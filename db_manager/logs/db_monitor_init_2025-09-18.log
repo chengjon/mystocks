@@ -1,0 +1,83 @@
+2025-09-18 08:59:53.222 | INFO     | __main__:<module>:336 | 🔬 检测到 Jupyter 环境，使用默认参数
+2025-09-18 08:59:53.223 | INFO     | __main__:<module>:347 | ============================================================
+2025-09-18 08:59:53.223 | INFO     | __main__:<module>:348 | 🎯 数据库监控初始化程序启动
+2025-09-18 08:59:53.223 | INFO     | __main__:<module>:349 | ⚙️ 参数设置: drop_existing=False
+2025-09-18 08:59:53.223 | INFO     | __main__:<module>:350 | 🌐 运行环境: Jupyter
+2025-09-18 08:59:53.223 | INFO     | __main__:<module>:351 | ============================================================
+2025-09-18 08:59:53.224 | INFO     | __main__:create_database_and_tables:172 | 🚀 开始创建数据库和表结构 (drop_existing=False)
+2025-09-18 08:59:53.224 | INFO     | __main__:load_env_config:30 | 🔍 开始加载环境配置文件: mystocks/.env
+2025-09-18 08:59:53.224 | ERROR    | __main__:load_env_config:84 | ❌ 加载配置失败 (耗时: 0.000s): 环境变量文件 'mystocks/.env' 不存在
+2025-09-18 08:59:53.224 | ERROR    | __main__:create_database_and_tables:269 | ❌ 发生意外错误 (耗时: 0.000s): 环境变量文件 'mystocks/.env' 不存在
+2025-09-18 08:59:53.224 | ERROR    | __main__:<module>:360 | 💥 数据库监控初始化程序执行失败!
+2025-09-18 08:59:53.224 | INFO     | __main__:<module>:362 | ============================================================
+2025-09-18 09:05:54.149 | INFO     | __main__:<module>:415 | 🔬 检测到 Jupyter 环境，使用默认参数
+2025-09-18 09:05:54.150 | INFO     | __main__:<module>:426 | ============================================================
+2025-09-18 09:05:54.150 | INFO     | __main__:<module>:427 | 🎯 数据库监控初始化程序启动
+2025-09-18 09:05:54.150 | INFO     | __main__:<module>:428 | ⚙️ 参数设置: drop_existing=False
+2025-09-18 09:05:54.150 | INFO     | __main__:<module>:429 | 🌐 运行环境: Jupyter
+2025-09-18 09:05:54.150 | INFO     | __main__:<module>:430 | ============================================================
+2025-09-18 09:05:54.150 | INFO     | __main__:create_database_and_tables:251 | 🚀 开始创建数据库和表结构 (drop_existing=False)
+2025-09-18 09:05:54.151 | SUCCESS  | __main__:find_env_file:78 | ✅ 找到环境文件: d:\MyData\GITHUB\mystocks\.env
+2025-09-18 09:05:54.151 | INFO     | __main__:load_env_config:113 | 🔍 开始加载环境配置文件: d:\MyData\GITHUB\mystocks\.env
+2025-09-18 09:05:54.151 | SUCCESS  | __main__:load_env_config:118 | ✓ 环境文件存在: d:\MyData\GITHUB\mystocks\.env
+2025-09-18 09:05:54.151 | INFO     | __main__:load_env_config:123 | 📄 读取到 32 行配置
+2025-09-18 09:05:54.151 | SUCCESS  | __main__:load_env_config:156 | ✓ 环境配置加载成功! 耗时: 0.000s
+2025-09-18 09:05:54.151 | INFO     | __main__:load_env_config:157 | 🔗 数据库连接信息: root@192.168.123.104:3306
+2025-09-18 09:05:54.151 | INFO     | __main__:create_database_and_tables:265 | 🔗 连接数据库: root@192.168.123.104:3306
+2025-09-18 09:05:54.322 | SUCCESS  | __main__:create_database_and_tables:272 | ✓ 数据库连接成功
+2025-09-18 09:05:54.323 | INFO     | __main__:create_database_and_tables:286 | 📄 将执行 6 条 SQL 命令
+2025-09-18 09:05:54.323 | INFO     | __main__:create_database_and_tables:296 | 📁 [1/6] 创建数据库: db_monitor
+2025-09-18 09:05:54.330 | INFO     | __main__:create_database_and_tables:298 | 🔄 [2/6] 切换到数据库: db_monitor
+2025-09-18 09:05:54.332 | INFO     | __main__:create_database_and_tables:301 | 📊 [3/6] 创建表: table_creation_log
+2025-09-18 09:05:54.355 | INFO     | __main__:create_database_and_tables:301 | 📊 [4/6] 创建表: column_definition_log
+2025-09-18 09:05:54.360 | INFO     | __main__:create_database_and_tables:301 | 📊 [5/6] 创建表: table_operation_log
+2025-09-18 09:05:54.380 | INFO     | __main__:create_database_and_tables:301 | 📊 [6/6] 创建表: table_validation_log
+2025-09-18 09:05:54.398 | SUCCESS  | __main__:create_database_and_tables:323 | ✓ 数据库初始化完成!
+2025-09-18 09:05:54.398 | INFO     | __main__:create_database_and_tables:324 | 📊 执行统计: 成功 6 / 失败 0 / 总计 6
+2025-09-18 09:05:54.399 | INFO     | __main__:create_database_and_tables:325 | ⏱️ 总执行时间: 0.248s
+2025-09-18 09:05:54.399 | INFO     | __main__:create_database_and_tables:328 | 📦 创建的资源汇总:
+2025-09-18 09:05:54.399 | INFO     | __main__:create_database_and_tables:329 |   • 数据库: db_monitor
+2025-09-18 09:05:54.399 | INFO     | __main__:create_database_and_tables:330 |   • 表结构:
+2025-09-18 09:05:54.400 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_creation_log - 表创建日志表
+2025-09-18 09:05:54.400 | INFO     | __main__:create_database_and_tables:338 |     ▫ column_definition_log - 列定义日志表
+2025-09-18 09:05:54.400 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_operation_log - 表操作日志表
+2025-09-18 09:05:54.400 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_validation_log - 表结构验证日志表
+2025-09-18 09:05:54.400 | SUCCESS  | __main__:<module>:437 | 🎉 数据库监控初始化程序执行成功!
+2025-09-18 09:05:54.401 | INFO     | __main__:<module>:441 | ============================================================
+2025-09-18 10:40:10.853 | INFO     | __main__:<module>:426 | ============================================================
+2025-09-18 10:40:10.854 | INFO     | __main__:<module>:427 | 🎯 数据库监控初始化程序启动
+2025-09-18 10:40:10.854 | INFO     | __main__:<module>:428 | ⚙️ 参数设置: drop_existing=True
+2025-09-18 10:40:10.855 | INFO     | __main__:<module>:429 | 🌐 运行环境: Command Line
+2025-09-18 10:40:10.855 | INFO     | __main__:<module>:430 | ============================================================
+2025-09-18 10:40:10.855 | INFO     | __main__:create_database_and_tables:251 | 🚀 开始创建数据库和表结构 (drop_existing=True)
+2025-09-18 10:40:10.855 | SUCCESS  | __main__:find_env_file:78 | ✅ 找到环境文件: D:\MyData\GITHUB\mystocks\.env
+2025-09-18 10:40:10.856 | INFO     | __main__:load_env_config:113 | 🔍 开始加载环境配置文件: D:\MyData\GITHUB\mystocks\.env
+2025-09-18 10:40:10.856 | SUCCESS  | __main__:load_env_config:118 | ✓ 环境文件存在: D:\MyData\GITHUB\mystocks\.env
+2025-09-18 10:40:10.856 | INFO     | __main__:load_env_config:123 | 📄 读取到 32 行配置
+2025-09-18 10:40:10.856 | SUCCESS  | __main__:load_env_config:156 | ✓ 环境配置加载成功! 耗时: 0.000s
+2025-09-18 10:40:10.857 | INFO     | __main__:load_env_config:157 | 🔗 数据库连接信息: root@192.168.123.104:3306
+2025-09-18 10:40:10.857 | INFO     | __main__:create_database_and_tables:265 | 🔗 连接数据库: root@192.168.123.104:3306
+2025-09-18 10:40:10.957 | SUCCESS  | __main__:create_database_and_tables:272 | ✓ 数据库连接成功
+2025-09-18 10:40:10.957 | INFO     | __main__:create_database_and_tables:286 | 📄 将执行 10 条 SQL 命令
+2025-09-18 10:40:10.958 | INFO     | __main__:create_database_and_tables:296 | 📁 [1/10] 创建数据库: db_monitor
+2025-09-18 10:40:10.964 | INFO     | __main__:create_database_and_tables:298 | 🔄 [2/10] 切换到数据库: db_monitor
+2025-09-18 10:40:10.967 | WARNING  | __main__:create_database_and_tables:303 | 🗑️ [3/10] 删除表
+2025-09-18 10:40:11.055 | WARNING  | __main__:create_database_and_tables:303 | 🗑️ [4/10] 删除表
+2025-09-18 10:40:11.144 | WARNING  | __main__:create_database_and_tables:303 | 🗑️ [5/10] 删除表
+2025-09-18 10:40:11.226 | WARNING  | __main__:create_database_and_tables:303 | 🗑️ [6/10] 删除表
+2025-09-18 10:40:11.308 | INFO     | __main__:create_database_and_tables:301 | 📊 [7/10] 创建表: table_creation_log
+2025-09-18 10:40:11.424 | INFO     | __main__:create_database_and_tables:301 | 📊 [8/10] 创建表: column_definition_log
+2025-09-18 10:40:11.525 | INFO     | __main__:create_database_and_tables:301 | 📊 [9/10] 创建表: table_operation_log
+2025-09-18 10:40:11.643 | INFO     | __main__:create_database_and_tables:301 | 📊 [10/10] 创建表: table_validation_log
+2025-09-18 10:40:11.909 | SUCCESS  | __main__:create_database_and_tables:323 | ✓ 数据库初始化完成!
+2025-09-18 10:40:11.909 | INFO     | __main__:create_database_and_tables:324 | 📊 执行统计: 成功 10 / 失败 0 / 总计 10
+2025-09-18 10:40:11.910 | INFO     | __main__:create_database_and_tables:325 | ⏱️ 总执行时间: 1.054s
+2025-09-18 10:40:11.910 | INFO     | __main__:create_database_and_tables:328 | 📦 创建的资源汇总:
+2025-09-18 10:40:11.910 | INFO     | __main__:create_database_and_tables:329 |   • 数据库: db_monitor
+2025-09-18 10:40:11.910 | INFO     | __main__:create_database_and_tables:330 |   • 表结构:
+2025-09-18 10:40:11.910 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_creation_log - 表创建日志表
+2025-09-18 10:40:11.911 | INFO     | __main__:create_database_and_tables:338 |     ▫ column_definition_log - 列定义日志表
+2025-09-18 10:40:11.911 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_operation_log - 表操作日志表
+2025-09-18 10:40:11.911 | INFO     | __main__:create_database_and_tables:338 |     ▫ table_validation_log - 表结构验证日志表
+2025-09-18 10:40:11.911 | SUCCESS  | __main__:<module>:437 | 🎉 数据库监控初始化程序执行成功!
+2025-09-18 10:40:11.912 | INFO     | __main__:<module>:441 | ============================================================
