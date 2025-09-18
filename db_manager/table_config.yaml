@@ -1,0 +1,75 @@
+tables:
+  - database_type: "TDengine"
+    database_name: "market_data"
+    table_name: "ticks"
+    is_super_table: true
+    columns:
+      - name: "ts"
+        type: "TIMESTAMP"
+        nullable: false
+      - name: "price"
+        type: "FLOAT"
+      - name: "volume"
+        type: "BIGINT"
+      - name: "symbol"
+        type: "VARCHAR"
+        length: 20
+        is_tag: true
+      - name: "exchange"
+        type: "VARCHAR"
+        length: 10
+        is_tag: true
+    # 连接参数将从环境变量中自动获取
+
+  - database_type: "PostgreSQL"
+    database_name: "quant_research"
+    table_name: "daily_bars"
+    is_timescale_hypertable: true
+    time_column: "trade_date"
+    columns:
+      - name: "id"
+        type: "SERIAL"
+        primary_key: true
+      - name: "symbol"
+        type: "VARCHAR"
+        length: 20
+        nullable: false
+      - name: "trade_date"
+        type: "DATE"
+        nullable: false
+      - name: "open"
+        type: "NUMERIC"
+        precision: 10
+        scale: 4
+      - name: "high"
+        type: "NUMERIC"
+        precision: 10
+        scale: 4
+      - name: "low"
+        type: "NUMERIC"
+        precision: 10
+        scale: 4
+      - name: "close"
+        type: "NUMERIC"
+        precision: 10
+        scale: 4
+      - name: "volume"
+        type: "BIGINT"
+    # 连接参数将从环境变量中自动获取
+
+  - database_type: "MySQL"
+    database_name: "test_db"
+    table_name: "test_table"
+    columns:
+      - name: "id"
+        type: "INT"
+        primary_key: true
+        nullable: false
+      - name: "name"
+        type: "VARCHAR"
+        length: 100
+        nullable: false
+      - name: "description"
+        type: "TEXT"
+        nullable: true
+    # 连接参数将从环境变量中自动获取
