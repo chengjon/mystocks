@@ -270,3 +270,86 @@ class AkshareDataSource(IDataSource):
         except Exception as e:
             print(f"Akshare获取指数成分股失败: {e}")
             return []
+    
+    def get_real_time_data(self, symbol: str):
+        """获取实时数据-Akshare实现"""
+        try:
+            # 使用stock_zh_a_spot接口获取股票实时数据
+            df = ak.stock_zh_a_spot()
+            
+            if df is None or df.empty:
+                print(f"未能获取到股票 {symbol} 的实时数据")
+                return {}
+                
+            # 筛选指定股票
+            filtered_df = df[df['代码'] == symbol]
+            if filtered_df.empty:
+                print(f"未能找到股票 {symbol} 的实时数据")
+                return {}
+                
+            # 转换为字典
+            return filtered_df.iloc[0].to_dict()
+        except Exception as e:
+            print(f"Akshare获取实时数据失败: {e}")
+            return {}
+    
+    def get_market_calendar(self, start_date: str, end_date: str):
+        """获取交易日历-Akshare实现"""
+        try:
+            # 使用tool_trade_date_hist_sina接口获取交易日历
+            df = ak.tool_trade_date_hist_sina()
+            
+            if df is None or df.empty:
+                print("未能获取到交易日历数据")
+                return pd.DataFrame()
+                
+            # 筛选日期范围
+            df['trade_date'] = pd.to_datetime(df['trade_date'])
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+            
+            mask = (df['trade_date'] >= start_date) & (df['trade_date'] <= end_date)
+            filtered_df = df[mask]
+            
+            return filtered_df
+        except Exception as e:
+            print(f"Akshare获取交易日历失败: {e}")
+            return pd.DataFrame()
+    
+    def get_financial_data(self, symbol: str, period: str = "annual"):
+        """获取财务数据-Akshare实现"""
+        try:
+            # 使用stock_financial_abstract接口获取财务摘要数据
+            stock_code = format_stock_code_for_source(symbol, 'akshare')
+            df = ak.stock_financial_abstract(stock=stock_code)
+            
+            if df is None or df.empty:
+                print(f"未能获取到股票 {symbol} 的财务数据")
+                return pd.DataFrame()
+                
+            return df
+        except Exception as e:
+            print(f"Akshare获取财务数据失败: {e}")
+            return pd.DataFrame()
+    
+    def get_news_data(self, symbol: str = None, limit: int = 10):
+        """获取新闻数据-Akshare实现"""
+        try:
+            # 如果提供了股票代码，获取个股新闻；否则获取市场新闻
+            if symbol:
+                # 获取个股新闻
+                stock_code = format_stock_code_for_source(symbol, 'akshare')
+                df = ak.stock_news_em(symbol=stock_code, pageSize=limit)
+            else:
+                # 获取市场新闻
+                df = ak.stock_news_em(pageSize=limit)
+            
+            if df is None or df.empty:
+                print("未能获取到新闻数据")
+                return []
+                
+            # 转换为字典列表
+            return df.to_dict('records')
+        except Exception as e:
+            print(f"Akshare获取新闻数据失败: {e}")
+            return []
