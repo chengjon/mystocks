@@ -53,6 +53,48 @@ class MockDataSource(IDataSource):
     def get_index_components(self, symbol: str) -> List[str]:
         """返回模拟成分股"""
         return ['600000', '000001', '000002']
+    
+    def get_real_time_data(self, symbol: str):
+        """返回模拟实时数据"""
+        return {
+            'symbol': symbol,
+            'price': 10.5,
+            'change': 0.2,
+            'change_percent': 1.93,
+            'volume': 1000000,
+            'time': '2023-08-01 10:00:00'
+        }
+    
+    def get_market_calendar(self, start_date: str, end_date: str):
+        """返回模拟交易日历"""
+        return pd.DataFrame({
+            'date': ['2023-08-01', '2023-08-02', '2023-08-03'],
+            'is_trading_day': [True, True, True]
+        })
+    
+    def get_financial_data(self, symbol: str, period: str = "annual"):
+        """返回模拟财务数据"""
+        return pd.DataFrame({
+            'date': ['2022-12-31', '2021-12-31'],
+            'revenue': [1000000, 900000],
+            'net_profit': [100000, 90000],
+            'eps': [1.0, 0.9]
+        })
+    
+    def get_news_data(self, symbol: str = None, limit: int = 10):
+        """返回模拟新闻数据"""
+        return [
+            {
+                'title': '模拟新闻标题1',
+                'content': '这是模拟的新闻内容1',
+                'time': '2023-08-01 09:00:00'
+            },
+            {
+                'title': '模拟新闻标题2',
+                'content': '这是模拟的新闻内容2',
+                'time': '2023-08-01 10:00:00'
+            }
+        ]
 
 
 def test_architecture():

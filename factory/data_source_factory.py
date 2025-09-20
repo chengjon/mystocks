@@ -14,7 +14,7 @@
 - 提供统一的创建接口，降低系统耦合度
 - 支持运行时注册新的数据源类型
 """
-from typing import Dict, Type
+from typing import Dict, Type, List
 import sys
 import os
 
@@ -30,6 +30,8 @@ from mystocks.adapters.baostock_adapter import BaostockDataSource
 # from mystocks.adapters.easyquotation_adapter import EasyquotationDataSource
 # from mystocks.adapters.biyingapi_adapter import BiyingapiDataSource
 # from mystocks.adapters.custom_adapter import CustomDataSource
+from mystocks.adapters.customer_adapter import CustomerDataSource
+from mystocks.adapters.financial_adapter import FinancialDataSource
 
 
 class DataSourceFactory:
@@ -38,7 +40,9 @@ class DataSourceFactory:
     # 注册的数据源类型
     _source_types: Dict[str, Type[IDataSource]] = {
         'akshare': AkshareDataSource,
-        'baostock': BaostockDataSource
+        'baostock': BaostockDataSource,
+        'customer': CustomerDataSource,
+        'financial': FinancialDataSource
     }
     
     @classmethod
