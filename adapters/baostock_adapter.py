@@ -180,3 +180,71 @@ class BaostockDataSource(IDataSource):
         except Exception as e:
             print(f"Baostock获取指数成分股失败: {e}")
             return []
+    
+    def get_real_time_data(self, symbol: str):
+        """获取实时数据-Baostock实现"""
+        try:
+            # 使用stock_zh_a_spot接口获取股票实时数据
+            rs = self.bs.query_all_stock(day=datetime.datetime.now().strftime("%Y-%m-%d"))
+            if rs.error_code != '0':
+                print(f"Baostock查询错误: {rs.error_msg}")
+                return {}
+            
+            # 转换为DataFrame
+            data_list = []
+            while (rs.error_code == '0') & rs.next():
+                data_list.append(rs.get_row_data())
+            
+            df = pd.DataFrame(data_list, columns=rs.fields)
+            
+            # 筛选指定股票
+            filtered_df = df[df['code'] == symbol]
+            if filtered_df.empty:
+                print(f"未能找到股票 {symbol} 的实时数据")
+                return {}
+                
+            # 转换为字典
+            return filtered_df.iloc[0].to_dict()
+        except Exception as e:
+            print(f"Baostock获取实时数据失败: {e}")
+            return {}
+    
+    def get_market_calendar(self, start_date: str, end_date: str):
+        """获取交易日历-Baostock实现"""
+        try:
+            # Baostock没有直接提供交易日历接口，返回空DataFrame
+            print("Baostock暂不支持交易日历查询")
+            return pd.DataFrame()
+        except Exception as e:
+            print(f"Baostock获取交易日历失败: {e}")
+            return pd.DataFrame()
+    
+    def get_financial_data(self, symbol: str, period: str = "annual"):
+        """获取财务数据-Baostock实现"""
+        try:
+            # 使用query_stock_basic获取基本信息（作为财务数据的替代）
+            rs = self.bs.query_stock_basic(code=symbol)
+            if rs.error_code != '0':
+                print(f"Baostock查询错误: {rs.error_msg}")
+                return pd.DataFrame()
+            
+            # 转换为DataFrame
+            data_list = []
+            while (rs.error_code == '0') & rs.next():
+                data_list.append(rs.get_row_data())
+            
+            df = pd.DataFrame(data_list, columns=rs.fields)
+            return df
+        except Exception as e:
+            print(f"Baostock获取财务数据失败: {e}")
+            return pd.DataFrame()
+    
+    def get_news_data(self, symbol: str = None, limit: int = 10):
+        """获取新闻数据-Baostock实现"""
+        try:
+            # Baostock没有直接提供新闻数据接口，返回空列表
+            print("Baostock暂不支持新闻数据查询")
+            return []
+        except Exception as e:
+            print(f"Baostock获取新闻数据失败: {e}")
+            return []

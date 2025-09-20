@@ -188,3 +188,27 @@ class UnifiedDataManager:
         if not bs_data.empty:
             print("\nBaostock 数据前5行:")
             print(bs_data.head())
+    
+    def get_financial_data(self, symbol: str, period: str = "annual", source_type: Optional[str] = None) -> pd.DataFrame:
+        """
+        获取股票财务数据（统一接口）
+        
+        Args:
+            symbol: 股票代码 (支持多种格式)
+            period: 报告期类型 ("annual" 或 "quarterly")
+            source_type: 数据源类型，如果为None则使用默认数据源
+            
+        Returns:
+            DataFrame: 包含股票财务数据的DataFrame
+        """
+        # 标准化股票代码
+        std_symbol = normalize_stock_code(symbol)
+        
+        # 获取数据
+        source = self.get_source(source_type)
+        # 检查数据源是否支持财务数据获取
+        if hasattr(source, 'get_financial_data'):
+            return source.get_financial_data(std_symbol, period)
+        else:
+            print(f"[警告] 数据源 {source_type if source_type else self.default_source} 不支持财务数据获取")
+            return pd.DataFrame()

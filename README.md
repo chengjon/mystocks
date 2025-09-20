@@ -277,7 +277,11 @@ print(f"验证结果: 通过={is_valid}, 缺失={missing}, 额外={extra}")
 - [QUICKSTART.md](./QUICKSTART.md) - 快速入门指南
 - [CHANGELOG.md](./CHANGELOG.md) - 更新日志
 - [ARCHITECTURE_VERIFICATION_REPORT.md](./ARCHITECTURE_VERIFICATION_REPORT.md) - 架构验证报告
+- [ARCHITECTURE_VALIDATION_SUMMARY.md](./ARCHITECTURE_VALIDATION_SUMMARY.md) - 架构验证总结报告
 - [EXTENSION_DEMO.md](./EXTENSION_DEMO.md) - 系统扩展功能演示
+- [FINAL_VALIDATION_REPORT.md](./FINAL_VALIDATION_REPORT.md) - 系统最终验证报告
+- [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md) - 项目总结报告
+- [PROJECT_SHOWCASE.md](./PROJECT_SHOWCASE.md) - 项目展示文档
 - [register_new_sources.py](./register_new_sources.py) - 新数据源注册演示脚本
 
 ## 支持的数据源
