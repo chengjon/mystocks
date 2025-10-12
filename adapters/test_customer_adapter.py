@@ -69,8 +69,9 @@ def test_customer_data_source():
     try:
         # 以平安银行(000001)为例，获取最近一个月的数据
         from datetime import datetime, timedelta
-        end_date = datetime.now().strftime("%Y-%m-%d")
-        start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        from mystocks.utils.date_utils import normalize_date
+        end_date = normalize_date(datetime.now())
+        start_date = normalize_date(datetime.now() - timedelta(days=30))
         
         daily_data = customer_source.get_stock_daily("000001", start_date, end_date)
         if isinstance(daily_data, pd.DataFrame) and not daily_data.empty:
