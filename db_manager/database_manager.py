@@ -23,12 +23,34 @@ logger = logging.getLogger("DatabaseTableManager")
 
 # 尝试导入TDengine，如果失败则设置为None
 try:
-    import taosrest
-    TAOS_AVAILABLE = True
-except ImportError as e:
+    # 优先尝试WebSocket方式
+    try:
+        import taosws as taos
+        TAOS_MODULE_TYPE = 'taosws'
+        TAOS_AVAILABLE = True
+    except ImportError:
+        try:
+            import taosrest as taos
+            TAOS_MODULE_TYPE = 'taosrest'
+            TAOS_AVAILABLE = True
+        except ImportError:
+            try:
+                import taos
+                TAOS_MODULE_TYPE = 'taos'
+                TAOS_AVAILABLE = True
+            except ImportError:
+                taos = None
+                TAOS_MODULE_TYPE = None
+                TAOS_AVAILABLE = False
+except Exception as e:
     taos = None
+    TAOS_MODULE_TYPE = None
     TAOS_AVAILABLE = False
-    logger.warning(f"TDengine client library not available: {e}")
+
+if TAOS_AVAILABLE:
+    logger.info(f"TDengine客户端已加载: {TAOS_MODULE_TYPE}")
+else:
+    logger.warning("TDengine client library not available")
 
 # 从环境变量获取监控数据库连接
 MONITOR_DB_URL = os.getenv("MONITOR_DB_URL", "mysql+pymysql://user:password@localhost/db_monitor")
@@ -170,14 +192,31 @@ class DatabaseTableManager:
                 # 检查TDengine是否可用
                 if not TAOS_AVAILABLE:
                     raise ValueError("TDengine client library is not available. Please install TDengine client.")
-                # TDengine连接
-                conn = taos.connect(
-                    host=config['host'],
-                    user=config['user'],
-                    password=config['password'],
-                    port=config['port'],
-                    database=db_name
-                )
+                
+                # 根据不同模块类型使用不同连接方式
+                if TAOS_MODULE_TYPE == 'taosws':
+                    # WebSocket连接方式
+                    dsn = f"ws://{config['user']}:{config['password']}@{config['host']}:{config.get('port', 6041)}"
+                    if db_name:
+                        dsn += f"/{db_name}"
+                    conn = taos.connect(dsn)
+                elif TAOS_MODULE_TYPE == 'taosrest':
+                    # REST API连接方式
+                    conn = taos.connect(
+                        url=f"http://{config['host']}:{config.get('rest_port', 6041)}",
+                        user=config['user'],
+                        password=config['password'],
+                        database=db_name
+                    )
+                else:
+                    # 原生连接方式
+                    conn = taos.connect(
+                        host=config['host'],
+                        user=config['user'],
+                        password=config['password'],
+                        port=config.get('port', 6030),
+                        database=db_name
+                    )
             elif db_type == DatabaseType.POSTGRESQL:
                 # PostgreSQL连接
                 conn = psycopg2.connect(
