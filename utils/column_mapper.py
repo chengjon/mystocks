@@ -26,7 +26,7 @@ class ColumnMapper:
     STANDARD_EN_MAPPING = {
         # 基本OHLCV数据
         "日期": "date",
-        "时间": "date", 
+        "时间": "date",
         "trade_date": "date",
         "trading_date": "date",
         "股票代码": "symbol",
@@ -38,9 +38,11 @@ class ColumnMapper:
         "stock_name": "name",
         "开盘": "open",
         "开盘价": "open",
+        "今开": "open",
         "open_price": "open",
         "收盘": "close",
-        "收盘价": "close", 
+        "收盘价": "close",
+        "最新价": "close",  # 实时行情中的最新价对应收盘价
         "close_price": "close",
         "最高": "high",
         "最高价": "high",
