@@ -73,4 +73,5 @@ dmypy.json
 # Temporary
 tmp/
 temp/
+temp_docs/
 *.tmp
