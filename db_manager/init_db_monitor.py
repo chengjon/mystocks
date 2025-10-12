@@ -219,17 +219,23 @@ USE db_monitor;
 -- 新增表操作日志表
 {create_table_prefix} table_operation_log (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
+    operation_id VARCHAR(100) NOT NULL COMMENT '操作ID',
     table_name VARCHAR(255) NOT NULL COMMENT '表名',
     database_type ENUM('TDengine', 'PostgreSQL', 'Redis', 'MySQL', 'MariaDB') NOT NULL COMMENT '数据库类型',
     database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
-    operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE') NOT NULL COMMENT '操作类型',
+    operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE', 'save_data', 'save_data_with_dedup', 'load_data', 'upsert_data', 'insert_data') NOT NULL COMMENT '操作类型',
     operation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
     operation_status ENUM('success', 'failed', 'processing') NOT NULL COMMENT '操作状态',
     operation_details JSON NOT NULL COMMENT '操作详情（JSON格式）',
     ddl_command TEXT COMMENT '执行的DDL命令',
     error_message TEXT COMMENT '错误信息（如有）',
+    data_count INT DEFAULT 0 COMMENT '数据记录数',
+    duration_seconds DECIMAL(10,3) DEFAULT 0 COMMENT '执行耗时（秒）',
+    end_time TIMESTAMP NULL COMMENT '结束时间',
+    INDEX idx_operation_id (operation_id),
     INDEX idx_operation_time (operation_time),
-    INDEX idx_operation_type (operation_type)
+    INDEX idx_operation_type (operation_type),
+    UNIQUE KEY uk_operation_id (operation_id)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表操作日志表';
 
 -- 新增表结构验证日志表

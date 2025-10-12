@@ -18,32 +18,51 @@ from typing import Dict, Type, List
 import sys
 import os
 
-# 将当前目录的父目录的父目录添加到模块搜索路径中
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# 添加项目根目录到路径
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
-from mystocks.interfaces.data_source import IDataSource
-from mystocks.adapters.akshare_adapter import AkshareDataSource
-from mystocks.adapters.baostock_adapter import BaostockDataSource
-# 为新数据源预留导入空间
-# from mystocks.adapters.tushare_adapter import TushareDataSource
-# from mystocks.adapters.efinance_adapter import EfinanceDataSource  
-# from mystocks.adapters.easyquotation_adapter import EasyquotationDataSource
-# from mystocks.adapters.biyingapi_adapter import BiyingapiDataSource
-# from mystocks.adapters.custom_adapter import CustomDataSource
-from mystocks.adapters.customer_adapter import CustomerDataSource
-from mystocks.adapters.financial_adapter import FinancialDataSource
+from interfaces.data_source import IDataSource
+
+# 尝试导入各个适配器，如果失败则跳过
+adapters_dict = {}
+
+try:
+    from adapters.akshare_adapter import AkshareDataSource
+    adapters_dict['akshare'] = AkshareDataSource
+except ImportError as e:
+    print(f"警告: Akshare适配器导入失败: {e}")
+
+try:
+    from adapters.baostock_adapter import BaostockDataSource
+    adapters_dict['baostock'] = BaostockDataSource
+except ImportError as e:
+    print(f"警告: Baostock适配器导入失败: {e}")
+
+try:
+    from adapters.customer_adapter import CustomerDataSource
+    adapters_dict['customer'] = CustomerDataSource
+except ImportError as e:
+    print(f"警告: Customer适配器导入失败: {e}")
+
+try:
+    from adapters.financial_adapter import FinancialDataSource
+    adapters_dict['financial'] = FinancialDataSource
+except ImportError as e:
+    print(f"警告: Financial适配器导入失败: {e}")
+
+try:
+    from adapters.akshare_proxy_adapter import AkshareProxyAdapter
+    adapters_dict['akshare_proxy'] = AkshareProxyAdapter
+except ImportError as e:
+    pass  # 代理适配器是可选的
 
 
 class DataSourceFactory:
     """数据源工厂：负责创建具体的数据源对象"""
-    
-    # 注册的数据源类型
-    _source_types: Dict[str, Type[IDataSource]] = {
-        'akshare': AkshareDataSource,
-        'baostock': BaostockDataSource,
-        'customer': CustomerDataSource,
-        'financial': FinancialDataSource
-    }
+
+    # 注册的数据源类型（使用成功导入的适配器）
+    _source_types: Dict[str, Type[IDataSource]] = adapters_dict.copy()
     
     @classmethod
     def register_source(cls, source_type: str, source_class: Type[IDataSource]) -> None:
