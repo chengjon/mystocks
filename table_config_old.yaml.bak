@@ -1,0 +1,269 @@
+version: '2.0'
+metadata:
+  project: 'MyStocks量化交易系统 - 简化版'
+  created_by: 'ConfigDrivenTableManager'
+  last_updated: '2025-09-22T00:00:00'
+  description: '基于工作数据库的简化配置（Redis + MySQL）'
+
+# 数据库连接配置
+databases:
+  mysql:
+    host: '${MYSQL_HOST}'
+    port: '${MYSQL_PORT}'
+    user: '${MYSQL_USER}'
+    password: '${MYSQL_PASSWORD}'
+    description: '元数据与参考数据仓库'
+  redis:
+    host: '${REDIS_HOST}'
+    port: '${REDIS_PORT}'
+    password: '${REDIS_PASSWORD}'
+    db: '${REDIS_DB}'
+    description: '实时状态中心'
+
+# 简化表结构配置（只包含工作正常的数据库）
+tables:
+  # =====================================
+  # 第1类：参考数据（Reference Data） - MySQL
+  # =====================================
+  - database_type: 'MySQL'
+    database_name: 'quant_research'
+    table_name: 'symbols'
+    classification: 'symbols_info'
+    description: '股票基础信息表'
+    columns:
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        primary_key: true
+        comment: '股票代码'
+      - name: 'name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '股票名称'
+      - name: 'exchange'
+        type: 'VARCHAR'
+        length: 10
+        nullable: false
+        comment: '交易所'
+      - name: 'sector'
+        type: 'VARCHAR'
+        length: 50
+        comment: '行业分类'
+      - name: 'list_date'
+        type: 'DATE'
+        comment: '上市日期'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        nullable: false
+        comment: '是否有效'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '创建时间'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '更新时间'
+    indexes:
+      - name: 'uk_symbols_symbol'
+        type: 'UNIQUE'
+        columns: ['symbol']
+      - name: 'idx_symbols_exchange'
+        type: 'INDEX'
+        columns: ['exchange']
+      - name: 'idx_symbols_sector'
+        type: 'INDEX'
+        columns: ['sector']
+      - name: 'idx_symbols_active'
+        type: 'INDEX'
+        columns: ['is_active']
+
+  - database_type: 'MySQL'
+    database_name: 'quant_research'
+    table_name: 'trade_calendar'
+    classification: 'symbols_info'
+    description: '交易日历表'
+    columns:
+      - name: 'exchange'
+        type: 'VARCHAR'
+        length: 10
+        nullable: false
+        comment: '交易所'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: '日期'
+      - name: 'is_trading_day'
+        type: 'BOOLEAN'
+        nullable: false
+        comment: '是否交易日'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '创建时间'
+    indexes:
+      - name: 'uk_trade_calendar_exchange_date'
+        type: 'UNIQUE'
+        columns: ['exchange', 'trade_date']
+      - name: 'idx_trade_calendar_date'
+        type: 'INDEX'
+        columns: ['trade_date']
+      - name: 'idx_trade_calendar_trading_day'
+        type: 'INDEX'
+        columns: ['is_trading_day']
+
+  # =====================================
+  # 第2类：系统配置（Meta Data） - MySQL
+  # =====================================
+  - database_type: 'MySQL'
+    database_name: 'quant_research'
+    table_name: 'system_config'
+    classification: 'symbols_info'
+    description: '系统配置表'
+    columns:
+      - name: 'config_group'
+        type: 'VARCHAR'
+        length: 50
+        nullable: false
+        comment: '配置组'
+      - name: 'config_key'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '配置键'
+      - name: 'config_value'
+        type: 'TEXT'
+        nullable: false
+        comment: '配置值'
+      - name: 'config_type'
+        type: 'VARCHAR'
+        length: 20
+        default: "'string'"
+        nullable: false
+        comment: '配置类型'
+      - name: 'description'
+        type: 'TEXT'
+        comment: '配置描述'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        nullable: false
+        comment: '是否有效'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '创建时间'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '更新时间'
+    indexes:
+      - name: 'uk_system_config_group_key'
+        type: 'UNIQUE'
+        columns: ['config_group', 'config_key']
+      - name: 'idx_system_config_group'
+        type: 'INDEX'
+        columns: ['config_group']
+
+  # =====================================
+  # 第3类：历史数据（Historical Data） - PostgreSQL+TimescaleDB
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'daily_kline'
+    classification: 'daily_kline'
+    description: '股票日线OHLCV数据'
+    is_timescale_hypertable: true
+    time_column: 'trade_date'
+    columns:
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: '股票代码'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: '交易日期'
+      - name: 'open'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '开盘价'
+      - name: 'high'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '最高价'
+      - name: 'low'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '最低价'
+      - name: 'close'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '成交金额'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '创建时间'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        nullable: false
+        comment: '更新时间'
+    indexes:
+      - name: 'uk_daily_kline_symbol_date'
+        type: 'UNIQUE'
+        columns: ['symbol', 'trade_date']
+      - name: 'idx_daily_kline_date'
+        type: 'INDEX'
+        columns: ['trade_date']
+      - name: 'idx_daily_kline_symbol'
+        type: 'INDEX'
+        columns: ['symbol']
+
+# 系统维护任务配置
+maintenance:
+  auto_create_tables: true
+  daily_tasks:
+    - name: 'data_quality_check'
+      time: '01:00'
+      enabled: true
+    - name: 'performance_monitoring'
+      time: '02:00'
+      enabled: true
+    - name: 'backup_operations'
+      time: '03:00'
+      enabled: false
+    - name: 'log_cleanup'
+      time: '04:00'
+      enabled: true
+  weekly_tasks:
+    - name: 'table_structure_validation'
+      day: 'sunday'
+      time: '05:00'
+      enabled: true
+    - name: 'database_optimization'
+      day: 'sunday'
+      time: '06:00'
+      enabled: false
