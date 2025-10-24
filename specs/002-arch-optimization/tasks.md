@@ -48,15 +48,15 @@ feature_branch: "002-arch-optimization"
 
 **⚠️ CRITICAL**: 现有系统使用扁平路由，需先构建2级菜单基础设施才能开始所有Web集成任务
 
-- [ ] T011 [P] 统一后端路由目录结构 - 确认使用 `web/backend/app/api/` 作为统一路由目录（当前混用api/和routers/），更新所有路由导入
-- [ ] T012 [P] 验证前端技术栈版本 - 检查并记录：Vue.js ^3.3.0, Vue Router ^4.2.0, Element Plus ^2.4.0, ECharts ^5.4.0, Pinia ^2.1.0, Axios ^1.3.0
-- [ ] T013 创建2级嵌套菜单UI组件 - 在 `web/frontend/src/components/layout/NestedMenu.vue` 创建支持2级菜单的导航组件（当前系统仅有扁平路由）
-- [ ] T014 [P] 实现自动面包屑导航 - 在 `web/frontend/src/components/layout/Breadcrumb.vue` 创建面包屑导航组件，自动根据路由层级生成
-- [ ] T015 [P] 创建菜单配置文件 - 在 `web/frontend/src/config/menu.config.js` 创建集中式菜单配置，支持一级/二级菜单定义和权限控制
-- [ ] T016 [P] 创建路由工具函数 - 在 `web/frontend/src/router/utils.js` 创建路由生成、权限检查、菜单激活状态等工具函数
-- [ ] T017 创建统一Pydantic响应模型 - 在 `web/backend/app/models/base.py` 创建标准响应模型：`BaseResponse`, `PagedResponse`, `ErrorResponse`
+- [x] T011 [P] 统一后端路由目录结构 - 确认使用 `web/backend/app/api/` 作为统一路由目录（当前混用api/和routers/），更新所有路由导入 (✅ 2025-10-25 - 已验证，系统已统一)
+- [x] T012 [P] 验证前端技术栈版本 - 检查并记录：Vue.js ^3.3.0, Vue Router ^4.2.0, Element Plus ^2.4.0, ECharts ^5.4.0, Pinia ^2.1.0, Axios ^1.3.0 (✅ 2025-10-25 - 所有版本符合要求)
+- [x] T013 创建2级嵌套菜单UI组件 - 在 `web/frontend/src/components/layout/NestedMenu.vue` 创建支持2级菜单的导航组件（当前系统仅有扁平路由） (✅ 2025-10-25 - 267行)
+- [x] T014 [P] 实现自动面包屑导航 - 在 `web/frontend/src/components/layout/Breadcrumb.vue` 创建面包屑导航组件，自动根据路由层级生成 (✅ 2025-10-25 - 279行)
+- [x] T015 [P] 创建菜单配置文件 - 在 `web/frontend/src/config/menu.config.js` 创建集中式菜单配置，支持一级/二级菜单定义和权限控制 (✅ 2025-10-25 - 337行, 8个一级菜单, 24个二级菜单)
+- [x] T016 [P] 创建路由工具函数 - 在 `web/frontend/src/router/utils.js` 创建路由生成、权限检查、菜单激活状态等工具函数 (✅ 2025-10-25 - 356行, 15个工具函数)
+- [x] T017 创建统一Pydantic响应模型 - 在 `web/backend/app/models/base.py` 创建标准响应模型：`BaseResponse`, `PagedResponse`, `ErrorResponse` (✅ 2025-10-25 - 436行, 4个模型, 3个辅助函数)
 
-**Checkpoint**: 基础设施就绪（含Web基础）- 用户故事实施现在可以并行开始
+**Checkpoint**: ✅ 基础设施就绪（含Web基础）- 用户故事实施现在可以并行开始
 
 ---
 
