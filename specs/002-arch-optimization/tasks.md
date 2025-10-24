@@ -37,12 +37,12 @@ feature_branch: "002-arch-optimization"
 
 ### Backend Infrastructure
 
-- [ ] T005 配置PostgreSQL TimescaleDB扩展 - 在PostgreSQL中执行 `CREATE EXTENSION IF NOT EXISTS timescaledb;`
-- [ ] T006 [P] 创建独立监控数据库 - 在PostgreSQL中创建 `mystocks_monitoring` 数据库用于日志和指标
-- [ ] T007 [P] 配置loguru日志框架 - 在所有核心模块中替换 `import logging` 为 `from loguru import logger`
-- [ ] T008 创建数据迁移脚本模板 - 创建 `scripts/week3/migration_utils.py` 包含通用迁移函数
-- [ ] T009 建立代码行数统计基线 - 执行 `cloc core.py unified_manager.py data_access.py factory/ monitoring/ > metrics/baseline_loc.txt`
-- [ ] T010 建立性能基准测试套件 - 创建 `tests/performance/test_baseline_latency.py` 测量当前1000条记录保存的120ms基线
+- [x] T005 配置PostgreSQL TimescaleDB扩展 - 在PostgreSQL中执行 `CREATE EXTENSION IF NOT EXISTS timescaledb;` (✅ 2025-10-25)
+- [x] T006 [P] 创建独立监控数据库 - 在PostgreSQL中创建 `mystocks_monitoring` 数据库用于日志和指标 (✅ 2025-10-25)
+- [x] T007 [P] 配置loguru日志框架 - 在所有核心模块中替换 `import logging` 为 `from loguru import logger` (✅ 2025-10-25)
+- [x] T008 创建数据迁移脚本模板 - 创建 `scripts/week3/migration_utils.py` 包含通用迁移函数 (✅ 2025-10-25)
+- [x] T009 建立代码行数统计基线 - 执行 `cloc core.py unified_manager.py data_access.py factory/ monitoring/ > metrics/baseline_loc.txt` (✅ 2025-10-25)
+- [x] T010 建立性能基准测试套件 - 创建 `tests/performance/test_baseline_latency.py` 测量当前1000条记录保存的120ms基线 (✅ 2025-10-25)
 
 ### Web Foundation (新增 - 阻塞所有Web集成任务)
 
