@@ -31,9 +31,9 @@
 - `data_access/redis_access.py`
 
 **数据路由分布**:
-- TDengine: 5项高频时序数据
-  - TICK_DATA, MINUTE_KLINE, ORDER_BOOK_DEPTH, LEVEL2_SNAPSHOT, INDEX_QUOTES
-- PostgreSQL: 29项其他数据
+- TDengine: 3项高频时序数据
+  - TICK_DATA, MINUTE_KLINE, DEPTH_DATA
+- PostgreSQL: 20项其他数据
   - 日线数据、参考数据、衍生数据、交易数据、元数据
 
 ### T037.8: 更新CLAUDE.md文档反映双数据库架构
@@ -51,7 +51,7 @@
 **测试结果**: 5/5 全部通过 ✅
 
 1. **DatabaseTarget枚举验证**: 仅包含tdengine和postgresql
-2. **数据路由映射验证**: 34项数据分类全部正确路由
+2. **数据路由映射验证**: 23项数据分类全部正确路由
 3. **数据访问类导入验证**: 
    - TDengineDataAccess ✅
    - PostgreSQLDataAccess ✅
@@ -86,12 +86,12 @@ dd20acb Remove MySQL/Redis from architecture, keeping TDengine + PostgreSQL
   - 依赖: psycopg2-binary>=2.9.5
 
 ### 数据分类统计
-- 总数据分类: 34项
-  - 市场数据 (6项): 5项→TDengine, 1项→PostgreSQL
-  - 参考数据 (9项): 全部→PostgreSQL
-  - 衍生数据 (6项): 全部→PostgreSQL
-  - 交易数据 (7项): 全部→PostgreSQL
-  - 元数据 (6项): 全部→PostgreSQL
+- 总数据分类: 23项
+  - 市场数据 (5项): 3项→TDengine, 2项→PostgreSQL
+  - 参考数据 (4项): 全部→PostgreSQL
+  - 衍生数据 (4项): 全部→PostgreSQL
+  - 交易数据 (6项): 全部→PostgreSQL
+  - 元数据 (4项): 全部→PostgreSQL
 
 ### 架构优势
 1. **性能优化**: TDengine处理高频时序数据，极致压缩（20:1）和超高写入性能
