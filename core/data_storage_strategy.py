@@ -1,11 +1,11 @@
 """
-数据存储策略 (Week 3简化后 - PostgreSQL-only)
+数据存储策略
 
-统一路由所有23个数据分类到PostgreSQL+TimescaleDB。
-基于TimescaleDB的hypertable优化时序数据存储。
+实现23个数据分类到4种数据库的智能路由映射。
+基于数据特征(时序性、访问频率、存储周期)自动选择最优数据库。
 
 创建日期: 2025-10-11
-版本: 2.0.0 (Week 3 PostgreSQL-only架构)
+版本: 1.0.0
 """
 
 from typing import Dict, List, Optional
@@ -16,56 +16,60 @@ from core.data_classification import DataClassification, DatabaseTarget
 
 class DataStorageStrategy:
     """
-    数据存储策略 (Week 3简化后 - PostgreSQL-only)
+    数据存储策略
 
-    统一路由所有数据分类到PostgreSQL+TimescaleDB:
-    - 高频时序数据 → PostgreSQL TimescaleDB hypertables (自动压缩 + 分区)
-    - 历史分析数据 → PostgreSQL 标准表 (复杂查询 + 事务支持)
-    - 参考元数据 → PostgreSQL 标准表 (ACID + 索引优化)
-    - 实时热数据 → PostgreSQL (应用层缓存支持)
+    根据数据分类的特征自动选择最优存储数据库:
+    - 高频时序数据 → TDengine (极致压缩 + 高写入性能)
+    - 历史分析数据 → PostgreSQL+TimescaleDB (复杂查询 + 自动分区)
+    - 参考元数据 → MySQL/MariaDB (ACID + 复杂JOIN)
+    - 实时热数据 → Redis (亚毫秒访问)
     """
 
-    # 静态路由映射表 (Week 3简化后 - 所有数据统一路由到PostgreSQL)
+    # 静态路由映射表
     _ROUTING_MAP: Dict[DataClassification, DatabaseTarget] = {
-        # 市场数据 (6项) - 高频时序 → PostgreSQL TimescaleDB hypertables
-        DataClassification.TICK_DATA: DatabaseTarget.POSTGRESQL,
-        DataClassification.MINUTE_KLINE: DatabaseTarget.POSTGRESQL,
-        DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,
-        DataClassification.ORDER_BOOK_DEPTH: DatabaseTarget.POSTGRESQL,
-        DataClassification.LEVEL2_SNAPSHOT: DatabaseTarget.POSTGRESQL,
-        DataClassification.INDEX_QUOTES: DatabaseTarget.POSTGRESQL,
-        # 参考数据 (9项) - 相对静态 → PostgreSQL 标准表
-        DataClassification.SYMBOLS_INFO: DatabaseTarget.POSTGRESQL,
-        DataClassification.INDUSTRY_CLASS: DatabaseTarget.POSTGRESQL,
-        DataClassification.CONCEPT_CLASS: DatabaseTarget.POSTGRESQL,
-        DataClassification.INDEX_CONSTITUENTS: DatabaseTarget.POSTGRESQL,
-        DataClassification.TRADE_CALENDAR: DatabaseTarget.POSTGRESQL,
-        DataClassification.FUNDAMENTAL_METRICS: DatabaseTarget.POSTGRESQL,
-        DataClassification.DIVIDEND_DATA: DatabaseTarget.POSTGRESQL,
-        DataClassification.SHAREHOLDER_DATA: DatabaseTarget.POSTGRESQL,
-        DataClassification.MARKET_RULES: DatabaseTarget.POSTGRESQL,
-        # 衍生数据 (6项) - 计算结果 → PostgreSQL 标准表
+        # 市场数据 (6项) - 高频时序 → TDengine
+        DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
+        DataClassification.MINUTE_KLINE: DatabaseTarget.TDENGINE,
+        DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,  # 日线用PostgreSQL便于复杂查询
+        DataClassification.ORDER_BOOK_DEPTH: DatabaseTarget.TDENGINE,
+        DataClassification.LEVEL2_SNAPSHOT: DatabaseTarget.TDENGINE,
+        DataClassification.INDEX_QUOTES: DatabaseTarget.TDENGINE,
+
+        # 参考数据 (9项) - 相对静态 → MySQL
+        DataClassification.SYMBOLS_INFO: DatabaseTarget.MYSQL,
+        DataClassification.INDUSTRY_CLASS: DatabaseTarget.MYSQL,
+        DataClassification.CONCEPT_CLASS: DatabaseTarget.MYSQL,
+        DataClassification.INDEX_CONSTITUENTS: DatabaseTarget.MYSQL,
+        DataClassification.TRADE_CALENDAR: DatabaseTarget.MYSQL,
+        DataClassification.FUNDAMENTAL_METRICS: DatabaseTarget.MYSQL,
+        DataClassification.DIVIDEND_DATA: DatabaseTarget.MYSQL,
+        DataClassification.SHAREHOLDER_DATA: DatabaseTarget.MYSQL,
+        DataClassification.MARKET_RULES: DatabaseTarget.MYSQL,
+
+        # 衍生数据 (6项) - 计算结果 → PostgreSQL (支持复杂分析)
         DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
         DataClassification.QUANT_FACTORS: DatabaseTarget.POSTGRESQL,
         DataClassification.MODEL_OUTPUT: DatabaseTarget.POSTGRESQL,
         DataClassification.TRADE_SIGNALS: DatabaseTarget.POSTGRESQL,
         DataClassification.BACKTEST_RESULTS: DatabaseTarget.POSTGRESQL,
         DataClassification.RISK_METRICS: DatabaseTarget.POSTGRESQL,
-        # 交易数据 (7项) - 统一存储 → PostgreSQL (应用层缓存实时数据)
-        DataClassification.ORDER_RECORDS: DatabaseTarget.POSTGRESQL,
-        DataClassification.TRADE_RECORDS: DatabaseTarget.POSTGRESQL,
-        DataClassification.POSITION_HISTORY: DatabaseTarget.POSTGRESQL,
-        DataClassification.REALTIME_POSITIONS: DatabaseTarget.POSTGRESQL,
-        DataClassification.REALTIME_ACCOUNT: DatabaseTarget.POSTGRESQL,
-        DataClassification.FUND_FLOW: DatabaseTarget.POSTGRESQL,
-        DataClassification.ORDER_QUEUE: DatabaseTarget.POSTGRESQL,
-        # 元数据 (6项) - 配置管理 → PostgreSQL 标准表
-        DataClassification.DATA_SOURCE_STATUS: DatabaseTarget.POSTGRESQL,
-        DataClassification.TASK_SCHEDULE: DatabaseTarget.POSTGRESQL,
-        DataClassification.STRATEGY_PARAMS: DatabaseTarget.POSTGRESQL,
-        DataClassification.SYSTEM_CONFIG: DatabaseTarget.POSTGRESQL,
-        DataClassification.DATA_QUALITY_METRICS: DatabaseTarget.POSTGRESQL,
-        DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
+
+        # 交易数据 (7项) - 冷热分离策略
+        DataClassification.ORDER_RECORDS: DatabaseTarget.POSTGRESQL,  # 历史订单 → PostgreSQL
+        DataClassification.TRADE_RECORDS: DatabaseTarget.POSTGRESQL,  # 历史成交 → PostgreSQL
+        DataClassification.POSITION_HISTORY: DatabaseTarget.POSTGRESQL,  # 历史持仓 → PostgreSQL
+        DataClassification.REALTIME_POSITIONS: DatabaseTarget.REDIS,  # 实时持仓 → Redis
+        DataClassification.REALTIME_ACCOUNT: DatabaseTarget.REDIS,  # 实时账户 → Redis
+        DataClassification.FUND_FLOW: DatabaseTarget.POSTGRESQL,  # 资金流水 → PostgreSQL
+        DataClassification.ORDER_QUEUE: DatabaseTarget.REDIS,  # 订单队列 → Redis
+
+        # 元数据 (6项) - 配置管理 → MySQL
+        DataClassification.DATA_SOURCE_STATUS: DatabaseTarget.MYSQL,
+        DataClassification.TASK_SCHEDULE: DatabaseTarget.MYSQL,
+        DataClassification.STRATEGY_PARAMS: DatabaseTarget.MYSQL,
+        DataClassification.SYSTEM_CONFIG: DatabaseTarget.MYSQL,
+        DataClassification.DATA_QUALITY_METRICS: DatabaseTarget.MYSQL,
+        DataClassification.USER_CONFIG: DatabaseTarget.MYSQL,
     }
 
     @classmethod
@@ -91,9 +95,7 @@ class DataStorageStrategy:
         return cls._ROUTING_MAP[classification]
 
     @classmethod
-    def get_classifications_by_database(
-        cls, database: DatabaseTarget
-    ) -> List[DataClassification]:
+    def get_classifications_by_database(cls, database: DatabaseTarget) -> List[DataClassification]:
         """
         获取指定数据库负责的所有数据分类
 
@@ -170,43 +172,55 @@ class DataStorageStrategy:
 
 class DataStorageRules:
     """
-    数据存储规则 (Week 3简化后 - PostgreSQL-only)
+    数据存储规则
 
-    定义PostgreSQL的存储策略、保留周期、TimescaleDB压缩策略等
+    定义各数据库的存储策略、保留周期、压缩策略等
     """
 
-    # 数据保留周期 (天) - 所有数据类型统一在PostgreSQL中管理
+    # 数据保留周期 (天)
     RETENTION_POLICY = {
-        DatabaseTarget.POSTGRESQL: {
-            # 高频时序数据 (通过TimescaleDB自动压缩和分区管理)
+        DatabaseTarget.TDENGINE: {
             DataClassification.TICK_DATA: 30,  # Tick数据保留30天
             DataClassification.MINUTE_KLINE: 90,  # 分钟线保留90天
             DataClassification.ORDER_BOOK_DEPTH: 30,  # 盘口深度保留30天
             DataClassification.LEVEL2_SNAPSHOT: 30,  # L2快照保留30天
             DataClassification.INDEX_QUOTES: 365,  # 指数行情保留1年
-            # 历史分析数据 (长期保留,通过TimescaleDB自动分区管理)
+        },
+        DatabaseTarget.POSTGRESQL: {
+            # PostgreSQL数据长期保留,通过TimescaleDB自动分区管理
             DataClassification.DAILY_KLINE: 3650,  # 日线保留10年
             DataClassification.TECHNICAL_INDICATORS: 1825,  # 技术指标保留5年
             DataClassification.BACKTEST_RESULTS: 1825,  # 回测结果保留5年
-            # 实时数据 (应用层缓存支持,数据库持久化)
-            DataClassification.REALTIME_POSITIONS: None,  # 持久化,无过期
-            DataClassification.REALTIME_ACCOUNT: None,  # 持久化,无过期
-            DataClassification.ORDER_QUEUE: 7,  # 订单队列保留7天
-            # 参考数据和元数据 (永久保留,业务逻辑定期清理)
-            # 其他分类默认永久保留
+        },
+        DatabaseTarget.REDIS: {
+            # Redis仅保留实时热数据
+            DataClassification.REALTIME_POSITIONS: 0,  # 实时数据,无固定周期
+            DataClassification.REALTIME_ACCOUNT: 0,
+            DataClassification.ORDER_QUEUE: 0,
+        },
+        DatabaseTarget.MYSQL: {
+            # MySQL参考数据无固定过期时间
+            # 通过业务逻辑定期清理过时数据
         }
+    }
+
+    # Redis缓存过期时间 (秒)
+    REDIS_TTL = {
+        DataClassification.REALTIME_POSITIONS: 300,  # 实时持仓5分钟过期
+        DataClassification.REALTIME_ACCOUNT: 300,  # 实时账户5分钟过期
+        DataClassification.ORDER_QUEUE: 3600,  # 订单队列1小时过期
     }
 
     @classmethod
     def get_retention_days(cls, classification: DataClassification) -> Optional[int]:
         """
-        获取数据保留天数 (Week 3简化后 - PostgreSQL-only)
+        获取数据保留天数
 
         Args:
             classification: 数据分类
 
         Returns:
-            保留天数 (None表示永久保留)
+            保留天数 (None表示永久保留, 0表示无固定周期)
         """
         target_db = DataStorageStrategy.get_target_database(classification)
 
@@ -214,6 +228,19 @@ class DataStorageRules:
             return cls.RETENTION_POLICY[target_db].get(classification)
 
         return None  # 默认永久保留
+
+    @classmethod
+    def get_redis_ttl(cls, classification: DataClassification) -> Optional[int]:
+        """
+        获取Redis缓存过期时间
+
+        Args:
+            classification: 数据分类
+
+        Returns:
+            TTL秒数 (None表示不过期)
+        """
+        return cls.REDIS_TTL.get(classification)
 
 
 if __name__ == "__main__":
