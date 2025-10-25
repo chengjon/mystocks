@@ -50,23 +50,38 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { dataApi } from '@/api'
 
 const keyword = ref('')
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
 
 const queryData = async () => {
   loading.value = true
   try {
-    const params = keyword.value ? { keyword: keyword.value, limit: 100 } : { limit: 100 }
-    const { data } = await axios.get(`${API_BASE}/api/market/etf/list`, { params })
-    tableData.value = data
-    ElMessage.success(`查询成功，共${data.length}条记录`)
+    const params = { limit: 100, sort_by: 'volume' }
+    const response = await dataApi.getETFData(params)
+
+    if (response.success) {
+      // Map PostgreSQL response to table format
+      tableData.value = response.data.map(item => ({
+        symbol: item.symbol,
+        name: item.name,
+        latest_price: item.close,
+        change_percent: item.change,
+        volume: item.volume,
+        amount: item.amount,
+        turnover_rate: item.turnover,
+        open_price: item.open,
+        high_price: item.high,
+        low_price: item.low,
+        total_market_cap: item.amount // Using amount as proxy for market cap
+      }))
+      ElMessage.success(`查询成功，共${response.data.length}条记录`)
+    }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.message}`)
+    ElMessage.error(`查询失败: ${error.message || '请稍后重试'}`)
   } finally {
     loading.value = false
   }
@@ -75,11 +90,10 @@ const queryData = async () => {
 const refreshData = async () => {
   refreshing.value = true
   try {
-    await axios.post(`${API_BASE}/api/market/etf/refresh`)
-    ElMessage.success('数据刷新成功')
     await queryData()
+    ElMessage.success('数据已刷新')
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.message}`)
+    ElMessage.error(`刷新失败: ${error.message || '请稍后重试'}`)
   } finally {
     refreshing.value = false
   }

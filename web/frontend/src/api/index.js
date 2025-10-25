@@ -136,6 +136,19 @@ export const dataApi = {
   },
   getDashboardFundFlow(params) {
     return request.get('/data/dashboard/fund-flow', { params })
+  },
+  // Week 3 Market Data PostgreSQL APIs (User Story 2)
+  getDragonTiger(params) {
+    return request.get('/market/dragon-tiger', { params })
+  },
+  getETFData(params) {
+    return request.get('/market/etf-data', { params })
+  },
+  getMarketFundFlow(params) {
+    return request.get('/market/fund-flow', { params })
+  },
+  getChipRace(params) {
+    return request.get('/market/chip-race', { params })
   }
 }
 

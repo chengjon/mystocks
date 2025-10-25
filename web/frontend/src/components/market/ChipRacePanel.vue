@@ -60,7 +60,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { dataApi } from '@/api'
 
 const raceType = ref('open')
 const tradeDate = ref('')
@@ -68,20 +68,32 @@ const minAmount = ref(null)
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
 
 const queryData = async () => {
   loading.value = true
   try {
-    const params = { race_type: raceType.value, limit: 200 }
+    const params = { limit: 200 }
     if (tradeDate.value) params.trade_date = tradeDate.value
-    if (minAmount.value) params.min_race_amount = minAmount.value
 
-    const { data } = await axios.get(`${API_BASE}/api/market/chip-race`, { params })
-    tableData.value = data
-    ElMessage.success(`查询成功，共${data.length}条记录`)
+    const response = await dataApi.getChipRace(params)
+
+    if (response.success) {
+      // Map PostgreSQL response to table format
+      tableData.value = response.data.map(item => ({
+        symbol: item.symbol,
+        name: item.name,
+        latest_price: item.close_price,
+        change_percent: item.change_percent,
+        race_amount: item.net_volume, // Using net_volume as race amount
+        race_amplitude: item.strength / 100, // Convert percentage to decimal
+        race_commission: item.bid_volume,
+        race_transaction: item.ask_volume,
+        race_ratio: item.strength / 100
+      }))
+      ElMessage.success(`查询成功，共${response.data.length}条记录`)
+    }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.message}`)
+    ElMessage.error(`查询失败: ${error.message || '请稍后重试'}`)
   } finally {
     loading.value = false
   }
@@ -90,14 +102,10 @@ const queryData = async () => {
 const refreshData = async () => {
   refreshing.value = true
   try {
-    const params = { race_type: raceType.value }
-    if (tradeDate.value) params.trade_date = tradeDate.value
-
-    await axios.post(`${API_BASE}/api/market/chip-race/refresh`, null, { params })
-    ElMessage.success('数据刷新成功')
     await queryData()
+    ElMessage.success('数据已刷新')
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.message}`)
+    ElMessage.error(`刷新失败: ${error.message || '请稍后重试'}`)
   } finally {
     refreshing.value = false
   }

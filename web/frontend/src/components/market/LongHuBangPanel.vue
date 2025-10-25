@@ -1,5 +1,5 @@
 <template>
-  <div class="lhb-panel">
+  <div class="lhb-panel dragon-tiger-panel">
     <el-card class="search-card">
       <el-form :inline="true">
         <el-form-item label="股票代码">
@@ -71,7 +71,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { dataApi } from '@/api'
 import dayjs from 'dayjs'
 
 const symbol = ref('')
@@ -80,41 +80,47 @@ const minNetAmount = ref(null)
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
 
 const queryData = async () => {
   loading.value = true
   try {
     const params = { limit: 200 }
-    if (symbol.value) params.symbol = symbol.value
     if (dateRange.value && dateRange.value.length === 2) {
-      params.start_date = dateRange.value[0]
-      params.end_date = dateRange.value[1]
+      params.trade_date = dateRange.value[1] // Use end date as trade_date
     }
-    if (minNetAmount.value) params.min_net_amount = minNetAmount.value
 
-    const { data } = await axios.get(`${API_BASE}/api/market/lhb`, { params })
-    tableData.value = data
-    ElMessage.success(`查询成功，共${data.length}条记录`)
+    const response = await dataApi.getDragonTiger(params)
+
+    if (response.success) {
+      // Map PostgreSQL response to table format
+      tableData.value = response.data.map(item => ({
+        trade_date: item.trade_date,
+        symbol: item.symbol,
+        name: item.name,
+        reason: item.buy_reason,
+        buy_amount: item.total_buy,
+        sell_amount: item.total_sell,
+        net_amount: item.net_buy,
+        turnover_rate: 0, // Not available in new API
+        institution_buy: 0, // Not available in new API
+        institution_sell: 0 // Not available in new API
+      }))
+      ElMessage.success(`查询成功，共${response.data.length}条记录`)
+    }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.message}`)
+    ElMessage.error(`查询失败: ${error.message || '请稍后重试'}`)
   } finally {
     loading.value = false
   }
 }
 
 const refreshData = async () => {
-  const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
-  
   refreshing.value = true
   try {
-    await axios.post(`${API_BASE}/api/market/lhb/refresh`, null, {
-      params: { trade_date: yesterday }
-    })
-    ElMessage.success('数据刷新成功')
     await queryData()
+    ElMessage.success('数据已刷新')
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.message}`)
+    ElMessage.error(`刷新失败: ${error.message || '请稍后重试'}`)
   } finally {
     refreshing.value = false
   }
