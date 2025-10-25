@@ -81,10 +81,9 @@ class DataClassification(Enum):
 
 
 class DatabaseTarget(Enum):
-    """目标数据库类型 - 基于数据特性选择 (Week 3简化后)"""
+    """目标数据库类型 (Week 3简化后 - PostgreSQL only)"""
 
-    TDENGINE = "TDengine"  # 高频时序数据专用
-    POSTGRESQL = "PostgreSQL"  # 通用数据仓库+TimescaleDB时序扩展
+    POSTGRESQL = "PostgreSQL"  # 通用数据仓库+TimescaleDB时序扩展 (支持所有数据类型)
 
 
 class DeduplicationStrategy(Enum):
