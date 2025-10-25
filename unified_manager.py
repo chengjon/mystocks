@@ -28,14 +28,9 @@ from core.data_storage_strategy import DataStorageStrategy, DataStorageRules
 from core.batch_failure_strategy import (
     BatchFailureStrategy,
     BatchFailureHandler,
-    BatchOperationResult
+    BatchOperationResult,
 )
-from data_access import (
-    TDengineDataAccess,
-    PostgreSQLDataAccess,
-    MySQLDataAccess,
-    RedisDataAccess
-)
+from data_access import TDengineDataAccess, PostgreSQLDataAccess
 from utils.failure_recovery_queue import FailureRecoveryQueue
 
 # 监控组件 (US3)
@@ -82,11 +77,9 @@ class MyStocksUnifiedManager:
         Args:
             enable_monitoring: 是否启用监控功能 (默认True)
         """
-        # 初始化4个数据访问层
+        # 初始化2个数据访问层 (Week 3简化后)
         self.tdengine = TDengineDataAccess()
         self.postgresql = PostgreSQLDataAccess()
-        self.mysql = MySQLDataAccess()
-        self.redis = RedisDataAccess()
 
         # 初始化故障恢复队列
         self.recovery_queue = FailureRecoveryQueue()
@@ -115,7 +108,7 @@ class MyStocksUnifiedManager:
 
         print("✅ MyStocksUnifiedManager 初始化成功")
         print("   - 支持34个数据分类的自动路由")
-        print("   - 4种数据库连接就绪")
+        print("   - 2种数据库连接就绪 (TDengine + PostgreSQL)")
         print("   - 故障恢复队列已启用")
 
     def save_data_by_classification(
@@ -123,7 +116,7 @@ class MyStocksUnifiedManager:
         classification: DataClassification,
         data: pd.DataFrame,
         table_name: str,
-        **kwargs
+        **kwargs,
     ) -> bool:
         """
         按分类保存数据 (核心方法 #1)
@@ -164,11 +157,13 @@ class MyStocksUnifiedManager:
         # 性能监控上下文 (US3)
         context_manager = (
             self.performance_monitor.track_operation(
-                operation_name=f'save_{classification.value}',
+                operation_name=f"save_{classification.value}",
                 classification=classification.value,
                 database_type=target_db.value,
-                table_name=table_name
-            ) if self.enable_monitoring else None
+                table_name=table_name,
+            )
+            if self.enable_monitoring
+            else None
         )
 
         try:
@@ -180,35 +175,33 @@ class MyStocksUnifiedManager:
 
             # 根据目标数据库选择访问层
             if target_db == DatabaseTarget.TDENGINE:
-                rows_affected = self.tdengine.insert_dataframe(table_name, data, **kwargs)
+                rows_affected = self.tdengine.insert_dataframe(
+                    table_name, data, **kwargs
+                )
                 print(f"✅ TDengine保存成功: {rows_affected}行")
 
             elif target_db == DatabaseTarget.POSTGRESQL:
                 rows_affected = self.postgresql.insert_dataframe(table_name, data)
                 print(f"✅ PostgreSQL保存成功: {rows_affected}行")
 
-            elif target_db == DatabaseTarget.MYSQL:
-                rows_affected = self.mysql.insert_dataframe(table_name, data)
-                print(f"✅ MySQL保存成功: {rows_affected}行")
-
-            elif target_db == DatabaseTarget.REDIS:
-                # Redis使用特殊逻辑 (hash/list/string)
-                ttl = kwargs.get('ttl') or DataStorageRules.get_redis_ttl(classification)
-                self._save_to_redis(table_name, data, ttl)
-                rows_affected = len(data)
-                print(f"✅ Redis保存成功: {rows_affected}条记录")
+            else:
+                # Week 3简化后仅支持TDengine和PostgreSQL
+                raise ValueError(
+                    f"不支持的数据库类型: {target_db}. "
+                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
+                )
 
             operation_success = True
 
             # 记录操作日志 (US3)
             if self.enable_monitoring and self.monitoring_db:
                 self.monitoring_db.log_operation(
-                    operation_type='SAVE',
+                    operation_type="SAVE",
                     classification=classification.value,
                     target_database=target_db.value,
                     table_name=table_name,
                     record_count=rows_affected,
-                    operation_status='SUCCESS'
+                    operation_status="SUCCESS",
                 )
 
             return True
@@ -220,20 +213,24 @@ class MyStocksUnifiedManager:
             # 记录失败操作日志 (US3)
             if self.enable_monitoring and self.monitoring_db:
                 self.monitoring_db.log_operation(
-                    operation_type='SAVE',
+                    operation_type="SAVE",
                     classification=classification.value,
                     target_database=target_db.value,
                     table_name=table_name,
                     record_count=len(data),
-                    operation_status='FAILED',
-                    error_message=str(e)
+                    operation_status="FAILED",
+                    error_message=str(e),
                 )
 
             # 加入故障恢复队列
             self.recovery_queue.enqueue(
                 classification=classification.value,
                 target_database=target_db.value,
-                data={'table_name': table_name, 'data': data.to_dict('records'), 'kwargs': kwargs}
+                data={
+                    "table_name": table_name,
+                    "data": data.to_dict("records"),
+                    "kwargs": kwargs,
+                },
             )
 
             return False
@@ -253,7 +250,7 @@ class MyStocksUnifiedManager:
         filters: Optional[Dict[str, Any]] = None,
         columns: Optional[List[str]] = None,
         limit: Optional[int] = None,
-        **kwargs
+        **kwargs,
     ) -> pd.DataFrame:
         """
         按分类加载数据 (核心方法 #2)
@@ -287,11 +284,13 @@ class MyStocksUnifiedManager:
         # 性能监控上下文 (US3)
         context_manager = (
             self.performance_monitor.track_operation(
-                operation_name=f'load_{classification.value}',
+                operation_name=f"load_{classification.value}",
                 classification=classification.value,
                 database_type=target_db.value,
-                table_name=table_name
-            ) if self.enable_monitoring else None
+                table_name=table_name,
+            )
+            if self.enable_monitoring
+            else None
         )
 
         try:
@@ -307,51 +306,50 @@ class MyStocksUnifiedManager:
             # 根据目标数据库查询
             if target_db == DatabaseTarget.TDENGINE:
                 # TDengine时间范围查询
-                if 'start_time' in kwargs and 'end_time' in kwargs:
+                if "start_time" in kwargs and "end_time" in kwargs:
                     df = self.tdengine.query_by_time_range(
                         table_name,
-                        kwargs['start_time'],
-                        kwargs['end_time'],
+                        kwargs["start_time"],
+                        kwargs["end_time"],
                         columns=columns,
-                        limit=limit
+                        limit=limit,
                     )
                 else:
                     df = self.tdengine.query_latest(table_name, limit or 100)
 
             elif target_db == DatabaseTarget.POSTGRESQL:
                 # PostgreSQL查询
-                if 'start_time' in kwargs and 'end_time' in kwargs:
-                    time_column = kwargs.get('time_column', 'time')
+                if "start_time" in kwargs and "end_time" in kwargs:
+                    time_column = kwargs.get("time_column", "time")
                     df = self.postgresql.query_by_time_range(
                         table_name,
                         time_column,
-                        kwargs['start_time'],
-                        kwargs['end_time'],
+                        kwargs["start_time"],
+                        kwargs["end_time"],
                         columns=columns,
-                        filters=where
+                        filters=where,
                     )
                 else:
                     df = self.postgresql.query(table_name, columns, where, limit=limit)
 
-            elif target_db == DatabaseTarget.MYSQL:
-                # MySQL查询
-                df = self.mysql.query(table_name, columns, where, limit=limit)
-
-            elif target_db == DatabaseTarget.REDIS:
-                # Redis查询
-                df = self._load_from_redis(table_name, filters)
+            else:
+                # Week 3简化后仅支持TDengine和PostgreSQL
+                raise ValueError(
+                    f"不支持的数据库类型: {target_db}. "
+                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
+                )
 
             print(f"✅ 查询成功: {len(df)}行")
 
             # 记录操作日志 (US3)
             if self.enable_monitoring and self.monitoring_db:
                 self.monitoring_db.log_operation(
-                    operation_type='LOAD',
+                    operation_type="LOAD",
                     classification=classification.value,
                     target_database=target_db.value,
                     table_name=table_name,
                     record_count=len(df),
-                    operation_status='SUCCESS'
+                    operation_status="SUCCESS",
                 )
 
             return df
@@ -362,13 +360,13 @@ class MyStocksUnifiedManager:
             # 记录失败操作日志 (US3)
             if self.enable_monitoring and self.monitoring_db:
                 self.monitoring_db.log_operation(
-                    operation_type='LOAD',
+                    operation_type="LOAD",
                     classification=classification.value,
                     target_database=target_db.value,
                     table_name=table_name,
                     record_count=0,
-                    operation_status='FAILED',
-                    error_message=str(e)
+                    operation_status="FAILED",
+                    error_message=str(e),
                 )
 
             return pd.DataFrame()
@@ -380,52 +378,6 @@ class MyStocksUnifiedManager:
                     context_manager.__exit__(None, None, None)
                 except:
                     pass
-
-    def _save_to_redis(self, key: str, data: pd.DataFrame, ttl: Optional[int] = None):
-        """
-        保存数据到Redis
-
-        根据数据结构选择最优Redis数据类型:
-        - 单条记录 → String
-        - 多条记录 → Hash (key-value pairs)
-        """
-        if len(data) == 1:
-            # 单条记录 → String
-            self.redis.set(key, data.iloc[0].to_dict(), ttl=ttl)
-        else:
-            # 多条记录 → Hash
-            for idx, row in data.iterrows():
-                field = str(row.get('symbol', idx))
-                self.redis.hset(key, field, row.to_dict())
-
-            if ttl:
-                self.redis.expire(key, ttl)
-
-    def _load_from_redis(self, key: str, filters: Optional[Dict[str, Any]] = None) -> pd.DataFrame:
-        """
-        从Redis加载数据
-
-        自动检测数据类型并返回DataFrame
-        """
-        # 尝试String类型
-        value = self.redis.get(key)
-        if value:
-            return pd.DataFrame([value])
-
-        # 尝试Hash类型
-        data = self.redis.hgetall(key)
-        if data:
-            df = pd.DataFrame.from_dict(data, orient='index')
-
-            # 应用过滤器
-            if filters:
-                for col, val in filters.items():
-                    if col in df.columns:
-                        df = df[df[col] == val]
-
-            return df
-
-        return pd.DataFrame()
 
     def _build_where_clause(self, filters: Dict[str, Any]) -> str:
         """
@@ -445,7 +397,7 @@ class MyStocksUnifiedManager:
 
         for key, value in filters.items():
             # 支持操作符后缀 (如 'date >= ')
-            if key.endswith((' =', ' >', ' <', ' >=', ' <=', ' !=')):
+            if key.endswith((" =", " >", " <", " >=", " <=", " !=")):
                 operator = key.split()[-1]
                 column = key.rsplit(operator, 1)[0].strip()
                 if isinstance(value, str):
@@ -459,7 +411,7 @@ class MyStocksUnifiedManager:
                 else:
                     conditions.append(f"{key} = {value}")
 
-        return ' AND '.join(conditions)
+        return " AND ".join(conditions)
 
     def get_routing_info(self, classification: DataClassification) -> Dict[str, Any]:
         """
@@ -479,11 +431,7 @@ class MyStocksUnifiedManager:
         retention = DataStorageRules.get_retention_days(classification)
         ttl = DataStorageRules.get_redis_ttl(classification)
 
-        return {
-            'target_db': target_db.value,
-            'retention_days': retention,
-            'ttl': ttl
-        }
+        return {"target_db": target_db.value, "retention_days": retention, "ttl": ttl}
 
     def save_data_batch_with_strategy(
         self,
@@ -491,7 +439,7 @@ class MyStocksUnifiedManager:
         data: pd.DataFrame,
         table_name: str,
         strategy: BatchFailureStrategy = BatchFailureStrategy.CONTINUE,
-        **kwargs
+        **kwargs,
     ) -> BatchOperationResult:
         """
         使用指定失败策略保存批量数据 (核心方法 #3)
@@ -529,18 +477,20 @@ class MyStocksUnifiedManager:
                 successful_records=0,
                 failed_records=0,
                 strategy_used=strategy,
-                execution_time_ms=0.0
+                execution_time_ms=0.0,
             )
 
         # 获取目标数据库
         target_db = DataStorageStrategy.get_target_database(classification)
-        print(f"📍 路由: {classification.value} → {target_db.value.upper()} (策略: {strategy.value.upper()})")
+        print(
+            f"📍 路由: {classification.value} → {target_db.value.upper()} (策略: {strategy.value.upper()})"
+        )
 
         # 创建失败处理器
         handler = BatchFailureHandler(
             strategy=strategy,
-            max_retries=kwargs.get('max_retries', 3),
-            retry_delay_base=kwargs.get('retry_delay_base', 1.0)
+            max_retries=kwargs.get("max_retries", 3),
+            retry_delay_base=kwargs.get("retry_delay_base", 1.0),
         )
 
         # 定义操作函数
@@ -550,36 +500,35 @@ class MyStocksUnifiedManager:
                     self.tdengine.insert_dataframe(table_name, batch, **kwargs)
                 elif target_db == DatabaseTarget.POSTGRESQL:
                     self.postgresql.insert_dataframe(table_name, batch)
-                elif target_db == DatabaseTarget.MYSQL:
-                    self.mysql.insert_dataframe(table_name, batch)
-                elif target_db == DatabaseTarget.REDIS:
-                    ttl = kwargs.get('ttl') or DataStorageRules.get_redis_ttl(classification)
-                    self._save_to_redis(table_name, batch, ttl)
+                else:
+                    # Week 3简化后仅支持TDengine和PostgreSQL
+                    raise ValueError(
+                        f"不支持的数据库类型: {target_db}. "
+                        f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
+                    )
                 return True
             except Exception as e:
                 print(f"⚠️  批次保存异常: {e}")
                 return False
 
         # 执行批量操作
-        result = handler.execute_batch(
-            data,
-            operation,
-            f"save_{classification.value}"
-        )
+        result = handler.execute_batch(data, operation, f"save_{classification.value}")
 
         # 如果有失败记录,加入故障恢复队列
         if result.failed_records > 0 and strategy != BatchFailureStrategy.ROLLBACK:
-            failed_data = data.iloc[result.failed_indices] if result.failed_indices else data
+            failed_data = (
+                data.iloc[result.failed_indices] if result.failed_indices else data
+            )
             print(f"📥 {result.failed_records} 条失败记录已加入故障恢复队列")
 
             self.recovery_queue.enqueue(
                 classification=classification.value,
                 target_database=target_db.value,
                 data={
-                    'table_name': table_name,
-                    'data': failed_data.to_dict('records'),
-                    'kwargs': kwargs
-                }
+                    "table_name": table_name,
+                    "data": failed_data.to_dict("records"),
+                    "kwargs": kwargs,
+                },
             )
 
         return result
@@ -596,27 +545,24 @@ class MyStocksUnifiedManager:
             }
         """
         if not self.enable_monitoring:
-            return {'enabled': False, 'message': '监控功能未启用'}
+            return {"enabled": False, "message": "监控功能未启用"}
 
         try:
             stats = {
-                'enabled': True,
-                'performance': self.performance_monitor.get_performance_summary(hours=24),
-                'alerts': self.alert_manager.get_statistics(),
-                'monitoring_db': {
-                    'connected': self.monitoring_db is not None
-                }
+                "enabled": True,
+                "performance": self.performance_monitor.get_performance_summary(
+                    hours=24
+                ),
+                "alerts": self.alert_manager.get_statistics(),
+                "monitoring_db": {"connected": self.monitoring_db is not None},
             }
             return stats
         except Exception as e:
             logger.error(f"获取监控统计失败: {e}")
-            return {'enabled': True, 'error': str(e)}
+            return {"enabled": True, "error": str(e)}
 
     def check_data_quality(
-        self,
-        classification: DataClassification,
-        table_name: str,
-        **kwargs
+        self, classification: DataClassification, table_name: str, **kwargs
     ) -> Dict[str, Any]:
         """
         执行数据质量检查 (US3)
@@ -645,57 +591,55 @@ class MyStocksUnifiedManager:
             )
         """
         if not self.enable_monitoring:
-            return {'error': '监控功能未启用'}
+            return {"error": "监控功能未启用"}
 
-        check_type = kwargs.get('check_type', 'completeness')
+        check_type = kwargs.get("check_type", "completeness")
         target_db = DataStorageStrategy.get_target_database(classification)
 
         try:
-            if check_type == 'completeness':
+            if check_type == "completeness":
                 result = self.quality_monitor.check_completeness(
                     classification=classification.value,
                     database_type=target_db.value,
                     table_name=table_name,
-                    total_records=kwargs.get('total_records', 0),
-                    null_records=kwargs.get('null_records', 0),
-                    threshold=kwargs.get('threshold')
+                    total_records=kwargs.get("total_records", 0),
+                    null_records=kwargs.get("null_records", 0),
+                    threshold=kwargs.get("threshold"),
                 )
-            elif check_type == 'freshness':
+            elif check_type == "freshness":
                 result = self.quality_monitor.check_freshness(
                     classification=classification.value,
                     database_type=target_db.value,
                     table_name=table_name,
-                    latest_timestamp=kwargs.get('latest_timestamp'),
-                    threshold_seconds=kwargs.get('threshold_seconds')
+                    latest_timestamp=kwargs.get("latest_timestamp"),
+                    threshold_seconds=kwargs.get("threshold_seconds"),
                 )
-            elif check_type == 'accuracy':
+            elif check_type == "accuracy":
                 result = self.quality_monitor.check_accuracy(
                     classification=classification.value,
                     database_type=target_db.value,
                     table_name=table_name,
-                    total_records=kwargs.get('total_records', 0),
-                    invalid_records=kwargs.get('invalid_records', 0),
-                    validation_rules=kwargs.get('validation_rules'),
-                    threshold=kwargs.get('threshold')
+                    total_records=kwargs.get("total_records", 0),
+                    invalid_records=kwargs.get("invalid_records", 0),
+                    validation_rules=kwargs.get("validation_rules"),
+                    threshold=kwargs.get("threshold"),
                 )
             else:
-                result = {'error': f'未知的检查类型: {check_type}'}
+                result = {"error": f"未知的检查类型: {check_type}"}
 
             logger.info(f"✓ 数据质量检查完成: {table_name} - {check_type}")
             return result
 
         except Exception as e:
             logger.error(f"数据质量检查失败: {e}")
-            return {'error': str(e)}
+            return {"error": str(e)}
 
     def close_all_connections(self):
-        """关闭所有数据库连接"""
+        """关闭所有数据库连接 (Week 3简化后 - 仅TDengine和PostgreSQL)"""
         print("\n正在关闭所有数据库连接...")
         self.tdengine.close()
         self.postgresql.close_all()
-        self.mysql.close()
-        self.redis.close()
-        print("✅ 所有连接已关闭")
+        print("✅ 所有连接已关闭 (2个数据库)")
 
 
 if __name__ == "__main__":
@@ -713,15 +657,19 @@ if __name__ == "__main__":
         DataClassification.TICK_DATA,
         DataClassification.DAILY_KLINE,
         DataClassification.SYMBOLS_INFO,
-        DataClassification.REALTIME_POSITIONS
+        DataClassification.REALTIME_POSITIONS,
     ]
 
     for classification in test_classifications:
         info = manager.get_routing_info(classification)
         print(f"  {classification.value}")
         print(f"    → 目标数据库: {info['target_db'].upper()}")
-        print(f"    → 保留周期: {info['retention_days']}天" if info['retention_days'] else f"    → 保留周期: 永久")
-        if info['ttl']:
+        print(
+            f"    → 保留周期: {info['retention_days']}天"
+            if info["retention_days"]
+            else f"    → 保留周期: 永久"
+        )
+        if info["ttl"]:
             print(f"    → TTL: {info['ttl']}秒")
 
     print("\n" + "=" * 80)
