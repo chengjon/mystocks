@@ -1,0 +1,571 @@
+{
+  "total_cases": 20,
+  "summary": {
+    "critical": 1,
+    "high": 12,
+    "medium": 7,
+    "low": 0
+  },
+  "duplications": [
+    {
+      "id": "DUP-894b0043",
+      "severity": "medium",
+      "token_similarity": 0.651685393258427,
+      "ast_similarity": 0.5014836795252225,
+      "description": "函数 'main' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "test_us2_acceptance.py",
+        "test_config_driven_table_manager.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "test_us2_acceptance.py",
+          "start_line": 273,
+          "end_line": 319,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "test_config_driven_table_manager.py",
+          "start_line": 185,
+          "end_line": 244,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-3199e008",
+      "severity": "medium",
+      "token_similarity": 0.6046511627906976,
+      "ast_similarity": 0.6632124352331606,
+      "description": "函数 'main' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "examples/tdx_import_example.py",
+        "db_manager/fixed_example.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "examples/tdx_import_example.py",
+          "start_line": 218,
+          "end_line": 241,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "db_manager/fixed_example.py",
+          "start_line": 75,
+          "end_line": 104,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-80afce14",
+      "severity": "medium",
+      "token_similarity": 0.6666666666666666,
+      "ast_similarity": 0.72,
+      "description": "函数 'main' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "utils/validate_test_naming.py",
+        "utils/validate_gitignore.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "utils/validate_test_naming.py",
+          "start_line": 180,
+          "end_line": 199,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "utils/validate_gitignore.py",
+          "start_line": 259,
+          "end_line": 272,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-dde9a59e",
+      "severity": "medium",
+      "token_similarity": 0.6333333333333333,
+      "ast_similarity": 0.5548387096774193,
+      "description": "函数 'get_auth_token' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "test_tdx_api.py",
+        "utils/check_api_health.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "test_tdx_api.py",
+          "start_line": 26,
+          "end_line": 40,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "utils/check_api_health.py",
+          "start_line": 120,
+          "end_line": 132,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-40cc37bc",
+      "severity": "high",
+      "token_similarity": 0.8395061728395061,
+      "ast_similarity": 0.9113924050632911,
+      "description": "函数 'setup_logging' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "run_realtime_market_saver.py",
+        "db_manager/validate_mystocks_architecture.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "run_realtime_market_saver.py",
+          "start_line": 29,
+          "end_line": 39,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "db_manager/validate_mystocks_architecture.py",
+          "start_line": 31,
+          "end_line": 38,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-047d1d49",
+      "severity": "high",
+      "token_similarity": 0.8095238095238095,
+      "ast_similarity": 0.918918918918919,
+      "description": "函数 'health_check' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "web/backend/app/main.py",
+        "web/backend/app/api/market.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "web/backend/app/main.py",
+          "start_line": 86,
+          "end_line": 92,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "web/backend/app/api/market.py",
+          "start_line": 346,
+          "end_line": 352,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-047d1d49",
+      "severity": "medium",
+      "token_similarity": 0.7,
+      "ast_similarity": 0.8,
+      "description": "函数 'health_check' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "web/backend/app/main.py",
+        "web/backend/app/api/wencai.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "web/backend/app/main.py",
+          "start_line": 86,
+          "end_line": 92,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "web/backend/app/api/wencai.py",
+          "start_line": 389,
+          "end_line": 402,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-069e9ff3",
+      "severity": "medium",
+      "token_similarity": 0.6363636363636364,
+      "ast_similarity": 0.7272727272727273,
+      "description": "函数 'health_check' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "web/backend/app/api/market.py",
+        "web/backend/app/api/wencai.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "web/backend/app/api/market.py",
+          "start_line": 346,
+          "end_line": 352,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "web/backend/app/api/wencai.py",
+          "start_line": 389,
+          "end_line": 402,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-bc8ece80",
+      "severity": "high",
+      "token_similarity": 0.9213483146067416,
+      "ast_similarity": 0.9829545454545454,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/acceptance/test_us2_config_driven.py",
+        "tests/unit/test_postgresql_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/acceptance/test_us2_config_driven.py",
+          "start_line": 538,
+          "end_line": 578,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_postgresql_table_creation.py",
+          "start_line": 223,
+          "end_line": 260,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-bc8ece80",
+      "severity": "high",
+      "token_similarity": 0.9213483146067416,
+      "ast_similarity": 0.9829545454545454,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/acceptance/test_us2_config_driven.py",
+        "tests/unit/test_mysql_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/acceptance/test_us2_config_driven.py",
+          "start_line": 538,
+          "end_line": 578,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_mysql_table_creation.py",
+          "start_line": 245,
+          "end_line": 282,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-bc8ece80",
+      "severity": "medium",
+      "token_similarity": 0.7953667953667953,
+      "ast_similarity": 0.8656716417910447,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议考虑合并：代码存在显著相似性。\n1. 分析差异是否可以通过配置或参数处理\n2. 评估合并的成本收益\n3. 如果合适，创建抽象基类或模板方法",
+      "affected_files": [
+        "tests/acceptance/test_us2_config_driven.py",
+        "tests/unit/test_config_validation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/acceptance/test_us2_config_driven.py",
+          "start_line": 538,
+          "end_line": 578,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_config_validation.py",
+          "start_line": 281,
+          "end_line": 317,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-bc8ece80",
+      "severity": "high",
+      "token_similarity": 0.9125475285171103,
+      "ast_similarity": 0.9712643678160919,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/acceptance/test_us2_config_driven.py",
+        "tests/unit/test_tdengine_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/acceptance/test_us2_config_driven.py",
+          "start_line": 538,
+          "end_line": 578,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_tdengine_table_creation.py",
+          "start_line": 189,
+          "end_line": 225,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-5c30cb7f",
+      "severity": "high",
+      "token_similarity": 0.9389312977099237,
+      "ast_similarity": 1.0,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_postgresql_table_creation.py",
+        "tests/unit/test_mysql_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_postgresql_table_creation.py",
+          "start_line": 223,
+          "end_line": 260,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_mysql_table_creation.py",
+          "start_line": 245,
+          "end_line": 282,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-5c30cb7f",
+      "severity": "high",
+      "token_similarity": 0.8110236220472441,
+      "ast_similarity": 0.8753799392097265,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_postgresql_table_creation.py",
+        "tests/unit/test_config_validation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_postgresql_table_creation.py",
+          "start_line": 223,
+          "end_line": 260,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_config_validation.py",
+          "start_line": 281,
+          "end_line": 317,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-5c30cb7f",
+      "severity": "high",
+      "token_similarity": 0.937984496124031,
+      "ast_similarity": 0.9883040935672515,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_postgresql_table_creation.py",
+        "tests/unit/test_tdengine_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_postgresql_table_creation.py",
+          "start_line": 223,
+          "end_line": 260,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_tdengine_table_creation.py",
+          "start_line": 189,
+          "end_line": 225,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-142fe70f",
+      "severity": "high",
+      "token_similarity": 0.8110236220472441,
+      "ast_similarity": 0.8753799392097265,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_mysql_table_creation.py",
+        "tests/unit/test_config_validation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_mysql_table_creation.py",
+          "start_line": 245,
+          "end_line": 282,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_config_validation.py",
+          "start_line": 281,
+          "end_line": 317,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-142fe70f",
+      "severity": "high",
+      "token_similarity": 0.9302325581395349,
+      "ast_similarity": 0.9883040935672515,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_mysql_table_creation.py",
+        "tests/unit/test_tdengine_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_mysql_table_creation.py",
+          "start_line": 245,
+          "end_line": 282,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_tdengine_table_creation.py",
+          "start_line": 189,
+          "end_line": 225,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-d5c78093",
+      "severity": "high",
+      "token_similarity": 0.8,
+      "ast_similarity": 0.8615384615384616,
+      "description": "函数 'run_tests' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "tests/unit/test_config_validation.py",
+        "tests/unit/test_tdengine_table_creation.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "tests/unit/test_config_validation.py",
+          "start_line": 281,
+          "end_line": 317,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "tests/unit/test_tdengine_table_creation.py",
+          "start_line": 189,
+          "end_line": 225,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-2c09fbdb",
+      "severity": "high",
+      "token_similarity": 0.8936170212765957,
+      "ast_similarity": 1.0,
+      "description": "函数 'get_api_documentation' 在多处实现中高度相似",
+      "merge_suggestion": "建议优先合并：代码高度相似。\n1. 识别差异部分并参数化\n2. 创建统一函数接受可变参数\n3. 重构调用点使用新函数",
+      "affected_files": [
+        "adapters/byapi/byapi_mapping_updated.py",
+        "adapters/byapi/byapi_mapping_optimized.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "adapters/byapi/byapi_mapping_updated.py",
+          "start_line": 2410,
+          "end_line": 2430,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "adapters/byapi/byapi_mapping_optimized.py",
+          "start_line": 125,
+          "end_line": 137,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "DUP-63cd6c5e",
+      "severity": "critical",
+      "token_similarity": 0.9662921348314607,
+      "ast_similarity": 1.0,
+      "description": "函数 'check_permission' 在多处实现中高度相似",
+      "merge_suggestion": "建议立即合并：代码几乎完全相同。\n1. 提取公共函数到共享工具模块\n2. 在原位置调用公共函数\n3. 删除重复代码",
+      "affected_files": [
+        "web/backend/app/api/auth.py",
+        "web/backend/app/core/security.py"
+      ],
+      "blocks": [
+        {
+          "file_path": "web/backend/app/api/auth.py",
+          "start_line": 191,
+          "end_line": 200,
+          "function_name": null,
+          "class_name": null
+        },
+        {
+          "file_path": "web/backend/app/core/security.py",
+          "start_line": 136,
+          "end_line": 143,
+          "function_name": null,
+          "class_name": null
+        }
+      ]
+    }
+  ]
+}

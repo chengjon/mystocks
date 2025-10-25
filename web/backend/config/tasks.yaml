@@ -1,0 +1,256 @@
+# MyStocks 任务配置文件
+# 定义所有系统任务的配置
+
+version: "1.0"
+description: "MyStocks任务管理系统配置"
+
+tasks:
+  # 1. 定时任务 - 每日数据同步
+  - task_id: "daily_data_sync"
+    task_name: "每日股票数据同步"
+    task_type: "cron"
+    task_module: "app.tasks.data_sync"
+    task_function: "sync_daily_stock_data"
+    description: "每天收盘后同步当日股票交易数据"
+    priority: 200
+    schedule:
+      schedule_type: "cron"
+      cron_expression: "0 16 * * 1-5"  # 工作日下午4点执行
+      enabled: true
+    params:
+      data_source: "akshare"
+      include_basic: true
+      include_kline: true
+    timeout: 3600
+    retry_count: 3
+    retry_delay: 300
+    tags:
+      - "daily"
+      - "data_sync"
+      - "important"
+    auto_restart: false
+    stop_on_error: true
+
+  # 2. 定时任务 - 每小时实时数据
+  - task_id: "hourly_realtime_data"
+    task_name: "每小时实时行情数据"
+    task_type: "cron"
+    task_module: "app.tasks.market_data"
+    task_function: "fetch_realtime_market_data"
+    description: "每小时获取股票和ETF的实时行情数据"
+    priority: 500
+    schedule:
+      schedule_type: "cron"
+      cron_expression: "0 * * * *"  # 每小时执行
+      enabled: true
+    params:
+      fetch_stocks: true
+      fetch_etfs: true
+    timeout: 600
+    retry_count: 2
+    retry_delay: 60
+    tags:
+      - "hourly"
+      - "realtime"
+      - "market_data"
+
+  # 3. 定时任务 - 每月数据清理
+  - task_id: "monthly_cache_cleanup"
+    task_name: "每月缓存数据清理"
+    task_type: "cron"
+    task_module: "app.tasks.maintenance"
+    task_function: "cleanup_cache_data"
+    description: "每月清理历史缓存数据"
+    priority: 800
+    schedule:
+      schedule_type: "cron"
+      cron_expression: "0 0 1 * *"  # 每月1号零点执行
+      enabled: true
+    params:
+      retention_days: 30
+      cleanup_paths:
+        - "/tmp/mystocks_cache"
+    timeout: 1800
+    retry_count: 1
+    retry_delay: 300
+    tags:
+      - "monthly"
+      - "maintenance"
+      - "cleanup"
+
+  # 4. 数据同步任务 - 基础数据
+  - task_id: "sync_basic_stock_info"
+    task_name: "同步股票基础信息"
+    task_type: "data_sync"
+    task_module: "app.tasks.data_sync"
+    task_function: "sync_basic_stock_info"
+    description: "同步股票基本信息（代码、名称、行业等）"
+    priority: 200
+    params:
+      data_source: "akshare"
+      include_delisted: false
+    timeout: 1200
+    retry_count: 3
+    retry_delay: 60
+    tags:
+      - "data_sync"
+      - "basic_data"
+
+  # 5. 数据同步任务 - 财务数据
+  - task_id: "sync_financial_data"
+    task_name: "同步财务报表数据"
+    task_type: "data_sync"
+    task_module: "app.tasks.data_sync"
+    task_function: "sync_financial_statements"
+    description: "同步上市公司财务报表数据"
+    priority: 500
+    params:
+      data_source: "akshare"
+      report_types:
+        - "balance_sheet"
+        - "income_statement"
+        - "cash_flow"
+    timeout: 3600
+    retry_count: 2
+    retry_delay: 300
+    tags:
+      - "data_sync"
+      - "financial"
+    dependencies:
+      - "sync_basic_stock_info"
+
+  # 6. 指标计算任务 - 技术指标
+  - task_id: "calc_technical_indicators"
+    task_name: "计算技术指标"
+    task_type: "indicator_calc"
+    task_module: "app.tasks.indicators"
+    task_function: "calculate_technical_indicators"
+    description: "计算各类技术指标（MA、MACD、KDJ等）"
+    priority: 500
+    params:
+      indicators:
+        - "MA"
+        - "MACD"
+        - "KDJ"
+        - "RSI"
+        - "BOLL"
+      periods:
+        - "daily"
+        - "weekly"
+    timeout: 7200
+    retry_count: 1
+    retry_delay: 300
+    tags:
+      - "indicator_calc"
+      - "technical"
+
+  # 7. 指标计算任务 - 策略信号
+  - task_id: "calc_strategy_signals"
+    task_name: "计算策略信号"
+    task_type: "indicator_calc"
+    task_module: "app.tasks.strategy"
+    task_function: "calculate_strategy_signals"
+    description: "基于技术指标计算交易策略信号"
+    priority: 500
+    params:
+      strategies:
+        - "ma_crossover"
+        - "macd_divergence"
+        - "kdj_overbought"
+    timeout: 3600
+    retry_count: 1
+    retry_delay: 300
+    tags:
+      - "strategy"
+      - "signal"
+    dependencies:
+      - "calc_technical_indicators"
+
+  # 8. 市场数据获取 - 龙虎榜
+  - task_id: "fetch_lhb_data"
+    task_name: "获取龙虎榜数据"
+    task_type: "market_fetch"
+    task_module: "app.tasks.market_data"
+    task_function: "fetch_longhubang_data"
+    description: "获取每日龙虎榜数据"
+    priority: 500
+    params:
+      data_source: "akshare"
+    timeout: 600
+    retry_count: 2
+    retry_delay: 60
+    tags:
+      - "market_fetch"
+      - "lhb"
+
+  # 9. 市场数据获取 - 资金流向
+  - task_id: "fetch_capital_flow"
+    task_name: "获取资金流向数据"
+    task_type: "market_fetch"
+    task_module: "app.tasks.market_data"
+    task_function: "fetch_capital_flow_data"
+    description: "获取主力资金流向数据"
+    priority: 500
+    params:
+      data_source: "akshare"
+      flow_types:
+        - "stock"
+        - "sector"
+        - "concept"
+    timeout: 900
+    retry_count: 2
+    retry_delay: 120
+    tags:
+      - "market_fetch"
+      - "capital_flow"
+
+  # 10. 回测任务
+  - task_id: "run_strategy_backtest"
+    task_name: "执行策略回测"
+    task_type: "manual"
+    task_module: "app.tasks.backtest"
+    task_function: "run_backtest"
+    description: "执行指定策略的历史回测"
+    priority: 800
+    params:
+      strategy_id: ""
+      start_date: ""
+      end_date: ""
+      initial_capital: 1000000
+    timeout: 7200
+    retry_count: 0
+    retry_delay: 0
+    tags:
+      - "backtest"
+      - "manual"
+
+# 任务组配置 - 用于批量执行相关任务
+task_groups:
+  - group_id: "daily_job"
+    group_name: "每日数据处理任务组"
+    description: "工作日收盘后执行的完整数据处理流程"
+    tasks:
+      - "daily_data_sync"
+      - "sync_basic_stock_info"
+      - "sync_financial_data"
+      - "calc_technical_indicators"
+      - "calc_strategy_signals"
+    execution_mode: "sequential"  # sequential: 顺序执行, parallel: 并行执行
+    enabled: true
+
+  - group_id: "market_data_fetch"
+    group_name: "市场数据获取任务组"
+    description: "实时市场数据获取任务"
+    tasks:
+      - "fetch_lhb_data"
+      - "fetch_capital_flow"
+    execution_mode: "parallel"
+    enabled: true
+
+  - group_id: "maintenance_job"
+    group_name: "系统维护任务组"
+    description: "定期系统维护任务"
+    tasks:
+      - "monthly_cache_cleanup"
+    execution_mode: "sequential"
+    enabled: true

@@ -1,0 +1,722 @@
+# Manual Structure Schema
+# Defines the structure and content specification for the MyStocks Function Classification Manual
+
+manual_version: "1.0.0"
+schema_version: "1.0.0"
+generated_date: "ISO 8601 timestamp (e.g., 2025-10-19T10:30:00Z)"
+
+# Complete metadata for the manual
+metadata:
+  project_name: "MyStocks Quantitative Trading System"
+  total_modules: 0  # Populated at runtime
+  total_classes: 0
+  total_functions: 0
+  total_lines_of_code: 0
+  scan_date: "ISO 8601 timestamp"
+  python_version: "3.12"
+
+  # Category distribution
+  categories:
+    core:
+      count: 0
+      percentage: 0.0
+    auxiliary:
+      count: 0
+      percentage: 0.0
+    infrastructure:
+      count: 0
+      percentage: 0.0
+    monitoring:
+      count: 0
+      percentage: 0.0
+    utility:
+      count: 0
+      percentage: 0.0
+
+# Manual sections - Ordered list defining document structure
+sections:
+  # Section 0: Overview
+  - id: "overview"
+    title: "System Architecture Overview"
+    filename: "README.md"
+    content_type: "markdown"
+    priority: 1
+    description: "Entry point with navigation guide and high-level statistics"
+
+    includes:
+      - name: "category_distribution"
+        format: "table"
+        description: "Module count and percentage per category"
+
+      - name: "file_count_summary"
+        format: "statistics"
+        fields:
+          - total_modules
+          - total_classes
+          - total_functions
+          - total_lines_of_code
+
+      - name: "key_patterns_summary"
+        format: "bullet_list"
+        description: "Notable architectural patterns identified"
+
+      - name: "navigation_guide"
+        format: "markdown"
+        description: "How to use this manual"
+
+      - name: "update_instructions"
+        format: "markdown"
+        description: "How to regenerate manual sections"
+
+  # Section 1: Core Functions
+  - id: "core_functions"
+    title: "Core Functions (核心功能)"
+    filename: "01-core-functions.md"
+    content_type: "markdown"
+    priority: 1
+    description: "Entry points, orchestration, and critical business logic"
+
+    category_filter: "core"
+
+    modules:
+      for_each: "module in core_category"
+      include:
+        - field: "module_header"
+          format: "markdown_h3"
+          template: "### `{module_name}` - {purpose}"
+
+        - field: "location"
+          format: "code_block"
+          content: "{file_path}"
+
+        - field: "metadata"
+          format: "table"
+          fields:
+            - lines_of_code
+            - effective_lines
+            - class_count
+            - function_count
+            - last_modified
+
+        - field: "purpose_description"
+          format: "markdown"
+          source: "module.docstring"
+
+        - field: "key_classes"
+          format: "nested_list"
+          for_each: "class in module.classes"
+          include:
+            - class_name
+            - docstring
+            - method_count
+            - key_methods_table
+
+        - field: "key_functions"
+          format: "table"
+          for_each: "func in module.functions"
+          columns:
+            - function_name
+            - signature
+            - purpose
+            - line_number
+
+        - field: "dependencies"
+          format: "bullet_list"
+          sections:
+            - name: "Imports"
+              content: "{module.imports}"
+            - name: "Used By"
+              content: "{module.used_by}"
+
+        - field: "data_flow_diagram"
+          format: "mermaid"
+          condition: "if module.is_data_handler"
+          description: "Visual data flow representation"
+
+  # Section 2: Auxiliary Functions
+  - id: "auxiliary_functions"
+    title: "Auxiliary Functions (辅助功能)"
+    filename: "02-auxiliary-functions.md"
+    content_type: "markdown"
+    priority: 2
+    description: "Data adapters, strategies, and backtesting"
+
+    category_filter: "auxiliary"
+
+    modules:
+      # Same structure as core_functions
+      extends: "core_functions.modules"
+
+  # Section 3: Infrastructure Functions
+  - id: "infrastructure_functions"
+    title: "Infrastructure Functions (基础设施)"
+    filename: "03-infrastructure-functions.md"
+    content_type: "markdown"
+    priority: 2
+    description: "Database management, configuration, and ORM"
+
+    category_filter: "infrastructure"
+
+    modules:
+      extends: "core_functions.modules"
+
+  # Section 4: Monitoring Functions
+  - id: "monitoring_functions"
+    title: "Monitoring Functions (监控功能)"
+    filename: "04-monitoring-functions.md"
+    content_type: "markdown"
+    priority: 2
+    description: "Observability, alerts, and metrics"
+
+    category_filter: "monitoring"
+
+    modules:
+      extends: "core_functions.modules"
+
+  # Section 5: Utility Functions
+  - id: "utility_functions"
+    title: "Utility Functions (工具功能)"
+    filename: "05-utility-functions.md"
+    content_type: "markdown"
+    priority: 2
+    description: "Helper functions, decorators, and validation"
+
+    category_filter: "utility"
+
+    modules:
+      extends: "core_functions.modules"
+
+  # Section 6: Duplication Analysis
+  - id: "duplication_analysis"
+    title: "Code Duplication Analysis"
+    filename: "06-duplication-analysis.md"
+    content_type: "markdown"
+    priority: 1
+    description: "Identified code duplications with consolidation recommendations"
+
+    includes:
+      - name: "summary_statistics"
+        format: "table"
+        fields:
+          - total_duplications
+          - critical_count
+          - high_count
+          - medium_count
+          - low_count
+          - average_similarity_score
+
+      - name: "severity_distribution"
+        format: "chart"
+        chart_type: "bar"
+        data_source: "duplication_index.json"
+
+      - name: "critical_duplications"
+        format: "detailed_list"
+        filter: "severity == CRITICAL"
+        for_each: "dup in critical_duplications"
+        include:
+          - field: "dup_header"
+            format: "markdown_h3"
+            template: "### {dup.id}: {dup.pattern_name}"
+
+          - field: "severity_badge"
+            format: "badge"
+            value: "{dup.severity}"
+
+          - field: "similarity_metrics"
+            format: "inline_stats"
+            template: "Token: {dup.token_similarity:.0%} | AST: {dup.ast_similarity:.0%} | Combined: {dup.similarity_score:.0%}"
+
+          - field: "locations"
+            format: "code_blocks"
+            for_each: "loc in dup.locations"
+            include:
+              - file_path
+              - line_range
+              - code_snippet
+
+          - field: "recommendation"
+            format: "markdown"
+            content: "{dup.recommendation}"
+
+          - field: "effort_estimate"
+            format: "badge"
+            content: "Effort: {dup.estimated_effort}"
+
+      - name: "high_priority_duplications"
+        extends: "critical_duplications"
+        filter: "severity == HIGH"
+
+      - name: "consolidation_recommendations"
+        format: "table"
+        sort_by: "priority_rank"
+        columns:
+          - duplication_id
+          - pattern_name
+          - severity
+          - locations_count
+          - recommendation_summary
+          - estimated_effort
+          - priority_rank
+
+  # Section 7: Optimization Roadmap
+  - id: "optimization_roadmap"
+    title: "Optimization Roadmap"
+    filename: "07-optimization-roadmap.md"
+    content_type: "markdown"
+    priority: 1
+    description: "Prioritized optimization opportunities"
+
+    grouped_by:
+      - priority  # CRITICAL, HIGH, MEDIUM, LOW
+      - type      # performance, architecture, code_quality, security
+
+    includes:
+      - name: "roadmap_overview"
+        format: "markdown"
+        description: "How to use this roadmap"
+
+      - name: "quick_wins_matrix"
+        format: "table"
+        description: "Low effort, high impact optimizations"
+        filter: "effort_hours <= 4 AND priority IN [CRITICAL, HIGH]"
+        sort_by: "priority_rank"
+        columns:
+          - id
+          - title
+          - type
+          - priority
+          - expected_impact
+          - estimated_effort
+
+      - name: "by_priority"
+        for_each: "priority_level in [CRITICAL, HIGH, MEDIUM, LOW]"
+        include:
+          - field: "priority_header"
+            format: "markdown_h2"
+            template: "## {priority_level} Priority"
+
+          - field: "opportunities_table"
+            format: "table"
+            filter: "priority == {priority_level}"
+            sort_by: "effort_hours"
+            columns:
+              - id
+              - title
+              - type
+              - expected_impact
+              - estimated_effort
+              - affected_modules_count
+
+          - field: "detailed_opportunities"
+            format: "detailed_list"
+            for_each: "opp in opportunities"
+            include:
+              - field: "opp_header"
+                format: "markdown_h3"
+                template: "### {opp.id}: {opp.title}"
+
+              - field: "metadata_badges"
+                format: "badges"
+                content:
+                  - "Type: {opp.type}"
+                  - "Priority: {opp.priority}"
+                  - "Effort: {opp.estimated_effort}"
+
+              - field: "current_state"
+                format: "markdown"
+                label: "**Current State**"
+                content: "{opp.current_state}"
+
+              - field: "proposed_change"
+                format: "markdown"
+                label: "**Proposed Change**"
+                content: "{opp.proposed_change}"
+
+              - field: "expected_impact"
+                format: "markdown"
+                label: "**Expected Impact**"
+                content: "{opp.expected_impact}"
+
+              - field: "implementation_steps"
+                format: "ordered_list"
+                label: "**Implementation Steps**"
+                items: "{opp.implementation_steps}"
+
+              - field: "affected_modules"
+                format: "bullet_list"
+                label: "**Affected Modules**"
+                items: "{opp.affected_modules}"
+
+              - field: "testing_strategy"
+                format: "markdown"
+                label: "**Testing Strategy**"
+                content: "{opp.testing_strategy}"
+
+  # Section 8: Consolidation Guide
+  - id: "consolidation_guide"
+    title: "Module Consolidation Guide"
+    filename: "08-consolidation-guide.md"
+    content_type: "markdown"
+    priority: 2
+    description: "Specific guidance for merging duplicate functionality"
+
+    includes:
+      - name: "consolidation_overview"
+        format: "markdown"
+        description: "Introduction to consolidation strategies"
+
+      - name: "merge_recommendations"
+        format: "grouped_list"
+        group_by: "consolidation_pattern"
+        for_each: "merge in merge_recommendations"
+        include:
+          - merge_id
+          - pattern_name
+          - affected_files
+          - merge_strategy
+          - common_functionality
+          - divergent_functionality
+          - testing_checklist
+          - rollback_plan
+
+      - name: "consolidation_patterns"
+        format: "documentation"
+        patterns:
+          - name: "Extract Base Class"
+            when_to_use: "Similar classes with shared methods"
+            approach: "Create abstract base class, move shared code"
+            example: "Data adapter base class"
+
+          - name: "Extract Utility Function"
+            when_to_use: "Duplicate helper functions"
+            approach: "Move to utils/ directory, import everywhere"
+            example: "Retry decorator pattern"
+
+          - name: "Extract Decorator"
+            when_to_use: "Repeated cross-cutting concerns"
+            approach: "Create decorator, apply to functions"
+            example: "Performance monitoring decorator"
+
+          - name: "Consolidate into Single Module"
+            when_to_use: "Multiple modules with overlapping purpose"
+            approach: "Merge into one, deprecate others"
+            example: "Data access layer consolidation"
+
+  # Section 9: Data Flow Maps
+  - id: "data_flow_maps"
+    title: "Data Flow Architecture"
+    filename: "09-data-flow-maps.md"
+    content_type: "mermaid + markdown"
+    priority: 1
+    description: "Visual representations of data flow through the system"
+
+    includes:
+      - name: "end_to_end_flow"
+        format: "mermaid"
+        diagram_type: "flowchart"
+        description: "Complete data flow from external sources to databases"
+
+      - name: "database_routing"
+        format: "mermaid"
+        diagram_type: "flowchart"
+        description: "5-tier classification routing to databases"
+
+      - name: "adapter_patterns"
+        format: "mermaid"
+        diagram_type: "classDiagram"
+        description: "Adapter pattern implementation"
+
+      - name: "monitoring_integration"
+        format: "mermaid"
+        diagram_type: "sequenceDiagram"
+        description: "Monitoring flow for operations"
+
+      - name: "dependency_graph_core"
+        format: "mermaid"
+        diagram_type: "graph"
+        filter: "category == core"
+        description: "Core module dependencies"
+
+      - name: "dependency_graph_all"
+        format: "mermaid"
+        diagram_type: "graph"
+        description: "Complete module dependency graph"
+        note: "May be large, consider generating as separate file"
+
+# Metadata files - Machine-readable sidecar data
+metadata_files:
+
+  module_inventory:
+    filename: "metadata/module-inventory.json"
+    format: "JSON"
+    description: "Complete module metadata for all Python files"
+
+    schema:
+      type: "array"
+      items:
+        type: "object"
+        required:
+          - file_path
+          - module_name
+          - category
+        properties:
+          file_path:
+            type: "string"
+            description: "Absolute path to file"
+          module_name:
+            type: "string"
+            description: "Fully qualified module name"
+          category:
+            type: "string"
+            enum: ["core", "auxiliary", "infrastructure", "monitoring", "utility"]
+          docstring:
+            type: ["string", "null"]
+          classes:
+            type: "array"
+            items:
+              type: "object"
+          functions:
+            type: "array"
+            items:
+              type: "object"
+          imports:
+            type: "array"
+            items:
+              type: "string"
+          lines_of_code:
+            type: "integer"
+            minimum: 0
+          effective_lines:
+            type: "integer"
+            minimum: 0
+          last_modified:
+            type: "string"
+            format: "date-time"
+          depends_on:
+            type: "array"
+            items:
+              type: "string"
+          used_by:
+            type: "array"
+            items:
+              type: "string"
+
+  duplication_index:
+    filename: "metadata/duplication-index.json"
+    format: "JSON"
+    description: "All detected code duplications"
+
+    schema:
+      type: "array"
+      items:
+        type: "object"
+        required:
+          - id
+          - severity
+          - locations
+        properties:
+          id:
+            type: "string"
+          severity:
+            type: "string"
+            enum: ["critical", "high", "medium", "low"]
+          locations:
+            type: "array"
+            minItems: 2
+            items:
+              type: "object"
+              properties:
+                file_path:
+                  type: "string"
+                start_line:
+                  type: "integer"
+                end_line:
+                  type: "integer"
+                context:
+                  type: ["string", "null"]
+                snippet:
+                  type: "string"
+          token_similarity:
+            type: "number"
+            minimum: 0.0
+            maximum: 1.0
+          ast_similarity:
+            type: "number"
+            minimum: 0.0
+            maximum: 1.0
+          similarity_score:
+            type: "number"
+            minimum: 0.0
+            maximum: 1.0
+          duplicate_type:
+            type: "string"
+            enum: ["exact", "near", "pattern"]
+          pattern_name:
+            type: ["string", "null"]
+          recommendation:
+            type: "string"
+          estimated_effort:
+            type: "string"
+          priority_rank:
+            type: "integer"
+
+  dependency_graph:
+    filename: "metadata/dependency-graph.json"
+    format: "JSON"
+    description: "Module dependency graph with circular dependency detection"
+
+    schema:
+      type: "object"
+      required:
+        - nodes
+        - edges
+      properties:
+        nodes:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - id
+              - label
+              - category
+            properties:
+              id:
+                type: "string"
+                description: "Module file path"
+              label:
+                type: "string"
+                description: "Module name"
+              category:
+                type: "string"
+                enum: ["core", "auxiliary", "infrastructure", "monitoring", "utility"]
+              metrics:
+                type: "object"
+                properties:
+                  lines_of_code:
+                    type: "integer"
+                  complexity:
+                    type: "number"
+        edges:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - source
+              - target
+              - type
+            properties:
+              source:
+                type: "string"
+                description: "Source module ID"
+              target:
+                type: "string"
+                description: "Target module ID"
+              type:
+                type: "string"
+                enum: ["imports", "inherits", "calls"]
+              weight:
+                type: "integer"
+                description: "Number of references"
+        circular_dependencies:
+          type: "array"
+          items:
+            type: "array"
+            description: "Cycle of module IDs"
+            items:
+              type: "string"
+
+# Output templates
+templates:
+
+  update_script:
+    filename: "templates/update-manual.sh"
+    type: "bash_script"
+    description: "Script to regenerate manual sections"
+    permissions: "755"
+
+    functionality:
+      - "Scan codebase for changes"
+      - "Regenerate affected sections"
+      - "Validate output"
+      - "Commit updates"
+
+# Validation rules
+validation:
+
+  completeness:
+    - rule: "All Python files in project scanned"
+      check: "Count files in repo == Count modules in inventory"
+
+    - rule: "All modules categorized"
+      check: "No module has category == null"
+
+    - rule: "All duplications have recommendations"
+      check: "All duplication_index items have non-empty recommendation"
+
+    - rule: "All optimizations have implementation steps"
+      check: "All optimization items have ≥ 1 implementation_step"
+
+  accuracy:
+    - rule: "Module categorization ≥ 95% accurate"
+      check: "Manual spot-check of 20 random modules"
+
+    - rule: "Duplication detection < 10% false positives"
+      check: "Manual review of HIGH/CRITICAL duplications"
+
+    - rule: "Dependency graph has no broken links"
+      check: "All edge targets exist in nodes"
+
+  freshness:
+    - rule: "Manual updated after major changes"
+      trigger: "> 10 files modified OR > 5000 LOC changed"
+      action: "Re-run analysis and regenerate manual"
+
+# Generation workflow
+workflow:
+
+  steps:
+    - step: 1
+      name: "Scan Codebase"
+      action: "Parse all .py files with AST"
+      output: "Raw module metadata"
+
+    - step: 2
+      name: "Classify Modules"
+      action: "Apply categorization rules"
+      output: "Categorized modules"
+
+    - step: 3
+      name: "Analyze Dependencies"
+      action: "Resolve imports, build graph"
+      output: "dependency-graph.json"
+
+    - step: 4
+      name: "Detect Duplications"
+      action: "Pairwise similarity comparison"
+      output: "duplication-index.json"
+
+    - step: 5
+      name: "Identify Optimizations"
+      action: "Pattern matching and analysis"
+      output: "optimization opportunities"
+
+    - step: 6
+      name: "Generate Manual"
+      action: "Render Markdown from templates"
+      output: "All .md files"
+
+    - step: 7
+      name: "Generate Metadata"
+      action: "Export JSON sidecar files"
+      output: "metadata/*.json"
+
+    - step: 8
+      name: "Validate"
+      action: "Run validation rules"
+      output: "Validation report"
+
+    - step: 9
+      name: "Publish"
+      action: "Commit to git"
+      output: "Updated manual in repo"

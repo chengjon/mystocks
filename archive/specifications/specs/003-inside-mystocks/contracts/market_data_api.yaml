@@ -1,0 +1,757 @@
+openapi: 3.0.3
+info:
+  title: 市场行情数据 API (Market Data API)
+  description: |
+    股票市场行情数据接口，包括：
+    - 个股资金流向数据
+    - ETF基金实时行情
+    - 竞价抢筹数据（早盘/尾盘）
+    - 龙虎榜数据
+    - 大宗交易数据
+    - 分红配送数据
+  version: 1.0.0
+  contact:
+    name: MyStocks API Team
+    email: api@mystocks.com
+
+servers:
+  - url: http://localhost:8888/api
+    description: 本地开发环境
+  - url: https://api.mystocks.com/v1
+    description: 生产环境
+
+tags:
+  - name: fund-flow
+    description: 个股资金流向
+  - name: etf
+    description: ETF基金数据
+  - name: chip-race
+    description: 竞价抢筹数据
+  - name: long-hu-bang
+    description: 龙虎榜数据
+  - name: block-trade
+    description: 大宗交易数据
+  - name: dividend
+    description: 分红配送数据
+
+paths:
+  /market/fund-flow:
+    get:
+      tags:
+        - fund-flow
+      summary: 获取个股资金流向数据
+      description: |
+        获取指定股票的资金流向数据，支持多个时间维度（今日、3日、5日、10日）
+
+        **数据源**: 东方财富网 (通过Akshare适配器)
+        **更新频率**: 每日收盘后更新
+        **数据分类**: FUND_FLOW (衍生数据-资金流向)
+      operationId: getFundFlow
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          description: 股票代码 (如: 600519.SH)
+          schema:
+            type: string
+            pattern: '^\d{6}\.(SH|SZ)$'
+            example: '600519.SH'
+        - name: timeframe
+          in: query
+          required: false
+          description: 时间维度
+          schema:
+            type: string
+            enum: ['1', '3', '5', '10']
+            default: '1'
+        - name: start_date
+          in: query
+          required: false
+          description: 开始日期 (格式: YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: end_date
+          in: query
+          required: false
+          description: 结束日期 (格式: YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: '2024-12-31'
+      responses:
+        '200':
+          description: 成功返回资金流向数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundFlowResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  symbol: '600519.SH'
+                  name: '贵州茅台'
+                  timeframe: '1'
+                  records:
+                    - trade_date: '2024-10-14'
+                      main_net_inflow: 123456789.00
+                      main_net_inflow_rate: 0.0523
+                      super_large_net_inflow: 56789000.00
+                      large_net_inflow: 66667789.00
+                      medium_net_inflow: -12345000.00
+                      small_net_inflow: -10000000.00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /market/etf/list:
+    get:
+      tags:
+        - etf
+      summary: 获取ETF列表
+      description: |
+        获取全市场ETF基金列表及实时行情数据
+
+        **数据源**: 东方财富网 (通过Akshare适配器)
+        **更新频率**: 每日收盘后更新
+        **数据分类**: ETF_DATA (市场数据-ETF数据)
+      operationId: getETFList
+      parameters:
+        - name: market
+          in: query
+          required: false
+          description: 市场类型
+          schema:
+            type: string
+            enum: ['all', 'SH', 'SZ']
+            default: 'all'
+        - name: sort_by
+          in: query
+          required: false
+          description: 排序字段
+          schema:
+            type: string
+            enum: ['change_percent', 'volume', 'amount', 'market_cap']
+            default: 'volume'
+        - name: order
+          in: query
+          required: false
+          description: 排序方向
+          schema:
+            type: string
+            enum: ['asc', 'desc']
+            default: 'desc'
+        - name: limit
+          in: query
+          required: false
+          description: 返回记录数
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+      responses:
+        '200':
+          description: 成功返回ETF列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ETFListResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  total: 850
+                  items:
+                    - symbol: '510300.SH'
+                      name: '沪深300ETF'
+                      latest_price: 4.567
+                      change_percent: 0.0125
+                      change_amount: 0.056
+                      volume: 12345678900
+                      amount: 56789012345.00
+                      turnover_rate: 0.1523
+                      total_market_cap: 123456789000.00
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /market/chip-race:
+    get:
+      tags:
+        - chip-race
+      summary: 获取竞价抢筹数据
+      description: |
+        获取早盘或尾盘竞价抢筹数据，用于分析盘前/盘后资金动向
+
+        **数据源**: 通达信TQLEX接口 (新适配器)
+        **更新频率**: 早盘/尾盘实时更新
+        **数据分类**: TRADING_ANALYSIS (衍生数据-交易分析)
+      operationId: getChipRace
+      parameters:
+        - name: race_type
+          in: query
+          required: true
+          description: 抢筹类型
+          schema:
+            type: string
+            enum: ['open', 'end']
+        - name: date
+          in: query
+          required: false
+          description: 日期 (格式: YYYY-MM-DD), 默认为最新交易日
+          schema:
+            type: string
+            format: date
+        - name: sort_by
+          in: query
+          required: false
+          description: 排序字段
+          schema:
+            type: string
+            enum: ['race_amount', 'race_ratio', 'change_percent']
+            default: 'race_amount'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: 成功返回竞价抢筹数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChipRaceResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  race_type: 'open'
+                  date: '2024-10-14'
+                  total: 127
+                  items:
+                    - symbol: '600519.SH'
+                      name: '贵州茅台'
+                      latest_price: 1780.50
+                      change_percent: 0.0156
+                      race_amount: 567890123.00
+                      race_amplitude: 0.0234
+                      race_ratio: 0.4567
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /market/long-hu-bang:
+    get:
+      tags:
+        - long-hu-bang
+      summary: 获取龙虎榜数据
+      description: |
+        获取龙虎榜详细数据，包括上榜原因、机构席位、买卖金额等
+
+        **数据源**: 东方财富网 (通过Akshare适配器)
+        **更新频率**: 每日收盘后更新
+        **数据分类**: INSTITUTIONAL_FLOW (衍生数据-机构流向)
+      operationId: getLongHuBang
+      parameters:
+        - name: symbol
+          in: query
+          required: false
+          description: 股票代码 (可选, 不填则返回所有上榜股票)
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: false
+          description: 日期 (格式: YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功返回龙虎榜数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LongHuBangResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  total: 23
+                  items:
+                    - symbol: '600519.SH'
+                      name: '贵州茅台'
+                      trade_date: '2024-10-14'
+                      reason: '日涨幅偏离值达7%'
+                      buy_amount: 234567890.00
+                      sell_amount: 123456789.00
+                      net_amount: 111111101.00
+                      institution_buy: 150000000.00
+                      institution_sell: 50000000.00
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /market/block-trade:
+    get:
+      tags:
+        - block-trade
+      summary: 获取大宗交易数据
+      description: |
+        获取大宗交易明细数据
+
+        **数据源**: 东方财富网 (通过Akshare适配器)
+        **更新频率**: 每日收盘后更新
+        **数据分类**: INSTITUTIONAL_FLOW (衍生数据-机构流向)
+      operationId: getBlockTrade
+      parameters:
+        - name: symbol
+          in: query
+          required: false
+          description: 股票代码
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功返回大宗交易数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockTradeResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /market/dividend:
+    get:
+      tags:
+        - dividend
+      summary: 获取分红配送数据
+      description: |
+        获取股票分红派息、送股、配股等公司行动数据
+
+        **数据源**: 东方财富网 (通过Akshare适配器)
+        **更新频率**: 按公告更新
+        **数据分类**: CORPORATE_ACTION (参考数据-公司行动)
+      operationId: getDividend
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          description: 股票代码
+          schema:
+            type: string
+        - name: year
+          in: query
+          required: false
+          description: 年份
+          schema:
+            type: integer
+            example: 2024
+      responses:
+        '200':
+          description: 成功返回分红配送数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DividendResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  symbol: '600519.SH'
+                  name: '贵州茅台'
+                  records:
+                    - announce_date: '2024-04-15'
+                      ex_dividend_date: '2024-06-28'
+                      record_date: '2024-06-27'
+                      dividend_ratio: 21.50
+                      bonus_share_ratio: 0.00
+                      transfer_ratio: 0.00
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    FundFlowResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 'success'
+        data:
+          type: object
+          properties:
+            symbol:
+              type: string
+              description: 股票代码
+            name:
+              type: string
+              description: 股票名称
+            timeframe:
+              type: string
+              description: 时间维度
+            records:
+              type: array
+              items:
+                $ref: '#/components/schemas/FundFlowRecord'
+
+    FundFlowRecord:
+      type: object
+      properties:
+        trade_date:
+          type: string
+          format: date
+          description: 交易日期
+        main_net_inflow:
+          type: number
+          format: double
+          description: 主力净流入额 (元)
+        main_net_inflow_rate:
+          type: number
+          format: double
+          description: 主力净流入占比 (0-1)
+        super_large_net_inflow:
+          type: number
+          format: double
+          description: 超大单净流入额
+        large_net_inflow:
+          type: number
+          format: double
+          description: 大单净流入额
+        medium_net_inflow:
+          type: number
+          format: double
+          description: 中单净流入额
+        small_net_inflow:
+          type: number
+          format: double
+          description: 小单净流入额
+
+    ETFListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+              description: 总记录数
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ETFItem'
+
+    ETFItem:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        latest_price:
+          type: number
+          format: double
+        change_percent:
+          type: number
+          format: double
+        change_amount:
+          type: number
+          format: double
+        volume:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        turnover_rate:
+          type: number
+          format: double
+        total_market_cap:
+          type: number
+          format: double
+
+    ChipRaceResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            race_type:
+              type: string
+              enum: ['open', 'end']
+            date:
+              type: string
+              format: date
+            total:
+              type: integer
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ChipRaceItem'
+
+    ChipRaceItem:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        latest_price:
+          type: number
+          format: double
+        change_percent:
+          type: number
+          format: double
+        race_amount:
+          type: number
+          format: double
+          description: 抢筹金额
+        race_amplitude:
+          type: number
+          format: double
+          description: 抢筹幅度
+        race_ratio:
+          type: number
+          format: double
+          description: 抢筹占比
+
+    LongHuBangResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/LongHuBangItem'
+
+    LongHuBangItem:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        trade_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          description: 上榜原因
+        buy_amount:
+          type: number
+          format: double
+        sell_amount:
+          type: number
+          format: double
+        net_amount:
+          type: number
+          format: double
+        institution_buy:
+          type: number
+          format: double
+        institution_sell:
+          type: number
+          format: double
+
+    BlockTradeResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/BlockTradeItem'
+
+    BlockTradeItem:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        trade_date:
+          type: string
+          format: date
+        trade_price:
+          type: number
+          format: double
+        trade_volume:
+          type: integer
+        trade_amount:
+          type: number
+          format: double
+        buyer_branch:
+          type: string
+          description: 买方营业部
+        seller_branch:
+          type: string
+          description: 卖方营业部
+        discount_rate:
+          type: number
+          format: double
+          description: 折价率
+
+    DividendResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            symbol:
+              type: string
+            name:
+              type: string
+            records:
+              type: array
+              items:
+                $ref: '#/components/schemas/DividendRecord'
+
+    DividendRecord:
+      type: object
+      properties:
+        announce_date:
+          type: string
+          format: date
+        ex_dividend_date:
+          type: string
+          format: date
+        record_date:
+          type: string
+          format: date
+        dividend_ratio:
+          type: number
+          format: double
+          description: 每股分红 (元)
+        bonus_share_ratio:
+          type: number
+          format: double
+          description: 每股送股
+        transfer_ratio:
+          type: number
+          format: double
+          description: 每股转增
+        allotment_ratio:
+          type: number
+          format: double
+          description: 每股配股
+        allotment_price:
+          type: number
+          format: double
+          description: 配股价
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        detail:
+          type: string
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: 'Bad Request'
+            detail: '无效的股票代码格式'
+
+    NotFound:
+      description: 资源未找到
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: 'Not Found'
+            detail: '未找到指定股票的数据'
+
+    InternalServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 500
+            message: 'Internal Server Error'
+            detail: '数据库连接失败'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
