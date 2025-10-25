@@ -185,6 +185,7 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import { ElMessage } from 'element-plus'
+import { handleApiError } from '@/utils/errorHandler'
 
 const loading = ref(false)
 const activeMarketTab = ref('heat')
@@ -196,38 +197,11 @@ const priceDistributionChartRef = ref(null)
 const capitalFlowChartRef = ref(null)
 const industryChartRef = ref(null)
 
-// Mock data for sector performance tabs
-const favoriteStocks = ref([
-  { symbol: '600519', name: '贵州茅台', price: 1680.50, change: 2.35, volume: '1.2万手', turnover: 0.85, industry: '白酒' },
-  { symbol: '000858', name: '五粮液', price: 158.20, change: 1.85, volume: '8.5万手', turnover: 2.15, industry: '白酒' },
-  { symbol: '300750', name: '宁德时代', price: 185.60, change: -1.25, volume: '15.2万手', turnover: 3.42, industry: '电池' },
-  { symbol: '601012', name: '隆基绿能', price: 25.80, change: 0.78, volume: '22.5万手', turnover: 4.58, industry: '光伏' },
-  { symbol: '002594', name: '比亚迪', price: 268.90, change: 3.15, volume: '18.9万手', turnover: 2.95, industry: '新能源车' }
-])
-
-const strategyStocks = ref([
-  { symbol: '688981', name: '中芯国际', price: 45.80, change: 5.25, strategy: '突破策略', score: 88, signal: '买入' },
-  { symbol: '002475', name: '立讯精密', price: 32.50, change: 3.85, strategy: '趋势跟踪', score: 85, signal: '买入' },
-  { symbol: '300059', name: '东方财富', price: 15.20, change: 2.15, strategy: '均线策略', score: 82, signal: '持有' },
-  { symbol: '600036', name: '招商银行', price: 38.90, change: -0.85, strategy: '价值投资', score: 78, signal: '持有' },
-  { symbol: '000001', name: '平安银行', price: 12.50, change: -1.95, strategy: '价值投资', score: 65, signal: '卖出' }
-])
-
-const industryStocks = ref([
-  { symbol: '600519', name: '贵州茅台', price: 1680.50, change: 2.35, industry: '白酒', industryRank: 1, marketCap: 21056 },
-  { symbol: '000858', name: '五粮液', price: 158.20, change: 1.85, industry: '白酒', industryRank: 2, marketCap: 6125 },
-  { symbol: '000568', name: '泸州老窖', price: 142.30, change: 1.55, industry: '白酒', industryRank: 3, marketCap: 2089 },
-  { symbol: '002304', name: '洋河股份', price: 98.50, change: 0.95, industry: '白酒', industryRank: 4, marketCap: 1516 },
-  { symbol: '600809', name: '山西汾酒', price: 185.60, change: 2.85, industry: '白酒', industryRank: 5, marketCap: 2268 }
-])
-
-const conceptStocks = ref([
-  { symbol: '300750', name: '宁德时代', price: 185.60, change: 3.25, concepts: ['新能源', '电池', 'MSCI'], conceptHeat: 98 },
-  { symbol: '688981', name: '中芯国际', price: 45.80, change: 5.25, concepts: ['芯片', '半导体', '华为概念'], conceptHeat: 95 },
-  { symbol: '600276', name: '恒瑞医药', price: 45.20, change: 2.15, concepts: ['医药', '创新药', '抗癌'], conceptHeat: 88 },
-  { symbol: '300122', name: '智飞生物', price: 78.50, change: 4.55, concepts: ['疫苗', '医药', '生物制品'], conceptHeat: 92 },
-  { symbol: '002230', name: '科大讯飞', price: 42.30, change: 6.85, concepts: ['AI', '人工智能', '语音识别'], conceptHeat: 96 }
-])
+// Real data from API (replaces mock data)
+const favoriteStocks = ref([])
+const strategyStocks = ref([])
+const industryStocks = ref([])
+const conceptStocks = ref([])  // TODO: Implement in future phase
 
 const stats = ref([
   {
@@ -270,26 +244,53 @@ let priceDistributionChart = null
 let capitalFlowChart = null
 let industryChart = null
 
-// 不同行业分类标准的数据
-const industryData = {
-  csrc: {
-    categories: ['金融业', '房地产业', '制造业', '信息技术', '批发零售', '建筑业', '采矿业', '交通运输'],
-    values: [185.5, 125.3, 98.7, 85.2, 52.8, 45.6, -38.5, -65.2]
-  },
-  sw_l1: {
-    categories: ['计算机', '电子', '医药生物', '电力设备', '汽车', '食品饮料', '银行', '非银金融'],
-    values: [165.8, 142.5, 118.9, 95.3, 78.6, 65.4, -45.8, -88.9]
-  },
-  sw_l2: {
-    categories: ['半导体', '光学光电子', '计算机设备', '通信设备', '医疗器械', '化学制药', '白酒', '保险'],
-    values: [195.2, 158.7, 125.6, 98.5, 85.3, 72.1, -52.3, -95.6]
+// Real fund flow data from API
+const industryData = ref({
+  csrc: { categories: [], values: [] },
+  sw_l1: { categories: [], values: [] },
+  sw_l2: { categories: [], values: [] }
+})
+
+// Load dashboard data from API
+const loadDashboardData = async () => {
+  loading.value = true
+  try {
+    // Call dashboard summary API
+    const response = await dataApi.getDashboardSummary()
+
+    if (response.success) {
+      // Update stats cards
+      stats.value[0].value = response.stats.totalStocks.toString()
+      stats.value[1].value = response.stats.activeStocks.toString()
+      stats.value[2].value = response.stats.dataUpdates.toString()
+      stats.value[3].value = response.stats.systemStatus
+
+      // Update table data
+      favoriteStocks.value = response.favorites || []
+      strategyStocks.value = response.strategyStocks || []
+      industryStocks.value = response.industryStocks || []
+
+      // Update fund flow data
+      industryData.value.csrc = response.fundFlow.csrc
+      industryData.value.sw_l1 = response.fundFlow.sw_l1
+      industryData.value.sw_l2 = response.fundFlow.sw_l2
+
+      // Update industry chart if visible
+      if (industryChart) {
+        updateIndustryChartData()
+      }
+    }
+  } catch (error) {
+    handleApiError(error, '加载Dashboard数据失败')
+  } finally {
+    loading.value = false
   }
 }
 
 const updateIndustryChartData = () => {
   if (!industryChart) return
 
-  const data = industryData[industryStandard.value]
+  const data = industryData.value[industryStandard.value]
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -585,28 +586,16 @@ watch(activeMarketTab, async () => {
   }
 })
 
-const loadData = async () => {
-  loading.value = true
-  try {
-    const response = await dataApi.getStocksBasic({ limit: 10 })
-    if (response.data && response.data.length > 0) {
-      stats.value[0].value = response.total?.toString() || response.data.length.toString()
-    }
-  } catch (error) {
-    ElMessage.error('加载数据失败')
-  } finally {
-    loading.value = false
-  }
-}
+const loadData = loadDashboardData
 
-const handleRefresh = () => {
+const handleRefresh = async () => {
+  await loadDashboardData()
   ElMessage.success('数据已刷新')
-  loadData()
 }
 
 onMounted(() => {
   initCharts()
-  loadData()
+  loadDashboardData()
 })
 </script>
 
