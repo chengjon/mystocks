@@ -37,7 +37,9 @@ class TDengineDataAccess:
             self.conn = self.conn_manager.get_tdengine_connection()
         return self.conn
 
-    def create_stable(self, stable_name: str, schema: Dict[str, str], tags: Dict[str, str]):
+    def create_stable(
+        self, stable_name: str, schema: Dict[str, str], tags: Dict[str, str]
+    ):
         """
         创建超表(STable)
 
@@ -54,11 +56,13 @@ class TDengineDataAccess:
         conn = self._get_connection()
 
         # 构建字段列表
-        fields = ', '.join([f"{name} {dtype}" for name, dtype in schema.items()])
-        tag_fields = ', '.join([f"{name} {dtype}" for name, dtype in tags.items()])
+        fields = ", ".join([f"{name} {dtype}" for name, dtype in schema.items()])
+        tag_fields = ", ".join([f"{name} {dtype}" for name, dtype in tags.items()])
 
         # 创建超表SQL
-        sql = f"CREATE STABLE IF NOT EXISTS {stable_name} ({fields}) TAGS ({tag_fields})"
+        sql = (
+            f"CREATE STABLE IF NOT EXISTS {stable_name} ({fields}) TAGS ({tag_fields})"
+        )
 
         try:
             cursor = conn.cursor()
@@ -69,7 +73,9 @@ class TDengineDataAccess:
             print(f"❌ 超表创建失败: {e}")
             raise
 
-    def create_table(self, table_name: str, stable_name: str, tag_values: Dict[str, Any]):
+    def create_table(
+        self, table_name: str, stable_name: str, tag_values: Dict[str, Any]
+    ):
         """
         创建子表(基于超表)
 
@@ -84,10 +90,14 @@ class TDengineDataAccess:
         conn = self._get_connection()
 
         # 构建标签值列表
-        tags = ', '.join([f"'{v}'" if isinstance(v, str) else str(v) for v in tag_values.values()])
+        tags = ", ".join(
+            [f"'{v}'" if isinstance(v, str) else str(v) for v in tag_values.values()]
+        )
 
         # 创建子表SQL
-        sql = f"CREATE TABLE IF NOT EXISTS {table_name} USING {stable_name} TAGS ({tags})"
+        sql = (
+            f"CREATE TABLE IF NOT EXISTS {table_name} USING {stable_name} TAGS ({tags})"
+        )
 
         try:
             cursor = conn.cursor()
@@ -97,7 +107,9 @@ class TDengineDataAccess:
             print(f"❌ 子表创建失败: {e}")
             raise
 
-    def insert_dataframe(self, table_name: str, df: pd.DataFrame, timestamp_col: str = 'ts'):
+    def insert_dataframe(
+        self, table_name: str, df: pd.DataFrame, timestamp_col: str = "ts"
+    ):
         """
         批量插入DataFrame数据
 
@@ -127,7 +139,7 @@ class TDengineDataAccess:
             df[timestamp_col] = pd.to_datetime(df[timestamp_col])
 
         # 构建批量插入SQL
-        columns = ', '.join(df.columns)
+        columns = ", ".join(df.columns)
 
         # 准备数据行
         rows = []
@@ -136,7 +148,7 @@ class TDengineDataAccess:
             for col in df.columns:
                 val = row[col]
                 if pd.isna(val):
-                    values.append('NULL')
+                    values.append("NULL")
                 elif isinstance(val, str):
                     values.append(f"'{val}'")
                 elif isinstance(val, datetime):
@@ -150,7 +162,7 @@ class TDengineDataAccess:
         total_inserted = 0
 
         for i in range(0, len(rows), batch_size):
-            batch = rows[i:i + batch_size]
+            batch = rows[i : i + batch_size]
             sql = f"INSERT INTO {table_name} ({columns}) VALUES {', '.join(batch)}"
 
             try:
@@ -170,7 +182,7 @@ class TDengineDataAccess:
         start_time: datetime,
         end_time: datetime,
         columns: Optional[List[str]] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ) -> pd.DataFrame:
         """
         按时间范围查询数据
@@ -197,7 +209,7 @@ class TDengineDataAccess:
         conn = self._get_connection()
 
         # 构建查询SQL
-        cols = ', '.join(columns) if columns else '*'
+        cols = ", ".join(columns) if columns else "*"
         sql = f"""
             SELECT {cols}
             FROM {table_name}
@@ -269,9 +281,9 @@ class TDengineDataAccess:
         table_name: str,
         start_time: datetime,
         end_time: datetime,
-        interval: str = '1m',
-        price_col: str = 'price',
-        volume_col: str = 'volume'
+        interval: str = "1m",
+        price_col: str = "price",
+        volume_col: str = "volume",
     ) -> pd.DataFrame:
         """
         聚合为K线数据
@@ -326,7 +338,9 @@ class TDengineDataAccess:
             print(f"❌ K线聚合失败: {e}")
             raise
 
-    def delete_by_time_range(self, table_name: str, start_time: datetime, end_time: datetime) -> int:
+    def delete_by_time_range(
+        self, table_name: str, start_time: datetime, end_time: datetime
+    ) -> int:
         """
         删除时间范围内的数据
 
@@ -386,14 +400,64 @@ class TDengineDataAccess:
             cursor.close()
 
             return {
-                'row_count': row[0] if row else 0,
-                'start_time': row[1] if row else None,
-                'end_time': row[2] if row else None
+                "row_count": row[0] if row else 0,
+                "start_time": row[1] if row else None,
+                "end_time": row[2] if row else None,
             }
 
         except Exception as e:
             print(f"❌ 获取表信息失败: {e}")
-            return {'row_count': 0, 'start_time': None, 'end_time': None}
+            return {"row_count": 0, "start_time": None, "end_time": None}
+
+    def save_data(
+        self, data: pd.DataFrame, classification, table_name: str, **kwargs
+    ) -> bool:
+        """
+        保存数据（DataManager API适配器）
+
+        Args:
+            data: 数据DataFrame
+            classification: 数据分类（US3架构参数，此处未使用）
+            table_name: 表名
+            **kwargs: 其他参数
+
+        Returns:
+            bool: 保存是否成功
+        """
+        try:
+            self.insert_dataframe(
+                table_name, data, timestamp_col=kwargs.get("timestamp_col", "ts")
+            )
+            return True
+        except Exception as e:
+            print(f"❌ 保存数据失败: {e}")
+            return False
+
+    def load_data(self, table_name: str, **filters) -> Optional[pd.DataFrame]:
+        """
+        加载数据（DataManager API适配器）
+
+        Args:
+            table_name: 表名
+            **filters: 过滤条件（如start_time, end_time）
+
+        Returns:
+            pd.DataFrame or None: 查询结果
+        """
+        try:
+            if "start_time" in filters and "end_time" in filters:
+                return self.query_by_time_range(
+                    table_name,
+                    filters["start_time"],
+                    filters["end_time"],
+                    columns=filters.get("columns"),
+                )
+            else:
+                # 如果没有时间范围，返回最新数据
+                return self.query_latest(table_name, limit=filters.get("limit", 100))
+        except Exception as e:
+            print(f"❌ 加载数据失败: {e}")
+            return None
 
     def close(self):
         """关闭连接"""

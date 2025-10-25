@@ -45,7 +45,9 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.putconn(conn)
 
-    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
+    def create_table(
+        self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None
+    ):
         """
         创建普通表
 
@@ -69,7 +71,9 @@ class PostgreSQLDataAccess:
 
         try:
             # 构建字段列表
-            fields = ',\n    '.join([f"{name} {dtype}" for name, dtype in schema.items()])
+            fields = ",\n    ".join(
+                [f"{name} {dtype}" for name, dtype in schema.items()]
+            )
 
             # 添加主键约束
             if primary_key:
@@ -91,7 +95,9 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def create_hypertable(self, table_name: str, time_column: str = 'time', chunk_interval: str = '7 days'):
+    def create_hypertable(
+        self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"
+    ):
         """
         将表转换为TimescaleDB时序表(Hypertable)
 
@@ -156,7 +162,7 @@ class PostgreSQLDataAccess:
         try:
             # 准备列名和数据
             columns = list(df.columns)
-            columns_str = ', '.join(columns)
+            columns_str = ", ".join(columns)
 
             # 转换DataFrame为tuple列表
             data = [tuple(row) for row in df.itertuples(index=False, name=None)]
@@ -185,7 +191,7 @@ class PostgreSQLDataAccess:
         table_name: str,
         df: pd.DataFrame,
         conflict_columns: List[str],
-        update_columns: Optional[List[str]] = None
+        update_columns: Optional[List[str]] = None,
     ) -> int:
         """
         批量Upsert (INSERT ... ON CONFLICT UPDATE)
@@ -211,18 +217,20 @@ class PostgreSQLDataAccess:
 
         try:
             columns = list(df.columns)
-            columns_str = ', '.join(columns)
+            columns_str = ", ".join(columns)
 
             # 准备数据
             data = [tuple(row) for row in df.itertuples(index=False, name=None)]
 
             # 构建冲突处理子句
-            conflict_str = ', '.join(conflict_columns)
+            conflict_str = ", ".join(conflict_columns)
 
             if update_columns is None:
                 update_columns = [col for col in columns if col not in conflict_columns]
 
-            update_str = ', '.join([f"{col} = EXCLUDED.{col}" for col in update_columns])
+            update_str = ", ".join(
+                [f"{col} = EXCLUDED.{col}" for col in update_columns]
+            )
 
             # Upsert SQL
             sql = f"""
@@ -254,7 +262,7 @@ class PostgreSQLDataAccess:
         columns: Optional[List[str]] = None,
         where: Optional[str] = None,
         order_by: Optional[str] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ) -> pd.DataFrame:
         """
         通用查询
@@ -279,7 +287,7 @@ class PostgreSQLDataAccess:
         conn = self._get_connection()
 
         try:
-            cols = ', '.join(columns) if columns else '*'
+            cols = ", ".join(columns) if columns else "*"
             sql = f"SELECT {cols} FROM {table_name}"
 
             if where:
@@ -307,7 +315,7 @@ class PostgreSQLDataAccess:
         start_time: datetime,
         end_time: datetime,
         columns: Optional[List[str]] = None,
-        filters: Optional[str] = None
+        filters: Optional[str] = None,
     ) -> pd.DataFrame:
         """
         按时间范围查询
@@ -323,12 +331,16 @@ class PostgreSQLDataAccess:
         Returns:
             查询结果DataFrame
         """
-        where_clause = f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
+        where_clause = (
+            f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
+        )
 
         if filters:
             where_clause += f" AND {filters}"
 
-        return self.query(table_name, columns, where_clause, order_by=f"{time_column} ASC")
+        return self.query(
+            table_name, columns, where_clause, order_by=f"{time_column} ASC"
+        )
 
     def execute_sql(self, sql: str, params: Optional[Tuple] = None) -> pd.DataFrame:
         """
@@ -426,15 +438,82 @@ class PostgreSQLDataAccess:
             cursor.close()
 
             return {
-                'row_count': row[0] if row else 0,
-                'total_size': row[1] if row else '0 bytes'
+                "row_count": row[0] if row else 0,
+                "total_size": row[1] if row else "0 bytes",
             }
 
         except Exception as e:
             print(f"❌ 获取表统计失败: {e}")
-            return {'row_count': 0, 'total_size': '0 bytes'}
+            return {"row_count": 0, "total_size": "0 bytes"}
         finally:
             self._return_connection(conn)
+
+    def save_data(
+        self, data: pd.DataFrame, classification, table_name: str, **kwargs
+    ) -> bool:
+        """
+        保存数据（DataManager API适配器）
+
+        Args:
+            data: 数据DataFrame
+            classification: 数据分类（US3架构参数，此处未使用）
+            table_name: 表名
+            **kwargs: 其他参数（如upsert=True, conflict_columns）
+
+        Returns:
+            bool: 保存是否成功
+        """
+        try:
+            if kwargs.get("upsert", False):
+                # 使用upsert操作
+                conflict_columns = kwargs.get("conflict_columns", ["id"])
+                row_count = self.upsert_dataframe(table_name, data, conflict_columns)
+            else:
+                # 使用普通插入
+                row_count = self.insert_dataframe(table_name, data)
+            return row_count > 0
+        except Exception as e:
+            print(f"❌ 保存数据失败: {e}")
+            return False
+
+    def load_data(self, table_name: str, **filters) -> Optional[pd.DataFrame]:
+        """
+        加载数据（DataManager API适配器）
+
+        Args:
+            table_name: 表名
+            **filters: 过滤条件
+
+        Returns:
+            pd.DataFrame or None: 查询结果
+        """
+        try:
+            if "start_time" in filters and "end_time" in filters:
+                # 时间范围查询
+                time_column = filters.get("time_column", "time")
+                return self.query_by_time_range(
+                    table_name,
+                    filters["start_time"],
+                    filters["end_time"],
+                    time_column=time_column,
+                )
+            elif "where" in filters:
+                # 自定义where条件
+                sql = f"SELECT * FROM {table_name} WHERE {filters['where']}"
+                if "limit" in filters:
+                    sql += f" LIMIT {filters['limit']}"
+                return self.query(
+                    table_name, where=filters["where"], limit=filters.get("limit")
+                )
+            else:
+                # 查询全表（带limit）
+                sql = f"SELECT * FROM {table_name}"
+                if "limit" in filters:
+                    sql += f" LIMIT {filters['limit']}"
+                return self.execute_sql(sql)
+        except Exception as e:
+            print(f"❌ 加载数据失败: {e}")
+            return None
 
     def close_all(self):
         """关闭所有连接"""
