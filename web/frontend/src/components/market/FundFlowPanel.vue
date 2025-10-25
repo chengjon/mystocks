@@ -3,21 +3,11 @@
     <!-- 查询表单 -->
     <el-card class="search-card" shadow="never">
       <el-form :inline="true" :model="queryForm" class="search-form">
-        <el-form-item label="股票代码">
-          <el-input
-            v-model="queryForm.symbol"
-            placeholder="如: 600519.SH"
-            style="width: 160px"
-            clearable
-          />
-        </el-form-item>
-
-        <el-form-item label="时间维度">
-          <el-select v-model="queryForm.timeframe" style="width: 120px">
-            <el-option label="今日" value="1" />
-            <el-option label="3日" value="3" />
-            <el-option label="5日" value="5" />
-            <el-option label="10日" value="10" />
+        <el-form-item label="行业分类">
+          <el-select v-model="queryForm.industry_type" style="width: 140px">
+            <el-option label="证监会行业" value="csrc" />
+            <el-option label="申万一级" value="sw_l1" />
+            <el-option label="申万二级" value="sw_l2" />
           </el-select>
         </el-form-item>
 
@@ -132,11 +122,11 @@ import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
-import axios from 'axios'
+import { dataApi } from '@/api'
 
 // 响应式数据
 const queryForm = reactive({
-  symbol: '600519.SH',
+  industry_type: 'csrc',
   timeframe: '1'
 })
 
@@ -147,41 +137,45 @@ const refreshing = ref(false)
 const chartRef = ref(null)
 let chartInstance = null
 
-// API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
-
 // 查询资金流向
 const handleQuery = async () => {
-  if (!queryForm.symbol) {
-    ElMessage.warning('请输入股票代码')
-    return
-  }
-
   loading.value = true
   try {
     const params = {
-      symbol: queryForm.symbol,
-      timeframe: queryForm.timeframe
+      industry_type: queryForm.industry_type,
+      limit: 20
     }
 
     if (dateRange.value && dateRange.value.length === 2) {
-      params.start_date = dateRange.value[0]
-      params.end_date = dateRange.value[1]
+      params.trade_date = dateRange.value[1] // Use end date
     }
 
-    const response = await axios.get(`${API_BASE}/api/market/fund-flow`, { params })
-    fundFlowData.value = response.data
+    const response = await dataApi.getMarketFundFlow(params)
 
-    if (response.data.length === 0) {
-      ElMessage.info('未查询到数据')
-    } else {
-      ElMessage.success(`查询成功: ${response.data.length}条记录`)
-      // 渲染图表
-      await nextTick()
-      renderChart()
+    if (response.success) {
+      // Map PostgreSQL response to table format
+      fundFlowData.value = response.data.map(item => ({
+        trade_date: item.trade_date,
+        timeframe: queryForm.timeframe,
+        main_net_inflow: item.net_inflow * 100000000, // Convert back to yuan
+        main_net_inflow_rate: (item.net_inflow / (item.total_inflow + item.total_outflow)) * 100,
+        super_large_net_inflow: item.main_inflow * 100000000,
+        large_net_inflow: item.retail_inflow * 100000000,
+        medium_net_inflow: 0,
+        small_net_inflow: 0,
+        industry_name: item.industry_name
+      }))
+
+      if (response.data.length === 0) {
+        ElMessage.info('未查询到数据')
+      } else {
+        ElMessage.success(`查询成功: ${response.data.length}条记录`)
+        await nextTick()
+        renderChart()
+      }
     }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
+    ElMessage.error(`查询失败: ${error.message || '请稍后重试'}`)
   } finally {
     loading.value = false
   }
@@ -189,25 +183,12 @@ const handleQuery = async () => {
 
 // 刷新数据
 const handleRefresh = async () => {
-  if (!queryForm.symbol) {
-    ElMessage.warning('请输入股票代码')
-    return
-  }
-
   refreshing.value = true
   try {
-    await axios.post(`${API_BASE}/api/market/fund-flow/refresh`, null, {
-      params: {
-        symbol: queryForm.symbol,
-        timeframe: queryForm.timeframe
-      }
-    })
-
-    ElMessage.success('数据刷新成功')
-    // 自动重新查询
     await handleQuery()
+    ElMessage.success('数据已刷新')
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
+    ElMessage.error(`刷新失败: ${error.message || '请稍后重试'}`)
   } finally {
     refreshing.value = false
   }
