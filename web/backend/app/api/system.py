@@ -1028,3 +1028,195 @@ async def get_system_architecture():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取系统架构信息失败: {str(e)}")
+
+
+@router.get("/database/health")
+async def database_health():
+    """
+    数据库健康检查 (US2 - 双数据库架构)
+
+    检查TDengine和PostgreSQL的连接状态和基本健康指标
+
+    Returns:
+        {
+            "success": true,
+            "message": "数据库健康检查完成",
+            "data": {
+                "tdengine": {...},
+                "postgresql": {...},
+                "summary": {...}
+            }
+        }
+    """
+    import os
+    from datetime import datetime
+
+    health_data = {
+        "tdengine": {"status": "unknown", "message": ""},
+        "postgresql": {"status": "unknown", "message": ""},
+        "summary": {
+            "total_databases": 2,
+            "healthy": 0,
+            "unhealthy": 0,
+            "checked_at": datetime.now().isoformat()
+        }
+    }
+
+    # Check TDengine
+    try:
+        import taos
+        conn = taos.connect(
+            host=os.getenv("TDENGINE_HOST", "192.168.123.104"),
+            port=int(os.getenv("TDENGINE_PORT", "6030")),
+            user=os.getenv("TDENGINE_USER", "root"),
+            password=os.getenv("TDENGINE_PASSWORD", "taosdata"),
+            database=os.getenv("TDENGINE_DATABASE", "market_data")
+        )
+        result = conn.query("SELECT server_version()")
+        version = result.fetch_all()[0][0] if result else "unknown"
+        conn.close()
+
+        health_data["tdengine"] = {
+            "status": "healthy",
+            "message": "连接成功",
+            "version": version,
+            "host": os.getenv("TDENGINE_HOST"),
+            "port": int(os.getenv("TDENGINE_PORT", "6030")),
+            "database": os.getenv("TDENGINE_DATABASE")
+        }
+        health_data["summary"]["healthy"] += 1
+    except Exception as e:
+        health_data["tdengine"] = {
+            "status": "unhealthy",
+            "message": f"连接失败: {str(e)}",
+            "host": os.getenv("TDENGINE_HOST"),
+            "port": int(os.getenv("TDENGINE_PORT", "6030"))
+        }
+        health_data["summary"]["unhealthy"] += 1
+
+    # Check PostgreSQL
+    try:
+        import psycopg2
+        conn = psycopg2.connect(
+            host=os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
+            port=int(os.getenv("POSTGRESQL_PORT", "5438")),
+            user=os.getenv("POSTGRESQL_USER", "postgres"),
+            password=os.getenv("POSTGRESQL_PASSWORD"),
+            database=os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT version()")
+        version = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+
+        health_data["postgresql"] = {
+            "status": "healthy",
+            "message": "连接成功",
+            "version": version.split(',')[0] if version else "unknown",
+            "host": os.getenv("POSTGRESQL_HOST"),
+            "port": int(os.getenv("POSTGRESQL_PORT", "5438")),
+            "database": os.getenv("POSTGRESQL_DATABASE")
+        }
+        health_data["summary"]["healthy"] += 1
+    except Exception as e:
+        health_data["postgresql"] = {
+            "status": "unhealthy",
+            "message": f"连接失败: {str(e)}",
+            "host": os.getenv("POSTGRESQL_HOST"),
+            "port": int(os.getenv("POSTGRESQL_PORT", "5438"))
+        }
+        health_data["summary"]["unhealthy"] += 1
+
+    return {
+        "success": True,
+        "message": "数据库健康检查完成",
+        "data": health_data
+    }
+
+
+@router.get("/database/stats")
+async def database_stats():
+    """
+    数据库统计信息 (US2 - 双数据库架构)
+
+    Returns:
+        {
+            "success": true,
+            "message": "数据库统计信息获取成功",
+            "data": {
+                "architecture": "dual-database",
+                "total_classifications": 34,
+                "routing": {...},
+                "features": {...}
+            }
+        }
+    """
+    from datetime import datetime
+
+    stats_data = {
+        "architecture": "dual-database",
+        "description": "TDengine + PostgreSQL 双数据库架构",
+        "simplified_from": "4 databases (MySQL, Redis, TDengine, PostgreSQL)",
+        "simplified_to": "2 databases (TDengine, PostgreSQL)",
+        "simplification_date": "2025-10-25",
+
+        "total_classifications": 34,
+        "routing": {
+            "tdengine": {
+                "count": 5,
+                "purpose": "高频时序数据",
+                "classifications": [
+                    "TICK_DATA",
+                    "MINUTE_KLINE",
+                    "ORDER_BOOK_DEPTH",
+                    "LEVEL2_SNAPSHOT",
+                    "INDEX_QUOTES"
+                ],
+                "features": [
+                    "极致压缩 (20:1)",
+                    "超高写入性能 (百万条/秒)",
+                    "原生时序优化"
+                ]
+            },
+            "postgresql": {
+                "count": 29,
+                "purpose": "所有其他数据",
+                "categories": [
+                    "日线市场数据",
+                    "参考数据 (股票信息、交易日历等)",
+                    "衍生数据 (技术指标、量化因子等)",
+                    "交易数据 (订单、成交、持仓等)",
+                    "元数据 (系统配置、数据源状态等)"
+                ],
+                "features": [
+                    "TimescaleDB 时序扩展",
+                    "复杂查询支持",
+                    "ACID 事务保证",
+                    "成熟生态"
+                ]
+            }
+        },
+
+        "removed_databases": {
+            "mysql": {
+                "status": "removed",
+                "migrated_to": "PostgreSQL",
+                "migration_date": "2025-10-19",
+                "rows_migrated": 299
+            },
+            "redis": {
+                "status": "removed",
+                "reason": "配置的db1未使用,应用层缓存替代",
+                "removal_date": "2025-10-25"
+            }
+        },
+
+        "timestamp": datetime.now().isoformat()
+    }
+
+    return {
+        "success": True,
+        "message": "数据库统计信息获取成功",
+        "data": stats_data
+    }

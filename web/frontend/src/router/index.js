@@ -143,6 +143,12 @@ const router = createRouter({
           meta: { title: '系统架构', icon: 'Grid' }
         },
         {
+          path: 'system/database-monitor',
+          name: 'system-database-monitor',
+          component: () => import('@/views/system/DatabaseMonitor.vue'),
+          meta: { title: '数据库监控', icon: 'Database' }
+        },
+        {
           path: 'openstock-demo',
           name: 'openstock-demo',
           component: () => import('@/views/OpenStockDemo.vue'),
