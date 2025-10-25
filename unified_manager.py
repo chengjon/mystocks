@@ -1,54 +1,53 @@
 """
-MyStocks统一数据管理器 - 集成监控版本 (US1 + US3)
+MyStocks统一数据管理器 - 简化版本 (US3 Architecture Simplification)
 
-这是系统的核心入口,提供统一的数据保存和加载接口。
-用户只需调用save_data_by_classification()和load_data_by_classification(),
-系统自动根据数据分类路由到最优数据库。
+这是系统的向后兼容性包装器,提供与之前版本相同的API。
+所有核心逻辑已委托给DataManager以简化架构。
 
-新增功能 (US3):
-- 所有操作自动记录到监控数据库
-- 性能指标自动收集
-- 慢查询自动告警
-- 数据质量自动检查
-
-创建日期: 2025-10-11
-版本: 2.0.0 (MVP US1 + US3监控集成)
+版本: 3.0.0 (US3 Simplified - Thin Wrapper)
+创建日期: 2025-10-25
 """
 
 import pandas as pd
-import time
 import logging
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 from core.data_classification import DataClassification, DatabaseTarget
-
-logger = logging.getLogger(__name__)
+from core.data_manager import DataManager
 from core.data_storage_strategy import DataStorageStrategy, DataStorageRules
 from core.batch_failure_strategy import (
     BatchFailureStrategy,
     BatchFailureHandler,
     BatchOperationResult,
 )
-from data_access import TDengineDataAccess, PostgreSQLDataAccess
 from utils.failure_recovery_queue import FailureRecoveryQueue
 
-# 监控组件 (US3)
-from monitoring.monitoring_database import get_monitoring_database
-from monitoring.performance_monitor import get_performance_monitor
-from monitoring.data_quality_monitor import get_quality_monitor
-from monitoring.alert_manager import get_alert_manager
+# 监控组件 (可选)
+try:
+    from monitoring.monitoring_database import get_monitoring_database
+    from monitoring.performance_monitor import get_performance_monitor
+    from monitoring.data_quality_monitor import get_quality_monitor
+    from monitoring.alert_manager import get_alert_manager
+
+    MONITORING_AVAILABLE = True
+except ImportError:
+    MONITORING_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 
 class MyStocksUnifiedManager:
     """
-    MyStocks统一数据管理器
+    MyStocks统一数据管理器 - Thin Wrapper版本
 
-    **核心功能** (MVP US1):
+    **重要**: 这是一个向后兼容性包装器。所有核心功能已委托给DataManager。
+
+    **核心功能**:
     1. 自动路由: 根据数据分类自动选择最优数据库
     2. 统一接口: 2行代码完成保存/加载操作
-    3. 故障恢复: 数据库不可用时自动排队,数据不丢失
-    4. 批量操作: 支持10万条记录的高性能批量保存
+    3. 故障恢复: 数据库不可用时自动排队
+    4. 批量操作: 支持高性能批量保存
 
     **使用示例**:
         ```python
@@ -77,16 +76,19 @@ class MyStocksUnifiedManager:
         Args:
             enable_monitoring: 是否启用监控功能 (默认True)
         """
-        # 初始化2个数据访问层 (Week 3简化后)
-        self.tdengine = TDengineDataAccess()
-        self.postgresql = PostgreSQLDataAccess()
+        # 核心：使用DataManager处理所有数据操作
+        self._data_manager = DataManager(enable_monitoring=enable_monitoring)
 
-        # 初始化故障恢复队列
+        # 保持向后兼容：直接访问数据库连接
+        self.tdengine = self._data_manager._tdengine
+        self.postgresql = self._data_manager._postgresql
+
+        # 故障恢复队列
         self.recovery_queue = FailureRecoveryQueue()
 
-        # 初始化监控组件 (US3)
+        # 监控组件
         self.enable_monitoring = enable_monitoring
-        if enable_monitoring:
+        if enable_monitoring and MONITORING_AVAILABLE:
             try:
                 self.monitoring_db = get_monitoring_database()
                 self.performance_monitor = get_performance_monitor()
@@ -106,10 +108,10 @@ class MyStocksUnifiedManager:
             self.quality_monitor = None
             self.alert_manager = None
 
-        print("✅ MyStocksUnifiedManager 初始化成功")
+        print("✅ MyStocksUnifiedManager 初始化成功 (US3 Simplified)")
         print("   - 支持34个数据分类的自动路由")
         print("   - 2种数据库连接就绪 (TDengine + PostgreSQL)")
-        print("   - 故障恢复队列已启用")
+        print("   - 基于DataManager的简化架构")
 
     def save_data_by_classification(
         self,
@@ -121,297 +123,67 @@ class MyStocksUnifiedManager:
         """
         按分类保存数据 (核心方法 #1)
 
-        根据数据分类自动选择最优数据库并保存数据。
-        如果目标数据库不可用,数据自动加入故障恢复队列。
+        委托给DataManager处理。
 
         Args:
             classification: 数据分类枚举
             data: 数据DataFrame
             table_name: 目标表名
-            **kwargs: 额外参数 (如ttl, timestamp_col等)
+            **kwargs: 额外参数
 
         Returns:
             bool: 保存是否成功
-
-        Raises:
-            ValueError: 未知的数据分类
-
-        Example:
-            # 保存分钟线数据
-            success = manager.save_data_by_classification(
-                DataClassification.MINUTE_KLINE,
-                kline_df,
-                table_name='minute_kline_600000',
-                timestamp_col='ts'
-            )
         """
         if data.empty:
-            print("⚠️  数据为空,跳过保存")
+            logger.warning("数据为空,跳过保存")
             return True
-
-        # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
-        operation_success = False
-        rows_affected = 0
-
-        # 性能监控上下文 (US3)
-        context_manager = (
-            self.performance_monitor.track_operation(
-                operation_name=f"save_{classification.value}",
-                classification=classification.value,
-                database_type=target_db.value,
-                table_name=table_name,
-            )
-            if self.enable_monitoring
-            else None
-        )
 
         try:
-            # 使用性能监控上下文
-            if context_manager:
-                context_manager.__enter__()
-
-            print(f"📍 路由: {classification.value} → {target_db.value.upper()}")
-
-            # 根据目标数据库选择访问层
-            if target_db == DatabaseTarget.TDENGINE:
-                rows_affected = self.tdengine.insert_dataframe(
-                    table_name, data, **kwargs
-                )
-                print(f"✅ TDengine保存成功: {rows_affected}行")
-
-            elif target_db == DatabaseTarget.POSTGRESQL:
-                rows_affected = self.postgresql.insert_dataframe(table_name, data)
-                print(f"✅ PostgreSQL保存成功: {rows_affected}行")
-
-            else:
-                # Week 3简化后仅支持TDengine和PostgreSQL
-                raise ValueError(
-                    f"不支持的数据库类型: {target_db}. "
-                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
-                )
-
-            operation_success = True
-
-            # 记录操作日志 (US3)
-            if self.enable_monitoring and self.monitoring_db:
-                self.monitoring_db.log_operation(
-                    operation_type="SAVE",
-                    classification=classification.value,
-                    target_database=target_db.value,
-                    table_name=table_name,
-                    record_count=rows_affected,
-                    operation_status="SUCCESS",
-                )
-
-            return True
-
-        except Exception as e:
-            print(f"❌ 保存失败: {e}")
-            print("📥 数据已加入故障恢复队列")
-
-            # 记录失败操作日志 (US3)
-            if self.enable_monitoring and self.monitoring_db:
-                self.monitoring_db.log_operation(
-                    operation_type="SAVE",
-                    classification=classification.value,
-                    target_database=target_db.value,
-                    table_name=table_name,
-                    record_count=len(data),
-                    operation_status="FAILED",
-                    error_message=str(e),
-                )
-
-            # 加入故障恢复队列
-            self.recovery_queue.enqueue(
-                classification=classification.value,
-                target_database=target_db.value,
-                data={
-                    "table_name": table_name,
-                    "data": data.to_dict("records"),
-                    "kwargs": kwargs,
-                },
+            # 委托给DataManager
+            return self._data_manager.save_data(
+                classification, data, table_name, **kwargs
             )
-
+        except Exception as e:
+            logger.error(f"保存数据失败: {classification} - {e}")
+            # 故障恢复：加入队列
+            self.recovery_queue.add_failed_operation(
+                operation_type="save",
+                classification=classification.value,
+                data=data,
+                table_name=table_name,
+                kwargs=kwargs,
+                error=str(e),
+            )
             return False
-
-        finally:
-            # 退出性能监控上下文
-            if context_manager:
-                try:
-                    context_manager.__exit__(None, None, None)
-                except:
-                    pass
 
     def load_data_by_classification(
         self,
         classification: DataClassification,
         table_name: str,
         filters: Optional[Dict[str, Any]] = None,
-        columns: Optional[List[str]] = None,
-        limit: Optional[int] = None,
-        **kwargs,
-    ) -> pd.DataFrame:
+    ) -> Optional[pd.DataFrame]:
         """
         按分类加载数据 (核心方法 #2)
 
-        根据数据分类自动选择最优数据库并查询数据。
+        委托给DataManager处理。
 
         Args:
             classification: 数据分类枚举
-            table_name: 表名
-            filters: 过滤条件 {'symbol': '600000.SH', 'date >= ': '2025-01-01'}
-            columns: 查询字段列表
-            limit: 返回行数限制
-            **kwargs: 额外参数 (如start_time, end_time等)
-
-        Returns:
-            查询结果DataFrame
-
-        Example:
-            # 加载日线数据
-            df = manager.load_data_by_classification(
-                DataClassification.DAILY_KLINE,
-                table_name='daily_kline',
-                filters={'symbol': '600000.SH'},
-                start_time=datetime(2025, 1, 1),
-                end_time=datetime(2025, 12, 31)
-            )
-        """
-        # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
-
-        # 性能监控上下文 (US3)
-        context_manager = (
-            self.performance_monitor.track_operation(
-                operation_name=f"load_{classification.value}",
-                classification=classification.value,
-                database_type=target_db.value,
-                table_name=table_name,
-            )
-            if self.enable_monitoring
-            else None
-        )
-
-        try:
-            # 使用性能监控上下文
-            if context_manager:
-                context_manager.__enter__()
-
-            print(f"📍 路由: {classification.value} → {target_db.value.upper()}")
-
-            # 构建where子句
-            where = self._build_where_clause(filters) if filters else None
-
-            # 根据目标数据库查询
-            if target_db == DatabaseTarget.TDENGINE:
-                # TDengine时间范围查询
-                if "start_time" in kwargs and "end_time" in kwargs:
-                    df = self.tdengine.query_by_time_range(
-                        table_name,
-                        kwargs["start_time"],
-                        kwargs["end_time"],
-                        columns=columns,
-                        limit=limit,
-                    )
-                else:
-                    df = self.tdengine.query_latest(table_name, limit or 100)
-
-            elif target_db == DatabaseTarget.POSTGRESQL:
-                # PostgreSQL查询
-                if "start_time" in kwargs and "end_time" in kwargs:
-                    time_column = kwargs.get("time_column", "time")
-                    df = self.postgresql.query_by_time_range(
-                        table_name,
-                        time_column,
-                        kwargs["start_time"],
-                        kwargs["end_time"],
-                        columns=columns,
-                        filters=where,
-                    )
-                else:
-                    df = self.postgresql.query(table_name, columns, where, limit=limit)
-
-            else:
-                # Week 3简化后仅支持TDengine和PostgreSQL
-                raise ValueError(
-                    f"不支持的数据库类型: {target_db}. "
-                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
-                )
-
-            print(f"✅ 查询成功: {len(df)}行")
-
-            # 记录操作日志 (US3)
-            if self.enable_monitoring and self.monitoring_db:
-                self.monitoring_db.log_operation(
-                    operation_type="LOAD",
-                    classification=classification.value,
-                    target_database=target_db.value,
-                    table_name=table_name,
-                    record_count=len(df),
-                    operation_status="SUCCESS",
-                )
-
-            return df
-
-        except Exception as e:
-            print(f"❌ 查询失败: {e}")
-
-            # 记录失败操作日志 (US3)
-            if self.enable_monitoring and self.monitoring_db:
-                self.monitoring_db.log_operation(
-                    operation_type="LOAD",
-                    classification=classification.value,
-                    target_database=target_db.value,
-                    table_name=table_name,
-                    record_count=0,
-                    operation_status="FAILED",
-                    error_message=str(e),
-                )
-
-            return pd.DataFrame()
-
-        finally:
-            # 退出性能监控上下文
-            if context_manager:
-                try:
-                    context_manager.__exit__(None, None, None)
-                except:
-                    pass
-
-    def _build_where_clause(self, filters: Dict[str, Any]) -> str:
-        """
-        构建WHERE子句
-
-        Args:
+            table_name: 源表名
             filters: 过滤条件字典
 
         Returns:
-            WHERE子句字符串
-
-        Example:
-            {'symbol': '600000.SH', 'date >= ': '2025-01-01'}
-            → "symbol = '600000.SH' AND date >= '2025-01-01'"
+            Optional[pd.DataFrame]: 加载的数据或None
         """
-        conditions = []
+        try:
+            # 委托给DataManager
+            if filters is None:
+                filters = {}
 
-        for key, value in filters.items():
-            # 支持操作符后缀 (如 'date >= ')
-            if key.endswith((" =", " >", " <", " >=", " <=", " !=")):
-                operator = key.split()[-1]
-                column = key.rsplit(operator, 1)[0].strip()
-                if isinstance(value, str):
-                    conditions.append(f"{column} {operator} '{value}'")
-                else:
-                    conditions.append(f"{column} {operator} {value}")
-            else:
-                # 默认使用 = 操作符
-                if isinstance(value, str):
-                    conditions.append(f"{key} = '{value}'")
-                else:
-                    conditions.append(f"{key} = {value}")
-
-        return " AND ".join(conditions)
+            return self._data_manager.load_data(classification, table_name, **filters)
+        except Exception as e:
+            logger.error(f"加载数据失败: {classification} - {e}")
+            return None
 
     def get_routing_info(self, classification: DataClassification) -> Dict[str, Any]:
         """
@@ -422,267 +194,136 @@ class MyStocksUnifiedManager:
 
         Returns:
             路由信息字典
-
-        Example:
-            info = manager.get_routing_info(DataClassification.TICK_DATA)
-            # {'target_db': 'tdengine', 'retention_days': 30}
         """
-        target_db = DataStorageStrategy.get_target_database(classification)
+        target_db = self._data_manager.get_target_database(classification)
         retention = DataStorageRules.get_retention_days(classification)
 
-        return {"target_db": target_db.value, "retention_days": retention}
+        return {
+            "classification": classification.value,
+            "target_db": target_db.value,
+            "retention_days": retention,
+        }
 
     def save_data_batch_with_strategy(
         self,
         classification: DataClassification,
         data: pd.DataFrame,
         table_name: str,
-        strategy: BatchFailureStrategy = BatchFailureStrategy.CONTINUE,
+        batch_size: int = 1000,
+        failure_strategy: BatchFailureStrategy = BatchFailureStrategy.CONTINUE,
         **kwargs,
     ) -> BatchOperationResult:
         """
-        使用指定失败策略保存批量数据 (核心方法 #3)
-
-        提供三种失败处理策略:
-        - ROLLBACK: 任何失败都回滚整个批次
-        - CONTINUE: 跳过失败记录,继续处理
-        - RETRY: 自动重试失败记录
+        批量保存数据（带故障处理策略）
 
         Args:
-            classification: 数据分类枚举
-            data: 数据DataFrame
+            classification: 数据分类
+            data: 要保存的数据
             table_name: 目标表名
-            strategy: 失败策略 (默认CONTINUE)
+            batch_size: 批次大小
+            failure_strategy: 失败处理策略
             **kwargs: 额外参数
 
         Returns:
             BatchOperationResult: 批量操作结果
-
-        Example:
-            # 使用RETRY策略保存10万条Tick数据
-            result = manager.save_data_batch_with_strategy(
-                DataClassification.TICK_DATA,
-                tick_df,
-                table_name='tick_600000',
-                strategy=BatchFailureStrategy.RETRY
-            )
-            print(f"成功率: {result.success_rate:.2%}")
-            print(f"失败记录: {result.failed_records}")
         """
-        if data.empty:
-            print("⚠️  数据为空,跳过保存")
-            return BatchOperationResult(
-                total_records=0,
-                successful_records=0,
-                failed_records=0,
-                strategy_used=strategy,
-                execution_time_ms=0.0,
+        handler = BatchFailureHandler(strategy=failure_strategy)
+
+        # 分批处理
+        total_rows = len(data)
+        for i in range(0, total_rows, batch_size):
+            batch_data = data.iloc[i : i + batch_size]
+
+            success = self.save_data_by_classification(
+                classification, batch_data, table_name, **kwargs
             )
 
-        # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
-        print(
-            f"📍 路由: {classification.value} → {target_db.value.upper()} (策略: {strategy.value.upper()})"
-        )
-
-        # 创建失败处理器
-        handler = BatchFailureHandler(
-            strategy=strategy,
-            max_retries=kwargs.get("max_retries", 3),
-            retry_delay_base=kwargs.get("retry_delay_base", 1.0),
-        )
-
-        # 定义操作函数
-        def operation(batch: pd.DataFrame) -> bool:
-            try:
-                if target_db == DatabaseTarget.TDENGINE:
-                    self.tdengine.insert_dataframe(table_name, batch, **kwargs)
-                elif target_db == DatabaseTarget.POSTGRESQL:
-                    self.postgresql.insert_dataframe(table_name, batch)
-                else:
-                    # Week 3简化后仅支持TDengine和PostgreSQL
-                    raise ValueError(
-                        f"不支持的数据库类型: {target_db}. "
-                        f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
-                    )
-                return True
-            except Exception as e:
-                print(f"⚠️  批次保存异常: {e}")
-                return False
-
-        # 执行批量操作
-        result = handler.execute_batch(data, operation, f"save_{classification.value}")
-
-        # 如果有失败记录,加入故障恢复队列
-        if result.failed_records > 0 and strategy != BatchFailureStrategy.ROLLBACK:
-            failed_data = (
-                data.iloc[result.failed_indices] if result.failed_indices else data
-            )
-            print(f"📥 {result.failed_records} 条失败记录已加入故障恢复队列")
-
-            self.recovery_queue.enqueue(
-                classification=classification.value,
-                target_database=target_db.value,
-                data={
-                    "table_name": table_name,
-                    "data": failed_data.to_dict("records"),
-                    "kwargs": kwargs,
-                },
+            handler.record_batch_result(
+                batch_index=i // batch_size, success=success, row_count=len(batch_data)
             )
 
-        return result
+            # 根据策略决定是否继续
+            if not success and failure_strategy == BatchFailureStrategy.ROLLBACK:
+                break
+
+        return handler.get_result()
 
     def get_monitoring_statistics(self) -> Dict[str, Any]:
         """
-        获取监控统计信息 (US3)
+        获取监控统计信息
 
         Returns:
-            dict: 监控统计信息 {
-                'performance': {...},
-                'alerts': {...},
-                'enabled': bool
-            }
+            监控统计字典
         """
-        if not self.enable_monitoring:
-            return {"enabled": False, "message": "监控功能未启用"}
+        stats = {
+            "manager_type": "MyStocksUnifiedManager (US3 Simplified)",
+            "data_manager_stats": self._data_manager.get_routing_stats(),
+            "monitoring_enabled": self.enable_monitoring,
+            "timestamp": datetime.now().isoformat(),
+        }
 
-        try:
-            stats = {
-                "enabled": True,
-                "performance": self.performance_monitor.get_performance_summary(
-                    hours=24
-                ),
-                "alerts": self.alert_manager.get_statistics(),
-                "monitoring_db": {"connected": self.monitoring_db is not None},
-            }
-            return stats
-        except Exception as e:
-            logger.error(f"获取监控统计失败: {e}")
-            return {"enabled": True, "error": str(e)}
+        if self.enable_monitoring and self.performance_monitor:
+            try:
+                stats["performance"] = self.performance_monitor.get_statistics()
+            except:
+                pass
+
+        return stats
 
     def check_data_quality(
-        self, classification: DataClassification, table_name: str, **kwargs
+        self, classification: DataClassification, table_name: str, **filters
     ) -> Dict[str, Any]:
         """
-        执行数据质量检查 (US3)
-
-        支持的检查维度:
-        - completeness: 完整性检查 (需要 total_records, null_records)
-        - freshness: 新鲜度检查 (需要 latest_timestamp)
-        - accuracy: 准确性检查 (需要 total_records, invalid_records)
+        检查数据质量
 
         Args:
             classification: 数据分类
             table_name: 表名
-            **kwargs: 检查参数
+            **filters: 过滤条件
 
         Returns:
-            dict: 质量检查结果
-
-        Example:
-            # 检查完整性
-            result = manager.check_data_quality(
-                DataClassification.DAILY_KLINE,
-                'daily_kline',
-                check_type='completeness',
-                total_records=10000,
-                null_records=50
-            )
+            数据质量检查结果
         """
-        if not self.enable_monitoring:
-            return {"error": "监控功能未启用"}
-
-        check_type = kwargs.get("check_type", "completeness")
-        target_db = DataStorageStrategy.get_target_database(classification)
+        result = {
+            "classification": classification.value,
+            "table_name": table_name,
+            "timestamp": datetime.now().isoformat(),
+        }
 
         try:
-            if check_type == "completeness":
-                result = self.quality_monitor.check_completeness(
-                    classification=classification.value,
-                    database_type=target_db.value,
-                    table_name=table_name,
-                    total_records=kwargs.get("total_records", 0),
-                    null_records=kwargs.get("null_records", 0),
-                    threshold=kwargs.get("threshold"),
-                )
-            elif check_type == "freshness":
-                result = self.quality_monitor.check_freshness(
-                    classification=classification.value,
-                    database_type=target_db.value,
-                    table_name=table_name,
-                    latest_timestamp=kwargs.get("latest_timestamp"),
-                    threshold_seconds=kwargs.get("threshold_seconds"),
-                )
-            elif check_type == "accuracy":
-                result = self.quality_monitor.check_accuracy(
-                    classification=classification.value,
-                    database_type=target_db.value,
-                    table_name=table_name,
-                    total_records=kwargs.get("total_records", 0),
-                    invalid_records=kwargs.get("invalid_records", 0),
-                    validation_rules=kwargs.get("validation_rules"),
-                    threshold=kwargs.get("threshold"),
-                )
-            else:
-                result = {"error": f"未知的检查类型: {check_type}"}
+            # 加载数据
+            data = self.load_data_by_classification(classification, table_name, filters)
 
-            logger.info(f"✓ 数据质量检查完成: {table_name} - {check_type}")
-            return result
+            if data is not None:
+                result["row_count"] = len(data)
+                result["column_count"] = len(data.columns)
+                result["null_counts"] = data.isnull().sum().to_dict()
+                result["status"] = "success"
+            else:
+                result["status"] = "no_data"
 
         except Exception as e:
-            logger.error(f"数据质量检查失败: {e}")
-            return {"error": str(e)}
+            result["status"] = "error"
+            result["error"] = str(e)
+
+        return result
 
     def close_all_connections(self):
-        """关闭所有数据库连接 (Week 3简化后 - 仅TDengine和PostgreSQL)"""
-        print("\n正在关闭所有数据库连接...")
-        self.tdengine.close()
-        self.postgresql.close_all()
-        print("✅ 所有连接已关闭 (2个数据库)")
+        """
+        关闭所有数据库连接
+        """
+        try:
+            if hasattr(self.tdengine, "close"):
+                self.tdengine.close()
+            if hasattr(self.postgresql, "close"):
+                self.postgresql.close()
+            logger.info("所有数据库连接已关闭")
+        except Exception as e:
+            logger.error(f"关闭连接时出错: {e}")
 
-
-if __name__ == "__main__":
-    """测试统一管理器"""
-    print("\n" + "=" * 80)
-    print("MyStocks统一数据管理器 - MVP测试")
-    print("=" * 80 + "\n")
-
-    # 初始化管理器
-    manager = MyStocksUnifiedManager()
-
-    # 测试路由信息查询
-    print("\n📊 路由信息测试:\n")
-    test_classifications = [
-        DataClassification.TICK_DATA,
-        DataClassification.DAILY_KLINE,
-        DataClassification.SYMBOLS_INFO,
-        DataClassification.REALTIME_POSITIONS,
-    ]
-
-    for classification in test_classifications:
-        info = manager.get_routing_info(classification)
-        print(f"  {classification.value}")
-        print(f"    → 目标数据库: {info['target_db'].upper()}")
-        print(
-            f"    → 保留周期: {info['retention_days']}天"
-            if info["retention_days"]
-            else f"    → 保留周期: 永久"
-        )
-        if info["ttl"]:
-            print(f"    → TTL: {info['ttl']}秒")
-
-    print("\n" + "=" * 80)
-    print("✅ 统一管理器基础功能验证通过")
-    print("=" * 80 + "\n")
-
-    print("核心功能:")
-    print("  ✅ save_data_by_classification() - 按分类保存")
-    print("  ✅ load_data_by_classification() - 按分类加载")
-    print("  ✅ save_data_batch_with_strategy() - 批量保存(含失败策略)")
-    print("  ✅ 自动路由到最优数据库")
-    print("  ✅ 故障恢复队列")
-    print("  ✅ 路由信息查询")
-    print("  ✅ 三种批量失败策略 (ROLLBACK/CONTINUE/RETRY)")
-
-    # 关闭连接
-    manager.close_all_connections()
+    def __del__(self):
+        """析构函数：确保连接被关闭"""
+        try:
+            self.close_all_connections()
+        except:
+            pass
