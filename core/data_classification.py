@@ -151,7 +151,7 @@ class DataClassification(str, Enum):
             cls.DAILY_KLINE.value,
             cls.ORDER_BOOK_DEPTH.value,
             cls.LEVEL2_SNAPSHOT.value,
-            cls.INDEX_QUOTES.value
+            cls.INDEX_QUOTES.value,
         ]
 
     @classmethod
@@ -166,7 +166,7 @@ class DataClassification(str, Enum):
             cls.FUNDAMENTAL_METRICS.value,
             cls.DIVIDEND_DATA.value,
             cls.SHAREHOLDER_DATA.value,
-            cls.MARKET_RULES.value
+            cls.MARKET_RULES.value,
         ]
 
     @classmethod
@@ -178,7 +178,7 @@ class DataClassification(str, Enum):
             cls.MODEL_OUTPUT.value,
             cls.TRADE_SIGNALS.value,
             cls.BACKTEST_RESULTS.value,
-            cls.RISK_METRICS.value
+            cls.RISK_METRICS.value,
         ]
 
     @classmethod
@@ -191,7 +191,7 @@ class DataClassification(str, Enum):
             cls.REALTIME_POSITIONS.value,
             cls.REALTIME_ACCOUNT.value,
             cls.FUND_FLOW.value,
-            cls.ORDER_QUEUE.value
+            cls.ORDER_QUEUE.value,
         ]
 
     @classmethod
@@ -203,28 +203,19 @@ class DataClassification(str, Enum):
             cls.STRATEGY_PARAMS.value,
             cls.SYSTEM_CONFIG.value,
             cls.DATA_QUALITY_METRICS.value,
-            cls.USER_CONFIG.value
+            cls.USER_CONFIG.value,
         ]
 
 
 class DatabaseTarget(str, Enum):
     """
-    数据库类型枚举
+    数据库类型枚举 (Week 3简化后 - PostgreSQL only)
 
-    定义系统支持的4种数据库类型,每种数据库针对特定数据特性优化
+    系统已简化为单一数据库架构,PostgreSQL+TimescaleDB支持所有数据类型
     """
 
-    TDENGINE = "tdengine"
-    """TDengine - 时序数据库,超高压缩比(20:1),极致写入性能,用于高频市场数据"""
-
     POSTGRESQL = "postgresql"
-    """PostgreSQL+TimescaleDB - 复杂时序查询,自动分区,用于历史分析和衍生数据"""
-
-    MYSQL = "mysql"
-    """MySQL/MariaDB - ACID合规,复杂JOIN,用于参考数据和元数据"""
-
-    REDIS = "redis"
-    """Redis - 亚毫秒级访问,用于实时状态和热数据"""
+    """PostgreSQL+TimescaleDB - 通用数据仓库,支持时序数据+结构化数据+元数据"""
 
     @classmethod
     def get_all_targets(cls) -> List[str]:
