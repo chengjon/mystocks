@@ -189,6 +189,13 @@ const menuConfig = [
         disabled: false
       },
       {
+        id: 'system-database-monitor',
+        title: '数据库监控',
+        path: '/system/database-monitor',
+        icon: 'Database',
+        disabled: false
+      },
+      {
         id: 'system-monitoring',
         title: '系统监控',
         path: '/system/monitoring',

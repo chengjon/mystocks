@@ -425,13 +425,12 @@ class MyStocksUnifiedManager:
 
         Example:
             info = manager.get_routing_info(DataClassification.TICK_DATA)
-            # {'target_db': 'tdengine', 'retention_days': 30, 'ttl': None}
+            # {'target_db': 'tdengine', 'retention_days': 30}
         """
         target_db = DataStorageStrategy.get_target_database(classification)
         retention = DataStorageRules.get_retention_days(classification)
-        ttl = DataStorageRules.get_redis_ttl(classification)
 
-        return {"target_db": target_db.value, "retention_days": retention, "ttl": ttl}
+        return {"target_db": target_db.value, "retention_days": retention}
 
     def save_data_batch_with_strategy(
         self,

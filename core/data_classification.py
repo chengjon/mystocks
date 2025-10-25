@@ -93,7 +93,7 @@ class DataClassification(str, Enum):
     """风险指标 - VaR、行业暴露度、Beta等,计算密集,多维度"""
 
     # ==================== 第4类: 交易数据 (7项) ====================
-    # 冷热分离 → PostgreSQL (冷) + Redis (热)
+    # 全部 → PostgreSQL（历史+实时）
 
     ORDER_RECORDS = "ORDER_RECORDS"
     """订单记录 - 历史委托记录,持久化,关联成交"""
@@ -105,19 +105,19 @@ class DataClassification(str, Enum):
     """持仓记录 - 历史持仓快照,持久化,历史回溯"""
 
     REALTIME_POSITIONS = "REALTIME_POSITIONS"
-    """实时持仓 - 当前持仓状态,热数据,高频读写 (Redis)"""
+    """实时持仓 - 当前持仓状态,热数据,高频读写"""
 
     REALTIME_ACCOUNT = "REALTIME_ACCOUNT"
-    """实时账户 - 当前账户资金状态,热数据,高频更新 (Redis)"""
+    """实时账户 - 当前账户资金状态,热数据,高频更新"""
 
     FUND_FLOW = "FUND_FLOW"
     """资金流水 - 资金转入/转出、手续费、分红到账,持久化,时序,审计"""
 
     ORDER_QUEUE = "ORDER_QUEUE"
-    """委托队列 - 未成交委托排队状态,热数据,实时更新 (Redis)"""
+    """委托队列 - 未成交委托排队状态,热数据,实时更新"""
 
     # ==================== 第5类: 元数据 (6项) ====================
-    # 系统配置和监控 → MySQL/MariaDB
+    # 系统配置和监控 → PostgreSQL
 
     DATA_SOURCE_STATUS = "DATA_SOURCE_STATUS"
     """数据源状态 - 数据源健康度、更新状态、完整性校验,配置型,实时监控"""
