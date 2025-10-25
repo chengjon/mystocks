@@ -450,9 +450,9 @@ class DataClassification(Enum):
 class DataStorageStrategy:
     """数据存储策略映射 - 实现自动路由（双数据库架构）"""
 
-    # 数据分类到数据库的映射关系（23项分类 → 2个数据库）
+    # 数据分类到数据库的映射关系（34项分类 → 2个数据库）
     CLASSIFICATION_TO_DATABASE = {
-        # 高频时序数据 (3项) → TDengine
+        # 高频时序数据 (5项) → TDengine
         DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
         DataClassification.MINUTE_KLINE: DatabaseTarget.TDENGINE,
         DataClassification.DEPTH_DATA: DatabaseTarget.TDENGINE,
