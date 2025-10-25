@@ -45,7 +45,7 @@ MyStocks 系统采用**分层架构**和**适配器模式**，实现了从数据
 ┌─────────────────────────────────────────────────────────────────┐
 │                  统一管理层 (Unified Manager)                    │
 │  - MyStocksUnifiedManager: 核心数据管理入口                     │
-│  - 自动路由: 34种数据分类 → 2个数据库 (TDengine/PostgreSQL)    │
+│  - 自动路由: 23种数据分类 → 2个数据库 (TDengine/PostgreSQL)    │
 │  - 故障恢复队列 + 监控集成                                      │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -450,16 +450,14 @@ class DataClassification(Enum):
 class DataStorageStrategy:
     """数据存储策略映射 - 实现自动路由（双数据库架构）"""
 
-    # 数据分类到数据库的映射关系（34项分类 → 2个数据库）
+    # 数据分类到数据库的映射关系（23项分类 → 2个数据库）
     CLASSIFICATION_TO_DATABASE = {
-        # 高频时序数据 (5项) → TDengine
+        # 高频时序数据 (3项) → TDengine
         DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
         DataClassification.MINUTE_KLINE: DatabaseTarget.TDENGINE,
         DataClassification.DEPTH_DATA: DatabaseTarget.TDENGINE,
-        DataClassification.ORDER_BOOK_DEPTH: DatabaseTarget.TDENGINE,
-        DataClassification.LEVEL2_SNAPSHOT: DatabaseTarget.TDENGINE,
 
-        # 所有其他数据 (29项) → PostgreSQL
+        # 所有其他数据 (20项) → PostgreSQL
         DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,
         DataClassification.REALTIME_QUOTES: DatabaseTarget.POSTGRESQL,
         DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
@@ -631,14 +629,14 @@ Step 5: 数据持久化
 
 | 数据库 | 状态 | 用途 | 数据分类数 | 数据示例 |
 |--------|-----|------|-----------|---------|
-| **TDengine** | ✅ 活跃 | 高频时序数据 | 5项 | tick_data, minute_kline, order_book_depth |
-| **PostgreSQL** | ✅ 活跃 | 所有其他数据 | 29项 | 日线、指标、参考数据、元数据 |
+| **TDengine** | ✅ 活跃 | 高频时序数据 | 3项 | tick_data, minute_kline, depth_data |
+| **PostgreSQL** | ✅ 活跃 | 所有其他数据 | 20项 | 日线、指标、参考数据、元数据 |
 | MySQL | ❌ 已废弃 | - | 0项 | 已迁移至PostgreSQL |
 | Redis | ❌ 已废弃 | - | 0项 | 配置的db1为空 |
 
-**数据路由分布**（共34项数据分类）:
-- **TDengine** (5项): TICK_DATA, MINUTE_KLINE, ORDER_BOOK_DEPTH, LEVEL2_SNAPSHOT, INDEX_QUOTES
-- **PostgreSQL** (29项): 其他所有数据分类
+**数据路由分布**（共23项数据分类）:
+- **TDengine** (3项): TICK_DATA, MINUTE_KLINE, DEPTH_DATA
+- **PostgreSQL** (20项): 其他所有数据分类
 
 **新配置**（见 `.env` 文件）:
 ```bash
@@ -1080,7 +1078,7 @@ MyStocks系统通过**分层架构**和**配置驱动**的设计理念，实现�
 ### 核心优势
 
 1. **统一接口**: IDataSource接口保证所有数据源的一致性
-2. **智能路由**: 34种数据分类自动路由到最优数据库（TDengine或PostgreSQL）
+2. **智能路由**: 23种数据分类自动路由到最优数据库（TDengine或PostgreSQL）
 3. **故障转移**: DataSourceManager支持多数据源优先级和自动切换
 4. **配置驱动**: YAML配置管理所有表结构，避免手工SQL
 5. **监控完整**: 所有操作记录到监控数据库（PostgreSQL），性能和质量可追溯
@@ -1091,7 +1089,7 @@ MyStocks系统通过**分层架构**和**配置驱动**的设计理念，实现�
 
 | 特性 | TDengine | PostgreSQL |
 |------|---------|------------|
-| **数据分类** | 5项高频时序数据 | 29项其他所有数据 |
+| **数据分类** | 3项高频时序数据 | 20项其他所有数据 |
 | **压缩率** | 20:1（极致压缩） | 5:1（TimescaleDB） |
 | **写入性能** | 百万条/秒 | 十万条/秒 |
 | **查询优化** | 时序范围查询 | 复杂JOIN、聚合 |
