@@ -169,6 +169,7 @@ async def root():
 # 导入 API 路由
 from app.api import (
     data,
+    dashboard,  # Week 3 Dashboard Real Data
     auth,
     system,
     indicators,
@@ -195,6 +196,9 @@ from app.api import (
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
+app.include_router(
+    dashboard.router, prefix="/api/data/dashboard", tags=["dashboard"]
+)  # Week 3 Dashboard Real Data
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])

@@ -120,6 +120,22 @@ export const dataApi = {
   },
   searchStocks(keyword) {
     return request.get('/data/stocks/search', { params: { keyword } })
+  },
+  // Week 3 Dashboard Real Data APIs
+  getDashboardSummary() {
+    return request.get('/data/dashboard/summary')
+  },
+  getDashboardFavorites() {
+    return request.get('/data/dashboard/favorites')
+  },
+  getDashboardStrategyMatches(params) {
+    return request.get('/data/dashboard/strategy-matches', { params })
+  },
+  getDashboardIndustryStocks(params) {
+    return request.get('/data/dashboard/industry-stocks', { params })
+  },
+  getDashboardFundFlow(params) {
+    return request.get('/data/dashboard/fund-flow', { params })
   }
 }
 
