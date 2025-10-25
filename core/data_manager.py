@@ -28,6 +28,37 @@ from core.data_classification import DataClassification, DatabaseTarget
 logger = logging.getLogger(__name__)
 
 
+class _NullMonitoring:
+    """
+    Null监控实现 - 用于禁用监控时的占位
+    实现监控接口但不执行任何操作
+    """
+
+    def log_operation_start(self, *args, **kwargs):
+        """记录操作开始 - 无操作"""
+        return "null_operation_id"
+
+    def log_operation_result(self, *args, **kwargs):
+        """记录操作结果 - 无操作"""
+        return True
+
+    def log_operation(self, *args, **kwargs):
+        """记录操作 - 无操作"""
+        return True
+
+    def record_performance_metric(self, *args, **kwargs):
+        """记录性能指标 - 无操作"""
+        return True
+
+    def record_operation(self, *args, **kwargs):
+        """记录操作性能 - 无操作"""
+        return True
+
+    def log_quality_check(self, *args, **kwargs):
+        """记录质量检查 - 无操作"""
+        return True
+
+
 class DataManager:
     """
     DataManager - 简化的数据管理核心类
@@ -103,21 +134,12 @@ class DataManager:
         Args:
             enable_monitoring: 是否启用监控 (默认False以简化架构)
         """
-        # 延迟导入以避免循环依赖
-        from data_access import TDengineDataAccess, PostgreSQLDataAccess
-
-        # 初始化数据库访问层
-        self._tdengine = TDengineDataAccess()
-        self._postgresql = PostgreSQLDataAccess()
-
-        # 适配器注册表
-        self._adapters: Dict[str, Any] = {}
-
         # 监控开关 (US3简化 - 默认关闭)
         self.enable_monitoring = enable_monitoring
         self._monitoring_db = None
         self._performance_monitor = None
 
+        # 先初始化监控组件（数据访问层需要）
         if enable_monitoring:
             try:
                 from monitoring.monitoring_database import get_monitoring_database
@@ -128,6 +150,22 @@ class DataManager:
             except Exception as e:
                 logger.warning(f"监控组件初始化失败: {e}")
                 self.enable_monitoring = False
+
+        # 如果监控未启用，使用null实现
+        if not self.enable_monitoring or self._monitoring_db is None:
+            null_monitor = _NullMonitoring()
+            self._monitoring_db = null_monitor
+            self._performance_monitor = null_monitor
+
+        # 延迟导入以避免循环依赖
+        from data_access import TDengineDataAccess, PostgreSQLDataAccess
+
+        # 初始化数据库访问层（US3简化版本不需要监控参数）
+        self._tdengine = TDengineDataAccess()
+        self._postgresql = PostgreSQLDataAccess()
+
+        # 适配器注册表
+        self._adapters: Dict[str, Any] = {}
 
         logger.info(
             "DataManager initialized with dual-database architecture (TDengine + PostgreSQL)"
@@ -230,9 +268,13 @@ class DataManager:
 
             # 根据目标数据库选择访问层
             if target_db == DatabaseTarget.TDENGINE:
-                success = self._tdengine.save_data(data, table_name, **kwargs)
+                success = self._tdengine.save_data(
+                    data, classification, table_name, **kwargs
+                )
             else:  # DatabaseTarget.POSTGRESQL
-                success = self._postgresql.save_data(data, table_name, **kwargs)
+                success = self._postgresql.save_data(
+                    data, classification, table_name, **kwargs
+                )
 
             # 记录性能指标
             duration_ms = (time.time() - start_time) * 1000
