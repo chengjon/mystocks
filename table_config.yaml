@@ -1,24 +1,38 @@
-version: '2.0'
+version: '3.0'
 metadata:
-  project: 'MyStocks量化交易系统 - 简化版'
+  project: 'MyStocks量化交易系统 - 双数据库架构'
   created_by: 'ConfigDrivenTableManager'
-  last_updated: '2025-09-22T00:00:00'
-  description: '基于工作数据库的简化配置（Redis + MySQL）'
+  last_updated: '2025-10-25T00:00:00'
+  description: '基于TDengine + PostgreSQL的双数据库架构配置'
 
 # 数据库连接配置
 databases:
+  postgresql:
+    host: '${POSTGRESQL_HOST}'
+    port: '${POSTGRESQL_PORT}'
+    user: '${POSTGRESQL_USER}'
+    password: '${POSTGRESQL_PASSWORD}'
+    database: '${POSTGRESQL_DATABASE}'
+    description: '主数据库 - 所有非时序数据'
+  tdengine:
+    host: '${TDENGINE_HOST}'
+    port: '${TDENGINE_PORT}'
+    user: '${TDENGINE_USER}'
+    password: '${TDENGINE_PASSWORD}'
+    database: '${TDENGINE_DATABASE}'
+    description: '时序数据库 - 高频tick和分钟K线'
   mysql:
     host: '${MYSQL_HOST}'
     port: '${MYSQL_PORT}'
     user: '${MYSQL_USER}'
     password: '${MYSQL_PASSWORD}'
-    description: '元数据与参考数据仓库'
+    description: '已废弃 - 数据已迁移至PostgreSQL'
   redis:
     host: '${REDIS_HOST}'
     port: '${REDIS_PORT}'
     password: '${REDIS_PASSWORD}'
     db: '${REDIS_DB}'
-    description: '实时状态中心'
+    description: '已废弃 - 缓存功能已由LRU内存缓存替代'
 
 # 简化表结构配置（只包含工作正常的数据库）
 tables:
@@ -172,6 +186,350 @@ tables:
       - name: 'idx_system_config_group'
         type: 'INDEX'
         columns: ['config_group']
+
+  # =====================================
+  # 第3类：市场数据（Market Metadata） - PostgreSQL
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'fund_flow'
+    classification: 'market_metadata'
+    description: '资金流向数据'
+    columns:
+      - name: 'id'
+        type: 'SERIAL'
+        primary_key: true
+        comment: 'Auto-incrementing ID'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: 'Trading date'
+      - name: 'industry_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: 'Industry code'
+      - name: 'industry_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: 'Industry name'
+      - name: 'net_inflow'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        nullable: false
+        comment: 'Net capital inflow (亿元)'
+      - name: 'main_net_inflow'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Main force net inflow'
+      - name: 'retail_net_inflow'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Retail net inflow'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Record creation time'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Last update time'
+    indexes:
+      - name: 'idx_fund_flow_date'
+        type: 'INDEX'
+        columns: ['trade_date']
+      - name: 'idx_fund_flow_industry'
+        type: 'INDEX'
+        columns: ['industry_code']
+      - name: 'idx_fund_flow_date_industry'
+        type: 'INDEX'
+        columns: ['trade_date', 'industry_code']
+
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'etf_data'
+    classification: 'market_metadata'
+    description: 'ETF数据'
+    columns:
+      - name: 'id'
+        type: 'SERIAL'
+        primary_key: true
+        comment: 'Auto-incrementing ID'
+      - name: 'etf_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: 'ETF code'
+      - name: 'etf_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: 'ETF name'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: 'Trading date'
+      - name: 'nav'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 4
+        comment: 'Net asset value'
+      - name: 'close_price'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'Closing price'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: 'Trading volume (shares)'
+      - name: 'turnover'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Turnover amount (元)'
+      - name: 'premium_rate'
+        type: 'DECIMAL'
+        precision: 6
+        scale: 2
+        comment: 'Premium/discount rate (%)'
+      - name: 'pe_ratio'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'P/E ratio'
+      - name: 'pb_ratio'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'P/B ratio'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Record creation time'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Last update time'
+    indexes:
+      - name: 'idx_etf_code_date'
+        type: 'INDEX'
+        columns: ['etf_code', 'trade_date']
+      - name: 'idx_etf_date'
+        type: 'INDEX'
+        columns: ['trade_date']
+      - name: 'idx_etf_unique'
+        type: 'UNIQUE'
+        columns: ['etf_code', 'trade_date']
+
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'dragon_tiger'
+    classification: 'market_metadata'
+    description: '龙虎榜数据'
+    columns:
+      - name: 'id'
+        type: 'SERIAL'
+        primary_key: true
+        comment: 'Auto-incrementing ID'
+      - name: 'stock_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: 'Stock code'
+      - name: 'stock_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: 'Stock name'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: 'Trading date'
+      - name: 'reason'
+        type: 'VARCHAR'
+        length: 200
+        comment: 'Reason for being on list'
+      - name: 'close_price'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'Closing price'
+      - name: 'change_pct'
+        type: 'DECIMAL'
+        precision: 6
+        scale: 2
+        comment: 'Price change percentage'
+      - name: 'turnover'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Turnover amount (元)'
+      - name: 'buy_amount_top5'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Top 5 buyers total (元)'
+      - name: 'sell_amount_top5'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Top 5 sellers total (元)'
+      - name: 'net_amount'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Net buy/sell amount'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Record creation time'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Last update time'
+    indexes:
+      - name: 'idx_dragon_code_date'
+        type: 'INDEX'
+        columns: ['stock_code', 'trade_date']
+      - name: 'idx_dragon_date'
+        type: 'INDEX'
+        columns: ['trade_date']
+      - name: 'idx_dragon_net_amount'
+        type: 'INDEX'
+        columns: ['net_amount']
+
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'chip_race'
+    classification: 'market_metadata'
+    description: '竞价抢筹数据'
+    columns:
+      - name: 'id'
+        type: 'SERIAL'
+        primary_key: true
+        comment: 'Auto-incrementing ID'
+      - name: 'stock_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: 'Stock code'
+      - name: 'stock_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: 'Stock name'
+      - name: 'trade_date'
+        type: 'DATE'
+        nullable: false
+        comment: 'Trading date'
+      - name: 'auction_type'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: 'Auction type (开盘/收盘)'
+      - name: 'auction_price'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'Auction price'
+      - name: 'auction_volume'
+        type: 'BIGINT'
+        comment: 'Auction volume (shares)'
+      - name: 'auction_turnover'
+        type: 'DECIMAL'
+        precision: 18
+        scale: 2
+        comment: 'Auction turnover (元)'
+      - name: 'price_change_pct'
+        type: 'DECIMAL'
+        precision: 6
+        scale: 2
+        comment: 'Price change vs previous close'
+      - name: 'turnover_rate'
+        type: 'DECIMAL'
+        precision: 6
+        scale: 2
+        comment: 'Turnover rate (%)'
+      - name: 'intensity_score'
+        type: 'DECIMAL'
+        precision: 10
+        scale: 2
+        comment: 'Bidding intensity score'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Record creation time'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Last update time'
+    indexes:
+      - name: 'idx_chip_code_date'
+        type: 'INDEX'
+        columns: ['stock_code', 'trade_date']
+      - name: 'idx_chip_date_type'
+        type: 'INDEX'
+        columns: ['trade_date', 'auction_type']
+      - name: 'idx_chip_intensity'
+        type: 'INDEX'
+        columns: ['intensity_score']
+
+  - database_type: 'PostgreSQL'
+    database_name: 'mystocks'
+    table_name: 'indicator_configs'
+    classification: 'derived_data'
+    description: '指标配置数据'
+    columns:
+      - name: 'id'
+        type: 'SERIAL'
+        primary_key: true
+        comment: 'Auto-incrementing ID'
+      - name: 'user_id'
+        type: 'INTEGER'
+        nullable: false
+        comment: 'User who created config'
+      - name: 'indicator_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: 'Indicator name (e.g., MACD, RSI)'
+      - name: 'display_name'
+        type: 'VARCHAR'
+        length: 200
+        comment: 'Custom display name'
+      - name: 'parameters'
+        type: 'JSONB'
+        nullable: false
+        comment: 'Indicator parameters as JSON'
+      - name: 'description'
+        type: 'TEXT'
+        comment: 'User notes'
+      - name: 'is_public'
+        type: 'BOOLEAN'
+        default: false
+        comment: 'Whether shared with other users'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Record creation time'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: 'Last update time'
+    indexes:
+      - name: 'idx_indicator_user'
+        type: 'INDEX'
+        columns: ['user_id']
+      - name: 'idx_indicator_name'
+        type: 'INDEX'
+        columns: ['indicator_name']
+      - name: 'idx_indicator_public'
+        type: 'INDEX'
+        columns: ['is_public']
 
 # 系统维护任务配置
 maintenance:

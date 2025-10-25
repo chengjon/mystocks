@@ -26,35 +26,58 @@ request.interceptors.request.use(
   }
 )
 
-// 响应拦截器
+// 响应拦截器 - Week 3: 用户友好错误处理
 request.interceptors.response.use(
   response => {
     return response.data
   },
   error => {
-    if (error.response) {
+    // 优先使用后端返回的用户友好错误消息
+    if (error.response?.data?.error) {
+      ElMessage.error(error.response.data.error)
+
+      // 特殊处理: 认证错误需要跳转到登录页
+      if (error.response.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        router.push('/login')
+      }
+    } else if (error.response) {
+      // 如果后端没有返回友好消息，使用默认消息
       switch (error.response.status) {
         case 401:
-          ElMessage.error('未授权,请重新登录')
+          ElMessage.error('登录已过期，请重新登录')
           localStorage.removeItem('token')
           localStorage.removeItem('user')
           router.push('/login')
           break
         case 403:
-          ElMessage.error('权限不足')
+          ElMessage.error('没有权限执行此操作')
           break
         case 404:
           ElMessage.error('请求的资源不存在')
           break
         case 500:
-          ElMessage.error('服务器错误')
+          ElMessage.error('服务器错误，请稍后重试')
+          break
+        case 503:
+          ElMessage.error('服务暂时不可用，请稍后重试')
           break
         default:
-          ElMessage.error(error.response.data?.detail || '请求失败')
+          // 尝试从响应中提取错误信息
+          const errorMsg = error.response.data?.message ||
+                          error.response.data?.detail ||
+                          '请求失败，请稍后重试'
+          ElMessage.error(errorMsg)
       }
+    } else if (error.request) {
+      // 请求已发送但没有收到响应
+      ElMessage.error('网络错误，请检查连接后重试')
     } else {
-      ElMessage.error('网络错误')
+      // 请求配置出错
+      ElMessage.error('请求错误: ' + (error.message || '未知错误'))
     }
+
     return Promise.reject(error)
   }
 )
