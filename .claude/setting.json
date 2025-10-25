@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "cr_83a06ba00d2731cbda63e8b77fc00a52509a5c8305340a336f6c96364e76e801",
+    "ANTHROPIC_BASE_URL": "https://claude-code.club/api"
+  }
+}

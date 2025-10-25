@@ -1,0 +1,372 @@
+# 自动化调度配置 (Automation Configuration)
+# MyStocks量化交易系统自动化任务配置
+
+version: "1.0.0"
+updated: "2025-10-18"
+
+# =============================================================================
+# 通知配置 (Notification Configuration)
+# =============================================================================
+notification:
+  # 启用的通知渠道
+  channels:
+    - log          # 日志通知（总是启用）
+    - console      # 控制台通知（开发调试）
+    # - email      # 邮件通知（需要配置SMTP）
+    # - webhook    # Webhook通知（需要配置URL）
+
+  # 邮件配置（使用环境变量）
+  email:
+    smtp_host: "${SMTP_HOST}"              # SMTP服务器
+    smtp_port: 587                         # SMTP端口
+    smtp_user: "${SMTP_USER}"              # SMTP用户名
+    smtp_password: "${SMTP_PASSWORD}"      # SMTP密码
+    email_from: "${EMAIL_FROM}"            # 发件人
+    email_to:
+      - "${EMAIL_TO_1}"                    # 收件人1
+      # - "${EMAIL_TO_2}"                  # 收件人2
+    html_email: true                       # 使用HTML格式
+
+  # Webhook配置
+  webhook:
+    url: "${WEBHOOK_URL}"                  # Webhook URL
+    headers:
+      Content-Type: "application/json"
+      # Authorization: "Bearer ${WEBHOOK_TOKEN}"
+
+  # 频率限制（秒）
+  rate_limit: 300  # 5分钟内相同通知只发送一次
+
+# =============================================================================
+# 任务调度配置 (Task Scheduling Configuration)
+# =============================================================================
+scheduler:
+  # 调度器设置
+  timezone: "Asia/Shanghai"                # 时区
+  max_instances: 3                         # 最大并发任务数
+  misfire_grace_time: 300                  # 错过触发时间的宽限期（秒）
+
+  # 任务默认配置
+  defaults:
+    max_retries: 3                         # 默认最大重试次数
+    retry_delay: 60                        # 默认重试延迟（秒）
+    timeout: 3600                          # 默认超时时间（秒）
+    notify_on_success: false               # 默认成功不通知
+    notify_on_failure: true                # 默认失败通知
+
+# =============================================================================
+# 预定义任务 (Predefined Tasks)
+# =============================================================================
+tasks:
+  # ---------------------------------------------------------------------------
+  # 1. 每日数据更新任务
+  # ---------------------------------------------------------------------------
+  - name: daily_data_update_sh
+    description: "上海市场每日数据更新"
+    enabled: true
+    priority: high
+
+    # 任务函数
+    function: "PredefinedTasks.daily_data_update"
+
+    # 触发器配置（每天16:00收盘后执行）
+    trigger:
+      type: cron
+      hour: 16
+      minute: 0
+      day_of_week: "0-4"  # 周一到周五
+
+    # 任务参数
+    kwargs:
+      market: "sh"
+      lookback_days: 3
+
+    # 重试配置
+    max_retries: 3
+    retry_delay: 120
+    timeout: 1800
+
+    # 通知配置
+    notify_on_success: true
+    notify_on_failure: true
+
+    # 后续任务（数据更新完成后执行）
+    next_tasks:
+      - daily_report_generation
+
+  - name: daily_data_update_sz
+    description: "深圳市场每日数据更新"
+    enabled: true
+    priority: high
+
+    function: "PredefinedTasks.daily_data_update"
+
+    trigger:
+      type: cron
+      hour: 16
+      minute: 10
+      day_of_week: "0-4"
+
+    kwargs:
+      market: "sz"
+      lookback_days: 3
+
+    max_retries: 3
+    retry_delay: 120
+    timeout: 1800
+
+    notify_on_success: true
+    notify_on_failure: true
+
+  # ---------------------------------------------------------------------------
+  # 2. 策略执行任务
+  # ---------------------------------------------------------------------------
+  - name: momentum_strategy_execution
+    description: "动量策略执行（每天开盘后）"
+    enabled: true
+    priority: normal
+
+    function: "PredefinedTasks.execute_strategy"
+
+    # 触发器：每天9:35开盘后5分钟执行
+    trigger:
+      type: cron
+      hour: 9
+      minute: 35
+      day_of_week: "0-4"
+
+    kwargs:
+      strategy_name: "momentum"
+      universe: []  # 从配置或数据库加载股票池
+
+    # 依赖任务（确保数据已更新）
+    depends_on:
+      - daily_data_update_sh
+
+    max_retries: 2
+    timeout: 600
+
+    notify_on_success: false
+    notify_on_failure: true
+
+  - name: mean_reversion_strategy_execution
+    description: "均值回归策略执行"
+    enabled: true
+    priority: normal
+
+    function: "PredefinedTasks.execute_strategy"
+
+    trigger:
+      type: cron
+      hour: 9
+      minute: 40
+      day_of_week: "0-4"
+
+    kwargs:
+      strategy_name: "mean_reversion"
+      universe: []
+
+    depends_on:
+      - daily_data_update_sh
+
+    max_retries: 2
+    timeout: 600
+
+    notify_on_success: false
+    notify_on_failure: true
+
+  # ---------------------------------------------------------------------------
+  # 3. 股票筛选任务
+  # ---------------------------------------------------------------------------
+  - name: stock_screening
+    description: "股票筛选（每周末）"
+    enabled: true
+    priority: low
+
+    function: "PredefinedTasks.screen_stocks"
+
+    # 触发器：每周六早上执行
+    trigger:
+      type: cron
+      day_of_week: 5  # 周六
+      hour: 9
+      minute: 0
+
+    kwargs:
+      screener_config:
+        min_price: 5.0
+        max_price: 100.0
+        min_volume: 1000000
+        min_market_cap: 1000000000
+
+    max_retries: 2
+    timeout: 1800
+
+    notify_on_success: true
+    notify_on_failure: true
+
+  # ---------------------------------------------------------------------------
+  # 4. 报告生成任务
+  # ---------------------------------------------------------------------------
+  - name: daily_report_generation
+    description: "每日报告生成"
+    enabled: true
+    priority: low
+
+    function: "PredefinedTasks.generate_daily_report"
+
+    # 触发器：每天17:00收盘后1小时
+    trigger:
+      type: cron
+      hour: 17
+      minute: 0
+      day_of_week: "0-4"
+
+    kwargs: {}
+
+    max_retries: 1
+    timeout: 300
+
+    notify_on_success: true
+    notify_on_failure: true
+
+  # ---------------------------------------------------------------------------
+  # 5. 系统维护任务
+  # ---------------------------------------------------------------------------
+  - name: database_maintenance
+    description: "数据库维护（每周末）"
+    enabled: true
+    priority: low
+
+    function: "PredefinedTasks.database_maintenance"
+
+    # 触发器：每周日凌晨2:00
+    trigger:
+      type: cron
+      day_of_week: 6  # 周日
+      hour: 2
+      minute: 0
+
+    kwargs: {}
+
+    max_retries: 1
+    timeout: 3600
+
+    notify_on_success: true
+    notify_on_failure: true
+
+  - name: system_health_check
+    description: "系统健康检查（每30分钟）"
+    enabled: true
+    priority: low
+
+    function: "PredefinedTasks.health_check"
+
+    # 触发器：间隔执行
+    trigger:
+      type: interval
+      minutes: 30
+
+    kwargs:
+      services:
+        - database
+        - data_source
+        - strategy
+
+    max_retries: 0  # 健康检查不重试
+    timeout: 120
+
+    notify_on_success: false
+    notify_on_failure: true
+
+# =============================================================================
+# 监控和日志配置 (Monitoring and Logging)
+# =============================================================================
+monitoring:
+  # 是否启用监控数据库
+  enabled: true
+
+  # 监控数据保留期（天）
+  retention_days: 90
+
+  # 性能阈值
+  thresholds:
+    slow_task_seconds: 300    # 慢任务阈值（秒）
+    critical_task_seconds: 600  # 严重慢任务阈值
+
+  # 日志配置
+  logging:
+    level: INFO
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    file: "logs/automation.log"
+    max_bytes: 10485760  # 10MB
+    backup_count: 5
+
+# =============================================================================
+# 数据源配置 (Data Source Configuration)
+# =============================================================================
+data_sources:
+  # TDX数据源
+  tdx:
+    enabled: true
+    data_path: "${TDX_DATA_PATH}"
+    markets:
+      - sh
+      - sz
+    parallel_import: true
+    batch_size: 100
+
+  # AkShare数据源
+  akshare:
+    enabled: false
+    rate_limit: 2  # 每秒请求数限制
+
+# =============================================================================
+# 策略配置 (Strategy Configuration)
+# =============================================================================
+strategies:
+  # 股票池
+  universes:
+    sh_main_board:
+      market: sh
+      prefix: "600,601,603,688"  # 主板+科创板
+
+    sz_main_board:
+      market: sz
+      prefix: "000,001,002,300"  # 主板+创业板
+
+    custom:
+      symbols:
+        - sh600000  # 浦发银行
+        - sh600016  # 民生银行
+        - sh600036  # 招商银行
+
+  # 默认策略参数
+  defaults:
+    initial_capital: 1000000
+    commission: 0.0003
+    slippage: 0.0001
+    stamp_duty: 0.001
+
+# =============================================================================
+# 环境变量说明 (Environment Variables)
+# =============================================================================
+#
+# 需要在 .env 文件中配置以下环境变量:
+#
+# # TDX数据路径
+# TDX_DATA_PATH=/path/to/tdx/vipdoc
+#
+# # 邮件配置
+# SMTP_HOST=smtp.example.com
+# SMTP_USER=your_email@example.com
+# SMTP_PASSWORD=your_password
+# EMAIL_FROM=mystocks@example.com
+# EMAIL_TO_1=recipient1@example.com
+# EMAIL_TO_2=recipient2@example.com
+#
+# # Webhook配置
+# WEBHOOK_URL=https://your-webhook-url.com/notify
+# WEBHOOK_TOKEN=your_token
+#
+# =============================================================================
