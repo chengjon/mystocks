@@ -68,20 +68,20 @@ feature_branch: "002-arch-optimization"
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] 更新 CLAUDE.md 数据库部分 - 将 "Week 3: simplified to 1 PostgreSQL database" 修正为 "Week 3: simplified to 2 databases (TDengine + PostgreSQL)"，移除所有MySQL和Redis提及
-- [ ] T012 [P] [US1] 更新 DATASOURCE_AND_DATABASE_ARCHITECTURE.md - 修改所有架构图显示2数据库和3层架构，更新数据流图
-- [ ] T013 [P] [US1] 更新 README.md 系统架构概览 - 更新"Database Architecture"章节描述2数据库策略
-- [ ] T014 [P] [US1] 更新 .env.example 配置变量 - 移除 `MYSQL_*` 和 `REDIS_*` 变量，仅保留 `TDENGINE_*` 和 `POSTGRESQL_*`
-- [ ] T015 [P] [US1] 更新部署文档 - 在 `docs/deployment/` 中更新安装说明仅包含TDengine和PostgreSQL设置步骤
-- [ ] T016 [US1] 验证文档一致性 - 执行文档审查checklist确保10个随机抽样文档声明与代码100%匹配
+- [x] T011 [P] [US1] 更新 CLAUDE.md 数据库部分 - 将 "Week 3: simplified to 1 PostgreSQL database" 修正为 "Week 3: simplified to 2 databases (TDengine + PostgreSQL)"，移除所有MySQL和Redis提及 (✅ 2025-10-25)
+- [x] T012 [P] [US1] 更新 DATASOURCE_AND_DATABASE_ARCHITECTURE.md - 修改所有架构图显示2数据库和3层架构，更新数据流图 (✅ 2025-10-25)
+- [x] T013 [P] [US1] 更新 README.md 系统架构概览 - 更新"Database Architecture"章节描述2数据库策略 (✅ 2025-10-25)
+- [x] T014 [P] [US1] 更新 .env.example 配置变量 - 移除 `MYSQL_*` 和 `REDIS_*` 变量，仅保留 `TDENGINE_*` 和 `POSTGRESQL_*` (✅ 2025-10-25)
+- [x] T015 [P] [US1] 更新部署文档 - 在 `docs/deployment/` 中更新安装说明仅包含TDengine和PostgreSQL设置步骤 (✅ 2025-10-25)
+- [x] T016 [US1] 验证文档一致性 - 执行文档审查checklist确保10个随机抽样文档声明与代码100%匹配 (✅ 2025-10-25 - 10/10文档通过)
 
 **Web Integration Tasks (US1)**:
 
-- [ ] T017 [US1] 创建系统架构可视化页面 - 在 `web/frontend/src/views/system/Architecture.vue` 创建架构图展示组件
-- [ ] T018 [US1] 添加架构文档API端点 - 在 `web/backend/app/api/system.py` 添加 `GET /api/system/architecture` 返回架构信息
-- [ ] T019 [US1] 更新系统菜单 - 在 `web/frontend/src/router/index.js` 添加"系统架构"作为"系统管理"的2级菜单
+- [x] T017 [US1] 创建系统架构可视化页面 - 在 `web/frontend/src/views/system/Architecture.vue` 创建架构图展示组件 (✅ 2025-10-25 - 已存在)
+- [x] T018 [US1] 添加架构文档API端点 - 在 `web/backend/app/api/system.py` 添加 `GET /api/system/architecture` 返回架构信息 (✅ 2025-10-25 - 已存在)
+- [x] T019 [US1] 更新系统菜单 - 在 `web/frontend/src/router/index.js` 添加"系统架构"作为"系统管理"的2级菜单 (✅ 2025-10-25 - 已存在)
 
-**Checkpoint**: US1完成 - 文档与代码100%一致，部署说明可用
+**Checkpoint**: ✅ US1完成 - 文档与代码100%一致，部署说明可用 (2025-10-25)
 
 ---
 
