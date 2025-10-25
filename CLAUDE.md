@@ -2,24 +2,50 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Note**: This file works in conjunction with the project constitution (`.specify/memory/constitution.md`) and the highest guidance document (`项目开发规范与指导文档.md`) to ensure consistent development practices.
+
+## ⚡ Week 3 Update (2025-10-19): Database Simplification
+
+**Major Change**: System simplified from 4 databases to 2 (TDengine + PostgreSQL)
+
+**Migration Completed**:
+- ✅ MySQL data migrated to PostgreSQL (18 tables, 299 rows)
+- ✅ Redis removed (configured db1 was empty)
+- ✅ Architecture complexity reduced by 50%
+- ✅ **TDengine retained**: Specialized for high-frequency time-series market data
+- ✅ **PostgreSQL**: Handles all other data types with TimescaleDB extension
+
+**New Configuration**: See `.env` for 2-database setup (TDengine + PostgreSQL).
+
+**Philosophy**: Right Tool for Right Job, Simplicity > Unnecessary Complexity
+
+---
+
 ## Project Overview
 
-MyStocks is a professional quantitative trading data management system that implements a scientific 5-tier data classification framework with intelligent routing strategies for multi-database coordination. The system is built on adapter and factory patterns to provide unified data access layers with configuration-driven automation.
+MyStocks is a professional quantitative trading data management system that uses a **dual-database architecture** optimized for different data characteristics. The system is built on adapter and factory patterns to provide unified data access layers with configuration-driven automation.
+
+**Current Architecture** (Post-Week 3):
+- **TDengine**: High-frequency time-series market data (tick/minute data) with extreme compression
+- **PostgreSQL + TimescaleDB**: All other data types (daily bars, reference data, derived data, metadata)
+- **Optimized Operations**: Right database for right workload, reduced unnecessary complexity
 
 ## Common Development Commands
 
 ### Environment Setup
 ```bash
-# Install dependencies
-pip install pandas numpy pyyaml pymysql psycopg2-binary redis taospy akshare
+# Install dependencies (dual-database setup)
+pip install pandas numpy pyyaml psycopg2-binary taospy akshare
 
-# Create .env file with database configurations
-# Required environment variables:
-# - MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_PORT, MYSQL_DATABASE
+# Create .env file with database configuration
+# Required environment variables for 2-database architecture:
+# TDengine (high-frequency time-series data):
+# - TDENGINE_HOST, TDENGINE_PORT, TDENGINE_USER, TDENGINE_PASSWORD, TDENGINE_DATABASE
+# PostgreSQL (all other data):
 # - POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT, POSTGRESQL_DATABASE
-# - TDENGINE_HOST, TDENGINE_USER, TDENGINE_PASSWORD, TDENGINE_PORT, TDENGINE_DATABASE
-# - REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_DB
-# - MONITOR_DB_URL (for monitoring database)
+# - MONITOR_DB_URL (uses PostgreSQL for monitoring database)
+
+# Note: MySQL (pymysql) and Redis removed after Week 3 simplification
 ```
 
 ### System Initialization and Management
@@ -36,9 +62,9 @@ python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableMan
 # Run realtime market data saver
 python run_realtime_market_saver.py
 
-# Check database table status
-python check_mysql_tables.py
-python check_tdengine_tables.py
+# Check database connections (TDengine + PostgreSQL)
+python -c "import taos; taos.connect(host='192.168.123.104', port=6030); print('TDengine OK')"
+python -c "import psycopg2; print('PostgreSQL connection OK')"
 ```
 
 ### Testing
@@ -75,16 +101,19 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 
 ### Core Design Principles
 
-1. **5-Tier Data Classification System**: Scientific categorization based on data characteristics and access patterns
-   - **Market Data** (时序数据): High-frequency tick/minute data → TDengine
-   - **Reference Data** (参考数据): Relatively static descriptive data → MySQL/MariaDB
-   - **Derived Data** (衍生数据): Computed analytical results → PostgreSQL+TimescaleDB
-   - **Transaction Data** (交易数据): Hot/cold separation strategy → Redis (hot) + PostgreSQL (cold)
-   - **Meta Data** (元数据): System configuration and metadata → MySQL/MariaDB
+1. **Dual-Database Data Storage** (Week 3+): Right database for right workload
+   - **High-Frequency Market Data** (高频时序数据): Tick/minute data → **TDengine** (extreme compression, ultra-high write performance)
+   - **Daily Market Data** (日线数据): Daily bars, historical data → **PostgreSQL TimescaleDB** hypertables
+   - **Reference Data** (参考数据): Relatively static descriptive data → **PostgreSQL** standard tables
+   - **Derived Data** (衍生数据): Computed analytical results → **PostgreSQL** standard tables
+   - **Transaction Data** (交易数据): Orders, positions, portfolios → **PostgreSQL** standard tables
+   - **Meta Data** (元数据): System configuration and metadata → **PostgreSQL** standard tables
 
-2. **Intelligent Auto-Routing**: Data automatically routed to optimal database based on classification
-   - `DataStorageStrategy.get_target_database()` determines best database for each data type
-   - `DataClassification` enum defines all supported data categories
+2. **Optimized Architecture** (Post-Week 3): 2-database strategy balances performance and simplicity
+   - **TDengine database**: `market_data` (超表: tick_data, minute_data)
+   - **PostgreSQL database**: `mystocks` (所有其他表 + TimescaleDB混合表)
+   - Unified access layer abstracts database differences
+   - Monitoring database in PostgreSQL tracks all operations
 
 3. **Configuration-Driven Management**: All table structures managed through YAML configuration
    - `table_config.yaml` defines complete table schemas
@@ -99,8 +128,8 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 
 #### Core Management Layer (`core.py`)
 - `DataClassification`: Enum defining 5-tier data classification
-- `DatabaseTarget`: Supported database types (TDengine, PostgreSQL, MySQL, Redis)
-- `DataStorageStrategy`: Auto-routing logic mapping data types to databases
+- `DatabaseTarget`: Supported database types (**TDengine**, **PostgreSQL**)
+- `DataStorageStrategy`: Auto-routing logic mapping data types to optimal database
 - `ConfigDrivenTableManager`: YAML-driven table management
 
 #### Unified Access Layer (`unified_manager.py`)
@@ -110,9 +139,7 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 
 #### Database Access Layer (`data_access.py`)
 - `TDengineDataAccess`: High-frequency time-series data (tick, minute bars)
-- `PostgreSQLDataAccess`: Historical analysis data (daily bars, indicators)
-- `MySQLDataAccess`: Reference and metadata (symbols, calendars, config)
-- `RedisDataAccess`: Real-time caching and hot data
+- `PostgreSQLDataAccess`: All other data (daily bars, indicators, reference data, metadata)
 
 #### Data Source Adapters (`adapters/`)
 - Unified interface `IDataSource` for all external data providers
@@ -121,8 +148,8 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 - `FinancialDataSource`: Financial statements and fundamental data
 
 #### Database Infrastructure (`db_manager/`)
-- `DatabaseTableManager`: Multi-database connection and table management
-- Supports TDengine (WebSocket/REST), PostgreSQL (TimescaleDB), MySQL, Redis
+- `DatabaseTableManager`: Dual-database connection and table management
+- Supports **TDengine** (WebSocket/Native) and **PostgreSQL** (TimescaleDB extension)
 - Environment variable driven configuration for security
 
 #### Monitoring and Quality (`monitoring.py`)
@@ -141,10 +168,16 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 
 ### Database Specialization Strategy
 
-- **TDengine**: Extreme compression (20:1 ratio), ultra-high write performance for market data
-- **PostgreSQL+TimescaleDB**: Complex time-series queries, automatic partitioning
-- **MySQL/MariaDB**: ACID compliance for reference data, complex JOINs
-- **Redis**: Sub-millisecond access for real-time positions and hot data
+- **TDengine**: Extreme compression (20:1 ratio), ultra-high write performance for high-frequency market data (tick/minute)
+  - Native time-series database optimized for IoT and financial data
+  - Automatic data retention policies
+  - Superior performance for time-range queries on tick data
+
+- **PostgreSQL + TimescaleDB**: Robust relational database with time-series optimization
+  - ACID compliance for all transactional data
+  - Complex JOIN operations on reference and derived data
+  - TimescaleDB hypertables for daily market data
+  - Full-text search and advanced indexing
 
 ## Important Implementation Notes
 
@@ -168,9 +201,10 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 - Individual component tests available in `test_*.py` files
 - Database validation available via `check_*_tables.py` scripts
 
-### Multi-Database Support
-- System designed for heterogeneous database environments
-- Each database type optimized for specific data characteristics
-- Seamless failover and connection management built-in
+### Dual-Database Support
+- **TDengine** for high-frequency time-series data (tick, minute bars)
+- **PostgreSQL** for all other data types (daily bars, reference, metadata)
+- Unified access layer abstracts database differences
+- Seamless connection management and automatic routing
 
-This architecture enables efficient handling of quantitative trading data with automatic optimization, comprehensive monitoring, and simplified management through configuration-driven automation.
+This architecture enables efficient handling of quantitative trading data by using the right database for each workload, with comprehensive monitoring and configuration-driven automation.

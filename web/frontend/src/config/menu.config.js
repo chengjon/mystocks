@@ -182,6 +182,13 @@ const menuConfig = [
     roles: ['admin'],
     children: [
       {
+        id: 'system-architecture',
+        title: '系统架构',
+        path: '/system/architecture',
+        icon: 'Grid',
+        disabled: false
+      },
+      {
         id: 'system-monitoring',
         title: '系统监控',
         path: '/system/monitoring',
