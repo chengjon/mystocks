@@ -30,7 +30,7 @@ from core.batch_failure_strategy import (
     BatchFailureHandler,
     BatchOperationResult,
 )
-from data_access import PostgreSQLDataAccess
+from data_access import TDengineDataAccess, PostgreSQLDataAccess
 from utils.failure_recovery_queue import FailureRecoveryQueue
 
 # 监控组件 (US3)
@@ -54,7 +54,7 @@ class MyStocksUnifiedManager:
         ```python
         manager = MyStocksUnifiedManager()
 
-        # 保存Tick数据 → 自动路由到PostgreSQL
+        # 保存Tick数据 → 自动路由到TDengine
         manager.save_data_by_classification(
             DataClassification.TICK_DATA,
             tick_df,
@@ -77,7 +77,8 @@ class MyStocksUnifiedManager:
         Args:
             enable_monitoring: 是否启用监控功能 (默认True)
         """
-        # 初始化数据访问层 (Week 3简化后 - PostgreSQL only)
+        # 初始化2个数据访问层 (Week 3简化后)
+        self.tdengine = TDengineDataAccess()
         self.postgresql = PostgreSQLDataAccess()
 
         # 初始化故障恢复队列
@@ -107,7 +108,7 @@ class MyStocksUnifiedManager:
 
         print("✅ MyStocksUnifiedManager 初始化成功")
         print("   - 支持34个数据分类的自动路由")
-        print("   - PostgreSQL-only架构 (Week 3简化: MySQL/Redis/TDengine已移除)")
+        print("   - 2种数据库连接就绪 (TDengine + PostgreSQL)")
         print("   - 故障恢复队列已启用")
 
     def save_data_by_classification(
@@ -172,15 +173,22 @@ class MyStocksUnifiedManager:
 
             print(f"📍 路由: {classification.value} → {target_db.value.upper()}")
 
-            # Week 3简化后仅支持PostgreSQL
-            if target_db == DatabaseTarget.POSTGRESQL:
+            # 根据目标数据库选择访问层
+            if target_db == DatabaseTarget.TDENGINE:
+                rows_affected = self.tdengine.insert_dataframe(
+                    table_name, data, **kwargs
+                )
+                print(f"✅ TDengine保存成功: {rows_affected}行")
+
+            elif target_db == DatabaseTarget.POSTGRESQL:
                 rows_affected = self.postgresql.insert_dataframe(table_name, data)
                 print(f"✅ PostgreSQL保存成功: {rows_affected}行")
+
             else:
-                # Week 3简化后仅支持PostgreSQL
+                # Week 3简化后仅支持TDengine和PostgreSQL
                 raise ValueError(
                     f"不支持的数据库类型: {target_db}. "
-                    f"系统已简化为PostgreSQL-only架构 (TDengine/MySQL/Redis已移除)"
+                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
                 )
 
             operation_success = True
@@ -295,8 +303,21 @@ class MyStocksUnifiedManager:
             # 构建where子句
             where = self._build_where_clause(filters) if filters else None
 
-            # Week 3简化后仅支持PostgreSQL
-            if target_db == DatabaseTarget.POSTGRESQL:
+            # 根据目标数据库查询
+            if target_db == DatabaseTarget.TDENGINE:
+                # TDengine时间范围查询
+                if "start_time" in kwargs and "end_time" in kwargs:
+                    df = self.tdengine.query_by_time_range(
+                        table_name,
+                        kwargs["start_time"],
+                        kwargs["end_time"],
+                        columns=columns,
+                        limit=limit,
+                    )
+                else:
+                    df = self.tdengine.query_latest(table_name, limit or 100)
+
+            elif target_db == DatabaseTarget.POSTGRESQL:
                 # PostgreSQL查询
                 if "start_time" in kwargs and "end_time" in kwargs:
                     time_column = kwargs.get("time_column", "time")
@@ -310,11 +331,12 @@ class MyStocksUnifiedManager:
                     )
                 else:
                     df = self.postgresql.query(table_name, columns, where, limit=limit)
+
             else:
-                # Week 3简化后仅支持PostgreSQL
+                # Week 3简化后仅支持TDengine和PostgreSQL
                 raise ValueError(
                     f"不支持的数据库类型: {target_db}. "
-                    f"系统已简化为PostgreSQL-only架构 (TDengine/MySQL/Redis已移除)"
+                    f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
                 )
 
             print(f"✅ 查询成功: {len(df)}行")
@@ -403,7 +425,7 @@ class MyStocksUnifiedManager:
 
         Example:
             info = manager.get_routing_info(DataClassification.TICK_DATA)
-            # {'target_db': 'postgresql', 'retention_days': 30, 'ttl': None}
+            # {'target_db': 'tdengine', 'retention_days': 30, 'ttl': None}
         """
         target_db = DataStorageStrategy.get_target_database(classification)
         retention = DataStorageRules.get_retention_days(classification)
@@ -474,13 +496,15 @@ class MyStocksUnifiedManager:
         # 定义操作函数
         def operation(batch: pd.DataFrame) -> bool:
             try:
-                # Week 3简化后仅支持PostgreSQL
-                if target_db == DatabaseTarget.POSTGRESQL:
+                if target_db == DatabaseTarget.TDENGINE:
+                    self.tdengine.insert_dataframe(table_name, batch, **kwargs)
+                elif target_db == DatabaseTarget.POSTGRESQL:
                     self.postgresql.insert_dataframe(table_name, batch)
                 else:
+                    # Week 3简化后仅支持TDengine和PostgreSQL
                     raise ValueError(
                         f"不支持的数据库类型: {target_db}. "
-                        f"系统已简化为PostgreSQL-only架构 (TDengine/MySQL/Redis已移除)"
+                        f"MySQL和Redis已在Week 3架构简化中移除，请使用PostgreSQL"
                     )
                 return True
             except Exception as e:
@@ -611,10 +635,11 @@ class MyStocksUnifiedManager:
             return {"error": str(e)}
 
     def close_all_connections(self):
-        """关闭所有数据库连接 (Week 3简化后 - PostgreSQL only)"""
+        """关闭所有数据库连接 (Week 3简化后 - 仅TDengine和PostgreSQL)"""
         print("\n正在关闭所有数据库连接...")
+        self.tdengine.close()
         self.postgresql.close_all()
-        print("✅ 所有连接已关闭 (PostgreSQL-only)")
+        print("✅ 所有连接已关闭 (2个数据库)")
 
 
 if __name__ == "__main__":
