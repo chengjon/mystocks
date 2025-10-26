@@ -1,0 +1,117 @@
+{
+  "version": "1.0",
+  "description": "问财筛选默认查询预设 - Default query presets for Wencai stock filter",
+  "queries": [
+    {
+      "id": "qs_1",
+      "name": "高市值蓝筹股",
+      "description": "市值超过1000亿，流动性好的蓝筹股",
+      "conditions": {
+        "market_cap_min": 100000000000,
+        "turnover_rate_min": 0.5,
+        "order_by": "market_cap",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_2",
+      "name": "连续上涨股",
+      "description": "连续3天上涨，量价齐升",
+      "conditions": {
+        "consecutive_up_days": 3,
+        "volume_ratio_min": 1.2,
+        "order_by": "change_percent",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_3",
+      "name": "低估值股票",
+      "description": "市盈率低于15，市净率低于2",
+      "conditions": {
+        "pe_max": 15,
+        "pb_max": 2,
+        "market_cap_min": 10000000000,
+        "order_by": "pe",
+        "order_direction": "asc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_4",
+      "name": "科技成长股",
+      "description": "科技行业，营收增长超过20%",
+      "conditions": {
+        "industry": "软件服务,电子信息,半导体",
+        "revenue_growth_min": 0.2,
+        "order_by": "revenue_growth",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_5",
+      "name": "高股息率股票",
+      "description": "股息率超过3%，稳定分红",
+      "conditions": {
+        "dividend_yield_min": 0.03,
+        "consecutive_dividend_years_min": 3,
+        "order_by": "dividend_yield",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_6",
+      "name": "突破新高股",
+      "description": "股价创60日新高，趋势向上",
+      "conditions": {
+        "price_position": "60d_high",
+        "volume_ratio_min": 1.5,
+        "order_by": "change_percent",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_7",
+      "name": "医药健康股",
+      "description": "医药生物行业，市值超过100亿",
+      "conditions": {
+        "industry": "医药生物,医疗器械,生物制品",
+        "market_cap_min": 10000000000,
+        "order_by": "market_cap",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_8",
+      "name": "超跌反弹股",
+      "description": "近期跌幅超过20%，出现反弹信号",
+      "conditions": {
+        "decline_percent_20d_min": -0.2,
+        "change_percent_min": 2,
+        "volume_ratio_min": 1.8,
+        "order_by": "change_percent",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    },
+    {
+      "id": "qs_9",
+      "name": "高ROE优质股",
+      "description": "ROE超过15%，盈利能力强",
+      "conditions": {
+        "roe_min": 0.15,
+        "net_profit_growth_min": 0.1,
+        "market_cap_min": 10000000000,
+        "order_by": "roe",
+        "order_direction": "desc",
+        "limit": 50
+      }
+    }
+  ]
+}

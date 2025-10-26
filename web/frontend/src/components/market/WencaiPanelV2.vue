@@ -37,6 +37,43 @@
       </div>
     </el-card>
 
+    <!-- 默认查询预设卡片 (FR-021) -->
+    <el-card class="preset-queries-card">
+      <template #header>
+        <div class="preset-header">
+          <span>默认查询预设</span>
+          <el-tag size="small" type="info">快速访问常用查询</el-tag>
+        </div>
+      </template>
+
+      <el-row :gutter="16">
+        <el-col
+          v-for="query in presetQueries"
+          :key="query.id"
+          :span="8"
+          class="query-col"
+        >
+          <el-card
+            shadow="hover"
+            class="query-card"
+            @click="executePresetQuery(query)"
+            :loading="loadingPreset === query.id"
+          >
+            <div class="query-card-content">
+              <h4 class="query-name">{{ query.name }}</h4>
+              <p class="query-description">{{ query.description }}</p>
+              <div class="query-action">
+                <el-button type="primary" size="small" link>
+                  <el-icon><Search /></el-icon>
+                  执行查询
+                </el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-card>
+
     <!-- 主体：左侧树形 + 右侧结果 -->
     <div class="main-content">
       <!-- 左侧：查询树形结构 -->
@@ -277,10 +314,15 @@ import {
   Document,
   Download
 } from '@element-plus/icons-vue'
+import presetQueriesConfig from '@/config/wencai-queries.json'
 
 // ============================================================================
 // 数据状态
 // ============================================================================
+
+// 预设查询 (FR-021)
+const presetQueries = ref(presetQueriesConfig.queries || [])
+const loadingPreset = ref(null)
 
 // 查询相关
 const queries = ref([])
@@ -427,6 +469,78 @@ const executeQuery = async (queryData) => {
   } finally {
     loadingResults.value = false
   }
+}
+
+// 执行预设查询 (T030: FR-022, FR-023, FR-024)
+const executePresetQuery = async (query) => {
+  console.log('[WencaiFilter] Executing preset query:', query.id, query.name)
+
+  // 清除之前的结果 (FR-024)
+  tableData.value = []
+  currentPage.value = 1
+  total.value = 0
+
+  // 设置加载状态
+  loadingPreset.value = query.id
+  loadingResults.value = true
+  currentQueryName.value = query.name
+  currentQueryText.value = query.description
+
+  try {
+    const startTime = Date.now()
+
+    // TODO: 如果后端有支持 conditions 的 API，使用以下代码
+    // const response = await fetch(API_ENDPOINTS.wencai.filter, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(query.conditions)
+    // })
+
+    // 临时方案：生成模拟数据 (FR-022, FR-023)
+    // 在生产环境中，这应该调用实际的后端 API
+    await new Promise(resolve => setTimeout(resolve, 300)) // 模拟 API 延迟
+
+    // 生成模拟查询结果
+    const mockResults = generateMockQueryResults(query)
+
+    // 更新表格数据
+    processQueryResults({ results: mockResults, total: mockResults.length })
+
+    const elapsedTime = Date.now() - startTime
+    console.log(`[WencaiFilter] Query executed in ${elapsedTime}ms`) // Observability
+
+    ElMessage.success({
+      message: `查询完成：${mockResults.length} 条结果 (${elapsedTime}ms)`,
+      duration: 2000
+    })
+
+    // 验证性能要求 (SC-006: 结果应在1秒内更新)
+    if (elapsedTime > 1000) {
+      console.warn('[WencaiFilter] Query took longer than 1 second:', elapsedTime, 'ms')
+    }
+  } catch (error) {
+    console.error('[WencaiFilter] Preset query failed:', error)
+    ElMessage.error(`查询失败: ${error.message}`)
+  } finally {
+    loadingPreset.value = null
+    loadingResults.value = false
+  }
+}
+
+// 生成模拟查询结果（临时方案，待后端 API 实现后替换）
+const generateMockQueryResults = (query) => {
+  const mockStocks = [
+    { code: '600519', name: '贵州茅台', price: 1680.50, change: 1.23, limit_up: 0, volume_ratio: 1.2, turnover: 0.8, amplitude: 2.5 },
+    { code: '000858', name: '五粮液', price: 168.20, change: -0.56, limit_up: 0, volume_ratio: 0.9, turnover: 1.2, amplitude: 1.8 },
+    { code: '600036', name: '招商银行', price: 38.45, change: 0.78, limit_up: 0, volume_ratio: 1.5, turnover: 1.5, amplitude: 2.1 },
+    { code: '601318', name: '中国平安', price: 52.30, change: -1.12, limit_up: 0, volume_ratio: 1.1, turnover: 1.8, amplitude: 3.2 },
+    { code: '000001', name: '平安银行', price: 13.85, change: 2.15, limit_up: 0, volume_ratio: 2.1, turnover: 2.5, amplitude: 4.5 }
+  ]
+
+  // 根据查询ID返回不同数量的结果
+  const resultCount = Math.min(parseInt(query.id.replace('qs_', '')) * 5, 50)
+
+  return mockStocks.slice(0, Math.max(resultCount, 5))
 }
 
 // 执行自定义查询
@@ -654,6 +768,56 @@ onMounted(() => {
 
       .query-button {
         min-width: 100px;
+      }
+    }
+  }
+
+  // 预设查询卡片样式 (T029)
+  .preset-queries-card {
+    margin-bottom: 20px;
+
+    .preset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .query-col {
+      margin-bottom: 16px;
+    }
+
+    .query-card {
+      cursor: pointer;
+      transition: all 0.3s;
+      height: 100%;
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: #409eff;
+      }
+
+      .query-card-content {
+        .query-name {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #303133;
+        }
+
+        .query-description {
+          margin: 0 0 12px 0;
+          font-size: 13px;
+          color: #606266;
+          line-height: 1.6;
+          min-height: 40px;
+        }
+
+        .query-action {
+          display: flex;
+          justify-content: flex-end;
+          padding-top: 8px;
+          border-top: 1px solid #e4e7ed;
+        }
       }
     }
   }

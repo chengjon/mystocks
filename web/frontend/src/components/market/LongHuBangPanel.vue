@@ -30,11 +30,32 @@
       <template #header>
         <div class="card-header">
           <span>龙虎榜数据</span>
-          <el-tag v-if="tableData.length > 0">共 {{ tableData.length }} 条</el-tag>
+          <div class="header-controls">
+            <el-tag v-if="tableData.length > 0" style="margin-right: 10px">共 {{ totalItems }} 条</el-tag>
+            <el-select
+              v-model="pageSize"
+              @change="handleSizeChange"
+              style="width: 120px"
+              size="small"
+            >
+              <el-option
+                v-for="size in pageSizes"
+                :key="size"
+                :label="`${size} 条/页`"
+                :value="size"
+              />
+            </el-select>
+          </div>
         </div>
       </template>
 
-      <el-table :data="tableData" stripe height="600">
+      <el-table
+        :data="paginatedData"
+        stripe
+        border
+        class="sticky-header-table"
+        height="calc(100vh - 400px)"
+      >
         <el-table-column prop="trade_date" label="交易日期" width="120" sortable />
         <el-table-column prop="symbol" label="代码" width="100" />
         <el-table-column prop="name" label="名称" width="120" />
@@ -64,6 +85,20 @@
       </el-table>
 
       <el-empty v-if="!loading && tableData.length === 0" description="暂无数据" />
+
+      <!-- 分页控件 (T016) -->
+      <el-pagination
+        v-if="showPagination"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="totalItems"
+        :page-sizes="pageSizes"
+        layout="total, sizes, prev, pager, next, jumper"
+        hide-on-single-page
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        style="margin-top: 20px; justify-content: center; display: flex"
+      />
     </el-card>
   </div>
 </template>
@@ -73,11 +108,27 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { dataApi } from '@/api'
 import dayjs from 'dayjs'
+import { usePagination } from '@/composables/usePagination'
 
 const symbol = ref('')
 const dateRange = ref([])
 const minNetAmount = ref(null)
 const tableData = ref([])
+
+// Pagination setup (T016)
+const {
+  paginatedData,
+  currentPage,
+  pageSize,
+  totalItems,
+  showPagination,
+  handleSizeChange,
+  handleCurrentChange,
+  pageSizes
+} = usePagination(tableData, {
+  initialPageSize: 20,
+  preferenceKey: 'pageSizeDragonTiger'
+})
 const loading = ref(false)
 const refreshing = ref(false)
 
@@ -151,6 +202,11 @@ queryData()
   .card-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-controls {
+    display: flex;
     align-items: center;
   }
 

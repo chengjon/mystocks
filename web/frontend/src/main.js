@@ -9,6 +9,10 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
+// Import global typography and table styles (T006)
+import './styles/typography.css'
+import './styles/table-common.css'
+
 const app = createApp(App)
 const pinia = createPinia()
 
@@ -22,5 +26,10 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
 })
+
+// Initialize user preferences (apply saved font size, etc.)
+import { usePreferencesStore } from './stores/preferences'
+const preferencesStore = usePreferencesStore()
+preferencesStore.initialize()
 
 app.mount('#app')

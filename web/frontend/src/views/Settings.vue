@@ -23,40 +23,41 @@
             </el-tab-pane>
 
             <el-tab-pane label="显示设置" name="display">
-              <el-form :model="displaySettings" label-width="120px">
-                <el-form-item label="字体">
-                  <el-select v-model="displaySettings.fontFamily" placeholder="请选择字体" style="width: 300px" @change="applyDisplaySettings">
-                    <el-option label="系统默认" value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" />
-                    <el-option label="微软雅黑" value="'Microsoft YaHei', sans-serif" />
-                    <el-option label="苹方" value="'PingFang SC', sans-serif" />
-                    <el-option label="思源黑体" value="'Source Han Sans CN', sans-serif" />
-                    <el-option label="宋体" value="SimSun, serif" />
-                    <el-option label="黑体" value="SimHei, sans-serif" />
-                    <el-option label="Arial" value="Arial, sans-serif" />
-                    <el-option label="Helvetica" value="Helvetica, sans-serif" />
-                  </el-select>
-                  <span style="margin-left: 10px; color: #909399; font-size: 12px">设置全局字体样式</span>
-                </el-form-item>
-                <el-form-item label="字体大小">
-                  <el-radio-group v-model="displaySettings.fontSize" @change="applyDisplaySettings">
-                    <el-radio label="small">小 (12px)</el-radio>
-                    <el-radio label="default">默认 (14px)</el-radio>
-                    <el-radio label="large">大 (16px)</el-radio>
-                    <el-radio label="extra-large">特大 (18px)</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="预览效果">
-                  <div class="font-preview" :style="previewStyle">
-                    <p>这是字体预览效果文本 - This is a font preview text</p>
-                    <p>数字：0123456789</p>
-                    <p>股票代码：600519 / 000858 / 300750</p>
-                  </div>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="saveDisplaySettings">保存设置</el-button>
-                  <el-button @click="resetDisplaySettings">恢复默认</el-button>
-                </el-form-item>
-              </el-form>
+              <!-- 字体大小设置 (FR-013) -->
+              <FontSizeSetting />
+
+              <!-- 字体家族设置 (legacy feature - kept for compatibility) -->
+              <el-card style="margin-top: 20px">
+                <template #header>
+                  <span>字体家族设置</span>
+                </template>
+                <el-form :model="displaySettings" label-width="120px">
+                  <el-form-item label="字体">
+                    <el-select v-model="displaySettings.fontFamily" placeholder="请选择字体" style="width: 300px" @change="applyDisplaySettings">
+                      <el-option label="系统默认" value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" />
+                      <el-option label="微软雅黑" value="'Microsoft YaHei', sans-serif" />
+                      <el-option label="苹方" value="'PingFang SC', sans-serif" />
+                      <el-option label="思源黑体" value="'Source Han Sans CN', sans-serif" />
+                      <el-option label="宋体" value="SimSun, serif" />
+                      <el-option label="黑体" value="SimHei, sans-serif" />
+                      <el-option label="Arial" value="Arial, sans-serif" />
+                      <el-option label="Helvetica" value="Helvetica, sans-serif" />
+                    </el-select>
+                    <span style="margin-left: 10px; color: #909399; font-size: 12px">设置全局字体样式</span>
+                  </el-form-item>
+                  <el-form-item label="预览效果">
+                    <div class="font-preview" :style="previewStyle">
+                      <p>这是字体预览效果文本 - This is a font preview text</p>
+                      <p>数字：0123456789</p>
+                      <p>股票代码：600519 / 000858 / 300750</p>
+                    </div>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="saveDisplaySettings">保存字体家族</el-button>
+                    <el-button @click="resetDisplaySettings">恢复默认</el-button>
+                  </el-form-item>
+                </el-form>
+              </el-card>
             </el-tab-pane>
 
             <el-tab-pane label="数据库配置" name="database">
@@ -261,6 +262,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { CircleCheck, CircleClose, Loading, Document, Warning, InfoFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
+import FontSizeSetting from '@/components/settings/FontSizeSetting.vue'
 
 const activeTab = ref('basic')
 

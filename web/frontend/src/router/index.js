@@ -71,10 +71,10 @@ const router = createRouter({
           meta: { title: '问财筛选', icon: 'Search' }
         },
         {
-          path: 'stocks',
-          name: 'stocks',
-          component: () => import('@/views/Stocks.vue'),
-          meta: { title: '股票管理', icon: 'Grid' }
+          path: 'watchlist',
+          name: 'watchlist',
+          component: () => import('@/views/Watchlist.vue'),
+          meta: { title: '自选股', icon: 'Grid' }
         },
         {
           path: 'analysis',

@@ -16,11 +16,33 @@
       <template #header>
         <div class="card-header">
           <span>ETF行情数据</span>
-          <el-tag v-if="tableData.length > 0">共 {{ tableData.length }} 条</el-tag>
+          <div class="header-controls">
+            <el-tag v-if="tableData.length > 0" style="margin-right: 10px">共 {{ totalItems }} 条</el-tag>
+            <el-select
+              v-model="pageSize"
+              @change="handleSizeChange"
+              style="width: 120px"
+              size="small"
+            >
+              <el-option
+                v-for="size in pageSizes"
+                :key="size"
+                :label="`${size} 条/页`"
+                :value="size"
+              />
+            </el-select>
+          </div>
         </div>
       </template>
 
-      <el-table :data="tableData" stripe height="600" @sort-change="handleSortChange">
+      <el-table
+        :data="paginatedData"
+        stripe
+        border
+        class="sticky-header-table"
+        height="calc(100vh - 400px)"
+        @sort-change="handleSortChange"
+      >
         <el-table-column prop="symbol" label="代码" width="120" fixed />
         <el-table-column prop="name" label="名称" width="180" fixed />
         <el-table-column prop="latest_price" label="最新价" width="100" sortable="custom" />
@@ -43,6 +65,20 @@
       </el-table>
 
       <el-empty v-if="!loading && tableData.length === 0" description="暂无数据" />
+
+      <!-- 分页控件 (T014) -->
+      <el-pagination
+        v-if="showPagination"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="totalItems"
+        :page-sizes="pageSizes"
+        layout="total, sizes, prev, pager, next, jumper"
+        hide-on-single-page
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        style="margin-top: 20px; justify-content: center; display: flex"
+      />
     </el-card>
   </div>
 </template>
@@ -51,11 +87,27 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { dataApi } from '@/api'
+import { usePagination } from '@/composables/usePagination'
 
 const keyword = ref('')
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
+
+// Pagination setup (T014)
+const {
+  paginatedData,
+  currentPage,
+  pageSize,
+  totalItems,
+  showPagination,
+  handleSizeChange,
+  handleCurrentChange,
+  pageSizes
+} = usePagination(tableData, {
+  initialPageSize: 20,
+  preferenceKey: 'pageSizeETF'
+})
 
 const queryData = async () => {
   loading.value = true
@@ -137,6 +189,11 @@ queryData()
   .card-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-controls {
+    display: flex;
     align-items: center;
   }
 

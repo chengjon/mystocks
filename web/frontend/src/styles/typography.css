@@ -1,0 +1,82 @@
+/**
+ * Typography System - Global Font Size Management
+ *
+ * Implements 5-level font sizing with CSS custom properties (FR-014, FR-016, FR-017, FR-018)
+ * Supports dynamic runtime updates without page reload
+ */
+
+:root {
+  /* Font Size Levels (FR-014) */
+  --font-size-extra-small: 12px;
+  --font-size-small: 14px;
+  --font-size-medium: 16px;
+  --font-size-large: 18px;
+  --font-size-extra-large: 20px;
+
+  /* Current User Selection (default: medium) */
+  --font-size-base: var(--font-size-medium);
+
+  /* Font Hierarchy (FR-016) - Automatically calculated from base */
+  --font-size-helper: calc(var(--font-size-base) - 2px);  /* 辅助文字 */
+  --font-size-body: var(--font-size-base);                /* 正文 */
+  --font-size-subtitle: calc(var(--font-size-base) + 2px);/* 小标题 */
+  --font-size-title: calc(var(--font-size-base) + 4px);   /* 标题 */
+  --font-size-heading: calc(var(--font-size-base) + 6px); /* 主标题 */
+
+  /* Line Height (FR-017) */
+  --line-height: 1.5;
+
+  /* Font Family (FR-018) - Optimized for Chinese + English */
+  --font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+/* Apply to body element */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height);
+}
+
+/* Typography Utility Classes */
+.text-helper {
+  font-size: var(--font-size-helper);
+  color: #909399;
+}
+
+.text-body {
+  font-size: var(--font-size-body);
+}
+
+.text-subtitle {
+  font-size: var(--font-size-subtitle);
+  font-weight: 500;
+}
+
+.text-title {
+  font-size: var(--font-size-title);
+  font-weight: 600;
+}
+
+.text-heading {
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+}
+
+/* Ensure Element Plus components inherit font settings */
+.el-button,
+.el-input,
+.el-select,
+.el-table,
+.el-card,
+.el-form-item__label {
+  font-family: var(--font-family);
+}
+
+/* Responsive font adjustments for small screens */
+@media (max-width: 768px) {
+  :root {
+    /* Optionally reduce base font size on mobile */
+    --font-size-base: calc(var(--font-size-medium) - 1px);
+  }
+}

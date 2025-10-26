@@ -39,15 +39,48 @@
       <template #header>
         <div class="card-header">
           <span class="title">资金流向数据</span>
-          <el-tag v-if="fundFlowData.length > 0" type="info">
-            共 {{ fundFlowData.length }} 条记录
-          </el-tag>
+          <div class="header-controls">
+            <el-tag v-if="fundFlowData.length > 0" type="info" style="margin-right: 10px">
+              共 {{ totalItems }} 条记录
+            </el-tag>
+            <el-select
+              v-model="pageSize"
+              @change="handleSizeChange"
+              style="width: 120px"
+              size="small"
+            >
+              <el-option
+                v-for="size in pageSizes"
+                :key="size"
+                :label="`${size} 条/页`"
+                :value="size"
+              />
+            </el-select>
+          </div>
         </div>
       </template>
 
       <!-- 数据表格 -->
-      <el-table :data="fundFlowData" stripe border style="width: 100%">
+      <el-table
+        :data="paginatedData"
+        stripe
+        border
+        class="sticky-header-table"
+        style="width: 100%"
+        height="calc(100vh - 400px)"
+      >
         <el-table-column prop="trade_date" label="交易日期" width="120" sortable />
+        <el-table-column prop="industry_name" label="行业名称" width="150" fixed>
+          <template #default="{ row }">
+            <a
+              class="industry-link"
+              :class="{ 'industry-selected': selectedIndustry === row.industry_name }"
+              @click="handleIndustryClick(row.industry_name)"
+            >
+              {{ row.industry_name }}
+            </a>
+          </template>
+        </el-table-column>
         <el-table-column prop="timeframe" label="时间维度" width="90" align="center">
           <template #default="{ row }">
             <el-tag size="small">{{ row.timeframe }}天</el-tag>
@@ -105,24 +138,47 @@
 
       <!-- 空状态 -->
       <el-empty v-if="!loading && fundFlowData.length === 0" description="暂无数据" />
+
+      <!-- 分页控件 (T008) -->
+      <el-pagination
+        v-if="showPagination"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="totalItems"
+        :page-sizes="pageSizes"
+        layout="total, sizes, prev, pager, next, jumper"
+        hide-on-single-page
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        style="margin-top: 20px; justify-content: center; display: flex"
+      />
     </el-card>
 
-    <!-- ECharts图表展示 -->
-    <el-card class="chart-card" shadow="never" v-if="fundFlowData.length > 0">
+    <!-- 资金流向趋势图 (T011) -->
+    <el-card class="chart-card" shadow="never" v-if="selectedIndustry">
       <template #header>
-        <span class="title">资金流向趋势图</span>
+        <div class="card-header">
+          <span class="title">资金流向趋势图</span>
+          <el-tag type="success" size="small">
+            当前选中: {{ selectedIndustry }}
+          </el-tag>
+        </div>
       </template>
-      <div ref="chartRef" style="width: 100%; height: 400px"></div>
+      <FundFlowTrendChart
+        :industry-name="selectedIndustry"
+        :trend-data="industryTrendData"
+      />
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
-import * as echarts from 'echarts'
 import { dataApi } from '@/api'
+import { usePagination } from '@/composables/usePagination'
+import FundFlowTrendChart from './FundFlowTrendChart.vue'
 
 // 响应式数据
 const queryForm = reactive({
@@ -134,8 +190,25 @@ const dateRange = ref([])
 const fundFlowData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const chartRef = ref(null)
-let chartInstance = null
+
+// Selected industry for trend chart (T009)
+const selectedIndustry = ref(null)
+const industryTrendData = ref([])
+
+// Pagination setup (T008)
+const {
+  paginatedData,
+  currentPage,
+  pageSize,
+  totalItems,
+  showPagination,
+  handleSizeChange,
+  handleCurrentChange,
+  pageSizes
+} = usePagination(fundFlowData, {
+  initialPageSize: 20,
+  preferenceKey: 'pageSizeFundFlow'
+})
 
 // 查询资金流向
 const handleQuery = async () => {
@@ -219,80 +292,23 @@ const getAmountClass = (value) => {
   return 'amount-neutral'
 }
 
-// 渲染ECharts图表
-const renderChart = () => {
-  if (!chartRef.value || fundFlowData.value.length === 0) return
+// Handle industry name click (T009)
+const handleIndustryClick = async (industryName) => {
+  selectedIndustry.value = industryName
+  console.log('[FundFlow] Industry clicked:', industryName)
 
-  if (!chartInstance) {
-    chartInstance = echarts.init(chartRef.value)
-  }
-
-  const dates = fundFlowData.value.map(d => d.trade_date).reverse()
-  const mainFlow = fundFlowData.value.map(d => (d.main_net_inflow / 100000000).toFixed(2)).reverse()
-  const superLargeFlow = fundFlowData.value.map(d => (d.super_large_net_inflow / 100000000).toFixed(2)).reverse()
-  const largeFlow = fundFlowData.value.map(d => (d.large_net_inflow / 100000000).toFixed(2)).reverse()
-
-  const option = {
-    title: {
-      text: `${queryForm.symbol} 资金流向趋势`,
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    legend: {
-      data: ['主力净流入', '超大单', '大单'],
-      top: 30
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: dates
-    },
-    yAxis: {
-      type: 'value',
-      name: '金额(亿元)'
-    },
-    series: [
-      {
-        name: '主力净流入',
-        type: 'line',
-        data: mainFlow,
-        smooth: true,
-        itemStyle: { color: '#409EFF' }
-      },
-      {
-        name: '超大单',
-        type: 'line',
-        data: superLargeFlow,
-        smooth: true,
-        itemStyle: { color: '#F56C6C' }
-      },
-      {
-        name: '大单',
-        type: 'line',
-        data: largeFlow,
-        smooth: true,
-        itemStyle: { color: '#E6A23C' }
-      }
-    ]
-  }
-
-  chartInstance.setOption(option)
+  // Fetch trend data for the selected industry (T011)
+  // For now, use mock data from current fundFlowData
+  // In T012, this will be replaced with API call
+  industryTrendData.value = fundFlowData.value
+    .filter(d => d.industry_name === industryName)
+    .map(d => ({
+      date: d.trade_date,
+      net_inflow: d.main_net_inflow || 0,
+      main_inflow: d.super_large_net_inflow || 0,
+      retail_inflow: d.large_net_inflow || 0
+    }))
 }
-
-// 监听数据变化
-watch(() => fundFlowData.value, () => {
-  if (fundFlowData.value.length > 0) {
-    nextTick(() => renderChart())
-  }
-})
 
 // 组件挂载
 onMounted(() => {
@@ -320,6 +336,11 @@ onMounted(() => {
   align-items: center;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+}
+
 .title {
   font-size: 16px;
   font-weight: 600;
@@ -341,5 +362,23 @@ onMounted(() => {
 
 .search-form {
   margin-bottom: 0;
+}
+
+/* Industry link styles (T009) */
+.industry-link {
+  color: #409EFF;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.industry-link:hover {
+  text-decoration: underline;
+  color: #66b1ff;
+}
+
+.industry-selected {
+  font-weight: 600;
+  color: #F56C6C;
 }
 </style>
