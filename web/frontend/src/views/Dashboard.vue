@@ -400,9 +400,20 @@ const initMarketHeatChart = () => {
 }
 
 const initLeadingSectorChart = () => {
-  if (!leadingSectorChartRef.value) return
+  if (!leadingSectorChartRef.value) {
+    console.warn('leadingSectorChartRef is not available yet')
+    return
+  }
 
-  leadingSectorChart = echarts.init(leadingSectorChartRef.value)
+  // Check if DOM element has valid dimensions
+  const element = leadingSectorChartRef.value
+  if (element.clientWidth === 0 || element.clientHeight === 0) {
+    console.warn('leadingSectorChart DOM has zero dimensions, delaying initialization')
+    setTimeout(initLeadingSectorChart, 100)
+    return
+  }
+
+  leadingSectorChart = echarts.init(element)
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -445,9 +456,20 @@ const initLeadingSectorChart = () => {
 }
 
 const initPriceDistributionChart = () => {
-  if (!priceDistributionChartRef.value) return
+  if (!priceDistributionChartRef.value) {
+    console.warn('priceDistributionChartRef is not available yet')
+    return
+  }
 
-  priceDistributionChart = echarts.init(priceDistributionChartRef.value)
+  // Check if DOM element has valid dimensions
+  const element = priceDistributionChartRef.value
+  if (element.clientWidth === 0 || element.clientHeight === 0) {
+    console.warn('priceDistributionChart DOM has zero dimensions, delaying initialization')
+    setTimeout(initPriceDistributionChart, 100)
+    return
+  }
+
+  priceDistributionChart = echarts.init(element)
   const option = {
     tooltip: {
       trigger: 'item',
@@ -494,9 +516,20 @@ const initPriceDistributionChart = () => {
 }
 
 const initCapitalFlowChart = () => {
-  if (!capitalFlowChartRef.value) return
+  if (!capitalFlowChartRef.value) {
+    console.warn('capitalFlowChartRef is not available yet')
+    return
+  }
 
-  capitalFlowChart = echarts.init(capitalFlowChartRef.value)
+  // Check if DOM element has valid dimensions
+  const element = capitalFlowChartRef.value
+  if (element.clientWidth === 0 || element.clientHeight === 0) {
+    console.warn('capitalFlowChart DOM has zero dimensions, delaying initialization')
+    setTimeout(initCapitalFlowChart, 100)
+    return
+  }
+
+  capitalFlowChart = echarts.init(element)
   const option = {
     tooltip: {
       trigger: 'axis',
