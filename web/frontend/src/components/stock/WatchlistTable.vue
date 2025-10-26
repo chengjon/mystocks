@@ -2,6 +2,7 @@
   <div class="watchlist-table">
     <el-table
       :data="paginatedData"
+      :row-class-name="getRowClassName"
       stripe
       border
       class="sticky-header-table"
@@ -70,6 +71,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { usePagination } from '@/composables/usePagination'
+import watchlistApi from '@/api/watchlist'
 
 const props = defineProps({
   group: {
@@ -125,22 +127,53 @@ const generateMockData = (group) => {
   }))
 }
 
-// Load data based on group
+// Load data based on group (T032: Real API integration)
 const loadData = async () => {
   loading.value = true
   try {
-    // In production, this would call an API:
-    // const response = await dataApi.getWatchlistByGroup(props.group)
-    // tableData.value = response.data
+    console.log(`[WatchlistTable] Loading data for category: ${props.group}`)
 
-    // Mock data for now
-    await new Promise(resolve => setTimeout(resolve, 300))
-    tableData.value = generateMockData(props.group)
+    // T032: Call real API to get watchlist by category
+    const response = await watchlistApi.getByCategory(props.group)
+
+    console.log(`[WatchlistTable] Loaded ${response.stocks?.length || 0} stocks`)
+
+    // Process and format data
+    tableData.value = (response.stocks || []).map(stock => ({
+      id: stock.id,
+      symbol: stock.symbol || stock.stock_code,
+      name: stock.name || stock.stock_name,
+      group: stock.group_name || '默认分组',
+      groupId: stock.group_id,
+      latest_price: stock.latest_price || stock.price,
+      change_percent: stock.change_percent,
+      industry: stock.industry,
+      market_cap: stock.market_cap,
+      add_date: stock.created_at?.split('T')[0] || stock.add_date
+    }))
   } catch (error) {
-    ElMessage.error(`加载失败: ${error.message}`)
+    console.error('[WatchlistTable] Failed to load data:', error)
+
+    // Show user-friendly error message
+    if (error.message === '该分类下暂无自选股') {
+      // Don't show error for empty category - just show empty state
+      tableData.value = []
+    } else {
+      ElMessage.error(`加载失败: ${error.message}`)
+      tableData.value = []
+    }
   } finally {
     loading.value = false
   }
+}
+
+// Get row class name for group highlighting (T033: FR-016)
+const getRowClassName = ({ row }) => {
+  if (!row.groupId) return ''
+
+  // Use groupId modulo 6 for 6 different color schemes
+  const colorIndex = row.groupId % 6
+  return `group-highlight-${colorIndex}`
 }
 
 // Get tag type based on group
@@ -164,11 +197,18 @@ const handleView = (row) => {
   ElMessage.info(`查看股票: ${row.name} (${row.symbol})`)
 }
 
-// Handle remove stock
+// Handle remove stock (T034: Real API integration)
 const handleRemove = async (row) => {
   try {
+    const categoryNames = {
+      user: '自选',
+      system: '系统推荐',
+      strategy: '策略',
+      monitor: '监控'
+    }
+
     await ElMessageBox.confirm(
-      `确定要从${props.group === 'user' ? '自选' : props.group === 'system' ? '系统推荐' : props.group === 'strategy' ? '策略' : '监控'}列表中移除 ${row.name} 吗？`,
+      `确定要从${categoryNames[props.group] || ''}列表中移除 ${row.name} 吗？`,
       '提示',
       {
         confirmButtonText: '确定',
@@ -177,13 +217,18 @@ const handleRemove = async (row) => {
       }
     )
 
-    // In production: await dataApi.removeFromWatchlist(props.group, row.symbol)
-    tableData.value = tableData.value.filter(item => item.symbol !== row.symbol)
+    // T034: Call real API to remove stock
+    await watchlistApi.removeStock(row.id)
+
+    // Remove from local data
+    tableData.value = tableData.value.filter(item => item.id !== row.id)
+
     ElMessage.success('移除成功')
     emit('remove', row)
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('移除失败')
+      console.error('[WatchlistTable] Remove failed:', error)
+      ElMessage.error(`移除失败: ${error.message || '未知错误'}`)
     }
   }
 }
@@ -211,5 +256,30 @@ onMounted(() => {
 .text-green {
   color: #67c23a;
   font-weight: 500;
+}
+
+/* Group highlighting styles (T033: FR-016) */
+:deep(.group-highlight-0) {
+  background-color: #f0f9ff !important; /* Blue */
+}
+
+:deep(.group-highlight-1) {
+  background-color: #f0fdf4 !important; /* Green */
+}
+
+:deep(.group-highlight-2) {
+  background-color: #fefce8 !important; /* Yellow */
+}
+
+:deep(.group-highlight-3) {
+  background-color: #fef3f2 !important; /* Red */
+}
+
+:deep(.group-highlight-4) {
+  background-color: #f5f3ff !important; /* Purple */
+}
+
+:deep(.group-highlight-5) {
+  background-color: #ecfeff !important; /* Cyan */
 }
 </style>
