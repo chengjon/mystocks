@@ -170,8 +170,8 @@ class DatabaseService:
             if postgresql_access:
                 filters = {
                     "symbol": symbol,
-                    "date >= ": start_date,
-                    "date <= ": end_date,
+                    "trade_date >= ": start_date,
+                    "trade_date <= ": end_date,
                 }
                 return postgresql_access.query("daily_kline", filters=filters)
             else:
@@ -179,12 +179,12 @@ class DatabaseService:
                 with get_postgresql_session() as session:
                     query = text(
                         """
-                        SELECT date, open, high, low, close, volume, amount
+                        SELECT trade_date as date, open, high, low, close, volume, amount
                         FROM daily_kline
                         WHERE symbol = :symbol
-                        AND date >= :start_date
-                        AND date <= :end_date
-                        ORDER BY date
+                        AND trade_date >= :start_date
+                        AND trade_date <= :end_date
+                        ORDER BY trade_date
                     """
                     )
                     result = session.execute(
