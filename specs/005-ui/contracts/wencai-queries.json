@@ -1,0 +1,158 @@
+{
+  "version": "1.0.0",
+  "description": "MyStocks问财筛选预设查询配置 - 9个精选查询模板",
+  "lastUpdated": "2025-10-26",
+  "queries": [
+    {
+      "id": "qs_1",
+      "name": "连续上涨股票",
+      "description": "查询连续3天以上上涨的股票，适合捕捉趋势行情",
+      "query": "连续3天以上上涨",
+      "category": "趋势",
+      "icon": "TrendCharts",
+      "tags": ["趋势", "上涨", "动量"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "qs_2",
+      "name": "放量突破",
+      "description": "成交量放大且突破前期高点，寻找突破机会",
+      "query": "成交量放大且突破前期高点",
+      "category": "突破",
+      "icon": "ArrowUp",
+      "tags": ["突破", "放量", "技术"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "qs_3",
+      "name": "资金流入前20",
+      "description": "主力资金净流入排名前20的股票，追踪资金动向",
+      "query": "主力资金净流入排名前20",
+      "category": "资金",
+      "icon": "Money",
+      "tags": ["资金", "主力", "排名"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "qs_4",
+      "name": "低位放量",
+      "description": "股价处于低位且成交量放大，可能是底部信号",
+      "query": "股价创近60日新低且成交量放大",
+      "category": "反转",
+      "icon": "Bottom",
+      "tags": ["反转", "低位", "放量"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "qs_5",
+      "name": "高换手率",
+      "description": "换手率大于10%的活跃股票，关注市场热点",
+      "query": "换手率大于10%",
+      "category": "活跃度",
+      "icon": "Operation",
+      "tags": ["换手", "活跃", "热点"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "qs_6",
+      "name": "龙虎榜上榜",
+      "description": "最近3天登上龙虎榜的股票，寻找市场焦点",
+      "query": "最近3天登上龙虎榜",
+      "category": "龙虎榜",
+      "icon": "Medal",
+      "tags": ["龙虎榜", "游资", "热点"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "qs_7",
+      "name": "MACD金叉",
+      "description": "MACD指标出现金叉，技术指标买入信号",
+      "query": "MACD金叉",
+      "category": "技术指标",
+      "icon": "DataLine",
+      "tags": ["MACD", "金叉", "技术"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "qs_8",
+      "name": "北向资金流入",
+      "description": "北向资金净流入的股票，追踪外资动向",
+      "query": "北向资金净流入",
+      "category": "资金",
+      "icon": "TopRight",
+      "tags": ["北向", "外资", "资金"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "qs_9",
+      "name": "市值500亿以下",
+      "description": "总市值500亿以下的中小盘股票，寻找成长机会",
+      "query": "总市值500亿以下且成交额1亿以上",
+      "category": "选股",
+      "icon": "Star",
+      "tags": ["中小盘", "成长", "市值"],
+      "difficulty": "easy"
+    }
+  ],
+  "categories": [
+    {
+      "id": "趋势",
+      "name": "趋势",
+      "description": "基于股价趋势的筛选条件",
+      "color": "#409EFF"
+    },
+    {
+      "id": "突破",
+      "name": "突破",
+      "description": "基于技术突破的筛选条件",
+      "color": "#F56C6C"
+    },
+    {
+      "id": "资金",
+      "name": "资金",
+      "description": "基于资金流向的筛选条件",
+      "color": "#E6A23C"
+    },
+    {
+      "id": "反转",
+      "name": "反转",
+      "description": "基于反转形态的筛选条件",
+      "color": "#67C23A"
+    },
+    {
+      "id": "活跃度",
+      "name": "活跃度",
+      "description": "基于交易活跃度的筛选条件",
+      "color": "#909399"
+    },
+    {
+      "id": "龙虎榜",
+      "name": "龙虎榜",
+      "description": "基于龙虎榜数据的筛选条件",
+      "color": "#FF6B6B"
+    },
+    {
+      "id": "技术指标",
+      "name": "技术指标",
+      "description": "基于技术指标的筛选条件",
+      "color": "#4ECDC4"
+    },
+    {
+      "id": "选股",
+      "name": "选股",
+      "description": "基于基本面的筛选条件",
+      "color": "#95E1D3"
+    }
+  ],
+  "metadata": {
+    "totalQueries": 9,
+    "requiredBySpec": "FR-009, FR-010",
+    "apiEndpoint": "/api/market/wencai/query",
+    "notes": [
+      "所有查询均为示例，实际查询语句需根据问财API实际支持的语法调整",
+      "查询结果由后端API处理，前端仅负责展示",
+      "icon字段对应Element Plus Icons组件名称",
+      "difficulty字段用于未来可能的筛选功能（初级/中级/高级用户）"
+    ]
+  }
+}

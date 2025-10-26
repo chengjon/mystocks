@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Font System Runtime Tests</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .test-result {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .pass { background: #d4edda; color: #155724; }
+    .fail { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+    .test-summary {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .font-test-area {
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div class="test-header">🧪 Font System Runtime Tests</div>
+
+    <div class="info test-result">
+      这个页面测试字体系统在浏览器中的实际运行时行为
+    </div>
+
+    <button onclick="runAllTests()">🚀 Run All Tests</button>
+    <button onclick="testFontSizeChange()">🔄 Test Font Size Change</button>
+    <button onclick="testLocalStorage()">💾 Test LocalStorage</button>
+    <button onclick="clearResults()">🗑️ Clear Results</button>
+
+    <div id="test-results"></div>
+    <div id="test-summary"></div>
+  </div>
+
+  <div class="test-container">
+    <div class="test-header">📝 Live Font Preview</div>
+    <div class="font-test-area" id="preview">
+      <p style="font-size: var(--font-size-helper)">辅助文字 (helper): 当前大小应该是基础字号 - 2px</p>
+      <p style="font-size: var(--font-size-body)">正文文字 (body): 当前大小应该是基础字号</p>
+      <p style="font-size: var(--font-size-subtitle)">副标题 (subtitle): 当前大小应该是基础字号 + 2px</p>
+      <p style="font-size: var(--font-size-title)">标题 (title): 当前大小应该是基础字号 + 4px</p>
+      <p style="font-size: var(--font-size-heading)">大标题 (heading): 当前大小应该是基础字号 + 8px</p>
+    </div>
+  </div>
+
+  <script>
+    let testResults = []
+
+    function addResult(test, status, message) {
+      testResults.push({ test, status, message })
+      const resultsDiv = document.getElementById('test-results')
+      const resultDiv = document.createElement('div')
+      resultDiv.className = `test-result ${status}`
+      resultDiv.textContent = `[${status.toUpperCase()}] ${test}: ${message}`
+      resultsDiv.appendChild(resultDiv)
+    }
+
+    function clearResults() {
+      testResults = []
+      document.getElementById('test-results').innerHTML = ''
+      document.getElementById('test-summary').innerHTML = ''
+    }
+
+    function showSummary() {
+      const passed = testResults.filter(r => r.status === 'pass').length
+      const failed = testResults.filter(r => r.status === 'fail').length
+      const total = testResults.length
+
+      const summaryDiv = document.getElementById('test-summary')
+      summaryDiv.className = 'test-summary'
+      summaryDiv.innerHTML = `
+        <div>测试总结:</div>
+        <div>✅ 通过: ${passed}</div>
+        <div>❌ 失败: ${failed}</div>
+        <div>📝 总计: ${total}</div>
+        <div>通过率: ${((passed/total)*100).toFixed(1)}%</div>
+      `
+    }
+
+    function testCSSVariables() {
+      const rootStyles = getComputedStyle(document.documentElement)
+
+      const requiredVars = [
+        '--font-size-base',
+        '--font-size-helper',
+        '--font-size-body',
+        '--font-size-subtitle',
+        '--font-size-title',
+        '--font-size-heading'
+      ]
+
+      requiredVars.forEach(varName => {
+        const value = rootStyles.getPropertyValue(varName).trim()
+        if (value) {
+          addResult(`CSS Variable ${varName}`, 'pass', `值为 ${value}`)
+        } else {
+          addResult(`CSS Variable ${varName}`, 'fail', '未定义')
+        }
+      })
+    }
+
+    function testFontSizeChange() {
+      const sizes = ['12px', '14px', '16px', '18px', '20px']
+      let currentIndex = 0
+
+      const interval = setInterval(() => {
+        if (currentIndex >= sizes.length) {
+          clearInterval(interval)
+          addResult('Font Size Changes', 'pass', '所有5个字体大小都已测试')
+          return
+        }
+
+        const size = sizes[currentIndex]
+        document.documentElement.style.setProperty('--font-size-base', size)
+
+        const rootStyles = getComputedStyle(document.documentElement)
+        const actualSize = rootStyles.getPropertyValue('--font-size-base').trim()
+
+        if (actualSize === size) {
+          addResult(`Set font to ${size}`, 'pass', `CSS变量更新成功`)
+        } else {
+          addResult(`Set font to ${size}`, 'fail', `预期 ${size}, 实际 ${actualSize}`)
+        }
+
+        currentIndex++
+      }, 500)
+    }
+
+    function testLocalStorage() {
+      const testKey = 'userPreferences'
+      const testData = {
+        version: '1.0',
+        preferences: {
+          fontSize: '18px',
+          pageSizeFundFlow: 20
+        },
+        lastUpdated: new Date().toISOString()
+      }
+
+      try {
+        // Test write
+        localStorage.setItem(testKey, JSON.stringify(testData))
+        addResult('LocalStorage Write', 'pass', '写入成功')
+
+        // Test read
+        const saved = JSON.parse(localStorage.getItem(testKey))
+        if (saved && saved.preferences.fontSize === '18px') {
+          addResult('LocalStorage Read', 'pass', '读取成功，数据匹配')
+        } else {
+          addResult('LocalStorage Read', 'fail', '数据不匹配')
+        }
+
+        // Test quota
+        const quota = navigator.storage && navigator.storage.estimate
+        if (quota) {
+          navigator.storage.estimate().then(estimate => {
+            const percentUsed = ((estimate.usage / estimate.quota) * 100).toFixed(2)
+            addResult('LocalStorage Quota', 'info', `已使用 ${percentUsed}% (${estimate.usage} / ${estimate.quota} bytes)`)
+          })
+        }
+
+      } catch (error) {
+        addResult('LocalStorage Test', 'fail', error.message)
+      }
+    }
+
+    function testResponsiveCheck() {
+      const width = window.innerWidth
+      const isMobile = width <= 768
+
+      if (isMobile) {
+        addResult('Responsive Design', 'info', `移动端视口: ${width}px - 应该应用95%缩放`)
+      } else {
+        addResult('Responsive Design', 'info', `桌面视口: ${width}px - 使用标准字体大小`)
+      }
+    }
+
+    function testComputedFontSizes() {
+      const preview = document.getElementById('preview')
+      const paragraphs = preview.querySelectorAll('p')
+
+      paragraphs.forEach((p, index) => {
+        const computedSize = getComputedStyle(p).fontSize
+        const types = ['helper', 'body', 'subtitle', 'title', 'heading']
+        addResult(`Computed font-size (${types[index]})`, 'info', `实际渲染大小: ${computedSize}`)
+      })
+    }
+
+    function runAllTests() {
+      clearResults()
+
+      addResult('Test Suite', 'info', '开始运行所有测试...')
+
+      setTimeout(() => {
+        testCSSVariables()
+        testResponsiveCheck()
+        testComputedFontSizes()
+        testLocalStorage()
+
+        setTimeout(() => {
+          showSummary()
+        }, 1000)
+      }, 100)
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      addResult('Page Load', 'info', '页面已加载，准备测试')
+      setTimeout(runAllTests, 500)
+    })
+  </script>
+</body>
+</html>

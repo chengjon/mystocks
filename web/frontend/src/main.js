@@ -9,8 +9,8 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
-// Import global typography and table styles (T006)
-import './styles/typography.css'
+// Import global typography and table styles (T009 - US1)
+import './assets/styles/typography.css'
 import './styles/table-common.css'
 
 const app = createApp(App)

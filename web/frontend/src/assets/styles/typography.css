@@ -1,0 +1,190 @@
+/**
+ * MyStocks Typography System
+ * 全局字体系统 - 基于CSS Variables实现动态字体调整
+ *
+ * Feature: 005-ui (User Story 1)
+ * Spec: FR-001, FR-002, FR-003, FR-004, FR-005
+ */
+
+/* ============================================================================
+   CSS Variables 定义 (FR-001)
+   ============================================================================ */
+
+:root {
+  /* 基础字号变量 - 默认16px (中等) */
+  --font-size-base: 16px;
+
+  /* 字体层级（使用calc自动计算） - FR-003 */
+  --font-size-helper: calc(var(--font-size-base) - 2px);    /* 辅助文字: 基础 - 2px */
+  --font-size-body: var(--font-size-base);                  /* 正文: 基础字号 */
+  --font-size-subtitle: calc(var(--font-size-base) + 2px);  /* 小标题: 基础 + 2px */
+  --font-size-title: calc(var(--font-size-base) + 4px);     /* 标题: 基础 + 4px */
+  --font-size-heading: calc(var(--font-size-base) + 8px);   /* 主标题: 基础 + 8px */
+
+  /* Typography字体族 - FR-004 */
+  --font-family: "Helvetica Neue", Helvetica, "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑",
+                 Arial, sans-serif;
+
+  /* 行高 - FR-005 */
+  --line-height-base: 1.5;
+}
+
+/* ============================================================================
+   全局应用
+   ============================================================================ */
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+}
+
+/* ============================================================================
+   Typography工具类
+   适用于需要明确指定字体层级的场景
+   ============================================================================ */
+
+/* 辅助文字 - 12px (默认基础字号16px时) */
+.text-helper,
+.text-xs {
+  font-size: var(--font-size-helper) !important;
+}
+
+/* 正文 - 14px */
+.text-body,
+.text-sm {
+  font-size: var(--font-size-body) !important;
+}
+
+/* 小标题 - 16px */
+.text-subtitle,
+.text-md {
+  font-size: var(--font-size-subtitle) !important;
+}
+
+/* 标题 - 18px */
+.text-title,
+.text-lg {
+  font-size: var(--font-size-title) !important;
+}
+
+/* 主标题 - 20px */
+.text-heading,
+.text-xl {
+  font-size: var(--font-size-heading) !important;
+}
+
+/* ============================================================================
+   Element Plus组件覆盖
+   确保Element Plus组件使用CSS Variables
+   ============================================================================ */
+
+/* 按钮字体 */
+.el-button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+}
+
+/* 表格字体 */
+.el-table {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+}
+
+.el-table th {
+  font-size: var(--font-size-subtitle);
+  font-weight: 600;
+}
+
+/* 表单字体 */
+.el-form-item__label {
+  font-size: var(--font-size-body);
+}
+
+.el-input__inner,
+.el-textarea__inner,
+.el-select .el-input__inner {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+}
+
+/* 卡片标题 */
+.el-card__header {
+  font-size: var(--font-size-title);
+  font-weight: 600;
+}
+
+/* 对话框标题 */
+.el-dialog__title {
+  font-size: var(--font-size-title);
+  font-weight: 600;
+}
+
+/* 消息提示 */
+.el-message {
+  font-size: var(--font-size-body);
+}
+
+/* 标签页 */
+.el-tabs__item {
+  font-size: var(--font-size-body);
+}
+
+/* 菜单 */
+.el-menu-item,
+.el-submenu__title {
+  font-size: var(--font-size-body);
+}
+
+/* ============================================================================
+   响应式字体调整
+   ============================================================================ */
+
+/* 移动端 - 适当减小字体 */
+@media (max-width: 768px) {
+  :root {
+    /* 如果用户未手动设置，移动端默认稍小 */
+    --font-size-base: calc(var(--font-size-base) * 0.95);
+  }
+}
+
+/* ============================================================================
+   打印样式
+   ============================================================================ */
+
+@media print {
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+}
+
+/* ============================================================================
+   字体大小预设类（供FontSizeSetting组件使用）
+   ============================================================================ */
+
+/* 特小 - 12px */
+.font-preset-xs {
+  --font-size-base: 12px;
+}
+
+/* 小 - 14px */
+.font-preset-sm {
+  --font-size-base: 14px;
+}
+
+/* 中（默认） - 16px */
+.font-preset-md {
+  --font-size-base: 16px;
+}
+
+/* 大 - 18px */
+.font-preset-lg {
+  --font-size-base: 18px;
+}
+
+/* 特大 - 20px */
+.font-preset-xl {
+  --font-size-base: 20px;
+}
