@@ -71,40 +71,26 @@ const preferencesStore = usePreferencesStore()
 const selectedFontSize = ref('16px') // Default: Medium
 
 /**
- * Handle font size change (FR-015)
+ * Handle font size change (FR-006, FR-007)
  * Updates CSS variable immediately and saves to LocalStorage
  */
 const handleFontSizeChange = (newSize) => {
   console.log(`[FontSizeSetting] Font size changed to: ${newSize}`)
 
-  // Apply to CSS custom property immediately (FR-015)
-  document.documentElement.style.setProperty('--font-size-base', newSize)
-
-  // Save to LocalStorage via preferences store (FR-019)
-  preferencesStore.updatePreference('fontSize', newSize)
+  // FR-006, FR-007: Use store's applyFontSize method (handles both CSS update and LocalStorage save)
+  preferencesStore.applyFontSize(newSize)
 
   ElMessage.success(`字体大小已更新为 ${newSize}`)
-
-  // Log for observability
-  console.log(`[FontSizeSetting] CSS variable --font-size-base updated to ${newSize}`)
-  console.log(`[FontSizeSetting] Preference saved to LocalStorage`)
 }
 
 /**
- * Initialize font size from saved preference
+ * Initialize font size from saved preference (FR-008)
+ * Note: CSS variable is already applied by preferencesStore.initialize() in main.js
  */
 onMounted(() => {
-  // Load saved preference from store
-  const savedFontSize = preferencesStore.preferences.fontSize
-
-  if (savedFontSize) {
-    selectedFontSize.value = savedFontSize
-    console.log(`[FontSizeSetting] Loaded saved font size: ${savedFontSize}`)
-  } else {
-    // Default to Medium (16px) if no preference saved (FR-014)
-    selectedFontSize.value = '16px'
-    console.log('[FontSizeSetting] Using default font size: 16px')
-  }
+  // FR-008: Read current font size from store (already loaded and applied in main.js)
+  selectedFontSize.value = preferencesStore.preferences.fontSize || '16px'
+  console.log(`[FontSizeSetting] Loaded saved font size: ${selectedFontSize.value}`)
 })
 </script>
 
