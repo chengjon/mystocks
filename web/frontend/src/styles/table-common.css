@@ -1,0 +1,75 @@
+/**
+ * Table Common Styles - Fixed Headers & Zebra Striping
+ *
+ * Implements fixed table headers using CSS position: sticky (FR-001, FR-009, FR-012)
+ * Applies zebra striping for better readability (FR-004, FR-012)
+ */
+
+/* Fixed Header Styles - Works with Element Plus el-table */
+.sticky-header-table {
+  /* Table must have explicit height for sticky to work */
+  height: calc(100vh - 300px);
+  overflow-y: auto;
+}
+
+.sticky-header-table :deep(.el-table__header-wrapper) {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f5f7fa; /* Match Element Plus default header background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow when scrolling */
+}
+
+/* Ensure header stays on top of table body */
+.sticky-header-table :deep(.el-table__header-wrapper th) {
+  background-color: #f5f7fa;
+}
+
+/* Zebra Striping Enhancement - Element Plus already provides .el-table--striped
+   but we can enhance it for better visibility */
+.sticky-header-table.el-table--striped :deep(.el-table__body tr.el-table__row--striped) {
+  background-color: #fafafa;
+}
+
+.sticky-header-table.el-table--striped :deep(.el-table__body tr.el-table__row--striped:hover) {
+  background-color: #f0f0f0 !important;
+}
+
+/* Mobile Fallback for devices that may have issues with sticky positioning */
+@media (max-width: 768px) {
+  .sticky-header-table :deep(.el-table__header-wrapper) {
+    /* Alternative: Use fixed positioning on mobile if sticky doesn't work well */
+    position: -webkit-sticky; /* Safari support */
+    position: sticky;
+  }
+
+  .sticky-header-table {
+    /* Adjust height for mobile devices */
+    height: calc(100vh - 200px);
+  }
+}
+
+/* Scrollbar Styling (optional enhancement) */
+.sticky-header-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sticky-header-table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.sticky-header-table::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.sticky-header-table::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading State - Keep header fixed during loading */
+.sticky-header-table.el-loading-parent--relative :deep(.el-table__header-wrapper) {
+  position: sticky;
+  z-index: 11; /* Above loading mask */
+}
