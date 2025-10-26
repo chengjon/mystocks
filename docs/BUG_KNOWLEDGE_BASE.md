@@ -981,27 +981,28 @@ const { formatToYi } = useAmountFormatter()
 
 | BUG ID | 严重程度 | 类型 | 修复文件 | 修复行数 | 状态 |
 |--------|---------|------|---------|---------|------|
-| bug#007 | P1 高 | SQL列名错误 | dashboard.py | 4 | ✅ RESOLVED |
+| bug#007 | P1 高 | SQL列名错误 | database.py | 6 | ✅ RESOLVED |
 | bug#008 | P1 高 | ORM类型处理 | wencai_data.py | 6 | ✅ RESOLVED |
 | bug#009 | P1 高 | DOM时序问题 | Dashboard.vue | 42 | ✅ RESOLVED |
-| bug#010 | P2 中 | Props类型错误 | ChipRaceTable.vue | 3 | ✅ RESOLVED |
-| bug#011 | P2 中 | Props类型错误 | LongHuBangTable.vue | 3 | ✅ RESOLVED |
+| bug#010 | P1 高 | Props类型错误 | ChipRaceTable.vue | 3 | ✅ RESOLVED |
+| bug#011 | P1 高 | Props类型错误 | LongHuBangTable.vue | 3 | ✅ RESOLVED |
+| bug#012 | P3 低 | ElTag类型错误 | IndicatorLibrary.vue | 1 | ✅ RESOLVED |
 
 **总计**:
-- P1级别BUG: 3个
-- P2级别BUG: 2个
-- 修改文件: 5个
-- 修改行数: 58行
-- 关联Commit: e3e8887
+- P1级别BUG: 5个
+- P3级别BUG: 1个
+- 修改文件: 6个
+- 修改行数: 61行
+- 关联Commit: 89fd274
 
 ### BUG根因分类统计
 
 | 根因类别 | BUG数量 | 占比 |
 |---------|--------|------|
-| 数据库Schema不匹配 | 1 | 20% |
-| ORM类型处理错误 | 1 | 20% |
-| 前端时序问题 | 1 | 20% |
-| JavaScript类型转换 | 2 | 40% |
+| 数据库Schema不匹配 | 1 | 17% |
+| ORM类型处理错误 | 1 | 17% |
+| 前端时序问题 | 1 | 17% |
+| Vue组件Props类型 | 3 | 49% |
 
 ### 预防措施优先级
 
