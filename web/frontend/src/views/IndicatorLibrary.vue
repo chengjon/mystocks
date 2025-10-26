@@ -249,7 +249,7 @@ const getCategoryTagType = (category) => {
 
 // 获取面板类型标签
 const getPanelTagType = (panelType) => {
-  return panelType === 'overlay' ? '' : 'warning'
+  return panelType === 'overlay' ? 'info' : 'warning'
 }
 
 // 获取面板类型标签文本
