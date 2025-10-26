@@ -315,6 +315,7 @@ import {
   Download
 } from '@element-plus/icons-vue'
 import presetQueriesConfig from '@/config/wencai-queries.json'
+import wencaiApi from '@/api/wencai'
 
 // ============================================================================
 // 数据状态
@@ -471,7 +472,7 @@ const executeQuery = async (queryData) => {
   }
 }
 
-// 执行预设查询 (T030: FR-022, FR-023, FR-024)
+// 执行预设查询 (T019: FR-022, FR-023, FR-024)
 const executePresetQuery = async (query) => {
   console.log('[WencaiFilter] Executing preset query:', query.id, query.name)
 
@@ -489,61 +490,47 @@ const executePresetQuery = async (query) => {
   try {
     const startTime = Date.now()
 
-    // TODO: 如果后端有支持 conditions 的 API，使用以下代码
-    // const response = await fetch(API_ENDPOINTS.wencai.filter, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(query.conditions)
-    // })
+    // T019: Call real API with query conditions
+    const response = await wencaiApi.executePresetQuery(query.id, query.conditions)
 
-    // 临时方案：生成模拟数据 (FR-022, FR-023)
-    // 在生产环境中，这应该调用实际的后端 API
-    await new Promise(resolve => setTimeout(resolve, 300)) // 模拟 API 延迟
+    console.log(`[WencaiFilter] API response:`, response)
 
-    // 生成模拟查询结果
-    const mockResults = generateMockQueryResults(query)
+    // Process response data
+    if (response && response.results) {
+      processQueryResults(response)
 
-    // 更新表格数据
-    processQueryResults({ results: mockResults, total: mockResults.length })
+      const elapsedTime = Date.now() - startTime
+      console.log(`[WencaiFilter] Query executed in ${elapsedTime}ms`)
 
-    const elapsedTime = Date.now() - startTime
-    console.log(`[WencaiFilter] Query executed in ${elapsedTime}ms`) // Observability
+      ElMessage.success({
+        message: `查询完成：${response.results.length} 条结果 (${elapsedTime}ms)`,
+        duration: 2000
+      })
 
-    ElMessage.success({
-      message: `查询完成：${mockResults.length} 条结果 (${elapsedTime}ms)`,
-      duration: 2000
-    })
-
-    // 验证性能要求 (SC-006: 结果应在1秒内更新)
-    if (elapsedTime > 1000) {
-      console.warn('[WencaiFilter] Query took longer than 1 second:', elapsedTime, 'ms')
+      // SC-006: Performance validation (should complete within 1s)
+      if (elapsedTime > 1000) {
+        console.warn('[WencaiFilter] Query took longer than 1 second:', elapsedTime, 'ms')
+      }
+    } else {
+      ElMessage.warning('查询返回结果为空')
     }
   } catch (error) {
     console.error('[WencaiFilter] Preset query failed:', error)
+
+    // T022: User-friendly error handling
     ElMessage.error(`查询失败: ${error.message}`)
+
+    // Keep previous data on error (fallback strategy)
+    // tableData.value remains unchanged
   } finally {
     loadingPreset.value = null
     loadingResults.value = false
   }
 }
 
-// 生成模拟查询结果（临时方案，待后端 API 实现后替换）
-const generateMockQueryResults = (query) => {
-  const mockStocks = [
-    { code: '600519', name: '贵州茅台', price: 1680.50, change: 1.23, limit_up: 0, volume_ratio: 1.2, turnover: 0.8, amplitude: 2.5 },
-    { code: '000858', name: '五粮液', price: 168.20, change: -0.56, limit_up: 0, volume_ratio: 0.9, turnover: 1.2, amplitude: 1.8 },
-    { code: '600036', name: '招商银行', price: 38.45, change: 0.78, limit_up: 0, volume_ratio: 1.5, turnover: 1.5, amplitude: 2.1 },
-    { code: '601318', name: '中国平安', price: 52.30, change: -1.12, limit_up: 0, volume_ratio: 1.1, turnover: 1.8, amplitude: 3.2 },
-    { code: '000001', name: '平安银行', price: 13.85, change: 2.15, limit_up: 0, volume_ratio: 2.1, turnover: 2.5, amplitude: 4.5 }
-  ]
+// Note: Mock data generation removed - now using real API (T019)
 
-  // 根据查询ID返回不同数量的结果
-  const resultCount = Math.min(parseInt(query.id.replace('qs_', '')) * 5, 50)
-
-  return mockStocks.slice(0, Math.max(resultCount, 5))
-}
-
-// 执行自定义查询
+// 执行自定义查询 (T020: Custom query data flow)
 const executeCustomQuery = async () => {
   if (!customQueryText.value) {
     ElMessage.warning('请输入查询条件')
@@ -556,27 +543,22 @@ const executeCustomQuery = async () => {
   currentQueryText.value = customQueryText.value
 
   try {
-    const response = await fetch(API_ENDPOINTS.wencai.customQuery, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query_text: customQueryText.value,
-        pages: 1
-      })
-    })
+    // T020: Use wencaiApi for custom queries
+    const response = await wencaiApi.executeCustomQuery(customQueryText.value, 1)
 
-    if (!response.ok) throw new Error('查询失败')
-    const data = await response.json()
+    console.log('[WencaiFilter] Custom query response:', response)
 
-    if (data.success) {
-      // 处理结果数据
-      processCustomQueryResults(data)
-      ElMessage.success(`查询成功：${data.total_records} 条数据`)
+    if (response && response.results) {
+      processCustomQueryResults(response)
+      ElMessage.success(`查询成功：${response.total_records || response.results.length} 条数据`)
     } else {
-      ElMessage.warning(data.message || '查询失败')
+      ElMessage.warning('查询返回结果为空')
     }
   } catch (error) {
-    ElMessage.error('查询失败: ' + error.message)
+    console.error('[WencaiFilter] Custom query failed:', error)
+
+    // T022: User-friendly error messages
+    ElMessage.error(`查询失败: ${error.message}`)
   } finally {
     executingCustomQuery.value = false
     loadingResults.value = false
@@ -604,20 +586,31 @@ const processCustomQueryResults = (data) => {
   currentPage.value = 1
 }
 
-// 加载预定义查询结果
-const loadResults = async (queryName) => {
+// 加载预定义查询结果 (T021: Pagination loading)
+const loadResults = async (queryId) => {
   try {
-    const response = await fetch(
-      `${API_ENDPOINTS.wencai.results(queryName)}?limit=${pageSize.value}&offset=${(currentPage.value - 1) * pageSize.value}`
+    loadingResults.value = true
+
+    // T021: Use wencaiApi for paginated results
+    const response = await wencaiApi.getResults(
+      queryId,
+      currentPage.value,
+      pageSize.value
     )
 
-    if (!response.ok) throw new Error('加载数据失败')
-    const data = await response.json()
+    console.log(`[WencaiFilter] Loaded page ${currentPage.value} for ${queryId}`)
 
-    // 处理结果
-    processQueryResults(data)
+    // Process results
+    if (response && response.results) {
+      processQueryResults(response)
+    } else {
+      ElMessage.warning('没有更多数据')
+    }
   } catch (error) {
-    ElMessage.error('加载失败: ' + error.message)
+    console.error('[WencaiFilter] Failed to load results:', error)
+    ElMessage.error(`加载失败: ${error.message}`)
+  } finally {
+    loadingResults.value = false
   }
 }
 
@@ -668,11 +661,24 @@ const getPriceChangeClass = (value) => {
   return ''
 }
 
-// 分页变化
+// 分页变化 (T021: Handle pagination)
 const handlePageChange = () => {
-  if (currentQueryName.value && currentQueryName.value !== '自定义查询') {
-    loadResults(currentQueryName.value)
+  console.log(`[WencaiFilter] Page changed to ${currentPage.value}, size: ${pageSize.value}`)
+
+  // Get current query ID from loadingPreset or derive from currentQueryName
+  const currentQueryId = loadingPreset.value || extractQueryId(currentQueryName.value)
+
+  if (currentQueryId && currentQueryName.value !== '自定义查询') {
+    loadResults(currentQueryId)
+  } else {
+    console.warn('[WencaiFilter] Cannot paginate custom queries or unknown queries')
   }
+}
+
+// Helper: Extract query ID from query name (for pagination)
+const extractQueryId = (queryName) => {
+  const query = presetQueries.value.find(q => q.name === queryName)
+  return query ? query.id : null
 }
 
 // 导出数据
