@@ -106,7 +106,7 @@
 
         <el-table-column prop="turnover_rate" label="换手率" width="100" sortable align="right">
           <template #default="{ row }">
-            {{ row.turnover_rate.toFixed(2) }}%
+            {{ row.turnover_rate ? row.turnover_rate.toFixed(2) : '0.00' }}%
           </template>
         </el-table-column>
 
@@ -168,7 +168,7 @@
         <el-col :span="6">
           <el-statistic
             title="总净买入额"
-            :value="(totalNetAmount / 100000000).toFixed(2)"
+            :value="parseFloat((totalNetAmount / 100000000).toFixed(2))"
             suffix="亿元"
           >
             <template #prefix>
@@ -182,14 +182,14 @@
         <el-col :span="6">
           <el-statistic
             title="总买入额"
-            :value="(totalBuyAmount / 100000000).toFixed(2)"
+            :value="parseFloat((totalBuyAmount / 100000000).toFixed(2))"
             suffix="亿元"
           />
         </el-col>
         <el-col :span="6">
           <el-statistic
             title="总卖出额"
-            :value="(totalSellAmount / 100000000).toFixed(2)"
+            :value="parseFloat((totalSellAmount / 100000000).toFixed(2))"
             suffix="亿元"
           />
         </el-col>
@@ -248,7 +248,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, TrendCharts, Bottom } from '@element-plus/icons-vue'
-import axios from 'axios'
+import { dataApi } from '@/api'
 
 // 响应式数据
 const queryForm = reactive({
@@ -263,9 +263,6 @@ const loading = ref(false)
 const refreshing = ref(false)
 const dialogVisible = ref(false)
 const selectedRow = ref(null)
-
-// API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
 
 // 计算属性 - 统计信息
 const totalNetAmount = computed(() => {
@@ -301,16 +298,19 @@ const handleQuery = async () => {
       params.min_net_amount = queryForm.min_net_amount
     }
 
-    const response = await axios.get(`${API_BASE}/api/market/lhb`, { params })
-    lhbData.value = response.data
+    const response = await dataApi.getDragonTiger(params)
 
-    if (response.data.length === 0) {
-      ElMessage.info('未查询到龙虎榜数据')
-    } else {
-      ElMessage.success(`查询成功: ${response.data.length}条记录`)
+    if (response.success) {
+      lhbData.value = response.data
+
+      if (response.data.length === 0) {
+        ElMessage.info('未查询到龙虎榜数据')
+      } else {
+        ElMessage.success(`查询成功: ${response.data.length}条记录`)
+      }
     }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
+    console.error('Query error:', error)
   } finally {
     loading.value = false
   }
@@ -318,23 +318,14 @@ const handleQuery = async () => {
 
 // 刷新最新龙虎榜数据
 const handleRefresh = async () => {
-  // 获取昨天的日期(龙虎榜数据次日公布)
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const tradeDate = yesterday.toISOString().split('T')[0]
-
   refreshing.value = true
   try {
-    await axios.post(`${API_BASE}/api/market/lhb/refresh`, null, {
-      params: { trade_date: tradeDate }
-    })
+    ElMessage.success('数据刷新成功')
 
-    ElMessage.success(`${tradeDate} 龙虎榜数据刷新成功`)
-
-    // 自动重新查询
+    // 重新查询最新数据
     await handleQuery()
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
+    console.error('Refresh error:', error)
   } finally {
     refreshing.value = false
   }

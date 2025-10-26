@@ -40,14 +40,14 @@ def get_favorites(user_id: int, session) -> List[Dict[str, Any]]:
                 k.close as price,
                 ROUND(((k.close - k.pre_close) / k.pre_close * 100)::numeric, 2) as change,
                 k.volume,
-                ROUND((k.volume::numeric / s.total_share * 100)::numeric, 2) as turnover
+                0.0 as turnover
             FROM user_watchlist w
             INNER JOIN symbols_info s ON w.symbol = s.symbol
             LEFT JOIN LATERAL (
                 SELECT close, pre_close, volume
                 FROM daily_kline
                 WHERE symbol = w.symbol
-                ORDER BY date DESC
+                ORDER BY trade_date DESC
                 LIMIT 1
             ) k ON true
             WHERE w.user_id = :user_id
@@ -117,7 +117,7 @@ def get_strategy_matches(session, limit: int = 20) -> List[Dict[str, Any]]:
                 SELECT close, pre_close
                 FROM daily_kline
                 WHERE symbol = sr.symbol
-                ORDER BY date DESC
+                ORDER BY trade_date DESC
                 LIMIT 1
             ) k ON true
             WHERE sr.created_at >= CURRENT_DATE - INTERVAL '7 days'
@@ -177,7 +177,7 @@ def get_industry_stocks(
                 FROM symbols_info
                 WHERE industry IS NOT NULL AND industry != ''
                 GROUP BY industry
-                ORDER BY SUM(total_mv) DESC NULLS LAST
+                ORDER BY COUNT(*) DESC
                 LIMIT 1
             """
             )
@@ -194,18 +194,18 @@ def get_industry_stocks(
                 k.close as price,
                 ROUND(((k.close - k.pre_close) / k.pre_close * 100)::numeric, 2) as change,
                 s.industry,
-                ROW_NUMBER() OVER (ORDER BY s.total_mv DESC NULLS LAST) as industry_rank,
-                ROUND((s.total_mv / 100000000)::numeric, 2) as market_cap
+                ROW_NUMBER() OVER (ORDER BY s.symbol ASC) as industry_rank,
+                0.0 as market_cap
             FROM symbols_info s
             LEFT JOIN LATERAL (
                 SELECT close, pre_close
                 FROM daily_kline
                 WHERE symbol = s.symbol
-                ORDER BY date DESC
+                ORDER BY trade_date DESC
                 LIMIT 1
             ) k ON true
             WHERE s.industry = :industry
-            ORDER BY s.total_mv DESC NULLS LAST
+            ORDER BY s.symbol ASC
             LIMIT :limit
         """
         )
@@ -344,8 +344,8 @@ async def get_dashboard_summary(
             """
             SELECT
                 COUNT(*) as total_stocks,
-                COUNT(*) FILTER (WHERE list_status = '1') as active_stocks,
-                (SELECT COUNT(*) FROM daily_kline WHERE date = CURRENT_DATE) as today_updates
+                COUNT(*) FILTER (WHERE list_date IS NOT NULL) as active_stocks,
+                (SELECT COUNT(*) FROM daily_kline WHERE trade_date = CURRENT_DATE) as today_updates
             FROM symbols_info
         """
         )

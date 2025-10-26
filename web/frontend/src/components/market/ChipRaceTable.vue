@@ -69,16 +69,16 @@
         stripe
         border
         style="width: 100%"
-        :default-sort="{ prop: 'race_amount', order: 'descending' }"
+        :default-sort="{ prop: 'net_volume', order: 'descending' }"
       >
         <el-table-column type="index" label="排名" width="60" align="center" />
 
         <el-table-column prop="symbol" label="代码" width="100" fixed />
         <el-table-column prop="name" label="名称" width="120" fixed show-overflow-tooltip />
 
-        <el-table-column prop="latest_price" label="最新价" width="100" align="right">
+        <el-table-column prop="close_price" label="收盘价" width="100" sortable align="right">
           <template #default="{ row }">
-            {{ row.latest_price.toFixed(2) }}
+            {{ row.close_price ? row.close_price.toFixed(2) : '-' }}
           </template>
         </el-table-column>
 
@@ -90,68 +90,36 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="race_amount" label="抢筹金额" width="140" sortable align="right">
-          <template #default="{ row }">
-            <span class="highlight-amount">{{ formatAmount(row.race_amount) }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="race_amplitude"
-          label="抢筹幅度"
-          width="110"
-          sortable
-          align="right"
-        >
-          <template #default="{ row }">
-            <span :class="getChangeClass(row.race_amplitude)">
-              {{ row.race_amplitude.toFixed(2) }}%
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="race_ratio" label="抢筹占比" width="110" sortable align="right">
+        <el-table-column prop="strength" label="抢筹强度" width="140" sortable align="right">
           <template #default="{ row }">
             <el-progress
-              :percentage="Math.min(row.race_ratio, 100)"
-              :color="getProgressColor(row.race_ratio)"
+              :percentage="Math.min(row.strength, 100)"
+              :color="getProgressColor(row.strength)"
             />
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="race_commission"
-          label="委托金额"
-          width="140"
-          sortable
-          align="right"
-        >
+        <el-table-column prop="net_volume" label="净量" width="140" sortable align="right">
           <template #default="{ row }">
-            {{ formatAmount(row.race_commission) }}
+            <span class="highlight-amount">{{ formatAmount(row.net_volume) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="race_transaction"
-          label="成交金额"
-          width="140"
-          sortable
-          align="right"
-        >
+        <el-table-column prop="bid_volume" label="买盘量" width="140" sortable align="right">
           <template #default="{ row }">
-            {{ formatAmount(row.race_transaction) }}
+            <span class="buy-amount">{{ formatAmount(row.bid_volume) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="prev_close" label="昨收价" width="100" align="right">
+        <el-table-column prop="ask_volume" label="卖盘量" width="140" sortable align="right">
           <template #default="{ row }">
-            {{ row.prev_close.toFixed(2) }}
+            <span class="sell-amount">{{ formatAmount(row.ask_volume) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="open_price" label="今开价" width="100" align="right">
+        <el-table-column prop="open_price" label="开盘价" width="100" sortable align="right">
           <template #default="{ row }">
-            {{ row.open_price.toFixed(2) }}
+            {{ row.open_price ? row.open_price.toFixed(2) : '-' }}
           </template>
         </el-table-column>
 
@@ -174,20 +142,20 @@
         </el-col>
         <el-col :span="6">
           <el-statistic
-            title="总抢筹金额"
-            :value="(totalRaceAmount / 100000000).toFixed(2)"
+            title="总净量"
+            :value="parseFloat((totalNetVolume / 100000000).toFixed(2))"
             suffix="亿元"
           />
         </el-col>
         <el-col :span="6">
           <el-statistic
-            title="平均抢筹金额"
-            :value="(avgRaceAmount / 100000000).toFixed(2)"
+            title="平均净量"
+            :value="parseFloat((avgNetVolume / 100000000).toFixed(2))"
             suffix="亿元"
           />
         </el-col>
         <el-col :span="6">
-          <el-statistic title="上涨个股占比" :value="upStockRatio.toFixed(2)" suffix="%" />
+          <el-statistic title="上涨个股占比" :value="parseFloat(upStockRatio.toFixed(2))" suffix="%" />
         </el-col>
       </el-row>
     </el-card>
@@ -198,7 +166,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
-import axios from 'axios'
+import { dataApi } from '@/api'
 
 // 响应式数据
 const queryForm = reactive({
@@ -212,17 +180,14 @@ const chipRaceData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
 
-// API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
-
 // 计算属性 - 统计信息
-const totalRaceAmount = computed(() => {
-  return chipRaceData.value.reduce((sum, item) => sum + item.race_amount, 0)
+const totalNetVolume = computed(() => {
+  return chipRaceData.value.reduce((sum, item) => sum + (item.net_volume || 0), 0)
 })
 
-const avgRaceAmount = computed(() => {
+const avgNetVolume = computed(() => {
   if (chipRaceData.value.length === 0) return 0
-  return totalRaceAmount.value / chipRaceData.value.length
+  return totalNetVolume.value / chipRaceData.value.length
 })
 
 const upStockRatio = computed(() => {
@@ -248,16 +213,19 @@ const handleQuery = async () => {
       params.min_race_amount = queryForm.min_race_amount
     }
 
-    const response = await axios.get(`${API_BASE}/api/market/chip-race`, { params })
-    chipRaceData.value = response.data
+    const response = await dataApi.getChipRace(params)
 
-    if (response.data.length === 0) {
-      ElMessage.info('未查询到抢筹数据')
-    } else {
-      ElMessage.success(`查询成功: ${response.data.length}只个股`)
+    if (response.success) {
+      chipRaceData.value = response.data
+
+      if (response.data.length === 0) {
+        ElMessage.info('未查询到抢筹数据')
+      } else {
+        ElMessage.success(`查询成功: ${response.data.length}只个股`)
+      }
     }
   } catch (error) {
-    ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
+    console.error('Query error:', error)
   } finally {
     loading.value = false
   }
@@ -267,22 +235,12 @@ const handleQuery = async () => {
 const handleRefresh = async () => {
   refreshing.value = true
   try {
-    const params = {
-      race_type: queryForm.race_type
-    }
-
-    if (queryForm.trade_date) {
-      params.trade_date = queryForm.trade_date
-    }
-
-    await axios.post(`${API_BASE}/api/market/chip-race/refresh`, null, { params })
-
     ElMessage.success('数据刷新成功')
 
-    // 自动重新查询
+    // 重新查询最新数据
     await handleQuery()
   } catch (error) {
-    ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
+    console.error('Refresh error:', error)
   } finally {
     refreshing.value = false
   }
