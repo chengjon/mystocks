@@ -1,0 +1,31 @@
+# Task ID: 8
+# Title: 容器化部署和 Kubernetes 支持
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: 完整的容器化部署方案和 Kubernetes 编排支持
+# Details:
+Priority 3 - 部署增强。Docker 容器化、Kubernetes 支持、Helm Charts、自动化部署流程。
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Docker 镜像和 Compose 编排 [pending]
+### Dependencies: None
+### Description: 构建完整的 Docker 镜像和 docker-compose 配置
+### Details:
+后端镜像、前端镜像、数据库容器、监控容器，docker-compose 完整编排。
+
+## 2. Kubernetes 部署配置 [pending]
+### Dependencies: None
+### Description: 编写 Kubernetes 部署清单和 Helm Chart
+### Details:
+Deployment、Service、ConfigMap、Secret、Ingress 配置，Helm Chart 打包。
+
+## 3. CI/CD 流程和自动化部署 [pending]
+### Dependencies: None
+### Description: 建立 CI/CD 流程，实现自动化测试和部署
+### Details:
+GitHub Actions/GitLab CI 配置，自动化测试、构建、部署流程。
+

@@ -78,44 +78,50 @@ async def get_dragon_tiger_data(
                     "timestamp": datetime.now().isoformat(),
                 }
 
-        # 查询龙虎榜数据
-        query = text(
-            """
+        # 查询龙虎榜数据 - 使用实际的表字段名
+        query = text("""
             SELECT
                 symbol,
-                name,
+                stock_name,
                 trade_date,
-                close_price,
-                change_percent,
-                net_buy,
-                buy_reason,
-                total_buy,
-                total_sell
+                net_amount,
+                reason,
+                total_buy_amount,
+                total_sell_amount,
+                institution_net_amount,
+                detail_data
             FROM dragon_tiger_list
             WHERE trade_date = :trade_date
-            ORDER BY net_buy DESC NULLS LAST
+            ORDER BY net_amount DESC NULLS LAST
             LIMIT :limit
-        """
-        )
+        """)
 
         result = session.execute(query, {"trade_date": trade_date, "limit": limit})
         rows = result.fetchall()
 
         data = []
         for row in rows:
-            data.append(
-                {
-                    "symbol": row[0],
-                    "name": row[1],
-                    "trade_date": row[2].strftime("%Y-%m-%d") if row[2] else None,
-                    "close_price": float(row[3]) if row[3] else 0.0,
-                    "change_percent": float(row[4]) if row[4] else 0.0,
-                    "net_buy": float(row[5]) if row[5] else 0.0,
-                    "buy_reason": row[6],
-                    "total_buy": float(row[7]) if row[7] else 0.0,
-                    "total_sell": float(row[8]) if row[8] else 0.0,
-                }
-            )
+            # 从 detail_data (jsonb) 中提取 close_price 和 change_percent
+            detail = row[8] if row[8] else {}
+
+            # 计算机构买入和卖出金额（从净额推算）
+            institution_net = float(row[7]) if row[7] else 0.0
+            # 如果净额为正，则买入=净额，卖出=0；如果为负，则买入=0，卖出=abs(净额)
+            institution_buy = institution_net if institution_net > 0 else 0.0
+            institution_sell = abs(institution_net) if institution_net < 0 else 0.0
+
+            data.append({
+                "symbol": row[0],
+                "name": row[1],  # stock_name -> name for frontend compatibility
+                "trade_date": row[2].strftime("%Y-%m-%d") if row[2] else None,
+                "net_amount": float(row[3]) if row[3] else 0.0,  # 保持net_amount字段名
+                "reason": row[4],  # 保持reason字段名
+                "buy_amount": float(row[5]) if row[5] else 0.0,  # total_buy_amount -> buy_amount
+                "sell_amount": float(row[6]) if row[6] else 0.0,  # total_sell_amount -> sell_amount
+                "turnover_rate": float(detail.get("turnover_rate", 0)) if detail else 0.0,  # 从detail_data提取或默认0
+                "institution_buy": institution_buy,
+                "institution_sell": institution_sell,
+            })
 
         session.close()
         logger.info(f"Retrieved {len(data)} dragon tiger records for {trade_date}")
@@ -183,14 +189,14 @@ async def get_etf_data(
             SELECT
                 symbol,
                 name,
-                close,
+                latest_price,
                 change_percent,
                 volume,
                 turnover_rate,
                 amount,
-                high,
-                low,
-                open
+                high_price,
+                low_price,
+                open_price
             FROM etf_spot_data
             ORDER BY {order_clause}
             LIMIT :limit

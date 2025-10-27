@@ -208,7 +208,7 @@ app.include_router(
     market_v2.router, tags=["market-v2"]
 )  # market V2路由（东方财富直接API）
 app.include_router(
-    market_v3.router, prefix="/api/market", tags=["market-v3"]
+    market_v3.router, prefix="/api/market/v3", tags=["market-v3"]
 )  # Week 3 Market Data PostgreSQL-Only (4 panels)
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
 app.include_router(

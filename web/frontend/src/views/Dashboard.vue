@@ -626,8 +626,16 @@ const handleRefresh = async () => {
   ElMessage.success('数据已刷新')
 }
 
-onMounted(() => {
-  initCharts()
+onMounted(async () => {
+  // Use nextTick to ensure DOM is fully rendered
+  await nextTick()
+
+  // Add small delay to ensure container has proper dimensions
+  setTimeout(() => {
+    initCharts()
+  }, 150)
+
+  // Load data in parallel
   loadDashboardData()
 })
 </script>

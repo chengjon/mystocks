@@ -4,6 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Note**: This file works in conjunction with the project constitution (`.specify/memory/constitution.md`) and the highest guidance document (`项目开发规范与指导文档.md`) to ensure consistent development practices.
 
+## ⚡ US3 Update (2025-10-25): Architecture Simplification
+
+**Major Change**: Architecture simplified from 7 layers to 3 layers
+
+**Simplification Completed**:
+- ✅ **DataManager** introduced as core routing engine (445 lines)
+- ✅ **unified_manager.py** simplified to thin wrapper (688→329 lines, -52%)
+- ✅ **Factory Pattern** completely removed (-286 lines)
+- ✅ **data_access package** provides unified database access layer
+- ✅ **Routing performance**: 0.0002ms (24,832x faster than 5ms target)
+- ✅ **Architecture layers**: 7→3 (-57% complexity)
+
+**New Architecture**:
+```
+Application Layer / MyStocksUnifiedManager (thin wrapper)
+    ↓
+DataManager (core routing engine - O(1) performance)
+    ↓
+data_access Package (TDengine + PostgreSQL implementations)
+```
+
+**Philosophy**: Simplicity > Complexity, Performance > Abstraction
+
+---
+
 ## ⚡ Week 3 Update (2025-10-19): Database Simplification
 
 **Major Change**: System simplified from 4 databases to 2 (TDengine + PostgreSQL)

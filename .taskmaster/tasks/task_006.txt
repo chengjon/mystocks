@@ -1,0 +1,31 @@
+# Task ID: 6
+# Title: 扩展应用：移动端应用开发
+# Status: pending
+# Dependencies: 2
+# Priority: low
+# Description: 开发 iOS 和 Android 移动应用，提供移动交易体验
+# Details:
+Priority 4 - 移动端应用。使用 React Native 或 Flutter 开发跨平台应用，支持核心功能的移动访问。
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. 移动应用框架选择和基础开发 [pending]
+### Dependencies: None
+### Description: 选择跨平台框架（React Native/Flutter），搭建基础项目架构
+### Details:
+框架选择评估，项目初始化，基础导航和布局设计。
+
+## 2. 核心功能移动实现 [pending]
+### Dependencies: None
+### Description: 实现移动端的核心功能（行情、交易信号、告警、组合管理）
+### Details:
+行情查看、技术分析、交易执行、告警推送、持仓管理。
+
+## 3. 移动端优化和发布 [pending]
+### Dependencies: None
+### Description: 性能优化、用户体验优化、应用商店发布
+### Details:
+离线模式、推送通知、地理定位等移动特性，App Store 和 Google Play 发布。
+
