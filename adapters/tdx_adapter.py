@@ -121,36 +121,40 @@ class TdxDataSource(IDataSource):
 
     def _get_market_code(self, symbol: str) -> int:
         """
-        识别股票代码对应的市场类型
+        识别股票/指数代码对应的市场类型
 
         Args:
-            symbol: 6位数字股票代码 (如'600519', '000001')
+            symbol: 6位数字股票/指数代码 (如'600519', '000001', '399001')
 
         Returns:
-            0 = 深圳证券交易所 (深市主板/中小板/创业板)
-            1 = 上海证券交易所 (沪市主板/科创板)
+            0 = 深圳证券交易所 (深市主板/中小板/创业板/指数)
+            1 = 上海证券交易所 (沪市主板/科创板/指数)
 
         Raises:
-            ValueError: 如果股票代码格式无效或无法识别市场
+            ValueError: 如果代码格式无效或无法识别市场
 
         市场识别规则:
+            股票:
             - 000xxx, 002xxx, 300xxx → 深圳 (主板/中小板/创业板)
             - 600xxx, 601xxx, 603xxx, 688xxx → 上海 (主板/科创板)
+            指数:
+            - 399xxx → 深圳 (深证成指、创业板指等)
+            - 000xxx → 上海 (上证指数等,当作为指数代码时)
         """
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
-            raise ValueError(f"无效的股票代码格式: {symbol} (需要6位数字)")
+            raise ValueError(f"无效的代码格式: {symbol} (需要6位数字)")
 
         prefix = symbol[:3]
 
-        # 深圳市场
-        if prefix in ['000', '002', '300']:
+        # 深圳市场 (股票 + 指数)
+        if prefix in ['000', '002', '300', '399']:
             return 0
 
-        # 上海市场
+        # 上海市场 (股票)
         if prefix in ['600', '601', '603', '688']:
             return 1
 
-        raise ValueError(f"无法识别的股票代码: {symbol} (前缀{prefix}不在已知范围)")
+        raise ValueError(f"无法识别的代码: {symbol} (前缀{prefix}不在已知范围)")
 
     # ==================== T008: 重试装饰器 ====================
 

@@ -1,0 +1,537 @@
+{
+  "dashboard": {
+    "title": "US3 DataManager 性能监控",
+    "tags": ["mystocks", "us3", "datamanager", "routing"],
+    "timezone": "browser",
+    "refresh": "10s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "annotations": {
+      "list": [
+        {
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": false,
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "limit": 100,
+          "name": "路由告警",
+          "showIn": 0,
+          "type": "tags"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "O(1) 路由性能 - 平均决策时间",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT ROUND(avg_routing_time_ms::NUMERIC, 6) as value FROM monitoring.v_routing_performance_24h",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "decimals": 6,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 0.001, "color": "yellow"},
+                {"value": 1.0, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "value_and_name"
+        },
+        "pluginVersion": "9.0.0"
+      },
+      {
+        "id": 2,
+        "title": "今日总操作数",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT total_operations as value FROM monitoring.v_routing_performance_24h",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 10000, "color": "yellow"},
+                {"value": 100000, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 3,
+        "title": "操作成功率",
+        "type": "gauge",
+        "gridPos": {"h": 6, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT ROUND((successful_operations::NUMERIC / NULLIF(total_operations, 0) * 100), 2) as value FROM monitoring.v_routing_performance_24h",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 90, "color": "yellow"},
+                {"value": 99, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        }
+      },
+      {
+        "id": 4,
+        "title": "未解决路由告警",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT COUNT(*) as value FROM monitoring.v_active_routing_alerts",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 5,
+        "title": "数据库目标分布（24小时）",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT target_database as label, operation_count as value FROM monitoring.v_database_distribution_24h",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          },
+          "pieType": "pie",
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          },
+          "displayLabels": ["name", "value", "percent"]
+        }
+      },
+      {
+        "id": 6,
+        "title": "数据库性能对比",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT target_database as \"数据库\", operation_count as \"操作数\", success_rate_percent as \"成功率%\", avg_routing_time_ms as \"平均路由时间(ms)\", avg_operation_time_ms as \"平均操作时间(ms)\" FROM monitoring.v_database_distribution_24h",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "center",
+              "displayMode": "auto"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "成功率%"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "thresholds"
+                  }
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": null, "color": "red"},
+                      {"value": 90, "color": "yellow"},
+                      {"value": 99, "color": "green"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "showHeader": true,
+          "sortBy": []
+        }
+      },
+      {
+        "id": 7,
+        "title": "路由决策时间趋势（5分钟聚合）",
+        "type": "timeseries",
+        "gridPos": {"h": 10, "w": 24, "x": 0, "y": 14},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT time_bucket, target_database, avg_routing_time_ms FROM monitoring.v_routing_performance_timeseries WHERE time_bucket >= NOW() - INTERVAL '6 hours' ORDER BY time_bucket ASC",
+            "format": "time_series",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "decimals": 6,
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "路由时间 (ms)",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              },
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line"
+              }
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 0.001, "color": "yellow"},
+                {"value": 1.0, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "calcs": ["mean", "max", "min"],
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "TOP 10 数据分类使用频率",
+        "type": "bargauge",
+        "gridPos": {"h": 10, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT classification || ' (' || target_database || ')' as metric, operation_count as value FROM monitoring.v_classification_frequency_24h ORDER BY operation_count DESC LIMIT 10",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"}
+          }
+        },
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true,
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "活跃路由告警",
+        "type": "table",
+        "gridPos": {"h": 10, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT alert_type as \"告警类型\", severity as \"严重程度\", classification as \"数据分类\", target_database as \"目标数据库\", ROUND(metric_value::NUMERIC, 6) as \"指标值\", message as \"消息\", created_at as \"创建时间\" FROM monitoring.v_active_routing_alerts ORDER BY created_at DESC LIMIT 20",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "left",
+              "displayMode": "auto"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "严重程度"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "red"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "showHeader": true,
+          "sortBy": []
+        }
+      },
+      {
+        "id": 10,
+        "title": "操作总时间分布（含路由时间）",
+        "type": "timeseries",
+        "gridPos": {"h": 10, "w": 24, "x": 0, "y": 34},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT time_bucket, target_database, avg_operation_time_ms FROM monitoring.v_routing_performance_timeseries WHERE time_bucket >= NOW() - INTERVAL '6 hours' ORDER BY time_bucket ASC",
+            "format": "time_series",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "操作时间 (ms)",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              },
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              }
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "calcs": ["mean", "max"],
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "慢路由操作（>1ms）",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 44},
+        "targets": [
+          {
+            "datasource": "MyStocks-PostgreSQL",
+            "rawSql": "SELECT operation_id as \"操作ID\", classification as \"数据分类\", target_database as \"目标数据库\", ROUND(routing_decision_time_ms::NUMERIC, 6) as \"路由时间(ms)\", ROUND(operation_duration_ms::NUMERIC, 3) as \"总时间(ms)\", table_name as \"表名\", data_count as \"数据量\", created_at as \"时间\" FROM monitoring.v_slow_routing_operations ORDER BY routing_decision_time_ms DESC LIMIT 50",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "left",
+              "displayMode": "auto"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "路由时间(ms)"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "thresholds"
+                  }
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": null, "color": "green"},
+                      {"value": 1, "color": "yellow"},
+                      {"value": 5, "color": "red"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "路由时间(ms)"
+            }
+          ]
+        }
+      }
+    ],
+    "schemaVersion": 36,
+    "style": "dark",
+    "templating": {
+      "list": []
+    },
+    "version": 1
+  },
+  "folderId": null,
+  "overwrite": true
+}

@@ -73,3 +73,67 @@
   position: sticky;
   z-index: 11; /* Above loading mask */
 }
+
+/* ============================================
+   Watchlist Group Highlight Styles (FR-016)
+   6 distinct color schemes for group differentiation
+   ============================================ */
+
+/* Group 1: Blue Theme */
+.group-highlight-0 {
+  background-color: rgba(64, 158, 255, 0.05) !important; /* Element Plus primary blue */
+}
+.group-highlight-0:hover {
+  background-color: rgba(64, 158, 255, 0.1) !important;
+}
+
+/* Group 2: Green Theme */
+.group-highlight-1 {
+  background-color: rgba(103, 194, 58, 0.05) !important; /* Element Plus success green */
+}
+.group-highlight-1:hover {
+  background-color: rgba(103, 194, 58, 0.1) !important;
+}
+
+/* Group 3: Orange Theme */
+.group-highlight-2 {
+  background-color: rgba(230, 162, 60, 0.05) !important; /* Element Plus warning orange */
+}
+.group-highlight-2:hover {
+  background-color: rgba(230, 162, 60, 0.1) !important;
+}
+
+/* Group 4: Purple Theme */
+.group-highlight-3 {
+  background-color: rgba(139, 92, 246, 0.05) !important; /* Purple */
+}
+.group-highlight-3:hover {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Group 5: Cyan Theme */
+.group-highlight-4 {
+  background-color: rgba(6, 182, 212, 0.05) !important; /* Cyan */
+}
+.group-highlight-4:hover {
+  background-color: rgba(6, 182, 212, 0.1) !important;
+}
+
+/* Group 6: Pink Theme */
+.group-highlight-5 {
+  background-color: rgba(236, 72, 153, 0.05) !important; /* Pink */
+}
+.group-highlight-5:hover {
+  background-color: rgba(236, 72, 153, 0.1) !important;
+}
+
+/* Ensure highlight works with striped tables */
+.sticky-header-table.el-table--striped .group-highlight-0.el-table__row--striped,
+.sticky-header-table.el-table--striped .group-highlight-1.el-table__row--striped,
+.sticky-header-table.el-table--striped .group-highlight-2.el-table__row--striped,
+.sticky-header-table.el-table--striped .group-highlight-3.el-table__row--striped,
+.sticky-header-table.el-table--striped .group-highlight-4.el-table__row--striped,
+.sticky-header-table.el-table--striped .group-highlight-5.el-table__row--striped {
+  /* Slightly darker for striped rows */
+  opacity: 1.2;
+}

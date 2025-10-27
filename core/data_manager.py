@@ -27,6 +27,14 @@ from core.data_classification import DataClassification, DatabaseTarget
 
 logger = logging.getLogger(__name__)
 
+# 尝试导入新的监控模块（可选依赖）
+try:
+    from core.datamanager_monitoring import DataManagerMonitor, RoutingOperationContext
+    MONITORING_AVAILABLE = True
+except ImportError:
+    MONITORING_AVAILABLE = False
+    logger.warning("DataManagerMonitor not available - monitoring disabled")
+
 
 class _NullMonitoring:
     """
@@ -127,33 +135,32 @@ class DataManager:
         DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
     }
 
-    def __init__(self, enable_monitoring: bool = False):
+    def __init__(self, enable_monitoring: bool = True):
         """
         初始化DataManager
 
         Args:
-            enable_monitoring: 是否启用监控 (默认False以简化架构)
+            enable_monitoring: 是否启用Grafana监控 (默认True以使用新的监控系统)
         """
-        # 监控开关 (US3简化 - 默认关闭)
-        self.enable_monitoring = enable_monitoring
-        self._monitoring_db = None
-        self._performance_monitor = None
+        # 监控开关 (US3 - 使用新的 Grafana 监控)
+        self.enable_monitoring = enable_monitoring and MONITORING_AVAILABLE
+        self.monitor = None
 
-        # 先初始化监控组件（数据访问层需要）
-        if enable_monitoring:
+        # 初始化新的监控组件
+        if self.enable_monitoring:
             try:
-                from monitoring.monitoring_database import get_monitoring_database
-                from monitoring.performance_monitor import get_performance_monitor
-
-                self._monitoring_db = get_monitoring_database()
-                self._performance_monitor = get_performance_monitor()
+                self.monitor = DataManagerMonitor()
+                logger.info(f"DataManager 监控: {'已启用' if self.monitor.enabled else '已禁用'}")
             except Exception as e:
                 logger.warning(f"监控组件初始化失败: {e}")
                 self.enable_monitoring = False
+                self.monitor = None
 
         # 如果监控未启用，使用null实现
-        if not self.enable_monitoring or self._monitoring_db is None:
+        if not self.enable_monitoring:
             null_monitor = _NullMonitoring()
+            self.monitor = null_monitor
+            # 保持向后兼容
             self._monitoring_db = null_monitor
             self._performance_monitor = null_monitor
 
@@ -249,7 +256,7 @@ class DataManager:
         **kwargs,
     ) -> bool:
         """
-        保存数据到正确的数据库
+        保存数据到正确的数据库 (带 Grafana 监控)
 
         Args:
             classification: 数据分类
@@ -260,55 +267,89 @@ class DataManager:
         Returns:
             True if successful, False otherwise
         """
-        start_time = time.time()
+        # 获取目标数据库
+        target_db = self.get_target_database(classification)
 
-        try:
-            # 快速路由决策 (<5ms目标)
-            target_db = self.get_target_database(classification)
+        # 使用监控上下文（如果启用）
+        if self.enable_monitoring and MONITORING_AVAILABLE:
+            with RoutingOperationContext(
+                self.monitor,
+                classification=classification.value,
+                target_database=target_db.value,
+                operation_type='save_data',
+                table_name=table_name
+            ) as ctx:
+                # 标记路由决策完成
+                ctx.mark_routing_complete()
 
-            # 根据目标数据库选择访问层
-            if target_db == DatabaseTarget.TDENGINE:
-                success = self._tdengine.save_data(
-                    data, classification, table_name, **kwargs
-                )
-            else:  # DatabaseTarget.POSTGRESQL
-                success = self._postgresql.save_data(
-                    data, classification, table_name, **kwargs
-                )
+                # 执行实际操作
+                try:
+                    if target_db == DatabaseTarget.TDENGINE:
+                        success = self._tdengine.save_data(
+                            data, classification, table_name, **kwargs
+                        )
+                    else:  # DatabaseTarget.POSTGRESQL
+                        success = self._postgresql.save_data(
+                            data, classification, table_name, **kwargs
+                        )
 
-            # 记录性能指标
-            duration_ms = (time.time() - start_time) * 1000
+                    # 记录结果
+                    ctx.set_result(
+                        success=success,
+                        data_count=len(data) if hasattr(data, '__len__') else 0
+                    )
 
-            if self.enable_monitoring and self._performance_monitor:
-                self._performance_monitor.record_operation(
-                    operation="save_data",
-                    classification=classification.value,
-                    duration_ms=duration_ms,
-                    success=success,
-                )
+                    if success:
+                        logger.debug(
+                            f"保存数据成功: {classification.value} → {target_db.value} "
+                            f"({len(data)} rows)"
+                        )
+                    else:
+                        logger.error(
+                            f"保存数据失败: {classification.value} → {target_db.value}"
+                        )
 
-            if success:
-                logger.debug(
-                    f"保存数据成功: {classification.value} → {target_db.value} "
-                    f"({len(data)} rows, {duration_ms:.2f}ms)"
-                )
-            else:
-                logger.error(
-                    f"保存数据失败: {classification.value} → {target_db.value}"
-                )
+                    return success
 
-            return success
+                except Exception as e:
+                    logger.error(f"保存数据异常: {classification.value} - {str(e)}")
+                    logger.debug(traceback.format_exc())
+                    ctx.set_result(success=False, error_message=str(e))
+                    return False
+        else:
+            # 无监控模式 (向后兼容)
+            try:
+                if target_db == DatabaseTarget.TDENGINE:
+                    success = self._tdengine.save_data(
+                        data, classification, table_name, **kwargs
+                    )
+                else:  # DatabaseTarget.POSTGRESQL
+                    success = self._postgresql.save_data(
+                        data, classification, table_name, **kwargs
+                    )
 
-        except Exception as e:
-            logger.error(f"保存数据异常: {classification.value} - {str(e)}")
-            logger.debug(traceback.format_exc())
-            return False
+                if success:
+                    logger.debug(
+                        f"保存数据成功: {classification.value} → {target_db.value} "
+                        f"({len(data)} rows)"
+                    )
+                else:
+                    logger.error(
+                        f"保存数据失败: {classification.value} → {target_db.value}"
+                    )
+
+                return success
+
+            except Exception as e:
+                logger.error(f"保存数据异常: {classification.value} - {str(e)}")
+                logger.debug(traceback.format_exc())
+                return False
 
     def load_data(
         self, classification: DataClassification, table_name: str, **filters
     ) -> Optional[pd.DataFrame]:
         """
-        从正确的数据库加载数据
+        从正确的数据库加载数据 (带 Grafana 监控)
 
         Args:
             classification: 数据分类
@@ -318,45 +359,75 @@ class DataManager:
         Returns:
             pandas DataFrame if successful, None otherwise
         """
-        start_time = time.time()
+        # 获取目标数据库
+        target_db = self.get_target_database(classification)
 
-        try:
-            # 快速路由决策
-            target_db = self.get_target_database(classification)
+        # 使用监控上下文（如果启用）
+        if self.enable_monitoring and MONITORING_AVAILABLE:
+            with RoutingOperationContext(
+                self.monitor,
+                classification=classification.value,
+                target_database=target_db.value,
+                operation_type='load_data',
+                table_name=table_name
+            ) as ctx:
+                # 标记路由决策完成
+                ctx.mark_routing_complete()
 
-            # 根据目标数据库选择访问层
-            if target_db == DatabaseTarget.TDENGINE:
-                data = self._tdengine.load_data(table_name, **filters)
-            else:  # DatabaseTarget.POSTGRESQL
-                data = self._postgresql.load_data(table_name, **filters)
+                # 执行实际操作
+                try:
+                    if target_db == DatabaseTarget.TDENGINE:
+                        data = self._tdengine.load_data(table_name, **filters)
+                    else:  # DatabaseTarget.POSTGRESQL
+                        data = self._postgresql.load_data(table_name, **filters)
 
-            # 记录性能指标
-            duration_ms = (time.time() - start_time) * 1000
+                    # 记录结果
+                    ctx.set_result(
+                        success=(data is not None),
+                        data_count=len(data) if data is not None else 0
+                    )
 
-            if self.enable_monitoring and self._performance_monitor:
-                self._performance_monitor.record_operation(
-                    operation="load_data",
-                    classification=classification.value,
-                    duration_ms=duration_ms,
-                    success=(data is not None),
-                )
+                    if data is not None:
+                        logger.debug(
+                            f"加载数据成功: {classification.value} → {target_db.value} "
+                            f"({len(data)} rows)"
+                        )
+                    else:
+                        logger.warning(
+                            f"加载数据为空: {classification.value} → {target_db.value}"
+                        )
 
-            if data is not None:
-                logger.debug(
-                    f"加载数据成功: {classification.value} → {target_db.value} "
-                    f"({len(data)} rows, {duration_ms:.2f}ms)"
-                )
-            else:
-                logger.warning(
-                    f"加载数据为空: {classification.value} → {target_db.value}"
-                )
+                    return data
 
-            return data
+                except Exception as e:
+                    logger.error(f"加载数据异常: {classification.value} - {str(e)}")
+                    logger.debug(traceback.format_exc())
+                    ctx.set_result(success=False, error_message=str(e))
+                    return None
+        else:
+            # 无监控模式 (向后兼容)
+            try:
+                if target_db == DatabaseTarget.TDENGINE:
+                    data = self._tdengine.load_data(table_name, **filters)
+                else:  # DatabaseTarget.POSTGRESQL
+                    data = self._postgresql.load_data(table_name, **filters)
 
-        except Exception as e:
-            logger.error(f"加载数据异常: {classification.value} - {str(e)}")
-            logger.debug(traceback.format_exc())
-            return None
+                if data is not None:
+                    logger.debug(
+                        f"加载数据成功: {classification.value} → {target_db.value} "
+                        f"({len(data)} rows)"
+                    )
+                else:
+                    logger.warning(
+                        f"加载数据为空: {classification.value} → {target_db.value}"
+                    )
+
+                return data
+
+            except Exception as e:
+                logger.error(f"加载数据异常: {classification.value} - {str(e)}")
+                logger.debug(traceback.format_exc())
+                return None
 
     def get_routing_stats(self) -> Dict[str, Any]:
         """

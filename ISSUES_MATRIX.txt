@@ -1,0 +1,363 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                        COMPREHENSIVE CODE REVIEW MATRIX                       ║
+║                           MyStocks Web Application                             ║
+║                                  2025-10-27                                   ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STATUS SUMMARY                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ✅ Frontend Source Code    : 85% GOOD (fixes are present)                 │
+│  ❌ Backend Source Code     : 70% GOOD (critical SQL bug found)            │
+│  🟡 Build/Cache System      : NEEDS ATTENTION (likely root cause)          │
+│                                                                             │
+│  Overall Code Health        : YELLOW - Fixes needed, then ready           │
+│  Estimated Fix Time         : 30 minutes                                   │
+│  Estimated Test Time        : 15 minutes                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ISSUE BREAKDOWN BY SEVERITY                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  P1 CRITICAL  : 2 issues                                                   │
+│    1. SQL column "date" doesn't exist (backend)                            │
+│    2. Frontend build cache not cleared (dev environment)                   │
+│                                                                             │
+│  P2 HIGH      : 2 issues                                                   │
+│    1. Dashboard missing auth check before API call                         │
+│    2. .isoformat() lacks type safety                                       │
+│                                                                             │
+│  P3 MEDIUM    : 0 issues                                                   │
+│                                                                             │
+│  ✅ FIXED     : 2 issues (already in code)                                │
+│    1. ECharts DOM initialization                                           │
+│    2. Vue Props type validation                                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ISSUE #1: SQL COLUMN NAME ERROR (P1 CRITICAL)                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ File      : web/backend/app/core/database.py                              │
+│ Lines     : 173, 174, 182, 184, 185, 187                                  │
+│ Severity  : P1 CRITICAL                                                    │
+│ Status    : ❌ NOT FIXED                                                   │
+│                                                                             │
+│ Problem   :                                                                │
+│   ❌ ORDER BY date              (column doesn't exist)                     │
+│   ❌ WHERE date >= :start_date  (column doesn't exist)                     │
+│   ❌ SELECT date, open, ...     (column doesn't exist)                     │
+│                                                                             │
+│ Solution  :                                                                │
+│   ✅ ORDER BY trade_date              (correct column name)               │
+│   ✅ WHERE trade_date >= :start_date  (correct column name)               │
+│   ✅ SELECT trade_date, open, ...     (correct column name)               │
+│                                                                             │
+│ Impact    : Breaks all daily kline queries → 500 errors                   │
+│ Fix Time  : 5 minutes                                                      │
+│ Blocking  : YES - Dashboard API fails completely                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ISSUE #2: FRONTEND BUILD CACHE NOT CLEARED (P1 CRITICAL)                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ Location  : Vite dev server + Browser cache                               │
+│ Severity  : P1 CRITICAL                                                    │
+│ Status    : ⚠️  NEEDS ACTION                                               │
+│                                                                             │
+│ Problem   :                                                                │
+│   • Source code has fixes ✅                                               │
+│   • But Vite serving old compiled code ❌                                  │
+│   • Browser has old .js files cached ❌                                    │
+│   • User sees old errors even though code is fixed                        │
+│                                                                             │
+│ Why It Happens:                                                            │
+│   1. Vite dev server still running old version                            │
+│   2. node_modules/.vite cache not cleared                                 │
+│   3. Browser cache has old JavaScript bundles                             │
+│                                                                             │
+│ Solution  :                                                                │
+│   1. pkill -f "vite"           (stop server)                              │
+│   2. rm -rf node_modules/.vite (clear cache)                              │
+│   3. npm install               (reinstall)                                │
+│   4. npm run dev               (restart)                                  │
+│   5. Ctrl+Shift+R              (hard refresh in browser)                  │
+│                                                                             │
+│ Impact    : Users can't see that fixes work                               │
+│ Fix Time  : 5 minutes                                                      │
+│ Blocking  : YES - Prevents verification of fixes                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ISSUE #3: DASHBOARD MISSING AUTHENTICATION CHECK (P2 HIGH)                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ File      : web/frontend/src/views/Dashboard.vue                          │
+│ Lines     : 259-268 (loadDashboardData function)                          │
+│ Severity  : P2 HIGH                                                        │
+│ Status    : ⚠️  NEEDS IMPLEMENTATION                                       │
+│                                                                             │
+│ Problem   :                                                                │
+│   • Dashboard calls API without checking token                            │
+│   • If user not logged in, API returns 401                                │
+│   • Frontend doesn't handle 401 specifically                              │
+│   • Users see confusing error messages                                    │
+│                                                                             │
+│ Current Behavior:                                                          │
+│   try {                                                                    │
+│     const data = await dataApi.getDashboardSummary()                     │
+│     // ...                                                                 │
+│   } catch (error) {                                                       │
+│     handleApiError(error)  // Generic error handler                      │
+│   }                                                                        │
+│                                                                             │
+│ Required Behavior:                                                         │
+│   const token = localStorage.getItem('token')                             │
+│   if (!token) {                                                            │
+│     ElMessage.error('请先登录 (Please log in first)')                     │
+│     await router.push('/login')                                           │
+│     return                                                                 │
+│   }                                                                        │
+│   try {                                                                    │
+│     const data = await dataApi.getDashboardSummary()                     │
+│     // ...                                                                 │
+│   } catch (error) {                                                       │
+│     if (error.response?.status === 401) {                                 │
+│       ElMessage.error('登录已过期，请重新登录')                           │
+│       localStorage.removeItem('token')                                   │
+│       await router.push('/login')                                         │
+│     } else {                                                              │
+│       handleApiError(error)                                               │
+│     }                                                                      │
+│   }                                                                        │
+│                                                                             │
+│ Impact    : Confusing error messages for unauthenticated users            │
+│ Fix Time  : 15 minutes                                                     │
+│ Blocking  : NO - Works but UX is poor                                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ISSUE #4: ISOFORMAT() LACKS TYPE SAFETY (P2 MEDIUM)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ File      : web/backend/app/tasks/wencai_tasks.py (line 392 + others)    │
+│ Severity  : P2 MEDIUM                                                      │
+│ Status    : ⚠️  NEEDS IMPLEMENTATION                                       │
+│                                                                             │
+│ Problem   :                                                                │
+│   'latest_fetch': latest_fetch.isoformat() if latest_fetch else None     │
+│                   ^^^^^^^^^^^^^^^^^^^^^^                                   │
+│   • Assumes latest_fetch is datetime object                               │
+│   • If it's already a string, .isoformat() fails                          │
+│   • Type checking missing                                                 │
+│                                                                             │
+│ Risk      :                                                                │
+│   - If database returns string instead of datetime                        │
+│   - Code crashes with AttributeError                                      │
+│   - Returns 500 error to frontend                                         │
+│                                                                             │
+│ Solution  :                                                                │
+│   def safe_isoformat(dt):                                                 │
+│       if dt is None:                                                      │
+│           return None                                                     │
+│       if isinstance(dt, str):                                             │
+│           return dt                                                       │
+│       if hasattr(dt, 'isoformat') and callable(dt.isoformat):            │
+│           return dt.isoformat()                                           │
+│       return str(dt)                                                      │
+│                                                                             │
+│   # Usage:                                                                 │
+│   'latest_fetch': safe_isoformat(latest_fetch)                           │
+│                                                                             │
+│ Impact    : Potential crashes in Wencai data service                      │
+│ Fix Time  : 10 minutes                                                     │
+│ Blocking  : NO - Only manifests if data type changes                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ VERIFIED FIXES (Already in Code) ✅                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ FIXED #1: ECharts DOM Initialization                                      │
+│   File    : web/frontend/src/views/Dashboard.vue                          │
+│   Lines   : 579 (await nextTick), 410-414 (DOM size check)                │
+│   Status  : ✅ CORRECTLY IMPLEMENTED                                       │
+│                                                                             │
+│   Evidence:                                                                │
+│   const initCharts = async () => {                                        │
+│     await nextTick()  // ✅ Waits for DOM                                 │
+│                                                                             │
+│     if (element.clientWidth === 0 || element.clientHeight === 0) {      │
+│       setTimeout(initLeadingSectorChart, 100)  // ✅ Retry with delay   │
+│       return                                                              │
+│     }                                                                      │
+│     leadingSectorChart = echarts.init(element)                           │
+│   }                                                                        │
+│                                                                             │
+│   Issue   : Reported as "Can't get DOM width or height"                   │
+│   Root    : Frontend cache not cleared (see Issue #2)                     │
+│                                                                             │
+│ ─────────────────────────────────────────────────────────────────────────│
+│                                                                             │
+│ FIXED #2: Vue Props Type Validation                                       │
+│   Files   : ChipRaceTable.vue, LongHuBangTable.vue                        │
+│   Lines   : Multiple :value bindings                                      │
+│   Status  : ✅ CORRECTLY IMPLEMENTED                                       │
+│                                                                             │
+│   Evidence:                                                                │
+│   <el-statistic                                                            │
+│     title="总净量"                                                         │
+│     :value="parseFloat((totalNetVolume / 100000000).toFixed(2))"          │
+│     suffix="亿元"                                                          │
+│   />                                                                       │
+│                                                                             │
+│   Issue   : Reported as "Invalid prop: type check failed for value"       │
+│   Root    : Frontend cache not cleared (see Issue #2)                     │
+│                                                                             │
+│ ─────────────────────────────────────────────────────────────────────────│
+│                                                                             │
+│ FIXED #3: Database Column Names (Partial)                                 │
+│   File    : web/backend/app/api/dashboard.py                              │
+│   Lines   : 50, 120, 204 (ORDER BY trade_date)                            │
+│   Status  : ✅ CORRECTLY IMPLEMENTED                                       │
+│                                                                             │
+│   Note    : But NOT fixed in database.py (see Issue #1)                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FILE-BY-FILE CODE QUALITY SCORE                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ Frontend                                                                   │
+│ ────────────────────────────────────────────────────────────────────────  │
+│ Dashboard.vue                           : 85/100  (fixes present)         │
+│ ChipRaceTable.vue                       : 90/100  (fixes present)         │
+│ LongHuBangTable.vue                     : 90/100  (fixes present)         │
+│ api/index.js                            : 85/100  (auth interceptor OK)  │
+│ utils/errorHandler.js                   : 80/100  (generic handling)     │
+│                                          ────────                         │
+│ Frontend Average                        : 86/100  ✅ GOOD                │
+│                                                                             │
+│ Backend                                                                    │
+│ ────────────────────────────────────────────────────────────────────────  │
+│ api/dashboard.py                        : 85/100  (auth + SQL OK)        │
+│ core/database.py                        : 40/100  (CRITICAL SQL BUG) ❌   │
+│ core/security.py                        : 75/100  (mock auth only)       │
+│ main.py                                 : 90/100  (routing correct)      │
+│ services/wencai_service.py              : 80/100  (type safety missing)  │
+│                                          ────────                         │
+│ Backend Average                         : 74/100  🟡 NEEDS FIXES        │
+│                                                                             │
+│ Overall Code Quality                    : 80/100  🟡 YELLOW              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ACTION PLAN (Priority Order)                                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ STEP 1: FIX DATABASE SQL BUG (5 minutes)                                   │
+│ ─────────────────────────────────────────────────────────────────────────  │
+│ File: web/backend/app/core/database.py                                    │
+│ Action: Replace "date" with "trade_date" (6 occurrences)                  │
+│ Reason: Unblocks Dashboard API                                            │
+│ Check: psql → SELECT trade_date FROM daily_kline LIMIT 1;                 │
+│                                                                             │
+│ STEP 2: CLEAR FRONTEND CACHE (5 minutes)                                  │
+│ ─────────────────────────────────────────────────────────────────────────  │
+│ Commands:                                                                  │
+│   pkill -f "vite"                 # Stop server                           │
+│   rm -rf node_modules/.vite       # Clear Vite cache                      │
+│   npm install                     # Reinstall dependencies                │
+│   npm run dev                     # Restart dev server                    │
+│ Browser: Ctrl+Shift+R             # Hard refresh to clear browser cache   │
+│ Reason: Users see actual fixes                                            │
+│                                                                             │
+│ STEP 3: ADD DASHBOARD AUTH CHECK (15 minutes)                             │
+│ ─────────────────────────────────────────────────────────────────────────  │
+│ File: web/frontend/src/views/Dashboard.vue                                │
+│ Action: Add token check + 401 error handler in loadDashboardData()       │
+│ Reason: Better error messages for users                                   │
+│ Test: Navigate to Dashboard → Check console for no 401 errors             │
+│                                                                             │
+│ STEP 4: ADD TYPE SAFETY (10 minutes)                                      │
+│ ─────────────────────────────────────────────────────────────────────────  │
+│ File: web/backend/app/tasks/wencai_tasks.py                               │
+│ Action: Add safe_isoformat() helper + update call sites                   │
+│ Reason: Prevent crashes on type mismatches                                │
+│ Test: Backend logs for no AttributeError                                  │
+│                                                                             │
+│ TOTAL TIME: ~35 minutes (5+5+15+10)                                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TESTING CHECKLIST                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ After Each Fix                                                             │
+│ [ ] Backend service starts without errors                                 │
+│ [ ] PostgreSQL connections successful                                     │
+│ [ ] No SQL syntax errors in logs                                          │
+│ [ ] Frontend dev server starts successfully                               │
+│ [ ] No compilation errors in console                                      │
+│ [ ] Browser hard refresh shows no cache                                   │
+│                                                                             │
+│ After All Fixes                                                            │
+│ [ ] Test authentication flow (login/logout)                               │
+│ [ ] Test Dashboard page loads without errors                              │
+│ [ ] Test Dashboard API returns data (not 500)                             │
+│ [ ] Test ECharts render without DOM size errors                           │
+│ [ ] Test Props validation (no Vue warnings)                               │
+│ [ ] Test error handling (401 redirects to login)                          │
+│ [ ] Test network requests (Bearer token in header)                        │
+│ [ ] Test database queries (trade_date column works)                       │
+│                                                                             │
+│ Browser DevTools (F12)                                                     │
+│ [ ] Console: No red errors                                                │
+│ [ ] Console: No yellow warnings (props, events)                           │
+│ [ ] Network: All API requests 200 or 401 (not 500)                        │
+│ [ ] Network: Authorization header present                                 │
+│ [ ] Application: localStorage has token                                   │
+│ [ ] Elements: Charts have non-zero width/height                           │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SUMMARY STATISTICS                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ Total Issues Found                 : 4                                    │
+│   - Critical (P1)                  : 2 (SQL, Cache)                       │
+│   - High (P2)                      : 2 (Auth, Type safety)                │
+│                                                                             │
+│ Issues Already Fixed in Code       : 2 (not visible due to cache)         │
+│   - ECharts DOM initialization     : ✅ Present                           │
+│   - Vue Props binding              : ✅ Present                           │
+│                                                                             │
+│ Issues Requiring Fixes             : 4                                    │
+│   - Real bugs                      : 1 (SQL column names)                 │
+│   - Environment issues             : 1 (build cache)                      │
+│   - Missing implementations        : 2 (auth, type safety)                │
+│                                                                             │
+│ Estimated Fix Time                 : 35 minutes                           │
+│ Estimated Test Time                : 15 minutes                           │
+│ Total Time to Production Ready      : 50 minutes                          │
+│                                                                             │
+│ Code Quality Score                 : 80/100 (Yellow - Needs Attention)   │
+│ Security Risk Level                : LOW (JWT + Parameterized Queries)   │
+│ Performance Risk Level             : LOW (Proper DB indexing)             │
+│ User Impact                        : HIGH (Dashboard broken without fixes)│
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+

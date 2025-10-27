@@ -1,0 +1,571 @@
+# MyStocks 量化交易数据管理系统 - 项目需求文档
+
+## Overview
+
+MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。
+
+**核心问题**: 量化交易需要处理不同特性的数据（高频时序数据、日线数据、参考数据、衍生数据、交易数据），传统单数据库方案无法兼顾性能和复杂性。
+
+**解决方案**: 采用 US3 简化架构（3层设计），基于 DataManager 核心引擎实现 O(1) 性能路由决策，提供配置驱动的自动化管理。
+
+**目标用户**: 量化交易团队、数据分析师、交易系统开发者
+
+**价值主张**:
+- 统一的数据访��接口，隐藏底层数据库差异
+- 自动路由策略，选择最优存储引擎
+- 配置驱动管理，YAML配置自动创建表结构
+- 极致性能，O(1) 路由决策（0.0002ms）
+- 完整的 Web 管理平台，提供可视化操作
+
+## Core Features
+
+### 1. 双数据库智能存储策略 (Week 3+ 实现)
+**特点**: 根据数据特性自动选择最优数据库
+
+- **TDengine 高频时序专用**
+  - 处理 Tick 数据、分钟K线、实时深度数据
+  - 极高压缩比 20:1，超强写入性能
+  - 适合毫秒级实时数据处理
+
+- **PostgreSQL + TimescaleDB 通用数据仓库**
+  - 处理日线K线、技术指标、量化因子
+  - 参考数据、交易数据、元数据
+  - 自动分区、复杂查询、ACID事务保证
+
+**为什么重要**: 用正确的工具做正确的事，性能和成本最优
+
+### 2. US3 简化架构（3层设计）
+**特点**: 简化的高性能架构设计
+
+- **应用层**: MyStocksUnifiedManager（薄包装器，329行）
+- **核心层**: DataManager（路由引擎，445行，O(1)性能）
+- **数据访问层**: TDengineDataAccess + PostgreSQLDataAccess
+
+**关键成果**:
+- 架构复杂度降低 57%（7层→3层）
+- 路由性能超出目标 24,832 倍
+- 代码质量：类型注解 95%，圈复杂度 <10
+
+### 3. 统一数据访问接口
+**特点**: 统一的 Python API，自动处理底层数据库选择
+
+- 单一的 MyStocksUnifiedManager 入口
+- save_data_by_classification() - 自动路由保存
+- load_data_by_classification() - 智能查询
+- 支持增量、批量、实时、定时等多种更新模式
+
+**为什么重要**: 开发者只需关注业务逻辑，不需要管理不同数据库
+
+### 4. 配置驱动的表管理
+**特点**: 所有表结构通过 YAML 配置定义
+
+- ConfigDrivenTableManager 自动创建和验证表
+- table_config.yaml 定义所有表结构
+- 支持 TDengine 和 PostgreSQL 表定义
+- 自动建表、自动扩展
+
+**为什么重要**: 减少手工操作，提高系统可维护性
+
+### 5. Web 管理平台（FastAPI + Vue3）
+**特点**: 现代化的全栈管理界面
+
+**后端**:
+- FastAPI 高性能异步 API
+- WebSocket 实时推送支持
+- Swagger/OpenAPI 完整文档
+- JWT 身份验证
+
+**前端**:
+- Vue 3 + Element Plus 组件库
+- 响应式设计，支持多设备
+- 实时监控面板
+
+**功能模块**:
+- 龙虎榜监控 - 异常交易跟踪
+- 资金流向分析 - 行业资金流向
+- 技术指标可视化 - 26个专业指标
+- 交易信号展示 - 策略信号图表
+- 数据源健康监控 - 数据源优先级和故障转移
+
+### 6. ValueCell 多智能体系统迁移
+**特点**: 从 ValueCell 项目迁移的核心量化功能
+
+**Phase 1 - 实时监控系统**:
+- 7种告警规则类型
+- 龙虎榜实时跟踪
+- 资金流向分析
+- 自定义告警规则
+
+**Phase 2 - 增强技术分析**:
+- 26个专业技术指标
+- 4大指标类别（趋势、动量、波动、成交量）
+- 交易信号生成
+- 指标组合分析
+
+**Phase 3 - 多数据源集成**:
+- 数据源优先级路由
+- 自动故障转移
+- 官方公告监控（类似 SEC Agent）
+- 数据源健康监控
+
+### 7. 完整的监控和告警系统
+**特点**: 独立的监控数据库和自动化告警
+
+- MonitoringDatabase - 独立监控数据库
+- DataQualityMonitor - 数据完整性检查
+- PerformanceMonitor - 查询性能追踪
+- AlertManager - 多渠道告警（邮件、webhook、日志）
+- 自动故障检测和恢复
+
+## User Experience
+
+### 用户画像
+
+**1. 数据工程师**
+- 需要: 快速构建和维护数据管道
+- 使用: ConfigDrivenTableManager、批量数据导入
+- 关心: 数据准确性、更新延迟、系统可靠性
+
+**2. 量化分析师**
+- 需要: 方便的数据查询和分析
+- 使用: Python API、技术指标、交易信号
+- 关心: 数据准确性、查询速度、指标准确度
+
+**3. 系统管理员**
+- 需要: 系统健康监控和故障排查
+- 使用: Web 管理平台、监控告警、数据源管理
+- 关心: 系统可用性、数据质量、性能指标
+
+**4. 交易执行人员**
+- 需要: 实时市场信息和交易信号
+- 使用: Web 仪表板、龙虎榜、资金流向、交易信号
+- 关心: 数据实时性、信号准确性、易用性
+
+### 关键用户流程
+
+**流程1: 新增数据源集成**
+1. 数据工程师在 table_config.yaml 定义新表结构
+2. 系统自动创建表（TDengine 或 PostgreSQL）
+3. 编写适配器实现数据采集
+4. 系统自动路由数据到最优数据库
+5. 监控系统自动追踪数据质量
+
+**流程2: 数据查询和分析**
+1. 分析师调用 load_data_by_classification()
+2. 系统自动选择数据库和优化查询
+3. 返回统一格式的数据
+4. 支持缓存、预聚合等优化
+
+**流程3: 实时监控告警**
+1. 系统监控龙虎榜异常交易
+2. 匹配告警规则生成交易信号
+3. Web 仪表板实时展示
+4. 多渠道告警通知（邮件、webhook）
+
+**流程4: 系统维护**
+1. 管理员通过 Web 平台查看系统状态
+2. 配置数据源优先级和故障转移
+3. 查看性能指标和数据质量报告
+4. 触发手动维护任务（数据修复、重新计算等）
+
+### UI/UX 考虑
+
+- **仪表板**: 关键指标 at-a-glance（龙虎榜、资金流向、系统状态）
+- **实时性**: WebSocket 推送，毫秒级更新
+- **可扩展性**: 支持自定义告警规则、自定义指标显示
+- **易用性**: RESTful API、Python SDK、Web UI 多种接口
+
+## Technical Architecture
+
+### 系统架构图
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Web UI 层                                               │
+│  (FastAPI + Vue3 + Element Plus)                        │
+│  - 龙虎榜监控、资金流向、技术指标、交易信号            │
+│  - 数据源管理、系统监控、告警设置                      │
+└─────────────────────────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────────────────────────┐
+│  应用层: MyStocksUnifiedManager (329 行)                 │
+│  - 数据分类智能路由                                      │
+│  - save_data_by_classification()                         │
+│  - load_data_by_classification()                         │
+│  - 自动维护和故障检测                                    │
+└─────────────────────────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────────────────────────┐
+│  核心层: DataManager (445 行, O(1) 性能)                │
+│  - 预计算路由映射表                                      │
+│  - 34种数据分类 → 最优数据库映射                        │
+│  - 性能: 0.0002ms（超出目标 24,832 倍）                │
+└─────────────────────────────────────────────────────────┘
+              ↓
+┌───────────���──────────┬──────────────────────────────────┐
+│  TDengineDataAccess  │   PostgreSQLDataAccess           │
+│  (493 行)            │   (550 行)                        │
+│                      │                                  │
+│  - Tick 数据         │  - 日线 K 线                     │
+│  - 分钟 K 线         │  - 技术指标                      │
+│  - 实时深度          │  - 量化因子                      │
+│  - WebSocket 支持    │  - 参考数据                      │
+│                      │  - 交易数据                      │
+│                      │  - 元数据                        │
+└──────────────────────┴──────────────────────────────────┘
+         ↓                          ↓
+┌──────────────────┐      ┌───────────────────────────────┐
+│  TDengine DB     │      │   PostgreSQL + TimescaleDB    │
+│  (market_data)   │      │   (mystocks)                  │
+│                  │      │                               │
+│  - tick_data     │      │  - 所有其他数据               │
+│  - minute_data   │      │  - TimescaleDB 自动分区      │
+│  超高压缩 20:1   │      │  - ACID 事务保证              │
+│  超强写入性能    │      │  - 支持 JSON                  │
+└──────────────────┘      └───────────────────────────────┘
+         ↓                          ↓
+┌──────────────────────────────────────────────────────────┐
+│  监控数据库 (PostgreSQL 独立 schema)                      │
+│  - MonitoringDatabase                                    │
+│  - 性能指标、数据质量、告警日志                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 核心组件
+
+#### 1. DataManager (445 行) - 核心路由引擎
+- 预计算的路由映射表（34种数据分类）
+- O(1) 时间复杂度的路由查询
+- 支持动态路由规则更新
+- 完整的类型注解和错误处理
+
+#### 2. MyStocksUnifiedManager (329 行) - 统一管理器
+- 高级 API 入口
+- 自动数据分类识别
+- save_data_by_classification()
+- load_data_by_classification()
+- 自动维护和故障恢复
+
+#### 3. TDengineDataAccess (493 行) - 高频数据访问
+- WebSocket 和原生连接支持
+- 高频数据写入优化
+- 时间范围查询优化
+- 流式数据处理
+
+#### 4. PostgreSQLDataAccess (550 行) - 通用数据访问
+- TimescaleDB 自动分区
+- 复杂 JOIN 操作支持
+- ACID 事务保证
+- JSON 字段支持
+
+#### 5. ConfigDrivenTableManager - 配置驱动表管理
+- YAML 配置文件解析
+- 自动表创建（支持 TDengine 和 PostgreSQL）
+- 表结构验证
+- 扩展字段支持
+
+#### 6. 数据适配器层 (adapters/)
+- IDataSource 统一接口
+- AkshareDataSource - 中文市场数据
+- FinancialDataSource - 财务数据
+- 支持自定义适配器
+
+#### 7. 监控系统
+- MonitoringDatabase - 独立监控数据库
+- DataQualityMonitor - 数据完整性、准确性、及时性检查
+- PerformanceMonitor - 查询性能追踪
+- AlertManager - 多渠道告警（邮件、webhook、日志）
+
+#### 8. Web 管理平台
+- FastAPI 后端 - 高性能异步 API，WebSocket 支持
+- Vue 3 前端 - 现代化 UI，Element Plus 组件
+- RESTful API - 完整的 API 文档（Swagger/OpenAPI）
+- JWT 身份验证 - 安全的用户认证
+
+### 数据分类体系 (5大类)
+
+1. **市场数据 (Market Data)** - 高频时序数据
+   - Tick 数据 → TDengine
+   - 分钟 K 线 → TDengine
+   - 日线数据 → PostgreSQL + TimescaleDB
+
+2. **参考数据 (Reference Data)** - 相对静态数据
+   - 股票信息 → PostgreSQL
+   - 成分股信息 → PostgreSQL
+   - 交易日历 → PostgreSQL
+
+3. **衍生数据 (Derived Data)** - 计算结果数据
+   - 技术指标 → PostgreSQL + TimescaleDB
+   - 量化因子 → PostgreSQL + TimescaleDB
+   - 交易信号 → PostgreSQL + TimescaleDB
+
+4. **交易数据 (Transaction Data)** - 交易相关数据
+   - 订单记录 → PostgreSQL (ACID)
+   - 成交记录 → PostgreSQL (ACID)
+   - 持仓记录 → PostgreSQL (ACID)
+
+5. **元数据 (Meta Data)** - 配置和系统数据
+   - 数据源状态 → PostgreSQL
+   - 任务调度 → PostgreSQL
+   - 系统配置 → PostgreSQL
+
+### API 和集成
+
+#### Python SDK
+```python
+from unified_manager import MyStocksUnifiedManager
+from core import DataClassification
+
+manager = MyStocksUnifiedManager()
+
+# 自动路由保存
+manager.save_data_by_classification(data, DataClassification.TICK_DATA)
+
+# 智能查询
+data = manager.load_data_by_classification(
+    DataClassification.DAILY_KLINE,
+    filters={'symbol': '600000', 'date': '>2024-01-01'},
+    limit=1000
+)
+```
+
+#### REST API
+- GET /api/market/dragon-tiger - 龙虎榜数据
+- GET /api/market/fund-flow - 资金流向数据
+- GET /api/market/chip-race - 竞价抢筹数据
+- GET /api/market/etf-data - ETF 数据
+- GET /api/data/dashboard/summary - 仪表板数据
+- WebSocket /ws/realtime - 实时数据推送
+
+#### 外部数据源
+- Akshare - 中文市场数据
+- 其他可扩展的数据适配器
+
+## Development Roadmap
+
+### 当前状态 (v3.1.0 - US3 架构完成)
+✅ US3 简化架构（7层→3层）
+✅ DataManager 核心引擎（O(1) 性能）
+✅ 双数据库存储策略（TDengine + PostgreSQL）
+✅ 统一数据访问接口
+✅ 配置驱动表管理
+✅ MySQL 迁移至 PostgreSQL
+✅ Redis 移除
+✅ 监控和告警系统（可选）
+✅ 代码质量（类型注解 95%，圈复杂度 <10）
+
+### 已完成的 Phase
+
+#### Phase 1: 实时监控系统 (完成)
+- 龙虎榜异常交易监控
+- 资金流向行业分析
+- 自定义告警规则（7种类型）
+- 多渠道告警（邮件、webhook、日志）
+- Web 仪表板展示
+
+#### Phase 2: 增强技术分析 (完成)
+- 26 个专业技术指标实现
+- 4 大指标类别（趋势、动量、波动、成交量）
+- 交易信号生成
+- 指标可视化展示
+- 自定义指标组合
+
+#### Phase 3: 多数据源集成 (完成)
+- 数据源优先级路由
+- 自动故障转移机制
+- 官方公告监控系统
+- 数据源健康监控
+- 动态配置管理
+
+### 未来增强方向
+
+#### 4. 高级分析功能
+- 机器学习模型集成
+- 回测框架
+- 因子分析平台
+- 实时风险评估
+
+#### 5. 性能优化
+- 缓存层优化（分布式缓存）
+- 查询优化（自动索引推荐）
+- 数据预热策略
+- 垂直和水平扩展
+
+#### 6. 生态扩展
+- 更多数据源适配器
+- 移动端应用
+- API 网关和限流
+- 多租户支持
+
+## Logical Dependency Chain
+
+### 核心依赖关系（已完成）
+
+1. **基础层** (Week 1-2)
+   - TDengine 和 PostgreSQL 数据库连接
+   - ConfigDrivenTableManager 表管理
+   - 基础适配器（Akshare、财务数据）
+
+2. **数据访问层** (Week 2-3)
+   - TDengineDataAccess 实现
+   - PostgreSQLDataAccess 实现
+   - 统一接口规范
+
+3. **核心路由层** (Week 3 US3)
+   - DataManager 核心引擎
+   - 34 种数据分类映射
+   - O(1) 路由决策
+
+4. **应用层** (Week 3 US3)
+   - MyStocksUnifiedManager 简化
+   - 自动维护和故障检测
+   - 完整的 API 接口
+
+5. **监控系统** (Week 2-3)
+   - MonitoringDatabase 实现
+   - DataQualityMonitor 实现
+   - PerformanceMonitor 实现
+   - AlertManager 实现
+
+6. **Web 管理平台** (Week 3-4)
+   - FastAPI 后端（基础 API）
+   - Vue 3 前端（仪表板、数据管理）
+   - WebSocket 实时推送
+   - JWT 身份验证
+
+7. **ValueCell 迁移** (Week 4+)
+   - Phase 1: 龙虎榜、资金流向监控
+   - Phase 2: 26 个技术指标
+   - Phase 3: 多数据源集成和故障转移
+
+### 下一步开发优先级
+
+#### 优先级 1: 系统稳定性和完整性
+- 补充缺失的单元测试
+- 集成测试覆盖
+- 性能基准测试
+- 文档完善
+
+#### 优先级 2: 功能增强
+- 用户认证和权限管理
+- 更多数据源适配器
+- 自定义规则引擎
+- 报表生成系统
+
+#### 优先级 3: 性能和扩展
+- 分布式缓存集成
+- 查询优化
+- 数据分片策略
+- 容器化部署
+
+## Risks and Mitigations
+
+### 技术风险
+
+#### 风险 1: 数据库性能瓶颈
+**问题**: 高频数据写入可能超过 TDengine 处理能力
+**影响**: 数据丢失、实时性降低
+**缓解措施**:
+- 分布式 TDengine 集群部署
+- 数据分片策略
+- 实时监控和告警
+- 自动故障转移
+
+#### 风险 2: 数据一致性问题
+**问题**: 多数据库间的数据同步不一致
+**影响**: 分析结果错误、交易决策失误
+**缓解措施**:
+- DataQualityMonitor 持续监控
+- 定期数据对账和修复
+- 完整的审计日志
+- 事务日志备份
+
+#### 风险 3: 系统可用性
+**问题**: 任何组件故障都会影响整体系统
+**影响**: 数据无法访问、交易中断
+**缓解措施**:
+- 高可用部署（主从、集群）
+- 自动故障转移机制
+- 监控告警和快速响应
+- 定期备份和恢复演练
+
+### 业务风险
+
+#### 风险 4: 数据源不稳定
+**问题**: 外部数据源（如 Akshare）可能不稳定
+**影响**: 数据不完整、分析延迟
+**缓解措施**:
+- 多数据源备用策略
+- 优先级路由和故障转移
+- 数据缓存和预热
+- 告警和手动切换
+
+#### 风险 5: 需求变化
+**问题**: 业务需求变化导致系统架构调整
+**影响**: 开发延迟、成本增加
+**缓解措施**:
+- 配置驱动设计，灵活适应
+- 模块化架构，易于扩展
+- 敏捷开发流程
+- 定期需求评审
+
+### MVP 确定
+
+系统已超过 MVP 阶段，当前处于功能完善和性能优化阶段。
+
+**已实现的核心 MVP**:
+- ✅ 双数据库存储策略
+- ✅ 统一数据访问接口
+- ✅ 配置驱动表管理
+- ✅ Web 管理平台
+- ✅ 实时监控和告警
+- ✅ 技术指标库
+
+**当前优化焦点**:
+- 系统可靠性提升
+- 功能完整性增强
+- 性能优化
+- 文档和培训
+
+## Appendix
+
+### 技术规范
+
+#### 编程语言和框架
+- **后端**: Python 3.8+，FastAPI 0.109+
+- **前端**: Vue 3.4+，Element Plus UI 组件库
+- **数据库**: TDengine（高频数据），PostgreSQL 15+（TimescaleDB 扩展）
+
+#### 部署环境
+- Docker 容器化支持
+- Linux 服务器（推荐 Ubuntu 20.04+）
+- 云平台支持（AWS、阿里云、腾讯云）
+
+#### 代码质量标准
+- 类型注解覆盖 95%+
+- 圈复杂度 <10
+- 单元测试覆盖率 80%+
+- 文档完整率 100%
+
+### 关键文件和文档
+
+- `README.md` - 项目总览
+- `CLAUDE.md` - Claude Code 开发指南
+- `table_config.yaml` - 表结构配置
+- `.env` - 环境变量配置
+- `docs/CODE_QUALITY_REVIEW_US3.md` - US3 架构代码质量报告
+- `docs/API_QUICK_REFERENCE.md` - API 快速参考
+
+### 测试和验证
+
+- `system_demo.py` - 完整系统演示
+- `test_unified_manager.py` - 统一管理器测试
+- `test_financial_adapter.py` - 财务适配器测试
+- `test_comprehensive.py` - 综合系统测试
+
+### 关键性能指标
+
+- 路由性能: 0.0002ms（超出目标 24,832 倍）
+- TDengine 压缩比: 20:1
+- 代码复杂度: 降低 57%（7层→3层）
+- 类型注解覆盖: 95%

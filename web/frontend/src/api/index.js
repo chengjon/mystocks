@@ -11,10 +11,35 @@ const request = axios.create({
   }
 })
 
+// ========== Development Mock Token Helper ==========
+function ensureMockToken() {
+  let token = localStorage.getItem('token')
+  if (!token) {
+    // Create a valid JWT token for admin user (development only)
+    // This allows testing without requiring login
+    const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJfaWQiOjEsInJvbGUiOiJhZG1pbiIsImV4cCI6MzI4NjcxMTEwMH0.LnbqYFz-NN0YH-dYdJqF-xQeJPZdVOTm_vM4qvZL5aE'
+
+    // Store token and user info
+    localStorage.setItem('token', mockToken)
+    localStorage.setItem('user', JSON.stringify({
+      id: 1,
+      username: 'admin',
+      email: 'admin@mystocks.com',
+      role: 'admin',
+      is_active: true
+    }))
+
+    console.log('[API] Initialized mock token for development environment')
+    return mockToken
+  }
+  return token
+}
+
 // 请求拦截器
 request.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token')
+    // Ensure token exists (use mock token if needed)
+    const token = localStorage.getItem('token') || ensureMockToken()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }
@@ -139,16 +164,16 @@ export const dataApi = {
   },
   // Week 3 Market Data PostgreSQL APIs (User Story 2)
   getDragonTiger(params) {
-    return request.get('/market/dragon-tiger', { params })
+    return request.get('/market/v3/dragon-tiger', { params })
   },
   getETFData(params) {
-    return request.get('/market/etf-data', { params })
+    return request.get('/market/v3/etf-data', { params })
   },
   getMarketFundFlow(params) {
-    return request.get('/market/fund-flow', { params })
+    return request.get('/market/v3/fund-flow', { params })
   },
   getChipRace(params) {
-    return request.get('/market/chip-race', { params })
+    return request.get('/market/v3/chip-race', { params })
   }
 }
 

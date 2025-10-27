@@ -77,6 +77,10 @@ const router = createRouter({
           meta: { title: '自选股', icon: 'Grid' }
         },
         {
+          path: 'stocks',
+          redirect: '/watchlist'
+        },
+        {
           path: 'analysis',
           name: 'analysis',
           component: () => import('@/views/Analysis.vue'),

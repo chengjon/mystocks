@@ -1,0 +1,43 @@
+[Unit]
+Description=MyStocks API Service
+After=network.target postgresql.service taosd.service
+Wants=postgresql.service taosd.service
+
+[Service]
+Type=notify
+User=mystocks
+Group=mystocks
+WorkingDirectory=/opt/mystocks
+Environment="PATH=/opt/mystocks/venv/bin"
+EnvironmentFile=/opt/mystocks/.env
+
+# 启动命令（使用Gunicorn + Uvicorn Workers）
+ExecStart=/opt/mystocks/venv/bin/gunicorn app.main:app \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:8000 \
+    --access-logfile /opt/mystocks/logs/access.log \
+    --error-logfile /opt/mystocks/logs/error.log \
+    --log-level info \
+    --timeout 30 \
+    --graceful-timeout 30 \
+    --max-requests 10000 \
+    --max-requests-jitter 100
+
+# 重启策略
+Restart=on-failure
+RestartSec=5s
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/mystocks/logs /opt/mystocks/backups
+
+[Install]
+WantedBy=multi-user.target
