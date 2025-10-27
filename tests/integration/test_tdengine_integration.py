@@ -31,7 +31,7 @@ try:
 except Exception as e:
     print(f"❌ TDengine连接失败: {e}")
     print("⚠️  跳过TDengine集成测试 (数据库未配置)\n")
-    sys.exit(0)
+    # Note: Not exiting here to allow pytest to complete
 
 # 测试2: 通过UnifiedManager保存Tick数据
 print("📍 测试2: 保存Tick数据 (通过UnifiedManager)")
