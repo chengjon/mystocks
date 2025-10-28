@@ -173,6 +173,7 @@ from app.api import (
     market_v3,  # Week 3 Market Data PostgreSQL-Only
     auth,
     oauth2,  # Task 2.1 Phase 2: OAuth2 Integration
+    mfa,  # Task 2.1 Phase 3: MFA Integration
     system,
     indicators,
     market,
@@ -202,7 +203,10 @@ app.include_router(
     dashboard.router, prefix="/api/data/dashboard", tags=["dashboard"]
 )  # Week 3 Dashboard Real Data
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(oauth2.router, prefix="/api/auth", tags=["oauth2"])  # Task 2.1
+app.include_router(
+    oauth2.router, prefix="/api/auth", tags=["oauth2"]
+)  # Task 2.1 Phase 2
+app.include_router(mfa.router, prefix="/api/auth", tags=["mfa"])  # Task 2.1 Phase 3
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix
