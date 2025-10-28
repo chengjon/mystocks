@@ -18,6 +18,22 @@ TA-Lib==0.4.28
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.1
+PyJWT==2.8.1
+bcrypt==4.1.1
+
+# OAuth2 and External Authentication
+authlib==1.2.1
+google-auth-oauthlib==1.1.0
+google-auth==2.25.2
+
+# Email and SMS
+aiosmtplib==3.0.1
+email-validator==2.1.0
+
+# MFA/2FA Support
+pyotp==2.9.0
+qrcode==7.4.2
+Pillow==10.1.0
 
 # Data Processing and Export
 openpyxl==3.1.5
