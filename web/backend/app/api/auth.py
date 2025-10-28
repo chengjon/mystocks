@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from typing import Dict, Any, Optional
 from datetime import timedelta
-
+import structlog
 from app.core.security import (
     User,
     UserInDB,
@@ -26,6 +26,11 @@ from app.models.user import User as UserModel, MFASecret as MFASecretModel
 
 router = APIRouter()
 security = HTTPBearer()
+logger = structlog.get_logger()
+
+# MFA 查询失败计数器 - 用于监控是否存在持续性故障
+_mfa_query_failure_count = 0
+_mfa_query_failure_threshold = 5  # 连续 5 次失败时触发警告
 
 # 模拟用户数据库 - 使用预先计算的密码哈希
 # TODO: 替换为真实的数据库存储
@@ -142,9 +147,34 @@ async def login_for_access_token(
                     .all()
                 )
                 mfa_enabled = bool(verified_mfa)
-        except Exception:
+            # MFA 查询成功，重置失败计数
+            global _mfa_query_failure_count
+            _mfa_query_failure_count = 0
+        except Exception as e:
             # 如果数据库查询失败，继续进行标准登录（优雅降级）
-            pass
+            # 但同时记录详细的错误信息用于监控和告警
+            global _mfa_query_failure_count
+            _mfa_query_failure_count += 1
+
+            # 记录警告级别日志（可被监控系统捕获）
+            logger.warning(
+                "mfa_check_failed",
+                username=username,
+                error=str(e),
+                failure_count=_mfa_query_failure_count,
+                event_type="graceful_degradation_triggered",
+            )
+
+            # 当连续失败次数超过阈值时，记录为告警级别错误
+            if _mfa_query_failure_count >= _mfa_query_failure_threshold:
+                logger.error(
+                    "mfa_persistent_failure_alert",
+                    failure_count=_mfa_query_failure_count,
+                    threshold=_mfa_query_failure_threshold,
+                    message="MFA database checks have failed persistently. This may indicate a database corruption or connectivity issue.",
+                    severity="HIGH",
+                    action_required="Investigate database health and MFA tables immediately",
+                )
 
         if mfa_enabled and verified_mfa:
             # 创建临时令牌用于 MFA 验证
