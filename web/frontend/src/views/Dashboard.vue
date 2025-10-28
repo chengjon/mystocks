@@ -408,8 +408,8 @@ const initLeadingSectorChart = () => {
   // Check if DOM element has valid dimensions
   const element = leadingSectorChartRef.value
   if (element.clientWidth === 0 || element.clientHeight === 0) {
-    console.warn('leadingSectorChart DOM has zero dimensions, delaying initialization')
-    setTimeout(initLeadingSectorChart, 100)
+    console.warn('leadingSectorChart DOM has zero dimensions, retrying in 50ms')
+    setTimeout(initLeadingSectorChart, 50)
     return
   }
 
@@ -464,8 +464,8 @@ const initPriceDistributionChart = () => {
   // Check if DOM element has valid dimensions
   const element = priceDistributionChartRef.value
   if (element.clientWidth === 0 || element.clientHeight === 0) {
-    console.warn('priceDistributionChart DOM has zero dimensions, delaying initialization')
-    setTimeout(initPriceDistributionChart, 100)
+    console.warn('priceDistributionChart DOM has zero dimensions, retrying in 50ms')
+    setTimeout(initPriceDistributionChart, 50)
     return
   }
 
@@ -524,8 +524,8 @@ const initCapitalFlowChart = () => {
   // Check if DOM element has valid dimensions
   const element = capitalFlowChartRef.value
   if (element.clientWidth === 0 || element.clientHeight === 0) {
-    console.warn('capitalFlowChart DOM has zero dimensions, delaying initialization')
-    setTimeout(initCapitalFlowChart, 100)
+    console.warn('capitalFlowChart DOM has zero dimensions, retrying in 50ms')
+    setTimeout(initCapitalFlowChart, 50)
     return
   }
 
@@ -584,8 +584,8 @@ const initCharts = async () => {
   initPriceDistributionChart()
   initCapitalFlowChart()
 
-  // 初始化资金流向图表
-  if (industryChartRef.value) {
+  // 初始化资金流向图表 (with safety check for valid dimensions)
+  if (industryChartRef.value && industryChartRef.value.clientWidth > 0 && industryChartRef.value.clientHeight > 0) {
     industryChart = echarts.init(industryChartRef.value)
     updateIndustryChartData()
   }
@@ -597,7 +597,7 @@ const initCharts = async () => {
     priceDistributionChart?.resize()
     capitalFlowChart?.resize()
     industryChart?.resize()
-  })
+  }, { passive: true })  // Mark resize listener as passive for better performance
 }
 
 // 监听 tab 切换，确保图表正确渲染
@@ -630,10 +630,12 @@ onMounted(async () => {
   // Use nextTick to ensure DOM is fully rendered
   await nextTick()
 
-  // Add small delay to ensure container has proper dimensions
-  setTimeout(() => {
+  // Add larger delay to ensure all tab containers have proper dimensions
+  // Tab animation takes ~100ms, ECharts needs valid DOM dimensions
+  setTimeout(async () => {
+    await nextTick()  // Ensure all DOM updates are complete
     initCharts()
-  }, 150)
+  }, 200)
 
   // Load data in parallel
   loadDashboardData()
