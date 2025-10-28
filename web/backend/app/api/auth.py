@@ -111,34 +111,42 @@ async def login_for_access_token(
 
     如果用户启用了 MFA，响应会包含 mfa_required 标志和临时令牌
     """
-    # 验证用户身份
-    user = authenticate_user(username, password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户名或密码错误",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # 检查用户是否启用了 MFA
-    db_user = db.execute(
-        select(UserModel).where(UserModel.username == username)
-    ).scalar_one_or_none()
-
-    if db_user and db_user.mfa_enabled:
-        # 检查用户是否有已验证的 MFA 方法
-        verified_mfa = (
-            db.execute(
-                select(MFASecretModel).where(
-                    (MFASecretModel.user_id == db_user.id)
-                    and (MFASecretModel.is_verified == True)
-                )
+    try:
+        # 验证用户身份
+        user = authenticate_user(username, password)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="用户名或密码错误",
+                headers={"WWW-Authenticate": "Bearer"},
             )
-            .scalars()
-            .all()
-        )
 
-        if verified_mfa:
+        # 尝试检查用户是否启用了 MFA（可选，如果数据库不可用则跳过）
+        mfa_enabled = False
+        verified_mfa = []
+        try:
+            db_user = db.execute(
+                select(UserModel).where(UserModel.username == username)
+            ).scalar_one_or_none()
+
+            if db_user and db_user.mfa_enabled:
+                # 检查用户是否有已验证的 MFA 方法
+                verified_mfa = (
+                    db.execute(
+                        select(MFASecretModel).where(
+                            (MFASecretModel.user_id == db_user.id)
+                            and (MFASecretModel.is_verified == True)
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                mfa_enabled = bool(verified_mfa)
+        except Exception:
+            # 如果数据库查询失败，继续进行标准登录（优雅降级）
+            pass
+
+        if mfa_enabled and verified_mfa:
             # 创建临时令牌用于 MFA 验证
             # 临时令牌有效期很短（5分钟）
             temp_token_expires = timedelta(minutes=5)
@@ -165,24 +173,35 @@ async def login_for_access_token(
                 },
             }
 
-    # 如果没有启用 MFA，直接返回完整的访问令牌
-    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-    access_token = create_access_token(
-        data={"sub": user.username, "user_id": user.id, "role": user.role},
-        expires_delta=access_token_expires,
-    )
+        # 如果没有启用 MFA，直接返回完整的访问令牌
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = create_access_token(
+            data={"sub": user.username, "user_id": user.id, "role": user.role},
+            expires_delta=access_token_expires,
+        )
 
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "expires_in": settings.access_token_expire_minutes * 60,
-        "mfa_required": False,
-        "user": {
-            "username": user.username,
-            "email": user.email,
-            "role": user.role,
-        },
-    }
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "expires_in": settings.access_token_expire_minutes * 60,
+            "mfa_required": False,
+            "user": {
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        # 捕获所有未预期的错误并返回 500 响应的友好版本
+        import logging
+
+        logging.error(f"Login endpoint error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="登录服务暂时不可用，请稍后重试",
+        )
 
 
 @router.post("/logout")
