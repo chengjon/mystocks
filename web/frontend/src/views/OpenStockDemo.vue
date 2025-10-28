@@ -1024,7 +1024,7 @@ const initHeatmapChart = () => {
     if (heatmapChart) {
       heatmapChart.resize()
     }
-  })
+  }, { passive: true })  // Mark resize listener as passive for better performance
 }
 
 // 加载热力图数据
