@@ -9,7 +9,8 @@ PostgreSQL集成测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pandas as pd
 import numpy as np
@@ -18,9 +19,9 @@ from data_access.postgresql_access import PostgreSQLDataAccess
 from core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("PostgreSQL集成测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 # 测试1: 连接测试
 print("📍 测试1: PostgreSQL连接测试")
@@ -40,15 +41,17 @@ try:
     manager = MyStocksUnifiedManager()
 
     # 生成测试日线数据
-    test_data = pd.DataFrame({
-        'symbol': ['600000.SH'] * 100,
-        'date': pd.date_range('2025-01-01', periods=100, freq='D'),
-        'open': np.random.uniform(10, 20, 100),
-        'high': np.random.uniform(15, 25, 100),
-        'low': np.random.uniform(5, 15, 100),
-        'close': np.random.uniform(10, 20, 100),
-        'volume': np.random.randint(1000000, 10000000, 100)
-    })
+    test_data = pd.DataFrame(
+        {
+            "symbol": ["600000.SH"] * 100,
+            "date": pd.date_range("2025-01-01", periods=100, freq="D"),
+            "open": np.random.uniform(10, 20, 100),
+            "high": np.random.uniform(15, 25, 100),
+            "low": np.random.uniform(5, 15, 100),
+            "close": np.random.uniform(10, 20, 100),
+            "volume": np.random.randint(1000000, 10000000, 100),
+        }
+    )
 
     print(f"  生成测试数据: {len(test_data)}条记录")
     print(f"  时间范围: {test_data['date'].min()} ~ {test_data['date'].max()}")
@@ -58,7 +61,7 @@ try:
     print(f"  路由目标: {info['target_db'].upper()}")
     print(f"  保留周期: {info['retention_days']}天")
 
-    assert info['target_db'] == 'postgresql', "日线应该路由到PostgreSQL"
+    assert info["target_db"] == "postgresql", "日线应该路由到PostgreSQL"
     print("✅ 日线数据路由测试通过\n")
 
 except Exception as e:
@@ -70,7 +73,7 @@ try:
     info = manager.get_routing_info(DataClassification.TECHNICAL_INDICATORS)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'postgresql', "技术指标应该路由到PostgreSQL"
+    assert info["target_db"] == "postgresql", "技术指标应该路由到PostgreSQL"
     print("✅ 技术指标路由验证通过\n")
 
 except Exception as e:
@@ -82,7 +85,7 @@ try:
     info = manager.get_routing_info(DataClassification.BACKTEST_RESULTS)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'postgresql', "回测结果应该路由到PostgreSQL"
+    assert info["target_db"] == "postgresql", "回测结果应该路由到PostgreSQL"
     print("✅ 回测结果路由验证通过\n")
 
 except Exception as e:
@@ -94,11 +97,13 @@ try:
     from core.batch_failure_strategy import BatchFailureStrategy
 
     # 生成测试数据
-    test_data = pd.DataFrame({
-        'symbol': ['600000.SH'] * 50,
-        'date': pd.date_range('2025-01-01', periods=50, freq='D'),
-        'value': np.random.uniform(100, 200, 50)
-    })
+    test_data = pd.DataFrame(
+        {
+            "symbol": ["600000.SH"] * 50,
+            "date": pd.date_range("2025-01-01", periods=50, freq="D"),
+            "value": np.random.uniform(100, 200, 50),
+        }
+    )
 
     print(f"  测试数据: {len(test_data)}条")
     print(f"  可用策略: ROLLBACK, CONTINUE, RETRY")
@@ -107,7 +112,7 @@ try:
     strategies = [
         BatchFailureStrategy.ROLLBACK,
         BatchFailureStrategy.CONTINUE,
-        BatchFailureStrategy.RETRY
+        BatchFailureStrategy.RETRY,
     ]
 
     for strategy in strategies:
@@ -124,14 +129,18 @@ try:
     import time
 
     # 生成50000条测试数据
-    large_data = pd.DataFrame({
-        'symbol': np.random.choice(['600000.SH', '000001.SZ', '600519.SH'], 50000),
-        'date': pd.date_range('2020-01-01', periods=50000, freq='1h'),
-        'value': np.random.uniform(10, 100, 50000)
-    })
+    large_data = pd.DataFrame(
+        {
+            "symbol": np.random.choice(["600000.SH", "000001.SZ", "600519.SH"], 50000),
+            "date": pd.date_range("2020-01-01", periods=50000, freq="1h"),
+            "value": np.random.uniform(10, 100, 50000),
+        }
+    )
 
     print(f"  数据量: {len(large_data)}条")
-    print(f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+    print(
+        f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB"
+    )
     print(f"  唯一标的: {large_data['symbol'].nunique()}个")
 
     print("✅ 大批量数据准备成功\n")
@@ -145,9 +154,9 @@ try:
 except:
     pass
 
-print("="*80)
+print("=" * 80)
 print("✅ PostgreSQL集成测试完成")
-print("="*80)
+print("=" * 80)
 print("\n测试总结:")
 print("  ✅ 连接测试 - 通过")
 print("  ✅ 日线路由 - 通过")

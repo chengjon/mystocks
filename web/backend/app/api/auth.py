@@ -127,6 +127,7 @@ async def login_for_access_token(
             )
 
         # 尝试检查用户是否启用了 MFA（可选，如果数据库不可用则跳过）
+        global _mfa_query_failure_count
         mfa_enabled = False
         verified_mfa = []
         try:
@@ -148,12 +149,10 @@ async def login_for_access_token(
                 )
                 mfa_enabled = bool(verified_mfa)
             # MFA 查询成功，重置失败计数
-            global _mfa_query_failure_count
             _mfa_query_failure_count = 0
         except Exception as e:
             # 如果数据库查询失败，继续进行标准登录（优雅降级）
             # 但同时记录详细的错误信息用于监控和告警
-            global _mfa_query_failure_count
             _mfa_query_failure_count += 1
 
             # 记录警告级别日志（可被监控系统捕获）

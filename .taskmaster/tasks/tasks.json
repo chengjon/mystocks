@@ -396,5 +396,653 @@
       "updated": "2025-10-28T05:00:34.116Z",
       "description": "Tasks for master context"
     }
+  },
+  "web-methodology": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "T001: Create documentation directory structure",
+        "description": "Create documentation directory structure at /opt/claude/mystocks_spec/docs/development-process/",
+        "details": "This is part of Phase 1 Setup. Create the base directory structure for all development process documentation.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "T002: Create integration test directory",
+        "description": "Create integration test directory structure at /opt/claude/mystocks_spec/tests/integration/",
+        "details": "Phase 1 Setup. Create the directory for Playwright integration tests.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "T003: Create examples directory",
+        "description": "Create examples directory at /opt/claude/mystocks_spec/docs/development-process/examples/",
+        "details": "Phase 1 Setup. Create directory for example verification workflows.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "T004: Create scripts directory",
+        "description": "Create helper scripts directory at /opt/claude/mystocks_spec/scripts/",
+        "details": "Phase 1 Setup. Create directory for verification scripts and bash aliases.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "T005: Install Playwright",
+        "description": "Install Playwright with Python support",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Run: pip install playwright pytest-playwright && playwright install chromium",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "T006: Install httpie",
+        "description": "Install httpie for API testing",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Run: pip install httpie",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "T007: Install jq",
+        "description": "Install jq for JSON processing",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Run: sudo apt install jq (Ubuntu) or brew install jq (macOS)",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "T008: Install pgcli",
+        "description": "Install pgcli for PostgreSQL",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Run: pip install pgcli",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "T009: Create bash aliases file",
+        "description": "Create bash aliases file at /opt/claude/mystocks_spec/scripts/bash_aliases.sh",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Create file with mt-token, mt-api, mt-db shortcuts.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "T010: Create screenshots directory",
+        "description": "Create verification screenshot directory at /opt/claude/mystocks_spec/docs/verification-screenshots/",
+        "details": "Phase 2 Foundational - CRITICAL BLOCKER. Create directory for UI layer verification screenshots.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "T011 [US1]: Create Definition of Done document",
+        "description": "Create Definition of Done main document at /opt/claude/mystocks_spec/docs/development-process/definition-of-done.md",
+        "details": "User Story 1 - MVP. Consolidate from process-framework.md into comprehensive DoD document.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "T012 [US1]: Create manual verification guide",
+        "description": "Create manual verification guide at /opt/claude/mystocks_spec/docs/development-process/manual-verification-guide.md",
+        "details": "User Story 1 - MVP. Based on Layer 4/5 verification in framework.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "T013 [US1]: Create tool selection guide",
+        "description": "Create tool selection guide at /opt/claude/mystocks_spec/docs/development-process/tool-selection-guide.md",
+        "details": "User Story 1 - MVP. Based on research.md decisions.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "T014 [US1]: Create API verification templates",
+        "description": "Create API verification command templates at /opt/claude/mystocks_spec/scripts/api_templates.sh",
+        "details": "User Story 1 - MVP. Shell script with httpie command templates from research.md manual verification patterns.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "T015 [US1]: Create SQL query templates",
+        "description": "Create SQL query templates at /opt/claude/mystocks_spec/scripts/sql_templates.sql",
+        "details": "User Story 1 - MVP. SQL file with data validation query patterns from research.md.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "T016 [US1]: Create quickstart README",
+        "description": "Create quickstart README at /opt/claude/mystocks_spec/docs/development-process/README.md",
+        "details": "User Story 1 - MVP. Overview document with quick links to all process docs. Depends on T011-T015.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "T017 [US1]: Create API fix example",
+        "description": "Create concrete API fix example at /opt/claude/mystocks_spec/docs/development-process/examples/api-fix-example.md",
+        "details": "User Story 1 - MVP. Document with screenshots showing all 5 layers for an API fix scenario.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          11
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "T018 [US1]: Create UI fix example",
+        "description": "Create concrete UI fix example at /opt/claude/mystocks_spec/docs/development-process/examples/ui-fix-example.md",
+        "details": "User Story 1 - MVP. Document with screenshots showing all 5 layers for a UI fix scenario.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          11
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "T019 [US1]: Create data integration example",
+        "description": "Create data integration example at /opt/claude/mystocks_spec/docs/development-process/examples/data-integration-example.md",
+        "details": "User Story 1 - MVP. Document with screenshots showing complete data flow verification.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          11
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "T020 [US2]: Create Playwright config",
+        "description": "Create Playwright configuration file at /opt/claude/mystocks_spec/tests/integration/conftest.py",
+        "details": "User Story 2 - MVP. Fixtures, browser setup, authentication, layer validation helpers. Depends on T005 (Playwright installed).",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "T021 [US2]: Create browser helpers",
+        "description": "Create browser helpers utility at /opt/claude/mystocks_spec/tests/integration/utils/browser_helpers.py",
+        "details": "User Story 2 - MVP. Screenshot, wait functions, common selectors utility functions.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "T022 [US2]: Create layer validation utility",
+        "description": "Create layer validation utility at /opt/claude/mystocks_spec/tests/integration/utils/layer_validation.py",
+        "details": "User Story 2 - MVP. Database check, API check, UI check functions for 5-layer validation.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "T023 [US2]: Implement login flow test",
+        "description": "Implement user login flow test at /opt/claude/mystocks_spec/tests/integration/test_user_login_flow.py",
+        "details": "User Story 2 - MVP. FR-006 requirement: verify login → dashboard flow with all 4 layers.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          20,
+          21,
+          22
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "T024 [US2]: Implement dashboard test",
+        "description": "Implement dashboard data display test at /opt/claude/mystocks_spec/tests/integration/test_dashboard_data_display.py",
+        "details": "User Story 2 - MVP. FR-006: verify dashboard loads with data, tests all 4 layers, includes layer failure detection per FR-005.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          20,
+          21,
+          22
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "T025 [US2]: Implement table rendering test",
+        "description": "Implement data table rendering test at /opt/claude/mystocks_spec/tests/integration/test_data_table_rendering.py",
+        "details": "User Story 2 - MVP. FR-006: verify at least one data table renders with actual data.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          20,
+          21,
+          22
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "T026 [US2]: Create login flow example",
+        "description": "Create Playwright test example file at /opt/claude/mystocks_spec/specs/006-web-90-1/contracts/playwright-test-examples/example_login_flow.py",
+        "details": "User Story 2 - MVP. Copy of test_user_login_flow.py with detailed comments.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          23
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "T027 [US2]: Create dashboard test example",
+        "description": "Create dashboard test example at /opt/claude/mystocks_spec/specs/006-web-90-1/contracts/playwright-test-examples/example_dashboard_data.py",
+        "details": "User Story 2 - MVP. Copy of test_dashboard_data_display.py with detailed comments.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          24
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "T028 [US2]: Create layer failure example",
+        "description": "Create layer failure detection example at /opt/claude/mystocks_spec/specs/006-web-90-1/contracts/playwright-test-examples/example_layer_failure_detection.py",
+        "details": "User Story 2 - MVP. Demonstrates how tests pinpoint failing layer.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          24
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "T029 [US3]: Create troubleshooting guide",
+        "description": "Create troubleshooting guide at /opt/claude/mystocks_spec/docs/development-process/troubleshooting.md",
+        "details": "User Story 3 - P2. Common failure modes from FR-017: API 500, Frontend no data, DB connection fails, plus solutions.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "T030 [US3]: Add workflow diagram",
+        "description": "Add workflow diagram to Definition of Done document",
+        "details": "User Story 3 - P2. Visual flow from \"code written\" to \"deployed\" showing all 5 layers and decision points.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          11
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "T031 [US3]: Create workflow infographic",
+        "description": "Create verification workflow infographic at /opt/claude/mystocks_spec/docs/development-process/verification-workflow.png",
+        "details": "User Story 3 - P2. 5-layer model visual with time estimates (.png or .svg format).",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "T032 [US3]: Create onboarding checklist",
+        "description": "Create onboarding checklist document at /opt/claude/mystocks_spec/docs/development-process/onboarding-checklist.md",
+        "details": "User Story 3 - P2. Verify developer has all tools installed and understands process.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "T033 [US3]: Add time estimates",
+        "description": "Add time estimates section to manual verification guide",
+        "details": "User Story 3 - P2. Simple bug: 5-10 min, medium feature: 20-30 min per FR-009.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          12
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "T034 [US3]: Create adoption metrics doc",
+        "description": "Create process adoption metrics doc at /opt/claude/mystocks_spec/docs/development-process/adoption-metrics.md",
+        "details": "User Story 3 - P2. Tracking template for \"% features marked complete that are verifiably functional\" per SC-001.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "T035 [US4]: Create decision tree doc",
+        "description": "Create tool selection decision tree document at /opt/claude/mystocks_spec/specs/006-web-90-1/contracts/tool-selection-decision-tree.md",
+        "details": "User Story 4 - P2. Flowchart: task type → recommended tool, per FR-010.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 36,
+        "title": "T036 [US4]: Add MCP tools section",
+        "description": "Add MCP tools usage section to tool selection guide",
+        "details": "User Story 4 - P2. What MCP is, when to use it - systematic multi-endpoint verification, concrete example commands per FR-011.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          13
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "T037 [US4]: Add AGENTS section",
+        "description": "Add AGENTS usage section to tool selection guide",
+        "details": "User Story 4 - P2. What AGENTS are, when to use them - complex multi-step analysis, example scenarios per FR-012.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          13
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 38,
+        "title": "T038 [US4]: Add manual verification section",
+        "description": "Add manual verification section to tool selection guide",
+        "details": "User Story 4 - P2. When tools NOT needed - simple one-line fixes per FR-013.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          13
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "T039 [US4]: Create tool comparison matrix",
+        "description": "Create tool comparison matrix at /opt/claude/mystocks_spec/docs/development-process/tool-comparison.md",
+        "details": "User Story 4 - P2. MCP vs AGENTS vs Manual: when to use each, pros/cons, time investment.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "T040 [US4]: Add MCP tool examples",
+        "description": "Add MCP tool examples to API verification guide",
+        "details": "User Story 4 - P2. Concrete curl/httpie commands for MyStocks APIs: dashboard, dragon-tiger, fund-flow.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          14
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "T041 [US5]: Create smoke test checklist",
+        "description": "Create smoke test main document at /opt/claude/mystocks_spec/specs/006-web-90-1/contracts/smoke-test-checklist.md",
+        "details": "User Story 5 - P3. 5-7 critical tests per FR-014.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "T042 [US5]: Create smoke test guide",
+        "description": "Create smoke test guide at /opt/claude/mystocks_spec/docs/development-process/smoke-test-guide.md",
+        "details": "User Story 5 - P3. Detailed guide linking to spec checklist.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 43,
+        "title": "T043 [US5]: Implement smoke test suite",
+        "description": "Implement smoke test suite at /opt/claude/mystocks_spec/tests/smoke/test_smoke.py",
+        "details": "User Story 5 - P3. 7 critical tests from research.md: health check, DB connectivity, login, dashboard loads, critical APIs, frontend assets, data table rendering.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          5
+        ],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 44,
+        "title": "T044 [US5]: Create pre-deployment script",
+        "description": "Create pre-deployment check script at /opt/claude/mystocks_spec/scripts/pre_deploy_check.sh",
+        "details": "User Story 5 - P3. Runs smoke tests, validates pass/fail, blocks deployment on failure.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          43
+        ],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 45,
+        "title": "T045 [US5]: Add execution instructions",
+        "description": "Add smoke test execution instructions to smoke-test-guide.md",
+        "details": "User Story 5 - P3. How to run pytest tests/smoke/ -v -x, expected pass/fail output per FR-015.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          42
+        ],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 46,
+        "title": "T046 [US5]: Create CI/CD example",
+        "description": "Create smoke test CI/CD integration example at /opt/claude/mystocks_spec/docs/development-process/examples/ci-cd-smoke-test.yml",
+        "details": "User Story 5 - P3. GitHub Actions example running smoke tests on PR.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 47,
+        "title": "T047 [Polish]: Update main README",
+        "description": "Update main README.md at /opt/claude/mystocks_spec/README.md to link to new development process documentation",
+        "details": "Phase 8 Polish. Add section linking to docs/development-process/.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 48,
+        "title": "T048 [Polish]: Create process index",
+        "description": "Create development process index at /opt/claude/mystocks_spec/docs/development-process/INDEX.md",
+        "details": "Phase 8 Polish. Master index of all documentation with descriptions.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 49,
+        "title": "T049 [Polish]: Create validation script",
+        "description": "Create quickstart validation script at /opt/claude/mystocks_spec/scripts/validate_quickstart.sh",
+        "details": "Phase 8 Polish. Verifies all tools installed, all docs present, runs one example verification.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 50,
+        "title": "T050 [Polish]: Add adoption metrics to README",
+        "description": "Add adoption metrics tracking to README",
+        "details": "Phase 8 Polish. Link to adoption-metrics.md, current baseline: 10% functional, target: 90% functional.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [
+          34
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 51,
+        "title": "T051 [Polish]: Review Chinese documentation",
+        "description": "Review all documentation for Chinese language consistency and completeness",
+        "details": "Phase 8 Polish. All process docs must be in Chinese per FR-016.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 52,
+        "title": "T052 [Polish]: Create training outline",
+        "description": "Create team training presentation outline at /opt/claude/mystocks_spec/docs/development-process/training-outline.md",
+        "details": "Phase 8 Polish. 2-hour training agenda based on process-framework.md rollout plan.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 53,
+        "title": "T053 [Polish]: Generate complete guide",
+        "description": "Generate consolidated documentation bundle at /opt/claude/mystocks_spec/docs/development-process/COMPLETE_GUIDE.md",
+        "details": "Phase 8 Polish. Single-file reference with all key documentation.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-29T00:10:43.941Z",
+      "updated": "2025-10-29T08:17:06.240Z",
+      "description": "Web 应用开发流程方法改进 - 建立端到端验证流程，确保功能可用性"
+    }
   }
 }
