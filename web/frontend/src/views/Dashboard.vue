@@ -243,6 +243,7 @@ import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import cache, { TTL } from '@/utils/cache'
+import performanceMonitor from '@/utils/performanceMonitor'
 import { ElMessage } from 'element-plus'
 import { handleApiError } from '@/utils/errorHandler'
 
@@ -360,10 +361,13 @@ const resetFundFlowFilters = () => {
   fundFlowSortOrder.value = 'desc'
 }
 
-// Load fund flow data from /api/market/v3/fund-flow with caching
+// Load fund flow data from /api/market/v3/fund-flow with caching and performance tracking
 const loadFundFlowData = async (industryType, forceRefresh = false) => {
   fundFlowLoading.value = true
   fundFlowEmpty.value = false
+
+  const startTime = performance.now()
+  let cached = false
 
   try {
     // Generate cache key based on industry type
@@ -373,9 +377,15 @@ const loadFundFlowData = async (industryType, forceRefresh = false) => {
     if (!forceRefresh) {
       const cachedData = cache.get(cacheKey)
       if (cachedData) {
+        cached = true
         console.log(`[Dashboard] Using cached fund flow data for ${industryType}`)
         industryData.value[industryType] = cachedData
         fundFlowEmpty.value = cachedData.categories.length === 0
+
+        // Track performance - cache hit
+        const duration = performance.now() - startTime
+        performanceMonitor.trackApiCall(`/api/market/v3/fund-flow?industry_type=${industryType}`, duration, 200, true)
+        performanceMonitor.updateCacheStats(cache.getStats())
 
         // Update chart if it's the currently selected standard
         if (industryType === industryStandard.value && industryChart) {
@@ -394,6 +404,10 @@ const loadFundFlowData = async (industryType, forceRefresh = false) => {
       limit: 20  // Get top 20 industries
     })
 
+    // Track performance - API call
+    const duration = performance.now() - startTime
+    performanceMonitor.trackApiCall(`/api/market/v3/fund-flow?industry_type=${industryType}`, duration, 200, false)
+
     if (response.success && response.data && response.data.length > 0) {
       // Transform API data to chart format
       const categories = response.data.map(item => item.industry_name)
@@ -405,6 +419,7 @@ const loadFundFlowData = async (industryType, forceRefresh = false) => {
 
       // Cache the data with 5-minute TTL
       cache.set(cacheKey, chartData, TTL.MINUTE_5)
+      performanceMonitor.updateCacheStats(cache.getStats())
 
       // Update chart if it's the currently selected standard
       if (industryType === industryStandard.value && industryChart) {
@@ -418,6 +433,7 @@ const loadFundFlowData = async (industryType, forceRefresh = false) => {
 
       // Cache empty result with shorter TTL (1 minute)
       cache.set(cacheKey, emptyData, TTL.MINUTE_1)
+      performanceMonitor.updateCacheStats(cache.getStats())
 
       if (industryType === industryStandard.value && industryChart) {
         updateIndustryChartData()
@@ -425,6 +441,15 @@ const loadFundFlowData = async (industryType, forceRefresh = false) => {
     }
   } catch (error) {
     console.error('Failed to load fund flow data:', error)
+
+    // Track error
+    const duration = performance.now() - startTime
+    performanceMonitor.trackApiCall(`/api/market/v3/fund-flow?industry_type=${industryType}`, duration, 500, cached)
+    performanceMonitor.trackError('api', `Failed to load fund flow: ${error.message}`, {
+      industryType,
+      cached
+    })
+
     industryData.value[industryType] = { categories: [], values: [] }
     fundFlowEmpty.value = true
 
