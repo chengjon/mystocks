@@ -4,6 +4,7 @@
   "description": "MyStocks Web Management Frontend",
   "scripts": {
     "dev": "vite",
+    "dev:safe": "./start-dev.sh",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
