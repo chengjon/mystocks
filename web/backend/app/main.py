@@ -39,6 +39,17 @@ async def lifespan(app: FastAPI):
             result = conn.execute(text("SELECT version()"))
             version = result.fetchone()[0]
             logger.info("✅ Database connection verified", version=version[:50])
+
+        # 启动定时任务调度器
+        try:
+            from app.services.scheduled_data_update import scheduler_service
+
+            scheduler_service.start()
+            logger.info("✅ Scheduled data update service started")
+        except Exception as e:
+            logger.warning(f"⚠️ Scheduled service failed to start: {e}")
+            logger.info("Application will continue without scheduled updates")
+
     except Exception as e:
         logger.error("❌ Database initialization failed", error=str(e))
         raise
@@ -47,6 +58,16 @@ async def lifespan(app: FastAPI):
 
     # 关闭时执行
     logger.info("🛑 Shutting down MyStocks Web API")
+
+    # 停止定时任务调度器
+    try:
+        from app.services.scheduled_data_update import scheduler_service
+
+        scheduler_service.stop()
+        logger.info("✅ Scheduled data update service stopped")
+    except Exception as e:
+        logger.warning(f"⚠️ Error stopping scheduled service: {e}")
+
     close_all_connections()
     logger.info("✅ All database connections closed")
 
@@ -195,6 +216,7 @@ from app.api import (
     strategy_management,
     risk_management,  # Week 1 Architecture-Compliant APIs
     sse_endpoints,  # Week 2 SSE Real-time Push
+    scheduled_jobs,  # Task 6: Scheduled Data Updates
 )
 
 # 包含路由
@@ -267,6 +289,11 @@ app.include_router(
 app.include_router(
     sse_endpoints.router
 )  # SSE实时推送 (training, backtest, alerts, dashboard)
+
+# Task 6: Scheduled Data Updates (定时数据更新)
+app.include_router(
+    scheduled_jobs.router, prefix="/api/jobs", tags=["scheduled-jobs"]
+)  # 定时任务管理 (状态查询, 手动触发, 下次执行时间)
 
 logger.info("✅ All API routers registered successfully")
 
