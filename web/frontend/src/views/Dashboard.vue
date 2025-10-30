@@ -46,17 +46,72 @@
           <template #header>
             <div class="flex-between">
               <span>资金流向</span>
-              <el-select v-model="industryStandard" size="small" style="width: 120px" @change="updateIndustryChart">
-                <el-option label="证监会" value="csrc" />
-                <el-option label="申万一级" value="sw_l1" />
-                <el-option label="申万二级" value="sw_l2" />
-              </el-select>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <el-select v-model="industryStandard" size="small" style="width: 120px" @change="updateIndustryChart">
+                  <el-option label="证监会" value="csrc" />
+                  <el-option label="申万一级" value="sw_l1" />
+                  <el-option label="申万二级" value="sw_l2" />
+                </el-select>
+                <el-button
+                  size="small"
+                  :icon="showFundFlowTable ? 'View' : 'List'"
+                  @click="showFundFlowTable = !showFundFlowTable"
+                  title="切换视图"
+                >
+                  {{ showFundFlowTable ? '图表' : '表格' }}
+                </el-button>
+              </div>
             </div>
           </template>
           <div v-if="fundFlowEmpty && !fundFlowLoading" style="height: 400px; display: flex; align-items: center; justify-content: center;">
             <el-empty description="暂无数据" :image-size="100" />
           </div>
-          <div v-else ref="industryChartRef" style="height: 400px"></div>
+          <div v-else-if="!showFundFlowTable" ref="industryChartRef" style="height: 400px"></div>
+          <div v-else style="height: 400px; overflow-y: auto;">
+            <!-- Fund Flow Table View with Filters and Sorting -->
+            <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+              <el-input
+                v-model="fundFlowSearch"
+                size="small"
+                placeholder="搜索行业名称..."
+                clearable
+                style="width: 200px"
+                prefix-icon="Search"
+              />
+              <el-select v-model="fundFlowSortField" size="small" style="width: 130px" placeholder="排序字段">
+                <el-option label="净流入" value="value" />
+                <el-option label="行业名称" value="name" />
+              </el-select>
+              <el-select v-model="fundFlowSortOrder" size="small" style="width: 100px">
+                <el-option label="降序" value="desc" />
+                <el-option label="升序" value="asc" />
+              </el-select>
+              <el-button size="small" @click="resetFundFlowFilters">重置</el-button>
+            </div>
+            <el-table
+              :data="filteredFundFlowData"
+              stripe
+              size="small"
+              height="320"
+              :default-sort="{ prop: fundFlowSortField, order: fundFlowSortOrder === 'desc' ? 'descending' : 'ascending' }"
+            >
+              <el-table-column prop="name" label="行业名称" min-width="120" sortable />
+              <el-table-column prop="value" label="净流入(亿元)" width="130" align="right" sortable>
+                <template #default="{ row }">
+                  <span :class="row.value > 0 ? 'text-red' : row.value < 0 ? 'text-green' : ''">
+                    {{ row.value > 0 ? '+' : '' }}{{ row.value.toFixed(2) }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column label="趋势" width="80" align="center">
+                <template #default="{ row }">
+                  <el-icon :size="20" :color="row.value > 0 ? '#f56c6c' : row.value < 0 ? '#67c23a' : '#909399'">
+                    <component :is="row.value > 0 ? 'Top' : row.value < 0 ? 'Bottom' : 'Minus'" />
+                  </el-icon>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -184,7 +239,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import cache, { TTL } from '@/utils/cache'
@@ -256,6 +311,54 @@ const industryData = ref({
 })
 const fundFlowLoading = ref(false)
 const fundFlowEmpty = ref(false)
+
+// Fund flow table view states
+const showFundFlowTable = ref(false)
+const fundFlowSearch = ref('')
+const fundFlowSortField = ref('value')  // 'value' or 'name'
+const fundFlowSortOrder = ref('desc')  // 'desc' or 'asc'
+
+// Computed: Filtered and sorted fund flow data for table view
+const filteredFundFlowData = computed(() => {
+  const currentData = industryData.value[industryStandard.value]
+  if (!currentData || !currentData.categories || currentData.categories.length === 0) {
+    return []
+  }
+
+  // Transform to table format
+  let tableData = currentData.categories.map((name, index) => ({
+    name,
+    value: currentData.values[index]
+  }))
+
+  // Apply search filter
+  if (fundFlowSearch.value) {
+    const searchTerm = fundFlowSearch.value.toLowerCase()
+    tableData = tableData.filter(item =>
+      item.name.toLowerCase().includes(searchTerm)
+    )
+  }
+
+  // Apply sorting
+  tableData.sort((a, b) => {
+    let comparison = 0
+    if (fundFlowSortField.value === 'value') {
+      comparison = a.value - b.value
+    } else {
+      comparison = a.name.localeCompare(b.name, 'zh-CN')
+    }
+    return fundFlowSortOrder.value === 'desc' ? -comparison : comparison
+  })
+
+  return tableData
+})
+
+// Reset fund flow filters
+const resetFundFlowFilters = () => {
+  fundFlowSearch.value = ''
+  fundFlowSortField.value = 'value'
+  fundFlowSortOrder.value = 'desc'
+}
 
 // Load fund flow data from /api/market/v3/fund-flow with caching
 const loadFundFlowData = async (industryType, forceRefresh = false) => {
