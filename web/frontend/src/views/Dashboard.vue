@@ -187,6 +187,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
+import cache, { TTL } from '@/utils/cache'
 import { ElMessage } from 'element-plus'
 import { handleApiError } from '@/utils/errorHandler'
 
@@ -256,12 +257,35 @@ const industryData = ref({
 const fundFlowLoading = ref(false)
 const fundFlowEmpty = ref(false)
 
-// Load fund flow data from /api/market/v3/fund-flow
-const loadFundFlowData = async (industryType) => {
+// Load fund flow data from /api/market/v3/fund-flow with caching
+const loadFundFlowData = async (industryType, forceRefresh = false) => {
   fundFlowLoading.value = true
   fundFlowEmpty.value = false
 
   try {
+    // Generate cache key based on industry type
+    const cacheKey = `fund_flow_${industryType}`
+
+    // Try to get from cache first (unless force refresh)
+    if (!forceRefresh) {
+      const cachedData = cache.get(cacheKey)
+      if (cachedData) {
+        console.log(`[Dashboard] Using cached fund flow data for ${industryType}`)
+        industryData.value[industryType] = cachedData
+        fundFlowEmpty.value = cachedData.categories.length === 0
+
+        // Update chart if it's the currently selected standard
+        if (industryType === industryStandard.value && industryChart) {
+          updateIndustryChartData()
+        }
+
+        fundFlowLoading.value = false
+        return
+      }
+    }
+
+    // Cache miss or force refresh - fetch from API
+    console.log(`[Dashboard] Fetching fresh fund flow data for ${industryType}`)
     const response = await dataApi.getMarketFundFlow({
       industry_type: industryType,
       limit: 20  // Get top 20 industries
@@ -272,8 +296,12 @@ const loadFundFlowData = async (industryType) => {
       const categories = response.data.map(item => item.industry_name)
       const values = response.data.map(item => parseFloat(item.net_inflow.toFixed(2)))
 
-      industryData.value[industryType] = { categories, values }
+      const chartData = { categories, values }
+      industryData.value[industryType] = chartData
       fundFlowEmpty.value = false
+
+      // Cache the data with 5-minute TTL
+      cache.set(cacheKey, chartData, TTL.MINUTE_5)
 
       // Update chart if it's the currently selected standard
       if (industryType === industryStandard.value && industryChart) {
@@ -281,8 +309,12 @@ const loadFundFlowData = async (industryType) => {
       }
     } else {
       // Empty data - set empty state
-      industryData.value[industryType] = { categories: [], values: [] }
+      const emptyData = { categories: [], values: [] }
+      industryData.value[industryType] = emptyData
       fundFlowEmpty.value = true
+
+      // Cache empty result with shorter TTL (1 minute)
+      cache.set(cacheKey, emptyData, TTL.MINUTE_1)
 
       if (industryType === industryStandard.value && industryChart) {
         updateIndustryChartData()
