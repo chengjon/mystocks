@@ -5,7 +5,7 @@ User Story 2: Fix 4 Broken Market Data Panels
 提供纯PostgreSQL接口，移除所有MySQL依赖:
 - GET /api/market/dragon-tiger - 龙虎榜数据
 - GET /api/market/etf-data - ETF实时数据
-- GET /api/market/fund-flow - 资金流向（PostgreSQL版本）
+- GET /api/market/fund-flow - 资金流向（PostgreSQL版本 + Mock Fallback）
 - GET /api/market/chip-race - 竞价抢筹数据
 """
 
@@ -14,6 +14,9 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, date, timedelta
 from sqlalchemy import text
 import structlog
+import json
+import os
+from pathlib import Path
 
 from app.core.database import get_postgresql_session
 from app.core.errors import DatabaseError, ResourceNotFoundError
@@ -21,6 +24,24 @@ from app.core.security import get_current_user, User
 
 router = APIRouter()
 logger = structlog.get_logger()
+
+# Mock数据文件路径
+MOCK_DATA_PATH = Path(__file__).parent.parent / "data" / "shenwan_fund_flow_mock.json"
+
+
+def load_shenwan_mock_data() -> Dict[str, List[Dict[str, Any]]]:
+    """加载申万行业mock数据"""
+    try:
+        if MOCK_DATA_PATH.exists():
+            with open(MOCK_DATA_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                logger.info(
+                    f"Loaded Shenwan mock data: sw_l1={len(data.get('sw_l1', []))}, sw_l2={len(data.get('sw_l2', []))}"
+                )
+                return data
+    except Exception as e:
+        logger.error(f"Failed to load Shenwan mock data: {e}")
+    return {"sw_l1": [], "sw_l2": []}
 
 
 @router.get("/dragon-tiger")
@@ -79,7 +100,8 @@ async def get_dragon_tiger_data(
                 }
 
         # 查询龙虎榜数据 - 使用实际的表字段名
-        query = text("""
+        query = text(
+            """
             SELECT
                 symbol,
                 stock_name,
@@ -94,7 +116,8 @@ async def get_dragon_tiger_data(
             WHERE trade_date = :trade_date
             ORDER BY net_amount DESC NULLS LAST
             LIMIT :limit
-        """)
+        """
+        )
 
         result = session.execute(query, {"trade_date": trade_date, "limit": limit})
         rows = result.fetchall()
@@ -110,18 +133,28 @@ async def get_dragon_tiger_data(
             institution_buy = institution_net if institution_net > 0 else 0.0
             institution_sell = abs(institution_net) if institution_net < 0 else 0.0
 
-            data.append({
-                "symbol": row[0],
-                "name": row[1],  # stock_name -> name for frontend compatibility
-                "trade_date": row[2].strftime("%Y-%m-%d") if row[2] else None,
-                "net_amount": float(row[3]) if row[3] else 0.0,  # 保持net_amount字段名
-                "reason": row[4],  # 保持reason字段名
-                "buy_amount": float(row[5]) if row[5] else 0.0,  # total_buy_amount -> buy_amount
-                "sell_amount": float(row[6]) if row[6] else 0.0,  # total_sell_amount -> sell_amount
-                "turnover_rate": float(detail.get("turnover_rate", 0)) if detail else 0.0,  # 从detail_data提取或默认0
-                "institution_buy": institution_buy,
-                "institution_sell": institution_sell,
-            })
+            data.append(
+                {
+                    "symbol": row[0],
+                    "name": row[1],  # stock_name -> name for frontend compatibility
+                    "trade_date": row[2].strftime("%Y-%m-%d") if row[2] else None,
+                    "net_amount": (
+                        float(row[3]) if row[3] else 0.0
+                    ),  # 保持net_amount字段名
+                    "reason": row[4],  # 保持reason字段名
+                    "buy_amount": (
+                        float(row[5]) if row[5] else 0.0
+                    ),  # total_buy_amount -> buy_amount
+                    "sell_amount": (
+                        float(row[6]) if row[6] else 0.0
+                    ),  # total_sell_amount -> sell_amount
+                    "turnover_rate": (
+                        float(detail.get("turnover_rate", 0)) if detail else 0.0
+                    ),  # 从detail_data提取或默认0
+                    "institution_buy": institution_buy,
+                    "institution_sell": institution_sell,
+                }
+            )
 
         session.close()
         logger.info(f"Retrieved {len(data)} dragon tiger records for {trade_date}")
@@ -290,6 +323,27 @@ async def get_fund_flow_data(
             trade_date = row[0].strftime("%Y-%m-%d") if row and row[0] else None
 
             if not trade_date:
+                # 数据库无数据时,尝试从mock文件加载(仅限申万行业)
+                if industry_type in ["sw_l1", "sw_l2"]:
+                    logger.info(
+                        f"No database records for {industry_type}, trying mock data fallback"
+                    )
+                    mock_data = load_shenwan_mock_data()
+
+                    if mock_data.get(industry_type):
+                        data_list = mock_data[industry_type][:limit]
+                        logger.info(
+                            f"Using mock data for {industry_type}: {len(data_list)} records"
+                        )
+
+                        return {
+                            "success": True,
+                            "data": data_list,
+                            "total": len(data_list),
+                            "timestamp": datetime.now().isoformat(),
+                            "source": "mock",  # 标记数据来源
+                        }
+
                 logger.warning(
                     f"No fund flow data found for industry_type={industry_type}"
                 )
