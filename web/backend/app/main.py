@@ -217,6 +217,7 @@ from app.api import (
     risk_management,  # Week 1 Architecture-Compliant APIs
     sse_endpoints,  # Week 2 SSE Real-time Push
     scheduled_jobs,  # Task 6: Scheduled Data Updates
+    data_export,  # Task 7: Data Export (Excel/CSV)
 )
 
 # 包含路由
@@ -294,6 +295,11 @@ app.include_router(
 app.include_router(
     scheduled_jobs.router, prefix="/api/jobs", tags=["scheduled-jobs"]
 )  # 定时任务管理 (状态查询, 手动触发, 下次执行时间)
+
+# Task 7: Data Export (数据导出)
+app.include_router(
+    data_export.router, prefix="/api/export", tags=["data-export"]
+)  # 数据导出 (Excel, CSV)
 
 logger.info("✅ All API routers registered successfully")
 

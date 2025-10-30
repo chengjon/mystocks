@@ -60,6 +60,18 @@
                 >
                   {{ showFundFlowTable ? '图表' : '表格' }}
                 </el-button>
+                <el-dropdown trigger="click" @command="handleExport" size="small">
+                  <el-button size="small" :loading="exportLoading" :disabled="fundFlowEmpty">
+                    导出
+                    <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                  </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="excel">导出为 Excel</el-dropdown-item>
+                      <el-dropdown-item command="csv">导出为 CSV</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
               </div>
             </div>
           </template>
@@ -312,6 +324,7 @@ const industryData = ref({
 })
 const fundFlowLoading = ref(false)
 const fundFlowEmpty = ref(false)
+const exportLoading = ref(false)
 
 // Fund flow table view states
 const showFundFlowTable = ref(false)
@@ -828,6 +841,71 @@ const loadData = loadDashboardData
 const handleRefresh = async () => {
   await loadDashboardData()
   ElMessage.success('数据已刷新')
+}
+
+// Task 7: Export fund flow data to Excel/CSV
+const handleExport = async (format) => {
+  if (fundFlowEmpty.value) {
+    ElMessage.warning('暂无数据可导出')
+    return
+  }
+
+  exportLoading.value = true
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      ElMessage.error('请先登录')
+      return
+    }
+
+    // Construct export URL with current filters
+    const params = new URLSearchParams({
+      format,
+      industry_type: industryStandard.value,
+      limit: 100  // Export more records than default display
+    })
+
+    const url = `http://localhost:8000/api/export/fund-flow/export?${params}`
+
+    // Create download using fetch
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('导出失败')
+    }
+
+    // Get filename from Content-Disposition header or use default
+    const contentDisposition = response.headers.get('content-disposition')
+    let filename = `fund_flow_${industryStandard.value}_${new Date().getTime()}.${format === 'excel' ? 'xlsx' : 'csv'}`
+    if (contentDisposition) {
+      const matches = /filename="?([^"]+)"?/.exec(contentDisposition)
+      if (matches && matches[1]) {
+        filename = matches[1]
+      }
+    }
+
+    // Download file
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(downloadUrl)
+    document.body.removeChild(a)
+
+    ElMessage.success(`导出成功: ${filename}`)
+  } catch (error) {
+    console.error('Export error:', error)
+    ElMessage.error('导出失败，请稍后重试')
+  } finally {
+    exportLoading.value = false
+  }
 }
 
 onMounted(async () => {
