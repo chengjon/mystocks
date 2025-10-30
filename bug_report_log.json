@@ -1,0 +1,121 @@
+[
+  {
+    "timestamp": "2025-10-30T23:59:02.592479",
+    "project": "mystocks",
+    "total_bugs": 2,
+    "bugs": [
+      {
+        "errorCode": "IMPORT_ERROR_001",
+        "title": "缺少require_admin函数导致后端启动失败",
+        "message": "在app.core.security模块中缺少require_admin函数，导致scheduled_jobs.py导入失败",
+        "severity": "critical",
+        "stackTrace": "ImportError: cannot import name 'require_admin' from 'app.core.security'\nFile: /opt/claude/mystocks_spec/web/backend/app/api/scheduled_jobs.py:15\nfrom app.core.security import get_current_user, User, require_admin",
+        "context": {
+          "timestamp": "2025-10-30T23:59:02.552085",
+          "project": "mystocks",
+          "component": "backend",
+          "module": "app.core.security",
+          "file": "web/backend/app/core/security.py",
+          "fix": "添加require_admin函数用于管理员权限验证",
+          "status": "FIXED",
+          "fix_commit": "Added require_admin function to security.py",
+          "session": "2025-10-30",
+          "bug_id": "BUG-NEW-003"
+        }
+      },
+      {
+        "errorCode": "MODULE_NOT_FOUND_001",
+        "title": "缺少apscheduler依赖导致后端ImportError",
+        "message": "scheduled_data_update.py需要apscheduler库，但环境中未安装该依赖",
+        "severity": "critical",
+        "stackTrace": "ModuleNotFoundError: No module named 'apscheduler'\nFile: /opt/claude/mystocks_spec/web/backend/app/services/scheduled_data_update.py:20\nfrom apscheduler.schedulers.background import BackgroundScheduler",
+        "context": {
+          "timestamp": "2025-10-30T23:59:02.552132",
+          "project": "mystocks",
+          "component": "backend",
+          "module": "app.services.scheduled_data_update",
+          "file": "web/backend/app/services/scheduled_data_update.py",
+          "fix": "pip install apscheduler",
+          "status": "FIXED",
+          "fix_command": "pip install apscheduler==3.11.0",
+          "session": "2025-10-30",
+          "bug_id": "BUG-NEW-004",
+          "related_task": "Task 6: Scheduled Data Updates"
+        }
+      }
+    ],
+    "results": [
+      {
+        "bug": {
+          "errorCode": "IMPORT_ERROR_001",
+          "title": "缺少require_admin函数导致后端启动失败",
+          "message": "在app.core.security模块中缺少require_admin函数，导致scheduled_jobs.py导入失败",
+          "severity": "critical",
+          "stackTrace": "ImportError: cannot import name 'require_admin' from 'app.core.security'\nFile: /opt/claude/mystocks_spec/web/backend/app/api/scheduled_jobs.py:15\nfrom app.core.security import get_current_user, User, require_admin",
+          "context": {
+            "timestamp": "2025-10-30T23:59:02.552085",
+            "project": "mystocks",
+            "component": "backend",
+            "module": "app.core.security",
+            "file": "web/backend/app/core/security.py",
+            "fix": "添加require_admin函数用于管理员权限验证",
+            "status": "FIXED",
+            "fix_commit": "Added require_admin function to security.py",
+            "session": "2025-10-30",
+            "bug_id": "BUG-NEW-003"
+          }
+        },
+        "result": {
+          "success": true,
+          "statusCode": 201,
+          "message": "Bug reported successfully",
+          "data": {
+            "bugId": "BUG-20251030-EA812A",
+            "projectId": "test-project",
+            "occurrences": 1,
+            "status": "open",
+            "createdAt": "2025-10-30T15:59:02.573Z"
+          },
+          "timestamp": "2025-10-30T15:59:02.580Z"
+        },
+        "timestamp": "2025-10-30T23:59:02.582329"
+      },
+      {
+        "bug": {
+          "errorCode": "MODULE_NOT_FOUND_001",
+          "title": "缺少apscheduler依赖导致后端ImportError",
+          "message": "scheduled_data_update.py需要apscheduler库，但环境中未安装该依赖",
+          "severity": "critical",
+          "stackTrace": "ModuleNotFoundError: No module named 'apscheduler'\nFile: /opt/claude/mystocks_spec/web/backend/app/services/scheduled_data_update.py:20\nfrom apscheduler.schedulers.background import BackgroundScheduler",
+          "context": {
+            "timestamp": "2025-10-30T23:59:02.552132",
+            "project": "mystocks",
+            "component": "backend",
+            "module": "app.services.scheduled_data_update",
+            "file": "web/backend/app/services/scheduled_data_update.py",
+            "fix": "pip install apscheduler",
+            "status": "FIXED",
+            "fix_command": "pip install apscheduler==3.11.0",
+            "session": "2025-10-30",
+            "bug_id": "BUG-NEW-004",
+            "related_task": "Task 6: Scheduled Data Updates"
+          }
+        },
+        "result": {
+          "success": true,
+          "statusCode": 201,
+          "message": "Bug reported successfully",
+          "data": {
+            "bugId": "BUG-20251030-495A0F",
+            "projectId": "test-project",
+            "occurrences": 1,
+            "status": "open",
+            "createdAt": "2025-10-30T15:59:02.588Z"
+          },
+          "timestamp": "2025-10-30T15:59:02.590Z"
+        },
+        "timestamp": "2025-10-30T23:59:02.592415"
+      }
+    ]
+  }
+]
