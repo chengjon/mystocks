@@ -1,0 +1,1316 @@
+{
+  "sw_l1": [
+    {
+      "industry_name": "军工",
+      "industry_type": "sw_l1",
+      "net_inflow": -90.91,
+      "main_inflow": -90.91,
+      "retail_inflow": 82.91,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 90.91
+    },
+    {
+      "industry_name": "煤化工",
+      "industry_type": "sw_l1",
+      "net_inflow": -8.12,
+      "main_inflow": -8.12,
+      "retail_inflow": 9.02,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 8.12
+    },
+    {
+      "industry_name": "新能源",
+      "industry_type": "sw_l1",
+      "net_inflow": -81.61,
+      "main_inflow": -81.61,
+      "retail_inflow": 67.73,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 81.61
+    },
+    {
+      "industry_name": "节能环保",
+      "industry_type": "sw_l1",
+      "net_inflow": -52.17,
+      "main_inflow": -52.17,
+      "retail_inflow": 39.37,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 52.17
+    },
+    {
+      "industry_name": "AB股",
+      "industry_type": "sw_l1",
+      "net_inflow": -7.05,
+      "main_inflow": -7.05,
+      "retail_inflow": 9.32,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 7.05
+    },
+    {
+      "industry_name": "AH股",
+      "industry_type": "sw_l1",
+      "net_inflow": -94.19,
+      "main_inflow": -94.19,
+      "retail_inflow": 74.17,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 94.19
+    },
+    {
+      "industry_name": "HS300_",
+      "industry_type": "sw_l1",
+      "net_inflow": -371.98,
+      "main_inflow": -371.98,
+      "retail_inflow": 248.37,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 371.98
+    },
+    {
+      "industry_name": "次新股",
+      "industry_type": "sw_l1",
+      "net_inflow": -8.27,
+      "main_inflow": -8.27,
+      "retail_inflow": 5.43,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 8.27
+    },
+    {
+      "industry_name": "中字头",
+      "industry_type": "sw_l1",
+      "net_inflow": -31.24,
+      "main_inflow": -31.24,
+      "retail_inflow": 16.59,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 31.24
+    },
+    {
+      "industry_name": "创投",
+      "industry_type": "sw_l1",
+      "net_inflow": -88.93,
+      "main_inflow": -88.93,
+      "retail_inflow": 70.59,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 88.93
+    },
+    {
+      "industry_name": "网络游戏",
+      "industry_type": "sw_l1",
+      "net_inflow": -24.93,
+      "main_inflow": -24.93,
+      "retail_inflow": 16.6,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 24.93
+    },
+    {
+      "industry_name": "ST股",
+      "industry_type": "sw_l1",
+      "net_inflow": -14.15,
+      "main_inflow": -14.15,
+      "retail_inflow": 8.34,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 14.15
+    },
+    {
+      "industry_name": "化工原料",
+      "industry_type": "sw_l1",
+      "net_inflow": -7.76,
+      "main_inflow": -7.76,
+      "retail_inflow": 5.47,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 7.76
+    },
+    {
+      "industry_name": "参股券商",
+      "industry_type": "sw_l1",
+      "net_inflow": -37.84,
+      "main_inflow": -37.84,
+      "retail_inflow": 35.27,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 37.84
+    },
+    {
+      "industry_name": "稀缺资源",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.31,
+      "main_inflow": -6.31,
+      "retail_inflow": 5.11,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.31
+    },
+    {
+      "industry_name": "社保重仓",
+      "industry_type": "sw_l1",
+      "net_inflow": -3.14,
+      "main_inflow": -3.14,
+      "retail_inflow": 2.72,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 3.14
+    },
+    {
+      "industry_name": "新材料",
+      "industry_type": "sw_l1",
+      "net_inflow": -100.14,
+      "main_inflow": -100.14,
+      "retail_inflow": 81.45,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 100.14
+    },
+    {
+      "industry_name": "参股期货",
+      "industry_type": "sw_l1",
+      "net_inflow": -51.91,
+      "main_inflow": -51.91,
+      "retail_inflow": 35.32,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 51.91
+    },
+    {
+      "industry_name": "参股银行",
+      "industry_type": "sw_l1",
+      "net_inflow": -46.68,
+      "main_inflow": -46.68,
+      "retail_inflow": 45.5,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 46.68
+    },
+    {
+      "industry_name": "转债标的",
+      "industry_type": "sw_l1",
+      "net_inflow": -74.2,
+      "main_inflow": -74.2,
+      "retail_inflow": 56.87,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 74.2
+    },
+    {
+      "industry_name": "成渝特区",
+      "industry_type": "sw_l1",
+      "net_inflow": -15.77,
+      "main_inflow": -15.77,
+      "retail_inflow": 15.84,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 15.77
+    },
+    {
+      "industry_name": "QFII重仓",
+      "industry_type": "sw_l1",
+      "net_inflow": -44.82,
+      "main_inflow": -44.82,
+      "retail_inflow": 38.64,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 44.82
+    },
+    {
+      "industry_name": "基金重仓",
+      "industry_type": "sw_l1",
+      "net_inflow": -167.9,
+      "main_inflow": -167.9,
+      "retail_inflow": 99.42,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 167.9
+    },
+    {
+      "industry_name": "黄金概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -20.72,
+      "main_inflow": -20.72,
+      "retail_inflow": 13.74,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 20.72
+    },
+    {
+      "industry_name": "生物疫苗",
+      "industry_type": "sw_l1",
+      "net_inflow": -8.17,
+      "main_inflow": -8.17,
+      "retail_inflow": 4.71,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 8.17
+    },
+    {
+      "industry_name": "深圳特区",
+      "industry_type": "sw_l1",
+      "net_inflow": -166.8,
+      "main_inflow": -166.8,
+      "retail_inflow": 123.05,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 166.8
+    },
+    {
+      "industry_name": "机构重仓",
+      "industry_type": "sw_l1",
+      "net_inflow": -228.82,
+      "main_inflow": -228.82,
+      "retail_inflow": 175.37,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 228.82
+    },
+    {
+      "industry_name": "物联网",
+      "industry_type": "sw_l1",
+      "net_inflow": -147.73,
+      "main_inflow": -147.73,
+      "retail_inflow": 107.2,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 147.73
+    },
+    {
+      "industry_name": "移动支付",
+      "industry_type": "sw_l1",
+      "net_inflow": -21.57,
+      "main_inflow": -21.57,
+      "retail_inflow": 16.39,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 21.57
+    },
+    {
+      "industry_name": "滨海新区",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.81,
+      "main_inflow": -6.81,
+      "retail_inflow": 5.31,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.81
+    },
+    {
+      "industry_name": "股权激励",
+      "industry_type": "sw_l1",
+      "net_inflow": -51.2,
+      "main_inflow": -51.2,
+      "retail_inflow": 47.35,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 51.2
+    },
+    {
+      "industry_name": "深成500",
+      "industry_type": "sw_l1",
+      "net_inflow": -404.92,
+      "main_inflow": -404.92,
+      "retail_inflow": 283.26,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 404.92
+    },
+    {
+      "industry_name": "锂电池",
+      "industry_type": "sw_l1",
+      "net_inflow": -34.98,
+      "main_inflow": -34.98,
+      "retail_inflow": 30.26,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 34.98
+    },
+    {
+      "industry_name": "核能核电",
+      "industry_type": "sw_l1",
+      "net_inflow": -75.43,
+      "main_inflow": -75.43,
+      "retail_inflow": 63.76,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 75.43
+    },
+    {
+      "industry_name": "稀土永磁",
+      "industry_type": "sw_l1",
+      "net_inflow": 7.73,
+      "main_inflow": 7.73,
+      "retail_inflow": -9.83,
+      "trade_date": "2025-10-30",
+      "total_inflow": 7.73,
+      "total_outflow": 0.0
+    },
+    {
+      "industry_name": "云计算",
+      "industry_type": "sw_l1",
+      "net_inflow": -143.43,
+      "main_inflow": -143.43,
+      "retail_inflow": 99.91,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 143.43
+    },
+    {
+      "industry_name": "LED",
+      "industry_type": "sw_l1",
+      "net_inflow": -12.3,
+      "main_inflow": -12.3,
+      "retail_inflow": 15.58,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 12.3
+    },
+    {
+      "industry_name": "智能电网",
+      "industry_type": "sw_l1",
+      "net_inflow": -60.13,
+      "main_inflow": -60.13,
+      "retail_inflow": 49.82,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 60.13
+    },
+    {
+      "industry_name": "太阳能",
+      "industry_type": "sw_l1",
+      "net_inflow": -142.32,
+      "main_inflow": -142.32,
+      "retail_inflow": 117.22,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 142.32
+    },
+    {
+      "industry_name": "西部大开发",
+      "industry_type": "sw_l1",
+      "net_inflow": -137.67,
+      "main_inflow": -137.67,
+      "retail_inflow": 105.21,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 137.67
+    },
+    {
+      "industry_name": "铁路基建",
+      "industry_type": "sw_l1",
+      "net_inflow": -20.35,
+      "main_inflow": -20.35,
+      "retail_inflow": 14.83,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 20.35
+    },
+    {
+      "industry_name": "长江三角",
+      "industry_type": "sw_l1",
+      "net_inflow": -116.89,
+      "main_inflow": -116.89,
+      "retail_inflow": 96.6,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 116.89
+    },
+    {
+      "industry_name": "风能",
+      "industry_type": "sw_l1",
+      "net_inflow": -62.65,
+      "main_inflow": -62.65,
+      "retail_inflow": 50.25,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 62.65
+    },
+    {
+      "industry_name": "融资融券",
+      "industry_type": "sw_l1",
+      "net_inflow": -989.02,
+      "main_inflow": -989.02,
+      "retail_inflow": 700.67,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 989.02
+    },
+    {
+      "industry_name": "水利建设",
+      "industry_type": "sw_l1",
+      "net_inflow": -21.2,
+      "main_inflow": -21.2,
+      "retail_inflow": 16.12,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 21.2
+    },
+    {
+      "industry_name": "参股新三板",
+      "industry_type": "sw_l1",
+      "net_inflow": -17.66,
+      "main_inflow": -17.66,
+      "retail_inflow": 18.14,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 17.66
+    },
+    {
+      "industry_name": "海工装备",
+      "industry_type": "sw_l1",
+      "net_inflow": -27.01,
+      "main_inflow": -27.01,
+      "retail_inflow": 24.11,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 27.01
+    },
+    {
+      "industry_name": "页岩气",
+      "industry_type": "sw_l1",
+      "net_inflow": -4.37,
+      "main_inflow": -4.37,
+      "retail_inflow": 5.99,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 4.37
+    },
+    {
+      "industry_name": "参股保险",
+      "industry_type": "sw_l1",
+      "net_inflow": -24.01,
+      "main_inflow": -24.01,
+      "retail_inflow": 19.01,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 24.01
+    },
+    {
+      "industry_name": "油气设服",
+      "industry_type": "sw_l1",
+      "net_inflow": -7.61,
+      "main_inflow": -7.61,
+      "retail_inflow": 8.74,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 7.61
+    },
+    {
+      "industry_name": "央视50_",
+      "industry_type": "sw_l1",
+      "net_inflow": -30.86,
+      "main_inflow": -30.86,
+      "retail_inflow": 19.18,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 30.86
+    },
+    {
+      "industry_name": "上证50_",
+      "industry_type": "sw_l1",
+      "net_inflow": -65.77,
+      "main_inflow": -65.77,
+      "retail_inflow": 41.48,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 65.77
+    },
+    {
+      "industry_name": "上证180_",
+      "industry_type": "sw_l1",
+      "net_inflow": -153.91,
+      "main_inflow": -153.91,
+      "retail_inflow": 100.76,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 153.91
+    },
+    {
+      "industry_name": "食品安全",
+      "industry_type": "sw_l1",
+      "net_inflow": -4.05,
+      "main_inflow": -4.05,
+      "retail_inflow": 2.45,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 4.05
+    },
+    {
+      "industry_name": "中药概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -17.73,
+      "main_inflow": -17.73,
+      "retail_inflow": 13.36,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 17.73
+    },
+    {
+      "industry_name": "石墨烯",
+      "industry_type": "sw_l1",
+      "net_inflow": -19.57,
+      "main_inflow": -19.57,
+      "retail_inflow": 17.65,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 19.57
+    },
+    {
+      "industry_name": "3D打印",
+      "industry_type": "sw_l1",
+      "net_inflow": -21.04,
+      "main_inflow": -21.04,
+      "retail_inflow": 14.83,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 21.04
+    },
+    {
+      "industry_name": "地热能",
+      "industry_type": "sw_l1",
+      "net_inflow": -1.45,
+      "main_inflow": -1.45,
+      "retail_inflow": 1.36,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 1.45
+    },
+    {
+      "industry_name": "海洋经济",
+      "industry_type": "sw_l1",
+      "net_inflow": -32.83,
+      "main_inflow": -32.83,
+      "retail_inflow": 32.04,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 32.83
+    },
+    {
+      "industry_name": "通用航空",
+      "industry_type": "sw_l1",
+      "net_inflow": -13.71,
+      "main_inflow": -13.71,
+      "retail_inflow": 11.6,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 13.71
+    },
+    {
+      "industry_name": "智慧城市",
+      "industry_type": "sw_l1",
+      "net_inflow": -54.4,
+      "main_inflow": -54.4,
+      "retail_inflow": 36.92,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 54.4
+    },
+    {
+      "industry_name": "北斗导航",
+      "industry_type": "sw_l1",
+      "net_inflow": -1.7,
+      "main_inflow": -1.7,
+      "retail_inflow": 1.91,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 1.7
+    },
+    {
+      "industry_name": "土地流转",
+      "industry_type": "sw_l1",
+      "net_inflow": -4.76,
+      "main_inflow": -4.76,
+      "retail_inflow": 5.0,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 4.76
+    },
+    {
+      "industry_name": "大数据",
+      "industry_type": "sw_l1",
+      "net_inflow": -112.52,
+      "main_inflow": -112.52,
+      "retail_inflow": 83.86,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 112.52
+    },
+    {
+      "industry_name": "B股",
+      "industry_type": "sw_l1",
+      "net_inflow": -0.17,
+      "main_inflow": -0.17,
+      "retail_inflow": 0.12,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 0.17
+    },
+    {
+      "industry_name": "互联金融",
+      "industry_type": "sw_l1",
+      "net_inflow": -171.62,
+      "main_inflow": -171.62,
+      "retail_inflow": 122.13,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 171.62
+    },
+    {
+      "industry_name": "创业成份",
+      "industry_type": "sw_l1",
+      "net_inflow": -213.15,
+      "main_inflow": -213.15,
+      "retail_inflow": 125.63,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 213.15
+    },
+    {
+      "industry_name": "智能穿戴",
+      "industry_type": "sw_l1",
+      "net_inflow": -72.07,
+      "main_inflow": -72.07,
+      "retail_inflow": 45.39,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 72.07
+    },
+    {
+      "industry_name": "上海自贸",
+      "industry_type": "sw_l1",
+      "net_inflow": -0.52,
+      "main_inflow": -0.52,
+      "retail_inflow": -0.13,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 0.52
+    },
+    {
+      "industry_name": "特斯拉",
+      "industry_type": "sw_l1",
+      "net_inflow": -85.91,
+      "main_inflow": -85.91,
+      "retail_inflow": 66.19,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 85.91
+    },
+    {
+      "industry_name": "养老概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -3.91,
+      "main_inflow": -3.91,
+      "retail_inflow": 5.7,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 3.91
+    },
+    {
+      "industry_name": "网络安全",
+      "industry_type": "sw_l1",
+      "net_inflow": -55.04,
+      "main_inflow": -55.04,
+      "retail_inflow": 38.38,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 55.04
+    },
+    {
+      "industry_name": "智能电视",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.69,
+      "main_inflow": -6.69,
+      "retail_inflow": 4.72,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.69
+    },
+    {
+      "industry_name": "在线教育",
+      "industry_type": "sw_l1",
+      "net_inflow": -23.38,
+      "main_inflow": -23.38,
+      "retail_inflow": 18.34,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 23.38
+    },
+    {
+      "industry_name": "婴童概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -5.48,
+      "main_inflow": -5.48,
+      "retail_inflow": 5.81,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 5.48
+    },
+    {
+      "industry_name": "电商概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -41.59,
+      "main_inflow": -41.59,
+      "retail_inflow": 31.91,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 41.59
+    },
+    {
+      "industry_name": "苹果概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -83.27,
+      "main_inflow": -83.27,
+      "retail_inflow": 58.09,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 83.27
+    },
+    {
+      "industry_name": "国家安防",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.8,
+      "main_inflow": -6.8,
+      "retail_inflow": 5.7,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.8
+    },
+    {
+      "industry_name": "医疗器械概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -45.99,
+      "main_inflow": -45.99,
+      "retail_inflow": 31.82,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 45.99
+    },
+    {
+      "industry_name": "生态农业",
+      "industry_type": "sw_l1",
+      "net_inflow": -2.15,
+      "main_inflow": -2.15,
+      "retail_inflow": 2.5,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 2.15
+    },
+    {
+      "industry_name": "彩票概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -0.57,
+      "main_inflow": -0.57,
+      "retail_inflow": 0.36,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 0.57
+    },
+    {
+      "industry_name": "沪企改革",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.87,
+      "main_inflow": -6.87,
+      "retail_inflow": 6.94,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.87
+    },
+    {
+      "industry_name": "蓝宝石",
+      "industry_type": "sw_l1",
+      "net_inflow": -24.11,
+      "main_inflow": -24.11,
+      "retail_inflow": 16.22,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 24.11
+    },
+    {
+      "industry_name": "病毒防治",
+      "industry_type": "sw_l1",
+      "net_inflow": -17.6,
+      "main_inflow": -17.6,
+      "retail_inflow": 10.24,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 17.6
+    },
+    {
+      "industry_name": "独家药品",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.39,
+      "main_inflow": -6.39,
+      "retail_inflow": 4.16,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.39
+    },
+    {
+      "industry_name": "粤港自贸",
+      "industry_type": "sw_l1",
+      "net_inflow": -7.49,
+      "main_inflow": -7.49,
+      "retail_inflow": 8.16,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 7.49
+    },
+    {
+      "industry_name": "超导概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -22.93,
+      "main_inflow": -22.93,
+      "retail_inflow": 18.53,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 22.93
+    },
+    {
+      "industry_name": "智能家居",
+      "industry_type": "sw_l1",
+      "net_inflow": -79.42,
+      "main_inflow": -79.42,
+      "retail_inflow": 58.0,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 79.42
+    },
+    {
+      "industry_name": "燃料电池",
+      "industry_type": "sw_l1",
+      "net_inflow": -41.12,
+      "main_inflow": -41.12,
+      "retail_inflow": 36.15,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 41.12
+    },
+    {
+      "industry_name": "央国企改革",
+      "industry_type": "sw_l1",
+      "net_inflow": -247.24,
+      "main_inflow": -247.24,
+      "retail_inflow": 199.09,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 247.24
+    },
+    {
+      "industry_name": "京津冀",
+      "industry_type": "sw_l1",
+      "net_inflow": -12.36,
+      "main_inflow": -12.36,
+      "retail_inflow": 14.54,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 12.36
+    },
+    {
+      "industry_name": "举牌",
+      "industry_type": "sw_l1",
+      "net_inflow": 0.97,
+      "main_inflow": 0.97,
+      "retail_inflow": -1.17,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.97,
+      "total_outflow": 0.0
+    },
+    {
+      "industry_name": "阿里概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -74.75,
+      "main_inflow": -74.75,
+      "retail_inflow": 58.03,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 74.75
+    },
+    {
+      "industry_name": "氟化工",
+      "industry_type": "sw_l1",
+      "net_inflow": 12.65,
+      "main_inflow": 12.65,
+      "retail_inflow": -9.66,
+      "trade_date": "2025-10-30",
+      "total_inflow": 12.65,
+      "total_outflow": 0.0
+    },
+    {
+      "industry_name": "旅游概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -6.49,
+      "main_inflow": -6.49,
+      "retail_inflow": 6.56,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.49
+    },
+    {
+      "industry_name": "基因测序",
+      "industry_type": "sw_l1",
+      "net_inflow": -2.84,
+      "main_inflow": -2.84,
+      "retail_inflow": 3.99,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 2.84
+    },
+    {
+      "industry_name": "小金属概念",
+      "industry_type": "sw_l1",
+      "net_inflow": -7.27,
+      "main_inflow": -7.27,
+      "retail_inflow": 5.12,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 7.27
+    },
+    {
+      "industry_name": "国产软件",
+      "industry_type": "sw_l1",
+      "net_inflow": -94.82,
+      "main_inflow": -94.82,
+      "retail_inflow": 69.02,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 94.82
+    },
+    {
+      "industry_name": "IPO受益",
+      "industry_type": "sw_l1",
+      "net_inflow": -18.01,
+      "main_inflow": -18.01,
+      "retail_inflow": 15.49,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 18.01
+    },
+    {
+      "industry_name": "免疫治疗",
+      "industry_type": "sw_l1",
+      "net_inflow": -5.32,
+      "main_inflow": -5.32,
+      "retail_inflow": 3.21,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 5.32
+    }
+  ],
+  "sw_l2": [
+    {
+      "industry_name": "上海板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -110.84,
+      "main_inflow": -110.84,
+      "retail_inflow": 83.31,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 110.84
+    },
+    {
+      "industry_name": "黑龙江",
+      "industry_type": "sw_l2",
+      "net_inflow": -5.25,
+      "main_inflow": -5.25,
+      "retail_inflow": 5.55,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 5.25
+    },
+    {
+      "industry_name": "新疆板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -10.78,
+      "main_inflow": -10.78,
+      "retail_inflow": 9.95,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 10.78
+    },
+    {
+      "industry_name": "吉林板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -6.55,
+      "main_inflow": -6.55,
+      "retail_inflow": 6.39,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.55
+    },
+    {
+      "industry_name": "安徽板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -44.32,
+      "main_inflow": -44.32,
+      "retail_inflow": 32.8,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 44.32
+    },
+    {
+      "industry_name": "北京板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -70.18,
+      "main_inflow": -70.18,
+      "retail_inflow": 46.74,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 70.18
+    },
+    {
+      "industry_name": "福建板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -31.46,
+      "main_inflow": -31.46,
+      "retail_inflow": 36.62,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 31.46
+    },
+    {
+      "industry_name": "甘肃板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -21.81,
+      "main_inflow": -21.81,
+      "retail_inflow": 16.95,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 21.81
+    },
+    {
+      "industry_name": "广东板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -238.41,
+      "main_inflow": -238.41,
+      "retail_inflow": 180.16,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 238.41
+    },
+    {
+      "industry_name": "广西板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -2.3,
+      "main_inflow": -2.3,
+      "retail_inflow": 1.16,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 2.3
+    },
+    {
+      "industry_name": "河北板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -12.93,
+      "main_inflow": -12.93,
+      "retail_inflow": 14.33,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 12.93
+    },
+    {
+      "industry_name": "河南板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -14.32,
+      "main_inflow": -14.32,
+      "retail_inflow": 10.32,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 14.32
+    },
+    {
+      "industry_name": "湖北板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -45.25,
+      "main_inflow": -45.25,
+      "retail_inflow": 30.62,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 45.25
+    },
+    {
+      "industry_name": "湖南板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -26.05,
+      "main_inflow": -26.05,
+      "retail_inflow": 17.87,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 26.05
+    },
+    {
+      "industry_name": "江苏板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -129.9,
+      "main_inflow": -129.9,
+      "retail_inflow": 87.78,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 129.9
+    },
+    {
+      "industry_name": "江西板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -6.41,
+      "main_inflow": -6.41,
+      "retail_inflow": 6.23,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 6.41
+    },
+    {
+      "industry_name": "辽宁板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -2.74,
+      "main_inflow": -2.74,
+      "retail_inflow": 1.32,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 2.74
+    },
+    {
+      "industry_name": "宁夏板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -0.73,
+      "main_inflow": -0.73,
+      "retail_inflow": 1.13,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 0.73
+    },
+    {
+      "industry_name": "青海板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -5.49,
+      "main_inflow": -5.49,
+      "retail_inflow": 2.73,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 5.49
+    },
+    {
+      "industry_name": "山东板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -28.76,
+      "main_inflow": -28.76,
+      "retail_inflow": 19.17,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 28.76
+    },
+    {
+      "industry_name": "陕西板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -19.27,
+      "main_inflow": -19.27,
+      "retail_inflow": 15.4,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 19.27
+    },
+    {
+      "industry_name": "天津板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -26.46,
+      "main_inflow": -26.46,
+      "retail_inflow": 12.62,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 26.46
+    },
+    {
+      "industry_name": "山西板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -13.22,
+      "main_inflow": -13.22,
+      "retail_inflow": 10.44,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 13.22
+    },
+    {
+      "industry_name": "四川板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -42.02,
+      "main_inflow": -42.02,
+      "retail_inflow": 32.85,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 42.02
+    },
+    {
+      "industry_name": "重庆板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -15.08,
+      "main_inflow": -15.08,
+      "retail_inflow": 11.26,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 15.08
+    },
+    {
+      "industry_name": "云南板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -9.91,
+      "main_inflow": -9.91,
+      "retail_inflow": 7.9,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 9.91
+    },
+    {
+      "industry_name": "浙江板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -113.55,
+      "main_inflow": -113.55,
+      "retail_inflow": 74.34,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 113.55
+    },
+    {
+      "industry_name": "贵州板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -8.38,
+      "main_inflow": -8.38,
+      "retail_inflow": 3.35,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 8.38
+    },
+    {
+      "industry_name": "西藏板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -1.28,
+      "main_inflow": -1.28,
+      "retail_inflow": 1.67,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 1.28
+    },
+    {
+      "industry_name": "内蒙古",
+      "industry_type": "sw_l2",
+      "net_inflow": -0.42,
+      "main_inflow": -0.42,
+      "retail_inflow": -0.15,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 0.42
+    },
+    {
+      "industry_name": "海南板块",
+      "industry_type": "sw_l2",
+      "net_inflow": -15.0,
+      "main_inflow": -15.0,
+      "retail_inflow": 13.44,
+      "trade_date": "2025-10-30",
+      "total_inflow": 0.0,
+      "total_outflow": 15.0
+    }
+  ]
+}
