@@ -42,7 +42,7 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :md="8">
-        <el-card class="chart-card">
+        <el-card class="chart-card" v-loading="fundFlowLoading">
           <template #header>
             <div class="flex-between">
               <span>资金流向</span>
@@ -53,7 +53,10 @@
               </el-select>
             </div>
           </template>
-          <div ref="industryChartRef" style="height: 400px"></div>
+          <div v-if="fundFlowEmpty && !fundFlowLoading" style="height: 400px; display: flex; align-items: center; justify-content: center;">
+            <el-empty description="暂无数据" :image-size="100" />
+          </div>
+          <div v-else ref="industryChartRef" style="height: 400px"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -250,6 +253,53 @@ const industryData = ref({
   sw_l1: { categories: [], values: [] },
   sw_l2: { categories: [], values: [] }
 })
+const fundFlowLoading = ref(false)
+const fundFlowEmpty = ref(false)
+
+// Load fund flow data from /api/market/v3/fund-flow
+const loadFundFlowData = async (industryType) => {
+  fundFlowLoading.value = true
+  fundFlowEmpty.value = false
+
+  try {
+    const response = await dataApi.getMarketFundFlow({
+      industry_type: industryType,
+      limit: 20  // Get top 20 industries
+    })
+
+    if (response.success && response.data && response.data.length > 0) {
+      // Transform API data to chart format
+      const categories = response.data.map(item => item.industry_name)
+      const values = response.data.map(item => parseFloat(item.net_inflow.toFixed(2)))
+
+      industryData.value[industryType] = { categories, values }
+      fundFlowEmpty.value = false
+
+      // Update chart if it's the currently selected standard
+      if (industryType === industryStandard.value && industryChart) {
+        updateIndustryChartData()
+      }
+    } else {
+      // Empty data - set empty state
+      industryData.value[industryType] = { categories: [], values: [] }
+      fundFlowEmpty.value = true
+
+      if (industryType === industryStandard.value && industryChart) {
+        updateIndustryChartData()
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load fund flow data:', error)
+    industryData.value[industryType] = { categories: [], values: [] }
+    fundFlowEmpty.value = true
+
+    if (industryType === industryStandard.value && industryChart) {
+      updateIndustryChartData()
+    }
+  } finally {
+    fundFlowLoading.value = false
+  }
+}
 
 // Load dashboard data from API
 const loadDashboardData = async () => {
@@ -269,22 +319,15 @@ const loadDashboardData = async () => {
       favoriteStocks.value = response.favorites || []
       strategyStocks.value = response.strategyStocks || []
       industryStocks.value = response.industryStocks || []
-
-      // Update fund flow data
-      industryData.value.csrc = response.fundFlow.csrc
-      industryData.value.sw_l1 = response.fundFlow.sw_l1
-      industryData.value.sw_l2 = response.fundFlow.sw_l2
-
-      // Update industry chart if visible
-      if (industryChart) {
-        updateIndustryChartData()
-      }
     }
   } catch (error) {
     handleApiError(error, '加载Dashboard数据失败')
   } finally {
     loading.value = false
   }
+
+  // Load fund flow data for current industry standard
+  await loadFundFlowData(industryStandard.value)
 }
 
 const updateIndustryChartData = () => {
@@ -349,8 +392,9 @@ const updateIndustryChartData = () => {
   industryChart.setOption(option)
 }
 
-const updateIndustryChart = () => {
-  updateIndustryChartData()
+const updateIndustryChart = async () => {
+  // Load data for the newly selected industry standard
+  await loadFundFlowData(industryStandard.value)
 }
 
 const initMarketHeatChart = () => {
