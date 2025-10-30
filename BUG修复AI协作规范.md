@@ -545,6 +545,213 @@ src/views/Login.vue 第45行（handleLogin 函数）
 - 必须阐述业务本质和架构原则
 - 技术选型验证必须说明是否符合第一性原理
 
+### 3.4 BUG知识库与BUGer服务集成
+
+#### 核心原则：BUGer是最终权威知识库
+
+**强制要求**:
+- ✅ 所有BUG必须提交到BUGer服务作为最终知识库
+- ✅ 调试前，必须先在BUGer中搜索已有解决方案
+- ✅ 发现新BUG后，必须通过AI调用token提交到BUGer
+- ✅ 本地文档（`BUG知识库.md`）仅作为临时记录，最终必须同步到BUGer
+
+#### BUG处理标准工作流
+
+```
+┌──────────────────────────────────────────┐
+│ 1. 发现BUG/开始调试                        │
+└──────────────────────┬───────────────────┘
+                       ↓
+┌──────────────────────────────────────────┐
+│ 2. 在BUGer服务中搜索已有解决方案            │
+│    - 使用错误码/错误信息作为关键词           │
+│    - 检查相同组件/模块的历史BUG              │
+└──────────────────────┬───────────────────┘
+                       ↓
+              ┌────────┴────────┐
+              │  找到解决方案？   │
+              └────────┬────────┘
+         是 ←─────────┤───────────→ 否
+          │           │              │
+          ↓           ↓              ↓
+┌─────────────┐  ┌─────────────┐  ┌──────────────────┐
+│ 3a. 应用已有 │  │ 3b. 验证方案 │  │ 3c. AI分析新BUG   │
+│     解决方案 │  │     是否有效 │  │     并修复        │
+└──────┬──────┘  └──────┬──────┘  └────────┬─────────┘
+       │                 │                   │
+       ↓                 ↓                   ↓
+┌─────────────────────────────────────────���───────────┐
+│ 4. 通过tools/bug_reporter.py提交到BUGer              │
+│    - 新BUG: 完整上下文 + 修复方案                      │
+│    - 已有BUG: 补充新的解决场景或更新修复状态            │
+└──────────────────────┬──────────────────────────────┘
+                       ↓
+┌──────────────────────────────────────────┐
+│ 5. 记录到本地文档（可选）                   │
+│    - BUG知识库.md（临时记录）               │
+│    - 最终以BUGer为准                       │
+└──────────────────────────────────────────┘
+```
+
+#### BUG Reporter客户端使用规范
+
+**工具位置**: `tools/bug_reporter.py`
+
+**环境配置**（在`.env`文件中设置）:
+```bash
+# BUGer服务配置
+BUGER_API_URL=http://localhost:3003/api
+BUGER_API_KEY=sk_test_xyz123
+PROJECT_ID=mystocks
+```
+
+**使用方法**:
+
+1. **单个BUG提交**:
+```python
+from tools.bug_reporter import BugReporter
+
+reporter = BugReporter()
+
+# 格式化BUG数据
+bug_data = reporter.format_bug(
+    error_code="IMPORT_ERROR_001",
+    title="缺少require_admin函数导致后端启动失败",
+    message="在app.core.security模块中缺少require_admin函数",
+    severity="critical",  # critical/high/medium/low
+    stack_trace="ImportError: cannot import name 'require_admin'...",
+    context={
+        "component": "backend",
+        "module": "app.core.security",
+        "file": "web/backend/app/core/security.py",
+        "fix": "添加require_admin函数用于管理员权限验证",
+        "status": "FIXED"
+    }
+)
+
+# 提交BUG
+result = reporter.report_bug(bug_data)
+```
+
+2. **批量BUG提交**:
+```python
+bugs = [bug1_data, bug2_data, bug3_data]
+result = reporter.report_bugs_batch(bugs)
+```
+
+3. **队列收集模式**（适合高频错误）:
+```python
+# 收集错误（不立即提交）
+reporter.collectError(error, context={"module": "api"})
+
+# 达到批次大小或定时自动提交
+# 或手动刷新
+reporter.flushQueue()
+```
+
+#### BUG数据结构标准
+
+所有提交到BUGer的BUG必须包含以下字段：
+
+```python
+{
+    "errorCode": str,         # 错误代码（如"IMPORT_ERROR_001"）
+    "title": str,             # 简明标题（50字符以内）
+    "message": str,           # 详细描述（包含问题原因和影响）
+    "severity": str,          # 严重程度：critical/high/medium/low
+    "stackTrace": str,        # 完整错误堆栈（如有）
+    "context": {              # 上下文信息
+        "timestamp": str,     # 发现时间（ISO格式）
+        "project": str,       # 项目名称
+        "component": str,     # 组件（frontend/backend/database）
+        "module": str,        # 具体模块路径
+        "file": str,          # 文件路径
+        "fix": str,           # 修复方案描述
+        "fix_commit": str,    # 修复提交哈希（如已提交）
+        "status": str,        # 状态：OPEN/IN_PROGRESS/FIXED/CLOSED
+        "session": str,       # 会话日期（YYYY-MM-DD）
+        "bug_id": str         # 本地BUG编号（如BUG-NEW-003）
+    }
+}
+```
+
+#### AI的强制要求
+
+**在修复BUG过程中，AI必须**:
+
+1. **修复前检查**:
+   - 使用BUGer API搜索相同错误码/错误信息
+   - 如果找到已知解决方案，优先使用而非重新分析
+   - 向用户汇报"该BUG在BUGer知识库中已有记录（BUG-ID: XXX），建议使用已验证的解决方案"
+
+2. **修复后提交**:
+   - 新发现的BUG必须通过`tools/bug_reporter.py`提交到BUGer
+   - 提交必须包含完整的context信息
+   - 提交后保存响应结果到`bug_report_log.json`
+   - 向用户汇报"BUG已提交到BUGer知识库（BUG-ID: XXX），供未来参考"
+
+3. **错误处理**:
+   - 如果BUGer服务不可用（Connection refused），记录到本地日志
+   - 提示用户"BUGer服务当前不可用，BUG已记录到本地日志（bug_report_log.json），待服务恢复后可重新提交"
+   - 不因BUGer不可用而中断BUG修复流程
+
+#### BUGer服务API参考
+
+**基础URL**: `http://localhost:3003/api`
+
+**认证**: 通过`X-API-Key`请求头
+
+**核心端点**:
+
+1. **提交单个BUG**:
+```
+POST /api/bugs
+Headers: X-API-Key: <api_key>
+Body: { errorCode, title, message, severity, stackTrace, context }
+Response: { success, statusCode, data: { bugId, status, createdAt } }
+```
+
+2. **批量提交**:
+```
+POST /api/bugs/batch
+Headers: X-API-Key: <api_key>
+Body: { bugs: [...] }
+Response: { success, data: { summary: { successful, failed } } }
+```
+
+3. **搜索BUG** (AI调用):
+```
+GET /api/bugs?search=<keyword>&project=<project_id>
+Response: { bugs: [...] }
+```
+
+#### 知识库同步原则
+
+**本地文档 vs BUGer服务**:
+
+| 特性 | 本地`BUG知识库.md` | BUGer服务 |
+|------|-------------------|-----------|
+| 定位 | 临时记录、快速查阅 | 最终权威知识库 |
+| 更新频率 | 会话结束后更新 | 实时提交 |
+| 搜索能力 | 手动查找 | API搜索、智能匹配 |
+| 数据完整性 | 可能滞后 | 最新、最完整 |
+| 使用场景 | 离线查阅、会话总结 | 在线搜索、AI查询 |
+
+**同步规则**:
+- ✅ 每次BUG修复会话结束后，必须将所有新BUG提交到BUGer
+- ✅ `BUG知识库.md`中的所有历史BUG应一次性同步到BUGer
+- ✅ 后续以BUGer为准，本地文档仅作为补充参考
+
+#### 集成检查清单
+
+在每次BUG修复会话中，AI必须确认：
+
+- [ ] 修复前已在BUGer中搜索该BUG
+- [ ] 如有已知解决方案，已评估其适用性
+- [ ] 修复完成后已通过`bug_reporter.py`提交
+- [ ] 提交结果已记录到`bug_report_log.json`
+- [ ] 向用户汇报BUGer提交状态（成功/失败+原因）
+
 ---
 
 ## 四、AI修复输出标准
