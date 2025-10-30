@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',  // 监听所有网卡，允许外部访问
     port: 3000,
+    strictPort: false, // 允许端口被占用时自动切换
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
