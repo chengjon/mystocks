@@ -662,7 +662,9 @@ reporter.flushQueue()
     "stackTrace": str,        # 完整错误堆栈（如有）
     "context": {              # 上下文信息
         "timestamp": str,     # 发现时间（ISO格式）
-        "project": str,       # 项目名称
+        "project": str,       # 项目ID（如"mystocks"）
+        "project_name": str,  # 项目名称（如"MyStocks"）**必填**
+        "project_root": str,  # 项目根目录（如"/opt/claude/mystocks_spec"）**必填**
         "component": str,     # 组件（frontend/backend/database）
         "module": str,        # 具体模块路径
         "file": str,          # 文件路径
@@ -675,14 +677,27 @@ reporter.flushQueue()
 }
 ```
 
+**项目信息字段说明**:
+- `project`: 项目ID,用于BUGer服务的项目分类
+- `project_name`: **必填**,项目的人类可读名称,用于同名项目BUG优先查询
+- `project_root`: **必填**,项目的绝对路径,便于定位文件和重现问题
+
 #### AI的强制要求
 
 **在修复BUG过程中，AI必须**:
 
-1. **修复前检查**:
-   - 使用BUGer API搜索相同错误码/错误信息
+1. **修复前检查（分层查询策略）**:
+   - **第一层**: 使用BUGer API搜索**同名项目**下的相同错误码/错误信息
+     - 查询条件: `project_name=当前项目名称 AND (errorCode=xxx OR message LIKE '%xxx%')`
+     - 优先级: **最高** (100%相同的项目环境，解决方案直接适用)
+   - **第二层**: 搜索**同类型组件**的相似BUG
+     - 查询条件: `component=当前组件 AND errorCode=xxx`
+     - 优先级: **高** (相同技术栈，解决方案大概率适用)
+   - **第三层**: 搜索**相同错误代码**的所有项目BUG
+     - 查询条件: `errorCode=xxx`
+     - 优先级: **中** (通用解决方案，需评估适用性)
    - 如果找到已知解决方案，优先使用而非重新分析
-   - 向用户汇报"该BUG在BUGer知识库中已有记录（BUG-ID: XXX），建议使用已验证的解决方案"
+   - 向用户汇报："该BUG在BUGer知识库中已有记录（BUG-ID: XXX，项目: YYY），建议使用已验证的解决方案"
 
 2. **修复后提交**:
    - 新发现的BUG必须通过`tools/bug_reporter.py`提交到BUGer

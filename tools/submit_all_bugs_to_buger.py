@@ -28,6 +28,8 @@ def collect_all_bugs():
             severity="high",
             stack_trace="SQL Error: column 'date' does not exist\nFile: database.py:173-187",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "backend",
                 "module": "database",
                 "file": "database.py",
@@ -49,6 +51,8 @@ def collect_all_bugs():
             severity="medium",
             stack_trace="[ECharts] Can't get DOM width or height. Check if the target element has appropriate dimensions.",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "ChartWrapper.vue",
                 "file": "web/frontend/src/components/ChartWrapper.vue",
@@ -68,6 +72,8 @@ def collect_all_bugs():
             severity="medium",
             stack_trace='[Vue warn]: Invalid prop: type check failed for prop "xxx". Expected Number, got String.',
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "ChipRaceTable.vue",
                 "file": "web/frontend/src/components/ChipRaceTable.vue",
@@ -87,6 +93,8 @@ def collect_all_bugs():
             severity="medium",
             stack_trace='[Vue warn]: Invalid prop: type check failed for prop "xxx". Expected Number, got String.',
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "LongHuBangTable.vue",
                 "file": "web/frontend/src/components/LongHuBangTable.vue",
@@ -106,6 +114,8 @@ def collect_all_bugs():
             severity="low",
             stack_trace='[Vue warn]: Invalid prop: custom validator check failed for prop "type".',
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "IndicatorLibrary.vue",
                 "file": "web/frontend/src/views/IndicatorLibrary.vue",
@@ -125,6 +135,8 @@ def collect_all_bugs():
             severity="low",
             stack_trace="N/A - Configuration issue without stack trace",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "dev-server",
                 "file": "package.json",
@@ -144,6 +156,8 @@ def collect_all_bugs():
             severity="low",
             stack_trace="N/A - Configuration issue without stack trace",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "router",
                 "file": "web/frontend/src/router/index.js",
@@ -163,6 +177,8 @@ def collect_all_bugs():
             severity="high",
             stack_trace="N/A - Configuration issue without stack trace",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "frontend",
                 "module": "Dashboard.vue",
                 "file": "web/frontend/src/views/Dashboard.vue",
@@ -188,6 +204,8 @@ def collect_all_bugs():
 File: /opt/claude/mystocks_spec/web/backend/app/api/scheduled_jobs.py:15
 from app.core.security import get_current_user, User, require_admin""",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "backend",
                 "module": "app.core.security",
                 "file": "web/backend/app/core/security.py",
@@ -211,6 +229,8 @@ from app.core.security import get_current_user, User, require_admin""",
 File: /opt/claude/mystocks_spec/web/backend/app/services/scheduled_data_update.py:20
 from apscheduler.schedulers.background import BackgroundScheduler""",
             context={
+                "project_name": "MyStocks",
+                "project_root": "/opt/claude/mystocks_spec",
                 "component": "backend",
                 "module": "app.services.scheduled_data_update",
                 "file": "web/backend/app/services/scheduled_data_update.py",
