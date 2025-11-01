@@ -1,0 +1,351 @@
+openapi: 3.0.3
+info:
+  title: Technical Analysis Indicators API
+  description: API for calculating technical indicators using TA-Lib
+  version: 1.0.0
+  contact:
+    name: MyStocks Development Team
+
+servers:
+  - url: http://localhost:8888/api
+    description: Local development server
+  - url: https://api.mystocks.com/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: indicators
+    description: Indicator calculation and registry operations
+  - name: config
+    description: User indicator configuration management
+
+paths:
+  /indicators/registry:
+    get:
+      tags: [indicators]
+      summary: Get indicator registry
+      description: Returns metadata for all 161 available technical indicators
+      operationId: getIndicatorRegistry
+      parameters:
+        - name: category
+          in: query
+          description: Filter by indicator category
+          required: false
+          schema:
+            type: string
+            enum: [trend, momentum, volatility, volume, candlestick]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndicatorMetadata'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /indicators/calculate:
+    post:
+      tags: [indicators]
+      summary: Calculate indicators
+      description: Calculate technical indicators for a stock within a date range
+      operationId: calculateIndicators
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndicatorCalculationRequest'
+            examples:
+              simple_ma:
+                summary: Single Moving Average
+                value:
+                  symbol: "600519.SH"
+                  start_date: "2024-01-01"
+                  end_date: "2024-12-31"
+                  indicators:
+                    - abbreviation: "MA"
+                      parameters:
+                        timeperiod: 20
+              multiple_indicators:
+                summary: Multiple Indicators
+                value:
+                  symbol: "600519.SH"
+                  start_date: "2024-01-01"
+                  end_date: "2024-12-31"
+                  indicators:
+                    - abbreviation: "MA"
+                      parameters:
+                        timeperiod: 20
+                    - abbreviation: "RSI"
+                      parameters:
+                        timeperiod: 14
+                    - abbreviation: "MACD"
+                      parameters:
+                        fastperiod: 12
+                        slowperiod: 26
+                        signalperiod: 9
+      responses:
+        '200':
+          description: Successful calculation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndicatorCalculationResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IndicatorMetadata:
+      type: object
+      required: [abbreviation, name, category, panel_type, parameters, outputs, min_data_points_formula]
+      properties:
+        abbreviation:
+          type: string
+          example: "MA"
+        name:
+          type: string
+          example: "Moving Average"
+        category:
+          type: string
+          enum: [trend, momentum, volatility, volume, candlestick]
+          example: "trend"
+        panel_type:
+          type: string
+          enum: [overlay, oscillator]
+          example: "overlay"
+        parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+                enum: [int, float, string]
+              default:
+                oneOf:
+                  - type: integer
+                  - type: number
+                  - type: string
+              min:
+                type: number
+              max:
+                type: number
+          example:
+            - name: "timeperiod"
+              type: "int"
+              default: 20
+              min: 2
+              max: 200
+        outputs:
+          type: array
+          items:
+            type: string
+          example: ["ma"]
+        min_data_points_formula:
+          type: string
+          example: "params['timeperiod']"
+        reference_lines:
+          type: array
+          items:
+            type: number
+          nullable: true
+          example: null
+        description:
+          type: string
+          example: "Average price over N periods"
+
+    IndicatorCalculationRequest:
+      type: object
+      required: [symbol, start_date, end_date, indicators]
+      properties:
+        symbol:
+          type: string
+          pattern: '^\d{6}\.(SH|SZ)$'
+          example: "600519.SH"
+        start_date:
+          type: string
+          format: date
+          example: "2024-01-01"
+        end_date:
+          type: string
+          format: date
+          example: "2024-12-31"
+        indicators:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: object
+            required: [abbreviation, parameters]
+            properties:
+              abbreviation:
+                type: string
+                example: "MA"
+              parameters:
+                type: object
+                additionalProperties: true
+                example:
+                  timeperiod: 20
+
+    IndicatorCalculationResult:
+      type: object
+      required: [success, symbol, start_date, end_date, data, calculation_time_ms, data_points_count, cache_hit]
+      properties:
+        success:
+          type: boolean
+          example: true
+        symbol:
+          type: string
+          example: "600519.SH"
+        start_date:
+          type: string
+          format: date
+          example: "2024-01-01"
+        end_date:
+          type: string
+          format: date
+          example: "2024-12-31"
+        data:
+          type: object
+          properties:
+            ohlcv:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  open:
+                    type: number
+                  high:
+                    type: number
+                  low:
+                    type: number
+                  close:
+                    type: number
+                  volume:
+                    type: integer
+            indicators:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      oneOf:
+                        - type: number
+                        - type: "null"
+                  parameters:
+                    type: object
+                  panel_type:
+                    type: string
+                    enum: [overlay, oscillator]
+                  reference_lines:
+                    type: array
+                    items:
+                      type: number
+                    nullable: true
+        calculation_time_ms:
+          type: integer
+          example: 125
+        data_points_count:
+          type: integer
+          example: 252
+        cache_hit:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error_code:
+          type: string
+        error_message:
+          type: string
+        error_details:
+          type: object
+          nullable: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error_code: "INVALID_SYMBOL"
+            error_message: "股票代码格式错误"
+            error_details:
+              symbol: "600519"
+              expected_format: "XXXXXX.SH or XXXXXX.SZ"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error_code: "STOCK_NOT_FOUND"
+            error_message: "股票不存在"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error_code: "INSUFFICIENT_DATA"
+            error_message: "需要至少 200 个数据点来计算 MA(200),但只有 50 个数据点"
+            error_details:
+              indicator: "MA"
+              required_points: 200
+              available_points: 50
+              suggestion: "请将日期范围扩大至至少 200 个交易日"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error_code: "INTERNAL_ERROR"
+            error_message: "服务器内部错误"

@@ -1,0 +1,105 @@
+# MyStocks告警规则配置
+
+groups:
+  - name: mystocks_api_alerts
+    interval: 30s
+    rules:
+      # API响应时间告警
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, rate(mystocks_http_request_duration_seconds_bucket[5m])) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "API响应时间过高"
+          description: "{{ $labels.method }} {{ $labels.endpoint }} 的95分位响应时间超过500ms，当前值: {{ $value }}s"
+
+      # API错误率告警
+      - alert: HighAPIErrorRate
+        expr: rate(mystocks_http_requests_total{status=~"5.."}[5m]) / rate(mystocks_http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "API错误率过高"
+          description: "API错误率超过5%，当前值: {{ $value | humanizePercentage }}"
+
+  - name: mystocks_database_alerts
+    interval: 30s
+    rules:
+      # 数据库连接数告警
+      - alert: HighDatabaseConnections
+        expr: mystocks_db_connections_active > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "数据库连接数过高"
+          description: "{{ $labels.database }} 活跃连接数超过50，当前值: {{ $value }}"
+
+      # 数据库服务不可用
+      - alert: DatabaseDown
+        expr: mystocks_api_health_status{service="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "数据库服务不可用"
+          description: "数据库服务连接失败"
+
+  - name: mystocks_service_alerts
+    interval: 30s
+    rules:
+      # Backend服务不可用
+      - alert: BackendDown
+        expr: up{job="mystocks-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Backend服务宕机"
+          description: "Backend服务无法访问，请立即检查"
+
+      # API健康检查失败
+      - alert: APIHealthCheckFailed
+        expr: mystocks_api_health_status{service="backend"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "API健康检查失败"
+          description: "Backend API健康检查失败"
+
+  - name: mystocks_datasource_alerts
+    interval: 30s
+    rules:
+      # 数据源不可用
+      - alert: DataSourceUnavailable
+        expr: mystocks_datasource_availability == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: datasource
+        annotations:
+          summary: "数据源不可用"
+          description: "数据源 {{ $labels.datasource }} 不可用"
+
+  - name: mystocks_cache_alerts
+    interval: 30s
+    rules:
+      # 缓存命中率过低
+      - alert: LowCacheHitRate
+        expr: rate(mystocks_cache_hits_total[5m]) / (rate(mystocks_cache_hits_total[5m]) + rate(mystocks_cache_misses_total[5m])) < 0.5
+        for: 10m
+        labels:
+          severity: info
+          component: cache
+        annotations:
+          summary: "缓存命中率过低"
+          description: "缓存命中率低于50%，当前值: {{ $value | humanizePercentage }}"

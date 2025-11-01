@@ -1,0 +1,64 @@
+======================================================================
+BACKTEST SUMMARY
+======================================================================
+Period: 2024-01-01 00:00:00 to 2024-04-09 00:00:00
+Trading Days: 100
+
+Initial Portfolio: 1,000,000.00
+Final Portfolio: 791,175.72
+Total Return: -20.88%
+
+======================================================================
+PERFORMANCE METRICS
+======================================================================
+
+Risk-Adjusted Returns:
+  Sharpe Ratio: -1.654
+  Sortino Ratio: -2.510
+  Calmar Ratio: -1.532
+
+Return Metrics:
+  Annualized Return: -44.58%
+  Volatility (Annual): 28.77%
+
+Risk Metrics:
+  Max Drawdown: 29.10%
+
+Trade Statistics:
+  Win Rate: 0.00%
+  Profit Factor: 0.000
+
+======================================================================
+COST ANALYSIS
+======================================================================
+
+Total Trading Cost: 108.46
+  Commission: 95.00
+  Stamp Tax: 13.46
+
+Total Trades: 19
+Average Cost per Trade: 5.71
+
+Cost as % of Initial Capital: 0.01%
+
+======================================================================
+TRADE HISTORY (Recent)
+======================================================================
+
+Showing last 10 of 19 trades:
+
+ timestamp symbol direction  amount     price
+2024-02-20 stock2       buy     100 15.000000
+2024-02-25 stock2      sell     100 14.838714
+2024-03-01 stock0       buy     100 16.000000
+2024-03-06 stock0      sell     100 16.404051
+2024-03-11 stock1       buy     100 17.000000
+2024-03-16 stock1      sell     100 18.886186
+2024-03-21 stock2       buy     100 18.000000
+2024-03-26 stock2      sell     100 18.174578
+2024-03-31 stock0       buy     100 19.000000
+2024-04-05 stock0      sell     100 19.257550
+
+======================================================================
+END OF REPORT
+======================================================================

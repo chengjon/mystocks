@@ -1,0 +1,502 @@
+{
+  "total_opportunities": 35,
+  "by_category": {
+    "performance": 2,
+    "architecture": 2,
+    "code_quality": 31
+  },
+  "by_priority": {
+    "p0": 12,
+    "p1": 11,
+    "p2": 12,
+    "p3": 0
+  },
+  "quick_wins": 0,
+  "opportunities": [
+    {
+      "id": "OPT-COMPLEXITY-001",
+      "title": "重构高复杂度函数 test_database_connection",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `test_database_connection` 圈复杂度为 29，超过建议阈值（10）。位置：`web/backend/app/api/system.py:133`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "web/backend/app/api/system.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-002",
+      "title": "重构高复杂度函数 FinancialDataSource._validate_and_clean_data",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `FinancialDataSource._validate_and_clean_data` 圈复杂度为 28，超过建议阈值（10）。位置：`adapters/financial_adapter.py:940`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/financial_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-003",
+      "title": "重构高复杂度函数 DatabaseTestTool.test_database_connectivity",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `DatabaseTestTool.test_database_connectivity` 圈复杂度为 28，超过建议阈值（10）。位置：`db_manager/test_database_menu.py:322`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "db_manager/test_database_menu.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-004",
+      "title": "重构高复杂度函数 ByapiInfo._to_dataframe",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `ByapiInfo._to_dataframe` 圈复杂度为 28，超过建议阈值（10）。位置：`adapters/byapi/byapi_new_updated.py:623`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/byapi/byapi_new_updated.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-005",
+      "title": "重构高复杂度函数 ModuleClassifier._score_category",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `ModuleClassifier._score_category` 圈复杂度为 26，超过建议阈值（10）。位置：`scripts/analysis/classifier.py:161`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "scripts/analysis/classifier.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-006",
+      "title": "重构高复杂度函数 FinancialDataSource.get_index_daily",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `FinancialDataSource.get_index_daily` 圈复杂度为 25，超过建议阈值（10）。位置：`adapters/financial_adapter.py:365`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/financial_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-007",
+      "title": "重构高复杂度函数 CustomerDataSource.get_real_time_data",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `CustomerDataSource.get_real_time_data` 圈复杂度为 25，超过建议阈值（10）。位置：`adapters/customer_adapter.py:187`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/customer_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-008",
+      "title": "重构高复杂度函数 IndicatorCalculator._call_talib_function",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `IndicatorCalculator._call_talib_function` 圈复杂度为 24，超过建议阈值（10）。位置：`web/backend/app/services/indicator_calculator.py:94`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "web/backend/app/services/indicator_calculator.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-009",
+      "title": "重构高复杂度函数 FinancialDataSource.get_stock_daily",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `FinancialDataSource.get_stock_daily` 圈复杂度为 22，超过建议阈值（10）。位置：`adapters/financial_adapter.py:196`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/financial_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-010",
+      "title": "重构高复杂度函数 FinancialDataSource.get_real_time_data",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `FinancialDataSource.get_real_time_data` 圈复杂度为 22，超过建议阈值（10）。位置：`adapters/financial_adapter.py:587`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/financial_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-011",
+      "title": "重构高复杂度函数 TdxDataSource.get_index_daily",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `TdxDataSource.get_index_daily` 圈复杂度为 21，超过建议阈值（10）。位置：`adapters/tdx_adapter.py:404`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "adapters/tdx_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-012",
+      "title": "重构高复杂度函数 GitIgnoreValidator.generate_report",
+      "category": "code_quality",
+      "priority": "p0",
+      "current_state": "函数 `GitIgnoreValidator.generate_report` 圈复杂度为 21，超过建议阈值（10）。位置：`utils/validate_gitignore.py:165`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "utils/validate_gitignore.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-013",
+      "title": "重构高复杂度函数 test_customer_data_source",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `test_customer_data_source` 圈复杂度为 20，超过建议阈值（10）。位置：`adapters/test_customer_adapter.py:20`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/test_customer_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-014",
+      "title": "重构高复杂度函数 TdxDataSource.get_stock_daily",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `TdxDataSource.get_stock_daily` 圈复杂度为 19，超过建议阈值（10）。位置：`adapters/tdx_adapter.py:255`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/tdx_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-015",
+      "title": "重构高复杂度函数 TdxDataSource.get_stock_kline",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `TdxDataSource.get_stock_kline` 圈复杂度为 19，超过建议阈值（10）。位置：`adapters/tdx_adapter.py:700`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/tdx_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-016",
+      "title": "重构高复杂度函数 normalize_stock_code",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `normalize_stock_code` 圈复杂度为 19，超过建议阈值（10）。位置：`utils/symbol_utils.py:8`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "utils/symbol_utils.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-017",
+      "title": "重构高复杂度函数 MyStocksUnifiedManager.load_data_by_classification",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `MyStocksUnifiedManager.load_data_by_classification` 圈复杂度为 18，超过建议阈值（10）。位置：`unified_manager.py:249`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "unified_manager.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-018",
+      "title": "重构高复杂度函数 main",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `main` 圈复杂度为 18，超过建议阈值（10）。位置：`utils/check_api_health.py:181`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "utils/check_api_health.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-019",
+      "title": "重构高复杂度函数 StockScreener.screen",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `StockScreener.screen` 圈复杂度为 18，超过建议阈值（10）。位置：`strategy/stock_screener.py:114`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "strategy/stock_screener.py"
+      ]
+    },
+    {
+      "id": "OPT-COMPLEXITY-020",
+      "title": "重构高复杂度函数 DatabaseTestTool._check_tdengine_drivers",
+      "category": "code_quality",
+      "priority": "p1",
+      "current_state": "函数 `DatabaseTestTool._check_tdengine_drivers` 圈复杂度为 18，超过建议阈值（10）。位置：`db_manager/test_database_menu.py:243`",
+      "proposed_change": "建议重构步骤：\n1. 提取独立的辅助函数减少嵌套\n2. 使用策略模式替代复杂的条件分支\n3. 考虑拆分为多个职责单一的函数\n4. 添加单元测试确保重构正确性",
+      "expected_impact": "- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "db_manager/test_database_menu.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-001",
+      "title": "拆分过长函数 IndicatorRegistry._load_indicators",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `IndicatorRegistry._load_indicators` 有 335 行代码，超过建议长度（50 行）。位置：`web/backend/app/services/indicator_registry.py:38`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "web/backend/app/services/indicator_registry.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-002",
+      "title": "拆分过长函数 test_database_connection",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `test_database_connection` 有 247 行代码，超过建议长度（50 行）。位置：`web/backend/app/api/system.py:133`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "web/backend/app/api/system.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-003",
+      "title": "拆分过长函数 VectorizedBacktester.run",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `VectorizedBacktester.run` 有 218 行代码，超过建议长度（50 行）。位置：`backtest/vectorized_backtester.py:94`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "backtest/vectorized_backtester.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-004",
+      "title": "拆分过长函数 calculate_indicators",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `calculate_indicators` 有 182 行代码，超过建议长度（50 行）。位置：`web/backend/app/api/indicators.py:149`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "web/backend/app/api/indicators.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-005",
+      "title": "拆分过长函数 main",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `main` 有 181 行代码，超过建议长度（50 行）。位置：`visualization/complete_example.py:48`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "visualization/complete_example.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-006",
+      "title": "拆分过长函数 StrategyExecutor.execute",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `StrategyExecutor.execute` 有 162 行代码，超过建议长度（50 行）。位置：`strategy/strategy_executor.py:112`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "strategy/strategy_executor.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-007",
+      "title": "拆分过长函数 IndicatorCalculator._call_talib_function",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `IndicatorCalculator._call_talib_function` 有 152 行代码，超过建议长度（50 行）。位置：`web/backend/app/services/indicator_calculator.py:94`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "web/backend/app/services/indicator_calculator.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-008",
+      "title": "拆分过长函数 TdxDataSource.get_index_daily",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `TdxDataSource.get_index_daily` 有 150 行代码，超过建议长度（50 行）。位置：`adapters/tdx_adapter.py:404`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/tdx_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-009",
+      "title": "拆分过长函数 TdxDataSource.get_stock_daily",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `TdxDataSource.get_stock_daily` 有 147 行代码，超过建议长度（50 行）。位置：`adapters/tdx_adapter.py:255`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/tdx_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-LENGTH-010",
+      "title": "拆分过长函数 CustomerDataSource.get_real_time_data",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "函数 `CustomerDataSource.get_real_time_data` 有 143 行代码，超过建议长度（50 行）。位置：`adapters/customer_adapter.py:187`",
+      "proposed_change": "建议重构步骤：\n1. 识别函数中的逻辑块\n2. 将每个逻辑块提取为独立函数\n3. 使用清晰的函数名描述每个步骤\n4. 保持原函数作为高层次的协调者",
+      "expected_impact": "- 提高代码可读性\n- 便于单元测试\n- 提高代码复用性",
+      "effort_estimate": "1-2 天",
+      "affected_modules": [
+        "adapters/customer_adapter.py"
+      ]
+    },
+    {
+      "id": "OPT-GOD-001",
+      "title": "重构 God Object: ByapiInfo",
+      "category": "architecture",
+      "priority": "p1",
+      "current_state": "类 `ByapiInfo` 有 59 个方法，可能违反单一职责原则。位置：`adapters/byapi/byapi_new_updated.py:428`",
+      "proposed_change": "建议重构步骤：\n1. 分析类的职责，识别不同的关注点\n2. 将相关方法分组\n3. 提取为独立的类（如 Manager, Helper, Strategy）\n4. 使用组合或委托模式连接拆分后的类\n5. 渐进式重构，保持向后兼容",
+      "expected_impact": "- 提高类的内聚性\n- 降低类之间的耦合\n- 提高代码可测试性\n- 简化未来的维护工作",
+      "effort_estimate": "3-5 天",
+      "affected_modules": [
+        "adapters/byapi/byapi_new_updated.py"
+      ]
+    },
+    {
+      "id": "OPT-GOD-002",
+      "title": "重构 God Object: RedisDataAccess",
+      "category": "architecture",
+      "priority": "p1",
+      "current_state": "类 `RedisDataAccess` 有 28 个方法，可能违反单一职责原则。位置：`data_access/redis_access.py:19`",
+      "proposed_change": "建议重构步骤：\n1. 分析类的职责，识别不同的关注点\n2. 将相关方法分组\n3. 提取为独立的类（如 Manager, Helper, Strategy）\n4. 使用组合或委托模式连接拆分后的类\n5. 渐进式重构，保持向后兼容",
+      "expected_impact": "- 提高类的内聚性\n- 降低类之间的耦合\n- 提高代码可测试性\n- 简化未来的维护工作",
+      "effort_estimate": "3-5 天",
+      "affected_modules": [
+        "data_access/redis_access.py"
+      ]
+    },
+    {
+      "id": "OPT-DOC-001",
+      "title": "提高模块文档覆盖率",
+      "category": "code_quality",
+      "priority": "p2",
+      "current_state": "24 个模块缺少 docstring，约占总模块的 11.2%",
+      "proposed_change": "建议行动：\n1. 为每个模块添加顶部 docstring\n2. 说明模块用途、主要类和函数\n3. 添加作者和日期信息\n4. 包含使用示例（如适用）",
+      "expected_impact": "- 提高代码可读性\n- 降低新开发者学习曲线\n- 支持自动文档生成",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "check_mysql_tables.py",
+        "test_unified_manager_financial.py",
+        "test_import.py",
+        "test_comprehensive.py",
+        "monitoring/__init__.py",
+        "tests/__init__.py",
+        "visualization/__init__.py",
+        "strategy/__init__.py",
+        "backtest/__init__.py",
+        "db_manager/execute_example.py"
+      ]
+    },
+    {
+      "id": "OPT-PERF-001",
+      "title": "实现数据库连接池",
+      "category": "performance",
+      "priority": "p1",
+      "current_state": "数据库连接未使用连接池，每次查询都创建新连接，导致性能开销",
+      "proposed_change": "建议实现：\n1. 使用 SQLAlchemy 连接池或自定义实现\n2. 配置合理的池大小（如 5-20 连接）\n3. 设置连接超时和回收策略\n4. 添加连接健康检查",
+      "expected_impact": "- 减少连接建立时间 80-90%\n- 提高并发处理能力 3-5 倍\n- 降低数据库服务器负载",
+      "effort_estimate": "2-3 天",
+      "affected_modules": [
+        "monitoring/monitoring_database.py",
+        "db_manager/validate_mystocks_architecture.py",
+        "db_manager/execute_example.py",
+        "db_manager/test_jupyter_compatibility.py",
+        "db_manager/save_realtime_market_data_simple.py",
+        "db_manager/fix_database_connections.py",
+        "db_manager/database_manager.py",
+        "db_manager/test_tdengine.py",
+        "db_manager/test_database_menu.py",
+        "db_manager/connection_manager.py",
+        "db_manager/execute_example_mysql_only.py",
+        "db_manager/test_simple.py",
+        "db_manager/init_db_monitor.py",
+        "db_manager/__init__.py",
+        "db_manager/save_realtime_market_data_offline.py",
+        "db_manager/fixed_example.py",
+        "db_manager/db_utils.py",
+        "db_manager/df2sql.py",
+        "db_manager/redis_data_fixation.py",
+        "db_manager/security_check.py",
+        "db_manager/save_realtime_market_data.py",
+        "db_manager/test_multi_directory.py",
+        "web/backend/setup_database.py",
+        "web/backend/app/core/database.py"
+      ]
+    },
+    {
+      "id": "OPT-PERF-003",
+      "title": "优化数据批量处理",
+      "category": "performance",
+      "priority": "p2",
+      "current_state": "部分数据插入和更新使用逐条操作，效率较低",
+      "proposed_change": "建议优化：\n1. 使用批量插入（batch insert）\n2. 实现事务批处理\n3. 使用 COPY 命令（PostgreSQL）或 LOAD DATA（MySQL）\n4. 设置合理的批次大小（如 1000-5000 条）",
+      "expected_impact": "- 提高数据写入速度 10-50 倍\n- 减少网络往返次数\n- 降低数据库锁竞争",
+      "effort_estimate": "1-2 天",
+      "affected_modules": []
+    }
+  ]
+}
