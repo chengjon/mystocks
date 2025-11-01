@@ -1,0 +1,255 @@
+================================================================================
+问财股票筛选功能集成 - 完整文件清单
+================================================================================
+创建日期: 2025-10-17
+状态: ✅ Phase 1 & Phase 2 完成
+总文件数: 20个（9文档 + 9代码 + 2脚本）
+总代码量: ~2,300行
+
+================================================================================
+📚 文档文件（9个，约70KB）
+================================================================================
+
+1. docs/WENCAI_INTEGRATION_PLAN.md (24KB)
+   - 完整的技术方案和实施指南
+   - 架构设计、API设计、数据库设计
+   - 4个实施阶段详细步骤
+
+2. docs/WENCAI_INTEGRATION_QUICKREF.md (5KB)
+   - 快速参考和上手指南
+   - 5步快速开始
+   - 核心代码示例
+
+3. docs/WENCAI_INTEGRATION_SUMMARY.md (17KB)
+   - 综合性总结报告
+   - 详细的实施文件清单
+   - API端点和数据库设计
+
+4. docs/WENCAI_INTEGRATION_INDEX.md (9KB)
+   - 文档导航和阅读指南
+   - 4条推荐阅读路径
+   - 常见问题FAQ
+
+5. docs/WENCAI_PHASE1_COMPLETED.md (7KB)
+   - Phase 1完成报告
+   - 6个核心文件说明
+   - 下一步操作指南
+
+6. docs/WENCAI_IMPLEMENTATION_COMPLETE.md (8KB)
+   - 完整实施报告
+   - 项目总结和成果
+   - 部署步骤和验收清单
+
+7. web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md (8KB)
+   - 配置更新详细指南
+   - 10个配置步骤
+   - 故障排查清单
+
+8. docs/WENCAI_INTEGRATION_FILES.txt (本文件)
+   - 完整文件清单
+   - 文件位置和说明
+
+9. temp/ 原始项目文档
+   - README.md, QUICKSTART.md, IMPROVEMENTS.md
+   - 原始AIstock项目说明
+
+================================================================================
+💻 代码文件（9个，~2,300行）
+================================================================================
+
+Phase 1 - 基础集成（6个文件，~1,630行）
+
+1. web/backend/app/adapters/wencai_adapter.py (~350行)
+   - WencaiDataSource类
+   - fetch_data()、clean_data()方法
+   - HTTP重试机制和错误处理
+   - 9个预定义查询常量
+
+2. web/backend/app/models/wencai_data.py (~100行)
+   - WencaiQuery ORM模型
+   - WencaiResultBase抽象基类
+   - to_dict()序列化方法
+
+3. web/backend/app/schemas/wencai_schemas.py (~350行)
+   - 8个Pydantic Schema类
+   - 请求验证和响应序列化
+   - 完整的字段文档和示例
+
+4. web/backend/app/services/wencai_service.py (~400行)
+   - WencaiService核心业务逻辑
+   - fetch_and_save()主方法
+   - 去重算法实现
+   - 查询结果和历史统计
+
+5. web/backend/app/api/wencai.py (~350行)
+   - 7个API端点
+   - FastAPI路由和验证
+   - 错误处理和后台任务
+
+6. web/backend/migrations/wencai_init.sql (~80行)
+   - 创建wencai_queries表
+   - 插入9个预定义查询
+   - 完整的索引和约束
+
+Phase 2 - 后台任务（3个文件，~700行）
+
+7. web/backend/app/tasks/wencai_tasks.py (~400行)
+   - 4个Celery任务
+   - refresh_query() - 单个查询刷新
+   - scheduled_refresh_all() - 全部刷新
+   - cleanup_old_data() - 清理旧数据
+   - stats() - 统计信息
+
+8. web/backend/celeryconfig_wencai.py (~150行)
+   - Celery配置示例
+   - 定时任务配置（每日9:00、2:00）
+   - 任务队列和路由配置
+
+9. web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md (见文档部分)
+
+================================================================================
+🔧 脚本文件（2个）
+================================================================================
+
+1. web/backend/scripts/deploy_wencai.sh
+   - 自动化部署脚本
+   - 6步完整部署流程
+   - 前置条件检查
+   - 数据库迁移执行
+   - 测试验证
+
+2. web/backend/scripts/test_wencai_api.sh
+   - API端点测试脚本
+   - 10个测试用例
+   - 彩色输出和统计
+   - 可选的实际API调用测试
+
+================================================================================
+🗄️ 数据库表
+================================================================================
+
+1. wencai_queries (查询定义表)
+   - id, query_name, query_text, description
+   - is_active, created_at, updated_at
+   - 索引: idx_query_name, idx_is_active
+
+2. wencai_qs_1 ~ wencai_qs_9 (查询结果表，动态创建)
+   - id, fetch_time, 取数区间
+   - 其他字段根据问财API返回动态生成
+   - 索引: idx_fetch_time
+
+================================================================================
+🔌 API端点（7个）
+================================================================================
+
+1. GET  /api/market/wencai/health
+   - 健康检查
+
+2. GET  /api/market/wencai/queries
+   - 获取所有查询列表
+
+3. GET  /api/market/wencai/queries/{query_name}
+   - 获取指定查询信息
+
+4. POST /api/market/wencai/query
+   - 执行查询并保存数据
+
+5. GET  /api/market/wencai/results/{query_name}
+   - 获取查询结果（支持分页）
+
+6. POST /api/market/wencai/refresh/{query_name}
+   - 后台刷新数据
+
+7. GET  /api/market/wencai/history/{query_name}
+   - 获取历史统计
+
+================================================================================
+⏰ Celery任务（4个）
+================================================================================
+
+1. wencai.refresh_query
+   - 刷新单个查询
+   - 支持重试（最多3次）
+
+2. wencai.scheduled_refresh_all
+   - 刷新所有查询
+   - 定时：每日9:00
+
+3. wencai.cleanup_old_data
+   - 清理30天前的数据
+   - 定时：每日2:00
+
+4. wencai.stats
+   - 获取统计信息
+   - 定时：每小时
+
+================================================================================
+📊 预定义查询（9个）
+================================================================================
+
+qs_1: 涨停板筛选（量比+换手率+振幅）
+qs_2: 资金流入持续为正（持续5天）
+qs_3: 高换手率（5日平均>30%）
+qs_4: 成交量放量（周环比>100%）
+qs_5: 新股高换手（上市满10月）
+qs_6: 板块资金流向
+qs_7: 低价活跃股（<30元+高换手）
+qs_8: 热度排行（前300）
+qs_9: 技术形态综合（MACD+KDJ金叉）
+
+================================================================================
+🚀 快速开始
+================================================================================
+
+1. 运行部署脚本:
+   bash /opt/claude/mystocks_spec/web/backend/scripts/deploy_wencai.sh
+
+2. 重启服务:
+   systemctl restart mystocks-backend
+   systemctl restart celery-worker
+   systemctl restart celery-beat
+
+3. 测试API:
+   bash /opt/claude/mystocks_spec/web/backend/scripts/test_wencai_api.sh
+
+4. 查看文档:
+   cat /opt/claude/mystocks_spec/docs/WENCAI_INTEGRATION_INDEX.md
+
+================================================================================
+📖 文档阅读顺序推荐
+================================================================================
+
+快速了解（5分钟）:
+  → docs/WENCAI_INTEGRATION_QUICKREF.md
+
+开发实施（30分钟）:
+  → docs/WENCAI_INTEGRATION_QUICKREF.md
+  → docs/WENCAI_INTEGRATION_PLAN.md (重点阅读实施步骤)
+  → web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md
+
+全面理解（1小时）:
+  → docs/WENCAI_IMPLEMENTATION_COMPLETE.md
+  → docs/WENCAI_INTEGRATION_PLAN.md
+  → docs/WENCAI_INTEGRATION_SUMMARY.md
+
+================================================================================
+✅ 完成状态
+================================================================================
+
+Phase 1 (基础集成):    ✅ 100%
+Phase 2 (后台任务):    ✅ 100%
+Phase 3 (测试文档):    ⏳ 待部署后进行
+Phase 4 (前端集成):    ⏸️  可选，未来实施
+
+总体完成度: 95%
+可部署状态: ✅ 就绪
+
+================================================================================
+📞 技术支持
+================================================================================
+
+文档位置: /opt/claude/mystocks_spec/docs/
+配置指南: web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md
+API文档: http://localhost:8000/api/docs
+
+================================================================================

@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # FastAPI 后端服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mystocks-web-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=192.168.123.104
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - MYSQL_HOST=192.168.123.104
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=c790414J
+      - MYSQL_DATABASE=quant_research
+      - POSTGRESQL_HOST=192.168.123.104
+      - POSTGRESQL_PORT=5438
+      - POSTGRESQL_USER=postgres
+      - POSTGRESQL_PASSWORD=c790414J
+      - POSTGRESQL_DATABASE=mystocks
+      - TDENGINE_HOST=192.168.123.104
+      - TDENGINE_PORT=6030
+      - TDENGINE_USER=root
+      - TDENGINE_PASSWORD=taosdata
+      - TDENGINE_DATABASE=market_data
+    volumes:
+      - ./backend:/app
+      - ./backend/logs:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - mystocks-network
+    restart: unless-stopped
+
+  # Vue3 前端服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mystocks-web-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - mystocks-network
+    restart: unless-stopped
+
+  # Redis 服务 (复用现有NAS Redis，这里仅用于开发环境)
+  redis:
+    image: redis:7-alpine
+    container_name: mystocks-web-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - mystocks-network
+    restart: unless-stopped
+    profiles:
+      - dev
+
+  # Nginx 反向代理 (生产环境用)
+  nginx:
+    image: nginx:alpine
+    container_name: mystocks-web-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - mystocks-network
+    restart: unless-stopped
+    profiles:
+      - prod
+
+volumes:
+  redis_data:
+
+networks:
+  mystocks-network:
+    driver: bridge

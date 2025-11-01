@@ -1,0 +1,884 @@
+openapi: 3.0.3
+info:
+  title: 策略管理 API (Strategy Management API)
+  description: |
+    交易策略管理和执行接口，包括：
+    - 策略列表查询和配置管理
+    - 策略参数编辑
+    - 实时信号生成
+    - 策略回测
+    - 回测结果分析
+  version: 1.0.0
+  contact:
+    name: MyStocks API Team
+    email: api@mystocks.com
+
+servers:
+  - url: http://localhost:8888/api
+    description: 本地开发环境
+  - url: https://api.mystocks.com/v1
+    description: 生产环境
+
+tags:
+  - name: strategies
+    description: 策略管理
+  - name: signals
+    description: 交易信号
+  - name: backtest
+    description: 策略回测
+
+paths:
+  /strategies/list:
+    get:
+      tags:
+        - strategies
+      summary: 获取策略列表
+      description: |
+        获取所有可用的交易策略及其元数据
+
+        **数据源**: StrategyRegistry (策略注册表)
+        **策略分类**:
+        - trend_following (趋势跟踪)
+        - mean_reversion (均值回归)
+        - breakout (突破策略)
+        - volume_based (成交量策略)
+      operationId: listStrategies
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: 策略分类过滤
+          schema:
+            type: string
+            enum: ['trend_following', 'mean_reversion', 'breakout', 'volume_based']
+        - name: is_active
+          in: query
+          required: false
+          description: 是否仅返回启用的策略
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: 成功返回策略列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyListResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  total: 10
+                  strategies:
+                    - strategy_id: 'volume_breakout'
+                      strategy_name: '成交量突破策略'
+                      category: 'volume_based'
+                      description: '基于成交量放大和均线突破的买入策略'
+                      parameters:
+                        - name: 'vol_period'
+                          type: 'integer'
+                          default: 20
+                          description: '成交量均线周期'
+                        - name: 'volume_threshold'
+                          type: 'float'
+                          default: 2.0
+                          description: '成交量突破倍数'
+                      is_active: true
+                    - strategy_id: 'ma_golden_cross'
+                      strategy_name: '均线金叉策略'
+                      category: 'trend_following'
+                      description: '短期均线上穿长期均线时买入'
+                      parameters:
+                        - name: 'short_period'
+                          type: 'integer'
+                          default: 5
+                        - name: 'long_period'
+                          type: 'integer'
+                          default: 20
+                      is_active: true
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /strategies/{strategy_id}:
+    get:
+      tags:
+        - strategies
+      summary: 获取策略详情
+      description: 获取指定策略的详细配置信息
+      operationId: getStrategy
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          description: 策略ID
+          schema:
+            type: string
+            example: 'volume_breakout'
+      responses:
+        '200':
+          description: 成功返回策略详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /strategies/{strategy_id}/config:
+    put:
+      tags:
+        - strategies
+      summary: 更新策略配置
+      description: |
+        更新策略的参数配置
+
+        **权限要求**: 需要管理员权限
+        **数据持久化**: MySQL strategy_configs表
+      operationId: updateStrategyConfig
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyConfigUpdate'
+            example:
+              parameters:
+                vol_period: 30
+                volume_threshold: 2.5
+              is_active: true
+      responses:
+        '200':
+          description: 配置更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /signals/generate:
+    post:
+      tags:
+        - signals
+      summary: 生成实时交易信号
+      description: |
+        根据指定策略和股票,生成实时交易信号
+
+        **执行流程**:
+        1. 从DataService获取最新OHLCV数据
+        2. 通过StrategyEngine执行策略逻辑
+        3. 生成买入/卖出/持有信号
+        4. 将信号保存到PostgreSQL strategy_signals表
+        5. 可选: 同时推送到Redis实时缓存
+
+        **数据分类**: TRADING_SIGNAL (衍生数据-交易信号)
+      operationId: generateSignal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalGenerateRequest'
+            example:
+              strategy_id: 'volume_breakout'
+              symbol: '600519.SH'
+              parameters:
+                vol_period: 20
+                volume_threshold: 2.0
+      responses:
+        '200':
+          description: 成功生成信号
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignalGenerateResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  signal_id: 'sig_20241014_123456'
+                  strategy_id: 'volume_breakout'
+                  symbol: '600519.SH'
+                  signal_date: '2024-10-14T14:30:00Z'
+                  signal_type: 1
+                  price: 1780.50
+                  reason: '成交量突破20日均量2.0倍,且价格上涨'
+                  confidence: 0.85
+                  metadata:
+                    volume: 12345678
+                    vol_ma: 6000000
+                    price_change: 0.0156
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /signals/history:
+    get:
+      tags:
+        - signals
+      summary: 查询历史信号
+      description: 查询指定策略或股票的历史交易信号
+      operationId: getSignalHistory
+      parameters:
+        - name: strategy_id
+          in: query
+          required: false
+          description: 策略ID
+          schema:
+            type: string
+        - name: symbol
+          in: query
+          required: false
+          description: 股票代码
+          schema:
+            type: string
+        - name: signal_type
+          in: query
+          required: false
+          description: 信号类型 (1=买入, -1=卖出, 0=持有)
+          schema:
+            type: integer
+            enum: [1, -1, 0]
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+      responses:
+        '200':
+          description: 成功返回历史信号
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignalHistoryResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  total: 245
+                  signals:
+                    - signal_id: 'sig_20241014_123456'
+                      strategy_id: 'volume_breakout'
+                      symbol: '600519.SH'
+                      signal_date: '2024-10-14T14:30:00Z'
+                      signal_type: 1
+                      price: 1780.50
+                      reason: '成交量突破20日均量2.0倍'
+                      confidence: 0.85
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/run:
+    post:
+      tags:
+        - backtest
+      summary: 运行策略回测
+      description: |
+        对指定策略进行历史回测
+
+        **执行流程**:
+        1. 从DataService加载历史OHLCV数据
+        2. 策略生成历史信号
+        3. 模拟交易执行 (考虑佣金、滑点)
+        4. 计算性能指标 (收益率、夏普比率、最大回撤等)
+        5. 保存回测结果到PostgreSQL backtest_results表
+
+        **性能指标**:
+        - 总收益率 / 年化收益率
+        - 夏普比率
+        - 最大回撤
+        - 胜率
+        - 盈亏比
+        - 总交易次数
+
+        **数据分类**: BACKTEST_RESULT (衍生数据-回测结果)
+      operationId: runBacktest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacktestRequest'
+            example:
+              strategy_id: 'volume_breakout'
+              symbol: '600519.SH'
+              start_date: '2023-01-01'
+              end_date: '2024-10-14'
+              initial_capital: 1000000.00
+              parameters:
+                vol_period: 20
+                volume_threshold: 2.0
+              config:
+                commission_rate: 0.0003
+                slippage_rate: 0.0001
+                position_size: 0.1
+      responses:
+        '200':
+          description: 回测完成,返回结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacktestResultResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  backtest_id: 'bt_20241014_123456'
+                  strategy_id: 'volume_breakout'
+                  symbol: '600519.SH'
+                  start_date: '2023-01-01'
+                  end_date: '2024-10-14'
+                  initial_capital: 1000000.00
+                  final_capital: 1256789.00
+                  total_return: 0.2568
+                  annual_return: 0.1234
+                  sharpe_ratio: 1.85
+                  max_drawdown: 0.1523
+                  win_rate: 0.6234
+                  total_trades: 47
+                  profit_factor: 2.34
+                  calculation_time_ms: 1234.56
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          description: 回测参数验证失败
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 422
+                message: 'Validation Error'
+                detail: '数据点不足: 策略需要至少100个交易日'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/{backtest_id}:
+    get:
+      tags:
+        - backtest
+      summary: 获取回测结果详情
+      description: 获取指定回测的完整结果,包括权益曲线和交易明细
+      operationId: getBacktestResult
+      parameters:
+        - name: backtest_id
+          in: path
+          required: true
+          description: 回测ID
+          schema:
+            type: string
+            example: 'bt_20241014_123456'
+      responses:
+        '200':
+          description: 成功返回回测详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacktestDetailResponse'
+              example:
+                code: 200
+                message: 'success'
+                data:
+                  backtest_id: 'bt_20241014_123456'
+                  strategy_id: 'volume_breakout'
+                  symbol: '600519.SH'
+                  total_return: 0.2568
+                  annual_return: 0.1234
+                  sharpe_ratio: 1.85
+                  max_drawdown: 0.1523
+                  win_rate: 0.6234
+                  total_trades: 47
+                  equity_curve:
+                    - date: '2023-01-03'
+                      equity: 1000000.00
+                    - date: '2023-01-04'
+                      equity: 1005234.00
+                    - date: '2023-01-05'
+                      equity: 998765.00
+                  trade_history:
+                    - trade_date: '2023-01-05T09:35:00Z'
+                      action: 'BUY'
+                      price: 1650.50
+                      shares: 60
+                      amount: 99030.00
+                      commission: 29.71
+                    - trade_date: '2023-01-12T14:55:00Z'
+                      action: 'SELL'
+                      price: 1680.20
+                      shares: 60
+                      amount: 100812.00
+                      commission: 30.24
+                      profit: 1752.05
+                      return_rate: 0.0177
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/history:
+    get:
+      tags:
+        - backtest
+      summary: 查询回测历史
+      description: 查询指定策略或股票的历史回测记录
+      operationId: getBacktestHistory
+      parameters:
+        - name: strategy_id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: symbol
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: 成功返回回测历史
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacktestHistoryResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    StrategyListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+            strategies:
+              type: array
+              items:
+                $ref: '#/components/schemas/StrategyMetadata'
+
+    StrategyMetadata:
+      type: object
+      properties:
+        strategy_id:
+          type: string
+          description: 策略唯一标识
+        strategy_name:
+          type: string
+          description: 策略名称
+        category:
+          type: string
+          enum: ['trend_following', 'mean_reversion', 'breakout', 'volume_based']
+        description:
+          type: string
+          description: 策略描述
+        parameters:
+          type: array
+          description: 策略参数定义
+          items:
+            $ref: '#/components/schemas/ParameterDefinition'
+        is_active:
+          type: boolean
+          description: 是否启用
+
+    ParameterDefinition:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: ['integer', 'float', 'string', 'boolean']
+        default:
+          description: 默认值
+        min:
+          type: number
+          description: 最小值 (数值类型)
+        max:
+          type: number
+          description: 最大值 (数值类型)
+        description:
+          type: string
+
+    StrategyDetailResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/StrategyMetadata'
+
+    StrategyConfigUpdate:
+      type: object
+      properties:
+        parameters:
+          type: object
+          description: 策略参数 (key-value格式)
+          additionalProperties: true
+        is_active:
+          type: boolean
+
+    SignalGenerateRequest:
+      type: object
+      required:
+        - strategy_id
+        - symbol
+      properties:
+        strategy_id:
+          type: string
+        symbol:
+          type: string
+        parameters:
+          type: object
+          description: 策略参数 (可选,不填则使用默认值)
+          additionalProperties: true
+
+    SignalGenerateResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Signal'
+
+    Signal:
+      type: object
+      properties:
+        signal_id:
+          type: string
+        strategy_id:
+          type: string
+        symbol:
+          type: string
+        signal_date:
+          type: string
+          format: date-time
+        signal_type:
+          type: integer
+          description: 信号类型 (1=买入, -1=卖出, 0=持有)
+        price:
+          type: number
+          format: double
+        reason:
+          type: string
+          description: 信号触发原因
+        confidence:
+          type: number
+          format: double
+          description: 信号置信度 (0-1)
+        metadata:
+          type: object
+          description: 额外元数据 (如指标值快照)
+          additionalProperties: true
+
+    SignalHistoryResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+            signals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Signal'
+
+    BacktestRequest:
+      type: object
+      required:
+        - strategy_id
+        - symbol
+        - start_date
+        - end_date
+      properties:
+        strategy_id:
+          type: string
+        symbol:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        initial_capital:
+          type: number
+          format: double
+          default: 1000000.00
+        parameters:
+          type: object
+          description: 策略参数
+          additionalProperties: true
+        config:
+          $ref: '#/components/schemas/BacktestConfig'
+
+    BacktestConfig:
+      type: object
+      properties:
+        commission_rate:
+          type: number
+          format: double
+          default: 0.0003
+          description: 佣金率
+        slippage_rate:
+          type: number
+          format: double
+          default: 0.0001
+          description: 滑点率
+        position_size:
+          type: number
+          format: double
+          default: 0.1
+          description: 单次交易仓位比例
+        max_positions:
+          type: integer
+          default: 10
+          description: 最大持仓数
+
+    BacktestResultResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/BacktestResult'
+
+    BacktestResult:
+      type: object
+      properties:
+        backtest_id:
+          type: string
+        strategy_id:
+          type: string
+        symbol:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        initial_capital:
+          type: number
+          format: double
+        final_capital:
+          type: number
+          format: double
+        total_return:
+          type: number
+          format: double
+          description: 总收益率
+        annual_return:
+          type: number
+          format: double
+          description: 年化收益率
+        sharpe_ratio:
+          type: number
+          format: double
+          description: 夏普比率
+        max_drawdown:
+          type: number
+          format: double
+          description: 最大回撤
+        win_rate:
+          type: number
+          format: double
+          description: 胜率
+        total_trades:
+          type: integer
+          description: 总交易次数
+        profit_factor:
+          type: number
+          format: double
+          description: 盈亏比
+        calculation_time_ms:
+          type: number
+          format: double
+          description: 计算耗时 (毫秒)
+
+    BacktestDetailResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          allOf:
+            - $ref: '#/components/schemas/BacktestResult'
+            - type: object
+              properties:
+                equity_curve:
+                  type: array
+                  description: 权益曲线
+                  items:
+                    $ref: '#/components/schemas/EquityCurvePoint'
+                trade_history:
+                  type: array
+                  description: 交易历史
+                  items:
+                    $ref: '#/components/schemas/Trade'
+
+    EquityCurvePoint:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        equity:
+          type: number
+          format: double
+
+    Trade:
+      type: object
+      properties:
+        trade_date:
+          type: string
+          format: date-time
+        action:
+          type: string
+          enum: ['BUY', 'SELL']
+        price:
+          type: number
+          format: double
+        shares:
+          type: integer
+        amount:
+          type: number
+          format: double
+        commission:
+          type: number
+          format: double
+        profit:
+          type: number
+          format: double
+          description: 本次交易盈亏 (仅SELL时有值)
+        return_rate:
+          type: number
+          format: double
+          description: 本次交易收益率
+
+    BacktestHistoryResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            total:
+              type: integer
+            backtests:
+              type: array
+              items:
+                $ref: '#/components/schemas/BacktestResult'
+
+    SuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 'success'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        detail:
+          type: string
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: 权限不足
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: 'Forbidden'
+            detail: '需要管理员权限'
+
+    NotFound:
+      description: 资源未找到
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

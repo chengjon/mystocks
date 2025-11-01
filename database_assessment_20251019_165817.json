@@ -1,0 +1,29 @@
+{
+  "assessment_time": "2025-10-19T16:58:17.185540",
+  "databases": {
+    "tdengine": {
+      "status": "success",
+      "databases": [],
+      "total_size_mb": 0,
+      "total_rows": 0,
+      "tables": [],
+      "connection": "✓ 连接成功",
+      "error": "'TDengineDataAccess' object has no attribute 'execute'"
+    },
+    "postgresql": {
+      "status": "error",
+      "connection": "✗ 连接失败",
+      "message": "'PostgreSQLDataAccess' object has no attribute 'execute'"
+    },
+    "mysql": {
+      "status": "error",
+      "connection": "✗ 连接失败",
+      "message": "'MySQLDataAccess' object has no attribute 'execute'"
+    },
+    "redis": {
+      "status": "error",
+      "connection": "✗ 连接失败",
+      "message": "'RedisDataAccess' object has no attribute 'client'"
+    }
+  }
+}

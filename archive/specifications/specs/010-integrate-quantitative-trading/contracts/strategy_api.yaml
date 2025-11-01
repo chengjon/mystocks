@@ -1,0 +1,526 @@
+openapi: 3.0.3
+info:
+  title: Strategy Execution API
+  description: API for executing custom stock screening strategies and managing signals
+  version: 1.0.0
+  contact:
+    name: MyStocks Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+
+paths:
+  /strategies:
+    get:
+      summary: List all strategies
+      tags: [Strategy Management]
+      parameters:
+        - name: is_active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated)
+          schema:
+            type: string
+          example: "momentum,technical"
+      responses:
+        '200':
+          description: List of strategies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Strategy'
+
+    post:
+      summary: Create new strategy
+      tags: [Strategy Management]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyCreate'
+      responses:
+        '201':
+          description: Strategy created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Strategy'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /strategies/{strategy_id}:
+    get:
+      summary: Get strategy by ID
+      tags: [Strategy Management]
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Strategy details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Strategy'
+        '404':
+          description: Strategy not found
+
+    put:
+      summary: Update strategy
+      tags: [Strategy Management]
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyUpdate'
+      responses:
+        '200':
+          description: Strategy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Strategy'
+
+    delete:
+      summary: Delete strategy (soft delete - sets is_active=false)
+      tags: [Strategy Management]
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Strategy deleted
+        '404':
+          description: Strategy not found
+
+  /strategies/{strategy_id}/execute:
+    post:
+      summary: Execute strategy against stock pool
+      tags: [Strategy Execution]
+      description: |
+        Executes the strategy screening logic against a pool of stocks.
+        Supports both fast mode (current day only) and full mode (historical period).
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - stock_pool
+                - execution_mode
+              properties:
+                stock_pool:
+                  type: array
+                  items:
+                    type: string
+                  description: List of stock symbols to screen
+                  example: ["000001", "000002", "600000"]
+                execution_mode:
+                  type: string
+                  enum: [fast, full]
+                  description: |
+                    - fast: Current day only (quick screening)
+                    - full: Historical period (complete signal generation)
+                start_date:
+                  type: string
+                  format: date
+                  description: Start date for full mode (ignored in fast mode)
+                  example: "2024-01-01"
+                end_date:
+                  type: string
+                  format: date
+                  description: End date for full mode (ignored in fast mode)
+                  example: "2024-12-31"
+                parallel:
+                  type: boolean
+                  default: true
+                  description: Enable multi-process execution
+                exclude_categories:
+                  type: object
+                  properties:
+                    st_stocks:
+                      type: boolean
+                      default: true
+                    industries:
+                      type: array
+                      items:
+                        type: string
+                      example: ["银行", "保险"]
+                    board_types:
+                      type: array
+                      items:
+                        type: string
+                      example: ["科创板"]
+      responses:
+        '202':
+          description: Strategy execution initiated (async)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  execution_id:
+                    type: string
+                    format: uuid
+                    description: Unique execution identifier for tracking
+                  status:
+                    type: string
+                    enum: [queued, running]
+                  estimated_duration:
+                    type: integer
+                    description: Estimated completion time in seconds
+                    example: 180
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Strategy not found
+
+  /strategies/{strategy_id}/executions/{execution_id}:
+    get:
+      summary: Get strategy execution status and results
+      tags: [Strategy Execution]
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: execution_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Execution status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionResult'
+        '404':
+          description: Execution not found
+
+  /signals:
+    get:
+      summary: Query strategy signals
+      tags: [Signal Management]
+      parameters:
+        - name: strategy_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: symbol
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: signal_type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [buy, sell]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of signals matching criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total number of matching signals
+                  signals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Signal'
+
+    post:
+      summary: Create signal manually (for testing/debugging)
+      tags: [Signal Management]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalCreate'
+      responses:
+        '201':
+          description: Signal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signal'
+
+components:
+  schemas:
+    Strategy:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "ma_crossover_strategy"
+        version:
+          type: string
+          example: "1.2.0"
+        description:
+          type: string
+          example: "Moving average crossover with RSI filter"
+        parameters:
+          type: object
+          example: {"ma_short": 5, "ma_long": 20, "rsi_period": 14}
+        code_hash:
+          type: string
+          example: "a3d5e8f9b2c1d4e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          example: "user123"
+        is_active:
+          type: boolean
+          example: true
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["momentum", "technical"]
+
+    StrategyCreate:
+      type: object
+      required:
+        - name
+        - version
+        - parameters
+        - code_hash
+      properties:
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 3
+          maxLength: 100
+        version:
+          type: string
+          pattern: '^\d+\.\d+\.\d+$'
+          example: "1.0.0"
+        description:
+          type: string
+          maxLength: 2000
+        parameters:
+          type: object
+        code_hash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+        created_by:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    StrategyUpdate:
+      type: object
+      properties:
+        description:
+          type: string
+        parameters:
+          type: object
+        is_active:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+
+    Signal:
+      type: object
+      properties:
+        id:
+          type: integer
+        strategy_id:
+          type: integer
+        symbol:
+          type: string
+          example: "000001"
+        signal_date:
+          type: string
+          format: date
+        signal_type:
+          type: string
+          enum: [buy, sell]
+        signal_strength:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.85
+        entry_price:
+          type: number
+          format: decimal
+          example: 12.34
+        indicators:
+          type: object
+          example: {"ma_5": 12.10, "ma_20": 11.80, "rsi_14": 28.5}
+        metadata:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+
+    SignalCreate:
+      type: object
+      required:
+        - strategy_id
+        - symbol
+        - signal_date
+        - signal_type
+        - entry_price
+      properties:
+        strategy_id:
+          type: integer
+        symbol:
+          type: string
+        signal_date:
+          type: string
+          format: date
+        signal_type:
+          type: string
+          enum: [buy, sell]
+        signal_strength:
+          type: number
+          format: float
+        entry_price:
+          type: number
+          format: decimal
+        indicators:
+          type: object
+        metadata:
+          type: object
+
+    ExecutionResult:
+      type: object
+      properties:
+        execution_id:
+          type: string
+          format: uuid
+        strategy_id:
+          type: integer
+        status:
+          type: string
+          enum: [queued, running, completed, failed, partial]
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        progress:
+          type: object
+          properties:
+            total_stocks:
+              type: integer
+            processed_stocks:
+              type: integer
+            signals_found:
+              type: integer
+            elapsed_seconds:
+              type: integer
+            estimated_remaining_seconds:
+              type: integer
+        results:
+          type: object
+          description: Available when status=completed
+          properties:
+            signals_generated:
+              type: integer
+            stocks_matched:
+              type: array
+              items:
+                type: string
+            execution_time:
+              type: number
+              description: Total execution time in seconds
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              symbol:
+                type: string
+              error_message:
+                type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object

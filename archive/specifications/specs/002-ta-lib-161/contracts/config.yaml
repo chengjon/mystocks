@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Indicator Configuration API
+  description: API for managing user-saved indicator configurations
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8888/api
+    description: Local development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /indicators/configs:
+    get:
+      tags: [config]
+      summary: List user configurations
+      operationId: listConfigurations
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [last_used, created, name]
+            default: last_used
+      responses:
+        '200':
+          description: List of configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndicatorConfiguration'
+
+    post:
+      tags: [config]
+      summary: Save new configuration
+      operationId: saveConfiguration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, indicators]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                indicators:
+                  type: array
+                  minItems: 1
+                  maxItems: 10
+                  items:
+                    $ref: '#/components/schemas/IndicatorSpec'
+      responses:
+        '201':
+          description: Configuration saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndicatorConfiguration'
+        '409':
+          description: Configuration name already exists
+
+  /indicators/configs/{id}:
+    get:
+      tags: [config]
+      summary: Get configuration by ID
+      operationId: getConfiguration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Configuration details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndicatorConfiguration'
+        '404':
+          description: Configuration not found
+
+    put:
+      tags: [config]
+      summary: Update configuration
+      operationId: updateConfiguration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                indicators:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/IndicatorSpec'
+      responses:
+        '200':
+          description: Configuration updated
+        '404':
+          description: Configuration not found
+
+    delete:
+      tags: [config]
+      summary: Delete configuration
+      operationId: deleteConfiguration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Configuration deleted
+        '404':
+          description: Configuration not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    IndicatorSpec:
+      type: object
+      required: [abbreviation, parameters]
+      properties:
+        abbreviation:
+          type: string
+        parameters:
+          type: object
+
+    IndicatorConfiguration:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        name:
+          type: string
+        indicators:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorSpec'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
