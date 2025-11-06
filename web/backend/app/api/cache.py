@@ -22,6 +22,10 @@ import structlog
 
 from app.core.cache_manager import get_cache_manager, CacheManager
 from app.core.cache_integration import get_cache_integration, CacheIntegration
+from app.core.cache_eviction import (
+    get_eviction_strategy,
+    get_eviction_scheduler,
+)
 
 logger = structlog.get_logger()
 
@@ -450,4 +454,124 @@ async def check_cache_freshness(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("❌ 缓存新鲜度检查失败", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== 缓存淘汰 ====================
+
+
+@router.post("/evict/manual")
+async def manual_cache_eviction() -> Dict[str, Any]:
+    """
+    手动触发缓存淘汰任务
+
+    Returns:
+        淘汰结果，包含:
+        - success: 操作成功标志
+        - message: 操作消息
+        - deleted_count: 删除的缓存条数
+        - timestamp: 操作时间戳
+
+    Examples:
+        POST /api/cache/evict/manual
+
+        Response:
+        {
+            "success": true,
+            "message": "缓存淘汰成功",
+            "deleted_count": 150,
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        scheduler = get_eviction_scheduler()
+        result = scheduler.manual_cleanup()
+
+        if result.get("success"):
+            logger.info(
+                "✅ 手动缓存淘汰成功",
+                deleted_count=result.get("deleted_count", 0),
+            )
+        else:
+            logger.warning(
+                "⚠️ 手动缓存淘汰失败",
+                message=result.get("message"),
+            )
+
+        return {
+            "success": result.get("success", False),
+            "message": result.get("message", "缓存淘汰失败"),
+            "deleted_count": result.get("deleted_count", 0),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 手动缓存淘汰异常", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/eviction/stats")
+async def get_eviction_statistics() -> Dict[str, Any]:
+    """
+    获取缓存淘汰策略统计信息
+
+    Returns:
+        淘汰策略统计，包含:
+        - ttl_days: TTL天数
+        - frequency_tracking: 访问频率追踪统计
+        - hot_data: 热点数据列表
+        - cache_stats: 缓存统计
+        - timestamp: 统计时间戳
+
+    Examples:
+        GET /api/cache/eviction/stats
+
+        Response:
+        {
+            "success": true,
+            "data": {
+                "ttl_days": 7,
+                "frequency_tracking": {
+                    "total_tracked": 100,
+                    "total_accesses": 5000,
+                    "average_frequency": 50.0
+                },
+                "hot_data": [
+                    {
+                        "cache_key": "000001:fund_flow:1d",
+                        "access_count": 500,
+                        "last_access": "2025-11-06T..."
+                    }
+                ],
+                "cache_stats": {
+                    "hit_rate": 0.85,
+                    "cache_hits": 850,
+                    "cache_misses": 150
+                }
+            },
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        strategy = get_eviction_strategy()
+
+        # 获取统计信息
+        stats = strategy.get_eviction_statistics()
+        hot_data = strategy.get_hot_data(top_n=10)
+
+        logger.info("✅ 获取淘汰策略统计")
+
+        return {
+            "success": True,
+            "data": {
+                "ttl_days": stats.get("ttl_days", 7),
+                "frequency_tracking": stats.get("frequency_tracking", {}),
+                "hot_data": hot_data,
+                "cache_stats": stats.get("cache_stats", {}),
+            },
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 获取淘汰统计失败", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
