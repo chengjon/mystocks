@@ -39,6 +39,7 @@ from app.models.websocket_message import (
     create_error_message,
     create_pong_message,
 )
+from app.core.reconnection_manager import get_reconnection_manager
 
 logger = structlog.get_logger()
 
@@ -190,11 +191,35 @@ class MySocketIONamespace(AsyncNamespace):
         """连接事件处理"""
         user_id = environ.get("HTTP_X_USER_ID")
         self.sio.connection_manager.add_connection(sid, user_id)
+
+        # 在重连管理器中注册连接
+        reconnection_manager = get_reconnection_manager()
+        reconnection_manager.register_connection(sid, user_id)
+
+        # 获取并补发缓冲的消息（用于重连）
+        buffered_messages = reconnection_manager.get_buffered_messages(sid)
+        if buffered_messages:
+            logger.info(
+                "📨 Resending buffered messages after reconnection",
+                sid=sid,
+                message_count=len(buffered_messages),
+            )
+            for msg in buffered_messages:
+                await self.emit(msg.event, msg.data, to=sid)
+                reconnection_manager.mark_message_sent(sid, msg.id)
+
+        # 标记已重连成功
+        reconnection_manager.mark_reconnected(sid)
+
         await self.emit("connect_response", {"status": "connected", "sid": sid})
 
     async def on_disconnect(self, sid: str):
         """断开连接事件处理"""
         self.sio.connection_manager.remove_connection(sid)
+
+        # 在重连管理器中标记为已断开
+        reconnection_manager = get_reconnection_manager()
+        reconnection_manager.mark_disconnected(sid)
 
     async def on_subscribe(self, sid: str, data: dict):
         """订阅事件处理"""
@@ -391,6 +416,12 @@ class MySocketIOManager:
         """获取Socket.IO统计信息"""
         stats = self.connection_manager.get_stats()
         stats["namespace"] = "/"
+
+        # 添加重连管理器统计
+        reconnection_manager = get_reconnection_manager()
+        reconnection_stats = reconnection_manager.get_all_stats()
+        stats["reconnection"] = reconnection_stats
+
         return stats
 
 

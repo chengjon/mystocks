@@ -89,7 +89,7 @@
           "id": "3",
           "title": "OpenAPI规范定义",
           "description": "定义统一响应码、数据格式约定、WebSocket消息格式、生成Swagger文档",
-          "status": "pending",
+          "status": "in-progress",
           "priority": "critical",
           "week": 1,
           "category": "P0-规范",
