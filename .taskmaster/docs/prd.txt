@@ -503,3 +503,267 @@ INSERT INTO users (password) VALUES (crypt('password', gen_salt('bf')));
 10. 安全加固报告
 11. 性能优化报告
 12. 用户使用文档
+
+==========================================
+TASK 6: Real-Time Market Data Streaming via WebSocket
+==========================================
+
+OBJECTIVE
+Implement efficient real-time market data streaming to WebSocket clients with room-based pub/sub, automatic filtering, and performance optimization.
+
+KEY REQUIREMENTS
+
+1. Real-Time Tick Data Streaming
+   - Stream high-frequency tick data from TDengine to clients
+   - Support multiple concurrent symbol subscriptions
+   - Handle automatic frequency adjustment based on market activity
+   - Implement bandwidth optimization with selective field transmission
+
+2. Room-Based Market Data Subscriptions
+   - Create dynamic rooms for each stock symbol (room format: "stock_SYMBOL")
+   - Broadcast latest tick/OHLC data to all room subscribers
+   - Handle subscription state per client connection
+   - Auto-cleanup when no subscribers in room
+
+3. Data Filtering & Transformation
+   - Allow clients to specify required fields (price, volume, time, etc.)
+   - Transform TDengine time-series format to WebSocket JSON messages
+   - Support real-time minute/hourly bar aggregation
+   - Implement conditional filtering (price ranges, volume thresholds)
+
+4. Performance Requirements
+   - Message latency: <500ms from data generation to client
+   - Support ≥100 concurrent subscriptions per server
+   - Data volume reduction: ≥50% via intelligent filtering
+   - Streaming throughput: ≥1000 updates/second
+
+5. Client-Server Synchronization
+   - Send market snapshot on subscription
+   - Incremental updates with minimal payload
+   - Data freshness tracking and validation
+   - Support historical data catchup for lagging clients
+
+6. Integration with Existing Components
+   - Use RoomManager for subscription organization
+   - Leverage SocketIOManager for WebSocket emission
+   - Integrate with ReconnectionManager for reliable delivery
+   - Utilize TDengineDataAccess for tick data retrieval
+
+TECHNICAL SPECIFICATIONS
+
+- Create `app/services/realtime_streaming_service.py` with:
+  * `RealtimeStreamingService` class managing all streams
+  * `MarketDataStream` class for per-symbol stream state
+  * `StreamSubscriber` class for client subscription tracking
+  * Methods: start_stream, stop_stream, broadcast_data, filter_data
+
+- Implement streaming event handlers in SocketIO:
+  * subscribe_market_stream - client subscribes to symbol
+  * unsubscribe_market_stream - client unsubscribes
+  * stream_filter_update - client updates data filters
+  * stream_pause/resume - client control of stream
+
+- TDengine Integration:
+  * Query latest tick data: `SELECT * FROM tick_data WHERE symbol = ? AND timestamp > ? LIMIT 1`
+  * Query minute bars: Aggregate tick data into OHLCV
+  * Implement continuous polling or event-driven approach
+
+- WebSocket Message Format:
+  * Request: {"event": "subscribe_stream", "symbol": "600519", "fields": ["price", "volume", "timestamp"]}
+  * Response: {"event": "stream_data", "symbol": "600519", "data": {...}, "timestamp": ...}
+  * Error: {"event": "stream_error", "error": "Invalid symbol", "symbol": "..."}
+
+ACCEPTANCE CRITERIA
+- Real-time data reaches clients within 500ms
+- ≥100 concurrent subscriptions supported
+- ≥90% test coverage for streaming service
+- Zero data loss on reconnection (existing reconnection buffer used)
+- Performance benchmarks: P95 latency <300ms, P99 <500ms
+- Streaming metrics API: GET /api/streaming/stats
+
+==========================================
+TASK 7: Market Data Aggregation Service
+==========================================
+
+OBJECTIVE
+Build backend service to aggregate tick data into multi-timeframe bars for efficient analysis and real-time distribution.
+
+KEY REQUIREMENTS
+
+1. Real-Time OHLCV Bar Construction
+   - Process tick data in real-time as it arrives
+   - Generate bars for configurable timeframes (1m, 5m, 15m, 1h, 1d)
+   - Calculate OHLCV values from constituent ticks
+   - Handle market gaps and halts gracefully
+
+2. Aggregation Pipeline
+   - Time-based windowing for each configured interval
+   - Efficient state management for open bars (in-memory)
+   - Atomic completion and storage of bars to PostgreSQL
+   - Support backfill of historical bars from TDengine
+
+3. Data Quality & Validation
+   - Verify aggregated bars against source ticks
+   - Detect anomalies (price spikes, volume anomalies)
+   - Track aggregation accuracy metrics
+   - Implement recovery from processing failures
+
+4. Real-Time Distribution
+   - Emit completed bars to WebSocket clients
+   - Support incremental bar updates (OHLC before close)
+   - Coordinate with Task 6 streaming service
+   - Maintain bar distribution queue for late subscribers
+
+5. Integration
+   - Store aggregated bars in PostgreSQL TimescaleDB hypertables
+   - Publish events for new bar completion
+   - Integration with Task 6 for client broadcasting
+   - Support multiple symbols simultaneously
+
+TECHNICAL SPECIFICATIONS
+
+- Create `app/services/data_aggregation_service.py` with:
+  * `AggregationEngine` class managing bar construction
+  * `TimeframeBuffer` class for in-memory bar state (one per timeframe)
+  * `BarValidator` class for data quality checks
+  * Methods: add_tick, get_open_bar, complete_bar, backfill_bars
+
+- Bar Aggregation Algorithm:
+  * Maintain current open bar for each timeframe
+  * For each new tick: update High, Low, Volume; update Close
+  * On time boundary: complete bar, store to DB, emit event
+  * Support backfill: query TDengine ticks, reconstruct historical bars
+
+- PostgreSQL Integration:
+  * Create TimescaleDB hypertable for aggregated bars
+  * Schema: symbol, timeframe, timestamp, open, high, low, close, volume
+  * Indexes on symbol and timestamp for fast queries
+  * Retention policy: keep aggregated data for 2 years
+
+- Event Publishing:
+  * Publish to Task 6 streaming service on bar completion
+  * Include bar data and completion timestamp
+  * Support subscription filtering by timeframe
+
+- Metrics & Monitoring:
+  * Track aggregation latency per timeframe
+  * Monitor data quality (gap detection, validation errors)
+  * Count bars generated per symbol/timeframe
+  * Alert on quality threshold violations
+
+ACCEPTANCE CRITERIA
+- Aggregate tick→minute bar latency <100ms
+- Support 5-minute, 15-minute, hourly, daily aggregations
+- Maintain data consistency with source ticks
+- ≥90% test coverage for aggregation engine
+- Comprehensive test cases for edge cases (gaps, halts, EOD)
+- Metrics dashboard showing aggregation health
+
+==========================================
+TASK 8: Advanced Subscription & Filtering
+==========================================
+
+OBJECTIVE
+Implement flexible, user-friendly subscription filtering system allowing sophisticated data filtering patterns.
+
+KEY REQUIREMENTS
+
+1. Subscription Filter Types
+   - Symbol patterns (exact match, wildcards, regex)
+   - Price filters (ranges, breakouts, changes >X%)
+   - Volume filters (absolute thresholds, moving average)
+   - Technical indicator filters (RSI, MACD, moving averages)
+   - Time-based filters (market hours only, specific hours)
+   - Composite filters (AND/OR logic with parentheses)
+
+2. Subscription Management
+   - Create named subscriptions for reuse
+   - Save/load subscriptions from database
+   - Share subscriptions between users (with permissions)
+   - Subscription templates for common patterns
+   - Version history for subscription changes
+
+3. Smart Alert System
+   - Generate alerts when filters match
+   - Priority levels: HIGH (immediate), MEDIUM (batched), LOW (daily digest)
+   - Multiple delivery methods: WebSocket, email, webhook, SMS
+   - Delivery rate limiting and alert deduplication
+   - Alert history and acknowledgement tracking
+
+4. Analytics & Optimization
+   - Track which filters are most popular
+   - Measure filter effectiveness (matches per subscription)
+   - Optimize filter evaluation order based on performance
+   - Provide recommendations for better filters
+   - Dashboard showing subscription patterns and trends
+
+5. Performance Requirements
+   - Filter evaluation latency: <50ms per event
+   - Support ≥10 concurrent active filters per client
+   - Efficient filter compilation and caching
+   - Prevent runaway filters with timeout protection
+
+TECHNICAL SPECIFICATIONS
+
+- Create `app/services/subscription_filter_service.py` with:
+  * `FilterExpression` class for parsing filter syntax
+  * `FilterEvaluator` class for fast filter evaluation
+  * `SubscriptionManager` class for lifecycle management
+  * `AlertDispatcher` class for alert delivery
+
+- Filter Expression Syntax:
+  * price > 100 AND volume < 1000000
+  * symbol MATCHES "60*" OR symbol MATCHES "00*"
+  * rsi(14) > 70 AND close > sma(20)
+  * Multiple filters combined with AND/OR/NOT/parentheses
+
+- Database Schema:
+  * subscriptions table: id, user_id, name, filter_expr, enabled, created_at
+  * subscription_triggers table: subscription_id, symbol, last_match, match_count
+  * alerts table: id, subscription_id, timestamp, symbol, data, delivery_status
+
+- Filter Evaluation Pipeline:
+  * Compile filter expression to bytecode/AST
+  * Cache compiled filters for performance
+  * Evaluate against incoming market data
+  * Collect matching events
+  * Dispatch alerts via configured channels
+
+- Performance Optimization:
+  * Index filters by most selective clause
+  * Early termination on filter failure
+  * Filter JIT compilation for high-frequency evaluations
+  * Parallel evaluation for independent filters
+
+ACCEPTANCE CRITERIA
+- Support minimum 10 concurrent filters per client
+- Filter evaluation <50ms per event
+- ≥90% test coverage for filter system
+- Comprehensive test cases for filter combinations
+- Alert delivery within 2 seconds
+- Analytics dashboard showing filter patterns
+- User documentation for filter syntax
+
+==========================================
+INTEGRATED SUCCESS METRICS (Tasks 6-8)
+==========================================
+
+Performance Targets:
+- Tick→Client latency: <500ms
+- Filter evaluation: <50ms
+- Bar aggregation: <100ms per interval
+
+Throughput Targets:
+- 100+ concurrent subscriptions
+- 1000+ events/second throughput
+- 50+ simultaneous symbols
+
+Reliability Targets:
+- Zero data loss on reconnection
+- 99.9% uptime for streaming
+- Automatic recovery from failures
+
+Quality Targets:
+- ≥90% test coverage for all services
+- Data consistency validation
+- Performance benchmarking
