@@ -167,7 +167,7 @@
           "id": "5",
           "title": "双库数据一致性方案",
           "description": "实现本地消息表最终一致性，处理跨库操作，同步失败重试，监控一致性",
-          "status": "pending",
+          "status": "in-progress",
           "priority": "critical",
           "week": 1,
           "category": "P0-数据",
