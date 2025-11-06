@@ -180,8 +180,8 @@
             {
               "id": "5.1",
               "title": "设计本地消息表",
-              "status": "pending",
-              "details": "创建消息表结构、定义状态枚举、索引优化"
+              "status": "done",
+              "details": "创建消息表结构、定义状态枚举、索引优化。✅ 完成: SyncMessage模型(421行) + SyncDatabaseManager(561行) + 20个测试(全部通过) + 6个复合索引 + 单例模式"
             },
             {
               "id": "5.2",
