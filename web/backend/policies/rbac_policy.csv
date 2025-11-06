@@ -1,0 +1,23 @@
+p, admin, indicator, read
+p, admin, indicator, write
+p, admin, indicator, delete
+p, admin, dashboard, read
+p, admin, dashboard, write
+p, admin, dashboard, delete
+p, admin, user, read
+p, admin, user, write
+p, admin, user, delete
+p, user, indicator, read
+p, user, dashboard, read
+p, vip, indicator, read
+p, vip, indicator, write
+p, vip, dashboard, read
+p, vip, dashboard, write
+p, guest, indicator, read
+p, test_role, test_resource, read
+p, analyst, indicator, read
+g, admin, admin
+g, regular_admin, admin
+g, vip_user, vip
+g, regular_user, user
+g, guest_user, guest
