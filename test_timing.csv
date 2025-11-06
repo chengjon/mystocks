@@ -119,3 +119,5 @@ tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_encrypt
 tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_encryption_produces_authenticated_ciphertext,2025-11-06 09:31:09.356446,2025-11-06 09:31:09.357838,0.001,Fx
 tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_nonce_is_random,2025-11-06 09:31:09.358172,2025-11-06 09:31:09.359560,0.001,Fx
 tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_file_permissions_restrictive,2025-11-06 09:31:09.359913,2025-11-06 09:31:09.364910,0.005,Fx
+------------------ -------------------------------------
+------------------ -------------------------------------
