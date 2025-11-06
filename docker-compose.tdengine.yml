@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  tdengine:
+    image: tdengine/tdengine:3.0.4.0
+    container_name: mystocks_tdengine
+    ports:
+      - "6030:6030"
+      - "6031:6031"
+      - "6032:6032"
+      - "6033:6033"
+      - "6034:6034"
+      - "6035:6035"
+      - "6036:6036"
+      - "6037:6037"
+      - "6038:6038"
+      - "6039:6039"
+    environment:
+      TZ: "Asia/Shanghai"
+      # TDengine 配置
+      TAOS_FQDN: "tdengine"
+      TAOS_SERVER_PORT: "6030"
+      # 存储配置
+      TAOS_DATA_DIR: "/var/lib/taos"
+      TAOS_LOG_DIR: "/var/log/taos"
+      # 性能配置
+      TAOS_MAXROWS: "4096"
+      TAOS_MINROWS: "100"
+      TAOS_KEEP: "30"
+      TAOS_CACHE_MODEL: "both"
+      TAOS_CACHE_SIZE: "16"
+      # 缓存模式配置 (支持缓存表)
+      TAOS_TSDB_PAGESIZE: "4"
+      # Wal 配置
+      TAOS_WAL_LEVEL: "1"
+      TAOS_WAL_FSYNC_PERIOD: "3000"
+    volumes:
+      - tdengine_data:/var/lib/taos
+      - tdengine_logs:/var/log/taos
+    networks:
+      - mystocks_network
+    healthcheck:
+      test: ["CMD", "taosBenchmark", "-t", "1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # PostgreSQL 数据库 (已有)
+  postgresql:
+    image: postgres:15-alpine
+    container_name: mystocks_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: c790414J
+      POSTGRES_DB: mystocks
+      TZ: "Asia/Shanghai"
+    ports:
+      - "5438:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mystocks_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  tdengine_data:
+    driver: local
+  tdengine_logs:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  mystocks_network:
+    driver: bridge

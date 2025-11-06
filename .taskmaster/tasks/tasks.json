@@ -13,7 +13,7 @@
           "id": "1",
           "title": "紧急安全修复",
           "description": "修复SQL注入、XSS/CSRF漏洞，敏感数据加密，删除重复代码",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "week": 1,
           "category": "P0-安全",
@@ -24,25 +24,25 @@
             {
               "id": "1.1",
               "title": "修复SQL注入漏洞",
-              "status": "pending",
+              "status": "done",
               "details": "使用SQLAlchemy ORM替代原生SQL、参数化查询、输入验证"
             },
             {
               "id": "1.2",
               "title": "实现XSS/CSRF防护",
-              "status": "pending",
+              "status": "done",
               "details": "前端Vue3自动转义、CSP头配置、CSRF Token验证"
             },
             {
               "id": "1.3",
               "title": "敏感数据加密",
-              "status": "pending",
+              "status": "done",
               "details": "PostgreSQL pgcrypto、TDengine列级加密、传输层TLS 1.3"
             },
             {
               "id": "1.4",
               "title": "删除重复代码",
-              "status": "pending",
+              "status": "done",
               "details": "删除src/monitoring/目录、整合AlertManager、合并重复函数"
             }
           ]
@@ -51,7 +51,7 @@
           "id": "2",
           "title": "TDengine缓存集成",
           "description": "搭建TDengine服务，实现缓存读写逻辑，时间窗口淘汰策略，热点数据识别",
-          "status": "pending",
+          "status": "in-progress",
           "priority": "critical",
           "week": 1,
           "category": "P0-架构",
@@ -62,8 +62,8 @@
             {
               "id": "2.1",
               "title": "搭建TDengine服务",
-              "status": "pending",
-              "details": "Docker容器部署、单机或集群配置、数据库初始化"
+              "status": "done",
+              "details": "Docker容器部署、单机或集群配置、数据库初始化。✅ 完成: docker-compose.tdengine.yml配置 + TDengineManager类 + 27个集成测试 + 部署验证脚本 + 监控脚本"
             },
             {
               "id": "2.2",
@@ -131,7 +131,9 @@
           "priority": "critical",
           "week": 1,
           "category": "P0-实时",
-          "dependencies": ["3"],
+          "dependencies": [
+            "3"
+          ],
           "details": "实现Socket.IO服务器、连接建立-数据请求-断开基础流程、单房间订阅功能、请求-响应模式（非持久推送）、客户端自动重连机制（3秒间隔，重试5次）",
           "testStrategy": "连接测试、消息收发测试、重连测试、并发连接测试",
           "subtasks": [
@@ -169,7 +171,9 @@
           "priority": "critical",
           "week": 1,
           "category": "P0-数据",
-          "dependencies": ["2"],
+          "dependencies": [
+            "2"
+          ],
           "details": "实现本地消息表最终一致性、处理TDengine+PostgreSQL跨库操作、同步失败重试机制（3次后触发告警）、数据同步状态监控、同步延迟<5秒",
           "testStrategy": "分布式事务测试、故障转移测试、数据一致性验证",
           "subtasks": [
@@ -207,7 +211,10 @@
           "priority": "critical",
           "week": 2,
           "category": "P0-测试",
-          "dependencies": ["3", "4"],
+          "dependencies": [
+            "3",
+            "4"
+          ],
           "details": "使用Playwright搭建测试框架、登录->订阅->数据查询核心流程测试、缓存命中和未命中场景测试、测试数据管理和清理、截图和错误报告生成",
           "testStrategy": "E2E测试覆盖核心流程、浏览器兼容性测试",
           "subtasks": [
@@ -245,7 +252,11 @@
           "priority": "critical",
           "week": 2,
           "category": "P0-部署",
-          "dependencies": ["1", "2", "4"],
+          "dependencies": [
+            "1",
+            "2",
+            "4"
+          ],
           "details": "Docker多阶段构建（减小镜像体积）、Docker Compose编排（TDengine+PostgreSQL+API+Frontend）、资源限制配置（CPU、内存限制）、环境变量管理（.env文件）、健康检查配置",
           "testStrategy": "容器启动测试、多容器协作测试、资源限制验证",
           "subtasks": [
@@ -283,7 +294,9 @@
           "priority": "critical",
           "week": 2,
           "category": "P0-运维",
-          "dependencies": ["2"],
+          "dependencies": [
+            "2"
+          ],
           "details": "TDengine每日全量+每小时增量备份脚本、PostgreSQL每日全量+WAL归档配置、恢复流程文档和验证脚本、备份数据完整性校验",
           "testStrategy": "备份完整性测试、恢复功能测试、RTO/RPO验证",
           "subtasks": [
@@ -321,7 +334,9 @@
           "priority": "high",
           "week": 2,
           "category": "P1-功能",
-          "dependencies": ["4"],
+          "dependencies": [
+            "4"
+          ],
           "details": "实现多房间同时订阅、房间管理逻辑（创建、加入、离开）、订阅权限控制、房间消息广播",
           "testStrategy": "多房间订阅测试、权限验证测试、消息广播测试",
           "subtasks": [
@@ -353,7 +368,9 @@
           "priority": "high",
           "week": 2,
           "category": "P1-安全",
-          "dependencies": ["4"],
+          "dependencies": [
+            "4"
+          ],
           "details": "Casbin与FastAPI集成、行级数据权限（基于userId过滤）、功能权限（管理员/普通用户/VIP角色）、权限策略配置文件",
           "testStrategy": "权限检查测试、角色切换测试、权限拒绝测试",
           "subtasks": [
@@ -391,7 +408,9 @@
           "priority": "high",
           "week": 3,
           "category": "P1-性能",
-          "dependencies": ["2"],
+          "dependencies": [
+            "2"
+          ],
           "details": "TDengine时间索引优化、PostgreSQL业务字段索引（symbol、user_id、timestamp）、慢查询分析和优化（目标<500ms）、执行计划分析",
           "testStrategy": "查询性能测试、索引效率验证、EXPLAIN分析",
           "subtasks": [
@@ -429,7 +448,9 @@
           "priority": "high",
           "week": 3,
           "category": "P1-测试",
-          "dependencies": ["3"],
+          "dependencies": [
+            "3"
+          ],
           "details": "配置Dredd契约测试框架、API一致性验证（OpenAPI规范vs实际实现）、测试钩子实现（数据准备和清理）、CI集成",
           "testStrategy": "契约测试全覆盖、API规范一致性验证",
           "subtasks": [
@@ -467,7 +488,10 @@
           "priority": "high",
           "week": 3,
           "category": "P1-监控",
-          "dependencies": ["4", "2"],
+          "dependencies": [
+            "4",
+            "2"
+          ],
           "details": "WebSocket连接数监控、TDengine缓存命中率监控、API响应时间监控（P50、P95、P99）、数据库连接池使用率监控、Prometheus Exporter开发",
           "testStrategy": "指标收集测试���Prometheus查询测试、告警触发测试",
           "subtasks": [
@@ -505,7 +529,10 @@
           "priority": "high",
           "week": 3,
           "category": "P1-性能",
-          "dependencies": ["4", "2"],
+          "dependencies": [
+            "4",
+            "2"
+          ],
           "details": "使用Locust模拟1000并发用户、WebSocket连接池参数优化、数据库连接池大小调整、缓存策略优化（热点数据时间窗口调整）、压测报告生成",
           "testStrategy": "并发压力测试、性能瓶颈分析、优化效果验证",
           "subtasks": [
@@ -543,7 +570,9 @@
           "priority": "medium",
           "week": 4,
           "category": "P2-可观测性",
-          "dependencies": ["13"],
+          "dependencies": [
+            "13"
+          ],
           "details": "多级告警规则（一级：短信+邮件，二级：邮件，三级：日志）、告警聚合和抑制（避免告警风暴）、告警恢复通知、告警历史记录",
           "testStrategy": "告警规则测试、告警流程验证、告警恢复测试",
           "subtasks": [
@@ -581,7 +610,10 @@
           "priority": "medium",
           "week": 4,
           "category": "P2-可靠性",
-          "dependencies": ["5", "4"],
+          "dependencies": [
+            "5",
+            "4"
+          ],
           "details": "TDengine集群故障自动切换、WebSocket自动重连、PostgreSQL主从自动切换、服务健康检查和自愈",
           "testStrategy": "故障转移测试、自动恢复验证、数据一致性检查",
           "subtasks": [
@@ -619,7 +651,9 @@
           "priority": "medium",
           "week": 4,
           "category": "P2-安全",
-          "dependencies": ["10"],
+          "dependencies": [
+            "10"
+          ],
           "details": "用户级限流（普通用户10QPS/VIP用户50QPS）、接口级限流、IP黑名单机制、限流策略动态调整",
           "testStrategy": "限流规则测试、降级效果验证、策略动态调整测试",
           "subtasks": [
@@ -657,7 +691,9 @@
           "priority": "medium",
           "week": 4,
           "category": "P2-性能",
-          "dependencies": ["2"],
+          "dependencies": [
+            "2"
+          ],
           "details": "批量数据同步异步化、大数据量查询异步返回、定时任务优化（Celery或APScheduler）、任务队列监控",
           "testStrategy": "异步任务测试、队列监控测试、性能改进验证",
           "subtasks": [
