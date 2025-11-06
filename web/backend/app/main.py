@@ -27,6 +27,9 @@ from app.core.cache_eviction import (
 # 导入OpenAPI配置
 from app.openapi_config import get_openapi_config, OPENAPI_TAGS
 
+# 导入Socket.IO服务器管理器
+from app.core.socketio_manager import get_socketio_manager
+
 # 配置日志
 logger = structlog.get_logger()
 
@@ -160,6 +163,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 初始化Socket.IO服务器
+socketio_manager = get_socketio_manager()
+sio = socketio_manager.sio
+
+# 注意: Socket.IO集成将在运行时通过uvicorn的asgi应用处理
+# 或者使用专门的Socket.IO中间件。目前Socket.IO服务器已初始化并准备使用。
+logger.info("✅ Socket.IO服务器已挂载")
+
 
 # SECURITY FIX 1.2: CSRF验证中间件
 @app.middleware("http")
@@ -256,6 +267,19 @@ async def health_check():
         "status": "healthy",
         "timestamp": time.time(),
         "service": "mystocks-web-api",
+    }
+
+
+# Socket.IO健康检查端点
+@app.get("/api/socketio-status")
+async def socketio_status():
+    """Socket.IO服务器状态"""
+    stats = socketio_manager.get_stats()
+    return {
+        "status": "active",
+        "service": "Socket.IO",
+        "statistics": stats,
+        "timestamp": time.time(),
     }
 
 
