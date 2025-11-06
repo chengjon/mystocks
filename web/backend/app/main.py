@@ -24,6 +24,9 @@ from app.core.cache_eviction import (
     reset_eviction_scheduler,
 )
 
+# 导入OpenAPI配置
+from app.openapi_config import get_openapi_config, OPENAPI_TAGS
+
 # 配置日志
 logger = structlog.get_logger()
 
@@ -119,13 +122,22 @@ async def lifespan(app: FastAPI):
     logger.info("✅ All database connections closed")
 
 
-# 创建 FastAPI 应用
+# 获取OpenAPI配置
+openapi_config = get_openapi_config()
+
+# 创建 FastAPI 应用（使用增强的OpenAPI配置）
 app = FastAPI(
-    title="MyStocks Web API",
-    description="MyStocks 量化交易数据管理系统 Web API - Week 3 Simplified",
-    version="2.0.0",
+    title=openapi_config["title"],
+    description=openapi_config["description"],
+    version=openapi_config["version"],
+    terms_of_service=openapi_config.get("terms_of_service"),
+    contact=openapi_config.get("contact"),
+    license_info=openapi_config.get("license_info"),
+    openapi_tags=openapi_config["openapi_tags"],
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    swagger_ui_parameters=openapi_config.get("swagger_ui_parameters"),
+    swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
     lifespan=lifespan,  # 添加生命周期管理
 )
 
