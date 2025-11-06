@@ -11,6 +11,7 @@
 - akshare_extension: ETF/资金流向/龙虎榜数据
 - tqlex_adapter: 竞价抢筹数据
 """
+
 from sqlalchemy import create_engine, and_, or_
 from sqlalchemy.orm import sessionmaker, Session
 from datetime import date, datetime, timedelta
@@ -22,6 +23,7 @@ import os
 from app.models.market_data import FundFlow, ETFData, ChipRaceData, LongHuBangData
 from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
+from app.core.cache_integration import get_cache_integration
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +31,14 @@ logger = logging.getLogger(__name__)
 class MarketDataService:
     """市场数据服务"""
 
-    def __init__(self):
-        """初始化数据库连接"""
-        db_url = os.getenv('DATABASE_URL') or self._build_db_url()
+    def __init__(self, use_cache: bool = True):
+        """
+        初始化数据库连接
+
+        Args:
+            use_cache: 是否启用缓存 (默认True)
+        """
+        db_url = os.getenv("DATABASE_URL") or self._build_db_url()
         self.engine = create_engine(db_url, pool_pre_ping=True, echo=False)
         self.SessionLocal = sessionmaker(bind=self.engine)
 
@@ -45,6 +52,11 @@ class MarketDataService:
             logger.warning(f"TQLEX适配器初始化失败(竞价抢筹功能将不可用): {e}")
             self.tqlex = None
 
+        # 初始化缓存集成
+        self.cache = get_cache_integration()
+        self.use_cache = use_cache
+        logger.info(f"市场数据服务初始化完成 (缓存: {'启用' if use_cache else '禁用'})")
+
     def _build_db_url(self) -> str:
         """从环境变量构建数据库URL"""
         return (
@@ -57,10 +69,95 @@ class MarketDataService:
 
     # ==================== 资金流向 (Fund Flow) ====================
 
+    def fetch_and_save_fund_flow_cached(
+        self, symbol: str, timeframe: str = "1"
+    ) -> Dict[str, Any]:
+        """
+        获取并保存资金流向数据 (带缓存支持)
+
+        先检查缓存，如果缓存有效则返回缓存数据；
+        否则从Akshare获取数据，保存到数据库和缓存。
+
+        Args:
+            symbol: 股票代码
+            timeframe: 时间维度 (1/3/5/10天)
+
+        Returns:
+            保存结果字典，包含缓存来源信息
+        """
+
+        def fetch_from_source():
+            """从源获取并保存资金流向数据"""
+            data = self.akshare_ext.get_stock_fund_flow(symbol, timeframe)
+            if not data:
+                return None
+
+            db = self.SessionLocal()
+            try:
+                fund_flow = FundFlow(
+                    symbol=symbol,
+                    trade_date=datetime.now().date(),
+                    timeframe=timeframe,
+                    main_net_inflow=data.get("main_net_inflow", 0),
+                    main_net_inflow_rate=data.get("main_net_inflow_rate", 0),
+                    super_large_net_inflow=data.get("super_large_net_inflow", 0),
+                    large_net_inflow=data.get("large_net_inflow", 0),
+                    medium_net_inflow=data.get("medium_net_inflow", 0),
+                    small_net_inflow=data.get("small_net_inflow", 0),
+                )
+
+                existing = (
+                    db.query(FundFlow)
+                    .filter(
+                        and_(
+                            FundFlow.symbol == symbol,
+                            FundFlow.trade_date == fund_flow.trade_date,
+                            FundFlow.timeframe == timeframe,
+                        )
+                    )
+                    .first()
+                )
+
+                if existing:
+                    for key, value in data.items():
+                        setattr(existing, key, value)
+                    db.commit()
+                    logger.info(f"更新资金流向: {symbol} - {timeframe}天")
+                else:
+                    db.add(fund_flow)
+                    db.commit()
+                    logger.info(f"新增资金流向: {symbol} - {timeframe}天")
+
+                return data
+
+            finally:
+                db.close()
+
+        try:
+            # 使用缓存读取模式
+            result = self.cache.fetch_with_cache(
+                symbol=symbol,
+                data_type="fund_flow",
+                fetch_fn=fetch_from_source,
+                timeframe=timeframe,
+                use_cache=self.use_cache,
+                ttl_days=1,  # 资金流向数据每天更新
+            )
+
+            return {
+                "success": True,
+                "message": f"获取资金流向成功 (来源: {result.get('source', 'unknown')})",
+                "data": result.get("data"),
+                "source": result.get("source"),
+                "timestamp": result.get("timestamp"),
+            }
+
+        except Exception as e:
+            logger.error(f"获取资金流向失败: {e}")
+            return {"success": False, "message": str(e)}
+
     def fetch_and_save_fund_flow(
-        self,
-        symbol: str,
-        timeframe: str = "1"
+        self, symbol: str, timeframe: str = "1"
     ) -> Dict[str, Any]:
         """
         获取并保存资金流向数据
@@ -86,22 +183,26 @@ class MarketDataService:
                     symbol=symbol,
                     trade_date=datetime.now().date(),
                     timeframe=timeframe,
-                    main_net_inflow=data.get('main_net_inflow', 0),
-                    main_net_inflow_rate=data.get('main_net_inflow_rate', 0),
-                    super_large_net_inflow=data.get('super_large_net_inflow', 0),
-                    large_net_inflow=data.get('large_net_inflow', 0),
-                    medium_net_inflow=data.get('medium_net_inflow', 0),
-                    small_net_inflow=data.get('small_net_inflow', 0)
+                    main_net_inflow=data.get("main_net_inflow", 0),
+                    main_net_inflow_rate=data.get("main_net_inflow_rate", 0),
+                    super_large_net_inflow=data.get("super_large_net_inflow", 0),
+                    large_net_inflow=data.get("large_net_inflow", 0),
+                    medium_net_inflow=data.get("medium_net_inflow", 0),
+                    small_net_inflow=data.get("small_net_inflow", 0),
                 )
 
                 # 使用upsert策略(如果存在则更新)
-                existing = db.query(FundFlow).filter(
-                    and_(
-                        FundFlow.symbol == symbol,
-                        FundFlow.trade_date == fund_flow.trade_date,
-                        FundFlow.timeframe == timeframe
+                existing = (
+                    db.query(FundFlow)
+                    .filter(
+                        and_(
+                            FundFlow.symbol == symbol,
+                            FundFlow.trade_date == fund_flow.trade_date,
+                            FundFlow.timeframe == timeframe,
+                        )
                     )
-                ).first()
+                    .first()
+                )
 
                 if existing:
                     for key, value in data.items():
@@ -113,7 +214,11 @@ class MarketDataService:
                     db.commit()
                     logger.info(f"新增资金流向: {symbol} - {timeframe}天")
 
-                return {"success": True, "message": "保存成功", "data": fund_flow.to_dict()}
+                return {
+                    "success": True,
+                    "message": "保存成功",
+                    "data": fund_flow.to_dict(),
+                }
 
             finally:
                 db.close()
@@ -127,7 +232,7 @@ class MarketDataService:
         symbol: str,
         timeframe: str = "1",
         start_date: Optional[date] = None,
-        end_date: Optional[date] = None
+        end_date: Optional[date] = None,
     ) -> List[FundFlow]:
         """
         查询资金流向历史数据
@@ -144,10 +249,7 @@ class MarketDataService:
         db = self.SessionLocal()
         try:
             query = db.query(FundFlow).filter(
-                and_(
-                    FundFlow.symbol == symbol,
-                    FundFlow.timeframe == timeframe
-                )
+                and_(FundFlow.symbol == symbol, FundFlow.timeframe == timeframe)
             )
 
             if start_date:
@@ -161,6 +263,116 @@ class MarketDataService:
             db.close()
 
     # ==================== ETF数据 (ETF Spot) ====================
+
+    def fetch_and_save_etf_spot_cached(self) -> Dict[str, Any]:
+        """
+        获取并保存ETF实时数据(全市场) - 带缓存支持
+
+        先检查缓存，如果缓存有效则返回缓存数据；
+        否则从Akshare获取全市场数据，保存到数据库和缓存。
+
+        Returns:
+            保存结果字典，包含缓存来源信息
+        """
+
+        def fetch_from_source():
+            """从源获取ETF数据"""
+            df = self.akshare_ext.get_etf_spot()
+            if df.empty:
+                return None
+
+            # 转换为字典列表格式便于缓存
+            return df.to_dict("records")
+
+        try:
+            # 使用缓存读取模式
+            result = self.cache.fetch_with_cache(
+                symbol="all",  # 全市场标记
+                data_type="etf",
+                fetch_fn=fetch_from_source,
+                timeframe="1d",
+                use_cache=self.use_cache,
+                ttl_days=1,  # ETF数据每天更新
+            )
+
+            etf_records = result.get("data") or []
+
+            # 保存到数据库（如果来自源）
+            if result.get("source") == "source" and etf_records:
+                db = self.SessionLocal()
+                try:
+                    today = datetime.now().date()
+                    saved_count = 0
+
+                    def safe_float(value, default=0):
+                        try:
+                            if pd.isna(value) or value == "" or value is None:
+                                return default
+                            return float(value)
+                        except (ValueError, TypeError):
+                            return default
+
+                    def safe_int(value, default=0):
+                        try:
+                            if pd.isna(value) or value == "" or value is None:
+                                return default
+                            return int(float(value))
+                        except (ValueError, TypeError):
+                            return default
+
+                    for row in etf_records:
+                        etf_data = ETFData(
+                            symbol=row.get("symbol"),
+                            name=row.get("name"),
+                            trade_date=today,
+                            latest_price=safe_float(row.get("latest_price"), 0),
+                            change_percent=safe_float(row.get("change_percent"), 0),
+                            change_amount=safe_float(row.get("change_amount"), 0),
+                            volume=safe_int(row.get("volume"), 0),
+                            amount=safe_float(row.get("amount"), 0),
+                            open_price=safe_float(row.get("open_price"), 0),
+                            high_price=safe_float(row.get("high_price"), 0),
+                            low_price=safe_float(row.get("low_price"), 0),
+                            prev_close=safe_float(row.get("prev_close"), 0),
+                            turnover_rate=safe_float(row.get("turnover_rate"), 0),
+                            total_market_cap=safe_float(row.get("total_market_cap"), 0),
+                            circulating_market_cap=safe_float(
+                                row.get("circulating_market_cap"), 0
+                            ),
+                        )
+
+                        existing = (
+                            db.query(ETFData)
+                            .filter(
+                                and_(
+                                    ETFData.symbol == etf_data.symbol,
+                                    ETFData.trade_date == today,
+                                )
+                            )
+                            .first()
+                        )
+
+                        if not existing:
+                            db.add(etf_data)
+                            saved_count += 1
+
+                    db.commit()
+                    logger.info(f"保存ETF数据成功: {saved_count}条")
+
+                finally:
+                    db.close()
+
+            return {
+                "success": True,
+                "message": f"获取ETF数据成功 (来源: {result.get('source', 'unknown')})",
+                "total": len(etf_records),
+                "source": result.get("source"),
+                "timestamp": result.get("timestamp"),
+            }
+
+        except Exception as e:
+            logger.error(f"获取ETF数据失败: {e}")
+            return {"success": False, "message": str(e)}
 
     def fetch_and_save_etf_spot(self) -> Dict[str, Any]:
         """
@@ -186,7 +398,7 @@ class MarketDataService:
                     # 处理NaN值，将其转换为0或None
                     def safe_float(value, default=0):
                         try:
-                            if pd.isna(value) or value == '' or value is None:
+                            if pd.isna(value) or value == "" or value is None:
                                 return default
                             return float(value)
                         except (ValueError, TypeError):
@@ -194,37 +406,43 @@ class MarketDataService:
 
                     def safe_int(value, default=0):
                         try:
-                            if pd.isna(value) or value == '' or value is None:
+                            if pd.isna(value) or value == "" or value is None:
                                 return default
                             return int(float(value))
                         except (ValueError, TypeError):
                             return default
 
                     etf_data = ETFData(
-                        symbol=row['symbol'],
-                        name=row['name'],
+                        symbol=row["symbol"],
+                        name=row["name"],
                         trade_date=today,
-                        latest_price=safe_float(row.get('latest_price'), 0),
-                        change_percent=safe_float(row.get('change_percent'), 0),
-                        change_amount=safe_float(row.get('change_amount'), 0),
-                        volume=safe_int(row.get('volume'), 0),
-                        amount=safe_float(row.get('amount'), 0),
-                        open_price=safe_float(row.get('open_price'), 0),
-                        high_price=safe_float(row.get('high_price'), 0),
-                        low_price=safe_float(row.get('low_price'), 0),
-                        prev_close=safe_float(row.get('prev_close'), 0),
-                        turnover_rate=safe_float(row.get('turnover_rate'), 0),
-                        total_market_cap=safe_float(row.get('total_market_cap'), 0),
-                        circulating_market_cap=safe_float(row.get('circulating_market_cap'), 0)
+                        latest_price=safe_float(row.get("latest_price"), 0),
+                        change_percent=safe_float(row.get("change_percent"), 0),
+                        change_amount=safe_float(row.get("change_amount"), 0),
+                        volume=safe_int(row.get("volume"), 0),
+                        amount=safe_float(row.get("amount"), 0),
+                        open_price=safe_float(row.get("open_price"), 0),
+                        high_price=safe_float(row.get("high_price"), 0),
+                        low_price=safe_float(row.get("low_price"), 0),
+                        prev_close=safe_float(row.get("prev_close"), 0),
+                        turnover_rate=safe_float(row.get("turnover_rate"), 0),
+                        total_market_cap=safe_float(row.get("total_market_cap"), 0),
+                        circulating_market_cap=safe_float(
+                            row.get("circulating_market_cap"), 0
+                        ),
                     )
 
                     # 检查是否已存在
-                    existing = db.query(ETFData).filter(
-                        and_(
-                            ETFData.symbol == etf_data.symbol,
-                            ETFData.trade_date == today
+                    existing = (
+                        db.query(ETFData)
+                        .filter(
+                            and_(
+                                ETFData.symbol == etf_data.symbol,
+                                ETFData.trade_date == today,
+                            )
                         )
-                    ).first()
+                        .first()
+                    )
 
                     if not existing:
                         db.add(etf_data)
@@ -237,7 +455,7 @@ class MarketDataService:
                     "success": True,
                     "message": f"保存成功: {saved_count}条",
                     "total": len(df),
-                    "saved": saved_count
+                    "saved": saved_count,
                 }
 
             finally:
@@ -251,7 +469,7 @@ class MarketDataService:
         self,
         symbol: Optional[str] = None,
         keyword: Optional[str] = None,
-        limit: int = 50
+        limit: int = 50,
     ) -> List[ETFData]:
         """
         查询ETF数据（查询最新可用数据）
@@ -268,15 +486,14 @@ class MarketDataService:
         try:
             # 先找到最新的交易日期
             from sqlalchemy import func
+
             latest_date_query = db.query(func.max(ETFData.trade_date)).scalar()
 
             if not latest_date_query:
                 return []  # 无数据
 
             # 查询最新日期的数据
-            query = db.query(ETFData).filter(
-                ETFData.trade_date == latest_date_query
-            )
+            query = db.query(ETFData).filter(ETFData.trade_date == latest_date_query)
 
             if symbol:
                 query = query.filter(ETFData.symbol == symbol)
@@ -284,8 +501,8 @@ class MarketDataService:
             if keyword:
                 query = query.filter(
                     or_(
-                        ETFData.symbol.like(f'%{keyword}%'),
-                        ETFData.name.like(f'%{keyword}%')
+                        ETFData.symbol.like(f"%{keyword}%"),
+                        ETFData.name.like(f"%{keyword}%"),
                     )
                 )
 
@@ -296,10 +513,110 @@ class MarketDataService:
 
     # ==================== 竞价抢筹 (Chip Race) ====================
 
+    def fetch_and_save_chip_race_cached(
+        self, race_type: str = "open", trade_date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        获取并保存竞价抢筹数据 - 带缓存支持
+
+        先检查缓存，如果缓存有效则返回缓存数据；
+        否则从TQLEX获取数据，保存到数据库和缓存。
+
+        Args:
+            race_type: 抢筹类型 (open/end)
+            trade_date: 交易日期
+
+        Returns:
+            保存结果字典，包含缓存来源信息
+        """
+        if not self.tqlex:
+            return {"success": False, "message": "TQLEX适配器未配置"}
+
+        def fetch_from_source():
+            """从源获取竞价抢筹数据"""
+            if race_type == "open":
+                df = self.tqlex.get_chip_race_open(trade_date)
+            else:
+                df = self.tqlex.get_chip_race_end(trade_date)
+
+            if df.empty:
+                return None
+
+            return df.to_dict("records")
+
+        try:
+            # 使用缓存读取模式
+            result = self.cache.fetch_with_cache(
+                symbol="chip_race",
+                data_type="chip_race",
+                fetch_fn=fetch_from_source,
+                timeframe=f"{race_type}_{trade_date or 'latest'}",
+                use_cache=self.use_cache,
+                ttl_days=1,
+            )
+
+            chip_records = result.get("data") or []
+
+            # 保存到数据库（如果来自源）
+            if result.get("source") == "source" and chip_records:
+                db = self.SessionLocal()
+                try:
+                    today = datetime.now().date()
+                    saved_count = 0
+
+                    for row in chip_records:
+                        chip_data = ChipRaceData(
+                            symbol=row.get("symbol"),
+                            name=row.get("name"),
+                            trade_date=today,
+                            race_type=race_type,
+                            latest_price=row.get("latest_price", 0),
+                            change_percent=row.get("change_percent", 0),
+                            prev_close=row.get("prev_close", 0),
+                            open_price=row.get("open_price", 0),
+                            race_amount=row.get("race_amount", 0),
+                            race_amplitude=row.get("race_amplitude", 0),
+                            race_commission=row.get("race_commission", 0),
+                            race_transaction=row.get("race_transaction", 0),
+                            race_ratio=row.get("race_ratio", 0),
+                        )
+
+                        existing = (
+                            db.query(ChipRaceData)
+                            .filter(
+                                and_(
+                                    ChipRaceData.symbol == chip_data.symbol,
+                                    ChipRaceData.trade_date == today,
+                                    ChipRaceData.race_type == race_type,
+                                )
+                            )
+                            .first()
+                        )
+
+                        if not existing:
+                            db.add(chip_data)
+                            saved_count += 1
+
+                    db.commit()
+                    logger.info(f"保存{race_type}抢筹数据成功: {saved_count}条")
+
+                finally:
+                    db.close()
+
+            return {
+                "success": True,
+                "message": f"获取抢筹数据成功 (来源: {result.get('source', 'unknown')})",
+                "total": len(chip_records),
+                "source": result.get("source"),
+                "timestamp": result.get("timestamp"),
+            }
+
+        except Exception as e:
+            logger.error(f"获取抢筹数据失败: {e}")
+            return {"success": False, "message": str(e)}
+
     def fetch_and_save_chip_race(
-        self,
-        race_type: str = "open",
-        trade_date: Optional[str] = None
+        self, race_type: str = "open", trade_date: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         获取并保存竞价抢筹数据
@@ -329,28 +646,32 @@ class MarketDataService:
 
                 for _, row in df.iterrows():
                     chip_data = ChipRaceData(
-                        symbol=row['symbol'],
-                        name=row['name'],
+                        symbol=row["symbol"],
+                        name=row["name"],
                         trade_date=today,
                         race_type=race_type,
-                        latest_price=row.get('latest_price', 0),
-                        change_percent=row.get('change_percent', 0),
-                        prev_close=row.get('prev_close', 0),
-                        open_price=row.get('open_price', 0),
-                        race_amount=row.get('race_amount', 0),
-                        race_amplitude=row.get('race_amplitude', 0),
-                        race_commission=row.get('race_commission', 0),
-                        race_transaction=row.get('race_transaction', 0),
-                        race_ratio=row.get('race_ratio', 0)
+                        latest_price=row.get("latest_price", 0),
+                        change_percent=row.get("change_percent", 0),
+                        prev_close=row.get("prev_close", 0),
+                        open_price=row.get("open_price", 0),
+                        race_amount=row.get("race_amount", 0),
+                        race_amplitude=row.get("race_amplitude", 0),
+                        race_commission=row.get("race_commission", 0),
+                        race_transaction=row.get("race_transaction", 0),
+                        race_ratio=row.get("race_ratio", 0),
                     )
 
-                    existing = db.query(ChipRaceData).filter(
-                        and_(
-                            ChipRaceData.symbol == chip_data.symbol,
-                            ChipRaceData.trade_date == today,
-                            ChipRaceData.race_type == race_type
+                    existing = (
+                        db.query(ChipRaceData)
+                        .filter(
+                            and_(
+                                ChipRaceData.symbol == chip_data.symbol,
+                                ChipRaceData.trade_date == today,
+                                ChipRaceData.race_type == race_type,
+                            )
                         )
-                    ).first()
+                        .first()
+                    )
 
                     if not existing:
                         db.add(chip_data)
@@ -373,7 +694,7 @@ class MarketDataService:
         race_type: str = "open",
         trade_date: Optional[date] = None,
         min_race_amount: Optional[float] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[ChipRaceData]:
         """
         查询竞价抢筹数据（查询最新可用数据）
@@ -389,18 +710,19 @@ class MarketDataService:
         """
         db = self.SessionLocal()
         try:
-            query = db.query(ChipRaceData).filter(
-                ChipRaceData.race_type == race_type
-            )
+            query = db.query(ChipRaceData).filter(ChipRaceData.race_type == race_type)
 
             if trade_date:
                 query = query.filter(ChipRaceData.trade_date == trade_date)
             else:
                 # 查询最新日期的数据
                 from sqlalchemy import func
-                latest_date = db.query(func.max(ChipRaceData.trade_date)).filter(
-                    ChipRaceData.race_type == race_type
-                ).scalar()
+
+                latest_date = (
+                    db.query(func.max(ChipRaceData.trade_date))
+                    .filter(ChipRaceData.race_type == race_type)
+                    .scalar()
+                )
                 if latest_date:
                     query = query.filter(ChipRaceData.trade_date == latest_date)
 
@@ -435,28 +757,32 @@ class MarketDataService:
             db = self.SessionLocal()
             try:
                 saved_count = 0
-                date_obj = datetime.strptime(trade_date, '%Y-%m-%d').date()
+                date_obj = datetime.strptime(trade_date, "%Y-%m-%d").date()
 
                 for _, row in df.iterrows():
                     lhb_data = LongHuBangData(
-                        symbol=row['symbol'],
-                        name=row['name'],
+                        symbol=row["symbol"],
+                        name=row["name"],
                         trade_date=date_obj,
-                        reason=row.get('reason'),
-                        buy_amount=row.get('buy_amount', 0),
-                        sell_amount=row.get('sell_amount', 0),
-                        net_amount=row.get('net_amount', 0),
-                        turnover_rate=row.get('turnover_rate', 0),
-                        institution_buy=row.get('institution_buy'),
-                        institution_sell=row.get('institution_sell')
+                        reason=row.get("reason"),
+                        buy_amount=row.get("buy_amount", 0),
+                        sell_amount=row.get("sell_amount", 0),
+                        net_amount=row.get("net_amount", 0),
+                        turnover_rate=row.get("turnover_rate", 0),
+                        institution_buy=row.get("institution_buy"),
+                        institution_sell=row.get("institution_sell"),
                     )
 
-                    existing = db.query(LongHuBangData).filter(
-                        and_(
-                            LongHuBangData.symbol == lhb_data.symbol,
-                            LongHuBangData.trade_date == date_obj
+                    existing = (
+                        db.query(LongHuBangData)
+                        .filter(
+                            and_(
+                                LongHuBangData.symbol == lhb_data.symbol,
+                                LongHuBangData.trade_date == date_obj,
+                            )
                         )
-                    ).first()
+                        .first()
+                    )
 
                     if not existing:
                         db.add(lhb_data)
@@ -480,7 +806,7 @@ class MarketDataService:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         min_net_amount: Optional[float] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[LongHuBangData]:
         """
         查询龙虎榜数据
