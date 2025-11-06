@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package realtime;
+
+// 实时数据订阅请求
+message SubscriptionRequest {
+  string symbol = 1;              // 股票代码
+  string exchange = 2;            // 交易所
+  string frequency = 3;           // 频率 (tick, 1min, 5min, 15min, 30min, 1h, 1d)
+  repeated string fields = 4;     // 字段列表 (open, high, low, close, volume, etc.)
+  bool include_features = 5;      // 是否包含特征计算
+  int32 buffer_size = 6;         // 缓冲区大小
+}
+
+// 市场数据流
+message MarketData {
+  string symbol = 1;              // 股票代码
+  string exchange = 2;            // 交易所
+  string timestamp = 3;           // 时间戳
+  double open = 4;                // 开盘价
+  double high = 5;                // 最高价
+  double low = 6;                 // 最低价
+  double close = 7;               // 收盘价
+  double volume = 8;              // 成交量
+  double amount = 9;              // 成交额
+  int32 trade_count = 10;         // 成交笔数
+  map<string, double> indicators = 11; // 技术指标
+  map<string, double> features = 12;    // 特征数据
+  map<string, string> metadata = 13;     // 元数据
+}
+
+// 特征计算请求
+message FeatureRequest {
+  string symbol = 1;              // 股票代码
+  repeated string feature_types = 2; // 特征类型列表
+  map<string, double> parameters = 3; // 特征参数
+  bool use_gpu = 4;              // 是否使用GPU加速
+  int32 window_size = 5;         // 窗口大小
+}
+
+// 特征响应
+message FeatureResponse {
+  string symbol = 1;              // 股票代码
+  repeated string feature_names = 2; // 特征名称列表
+  repeated double feature_values = 3; // 特征值列表
+  map<string, double> statistics = 4; // 统计信息
+  map<string, string> metadata = 5;   // 元数据
+}
+
+// 实时预警请求
+message AlertRequest {
+  string symbol = 1;              // 股票代码
+  string alert_type = 2;          // 预警类型 (price_change, volume_spike, volatility, etc.)
+  double threshold = 3;           // 阈值
+  string operator = 4;            // 操作符 (gt, lt, eq, etc.)
+  int32 duration = 5;             // 持续时间 (秒)
+}
+
+// 预警消息
+message AlertMessage {
+  string alert_id = 1;            // 预警ID
+  string symbol = 2;              // 股票代码
+  string alert_type = 3;          // 预警类型
+  string message = 4;             // 预警消息
+  double value = 5;               // 当前值
+  double threshold = 6;           // 阈值
+  string timestamp = 7;           // 时间戳
+  map<string, string> metadata = 8; // 元数据
+}
+
+// 实时数据处理服务
+service RealTimeService {
+  // 实时市场数据订阅
+  rpc SubscribeMarketData (SubscriptionRequest) returns (stream MarketData);
+
+  // 特征计算
+  rpc ProcessFeatureCalculation (FeatureRequest) returns (FeatureResponse);
+
+  // 注册实时预警
+  rpc RegisterAlert (AlertRequest) returns (stream AlertMessage);
+
+  // 取消数据订阅
+  rpc UnsubscribeMarketData (SubscriptionRequest) returns (SubscriptionResponse);
+
+  // 获取实时统计信息
+  rpc GetRealtimeStatistics (SubscriptionRequest) returns (RealtimeStatistics);
+
+  // 获取系统健康状态
+  rpc GetSystemHealth (HealthRequest) returns (HealthResponse);
+}
+
+// 订阅响应
+message SubscriptionResponse {
+  string subscription_id = 1;     // 订阅ID
+  string status = 2;              // 状态
+  string message = 3;             // 消息
+}
+
+// 健康请求
+message HealthRequest {
+  string service = 1;             // 服务名称 (可选)
+}
+
+// 健康响应
+message HealthResponse {
+  string service_name = 1;       // 服务名称
+  string status = 2;              // 状态 (healthy, degraded, unhealthy)
+  double cpu_usage = 3;           // CPU使用率
+  double memory_usage = 4;       // 内存使用率
+  double gpu_usage = 5;           // GPU使用率
+  double gpu_memory_usage = 6;   // GPU内存使用率
+  int32 active_connections = 7;   // 活跃连接数
+  int32 pending_tasks = 8;       // 待处理任务数
+  string timestamp = 9;           // 时间戳
+  map<string, string> details = 10; // 详细信息
+}
+
+// 实时统计信息
+message RealtimeStatistics {
+  string symbol = 1;              // 股票代码
+  double price_change = 2;        // 价格变化
+  double price_change_percent = 3; // 价格变化百分比
+  double volume_ratio = 4;        // 成交量比率
+  double volatility = 5;          // 波动率
+  double ma_short = 6;            // 短期均线
+  double ma_long = 7;             // 长期均线
+  double rsi = 8;                 // RSI指标
+  macd_result macd = 9;          // MACD指标
+  map<string, double> custom_features = 10; // 自定义特征
+  string timestamp = 11;          // 时间戳
+}
+
+// MACD结果
+message macd_result {
+  double macd = 1;                // MACD值
+  double signal = 2;              // 信号线
+  double histogram = 3;           // 柱状图
+}

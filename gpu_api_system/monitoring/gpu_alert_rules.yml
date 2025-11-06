@@ -1,0 +1,81 @@
+# GPU告警规则
+
+groups:
+  - name: gpu_alerts
+    rules:
+      # GPU利用率过高
+      - alert: HighGpuUtilization
+        expr: 100 - (avg by (device) (dcgm_gpu_utilization)) > 90
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "GPU利用率过高"
+          description: "GPU {{ $labels.device }} 利用率超过90%，持续5分钟"
+
+      # GPU内存使用率过高
+      - alert: HighGpuMemoryUsage
+        expr: 100 - (avg by (device) (dcgm_gpu_mem_utilization)) > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "GPU内存使用率过高"
+          description: "GPU {{ $labels.device }} 内存使用率超过85%，持续5分钟"
+
+      # GPU温度过高
+      - alert: HighGpuTemperature
+        expr: dcgm_gpu_temp > 85
+        for: 5m
+        labels:
+          severity: critical
+          category: hardware
+        annotations:
+          summary: "GPU温度过高"
+          description: "GPU {{ $labels.device }} 温度超过85°C，持续5分钟"
+
+      # GPU风扇故障
+      - alert: GpuFanFailure
+        expr: dcgm_gpu_fan_speed < 1000
+        for: 2m
+        labels:
+          severity: critical
+          category: hardware
+        annotations:
+          summary: "GPU风扇故障"
+          description: "GPU {{ $labels.device }} 风扇转速异常，持续2分钟"
+
+      # GPU功耗异常
+      - alert: GpuPowerAbnormal
+        expr: dcgm_gpu_power > 250
+        for: 5m
+        labels:
+          severity: warning
+          category: hardware
+        annotations:
+          summary: "GPU功耗异常"
+          description: "GPU {{ $labels.device }} 功耗超过250W，持续5分钟"
+
+      # GPU内存错误
+      - alert: GpuMemoryError
+        expr: dcgm_gpu_ecc_memory_errors > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: hardware
+        annotations:
+          summary: "GPU内存错误"
+          description: "GPU {{ $labels.device }} 检测到内存错误，需要立即处理"
+
+      # GPU PCIE带宽异常
+      - alert: GpuPcieBandwidthAbnormal
+        expr: dcgm_gpu_PCIE_bandwidth < 5
+        for: 5m
+        labels:
+          severity: warning
+          category: network
+        annotations:
+          summary: "GPU PCIE带宽异常"
+          description: "GPU {{ $labels.device }} PCIE带宽低于5GB/s，持续5分钟"

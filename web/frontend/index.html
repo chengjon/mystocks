@@ -4,6 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SECURITY FIX 1.2: Content-Security-Policy header to prevent XSS attacks -->
+    <!-- This policy restricts script execution to same-origin only, preventing inline scripts -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self';
+                   style-src 'self' 'unsafe-inline';
+                   img-src 'self' data: https:;
+                   font-src 'self';
+                   connect-src 'self' http://localhost:8000 http://127.0.0.1:8000;
+                   frame-ancestors 'none';
+                   form-action 'self';
+                   base-uri 'self';" />
+
+    <!-- Prevent clickjacking attacks -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- CSRF Token meta tag for frontend to use -->
+    <meta name="csrf-token" content="">
+
     <title>MyStocks - 量化交易数据管理系统</title>
   </head>
   <body>

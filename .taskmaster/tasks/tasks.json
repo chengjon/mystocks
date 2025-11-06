@@ -1,0 +1,693 @@
+{
+  "version": "1.0.0",
+  "projectName": "MyStocks架构优化",
+  "defaultTag": "master",
+  "tags": {
+    "master": {
+      "id": "master",
+      "name": "主分支",
+      "description": "MyStocks架构优化项目主任务列表",
+      "createdAt": "2025-11-06",
+      "tasks": [
+        {
+          "id": "1",
+          "title": "紧急安全修复",
+          "description": "修复SQL注入、XSS/CSRF漏洞，敏感数据加密，删除重复代码",
+          "status": "pending",
+          "priority": "critical",
+          "week": 1,
+          "category": "P0-安全",
+          "dependencies": [],
+          "details": "修复SQL注入漏洞（SQLAlchemy ORM+参数化查询）、XSS/CSRF防护（前端转义+CSRF Token）、敏感数据加密（PostgreSQL pgcrypto+TDengine列级加密）、删除重复的监控系统代码（删除src/monitoring/目录）",
+          "testStrategy": "安全扫描工具验证、代码审查、渗透测试",
+          "subtasks": [
+            {
+              "id": "1.1",
+              "title": "修复SQL注入漏洞",
+              "status": "pending",
+              "details": "使用SQLAlchemy ORM替代原生SQL、参数化查询、输入验证"
+            },
+            {
+              "id": "1.2",
+              "title": "实现XSS/CSRF防护",
+              "status": "pending",
+              "details": "前端Vue3自动转义、CSP头配置、CSRF Token验证"
+            },
+            {
+              "id": "1.3",
+              "title": "敏感数据加密",
+              "status": "pending",
+              "details": "PostgreSQL pgcrypto、TDengine列级加密、传输层TLS 1.3"
+            },
+            {
+              "id": "1.4",
+              "title": "删除重复代码",
+              "status": "pending",
+              "details": "删除src/monitoring/目录、整合AlertManager、合并重复函数"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "title": "TDengine缓存集成",
+          "description": "搭建TDengine服务，实现缓存读写逻辑，时间窗口淘汰策略，热点数据识别",
+          "status": "pending",
+          "priority": "critical",
+          "week": 1,
+          "category": "P0-架构",
+          "dependencies": [],
+          "details": "搭建TDengine集群或单机模式、实现时间窗口淘汰策略（7天自动清理）、缓存读写逻辑开发（fetch_from_cache、write_to_cache）、缓存命中率监控（目标≥80%）、热点数据识别和预加载机制",
+          "testStrategy": "缓存命中率测试、压力测试、数据一致性验证",
+          "subtasks": [
+            {
+              "id": "2.1",
+              "title": "搭建TDengine服务",
+              "status": "pending",
+              "details": "Docker容器部署、单机或集群配置、数据库初始化"
+            },
+            {
+              "id": "2.2",
+              "title": "实现缓存读写逻辑",
+              "status": "pending",
+              "details": "fetch_from_cache、write_to_cache、缓存更新接口"
+            },
+            {
+              "id": "2.3",
+              "title": "时间窗口淘汰策略",
+              "status": "pending",
+              "details": "7天自动清理任务、基于访问频率淘汰、管理员手动清理接口"
+            },
+            {
+              "id": "2.4",
+              "title": "缓存预热和监控",
+              "status": "pending",
+              "details": "启动时预加载核心指标、缓存命中率监控、热点数据识别"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "title": "OpenAPI规范定义",
+          "description": "定义统一响应码、数据格式约定、WebSocket消息格式、生成Swagger文档",
+          "status": "pending",
+          "priority": "critical",
+          "week": 1,
+          "category": "P0-规范",
+          "dependencies": [],
+          "details": "定义统一响应码（200/400/401/403/500）、数据格式约定（UTC毫秒级时间戳、Decimal数值类型）、WebSocket消息格式规范（type、payload、timestamp、userId、traceId）、错误响应格式统一、生��Swagger UI文档",
+          "testStrategy": "API规范验证、Swagger文档自动生成测试",
+          "subtasks": [
+            {
+              "id": "3.1",
+              "title": "定义响应格式规范",
+              "status": "pending",
+              "details": "成功响应、错误响应、分页响应格式"
+            },
+            {
+              "id": "3.2",
+              "title": "定义WebSocket消息格��",
+              "status": "pending",
+              "details": "请求消息、响应消息、错误消息、心跳消息"
+            },
+            {
+              "id": "3.3",
+              "title": "生成OpenAPI文档",
+              "status": "pending",
+              "details": "编写openapi.yaml、Swagger UI配置、API文档生成"
+            },
+            {
+              "id": "3.4",
+              "title": "定义数据格式约定",
+              "status": "pending",
+              "details": "时间戳格式、数值精度、特殊字段处理"
+            }
+          ]
+        },
+        {
+          "id": "4",
+          "title": "基础WebSocket通信",
+          "description": "实现Socket.IO服务器，连接管理，单房间订阅，请求-响应模式，自动重连",
+          "status": "pending",
+          "priority": "critical",
+          "week": 1,
+          "category": "P0-实时",
+          "dependencies": ["3"],
+          "details": "实现Socket.IO服务器、连接建立-数据请求-断开基础流程、单房间订阅功能、请求-响应模式（非持久推送）、客户端自动重连机制（3秒间隔，重试5次）",
+          "testStrategy": "连接测试、消息收发测试、重连测试、并发连接测试",
+          "subtasks": [
+            {
+              "id": "4.1",
+              "title": "实现Socket.IO服务器",
+              "status": "pending",
+              "details": "python-socketio安装配置、FastAPI集成、事件处理"
+            },
+            {
+              "id": "4.2",
+              "title": "实现连接管理",
+              "status": "pending",
+              "details": "连接建立、连接断开、连接超时检测"
+            },
+            {
+              "id": "4.3",
+              "title": "实现房间订阅",
+              "status": "pending",
+              "details": "单房间订阅、进房通知、离房通知、房间消息广播"
+            },
+            {
+              "id": "4.4",
+              "title": "客户端重连机制",
+              "status": "pending",
+              "details": "自动重连逻辑、本地消息缓存、重连补发"
+            }
+          ]
+        },
+        {
+          "id": "5",
+          "title": "双库数据一致性方案",
+          "description": "实现本地消息表最终一致性，处理跨库操作，同步失败重试，监控一致性",
+          "status": "pending",
+          "priority": "critical",
+          "week": 1,
+          "category": "P0-数据",
+          "dependencies": ["2"],
+          "details": "实现本地消息表最终一致性、处理TDengine+PostgreSQL跨库操作、同步失败重试机制（3次后触发告警）、数据同步状态监控、同步延迟<5秒",
+          "testStrategy": "分布式事务测试、故障转移测试、数据一致性验证",
+          "subtasks": [
+            {
+              "id": "5.1",
+              "title": "设计本地消息表",
+              "status": "pending",
+              "details": "创建消息表结构、定义状态枚举、索引优化"
+            },
+            {
+              "id": "5.2",
+              "title": "实现消息同步逻辑",
+              "status": "pending",
+              "details": "消息入队、定时扫描、异步同步、状态更新"
+            },
+            {
+              "id": "5.3",
+              "title": "实现重试和失败处理",
+              "status": "pending",
+              "details": "重试机制、指数退避、失败告警、DLQ死信队列"
+            },
+            {
+              "id": "5.4",
+              "title": "监控一致性状态",
+              "status": "pending",
+              "details": "同步延迟监控、失败率监控、数据一致性校验"
+            }
+          ]
+        },
+        {
+          "id": "6",
+          "title": "核心E2E测试",
+          "description": "搭建Playwright框架，编写登录->订阅->查询核心流程测试，测试数据管理",
+          "status": "pending",
+          "priority": "critical",
+          "week": 2,
+          "category": "P0-测试",
+          "dependencies": ["3", "4"],
+          "details": "使用Playwright搭建测试框架、登录->订阅->数据查询核心流程测试、缓存命中和未命中场景测试、测试数据管理和清理、截图和错误报告生成",
+          "testStrategy": "E2E测试覆盖核心流程、浏览器兼容性测试",
+          "subtasks": [
+            {
+              "id": "6.1",
+              "title": "Playwright框架搭建",
+              "status": "pending",
+              "details": "项目初始化、配置文件、Page Object模式"
+            },
+            {
+              "id": "6.2",
+              "title": "编写登录流程测试",
+              "status": "pending",
+              "details": "用户登录、令牌获取、会话验证"
+            },
+            {
+              "id": "6.3",
+              "title": "编写订阅查询测试",
+              "status": "pending",
+              "details": "WebSocket连接、房间订阅、数据查询、缓存验证"
+            },
+            {
+              "id": "6.4",
+              "title": "测试数据管理和报告",
+              "status": "pending",
+              "details": "测试数据生成、清理机制、报告生成、截图保存"
+            }
+          ]
+        },
+        {
+          "id": "7",
+          "title": "容器化部署",
+          "description": "Docker多阶段构建，Docker Compose编排，资源限制，环境变量管理，健康检查",
+          "status": "pending",
+          "priority": "critical",
+          "week": 2,
+          "category": "P0-部署",
+          "dependencies": ["1", "2", "4"],
+          "details": "Docker多阶段构建（减小镜像体积）、Docker Compose编排（TDengine+PostgreSQL+API+Frontend）、资源限制配置（CPU、内存限制）、环境变量管理（.env文件）、健康检查配置",
+          "testStrategy": "容器启动测试、多容器协作测试、资源限制验证",
+          "subtasks": [
+            {
+              "id": "7.1",
+              "title": "编写Dockerfile",
+              "status": "pending",
+              "details": "多阶段构建、依赖缓存、镜像大小优化"
+            },
+            {
+              "id": "7.2",
+              "title": "编写docker-compose.yml",
+              "status": "pending",
+              "details": "服务编排、网络配置、数据卷挂载"
+            },
+            {
+              "id": "7.3",
+              "title": "配置环境管理",
+              "status": "pending",
+              "details": ".env文件管理、环境变量验证、配置分层"
+            },
+            {
+              "id": "7.4",
+              "title": "配置健康检查",
+              "status": "pending",
+              "details": "应用健康检查、数据库连接检查、启动依赖管理"
+            }
+          ]
+        },
+        {
+          "id": "8",
+          "title": "数据备份恢复机制",
+          "description": "TDengine全量+增量备份，PostgreSQL全量+WAL，恢复流程文档，数据完整性校验",
+          "status": "pending",
+          "priority": "critical",
+          "week": 2,
+          "category": "P0-运维",
+          "dependencies": ["2"],
+          "details": "TDengine每日全量+每小时增量备份脚本、PostgreSQL每日全量+WAL归档配置、恢复流程文档和验证脚本、备份数据完整性校验",
+          "testStrategy": "备份完整性测试、恢复功能测试、RTO/RPO验证",
+          "subtasks": [
+            {
+              "id": "8.1",
+              "title": "TDengine备份策略",
+              "status": "pending",
+              "details": "全量备份脚本、增量备份实现、备份存储管理"
+            },
+            {
+              "id": "8.2",
+              "title": "PostgreSQL备份策略",
+              "status": "pending",
+              "details": "pg_dump全量备份、WAL归档配置、PITR恢复"
+            },
+            {
+              "id": "8.3",
+              "title": "恢复流程实现",
+              "status": "pending",
+              "details": "恢复脚本开发、恢复流程测试、恢复时间优化"
+            },
+            {
+              "id": "8.4",
+              "title": "数据完整性校验",
+              "status": "pending",
+              "details": "校验和计算、恢复验证、日志记录"
+            }
+          ]
+        },
+        {
+          "id": "9",
+          "title": "多房间订阅扩展",
+          "description": "实现多房间同时订阅，房间管理逻辑，订阅权限控制，房间消息广播",
+          "status": "pending",
+          "priority": "high",
+          "week": 2,
+          "category": "P1-功能",
+          "dependencies": ["4"],
+          "details": "实现多房间同时订阅、房间管理逻辑（创建、加入、离开）、订阅权限控制、房间消息广播",
+          "testStrategy": "多房间订阅测试、权限验证测试、消息广播测试",
+          "subtasks": [
+            {
+              "id": "9.1",
+              "title": "房间管理系统",
+              "status": "pending",
+              "details": "房间模型设计、创建/加入/离开逻辑、房间状态管理"
+            },
+            {
+              "id": "9.2",
+              "title": "权限控制集成",
+              "status": "pending",
+              "details": "房间访问权限、数据权限过滤、权限验证"
+            },
+            {
+              "id": "9.3",
+              "title": "消息广播实现",
+              "status": "pending",
+              "details": "房间消息广播、消息路由、消息队列集成"
+            }
+          ]
+        },
+        {
+          "id": "10",
+          "title": "Casbin权限集成",
+          "description": "与FastAPI集成，行级数据权限，功能权限控制，权限策略配置",
+          "status": "pending",
+          "priority": "high",
+          "week": 2,
+          "category": "P1-安全",
+          "dependencies": ["4"],
+          "details": "Casbin与FastAPI集成、行级数据权限（基于userId过滤）、功能权限（管理员/普通用户/VIP角色）、权限策略配置文件",
+          "testStrategy": "权限检查测试、角色切换测试、权限拒绝测试",
+          "subtasks": [
+            {
+              "id": "10.1",
+              "title": "Casbin集成",
+              "status": "pending",
+              "details": "安装配置、模型定义、FastAPI中间件集成"
+            },
+            {
+              "id": "10.2",
+              "title": "行级权限实现",
+              "status": "pending",
+              "details": "userId过滤、数据查询权限、修改权限验证"
+            },
+            {
+              "id": "10.3",
+              "title": "功能权限实现",
+              "status": "pending",
+              "details": "角色定义、权限映射、API端点保护"
+            },
+            {
+              "id": "10.4",
+              "title": "权限策略配置",
+              "status": "pending",
+              "details": "RBAC策���文件、权限规则定义、策略热更新"
+            }
+          ]
+        },
+        {
+          "id": "11",
+          "title": "数据库索引优化",
+          "description": "TDengine时间索引，PostgreSQL业务字段索引，慢查询优化，执行计划分析",
+          "status": "pending",
+          "priority": "high",
+          "week": 3,
+          "category": "P1-性能",
+          "dependencies": ["2"],
+          "details": "TDengine时间索引优化、PostgreSQL业务字段索引（symbol、user_id、timestamp）、慢查询分析和优化（目标<500ms）、执行计划分析",
+          "testStrategy": "查询性能测试、索引效率验证、EXPLAIN分析",
+          "subtasks": [
+            {
+              "id": "11.1",
+              "title": "TDengine索引优化",
+              "status": "pending",
+              "details": "时间索引配置、标签索引、查询优化"
+            },
+            {
+              "id": "11.2",
+              "title": "PostgreSQL索引设计",
+              "status": "pending",
+              "details": "单列索引、复合索引、部分索引、BRIN索引"
+            },
+            {
+              "id": "11.3",
+              "title": "慢查询优化",
+              "status": "pending",
+              "details": "慢查询识别、执行计划分析、查询重写"
+            },
+            {
+              "id": "11.4",
+              "title": "性能监控",
+              "status": "pending",
+              "details": "查询时间监控、索引使用率监控、性能基准测试"
+            }
+          ]
+        },
+        {
+          "id": "12",
+          "title": "契约测试",
+          "description": "配置Dredd框架，API一致性验证，测试钩子实现，CI集成",
+          "status": "pending",
+          "priority": "high",
+          "week": 3,
+          "category": "P1-测试",
+          "dependencies": ["3"],
+          "details": "配置Dredd契约测试框架、API一致性验证（OpenAPI规范vs实际实现）、测试钩子实现（数据准备和清理）、CI集成",
+          "testStrategy": "契约测试全覆盖、API规范一致性验证",
+          "subtasks": [
+            {
+              "id": "12.1",
+              "title": "Dredd框架搭建",
+              "status": "pending",
+              "details": "安装配置、规范验证、报告生成"
+            },
+            {
+              "id": "12.2",
+              "title": "编写测试钩子",
+              "status": "pending",
+              "details": "setup钩子、teardown钩子、数据准备"
+            },
+            {
+              "id": "12.3",
+              "title": "API一致性验证",
+              "status": "pending",
+              "details": "规范vs实现对比、差异报告、修复流程"
+            },
+            {
+              "id": "12.4",
+              "title": "CI集成",
+              "status": "pending",
+              "details": "GitHub Actions配置、自动化验证、失败通知"
+            }
+          ]
+        },
+        {
+          "id": "13",
+          "title": "自定义监控指标",
+          "description": "WebSocket连接监控，缓存命中率监控，API响应时间，数据库连接池，Prometheus Exporter",
+          "status": "pending",
+          "priority": "high",
+          "week": 3,
+          "category": "P1-监控",
+          "dependencies": ["4", "2"],
+          "details": "WebSocket连接数监控、TDengine缓存命中率监控、API响应时间监控（P50、P95、P99）、数据库连接池使用率监控、Prometheus Exporter开发",
+          "testStrategy": "指标收集测试���Prometheus查询测试、告警触发测试",
+          "subtasks": [
+            {
+              "id": "13.1",
+              "title": "定义监控指标",
+              "status": "pending",
+              "details": "业务指标、技术指标、告警指标定义"
+            },
+            {
+              "id": "13.2",
+              "title": "Prometheus Exporter开发",
+              "status": "pending",
+              "details": "自定义指标导出、metrics端点、数据采集"
+            },
+            {
+              "id": "13.3",
+              "title": "Grafana仪表盘",
+              "status": "pending",
+              "details": "仪表盘设计、图表配置、告警显示"
+            },
+            {
+              "id": "13.4",
+              "title": "告警规则配置",
+              "status": "pending",
+              "details": "告警条件、告警消息、告警渠道"
+            }
+          ]
+        },
+        {
+          "id": "14",
+          "title": "性能压测",
+          "description": "使用Locust模拟1000并发，WebSocket连接优化，数据库连接池调整，缓存策略优化",
+          "status": "pending",
+          "priority": "high",
+          "week": 3,
+          "category": "P1-性能",
+          "dependencies": ["4", "2"],
+          "details": "使用Locust模拟1000并发用户、WebSocket连接池参数优化、数据库连接池大小调整、缓存策略优化（热点数据时间窗口调整）、压测报告生成",
+          "testStrategy": "并发压力测试、性能瓶颈分析、优化效果验证",
+          "subtasks": [
+            {
+              "id": "14.1",
+              "title": "Locust压测脚本",
+              "status": "pending",
+              "details": "用户行为建模、场景设计、压测脚本编写"
+            },
+            {
+              "id": "14.2",
+              "title": "WebSocket性能优化",
+              "status": "pending",
+              "details": "连接池参数调整、消息批处理、内存优化"
+            },
+            {
+              "id": "14.3",
+              "title": "数据库性能优化",
+              "status": "pending",
+              "details": "连接池大小、查询批处理、缓存策略调整"
+            },
+            {
+              "id": "14.4",
+              "title": "压测报告分析",
+              "status": "pending",
+              "details": "性能指标分析、瓶颈识别、优化建议"
+            }
+          ]
+        },
+        {
+          "id": "15",
+          "title": "告警升级机制",
+          "description": "多级告警规则，告警聚合和抑制，告警恢复通知，告警历史记录",
+          "status": "pending",
+          "priority": "medium",
+          "week": 4,
+          "category": "P2-可观测性",
+          "dependencies": ["13"],
+          "details": "多级告警规则（一级：短信+邮件，二级：邮件，三级：日志）、告警聚合和抑制（避免告警风暴）、告警恢复通知、告警历史记录",
+          "testStrategy": "告警规则测试、告警流程验证、告警恢复测试",
+          "subtasks": [
+            {
+              "id": "15.1",
+              "title": "多级告警规则设计",
+              "status": "pending",
+              "details": "告警等级定义、规则配置、阈值设置"
+            },
+            {
+              "id": "15.2",
+              "title": "告警聚合和抑制",
+              "status": "pending",
+              "details": "聚合窗口配置、抑制规则、去重机制"
+            },
+            {
+              "id": "15.3",
+              "title": "告警通知实现",
+              "status": "pending",
+              "details": "邮件通知、短信通知、webhook通知、Slack集成"
+            },
+            {
+              "id": "15.4",
+              "title": "告警历史和统计",
+              "status": "pending",
+              "details": "告警记录保存、历史查询、告警统计分析"
+            }
+          ]
+        },
+        {
+          "id": "16",
+          "title": "故障自动响应",
+          "description": "TDengine故障切换，WebSocket自动重连，PostgreSQL主从切换，服务自愈",
+          "status": "pending",
+          "priority": "medium",
+          "week": 4,
+          "category": "P2-可靠性",
+          "dependencies": ["5", "4"],
+          "details": "TDengine集群故障自动切换、WebSocket自动重连、PostgreSQL主从自动切换、服务健康检查和自愈",
+          "testStrategy": "故障转移测试、自动恢复验证、数据一致性检查",
+          "subtasks": [
+            {
+              "id": "16.1",
+              "title": "TDengine故障检测和切换",
+              "status": "pending",
+              "details": "健康检查、故障转移、数据同步"
+            },
+            {
+              "id": "16.2",
+              "title": "WebSocket自动重连",
+              "status": "pending",
+              "details": "断开检测、重连策略、消息恢复"
+            },
+            {
+              "id": "16.3",
+              "title": "PostgreSQL主从切换",
+              "status": "pending",
+              "details": "主从复制配置、故障检测、自动切换、反向复制"
+            },
+            {
+              "id": "16.4",
+              "title": "健康检查和自愈",
+              "status": "pending",
+              "details": "健康检查端点、自愈脚本、自动重启"
+            }
+          ]
+        },
+        {
+          "id": "17",
+          "title": "限流降级细化",
+          "description": "���户级限流，接口级限流，IP黑名单，限流策略动态调整",
+          "status": "pending",
+          "priority": "medium",
+          "week": 4,
+          "category": "P2-安全",
+          "dependencies": ["10"],
+          "details": "用户级限流（普通用户10QPS/VIP用户50QPS）、接口级限流、IP黑名单机制、限流策略动态调整",
+          "testStrategy": "限流规则测试、降级效果验证、策略动态调整测试",
+          "subtasks": [
+            {
+              "id": "17.1",
+              "title": "用户级限流实现",
+              "status": "pending",
+              "details": "用户分级、限流规则、配额管理"
+            },
+            {
+              "id": "17.2",
+              "title": "接口级限流实现",
+              "status": "pending",
+              "details": "单接口限流、全局限流、令牌桶算法"
+            },
+            {
+              "id": "17.3",
+              "title": "IP黑名单机制",
+              "status": "pending",
+              "details": "黑名单维护、自动封禁、手动解禁"
+            },
+            {
+              "id": "17.4",
+              "title": "降级和熔断",
+              "status": "pending",
+              "details": "熔断规则、降级策略、自动恢复"
+            }
+          ]
+        },
+        {
+          "id": "18",
+          "title": "异步处理优化",
+          "description": "批量数据同步异步化，大数据量查询异步返回，定时任务优化，任务队列监控",
+          "status": "pending",
+          "priority": "medium",
+          "week": 4,
+          "category": "P2-性能",
+          "dependencies": ["2"],
+          "details": "批量数据同步异步化、大数据量查询异步返回、定时任务优化（Celery或APScheduler）、任务队列监控",
+          "testStrategy": "异步任务测试、队列监控测试、性能改进验证",
+          "subtasks": [
+            {
+              "id": "18.1",
+              "title": "选择任务队列方案",
+              "status": "pending",
+              "details": "Celery vs APScheduler、消息中间件选择、集群配置"
+            },
+            {
+              "id": "18.2",
+              "title": "数据同步异步化",
+              "status": "pending",
+              "details": "同步任务定义、优先级队列、重试机制"
+            },
+            {
+              "id": "18.3",
+              "title": "异步查询实现",
+              "status": "pending",
+              "details": "WebSocket异步推送、结果缓存、超时处理"
+            },
+            {
+              "id": "18.4",
+              "title": "任务队列监控",
+              "status": "pending",
+              "details": "队列深度监控、任务延迟监控、失败告警"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
