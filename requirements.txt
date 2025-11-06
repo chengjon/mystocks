@@ -20,6 +20,14 @@ python-dotenv>=1.0.0
 schedule>=1.2.0
 requests>=2.31.0
 
+# Web框架和实时通信 (FastAPI + Socket.IO)
+fastapi>=0.114.0
+uvicorn>=0.30.0
+python-socketio>=5.10.0
+python-engineio>=4.8.0
+aiofiles>=23.0.0
+python-multipart>=0.0.6
+
 # GPU加速依赖 (可选安装，用于量化交易回测和AI策略)
 # RTX 2080 GPU加速支持
 cupy-cuda12x>=13.6.0
