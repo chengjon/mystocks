@@ -26,6 +26,10 @@ from app.core.cache_eviction import (
     get_eviction_strategy,
     get_eviction_scheduler,
 )
+from app.core.cache_prewarming import (
+    get_cache_monitor,
+    get_prewarming_strategy,
+)
 
 logger = structlog.get_logger()
 
@@ -574,4 +578,204 @@ async def get_eviction_statistics() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error("❌ 获取淘汰统计失败", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== 缓存预热与监控 ====================
+
+
+@router.post("/prewarming/trigger")
+async def trigger_cache_prewarming() -> Dict[str, Any]:
+    """
+    触发缓存预热任务
+
+    Returns:
+        预热结果，包含:
+        - success: 操作成功标志
+        - prewarmed_count: 预热的缓存条数
+        - failed_count: 失败的缓存条数
+        - elapsed_seconds: 预热耗时
+
+    Examples:
+        POST /api/cache/prewarming/trigger
+
+        Response:
+        {
+            "success": true,
+            "message": "缓存预热成功",
+            "prewarmed_count": 20,
+            "failed_count": 0,
+            "elapsed_seconds": 2.5,
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        strategy = get_prewarming_strategy()
+        result = strategy.prewarm_cache()
+
+        logger.info(
+            "✅ 缓存预热完成",
+            prewarmed_count=result.get("prewarmed_count", 0),
+            failed_count=result.get("failed_count", 0),
+        )
+
+        return {
+            "success": result.get("success", False),
+            "message": "缓存预热成功" if result.get("success") else "缓存预热失败",
+            "prewarmed_count": result.get("prewarmed_count", 0),
+            "failed_count": result.get("failed_count", 0),
+            "elapsed_seconds": result.get("elapsed_seconds", 0),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 缓存预热失败", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/prewarming/status")
+async def get_prewarming_status() -> Dict[str, Any]:
+    """
+    获取缓存预热状态
+
+    Returns:
+        预热状态信息，包含:
+        - last_prewarming: 最后预热时间
+        - prewarmed_keys_count: 已预热的缓存键数
+
+    Examples:
+        GET /api/cache/prewarming/status
+
+        Response:
+        {
+            "success": true,
+            "data": {
+                "last_prewarming": "2025-11-06T12:00:00.000000",
+                "prewarmed_keys_count": 20
+            },
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        strategy = get_prewarming_strategy()
+        status = strategy.get_prewarming_status()
+
+        logger.info("✅ 获取预热状态")
+
+        return {
+            "success": True,
+            "data": status,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 获取预热状态失败", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/monitoring/metrics")
+async def get_cache_monitoring_metrics() -> Dict[str, Any]:
+    """
+    获取缓存监控指标
+
+    Returns:
+        缓存性能指标，包含:
+        - hit_rate: 命中率
+        - hit_count: 命中次数
+        - miss_count: 未命中次数
+        - average_latency_ms: 平均延迟（毫秒）
+        - health_status: 健康状态
+
+    Examples:
+        GET /api/cache/monitoring/metrics
+
+        Response:
+        {
+            "success": true,
+            "data": {
+                "hit_count": 850,
+                "miss_count": 150,
+                "hit_rate": 85.0,
+                "average_latency_ms": 2.5,
+                "health_status": "healthy"
+            },
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        monitor = get_cache_monitor()
+        metrics = monitor.get_metrics()
+
+        logger.info("✅ 获取缓存监控指标", hit_rate=metrics.get("hit_rate", 0))
+
+        return {
+            "success": True,
+            "data": {
+                "hit_count": metrics.get("hit_count", 0),
+                "miss_count": metrics.get("miss_count", 0),
+                "hit_rate": metrics.get("hit_rate", 0),
+                "hit_rate_percent": metrics.get("hit_rate_percent", "0.0%"),
+                "average_latency_ms": metrics.get("average_latency_ms", 0),
+                "total_reads": metrics.get("total_reads", 0),
+                "health_status": metrics.get("health_status", "unknown"),
+            },
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 获取监控指标失败", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/monitoring/health")
+async def get_cache_health_status() -> Dict[str, Any]:
+    """
+    获取缓存系统健康状态
+
+    Returns:
+        缓存系统健康状态，包含:
+        - status: 健康状态 (healthy/warning/critical)
+        - hit_rate: 命中率
+        - metrics: 详细指标
+
+    Examples:
+        GET /api/cache/monitoring/health
+
+        Response:
+        {
+            "success": true,
+            "status": "healthy",
+            "hit_rate": 85.0,
+            "message": "缓存系统运行正常，命中率 85.0%",
+            "timestamp": "2025-11-06T..."
+        }
+    """
+    try:
+        strategy = get_prewarming_strategy()
+        health = strategy.get_health_status()
+
+        status = health.get("status", "unknown")
+        hit_rate = health.get("hit_rate", 0)
+
+        # 构建健康消息
+        if status == "healthy":
+            message = f"缓存系统运行正常，命中率 {hit_rate:.1f}%"
+        else:
+            message = f"缓存系统警告：命中率 {hit_rate:.1f}%，建议手动预热"
+
+        logger.info("✅ 获取缓存健康状态", status=status, hit_rate=hit_rate)
+
+        return {
+            "success": True,
+            "status": status,
+            "hit_rate": hit_rate,
+            "hit_rate_percent": health.get("hit_rate_percent", "0.0%"),
+            "message": message,
+            "total_reads": health.get("total_reads", 0),
+            "average_latency_ms": health.get("average_latency_ms", 0),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    except Exception as e:
+        logger.error("❌ 获取健康状态失败", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
