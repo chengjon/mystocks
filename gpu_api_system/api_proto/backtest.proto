@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package backtest;
+
+// 回测请求消息
+message BacktestRequest {
+  string strategy_id = 1;          // 策略ID
+  string stock_code = 2;            // 股票代码
+  string start_date = 3;            // 开始日期 (YYYY-MM-DD)
+  string end_date = 4;              // 结束日期 (YYYY-MM-DD)
+  double initial_capital = 5;       // 初始资金
+  double commission_rate = 6;       // 手续费率
+  double slippage_rate = 7;        // 滑点率
+  map<string, double> parameters = 8; // 策略参数
+  bool use_gpu = 9;                 // 是否使用GPU加速
+  int32 max_concurrent_tasks = 10;  // 最大并发任务数
+}
+
+// 任务响应消息
+message TaskResponse {
+  string task_id = 1;               // 任务ID
+  string status = 2;                // 任务状态
+  string message = 3;               // 消息
+  double progress = 4;              // 进度 (0.0-1.0)
+  map<string, string> metadata = 5; // 元数据
+}
+
+// 查询请求消息
+message QueryRequest {
+  string task_id = 1;               // 任务ID
+}
+
+// 查询响应消息
+message QueryResponse {
+  string task_id = 1;               // 任务ID
+  string status = 2;                // 任务状态
+  double progress = 3;              // 进度 (0.0-1.0)
+  string result = 4;                // 结果数据 (JSON)
+  map<string, string> metadata = 5;  // 元数据
+}
+
+// 历史请求消息
+message HistoryRequest {
+  string strategy_id = 1;           // 策略ID (可选)
+  string user_id = 2;               // 用户ID (可选)
+  int32 limit = 3;                 // 返回数量限制
+  string start_time = 4;           // 开始时间 (可选)
+  string end_time = 5;             // 结束时间 (可选)
+}
+
+// 历史响应消息
+message HistoryResponse {
+  repeated TaskRecord records = 1;  // 任务记录列表
+  int32 total_count = 2;            // 总记录数
+}
+
+// 任务记录消息
+message TaskRecord {
+  string task_id = 1;               // 任务ID
+  string strategy_id = 2;          // 策略ID
+  string stock_code = 3;            // 股票代码
+  string start_date = 4;            // 开始日期
+  string end_date = 5;              // 结束日期
+  string status = 6;                // 任务状态
+  double progress = 7;              // 进度 (0.0-1.0)
+  double processing_time = 8;      // 处理时间 (秒)
+  bool gpu_enabled = 9;             // 是否使用GPU
+  string result = 10;               // 结果数据 (JSON)
+  string created_at = 11;            // 创建时间
+  string completed_at = 12;          // 完成时间 (可选)
+}
+
+// 批量回测请求消息
+message BatchBacktestRequest {
+  repeated BacktestRequest requests = 1; // 回测请求列表
+  string batch_id = 2;                    // 批量任务ID
+  string batch_name = 3;                  // 批量任务名称
+}
+
+// 批量回测响应消息
+message BatchBacktestResponse {
+  string batch_id = 1;                    // 批量任务ID
+  repeated TaskResponse task_responses = 2; // 任务响应列表
+  map<string, string> metadata = 3;      // 元数据
+}
+
+// 回测服务
+service BacktestService {
+  // 提交单个回测任务
+  rpc SubmitBacktestTask (BacktestRequest) returns (TaskResponse);
+
+  // 查询回测任务状态
+  rpc QueryBacktestResult (QueryRequest) returns (QueryResponse);
+
+  // 获取回测历史记录
+  rpc GetBacktestHistory (HistoryRequest) returns (HistoryResponse);
+
+  // 提交批量回测任务
+  rpc SubmitBatchBacktestTask (BatchBacktestRequest) returns (BatchBacktestResponse);
+
+  // 取消回测任务
+  rpc CancelBacktestTask (QueryRequest) returns (TaskResponse);
+
+  // 获取回测统计信息
+  rpc GetBacktestStatistics (HistoryRequest) returns (QueryResponse);
+}

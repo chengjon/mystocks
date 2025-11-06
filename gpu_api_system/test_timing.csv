@@ -1,0 +1,126 @@
+test_name,start_time,end_time,duration_seconds,result
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:02:37.195944,2025-11-04 13:02:38.185666,0.990,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:02:38.186312,2025-11-04 13:03:22.808633,44.622,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:03:22.809160,2025-11-04 13:03:22.910472,0.101,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:03:22.918778,2025-11-04 13:03:25.250954,2.332,Fx
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:16:09.836312,2025-11-04 13:16:10.452835,0.617,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:16:10.453279,2025-11-04 13:16:52.393602,41.940,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:16:52.394076,2025-11-04 13:16:52.477474,0.083,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:16:52.478060,2025-11-04 13:16:54.726573,2.249,Fx
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:17:15.380342,2025-11-04 13:17:15.695433,0.315,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:17:15.695870,2025-11-04 13:18:06.918661,51.223,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:18:06.919383,2025-11-04 13:18:07.187016,0.268,Fa
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:18:07.187802,2025-11-04 13:18:09.399572,2.212,Fx
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:18:21.049104,2025-11-04 13:18:21.390511,0.341,Fx
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:18:21.391133,2025-11-04 13:19:04.269692,42.879,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:19:04.270520,2025-11-04 13:19:04.312962,0.042,Fa
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:19:04.313362,2025-11-04 13:19:06.233607,1.920,Fx
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:21:03.086043,2025-11-04 13:21:03.196368,0.110,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:21:03.197344,2025-11-04 13:21:47.363525,44.166,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:21:47.364186,2025-11-04 13:21:47.407592,0.043,Fa
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:21:47.408183,2025-11-04 13:21:49.582265,2.174,P
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:22:51.822542,2025-11-04 13:22:51.941504,0.119,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:22:51.942044,2025-11-04 13:23:34.460106,42.518,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:23:34.460578,2025-11-04 13:23:34.721983,0.261,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:23:34.722452,2025-11-04 13:23:36.820997,2.099,P
+------------------ -------------------------------------
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_dataframe_operations,2025-11-04 13:43:55.655770,2025-11-04 13:43:55.803633,0.148,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_ml_training,2025-11-04 13:43:55.804156,2025-11-04 13:44:47.444438,51.640,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_memory_usage,2025-11-04 13:44:47.445103,2025-11-04 13:44:47.485146,0.040,P
+tests/test_real_gpu.py::TestRealGPUAcceleration::test_real_gpu_backtest_performance,2025-11-04 13:44:47.485542,2025-11-04 13:44:49.713061,2.228,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_get_keys_to_preload,2025-11-04 15:33:02.384521,2025-11-04 15:33:02.389478,0.005,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_hot_keys_detection,2025-11-04 15:33:02.389870,2025-11-04 15:33:02.391387,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_key_correlation,2025-11-04 15:33:02.391713,2025-11-04 15:33:02.392755,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_record_and_predict_access,2025-11-04 15:33:02.393562,2025-11-04 15:33:02.395108,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_cache_and_retrieve_query_result,2025-11-04 15:33:02.395431,2025-11-04 15:33:02.443158,0.048,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_partial_result_caching,2025-11-04 15:33:02.443585,2025-11-04 15:33:02.474849,0.031,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_query_fingerprint_generation,2025-11-04 15:33:02.475258,2025-11-04 15:33:02.476826,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_get_with_negative_check,2025-11-04 15:33:02.477131,2025-11-04 15:33:02.478558,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_mark_and_check_negative,2025-11-04 15:33:02.478859,2025-11-04 15:33:02.514985,0.036,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_adaptive_ttl_calculation,2025-11-04 15:33:02.515469,2025-11-04 15:33:02.516935,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_partition_classification,2025-11-04 15:33:02.517275,2025-11-04 15:33:02.518597,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_decompression_cycle,2025-11-04 15:33:02.518898,2025-11-04 15:33:02.520337,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_stats,2025-11-04 15:33:02.520687,2025-11-04 15:33:02.529412,0.009,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_large_object_with_good_compression,2025-11-04 15:33:02.529759,2025-11-04 15:33:02.531416,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_small_object_no_compression,2025-11-04 15:33:02.531779,2025-11-04 15:33:02.532893,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_adaptive_ttl_with_access_patterns,2025-11-04 15:33:02.533203,2025-11-04 15:33:02.558085,0.025,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_basic_get_put,2025-11-04 15:33:02.558470,2025-11-04 15:33:02.563017,0.005,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_cache_hit_rate_improvement,2025-11-04 15:33:02.563413,2025-11-04 15:33:02.707264,0.144,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_comprehensive_stats,2025-11-04 15:33:02.707639,2025-11-04 15:33:02.732671,0.025,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_query_result_caching,2025-11-04 15:33:02.733078,2025-11-04 15:33:02.780202,0.047,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_warmup_effectiveness,2025-11-04 15:33:02.780679,2025-11-04 15:33:02.794640,0.014,P
+------------------ -------------------------------------
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_get_keys_to_preload,2025-11-04 15:34:25.018778,2025-11-04 15:34:25.024135,0.005,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_hot_keys_detection,2025-11-04 15:34:25.024639,2025-11-04 15:34:25.026371,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_key_correlation,2025-11-04 15:34:25.026723,2025-11-04 15:34:25.027871,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_record_and_predict_access,2025-11-04 15:34:25.028201,2025-11-04 15:34:25.029715,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_cache_and_retrieve_query_result,2025-11-04 15:34:25.030055,2025-11-04 15:34:25.078926,0.049,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_partial_result_caching,2025-11-04 15:34:25.079370,2025-11-04 15:34:25.110987,0.032,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_query_fingerprint_generation,2025-11-04 15:34:25.111445,2025-11-04 15:34:25.113154,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_get_with_negative_check,2025-11-04 15:34:25.113618,2025-11-04 15:34:25.115552,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_mark_and_check_negative,2025-11-04 15:34:25.116027,2025-11-04 15:34:25.153154,0.037,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_adaptive_ttl_calculation,2025-11-04 15:34:25.153634,2025-11-04 15:34:25.155100,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_partition_classification,2025-11-04 15:34:25.155452,2025-11-04 15:34:25.156969,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_decompression_cycle,2025-11-04 15:34:25.157405,2025-11-04 15:34:25.159127,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_stats,2025-11-04 15:34:25.159530,2025-11-04 15:34:25.169021,0.009,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_large_object_with_good_compression,2025-11-04 15:34:25.169440,2025-11-04 15:34:25.170726,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_small_object_no_compression,2025-11-04 15:34:25.171081,2025-11-04 15:34:25.172283,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_adaptive_ttl_with_access_patterns,2025-11-04 15:34:25.172627,2025-11-04 15:34:25.195550,0.023,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_basic_get_put,2025-11-04 15:34:25.195938,2025-11-04 15:34:25.200200,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_cache_hit_rate_improvement,2025-11-04 15:34:25.200584,2025-11-04 15:34:25.331203,0.131,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_comprehensive_stats,2025-11-04 15:34:25.331633,2025-11-04 15:34:25.356778,0.025,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_query_result_caching,2025-11-04 15:34:25.357379,2025-11-04 15:34:25.404055,0.047,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_warmup_effectiveness,2025-11-04 15:34:25.404560,2025-11-04 15:34:25.418762,0.014,P
+------------------ -------------------------------------
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_cache_and_retrieve_query_result,2025-11-04 15:34:34.844648,2025-11-04 15:34:34.897525,0.053,P
+------------------ -------------------------------------
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_get_keys_to_preload,2025-11-04 15:35:02.968822,2025-11-04 15:35:02.974383,0.006,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_hot_keys_detection,2025-11-04 15:35:02.974870,2025-11-04 15:35:02.976641,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_key_correlation,2025-11-04 15:35:02.977025,2025-11-04 15:35:02.978227,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_record_and_predict_access,2025-11-04 15:35:02.978574,2025-11-04 15:35:02.980011,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_cache_and_retrieve_query_result,2025-11-04 15:35:02.980362,2025-11-04 15:35:02.982480,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_partial_result_caching,2025-11-04 15:35:02.982884,2025-11-04 15:35:02.984484,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_query_fingerprint_generation,2025-11-04 15:35:02.984914,2025-11-04 15:35:02.987189,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_get_with_negative_check,2025-11-04 15:35:02.987733,2025-11-04 15:35:02.989531,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_mark_and_check_negative,2025-11-04 15:35:02.989988,2025-11-04 15:35:02.991639,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_adaptive_ttl_calculation,2025-11-04 15:35:02.991995,2025-11-04 15:35:02.993383,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_partition_classification,2025-11-04 15:35:02.993731,2025-11-04 15:35:02.995104,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_decompression_cycle,2025-11-04 15:35:02.995454,2025-11-04 15:35:02.996876,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_stats,2025-11-04 15:35:02.997240,2025-11-04 15:35:02.999405,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_large_object_with_good_compression,2025-11-04 15:35:02.999766,2025-11-04 15:35:03.001058,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_small_object_no_compression,2025-11-04 15:35:03.001426,2025-11-04 15:35:03.002887,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_adaptive_ttl_with_access_patterns,2025-11-04 15:35:03.003309,2025-11-04 15:35:03.025573,0.022,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_basic_get_put,2025-11-04 15:35:03.025993,2025-11-04 15:35:03.030401,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_cache_hit_rate_improvement,2025-11-04 15:35:03.030873,2025-11-04 15:35:03.155708,0.125,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_comprehensive_stats,2025-11-04 15:35:03.156175,2025-11-04 15:35:03.178704,0.023,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_query_result_caching,2025-11-04 15:35:03.179110,2025-11-04 15:35:03.183507,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_warmup_effectiveness,2025-11-04 15:35:03.183904,2025-11-04 15:35:03.191497,0.008,P
+------------------ -------------------------------------
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_get_keys_to_preload,2025-11-04 15:35:48.183094,2025-11-04 15:35:48.187092,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_hot_keys_detection,2025-11-04 15:35:48.187480,2025-11-04 15:35:48.189053,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_key_correlation,2025-11-04 15:35:48.189386,2025-11-04 15:35:48.190509,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAccessPatternLearner::test_record_and_predict_access,2025-11-04 15:35:48.190836,2025-11-04 15:35:48.192179,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_cache_and_retrieve_query_result,2025-11-04 15:35:48.192551,2025-11-04 15:35:48.194428,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_partial_result_caching,2025-11-04 15:35:48.194792,2025-11-04 15:35:48.196453,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestQueryResultCache::test_query_fingerprint_generation,2025-11-04 15:35:48.196801,2025-11-04 15:35:48.198275,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_get_with_negative_check,2025-11-04 15:35:48.198601,2025-11-04 15:35:48.200167,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestNegativeCache::test_mark_and_check_negative,2025-11-04 15:35:48.200538,2025-11-04 15:35:48.201988,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_adaptive_ttl_calculation,2025-11-04 15:35:48.202338,2025-11-04 15:35:48.203616,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestAdaptiveTTLManager::test_partition_classification,2025-11-04 15:35:48.203940,2025-11-04 15:35:48.205322,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_decompression_cycle,2025-11-04 15:35:48.205646,2025-11-04 15:35:48.206994,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_compression_stats,2025-11-04 15:35:48.207316,2025-11-04 15:35:48.208983,0.002,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_large_object_with_good_compression,2025-11-04 15:35:48.209309,2025-11-04 15:35:48.210625,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestSmartCompressor::test_small_object_no_compression,2025-11-04 15:35:48.211071,2025-11-04 15:35:48.212480,0.001,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_adaptive_ttl_with_access_patterns,2025-11-04 15:35:48.212827,2025-11-04 15:35:48.234708,0.022,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_basic_get_put,2025-11-04 15:35:48.235087,2025-11-04 15:35:48.239266,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_cache_hit_rate_improvement,2025-11-04 15:35:48.239714,2025-11-04 15:35:48.366908,0.127,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_comprehensive_stats,2025-11-04 15:35:48.367351,2025-11-04 15:35:48.394341,0.027,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_query_result_caching,2025-11-04 15:35:48.394724,2025-11-04 15:35:48.398685,0.004,P
+tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_warmup_effectiveness,2025-11-04 15:35:48.399021,2025-11-04 15:35:48.415008,0.016,P

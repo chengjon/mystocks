@@ -1,0 +1,224 @@
+# MyStocks API模式GPU加速系统配置文件
+
+# 系统配置
+system:
+  name: "MyStocks GPU Acceleration API"
+  version: "1.0.0"
+  environment: "production"  # development, staging, production
+  debug: false
+
+# GPU硬件配置
+gpu:
+  hardware:
+    - device_id: 0
+      name: "NVIDIA RTX 2080"
+      memory_gb: 8.0
+      compute_capability: "7.5"
+    - device_id: 1
+      name: "NVIDIA RTX 2080"
+      memory_gb: 8.0
+      compute_capability: "7.5"
+    - device_id: 2
+      name: "NVIDIA RTX 2080"
+      memory_gb: 8.0
+      compute_capability: "7.5"
+    - device_id: 3
+      name: "NVIDIA RTX 2080"
+      memory_gb: 8.0
+      compute_capability: "7.5"
+
+  # GPU使用策略
+  allocation:
+    strategy: "dynamic"  # static, dynamic, priority
+    memory_threshold_percent: 80  # 内存使用阈值
+    utilization_threshold_percent: 90  # 利用率阈值
+    cool_down_period: 300  # 冷却时间(秒)
+
+  # RAPIDS配置
+  rapids:
+    cudf_version: "24.02"
+    cuml_version: "24.02"
+    cupy_version: "13.0.0"
+    chunk_size: 10000
+    n_jobs: 4
+    enable_streaming: true
+    enable_distributed: false
+
+# API服务配置
+api:
+  grpc:
+    host: "0.0.0.0"
+    port: 50051
+    max_workers: 10
+    timeout_seconds: 30
+    enable_tls: false
+
+  websocket:
+    host: "0.0.0.0"
+    port: 50052
+    max_connections: 1000
+    heartbeat_interval: 30
+    message_timeout: 60
+
+  rest:
+    host: "0.0.0.0"
+    port: 50053
+    max_workers: 4
+    timeout_seconds: 60
+
+# 任务队列配置
+queue:
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: null
+    max_connections: 20
+
+  # 队列优先级
+  priorities:
+    high: "high_priority"
+    medium: "medium_priority"
+    low: "low_priority"
+
+  # 任务配置
+  task_timeout:
+    backtest: 3600  # 1小时
+    realtime: 300    # 5分钟
+    ml: 7200        # 2小时
+    risk: 1800      # 30分钟
+    order: 60       # 1分钟
+    multi_factor: 2400  # 40分钟
+
+# 数据库配置
+database:
+  tdengine:
+    host: "localhost"
+    port: 6030
+    user: "root"
+    password: "taosdata"
+    database: "market_data"
+
+  postgresql:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "postgres"
+    database: "mystocks"
+    pool_size: 20
+
+  monitoring:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "postgres"
+    database: "gpu_api_monitoring"
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics_interval: 10  # 秒
+  log_level: "INFO"
+
+  # 性能监控
+  performance:
+    gpu_utilization_alert_threshold: 90
+    memory_usage_alert_threshold: 85
+    processing_time_alert_threshold: 300  # 秒
+    error_rate_alert_threshold: 0.05
+
+  # 告警配置
+  alerts:
+    email:
+      enabled: false
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      username: ""
+      password: ""
+      recipients: []
+
+    webhook:
+      enabled: false
+      url: ""
+      timeout: 30
+
+# 安全配置
+security:
+  authentication:
+    enabled: true
+    type: "jwt"  # jwt, api_key
+    secret_key: "your-secret-key-here"
+    token_expiry_hours: 24
+
+  rate_limit:
+    enabled: true
+    requests_per_minute: 1000
+    requests_per_hour: 10000
+
+  encryption:
+    enabled: true
+    algorithm: "AES-256"
+    key: "your-encryption-key"
+
+# 缓存配置
+cache:
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 1
+    password: null
+    ttl_seconds: 3600
+
+  # 缓存策略
+  strategies:
+    lru: true
+    ttl: 3600
+    max_memory_usage_gb: 4
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  # 文件日志
+  file:
+    enabled: true
+    path: "/var/log/mystocks_gpu_api"
+    max_size_mb: 100
+    backup_count: 5
+
+  # 控制台日志
+  console:
+    enabled: true
+    color: true
+
+# 备份配置
+backup:
+  enabled: true
+  interval_hours: 24
+  retention_days: 30
+
+  # 备份位置
+  locations:
+    local: "/backups/mystocks_gpu_api"
+    cloud: null  # 可以配置云存储位置
+
+# 容器配置
+docker:
+  image_name: "mystocks-gpu-api"
+  tag: "latest"
+  build_context: "."
+  dockerfile: "Dockerfile"
+
+  # Kubernetes配置
+  kubernetes:
+    namespace: "mystocks-gpu"
+    replicas: 3
+    resource_limits:
+      cpu: "4"
+      memory: "8Gi"
+      nvidia.com/gpu: "1"
+    resource_requests:
+      cpu: "2"
+      memory: "4Gi"
+      nvidia.com/gpu: "1"

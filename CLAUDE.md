@@ -208,3 +208,7 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 - Seamless connection management and automatic routing
 
 This architecture enables efficient handling of quantitative trading data by using the right database for each workload, with comprehensive monitoring and configuration-driven automation.
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md

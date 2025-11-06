@@ -20,6 +20,12 @@ python-dotenv>=1.0.0
 schedule>=1.2.0
 requests>=2.31.0
 
+# GPU加速依赖 (可选安装，用于量化交易回测和AI策略)
+# RTX 2080 GPU加速支持
+cupy-cuda12x>=13.6.0
+cudf-cu12>=25.10.0
+cuml-cu12>=25.10.0
+
 # 开发工具
 pytest>=7.4.0
 mypy>=1.5.0

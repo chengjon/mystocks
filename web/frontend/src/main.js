@@ -9,6 +9,9 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
+// SECURITY FIX 1.2: Import CSRF initialization
+import { initializeSecurity } from './services/httpClient.js'
+
 const app = createApp(App)
 const pinia = createPinia()
 
@@ -23,4 +26,19 @@ app.use(ElementPlus, {
   locale: zhCn,
 })
 
-app.mount('#app')
+// SECURITY FIX 1.2: Initialize CSRF protection before mounting
+;(async () => {
+  try {
+    // 初始化CSRF token
+    await initializeSecurity()
+    console.log('✅ Security initialization completed')
+
+    // 挂载应用
+    app.mount('#app')
+  } catch (error) {
+    console.error('❌ Failed to initialize security:', error)
+    // 即使CSRF初始化失败，仍然挂载应用（优雅降级）
+    app.mount('#app')
+  }
+})()
+
