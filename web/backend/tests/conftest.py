@@ -2,38 +2,54 @@
 Pytest configuration and shared fixtures
 Week 1 Architecture-Compliant API Tests
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 import sys
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file before setting environment variables
+load_dotenv()
 
 # Week 3 Compatibility: Set database environment variables to redirect to PostgreSQL
 # This allows MyStocksUnifiedManager to work in the simplified PostgreSQL-only environment
-os.environ.setdefault('POSTGRESQL_HOST', os.getenv('POSTGRESQL_HOST', '192.168.123.104'))
-os.environ.setdefault('POSTGRESQL_PORT', os.getenv('POSTGRESQL_PORT', '5438'))
-os.environ.setdefault('POSTGRESQL_USER', os.getenv('POSTGRESQL_USER', 'postgres'))
-os.environ.setdefault('POSTGRESQL_PASSWORD', os.getenv('POSTGRESQL_PASSWORD', 'c790414J'))
-os.environ.setdefault('POSTGRESQL_DATABASE', os.getenv('POSTGRESQL_DATABASE', 'mystocks'))
+os.environ.setdefault(
+    "POSTGRESQL_HOST", os.getenv("POSTGRESQL_HOST", "192.168.123.104")
+)
+os.environ.setdefault("POSTGRESQL_PORT", os.getenv("POSTGRESQL_PORT", "5438"))
+os.environ.setdefault("POSTGRESQL_USER", os.getenv("POSTGRESQL_USER", "postgres"))
+os.environ.setdefault(
+    "POSTGRESQL_PASSWORD", os.getenv("POSTGRESQL_PASSWORD", "c790414J")
+)
+os.environ.setdefault(
+    "POSTGRESQL_DATABASE", os.getenv("POSTGRESQL_DATABASE", "mystocks")
+)
 
 # Compatibility shims for old database variables (all redirect to PostgreSQL)
-os.environ.setdefault('MYSQL_HOST', os.getenv('POSTGRESQL_HOST', '192.168.123.104'))
-os.environ.setdefault('MYSQL_PORT', os.getenv('POSTGRESQL_PORT', '5438'))
-os.environ.setdefault('MYSQL_USER', os.getenv('POSTGRESQL_USER', 'postgres'))
-os.environ.setdefault('MYSQL_PASSWORD', os.getenv('POSTGRESQL_PASSWORD', 'c790414J'))
-os.environ.setdefault('MYSQL_DATABASE', os.getenv('POSTGRESQL_DATABASE', 'mystocks'))
+os.environ.setdefault("MYSQL_HOST", os.getenv("POSTGRESQL_HOST", "192.168.123.104"))
+os.environ.setdefault("MYSQL_PORT", os.getenv("POSTGRESQL_PORT", "5438"))
+os.environ.setdefault("MYSQL_USER", os.getenv("POSTGRESQL_USER", "postgres"))
+os.environ.setdefault("MYSQL_PASSWORD", os.getenv("POSTGRESQL_PASSWORD", "c790414J"))
+os.environ.setdefault("MYSQL_DATABASE", os.getenv("POSTGRESQL_DATABASE", "mystocks"))
 
-os.environ.setdefault('TDENGINE_HOST', 'localhost')  # Not used, but required for initialization
-os.environ.setdefault('TDENGINE_PORT', '6041')
-os.environ.setdefault('TDENGINE_USER', 'root')
-os.environ.setdefault('TDENGINE_PASSWORD', 'taosdata')
-os.environ.setdefault('TDENGINE_DATABASE', 'market_data')
+# TDengine configuration (use actual values from .env)
+os.environ.setdefault("TDENGINE_HOST", os.getenv("TDENGINE_HOST", "192.168.123.104"))
+os.environ.setdefault("TDENGINE_PORT", os.getenv("TDENGINE_PORT", "6030"))
+os.environ.setdefault("TDENGINE_USER", os.getenv("TDENGINE_USER", "root"))
+os.environ.setdefault("TDENGINE_PASSWORD", os.getenv("TDENGINE_PASSWORD", "taosdata"))
+os.environ.setdefault(
+    "TDENGINE_DATABASE", os.getenv("TDENGINE_DATABASE", "market_data")
+)
 
-os.environ.setdefault('REDIS_HOST', 'localhost')  # Not used, but required for initialization
-os.environ.setdefault('REDIS_PORT', '6379')
-os.environ.setdefault('REDIS_PASSWORD', '')
-os.environ.setdefault('REDIS_DB', '1')  # Use DB 1 (DB 0 reserved for PAPERLESS)
+os.environ.setdefault(
+    "REDIS_HOST", "localhost"
+)  # Not used, but required for initialization
+os.environ.setdefault("REDIS_PORT", "6379")
+os.environ.setdefault("REDIS_PASSWORD", "")
+os.environ.setdefault("REDIS_DB", "1")  # Use DB 1 (DB 0 reserved for PAPERLESS)
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent
@@ -69,11 +85,8 @@ def sample_strategy_data():
         "name": "Test Strategy",
         "description": "A test strategy for E2E testing",
         "strategy_type": "model_based",
-        "parameters": {
-            "lookback_period": 20,
-            "threshold": 0.05
-        },
-        "status": "draft"
+        "parameters": {"lookback_period": 20, "threshold": 0.05},
+        "status": "draft",
     }
 
 
@@ -85,10 +98,7 @@ def sample_model_data():
         "model_type": "RandomForest",
         "features": ["close", "volume", "ma_5", "ma_10"],
         "target": "future_return_5d",
-        "parameters": {
-            "n_estimators": 100,
-            "max_depth": 10
-        }
+        "parameters": {"n_estimators": 100, "max_depth": 10},
     }
 
 
@@ -101,10 +111,7 @@ def sample_backtest_data():
         "end_date": datetime.now().strftime("%Y-%m-%d"),
         "initial_capital": 100000.0,
         "symbols": ["600519.SH", "000858.SZ"],
-        "parameters": {
-            "commission": 0.001,
-            "slippage": 0.001
-        }
+        "parameters": {"commission": 0.001, "slippage": 0.001},
     }
 
 
@@ -117,7 +124,7 @@ def sample_risk_alert_data():
         "threshold": 0.05,
         "condition": "greater_than",
         "notification_channel": "email",
-        "enabled": True
+        "enabled": True,
     }
 
 
@@ -130,16 +137,16 @@ def sample_portfolio_positions():
                 "symbol": "600519.SH",
                 "quantity": 1000,
                 "entry_price": 1800.0,
-                "current_price": 1850.0
+                "current_price": 1850.0,
             },
             {
                 "symbol": "000858.SZ",
                 "quantity": 2000,
                 "entry_price": 45.0,
-                "current_price": 47.5
-            }
+                "current_price": 47.5,
+            },
         ],
-        "cash": 50000.0
+        "cash": 50000.0,
     }
 
 

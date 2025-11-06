@@ -28,12 +28,14 @@ from app.core.sync_processor import (
 )
 from app.core.sync_db_manager import SyncDatabaseManager, reset_sync_db_manager
 from app.core.cache_manager import reset_cache_manager
+from app.core.tdengine_manager import reset_tdengine_manager
 
 
 @pytest.fixture
 def setup_teardown():
     """设置和清理"""
     # 重置所有单例
+    reset_tdengine_manager()
     reset_cache_manager()
     reset_sync_db_manager()
     reset_sync_processor()
@@ -57,6 +59,7 @@ def setup_teardown():
     except:
         pass
 
+    reset_tdengine_manager()
     reset_cache_manager()
     reset_sync_db_manager()
     reset_sync_processor()

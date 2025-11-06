@@ -141,10 +141,11 @@ class TDengineManager:
     def _create_database(self):
         """创建缓存数据库"""
         try:
+            # TDengine 3.x compatible syntax (simplified)
             self._execute(
                 f"CREATE DATABASE IF NOT EXISTS {self.database} "
-                f"KEEP 2147483647 BUFFER 256 PAGES 256 MINROWS 100 MAXROWS 4096 "
-                f"FSYNC 3000 COMP 2 PRECISION 'ms' REPLICATIONS 1 STRICT OFF"
+                f"KEEP 3650 "  # Keep data for 10 years
+                f"PRECISION 'ms'"  # Millisecond precision
             )
             logger.info("✅ 数据库已创建", database=self.database)
         except Exception as e:
@@ -152,26 +153,27 @@ class TDengineManager:
             raise
 
     def _create_cache_tables(self):
-        """创建缓存表"""
+        """创建缓存表 (TDengine 3.x compatible)"""
         try:
-            # 创建市场数据缓存超表
+            # 创建市场数据缓存超表 (stable)
             self._execute(
                 """
-                CREATE TABLE IF NOT EXISTS market_data_cache (
+                CREATE STABLE IF NOT EXISTS market_data_cache (
                     ts TIMESTAMP,
-                    symbol VARCHAR(10),
-                    data_type VARCHAR(20),
-                    timeframe VARCHAR(10),
                     data NCHAR(1024),
-                    hit_count BIGINT DEFAULT 0,
+                    hit_count BIGINT,
                     created_at TIMESTAMP,
                     updated_at TIMESTAMP
-                ) TAGS (symbol VARCHAR(10), data_type VARCHAR(20))
+                ) TAGS (
+                    symbol VARCHAR(10),
+                    data_type VARCHAR(20),
+                    timeframe VARCHAR(10)
+                )
             """
             )
-            logger.info("✅ 缓存表已创建: market_data_cache")
+            logger.info("✅ 缓存超表已创建: market_data_cache")
 
-            # 创建缓存统计表
+            # 创建缓存统计表 (普通表)
             self._execute(
                 """
                 CREATE TABLE IF NOT EXISTS cache_stats (
@@ -185,18 +187,17 @@ class TDengineManager:
             )
             logger.info("✅ 统计表已创建: cache_stats")
 
-            # 创建热点数据表
+            # 创建热点数据超表
             self._execute(
                 """
-                CREATE TABLE IF NOT EXISTS hot_symbols (
+                CREATE STABLE IF NOT EXISTS hot_symbols (
                     ts TIMESTAMP,
-                    symbol VARCHAR(10),
                     access_count BIGINT,
                     last_access TIMESTAMP
                 ) TAGS (symbol VARCHAR(10))
             """
             )
-            logger.info("✅ 热点表已创建: hot_symbols")
+            logger.info("✅ 热点超表已创建: hot_symbols")
 
         except Exception as e:
             logger.error("❌ 创建表失败", error=str(e))
@@ -211,7 +212,7 @@ class TDengineManager:
         timestamp: Optional[datetime] = None,
     ) -> bool:
         """
-        写入缓存数据
+        写入缓存数据 (自动创建子表)
 
         Args:
             symbol: 股票代码
@@ -231,21 +232,19 @@ class TDengineManager:
             ts = timestamp or datetime.utcnow()
             data_json = json.dumps(data, ensure_ascii=False)
 
-            # 生成表名 (用于子表)
-            table_name = f"cache_{symbol}_{data_type.lower()}"
+            # 生成子表名
+            table_name = f"cache_{symbol}_{data_type.lower().replace('-', '_')}"
 
-            # 使用 INSERT 插入数据
+            # TDengine 3.x: 使用 USING 语法自动创建子表
             sql = f"""
-                INSERT INTO {table_name} VALUES (
+                INSERT INTO {table_name} USING market_data_cache TAGS ('{symbol}', '{data_type}', '{timeframe}')
+                VALUES (
                     '{ts.isoformat()}',
-                    '{symbol}',
-                    '{data_type}',
-                    '{timeframe}',
                     '{data_json}',
                     0,
                     '{datetime.utcnow().isoformat()}',
                     '{datetime.utcnow().isoformat()}'
-                ) TAGS ('{symbol}', '{data_type}')
+                )
             """
 
             self._execute(sql)
@@ -393,8 +392,8 @@ class TDengineManager:
             if not self._conn:
                 return self.connect()
 
-            # 执行简单查询测试连接
-            self._execute("SELECT DATABASE()")
+            # 执行简单查询测试连接 (不需要选择数据库)
+            self._execute("SELECT SERVER_VERSION()")
             logger.debug("✅ 健康检查通过")
             return True
 
