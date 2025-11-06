@@ -18,6 +18,12 @@ import json
 # 导入数据库连接管理
 from app.core.database import get_postgresql_engine, close_all_connections
 
+# 导入缓存淘汰调度器
+from app.core.cache_eviction import (
+    get_eviction_scheduler,
+    reset_eviction_scheduler,
+)
+
 # 配置日志
 logger = structlog.get_logger()
 
@@ -89,10 +95,26 @@ async def lifespan(app: FastAPI):
         logger.error("❌ Database initialization failed", error=str(e))
         raise
 
+    # 启动缓存淘汰调度器
+    try:
+        scheduler = get_eviction_scheduler()
+        scheduler.start_daily_cleanup(hour=2, minute=0)
+        logger.info("✅ Cache eviction scheduler started")
+    except Exception as e:
+        logger.warning("⚠️ Failed to start cache eviction scheduler", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
     logger.info("🛑 Shutting down MyStocks Web API")
+
+    # 停止缓存淘汰调度器
+    try:
+        reset_eviction_scheduler()
+        logger.info("✅ Cache eviction scheduler stopped")
+    except Exception as e:
+        logger.warning("⚠️ Error stopping cache eviction scheduler", error=str(e))
+
     close_all_connections()
     logger.info("✅ All database connections closed")
 
