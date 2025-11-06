@@ -40,6 +40,10 @@ from app.models.websocket_message import (
     create_pong_message,
 )
 from app.core.reconnection_manager import get_reconnection_manager
+from app.services.realtime_streaming_service import (
+    get_streaming_service,
+    StreamEventType,
+)
 
 logger = structlog.get_logger()
 
@@ -211,6 +215,15 @@ class MySocketIONamespace(AsyncNamespace):
         # 标记已重连成功
         reconnection_manager.mark_reconnected(sid)
 
+        # Initialize streaming state for this connection
+        streaming_service = get_streaming_service()
+        # Note: Streaming subscriptions are explicitly managed via on_subscribe_market_stream
+        logger.info(
+            "🎬 Streaming support initialized for connection",
+            sid=sid,
+            user_id=user_id,
+        )
+
         await self.emit("connect_response", {"status": "connected", "sid": sid})
 
     async def on_disconnect(self, sid: str):
@@ -220,6 +233,17 @@ class MySocketIONamespace(AsyncNamespace):
         # 在重连管理器中标记为已断开
         reconnection_manager = get_reconnection_manager()
         reconnection_manager.mark_disconnected(sid)
+
+        # Clean up streaming subscriptions for this connection
+        streaming_service = get_streaming_service()
+        active_symbols = streaming_service.get_active_symbols()
+        for symbol in active_symbols:
+            streaming_service.unsubscribe(sid, symbol)
+
+        logger.info(
+            "🎬 Streaming subscriptions cleaned up on disconnect",
+            sid=sid,
+        )
 
     async def on_subscribe(self, sid: str, data: dict):
         """订阅事件处理"""
@@ -351,6 +375,205 @@ class MySocketIONamespace(AsyncNamespace):
                 to=sid,
             )
 
+    async def on_subscribe_market_stream(self, sid: str, data: dict):
+        """Market data stream subscription event handler"""
+        self.sio.connection_manager.update_activity(sid)
+
+        try:
+            symbol = data.get("symbol")
+            if not symbol:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "INVALID_SYMBOL",
+                        "message": "Stock symbol cannot be empty",
+                    },
+                    to=sid,
+                )
+                return
+
+            # Extract optional fields filter
+            fields = data.get("fields")
+            if fields and isinstance(fields, list):
+                fields = set(fields)
+            else:
+                fields = None
+
+            # Subscribe to streaming service
+            streaming_service = get_streaming_service()
+            connection = self.sio.connection_manager.get_connection(sid)
+            user_id = connection.get("user_id") if connection else None
+
+            success = streaming_service.subscribe(sid, symbol, user_id, fields)
+
+            if success:
+                logger.info(
+                    "✅ Market stream subscription",
+                    sid=sid,
+                    symbol=symbol,
+                    fields=fields,
+                )
+
+                await self.emit(
+                    "stream_subscribed",
+                    {
+                        "symbol": symbol,
+                        "status": "subscribed",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                    to=sid,
+                )
+            else:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "SUBSCRIPTION_FAILED",
+                        "message": f"Failed to subscribe to {symbol}",
+                    },
+                    to=sid,
+                )
+
+        except Exception as e:
+            logger.error("❌ Market stream subscription failed", error=str(e), sid=sid)
+            await self.emit(
+                "stream_error",
+                {
+                    "error_code": "INTERNAL_ERROR",
+                    "message": "Server error during subscription",
+                },
+                to=sid,
+            )
+
+    async def on_unsubscribe_market_stream(self, sid: str, data: dict):
+        """Market data stream unsubscription event handler"""
+        self.sio.connection_manager.update_activity(sid)
+
+        try:
+            symbol = data.get("symbol")
+            if not symbol:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "INVALID_SYMBOL",
+                        "message": "Stock symbol cannot be empty",
+                    },
+                    to=sid,
+                )
+                return
+
+            # Unsubscribe from streaming service
+            streaming_service = get_streaming_service()
+            success = streaming_service.unsubscribe(sid, symbol)
+
+            if success:
+                logger.info("✅ Market stream unsubscription", sid=sid, symbol=symbol)
+
+                await self.emit(
+                    "stream_unsubscribed",
+                    {
+                        "symbol": symbol,
+                        "status": "unsubscribed",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                    to=sid,
+                )
+            else:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "UNSUBSCRIPTION_FAILED",
+                        "message": f"Failed to unsubscribe from {symbol}",
+                    },
+                    to=sid,
+                )
+
+        except Exception as e:
+            logger.error(
+                "❌ Market stream unsubscription failed", error=str(e), sid=sid
+            )
+            await self.emit(
+                "stream_error",
+                {
+                    "error_code": "INTERNAL_ERROR",
+                    "message": "Server error during unsubscription",
+                },
+                to=sid,
+            )
+
+    async def on_stream_filter_update(self, sid: str, data: dict):
+        """Update field filter for market data stream"""
+        self.sio.connection_manager.update_activity(sid)
+
+        try:
+            symbol = data.get("symbol")
+            fields = data.get("fields")
+
+            if not symbol or not fields:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "INVALID_PARAMETERS",
+                        "message": "Symbol and fields are required",
+                    },
+                    to=sid,
+                )
+                return
+
+            # Get streaming service and update subscriber fields
+            streaming_service = get_streaming_service()
+            stream = streaming_service.get_stream(symbol)
+
+            if not stream:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "STREAM_NOT_FOUND",
+                        "message": f"Stream for {symbol} not found",
+                    },
+                    to=sid,
+                )
+                return
+
+            # Update subscriber fields
+            if sid in stream.subscribers:
+                stream.subscribers[sid].fields = set(fields)
+                logger.info(
+                    "✅ Stream filter updated",
+                    sid=sid,
+                    symbol=symbol,
+                    fields=fields,
+                )
+
+                await self.emit(
+                    "stream_filter_updated",
+                    {
+                        "symbol": symbol,
+                        "fields": fields,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                    to=sid,
+                )
+            else:
+                await self.emit(
+                    "stream_error",
+                    {
+                        "error_code": "SUBSCRIBER_NOT_FOUND",
+                        "message": f"No subscription found for {symbol}",
+                    },
+                    to=sid,
+                )
+
+        except Exception as e:
+            logger.error("❌ Stream filter update failed", error=str(e), sid=sid)
+            await self.emit(
+                "stream_error",
+                {
+                    "error_code": "INTERNAL_ERROR",
+                    "message": "Server error during filter update",
+                },
+                to=sid,
+            )
+
 
 class MySocketIOManager:
     """MyStocks Socket.IO服务器管理器"""
@@ -422,7 +645,56 @@ class MySocketIOManager:
         reconnection_stats = reconnection_manager.get_all_stats()
         stats["reconnection"] = reconnection_stats
 
+        # 添加流服务统计
+        streaming_service = get_streaming_service()
+        streaming_stats = streaming_service.get_stats()
+        stats["streaming"] = streaming_stats
+
         return stats
+
+    async def emit_stream_data(
+        self,
+        symbol: str,
+        data: Dict[str, Any],
+    ) -> None:
+        """Emit market data to stream subscribers (room-based broadcast)"""
+        try:
+            streaming_service = get_streaming_service()
+            stream = streaming_service.get_stream(symbol)
+
+            if not stream:
+                logger.warning(
+                    "⚠️ Stream not found for symbol",
+                    symbol=symbol,
+                )
+                return
+
+            # Broadcast data to all subscribers in the stream
+            # Use symbol as room name for Socket.IO broadcast
+            await self.sio.emit(
+                "stream_data",
+                {
+                    "symbol": symbol,
+                    "data": data,
+                    "timestamp": datetime.utcnow().isoformat(),
+                },
+                to=f"stream_{symbol}",
+            )
+
+            # Also record the broadcast in the stream
+            streaming_service.broadcast_data(symbol, data)
+
+        except Exception as e:
+            logger.error(
+                "❌ Error emitting stream data",
+                symbol=symbol,
+                error=str(e),
+            )
+
+    def get_streaming_stats(self) -> Dict[str, Any]:
+        """Get real-time streaming service statistics"""
+        streaming_service = get_streaming_service()
+        return streaming_service.get_stats()
 
 
 # 全局单例
