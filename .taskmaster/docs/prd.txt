@@ -1,0 +1,505 @@
+MyStocks架构优化项目需求文档 (PRD v2.0)
+============================================
+基于TDengine缓存 + Qlib数据关联机制
+
+一、项目背景与核心调整
+--------------------
+
+### 1.1 当前问题
+- 缺少实时通信能力（无WebSocket）
+- API设计不规范（命名不一致，缺少OpenAPI规范）
+- 测试覆盖率低（仅15%）
+- 存在安全隐患（SQL注入风险）
+- 代码重复率高（18%）
+- 缺少监控和追踪体系
+- 无缓存层导致性能瓶颈
+
+### 1.2 核心架构调整
+**关键决策**：TDengine替代Redis承担缓存功能
+
+理由：
+- 简化数据库维护：仅保留TDengine（时序数据存储+缓存）与PostgreSQL（业务数据存储）双库架构
+- 适配量化交易场景：满足非实时推送、时序数据高效查询、数据一致性需求
+- TDengine时序数据高压缩比、时间窗口索引优势
+- 避免引入额外的Redis维护成本
+
+二、核心架构设计（融合Qlib机制）
+-------------------------------
+
+### 2.1 客户端-服务器架构（沿用Qlib双模设计）
+
+**离线模式**：
+- 客户端直接读取本地TDengine缓存文件
+- 历史时序数据复用，减少服务器交互
+
+**在线模式**：
+- 客户端通过WebSocket发起请求
+- 服务器查询TDengine缓存
+- 缓存命中则返回，未命中则从数据源同步后写入TDengine再返回
+
+**通信特性**：
+- 非持久连接：请求-响应模式（无服务器主动推送）
+- 契合Qlib按需获取逻辑，降低资源消耗
+
+### 2.2 多层缓存机制
+
+#### 层级1：服务器端核心缓存（TDengine）
+- 存储范围：高频时序数据（交易指标、传感器数据）、热点缓存数据
+- 缓存策略：基于时间窗口自动淘汰（清理7天前冷数据）、TDengine事务+时间戳版本控制
+- 与PostgreSQL协同：TDengine负责时序数据缓存+存储，PostgreSQL负责用户信息、策略配置等业务数据
+
+#### 层级2：磁盘缓存（服务器端）
+- 将TDengine中高频访问的热点数据（如最近24小时）导出为本地文件
+- 客户端可直接读取，减少TDengine查询压力
+
+#### 层级3：客户端内存缓存
+- 客户端本地缓存最近请求的小批量数据
+- 短期重复请求直接命中，减少服务器交互
+
+### 2.3 数据同步与更新机制
+- 同步触发：客户端显式调用fetch_data()获取数据，update_cache()触发缓存更新
+- 增量更新：通过时间戳比对数据源与TDengine缓存差异，仅同步新增/变更数据
+- 定时兜底：服务器每小时自动同步数据源到TDengine
+
+三、功能需求（按优先级分类）
+--------------------------
+
+### P0优先级（必须完成-落地基础）
+
+#### Week 1: 安全修复与核心架构
+
+**任务1：紧急安全修复**
+- 修复SQL注入漏洞（SQLAlchemy ORM+参数化查询）
+- XSS/CSRF防护（前端转义+CSRF Token）
+- 敏感数据加密（PostgreSQL pgcrypto+TDengine列级加密）
+- 删除重复的监控系统代码（删除src/monitoring/目录）
+
+**���务2：TDengine缓存集成**
+- 搭建TDengine服务（单机或集群模式）
+- 实现时间窗口淘汰策略（7天自动清理）
+- 缓存读写逻辑开发（fetch_from_cache、write_to_cache）
+- 缓存命中率监控（目标≥80%）
+- 热点数据识别和预加载机制
+
+**任务3：OpenAPI规范定义**
+- 定义统一响应码（200/400/401/403/500）
+- 数据格式约定（UTC毫秒级时间戳、Decimal数值类型）
+- WebSocket消息格式规范（type、payload、timestamp、userId、traceId）
+- 错误响应格式统一
+- 生成Swagger UI文档
+
+**任务4：基础WebSocket通信**
+- 实现Socket.IO服务器（python-socketio）
+- 连接建立-数据请求-断开基础流程
+- 单房间订阅功能
+- 请求-响应模式（非持久推送）
+- 客户端自动重连机制（3秒间隔，重试5次）
+
+**任务5：双库数据一致性方案**
+- 实现本地消息表最终一致性
+- 处理TDengine+PostgreSQL跨库操作
+- 同步失败重试机制（3次后触发告警）
+- 数据同步状态监控
+
+#### Week 2: 核心功能与测试
+
+**任务6：核心E2E测试**
+- 使用Playwright搭建测试框架
+- 登录→订阅→数据查询核心流程测试
+- 缓存命中和未命中场景测试
+- 测试数据管理和清理
+- 截图和错误报告生成
+
+**任务7：容器化部署**
+- Docker多阶段构建（减小镜像体积）
+- Docker Compose编排（TDengine+PostgreSQL+API+Frontend）
+- 资源限制配置（CPU、内存限制）
+- 环境变量管理（.env文件）
+- 健康检查配置
+
+**任务8：数据备份恢复机制**
+- TDengine每日全量+每小时增量备份脚本
+- PostgreSQL每日全量+WAL归档配置
+- 恢复流程文档和验证脚本
+- 备份数据完整性校验
+
+### P1优先级（重要-功能完善）
+
+#### Week 2-3: 扩展功能
+
+**任务9：多房间订阅扩展**
+- 实现多房间同时订阅
+- 房间管理逻辑（创建、加入、离开）
+- 订阅权限控制
+- 房间消息广播
+
+**任务10：Casbin权限集成**
+- Casbin与FastAPI集成
+- 行级数据权限（基于userId过滤）
+- 功能权限（管理员/普通用户/VIP角色）
+- 权限策略配置文件
+
+**任务11：数据库索引优化**
+- TDengine时间索引优化
+- PostgreSQL业务字段索引（symbol、user_id、timestamp）
+- 慢查询分析和优化（目标<500ms）
+- 执行计划分析
+
+**任务12：契���测试**
+- 配置Dredd契约测试框架
+- API一致性验证（OpenAPI规范vs实际实现）
+- 测试钩子实现（数据准备和清理）
+- CI集成
+
+**任务13：自定义监控指标**
+- WebSocket连接数监控
+- TDengine缓存命中率监控
+- API响应时间监控（P50、P95、P99）
+- 数据库连接池使用率监控
+- Prometheus Exporter开发
+
+**任务14：性能压测**
+- 使用Locust模拟1000并发用户
+- WebSocket连接池参数优化
+- 数据库连接池大小调整
+- 缓存策略优化（热点数据时间窗口调整）
+- 压测报告生成
+
+### P2优先级（优化-体验/性能提升）
+
+#### Week 4: 高级优化
+
+**任务15：告警升级机制**
+- 多级告警规则（一级：短信+邮件，二级：邮件，三级：日志）
+- 告警聚合和抑制（避免告警风暴）
+- 告警恢复通知
+- 告警历史记录
+
+**任务16：故障自动响应**
+- TDengine集群故障自动切换
+- WebSocket自动重连
+- PostgreSQL主从自动切换
+- 服务健康检查和自愈
+
+**任务17：限流降级细化**
+- 用户级限流（普通用户10QPS/VIP用户50QPS）
+- 接口级限流
+- IP黑名单机制
+- 限流策略动态调整
+
+**任务18：异步处理优化**
+- 批量数据同步异步化
+- 大数据量查询异步返回
+- 定时任务优化（Celery或APScheduler）
+- 任务队列监控
+
+四、关键技术模块细化
+-------------------
+
+### 4.1 TDengine缓存核心逻辑
+
+**缓存查询流程**：
+1. 客户端发起数据查询请求
+2. 服务器先查询TDengine缓存（基于时间范围+指标类型）
+3. 缓存命中：直接返回数据
+4. 缓存未命中：从数据源获取→写入TDengine→返回数据
+
+**缓存淘汰策略**：
+- 基于时间窗口：7天前数据自动清理
+- 基于访问频率：低频数据优先淘汰
+- 手动清理接口：支持管理员手动清理指定数据
+
+**缓存预热**：
+- 服务器启动时预加载核心指标最近24小时数据
+- 定时预加载高频查询数据
+
+### 4.2 数据一致性保障
+
+**本地消息表方案**：
+```sql
+CREATE TABLE local_message_table (
+    id SERIAL PRIMARY KEY,
+    business_id VARCHAR(100),
+    message_type VARCHAR(50),
+    payload JSONB,
+    status VARCHAR(20), -- pending/success/failed
+    retry_count INT DEFAULT 0,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+```
+
+**同步流程**：
+1. 业务操作写入PostgreSQL+本地消息表（同一事务）
+2. 定时任务扫描pending状态消息
+3. 向TDengine同步数据
+4. 成功：更新status为success
+5. 失败：重试（最多3次），超限后告警
+
+### 4.3 安全防护实现
+
+**SQL注入防护**：
+```python
+# 禁止
+query = f"SELECT * FROM users WHERE id = {user_id}"
+
+# 推荐
+query = session.query(User).filter(User.id == user_id)
+```
+
+**XSS/CSRF防护**：
+```python
+# FastAPI配置
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.csrf import CSRFMiddleware
+
+app.add_middleware(CSRFMiddleware, secret="your-secret-key")
+```
+
+**数据加密**：
+```python
+# PostgreSQL
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+INSERT INTO users (password) VALUES (crypt('password', gen_salt('bf')));
+
+# TDengine列级加密
+# 配置文件中启用加密列
+```
+
+### 4.4 监控指标定义
+
+**业务指标**：
+- websocket_connections（当前WebSocket连接数）
+- tdengine_cache_hit_rate（TDengine缓存命中率）
+- data_query_count（数据查询次数/分钟）
+- subscription_success_rate（订阅成功率）
+
+**错误指标**：
+- api_error_rate（API错误率）
+- websocket_disconnect_rate（WebSocket断连率）
+- database_slow_query_count（慢查询次数）
+
+**系统指标**：
+- cpu_usage（CPU使用率）
+- memory_usage（内存使用率）
+- db_connection_pool_usage（数据库连接池使用率）
+
+### 4.5 WebSocket消息格式
+
+**请求消息**：
+```json
+{
+  "type": "data_query",
+  "payload": {
+    "time_range": [1690000000000, 1690003600000],
+    "indicator": "profit_rate",
+    "symbol": "600519.SH"
+  },
+  "timestamp": 1690003601000,
+  "userId": "user_123",
+  "traceId": "trace_456"
+}
+```
+
+**成功响应**：
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "indicator": "profit_rate",
+    "values": [[1690000000000, 0.05], [1690003600000, 0.06]],
+    "from_cache": true
+  },
+  "timestamp": 1690003602000,
+  "traceId": "trace_456"
+}
+```
+
+**错误响应**：
+```json
+{
+  "code": 400,
+  "msg": "参数错误：时间范围起始值大于结束值",
+  "data": null,
+  "timestamp": 1690003602000,
+  "traceId": "trace_456"
+}
+```
+
+五、风险兜底与回滚机制
+--------------------
+
+### 5.1 回滚机制
+
+**代码回滚**：
+- Git Tag标记每周版本（v1.0.0-week1、v1.0.0-week2等）
+- 一键回滚脚本：`git checkout v1.0.0-week1 && docker-compose restart`
+
+**部署回滚**：
+- Docker镜像保留最近3个版本
+- Docker Compose支持版本切换
+- 回滚验证checklist
+
+**数据回滚**：
+- 数据库变更前自动备份
+- 提供回滚SQL脚本（索引删除、表结构修改）
+- 数据完整性验证
+
+### 5.2 故障兜底方案
+
+**TDengine故障**：
+- 检测：健康检查失败3次
+- 降级：切换至PostgreSQL直查（非时序数据）或本地缓存（时序数据）
+- 告警：一级告警（短信+邮件）
+- 恢复：TDengine恢复后自动切回
+
+**WebSocket故障**：
+- 检测：连接断开
+- 降级：客户端自动重连（3秒间隔，最多5次）
+- 缓存：本地存储未接收消息，重连后补发
+- 告警：重连失败5次后告警
+
+**PostgreSQL故障**：
+- 检测：主库健康检查失败
+- 切换：主从自动切换（数据同步延迟≤10秒）
+- 告警：主库故障一级告警
+- 恢复：主库恢复后手动切回
+
+六、测试策略
+-----------
+
+### 6.1 单元测试
+- 框架：Pytest + unittest.mock
+- 覆盖范围：业务逻辑层（策略计算、权限校验、缓存逻辑）
+- Mock数据库依赖
+- 目标覆盖率：85%
+
+### 6.2 集成测试
+- 框架：Pytest + TestClient（FastAPI）
+- 覆盖范围：API+数据库+缓存链路
+- 验证数据流转一致性
+- 目标覆盖率：75%
+
+### 6.3 E2E测试
+- 框架：Playwright
+- 覆盖范围：登录→订阅数据→查询交易指标→缓存更新
+- 浏览器兼容性测试
+- 目标覆盖率：核心流程100%
+
+### 6.4 压力测试
+- 框架：Locust
+- 场景：1000并发用户、高频数据查询
+- 指标：响应时间、错误率、缓存命中率
+- 优化目标：P95响应时间<200ms
+
+七、验收标准
+-----------
+
+### Week 1验收（P0核心）
+- [ ] SQL注入漏洞修复完成，通过安全扫描
+- [ ] TDengine缓存服务正常运行，缓存命中率>60%
+- [ ] OpenAPI规范文档完成，Swagger UI可访问
+- [ ] 基础WebSocket通信建立成功，支持单房间订阅
+- [ ] 双库数据一致性方案实现，同步延迟<5秒
+- [ ] 删除重复代码（src/monitoring/目录）
+
+### Week 2验收（P0+部分P1）
+- [ ] 核心E2E测试覆盖主要流程（登录、订阅、查询）
+- [ ] 容器化部署成功，一键启动所有服务
+- [ ] 数据备份恢复机制测试通过
+- [ ] 多房间订阅功能实现并测试通过
+- [ ] Casbin权限集成完成，角色权限生效
+- [ ] 测试覆盖率达到60%
+
+### Week 3验收（P1+性能）
+- [ ] 契约测试全部通过，API与规范一致
+- [ ] 自定义监控指标展示正常
+- [ ] 性能压测完成，识别并优化瓶颈
+- [ ] TDengine缓存命中率≥80%
+- [ ] API响应时间P95<200ms
+- [ ] 数据库索引优化完成，慢查询<500ms
+
+### Week 4验收（P2+整体）
+- [ ] 告警升级机制工作正常
+- [ ] 故障自动响应测试通过（TDengine、WebSocket、PostgreSQL）
+- [ ] 限流降级功能验证（用户级+接口级）
+- [ ] 异步处理优化完成
+- [ ] 所有文档更新完成（运维手册、架构文档）
+- [ ] 测试覆盖率≥90%
+- [ ] 性能指标全部达标
+
+八、技术规范
+-----------
+
+### 8.1 技术栈
+- 前端：Vue 3 + TypeScript + Socket.IO Client + Pinia
+- 后端：FastAPI + Python-SocketIO + SQLAlchemy + Pydantic
+- 数据库：TDengine（时序数据存储+缓存）+ PostgreSQL（业务数据）
+- 测试：Playwright + Pytest + Locust + Dredd
+- 监控：Prometheus + Grafana + ELK
+- 部署：Docker + Docker Compose + GitHub Actions
+
+### 8.2 性能指标
+- API响应时间：P95 < 200ms
+- WebSocket延迟：< 100ms（请求-响应模式）
+- TDengine缓存命中率：≥ 80%
+- 系统可用性：> 99.9%
+- 测试覆盖率：> 90%
+- 数据库慢查询：< 500ms
+
+### 8.3 编码规范
+- Python：PEP 8 + Type Hints
+- TypeScript：ESLint + Prettier
+- Git提交：Conventional Commits
+- 代码审查：必须PR review才能合并
+
+九、项目约束
+-----------
+
+### 9.1 资源约束
+- 团队规模：2-3人
+- 开发周期：4周（160人时）
+- 预算：使用开源方案，软件成本¥0
+
+### 9.2 技术约束
+- 保持与现有系统兼容
+- 平滑迁移，不影响生产
+- 优先使用开源技术
+- TDengine替代Redis（无Redis依赖）
+- 双库架构（TDengine+PostgreSQL）
+
+### 9.3 时间约束
+- 第一周必须完成安全修复
+- 每周五进行阶段性验收
+- 月底前完成全部优化
+
+十、成功标准
+-----------
+
+1. 所有P0任务100%完成
+2. P1任务完成率≥80%
+3. P2任务完成率≥60%
+4. 测试覆盖率达到90%
+5. API响应时间P95<200ms
+6. TDengine缓存命中率≥80%
+7. 系统可用性>99.9%
+8. 开发效率提升60%
+9. Bug率降低70%
+10. 零安全漏洞
+
+十一、交付物清单
+--------------
+
+1. 源代码和配置文件（Git仓库）
+2. OpenAPI规范文档（Swagger UI）
+3. WebSocket消息格式规范
+4. 测试套件和报告（单元+集成+E2E+压测）
+5. Docker部署配置（Dockerfile + docker-compose.yml）
+6. 数据备份恢复脚本
+7. 监控指标配置（Prometheus + Grafana）
+8. 运维手册（故障排查+回滚流程）
+9. 架构设计文档
+10. 安全加固报告
+11. 性能优化报告
+12. 用户使用文档

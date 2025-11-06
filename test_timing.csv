@@ -1,0 +1,121 @@
+test_name,start_time,end_time,duration_seconds,result
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_equals_clause,2025-11-06 08:08:08.763707,2025-11-06 08:08:08.767471,0.004,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_in_clause,2025-11-06 08:08:08.768007,2025-11-06 08:08:08.769222,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_delete_query,2025-11-06 08:08:08.769610,2025-11-06 08:08:08.770775,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_parameterized_query_protection,2025-11-06 08:08:08.771201,2025-11-06 08:08:09.224116,0.453,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_psycopg2_parameterized_query_protection,2025-11-06 08:08:09.224574,2025-11-06 08:08:09.225719,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_raw_string_concatenation_is_unsafe,2025-11-06 08:08:09.226113,2025-11-06 08:08:09.227220,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_f_string_with_user_input_vulnerability,2025-11-06 08:08:09.227662,2025-11-06 08:08:09.228817,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_column_name_injection,2025-11-06 08:08:09.229210,2025-11-06 08:08:09.231862,0.003,P
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln0],2025-11-06 08:08:18.593872,2025-11-06 08:08:18.597360,0.003,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln1],2025-11-06 08:08:18.597764,2025-11-06 08:08:18.599549,0.002,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln2],2025-11-06 08:08:18.600090,2025-11-06 08:08:18.601360,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln3],2025-11-06 08:08:18.601738,2025-11-06 08:08:18.603079,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln4],2025-11-06 08:08:18.603537,2025-11-06 08:08:18.605437,0.002,P
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_sqlalchemy_parameterization,2025-11-06 08:10:21.274080,2025-11-06 08:10:21.537478,0.263,Fa
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_psycopg2_parameterization,2025-11-06 08:10:21.537974,2025-11-06 08:10:21.546640,0.009,Fa
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_where_in_clause,2025-11-06 08:10:21.547342,2025-11-06 08:10:21.548606,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_whitelist_table_column_names,2025-11-06 08:10:21.549034,2025-11-06 08:10:21.550800,0.002,P
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_sqlalchemy_parameterization,2025-11-06 08:10:29.149162,2025-11-06 08:10:29.410261,0.261,Fa
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_equals_clause,2025-11-06 08:10:40.780756,2025-11-06 08:10:40.784514,0.004,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_in_clause,2025-11-06 08:10:40.785020,2025-11-06 08:10:40.786467,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_delete_query,2025-11-06 08:10:40.787205,2025-11-06 08:10:40.788488,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_parameterized_query_protection,2025-11-06 08:10:40.789019,2025-11-06 08:10:40.983191,0.194,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_psycopg2_parameterized_query_protection,2025-11-06 08:10:40.983594,2025-11-06 08:10:40.984672,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_raw_string_concatenation_is_unsafe,2025-11-06 08:10:40.985056,2025-11-06 08:10:40.986175,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_f_string_with_user_input_vulnerability,2025-11-06 08:10:40.986605,2025-11-06 08:10:40.987756,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_column_name_injection,2025-11-06 08:10:40.988174,2025-11-06 08:10:40.989241,0.001,P
+tests/test_security_sql_injection.py::TestDataAccessVulnerabilityPatterns::test_build_analysis_query_vulnerability,2025-11-06 08:10:40.989588,2025-11-06 08:10:40.990641,0.001,P
+tests/test_security_sql_injection.py::TestDataAccessVulnerabilityPatterns::test_build_delete_query_vulnerability,2025-11-06 08:10:40.990982,2025-11-06 08:10:40.991978,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_sqlalchemy_parameterization,2025-11-06 08:10:40.992313,2025-11-06 08:10:40.993524,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_psycopg2_parameterization,2025-11-06 08:10:40.993887,2025-11-06 08:10:41.033912,0.040,Fa
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_where_in_clause,2025-11-06 08:10:41.034364,2025-11-06 08:10:41.035589,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_whitelist_table_column_names,2025-11-06 08:10:41.036043,2025-11-06 08:10:41.037704,0.002,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln0],2025-11-06 08:10:41.038157,2025-11-06 08:10:41.039427,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln1],2025-11-06 08:10:41.039842,2025-11-06 08:10:41.041168,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln2],2025-11-06 08:10:41.041576,2025-11-06 08:10:41.042714,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln3],2025-11-06 08:10:41.043075,2025-11-06 08:10:41.044185,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln4],2025-11-06 08:10:41.044530,2025-11-06 08:10:41.047555,0.003,P
+------------------ -------------------------------------
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_equals_clause,2025-11-06 08:10:52.774820,2025-11-06 08:10:52.778710,0.004,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_where_in_clause,2025-11-06 08:10:52.779241,2025-11-06 08:10:52.780636,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_sql_injection_in_delete_query,2025-11-06 08:10:52.781323,2025-11-06 08:10:52.782733,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_parameterized_query_protection,2025-11-06 08:10:52.783254,2025-11-06 08:10:52.985318,0.202,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_psycopg2_parameterized_query_protection,2025-11-06 08:10:52.986202,2025-11-06 08:10:52.990320,0.004,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_raw_string_concatenation_is_unsafe,2025-11-06 08:10:52.990935,2025-11-06 08:10:52.992245,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_f_string_with_user_input_vulnerability,2025-11-06 08:10:52.992655,2025-11-06 08:10:52.993785,0.001,P
+tests/test_security_sql_injection.py::TestSQLInjectionVulnerabilities::test_column_name_injection,2025-11-06 08:10:52.994434,2025-11-06 08:10:52.995702,0.001,P
+tests/test_security_sql_injection.py::TestDataAccessVulnerabilityPatterns::test_build_analysis_query_vulnerability,2025-11-06 08:10:52.996128,2025-11-06 08:10:52.997289,0.001,P
+tests/test_security_sql_injection.py::TestDataAccessVulnerabilityPatterns::test_build_delete_query_vulnerability,2025-11-06 08:10:52.997718,2025-11-06 08:10:52.998974,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_sqlalchemy_parameterization,2025-11-06 08:10:52.999394,2025-11-06 08:10:53.001185,0.002,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_psycopg2_parameterization,2025-11-06 08:10:53.001701,2025-11-06 08:10:53.003086,0.001,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_fixed_where_in_clause,2025-11-06 08:10:53.003997,2025-11-06 08:10:53.006215,0.002,P
+tests/test_security_sql_injection.py::TestSecurityFixApproaches::test_whitelist_table_column_names,2025-11-06 08:10:53.006820,2025-11-06 08:10:53.008448,0.002,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln0],2025-11-06 08:10:53.008878,2025-11-06 08:10:53.010294,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln1],2025-11-06 08:10:53.010844,2025-11-06 08:10:53.012362,0.002,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln2],2025-11-06 08:10:53.012818,2025-11-06 08:10:53.014233,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln3],2025-11-06 08:10:53.014683,2025-11-06 08:10:53.016044,0.001,P
+tests/test_security_sql_injection.py::TestSecurityScanResults::test_vulnerability_catalog[vuln4],2025-11-06 08:10:53.016555,2025-11-06 08:10:53.020617,0.004,P
+------------------ -------------------------------------
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_generation,2025-11-06 08:22:30.677259,2025-11-06 08:22:32.865265,2.188,Fx
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_stored_with_metadata,2025-11-06 08:22:32.865821,2025-11-06 08:22:32.885475,0.020,Fx
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_validation_success,2025-11-06 08:22:32.885997,2025-11-06 08:22:32.906051,0.020,Fx
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_validation_invalid_token,2025-11-06 08:22:32.906946,2025-11-06 08:22:32.925304,0.018,Fx
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_validation_expired_token,2025-11-06 08:22:32.925849,2025-11-06 08:22:32.943973,0.018,Fx
+tests/test_security_xss_csrf.py::TestCSRFTokenManager::test_csrf_token_cleanup_expired,2025-11-06 08:22:32.944694,2025-11-06 08:22:32.963399,0.019,Fx
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_csrf_token_endpoint_accessible_without_token,2025-11-06 08:22:32.963930,2025-11-06 08:22:33.463477,0.500,Fe
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_csrf_token_generation_returns_valid_format,2025-11-06 08:22:33.463953,2025-11-06 08:22:33.482399,0.018,Fe
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_post_without_csrf_token_rejected,2025-11-06 08:22:33.482867,2025-11-06 08:22:33.500119,0.017,Fe
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_post_with_invalid_csrf_token_rejected,2025-11-06 08:22:33.501038,2025-11-06 08:22:33.518244,0.017,Fe
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_csrf_protection_on_all_state_modifying_methods,2025-11-06 08:22:33.518712,2025-11-06 08:22:33.535270,0.017,Fe
+tests/test_security_xss_csrf.py::TestCSRFMiddleware::test_get_requests_skip_csrf_check,2025-11-06 08:22:33.535766,2025-11-06 08:22:33.552456,0.017,Fe
+tests/test_security_xss_csrf.py::TestContentSecurityPolicy::test_csp_header_in_html_template,2025-11-06 08:22:33.552917,2025-11-06 08:22:33.554648,0.002,P
+tests/test_security_xss_csrf.py::TestContentSecurityPolicy::test_csp_restricts_script_sources,2025-11-06 08:22:33.555054,2025-11-06 08:22:33.556254,0.001,P
+tests/test_security_xss_csrf.py::TestContentSecurityPolicy::test_csp_prevents_clickjacking,2025-11-06 08:22:33.557235,2025-11-06 08:22:33.561577,0.004,P
+tests/test_security_xss_csrf.py::TestContentSecurityPolicy::test_csp_restricts_form_submissions,2025-11-06 08:22:33.562072,2025-11-06 08:22:33.563502,0.001,P
+tests/test_security_xss_csrf.py::TestHTTPClientCSRFHandling::test_http_client_initialization,2025-11-06 08:22:33.563922,2025-11-06 08:22:33.565293,0.001,P
+tests/test_security_xss_csrf.py::TestHTTPClientCSRFHandling::test_http_client_csrf_token_endpoint,2025-11-06 08:22:33.565686,2025-11-06 08:22:33.566915,0.001,P
+tests/test_security_xss_csrf.py::TestHTTPClientCSRFHandling::test_http_client_adds_csrf_header_to_mutations,2025-11-06 08:22:33.567293,2025-11-06 08:22:33.568475,0.001,P
+tests/test_security_xss_csrf.py::TestHTTPClientCSRFHandling::test_http_client_credentials_included,2025-11-06 08:22:33.568845,2025-11-06 08:22:33.570285,0.001,P
+tests/test_security_xss_csrf.py::TestVueAppSecurityInit::test_main_js_initializes_csrf,2025-11-06 08:22:33.570668,2025-11-06 08:22:33.571846,0.001,P
+tests/test_security_xss_csrf.py::TestVueAppSecurityInit::test_csrf_meta_tag_present,2025-11-06 08:22:33.572217,2025-11-06 08:22:33.573344,0.001,P
+tests/test_security_xss_csrf.py::TestXSSCSRFIntegration::test_complete_csrf_token_flow,2025-11-06 08:22:33.573732,2025-11-06 08:22:33.591331,0.018,Fe
+tests/test_security_xss_csrf.py::TestXSSCSRFIntegration::test_multiple_tokens_unique_and_independent,2025-11-06 08:22:33.591804,2025-11-06 08:22:33.613155,0.021,Fe
+tests/test_security_xss_csrf.py::TestSecurityBestPractices::test_csrf_token_uses_secure_random,2025-11-06 08:22:33.613660,2025-11-06 08:22:33.633792,0.020,Fx
+tests/test_security_xss_csrf.py::TestSecurityBestPractices::test_csrf_token_has_expiration,2025-11-06 08:22:33.634407,2025-11-06 08:22:33.651867,0.017,Fx
+tests/test_security_xss_csrf.py::TestSecurityBestPractices::test_csrf_token_one_time_use,2025-11-06 08:22:33.652400,2025-11-06 08:22:33.670612,0.018,Fx
+tests/test_security_xss_csrf.py::TestSecurityBestPractices::test_no_hardcoded_secrets,2025-11-06 08:22:33.671286,2025-11-06 08:22:33.680820,0.010,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+tests/test_security_encryption.py::TestEncryptionManager::test_encryption_decryption_roundtrip,2025-11-06 09:31:09.300467,2025-11-06 09:31:09.305856,0.005,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypted_data_is_base64_encoded,2025-11-06 09:31:09.306471,2025-11-06 09:31:09.309563,0.003,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encryption_produces_different_output_each_time,2025-11-06 09:31:09.310274,2025-11-06 09:31:09.312189,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_decryption_fails_with_wrong_key,2025-11-06 09:31:09.312611,2025-11-06 09:31:09.314414,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_decryption_fails_with_tampered_data,2025-11-06 09:31:09.314936,2025-11-06 09:31:09.317249,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypt_bytes_input,2025-11-06 09:31:09.317816,2025-11-06 09:31:09.319872,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypt_large_data,2025-11-06 09:31:09.320293,2025-11-06 09:31:09.321978,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypt_special_characters,2025-11-06 09:31:09.322400,2025-11-06 09:31:09.324175,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypt_unicode_data,2025-11-06 09:31:09.324573,2025-11-06 09:31:09.326181,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_encrypt_dict_multiple_keys,2025-11-06 09:31:09.326594,2025-11-06 09:31:09.328307,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionManager::test_decrypt_dict_recovery,2025-11-06 09:31:09.328723,2025-11-06 09:31:09.330705,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_store_and_retrieve_database_credentials,2025-11-06 09:31:09.331213,2025-11-06 09:31:09.333277,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_build_postgresql_connection_string,2025-11-06 09:31:09.333711,2025-11-06 09:31:09.335426,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_build_mysql_connection_string,2025-11-06 09:31:09.335884,2025-11-06 09:31:09.337750,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_build_tdengine_connection_string,2025-11-06 09:31:09.338231,2025-11-06 09:31:09.339825,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_store_and_retrieve_api_key,2025-11-06 09:31:09.340219,2025-11-06 09:31:09.341813,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_store_and_retrieve_jwt_secret,2025-11-06 09:31:09.342204,2025-11-06 09:31:09.343835,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_save_and_load_encrypted_config_file,2025-11-06 09:31:09.344191,2025-11-06 09:31:09.345932,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_get_missing_database_credentials_raises_error,2025-11-06 09:31:09.346383,2025-11-06 09:31:09.348180,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_get_missing_api_key_raises_error,2025-11-06 09:31:09.348614,2025-11-06 09:31:09.350360,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_verify_configuration_integrity,2025-11-06 09:31:09.350773,2025-11-06 09:31:09.352357,0.002,Fx
+tests/test_security_encryption.py::TestSecureConfig::test_to_dict_with_decryption,2025-11-06 09:31:09.352713,2025-11-06 09:31:09.354190,0.001,Fx
+tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_encryption_uses_aes_256_gcm,2025-11-06 09:31:09.354559,2025-11-06 09:31:09.356081,0.002,Fx
+tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_encryption_produces_authenticated_ciphertext,2025-11-06 09:31:09.356446,2025-11-06 09:31:09.357838,0.001,Fx
+tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_nonce_is_random,2025-11-06 09:31:09.358172,2025-11-06 09:31:09.359560,0.001,Fx
+tests/test_security_encryption.py::TestEncryptionSecurityPractices::test_file_permissions_restrictive,2025-11-06 09:31:09.359913,2025-11-06 09:31:09.364910,0.005,Fx

@@ -1,8 +1,0 @@
-{
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "e08501403bb64960a131232c5d8120cd.BlmhhTocEn1HhWo8",
-    "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
-    "ANTHROPIC_MODEL": "GLM-4.5",
-    "ANTHROPIC_SMALL_FAST_MODEL": "GLM-4.5-Air"
-  }
-}

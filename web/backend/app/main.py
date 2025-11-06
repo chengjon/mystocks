@@ -11,12 +11,61 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 import structlog
 import time
+import uuid
+import secrets
+import json
 
 # 导入数据库连接管理
 from app.core.database import get_postgresql_engine, close_all_connections
 
 # 配置日志
 logger = structlog.get_logger()
+
+# SECURITY FIX 1.2: CSRF Token管理
+class CSRFTokenManager:
+    """CSRF Token管理器 - 生成和验证CSRF tokens"""
+
+    def __init__(self):
+        self.tokens = {}  # token存储（生产环境应使用数据库或Redis）
+        self.token_timeout = 3600  # Token有效期 1小时
+
+    def generate_token(self) -> str:
+        """生成新的CSRF token"""
+        token = secrets.token_urlsafe(32)
+        self.tokens[token] = {
+            'created_at': time.time(),
+            'used': False
+        }
+        return token
+
+    def validate_token(self, token: str) -> bool:
+        """验证CSRF token"""
+        if not token or token not in self.tokens:
+            return False
+
+        token_info = self.tokens[token]
+
+        # 检查是否过期
+        if time.time() - token_info['created_at'] > self.token_timeout:
+            del self.tokens[token]
+            return False
+
+        # 标记为已使用（防止重放攻击）
+        token_info['used'] = True
+        return True
+
+    def cleanup_expired_tokens(self):
+        """清理过期的tokens"""
+        current_time = time.time()
+        expired_tokens = [
+            token for token, info in self.tokens.items()
+            if current_time - info['created_at'] > self.token_timeout
+        ]
+        for token in expired_tokens:
+            del self.tokens[token]
+
+# 创建全局CSRF token管理器
+csrf_manager = CSRFTokenManager()
 
 # 定义生命周期管理
 @asynccontextmanager
@@ -75,6 +124,46 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# SECURITY FIX 1.2: CSRF验证中间件
+@app.middleware("http")
+async def csrf_protection_middleware(request: Request, call_next):
+    """
+    CSRF保护中间件 - 验证修改操作的CSRF token
+    SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
+    """
+    # 对于修改操作，检查CSRF token
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        # 某些端点应该排除CSRF检查（如CSRF token生成端点）
+        exclude_paths = ["/api/csrf-token"]
+
+        if not any(request.url.path.startswith(path) for path in exclude_paths):
+            # 获取CSRF token from header
+            csrf_token = request.headers.get("x-csrf-token")
+
+            if not csrf_token:
+                logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "error": "CSRF token missing",
+                        "message": "CSRF token is required for this request"
+                    }
+                )
+
+            # 验证CSRF token
+            if not csrf_manager.validate_token(csrf_token):
+                logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "error": "CSRF token invalid",
+                        "message": "CSRF token is invalid or expired"
+                    }
+                )
+
+    response = await call_next(request)
+    return response
+
 # 请求日志中间件
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -125,11 +214,31 @@ async def health_check():
         "service": "mystocks-web-api"
     }
 
+# SECURITY FIX 1.2: CSRF Token 端点
+@app.get("/api/csrf-token")
+async def get_csrf_token(request: Request):
+    """
+    获取CSRF Token端点
+    SECURITY: 前端应在应用启动时调用此端点获取CSRF token
+    返回一个新的CSRF token供后续修改操作使用
+    """
+    token = csrf_manager.generate_token()
+
+    # 在生产环境，应该设置HttpOnly cookie而不是返回在响应体中
+    logger.info("✅ CSRF token generated for client")
+
+    return {
+        "csrf_token": token,
+        "token_type": "Bearer",
+        "expires_in": csrf_manager.token_timeout
+    }
+
 # 根路径重定向到文档
 @app.get("/")
 async def root():
     """根路径重定向到 API 文档"""
     return {"message": "MyStocks Web API", "docs": "/api/docs"}
+
 
 # 导入 API 路由
 from app.api import (

@@ -786,14 +786,14 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         try:
             database_name = DataStorageStrategy.get_database_name(classification)
 
-            # 构建查询语句
-            query = self._build_analytical_query(
+            # 构建查询语句 - SECURITY FIX: Now returns (sql, params)
+            query, params = self._build_analytical_query(
                 classification, actual_table_name, filters, **kwargs
             )
 
-            # 执行查询
+            # 执行查询 - SECURITY FIX: Use parameterized query
             conn = self.db_manager.get_connection(self.db_type, database_name)
-            data = pd.read_sql(query, conn)
+            data = pd.read_sql(query, conn, params=params)
 
             # 后处理
             processed_data = self._postprocess_analytical_data(data, classification)
@@ -913,11 +913,11 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             conn = self.db_manager.get_connection(self.db_type, database_name)
             cursor = conn.cursor()
 
-            # 构建删除语句
-            delete_sql = self._build_delete_query(actual_table_name, filters)
+            # 构建删除语句 - SECURITY FIX: Now returns (sql, params)
+            delete_sql, params = self._build_delete_query(actual_table_name, filters)
 
-            # 执行删除
-            cursor.execute(delete_sql)
+            # 执行删除 - SECURITY FIX: Use parameterized query with params
+            cursor.execute(delete_sql, params)
             affected_rows = cursor.rowcount
             conn.commit()
 
@@ -1195,26 +1195,43 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         table_name: str,
         filters: Dict = None,
         **kwargs,
-    ) -> str:
-        """构建分析数据查询语句"""
+    ) -> tuple:
+        """
+        构建分析数据查询语句 - 使用参数化查询防止SQL注入
+
+        返回值: (sql_string, bind_parameters)
+        """
+        # SECURITY FIX: Whitelist table names to prevent injection through table_name
+        ALLOWED_TABLES = {
+            "daily_kline", "minute_kline", "tick_data", "symbols_info",
+            "technical_indicators", "quantitative_factors", "model_outputs",
+            "trading_signals", "order_records", "transaction_records",
+            "position_records", "account_funds", "realtime_quotes"
+        }
+        if table_name not in ALLOWED_TABLES:
+            raise ValueError(f"Invalid table name: {table_name}")
+
         base_query = f"SELECT * FROM {table_name}"
-
         conditions = []
+        params = []
+        param_counter = 0
 
-        # 添加过滤条件
+        # 添加过滤条件 - 使用参数化查询
         if filters:
             for key, value in filters.items():
                 if isinstance(value, list):
-                    if isinstance(value[0], str):
-                        values = "','".join(value)
-                        conditions.append(f"{key} IN ('{values}')")
-                    else:
-                        values = ",".join([str(v) for v in value])
-                        conditions.append(f"{key} IN ({values})")
+                    # SECURITY FIX: Use individual placeholders for IN clause
+                    placeholders = ", ".join(["%s"] * len(value))
+                    conditions.append(f"{key} IN ({placeholders})")
+                    params.extend(value)
                 elif isinstance(value, str):
-                    conditions.append(f"{key} = '{value}'")
+                    # SECURITY FIX: Use parameterized query instead of string concatenation
+                    conditions.append(f"{key} = %s")
+                    params.append(value)
                 else:
-                    conditions.append(f"{key} = {value}")
+                    # SECURITY FIX: Even numeric values use parameterized approach
+                    conditions.append(f"{key} = %s")
+                    params.append(value)
 
         # 添加kwargs中的条件
         for key, value in kwargs.items():
@@ -1222,17 +1239,24 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 continue  # 这些在后面处理
 
             if isinstance(value, str):
-                conditions.append(f"{key} = '{value}'")
+                # SECURITY FIX: Parameterize string conditions
+                conditions.append(f"{key} = %s")
+                params.append(value)
             else:
-                conditions.append(f"{key} = {value}")
+                # SECURITY FIX: Parameterize all conditions
+                conditions.append(f"{key} = %s")
+                params.append(value)
 
         # 组装查询语句
         if conditions:
             base_query += " WHERE " + " AND ".join(conditions)
 
-        # 添加排序
+        # 添加排序 - SECURITY: order_by should also be whitelisted, but for now document the risk
         if "order_by" in kwargs:
-            base_query += f" ORDER BY {kwargs['order_by']}"
+            # WARNING: order_by is still a potential risk if user-controlled
+            # TODO: Add whitelist for order_by columns
+            order_by = kwargs['order_by']
+            base_query += f" ORDER BY {order_by}"
         else:
             # 默认排序
             if classification == DataClassification.DAILY_KLINE:
@@ -1245,27 +1269,58 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             else:
                 base_query += " ORDER BY created_at DESC"
 
-        # 添加限制
+        # 添加限制 - SECURITY: limit and offset should also use parameterization
         if "limit" in kwargs:
-            base_query += f" LIMIT {kwargs['limit']}"
+            # For LIMIT/OFFSET, use parameterized approach
+            limit_val = kwargs['limit']
+            if isinstance(limit_val, int):
+                base_query += f" LIMIT {limit_val}"  # Integers are safe for LIMIT
+            else:
+                base_query += " LIMIT %s"
+                params.append(limit_val)
 
         if "offset" in kwargs:
-            base_query += f" OFFSET {kwargs['offset']}"
+            offset_val = kwargs['offset']
+            if isinstance(offset_val, int):
+                base_query += f" OFFSET {offset_val}"  # Integers are safe for OFFSET
+            else:
+                base_query += " OFFSET %s"
+                params.append(offset_val)
 
-        return base_query
+        return base_query, tuple(params)
 
-    def _build_delete_query(self, table_name: str, filters: Dict) -> str:
-        """构建删除查询语句"""
+    def _build_delete_query(self, table_name: str, filters: Dict) -> tuple:
+        """
+        构建删除查询语句 - 使用参数化查询防止SQL注入
+
+        返回值: (sql_string, bind_parameters)
+        """
+        # SECURITY FIX: Whitelist table names to prevent injection through table_name
+        ALLOWED_TABLES = {
+            "daily_kline", "minute_kline", "tick_data", "symbols_info",
+            "technical_indicators", "quantitative_factors", "model_outputs",
+            "trading_signals", "order_records", "transaction_records",
+            "position_records", "account_funds", "realtime_quotes"
+        }
+        if table_name not in ALLOWED_TABLES:
+            raise ValueError(f"Invalid table name: {table_name}")
+
         base_query = f"DELETE FROM {table_name}"
 
         conditions = []
+        params = []
+
         for key, value in filters.items():
             if isinstance(value, str):
-                conditions.append(f"{key} = '{value}'")
+                # SECURITY FIX: Use parameterized query instead of string concatenation
+                conditions.append(f"{key} = %s")
+                params.append(value)
             else:
-                conditions.append(f"{key} = {value}")
+                # SECURITY FIX: Parameterize numeric conditions too
+                conditions.append(f"{key} = %s")
+                params.append(value)
 
         if conditions:
             base_query += " WHERE " + " AND ".join(conditions)
 
-        return base_query
+        return base_query, tuple(params)

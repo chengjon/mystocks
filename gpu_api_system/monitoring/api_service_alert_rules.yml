@@ -1,0 +1,81 @@
+# API服务告警规则
+
+groups:
+  - name: api_service_alerts
+    rules:
+      # API服务响应时间过长
+      - alert: HighApiResponseTime
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)) > 1
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "API响应时间过长"
+          description: "服务 {{ $labels.service }} 95%响应时间超过1秒，持续5分钟"
+
+      # API错误率过高
+      - alert: HighApiErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          category: reliability
+        annotations:
+          summary: "API错误率过高"
+          description: "服务 {{ $labels.service }} 错误率超过5%，持续5分钟"
+
+      # API QPS过高
+      - alert: HighApiQPS
+        expr: sum(rate(http_requests_total[5m])) > 10000
+        for: 5m
+        labels:
+          severity: warning
+          category: capacity
+        annotations:
+          summary: "API QPS过高"
+          description: "服务 {{ $labels.service }} QPS超过10000，持续5分钟"
+
+      # 任务队列积压
+      - alert: TaskQueueBacklog
+        expr: redis_length > 1000
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "任务队列积压"
+          description: "任务队列长度超过1000，持续5分钟"
+
+      # 服务健康检查失败
+      - alert: ServiceHealthCheckFailed
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: reliability
+        annotations:
+          summary: "服务健康检查失败"
+          description: "服务 {{ $labels.instance }} 健康检查失败"
+
+      # 资源调度器故障
+      - alert: ResourceSchedulerFailed
+        expr: scheduler_success_rate < 0.95
+        for: 5m
+        labels:
+          severity: critical
+          category: reliability
+        annotations:
+          summary: "资源调度器故障"
+          description: "资源调度器成功率低于95%，持续5分钟"
+
+      # GPU资源耗尽
+      - alert: GpuResourceExhausted
+        expr: available_gpu_slots == 0
+        for: 5m
+        labels:
+          severity: warning
+          category: capacity
+        annotations:
+          summary: "GPU资源耗尽"
+          description: "所有GPU插槽均被占用，新任务需要排队等待"
