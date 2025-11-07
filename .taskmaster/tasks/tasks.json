@@ -727,7 +727,7 @@
           "id": "19",
           "title": "数据库连接池优化",
           "description": "优化PostgreSQL和TDengine连接池配置，实现连接池监控，避免高并发场景连接耗尽",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "category": "P3-性能",
           "dependencies": [
