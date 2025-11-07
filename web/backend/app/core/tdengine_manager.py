@@ -1,11 +1,12 @@
 """
 TDengine Cache Manager - 时序数据库缓存管理
 Task 2.1: TDengine 缓存集成 - 搭建 TDengine 服务
+Phase 3 Task 19: 集成连接池优化
 
 实现 TDengine 连接管理、表创建、数据读写等基础功能。
 
 Features:
-- TDengine 连接池管理
+- TDengine 连接池管理（Phase 3优化：连接复用、健康检查、监控）
 - 自动表创建和初始化
 - 缓存数据读写接口
 - 连接健康检查
@@ -18,6 +19,8 @@ from typing import Dict, List, Optional, Any, Tuple
 import structlog
 from taos import connect
 from taos.error import ProgrammingError
+
+from app.core.tdengine_pool import TDengineConnectionPool
 
 logger = structlog.get_logger()
 
@@ -63,9 +66,11 @@ class TDengineManager:
         password: str = "taosdata",
         database: str = "mystocks_cache",
         precision: str = "ms",
+        min_pool_size: int = 5,
+        max_pool_size: int = 20,
     ):
         """
-        初始化 TDengine 管理器
+        初始化 TDengine 管理器（Phase 3优化：连接池支持）
 
         Args:
             host: TDengine 服务器地址
@@ -74,6 +79,8 @@ class TDengineManager:
             password: 数据库密码
             database: 缓存数据库名
             precision: 时间精度 (ms/us/ns)
+            min_pool_size: 最小连接池大小（Phase 3新增）
+            max_pool_size: 最大连接池大小（Phase 3新增）
         """
         self.host = host or os.getenv("TDENGINE_HOST", "127.0.0.1")
         self.port = port or int(os.getenv("TDENGINE_PORT", "6030"))
@@ -82,32 +89,51 @@ class TDengineManager:
         self.database = database or os.getenv("TDENGINE_DATABASE", "mystocks_cache")
         self.precision = precision
 
-        self._conn = None
+        # Phase 3: 连接池替代单连接
+        self._pool: Optional[TDengineConnectionPool] = None
         self._is_initialized = False
 
+        # 连接池配置
+        self._min_pool_size = min_pool_size
+        self._max_pool_size = max_pool_size
+
         logger.info(
-            "🔧 初始化 TDengine 管理器",
+            "🔧 初始化 TDengine 管理器（Phase 3连接池优化）",
             host=self.host,
             port=self.port,
             database=self.database,
+            pool_size=f"{min_pool_size}-{max_pool_size}",
         )
 
     def connect(self) -> bool:
         """
-        连接到 TDengine 服务器
+        初始化 TDengine 连接池（Phase 3优化）
 
         Returns:
-            True if connection successful
+            True if connection pool initialization successful
         """
         try:
-            self._conn = connect(
-                host=self.host, port=self.port, user=self.user, password=self.password
+            # Phase 3: 创建连接池替代单连接
+            self._pool = TDengineConnectionPool(
+                host=self.host,
+                port=self.port,
+                user=self.user,
+                password=self.password,
+                database=None,  # 初始不指定数据库，在initialize中切换
+                min_size=self._min_pool_size,
+                max_size=self._max_pool_size,
+                max_idle_time=600,  # 10分钟空闲超时
+                health_check_interval=60,  # 60秒健康检查间隔
             )
-            logger.info("✅ 已连接到 TDengine", host=self.host)
+            logger.info(
+                "✅ TDengine连接池已初始化",
+                host=self.host,
+                pool_size=f"{self._min_pool_size}-{self._max_pool_size}",
+            )
             return True
 
         except Exception as e:
-            logger.error("❌ 连接 TDengine 失败", error=str(e))
+            logger.error("❌ 初始化TDengine连接池失败", error=str(e))
             return False
 
     def initialize(self) -> bool:
@@ -383,18 +409,29 @@ class TDengineManager:
 
     def health_check(self) -> bool:
         """
-        健康检查
+        健康检查（Phase 3优化：检查连接池状态）
 
         Returns:
             True if health check passed
         """
         try:
-            if not self._conn:
+            if not self._pool:
                 return self.connect()
 
-            # 执行简单查询测试连接 (不需要选择数据库)
-            self._execute("SELECT SERVER_VERSION()")
-            logger.debug("✅ 健康检查通过")
+            # Phase 3: 从连接池获取连接进行健康检查
+            with self._pool.get_connection_context(timeout=5) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT SERVER_VERSION()")
+                cursor.close()
+
+            # 记录连接池统计信息
+            stats = self._pool.get_stats()
+            logger.debug(
+                "✅ 健康检查通过",
+                pool_size=stats.get("pool_size"),
+                active=stats.get("active_connections"),
+                idle=stats.get("idle_connections"),
+            )
             return True
 
         except Exception as e:
@@ -402,24 +439,38 @@ class TDengineManager:
             return False
 
     def _execute(self, sql: str) -> bool:
-        """执行 SQL 语句"""
+        """
+        执行 SQL 语句（Phase 3优化：使用连接池）
+        """
+        if not self._pool:
+            raise RuntimeError("连接池未初始化")
+
         try:
-            cursor = self._conn.cursor()
-            cursor.execute(sql)
-            cursor.close()
+            # Phase 3: 从连接池获取连接
+            with self._pool.get_connection_context() as conn:
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                cursor.close()
             return True
         except Exception as e:
             logger.error("❌ SQL 执行失败", sql=sql, error=str(e))
             raise
 
     def _execute_query(self, sql: str) -> Optional[List[Tuple]]:
-        """执行查询 SQL"""
+        """
+        执行查询 SQL（Phase 3优化：使用连接池）
+        """
+        if not self._pool:
+            raise RuntimeError("连接池未初始化")
+
         try:
-            cursor = self._conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            cursor.close()
-            return result
+            # Phase 3: 从连接池获取连接
+            with self._pool.get_connection_context() as conn:
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                cursor.close()
+                return result
         except Exception as e:
             logger.error("❌ SQL 查询失败", sql=sql, error=str(e))
             return None
@@ -438,11 +489,26 @@ class TDengineManager:
             logger.debug(f"更新命中次数失败: {str(e)}")
 
     def close(self):
-        """关闭数据库连接"""
-        if self._conn:
-            self._conn.close()
-            logger.info("✅ TDengine 连接已关闭")
+        """
+        关闭连接池（Phase 3优化：关闭所有连接）
+        """
+        if self._pool:
+            self._pool.close_all()
+            self._pool = None
+            logger.info("✅ TDengine 连接池已关闭")
             self._is_initialized = False
+
+    def get_pool_stats(self) -> Optional[Dict[str, Any]]:
+        """
+        获取连接池统计信息（Phase 3新增）
+
+        Returns:
+            连接池统计字典，包含活跃连接数、空闲连接数、请求次数等
+        """
+        if not self._pool:
+            return None
+
+        return self._pool.get_stats()
 
 
 # 全局单例
