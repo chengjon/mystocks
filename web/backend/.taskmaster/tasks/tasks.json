@@ -1,0 +1,56 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Task 9: Multi-Room Subscription Extension",
+        "description": "Implement Socket.IO room-based subscription system with multi-room support",
+        "status": "done",
+        "details": "Completed: 174 tests passing, Room manager with event subscription, Message routing and broadcasting",
+        "priority": "high",
+        "test_strategy": "Unit tests + Integration tests"
+      },
+      {
+        "id": 2,
+        "title": "Task 10: Simplified Casbin RBAC for Single-User System",
+        "description": "Implement role-based permission system optimized for single-user architecture",
+        "status": "done",
+        "details": "Completed: 48 tests passing, Removed JWT/auth overhead, Simple role-based access control",
+        "priority": "high",
+        "test_strategy": "Unit tests for permission checking + FastAPI integration"
+      },
+      {
+        "id": 3,
+        "title": "Task 11: API Gateway and Request Routing",
+        "description": "Implement comprehensive API gateway with request routing, validation, and middleware chain",
+        "status": "done",
+        "details": "Design API gateway architecture, implement request routing, add request validation middleware, add response formatting, add error handling middleware, create comprehensive tests",
+        "priority": "high",
+        "test_strategy": "Unit tests for routing + E2E tests for middleware chain"
+      },
+      {
+        "id": 4,
+        "title": "Task 12: Market Data Cache System",
+        "description": "Implement distributed caching layer for market data with invalidation strategies",
+        "status": "pending",
+        "details": "Design cache architecture (Redis), implement cache layers, add cache invalidation, add prewarming, add statistics tracking",
+        "priority": "high",
+        "test_strategy": "Unit tests for cache operations + Performance tests"
+      },
+      {
+        "id": 5,
+        "title": "Task 13: Real-time Data Synchronization",
+        "description": "Implement real-time sync processor for market data updates across WebSocket connections",
+        "status": "pending",
+        "details": "Design sync processor, implement message queue, add conflict resolution, add data consistency checks",
+        "priority": "high",
+        "test_strategy": "Unit tests + Integration tests with message queue"
+      }
+    ],
+    "metadata": {
+      "created": "2025-11-07T00:34:00.428Z",
+      "updated": "2025-11-07T03:37:53.428Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
