@@ -6,7 +6,7 @@
     "master": {
       "id": "master",
       "name": "主分支",
-      "description": "MyStocks架构优化项目主任务列表",
+      "description": "MyStocks架构优化项目主任务列表 - Phase 3系统优化与增强",
       "createdAt": "2025-11-06",
       "tasks": [
         {
@@ -722,6 +722,194 @@
               "details": "队列深度监控、任务延迟监控、失败告警"
             }
           ]
+        },
+        {
+          "id": "19",
+          "title": "数据库连接池优化",
+          "description": "优化PostgreSQL和TDengine连接池配置，实现连接池监控，避免高并发场景连接耗尽",
+          "status": "pending",
+          "priority": "critical",
+          "category": "P3-性能",
+          "dependencies": [
+            "2"
+          ],
+          "details": "PostgreSQL连接池配置优化（核心连接数20，最大溢出连接40，pool_pre_ping=True，连接回收时间3600秒，连接超时30秒），TDengine连接池配置（连接池管理，连接复用机制，超时处理），连接池监控（活跃连接数监控，连接泄漏检测，性能指标采集）。\n\n验收标准：\n- PostgreSQL连接池配置完成且生效\n- TDengine连接池实现并验证\n- 连接池监控指标可视化\n- 压测验证：1000并发无连接耗尽\n- 单元测试覆盖连接池管理逻辑\n\n预期收益：避免连接泄漏，并发处理能力提升50%，数据库压力降低30%",
+          "testStrategy": "单元测试：连接池配置验证、连接获取释放逻辑；集成测试：高并发场景测试（1000+并发）；性能测试：连接池监控指标采集验证；压力测试：连接泄漏检测、长时间运行稳定性",
+          "subtasks": []
+        },
+        {
+          "id": "20",
+          "title": "配置敏感信息加密存储",
+          "description": "实现SecretManager模块，加密存储数据库密码和API密钥，支持密钥轮换",
+          "status": "pending",
+          "priority": "critical",
+          "category": "P3-安全",
+          "dependencies": [],
+          "details": "实现SecretManager模块（支持Fernet加密算法，环境变量加密存储，密钥轮换机制），敏感配置加密（数据库密码加密，API密钥加密，JWT密钥加密），集成云密钥管理服务（可选）（AWS Secrets Manager，Azure Key Vault，HashiCorp Vault）。\n\n验收标准：\n- SecretManager模块实现并测试\n- 所有敏感配置加密存储\n- 密钥轮换流程文档化\n- 单元测试覆盖加密/解密逻辑\n- 安全审计通过\n\n预期收益：消除明文密码安全风险，符合安全合规要求，支持密钥轮换",
+          "testStrategy": "单元测试：加密/解密功能验证；集成测试：SecretManager与应用集成；安全测试：密钥轮换流程验证；合规测试：安全审计工具扫描",
+          "subtasks": []
+        },
+        {
+          "id": "21",
+          "title": "Prometheus + Grafana监控系统",
+          "description": "部署Prometheus metrics端点，配置Grafana仪表板，实现告警规则",
+          "status": "pending",
+          "priority": "critical",
+          "category": "P3-监控",
+          "dependencies": [
+            "2",
+            "4"
+          ],
+          "details": "Prometheus metrics端点（cache_hits_total，cache_misses_total，request_latency_seconds，active_connections，socketio_rooms_active，api_requests_total），Grafana仪表板（缓存命中率趋势图，API响应时间分布P50/P95/P99，数据库连接池使用率，Socket.IO房间活跃度，错误率监控），告警规则（缓存命中率<70%，API P95延迟>500ms，数据库连接使用率>80%，错误率>1%）。\n\n验收标准：\n- Prometheus metrics端点实现\n- Grafana仪表板配置完成\n- 告警规则配置并验证\n- 告警通知渠道接入（邮件/Webhook）\n- 监控系统7x24运行验证\n\n预期收益：实时问题发现，性能瓶颈可视化，告警响应时间缩短90%",
+          "testStrategy": "功能测试：metrics端点验证；集成测试：Grafana仪表板数据展示；告警测试：触发告警规则验证通知；压力测试：高负载下监控系统稳定性",
+          "subtasks": []
+        },
+        {
+          "id": "22",
+          "title": "多级缓存架构（L1+L2）",
+          "description": "实现L1应用层缓存（LRUCache），整合L2 TDengine缓存，实现缓存一致性机制",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-性能",
+          "dependencies": [
+            "2"
+          ],
+          "details": "L1应用层缓存（使用cachetools.LRUCache，缓存容量10000条，访问延迟<0.5ms），L2 TDengine缓存（保持现有实现，访问延迟<5ms），缓存一致性机制（L1自动回填策略，L1/L2失效同步，缓存预热优化）。\n\n验收标准：\n- L1缓存模块实现并测试\n- L1/L2缓存整合完成\n- 性能测试：热点数据延迟<0.5ms\n- 缓存命中率提升至85%+\n- 单元测试覆盖多级缓存逻辑\n\n预期收益：热点数据访问延迟降低90%，数据库查询减少50%，缓存命中率提升15%",
+          "testStrategy": "单元测试：L1缓存CRUD操作；集成测试：L1/L2缓存协同；性能测试：不同缓存层延迟测试；一致性测试：缓存失效同步验证",
+          "subtasks": []
+        },
+        {
+          "id": "23",
+          "title": "API全面版本控制",
+          "description": "实现版本化路由（/api/v1/*，/api/v2/*），版本弃用策略，更新OpenAPI文档",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-规范",
+          "dependencies": [
+            "3"
+          ],
+          "details": "版本化路由实现（/api/v1/*路由，/api/v2/*路由，版本路由自动注册），API版本管理（版本弃用策略，版本兼容性检查，版本迁移指南），OpenAPI规范更新（多版本API文档，版本差异说明，迁移路径文档）。\n\n验收标准：\n- 所有API端点版本化\n- 版本弃用装饰器实现\n- OpenAPI文档更新完成\n- API版本策略文档化\n- 向后兼容性验证\n\n预期收益：API演进灵活性提升，向后兼容性保障，版本管理规范化",
+          "testStrategy": "单元测试：版本路由注册验证；集成测试：多版本API并存；兼容性测试：旧版本客户端访问；文档测试：OpenAPI规范验证",
+          "subtasks": []
+        },
+        {
+          "id": "24",
+          "title": "异步批量操作优化",
+          "description": "使用asyncio.gather实现异步批量写入，优化批量操作性能，实现错误隔离机制",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-性能",
+          "dependencies": [
+            "2"
+          ],
+          "details": "异步批量写入（使用asyncio.gather并发执行，错误隔离机制，部分成功处理），批量操作性能优化（缓存批量写入，数据库批量插入，文件批量上传），性能监控（批量操作耗时统计，并发度优化，资源使用监控）。\n\n验收标准：\n- 异步批量操作实现\n- 性能测试：1000条记录<2秒\n- 错误处理机制验证\n- 并发度可配置\n- 单元测试覆盖边界情况\n\n预期收益：批量写入性能提升5-10倍，1000条记录从10秒降至2秒，资源利用率提升",
+          "testStrategy": "单元测试：异步批量操作逻辑；性能测试：不同数据量批量写入；错误测试：部分失败场景处理；并发测试：高并发批量操作",
+          "subtasks": []
+        },
+        {
+          "id": "25",
+          "title": "智能缓存预热（机器学习）",
+          "description": "采集访问日志，训练ML预测模型，实现智能预热策略",
+          "status": "pending",
+          "priority": "medium",
+          "category": "P3-智能化",
+          "dependencies": [
+            "2"
+          ],
+          "details": "访问日志采集（股票访问频率，访问时间分布，市场热度指标），ML预测模型（RandomForestClassifier训练，特征工程：频率/时间/热度，热点股票预测），智能预热策略（预测准确率>70%，自动预加载热点股票，预热效果评估）。\n\n验收标准：\n- 访问日志采集系统\n- ML模型训练并部署\n- 预测准确率>70%\n- 缓存命中率提升10%+\n- 模型效果A/B测试\n\n预期收益：缓存命中率提升10-15%，数据库查询减少20%，动态适应市场变化",
+          "testStrategy": "单元测试：日志采集功能；模型测试：预测准确率验证；集成测试：预热策略与缓存系统集成；A/B测试：智能预热vs传统预热效果对比",
+          "subtasks": []
+        },
+        {
+          "id": "26",
+          "title": "PostgreSQL读写分离",
+          "description": "配置PostgreSQL主从复制，实现读写路由，保证数据一致性",
+          "status": "pending",
+          "priority": "medium",
+          "category": "P3-架构",
+          "dependencies": [
+            "2"
+          ],
+          "details": "主从复制配置（主库：写操作，从库：读操作，复制延迟监控），读写路由（SELECT路由到从库，INSERT/UPDATE/DELETE路由到主库，智能故障切换），数据一致性（复制延迟告警，读己写一致性，最终一致性保证）。\n\n验收标准：\n- 主从复制配置完成\n- 读写路由实现并验证\n- 复制延迟<1秒\n- 读操作性能提升2-3倍\n- 故障切换测试通过\n\n预期收益：读操作性能提升2-3倍，主库负载降低60%，高可用性提升",
+          "testStrategy": "功能测试：读写路由验证；性能测试：读操作延迟测试；一致性测试：复制延迟监控；故障测试：主从切换验证",
+          "subtasks": []
+        },
+        {
+          "id": "27",
+          "title": "Socket.IO横向扩展（Redis Pub/Sub）",
+          "description": "集成Redis Adapter，配置负载均衡，支持10万+并发连接",
+          "status": "pending",
+          "priority": "medium",
+          "category": "P3-扩展性",
+          "dependencies": [
+            "4"
+          ],
+          "details": "Redis Adapter集成（AsyncRedisManager配置，多实例消息同步，房间状态共享），负载均衡（Nginx负载均衡配置，会话粘性处理，健康检查），水平扩展验证（多实例部署测试，10万+并发连接压测，消息广播性能验证）。\n\n验收标准：\n- Redis Adapter配置完成\n- 多实例消息同步验证\n- 负载均衡配置并测试\n- 支持10万+并发连接\n- 消息延迟<200ms\n\n预期收益：支持10万+并发连接，横向扩展能力，高可用性保障",
+          "testStrategy": "功能测试：Redis Adapter集成验证；负载测试：Nginx负载均衡验证；压力测试：10万+并发连接；消息测试：跨实例消息同步",
+          "subtasks": []
+        },
+        {
+          "id": "28",
+          "title": "输入验证增强",
+          "description": "实现股票代码验证，API参数验证，文件上传验证，防止SQL注入和XSS攻击",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-安全",
+          "dependencies": [],
+          "details": "股票代码验证（正则表达式验证6位数字，白名单验证，恶意输入拦截），API参数验证（参数类型检查，参数范围验证，XSS过滤），文件上传验证（文件类型白名单，文件大小限制，恶意文件扫描）。\n\n验收标准：\n- 输入验证中间件实现\n- SQL注入防护验证\n- XSS攻击防护验证\n- 安全测试通过\n- 单元测试覆盖验证逻辑\n\n预期收益：SQL注入风险消除，XSS攻击防护，安全评分提升至90+",
+          "testStrategy": "单元测试：输入验证规则验证；安全测试：SQL注入攻击测试；XSS测试：跨站脚本攻击测试；渗透测试：综合安全扫描",
+          "subtasks": []
+        },
+        {
+          "id": "29",
+          "title": "API认证扩展（多用户支持）",
+          "description": "实现JWT认证，用户管理功能，权限控制升级",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-安全",
+          "dependencies": [],
+          "details": "JWT认证实现（OAuth2PasswordBearer，Token生成和验证，Token刷新机制），用户管理（用户注册/登录，密码哈希bcrypt，用户角色管理），权限控制升级（基于JWT的权限检查，行级权限控制，API访问审计）。\n\n验收标准：\n- JWT认证实现并测试\n- 用户管理功能完成\n- 权限控制升级完成\n- 安全审计日志记录\n- 单元测试覆盖认证流程\n\n预期收益：多用户支持能力，细粒度权限控制，审计追溯能力",
+          "testStrategy": "单元测试：JWT生成验证逻辑；集成测试：用户注册登录流程；权限测试：不同角色权限验证；审计测试：访问日志记录验证",
+          "subtasks": []
+        },
+        {
+          "id": "30",
+          "title": "Docker容器化部署",
+          "description": "编写Dockerfile，配置docker-compose，实现容器化部署",
+          "status": "pending",
+          "priority": "high",
+          "category": "P3-运维",
+          "dependencies": [
+            "2",
+            "4"
+          ],
+          "details": "Dockerfile编写（FastAPI应用容器化，多阶段构建优化，镜像大小优化），docker-compose配置（服务编排，网络配置，数据持久化），部署文档（容器部署指南，环境变量配置，健康检查配置）。\n\n验收标准：\n- Dockerfile编写并优化\n- docker-compose配置完成\n- 容器化部署验证\n- 部署文档完善\n- CI/CD集成\n\n预期收益：环境一致性保障，部署效率提升，运维复杂度降低",
+          "testStrategy": "功能测试：容器启动验证；集成测试：多容器协同工作；部署测试：完整部署流程验证；CI/CD测试：自动化部署流程",
+          "subtasks": []
+        },
+        {
+          "id": "31",
+          "title": "日志集中化（ELK Stack）",
+          "description": "部署ELK Stack，标准化日志格式，配置Kibana仪表板",
+          "status": "pending",
+          "priority": "medium",
+          "category": "P3-运维",
+          "dependencies": [],
+          "details": "ELK Stack部署（Elasticsearch配置，Logstash日志收集，Kibana可视化），日志格式标准化（结构化日志structlog，日志级别规范，关键字段标准），日志分析（错误日志聚合，性能日志分析，审计日志追溯）。\n\n验收标准：\n- ELK Stack部署完成\n- 日志格式标准化\n- Kibana仪表板配置\n- 日志保留策略配置\n- 日志查询性能验证\n\n预期收益：日志集中管理，问题排查效率提升，审计追溯能力",
+          "testStrategy": "功能测试：ELK Stack部署验证；集成测试：日志收集流程；性能测试：日志查询响应��间；运维测试：日志保留策略验证",
+          "subtasks": []
+        },
+        {
+          "id": "32",
+          "title": "配置中心化（Consul/etcd）",
+          "description": "部署Consul或etcd，实现配置热更新，配置版本控制",
+          "status": "pending",
+          "priority": "medium",
+          "category": "P3-运维",
+          "dependencies": [],
+          "details": "Consul/etcd部署（配置中心部署，高可用配置，配置备份），配置管理（配置版本控制，配置热更新，配置回滚），配置集成（应用配置读取，配置变更监听，配置优先级）。\n\n验收标准：\n- 配置中心部署完成\n- 配置热更新验证\n- 配置版本控制实现\n- 配置管理文档化\n- 高可用验证\n\n预期收益：配置集中管理，配置热更新能力，配置版本追溯",
+          "testStrategy": "功能测试：配置中心部署验证；集成测试：配置读取更新；热更新测试：无重启配置更新；高可用测试：配置中心故障切换",
+          "subtasks": []
         }
       ]
     }
