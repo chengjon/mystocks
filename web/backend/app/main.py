@@ -337,6 +337,7 @@ from app.api import (
     sse_endpoints,  # Week 2 SSE Real-time Push
     cache,  # Task 2.2 Cache Management API
 )
+from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
@@ -351,6 +352,9 @@ app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
 app.include_router(
     metrics.router, prefix="/api", tags=["metrics"]
 )  # Prometheus metrics
+app.include_router(
+    pool_monitoring.router, prefix="/api", tags=["pool-monitoring"]
+)  # Phase 3 Task 19: Connection Pool Monitoring
 app.include_router(cache.router, prefix="/api", tags=["cache"])  # 缓存管理 (Task 2.2)
 app.include_router(tasks.router, tags=["tasks"])  # 任务管理
 app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
