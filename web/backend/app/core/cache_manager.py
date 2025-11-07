@@ -166,7 +166,7 @@ class CacheManager:
 
         try:
             # 验证数据
-            if not data or not isinstance(data, dict):
+            if data is None or not isinstance(data, dict):
                 logger.warning(
                     "无效的缓存数据",
                     symbol=symbol,

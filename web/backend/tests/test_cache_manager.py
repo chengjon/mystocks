@@ -72,6 +72,8 @@ class TestSingleCacheOperations:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -178,6 +180,8 @@ class TestBatchOperations:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -303,6 +307,8 @@ class TestCacheInvalidation:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -356,6 +362,8 @@ class TestCacheValidation:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -413,6 +421,8 @@ class TestCacheStatistics:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -512,6 +522,8 @@ class TestCacheAsidesPattern:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -552,6 +564,8 @@ class TestErrorHandling:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
@@ -595,6 +609,8 @@ class TestPerformance:
         self.manager = get_cache_manager()
         try:
             self.manager.tdengine.initialize()
+            # Clear cache data to ensure clean state for each test
+            self.manager.invalidate_cache()
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
 
