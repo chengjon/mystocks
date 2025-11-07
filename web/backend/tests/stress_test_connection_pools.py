@@ -15,6 +15,7 @@ import structlog
 
 from app.core.database import get_postgresql_engine
 from app.core.tdengine_manager import get_tdengine_manager
+from sqlalchemy import text
 
 logger = structlog.get_logger()
 
@@ -145,9 +146,7 @@ def postgresql_connection_test():
         engine = get_postgresql_engine()
         with engine.connect() as conn:
             # 执行简单查询
-            result = conn.execute(
-                "SELECT 1 as test"
-            )  # Changed from text() to direct string
+            result = conn.execute(text("SELECT 1 as test"))
             result.fetchone()
         response_time = time.time() - start_time
         return True, response_time, None
