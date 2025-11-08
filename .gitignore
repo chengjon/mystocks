@@ -48,6 +48,11 @@ data/*.json
 data/backups/*
 !data/backups/.gitkeep
 
+# CSV files (test data, temporary exports, generated reports)
+*.csv
+# Exception: Keep essential reference CSV files if needed in the future
+# !config/essential_data.csv
+
 # Logs
 *.log
 logs/
