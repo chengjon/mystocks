@@ -181,8 +181,14 @@ async def csrf_protection_middleware(request: Request, call_next):
     """
     # 对于修改操作，检查CSRF token
     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
-        # 某些端点应该排除CSRF检查（如CSRF token生成端点）
-        exclude_paths = ["/api/csrf-token"]
+        # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
+        exclude_paths = [
+            "/api/csrf-token",
+            "/api/auth/login",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+        ]
 
         if not any(request.url.path.startswith(path) for path in exclude_paths):
             # 获取CSRF token from header

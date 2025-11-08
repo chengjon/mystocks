@@ -1,0 +1,279 @@
+{
+    "version": "1.0",
+    "description": "Skill activation triggers for Claude Code (Reddit Case Study Pattern). Controls when skills automatically suggest or block actions. Based on 30万行代码 production experience.",
+    "skills": {
+        "backend-dev-guidelines": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Backend development patterns: Routes → Controllers → Services → Repositories architecture",
+            "promptTriggers": {
+                "keywords": [
+                    "backend",
+                    "API",
+                    "endpoint",
+                    "route",
+                    "routing",
+                    "controller",
+                    "service",
+                    "repository",
+                    "middleware",
+                    "validation",
+                    "database",
+                    "error handling",
+                    "authentication",
+                    "authorization"
+                ],
+                "intentPatterns": [
+                    "(create|add|implement|build).*?(route|endpoint|API|controller|service|repository)",
+                    "(fix|debug|handle).*?(error|exception|backend)",
+                    "(add|implement).*?(middleware|validation|auth)",
+                    "(organize|structure|refactor).*?(backend|service|API)",
+                    "(how to|best practice).*?(backend|route|controller|service)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/routes/**/*.ts",
+                    "src/controllers/**/*.ts",
+                    "src/services/**/*.ts",
+                    "src/repositories/**/*.ts",
+                    "backend/**/*.ts",
+                    "api/**/*.ts",
+                    "server/**/*.ts"
+                ],
+                "pathExclusions": [
+                    "**/*.test.ts",
+                    "**/*.spec.ts"
+                ],
+                "contentPatterns": [
+                    "router\\.",
+                    "app\\.(get|post|put|delete|patch)",
+                    "export.*Controller",
+                    "export.*Service",
+                    "export.*Repository"
+                ]
+            }
+        },
+        "frontend-dev-guidelines": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Frontend development patterns: React 19, component architecture, state management, performance",
+            "promptTriggers": {
+                "keywords": [
+                    "component",
+                    "react",
+                    "UI",
+                    "interface",
+                    "page",
+                    "modal",
+                    "dialog",
+                    "form",
+                    "styling",
+                    "frontend",
+                    "state management",
+                    "hooks",
+                    "performance",
+                    "rendering"
+                ],
+                "intentPatterns": [
+                    "(create|add|build|update|modify).*?(component|UI|page|modal|form)",
+                    "(how to|best practice).*?(component|react|frontend)",
+                    "(style|design|layout).*?(component|UI)",
+                    "(optimize|improve).*?(performance|rendering)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/**/*.tsx",
+                    "src/**/*.jsx",
+                    "frontend/**/*.tsx",
+                    "frontend/**/*.jsx",
+                    "client/**/*.tsx",
+                    "client/**/*.jsx"
+                ],
+                "pathExclusions": [
+                    "**/*.test.tsx",
+                    "**/*.test.jsx",
+                    "**/*.spec.tsx",
+                    "**/*.spec.jsx",
+                    "**/*.stories.tsx"
+                ],
+                "contentPatterns": [
+                    "import.*React",
+                    "export.*Component",
+                    "useState",
+                    "useEffect",
+                    "function.*Component"
+                ]
+            }
+        },
+        "skill-developer": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Meta-skill for creating and managing Claude Code skills following the 500-line rule and progressive disclosure pattern",
+            "promptTriggers": {
+                "keywords": [
+                    "skill",
+                    "create skill",
+                    "add skill",
+                    "skill system",
+                    "skill triggers",
+                    "skill rules",
+                    "skill-rules.json",
+                    "skill development",
+                    "SKILL.md",
+                    "skill activation"
+                ],
+                "intentPatterns": [
+                    "(how do|how does|explain).*?skill",
+                    "(create|add|modify|build).*?skill",
+                    "skill.*?(work|trigger|activate|system)",
+                    "skill-rules"
+                ]
+            }
+        },
+        "dev-docs-workflow": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "Dev Docs three-file system (plan.md + context.md + tasks.md) for context preservation across sessions",
+            "promptTriggers": {
+                "keywords": [
+                    "dev docs",
+                    "development documentation",
+                    "context preservation",
+                    "session context",
+                    "task documentation",
+                    "plan.md",
+                    "context.md",
+                    "tasks.md"
+                ],
+                "intentPatterns": [
+                    "(create|setup|initialize).*?dev docs",
+                    "(update|sync).*?dev docs",
+                    "(preserve|save).*?context",
+                    "context.*?(loss|reset|preservation)"
+                ]
+            }
+        },
+        "database-verification": {
+            "type": "domain",
+            "enforcement": "warn",
+            "priority": "high",
+            "description": "Database schema verification, migration safety, and query optimization",
+            "promptTriggers": {
+                "keywords": [
+                    "database",
+                    "schema",
+                    "migration",
+                    "database change",
+                    "alter table",
+                    "create table",
+                    "drop table",
+                    "prisma migrate",
+                    "database seed",
+                    "query optimization",
+                    "index"
+                ],
+                "intentPatterns": [
+                    "(create|modify|alter|drop).*?(table|schema|database)",
+                    "(add|remove|change).*?(column|field|constraint|index)",
+                    "(run|execute|apply).*?migration",
+                    "(optimize|improve).*?query"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "**/migrations/**/*.sql",
+                    "**/prisma/schema.prisma",
+                    "**/database/**/*.ts",
+                    "**/models/**/*.ts"
+                ],
+                "contentPatterns": [
+                    "CREATE TABLE",
+                    "ALTER TABLE",
+                    "DROP TABLE",
+                    "prisma\\.\\$",
+                    "prisma\\..*\\.create",
+                    "prisma\\..*\\.update"
+                ]
+            }
+        },
+        "notification-developer": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "low",
+            "description": "Notification system development using Notification hooks, desktop notifications, and external integrations",
+            "promptTriggers": {
+                "keywords": [
+                    "notification",
+                    "notify",
+                    "alert",
+                    "desktop notification",
+                    "slack notification",
+                    "webhook"
+                ],
+                "intentPatterns": [
+                    "(add|create|implement).*?notification",
+                    "(setup|configure).*?notify",
+                    "notification.*?hook"
+                ]
+            }
+        },
+        "progressive-disclosure-pattern": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "Skill modularization pattern: main file <500 lines, detailed content in resources/ subdirectory",
+            "promptTriggers": {
+                "keywords": [
+                    "500 line rule",
+                    "skill structure",
+                    "modular skill",
+                    "progressive disclosure",
+                    "resources directory"
+                ],
+                "intentPatterns": [
+                    "skill.*?too long",
+                    "skill.*?structure",
+                    "organize.*?skill",
+                    "split.*?skill"
+                ]
+            }
+        }
+    },
+    "notes": {
+        "enforcement_types": {
+            "suggest": "Skill suggestion appears but doesn't block execution (default for most skills)",
+            "block": "Requires skill to be reviewed before proceeding (use sparingly for critical guardrails)",
+            "warn": "Shows prominent warning but allows proceeding (use for potentially dangerous operations)"
+        },
+        "priority_levels": {
+            "critical": "Highest - Always trigger when matched (security, data loss prevention)",
+            "high": "Important - Trigger for most matches (architectural patterns, best practices)",
+            "medium": "Moderate - Trigger for clear matches (optional workflows, meta-skills)",
+            "low": "Optional - Trigger only for explicit matches (nice-to-have suggestions)"
+        },
+        "customization_guide": {
+            "pathPatterns": "⚠️ MUST CUSTOMIZE: Adjust to match YOUR project structure (src/, backend/, api/, etc.)",
+            "keywords": "Add domain-specific terms relevant to YOUR project (tech stack, libraries, frameworks)",
+            "intentPatterns": "Use regex for flexible user intent matching - test with real prompts",
+            "contentPatterns": "Match code signatures specific to YOUR codebase (class names, import patterns)"
+        },
+        "reddit_case_insights": {
+            "key_finding": "Claude doesn't automatically load/adopt all Skill documents! Must use UserPromptSubmit hook + skill-rules.json to force activation.",
+            "enforcement_philosophy": "Use 'suggest' for most (gentle reminders), 'warn' for dangerous operations, 'block' sparingly (only for critical guardrails like frontend-dev-guidelines in original case)",
+            "priority_strategy": "Set 'critical' for security/data, 'high' for architecture/patterns, 'medium' for workflows, 'low' for meta-skills",
+            "token_cost_warning": "More activated skills = more tokens consumed. Be selective with 'critical' priority."
+        },
+        "testing": {
+            "test_activation": "Try: 'Create a new API endpoint' - should activate backend-dev-guidelines",
+            "test_file_trigger": "Edit src/routes/users.ts - should activate backend-dev-guidelines",
+            "test_block": "If using block enforcement, test skip conditions work properly",
+            "debug_mode": "Set SKILL_ACTIVATION_DEBUG=true environment variable for detailed logs"
+        }
+    }
+}
