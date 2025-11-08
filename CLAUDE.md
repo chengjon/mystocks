@@ -54,32 +54,35 @@ pip install pandas numpy pyyaml psycopg2-binary taospy akshare
 python -c "from unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
 
 # Run system demonstration
-python system_demo.py
+python scripts/runtime/system_demo.py
 
 # Validate database connections and table structures
 python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
 
 # Run realtime market data saver
-python run_realtime_market_saver.py
+python scripts/runtime/run_realtime_market_saver.py
 
 # Check database connections (TDengine + PostgreSQL)
-python -c "import taos; taos.connect(host='192.168.123.104', port=6030); print('TDengine OK')"
-python -c "import psycopg2; print('PostgreSQL connection OK')"
+python scripts/database/check_tdengine_tables.py
+python scripts/database/verify_tdengine_deployment.py
 ```
 
 ### Testing
 ```bash
 # Test unified manager functionality
-python test_unified_manager.py
+python scripts/tests/test_config_driven_table_manager.py
 
 # Test financial adapter
-python test_financial_adapter.py
+python scripts/tests/test_financial_adapter.py
 
-# Test comprehensive system
-python test_comprehensive.py
+# Test dual database architecture
+python scripts/tests/test_dual_database_architecture.py
 
 # Test realtime data functionality
-python test_save_realtime_data.py
+python scripts/tests/test_save_realtime_data.py
+
+# Test TDX adapter
+python scripts/tests/test_tdx_mvp.py
 ```
 
 ### Configuration Management
@@ -208,6 +211,215 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 - Seamless connection management and automatic routing
 
 This architecture enables efficient handling of quantitative trading data by using the right database for each workload, with comprehensive monitoring and configuration-driven automation.
+
+## File Organization Rules
+
+**Philosophy**: Maintain a clean, minimal root directory with logical categorization by functionality. Every file should have a clear, rule-based location.
+
+### Root Directory Standards
+
+**ONLY these 5 core files belong in root**:
+- `README.md` - Project overview and main documentation
+- `CLAUDE.md` - Claude Code integration guide (this file)
+- `CHANGELOG.md` - Version history and changes
+- `requirements.txt` - Python dependencies
+- `.mcp.json` - MCP server configuration
+
+**All other files MUST be organized into subdirectories**.
+
+### Directory Structure and Rules
+
+#### 1. **scripts/** - All Executable Scripts
+
+Organized by functionality into 4 categories:
+
+**scripts/tests/** - Test Files
+- **Pattern**: Files prefixed with `test_`
+- **Purpose**: Unit tests, integration tests, acceptance tests
+- **Examples**: `test_config_driven_table_manager.py`, `test_financial_adapter.py`
+- **Special files**: `test_requirements.txt`, `coverage.xml`
+
+**scripts/runtime/** - Production Runtime Scripts
+- **Pattern**: Files prefixed with `run_`, `save_`, `monitor_`, or `*_demo.py`
+- **Purpose**: Production data collection, monitoring, demonstrations
+- **Examples**: `run_realtime_market_saver.py`, `save_realtime_data.py`, `system_demo.py`
+
+**scripts/database/** - Database Operations
+- **Pattern**: Files prefixed with `check_`, `verify_`, `create_`
+- **Purpose**: Database initialization, validation, management
+- **Examples**: `check_tdengine_tables.py`, `verify_tdengine_deployment.py`
+
+**scripts/dev/** - Development Tools
+- **Pattern**: Development utilities not fitting other categories
+- **Purpose**: Code validation, testing utilities, development aids
+- **Examples**: `gpu_test_examples.py`, `validate_documentation_consistency.py`
+- **Special files**: `git_commit_comments.txt`
+
+#### 2. **docs/** - Documentation Files
+
+**docs/guides/** - User and Developer Guides
+- **Files**: `QUICKSTART.md`, `IFLOW.md`, tutorial documents
+- **Purpose**: Getting started guides, workflow documentation
+
+**docs/archived/** - Deprecated Documentation
+- **Files**: `START_HERE.md`, `TASKMASTER_START_HERE.md` (kept for historical reference)
+- **Purpose**: Preserve old documentation without cluttering active docs
+- **Rule**: Add deprecation notice at top of file when archiving
+
+**docs/architecture/** - Architecture Design Documents
+- **Purpose**: System design, technical architecture documentation
+- **Examples**: Database design docs, system architecture diagrams
+
+**docs/api/** - API Documentation
+- **Purpose**: API reference, endpoint documentation, SDK guides
+
+#### 3. **config/** - Configuration Files
+
+**All configuration files** (regardless of extension):
+- **Extensions**: `.yaml`, `.yml`, `.ini`, `.toml`, `docker-compose.*.yml`
+- **Examples**:
+  - `mystocks_table_config.yaml` - Table structure definitions
+  - `docker-compose.tdengine.yml` - Docker setup
+  - `pytest.ini` - Test configuration
+  - `.readthedocs.yaml` - Documentation build config
+
+#### 4. **reports/** - Generated Reports and Analysis
+
+**Pattern**: Files generated by analysis scripts, timestamped if recurring
+- **Extensions**: `.json`, `.txt`, analysis outputs
+- **Examples**:
+  - `database_assessment_20251019_165817.json`
+  - `query_patterns_analysis.txt`
+  - `dump_result.txt`
+  - `WENCAI_INTEGRATION_FILES.txt`
+
+**Naming Convention**: Use ISO date format for timestamped files: `YYYYMMDD_HHMMSS`
+
+### File Lifecycle Management
+
+#### Pre-Classification (Proactive)
+
+**When creating new files**, place them directly in the correct location:
+
+1. **Determine file purpose**: Test? Runtime? Configuration? Documentation?
+2. **Match against rules**: Use the directory structure above
+3. **Create in correct location**: Never create in root unless it's one of the 5 core files
+
+**Example Pre-Classification**:
+```python
+# Creating a new test file
+# ✅ CORRECT: Create directly in scripts/tests/
+with open('scripts/tests/test_new_feature.py', 'w') as f:
+    f.write(test_code)
+
+# ❌ INCORRECT: Creating in root
+with open('test_new_feature.py', 'w') as f:
+    f.write(test_code)
+```
+
+#### Post-Classification (Reactive)
+
+**When organizing existing files**:
+
+1. **Identify misplaced files**: Use `ls` or `find` to list root directory files
+2. **Categorize by rules**: Match each file against the directory structure rules
+3. **Plan the reorganization**: Create a categorization plan before execution
+4. **Use git mv**: Preserve file history when moving tracked files
+5. **Update references**: Update all import paths, documentation links
+6. **Validate**: Test that moved files work correctly
+
+**Post-Classification Workflow**:
+```bash
+# 1. List root directory files (exclude core 5)
+ls -1 | grep -v -E '^(README\.md|CLAUDE\.md|CHANGELOG\.md|requirements\.txt|\.mcp\.json)$'
+
+# 2. For each file, determine correct location using rules above
+
+# 3. Move files (use git mv for tracked files)
+git mv test_something.py scripts/tests/
+git mv run_collector.py scripts/runtime/
+git mv config.yaml config/
+git mv analysis_report.txt reports/
+
+# 4. Update references in affected files
+
+# 5. Commit with descriptive message
+git commit -m "refactor: organize files according to directory structure rules"
+```
+
+### Import Path Management for Scripts
+
+**Critical Rule**: All scripts in nested directories must calculate project root correctly.
+
+**Standard Pattern for scripts in `scripts/**/`**:
+```python
+import sys
+import os
+from pathlib import Path
+
+# Calculate project root (3 levels up from script location)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+# Now you can import from project root
+from core import ConfigDrivenTableManager
+from adapters.akshare_adapter import AkshareDataSource
+from db_manager.database_manager import DatabaseTableManager
+```
+
+**Explanation**:
+- Script in `scripts/tests/test_something.py`
+- `__file__` → `scripts/tests/test_something.py`
+- `os.path.dirname(__file__)` → `scripts/tests/`
+- `os.path.dirname(os.path.dirname(__file__))` → `scripts/`
+- `os.path.dirname(os.path.dirname(os.path.dirname(__file__)))` → project root `/opt/claude/mystocks_spec/`
+
+### Git Best Practices
+
+**Always use `git mv` for tracked files**:
+```bash
+# ✅ CORRECT: Preserves file history
+git mv old_location/file.py new_location/file.py
+
+# ❌ INCORRECT: Breaks file history
+mv old_location/file.py new_location/file.py
+git add new_location/file.py
+```
+
+**For untracked files**, regular `mv` is fine:
+```bash
+# For files not in git yet
+mv untracked_file.log reports/
+```
+
+### Validation Checklist
+
+After any file reorganization:
+
+- [ ] Root directory contains only the 5 core files
+- [ ] All scripts properly categorized in scripts/{tests,runtime,database,dev}
+- [ ] All documentation in docs/{guides,archived,architecture,api}
+- [ ] All configuration files in config/
+- [ ] All reports in reports/
+- [ ] All moved scripts have updated import paths (3-level dirname)
+- [ ] All documentation links updated to new paths
+- [ ] `git status` shows moves (not deletions + additions)
+- [ ] All tests pass after reorganization
+- [ ] `scripts/README.md` is up to date
+
+### Common Mistakes to Avoid
+
+1. **Creating files in root**: Always use subdirectories unless it's one of the 5 core files
+2. **Wrong import paths**: Remember to use 3-level dirname for scripts in nested directories
+3. **Using `mv` instead of `git mv`**: Always preserve git history
+4. **Forgetting to update references**: Check all imports, documentation links
+5. **Mixing purposes**: Don't put test files in runtime/, or config files in docs/
+
+### Reference Documentation
+
+For detailed directory contents and file inventory:
+- **Complete documentation structure**: See `docs/DOCUMENTATION_STRUCTURE.md`
+- **Script organization guide**: See `scripts/README.md`
 
 ## Task Master AI Instructions
 **Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**

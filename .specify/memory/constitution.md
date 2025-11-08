@@ -199,9 +199,198 @@ text
 
 - 代码重复率 ≤ 5%
 
- 
 
-### 3. 版本管理
+
+### 3. 文件组织规范
+
+**核心原则**: 保持根目录简洁，按功能逻辑分类，每个文件都有明确的规则位置。
+
+**根目录标准**:
+
+根目录**只允许**以下5个核心文件:
+- `README.md` - 项目总览和主要文档
+- `CLAUDE.md` - Claude Code集成指南
+- `CHANGELOG.md` - 版本历史和变更记录
+- `requirements.txt` - Python依赖
+- `.mcp.json` - MCP服务器配置
+
+**所有其他文件必须组织到子目录中**。
+
+**目录结构与规则**:
+
+1. **scripts/** - 所有可执行脚本
+
+   按功能分为4类:
+
+   **scripts/tests/** - 测试文件
+   - 模式: 文件名以`test_`开头
+   - 用途: 单元测试、集成测试、验收测试
+   - 特殊文件: `test_requirements.txt`, `coverage.xml`
+
+   **scripts/runtime/** - 生产运行脚本
+   - 模式: 文件名以`run_`、`save_`、`monitor_`开头,或以`*_demo.py`结尾
+   - 用途: 生产数据采集、监控、系统演示
+
+   **scripts/database/** - 数据库操作
+   - 模式: 文件名以`check_`、`verify_`、`create_`开头
+   - 用途: 数据库初始化、验证、管理
+
+   **scripts/dev/** - 开发工具
+   - 模式: 不适合其他类别的开发实用工具
+   - 用途: 代码验证、测试工具、开发辅助
+   - 特殊文件: `git_commit_comments.txt`
+
+2. **docs/** - 文档文件
+
+   **docs/guides/** - 用户与开发者指南
+   - 文件: `QUICKSTART.md`, `IFLOW.md`, 教程文档
+   - 用途: 快速入门指南、工作流程文档
+
+   **docs/archived/** - 废弃文档
+   - 文件: `START_HERE.md`, `TASKMASTER_START_HERE.md`(保留用于历史参考)
+   - 用途: 保留旧文档而不影响活动文档
+   - 规则: 归档时在文件顶部添加废弃声明
+
+   **docs/architecture/** - 架构设计文档
+   - 用途: 系统设计、技术架构文档
+
+   **docs/api/** - API文档
+   - 用途: API参考、端点文档、SDK指南
+
+3. **config/** - 配置文件
+
+   **所有配置文件**(无论扩展名):
+   - 扩展名: `.yaml`, `.yml`, `.ini`, `.toml`, `docker-compose.*.yml`
+   - 示例:
+     - `mystocks_table_config.yaml` - 表结构定义
+     - `docker-compose.tdengine.yml` - Docker设置
+     - `pytest.ini` - 测试配置
+     - `.readthedocs.yaml` - 文档构建配置
+
+4. **reports/** - 生成的报告和分析
+
+   模式: 分析脚本生成的文件,如果定期生成则添加时间戳
+   - 扩展名: `.json`, `.txt`, 分析输出
+   - 示例:
+     - `database_assessment_20251019_165817.json`
+     - `query_patterns_analysis.txt`
+     - `dump_result.txt`
+   - 命名规范: 时间戳文件使用ISO日期格式: `YYYYMMDD_HHMMSS`
+
+**文件生命周期管理**:
+
+**前分类(主动式)**:
+
+创建新文件时,直接放在正确位置:
+
+1. 确定文件用途: 测试?运行?配置?文档?
+2. 匹配规则: 使用上述目录结构
+3. 在正确位置创建: 除非是5个核心文件之一,否则不要在根目录创建
+
+示例:
+```python
+# ✅ 正确: 直接在scripts/tests/创建
+with open('scripts/tests/test_new_feature.py', 'w') as f:
+    f.write(test_code)
+
+# ❌ 错误: 在根目录创建
+with open('test_new_feature.py', 'w') as f:
+    f.write(test_code)
+```
+
+**后分类(反应式)**:
+
+整理现有文件时:
+
+1. 识别错位文件: 使用`ls`或`find`列出根目录文件
+2. 按规则分类: 根据上述目录结构规则匹配每个文件
+3. 规划重组: 执行前制定分类计划
+4. 使用git mv: 移动已跟踪文件时保留历史记录
+5. 更新引用: 更新所有导入路径、文档链接
+6. 验证: 测试移动后的文件正常工作
+
+后分类工作流:
+```bash
+# 1. 列出根目录文件(排除核心5个)
+ls -1 | grep -v -E '^(README\.md|CLAUDE\.md|CHANGELOG\.md|requirements\.txt|\.mcp\.json)$'
+
+# 2. 根据上述规则确定每个文件的正确位置
+
+# 3. 移动文件(已跟踪文件使用git mv)
+git mv test_something.py scripts/tests/
+git mv run_collector.py scripts/runtime/
+git mv config.yaml config/
+git mv analysis_report.txt reports/
+
+# 4. 更新受影响文件中的引用
+
+# 5. 使用描述性消息提交
+git commit -m "refactor: 按目录结构规则组织文件"
+```
+
+**脚本导入路径管理**:
+
+关键规则: `scripts/**/`中的所有脚本必须正确计算项目根目录。
+
+标准模式:
+```python
+import sys
+import os
+from pathlib import Path
+
+# 计算项目根目录(从脚本位置向上3级)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+# 现在可以从项目根目录导入
+from core import ConfigDrivenTableManager
+from adapters.akshare_adapter import AkshareDataSource
+from db_manager.database_manager import DatabaseTableManager
+```
+
+**Git最佳实践**:
+
+已跟踪文件始终使用`git mv`:
+```bash
+# ✅ 正确: 保留文件历史
+git mv old_location/file.py new_location/file.py
+
+# ❌ 错误: 破坏文件历史
+mv old_location/file.py new_location/file.py
+git add new_location/file.py
+```
+
+**验证清单**:
+
+任何文件重组后:
+
+- [ ] 根目录只包含5个核心文件
+- [ ] 所有脚本正确分类在scripts/{tests,runtime,database,dev}
+- [ ] 所有文档在docs/{guides,archived,architecture,api}
+- [ ] 所有配置文件在config/
+- [ ] 所有报告在reports/
+- [ ] 所有移动的脚本已更新导入路径(3级dirname)
+- [ ] 所有文档链接更新到新路径
+- [ ] `git status`显示移动(不是删除+添加)
+- [ ] 重组后所有测试通过
+- [ ] `scripts/README.md`已更新
+
+**常见错误**:
+
+1. 在根目录创建文件: 除非是5个核心文件之一,否则始终使用子目录
+2. 错误的导入路径: 记得为嵌套目录中的脚本使用3级dirname
+3. 使用`mv`而不是`git mv`: 始终保留git历史记录
+4. 忘记更新引用: 检查所有导入、文档链接
+5. 混合用途: 不要将测试文件放在runtime/,或将配置文件放在docs/
+
+**参考文档**:
+
+- 完整文档结构: 参见`docs/DOCUMENTATION_STRUCTURE.md`
+- 脚本组织指南: 参见`scripts/README.md`
+
+
+
+### 4. 版本管理
 
 **分支策略**:
 
