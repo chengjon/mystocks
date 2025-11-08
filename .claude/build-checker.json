@@ -1,0 +1,73 @@
+{
+    "version": "1.0",
+    "description": "Build Checker configuration for Stop hook. Part of Reddit Case Study 'zero error tolerance' system that achieved 6 months without TypeScript compilation errors.",
+    "errorThreshold": 5,
+    "note_errorThreshold": "If total errors >= threshold, Stop hook blocks Claude from stopping and requires fixes. Reddit case uses 5 (triggers build-error-resolver agent recommendation).",
+    "repos": {
+        "/opt/claude/mystocks_spec": {
+            "buildCommand": "echo 'Build check skipped - configure your build command in .claude/build-checker.json'",
+            "note_buildCommand": "Command to run for build. Supports: npm/pnpm/yarn build, tsc --noEmit, etc.",
+            "skipPatterns": [
+                "*.test.ts",
+                "*.spec.ts",
+                "*.stories.tsx",
+                "__tests__/**",
+                "__mocks__/**"
+            ],
+            "note_skipPatterns": "(Optional) Files matching these patterns won't trigger builds even if edited.",
+            "errorPatterns": [
+                "error TS\\d+:",
+                "Error:",
+                "✖ \\d+ problems",
+                "FAIL",
+                "✗"
+            ],
+            "note_errorPatterns": "(Optional) Regex patterns to detect errors in build output. Defaults to TypeScript error patterns.",
+            "timeout": 120,
+            "note_timeout": "(Optional) Max seconds to wait for build. Default: 120 (2 minutes). Increase for large projects."
+        }
+    },
+    "monorepo_example": {
+        "note": "If you have a monorepo with multiple packages/services, define each repo separately:",
+        "repos": {
+            "/home/user/monorepo/packages/api": {
+                "buildCommand": "pnpm build",
+                "skipPatterns": ["*.test.ts"]
+            },
+            "/home/user/monorepo/packages/frontend": {
+                "buildCommand": "npm run build",
+                "skipPatterns": ["*.test.tsx", "*.stories.tsx"]
+            }
+        }
+    },
+    "customization_guide": {
+        "step1": "Replace '/absolute/path/to/your/project' with YOUR actual project path (use pwd to get it)",
+        "step2": "Update buildCommand to match YOUR package.json scripts or build tool",
+        "step3": "(Optional) Add testCommand if you want tests to run on Stop",
+        "step4": "(Optional) Adjust errorThreshold based on YOUR project size (5 works for most, increase for very large projects)",
+        "step5": "(Optional) Add skipPatterns for files that shouldn't trigger builds (test files, stories, etc.)"
+    },
+    "build_command_examples": {
+        "typescript_only": "tsc --noEmit",
+        "typescript_monorepo": "pnpm -w build",
+        "webpack": "webpack --mode production",
+        "vite": "vite build",
+        "next_js": "next build",
+        "turbo": "turbo run build",
+        "nx": "nx run-many --target=build --all"
+    },
+    "reddit_case_insights": {
+        "pattern": "PostToolUse file-edit-tracker.sh (non-blocking record) → Stop build-checker.sh (batch build + block if errors >= 5)",
+        "why_not_immediate": "Running build after each edit creates noise when code is temporarily broken. Batch checking at Stop allows temporary breakage.",
+        "zero_error_record": "6 months, 50,000+ lines, 0 TypeScript errors in production. Achieved by consistent build checking + build-error-resolver agent.",
+        "agent_integration": "When errors >= 5, Stop hook recommends '/build-and-fix' slash command which invokes build-error-resolver agent for systematic fixing.",
+        "timeout_consideration": "Default 120s (2 min) works for most projects. Large monorepos may need 180-300s. Align with hook timeout in settings.json."
+    },
+    "troubleshooting": {
+        "build_always_fails": "Test buildCommand manually: cd /your/project && npm run build. Fix any config issues first.",
+        "timeout_exceeded": "Increase timeout field (and hook timeout in settings.json) for large projects.",
+        "false_positives": "Adjust errorPatterns to match your build tool's output format. Check build output manually.",
+        "monorepo_issues": "Ensure each repo path is correct. Use git rev-parse --show-toplevel to verify paths.",
+        "no_errors_detected": "Check errorPatterns match your build tool output. Add custom patterns if needed."
+    }
+}

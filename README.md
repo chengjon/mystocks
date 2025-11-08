@@ -21,7 +21,7 @@
 
 **核心原则**: **专库专用，简洁胜于过度复杂**
 
-详细评估请参阅：[ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
 
 ---
 
@@ -868,25 +868,48 @@ curl -X POST http://localhost:8000/backtest \
 
 - **WSL2支持**: ✅ 完全支持（需要Windows 11或Win10 21H2+）
 
-### 文档导航
+### 📚 文档导航
 
-**核心文档**:
-- [`gpu_api_system/README.md`](./gpu_api_system/README.md) - 主项目文档 (88页)
-- [`gpu_api_system/INDEX.md`](./gpu_api_system/INDEX.md) - 文档导航索引
-- [`gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md`](./gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md) - 🆕 缓存优化指南
+**快速开始**:
+- [`QUICKSTART.md`](./QUICKSTART.md) - 快速入门指南
+- [`START_HERE.md`](./START_HERE.md) - 项目起点
+- [`TASKMASTER_START_HERE.md`](./TASKMASTER_START_HERE.md) - Task Master工作流程
 
-**测试相关**:
-- [`gpu_api_system/TESTING_QUICK_START.md`](./gpu_api_system/TESTING_QUICK_START.md) - 5分钟测试入门
-- [`gpu_api_system/tests/README.md`](./gpu_api_system/tests/README.md) - 完整测试文档
+**架构设计文档** (`docs/architecture/`):
+- 核心架构评估与设计决策
+- 数据库架构方案对比
+- 适配器模式与路由策略
+- 高级架构评审报告
 
-**WSL2 GPU支持** (重要!):
-- [`gpu_api_system/WSL2_GPU_SETUP.md`](./gpu_api_system/WSL2_GPU_SETUP.md) - WSL2配置指南 ⭐⭐⭐⭐⭐
-- [`gpu_api_system/WSL2_GPU_COMPLETION.md`](./gpu_api_system/WSL2_GPU_COMPLETION.md) - WSL2完工报告
-- [`gpu_api_system/wsl2_gpu_init.py`](./gpu_api_system/wsl2_gpu_init.py) - WSL2初始化脚本
+**实现指南** (`docs/guides/`):
+- 系统部署和配置指南
+- 数据迁移方案
+- TDengine快速参考
+- 前后端数据流
 
-**项目报告**:
-- [`gpu_api_system/PROJECT_SUMMARY.md`](./gpu_api_system/PROJECT_SUMMARY.md) - 项目总结
-- [`gpu_api_system/PROJECT_COMPLETION_REPORT.md`](./gpu_api_system/PROJECT_COMPLETION_REPORT.md) - 完工报告
+**开发规范** (`docs/standards/`):
+- 项目开发规范与指导文档
+- 代码修改规则
+- 数据工作流程
+- Web页面结构指南
+
+**特性实现** (`docs/features/`):
+- 股票热力图实现
+- 监控列表分组
+- TradingView集成修复
+- ValueCell各阶段完成报告
+
+**完成报告** (`docs/reports/`):
+- 任务和子任务完成报告
+- Web集成状态报告
+- 系统性能优化总结
+- 开发进展总结
+
+**旧文档归档** (`docs/archive/`):
+- 历史决策记录
+- 过期的规划文档
+- 前期讨论材料
+- 作为参考保留
 
 ### 项目亮点
 
