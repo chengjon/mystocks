@@ -151,7 +151,7 @@ const loadResults = async () => {
   loading.value = true
   try {
     const response = await fetch(
-      `http://localhost:8000/api/market/wencai/results/${props.queryName}?limit=${pageSize.value}&offset=${(currentPage.value - 1) * pageSize.value}`
+      `/api/market/wencai/results/${props.queryName}?limit=${pageSize.value}&offset=${(currentPage.value - 1) * pageSize.value}`
     )
 
     if (!response.ok) {

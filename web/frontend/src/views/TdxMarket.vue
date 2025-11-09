@@ -198,7 +198,7 @@ import { init, dispose } from 'klinecharts'
 import axios from 'axios'
 
 // API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 // 状态
 const searchSymbol = ref('600519')

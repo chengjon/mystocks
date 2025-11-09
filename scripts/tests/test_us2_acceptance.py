@@ -20,14 +20,13 @@ import tempfile
 import os
 
 # 添加项目根目录到路径
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.config_driven_table_manager import ConfigDrivenTableManager
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ def test_config_validation():
         tests_passed.append("正确配置文件加载")
 
         # 验证版本
-        version = manager.config.get('version')
+        version = manager.config.get("version")
         if version:
             logger.info(f"   ✅ 配置版本: {version}")
             tests_passed.append("版本字段验证")
@@ -58,21 +57,23 @@ def test_config_validation():
             tests_failed.append("版本字段缺失")
 
         # 验证必需字段
-        if 'databases' in manager.config:
-            logger.info(f"   ✅ databases字段存在（{len(manager.config['databases'])}个数据库）")
+        if "databases" in manager.config:
+            logger.info(
+                f"   ✅ databases字段存在（{len(manager.config['databases'])}个数据库）"
+            )
             tests_passed.append("databases字段验证")
         else:
             logger.error("   ❌ 缺少databases字段")
             tests_failed.append("databases字段缺失")
 
-        if 'tables' in manager.config:
+        if "tables" in manager.config:
             logger.info(f"   ✅ tables字段存在（{len(manager.config['tables'])}个表）")
             tests_passed.append("tables字段验证")
         else:
             logger.error("   ❌ 缺少tables字段")
             tests_failed.append("tables字段缺失")
 
-        if 'maintenance' in manager.config:
+        if "maintenance" in manager.config:
             logger.info(f"   ✅ maintenance字段存在")
             tests_passed.append("maintenance字段验证")
         else:
@@ -100,7 +101,7 @@ def test_config_validation():
     logger.info("\n3. 测试格式错误的配置文件（应该抛出错误）")
     try:
         # 创建临时的错误配置文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write("invalid: yaml: content:\n  - wrong indentation\n wrong")
             temp_config_path = f.name
 
@@ -122,7 +123,7 @@ def test_config_validation():
     logger.info("\n4. 测试缺少必需字段的配置（应该抛出错误）")
     try:
         # 创建临时的不完整配置文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write("version: '1.0.0'\n")
             f.write("# 缺少databases和tables字段\n")
             temp_config_path = f.name
@@ -146,7 +147,9 @@ def test_config_validation():
 
     # 总结T024
     logger.info("\n" + "-" * 60)
-    logger.info(f"T024结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项")
+    logger.info(
+        f"T024结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项"
+    )
 
     if len(tests_failed) == 0:
         logger.info("✅ T024验收通过: 配置验证功能完善")
@@ -181,16 +184,16 @@ def test_safe_mode():
         logger.info("\n2. 测试安全添加列（应该允许）")
         try:
             column_def = {
-                'name': 'new_test_column',
-                'type': 'VARCHAR',
-                'length': 64,
-                'nullable': True,
-                'comment': '测试列'
+                "name": "new_test_column",
+                "type": "VARCHAR",
+                "length": 64,
+                "nullable": True,
+                "comment": "测试列",
             }
 
             # safe_add_column方法在安全模式下应该成功
             if manager.safe_mode:
-                result = manager.safe_add_column('test_table', column_def)
+                result = manager.safe_add_column("test_table", column_def)
                 logger.info("   ✅ 安全模式下允许添加列")
                 tests_passed.append("安全添加列")
             else:
@@ -206,7 +209,7 @@ def test_safe_mode():
         result = manager.confirm_dangerous_operation(
             operation_type="DELETE_COLUMN",
             table_name="test_table",
-            details="删除列 old_column"
+            details="删除列 old_column",
         )
 
         if result == False:
@@ -221,7 +224,7 @@ def test_safe_mode():
         result = manager.confirm_dangerous_operation(
             operation_type="MODIFY_COLUMN",
             table_name="test_table",
-            details="修改列 price 从 FLOAT 到 DOUBLE"
+            details="修改列 price 从 FLOAT 到 DOUBLE",
         )
 
         if result == False:
@@ -233,8 +236,8 @@ def test_safe_mode():
 
         # 测试5: 验证配置中的安全模式设置
         logger.info("\n5. 验证配置文件中的安全模式设置")
-        maintenance = manager.config.get('maintenance', {})
-        safe_mode_config = maintenance.get('safe_mode')
+        maintenance = manager.config.get("maintenance", {})
+        safe_mode_config = maintenance.get("safe_mode")
 
         if safe_mode_config == True:
             logger.info(f"   ✅ 配置文件中safe_mode设置正确: {safe_mode_config}")
@@ -245,7 +248,7 @@ def test_safe_mode():
 
         # 测试6: auto_create_tables配置
         logger.info("\n6. 验证auto_create_tables配置")
-        auto_create = maintenance.get('auto_create_tables')
+        auto_create = maintenance.get("auto_create_tables")
 
         if auto_create == True:
             logger.info(f"   ✅ auto_create_tables设置正确: {auto_create}")
@@ -260,7 +263,9 @@ def test_safe_mode():
 
     # 总结T025
     logger.info("\n" + "-" * 60)
-    logger.info(f"T025结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项")
+    logger.info(
+        f"T025结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项"
+    )
 
     if len(tests_failed) == 0:
         logger.info("✅ T025验收通过: 安全模式功能完善")
@@ -292,7 +297,7 @@ def main():
 
     results = [
         ("T024 - 配置验证测试", success_t024),
-        ("T025 - 安全模式验收测试", success_t025)
+        ("T025 - 安全模式验收测试", success_t025),
     ]
 
     passed = sum(1 for _, success in results if success)
@@ -319,6 +324,6 @@ def main():
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)

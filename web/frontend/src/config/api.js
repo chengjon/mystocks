@@ -5,7 +5,7 @@
  */
 
 // 从环境变量读取 API 基础 URL，如果未设置则使用默认值
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // API endpoints
 export const API_ENDPOINTS = {

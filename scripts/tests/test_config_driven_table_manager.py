@@ -15,14 +15,13 @@ import sys
 from pathlib import Path
 
 # 添加项目根目录到路径
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.config_driven_table_manager import ConfigDrivenTableManager
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -63,7 +62,7 @@ def test_table_statistics(manager):
         logger.info(f"   - 总计: {total}个表")
 
         # 验证表数量
-        expected_total = len(manager.config['tables'])
+        expected_total = len(manager.config["tables"])
         if total == expected_total:
             logger.info(f"✅ 表数量验证通过 ({total} == {expected_total})")
             return True
@@ -96,12 +95,12 @@ def test_classification_mapping(manager):
 
         # 验证关键分类是否存在
         key_classifications = [
-            'TICK_DATA',
-            'MINUTE_KLINE',
-            'DAILY_KLINE',
-            'SYMBOLS_INFO',
-            'TECHNICAL_INDICATORS',
-            'ORDER_RECORDS'
+            "TICK_DATA",
+            "MINUTE_KLINE",
+            "DAILY_KLINE",
+            "SYMBOLS_INFO",
+            "TECHNICAL_INDICATORS",
+            "ORDER_RECORDS",
         ]
 
         missing = []
@@ -135,7 +134,7 @@ def test_safe_mode(manager):
         result = manager.confirm_dangerous_operation(
             operation_type="DELETE_COLUMN",
             table_name="test_table",
-            details="删除列 old_column"
+            details="删除列 old_column",
         )
 
         if result == False:
@@ -158,21 +157,21 @@ def test_config_validation(manager):
 
     try:
         # 检查数据库配置
-        databases = manager.config.get('databases', {})
+        databases = manager.config.get("databases", {})
         logger.info(f"✅ 数据库配置: {len(databases)}个数据库")
         for db_name in databases.keys():
             logger.info(f"   - {db_name}")
 
         # 检查维护任务配置
-        maintenance = manager.config.get('maintenance', {})
+        maintenance = manager.config.get("maintenance", {})
         logger.info(f"\n✅ 维护配置:")
         logger.info(f"   - auto_create_tables: {maintenance.get('auto_create_tables')}")
         logger.info(f"   - safe_mode: {maintenance.get('safe_mode')}")
 
-        daily_tasks = maintenance.get('daily_tasks', [])
+        daily_tasks = maintenance.get("daily_tasks", [])
         logger.info(f"   - daily_tasks: {len(daily_tasks)}个任务")
 
-        weekly_tasks = maintenance.get('weekly_tasks', [])
+        weekly_tasks = maintenance.get("weekly_tasks", [])
         logger.info(f"   - weekly_tasks: {len(weekly_tasks)}个任务")
 
         return True
@@ -222,7 +221,7 @@ def main():
         ("表数量统计", success2),
         ("数据分类映射", success3),
         ("安全模式功能", success4),
-        ("配置内容验证", success5)
+        ("配置内容验证", success5),
     ]
 
     passed = sum(1 for _, success in results if success)
@@ -244,6 +243,6 @@ def main():
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
