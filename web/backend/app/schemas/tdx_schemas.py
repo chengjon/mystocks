@@ -1,6 +1,7 @@
 """
 TDX数据API的Pydantic模型定义
 """
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -8,6 +9,7 @@ from datetime import datetime
 
 class RealTimeQuoteResponse(BaseModel):
     """实时行情响应模型"""
+
     code: str = Field(..., description="股票代码")
     name: str = Field(..., description="股票名称")
     price: float = Field(..., description="最新价")
@@ -45,13 +47,14 @@ class RealTimeQuoteResponse(BaseModel):
                 "ask1_volume": 150,
                 "timestamp": "2025-10-15 14:30:00",
                 "change": 5.50,
-                "change_pct": 0.30
+                "change_pct": 0.30,
             }
         }
 
 
 class KlineDataPoint(BaseModel):
     """K线数据点模型"""
+
     date: str = Field(..., description="日期时间")
     open: float = Field(..., description="开盘价")
     high: float = Field(..., description="最高价")
@@ -69,13 +72,14 @@ class KlineDataPoint(BaseModel):
                 "low": 1844.00,
                 "close": 1848.50,
                 "volume": 12345,
-                "amount": 22800000.00
+                "amount": 22800000.00,
             }
         }
 
 
 class KlineResponse(BaseModel):
     """K线数据响应模型"""
+
     code: str = Field(..., description="股票/指数代码")
     period: str = Field(..., description="K线周期")
     data: List[KlineDataPoint] = Field(..., description="K线数据列表")
@@ -94,16 +98,17 @@ class KlineResponse(BaseModel):
                         "low": 1844.00,
                         "close": 1848.50,
                         "volume": 12345,
-                        "amount": 22800000.00
+                        "amount": 22800000.00,
                     }
                 ],
-                "count": 1
+                "count": 1,
             }
         }
 
 
 class IndexQuoteResponse(BaseModel):
     """指数行情响应模型"""
+
     code: str = Field(..., description="指数代码")
     name: str = Field(..., description="指数名称")
     price: float = Field(..., description="当前点位")
@@ -131,13 +136,14 @@ class IndexQuoteResponse(BaseModel):
                 "amount": 450000000000.00,
                 "change": 5.50,
                 "change_pct": 0.17,
-                "timestamp": "2025-10-15 14:30:00"
+                "timestamp": "2025-10-15 14:30:00",
             }
         }
 
 
 class ErrorResponse(BaseModel):
     """错误响应模型"""
+
     error: str = Field(..., description="错误类型")
     message: str = Field(..., description="错误消息")
     detail: Optional[str] = Field(None, description="详细信息")
@@ -147,13 +153,14 @@ class ErrorResponse(BaseModel):
             "example": {
                 "error": "InvalidParameter",
                 "message": "无效的股票代码",
-                "detail": "股票代码必须为6位数字"
+                "detail": "股票代码必须为6位数字",
             }
         }
 
 
 class TdxHealthResponse(BaseModel):
     """TDX服务健康检查响应"""
+
     status: str = Field(..., description="服务状态")
     tdx_connected: bool = Field(..., description="TDX服务器连接状态")
     timestamp: str = Field(..., description="检查时间")

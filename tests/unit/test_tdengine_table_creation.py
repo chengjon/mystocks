@@ -10,15 +10,16 @@ T021: TDengine表创建单元测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pytest
-from core.config_driven_table_manager import ConfigDrivenTableManager
-from db_manager.connection_manager import DatabaseConnectionManager
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
+from src.db_manager.connection_manager import DatabaseConnectionManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("T021: TDengine表创建单元测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 
 class TestTDengineTableCreation:
@@ -35,8 +36,8 @@ class TestTDengineTableCreation:
         print("📍 测试1: 验证配置文件加载")
 
         assert self.manager.config is not None
-        assert 'tables' in self.manager.config
-        assert len(self.manager.config['tables']) > 0
+        assert "tables" in self.manager.config
+        assert len(self.manager.config["tables"]) > 0
 
         print(f"  ✅ 配置文件已加载: {len(self.manager.config['tables'])}个表定义")
 
@@ -51,7 +52,9 @@ class TestTDengineTableCreation:
             version = cursor.fetchone()
             cursor.close()
 
-            print(f"  ✅ TDengine连接成功 (version={version[0] if version else 'unknown'})")
+            print(
+                f"  ✅ TDengine连接成功 (version={version[0] if version else 'unknown'})"
+            )
             assert conn is not None
         except Exception as e:
             print(f"  ⚠️  TDengine连接失败: {e}")
@@ -62,8 +65,7 @@ class TestTDengineTableCreation:
         print("\n📍 测试3: 统计TDengine表定义")
 
         tdengine_tables = [
-            t for t in self.manager.config['tables']
-            if t['database_type'] == 'TDengine'
+            t for t in self.manager.config["tables"] if t["database_type"] == "TDengine"
         ]
 
         print(f"  TDengine表数量: {len(tdengine_tables)}")
@@ -83,47 +85,50 @@ class TestTDengineTableCreation:
 
         # 查找tick_data表定义
         tick_table = next(
-            (t for t in self.manager.config['tables']
-             if t['table_name'] == 'tick_data'),
-            None
+            (
+                t
+                for t in self.manager.config["tables"]
+                if t["table_name"] == "tick_data"
+            ),
+            None,
         )
 
         assert tick_table is not None, "未找到tick_data表定义"
-        assert tick_table.get('is_super_table', False), "tick_data应该是Super Table"
+        assert tick_table.get("is_super_table", False), "tick_data应该是Super Table"
 
         # 验证列定义
-        columns = tick_table.get('columns', [])
+        columns = tick_table.get("columns", [])
         assert len(columns) > 0, "列定义为空"
 
         # 验证必需列
-        col_names = [col['name'] for col in columns]
-        assert 'ts' in col_names, "缺少时间戳列"
-        assert 'price' in col_names, "缺少价格列"
-        assert 'volume' in col_names, "缺少成交量列"
+        col_names = [col["name"] for col in columns]
+        assert "ts" in col_names, "缺少时间戳列"
+        assert "price" in col_names, "缺少价格列"
+        assert "volume" in col_names, "缺少成交量列"
 
         print(f"  列数量: {len(columns)}")
         print(f"  必需列验证: ✓")
 
         # 验证标签(Tags)
-        tags = tick_table.get('tags', [])
+        tags = tick_table.get("tags", [])
         assert len(tags) > 0, "标签定义为空"
 
-        tag_names = [tag['name'] for tag in tags]
-        assert 'symbol' in tag_names, "缺少symbol标签"
-        assert 'exchange' in tag_names, "缺少exchange标签"
+        tag_names = [tag["name"] for tag in tags]
+        assert "symbol" in tag_names, "缺少symbol标签"
+        assert "exchange" in tag_names, "缺少exchange标签"
 
         print(f"  标签数量: {len(tags)}")
         print(f"  必需标签验证: ✓")
 
         # 验证压缩配置
-        compression = tick_table.get('compression', {})
-        assert compression.get('enabled', False), "应该启用压缩"
-        assert compression.get('codec') in ['zstd', 'ZSTD'], "压缩算法应该是ZSTD"
+        compression = tick_table.get("compression", {})
+        assert compression.get("enabled", False), "应该启用压缩"
+        assert compression.get("codec") in ["zstd", "ZSTD"], "压缩算法应该是ZSTD"
 
         print(f"  压缩配置: {compression.get('codec')} / {compression.get('level')}")
 
         # 验证保留策略
-        retention_days = tick_table.get('retention_days')
+        retention_days = tick_table.get("retention_days")
         assert retention_days is not None, "应该配置保留策略"
         assert retention_days > 0, "保留天数应该大于0"
 
@@ -137,8 +142,9 @@ class TestTDengineTableCreation:
         try:
             # 尝试创建所有TDengine表
             tdengine_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'TDengine'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "TDengine"
             ]
 
             created_count = 0
@@ -169,13 +175,14 @@ class TestTDengineTableCreation:
 
         try:
             tdengine_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'TDengine'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "TDengine"
             ]
 
             for table_def in tdengine_tables[:3]:  # 只检查前3个
-                table_name = table_def['table_name']
-                exists = self.manager._table_exists('TDengine', table_name)
+                table_name = table_def["table_name"]
+                exists = self.manager._table_exists("TDengine", table_name)
 
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
@@ -220,10 +227,10 @@ def run_tests():
             failed += 1
             print(f"  ❌ 错误: {e}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"测试结果: 通过={passed}, 失败={failed}, 跳过={skipped}")
-    print("="*80)
+    print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

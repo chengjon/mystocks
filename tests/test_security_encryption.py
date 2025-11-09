@@ -496,9 +496,7 @@ class TestEncryptionSecurityPractices:
         import base64
 
         encrypted_bytes = base64.b64decode(encrypted)
-        tampered_bytes = (
-            encrypted_bytes[:-1] + bytes([encrypted_bytes[-1] ^ 0xFF])
-        )
+        tampered_bytes = encrypted_bytes[:-1] + bytes([encrypted_bytes[-1] ^ 0xFF])
         tampered_encrypted = base64.b64encode(tampered_bytes).decode("utf-8")
 
         # Tampered data should fail authentication

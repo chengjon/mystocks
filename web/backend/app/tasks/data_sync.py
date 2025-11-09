@@ -26,15 +26,15 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
     logger.info(f"Starting daily stock data sync with params: {params}")
 
     try:
-        data_source = params.get('data_source', 'akshare')
-        include_basic = params.get('include_basic', True)
-        include_kline = params.get('include_kline', True)
+        data_source = params.get("data_source", "akshare")
+        include_basic = params.get("include_basic", True)
+        include_kline = params.get("include_kline", True)
 
         result = {
-            'status': 'success',
-            'data_source': data_source,
-            'sync_time': datetime.now().isoformat(),
-            'records_synced': 0
+            "status": "success",
+            "data_source": data_source,
+            "sync_time": datetime.now().isoformat(),
+            "records_synced": 0,
         }
 
         # TODO: 实现实际的数据同步逻辑
@@ -42,12 +42,12 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
         if include_basic:
             logger.info("Syncing basic stock data...")
             # 调用实际的数据同步函数
-            result['records_synced'] += 100  # 示例数据
+            result["records_synced"] += 100  # 示例数据
 
         if include_kline:
             logger.info("Syncing k-line data...")
             # 调用实际的K线数据同步函数
-            result['records_synced'] += 500  # 示例数据
+            result["records_synced"] += 500  # 示例数据
 
         logger.info(f"Daily stock data sync completed: {result}")
         return result
@@ -55,9 +55,9 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Failed to sync daily stock data: {e}")
         return {
-            'status': 'failed',
-            'error': str(e),
-            'sync_time': datetime.now().isoformat()
+            "status": "failed",
+            "error": str(e),
+            "sync_time": datetime.now().isoformat(),
         }
 
 
@@ -76,16 +76,16 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
     logger.info(f"Starting basic stock info sync with params: {params}")
 
     try:
-        data_source = params.get('data_source', 'akshare')
-        include_delisted = params.get('include_delisted', False)
+        data_source = params.get("data_source", "akshare")
+        include_delisted = params.get("include_delisted", False)
 
         # TODO: 实现实际的数据同步逻辑
         result = {
-            'status': 'success',
-            'data_source': data_source,
-            'sync_time': datetime.now().isoformat(),
-            'stocks_synced': 5000,  # 示例数据
-            'include_delisted': include_delisted
+            "status": "success",
+            "data_source": data_source,
+            "sync_time": datetime.now().isoformat(),
+            "stocks_synced": 5000,  # 示例数据
+            "include_delisted": include_delisted,
         }
 
         logger.info(f"Basic stock info sync completed: {result}")
@@ -94,9 +94,9 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Failed to sync basic stock info: {e}")
         return {
-            'status': 'failed',
-            'error': str(e),
-            'sync_time': datetime.now().isoformat()
+            "status": "failed",
+            "error": str(e),
+            "sync_time": datetime.now().isoformat(),
         }
 
 
@@ -115,15 +115,15 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
     logger.info(f"Starting financial statements sync with params: {params}")
 
     try:
-        data_source = params.get('data_source', 'akshare')
-        report_types = params.get('report_types', [])
+        data_source = params.get("data_source", "akshare")
+        report_types = params.get("report_types", [])
 
         result = {
-            'status': 'success',
-            'data_source': data_source,
-            'sync_time': datetime.now().isoformat(),
-            'report_types': report_types,
-            'records_synced': len(report_types) * 1000  # 示例数据
+            "status": "success",
+            "data_source": data_source,
+            "sync_time": datetime.now().isoformat(),
+            "report_types": report_types,
+            "records_synced": len(report_types) * 1000,  # 示例数据
         }
 
         logger.info(f"Financial statements sync completed: {result}")
@@ -132,7 +132,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Failed to sync financial statements: {e}")
         return {
-            'status': 'failed',
-            'error': str(e),
-            'sync_time': datetime.now().isoformat()
+            "status": "failed",
+            "error": str(e),
+            "sync_time": datetime.now().isoformat(),
         }

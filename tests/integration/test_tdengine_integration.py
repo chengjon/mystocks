@@ -9,18 +9,19 @@ TDengine集成测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from data_access.tdengine_access import TDengineDataAccess
-from core.data_classification import DataClassification
+from src.data_access.tdengine_access import TDengineDataAccess
+from src.core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("TDengine集成测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 # 测试1: 连接测试
 print("📍 测试1: TDengine连接测试")
@@ -39,12 +40,14 @@ try:
     manager = MyStocksUnifiedManager()
 
     # 生成测试数据 (1000条Tick记录)
-    test_data = pd.DataFrame({
-        'ts': pd.date_range(datetime.now(), periods=1000, freq='1s'),
-        'price': np.random.uniform(10, 20, 1000),
-        'volume': np.random.randint(100, 10000, 1000),
-        'amount': np.random.uniform(1000, 200000, 1000)
-    })
+    test_data = pd.DataFrame(
+        {
+            "ts": pd.date_range(datetime.now(), periods=1000, freq="1s"),
+            "price": np.random.uniform(10, 20, 1000),
+            "volume": np.random.randint(100, 10000, 1000),
+            "amount": np.random.uniform(1000, 200000, 1000),
+        }
+    )
 
     # 注意: 实际测试需要先创建表
     # 这里仅测试路由和调用逻辑
@@ -67,14 +70,18 @@ try:
     import time
 
     # 生成10000条测试数据
-    large_data = pd.DataFrame({
-        'ts': pd.date_range(datetime.now(), periods=10000, freq='1s'),
-        'price': np.random.uniform(10, 20, 10000),
-        'volume': np.random.randint(100, 10000, 10000)
-    })
+    large_data = pd.DataFrame(
+        {
+            "ts": pd.date_range(datetime.now(), periods=10000, freq="1s"),
+            "price": np.random.uniform(10, 20, 10000),
+            "volume": np.random.randint(100, 10000, 10000),
+        }
+    )
 
     print(f"  数据量: {len(large_data)}条")
-    print(f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+    print(
+        f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB"
+    )
 
     # 注意: 实际插入需要先创建表,这里仅测试数据准备
     print("✅ 大批量数据准备成功\n")
@@ -90,7 +97,7 @@ try:
     print(f"  路由目标: {info['target_db'].upper()}")
     print(f"  保留周期: {info['retention_days']}天")
 
-    assert info['target_db'] == 'tdengine', "分钟线应该路由到TDengine"
+    assert info["target_db"] == "tdengine", "分钟线应该路由到TDengine"
     print("✅ 分钟线路由验证通过\n")
 
 except Exception as e:
@@ -99,14 +106,16 @@ except Exception as e:
 # 测试5: 故障恢复队列测试
 print("📍 测试5: 故障恢复队列测试")
 try:
-    from core.batch_failure_strategy import BatchFailureStrategy
+    from src.core.batch_failure_strategy import BatchFailureStrategy
 
     # 测试批量保存策略
-    small_data = pd.DataFrame({
-        'ts': pd.date_range(datetime.now(), periods=10, freq='1s'),
-        'price': np.random.uniform(10, 20, 10),
-        'volume': np.random.randint(100, 10000, 10)
-    })
+    small_data = pd.DataFrame(
+        {
+            "ts": pd.date_range(datetime.now(), periods=10, freq="1s"),
+            "price": np.random.uniform(10, 20, 10),
+            "volume": np.random.randint(100, 10000, 10),
+        }
+    )
 
     print(f"  测试数据: {len(small_data)}条")
     print(f"  使用策略: CONTINUE")
@@ -124,9 +133,9 @@ try:
 except:
     pass
 
-print("="*80)
+print("=" * 80)
 print("✅ TDengine集成测试完成")
-print("="*80)
+print("=" * 80)
 print("\n测试总结:")
 print("  ✅ 连接测试 - 通过")
 print("  ✅ 数据路由 - 通过")

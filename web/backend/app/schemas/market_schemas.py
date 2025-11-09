@@ -7,6 +7,7 @@
 - ChipRace: 竞价抢筹数据
 - LongHuBang: 龙虎榜数据
 """
+
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 from datetime import date, datetime
@@ -15,23 +16,28 @@ from decimal import Decimal
 
 # ==================== 资金流向 (Fund Flow) ====================
 
+
 class FundFlowRequest(BaseModel):
     """资金流向查询请求"""
-    symbol: str = Field(..., description="股票代码 (如: 600519.SH)", min_length=6, max_length=20)
+
+    symbol: str = Field(
+        ..., description="股票代码 (如: 600519.SH)", min_length=6, max_length=20
+    )
     timeframe: str = Field(default="1", description="时间维度: 1/3/5/10天")
     start_date: Optional[date] = Field(None, description="开始日期")
     end_date: Optional[date] = Field(None, description="结束日期")
 
-    @field_validator('timeframe')
+    @field_validator("timeframe")
     @classmethod
     def validate_timeframe(cls, v):
-        if v not in ['1', '3', '5', '10']:
-            raise ValueError('timeframe必须为: 1, 3, 5, 10')
+        if v not in ["1", "3", "5", "10"]:
+            raise ValueError("timeframe必须为: 1, 3, 5, 10")
         return v
 
 
 class FundFlowResponse(BaseModel):
     """资金流向响应"""
+
     id: int
     symbol: str
     trade_date: date
@@ -50,22 +56,25 @@ class FundFlowResponse(BaseModel):
 
 # ==================== ETF数据 (ETF Spot) ====================
 
+
 class ETFDataRequest(BaseModel):
     """ETF数据查询请求"""
+
     symbol: Optional[str] = Field(None, description="ETF代码 (如: 510300)")
     keyword: Optional[str] = Field(None, description="关键词搜索(名称/代码)")
     limit: int = Field(default=50, ge=1, le=500, description="返回数量限制")
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v):
         if v and len(v) < 6:
-            raise ValueError('ETF代码长度至少6位')
+            raise ValueError("ETF代码长度至少6位")
         return v
 
 
 class ETFDataResponse(BaseModel):
     """ETF数据响应"""
+
     id: int
     symbol: str
     name: str
@@ -90,23 +99,28 @@ class ETFDataResponse(BaseModel):
 
 # ==================== 竞价抢筹 (Chip Race) ====================
 
+
 class ChipRaceRequest(BaseModel):
     """竞价抢筹查询请求"""
-    race_type: str = Field(default="open", description="抢筹类型: open(早盘) / end(尾盘)")
+
+    race_type: str = Field(
+        default="open", description="抢筹类型: open(早盘) / end(尾盘)"
+    )
     trade_date: Optional[date] = Field(None, description="交易日期")
     min_race_amount: Optional[float] = Field(None, ge=0, description="最小抢筹金额(元)")
     limit: int = Field(default=100, ge=1, le=500)
 
-    @field_validator('race_type')
+    @field_validator("race_type")
     @classmethod
     def validate_race_type(cls, v):
-        if v not in ['open', 'end']:
-            raise ValueError('race_type必须为: open 或 end')
+        if v not in ["open", "end"]:
+            raise ValueError("race_type必须为: open 或 end")
         return v
 
 
 class ChipRaceResponse(BaseModel):
     """竞价抢筹响应"""
+
     id: int
     symbol: str
     name: str
@@ -129,8 +143,10 @@ class ChipRaceResponse(BaseModel):
 
 # ==================== 龙虎榜 (Long Hu Bang) ====================
 
+
 class LongHuBangRequest(BaseModel):
     """龙虎榜查询请求"""
+
     symbol: Optional[str] = Field(None, description="股票代码")
     start_date: Optional[date] = Field(None, description="开始日期")
     end_date: Optional[date] = Field(None, description="结束日期")
@@ -140,6 +156,7 @@ class LongHuBangRequest(BaseModel):
 
 class LongHuBangResponse(BaseModel):
     """龙虎榜响应"""
+
     id: int
     symbol: str
     name: str
@@ -159,8 +176,10 @@ class LongHuBangResponse(BaseModel):
 
 # ==================== 通用响应模型 ====================
 
+
 class PaginatedResponse(BaseModel):
     """分页响应"""
+
     total: int = Field(description="总记录数")
     page: int = Field(description="当前页码")
     page_size: int = Field(description="每页数量")
@@ -169,6 +188,7 @@ class PaginatedResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     """通用消息响应"""
+
     success: bool
     message: str
     data: Optional[dict] = None

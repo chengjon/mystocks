@@ -103,7 +103,7 @@ try:
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
-    from data_access import PostgreSQLDataAccess
+    from src.data_access import PostgreSQLDataAccess
 
     # 创建PostgreSQL数据访问实例
     postgresql_access = PostgreSQLDataAccess()

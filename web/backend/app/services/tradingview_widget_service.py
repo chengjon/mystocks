@@ -18,7 +18,7 @@ class TradingViewWidgetService:
         interval: str = "D",
         theme: str = "dark",
         locale: str = "zh_CN",
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         生成 TradingView 图表配置
@@ -52,8 +52,8 @@ class TradingViewWidgetService:
             "allow_symbol_change": True,
             "studies": [
                 "MASimple@tv-basicstudies",  # 移动平均线
-                "Volume@tv-basicstudies"       # 成交量
-            ]
+                "Volume@tv-basicstudies",  # 成交量
+            ],
         }
 
         # 合并自定义配置
@@ -66,7 +66,7 @@ class TradingViewWidgetService:
         container_id: str = "tradingview_mini_chart",
         theme: str = "dark",
         locale: str = "zh_CN",
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         生成 TradingView 迷你图表配置
@@ -94,7 +94,7 @@ class TradingViewWidgetService:
             "isTransparent": False,
             "autosize": True,
             "largeChartUrl": "",
-            "container_id": container_id
+            "container_id": container_id,
         }
 
         config.update(kwargs)
@@ -106,7 +106,7 @@ class TradingViewWidgetService:
         container_id: str = "tradingview_ticker_tape",
         theme: str = "dark",
         locale: str = "zh_CN",
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         生成 TradingView Ticker Tape 配置
@@ -127,7 +127,7 @@ class TradingViewWidgetService:
                 {"proName": "SZSE:399001", "title": "深证成指"},
                 {"proName": "SZSE:399006", "title": "创业板指"},
                 {"proName": "NASDAQ:AAPL", "title": "苹果"},
-                {"proName": "NASDAQ:TSLA", "title": "特斯拉"}
+                {"proName": "NASDAQ:TSLA", "title": "特斯拉"},
             ]
 
         config = {
@@ -137,7 +137,7 @@ class TradingViewWidgetService:
             "isTransparent": False,
             "displayMode": "adaptive",
             "locale": locale,
-            "container_id": container_id
+            "container_id": container_id,
         }
 
         config.update(kwargs)
@@ -149,7 +149,7 @@ class TradingViewWidgetService:
         theme: str = "dark",
         locale: str = "zh_CN",
         market: str = "china",
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         生成 TradingView 市场概览配置
@@ -173,8 +173,8 @@ class TradingViewWidgetService:
                         {"s": "SSE:000001", "d": "上证指数"},
                         {"s": "SZSE:399001", "d": "深证成指"},
                         {"s": "SZSE:399006", "d": "创业板指"},
-                        {"s": "SSE:000688", "d": "科创50"}
-                    ]
+                        {"s": "SSE:000688", "d": "科创50"},
+                    ],
                 },
                 {
                     "title": "沪深热门",
@@ -182,9 +182,9 @@ class TradingViewWidgetService:
                         {"s": "SSE:600519", "d": "贵州茅台"},
                         {"s": "SZSE:000858", "d": "五粮液"},
                         {"s": "SZSE:000333", "d": "美的集团"},
-                        {"s": "SSE:600036", "d": "招商银行"}
-                    ]
-                }
+                        {"s": "SSE:600036", "d": "招商银行"},
+                    ],
+                },
             ],
             "us": [
                 {
@@ -192,8 +192,8 @@ class TradingViewWidgetService:
                     "symbols": [
                         {"s": "FOREXCOM:SPXUSD", "d": "S&P 500"},
                         {"s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100"},
-                        {"s": "FOREXCOM:DJI", "d": "Dow 30"}
-                    ]
+                        {"s": "FOREXCOM:DJI", "d": "Dow 30"},
+                    ],
                 },
                 {
                     "title": "科技股",
@@ -201,9 +201,9 @@ class TradingViewWidgetService:
                         {"s": "NASDAQ:AAPL", "d": "Apple"},
                         {"s": "NASDAQ:GOOGL", "d": "Alphabet"},
                         {"s": "NASDAQ:MSFT", "d": "Microsoft"},
-                        {"s": "NASDAQ:TSLA", "d": "Tesla"}
-                    ]
-                }
+                        {"s": "NASDAQ:TSLA", "d": "Tesla"},
+                    ],
+                },
             ],
             "crypto": [
                 {
@@ -212,10 +212,10 @@ class TradingViewWidgetService:
                         {"s": "BINANCE:BTCUSDT", "d": "Bitcoin"},
                         {"s": "BINANCE:ETHUSDT", "d": "Ethereum"},
                         {"s": "BINANCE:BNBUSDT", "d": "BNB"},
-                        {"s": "BINANCE:ADAUSDT", "d": "Cardano"}
-                    ]
+                        {"s": "BINANCE:ADAUSDT", "d": "Cardano"},
+                    ],
                 }
-            ]
+            ],
         }
 
         config = {
@@ -239,7 +239,7 @@ class TradingViewWidgetService:
             "belowLineFillColorFallingBottom": "rgba(41, 98, 255, 0)",
             "symbolActiveColor": "rgba(41, 98, 255, 0.12)",
             "tabs": market_tabs.get(market, market_tabs["china"]),
-            "container_id": container_id
+            "container_id": container_id,
         }
 
         config.update(kwargs)
@@ -251,7 +251,7 @@ class TradingViewWidgetService:
         theme: str = "dark",
         locale: str = "zh_CN",
         market: str = "china",
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         生成 TradingView 股票筛选器配置
@@ -275,7 +275,7 @@ class TradingViewWidgetService:
             "showToolbar": True,
             "colorTheme": theme,
             "locale": locale,
-            "container_id": container_id
+            "container_id": container_id,
         }
 
         config.update(kwargs)
@@ -295,11 +295,11 @@ class TradingViewWidgetService:
         """
         if market == "CN":
             # A股代码转换
-            if symbol.startswith('6'):
+            if symbol.startswith("6"):
                 return f"SSE:{symbol}"  # 上海证券交易所
-            elif symbol.startswith('0') or symbol.startswith('3'):
+            elif symbol.startswith("0") or symbol.startswith("3"):
                 return f"SZSE:{symbol}"  # 深圳证券交易所
-            elif symbol.startswith('8') or symbol.startswith('4'):
+            elif symbol.startswith("8") or symbol.startswith("4"):
                 return f"BSE:{symbol}"  # 北京证券交易所
             else:
                 return f"SSE:{symbol}"
@@ -315,6 +315,7 @@ class TradingViewWidgetService:
 
 # 创建全局实例
 _tradingview_service = None
+
 
 def get_tradingview_service() -> TradingViewWidgetService:
     """

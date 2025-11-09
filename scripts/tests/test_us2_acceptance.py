@@ -22,7 +22,7 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from core.config_driven_table_manager import ConfigDrivenTableManager
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
 
 # 配置日志
 logging.basicConfig(

@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：监控数据库模块，独立记录所有操作日志和指标
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,8 +7,7 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import uuid
 import time
@@ -17,7 +16,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 
-from db_manager.connection_manager import DatabaseConnectionManager
+from src.db_manager.connection_manager import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)
 
@@ -62,18 +61,20 @@ class MonitoringDatabase:
             if conn and pool:
                 pool.putconn(conn)
 
-    def log_operation(self,
-                      operation_type: str,
-                      classification: str,
-                      target_database: str,
-                      table_name: Optional[str] = None,
-                      record_count: int = 0,
-                      operation_status: str = 'SUCCESS',
-                      error_message: Optional[str] = None,
-                      execution_time_ms: Optional[int] = None,
-                      user_agent: Optional[str] = None,
-                      client_ip: Optional[str] = None,
-                      additional_info: Optional[Dict] = None) -> bool:
+    def log_operation(
+        self,
+        operation_type: str,
+        classification: str,
+        target_database: str,
+        table_name: Optional[str] = None,
+        record_count: int = 0,
+        operation_status: str = "SUCCESS",
+        error_message: Optional[str] = None,
+        execution_time_ms: Optional[int] = None,
+        user_agent: Optional[str] = None,
+        client_ip: Optional[str] = None,
+        additional_info: Optional[Dict] = None,
+    ) -> bool:
         """
         记录操作日志
 
@@ -104,7 +105,8 @@ class MonitoringDatabase:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO operation_logs (
                         operation_id, operation_type, classification,
                         target_database, table_name, record_count,
@@ -113,12 +115,22 @@ class MonitoringDatabase:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
-                """, (
-                    operation_id, operation_type, classification,
-                    target_database, table_name, record_count,
-                    operation_status, error_message, execution_time_ms,
-                    user_agent, client_ip, additional_info
-                ))
+                """,
+                    (
+                        operation_id,
+                        operation_type,
+                        classification,
+                        target_database,
+                        table_name,
+                        record_count,
+                        operation_status,
+                        error_message,
+                        execution_time_ms,
+                        user_agent,
+                        client_ip,
+                        additional_info,
+                    ),
+                )
 
                 cursor.close()
 
@@ -127,22 +139,26 @@ class MonitoringDatabase:
         except Exception as e:
             self._write_failures += 1
             logger.warning(f"记录操作日志失败 (降级到本地日志): {e}")
-            logger.info(f"操作日志: {operation_type} {classification} -> {target_database}.{table_name} "
-                       f"({record_count} records, {operation_status}, {execution_time_ms}ms)")
+            logger.info(
+                f"操作日志: {operation_type} {classification} -> {target_database}.{table_name} "
+                f"({record_count} records, {operation_status}, {execution_time_ms}ms)"
+            )
             return False
 
-    def record_performance_metric(self,
-                                   metric_name: str,
-                                   metric_value: float,
-                                   metric_type: str = 'QUERY_TIME',
-                                   metric_unit: str = 'ms',
-                                   classification: Optional[str] = None,
-                                   database_type: Optional[str] = None,
-                                   table_name: Optional[str] = None,
-                                   is_slow_query: bool = False,
-                                   query_sql: Optional[str] = None,
-                                   execution_plan: Optional[str] = None,
-                                   tags: Optional[Dict] = None) -> bool:
+    def record_performance_metric(
+        self,
+        metric_name: str,
+        metric_value: float,
+        metric_type: str = "QUERY_TIME",
+        metric_unit: str = "ms",
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        is_slow_query: bool = False,
+        query_sql: Optional[str] = None,
+        execution_plan: Optional[str] = None,
+        tags: Optional[Dict] = None,
+    ) -> bool:
         """
         记录性能指标
 
@@ -169,7 +185,8 @@ class MonitoringDatabase:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO performance_metrics (
                         metric_name, metric_type, metric_value, metric_unit,
                         classification, database_type, table_name,
@@ -177,11 +194,21 @@ class MonitoringDatabase:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
-                """, (
-                    metric_name, metric_type, metric_value, metric_unit,
-                    classification, database_type, table_name,
-                    is_slow_query, query_sql, execution_plan, tags
-                ))
+                """,
+                    (
+                        metric_name,
+                        metric_type,
+                        metric_value,
+                        metric_unit,
+                        classification,
+                        database_type,
+                        table_name,
+                        is_slow_query,
+                        query_sql,
+                        execution_plan,
+                        tags,
+                    ),
+                )
 
                 cursor.close()
 
@@ -191,22 +218,24 @@ class MonitoringDatabase:
             logger.warning(f"记录性能指标失败: {e}")
             return False
 
-    def log_quality_check(self,
-                          check_type: str,
-                          classification: str,
-                          database_type: str,
-                          table_name: str,
-                          check_status: str,
-                          total_records: Optional[int] = None,
-                          null_records: Optional[int] = None,
-                          missing_rate: Optional[float] = None,
-                          latest_timestamp: Optional[datetime] = None,
-                          data_delay_seconds: Optional[int] = None,
-                          invalid_records: Optional[int] = None,
-                          validation_rules: Optional[str] = None,
-                          check_message: Optional[str] = None,
-                          threshold_config: Optional[Dict] = None,
-                          check_duration_ms: Optional[int] = None) -> bool:
+    def log_quality_check(
+        self,
+        check_type: str,
+        classification: str,
+        database_type: str,
+        table_name: str,
+        check_status: str,
+        total_records: Optional[int] = None,
+        null_records: Optional[int] = None,
+        missing_rate: Optional[float] = None,
+        latest_timestamp: Optional[datetime] = None,
+        data_delay_seconds: Optional[int] = None,
+        invalid_records: Optional[int] = None,
+        validation_rules: Optional[str] = None,
+        check_message: Optional[str] = None,
+        threshold_config: Optional[Dict] = None,
+        check_duration_ms: Optional[int] = None,
+    ) -> bool:
         """
         记录数据质量检查
 
@@ -239,7 +268,8 @@ class MonitoringDatabase:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO data_quality_checks (
                         check_id, check_type, classification, database_type,
                         table_name, check_status, total_records, null_records,
@@ -249,13 +279,26 @@ class MonitoringDatabase:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
-                """, (
-                    check_id, check_type, classification, database_type,
-                    table_name, check_status, total_records, null_records,
-                    missing_rate, latest_timestamp, data_delay_seconds,
-                    invalid_records, validation_rules, check_message,
-                    threshold_config, check_duration_ms
-                ))
+                """,
+                    (
+                        check_id,
+                        check_type,
+                        classification,
+                        database_type,
+                        table_name,
+                        check_status,
+                        total_records,
+                        null_records,
+                        missing_rate,
+                        latest_timestamp,
+                        data_delay_seconds,
+                        invalid_records,
+                        validation_rules,
+                        check_message,
+                        threshold_config,
+                        check_duration_ms,
+                    ),
+                )
 
                 cursor.close()
 
@@ -265,17 +308,19 @@ class MonitoringDatabase:
             logger.warning(f"记录质量检查失败: {e}")
             return False
 
-    def create_alert(self,
-                     alert_level: str,
-                     alert_type: str,
-                     alert_title: str,
-                     alert_message: str,
-                     source: Optional[str] = None,
-                     classification: Optional[str] = None,
-                     database_type: Optional[str] = None,
-                     table_name: Optional[str] = None,
-                     additional_data: Optional[Dict] = None,
-                     notification_channels: Optional[List[str]] = None) -> Optional[str]:
+    def create_alert(
+        self,
+        alert_level: str,
+        alert_type: str,
+        alert_title: str,
+        alert_message: str,
+        source: Optional[str] = None,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        additional_data: Optional[Dict] = None,
+        notification_channels: Optional[List[str]] = None,
+    ) -> Optional[str]:
         """
         创建告警
 
@@ -304,7 +349,8 @@ class MonitoringDatabase:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO alert_records (
                         alert_id, alert_level, alert_type, alert_title,
                         alert_message, source, classification, database_type,
@@ -313,11 +359,23 @@ class MonitoringDatabase:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
-                """, (
-                    alert_id, alert_level, alert_type, alert_title,
-                    alert_message, source, classification, database_type,
-                    table_name, now, now, notification_channels, additional_data
-                ))
+                """,
+                    (
+                        alert_id,
+                        alert_level,
+                        alert_type,
+                        alert_title,
+                        alert_message,
+                        source,
+                        classification,
+                        database_type,
+                        table_name,
+                        now,
+                        now,
+                        notification_channels,
+                        additional_data,
+                    ),
+                )
 
                 cursor.close()
 
@@ -329,11 +387,13 @@ class MonitoringDatabase:
             logger.warning(f"告警内容: [{alert_level}] {alert_title} - {alert_message}")
             return None
 
-    def update_alert_status(self,
-                            alert_id: str,
-                            alert_status: str,
-                            operator: str,
-                            resolution_notes: Optional[str] = None) -> bool:
+    def update_alert_status(
+        self,
+        alert_id: str,
+        alert_status: str,
+        operator: str,
+        resolution_notes: Optional[str] = None,
+    ) -> bool:
         """
         更新告警状态
 
@@ -353,18 +413,22 @@ class MonitoringDatabase:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
 
-                if alert_status == 'ACKNOWLEDGED':
-                    cursor.execute("""
+                if alert_status == "ACKNOWLEDGED":
+                    cursor.execute(
+                        """
                         UPDATE alert_records
                         SET alert_status = %s,
                             acknowledged_by = %s,
                             acknowledged_at = CURRENT_TIMESTAMP,
                             updated_at = CURRENT_TIMESTAMP
                         WHERE alert_id = %s
-                    """, (alert_status, operator, alert_id))
+                    """,
+                        (alert_status, operator, alert_id),
+                    )
 
-                elif alert_status == 'RESOLVED':
-                    cursor.execute("""
+                elif alert_status == "RESOLVED":
+                    cursor.execute(
+                        """
                         UPDATE alert_records
                         SET alert_status = %s,
                             resolved_by = %s,
@@ -372,7 +436,9 @@ class MonitoringDatabase:
                             resolution_notes = %s,
                             updated_at = CURRENT_TIMESTAMP
                         WHERE alert_id = %s
-                    """, (alert_status, operator, resolution_notes, alert_id))
+                    """,
+                        (alert_status, operator, resolution_notes, alert_id),
+                    )
 
                 cursor.close()
 
@@ -390,19 +456,21 @@ class MonitoringDatabase:
             dict: 统计信息
         """
         stats = {
-            'total_writes': self._total_writes,
-            'write_failures': self._write_failures,
-            'write_success_rate': 0.0
+            "total_writes": self._total_writes,
+            "write_failures": self._write_failures,
+            "write_success_rate": 0.0,
         }
 
         if self._total_writes > 0:
-            stats['write_success_rate'] = (
+            stats["write_success_rate"] = (
                 (self._total_writes - self._write_failures) / self._total_writes * 100
             )
 
         return stats
 
-    def cleanup_old_records(self, days_to_keep: Optional[Dict[str, int]] = None) -> Dict[str, int]:
+    def cleanup_old_records(
+        self, days_to_keep: Optional[Dict[str, int]] = None
+    ) -> Dict[str, int]:
         """
         清理过期记录
 
@@ -422,10 +490,10 @@ class MonitoringDatabase:
 
         if days_to_keep is None:
             days_to_keep = {
-                'operation_logs': 30,
-                'performance_metrics': 90,
-                'data_quality_checks': 7,
-                'alert_records': 90
+                "operation_logs": 30,
+                "performance_metrics": 90,
+                "data_quality_checks": 7,
+                "alert_records": 90,
             }
 
         deleted_counts = {}
@@ -437,13 +505,18 @@ class MonitoringDatabase:
                 for table_name, days in days_to_keep.items():
                     cutoff_date = datetime.now() - timedelta(days=days)
 
-                    cursor.execute(f"""
+                    cursor.execute(
+                        f"""
                         DELETE FROM {table_name}
                         WHERE created_at < %s
-                    """, (cutoff_date,))
+                    """,
+                        (cutoff_date,),
+                    )
 
                     deleted_counts[table_name] = cursor.rowcount
-                    logger.info(f"清理 {table_name}: 删除 {cursor.rowcount} 条记录 (>{days}天)")
+                    logger.info(
+                        f"清理 {table_name}: 删除 {cursor.rowcount} 条记录 (>{days}天)"
+                    )
 
                 cursor.close()
 
@@ -466,9 +539,11 @@ def get_monitoring_database(enable_monitoring: bool = True) -> MonitoringDatabas
     return _monitoring_db
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """测试监控数据库"""
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
 
     print("\n测试MonitoringDatabase...")
 
@@ -478,53 +553,53 @@ if __name__ == '__main__':
     # 测试1: 记录操作日志
     print("\n1. 测试记录操作日志...")
     success = monitor_db.log_operation(
-        operation_type='SAVE',
-        classification='DAILY_KLINE',
-        target_database='PostgreSQL',
-        table_name='daily_kline',
+        operation_type="SAVE",
+        classification="DAILY_KLINE",
+        target_database="PostgreSQL",
+        table_name="daily_kline",
         record_count=100,
-        operation_status='SUCCESS',
-        execution_time_ms=45
+        operation_status="SUCCESS",
+        execution_time_ms=45,
     )
     print(f"   记录操作日志: {'✅ 成功' if success else '❌ 失败'}")
 
     # 测试2: 记录性能指标
     print("\n2. 测试记录性能指标...")
     success = monitor_db.record_performance_metric(
-        metric_name='query_daily_kline',
+        metric_name="query_daily_kline",
         metric_value=150.5,
-        metric_type='QUERY_TIME',
-        metric_unit='ms',
-        classification='DAILY_KLINE',
-        database_type='PostgreSQL',
-        is_slow_query=False
+        metric_type="QUERY_TIME",
+        metric_unit="ms",
+        classification="DAILY_KLINE",
+        database_type="PostgreSQL",
+        is_slow_query=False,
     )
     print(f"   记录性能指标: {'✅ 成功' if success else '❌ 失败'}")
 
     # 测试3: 记录质量检查
     print("\n3. 测试记录质量检查...")
     success = monitor_db.log_quality_check(
-        check_type='COMPLETENESS',
-        classification='DAILY_KLINE',
-        database_type='PostgreSQL',
-        table_name='daily_kline',
-        check_status='PASS',
+        check_type="COMPLETENESS",
+        classification="DAILY_KLINE",
+        database_type="PostgreSQL",
+        table_name="daily_kline",
+        check_status="PASS",
         total_records=10000,
         null_records=5,
-        missing_rate=0.05
+        missing_rate=0.05,
     )
     print(f"   记录质量检查: {'✅ 成功' if success else '❌ 失败'}")
 
     # 测试4: 创建告警
     print("\n4. 测试创建告警...")
     alert_id = monitor_db.create_alert(
-        alert_level='WARNING',
-        alert_type='DATA_QUALITY',
-        alert_title='数据缺失率偏高',
-        alert_message='daily_kline表数据缺失率达到5%,超过阈值3%',
-        source='DataQualityMonitor',
-        classification='DAILY_KLINE',
-        notification_channels=['log', 'webhook']
+        alert_level="WARNING",
+        alert_type="DATA_QUALITY",
+        alert_title="数据缺失率偏高",
+        alert_message="daily_kline表数据缺失率达到5%,超过阈值3%",
+        source="DataQualityMonitor",
+        classification="DAILY_KLINE",
+        notification_channels=["log", "webhook"],
     )
     print(f"   创建告警: {'✅ 成功' if alert_id else '❌ 失败'} (ID={alert_id})")
 

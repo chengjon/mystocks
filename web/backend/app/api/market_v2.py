@@ -10,6 +10,7 @@
 - 股票分红配送
 - 股票大宗交易
 """
+
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from datetime import date, datetime
@@ -21,12 +22,13 @@ router = APIRouter(prefix="/api/market/v2", tags=["市场数据V2"])
 
 # ==================== 个股资金流向 ====================
 
+
 @router.get("/fund-flow", summary="查询个股资金流向")
 async def get_fund_flow(
     symbol: str = Query(..., description="股票代码"),
     timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天"),
     start_date: Optional[date] = Query(None, description="开始日期"),
-    end_date: Optional[date] = Query(None, description="结束日期")
+    end_date: Optional[date] = Query(None, description="结束日期"),
 ):
     """
     查询个股资金流向历史数据
@@ -47,7 +49,7 @@ async def get_fund_flow(
 @router.post("/fund-flow/refresh", summary="刷新资金流向数据")
 async def refresh_fund_flow(
     symbol: Optional[str] = Query(None, description="股票代码，不传则刷新全市场"),
-    timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日")
+    timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
 ):
     """
     从东方财富刷新资金流向数据
@@ -64,11 +66,12 @@ async def refresh_fund_flow(
 
 # ==================== ETF数据 ====================
 
+
 @router.get("/etf/list", summary="查询ETF列表")
 async def get_etf_list(
     symbol: Optional[str] = Query(None, description="ETF代码"),
     keyword: Optional[str] = Query(None, description="关键词搜索"),
-    limit: int = Query(default=50, ge=1, le=500, description="返回数量")
+    limit: int = Query(default=50, ge=1, le=500, description="返回数量"),
 ):
     """
     查询ETF实时行情数据
@@ -98,13 +101,14 @@ async def refresh_etf_spot():
 
 # ==================== 龙虎榜 ====================
 
+
 @router.get("/lhb", summary="查询龙虎榜")
 async def get_lhb_detail(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
     min_net_amount: Optional[float] = Query(None, description="最小净买入额(元)"),
-    limit: int = Query(default=100, ge=1, le=500, description="返回数量")
+    limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
     """
     查询龙虎榜详细数据
@@ -113,7 +117,9 @@ async def get_lhb_detail(
     """
     try:
         service = get_market_data_service_v2()
-        results = service.query_lhb_detail(symbol, start_date, end_date, min_net_amount, limit)
+        results = service.query_lhb_detail(
+            symbol, start_date, end_date, min_net_amount, limit
+        )
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -136,11 +142,12 @@ async def refresh_lhb_detail(
 
 # ==================== 行业/概念资金流向 ====================
 
+
 @router.get("/sector/fund-flow", summary="查询行业/概念资金流向")
 async def get_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
-    limit: int = Query(default=100, ge=1, le=500, description="返回数量")
+    limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
     """
     查询行业/概念板块资金流向
@@ -160,7 +167,7 @@ async def get_sector_fund_flow(
 @router.post("/sector/fund-flow/refresh", summary="刷新行业/概念资金流向")
 async def refresh_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
-    timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日")
+    timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
 ):
     """
     从东方财富刷新行业/概念资金流向数据
@@ -175,10 +182,11 @@ async def refresh_sector_fund_flow(
 
 # ==================== 股票分红配送 ====================
 
+
 @router.get("/dividend", summary="查询股票分红配送")
 async def get_stock_dividend(
     symbol: str = Query(..., description="股票代码"),
-    limit: int = Query(default=50, ge=1, le=200, description="返回数量")
+    limit: int = Query(default=50, ge=1, le=200, description="返回数量"),
 ):
     """
     查询股票分红配送历史记录
@@ -195,9 +203,7 @@ async def get_stock_dividend(
 
 
 @router.post("/dividend/refresh", summary="刷新股票分红配送数据")
-async def refresh_stock_dividend(
-    symbol: str = Query(..., description="股票代码")
-):
+async def refresh_stock_dividend(symbol: str = Query(..., description="股票代码")):
     """
     从东方财富刷新股票分红配送数据
     """
@@ -211,12 +217,13 @@ async def refresh_stock_dividend(
 
 # ==================== 股票大宗交易 ====================
 
+
 @router.get("/blocktrade", summary="查询股票大宗交易")
 async def get_stock_blocktrade(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
-    limit: int = Query(default=100, ge=1, le=500, description="返回数量")
+    limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
     """
     查询股票大宗交易记录
@@ -235,7 +242,9 @@ async def get_stock_blocktrade(
 
 @router.post("/blocktrade/refresh", summary="刷新股票大宗交易数据")
 async def refresh_stock_blocktrade(
-    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新")
+    trade_date: Optional[str] = Query(
+        None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"
+    )
 ):
     """
     从东方财富刷新大宗交易数据
@@ -249,6 +258,7 @@ async def refresh_stock_blocktrade(
 
 
 # ==================== 批量刷新 ====================
+
 
 @router.post("/refresh-all", summary="批量刷新所有市场数据")
 async def refresh_all_market_data():
@@ -268,28 +278,28 @@ async def refresh_all_market_data():
         results = {}
 
         # 1. 刷新资金流向
-        results['fund_flow'] = service.fetch_and_save_fund_flow(None, "今日")
+        results["fund_flow"] = service.fetch_and_save_fund_flow(None, "今日")
 
         # 2. 刷新ETF数据
-        results['etf'] = service.fetch_and_save_etf_spot()
+        results["etf"] = service.fetch_and_save_etf_spot()
 
         # 3. 刷新行业资金流向
-        results['sector_industry'] = service.fetch_and_save_sector_fund_flow("行业", "今日")
+        results["sector_industry"] = service.fetch_and_save_sector_fund_flow(
+            "行业", "今日"
+        )
 
         # 4. 刷新概念资金流向
-        results['sector_concept'] = service.fetch_and_save_sector_fund_flow("概念", "今日")
+        results["sector_concept"] = service.fetch_and_save_sector_fund_flow(
+            "概念", "今日"
+        )
 
         # 5. 刷新龙虎榜（最近交易日）
-        today_str = datetime.now().strftime('%Y-%m-%d')
-        results['lhb'] = service.fetch_and_save_lhb_detail(today_str)
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        results["lhb"] = service.fetch_and_save_lhb_detail(today_str)
 
         # 6. 刷新大宗交易
-        results['blocktrade'] = service.fetch_and_save_blocktrade(today_str)
+        results["blocktrade"] = service.fetch_and_save_blocktrade(today_str)
 
-        return {
-            "success": True,
-            "message": "批量刷新完成",
-            "details": results
-        }
+        return {"success": True, "message": "批量刷新完成", "details": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

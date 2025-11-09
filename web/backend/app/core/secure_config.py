@@ -104,9 +104,7 @@ class SecureConfig:
                 )
                 del db_config["password_encrypted"]
             except ValueError as e:
-                logger.error(
-                    f"❌ Failed to decrypt {db_type} password", error=str(e)
-                )
+                logger.error(f"❌ Failed to decrypt {db_type} password", error=str(e))
                 raise
 
         return db_config
@@ -144,15 +142,11 @@ class SecureConfig:
         # Build appropriate connection string based on database type
         if db_type == "postgresql":
             driver = driver or "postgresql+psycopg2"
-            conn_str = (
-                f"{driver}://{user}:{password}@{host}:{port}/{database}"
-            )
+            conn_str = f"{driver}://{user}:{password}@{host}:{port}/{database}"
 
         elif db_type == "mysql":
             driver = driver or "mysql+pymysql"
-            conn_str = (
-                f"{driver}://{user}:{password}@{host}:{port}/{database}"
-            )
+            conn_str = f"{driver}://{user}:{password}@{host}:{port}/{database}"
 
         elif db_type == "tdengine":
             # TDengine uses custom connection format
@@ -330,9 +324,7 @@ class SecureConfig:
                     verification_results[key] = True
                 except Exception as e:
                     verification_results[key] = False
-                    logger.error(
-                        f"❌ Verification failed for {key}", error=str(e)
-                    )
+                    logger.error(f"❌ Verification failed for {key}", error=str(e))
 
         logger.info(
             f"✅ Configuration verification complete",

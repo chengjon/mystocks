@@ -5,6 +5,7 @@
 - DataService: 获取历史OHLCV数据
 - StrategyRegistry: 获取策略实例
 """
+
 from dataclasses import dataclass
 from typing import Dict, Any
 import pandas as pd
@@ -17,28 +18,30 @@ logger = logging.getLogger(__name__)
 @dataclass
 class BacktestConfig:
     """回测配置"""
+
     initial_capital: float = 1000000.0  # 初始资金
-    commission_rate: float = 0.0003     # 佣金率
-    slippage_rate: float = 0.0001       # 滑点率
-    position_size: float = 0.1          # 单次交易仓位比例
-    max_positions: int = 10             # 最大持仓数
+    commission_rate: float = 0.0003  # 佣金率
+    slippage_rate: float = 0.0001  # 滑点率
+    position_size: float = 0.1  # 单次交易仓位比例
+    max_positions: int = 10  # 最大持仓数
 
 
 @dataclass
 class BacktestResult:
     """回测结果"""
+
     backtest_id: str
     strategy_id: str
     symbol: str
-    total_return: float         # 总收益率
-    annual_return: float        # 年化收益率
-    sharpe_ratio: float         # 夏普比率
-    max_drawdown: float         # 最大回撤
-    win_rate: float             # 胜率
-    total_trades: int           # 总交易次数
-    profit_factor: float        # 盈亏比
+    total_return: float  # 总收益率
+    annual_return: float  # 年化收益率
+    sharpe_ratio: float  # 夏普比率
+    max_drawdown: float  # 最大回撤
+    win_rate: float  # 胜率
+    total_trades: int  # 总交易次数
+    profit_factor: float  # 盈亏比
     equity_curve: pd.DataFrame  # 权益曲线
-    trade_history: pd.DataFrame # 交易历史
+    trade_history: pd.DataFrame  # 交易历史
 
 
 class BacktestEngine:
@@ -53,7 +56,7 @@ class BacktestEngine:
         symbol: str,
         start_date: str,
         end_date: str,
-        strategy_params: Dict[str, Any] = None
+        strategy_params: Dict[str, Any] = None,
     ) -> BacktestResult:
         """
         运行单策略回测
@@ -97,7 +100,7 @@ class BacktestEngine:
                 strategy_id=strategy_id,
                 symbol=symbol,
                 trades_df=trades_df,
-                signals_df=signals_df
+                signals_df=signals_df,
             )
 
             return result
@@ -113,45 +116,52 @@ class BacktestEngine:
         entry_price = 0.0
 
         for idx, row in signals_df.iterrows():
-            signal = row['signal']
-            price = row['price']
-            date = row['date']
+            signal = row["signal"]
+            price = row["price"]
+            date = row["date"]
 
             # 买入信号
             if signal == 1 and position == 0:
                 position = 1
                 entry_price = price * (1 + self.config.slippage_rate)
                 shares = int(
-                    (self.config.initial_capital * self.config.position_size) / entry_price
+                    (self.config.initial_capital * self.config.position_size)
+                    / entry_price
                 )
-                trades.append({
-                    'date': date,
-                    'action': 'BUY',
-                    'price': entry_price,
-                    'shares': shares,
-                    'amount': entry_price * shares
-                })
+                trades.append(
+                    {
+                        "date": date,
+                        "action": "BUY",
+                        "price": entry_price,
+                        "shares": shares,
+                        "amount": entry_price * shares,
+                    }
+                )
 
             # 卖出信号
             elif signal == -1 and position == 1:
                 exit_price = price * (1 - self.config.slippage_rate)
-                shares = trades[-1]['shares']
+                shares = trades[-1]["shares"]
 
                 # 计算盈亏
                 profit = (exit_price - entry_price) * shares
-                commission = (entry_price + exit_price) * shares * self.config.commission_rate
+                commission = (
+                    (entry_price + exit_price) * shares * self.config.commission_rate
+                )
                 net_profit = profit - commission
 
-                trades.append({
-                    'date': date,
-                    'action': 'SELL',
-                    'price': exit_price,
-                    'shares': shares,
-                    'amount': exit_price * shares,
-                    'commission': commission,
-                    'profit': net_profit,
-                    'return_rate': net_profit / (entry_price * shares)
-                })
+                trades.append(
+                    {
+                        "date": date,
+                        "action": "SELL",
+                        "price": exit_price,
+                        "shares": shares,
+                        "amount": exit_price * shares,
+                        "commission": commission,
+                        "profit": net_profit,
+                        "return_rate": net_profit / (entry_price * shares),
+                    }
+                )
 
                 position = 0
 
@@ -163,33 +173,37 @@ class BacktestEngine:
         strategy_id: str,
         symbol: str,
         trades_df: pd.DataFrame,
-        signals_df: pd.DataFrame
+        signals_df: pd.DataFrame,
     ) -> BacktestResult:
         """计算回测指标"""
         if trades_df.empty:
             return self._empty_result(strategy_id, symbol, backtest_id)
 
         # 提取买卖对
-        sell_trades = trades_df[trades_df['action'] == 'SELL']
+        sell_trades = trades_df[trades_df["action"] == "SELL"]
 
         # 总收益率
-        total_profit = sell_trades['profit'].sum() if not sell_trades.empty else 0
+        total_profit = sell_trades["profit"].sum() if not sell_trades.empty else 0
         total_return = total_profit / self.config.initial_capital
 
         # 年化收益率
-        days = (pd.to_datetime(signals_df['date'].max()) -
-                pd.to_datetime(signals_df['date'].min())).days
+        days = (
+            pd.to_datetime(signals_df["date"].max())
+            - pd.to_datetime(signals_df["date"].min())
+        ).days
         annual_return = (1 + total_return) ** (365.0 / days) - 1 if days > 0 else 0
 
         # 胜率
         if not sell_trades.empty:
-            wins = (sell_trades['profit'] > 0).sum()
+            wins = (sell_trades["profit"] > 0).sum()
             win_rate = wins / len(sell_trades)
         else:
             win_rate = 0.0
 
         # 夏普比率
-        returns = sell_trades['return_rate'].values if not sell_trades.empty else np.array([])
+        returns = (
+            sell_trades["return_rate"].values if not sell_trades.empty else np.array([])
+        )
         sharpe_ratio = (
             (returns.mean() / returns.std() * np.sqrt(252))
             if len(returns) > 1 and returns.std() > 0
@@ -198,8 +212,8 @@ class BacktestEngine:
 
         # 盈亏比
         if not sell_trades.empty:
-            profits = sell_trades[sell_trades['profit'] > 0]['profit'].sum()
-            losses = abs(sell_trades[sell_trades['profit'] < 0]['profit'].sum())
+            profits = sell_trades[sell_trades["profit"] > 0]["profit"].sum()
+            losses = abs(sell_trades[sell_trades["profit"] < 0]["profit"].sum())
             profit_factor = profits / losses if losses > 0 else 0.0
         else:
             profit_factor = 0.0
@@ -222,26 +236,25 @@ class BacktestEngine:
             total_trades=len(sell_trades),
             profit_factor=profit_factor,
             equity_curve=equity_curve,
-            trade_history=trades_df
+            trade_history=trades_df,
         )
 
     def _calculate_equity_curve(
-        self,
-        signals_df: pd.DataFrame,
-        trades_df: pd.DataFrame
+        self, signals_df: pd.DataFrame, trades_df: pd.DataFrame
     ) -> pd.DataFrame:
         """计算权益曲线"""
-        equity = pd.DataFrame({
-            'date': signals_df['date'],
-            'equity': self.config.initial_capital
-        })
+        equity = pd.DataFrame(
+            {"date": signals_df["date"], "equity": self.config.initial_capital}
+        )
 
         cumulative_profit = 0.0
         for idx, row in trades_df.iterrows():
-            if row['action'] == 'SELL':
-                cumulative_profit += row['profit']
-                mask = equity['date'] >= row['date']
-                equity.loc[mask, 'equity'] = self.config.initial_capital + cumulative_profit
+            if row["action"] == "SELL":
+                cumulative_profit += row["profit"]
+                mask = equity["date"] >= row["date"]
+                equity.loc[mask, "equity"] = (
+                    self.config.initial_capital + cumulative_profit
+                )
 
         return equity
 
@@ -250,16 +263,13 @@ class BacktestEngine:
         if equity_curve.empty:
             return 0.0
 
-        equity_values = equity_curve['equity'].values
+        equity_values = equity_curve["equity"].values
         running_max = np.maximum.accumulate(equity_values)
         drawdown = (equity_values - running_max) / running_max
         return abs(drawdown.min())
 
     def _empty_result(
-        self,
-        strategy_id: str,
-        symbol: str,
-        backtest_id: str = "unknown"
+        self, strategy_id: str, symbol: str, backtest_id: str = "unknown"
     ) -> BacktestResult:
         """返回空回测结果"""
         return BacktestResult(
@@ -274,7 +284,7 @@ class BacktestEngine:
             total_trades=0,
             profit_factor=0.0,
             equity_curve=pd.DataFrame(),
-            trade_history=pd.DataFrame()
+            trade_history=pd.DataFrame(),
         )
 
 

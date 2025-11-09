@@ -42,21 +42,16 @@ def _get_safe_table_name(query_name: str) -> str:
     """
     table_name = ALLOWED_QUERY_TABLES.get(query_name)
     if not table_name:
-        raise ValueError(f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}")
+        raise ValueError(
+            f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}"
+        )
     return table_name
 
 
 @shared_task(
-    name="wencai.refresh_query",
-    bind=True,
-    max_retries=3,
-    default_retry_delay=60
+    name="wencai.refresh_query", bind=True, max_retries=3, default_retry_delay=60
 )
-def refresh_wencai_query(
-    self,
-    query_name: str,
-    pages: int = 1
-) -> Dict[str, Any]:
+def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
     """
     刷新单个问财查询（后台任务）
 
@@ -73,10 +68,7 @@ def refresh_wencai_query(
 
     try:
         service = WencaiService(db=db)
-        result = service.fetch_and_save(
-            query_name=query_name,
-            pages=pages
-        )
+        result = service.fetch_and_save(query_name=query_name, pages=pages)
 
         logger.info(
             f"[Celery Task] Refresh completed for {query_name}: "
@@ -86,18 +78,17 @@ def refresh_wencai_query(
         )
 
         return {
-            'success': True,
-            'query_name': query_name,
-            'total_records': result['total_records'],
-            'new_records': result['new_records'],
-            'duplicate_records': result['duplicate_records'],
-            'completed_at': datetime.now().isoformat()
+            "success": True,
+            "query_name": query_name,
+            "total_records": result["total_records"],
+            "new_records": result["new_records"],
+            "duplicate_records": result["duplicate_records"],
+            "completed_at": datetime.now().isoformat(),
         }
 
     except Exception as e:
         logger.error(
-            f"[Celery Task] Refresh failed for {query_name}: {str(e)}",
-            exc_info=True
+            f"[Celery Task] Refresh failed for {query_name}: {str(e)}", exc_info=True
         )
 
         # 重试机制
@@ -106,10 +97,10 @@ def refresh_wencai_query(
             raise self.retry(exc=e)
 
         return {
-            'success': False,
-            'query_name': query_name,
-            'error': str(e),
-            'completed_at': datetime.now().isoformat()
+            "success": False,
+            "query_name": query_name,
+            "error": str(e),
+            "completed_at": datetime.now().isoformat(),
         }
 
     finally:
@@ -118,8 +109,7 @@ def refresh_wencai_query(
 
 @shared_task(name="wencai.scheduled_refresh_all")
 def scheduled_refresh_all_queries(
-    pages: int = 1,
-    active_only: bool = True
+    pages: int = 1, active_only: bool = True
 ) -> Dict[str, Any]:
     """
     定时刷新所有查询（每日任务）
@@ -138,11 +128,11 @@ def scheduled_refresh_all_queries(
 
     db = SessionLocal()
     results = {
-        'started_at': datetime.now().isoformat(),
-        'total_queries': 0,
-        'successful': 0,
-        'failed': 0,
-        'details': []
+        "started_at": datetime.now().isoformat(),
+        "total_queries": 0,
+        "successful": 0,
+        "failed": 0,
+        "details": [],
     }
 
     try:
@@ -151,42 +141,39 @@ def scheduled_refresh_all_queries(
 
         # 过滤启用的查询
         if active_only:
-            queries = [q for q in queries if q.get('is_active', False)]
+            queries = [q for q in queries if q.get("is_active", False)]
 
-        results['total_queries'] = len(queries)
+        results["total_queries"] = len(queries)
         logger.info(f"Found {len(queries)} queries to refresh")
 
         # 逐个刷新
         for query_info in queries:
-            query_name = query_info['query_name']
+            query_name = query_info["query_name"]
             logger.info(f"Refreshing {query_name}...")
 
             try:
-                result = service.fetch_and_save(
-                    query_name=query_name,
-                    pages=pages
-                )
+                result = service.fetch_and_save(query_name=query_name, pages=pages)
 
-                results['successful'] += 1
-                results['details'].append({
-                    'query_name': query_name,
-                    'success': True,
-                    'new_records': result['new_records']
-                })
+                results["successful"] += 1
+                results["details"].append(
+                    {
+                        "query_name": query_name,
+                        "success": True,
+                        "new_records": result["new_records"],
+                    }
+                )
 
                 logger.info(f"✅ {query_name}: {result['new_records']} new records")
 
             except Exception as e:
-                results['failed'] += 1
-                results['details'].append({
-                    'query_name': query_name,
-                    'success': False,
-                    'error': str(e)
-                })
+                results["failed"] += 1
+                results["details"].append(
+                    {"query_name": query_name, "success": False, "error": str(e)}
+                )
 
                 logger.error(f"❌ {query_name}: {str(e)}")
 
-        results['completed_at'] = datetime.now().isoformat()
+        results["completed_at"] = datetime.now().isoformat()
         logger.info(
             f"[Celery Task] Scheduled refresh completed: "
             f"{results['successful']}/{results['total_queries']} successful"
@@ -196,8 +183,8 @@ def scheduled_refresh_all_queries(
 
     except Exception as e:
         logger.error(f"[Celery Task] Scheduled refresh failed: {str(e)}", exc_info=True)
-        results['error'] = str(e)
-        results['completed_at'] = datetime.now().isoformat()
+        results["error"] = str(e)
+        results["completed_at"] = datetime.now().isoformat()
         return results
 
     finally:
@@ -205,10 +192,7 @@ def scheduled_refresh_all_queries(
 
 
 @shared_task(name="wencai.cleanup_old_data")
-def cleanup_old_wencai_data(
-    days: int = 30,
-    dry_run: bool = False
-) -> Dict[str, Any]:
+def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, Any]:
     """
     清理旧数据（定期维护任务）
 
@@ -222,16 +206,15 @@ def cleanup_old_wencai_data(
         清理统计结果
     """
     logger.info(
-        f"[Celery Task] Starting cleanup old data, "
-        f"days={days}, dry_run={dry_run}"
+        f"[Celery Task] Starting cleanup old data, " f"days={days}, dry_run={dry_run}"
     )
 
     results = {
-        'started_at': datetime.now().isoformat(),
-        'total_tables': 0,
-        'total_deleted': 0,
-        'details': [],
-        'dry_run': dry_run
+        "started_at": datetime.now().isoformat(),
+        "total_tables": 0,
+        "total_deleted": 0,
+        "details": [],
+        "dry_run": dry_run,
     }
 
     # 创建数据库引擎
@@ -246,13 +229,11 @@ def cleanup_old_wencai_data(
         # 获取所有问财结果表
         with engine.connect() as conn:
             # 查询所有wencai_qs_*表
-            tables_query = text(
-                "SHOW TABLES LIKE 'wencai_qs_%'"
-            )
+            tables_query = text("SHOW TABLES LIKE 'wencai_qs_%'")
             tables_result = conn.execute(tables_query)
             tables = [row[0] for row in tables_result]
 
-        results['total_tables'] = len(tables)
+        results["total_tables"] = len(tables)
         logger.info(f"Found {len(tables)} result tables")
 
         # 逐表清理
@@ -265,8 +246,7 @@ def cleanup_old_wencai_data(
                         f"WHERE fetch_time < :cutoff_date"
                     )
                     count_result = conn.execute(
-                        count_query,
-                        {"cutoff_date": cutoff_date}
+                        count_query, {"cutoff_date": cutoff_date}
                     )
                     delete_count = count_result.scalar()
 
@@ -277,10 +257,7 @@ def cleanup_old_wencai_data(
                                 f"DELETE FROM {table_name} "
                                 f"WHERE fetch_time < :cutoff_date"
                             )
-                            conn.execute(
-                                delete_query,
-                                {"cutoff_date": cutoff_date}
-                            )
+                            conn.execute(delete_query, {"cutoff_date": cutoff_date})
                             conn.commit()
 
                             logger.info(
@@ -291,20 +268,16 @@ def cleanup_old_wencai_data(
                                 f"[DRY RUN] {table_name}: Would delete {delete_count} records"
                             )
 
-                        results['total_deleted'] += delete_count
-                        results['details'].append({
-                            'table': table_name,
-                            'deleted': delete_count
-                        })
+                        results["total_deleted"] += delete_count
+                        results["details"].append(
+                            {"table": table_name, "deleted": delete_count}
+                        )
 
             except Exception as e:
                 logger.error(f"Failed to cleanup {table_name}: {str(e)}")
-                results['details'].append({
-                    'table': table_name,
-                    'error': str(e)
-                })
+                results["details"].append({"table": table_name, "error": str(e)})
 
-        results['completed_at'] = datetime.now().isoformat()
+        results["completed_at"] = datetime.now().isoformat()
         logger.info(
             f"[Celery Task] Cleanup completed: "
             f"{results['total_deleted']} records deleted from {results['total_tables']} tables"
@@ -314,8 +287,8 @@ def cleanup_old_wencai_data(
 
     except Exception as e:
         logger.error(f"[Celery Task] Cleanup failed: {str(e)}", exc_info=True)
-        results['error'] = str(e)
-        results['completed_at'] = datetime.now().isoformat()
+        results["error"] = str(e)
+        results["completed_at"] = datetime.now().isoformat()
         return results
 
     finally:
@@ -336,19 +309,19 @@ def get_wencai_stats() -> Dict[str, Any]:
 
     db = SessionLocal()
     stats = {
-        'timestamp': datetime.now().isoformat(),
-        'total_queries': 0,
-        'active_queries': 0,
-        'total_records': 0,
-        'tables': []
+        "timestamp": datetime.now().isoformat(),
+        "total_queries": 0,
+        "active_queries": 0,
+        "total_records": 0,
+        "tables": [],
     }
 
     try:
         service = WencaiService(db=db)
         queries = service.get_all_queries()
 
-        stats['total_queries'] = len(queries)
-        stats['active_queries'] = len([q for q in queries if q.get('is_active', False)])
+        stats["total_queries"] = len(queries)
+        stats["active_queries"] = len([q for q in queries if q.get("is_active", False)])
 
         # 统计每个表的记录数
         mysql_url = settings.MYSQL_DATABASE_URL
@@ -356,7 +329,7 @@ def get_wencai_stats() -> Dict[str, Any]:
 
         with engine.connect() as conn:
             for query_info in queries:
-                query_name = query_info['query_name']
+                query_name = query_info["query_name"]
                 # 使用白名单获取安全的表名
                 table_name = _get_safe_table_name(query_name)
 
@@ -368,10 +341,10 @@ def get_wencai_stats() -> Dict[str, Any]:
                         f"WHERE table_schema = DATABASE() "
                         f"AND table_name = :table_name"
                     )
-                    exists = conn.execute(
-                        check_query,
-                        {"table_name": table_name}
-                    ).scalar() > 0
+                    exists = (
+                        conn.execute(check_query, {"table_name": table_name}).scalar()
+                        > 0
+                    )
 
                     if exists:
                         # 统计记录数
@@ -384,13 +357,17 @@ def get_wencai_stats() -> Dict[str, Any]:
                         )
                         latest_fetch = conn.execute(latest_query).scalar()
 
-                        stats['total_records'] += record_count
-                        stats['tables'].append({
-                            'query_name': query_name,
-                            'table_name': table_name,
-                            'record_count': record_count,
-                            'latest_fetch': latest_fetch.isoformat() if latest_fetch else None
-                        })
+                        stats["total_records"] += record_count
+                        stats["tables"].append(
+                            {
+                                "query_name": query_name,
+                                "table_name": table_name,
+                                "record_count": record_count,
+                                "latest_fetch": (
+                                    latest_fetch.isoformat() if latest_fetch else None
+                                ),
+                            }
+                        )
 
                 except Exception as e:
                     logger.warning(f"Failed to get stats for {table_name}: {str(e)}")
@@ -398,18 +375,14 @@ def get_wencai_stats() -> Dict[str, Any]:
         engine.dispose()
 
         logger.info(
-            f"[Celery Task] Stats completed: "
-            f"{stats['total_records']} total records"
+            f"[Celery Task] Stats completed: " f"{stats['total_records']} total records"
         )
 
         return stats
 
     except Exception as e:
         logger.error(f"[Celery Task] Failed to get stats: {str(e)}", exc_info=True)
-        return {
-            'error': str(e),
-            'timestamp': datetime.now().isoformat()
-        }
+        return {"error": str(e), "timestamp": datetime.now().isoformat()}
 
     finally:
         db.close()
@@ -418,6 +391,7 @@ def get_wencai_stats() -> Dict[str, Any]:
 # ============================================================================
 # 任务工具函数
 # ============================================================================
+
 
 def trigger_refresh_all():
     """

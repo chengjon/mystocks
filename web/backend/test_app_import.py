@@ -9,15 +9,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 try:
     from app.main import app
+
     print("✅ FastAPI app imported successfully")
     print(f"✅ Total routes: {len(app.routes)}")
 
     # Check Week 1 routes
     print("\n✅ Checking Week 1 Architecture-Compliant routes...")
-    routes = [r for r in app.routes if hasattr(r, 'path')]
+    routes = [r for r in app.routes if hasattr(r, "path")]
 
-    strategy_routes = [r.path for r in routes if '/v1/strategy' in r.path]
-    risk_routes = [r.path for r in routes if '/v1/risk' in r.path]
+    strategy_routes = [r.path for r in routes if "/v1/strategy" in r.path]
+    risk_routes = [r.path for r in routes if "/v1/risk" in r.path]
 
     print(f"  Strategy management routes: {len(strategy_routes)}")
     print(f"  Risk management routes: {len(risk_routes)}")
@@ -31,10 +32,13 @@ try:
         print(f"  - {r}")
 
     print("\n✅ Week 2 FastAPI setup complete!")
-    print(f"✅ Total API endpoints: {len([r for r in routes if hasattr(r, 'methods')])}")
+    print(
+        f"✅ Total API endpoints: {len([r for r in routes if hasattr(r, 'methods')])}"
+    )
 
 except Exception as e:
     print(f"❌ Error importing app: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)

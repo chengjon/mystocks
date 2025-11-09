@@ -15,6 +15,7 @@ import os
 
 class EmailServiceError(Exception):
     """邮件服务错误"""
+
     pass
 
 
@@ -29,26 +30,32 @@ class EmailNotificationService:
             config: 邮件服务配置，如果未提供则从环境变量读取
         """
         if config:
-            self.smtp_host = config.get('smtp_host')
-            self.smtp_port = config.get('smtp_port')
-            self.username = config.get('username')
-            self.password = config.get('password')
-            self.use_tls = config.get('use_tls', True)
-            self.from_name = config.get('from_name', 'MyStocks')
+            self.smtp_host = config.get("smtp_host")
+            self.smtp_port = config.get("smtp_port")
+            self.username = config.get("username")
+            self.password = config.get("password")
+            self.use_tls = config.get("use_tls", True)
+            self.from_name = config.get("from_name", "MyStocks")
         else:
             # 从环境变量读取配置
-            self.smtp_host = os.getenv('SMTP_HOST', 'smtp.gmail.com')
-            self.smtp_port = int(os.getenv('SMTP_PORT', 587))
-            self.username = os.getenv('SMTP_USERNAME', '')
-            self.password = os.getenv('SMTP_PASSWORD', '')
-            self.use_tls = os.getenv('SMTP_USE_TLS', 'true').lower() == 'true'
-            self.from_name = os.getenv('SMTP_FROM_NAME', 'MyStocks')
+            self.smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+            self.smtp_port = int(os.getenv("SMTP_PORT", 587))
+            self.username = os.getenv("SMTP_USERNAME", "")
+            self.password = os.getenv("SMTP_PASSWORD", "")
+            self.use_tls = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
+            self.from_name = os.getenv("SMTP_FROM_NAME", "MyStocks")
 
         if not self.username or not self.password:
             print("警告: SMTP 配置未完整，邮件发送功能将不可用")
 
-    def send_email(self, to_addresses: List[str], subject: str, content: str,
-                   content_type: str = "html", from_name: str = None) -> bool:
+    def send_email(
+        self,
+        to_addresses: List[str],
+        subject: str,
+        content: str,
+        content_type: str = "html",
+        from_name: str = None,
+    ) -> bool:
         """
         发送邮件
 
@@ -70,12 +77,12 @@ class EmailNotificationService:
             # 创建邮件对象
             msg = MIMEMultipart()
             sender_name = from_name or self.from_name
-            msg['From'] = f"{sender_name} <{self.username}>"
-            msg['To'] = ", ".join(to_addresses)
-            msg['Subject'] = Header(subject, 'utf-8')
+            msg["From"] = f"{sender_name} <{self.username}>"
+            msg["To"] = ", ".join(to_addresses)
+            msg["Subject"] = Header(subject, "utf-8")
 
             # 添加邮件内容
-            content_mime = MIMEText(content, content_type, 'utf-8')
+            content_mime = MIMEText(content, content_type, "utf-8")
             msg.attach(content_mime)
 
             # 连接SMTP服务器并发送邮件
@@ -148,8 +155,13 @@ class EmailNotificationService:
 
         return self.send_email([user_email], subject, content, "html")
 
-    def send_daily_newsletter(self, user_email: str, user_name: str,
-                              watchlist_symbols: List[str], news_data: List[Dict]) -> bool:
+    def send_daily_newsletter(
+        self,
+        user_email: str,
+        user_name: str,
+        watchlist_symbols: List[str],
+        news_data: List[Dict],
+    ) -> bool:
         """
         发送每日新闻简报
 
@@ -167,7 +179,9 @@ class EmailNotificationService:
         # 构建新闻内容
         news_content = ""
         for news in news_data[:10]:  # 限制最多10条新闻
-            news_time = datetime.fromtimestamp(news.get('datetime', 0)).strftime('%Y-%m-%d %H:%M')
+            news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime(
+                "%Y-%m-%d %H:%M"
+            )
             news_content += f"""
             <div style="margin-bottom: 20px; padding: 15px; background-color: white; border-left: 4px solid #2563eb;">
                 <h3 style="margin: 0 0 10px 0;">
@@ -231,7 +245,9 @@ class EmailNotificationService:
 
         return self.send_email([user_email], subject, content, "html")
 
-    def send_alert_email(self, user_email: str, alert_type: str, alert_message: str) -> bool:
+    def send_alert_email(
+        self, user_email: str, alert_type: str, alert_message: str
+    ) -> bool:
         """
         发送告警邮件
 
@@ -244,10 +260,10 @@ class EmailNotificationService:
             bool: 发送是否成功
         """
         alert_types = {
-            'price_alert': '价格提醒',
-            'news_alert': '新闻提醒',
-            'system_alert': '系统通知',
-            'performance_alert': '性能告警'
+            "price_alert": "价格提醒",
+            "news_alert": "新闻提醒",
+            "system_alert": "系统通知",
+            "performance_alert": "性能告警",
         }
 
         subject = f"MyStocks 告警: {alert_types.get(alert_type, '通知')}"
@@ -289,6 +305,7 @@ class EmailNotificationService:
 
 # 创建全局实例
 _email_service = None
+
 
 def get_email_service() -> EmailNotificationService:
     """

@@ -20,11 +20,11 @@ from datetime import datetime
 from typing import Dict, Any
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from unified_manager import MyStocksUnifiedManager
-from core.data_classification import DataClassification
-from monitoring.monitoring_database import get_monitoring_database
+from src.core.data_classification import DataClassification
+from src.monitoring.monitoring_database import get_monitoring_database
 
 
 class TestOperationLogging(unittest.TestCase):
@@ -49,18 +49,20 @@ class TestOperationLogging(unittest.TestCase):
         print("测试1: SAVE操作日志记录...")
 
         # 准备测试数据
-        test_data = pd.DataFrame({
-            'symbol': ['600000.SH'],
-            'price': [10.5],
-            'volume': [1000000],
-            'timestamp': [datetime.now()]
-        })
+        test_data = pd.DataFrame(
+            {
+                "symbol": ["600000.SH"],
+                "price": [10.5],
+                "volume": [1000000],
+                "timestamp": [datetime.now()],
+            }
+        )
 
         # 执行保存操作
         success = self.manager.save_data_by_classification(
             DataClassification.REALTIME_POSITIONS,
             test_data,
-            table_name='test_realtime_quotes'
+            table_name="test_realtime_quotes",
         )
 
         # 验证操作成功
@@ -80,8 +82,8 @@ class TestOperationLogging(unittest.TestCase):
         # 执行加载操作
         result_df = self.manager.load_data_by_classification(
             DataClassification.REALTIME_POSITIONS,
-            table_name='test_realtime_quotes',
-            limit=10
+            table_name="test_realtime_quotes",
+            limit=10,
         )
 
         # 验证操作执行 (可能为空)
@@ -98,14 +100,12 @@ class TestOperationLogging(unittest.TestCase):
         print("\n测试3: 失败操作日志记录...")
 
         # 尝试保存到不存在的表 (预期失败)
-        test_data = pd.DataFrame({
-            'invalid_col': [1, 2, 3]
-        })
+        test_data = pd.DataFrame({"invalid_col": [1, 2, 3]})
 
         success = self.manager.save_data_by_classification(
             DataClassification.REALTIME_POSITIONS,
             test_data,
-            table_name='non_existent_table_xyz'
+            table_name="non_existent_table_xyz",
         )
 
         # 验证操作失败
@@ -126,11 +126,11 @@ class TestOperationLogging(unittest.TestCase):
 
         # 验证统计信息
         self.assertIsInstance(stats, dict, "应该返回字典")
-        self.assertIn('enabled', stats, "应该包含enabled字段")
+        self.assertIn("enabled", stats, "应该包含enabled字段")
 
         print(f"  监控状态: {'已启用' if stats['enabled'] else '未启用'}")
 
-        if stats['enabled']:
+        if stats["enabled"]:
             print(f"  性能统计: {stats.get('performance', {})}")
             print(f"  告警统计: {stats.get('alerts', {})}")
             print("  ✅ 监控统计信息正常")
@@ -142,23 +142,27 @@ class TestOperationLogging(unittest.TestCase):
         print("\n测试5: 批量操作日志记录...")
 
         # 准备批量数据
-        batch_data = pd.DataFrame({
-            'symbol': [f'60000{i}.SH' for i in range(10)],
-            'price': [10.0 + i * 0.1 for i in range(10)],
-            'volume': [1000000 + i * 1000 for i in range(10)],
-            'timestamp': [datetime.now() for _ in range(10)]
-        })
+        batch_data = pd.DataFrame(
+            {
+                "symbol": [f"60000{i}.SH" for i in range(10)],
+                "price": [10.0 + i * 0.1 for i in range(10)],
+                "volume": [1000000 + i * 1000 for i in range(10)],
+                "timestamp": [datetime.now() for _ in range(10)],
+            }
+        )
 
         # 执行批量保存
         result = self.manager.save_data_batch_with_strategy(
             DataClassification.REALTIME_POSITIONS,
             batch_data,
-            table_name='test_batch_quotes'
+            table_name="test_batch_quotes",
         )
 
         # 验证批量操作结果
         self.assertIsNotNone(result, "应该返回批量操作结果")
-        print(f"  批量操作: 总数={result.total_records}, 成功={result.successful_records}")
+        print(
+            f"  批量操作: 总数={result.total_records}, 成功={result.successful_records}"
+        )
 
         if self.manager.enable_monitoring:
             print("  ✅ 批量操作已记录到监控数据库")
@@ -178,12 +182,13 @@ class TestOperationLogging(unittest.TestCase):
         print("=" * 80 + "\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 配置日志
     import logging
+
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     # 运行测试

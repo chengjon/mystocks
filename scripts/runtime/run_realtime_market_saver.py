@@ -20,23 +20,25 @@ import pandas as pd
 from datetime import datetime
 
 # 导入MyStocks核心模块
-from core import DataClassification, DataStorageStrategy
+from src.core import DataClassification, DataStorageStrategy
 from unified_manager import MyStocksUnifiedManager
 
 # 导入改进的customer适配器
-from adapters.customer_adapter import CustomerDataSource
+from src.adapters.customer_adapter import CustomerDataSource
+
 
 def setup_logging():
     """设置日志"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(levelname)s - %(message)s",
         handlers=[
-            logging.FileHandler('realtime_market_saver.log', encoding='utf-8'),
-            logging.StreamHandler()
-        ]
+            logging.FileHandler("realtime_market_saver.log", encoding="utf-8"),
+            logging.StreamHandler(),
+        ],
     )
     return logging.getLogger(__name__)
+
 
 def get_realtime_market_data_via_adapter():
     """使用customer_adapter获取沪深A股实时行情数据"""
@@ -66,6 +68,7 @@ def get_realtime_market_data_via_adapter():
         logger.error(f"❌ 通过customer_adapter获取实时行情数据失败: {str(e)}")
         return None
 
+
 def save_to_auto_routing(data, manager):
     """使用自动路由保存数据到合适的数据库"""
     logger = logging.getLogger(__name__)
@@ -84,7 +87,7 @@ def save_to_auto_routing(data, manager):
         success = manager.save_data_by_classification(
             data=data,
             classification=classification,
-            table_name='realtime_market_quotes'
+            table_name="realtime_market_quotes",
         )
 
         if success:
@@ -97,6 +100,7 @@ def save_to_auto_routing(data, manager):
     except Exception as e:
         logger.error(f"❌ 自动路由保存数据时出错: {str(e)}")
         return False
+
 
 def run_single_fetch_and_save():
     """执行单次数据获取和保存"""
@@ -122,6 +126,7 @@ def run_single_fetch_and_save():
         logger.error(f"❌ 执行过程中出现错误: {str(e)}")
         return False
 
+
 def main():
     """主启动函数"""
 
@@ -131,7 +136,7 @@ def main():
     print("=" * 70)
 
     parser = argparse.ArgumentParser(
-        description='MyStocks 沪深市场A股实时数据保存系统',
+        description="MyStocks 沪深市场A股实时数据保存系统",
         epilog="""
 数据流说明：
 • customer_adapter → efinance.stock.get_realtime_quotes() → 获取实时行情
@@ -143,27 +148,19 @@ def main():
 • 增量更新：基于时间戳的增量保存
 • 双库管理：efinance(主) + easyquotation(备)
         """,
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '--interval',
-        type=int,
-        default=60,
-        help='数据获取间隔（秒），默认60秒'
+        "--interval", type=int, default=60, help="数据获取间隔（秒），默认60秒"
     )
 
     parser.add_argument(
-        '--count',
-        type=int,
-        default=1,
-        help='运行次数，默认1次，-1表示持续运行'
+        "--count", type=int, default=1, help="运行次数，默认1次，-1表示持续运行"
     )
 
     parser.add_argument(
-        '--test-adapter',
-        action='store_true',
-        help='仅测试customer_adapter是否正常工作'
+        "--test-adapter", action="store_true", help="仅测试customer_adapter是否正常工作"
     )
 
     args = parser.parse_args()
@@ -223,10 +220,14 @@ def main():
         print(f"  - 总运行次数: {run_count}")
         print(f"  - 成功次数: {success_count}")
         print(f"  - 失败次数: {run_count - success_count}")
-        print(f"  - 成功率: {success_count/run_count*100:.1f}%" if run_count > 0 else "  - 成功率: N/A")
+        print(
+            f"  - 成功率: {success_count/run_count*100:.1f}%"
+            if run_count > 0
+            else "  - 成功率: N/A"
+        )
         print("=" * 70)
         logger.info("🏁 程序执行完毕")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

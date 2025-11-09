@@ -1,13 +1,15 @@
 """
 测试AkshareDataSource适配器
 """
+
 import pytest
 import pandas as pd
 from unittest.mock import Mock, patch, MagicMock
 import sys
-sys.path.insert(0, '/opt/claude/mystocks_spec')
 
-from adapters.akshare_adapter import AkshareDataSource
+sys.path.insert(0, "/opt/claude/mystocks_spec")
+
+from src.adapters.akshare_adapter import AkshareDataSource
 
 
 class TestAkshareAdapter:
@@ -20,10 +22,10 @@ class TestAkshareAdapter:
     def test_adapter_initialization(self):
         """测试适配器初始化"""
         assert self.adapter is not None
-        assert hasattr(self.adapter, 'get_stock_daily')
-        assert hasattr(self.adapter, 'get_real_time_data')
+        assert hasattr(self.adapter, "get_stock_daily")
+        assert hasattr(self.adapter, "get_real_time_data")
 
-    @patch('adapters.akshare_adapter.ak.stock_zh_a_hist')
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
     def test_get_stock_daily_success(self, mock_hist, sample_stock_data):
         """测试获取日线数据成功场景"""
         # Mock返回数据
@@ -36,11 +38,11 @@ class TestAkshareAdapter:
         assert result is not None
         assert isinstance(result, pd.DataFrame)
         assert len(result) > 0
-        assert 'date' in result.columns
-        assert 'close' in result.columns
+        assert "date" in result.columns
+        assert "close" in result.columns
         mock_hist.assert_called_once()
 
-    @patch('adapters.akshare_adapter.ak.stock_zh_a_hist')
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
     def test_get_stock_daily_empty_result(self, mock_hist):
         """测试获取日线数据返回空结果"""
         # Mock返回空DataFrame
@@ -54,7 +56,7 @@ class TestAkshareAdapter:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0
 
-    @patch('adapters.akshare_adapter.ak.stock_zh_a_hist')
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
     def test_get_stock_daily_exception_handling(self, mock_hist):
         """测试获取日线数据异常处理"""
         # Mock抛出异常
@@ -71,7 +73,7 @@ class TestAkshareAdapter:
         with pytest.raises((ValueError, TypeError, Exception)):
             self.adapter.get_stock_daily(None, "2024-01-01", "2024-01-10")
 
-    @patch('adapters.akshare_adapter.ak.stock_zh_a_spot_em')
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_spot_em")
     def test_get_real_time_data_success(self, mock_spot, sample_realtime_data):
         """测试获取实时数据成功场景"""
         # Mock返回数据
@@ -85,7 +87,7 @@ class TestAkshareAdapter:
         assert result is not None
         assert isinstance(result, (dict, pd.DataFrame))
 
-    @patch('adapters.akshare_adapter.ak')
+    @patch("adapters.akshare_adapter.ak")
     def test_get_balance_sheet(self, mock_ak, sample_financial_data):
         """测试获取资产负债表"""
         # Mock返回数据
@@ -98,9 +100,11 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
             if len(result) > 0:
-                assert 'report_date' in result.columns or 'total_assets' in str(result.columns)
+                assert "report_date" in result.columns or "total_assets" in str(
+                    result.columns
+                )
 
-    @patch('adapters.akshare_adapter.ak')
+    @patch("adapters.akshare_adapter.ak")
     def test_get_income_statement(self, mock_ak, sample_financial_data):
         """测试获取利润表"""
         # Mock返回数据
@@ -113,7 +117,7 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
 
-    @patch('adapters.akshare_adapter.ak')
+    @patch("adapters.akshare_adapter.ak")
     def test_get_cashflow_statement(self, mock_ak, sample_financial_data):
         """测试获取现金流量表"""
         # Mock返回数据
@@ -141,13 +145,14 @@ class TestAkshareAdapter:
             # 这里只测试不抛出异常
             try:
                 # 调用某个方法看是否能处理格式
-                result = self.adapter.get_stock_daily(input_symbol, "2024-01-01", "2024-01-10")
+                result = self.adapter.get_stock_daily(
+                    input_symbol, "2024-01-01", "2024-01-10"
+                )
                 # 不抛出异常就算通过
                 assert True
             except:
                 # 允许API调用失败，但不应该是格式问题
                 pass
-
 
     def test_date_format_validation(self):
         """测试日期格式验证"""
@@ -177,7 +182,7 @@ class TestAkshareAdapterIntegration:
             result = adapter.get_stock_daily("000001", "2024-01-01", "2024-01-05")
             if result is not None and not result.empty:
                 assert len(result) > 0
-                assert 'date' in result.columns or 'close' in result.columns
+                assert "date" in result.columns or "close" in result.columns
         except Exception as e:
             # 网络问题或API限流，跳过
             pytest.skip(f"API call failed: {str(e)}")

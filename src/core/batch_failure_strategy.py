@@ -88,16 +88,22 @@ class BatchOperationResult:
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {
-            'total_records': self.total_records,
-            'successful_records': self.successful_records,
-            'failed_records': self.failed_records,
-            'success_rate': f"{self.success_rate:.2%}",
-            'strategy_used': self.strategy_used.value,
-            'execution_time_ms': f"{self.execution_time_ms:.2f}",
-            'retry_count': self.retry_count,
-            'rollback_executed': self.rollback_executed,
-            'failed_indices': self.failed_indices[:10] if len(self.failed_indices) > 10 else self.failed_indices,
-            'error_sample': list(self.error_messages.values())[:3] if self.error_messages else []
+            "total_records": self.total_records,
+            "successful_records": self.successful_records,
+            "failed_records": self.failed_records,
+            "success_rate": f"{self.success_rate:.2%}",
+            "strategy_used": self.strategy_used.value,
+            "execution_time_ms": f"{self.execution_time_ms:.2f}",
+            "retry_count": self.retry_count,
+            "rollback_executed": self.rollback_executed,
+            "failed_indices": (
+                self.failed_indices[:10]
+                if len(self.failed_indices) > 10
+                else self.failed_indices
+            ),
+            "error_sample": (
+                list(self.error_messages.values())[:3] if self.error_messages else []
+            ),
         }
 
 
@@ -113,7 +119,7 @@ class BatchFailureHandler:
         strategy: BatchFailureStrategy = BatchFailureStrategy.CONTINUE,
         max_retries: int = 3,
         retry_delay_base: float = 1.0,
-        retry_delay_multiplier: float = 2.0
+        retry_delay_multiplier: float = 2.0,
     ):
         """
         初始化失败处理器
@@ -133,7 +139,7 @@ class BatchFailureHandler:
         self,
         data: pd.DataFrame,
         operation: Callable[[pd.DataFrame], bool],
-        operation_name: str = "batch_operation"
+        operation_name: str = "batch_operation",
     ) -> BatchOperationResult:
         """
         执行批量操作 (根据策略处理失败)
@@ -177,7 +183,7 @@ class BatchFailureHandler:
         self,
         data: pd.DataFrame,
         operation: Callable[[pd.DataFrame], bool],
-        operation_name: str
+        operation_name: str,
     ) -> BatchOperationResult:
         """
         ROLLBACK策略: 任何失败都回滚整个批次
@@ -199,7 +205,7 @@ class BatchFailureHandler:
                     successful_records=len(data),
                     failed_records=0,
                     strategy_used=BatchFailureStrategy.ROLLBACK,
-                    execution_time_ms=0.0
+                    execution_time_ms=0.0,
                 )
             else:
                 # 操作失败,标记为需要回滚
@@ -211,7 +217,7 @@ class BatchFailureHandler:
                     strategy_used=BatchFailureStrategy.ROLLBACK,
                     execution_time_ms=0.0,
                     rollback_executed=True,
-                    error_messages={0: "Batch operation failed"}
+                    error_messages={0: "Batch operation failed"},
                 )
 
         except Exception as e:
@@ -223,14 +229,14 @@ class BatchFailureHandler:
                 strategy_used=BatchFailureStrategy.ROLLBACK,
                 execution_time_ms=0.0,
                 rollback_executed=True,
-                error_messages={0: str(e)}
+                error_messages={0: str(e)},
             )
 
     def _execute_with_continue(
         self,
         data: pd.DataFrame,
         operation: Callable[[pd.DataFrame], bool],
-        operation_name: str
+        operation_name: str,
     ) -> BatchOperationResult:
         """
         CONTINUE策略: 逐条处理,跳过失败记录
@@ -273,14 +279,14 @@ class BatchFailureHandler:
             strategy_used=BatchFailureStrategy.CONTINUE,
             execution_time_ms=0.0,
             failed_indices=failed_indices,
-            error_messages=error_messages
+            error_messages=error_messages,
         )
 
     def _execute_with_retry(
         self,
         data: pd.DataFrame,
         operation: Callable[[pd.DataFrame], bool],
-        operation_name: str
+        operation_name: str,
     ) -> BatchOperationResult:
         """
         RETRY策略: 失败记录自动重试 (指数退避)
@@ -291,7 +297,9 @@ class BatchFailureHandler:
         3. 使用指数退避重试失败记录
         4. 重复直到成功或达到最大重试次数
         """
-        print(f"📍 执行批量操作 [{operation_name}] - 策略: RETRY (最多{self.max_retries}次)")
+        print(
+            f"📍 执行批量操作 [{operation_name}] - 策略: RETRY (最多{self.max_retries}次)"
+        )
 
         remaining_data = data.copy()
         successful_count = 0
@@ -305,7 +313,9 @@ class BatchFailureHandler:
 
             if attempt > 0:
                 # 指数退避
-                delay = self.retry_delay_base * (self.retry_delay_multiplier ** (attempt - 1))
+                delay = self.retry_delay_base * (
+                    self.retry_delay_multiplier ** (attempt - 1)
+                )
                 print(f"⏳ 重试 {attempt}/{self.max_retries}, 等待 {delay:.1f}秒...")
                 time.sleep(delay)
                 total_retries += 1
@@ -345,7 +355,7 @@ class BatchFailureHandler:
             execution_time_ms=0.0,
             failed_indices=all_failed_indices,
             error_messages=all_error_messages,
-            retry_count=total_retries
+            retry_count=total_retries,
         )
 
 
@@ -356,21 +366,24 @@ if __name__ == "__main__":
     print("=" * 80 + "\n")
 
     # 创建测试数据
-    test_data = pd.DataFrame({
-        'id': range(1, 11),
-        'value': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-    })
+    test_data = pd.DataFrame(
+        {
+            "id": range(1, 11),
+            "value": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+        }
+    )
 
     # 模拟操作: 70%成功率
     def mock_operation(df: pd.DataFrame) -> bool:
         import random
+
         return random.random() > 0.3
 
     # 测试三种策略
     strategies = [
         BatchFailureStrategy.ROLLBACK,
         BatchFailureStrategy.CONTINUE,
-        BatchFailureStrategy.RETRY
+        BatchFailureStrategy.RETRY,
     ]
 
     for strategy in strategies:
@@ -380,9 +393,7 @@ if __name__ == "__main__":
 
         handler = BatchFailureHandler(strategy=strategy, max_retries=2)
         result = handler.execute_batch(
-            test_data,
-            mock_operation,
-            f"test_{strategy.value}"
+            test_data, mock_operation, f"test_{strategy.value}"
         )
 
         print(f"\n结果统计:")

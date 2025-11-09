@@ -2,6 +2,7 @@
 股票策略API端点
 提供策略执行、查询、管理等RESTful接口
 """
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
@@ -17,8 +18,10 @@ router = APIRouter(prefix="/api/strategy")
 
 # ==================== 请求/响应模型 ====================
 
+
 class StrategyRunRequest(BaseModel):
     """运行策略请求"""
+
     strategy_code: str
     symbol: Optional[str] = None
     symbols: Optional[List[str]] = None
@@ -28,12 +31,14 @@ class StrategyRunRequest(BaseModel):
 
 class StrategyResultResponse(BaseModel):
     """策略结果响应"""
+
     success: bool
     data: Optional[dict] = None
     message: str
 
 
 # ==================== 策略定义相关 ====================
+
 
 @router.get("/definitions", tags=["strategy"])
 async def get_strategy_definitions():
@@ -51,7 +56,7 @@ async def get_strategy_definitions():
             "success": True,
             "data": strategies,
             "total": len(strategies),
-            "message": "获取策略定义成功"
+            "message": "获取策略定义成功",
         }
 
     except Exception as e:
@@ -61,12 +66,13 @@ async def get_strategy_definitions():
 
 # ==================== 策略执行相关 ====================
 
+
 @router.post("/run/single", tags=["strategy"])
 async def run_strategy_single(
     strategy_code: str = Query(..., description="策略代码"),
     symbol: str = Query(..., description="股票代码"),
     stock_name: Optional[str] = Query(None, description="股票名称"),
-    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD")
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD"),
 ):
     """
     对单只股票运行策略
@@ -86,24 +92,24 @@ async def run_strategy_single(
         # 解析日期
         check_date_obj = None
         if check_date:
-            check_date_obj = datetime.strptime(check_date, '%Y-%m-%d').date()
+            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
         result = service.run_strategy_for_stock(
             strategy_code=strategy_code,
             symbol=symbol,
             stock_name=stock_name,
-            check_date=check_date_obj
+            check_date=check_date_obj,
         )
 
         return {
-            "success": result.get('success', False),
+            "success": result.get("success", False),
             "data": {
                 "strategy_code": strategy_code,
                 "symbol": symbol,
-                "match_result": result.get('match_result', False),
-                "check_date": check_date or datetime.now().strftime('%Y-%m-%d')
+                "match_result": result.get("match_result", False),
+                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
             },
-            "message": result.get('message', '')
+            "message": result.get("message", ""),
         }
 
     except Exception as e:
@@ -117,7 +123,7 @@ async def run_strategy_batch(
     symbols: Optional[str] = Query(None, description="股票代码列表，逗号分隔"),
     market: Optional[str] = Query("A", description="市场类型 (A/SH/SZ/CYB/KCB)"),
     limit: Optional[int] = Query(None, description="限制处理数量"),
-    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD")
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD"),
 ):
     """
     批量运行策略
@@ -138,30 +144,30 @@ async def run_strategy_batch(
         # 解析股票列表
         symbol_list = None
         if symbols:
-            symbol_list = [s.strip() for s in symbols.split(',')]
+            symbol_list = [s.strip() for s in symbols.split(",")]
 
         # 解析日期
         check_date_obj = None
         if check_date:
-            check_date_obj = datetime.strptime(check_date, '%Y-%m-%d').date()
+            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
         result = service.run_strategy_batch(
             strategy_code=strategy_code,
             symbols=symbol_list,
             check_date=check_date_obj,
-            limit=limit
+            limit=limit,
         )
 
         return {
-            "success": result.get('success', False),
+            "success": result.get("success", False),
             "data": {
                 "strategy_code": strategy_code,
-                "total": result.get('total', 0),
-                "matched": result.get('matched', 0),
-                "failed": result.get('failed', 0),
-                "check_date": check_date or datetime.now().strftime('%Y-%m-%d')
+                "total": result.get("total", 0),
+                "matched": result.get("matched", 0),
+                "failed": result.get("failed", 0),
+                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
             },
-            "message": result.get('message', '')
+            "message": result.get("message", ""),
         }
 
     except Exception as e:
@@ -171,6 +177,7 @@ async def run_strategy_batch(
 
 # ==================== 策略结果查询 ====================
 
+
 @router.get("/results", tags=["strategy"])
 async def query_strategy_results(
     strategy_code: Optional[str] = Query(None, description="策略代码"),
@@ -178,7 +185,7 @@ async def query_strategy_results(
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD"),
     match_result: Optional[bool] = Query(None, description="是否匹配"),
     limit: int = Query(100, description="返回数量"),
-    offset: int = Query(0, description="偏移量")
+    offset: int = Query(0, description="偏移量"),
 ):
     """
     查询策略结果
@@ -200,7 +207,7 @@ async def query_strategy_results(
         # 解析日期
         check_date_obj = None
         if check_date:
-            check_date_obj = datetime.strptime(check_date, '%Y-%m-%d').date()
+            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
         results = service.query_strategy_results(
             strategy_code=strategy_code,
@@ -208,14 +215,14 @@ async def query_strategy_results(
             check_date=check_date_obj,
             match_result=match_result,
             limit=limit,
-            offset=offset
+            offset=offset,
         )
 
         return {
             "success": True,
             "data": results,
             "total": len(results),
-            "message": "查询成功"
+            "message": "查询成功",
         }
 
     except Exception as e:
@@ -227,7 +234,7 @@ async def query_strategy_results(
 async def get_matched_stocks(
     strategy_code: str = Query(..., description="策略代码"),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD"),
-    limit: int = Query(100, description="返回数量")
+    limit: int = Query(100, description="返回数量"),
 ):
     """
     获取匹配指定策略的股票列表
@@ -246,19 +253,17 @@ async def get_matched_stocks(
         # 解析日期
         check_date_obj = None
         if check_date:
-            check_date_obj = datetime.strptime(check_date, '%Y-%m-%d').date()
+            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
         stocks = service.get_matched_stocks(
-            strategy_code=strategy_code,
-            check_date=check_date_obj,
-            limit=limit
+            strategy_code=strategy_code, check_date=check_date_obj, limit=limit
         )
 
         return {
             "success": True,
             "data": stocks,
             "total": len(stocks),
-            "message": f"找到{len(stocks)}只匹配股票"
+            "message": f"找到{len(stocks)}只匹配股票",
         }
 
     except Exception as e:
@@ -267,6 +272,7 @@ async def get_matched_stocks(
 
 
 # ==================== 统计分析相关 ====================
+
 
 @router.get("/stats/summary", tags=["strategy"])
 async def get_strategy_summary(
@@ -287,7 +293,7 @@ async def get_strategy_summary(
         # 解析日期
         check_date_obj = None
         if check_date:
-            check_date_obj = datetime.strptime(check_date, '%Y-%m-%d').date()
+            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
         else:
             check_date_obj = datetime.now().date()
 
@@ -298,24 +304,22 @@ async def get_strategy_summary(
         summary = []
         for strategy in strategies:
             matched_stocks = service.get_matched_stocks(
-                strategy_code=strategy['strategy_code'],
+                strategy_code=strategy["strategy_code"],
                 check_date=check_date_obj,
-                limit=10000  # 大数以获取全部
+                limit=10000,  # 大数以获取全部
             )
 
-            summary.append({
-                "strategy_code": strategy['strategy_code'],
-                "strategy_name_cn": strategy['strategy_name_cn'],
-                "strategy_name_en": strategy['strategy_name_en'],
-                "matched_count": len(matched_stocks),
-                "check_date": check_date or datetime.now().strftime('%Y-%m-%d')
-            })
+            summary.append(
+                {
+                    "strategy_code": strategy["strategy_code"],
+                    "strategy_name_cn": strategy["strategy_name_cn"],
+                    "strategy_name_en": strategy["strategy_name_en"],
+                    "matched_count": len(matched_stocks),
+                    "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
+                }
+            )
 
-        return {
-            "success": True,
-            "data": summary,
-            "message": "获取统计摘要成功"
-        }
+        return {"success": True, "data": summary, "message": "获取统计摘要成功"}
 
     except Exception as e:
         logger.error(f"获取策略统计失败: {e}")

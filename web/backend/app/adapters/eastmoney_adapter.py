@@ -3,6 +3,7 @@
 直接调用东方财富网API，不经过akshare
 提供稳定高效的数据获取服务
 """
+
 import math
 import json
 import time
@@ -21,15 +22,19 @@ class EastMoneyAdapter:
     def __init__(self):
         """初始化适配器"""
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            }
+        )
 
     # ==================== 资金流向数据 ====================
 
-    def get_stock_fund_flow(self, symbol: str = None, timeframe: str = "今日") -> pd.DataFrame:
+    def get_stock_fund_flow(
+        self, symbol: str = None, timeframe: str = "今日"
+    ) -> pd.DataFrame:
         """
         获取个股资金流向数据
 
@@ -42,10 +47,22 @@ class EastMoneyAdapter:
         """
         try:
             indicator_map = {
-                "今日": ["f62", "f12,f14,f2,f3,f62,f184,f66,f69,f72,f75,f78,f81,f84,f87,f204,f205,f124"],
-                "3日": ["f267", "f12,f14,f2,f127,f267,f268,f269,f270,f271,f272,f273,f274,f275,f276,f257,f258,f124"],
-                "5日": ["f164", "f12,f14,f2,f109,f164,f165,f166,f167,f168,f169,f170,f171,f172,f173,f257,f258,f124"],
-                "10日": ["f174", "f12,f14,f2,f160,f174,f175,f176,f177,f178,f179,f180,f181,f182,f183,f260,f261,f124"],
+                "今日": [
+                    "f62",
+                    "f12,f14,f2,f3,f62,f184,f66,f69,f72,f75,f78,f81,f84,f87,f204,f205,f124",
+                ],
+                "3日": [
+                    "f267",
+                    "f12,f14,f2,f127,f267,f268,f269,f270,f271,f272,f273,f274,f275,f276,f257,f258,f124",
+                ],
+                "5日": [
+                    "f164",
+                    "f12,f14,f2,f109,f164,f165,f166,f167,f168,f169,f170,f171,f172,f173,f257,f258,f124",
+                ],
+                "10日": [
+                    "f174",
+                    "f12,f14,f2,f160,f174,f175,f176,f177,f178,f179,f180,f181,f182,f183,f260,f261,f124",
+                ],
             }
 
             url = "http://push2.eastmoney.com/api/qt/clist/get"
@@ -90,21 +107,43 @@ class EastMoneyAdapter:
             # 重命名列
             if timeframe == "今日":
                 temp_df.columns = [
-                    "最新价", "今日涨跌幅", "代码", "名称",
-                    "今日主力净流入-净额", "今日超大单净流入-净额", "今日超大单净流入-净占比",
-                    "今日大单净流入-净额", "今日大单净流入-净占比",
-                    "今日中单净流入-净额", "今日中单净流入-净占比",
-                    "今日小单净流入-净额", "今日小单净流入-净占比",
-                    "_", "今日主力净流入-净占比", "_", "_", "_",
+                    "最新价",
+                    "今日涨跌幅",
+                    "代码",
+                    "名称",
+                    "今日主力净流入-净额",
+                    "今日超大单净流入-净额",
+                    "今日超大单净流入-净占比",
+                    "今日大单净流入-净额",
+                    "今日大单净流入-净占比",
+                    "今日中单净流入-净额",
+                    "今日中单净流入-净占比",
+                    "今日小单净流入-净额",
+                    "今日小单净流入-净占比",
+                    "_",
+                    "今日主力净流入-净占比",
+                    "_",
+                    "_",
+                    "_",
                 ]
-                temp_df = temp_df[[
-                    "代码", "名称", "最新价", "今日涨跌幅",
-                    "今日主力净流入-净额", "今日主力净流入-净占比",
-                    "今日超大单净流入-净额", "今日超大单净流入-净占比",
-                    "今日大单净流入-净额", "今日大单净流入-净占比",
-                    "今日中单净流入-净额", "今日中单净流入-净占比",
-                    "今日小单净流入-净额", "今日小单净流入-净占比",
-                ]]
+                temp_df = temp_df[
+                    [
+                        "代码",
+                        "名称",
+                        "最新价",
+                        "今日涨跌幅",
+                        "今日主力净流入-净额",
+                        "今日主力净流入-净占比",
+                        "今日超大单净流入-净额",
+                        "今日超大单净流入-净占比",
+                        "今日大单净流入-净额",
+                        "今日大单净流入-净占比",
+                        "今日中单净流入-净额",
+                        "今日中单净流入-净占比",
+                        "今日小单净流入-净额",
+                        "今日小单净流入-净占比",
+                    ]
+                ]
 
             # 数据类型转换
             for col in temp_df.columns:
@@ -113,7 +152,7 @@ class EastMoneyAdapter:
 
             # 如果指定了股票代码，则筛选
             if symbol:
-                stock_code = symbol.split('.')[0] if '.' in symbol else symbol
+                stock_code = symbol.split(".")[0] if "." in symbol else symbol
                 temp_df = temp_df[temp_df["代码"] == stock_code]
 
             return temp_df
@@ -148,7 +187,7 @@ class EastMoneyAdapter:
                 "fid": "f3",
                 "fs": "b:MK0021,b:MK0022,b:MK0023,b:MK0024",
                 "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152",
-                "_": str(int(time.time() * 1000))
+                "_": str(int(time.time() * 1000)),
             }
 
             r = self.session.get(url, params=params)
@@ -174,32 +213,60 @@ class EastMoneyAdapter:
                 page_count -= 1
 
             temp_df = pd.DataFrame(data)
-            temp_df.rename(columns={
-                "f12": "代码",
-                "f14": "名称",
-                "f2": "最新价",
-                "f3": "涨跌幅",
-                "f4": "涨跌额",
-                "f5": "成交量",
-                "f6": "成交额",
-                "f17": "开盘价",
-                "f15": "最高价",
-                "f16": "最低价",
-                "f18": "昨收",
-                "f8": "换手率",
-                "f21": "流通市值",
-                "f20": "总市值",
-            }, inplace=True)
+            temp_df.rename(
+                columns={
+                    "f12": "代码",
+                    "f14": "名称",
+                    "f2": "最新价",
+                    "f3": "涨跌幅",
+                    "f4": "涨跌额",
+                    "f5": "成交量",
+                    "f6": "成交额",
+                    "f17": "开盘价",
+                    "f15": "最高价",
+                    "f16": "最低价",
+                    "f18": "昨收",
+                    "f8": "换手率",
+                    "f21": "流通市值",
+                    "f20": "总市值",
+                },
+                inplace=True,
+            )
 
-            temp_df = temp_df[[
-                "代码", "名称", "最新价", "涨跌幅", "涨跌额",
-                "成交量", "成交额", "开盘价", "最高价", "最低价",
-                "昨收", "换手率", "流通市值", "总市值",
-            ]]
+            temp_df = temp_df[
+                [
+                    "代码",
+                    "名称",
+                    "最新价",
+                    "涨跌幅",
+                    "涨跌额",
+                    "成交量",
+                    "成交额",
+                    "开盘价",
+                    "最高价",
+                    "最低价",
+                    "昨收",
+                    "换手率",
+                    "流通市值",
+                    "总市值",
+                ]
+            ]
 
             # 数据类型转换
-            numeric_columns = ["最新价", "涨跌幅", "涨跌额", "成交量", "成交额",
-                              "开盘价", "最高价", "最低价", "昨收", "换手率", "流通市值", "总市值"]
+            numeric_columns = [
+                "最新价",
+                "涨跌幅",
+                "涨跌额",
+                "成交量",
+                "成交额",
+                "开盘价",
+                "最高价",
+                "最低价",
+                "昨收",
+                "换手率",
+                "流通市值",
+                "总市值",
+            ]
             for col in numeric_columns:
                 temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")
 
@@ -223,7 +290,7 @@ class EastMoneyAdapter:
         """
         try:
             # 转换日期格式
-            date_formatted = date_str.replace('-', '')
+            date_formatted = date_str.replace("-", "")
 
             url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
 
@@ -236,7 +303,7 @@ class EastMoneyAdapter:
                 "columns": "SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,TRADE_DATE,EXPLAIN,CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE",
                 "source": "WEB",
                 "client": "WEB",
-                "filter": f"(TRADE_DATE='{date_str}')"
+                "filter": f"(TRADE_DATE='{date_str}')",
             }
 
             r = self.session.get(url, params=params)
@@ -248,28 +315,41 @@ class EastMoneyAdapter:
             temp_df = pd.DataFrame(data_json["result"]["data"])
 
             # 重命名列
-            temp_df.rename(columns={
-                "SECURITY_CODE": "代码",
-                "SECURITY_NAME_ABBR": "名称",
-                "TRADE_DATE": "日期",
-                "EXPLAIN": "解读",
-                "CLOSE_PRICE": "收盘价",
-                "CHANGE_RATE": "涨跌幅",
-                "BILLBOARD_NET_AMT": "龙虎榜净买额",
-                "BILLBOARD_BUY_AMT": "龙虎榜买入额",
-                "BILLBOARD_SELL_AMT": "龙虎榜卖出额",
-                "BILLBOARD_DEAL_AMT": "龙虎榜成交额",
-                "ACCUM_AMOUNT": "市场总成交额",
-                "DEAL_NET_RATIO": "净买额占总成交比",
-                "DEAL_AMOUNT_RATIO": "成交额占总成交比",
-                "TURNOVERRATE": "换手率",
-                "FREE_MARKET_CAP": "流通市值"
-            }, inplace=True)
+            temp_df.rename(
+                columns={
+                    "SECURITY_CODE": "代码",
+                    "SECURITY_NAME_ABBR": "名称",
+                    "TRADE_DATE": "日期",
+                    "EXPLAIN": "解读",
+                    "CLOSE_PRICE": "收盘价",
+                    "CHANGE_RATE": "涨跌幅",
+                    "BILLBOARD_NET_AMT": "龙虎榜净买额",
+                    "BILLBOARD_BUY_AMT": "龙虎榜买入额",
+                    "BILLBOARD_SELL_AMT": "龙虎榜卖出额",
+                    "BILLBOARD_DEAL_AMT": "龙虎榜成交额",
+                    "ACCUM_AMOUNT": "市场总成交额",
+                    "DEAL_NET_RATIO": "净买额占总成交比",
+                    "DEAL_AMOUNT_RATIO": "成交额占总成交比",
+                    "TURNOVERRATE": "换手率",
+                    "FREE_MARKET_CAP": "流通市值",
+                },
+                inplace=True,
+            )
 
             # 数据类型转换
-            numeric_columns = ["收盘价", "涨跌幅", "龙虎榜净买额", "龙虎榜买入额",
-                              "龙虎榜卖出额", "龙虎榜成交额", "市场总成交额",
-                              "净买额占总成交比", "成交额占总成交比", "换手率", "流通市值"]
+            numeric_columns = [
+                "收盘价",
+                "涨跌幅",
+                "龙虎榜净买额",
+                "龙虎榜买入额",
+                "龙虎榜卖出额",
+                "龙虎榜成交额",
+                "市场总成交额",
+                "净买额占总成交比",
+                "成交额占总成交比",
+                "换手率",
+                "流通市值",
+            ]
             for col in numeric_columns:
                 if col in temp_df.columns:
                     temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")
@@ -282,7 +362,9 @@ class EastMoneyAdapter:
 
     # ==================== 竞价抢筹数据 ====================
 
-    def get_chip_race(self, race_type: str = "open", date_str: Optional[str] = None) -> pd.DataFrame:
+    def get_chip_race(
+        self, race_type: str = "open", date_str: Optional[str] = None
+    ) -> pd.DataFrame:
         """
         获取竞价抢筹数据（早盘/尾盘）
         注意：此功能需要通达信或其他数据源支持，东方财富网暂不提供
@@ -300,7 +382,9 @@ class EastMoneyAdapter:
 
     # ==================== 行业/概念资金流向 ====================
 
-    def get_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> pd.DataFrame:
+    def get_sector_fund_flow(
+        self, sector_type: str = "行业", timeframe: str = "今日"
+    ) -> pd.DataFrame:
         """
         获取行业/概念板块资金流向
 
@@ -313,18 +397,14 @@ class EastMoneyAdapter:
         """
         try:
             # 板块类型映射
-            sector_map = {
-                "行业": "m:90+t:2",
-                "概念": "m:90+t:3",
-                "地域": "m:90+t:1"
-            }
+            sector_map = {"行业": "m:90+t:2", "概念": "m:90+t:3", "地域": "m:90+t:1"}
 
             # 时间字段映射
             timeframe_fields = {
                 "今日": "f62,f12,f14,f2,f3,f62,f184,f66,f69,f72,f75,f78,f81,f84,f87,f204,f205,f124,f1,f13",
                 "3日": "f62,f12,f14,f2,f127,f267,f268,f269,f270,f271,f272,f273,f274,f275,f276,f257,f258,f124,f1,f13",
                 "5日": "f62,f12,f14,f2,f109,f164,f165,f166,f167,f168,f169,f170,f171,f172,f173,f257,f258,f124,f1,f13",
-                "10日": "f62,f12,f14,f2,f160,f174,f175,f176,f177,f178,f179,f180,f181,f182,f183,f260,f261,f124,f1,f13"
+                "10日": "f62,f12,f14,f2,f160,f174,f175,f176,f177,f178,f179,f180,f181,f182,f183,f260,f261,f124,f1,f13",
             }
 
             url = "http://push2.eastmoney.com/api/qt/clist/get"
@@ -339,7 +419,7 @@ class EastMoneyAdapter:
                 "invt": "2",
                 "fid": "f62",
                 "fs": sector_map.get(sector_type, "m:90+t:2"),
-                "fields": timeframe_fields.get(timeframe, timeframe_fields["今日"])
+                "fields": timeframe_fields.get(timeframe, timeframe_fields["今日"]),
             }
 
             r = self.session.get(url, params=params)
@@ -352,26 +432,30 @@ class EastMoneyAdapter:
 
             # 重命名列（根据时间维度）
             if timeframe == "今日":
-                temp_df = temp_df.rename(columns={
-                    "f12": "代码",
-                    "f14": "名称",
-                    "f2": "最新价",
-                    "f3": "涨跌幅",
-                    "f62": "主力净流入",
-                    "f184": "主力净流入占比",
-                    "f66": "超大单净流入",
-                    "f69": "超大单净流入占比",
-                    "f72": "大单净流入",
-                    "f75": "大单净流入占比",
-                    "f78": "中单净流入",
-                    "f81": "中单净流入占比",
-                    "f84": "小单净流入",
-                    "f87": "小单净流入占比",
-                })
+                temp_df = temp_df.rename(
+                    columns={
+                        "f12": "代码",
+                        "f14": "名称",
+                        "f2": "最新价",
+                        "f3": "涨跌幅",
+                        "f62": "主力净流入",
+                        "f184": "主力净流入占比",
+                        "f66": "超大单净流入",
+                        "f69": "超大单净流入占比",
+                        "f72": "大单净流入",
+                        "f75": "大单净流入占比",
+                        "f78": "中单净流入",
+                        "f81": "中单净流入占比",
+                        "f84": "小单净流入",
+                        "f87": "小单净流入占比",
+                    }
+                )
 
             # 数据类型转换
             for col in temp_df.columns:
-                if any(keyword in col for keyword in ["净流入", "占比", "涨跌幅", "最新价"]):
+                if any(
+                    keyword in col for keyword in ["净流入", "占比", "涨跌幅", "最新价"]
+                ):
                     temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")
 
             return temp_df
@@ -393,7 +477,7 @@ class EastMoneyAdapter:
             pd.DataFrame: 分红配送数据
         """
         try:
-            stock_code = symbol.split('.')[0] if '.' in symbol else symbol
+            stock_code = symbol.split(".")[0] if "." in symbol else symbol
 
             url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
 
@@ -404,7 +488,7 @@ class EastMoneyAdapter:
                 "pageNumber": 1,
                 "reportName": "RPT_SHAREBONUS_DET",
                 "columns": "ALL",
-                "filter": f"(SECURITY_CODE=\"{stock_code}\")"
+                "filter": f'(SECURITY_CODE="{stock_code}")',
             }
 
             r = self.session.get(url, params=params)
@@ -416,18 +500,20 @@ class EastMoneyAdapter:
             temp_df = pd.DataFrame(data_json["result"]["data"])
 
             # 重命名列
-            temp_df = temp_df.rename(columns={
-                "SECURITY_CODE": "股票代码",
-                "SECURITY_NAME_ABBR": "股票名称",
-                "REPORT_DATE": "公告日期",
-                "IMPL_PLAN_PROFILE": "分红方案",
-                "DIVIDEND_RATIO": "每股派息",
-                "BONUS_RATIO": "每股送股",
-                "TRANSFER_RATIO": "每股转增",
-                "EX_DIVIDEND_DATE": "除权除息日",
-                "RECORD_DATE": "股权登记日",
-                "PAYMENT_DATE": "派息日"
-            })
+            temp_df = temp_df.rename(
+                columns={
+                    "SECURITY_CODE": "股票代码",
+                    "SECURITY_NAME_ABBR": "股票名称",
+                    "REPORT_DATE": "公告日期",
+                    "IMPL_PLAN_PROFILE": "分红方案",
+                    "DIVIDEND_RATIO": "每股派息",
+                    "BONUS_RATIO": "每股送股",
+                    "TRANSFER_RATIO": "每股转增",
+                    "EX_DIVIDEND_DATE": "除权除息日",
+                    "RECORD_DATE": "股权登记日",
+                    "PAYMENT_DATE": "派息日",
+                }
+            )
 
             return temp_df
 
@@ -461,7 +547,7 @@ class EastMoneyAdapter:
                 "columns": "ALL",
                 "source": "WEB",
                 "client": "WEB",
-                "filter": filter_str
+                "filter": filter_str,
             }
 
             r = self.session.get(url, params=params)
@@ -473,22 +559,31 @@ class EastMoneyAdapter:
             temp_df = pd.DataFrame(data_json["result"]["data"])
 
             # 重命名列
-            temp_df = temp_df.rename(columns={
-                "TRADE_DATE": "交易日期",
-                "SECURITY_CODE": "股票代码",
-                "SECURITY_NAME_ABBR": "股票名称",
-                "DEAL_PRICE": "成交价",
-                "CLOSE_PRICE": "收盘价",
-                "PREMIUM_RATIO": "溢价率",
-                "DEAL_AMT": "成交金额",
-                "DEAL_VOL": "成交量",
-                "TURNOVER_RATE": "成交占比",
-                "BUYER_NAME": "买方营业部",
-                "SELLER_NAME": "卖方营业部"
-            })
+            temp_df = temp_df.rename(
+                columns={
+                    "TRADE_DATE": "交易日期",
+                    "SECURITY_CODE": "股票代码",
+                    "SECURITY_NAME_ABBR": "股票名称",
+                    "DEAL_PRICE": "成交价",
+                    "CLOSE_PRICE": "收盘价",
+                    "PREMIUM_RATIO": "溢价率",
+                    "DEAL_AMT": "成交金额",
+                    "DEAL_VOL": "成交量",
+                    "TURNOVER_RATE": "成交占比",
+                    "BUYER_NAME": "买方营业部",
+                    "SELLER_NAME": "卖方营业部",
+                }
+            )
 
             # 数据类型转换
-            numeric_columns = ["成交价", "收盘价", "溢价率", "成交金额", "成交量", "成交占比"]
+            numeric_columns = [
+                "成交价",
+                "收盘价",
+                "溢价率",
+                "成交金额",
+                "成交量",
+                "成交占比",
+            ]
             for col in numeric_columns:
                 if col in temp_df.columns:
                     temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")

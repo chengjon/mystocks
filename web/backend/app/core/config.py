@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings
 from typing import Optional, List
 import os
 
+
 class Settings(BaseSettings):
     """应用配置 - Week 3 简化版 (PostgreSQL-only)"""
 
@@ -40,7 +41,11 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # CORS 配置
-    cors_origins: List[str] = ["http://localhost:3000", "http://localhost:8080", "http://localhost:5173"]
+    cors_origins: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://localhost:5173",
+    ]
 
     # 缓存配置 (Week 3 简化: 暂时禁用Redis缓存)
     enable_cache: bool = False  # Week 3简化: Redis已移除
@@ -68,13 +73,16 @@ class Settings(BaseSettings):
         case_sensitive = False
         extra = "allow"  # 允许额外字段
 
+
 # 创建全局配置实例
 settings = Settings()
+
 
 # 数据库连接字符串 - Week 3 简化版 (仅PostgreSQL)
 def get_postgresql_connection_string() -> str:
     """获取PostgreSQL主数据库连接字符串"""
     return f"postgresql://{settings.postgresql_user}:{settings.postgresql_password}@{settings.postgresql_host}:{settings.postgresql_port}/{settings.postgresql_database}"
+
 
 def get_monitor_db_connection_string() -> str:
     """获取监控数据库连接字符串（PostgreSQL同库）"""
@@ -82,10 +90,14 @@ def get_monitor_db_connection_string() -> str:
         return settings.monitor_db_url
     return get_postgresql_connection_string()  # 使用主数据库
 
+
 # 为兼容性保留（部分服务可能引用）
 def get_mysql_connection_string() -> str:
     """已废弃: Week 3简化后不再使用MySQL"""
-    raise NotImplementedError("MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()")
+    raise NotImplementedError(
+        "MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()"
+    )
+
 
 # 设置数据库URL（用于某些服务的向后兼容）
 settings.DATABASE_URL = get_postgresql_connection_string()

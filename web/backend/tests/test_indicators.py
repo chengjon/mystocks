@@ -2,6 +2,7 @@
 Unit and Integration Tests for Indicator Calculation
 测试技术指标计算功能
 """
+
 import pytest
 import numpy as np
 from fastapi.testclient import TestClient
@@ -9,7 +10,7 @@ from fastapi.testclient import TestClient
 from app.services.indicator_calculator import (
     get_indicator_calculator,
     InsufficientDataError,
-    IndicatorCalculationError
+    IndicatorCalculationError,
 )
 from app.services.indicator_registry import get_indicator_registry, IndicatorCategory
 from app.main import app
@@ -29,20 +30,20 @@ class TestMACalculation:
         calculator = get_indicator_calculator()
 
         # 准备测试数据: 10个简单的收盘价
-        close_prices = np.array([10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0])
+        close_prices = np.array(
+            [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0]
+        )
         ohlcv_data = {
             "open": close_prices - 0.5,
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 10)
+            "volume": np.array([1000000] * 10),
         }
 
         # 计算MA(5)
         result = calculator.calculate_indicator(
-            abbreviation="SMA",
-            ohlcv_data=ohlcv_data,
-            parameters={"timeperiod": 5}
+            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 5}
         )
 
         # 验证返回格式
@@ -80,14 +81,14 @@ class TestMultipleMACalculation:
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 100)
+            "volume": np.array([1000000] * 100),
         }
 
         # 批量计算 MA5, MA10, MA20
         indicators = [
             {"abbreviation": "SMA", "parameters": {"timeperiod": 5}},
             {"abbreviation": "SMA", "parameters": {"timeperiod": 10}},
-            {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
+            {"abbreviation": "SMA", "parameters": {"timeperiod": 20}},
         ]
 
         results = calculator.calculate_multiple_indicators(indicators, ohlcv_data)
@@ -131,7 +132,7 @@ class TestInsufficientDataHandling:
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 50)
+            "volume": np.array([1000000] * 50),
         }
 
         # 尝试计算MA(200) - 应该抛出异常
@@ -139,7 +140,7 @@ class TestInsufficientDataHandling:
             calculator.calculate_indicator(
                 abbreviation="SMA",
                 ohlcv_data=ohlcv_data,
-                parameters={"timeperiod": 200}
+                parameters={"timeperiod": 200},
             )
 
         # 验证错误消息
@@ -158,14 +159,12 @@ class TestInsufficientDataHandling:
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 20)
+            "volume": np.array([1000000] * 20),
         }
 
         # 应该成功计算
         result = calculator.calculate_indicator(
-            abbreviation="SMA",
-            ohlcv_data=ohlcv_data,
-            parameters={"timeperiod": 20}
+            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 20}
         )
 
         # 验证最后一个值不是NaN
@@ -252,10 +251,8 @@ class TestCalculateEndpoint:
             "symbol": "600519.SH",
             "start_date": "2024-01-01",
             "end_date": "2024-01-31",
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ],
-            "use_cache": False
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
+            "use_cache": False,
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -297,9 +294,7 @@ class TestCalculateEndpoint:
             "symbol": "INVALID",  # 无效格式
             "start_date": "2024-01-01",
             "end_date": "2024-01-31",
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ]
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -313,9 +308,7 @@ class TestCalculateEndpoint:
             "symbol": "600519.SH",
             "start_date": "2024-12-31",  # 开始日期晚于结束日期
             "end_date": "2024-01-01",
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ]
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -329,9 +322,7 @@ class TestCalculateEndpoint:
             "symbol": "600519.SH",
             "start_date": "2024-01-01",
             "end_date": "2099-12-31",  # 未来日期
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ]
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -345,9 +336,7 @@ class TestCalculateEndpoint:
             "symbol": "600519.SH",
             "start_date": "2024-01-01",
             "end_date": "2024-01-31",
-            "indicators": [
-                {"abbreviation": "UNKNOWN_INDICATOR", "parameters": {}}
-            ]
+            "indicators": [{"abbreviation": "UNKNOWN_INDICATOR", "parameters": {}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -369,7 +358,7 @@ class TestDataQualityValidation:
             "high": np.array([9.0, 10.0]),  # high < open/close (无效)
             "low": np.array([8.0, 9.0]),
             "close": np.array([10.0, 11.0]),
-            "volume": np.array([1000, 1000])
+            "volume": np.array([1000, 1000]),
         }
 
         is_valid, error_msg = calculator.validate_data_quality(invalid_ohlcv)
@@ -386,7 +375,7 @@ class TestDataQualityValidation:
             "high": np.array([11.0, 12.0]),
             "low": np.array([9.0, 10.0]),
             "close": np.array([10.5, 11.5]),
-            "volume": np.array([1000, -500])  # 负数 (无效)
+            "volume": np.array([1000, -500]),  # 负数 (无效)
         }
 
         is_valid, error_msg = calculator.validate_data_quality(invalid_ohlcv)
@@ -408,13 +397,13 @@ class TestMACDCalculation:
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 100)
+            "volume": np.array([1000000] * 100),
         }
 
         result = calculator.calculate_indicator(
             abbreviation="MACD",
             ohlcv_data=ohlcv_data,
-            parameters={"fastperiod": 12, "slowperiod": 26, "signalperiod": 9}
+            parameters={"fastperiod": 12, "slowperiod": 26, "signalperiod": 9},
         )
 
         # 验证返回三个值
@@ -447,13 +436,11 @@ class TestRSICalculation:
             "high": close_prices + 0.5,
             "low": close_prices - 0.5,
             "close": close_prices,
-            "volume": np.array([1000000] * 50)
+            "volume": np.array([1000000] * 50),
         }
 
         result = calculator.calculate_indicator(
-            abbreviation="RSI",
-            ohlcv_data=ohlcv_data,
-            parameters={"timeperiod": 14}
+            abbreviation="RSI", ohlcv_data=ohlcv_data, parameters={"timeperiod": 14}
         )
 
         # 验证返回格式

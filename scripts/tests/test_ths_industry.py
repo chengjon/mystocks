@@ -17,7 +17,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
-from adapters.akshare_adapter import AkshareDataSource
+from src.adapters.akshare_adapter import AkshareDataSource
 
 
 def test_ths_industry_summary():

@@ -5,6 +5,7 @@ Customer 数据源适配器测试脚本
 示例用法：
     >>> python test_customer_adapter.py
 """
+
 import sys
 import os
 import pandas as pd
@@ -15,14 +16,15 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # 使用相对导入
-from adapters.customer_adapter import CustomerDataSource
+from src.adapters.customer_adapter import CustomerDataSource
+
 
 def test_customer_data_source():
     """测试Customer数据源"""
     print("=" * 50)
     print("Customer 数据源适配器测试")
     print("=" * 50)
-    
+
     # 创建数据源实例
     print("1. 创建Customer数据源实例...")
     try:
@@ -31,7 +33,7 @@ def test_customer_data_source():
     except Exception as e:
         print(f"   ✗ Customer数据源实例创建失败: {e}")
         return
-    
+
     # 测试获取实时数据功能（重点测试efinance的沪深市场A股最新状况）
     print("\n2. 测试获取沪深市场A股最新状况...")
     try:
@@ -47,7 +49,7 @@ def test_customer_data_source():
             print("   ! 未能获取到沪深市场A股最新状况数据")
     except Exception as e:
         print(f"   ✗ 获取沪深市场A股最新状况失败: {e}")
-    
+
     # 测试获取特定股票实时数据
     print("\n3. 测试获取特定股票实时数据...")
     try:
@@ -63,16 +65,17 @@ def test_customer_data_source():
             print("   ! 未能获取到股票000001的实时数据")
     except Exception as e:
         print(f"   ✗ 获取股票000001实时数据失败: {e}")
-    
+
     # 测试获取股票日线数据
     print("\n4. 测试获取股票日线数据...")
     try:
         # 以平安银行(000001)为例，获取最近一个月的数据
         from datetime import datetime, timedelta
         from mystocks.utils.date_utils import normalize_date
+
         end_date = normalize_date(datetime.now())
         start_date = normalize_date(datetime.now() - timedelta(days=30))
-        
+
         daily_data = customer_source.get_stock_daily("000001", start_date, end_date)
         if isinstance(daily_data, pd.DataFrame) and not daily_data.empty:
             print(f"   ✓ 成功获取到股票000001的日线数据，共{len(daily_data)}条记录")
@@ -82,7 +85,7 @@ def test_customer_data_source():
             print("   ! 未能获取到股票000001的日线数据")
     except Exception as e:
         print(f"   ✗ 获取股票000001日线数据失败: {e}")
-    
+
     # 测试获取股票基本信息
     print("\n5. 测试获取股票基本信息...")
     try:
@@ -93,7 +96,7 @@ def test_customer_data_source():
             print("   ! 未能获取到股票000001的基本信息")
     except Exception as e:
         print(f"   ✗ 获取股票000001基本信息失败: {e}")
-    
+
     # 测试获取财务数据
     print("\n6. 测试获取财务数据...")
     try:
@@ -106,10 +109,11 @@ def test_customer_data_source():
             print("   ! 未能获取到股票000001的财务数据")
     except Exception as e:
         print(f"   ✗ 获取股票000001财务数据失败: {e}")
-    
+
     print("\n" + "=" * 50)
     print("Customer 数据源适配器测试完成")
     print("=" * 50)
+
 
 if __name__ == "__main__":
     print("开始执行Customer数据源测试...")

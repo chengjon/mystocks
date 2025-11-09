@@ -2,6 +2,7 @@
 Indicator Calculator Service
 基于TA-Lib的技术指标计算服务
 """
+
 import numpy as np
 import talib
 from typing import Dict, List, Any, Optional
@@ -14,11 +15,13 @@ logger = logging.getLogger(__name__)
 
 class InsufficientDataError(Exception):
     """数据点不足错误"""
+
     pass
 
 
 class IndicatorCalculationError(Exception):
     """指标计算错误"""
+
     pass
 
 
@@ -38,7 +41,7 @@ class IndicatorCalculator:
         self,
         abbreviation: str,
         ohlcv_data: Dict[str, np.ndarray],
-        parameters: Dict[str, Any]
+        parameters: Dict[str, Any],
     ) -> Dict[str, np.ndarray]:
         """
         计算单个指标
@@ -84,7 +87,9 @@ class IndicatorCalculator:
 
         try:
             # 根据指标类型调用对应的TA-Lib函数
-            result = self._call_talib_function(abbreviation, ohlcv_data, parameters, indicator_meta)
+            result = self._call_talib_function(
+                abbreviation, ohlcv_data, parameters, indicator_meta
+            )
             return result
 
         except Exception as e:
@@ -96,7 +101,7 @@ class IndicatorCalculator:
         abbreviation: str,
         ohlcv_data: Dict[str, np.ndarray],
         parameters: Dict[str, Any],
-        indicator_meta: Dict[str, Any]
+        indicator_meta: Dict[str, Any],
     ) -> Dict[str, np.ndarray]:
         """
         调用TA-Lib函数计算指标
@@ -128,7 +133,7 @@ class IndicatorCalculator:
                 close,
                 fastperiod=parameters.get("fastperiod", 12),
                 slowperiod=parameters.get("slowperiod", 26),
-                signalperiod=parameters.get("signalperiod", 9)
+                signalperiod=parameters.get("signalperiod", 9),
             )
             return {"macd": macd, "signal": signal, "hist": hist}
 
@@ -137,22 +142,22 @@ class IndicatorCalculator:
                 close,
                 timeperiod=parameters.get("timeperiod", 20),
                 nbdevup=parameters.get("nbdevup", 2.0),
-                nbdevdn=parameters.get("nbdevdn", 2.0)
+                nbdevdn=parameters.get("nbdevdn", 2.0),
             )
             return {"upperband": upper, "middleband": middle, "lowerband": lower}
 
         elif abbreviation == "SAR":
             result = talib.SAR(
-                high, low,
+                high,
+                low,
                 acceleration=parameters.get("acceleration", 0.02),
-                maximum=parameters.get("maximum", 0.2)
+                maximum=parameters.get("maximum", 0.2),
             )
             return {"sar": result}
 
         elif abbreviation == "ADX":
             result = talib.ADX(
-                high, low, close,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"adx": result}
 
@@ -163,31 +168,30 @@ class IndicatorCalculator:
 
         elif abbreviation == "STOCH":
             slowk, slowd = talib.STOCH(
-                high, low, close,
+                high,
+                low,
+                close,
                 fastk_period=parameters.get("fastk_period", 9),
                 slowk_period=parameters.get("slowk_period", 3),
-                slowd_period=parameters.get("slowd_period", 3)
+                slowd_period=parameters.get("slowd_period", 3),
             )
             return {"slowk": slowk, "slowd": slowd}
 
         elif abbreviation == "CCI":
             result = talib.CCI(
-                high, low, close,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"cci": result}
 
         elif abbreviation == "MFI":
             result = talib.MFI(
-                high, low, close, volume,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, volume, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"mfi": result}
 
         elif abbreviation == "WILLR":
             result = talib.WILLR(
-                high, low, close,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"willr": result}
 
@@ -202,15 +206,13 @@ class IndicatorCalculator:
         # 波动率指标
         elif abbreviation == "ATR":
             result = talib.ATR(
-                high, low, close,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"atr": result}
 
         elif abbreviation == "NATR":
             result = talib.NATR(
-                high, low, close,
-                timeperiod=parameters.get("timeperiod", 14)
+                high, low, close, timeperiod=parameters.get("timeperiod", 14)
             )
             return {"natr": result}
 
@@ -229,9 +231,12 @@ class IndicatorCalculator:
 
         elif abbreviation == "ADOSC":
             result = talib.ADOSC(
-                high, low, close, volume,
+                high,
+                low,
+                close,
+                volume,
                 fastperiod=parameters.get("fastperiod", 3),
-                slowperiod=parameters.get("slowperiod", 10)
+                slowperiod=parameters.get("slowperiod", 10),
             )
             return {"adosc": result}
 
@@ -252,9 +257,7 @@ class IndicatorCalculator:
             raise NotImplementedError(f"指标 {abbreviation} 的计算尚未实现")
 
     def calculate_multiple_indicators(
-        self,
-        indicators: List[Dict[str, Any]],
-        ohlcv_data: Dict[str, np.ndarray]
+        self, indicators: List[Dict[str, Any]], ohlcv_data: Dict[str, np.ndarray]
     ) -> Dict[str, Dict[str, Any]]:
         """
         批量计算多个指标
@@ -306,7 +309,7 @@ class IndicatorCalculator:
                     "parameters": parameters,
                     "panel_type": indicator_meta["panel_type"].value,
                     "reference_lines": indicator_meta.get("reference_lines"),
-                    "abbreviation": abbreviation  # 保留原始缩写
+                    "abbreviation": abbreviation,  # 保留原始缩写
                 }
 
             except (InsufficientDataError, IndicatorCalculationError) as e:
@@ -317,12 +320,14 @@ class IndicatorCalculator:
                 results[result_key] = {
                     "error": str(e),
                     "parameters": parameters,
-                    "abbreviation": abbreviation
+                    "abbreviation": abbreviation,
                 }
 
         return results
 
-    def validate_data_quality(self, ohlcv_data: Dict[str, np.ndarray]) -> tuple[bool, Optional[str]]:
+    def validate_data_quality(
+        self, ohlcv_data: Dict[str, np.ndarray]
+    ) -> tuple[bool, Optional[str]]:
         """
         验证OHLCV数据质量
 

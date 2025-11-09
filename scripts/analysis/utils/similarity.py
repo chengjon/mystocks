@@ -14,19 +14,25 @@ from typing import List, Tuple, Optional
 from pathlib import Path
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import (
-    CodeBlock, DuplicationCase, SeverityEnum,
-    FunctionMetadata, severity_from_similarity
+    CodeBlock,
+    DuplicationCase,
+    SeverityEnum,
+    FunctionMetadata,
+    severity_from_similarity,
 )
-from utils.ast_parser import tokenize_code, extract_code_block
+from src.utils.ast_parser import tokenize_code, extract_code_block
 
 
 class SimilarityDetector:
     """代码相似性检测器"""
 
-    def __init__(self, min_token_similarity: float = 0.4, min_ast_similarity: float = 0.3):
+    def __init__(
+        self, min_token_similarity: float = 0.4, min_ast_similarity: float = 0.3
+    ):
         """
         初始化相似性检测器
 
@@ -122,7 +128,7 @@ class SimilarityDetector:
                 structure.append("loop_while")
 
         # 生成哈希
-        structure_str = ''.join(structure)
+        structure_str = "".join(structure)
         return hashlib.md5(structure_str.encode()).hexdigest()
 
     def _extract_node_sequence(self, tree: ast.AST) -> List[str]:
@@ -147,7 +153,7 @@ class SimilarityDetector:
         func1: FunctionMetadata,
         func2: FunctionMetadata,
         file1_path: str,
-        file2_path: str
+        file2_path: str,
     ) -> Optional[Tuple[float, float]]:
         """
         比较两个函数的相似度
@@ -163,14 +169,10 @@ class SimilarityDetector:
         """
         # 提取函数代码
         code1 = extract_code_block(
-            file1_path,
-            func1.line_number,
-            func1.line_number + func1.body_lines
+            file1_path, func1.line_number, func1.line_number + func1.body_lines
         )
         code2 = extract_code_block(
-            file2_path,
-            func2.line_number,
-            func2.line_number + func2.body_lines
+            file2_path, func2.line_number, func2.line_number + func2.body_lines
         )
 
         if not code1 or not code2:
@@ -181,17 +183,22 @@ class SimilarityDetector:
         ast_sim = self.calculate_ast_similarity(code1, code2)
 
         # 检查是否超过阈值
-        if token_sim >= self.min_token_similarity and ast_sim >= self.min_ast_similarity:
+        if (
+            token_sim >= self.min_token_similarity
+            and ast_sim >= self.min_ast_similarity
+        ):
             return (token_sim, ast_sim)
 
         return None
 
     def create_duplication_case(
         self,
-        blocks: List[Tuple[str, int, int, str]],  # (file_path, start_line, end_line, code)
+        blocks: List[
+            Tuple[str, int, int, str]
+        ],  # (file_path, start_line, end_line, code)
         token_similarity: float,
         ast_similarity: float,
-        description: str = ""
+        description: str = "",
     ) -> DuplicationCase:
         """
         创建重复案例
@@ -217,14 +224,16 @@ class SimilarityDetector:
             except:
                 ast_hash = None
 
-            code_blocks.append(CodeBlock(
-                file_path=file_path,
-                start_line=start_line,
-                end_line=end_line,
-                content=code,
-                tokens=tokens,
-                ast_hash=ast_hash
-            ))
+            code_blocks.append(
+                CodeBlock(
+                    file_path=file_path,
+                    start_line=start_line,
+                    end_line=end_line,
+                    content=code,
+                    tokens=tokens,
+                    ast_hash=ast_hash,
+                )
+            )
 
             if file_path not in affected_files:
                 affected_files.append(file_path)
@@ -246,13 +255,11 @@ class SimilarityDetector:
             ast_similarity=ast_similarity,
             description=description or f"检测到 {len(code_blocks)} 处相似代码",
             merge_suggestion=merge_suggestion,
-            affected_files=affected_files
+            affected_files=affected_files,
         )
 
     def _generate_merge_suggestion(
-        self,
-        severity: SeverityEnum,
-        blocks: List[CodeBlock]
+        self, severity: SeverityEnum, blocks: List[CodeBlock]
     ) -> str:
         """生成合并建议"""
         if severity == SeverityEnum.CRITICAL:
@@ -285,8 +292,7 @@ class SimilarityDetector:
             )
 
     def find_similar_code_blocks(
-        self,
-        code_blocks: List[Tuple[str, int, int, str]]
+        self, code_blocks: List[Tuple[str, int, int, str]]
     ) -> List[DuplicationCase]:
         """
         在代码块列表中查找相似项
@@ -317,7 +323,10 @@ class SimilarityDetector:
                 token_sim = self.calculate_token_similarity(code1, code2)
                 ast_sim = self.calculate_ast_similarity(code1, code2)
 
-                if token_sim >= self.min_token_similarity and ast_sim >= self.min_ast_similarity:
+                if (
+                    token_sim >= self.min_token_similarity
+                    and ast_sim >= self.min_ast_similarity
+                ):
                     similar_blocks.append((file2, start2, end2, code2))
                     processed.add(j)
 
@@ -338,7 +347,7 @@ class SimilarityDetector:
                     similar_blocks,
                     avg_token_sim,
                     avg_ast_sim,
-                    f"检测到 {len(similar_blocks)} 处相似代码"
+                    f"检测到 {len(similar_blocks)} 处相似代码",
                 )
                 duplications.append(dup)
                 processed.add(i)
@@ -359,10 +368,10 @@ def normalize_code(code: str) -> str:
     import re
 
     # 移除注释
-    code = re.sub(r'#.*$', '', code, flags=re.MULTILINE)
+    code = re.sub(r"#.*$", "", code, flags=re.MULTILINE)
 
     # 移除空行
-    lines = [line for line in code.split('\n') if line.strip()]
+    lines = [line for line in code.split("\n") if line.strip()]
 
     # 标准化空白
     normalized_lines = []
@@ -370,10 +379,10 @@ def normalize_code(code: str) -> str:
         # 保留缩进结构，但标准化为 4 空格
         indent_level = len(line) - len(line.lstrip())
         indent_level = (indent_level // 4) * 4
-        normalized_line = ' ' * indent_level + line.strip()
+        normalized_line = " " * indent_level + line.strip()
         normalized_lines.append(normalized_line)
 
-    return '\n'.join(normalized_lines)
+    return "\n".join(normalized_lines)
 
 
 if __name__ == "__main__":

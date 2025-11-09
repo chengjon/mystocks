@@ -2,6 +2,7 @@
 特征工程服务
 用于生成股票预测的滚动窗口特征
 """
+
 import numpy as np
 import pandas as pd
 from typing import Tuple, Optional
@@ -20,9 +21,7 @@ class FeatureEngineeringService:
 
     @staticmethod
     def generate_rolling_features(
-        df: pd.DataFrame,
-        step: int = 10,
-        feature_columns: list = None
+        df: pd.DataFrame, step: int = 10, feature_columns: list = None
     ) -> Tuple[pd.DataFrame, pd.Series]:
         """
         生成滚动窗口特征
@@ -36,7 +35,7 @@ class FeatureEngineeringService:
             Tuple[pd.DataFrame, pd.Series]: (特征矩阵 X, 目标变量 y)
         """
         if feature_columns is None:
-            feature_columns = ['open', 'high', 'low', 'close', 'amount', 'volume']
+            feature_columns = ["open", "high", "low", "close", "amount", "volume"]
 
         # 确保所有特征列都存在
         missing_cols = [col for col in feature_columns if col not in df.columns]
@@ -45,7 +44,7 @@ class FeatureEngineeringService:
 
         # 生成目标变量：下一日收盘价
         df = df.copy()
-        df['nextClose'] = df['close'].shift(-1)
+        df["nextClose"] = df["close"].shift(-1)
 
         # 删除最后一行（没有目标变量）
         df = df[:-1]
@@ -89,7 +88,7 @@ class FeatureEngineeringService:
         # 删除包含 NaN 的行
         valid_indices = X.dropna().index
         X = X.loc[valid_indices]
-        y = df.iloc[valid_indices]['nextClose']
+        y = df.iloc[valid_indices]["nextClose"]
 
         # 重置索引
         X = X.reset_index(drop=True)
@@ -98,11 +97,7 @@ class FeatureEngineeringService:
         return X, y
 
     @staticmethod
-    def save_features_to_csv(
-        X: pd.DataFrame,
-        y: pd.Series,
-        output_file: str
-    ) -> str:
+    def save_features_to_csv(X: pd.DataFrame, y: pd.Series, output_file: str) -> str:
         """
         保存特征和目标变量到 CSV 文件
 
@@ -116,10 +111,10 @@ class FeatureEngineeringService:
         """
         # 合并特征和目标变量
         data = X.copy()
-        data['nextClose'] = y
+        data["nextClose"] = y
 
         # 保存到 CSV
-        data.to_csv(output_file, index=False, encoding='utf-8')
+        data.to_csv(output_file, index=False, encoding="utf-8")
 
         return output_file
 
@@ -137,17 +132,14 @@ class FeatureEngineeringService:
         data = pd.read_csv(file_path)
 
         # 分离特征和目标变量
-        y = data['nextClose']
-        X = data.drop(columns=['nextClose'])
+        y = data["nextClose"]
+        X = data.drop(columns=["nextClose"])
 
         return X, y
 
     @staticmethod
     def generate_features_from_file(
-        input_file: str,
-        output_file: str,
-        step: int = 10,
-        feature_columns: list = None
+        input_file: str, output_file: str, step: int = 10, feature_columns: list = None
     ) -> Tuple[str, dict]:
         """
         从 CSV 文件读取数据并生成特征
@@ -174,14 +166,15 @@ class FeatureEngineeringService:
 
         # 统计信息
         stats = {
-            'total_samples': len(X),
-            'feature_dim': X.shape[1],
-            'step': step,
-            'feature_columns': feature_columns or ['open', 'high', 'low', 'close', 'amount', 'volume'],
-            'target_mean': float(y.mean()),
-            'target_std': float(y.std()),
-            'target_min': float(y.min()),
-            'target_max': float(y.max())
+            "total_samples": len(X),
+            "feature_dim": X.shape[1],
+            "step": step,
+            "feature_columns": feature_columns
+            or ["open", "high", "low", "close", "amount", "volume"],
+            "target_mean": float(y.mean()),
+            "target_std": float(y.std()),
+            "target_min": float(y.min()),
+            "target_max": float(y.max()),
         }
 
         return output_path, stats
@@ -200,29 +193,29 @@ class FeatureEngineeringService:
         df = df.copy()
 
         # 移动平均线
-        df['MA5'] = df['close'].rolling(window=5).mean()
-        df['MA10'] = df['close'].rolling(window=10).mean()
-        df['MA20'] = df['close'].rolling(window=20).mean()
+        df["MA5"] = df["close"].rolling(window=5).mean()
+        df["MA10"] = df["close"].rolling(window=10).mean()
+        df["MA20"] = df["close"].rolling(window=20).mean()
 
         # 涨跌幅
-        df['pct_change'] = df['close'].pct_change()
+        df["pct_change"] = df["close"].pct_change()
 
         # 价格波动率（标准差）
-        df['volatility'] = df['close'].rolling(window=10).std()
+        df["volatility"] = df["close"].rolling(window=10).std()
 
         # 相对强弱指标（简化版）
-        df['price_position'] = (df['close'] - df['low']) / (df['high'] - df['low'] + 1e-6)
+        df["price_position"] = (df["close"] - df["low"]) / (
+            df["high"] - df["low"] + 1e-6
+        )
 
         # 成交量变化
-        df['volume_change'] = df['volume'].pct_change()
+        df["volume_change"] = df["volume"].pct_change()
 
         return df
 
     @staticmethod
     def prepare_model_data(
-        df: pd.DataFrame,
-        step: int = 10,
-        include_indicators: bool = True
+        df: pd.DataFrame, step: int = 10, include_indicators: bool = True
     ) -> Tuple[pd.DataFrame, pd.Series, dict]:
         """
         准备用于模型训练的数据
@@ -239,12 +232,22 @@ class FeatureEngineeringService:
         if include_indicators:
             df = FeatureEngineeringService.calculate_technical_indicators(df)
             feature_columns = [
-                'open', 'high', 'low', 'close', 'amount', 'volume',
-                'MA5', 'MA10', 'MA20', 'pct_change', 'volatility',
-                'price_position', 'volume_change'
+                "open",
+                "high",
+                "low",
+                "close",
+                "amount",
+                "volume",
+                "MA5",
+                "MA10",
+                "MA20",
+                "pct_change",
+                "volatility",
+                "price_position",
+                "volume_change",
             ]
         else:
-            feature_columns = ['open', 'high', 'low', 'close', 'amount', 'volume']
+            feature_columns = ["open", "high", "low", "close", "amount", "volume"]
 
         # 删除 NaN 行
         df = df.dropna()
@@ -256,15 +259,19 @@ class FeatureEngineeringService:
 
         # 元数据
         metadata = {
-            'step': step,
-            'feature_columns': feature_columns,
-            'total_samples': len(X),
-            'feature_dim': X.shape[1],
-            'include_indicators': include_indicators,
-            'date_range': {
-                'start': df.iloc[0]['tradeDate'] if 'tradeDate' in df.columns else 'unknown',
-                'end': df.iloc[-1]['tradeDate'] if 'tradeDate' in df.columns else 'unknown'
-            }
+            "step": step,
+            "feature_columns": feature_columns,
+            "total_samples": len(X),
+            "feature_dim": X.shape[1],
+            "include_indicators": include_indicators,
+            "date_range": {
+                "start": (
+                    df.iloc[0]["tradeDate"] if "tradeDate" in df.columns else "unknown"
+                ),
+                "end": (
+                    df.iloc[-1]["tradeDate"] if "tradeDate" in df.columns else "unknown"
+                ),
+            },
         }
 
         return X, y, metadata

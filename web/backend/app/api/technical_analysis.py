@@ -17,8 +17,10 @@ router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 # Pydantic Models
 # ============================================================================
 
+
 class TrendIndicatorsResponse(BaseModel):
     """趋势指标响应"""
+
     ma5: Optional[float] = None
     ma10: Optional[float] = None
     ma20: Optional[float] = None
@@ -40,6 +42,7 @@ class TrendIndicatorsResponse(BaseModel):
 
 class MomentumIndicatorsResponse(BaseModel):
     """动量指标响应"""
+
     rsi6: Optional[float] = None
     rsi12: Optional[float] = None
     rsi24: Optional[float] = None
@@ -53,6 +56,7 @@ class MomentumIndicatorsResponse(BaseModel):
 
 class VolatilityIndicatorsResponse(BaseModel):
     """波动性指标响应"""
+
     bb_upper: Optional[float] = None
     bb_middle: Optional[float] = None
     bb_lower: Optional[float] = None
@@ -67,6 +71,7 @@ class VolatilityIndicatorsResponse(BaseModel):
 
 class VolumeIndicatorsResponse(BaseModel):
     """成交量指标响应"""
+
     obv: Optional[float] = None
     vwap: Optional[float] = None
     volume_ma5: Optional[float] = None
@@ -76,6 +81,7 @@ class VolumeIndicatorsResponse(BaseModel):
 
 class AllIndicatorsResponse(BaseModel):
     """所有指标综合响应"""
+
     symbol: str
     latest_price: float
     latest_date: str
@@ -89,6 +95,7 @@ class AllIndicatorsResponse(BaseModel):
 
 class TradingSignalItem(BaseModel):
     """单个交易信号"""
+
     type: str
     signal: str  # buy, sell, hold
     strength: float  # 0-1
@@ -96,6 +103,7 @@ class TradingSignalItem(BaseModel):
 
 class TradingSignalsResponse(BaseModel):
     """交易信号响应"""
+
     overall_signal: str
     signal_strength: float
     signals: List[TradingSignalItem]
@@ -106,12 +114,13 @@ class TradingSignalsResponse(BaseModel):
 # API Endpoints
 # ============================================================================
 
+
 @router.get("/{symbol}/indicators", response_model=AllIndicatorsResponse)
 async def get_all_indicators(
     symbol: str,
     period: str = Query("daily", description="数据周期: daily, weekly, monthly"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
-    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD")
+    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
 ):
     """
     获取股票的所有技术指标
@@ -132,10 +141,7 @@ async def get_all_indicators(
     """
     try:
         result = technical_analysis_service.calculate_all_indicators(
-            symbol=symbol,
-            period=period,
-            start_date=start_date,
-            end_date=end_date
+            symbol=symbol, period=period, start_date=start_date, end_date=end_date
         )
 
         if "error" in result:
@@ -151,8 +157,7 @@ async def get_all_indicators(
 
 @router.get("/{symbol}/trend", response_model=Dict)
 async def get_trend_indicators(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     获取趋势指标
@@ -177,7 +182,7 @@ async def get_trend_indicators(
             "success": True,
             "symbol": symbol,
             "indicators": indicators,
-            "count": len(indicators)
+            "count": len(indicators),
         }
 
     except HTTPException:
@@ -188,8 +193,7 @@ async def get_trend_indicators(
 
 @router.get("/{symbol}/momentum", response_model=Dict)
 async def get_momentum_indicators(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     获取动量指标
@@ -214,7 +218,7 @@ async def get_momentum_indicators(
             "success": True,
             "symbol": symbol,
             "indicators": indicators,
-            "count": len(indicators)
+            "count": len(indicators),
         }
 
     except HTTPException:
@@ -225,8 +229,7 @@ async def get_momentum_indicators(
 
 @router.get("/{symbol}/volatility", response_model=Dict)
 async def get_volatility_indicators(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     获取波动性指标
@@ -250,7 +253,7 @@ async def get_volatility_indicators(
             "success": True,
             "symbol": symbol,
             "indicators": indicators,
-            "count": len(indicators)
+            "count": len(indicators),
         }
 
     except HTTPException:
@@ -261,8 +264,7 @@ async def get_volatility_indicators(
 
 @router.get("/{symbol}/volume", response_model=Dict)
 async def get_volume_indicators(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     获取成交量指标
@@ -286,7 +288,7 @@ async def get_volume_indicators(
             "success": True,
             "symbol": symbol,
             "indicators": indicators,
-            "count": len(indicators)
+            "count": len(indicators),
         }
 
     except HTTPException:
@@ -297,8 +299,7 @@ async def get_volume_indicators(
 
 @router.get("/{symbol}/signals", response_model=Dict)
 async def get_trading_signals(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     获取交易信号
@@ -324,11 +325,7 @@ async def get_trading_signals(
         if "error" in signals:
             raise HTTPException(status_code=400, detail=signals["error"])
 
-        return {
-            "success": True,
-            "symbol": symbol,
-            **signals
-        }
+        return {"success": True, "symbol": symbol, **signals}
 
     except HTTPException:
         raise
@@ -342,7 +339,7 @@ async def get_stock_history(
     period: str = Query("daily", description="数据周期"),
     start_date: Optional[str] = Query(None, description="开始日期"),
     end_date: Optional[str] = Query(None, description="结束日期"),
-    limit: int = Query(100, ge=10, le=1000, description="返回数据点数量")
+    limit: int = Query(100, ge=10, le=1000, description="返回数据点数量"),
 ):
     """
     获取股票历史行情数据
@@ -365,10 +362,7 @@ async def get_stock_history(
     """
     try:
         df = technical_analysis_service.get_stock_history(
-            symbol=symbol,
-            period=period,
-            start_date=start_date,
-            end_date=end_date
+            symbol=symbol, period=period, start_date=start_date, end_date=end_date
         )
 
         if df.empty:
@@ -382,18 +376,15 @@ async def get_stock_history(
             "symbol": symbol,
             "period": period,
             "count": len(df),
-            "dates": df['date'].dt.strftime("%Y-%m-%d").tolist(),
-            "data": df[['open', 'close', 'high', 'low', 'volume']].to_dict('records')
+            "dates": df["date"].dt.strftime("%Y-%m-%d").tolist(),
+            "data": df[["open", "close", "high", "low", "volume"]].to_dict("records"),
         }
 
         # 如果有涨跌幅数据，也包含进去
-        if 'change_percent' in df.columns:
-            data['change_percent'] = df['change_percent'].tolist()
+        if "change_percent" in df.columns:
+            data["change_percent"] = df["change_percent"].tolist()
 
-        return {
-            "success": True,
-            **data
-        }
+        return {"success": True, **data}
 
     except HTTPException:
         raise
@@ -404,7 +395,7 @@ async def get_stock_history(
 @router.post("/batch/indicators")
 async def get_batch_indicators(
     symbols: List[str] = Query(..., description="股票代码列表"),
-    period: str = Query("daily", description="数据周期")
+    period: str = Query("daily", description="数据周期"),
 ):
     """
     批量获取多只股票的技术指标
@@ -417,28 +408,20 @@ async def get_batch_indicators(
     """
     try:
         if len(symbols) > 20:
-            raise HTTPException(
-                status_code=400,
-                detail="Maximum 20 symbols allowed"
-            )
+            raise HTTPException(status_code=400, detail="Maximum 20 symbols allowed")
 
         results = []
         for symbol in symbols:
             try:
                 result = technical_analysis_service.calculate_all_indicators(
-                    symbol=symbol,
-                    period=period
+                    symbol=symbol, period=period
                 )
                 if "error" not in result:
                     results.append(result)
             except Exception as e:
                 logger.warning(f"Failed to get indicators for {symbol}: {e}")
 
-        return {
-            "success": True,
-            "count": len(results),
-            "data": results
-        }
+        return {"success": True, "count": len(results), "data": results}
 
     except HTTPException:
         raise
@@ -448,8 +431,7 @@ async def get_batch_indicators(
 
 @router.get("/patterns/{symbol}")
 async def detect_patterns(
-    symbol: str,
-    period: str = Query("daily", description="数据周期")
+    symbol: str, period: str = Query("daily", description="数据周期")
 ):
     """
     检测技术形态 (预留功能)
@@ -468,10 +450,11 @@ async def detect_patterns(
     return {
         "success": False,
         "message": "Pattern recognition feature is under development",
-        "symbol": symbol
+        "symbol": symbol,
     }
 
 
 # 导入日志
 import logging
+
 logger = logging.getLogger(__name__)

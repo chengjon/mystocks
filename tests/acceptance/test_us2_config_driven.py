@@ -15,19 +15,20 @@ T025: US2配置驱动表结构管理验收测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import yaml
 import tempfile
 import shutil
 from pathlib import Path
 import pytest
-from core.config_driven_table_manager import ConfigDrivenTableManager
-from db_manager.connection_manager import DatabaseConnectionManager
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
+from src.db_manager.connection_manager import DatabaseConnectionManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("T025: US2配置驱动表结构管理验收测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 
 class TestUS2ConfigDriven:
@@ -47,24 +48,24 @@ class TestUS2ConfigDriven:
     def teardown_class(cls):
         """测试类清理"""
         # 删除临时目录
-        if hasattr(cls, 'temp_dir') and os.path.exists(cls.temp_dir):
+        if hasattr(cls, "temp_dir") and os.path.exists(cls.temp_dir):
             shutil.rmtree(cls.temp_dir)
 
     @classmethod
     def _check_database_availability(cls):
         """检查数据库可用性"""
         available = {
-            'tdengine': False,
-            'postgresql': False,
-            'mysql': False,
-            'redis': False
+            "tdengine": False,
+            "postgresql": False,
+            "mysql": False,
+            "redis": False,
         }
 
         try:
             conn = cls.conn_manager.get_tdengine_connection()
             if conn:
                 conn.close()
-                available['tdengine'] = True
+                available["tdengine"] = True
         except:
             pass
 
@@ -72,7 +73,7 @@ class TestUS2ConfigDriven:
             conn = cls.conn_manager.get_postgresql_connection()
             if conn:
                 cls.conn_manager._return_postgresql_connection(conn)
-                available['postgresql'] = True
+                available["postgresql"] = True
         except:
             pass
 
@@ -80,7 +81,7 @@ class TestUS2ConfigDriven:
             conn = cls.conn_manager.get_mysql_connection()
             if conn:
                 conn.close()
-                available['mysql'] = True
+                available["mysql"] = True
         except:
             pass
 
@@ -88,7 +89,7 @@ class TestUS2ConfigDriven:
             conn = cls.conn_manager.get_redis_connection()
             if conn:
                 conn.close()
-                available['redis'] = True
+                available["redis"] = True
         except:
             pass
 
@@ -106,79 +107,76 @@ class TestUS2ConfigDriven:
         """
         print("\n📍 场景1: 添加新表定义 → 自动创建")
 
-        if not self.test_db_available['mysql']:
+        if not self.test_db_available["mysql"]:
             pytest.skip("MySQL数据库不可用")
 
         # 创建测试配置
         test_config = {
-            'version': '3.0.0',
-            'metadata': {
-                'project': 'MyStocks测试',
-                'created_by': 'US2 Acceptance Test'
+            "version": "3.0.0",
+            "metadata": {
+                "project": "MyStocks测试",
+                "created_by": "US2 Acceptance Test",
             },
-            'databases': {
-                'mysql': {
-                    'host': '${MYSQL_HOST:localhost}',
-                    'port': '${MYSQL_PORT:3306}',
-                    'user': '${MYSQL_USER:root}',
-                    'password': '${MYSQL_PASSWORD:}',
-                    'database': '${MYSQL_DATABASE:mystocks}'
+            "databases": {
+                "mysql": {
+                    "host": "${MYSQL_HOST:localhost}",
+                    "port": "${MYSQL_PORT:3306}",
+                    "user": "${MYSQL_USER:root}",
+                    "password": "${MYSQL_PASSWORD:}",
+                    "database": "${MYSQL_DATABASE:mystocks}",
                 }
             },
-            'tables': [
+            "tables": [
                 {
-                    'database_type': 'MySQL',
-                    'table_name': 'test_new_table_us2',
-                    'database_name': 'mystocks',
-                    'classification': 'USER_CONFIG',
-                    'description': 'US2测试新表',
-                    'columns': [
+                    "database_type": "MySQL",
+                    "table_name": "test_new_table_us2",
+                    "database_name": "mystocks",
+                    "classification": "USER_CONFIG",
+                    "description": "US2测试新表",
+                    "columns": [
                         {
-                            'name': 'id',
-                            'type': 'INT',
-                            'nullable': False,
-                            'primary_key': True,
-                            'auto_increment': True,
-                            'comment': '主键ID'
+                            "name": "id",
+                            "type": "INT",
+                            "nullable": False,
+                            "primary_key": True,
+                            "auto_increment": True,
+                            "comment": "主键ID",
                         },
                         {
-                            'name': 'test_name',
-                            'type': 'VARCHAR(100)',
-                            'nullable': False,
-                            'comment': '测试名称'
+                            "name": "test_name",
+                            "type": "VARCHAR(100)",
+                            "nullable": False,
+                            "comment": "测试名称",
                         },
                         {
-                            'name': 'test_value',
-                            'type': 'VARCHAR(200)',
-                            'nullable': True,
-                            'comment': '测试值'
+                            "name": "test_value",
+                            "type": "VARCHAR(200)",
+                            "nullable": True,
+                            "comment": "测试值",
                         },
                         {
-                            'name': 'created_at',
-                            'type': 'TIMESTAMP',
-                            'nullable': False,
-                            'default': 'CURRENT_TIMESTAMP',
-                            'comment': '创建时间'
+                            "name": "created_at",
+                            "type": "TIMESTAMP",
+                            "nullable": False,
+                            "default": "CURRENT_TIMESTAMP",
+                            "comment": "创建时间",
+                        },
+                    ],
+                    "indexes": [
+                        {
+                            "name": "idx_test_name",
+                            "columns": ["test_name"],
+                            "type": "BTREE",
                         }
                     ],
-                    'indexes': [
-                        {
-                            'name': 'idx_test_name',
-                            'columns': ['test_name'],
-                            'type': 'BTREE'
-                        }
-                    ]
                 }
             ],
-            'maintenance': {
-                'auto_create_tables': True,
-                'safe_mode': True
-            }
+            "maintenance": {"auto_create_tables": True, "safe_mode": True},
         }
 
         # 保存测试配置
-        test_config_path = os.path.join(self.temp_dir, 'test_scenario1.yaml')
-        with open(test_config_path, 'w', encoding='utf-8') as f:
+        test_config_path = os.path.join(self.temp_dir, "test_scenario1.yaml")
+        with open(test_config_path, "w", encoding="utf-8") as f:
             yaml.dump(test_config, f, allow_unicode=True)
 
         print(f"  ✓ 测试配置已创建: {test_config_path}")
@@ -201,10 +199,12 @@ class TestUS2ConfigDriven:
         print(f"  ✓ 表创建结果: {result}")
 
         # 验证表是否创建成功
-        total_processed = result['tables_created'] + result['tables_skipped']
+        total_processed = result["tables_created"] + result["tables_skipped"]
         assert total_processed == 1, f"应该处理1个表，实际处理了{total_processed}个"
-        assert result['tables_created'] >= 0, "创建计数应该有效"
-        assert len(result.get('errors', [])) == 0, f"不应该有错误: {result.get('errors')}"
+        assert result["tables_created"] >= 0, "创建计数应该有效"
+        assert (
+            len(result.get("errors", [])) == 0
+        ), f"不应该有错误: {result.get('errors')}"
 
         # 验证表确实存在 - 直接查询数据库
         try:
@@ -234,11 +234,13 @@ class TestUS2ConfigDriven:
         """
         print("\n📍 场景2: 添加新列 → 自动添加")
 
-        if not self.test_db_available['mysql']:
+        if not self.test_db_available["mysql"]:
             pytest.skip("MySQL数据库不可用")
 
         print(f"  ℹ️  当前safe_mode=True，应该自动添加新列")
-        print(f"  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法")
+        print(
+            f"  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法"
+        )
         print(f"  ✅ 场景2验证通过: 配置支持自动添加列（实现待完善）")
 
     def test_scenario_3_delete_column_needs_confirmation(self):
@@ -262,7 +264,7 @@ class TestUS2ConfigDriven:
             print(f"  ✓ Safe Mode已启用，危险操作将被拒绝或要求确认")
 
             # 模拟测试confirm_dangerous_operation方法
-            if hasattr(manager, 'confirm_dangerous_operation'):
+            if hasattr(manager, "confirm_dangerous_operation"):
                 print(f"  ✓ 危险操作确认方法已实现")
             else:
                 print(f"  ⚠️  危险操作确认方法待实现")
@@ -297,8 +299,8 @@ tables:
       - name: 'value'  # 缺少type字段
 """
 
-        test_config_path = os.path.join(self.temp_dir, 'invalid_syntax.yaml')
-        with open(test_config_path, 'w', encoding='utf-8') as f:
+        test_config_path = os.path.join(self.temp_dir, "invalid_syntax.yaml")
+        with open(test_config_path, "w", encoding="utf-8") as f:
             f.write(invalid_yaml)
 
         print(f"  测试无效配置: {test_config_path}")
@@ -312,18 +314,18 @@ tables:
 
         # 测试2: 缺少必需字段
         incomplete_config = {
-            'version': '3.0.0',
-            'tables': [
+            "version": "3.0.0",
+            "tables": [
                 {
-                    'table_name': 'test_incomplete',
+                    "table_name": "test_incomplete",
                     # 缺少database_type字段
-                    'columns': []
+                    "columns": [],
                 }
-            ]
+            ],
         }
 
-        test_config_path2 = os.path.join(self.temp_dir, 'incomplete_config.yaml')
-        with open(test_config_path2, 'w', encoding='utf-8') as f:
+        test_config_path2 = os.path.join(self.temp_dir, "incomplete_config.yaml")
+        with open(test_config_path2, "w", encoding="utf-8") as f:
             yaml.dump(incomplete_config, f)
 
         try:
@@ -350,36 +352,30 @@ tables:
 
         # 创建包含不支持数据库类型的配置 (使用虚构的数据库类型进行测试)
         invalid_db_config = {
-            'version': '3.0.0',
-            'metadata': {
-                'project': 'Test Invalid DB'
-            },
-            'databases': {
-                'mysql': {  # 使用有效的数据库配置避免连接错误
-                    'host': os.getenv('MYSQL_HOST', 'localhost'),
-                    'port': int(os.getenv('MYSQL_PORT', 3306)),
-                    'user': os.getenv('MYSQL_USER', 'root'),
-                    'password': os.getenv('MYSQL_PASSWORD', ''),
-                    'database': os.getenv('MYSQL_DATABASE', 'test')
+            "version": "3.0.0",
+            "metadata": {"project": "Test Invalid DB"},
+            "databases": {
+                "mysql": {  # 使用有效的数据库配置避免连接错误
+                    "host": os.getenv("MYSQL_HOST", "localhost"),
+                    "port": int(os.getenv("MYSQL_PORT", 3306)),
+                    "user": os.getenv("MYSQL_USER", "root"),
+                    "password": os.getenv("MYSQL_PASSWORD", ""),
+                    "database": os.getenv("MYSQL_DATABASE", "test"),
                 }
             },
-            'tables': [
+            "tables": [
                 {
-                    'database_type': 'ClickHouse',  # 不支持的数据库类型
-                    'table_name': 'test_clickhouse',
-                    'database_name': 'test',
-                    'columns': [
-                        {'name': 'id', 'type': 'UInt64', 'nullable': False}
-                    ]
+                    "database_type": "ClickHouse",  # 不支持的数据库类型
+                    "table_name": "test_clickhouse",
+                    "database_name": "test",
+                    "columns": [{"name": "id", "type": "UInt64", "nullable": False}],
                 }
             ],
-            'maintenance': {
-                'auto_create_tables': True
-            }
+            "maintenance": {"auto_create_tables": True},
         }
 
-        test_config_path = os.path.join(self.temp_dir, 'invalid_db_type.yaml')
-        with open(test_config_path, 'w', encoding='utf-8') as f:
+        test_config_path = os.path.join(self.temp_dir, "invalid_db_type.yaml")
+        with open(test_config_path, "w", encoding="utf-8") as f:
             yaml.dump(invalid_db_config, f, allow_unicode=True)
 
         print(f"  测试不支持的数据库类型: ClickHouse")
@@ -389,12 +385,12 @@ tables:
             result = manager.initialize_all_tables()
 
             # 检查是否有错误
-            if result.get('errors') and len(result['errors']) > 0:
+            if result.get("errors") and len(result["errors"]) > 0:
                 print(f"  ✓ 不支持的数据库类型被检测到")
                 print(f"    错误数量: {len(result['errors'])}")
                 # 检查错误信息中是否包含"不支持"
-                error_msg = str(result['errors'][0])
-                if '不支持' in error_msg or 'unsupported' in error_msg.lower():
+                error_msg = str(result["errors"][0])
+                if "不支持" in error_msg or "unsupported" in error_msg.lower():
                     print(f"    ✓ 错误信息明确: {error_msg[:80]}")
             else:
                 print(f"  ⚠️  不支持的数据库类型未被明确拒绝")
@@ -420,51 +416,39 @@ tables:
 
         # 创建包含重复表名的配置
         conflict_config = {
-            'version': '3.0.0',
-            'metadata': {
-                'project': 'Test Conflict'
+            "version": "3.0.0",
+            "metadata": {"project": "Test Conflict"},
+            "databases": {
+                "mysql": {"host": "localhost", "port": 3306, "database": "mystocks"}
             },
-            'databases': {
-                'mysql': {
-                    'host': 'localhost',
-                    'port': 3306,
-                    'database': 'mystocks'
-                }
-            },
-            'tables': [
+            "tables": [
                 {
-                    'database_type': 'MySQL',
-                    'table_name': 'duplicate_table',  # 重复表名
-                    'database_name': 'mystocks',
-                    'columns': [
-                        {'name': 'id', 'type': 'INT', 'primary_key': True}
-                    ]
+                    "database_type": "MySQL",
+                    "table_name": "duplicate_table",  # 重复表名
+                    "database_name": "mystocks",
+                    "columns": [{"name": "id", "type": "INT", "primary_key": True}],
                 },
                 {
-                    'database_type': 'MySQL',
-                    'table_name': 'duplicate_table',  # 重复表名
-                    'database_name': 'mystocks',
-                    'columns': [
-                        {'name': 'id', 'type': 'BIGINT', 'primary_key': True}
-                    ]
-                }
+                    "database_type": "MySQL",
+                    "table_name": "duplicate_table",  # 重复表名
+                    "database_name": "mystocks",
+                    "columns": [{"name": "id", "type": "BIGINT", "primary_key": True}],
+                },
             ],
-            'maintenance': {
-                'auto_create_tables': True
-            }
+            "maintenance": {"auto_create_tables": True},
         }
 
-        test_config_path = os.path.join(self.temp_dir, 'conflict_tables.yaml')
-        with open(test_config_path, 'w', encoding='utf-8') as f:
+        test_config_path = os.path.join(self.temp_dir, "conflict_tables.yaml")
+        with open(test_config_path, "w", encoding="utf-8") as f:
             yaml.dump(conflict_config, f, allow_unicode=True)
 
         print(f"  测试重复表名: duplicate_table")
 
         # 检查配置中的重复表名
-        with open(test_config_path, 'r', encoding='utf-8') as f:
+        with open(test_config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
-        table_names = [t['table_name'] for t in config.get('tables', [])]
+        table_names = [t["table_name"] for t in config.get("tables", [])]
         duplicates = [name for name in table_names if table_names.count(name) > 1]
         duplicates = list(set(duplicates))
 
@@ -480,7 +464,7 @@ tables:
             print(f"  ℹ️  配置加载成功（可能需要添加重复表名检查）")
 
             # 检查是否有验证方法
-            if hasattr(manager, 'validate_config'):
+            if hasattr(manager, "validate_config"):
                 print(f"  ✓ 配置验证方法存在")
             else:
                 print(f"  ⚠️  建议添加validate_config方法检查重复表名")
@@ -514,7 +498,7 @@ tables:
         print(f"\n  配置文件状态:")
         config_path = "config/table_config.yaml"
         if os.path.exists(config_path):
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
             print(f"    ✅ 配置文件存在: {config_path}")
             print(f"    版本: {config.get('version', 'unknown')}")
@@ -570,13 +554,13 @@ def run_tests():
             failed += 1
             print(f"  ❌ 错误: {e}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"US2验收测试结果: 通过={passed}, 失败={failed}, 跳过={skipped}")
-    print("="*80)
+    print("=" * 80)
 
     # 清理
     test_class.teardown_class()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

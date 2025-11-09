@@ -10,15 +10,15 @@ from app.adapters.base import (
     DataSourceConfig,
     IDataSource,
     BaseDataSourceAdapter,
-    DataSourceFactory
+    DataSourceFactory,
 )
 
 __all__ = [
-    'DataSourceType',
-    'DataSourceStatus',
-    'DataCategory',
-    'DataSourceConfig',
-    'IDataSource',
-    'BaseDataSourceAdapter',
-    'DataSourceFactory'
+    "DataSourceType",
+    "DataSourceStatus",
+    "DataCategory",
+    "DataSourceConfig",
+    "IDataSource",
+    "BaseDataSourceAdapter",
+    "DataSourceFactory",
 ]

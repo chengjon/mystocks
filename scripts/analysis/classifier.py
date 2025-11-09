@@ -16,6 +16,7 @@ from typing import List, Dict, Set
 from pathlib import Path
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from models import ModuleMetadata, CategoryEnum
@@ -33,97 +34,145 @@ class ModuleClassifier:
 
         # 核心功能特征
         self.core_indicators = {
-            'path_keywords': [
-                'unified_manager', 'core.py', 'data_access',
-                'main.py', 'mystocks_main', 'manager/unified'
+            "path_keywords": [
+                "unified_manager",
+                "core.py",
+                "data_access",
+                "main.py",
+                "mystocks_main",
+                "manager/unified",
             ],
-            'class_keywords': [
-                'UnifiedManager', 'DataAccess', 'CoreManager',
-                'DataClassification', 'DataStorageStrategy'
+            "class_keywords": [
+                "UnifiedManager",
+                "DataAccess",
+                "CoreManager",
+                "DataClassification",
+                "DataStorageStrategy",
             ],
-            'function_keywords': [
-                'save_data_by_classification', 'load_data_by_classification',
-                'route_data', 'orchestrate', 'initialize_system'
+            "function_keywords": [
+                "save_data_by_classification",
+                "load_data_by_classification",
+                "route_data",
+                "orchestrate",
+                "initialize_system",
             ],
-            'import_keywords': [
-                'data_access', 'core', 'classification'
-            ]
+            "import_keywords": ["data_access", "core", "classification"],
         }
 
         # 辅助功能特征
         self.auxiliary_indicators = {
-            'path_keywords': [
-                'adapter', 'factory', 'strategy', 'backtest',
-                'ml_strategy', 'automation', 'realtime'
+            "path_keywords": [
+                "adapter",
+                "factory",
+                "strategy",
+                "backtest",
+                "ml_strategy",
+                "automation",
+                "realtime",
             ],
-            'class_keywords': [
-                'Adapter', 'DataSource', 'Factory', 'Strategy',
-                'BacktestEngine', 'MLStrategy'
+            "class_keywords": [
+                "Adapter",
+                "DataSource",
+                "Factory",
+                "Strategy",
+                "BacktestEngine",
+                "MLStrategy",
             ],
-            'function_keywords': [
-                'fetch_data', 'get_historical', 'create_adapter',
-                'run_backtest', 'train_model'
+            "function_keywords": [
+                "fetch_data",
+                "get_historical",
+                "create_adapter",
+                "run_backtest",
+                "train_model",
             ],
-            'base_classes': [
-                'IDataSource', 'BaseAdapter', 'BaseStrategy'
-            ]
+            "base_classes": ["IDataSource", "BaseAdapter", "BaseStrategy"],
         }
 
         # 基础设施功能特征
         self.infrastructure_indicators = {
-            'path_keywords': [
-                'db_manager', 'database', 'config', 'model',
-                'table_manager', 'connection'
+            "path_keywords": [
+                "db_manager",
+                "database",
+                "config",
+                "model",
+                "table_manager",
+                "connection",
             ],
-            'class_keywords': [
-                'DatabaseManager', 'TableManager', 'ConnectionPool',
-                'ConfigManager', 'ORM', 'Model'
+            "class_keywords": [
+                "DatabaseManager",
+                "TableManager",
+                "ConnectionPool",
+                "ConfigManager",
+                "ORM",
+                "Model",
             ],
-            'function_keywords': [
-                'create_table', 'get_connection', 'load_config',
-                'validate_table', 'migrate', 'init_db'
+            "function_keywords": [
+                "create_table",
+                "get_connection",
+                "load_config",
+                "validate_table",
+                "migrate",
+                "init_db",
             ],
-            'import_keywords': [
-                'pymysql', 'psycopg2', 'taospy', 'redis',
-                'sqlalchemy', 'yaml'
-            ]
+            "import_keywords": [
+                "pymysql",
+                "psycopg2",
+                "taospy",
+                "redis",
+                "sqlalchemy",
+                "yaml",
+            ],
         }
 
         # 监控功能特征
         self.monitoring_indicators = {
-            'path_keywords': [
-                'monitoring', 'alert', 'performance_monitor',
-                'data_quality', 'logger', 'metrics'
+            "path_keywords": [
+                "monitoring",
+                "alert",
+                "performance_monitor",
+                "data_quality",
+                "logger",
+                "metrics",
             ],
-            'class_keywords': [
-                'Monitor', 'AlertManager', 'PerformanceMonitor',
-                'DataQualityMonitor', 'MetricsCollector'
+            "class_keywords": [
+                "Monitor",
+                "AlertManager",
+                "PerformanceMonitor",
+                "DataQualityMonitor",
+                "MetricsCollector",
             ],
-            'function_keywords': [
-                'log_operation', 'track_performance', 'check_quality',
-                'send_alert', 'collect_metrics', 'monitor'
+            "function_keywords": [
+                "log_operation",
+                "track_performance",
+                "check_quality",
+                "send_alert",
+                "collect_metrics",
+                "monitor",
             ],
-            'import_keywords': [
-                'logging', 'prometheus', 'grafana'
-            ]
+            "import_keywords": ["logging", "prometheus", "grafana"],
         }
 
         # 工具功能特征
         self.utility_indicators = {
-            'path_keywords': [
-                'util', 'helper', 'decorator', 'validation',
-                'date_utils', 'symbol_utils', 'column_mapper'
+            "path_keywords": [
+                "util",
+                "helper",
+                "decorator",
+                "validation",
+                "date_utils",
+                "symbol_utils",
+                "column_mapper",
             ],
-            'class_keywords': [
-                'Utils', 'Helper', 'Validator', 'Mapper'
+            "class_keywords": ["Utils", "Helper", "Validator", "Mapper"],
+            "function_keywords": [
+                "format_date",
+                "convert_symbol",
+                "map_columns",
+                "retry",
+                "validate",
+                "normalize",
             ],
-            'function_keywords': [
-                'format_date', 'convert_symbol', 'map_columns',
-                'retry', 'validate', 'normalize'
-            ],
-            'decorators': [
-                'retry', 'cache', 'timing', 'validate_params'
-            ]
+            "decorators": ["retry", "cache", "timing", "validate_params"],
         }
 
     def classify_module(self, module: ModuleMetadata) -> CategoryEnum:
@@ -139,10 +188,16 @@ class ModuleClassifier:
         # 计算各类别的匹配分数
         scores = {
             CategoryEnum.CORE: self._score_category(module, self.core_indicators),
-            CategoryEnum.AUXILIARY: self._score_category(module, self.auxiliary_indicators),
-            CategoryEnum.INFRASTRUCTURE: self._score_category(module, self.infrastructure_indicators),
-            CategoryEnum.MONITORING: self._score_category(module, self.monitoring_indicators),
-            CategoryEnum.UTILITY: self._score_category(module, self.utility_indicators)
+            CategoryEnum.AUXILIARY: self._score_category(
+                module, self.auxiliary_indicators
+            ),
+            CategoryEnum.INFRASTRUCTURE: self._score_category(
+                module, self.infrastructure_indicators
+            ),
+            CategoryEnum.MONITORING: self._score_category(
+                module, self.monitoring_indicators
+            ),
+            CategoryEnum.UTILITY: self._score_category(module, self.utility_indicators),
         }
 
         # 选择得分最高的类别
@@ -158,7 +213,9 @@ class ModuleClassifier:
 
         return CategoryEnum.UNKNOWN
 
-    def _score_category(self, module: ModuleMetadata, indicators: Dict[str, List[str]]) -> int:
+    def _score_category(
+        self, module: ModuleMetadata, indicators: Dict[str, List[str]]
+    ) -> int:
         """
         计算模块与某类别的匹配分数
 
@@ -172,59 +229,61 @@ class ModuleClassifier:
         score = 0
 
         # 检查路径关键词（权重：3）
-        if 'path_keywords' in indicators:
-            for keyword in indicators['path_keywords']:
+        if "path_keywords" in indicators:
+            for keyword in indicators["path_keywords"]:
                 if keyword in module.file_path.lower():
                     score += 3
                     break  # 只计一次
 
         # 检查类名关键词（权重：2）
-        if 'class_keywords' in indicators:
+        if "class_keywords" in indicators:
             for cls in module.classes:
-                for keyword in indicators['class_keywords']:
+                for keyword in indicators["class_keywords"]:
                     if keyword.lower() in cls.name.lower():
                         score += 2
                         break
 
         # 检查基类（权重：3）
-        if 'base_classes' in indicators:
+        if "base_classes" in indicators:
             for cls in module.classes:
                 for base in cls.base_classes:
-                    if base in indicators['base_classes']:
+                    if base in indicators["base_classes"]:
                         score += 3
 
         # 检查函数名关键词（权重：1）
-        if 'function_keywords' in indicators:
+        if "function_keywords" in indicators:
             all_functions = module.functions.copy()
             for cls in module.classes:
                 all_functions.extend(cls.methods)
 
             for func in all_functions:
-                for keyword in indicators['function_keywords']:
+                for keyword in indicators["function_keywords"]:
                     if keyword.lower() in func.name.lower():
                         score += 1
 
         # 检查导入关键词（权重：1）
-        if 'import_keywords' in indicators:
+        if "import_keywords" in indicators:
             for imp in module.imports:
-                for keyword in indicators['import_keywords']:
+                for keyword in indicators["import_keywords"]:
                     if keyword.lower() in imp.lower():
                         score += 1
 
         # 检查装饰器（权重：2）
-        if 'decorators' in indicators:
+        if "decorators" in indicators:
             all_functions = module.functions.copy()
             for cls in module.classes:
                 all_functions.extend(cls.methods)
 
             for func in all_functions:
                 for decorator in func.decorators:
-                    if decorator in indicators['decorators']:
+                    if decorator in indicators["decorators"]:
                         score += 2
 
         return score
 
-    def classify_batch(self, modules: List[ModuleMetadata]) -> Dict[CategoryEnum, List[ModuleMetadata]]:
+    def classify_batch(
+        self, modules: List[ModuleMetadata]
+    ) -> Dict[CategoryEnum, List[ModuleMetadata]]:
         """
         批量分类模块
 
@@ -240,7 +299,7 @@ class ModuleClassifier:
             CategoryEnum.INFRASTRUCTURE: [],
             CategoryEnum.MONITORING: [],
             CategoryEnum.UTILITY: [],
-            CategoryEnum.UNKNOWN: []
+            CategoryEnum.UNKNOWN: [],
         }
 
         for module in modules:
@@ -250,7 +309,9 @@ class ModuleClassifier:
 
         return categorized
 
-    def get_category_stats(self, modules: List[ModuleMetadata]) -> Dict[str, Dict[str, int]]:
+    def get_category_stats(
+        self, modules: List[ModuleMetadata]
+    ) -> Dict[str, Dict[str, int]]:
         """
         获取分类统计信息
 
@@ -272,10 +333,10 @@ class ModuleClassifier:
             total_lines = sum(m.lines_of_code for m in module_list)
 
             stats[category.value] = {
-                'modules': len(module_list),
-                'classes': total_classes,
-                'functions': total_functions,
-                'lines': total_lines
+                "modules": len(module_list),
+                "classes": total_classes,
+                "functions": total_functions,
+                "lines": total_lines,
             }
 
         return stats
@@ -294,11 +355,13 @@ class ModuleClassifier:
 
         # 计算所有类别的分数
         scores = {
-            'Core': self._score_category(module, self.core_indicators),
-            'Auxiliary': self._score_category(module, self.auxiliary_indicators),
-            'Infrastructure': self._score_category(module, self.infrastructure_indicators),
-            'Monitoring': self._score_category(module, self.monitoring_indicators),
-            'Utility': self._score_category(module, self.utility_indicators)
+            "Core": self._score_category(module, self.core_indicators),
+            "Auxiliary": self._score_category(module, self.auxiliary_indicators),
+            "Infrastructure": self._score_category(
+                module, self.infrastructure_indicators
+            ),
+            "Monitoring": self._score_category(module, self.monitoring_indicators),
+            "Utility": self._score_category(module, self.utility_indicators),
         }
 
         # 获取前两名
@@ -345,12 +408,12 @@ def create_category_report(modules: List[ModuleMetadata]) -> str:
     report.append("|------|--------|------|--------|----------|")
 
     category_names = {
-        'core': '核心功能',
-        'auxiliary': '辅助功能',
-        'infrastructure': '基础设施',
-        'monitoring': '监控功能',
-        'utility': '工具功能',
-        'unknown': '未分类'
+        "core": "核心功能",
+        "auxiliary": "辅助功能",
+        "infrastructure": "基础设施",
+        "monitoring": "监控功能",
+        "utility": "工具功能",
+        "unknown": "未分类",
     }
 
     for cat_key, cat_name in category_names.items():
@@ -379,17 +442,17 @@ def create_category_report(modules: List[ModuleMetadata]) -> str:
             report.append(f"- **代码行**: {module.lines_of_code}")
 
             if module.docstring:
-                first_line = module.docstring.split('\n')[0]
+                first_line = module.docstring.split("\n")[0]
                 report.append(f"- **说明**: {first_line}")
 
             report.append("")
 
-    return '\n'.join(report)
+    return "\n".join(report)
 
 
 if __name__ == "__main__":
     # 测试代码
-    from utils.ast_parser import ASTParser
+    from src.utils.ast_parser import ASTParser
 
     project_root = "/opt/claude/mystocks_spec"
     parser = ASTParser(project_root)
@@ -402,7 +465,7 @@ if __name__ == "__main__":
         "adapters/akshare_adapter.py",
         "db_manager/database_manager.py",
         "monitoring/performance_monitor.py",
-        "utils/date_utils.py"
+        "utils/date_utils.py",
     ]
 
     print("模块分类测试:\n")

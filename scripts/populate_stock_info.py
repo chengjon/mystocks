@@ -24,8 +24,7 @@ import logging
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -49,45 +48,47 @@ def get_stock_list_from_akshare() -> List[Dict]:
         stocks = []
         for _, row in df.iterrows():
             # AkShare returns: code, name
-            symbol = row['code']
-            name = row['name']
+            symbol = row["code"]
+            name = row["name"]
 
             # Determine exchange and format symbol
-            if symbol.startswith('6'):
-                exchange = 'SSE'  # Shanghai Stock Exchange
+            if symbol.startswith("6"):
+                exchange = "SSE"  # Shanghai Stock Exchange
                 full_symbol = f"{symbol}.SH"
-            elif symbol.startswith('0') or symbol.startswith('3'):
-                exchange = 'SZSE'  # Shenzhen Stock Exchange
+            elif symbol.startswith("0") or symbol.startswith("3"):
+                exchange = "SZSE"  # Shenzhen Stock Exchange
                 full_symbol = f"{symbol}.SZ"
-            elif symbol.startswith('4') or symbol.startswith('8'):
-                exchange = 'BSE'  # Beijing Stock Exchange
+            elif symbol.startswith("4") or symbol.startswith("8"):
+                exchange = "BSE"  # Beijing Stock Exchange
                 full_symbol = f"{symbol}.BJ"
             else:
-                exchange = 'UNKNOWN'
+                exchange = "UNKNOWN"
                 full_symbol = symbol
 
             # Determine security type
-            if symbol.startswith('688'):
-                security_type = 'STAR'  # 科创板
-                listing_board = 'STAR'
-            elif symbol.startswith('300'):
-                security_type = 'GEM'  # 创业板
-                listing_board = 'GEM'
-            elif symbol.startswith('8') or symbol.startswith('4'):
-                security_type = 'BSE'  # 北交所
-                listing_board = 'BSE'
+            if symbol.startswith("688"):
+                security_type = "STAR"  # 科创板
+                listing_board = "STAR"
+            elif symbol.startswith("300"):
+                security_type = "GEM"  # 创业板
+                listing_board = "GEM"
+            elif symbol.startswith("8") or symbol.startswith("4"):
+                security_type = "BSE"  # 北交所
+                listing_board = "BSE"
             else:
-                security_type = 'MAIN'  # 主板
-                listing_board = 'MAIN'
+                security_type = "MAIN"  # 主板
+                listing_board = "MAIN"
 
-            stocks.append({
-                'symbol': full_symbol,
-                'name': name,
-                'exchange': exchange,
-                'security_type': security_type,
-                'listing_board': listing_board,
-                'status': 'ACTIVE'  # Assume active if in current list
-            })
+            stocks.append(
+                {
+                    "symbol": full_symbol,
+                    "name": name,
+                    "exchange": exchange,
+                    "security_type": security_type,
+                    "listing_board": listing_board,
+                    "status": "ACTIVE",  # Assume active if in current list
+                }
+            )
 
         return stocks
 
@@ -138,11 +139,9 @@ def populate_stock_info(stocks: List[Dict], db_config: Dict):
         # Prepare batch data
         batch_data = []
         for stock in stocks:
-            batch_data.append({
-                **stock,
-                'created_at': current_time,
-                'updated_at': current_time
-            })
+            batch_data.append(
+                {**stock, "created_at": current_time, "updated_at": current_time}
+            )
 
         # Execute batch insert
         cursor.executemany(insert_sql, batch_data)
@@ -173,11 +172,11 @@ def main():
 
     # Database configuration (from environment variables)
     db_config = {
-        'host': os.getenv('POSTGRESQL_HOST', '192.168.123.104'),
-        'port': int(os.getenv('POSTGRESQL_PORT', '5438')),
-        'user': os.getenv('POSTGRESQL_USER', 'postgres'),
-        'password': os.getenv('POSTGRESQL_PASSWORD', 'c790414J'),
-        'database': os.getenv('POSTGRESQL_DATABASE', 'mystocks')
+        "host": os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
+        "port": int(os.getenv("POSTGRESQL_PORT", "5438")),
+        "user": os.getenv("POSTGRESQL_USER", "postgres"),
+        "password": os.getenv("POSTGRESQL_PASSWORD", "c790414J"),
+        "database": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
     }
 
     logger.info("=" * 60)

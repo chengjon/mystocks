@@ -2,6 +2,7 @@
 TDX数据服务
 提供对TDX适配器的封装和缓存支持
 """
+
 import sys
 import os
 import logging
@@ -10,10 +11,10 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
 sys.path.insert(0, project_root)
 
-from adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx_adapter import TdxDataSource
 
 logger = logging.getLogger(__name__)
 
@@ -59,15 +60,15 @@ class TdxService:
                 raise ValueError(result)
 
             # 计算涨跌额和涨跌幅
-            if result['pre_close'] > 0:
-                result['change'] = round(result['price'] - result['pre_close'], 2)
-                result['change_pct'] = round(
-                    (result['price'] - result['pre_close']) / result['pre_close'] * 100,
-                    2
+            if result["pre_close"] > 0:
+                result["change"] = round(result["price"] - result["pre_close"], 2)
+                result["change_pct"] = round(
+                    (result["price"] - result["pre_close"]) / result["pre_close"] * 100,
+                    2,
                 )
             else:
-                result['change'] = 0.0
-                result['change_pct'] = 0.0
+                result["change"] = 0.0
+                result["change_pct"] = 0.0
 
             logger.info(f"获取实时行情成功: {symbol}")
             return result
@@ -77,11 +78,7 @@ class TdxService:
             raise
 
     def get_stock_kline(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        period: str = '1d'
+        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
     ) -> Dict:
         """
         获取股票K线数据
@@ -98,40 +95,32 @@ class TdxService:
         try:
             # 调用TDX适配器获取K线
             df = self.tdx_adapter.get_stock_kline(
-                symbol=symbol,
-                start_date=start_date,
-                end_date=end_date,
-                period=period
+                symbol=symbol, start_date=start_date, end_date=end_date, period=period
             )
 
             if df.empty:
                 logger.warning(f"未获取到K线数据: {symbol}, {period}")
-                return {
-                    'code': symbol,
-                    'period': period,
-                    'data': [],
-                    'count': 0
-                }
+                return {"code": symbol, "period": period, "data": [], "count": 0}
 
             # 转换为字典列表
             data_list = []
             for _, row in df.iterrows():
                 data_point = {
-                    'date': str(row.get('date', '')),
-                    'open': float(row.get('open', 0)),
-                    'high': float(row.get('high', 0)),
-                    'low': float(row.get('low', 0)),
-                    'close': float(row.get('close', 0)),
-                    'volume': int(row.get('volume', 0)),
-                    'amount': float(row.get('amount', 0)) if 'amount' in row else None
+                    "date": str(row.get("date", "")),
+                    "open": float(row.get("open", 0)),
+                    "high": float(row.get("high", 0)),
+                    "low": float(row.get("low", 0)),
+                    "close": float(row.get("close", 0)),
+                    "volume": int(row.get("volume", 0)),
+                    "amount": float(row.get("amount", 0)) if "amount" in row else None,
                 }
                 data_list.append(data_point)
 
             result = {
-                'code': symbol,
-                'period': period,
-                'data': data_list,
-                'count': len(data_list)
+                "code": symbol,
+                "period": period,
+                "data": data_list,
+                "count": len(data_list),
             }
 
             logger.info(f"获取K线成功: {symbol}, {period}, {len(data_list)}条")
@@ -160,15 +149,15 @@ class TdxService:
                 raise ValueError(result)
 
             # 计算涨跌
-            if result['pre_close'] > 0:
-                result['change'] = round(result['price'] - result['pre_close'], 2)
-                result['change_pct'] = round(
-                    (result['price'] - result['pre_close']) / result['pre_close'] * 100,
-                    2
+            if result["pre_close"] > 0:
+                result["change"] = round(result["price"] - result["pre_close"], 2)
+                result["change_pct"] = round(
+                    (result["price"] - result["pre_close"]) / result["pre_close"] * 100,
+                    2,
                 )
             else:
-                result['change'] = 0.0
-                result['change_pct'] = 0.0
+                result["change"] = 0.0
+                result["change_pct"] = 0.0
 
             logger.info(f"获取指数行情成功: {symbol}")
             return result
@@ -178,11 +167,7 @@ class TdxService:
             raise
 
     def get_index_kline(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        period: str = '1d'
+        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
     ) -> Dict:
         """
         获取指数K线数据
@@ -198,39 +183,31 @@ class TdxService:
         """
         try:
             df = self.tdx_adapter.get_index_kline(
-                symbol=symbol,
-                start_date=start_date,
-                end_date=end_date,
-                period=period
+                symbol=symbol, start_date=start_date, end_date=end_date, period=period
             )
 
             if df.empty:
-                return {
-                    'code': symbol,
-                    'period': period,
-                    'data': [],
-                    'count': 0
-                }
+                return {"code": symbol, "period": period, "data": [], "count": 0}
 
             # 转换为字典列表
             data_list = []
             for _, row in df.iterrows():
                 data_point = {
-                    'date': str(row.get('date', '')),
-                    'open': float(row.get('open', 0)),
-                    'high': float(row.get('high', 0)),
-                    'low': float(row.get('low', 0)),
-                    'close': float(row.get('close', 0)),
-                    'volume': int(row.get('volume', 0)),
-                    'amount': float(row.get('amount', 0)) if 'amount' in row else None
+                    "date": str(row.get("date", "")),
+                    "open": float(row.get("open", 0)),
+                    "high": float(row.get("high", 0)),
+                    "low": float(row.get("low", 0)),
+                    "close": float(row.get("close", 0)),
+                    "volume": int(row.get("volume", 0)),
+                    "amount": float(row.get("amount", 0)) if "amount" in row else None,
                 }
                 data_list.append(data_point)
 
             result = {
-                'code': symbol,
-                'period': period,
-                'data': data_list,
-                'count': len(data_list)
+                "code": symbol,
+                "period": period,
+                "data": data_list,
+                "count": len(data_list),
             }
 
             logger.info(f"获取指数K线成功: {symbol}, {period}, {len(data_list)}条")
@@ -249,33 +226,33 @@ class TdxService:
         """
         try:
             # 尝试获取上证指数作为连接测试
-            result = self.tdx_adapter.get_real_time_data('000001')
+            result = self.tdx_adapter.get_real_time_data("000001")
 
             if isinstance(result, dict):
                 return {
-                    'status': 'healthy',
-                    'tdx_connected': True,
-                    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    'server_info': {
-                        'host': self.tdx_adapter.tdx_host,
-                        'port': self.tdx_adapter.tdx_port
-                    }
+                    "status": "healthy",
+                    "tdx_connected": True,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "server_info": {
+                        "host": self.tdx_adapter.tdx_host,
+                        "port": self.tdx_adapter.tdx_port,
+                    },
                 }
             else:
                 return {
-                    'status': 'unhealthy',
-                    'tdx_connected': False,
-                    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    'error': str(result)
+                    "status": "unhealthy",
+                    "tdx_connected": False,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "error": str(result),
                 }
 
         except Exception as e:
             logger.error(f"TDX连接检查失败: {e}")
             return {
-                'status': 'unhealthy',
-                'tdx_connected': False,
-                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'error': str(e)
+                "status": "unhealthy",
+                "tdx_connected": False,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "error": str(e),
             }
 
 

@@ -16,9 +16,9 @@ headers = {}
 
 def print_section(title):
     """打印章节标题"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"  {title}")
-    print("="*80)
+    print("=" * 80)
 
 
 def print_json(data, max_items=5):
@@ -26,7 +26,13 @@ def print_json(data, max_items=5):
     if isinstance(data, dict):
         if "data" in data and isinstance(data["data"], list):
             # 限制输出数量
-            print(json.dumps({**data, "data": data["data"][:max_items]}, indent=2, ensure_ascii=False))
+            print(
+                json.dumps(
+                    {**data, "data": data["data"][:max_items]},
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
             if len(data["data"]) > max_items:
                 print(f"  ... and {len(data['data']) - max_items} more items")
         else:
@@ -38,6 +44,7 @@ def print_json(data, max_items=5):
 # ============================================================================
 # 多数据源管理测试
 # ============================================================================
+
 
 def test_multi_source_health():
     """测试1: 获取所有数据源健康状态"""
@@ -64,7 +71,9 @@ def test_single_source_health():
 
     for source in ["eastmoney", "cninfo"]:
         print(f"\n--- {source.upper()} ---")
-        response = requests.get(f"{BASE_URL}/api/multi-source/health/{source}", headers=headers)
+        response = requests.get(
+            f"{BASE_URL}/api/multi-source/health/{source}", headers=headers
+        )
         print(f"Status Code: {response.status_code}")
 
         if response.status_code == 200:
@@ -76,13 +85,15 @@ def test_supported_categories():
     """测试3: 获取支持的数据类别"""
     print_section("测试 3: 获取支持的数据类别")
 
-    response = requests.get(f"{BASE_URL}/api/multi-source/supported-categories", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/multi-source/supported-categories", headers=headers
+    )
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
         data = response.json()
         print(f"\n共支持 {data['total_categories']} 个数据类别:")
-        for category, sources in data['categories'].items():
+        for category, sources in data["categories"].items():
             print(f"  - {category}: {', '.join(sources)}")
 
 
@@ -95,7 +106,7 @@ def test_realtime_quote():
     response = requests.get(
         f"{BASE_URL}/api/multi-source/realtime-quote",
         params={"symbols": "600519,000001"},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -104,7 +115,7 @@ def test_realtime_quote():
         print(f"数据源: {data.get('source')}")
         print(f"响应时间: {data.get('response_time')}秒")
         print(f"缓存: {data.get('cached', False)}")
-        if data.get('data'):
+        if data.get("data"):
             print(f"数据条数: {data.get('count', 0)}")
             print_json(data, max_items=3)
 
@@ -116,7 +127,7 @@ def test_fund_flow():
     response = requests.get(
         f"{BASE_URL}/api/multi-source/fund-flow",
         params={"symbol": "600519", "timeframe": "今日"},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -124,7 +135,7 @@ def test_fund_flow():
         data = response.json()
         print(f"数据源: {data.get('source')}")
         print(f"成功: {data.get('success')}")
-        if data.get('data'):
+        if data.get("data"):
             print(f"数据条数: {data.get('count', 0)}")
             print_json(data, max_items=3)
 
@@ -134,12 +145,12 @@ def test_dragon_tiger():
     print_section("测试 6: 获取龙虎榜（多数据源）")
 
     # 获取昨天的龙虎榜
-    yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
     response = requests.get(
         f"{BASE_URL}/api/multi-source/dragon-tiger",
         params={"date_str": yesterday},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -148,7 +159,7 @@ def test_dragon_tiger():
         print(f"日期: {yesterday}")
         print(f"数据源: {data.get('source')}")
         print(f"成功: {data.get('success')}")
-        if data.get('data'):
+        if data.get("data"):
             print(f"数据条数: {data.get('count', 0)}")
             print_json(data, max_items=3)
 
@@ -157,24 +168,21 @@ def test_dragon_tiger():
 # 公告系统测试
 # ============================================================================
 
+
 def test_fetch_announcements():
     """测试7: 获取并保存公告"""
     print_section("测试 7: 获取并保存公告")
 
     # 获取最近3天的公告
-    end_date = date.today().strftime('%Y-%m-%d')
-    start_date = (date.today() - timedelta(days=3)).strftime('%Y-%m-%d')
+    end_date = date.today().strftime("%Y-%m-%d")
+    start_date = (date.today() - timedelta(days=3)).strftime("%Y-%m-%d")
 
     print(f"获取日期范围: {start_date} 至 {end_date}")
 
     response = requests.post(
         f"{BASE_URL}/api/announcement/fetch",
-        params={
-            "start_date": start_date,
-            "end_date": end_date,
-            "category": "all"
-        },
-        headers=headers
+        params={"start_date": start_date, "end_date": end_date, "category": "all"},
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -193,7 +201,7 @@ def test_get_announcement_types():
     if response.status_code == 200:
         data = response.json()
         print(f"\n共有 {len(data['types'])} 种公告类型:")
-        for ann_type in data['types'][:10]:  # 只显示前10个
+        for ann_type in data["types"][:10]:  # 只显示前10个
             print(f"  - {ann_type['code']}: {ann_type['name']}")
 
 
@@ -204,7 +212,7 @@ def test_get_today_announcements():
     response = requests.get(
         f"{BASE_URL}/api/announcement/today",
         params={"min_importance": 0},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -213,9 +221,9 @@ def test_get_today_announcements():
         print(f"日期: {data.get('date')}")
         print(f"公告数量: {data.get('count', 0)}")
 
-        if data.get('announcements'):
+        if data.get("announcements"):
             print("\n前5条公告:")
-            for ann in data['announcements'][:5]:
+            for ann in data["announcements"][:5]:
                 print(f"\n  股票: {ann['stock_code']} {ann.get('stock_name', '')}")
                 print(f"  标题: {ann['title']}")
                 print(f"  类型: {ann.get('type', 'N/A')}")
@@ -230,7 +238,7 @@ def test_get_important_announcements():
     response = requests.get(
         f"{BASE_URL}/api/announcement/important",
         params={"days": 7, "min_importance": 3},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -240,10 +248,12 @@ def test_get_important_announcements():
         print(f"最小重要性: {data.get('min_importance')}")
         print(f"公告数量: {data.get('count', 0)}")
 
-        if data.get('announcements'):
+        if data.get("announcements"):
             print("\n重要公告列表:")
-            for ann in data['announcements'][:10]:
-                print(f"\n  [{ann['importance_level']}] {ann['stock_code']} {ann.get('stock_name', '')}")
+            for ann in data["announcements"][:10]:
+                print(
+                    f"\n  [{ann['importance_level']}] {ann['stock_code']} {ann.get('stock_name', '')}"
+                )
                 print(f"  {ann['title']}")
                 print(f"  发布日期: {ann['publish_date']}")
 
@@ -258,7 +268,7 @@ def test_get_stock_announcements():
     response = requests.get(
         f"{BASE_URL}/api/announcement/stock/{stock_code}",
         params={"days": 30},
-        headers=headers
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -268,11 +278,13 @@ def test_get_stock_announcements():
         print(f"日期范围: {data.get('start_date')} 至 {data.get('end_date')}")
         print(f"公告数量: {data.get('count', 0)}")
 
-        if data.get('announcements'):
+        if data.get("announcements"):
             print("\n公告列表:")
-            for ann in data['announcements'][:10]:
+            for ann in data["announcements"][:10]:
                 print(f"\n  {ann['publish_date']}: {ann['title']}")
-                print(f"    类型: {ann.get('type', 'N/A')} | 重要性: {ann['importance_level']}")
+                print(
+                    f"    类型: {ann.get('type', 'N/A')} | 重要性: {ann['importance_level']}"
+                )
 
 
 def test_announcement_list():
@@ -281,12 +293,8 @@ def test_announcement_list():
 
     response = requests.get(
         f"{BASE_URL}/api/announcement/list",
-        params={
-            "page": 1,
-            "page_size": 10,
-            "min_importance": 2
-        },
-        headers=headers
+        params={"page": 1, "page_size": 10, "min_importance": 2},
+        headers=headers,
     )
     print(f"Status Code: {response.status_code}")
 
@@ -296,9 +304,9 @@ def test_announcement_list():
         print(f"当前页: {data.get('page')}/{data.get('total_pages')}")
         print(f"每页数量: {data.get('page_size')}")
 
-        if data.get('data'):
+        if data.get("data"):
             print(f"\n本页公告:")
-            for ann in data['data']:
+            for ann in data["data"]:
                 print(f"  - {ann['stock_code']}: {ann['title'][:50]}...")
 
 
@@ -318,7 +326,9 @@ def test_evaluate_monitor_rules():
     """测试14: 评估监控规则"""
     print_section("测试 14: 评估监控规则")
 
-    response = requests.post(f"{BASE_URL}/api/announcement/monitor/evaluate", headers=headers)
+    response = requests.post(
+        f"{BASE_URL}/api/announcement/monitor/evaluate", headers=headers
+    )
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -330,7 +340,9 @@ def test_refresh_health():
     """测试15: 刷新数据源健康状态"""
     print_section("测试 15: 刷新数据源健康状态")
 
-    response = requests.post(f"{BASE_URL}/api/multi-source/refresh-health", headers=headers)
+    response = requests.post(
+        f"{BASE_URL}/api/multi-source/refresh-health", headers=headers
+    )
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -343,7 +355,9 @@ def test_clear_cache():
     """测试16: 清空缓存"""
     print_section("测试 16: 清空缓存")
 
-    response = requests.post(f"{BASE_URL}/api/multi-source/clear-cache", headers=headers)
+    response = requests.post(
+        f"{BASE_URL}/api/multi-source/clear-cache", headers=headers
+    )
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -355,12 +369,13 @@ def test_clear_cache():
 # 主测试流程
 # ============================================================================
 
+
 def main():
     """运行所有测试"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("  MyStocks Phase 3: Multi-source Integration API 测试")
     print("  ValueCell Migration - Multi-data Source Support")
-    print("="*80)
+    print("=" * 80)
 
     try:
         # 多数据源管理测试
@@ -431,6 +446,7 @@ def main():
     except Exception as e:
         print(f"\n❌ 测试失败: {e}")
         import traceback
+
         traceback.print_exc()
 
 

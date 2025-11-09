@@ -2,6 +2,7 @@
 Indicator Registry Service
 管理所有161个TA-Lib技术指标的元数据注册表
 """
+
 import talib
 from typing import Dict, List, Optional, Any
 from enum import Enum
@@ -9,6 +10,7 @@ from enum import Enum
 
 class IndicatorCategory(str, Enum):
     """指标分类"""
+
     TREND = "trend"
     MOMENTUM = "momentum"
     VOLATILITY = "volatility"
@@ -18,6 +20,7 @@ class IndicatorCategory(str, Enum):
 
 class PanelType(str, Enum):
     """显示面板类型"""
+
     OVERLAY = "overlay"  # 叠加在主图上
     OSCILLATOR = "oscillator"  # 独立震荡面板
 
@@ -46,12 +49,18 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OVERLAY,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 20, "min": 2, "max": 200}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 20,
+                        "min": 2,
+                        "max": 200,
+                    }
                 ],
                 "outputs": [{"name": "sma", "description": "SMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
                 "min_data_points_formula": "timeperiod",
-                "description": "简单移动平均线,对价格进行平滑处理"
+                "description": "简单移动平均线,对价格进行平滑处理",
             },
             "EMA": {
                 "full_name": "Exponential Moving Average",
@@ -59,12 +68,18 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OVERLAY,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 20, "min": 2, "max": 200}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 20,
+                        "min": 2,
+                        "max": 200,
+                    }
                 ],
                 "outputs": [{"name": "ema", "description": "EMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
                 "min_data_points_formula": "timeperiod",
-                "description": "指数移动平均线,对近期价格赋予更高权重"
+                "description": "指数移动平均线,对近期价格赋予更高权重",
             },
             "WMA": {
                 "full_name": "Weighted Moving Average",
@@ -72,12 +87,18 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OVERLAY,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 20, "min": 2, "max": 200}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 20,
+                        "min": 2,
+                        "max": 200,
+                    }
                 ],
                 "outputs": [{"name": "wma", "description": "WMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
                 "min_data_points_formula": "timeperiod",
-                "description": "加权移动平均线"
+                "description": "加权移动平均线",
             },
             "MACD": {
                 "full_name": "Moving Average Convergence Divergence",
@@ -85,15 +106,38 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "fastperiod", "type": "int", "default": 12, "min": 2, "max": 100},
-                    {"name": "slowperiod", "type": "int", "default": 26, "min": 2, "max": 100},
-                    {"name": "signalperiod", "type": "int", "default": 9, "min": 2, "max": 100}
+                    {
+                        "name": "fastperiod",
+                        "type": "int",
+                        "default": 12,
+                        "min": 2,
+                        "max": 100,
+                    },
+                    {
+                        "name": "slowperiod",
+                        "type": "int",
+                        "default": 26,
+                        "min": 2,
+                        "max": 100,
+                    },
+                    {
+                        "name": "signalperiod",
+                        "type": "int",
+                        "default": 9,
+                        "min": 2,
+                        "max": 100,
+                    },
                 ],
-                "outputs": [{"name": "macd", "description": "MACD线"}, {"name": "signal", "description": "信号线"}, {"name": "hist", "description": "柱状图"}],
-                "min_data_points": lambda p: p.get("slowperiod", 26) + p.get("signalperiod", 9),
+                "outputs": [
+                    {"name": "macd", "description": "MACD线"},
+                    {"name": "signal", "description": "信号线"},
+                    {"name": "hist", "description": "柱状图"},
+                ],
+                "min_data_points": lambda p: p.get("slowperiod", 26)
+                + p.get("signalperiod", 9),
                 "min_data_points_formula": "slowperiod + signalperiod",
                 "reference_lines": [0],
-                "description": "MACD指标,显示快慢均线的差值"
+                "description": "MACD指标,显示快慢均线的差值",
             },
             "BBANDS": {
                 "full_name": "Bollinger Bands",
@@ -101,14 +145,36 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OVERLAY,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 20, "min": 2, "max": 200},
-                    {"name": "nbdevup", "type": "float", "default": 2.0, "min": 0.1, "max": 5.0},
-                    {"name": "nbdevdn", "type": "float", "default": 2.0, "min": 0.1, "max": 5.0}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 20,
+                        "min": 2,
+                        "max": 200,
+                    },
+                    {
+                        "name": "nbdevup",
+                        "type": "float",
+                        "default": 2.0,
+                        "min": 0.1,
+                        "max": 5.0,
+                    },
+                    {
+                        "name": "nbdevdn",
+                        "type": "float",
+                        "default": 2.0,
+                        "min": 0.1,
+                        "max": 5.0,
+                    },
                 ],
-                "outputs": [{"name": "upperband", "description": "上轨"}, {"name": "middleband", "description": "中轨"}, {"name": "lowerband", "description": "下轨"}],
+                "outputs": [
+                    {"name": "upperband", "description": "上轨"},
+                    {"name": "middleband", "description": "中轨"},
+                    {"name": "lowerband", "description": "下轨"},
+                ],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
                 "min_data_points_formula": "timeperiod",
-                "description": "布林带,显示价格的波动区间"
+                "description": "布林带,显示价格的波动区间",
             },
             "SAR": {
                 "full_name": "Parabolic SAR",
@@ -116,13 +182,25 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OVERLAY,
                 "parameters": [
-                    {"name": "acceleration", "type": "float", "default": 0.02, "min": 0.01, "max": 0.2},
-                    {"name": "maximum", "type": "float", "default": 0.2, "min": 0.1, "max": 0.5}
+                    {
+                        "name": "acceleration",
+                        "type": "float",
+                        "default": 0.02,
+                        "min": 0.01,
+                        "max": 0.2,
+                    },
+                    {
+                        "name": "maximum",
+                        "type": "float",
+                        "default": 0.2,
+                        "min": 0.1,
+                        "max": 0.5,
+                    },
                 ],
                 "outputs": [{"name": "sar", "description": "SAR值"}],
                 "min_data_points": lambda p: 10,
                 "min_data_points_formula": "10",
-                "description": "抛物线转向指标"
+                "description": "抛物线转向指标",
             },
             "ADX": {
                 "full_name": "Average Directional Movement Index",
@@ -130,13 +208,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.TREND,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 2, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "adx", "description": "ADX值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) * 2,
                 "min_data_points_formula": "timeperiod * 2",
                 "reference_lines": [20, 40],
-                "description": "平均趋向指数,衡量趋势强度"
+                "description": "平均趋向指数,衡量趋势强度",
             },
         }
 
@@ -148,13 +232,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 2, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "rsi", "description": "RSI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) + 1,
                 "min_data_points_formula": "timeperiod + 1",
                 "reference_lines": [30, 70],
-                "description": "相对强弱指数,显示超买超卖状态"
+                "description": "相对强弱指数,显示超买超卖状态",
             },
             "STOCH": {
                 "full_name": "Stochastic",
@@ -162,15 +252,37 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "fastk_period", "type": "int", "default": 9, "min": 1, "max": 100},
-                    {"name": "slowk_period", "type": "int", "default": 3, "min": 1, "max": 100},
-                    {"name": "slowd_period", "type": "int", "default": 3, "min": 1, "max": 100}
+                    {
+                        "name": "fastk_period",
+                        "type": "int",
+                        "default": 9,
+                        "min": 1,
+                        "max": 100,
+                    },
+                    {
+                        "name": "slowk_period",
+                        "type": "int",
+                        "default": 3,
+                        "min": 1,
+                        "max": 100,
+                    },
+                    {
+                        "name": "slowd_period",
+                        "type": "int",
+                        "default": 3,
+                        "min": 1,
+                        "max": 100,
+                    },
                 ],
-                "outputs": [{"name": "slowk", "description": "K值"}, {"name": "slowd", "description": "D值"}],
-                "min_data_points": lambda p: p.get("fastk_period", 9) + p.get("slowk_period", 3),
+                "outputs": [
+                    {"name": "slowk", "description": "K值"},
+                    {"name": "slowd", "description": "D值"},
+                ],
+                "min_data_points": lambda p: p.get("fastk_period", 9)
+                + p.get("slowk_period", 3),
                 "min_data_points_formula": "fastk_period + slowk_period",
                 "reference_lines": [20, 80],
-                "description": "随机指标(KD值),显示价格动量"
+                "description": "随机指标(KD值),显示价格动量",
             },
             "CCI": {
                 "full_name": "Commodity Channel Index",
@@ -178,13 +290,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 2, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "cci", "description": "CCI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
                 "min_data_points_formula": "timeperiod",
                 "reference_lines": [-100, 100],
-                "description": "顺势指标,衡量价格偏离程度"
+                "description": "顺势指标,衡量价格偏离程度",
             },
             "MFI": {
                 "full_name": "Money Flow Index",
@@ -192,13 +310,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 2, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "mfi", "description": "MFI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) + 1,
                 "min_data_points_formula": "timeperiod + 1",
                 "reference_lines": [20, 80],
-                "description": "资金流量指标,结合价格和成交量"
+                "description": "资金流量指标,结合价格和成交量",
             },
             "WILLR": {
                 "full_name": "Williams %R",
@@ -206,13 +330,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 2, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "willr", "description": "威廉指标值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
                 "min_data_points_formula": "timeperiod",
                 "reference_lines": [-20, -80],
-                "description": "威廉指标,反向显示超买超卖"
+                "description": "威廉指标,反向显示超买超卖",
             },
             "ROC": {
                 "full_name": "Rate of Change",
@@ -220,13 +350,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 10, "min": 1, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 10,
+                        "min": 1,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "roc", "description": "变动率值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 10) + 1,
                 "min_data_points_formula": "timeperiod + 1",
                 "reference_lines": [0],
-                "description": "变动率指标,显示价格变化百分比"
+                "description": "变动率指标,显示价格变化百分比",
             },
             "MOM": {
                 "full_name": "Momentum",
@@ -234,13 +370,19 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.MOMENTUM,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 10, "min": 1, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 10,
+                        "min": 1,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "mom", "description": "动量值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 10) + 1,
                 "min_data_points_formula": "timeperiod + 1",
                 "reference_lines": [0],
-                "description": "动量指标,显示价格绝对变化"
+                "description": "动量指标,显示价格绝对变化",
             },
         }
 
@@ -252,12 +394,18 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.VOLATILITY,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 1, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 1,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "atr", "description": "ATR值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
                 "min_data_points_formula": "timeperiod",
-                "description": "真实波幅均值,衡量价格波动性"
+                "description": "真实波幅均值,衡量价格波动性",
             },
             "NATR": {
                 "full_name": "Normalized Average True Range",
@@ -265,12 +413,18 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.VOLATILITY,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "timeperiod", "type": "int", "default": 14, "min": 1, "max": 100}
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 1,
+                        "max": 100,
+                    }
                 ],
                 "outputs": [{"name": "natr", "description": "NATR值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
                 "min_data_points_formula": "timeperiod",
-                "description": "标准化真实波幅"
+                "description": "标准化真实波幅",
             },
             "TRANGE": {
                 "full_name": "True Range",
@@ -281,7 +435,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "trange", "description": "真实波幅值"}],
                 "min_data_points": lambda p: 2,
                 "min_data_points_formula": "2",
-                "description": "真实波幅"
+                "description": "真实波幅",
             },
         }
 
@@ -296,7 +450,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "obv", "description": "OBV值"}],
                 "min_data_points": lambda p: 1,
                 "min_data_points_formula": "1",
-                "description": "能量潮指标,累积成交量变化"
+                "description": "能量潮指标,累积成交量变化",
             },
             "AD": {
                 "full_name": "Chaikin A/D Line",
@@ -307,7 +461,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "ad", "description": "AD值"}],
                 "min_data_points": lambda p: 1,
                 "min_data_points_formula": "1",
-                "description": "累积/派发线"
+                "description": "累积/派发线",
             },
             "ADOSC": {
                 "full_name": "Chaikin A/D Oscillator",
@@ -315,14 +469,26 @@ class IndicatorRegistry:
                 "category": IndicatorCategory.VOLUME,
                 "panel_type": PanelType.OSCILLATOR,
                 "parameters": [
-                    {"name": "fastperiod", "type": "int", "default": 3, "min": 2, "max": 100},
-                    {"name": "slowperiod", "type": "int", "default": 10, "min": 2, "max": 100}
+                    {
+                        "name": "fastperiod",
+                        "type": "int",
+                        "default": 3,
+                        "min": 2,
+                        "max": 100,
+                    },
+                    {
+                        "name": "slowperiod",
+                        "type": "int",
+                        "default": 10,
+                        "min": 2,
+                        "max": 100,
+                    },
                 ],
                 "outputs": [{"name": "adosc", "description": "ADOSC值"}],
                 "min_data_points": lambda p: p.get("slowperiod", 10),
                 "min_data_points_formula": "slowperiod",
                 "reference_lines": [0],
-                "description": "累积/派发震荡指标"
+                "description": "累积/派发震荡指标",
             },
         }
 
@@ -337,7 +503,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "pattern", "description": "形态识别值"}],
                 "min_data_points": lambda p: 1,
                 "min_data_points_formula": "1",
-                "description": "十字星形态"
+                "description": "十字星形态",
             },
             "CDLHAMMER": {
                 "full_name": "Hammer",
@@ -348,7 +514,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "pattern", "description": "形态识别值"}],
                 "min_data_points": lambda p: 1,
                 "min_data_points_formula": "1",
-                "description": "锤子线形态"
+                "description": "锤子线形态",
             },
             "CDLENGULFING": {
                 "full_name": "Engulfing Pattern",
@@ -359,7 +525,7 @@ class IndicatorRegistry:
                 "outputs": [{"name": "pattern", "description": "形态识别值"}],
                 "min_data_points": lambda p: 2,
                 "min_data_points_formula": "2",
-                "description": "吞没形态"
+                "description": "吞没形态",
             },
         }
 
@@ -369,7 +535,7 @@ class IndicatorRegistry:
             **momentum_indicators,
             **volatility_indicators,
             **volume_indicators,
-            **candlestick_patterns
+            **candlestick_patterns,
         }
 
     def get_indicator(self, abbreviation: str) -> Optional[Dict[str, Any]]:
@@ -388,7 +554,9 @@ class IndicatorRegistry:
         """获取所有指标的元数据"""
         return self._registry.copy()
 
-    def get_indicators_by_category(self, category: IndicatorCategory) -> Dict[str, Dict[str, Any]]:
+    def get_indicators_by_category(
+        self, category: IndicatorCategory
+    ) -> Dict[str, Dict[str, Any]]:
         """
         按分类获取指标
 
@@ -404,7 +572,9 @@ class IndicatorRegistry:
             if meta["category"] == category
         }
 
-    def validate_indicator(self, abbreviation: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_indicator(
+        self, abbreviation: str, parameters: Dict[str, Any]
+    ) -> tuple[bool, Optional[str]]:
         """
         验证指标及其参数
 
@@ -425,14 +595,19 @@ class IndicatorRegistry:
 
         for param_name, param_value in parameters.items():
             if param_name not in required_params:
-                return False, f"参数 '{param_name}' 不是指标 '{abbreviation}' 的有效参数"
+                return (
+                    False,
+                    f"参数 '{param_name}' 不是指标 '{abbreviation}' 的有效参数",
+                )
 
             param_def = required_params[param_name]
 
             # 类型检查
             if param_def["type"] == "int" and not isinstance(param_value, int):
                 return False, f"参数 '{param_name}' 应为整数"
-            elif param_def["type"] == "float" and not isinstance(param_value, (int, float)):
+            elif param_def["type"] == "float" and not isinstance(
+                param_value, (int, float)
+            ):
                 return False, f"参数 '{param_name}' 应为数值"
 
             # 范围检查
