@@ -33,8 +33,6 @@ from src.core.batch_failure_strategy import (
 from src.data_access import (
     TDengineDataAccess,
     PostgreSQLDataAccess,
-    MySQLDataAccess,
-    RedisDataAccess,
 )
 from src.utils.failure_recovery_queue import FailureRecoveryQueue
 
