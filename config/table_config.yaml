@@ -1,2280 +1,1349 @@
-version: '3.0.0'
+version: '2.0'
 metadata:
-  project: 'MyStocks量化交易数据管理系统'
+  project: 'MyStocks量化交易系统'
   created_by: 'ConfigDrivenTableManager'
-  last_updated: '2025-10-11T00:00:00'
-  description: '完整的23个数据分类表结构配置'
-  compatible_databases: ['TDengine 3.0+', 'PostgreSQL 14+', 'MySQL 8.0+', 'Redis 6.0+']
+  last_updated: '2025-09-21T00:00:00'
+  description: '基于原始设计理念的配置驱动表管理'
 
 # 数据库连接配置
 databases:
   tdengine:
-    host: '${TDENGINE_HOST:localhost}'
-    port: '${TDENGINE_REST_PORT:6041}'
-    user: '${TDENGINE_USER:root}'
-    password: '${TDENGINE_PASSWORD:taosdata}'
-    database: '${TDENGINE_DATABASE:market_data}'
-    description: '高频时序数据存储'
-
+    host: '${TDENGINE_HOST}'
+    port: '${TDENGINE_PORT}'
+    user: '${TDENGINE_USER}'
+    password: '${TDENGINE_PASSWORD}'
+    description: '高频行情数据专用库'
   postgresql:
-    host: '${POSTGRESQL_HOST:localhost}'
-    port: '${POSTGRESQL_PORT:5432}'
-    user: '${POSTGRESQL_USER:postgres}'
+    host: '${POSTGRESQL_HOST}'
+    port: '${POSTGRESQL_PORT}'
+    user: '${POSTGRESQL_USER}'
     password: '${POSTGRESQL_PASSWORD}'
-    database: '${POSTGRESQL_DATABASE:mystocks}'
-    description: '历史分析数据存储'
-
+    description: '历史数据仓库+TimescaleDB'
   mysql:
-    host: '${MYSQL_HOST:localhost}'
-    port: '${MYSQL_PORT:3306}'
-    user: '${MYSQL_USER:root}'
+    host: '${MYSQL_HOST}'
+    port: '${MYSQL_PORT}'
+    user: '${MYSQL_USER}'
     password: '${MYSQL_PASSWORD}'
-    database: '${MYSQL_DATABASE:mystocks_reference}'
-    description: '参考数据和元数据存储'
-
+    description: '元数据与参考数据仓库'
   redis:
-    host: '${REDIS_HOST:localhost}'
-    port: '${REDIS_PORT:6379}'
-    password: '${REDIS_PASSWORD:}'
-    db: '${REDIS_DB:1}'
-    description: '实时缓存'
+    host: '${REDIS_HOST}'
+    port: '${REDIS_PORT}'
+    password: '${REDIS_PASSWORD}'
+    db: '${REDIS_DB}'
+    description: '实时状态中心'
 
-# 表结构配置
+# 完整的5大数据分类表结构配置
 tables:
   # =====================================
-  # 第1类: 市场数据 (Market Data) - 6个实体
+  # 第1类：市场数据（Market Data） - TDengine
   # =====================================
-
-  # 1.1 Tick数据
   - database_type: 'TDengine'
     database_name: 'market_data'
     table_name: 'tick_data'
-    classification: 'TICK_DATA'
-    description: 'Tick逐笔成交数据'
     is_super_table: true
-    compression:
-      enabled: true
-      codec: 'zstd'
-      level: 'high'
-    retention_days: 730  # 2年
+    classification: 'tick_data'
+    description: '股票Tick级成交数据'
     columns:
       - name: 'ts'
         type: 'TIMESTAMP'
         nullable: false
-        comment: '成交时间戳(毫秒精度)'
+        comment: '时间戳'
       - name: 'price'
-        type: 'DOUBLE'
-        nullable: false
+        type: 'FLOAT'
         comment: '成交价格'
       - name: 'volume'
         type: 'BIGINT'
-        nullable: false
-        comment: '成交量(股)'
+        comment: '成交量'
       - name: 'amount'
-        type: 'DOUBLE'
-        nullable: false
-        comment: '成交额(元)'
-      - name: 'direction'
-        type: 'TINYINT'
-        nullable: true
-        comment: '买卖方向(1=主动买,-1=主动卖,0=未知)'
-      - name: 'buy_count'
-        type: 'INT'
-        nullable: true
-        comment: '买盘笔数'
-      - name: 'sell_count'
-        type: 'INT'
-        nullable: true
-        comment: '卖盘笔数'
+        type: 'FLOAT'
+        comment: '成交金额'
       - name: 'bid_price'
-        type: 'DOUBLE'
-        nullable: true
+        type: 'FLOAT'
         comment: '买一价'
       - name: 'ask_price'
-        type: 'DOUBLE'
-        nullable: true
+        type: 'FLOAT'
         comment: '卖一价'
-    tags:
+      - name: 'bid_volume'
+        type: 'BIGINT'
+        comment: '买一量'
+      - name: 'ask_volume'
+        type: 'BIGINT'
+        comment: '卖一量'
       - name: 'symbol'
-        type: 'BINARY(16)'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
         comment: '股票代码'
       - name: 'exchange'
-        type: 'BINARY(16)'
-        comment: '交易所(SSE/SZSE)'
-      - name: 'security_type'
-        type: 'BINARY(16)'
-        comment: '证券类型(STOCK/INDEX/BOND)'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '交易所'
 
-  # 1.2 分钟K线数据
   - database_type: 'TDengine'
     database_name: 'market_data'
     table_name: 'minute_kline'
-    classification: 'MINUTE_KLINE'
-    description: '分钟K线数据(1/5/15/30/60分钟)'
     is_super_table: true
-    compression:
-      enabled: true
-      codec: 'zstd'
-      level: 'high'
-    retention_days: 730
+    classification: 'minute_kline'
+    description: '分钟级K线数据'
     columns:
       - name: 'ts'
         type: 'TIMESTAMP'
         nullable: false
-        comment: 'K线时间戳(分钟精度)'
+        comment: '时间戳'
       - name: 'open'
-        type: 'DOUBLE'
-        nullable: false
+        type: 'FLOAT'
         comment: '开盘价'
       - name: 'high'
-        type: 'DOUBLE'
-        nullable: false
+        type: 'FLOAT'
         comment: '最高价'
       - name: 'low'
-        type: 'DOUBLE'
-        nullable: false
+        type: 'FLOAT'
         comment: '最低价'
       - name: 'close'
-        type: 'DOUBLE'
-        nullable: false
+        type: 'FLOAT'
         comment: '收盘价'
       - name: 'volume'
         type: 'BIGINT'
-        nullable: false
         comment: '成交量'
       - name: 'amount'
-        type: 'DOUBLE'
-        nullable: false
-        comment: '成交额'
-      - name: 'num_trades'
-        type: 'INT'
-        nullable: true
-        comment: '成交笔数'
-      - name: 'vwap'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '成交均价'
-    tags:
-      - name: 'symbol'
-        type: 'BINARY(16)'
-        comment: '股票代码'
-      - name: 'exchange'
-        type: 'BINARY(16)'
-        comment: '交易所'
-      - name: 'interval_type'
-        type: 'BINARY(8)'
-        comment: 'K线周期(1min/5min/15min/30min/60min)'
-
-  # 1.3 日线/周线/月线数据
-  - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'daily_kline'
-    classification: 'DAILY_KLINE'
-    description: '日线/周线/月线K线数据'
-    is_timescale_hypertable: true
-    time_column: 'trade_date'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['symbol', 'interval_type']
-      order_by: 'trade_date DESC'
-    retention_days: 3650  # 10年
-    columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-        comment: '自增主键'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'open_interest'
+        type: 'BIGINT'
+        comment: '持仓量'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(1m,5m,15m,30m,60m)'
+
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'depth_data'
+    is_super_table: true
+    classification: 'depth_data'
+    description: '深度行情数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'level'
+        type: 'INT'
+        comment: '档位(1-10)'
+      - name: 'bid_price'
+        type: 'FLOAT'
+        comment: '买价'
+      - name: 'bid_volume'
+        type: 'BIGINT'
+        comment: '买量'
+      - name: 'ask_price'
+        type: 'FLOAT'
+        comment: '卖价'
+      - name: 'ask_volume'
+        type: 'BIGINT'
+        comment: '卖量'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'exchange'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '交易所'
+
+  # =====================================
+  # 第1类：市场数据（Market Data） - PostgreSQL历史数据
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'daily_kline'
+    is_timescale_hypertable: true
+    time_column: 'trade_date'
+    classification: 'daily_kline'
+    description: '股票日线OHLCV数据'
+    columns:
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
         nullable: false
         comment: '股票代码'
       - name: 'trade_date'
-        type: 'TIMESTAMPTZ'
+        type: 'DATE'
         nullable: false
         comment: '交易日期'
-      - name: 'interval_type'
-        type: 'VARCHAR'
-        length: 8
-        nullable: false
-        comment: 'D=日线,W=周线,M=月线'
       - name: 'open'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
         comment: '开盘价'
       - name: 'high'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
         comment: '最高价'
       - name: 'low'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
         comment: '最低价'
       - name: 'close'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
         comment: '收盘价'
       - name: 'volume'
         type: 'BIGINT'
-        nullable: false
         comment: '成交量'
       - name: 'amount'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-        comment: '成交额'
-      - name: 'turnover_rate'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-        comment: '换手率(%)'
-      - name: 'pe_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-        comment: '市盈率'
-      - name: 'pb_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-        comment: '市净率'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '成交金额'
       - name: 'adj_factor'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 10
+        scale: 6
         comment: '复权因子'
+      - name: 'pre_close'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '前收盘价'
+      - name: 'change'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '涨跌额'
+      - name: 'pct_chg'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '涨跌幅(%)'
+      - name: 'turnover_rate'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '换手率(%)'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '创建时间'
       - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'idx_daily_kline_symbol_date'
-        type: 'INDEX'
-        columns: ['symbol', 'trade_date DESC']
-      - name: 'idx_daily_kline_interval'
-        type: 'INDEX'
-        columns: ['interval_type', 'trade_date DESC']
-
-  # 1.4 订单簿深度数据
-  - database_type: 'TDengine'
-    database_name: 'market_data'
-    table_name: 'order_book_depth'
-    classification: 'ORDER_BOOK_DEPTH'
-    description: '订单簿深度数据(10档行情)'
-    is_super_table: true
-    compression:
-      enabled: true
-      codec: 'zstd'
-      level: 'medium'
-    retention_days: 365
-    columns:
-      - name: 'ts'
-        type: 'TIMESTAMP'
-        nullable: false
-        comment: '快照时间戳'
-      - name: 'bid_prices'
-        type: 'BINARY(512)'
-        nullable: true
-        comment: '买盘10档价格(JSON数组)'
-      - name: 'bid_volumes'
-        type: 'BINARY(512)'
-        nullable: true
-        comment: '买盘10档数量(JSON数组)'
-      - name: 'ask_prices'
-        type: 'BINARY(512)'
-        nullable: true
-        comment: '卖盘10档价格(JSON数组)'
-      - name: 'ask_volumes'
-        type: 'BINARY(512)'
-        nullable: true
-        comment: '卖盘10档数量(JSON数组)'
-      - name: 'total_bid_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买盘总量'
-      - name: 'total_ask_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖盘总量'
-      - name: 'spread'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '价差'
-      - name: 'mid_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '中间价'
-    tags:
-      - name: 'symbol'
-        type: 'BINARY(16)'
-        comment: '股票代码'
-      - name: 'exchange'
-        type: 'BINARY(16)'
-        comment: '交易所'
-
-  # 1.5 Level-2盘口快照
-  - database_type: 'TDengine'
-    database_name: 'market_data'
-    table_name: 'level2_snapshot'
-    classification: 'LEVEL2_SNAPSHOT'
-    description: 'Level-2盘口快照(五档行情)'
-    is_super_table: true
-    compression:
-      enabled: true
-      codec: 'zstd'
-      level: 'high'
-    retention_days: 365
-    columns:
-      - name: 'ts'
-        type: 'TIMESTAMP'
-        nullable: false
-        comment: '快照时间戳'
-      - name: 'current_price'
-        type: 'DOUBLE'
-        nullable: false
-        comment: '当前价'
-      - name: 'pre_close'
-        type: 'DOUBLE'
-        nullable: false
-        comment: '昨收价'
-      - name: 'bid1_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '买一价'
-      - name: 'bid1_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买一量'
-      - name: 'bid2_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '买二价'
-      - name: 'bid2_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买二量'
-      - name: 'bid3_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '买三价'
-      - name: 'bid3_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买三量'
-      - name: 'bid4_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '买四价'
-      - name: 'bid4_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买四量'
-      - name: 'bid5_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '买五价'
-      - name: 'bid5_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '买五量'
-      - name: 'ask1_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '卖一价'
-      - name: 'ask1_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖一量'
-      - name: 'ask2_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '卖二价'
-      - name: 'ask2_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖二量'
-      - name: 'ask3_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '卖三价'
-      - name: 'ask3_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖三量'
-      - name: 'ask4_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '卖四价'
-      - name: 'ask4_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖四量'
-      - name: 'ask5_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '卖五价'
-      - name: 'ask5_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '卖五量'
-      - name: 'total_volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '总成交量'
-      - name: 'total_amount'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '总成交额'
-      - name: 'weighted_buy_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '加权买价'
-      - name: 'weighted_sell_price'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '加权卖价'
-    tags:
-      - name: 'symbol'
-        type: 'BINARY(16)'
-        comment: '股票代码'
-      - name: 'exchange'
-        type: 'BINARY(16)'
-        comment: '交易所'
-
-  # 1.6 指数行情(分时)
-  - database_type: 'TDengine'
-    database_name: 'market_data'
-    table_name: 'index_intraday_quotes'
-    classification: 'INDEX_QUOTES'
-    description: '指数分时行情'
-    is_super_table: true
-    compression:
-      enabled: true
-      codec: 'zstd'
-      level: 'high'
-    retention_days: 180
-    columns:
-      - name: 'ts'
-        type: 'TIMESTAMP'
-        nullable: false
-        comment: '行情时间戳'
-      - name: 'index_value'
-        type: 'DOUBLE'
-        nullable: false
-        comment: '指数点位'
-      - name: 'change'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '涨跌点数'
-      - name: 'change_pct'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '涨跌幅(%)'
-      - name: 'volume'
-        type: 'BIGINT'
-        nullable: true
-        comment: '成交量'
-      - name: 'amount'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '成交额'
-    tags:
-      - name: 'index_code'
-        type: 'BINARY(16)'
-        comment: '指数代码(如000001.SH)'
-      - name: 'index_name'
-        type: 'BINARY(64)'
-        comment: '指数名称'
-      - name: 'market'
-        type: 'BINARY(16)'
-        comment: '市场(SSE/SZSE/CSI)'
+        columns: ['symbol', 'trade_date']
+        unique: true
+      - name: 'idx_daily_kline_date'
+        columns: ['trade_date']
+      - name: 'idx_daily_kline_symbol'
+        columns: ['symbol']
 
   # =====================================
-  # 第2类: 参考数据 (Reference Data) - 9个实体 → MySQL
+  # 第2类：参考数据（Reference Data） - MySQL
   # =====================================
-
-  # 2.1 股票基础信息
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'stock_info'
-    classification: 'SYMBOLS_INFO'
-    description: '股票基础信息表'
+    database_name: 'quant_research'
+    table_name: 'symbols'
+    classification: 'symbols_info'
+    description: '股票代码信息表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'symbol_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
-        comment: '自增主键'
+        comment: '股票ID'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-        unique: true
-        comment: '股票代码(统一格式:600000.SH)'
+        comment: '股票代码'
       - name: 'name'
         type: 'VARCHAR'
-        length: 64
+        length: 100
         nullable: false
         comment: '股票名称'
       - name: 'exchange'
         type: 'VARCHAR'
-        length: 16
+        length: 10
         nullable: false
-        comment: '交易所(SSE/SZSE)'
-      - name: 'security_type'
+        comment: '交易所'
+      - name: 'market'
         type: 'VARCHAR'
-        length: 16
-        nullable: false
-        comment: '证券类型(STOCK/INDEX/BOND/FUND)'
+        length: 20
+        comment: '市场类型(主板、中小板、创业板、科创板)'
+      - name: 'sector'
+        type: 'VARCHAR'
+        length: 50
+        comment: '行业'
+      - name: 'industry'
+        type: 'VARCHAR'
+        length: 50
+        comment: '子行业'
+      - name: 'area'
+        type: 'VARCHAR'
+        length: 20
+        comment: '地区'
       - name: 'list_date'
         type: 'DATE'
-        nullable: true
         comment: '上市日期'
       - name: 'delist_date'
         type: 'DATE'
-        nullable: true
         comment: '退市日期'
-      - name: 'status'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-        default: "'ACTIVE'"
-        comment: '状态(ACTIVE/SUSPENDED/DELISTED)'
-      - name: 'listing_board'
-        type: 'VARCHAR'
-        length: 16
-        nullable: true
-        comment: '上市板块(MAIN/GEM/STAR/BJ)'
-      - name: 'market_cap'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '总市值(元)'
-      - name: 'circulating_market_cap'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '流通市值(元)'
-      - name: 'total_shares'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        comment: '是否有效'
+      - name: 'is_st'
+        type: 'BOOLEAN'
+        default: false
+        comment: '是否ST'
+      - name: 'total_share'
         type: 'BIGINT'
-        nullable: true
         comment: '总股本'
-      - name: 'circulating_shares'
+      - name: 'float_share'
         type: 'BIGINT'
-        nullable: true
         comment: '流通股本'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
         comment: '更新时间'
     indexes:
-      - name: 'idx_symbol'
-        type: 'INDEX'
+      - name: 'uk_symbols_symbol'
         columns: ['symbol']
-      - name: 'idx_exchange_status'
-        type: 'INDEX'
-        columns: ['exchange', 'status']
-      - name: 'idx_security_type'
-        type: 'INDEX'
-        columns: ['security_type']
+        unique: true
+      - name: 'idx_symbols_exchange'
+        columns: ['exchange']
+      - name: 'idx_symbols_sector'
+        columns: ['sector']
+      - name: 'idx_symbols_active'
+        columns: ['is_active']
 
-  # 2.2 行业分类
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'industry_classification'
-    classification: 'INDUSTRY_CLASS'
-    description: '行业分类表(申万/证监会/同花顺)'
+    database_name: 'quant_research'
+    table_name: 'constituents'
+    classification: 'constituent_info'
+    description: '指数成分股信息表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'constituent_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'industry_standard'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-        comment: '分类标准(SW=申万,CSRC=证监会,THS=同花顺)'
-      - name: 'industry_level'
-        type: 'VARCHAR'
-        length: 8
-        nullable: false
-        comment: '行业层级(L1=一级,L2=二级,L3=三级)'
-      - name: 'industry_code'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'industry_name'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-      - name: 'parent_industry_code'
-        type: 'VARCHAR'
-        length: 16
-        nullable: true
-      - name: 'valid_from'
-        type: 'DATE'
-        nullable: false
-      - name: 'valid_to'
-        type: 'DATE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol_standard'
-        type: 'INDEX'
-        columns: ['symbol', 'industry_standard']
-      - name: 'idx_industry_code'
-        type: 'INDEX'
-        columns: ['industry_code']
-      - name: 'idx_valid_period'
-        type: 'INDEX'
-        columns: ['valid_from', 'valid_to']
-
-  # 2.3 概念分类
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'concept_classification'
-    classification: 'CONCEPT_CLASS'
-    description: '概念分类表(AI/新能源/国企改革等)'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'concept_name'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-      - name: 'concept_category'
-        type: 'VARCHAR'
-        length: 32
-        nullable: true
-        comment: '概念类别(TECH/NEW_ENERGY/POLICY)'
-      - name: 'concept_source'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-        comment: '概念来源(THS/EASTMONEY/WIND)'
-      - name: 'join_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'exit_date'
-        type: 'DATE'
-        nullable: true
-      - name: 'weight'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol'
-        type: 'INDEX'
-        columns: ['symbol']
-      - name: 'idx_concept_name'
-        type: 'INDEX'
-        columns: ['concept_name']
-      - name: 'idx_concept_category'
-        type: 'INDEX'
-        columns: ['concept_category']
-
-  # 2.4 指数成分股
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'index_constituents'
-    classification: 'INDEX_CONSTITUENTS'
-    description: '指数成分股表(沪深300/中证500等)'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
+        comment: '成分股ID'
       - name: 'index_code'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-      - name: 'index_name'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
+        comment: '指数代码'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '股票代码'
       - name: 'weight'
-        type: 'DOUBLE'
-        nullable: true
+        type: 'DECIMAL'
+        precision: 8
+        scale: 4
         comment: '权重(%)'
       - name: 'in_date'
         type: 'DATE'
-        nullable: false
+        comment: '纳入日期'
       - name: 'out_date'
         type: 'DATE'
-        nullable: true
-      - name: 'adjustment_reason'
-        type: 'VARCHAR'
-        length: 128
-        nullable: true
+        comment: '剔除日期'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        comment: '是否有效'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '更新时间'
     indexes:
-      - name: 'idx_index_code'
-        type: 'INDEX'
-        columns: ['index_code', 'in_date DESC']
-      - name: 'idx_symbol'
-        type: 'INDEX'
+      - name: 'uk_constituents_index_symbol'
+        columns: ['index_code', 'symbol']
+        unique: true
+      - name: 'idx_constituents_index'
+        columns: ['index_code']
+      - name: 'idx_constituents_symbol'
         columns: ['symbol']
 
-  # 2.5 交易日历
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
+    database_name: 'quant_research'
     table_name: 'trade_calendar'
-    classification: 'TRADE_CALENDAR'
+    classification: 'trade_calendar'
     description: '交易日历表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'calendar_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
+        comment: '日历ID'
+      - name: 'exchange'
+        type: 'VARCHAR'
+        length: 10
+        nullable: false
+        comment: '交易所'
       - name: 'trade_date'
         type: 'DATE'
         nullable: false
-        unique: true
-      - name: 'is_open'
+        comment: '日期'
+      - name: 'is_trading_day'
         type: 'BOOLEAN'
         nullable: false
-      - name: 'exchange'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'day_type'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-        comment: 'TRADING/WEEKEND/HOLIDAY'
+        comment: '是否交易日'
+      - name: 'is_weekend'
+        type: 'BOOLEAN'
+        default: false
+        comment: '是否周末'
+      - name: 'is_holiday'
+        type: 'BOOLEAN'
+        default: false
+        comment: '是否节假日'
       - name: 'holiday_name'
         type: 'VARCHAR'
-        length: 64
-        nullable: true
+        length: 50
+        comment: '节假日名称'
       - name: 'prev_trade_date'
         type: 'DATE'
-        nullable: true
+        comment: '前一交易日'
       - name: 'next_trade_date'
         type: 'DATE'
-        nullable: true
+        comment: '下一交易日'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
     indexes:
-      - name: 'idx_trade_date'
-        type: 'INDEX'
-        columns: ['trade_date DESC']
-      - name: 'idx_is_open_exchange'
-        type: 'INDEX'
-        columns: ['is_open', 'exchange']
-
-  # 2.6 财务指标
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'fundamental_metrics'
-    classification: 'FUNDAMENTAL_METRICS'
-    description: '财务指标表(营收/净利润/ROE等)'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'report_period'
-        type: 'DATE'
-        nullable: false
-      - name: 'report_type'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-        comment: 'Q1/Q2/Q3/ANNUAL'
-      - name: 'revenue'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'net_profit'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'eps'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'roe'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'roa'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'gross_margin'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'net_margin'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'debt_ratio'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'current_ratio'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'quick_ratio'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'total_assets'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'total_liabilities'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'shareholders_equity'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'operating_cash_flow'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol_period'
-        type: 'INDEX'
-        columns: ['symbol', 'report_period DESC']
-      - name: 'idx_report_period'
-        type: 'INDEX'
-        columns: ['report_period DESC']
-
-  # 2.7 分红送配
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'dividend_data'
-    classification: 'DIVIDEND_DATA'
-    description: '分红送配表'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'announcement_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'ex_dividend_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'record_date'
-        type: 'DATE'
-        nullable: true
-      - name: 'payment_date'
-        type: 'DATE'
-        nullable: true
-      - name: 'dividend_ratio'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '每股派息(元)'
-      - name: 'bonus_share_ratio'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '每股送股(股)'
-      - name: 'transfer_ratio'
-        type: 'DOUBLE'
-        nullable: true
-        comment: '每股转增(股)'
-      - name: 'total_dividend_amount'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'payout_ratio'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'dividend_yield'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol_ex_date'
-        type: 'INDEX'
-        columns: ['symbol', 'ex_dividend_date DESC']
-
-  # 2.8 股东数据
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'shareholder_data'
-    classification: 'SHAREHOLDER_DATA'
-    description: '股东数据表'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'report_period'
-        type: 'DATE'
-        nullable: false
-      - name: 'holder_name'
-        type: 'VARCHAR'
-        length: 128
-        nullable: false
-      - name: 'holder_type'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-        comment: 'FUND/QFII/INSURANCE/CORP/INDIVIDUAL'
-      - name: 'holder_rank'
-        type: 'INT'
-        nullable: true
-      - name: 'shareholding'
-        type: 'BIGINT'
-        nullable: true
-      - name: 'shareholding_pct'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'change_shares'
-        type: 'BIGINT'
-        nullable: true
-      - name: 'change_pct'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol_period'
-        type: 'INDEX'
-        columns: ['symbol', 'report_period DESC']
-      - name: 'idx_holder_name'
-        type: 'INDEX'
-        columns: ['holder_name']
-
-  # 2.9 市场规则
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'market_rules'
-    classification: 'MARKET_RULES'
-    description: '市场规则表(涨跌停幅度/最小价格变动等)'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: true
-        comment: 'NULL表示全市场规则'
-      - name: 'exchange'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'listing_board'
-        type: 'VARCHAR'
-        length: 16
-        nullable: true
-      - name: 'price_limit_up_pct'
-        type: 'DOUBLE'
-        nullable: false
-      - name: 'price_limit_down_pct'
-        type: 'DOUBLE'
-        nullable: false
-      - name: 'tick_size'
-        type: 'DOUBLE'
-        nullable: false
-      - name: 'lot_size'
-        type: 'INT'
-        nullable: false
-      - name: 'max_order_volume'
-        type: 'BIGINT'
-        nullable: true
-      - name: 'trading_hours'
-        type: 'VARCHAR'
-        length: 128
-        nullable: true
-      - name: 'rule_effective_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'rule_expiry_date'
-        type: 'DATE'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_symbol'
-        type: 'INDEX'
-        columns: ['symbol']
-      - name: 'idx_exchange_board'
-        type: 'INDEX'
-        columns: ['exchange', 'listing_board']
-
-# Continue in next message due to length...
+      - name: 'uk_trade_calendar_exchange_date'
+        columns: ['exchange', 'trade_date']
+        unique: true
+      - name: 'idx_trade_calendar_date'
+        columns: ['trade_date']
+      - name: 'idx_trade_calendar_trading_day'
+        columns: ['is_trading_day']
 
   # =====================================
-  # 第3类: 衍生数据 (Derived Data) - 6个实体 → PostgreSQL
+  # 第3类：衍生数据（Derived Data） - PostgreSQL
   # =====================================
-
-  # 3.1 技术指标
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
+    database_name: 'quant_research'
     table_name: 'technical_indicators'
-    classification: 'TECHNICAL_INDICATORS'
-    description: '技术指标表(MACD/RSI/BOLL等)'
     is_timescale_hypertable: true
     time_column: 'calc_date'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['symbol', 'indicator_name']
-      order_by: 'calc_date DESC'
-    retention_days: 1825  # 5年
+    classification: 'technical_indicators'
+    description: '技术指标数据'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '股票代码'
       - name: 'calc_date'
-        type: 'TIMESTAMPTZ'
+        type: 'DATE'
         nullable: false
+        comment: '计算日期'
       - name: 'indicator_name'
         type: 'VARCHAR'
-        length: 32
+        length: 50
         nullable: false
+        comment: '指标名称'
       - name: 'indicator_value'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 15
+        scale: 6
+        comment: '指标值'
       - name: 'indicator_params'
         type: 'JSONB'
-        nullable: true
-      - name: 'signal_line'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'histogram'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'upper_band'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'lower_band'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        comment: '指标参数'
+      - name: 'time_period'
+        type: 'VARCHAR'
+        length: 10
+        comment: '时间周期(1d,1w,1m)'
+      - name: 'data_source'
+        type: 'VARCHAR'
+        length: 20
+        comment: '数据源'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
       - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
     indexes:
-      - name: 'idx_tech_symbol_date'
-        type: 'INDEX'
-        columns: ['symbol', 'calc_date DESC']
-      - name: 'idx_tech_indicator'
-        type: 'INDEX'
+      - name: 'idx_tech_ind_symbol_date_name'
+        columns: ['symbol', 'calc_date', 'indicator_name']
+        unique: true
+      - name: 'idx_tech_ind_date'
+        columns: ['calc_date']
+      - name: 'idx_tech_ind_name'
         columns: ['indicator_name']
 
-  # 3.2 量化因子
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'quant_factors'
-    classification: 'QUANT_FACTORS'
-    description: '量化因子表(动量/价值/质量)'
+    database_name: 'quant_research'
+    table_name: 'quantitative_factors'
     is_timescale_hypertable: true
-    time_column: 'factor_date'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['symbol', 'factor_category', 'factor_name']
-      order_by: 'factor_date DESC'
-    retention_days: 1825
+    time_column: 'calc_date'
+    classification: 'quantitative_factors'
+    description: '量化因子数据'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-      - name: 'factor_date'
-        type: 'TIMESTAMPTZ'
+        comment: '股票代码'
+      - name: 'calc_date'
+        type: 'DATE'
         nullable: false
-      - name: 'factor_category'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
+        comment: '计算日期'
       - name: 'factor_name'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
+        comment: '因子名称'
       - name: 'factor_value'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'factor_percentile'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'factor_z_score'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'sector_neutral_value'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'market_neutral_value'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 15
+        scale: 6
+        comment: '因子值'
       - name: 'factor_params'
         type: 'JSONB'
-        nullable: true
+        comment: '因子参数'
+      - name: 'factor_category'
+        type: 'VARCHAR'
+        length: 30
+        comment: '因子分类(quality,growth,value,momentum,etc)'
+      - name: 'percentile_rank'
+        type: 'NUMERIC'
+        precision: 5
+        scale: 2
+        comment: '百分位排名'
+      - name: 'z_score'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: 'Z分数'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_quant_symbol_date'
-        type: 'INDEX'
-        columns: ['symbol', 'factor_date DESC']
-      - name: 'idx_quant_factor_name'
-        type: 'INDEX'
-        columns: ['factor_name', 'factor_date DESC']
+      - name: 'idx_quant_factors_symbol_date_name'
+        columns: ['symbol', 'calc_date', 'factor_name']
+        unique: true
+      - name: 'idx_quant_factors_date'
+        columns: ['calc_date']
+      - name: 'idx_quant_factors_category'
+        columns: ['factor_category']
 
-  # 3.3 模型输出
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'model_output'
-    classification: 'MODEL_OUTPUT'
-    description: '模型输出表(价格预测/收益率预测)'
+    database_name: 'quant_research'
+    table_name: 'model_outputs'
     is_timescale_hypertable: true
-    time_column: 'prediction_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['model_id', 'symbol']
-      order_by: 'prediction_time DESC'
-    retention_days: 1825
+    time_column: 'calc_date'
+    classification: 'model_outputs'
+    description: '模型输出数据'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
       - name: 'model_id'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
-      - name: 'model_name'
+        comment: '模型ID'
+      - name: 'symbol'
         type: 'VARCHAR'
-        length: 128
+        length: 20
         nullable: false
+        comment: '股票代码'
+      - name: 'calc_date'
+        type: 'DATE'
+        nullable: false
+        comment: '计算日期'
+      - name: 'output_type'
+        type: 'VARCHAR'
+        length: 30
+        nullable: false
+        comment: '输出类型(prediction,probability,score,etc)'
+      - name: 'output_value'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 6
+        comment: '输出值'
+      - name: 'confidence'
+        type: 'NUMERIC'
+        precision: 5
+        scale: 4
+        comment: '置信度'
       - name: 'model_version'
         type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'symbol'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'prediction_time'
-        type: 'TIMESTAMPTZ'
-        nullable: false
-      - name: 'prediction_horizon'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'prediction_value'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'confidence'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'prediction_type'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-      - name: 'feature_importance'
+        length: 20
+        comment: '模型版本'
+      - name: 'features_used'
         type: 'JSONB'
-        nullable: true
-      - name: 'model_metadata'
-        type: 'JSONB'
-        nullable: true
+        comment: '使用的特征'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_model_symbol_time'
-        type: 'INDEX'
-        columns: ['symbol', 'prediction_time DESC']
-      - name: 'idx_model_id'
-        type: 'INDEX'
-        columns: ['model_id', 'prediction_time DESC']
+      - name: 'idx_model_outputs_model_symbol_date'
+        columns: ['model_id', 'symbol', 'calc_date']
+        unique: true
+      - name: 'idx_model_outputs_date'
+        columns: ['calc_date']
+      - name: 'idx_model_outputs_model'
+        columns: ['model_id']
 
-  # 3.4 交易信号
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'trade_signals'
-    classification: 'TRADE_SIGNALS'
-    description: '交易信号表(BUY/SELL/HOLD)'
+    database_name: 'quant_research'
+    table_name: 'trading_signals'
     is_timescale_hypertable: true
     time_column: 'signal_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['strategy_id', 'symbol', 'signal_status']
-      order_by: 'signal_time DESC'
-    retention_days: 1825
+    classification: 'trading_signals'
+    description: '交易信号数据'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
       - name: 'signal_id'
         type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
+        length: 50
+        primary_key: true
+        comment: '信号ID'
       - name: 'strategy_id'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
-      - name: 'strategy_name'
-        type: 'VARCHAR'
-        length: 128
-        nullable: false
+        comment: '策略ID'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '股票代码'
       - name: 'signal_time'
-        type: 'TIMESTAMPTZ'
+        type: 'TIMESTAMP'
         nullable: false
+        comment: '信号时间'
       - name: 'signal_type'
         type: 'VARCHAR'
-        length: 16
+        length: 10
         nullable: false
+        comment: '信号类型(BUY,SELL,HOLD)'
       - name: 'signal_strength'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        type: 'NUMERIC'
+        precision: 5
+        scale: 2
+        comment: '信号强度(0-100)'
       - name: 'target_price'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'stop_loss_price'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'take_profit_price'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '目标价格'
+      - name: 'stop_loss'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '止损价格'
       - name: 'position_size'
-        type: 'INT'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '建议仓位'
       - name: 'signal_reason'
         type: 'TEXT'
-        nullable: true
-      - name: 'signal_status'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-        default: "'ACTIVE'"
-      - name: 'executed_time'
-        type: 'TIMESTAMPTZ'
-        nullable: true
+        comment: '信号原因'
+      - name: 'is_executed'
+        type: 'BOOLEAN'
+        default: false
+        comment: '是否已执行'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_signal_symbol_time'
-        type: 'INDEX'
-        columns: ['symbol', 'signal_time DESC']
-      - name: 'idx_signal_strategy'
-        type: 'INDEX'
-        columns: ['strategy_id', 'signal_time DESC']
-
-  # 3.5 回测结果
-  - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'backtest_results'
-    classification: 'BACKTEST_RESULTS'
-    description: '回测结果表'
-    is_timescale_hypertable: true
-    time_column: 'backtest_start_date'
-    chunk_interval: '1 month'
-    columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-      - name: 'backtest_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
-      - name: 'strategy_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-      - name: 'strategy_name'
-        type: 'VARCHAR'
-        length: 128
-        nullable: false
-      - name: 'backtest_start_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'backtest_end_date'
-        type: 'DATE'
-        nullable: false
-      - name: 'initial_capital'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'final_capital'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'total_return'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'annualized_return'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'max_drawdown'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'sharpe_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'sortino_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'calmar_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'win_rate'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'profit_factor'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'total_trades'
-        type: 'INT'
-        nullable: false
-      - name: 'winning_trades'
-        type: 'INT'
-        nullable: true
-      - name: 'losing_trades'
-        type: 'INT'
-        nullable: true
-      - name: 'avg_winning_trade'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'avg_losing_trade'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'return_curve'
-        type: 'JSONB'
-        nullable: true
-      - name: 'drawdown_curve'
-        type: 'JSONB'
-        nullable: true
-      - name: 'strategy_params'
-        type: 'JSONB'
-        nullable: true
-      - name: 'backtest_metadata'
-        type: 'JSONB'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
-    indexes:
-      - name: 'idx_backtest_strategy'
-        type: 'INDEX'
-        columns: ['strategy_id', 'backtest_start_date DESC']
-
-  # 3.6 风险指标
-  - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'risk_metrics'
-    classification: 'RISK_METRICS'
-    description: '风险指标表(VaR/Beta/Alpha)'
-    is_timescale_hypertable: true
-    time_column: 'metric_date'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-    columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-      - name: 'portfolio_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-      - name: 'portfolio_name'
-        type: 'VARCHAR'
-        length: 128
-        nullable: false
-      - name: 'metric_date'
-        type: 'TIMESTAMPTZ'
-        nullable: false
-      - name: 'var_95'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'var_99'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'cvar_95'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'beta'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'alpha'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'volatility'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'tracking_error'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'information_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'industry_exposure'
-        type: 'JSONB'
-        nullable: true
-      - name: 'factor_exposure'
-        type: 'JSONB'
-        nullable: true
-      - name: 'concentration_risk'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'liquidity_risk'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
-    indexes:
-      - name: 'idx_risk_portfolio_date'
-        type: 'INDEX'
-        columns: ['portfolio_id', 'metric_date DESC']
+      - name: 'idx_trading_signals_strategy_time'
+        columns: ['strategy_id', 'signal_time']
+      - name: 'idx_trading_signals_symbol_time'
+        columns: ['symbol', 'signal_time']
+      - name: 'idx_trading_signals_type'
+        columns: ['signal_type']
 
   # =====================================
-  # 第4类: 交易数据 (Transaction Data) - 7个实体
+  # 第4类：交易数据（Transaction Data） - PostgreSQL冷数据
   # =====================================
-
-  # 4.1 订单历史
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'order_history'
-    classification: 'ORDER_RECORDS'
-    description: '历史订单记录'
+    database_name: 'quant_research'
+    table_name: 'order_records'
     is_timescale_hypertable: true
     time_column: 'order_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['account_id', 'symbol', 'status']
-      order_by: 'order_time DESC'
-    retention_days: 1095  # 3年
+    classification: 'order_records'
+    description: '订单记录表'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
       - name: 'order_id'
         type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
+        length: 50
+        primary_key: true
+        comment: '订单ID'
+      - name: 'client_order_id'
+        type: 'VARCHAR'
+        length: 50
+        comment: '客户端订单ID'
       - name: 'account_id'
         type: 'VARCHAR'
-        length: 64
+        length: 30
         nullable: false
+        comment: '账户ID'
+      - name: 'strategy_id'
+        type: 'VARCHAR'
+        length: 50
+        comment: '策略ID'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '股票代码'
       - name: 'order_time'
-        type: 'TIMESTAMPTZ'
+        type: 'TIMESTAMP'
         nullable: false
+        comment: '下单时间'
       - name: 'order_type'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-      - name: 'direction'
+        comment: '订单类型(MARKET,LIMIT,STOP,etc)'
+      - name: 'side'
         type: 'VARCHAR'
-        length: 8
+        length: 10
         nullable: false
-      - name: 'price'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        comment: '买卖方向(BUY,SELL)'
       - name: 'quantity'
         type: 'BIGINT'
         nullable: false
+        comment: '数量'
+      - name: 'price'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '价格'
       - name: 'filled_quantity'
         type: 'BIGINT'
-        default: '0'
-        nullable: false
-      - name: 'cancelled_quantity'
-        type: 'BIGINT'
-        default: '0'
-        nullable: false
-      - name: 'status'
+        default: 0
+        comment: '成交数量'
+      - name: 'avg_fill_price'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '平均成交价'
+      - name: 'order_status'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '订单状态(NEW,FILLED,CANCELLED,etc)'
       - name: 'commission'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'tax'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'avg_filled_price'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'reject_reason'
-        type: 'TEXT'
-        nullable: true
-      - name: 'strategy_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
-      - name: 'signal_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '手续费'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
       - name: 'updated_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
     indexes:
-      - name: 'idx_order_account_time'
-        type: 'INDEX'
-        columns: ['account_id', 'order_time DESC']
-      - name: 'idx_order_symbol_time'
-        type: 'INDEX'
-        columns: ['symbol', 'order_time DESC']
+      - name: 'idx_order_records_account_time'
+        columns: ['account_id', 'order_time']
+      - name: 'idx_order_records_symbol_time'
+        columns: ['symbol', 'order_time']
+      - name: 'idx_order_records_strategy'
+        columns: ['strategy_id']
 
-  # 4.2 成交历史
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'trade_history'
-    classification: 'TRADE_RECORDS'
-    description: '历史成交记录'
+    database_name: 'quant_research'
+    table_name: 'transaction_records'
     is_timescale_hypertable: true
     time_column: 'trade_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['account_id', 'symbol']
-      order_by: 'trade_time DESC'
-    retention_days: 1095
+    classification: 'transaction_records'
+    description: '成交记录表'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-      - name: 'trade_id'
+      - name: 'transaction_id'
         type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
+        length: 50
+        primary_key: true
+        comment: '成交ID'
       - name: 'order_id'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
+        comment: '订单ID'
       - name: 'account_id'
         type: 'VARCHAR'
-        length: 64
+        length: 30
         nullable: false
+        comment: '账户ID'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
+        comment: '股票代码'
       - name: 'trade_time'
-        type: 'TIMESTAMPTZ'
+        type: 'TIMESTAMP'
         nullable: false
-      - name: 'direction'
+        comment: '成交时间'
+      - name: 'side'
         type: 'VARCHAR'
-        length: 8
+        length: 10
         nullable: false
-      - name: 'price'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        comment: '买卖方向'
       - name: 'quantity'
         type: 'BIGINT'
         nullable: false
+        comment: '成交数量'
+      - name: 'price'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        nullable: false
+        comment: '成交价格'
       - name: 'amount'
-        type: 'DOUBLE PRECISION'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
         nullable: false
+        comment: '成交金额'
       - name: 'commission'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'tax'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '手续费'
+      - name: 'stamp_duty'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '印花税'
+      - name: 'transfer_fee'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '过户费'
       - name: 'net_amount'
-        type: 'DOUBLE PRECISION'
-        nullable: true
-      - name: 'counter_party'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
-      - name: 'exchange_trade_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '净金额'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_trade_account_time'
-        type: 'INDEX'
-        columns: ['account_id', 'trade_time DESC']
-      - name: 'idx_trade_order'
-        type: 'INDEX'
+      - name: 'idx_transaction_records_order'
         columns: ['order_id']
+      - name: 'idx_transaction_records_account_time'
+        columns: ['account_id', 'trade_time']
+      - name: 'idx_transaction_records_symbol_time'
+        columns: ['symbol', 'trade_time']
 
-  # 4.3 持仓历史快照
   - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'position_history'
-    classification: 'POSITION_HISTORY'
-    description: '持仓历史快照'
+    database_name: 'quant_research'
+    table_name: 'position_records'
     is_timescale_hypertable: true
-    time_column: 'snapshot_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['account_id', 'symbol']
-      order_by: 'snapshot_time DESC'
-    retention_days: 1095
+    time_column: 'record_date'
+    classification: 'position_records'
+    description: '持仓记录表'
     columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-      - name: 'snapshot_id'
+      - name: 'position_id'
         type: 'VARCHAR'
-        length: 64
-        nullable: false
+        length: 50
+        primary_key: true
+        comment: '持仓ID'
       - name: 'account_id'
         type: 'VARCHAR'
-        length: 64
+        length: 30
         nullable: false
+        comment: '账户ID'
       - name: 'symbol'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-      - name: 'snapshot_time'
-        type: 'TIMESTAMPTZ'
+        comment: '股票代码'
+      - name: 'record_date'
+        type: 'DATE'
         nullable: false
+        comment: '记录日期'
+      - name: 'position_type'
+        type: 'VARCHAR'
+        length: 10
+        nullable: false
+        comment: '持仓类型(LONG,SHORT)'
       - name: 'quantity'
         type: 'BIGINT'
         nullable: false
+        comment: '持仓数量'
       - name: 'available_quantity'
         type: 'BIGINT'
-        nullable: false
-      - name: 'frozen_quantity'
-        type: 'BIGINT'
-        default: '0'
-        nullable: false
-      - name: 'cost_price'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'current_price'
-        type: 'DOUBLE PRECISION'
-        nullable: false
+        comment: '可用数量'
+      - name: 'avg_cost'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '平均成本'
       - name: 'market_value'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'profit_loss'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'profit_loss_pct'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'position_ratio'
-        type: 'DOUBLE PRECISION'
-        nullable: true
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '市值'
+      - name: 'unrealized_pnl'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '浮动盈亏'
+      - name: 'realized_pnl'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '已实现盈亏'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_position_account_time'
-        type: 'INDEX'
-        columns: ['account_id', 'snapshot_time DESC']
-
-  # 4.4 资金流水
-  - database_type: 'PostgreSQL'
-    database_name: 'mystocks'
-    table_name: 'fund_flow'
-    classification: 'FUND_FLOW'
-    description: '资金流水记录'
-    is_timescale_hypertable: true
-    time_column: 'flow_time'
-    chunk_interval: '1 day'
-    compression:
-      enabled: true
-      after_days: 30
-      segment_by: ['account_id', 'flow_type']
-      order_by: 'flow_time DESC'
-    retention_days: 1095
-    columns:
-      - name: 'id'
-        type: 'BIGSERIAL'
-        nullable: false
-        primary_key: true
-      - name: 'flow_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
+      - name: 'idx_position_records_account_date'
+        columns: ['account_id', 'record_date']
         unique: true
+      - name: 'idx_position_records_symbol_date'
+        columns: ['symbol', 'record_date']
+
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'account_funds'
+    is_timescale_hypertable: true
+    time_column: 'record_date'
+    classification: 'account_funds'
+    description: '账户资金记录表'
+    columns:
+      - name: 'record_id'
+        type: 'VARCHAR'
+        length: 50
+        primary_key: true
+        comment: '记录ID'
       - name: 'account_id'
         type: 'VARCHAR'
-        length: 64
+        length: 30
         nullable: false
-      - name: 'flow_time'
-        type: 'TIMESTAMPTZ'
+        comment: '账户ID'
+      - name: 'record_date'
+        type: 'DATE'
         nullable: false
-      - name: 'flow_type'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-      - name: 'amount'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'balance'
-        type: 'DOUBLE PRECISION'
-        nullable: false
-      - name: 'related_order_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
-      - name: 'related_trade_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
-      - name: 'remark'
-        type: 'TEXT'
-        nullable: true
-      - name: 'operator'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
+        comment: '记录日期'
+      - name: 'total_assets'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '总资产'
+      - name: 'cash_balance'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '现金余额'
+      - name: 'available_cash'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '可用资金'
+      - name: 'frozen_cash'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '冻结资金'
+      - name: 'market_value'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '持仓市值'
+      - name: 'total_pnl'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '总盈亏'
+      - name: 'daily_pnl'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '当日盈亏'
+      - name: 'commission_paid'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 2
+        comment: '手续费支出'
       - name: 'created_at'
-        type: 'TIMESTAMPTZ'
-        default: 'NOW()'
-        nullable: false
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
     indexes:
-      - name: 'idx_fund_account_time'
-        type: 'INDEX'
-        columns: ['account_id', 'flow_time DESC']
-
-  # 4.5-4.7 Redis实时数据 (不需要在table_config中定义表结构)
-  # REALTIME_POSITIONS, REALTIME_ACCOUNT, ORDER_QUEUE 使用Redis数据结构
+      - name: 'idx_account_funds_account_date'
+        columns: ['account_id', 'record_date']
+        unique: true
+      - name: 'idx_account_funds_date'
+        columns: ['record_date']
 
   # =====================================
-  # 第5类: 元数据 (Meta Data) - 6个实体 → MySQL
+  # 第5类：元数据（Meta Data） - MySQL
   # =====================================
-
-  # 5.1 数据源状态
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'data_source_status'
-    classification: 'DATA_SOURCE_STATUS'
+    database_name: 'quant_research'
+    table_name: 'data_sources'
+    classification: 'data_source_status'
     description: '数据源状态表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'source_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
+        comment: '数据源ID'
       - name: 'source_name'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
-        unique: true
+        comment: '数据源名称'
       - name: 'source_type'
         type: 'VARCHAR'
-        length: 32
+        length: 20
         nullable: false
-      - name: 'health_status'
+        comment: '数据源类型(api,file,database,etc)'
+      - name: 'endpoint_url'
         type: 'VARCHAR'
-        length: 16
-        nullable: false
+        length: 200
+        comment: '接口地址'
+      - name: 'api_key'
+        type: 'VARCHAR'
+        length: 100
+        comment: 'API密钥'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        comment: '是否启用'
       - name: 'last_update_time'
         type: 'TIMESTAMP'
-        nullable: false
-      - name: 'last_success_time'
-        type: 'TIMESTAMP'
-        nullable: true
-      - name: 'last_error_time'
-        type: 'TIMESTAMP'
-        nullable: true
+        comment: '最后更新时间'
+      - name: 'data_count'
+        type: 'BIGINT'
+        comment: '数据条数'
       - name: 'error_count'
         type: 'INT'
-        default: '0'
-        nullable: false
-      - name: 'success_count'
-        type: 'INT'
-        default: '0'
-        nullable: false
-      - name: 'avg_response_time'
-        type: 'DOUBLE'
-        nullable: true
+        default: 0
+        comment: '错误次数'
       - name: 'last_error_message'
         type: 'TEXT'
-        nullable: true
+        comment: '最后错误信息'
+      - name: 'rate_limit'
+        type: 'INT'
+        comment: '速率限制(次/分钟)'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '更新时间'
     indexes:
-      - name: 'idx_health_status'
-        type: 'INDEX'
-        columns: ['health_status']
+      - name: 'uk_data_sources_name'
+        columns: ['source_name']
+        unique: true
+      - name: 'idx_data_sources_type'
+        columns: ['source_type']
+      - name: 'idx_data_sources_active'
+        columns: ['is_active']
 
-  # 5.2 任务调度
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'task_schedule'
-    classification: 'TASK_SCHEDULE'
+    database_name: 'quant_research'
+    table_name: 'task_schedules'
+    classification: 'task_schedules'
     description: '任务调度表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'task_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
-      - name: 'task_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
+        comment: '任务ID'
       - name: 'task_name'
         type: 'VARCHAR'
-        length: 128
+        length: 100
         nullable: false
+        comment: '任务名称'
       - name: 'task_type'
         type: 'VARCHAR'
-        length: 32
+        length: 30
         nullable: false
-      - name: 'schedule_expr'
+        comment: '任务类型(data_import,indicator_calc,etc)'
+      - name: 'schedule_expression'
         type: 'VARCHAR'
-        length: 128
+        length: 50
         nullable: false
-      - name: 'enabled'
+        comment: '调度表达式(cron)'
+      - name: 'is_enabled'
         type: 'BOOLEAN'
-        nullable: false
-        default: 'TRUE'
+        default: true
+        comment: '是否启用'
       - name: 'last_run_time'
         type: 'TIMESTAMP'
-        nullable: true
+        comment: '最后运行时间'
       - name: 'next_run_time'
         type: 'TIMESTAMP'
-        nullable: true
-      - name: 'last_run_status'
+        comment: '下次运行时间'
+      - name: 'run_count'
+        type: 'INT'
+        default: 0
+        comment: '运行次数'
+      - name: 'success_count'
+        type: 'INT'
+        default: 0
+        comment: '成功次数'
+      - name: 'fail_count'
+        type: 'INT'
+        default: 0
+        comment: '失败次数'
+      - name: 'last_status'
         type: 'VARCHAR'
-        length: 16
-        nullable: true
-      - name: 'last_run_duration'
-        type: 'INT'
-        nullable: true
-      - name: 'last_error_message'
+        length: 20
+        comment: '最后状态'
+      - name: 'last_error'
         type: 'TEXT'
-        nullable: true
-      - name: 'consecutive_failures'
+        comment: '最后错误'
+      - name: 'timeout_seconds'
         type: 'INT'
-        default: '0'
-        nullable: false
-      - name: 'task_params'
-        type: 'JSON'
-        nullable: true
+        default: 3600
+        comment: '超时时间(秒)'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '更新时间'
     indexes:
-      - name: 'idx_enabled_next_run'
-        type: 'INDEX'
-        columns: ['enabled', 'next_run_time']
+      - name: 'uk_task_schedules_name'
+        columns: ['task_name']
+        unique: true
+      - name: 'idx_task_schedules_type'
+        columns: ['task_type']
+      - name: 'idx_task_schedules_enabled'
+        columns: ['is_enabled']
+      - name: 'idx_task_schedules_next_run'
+        columns: ['next_run_time']
 
-  # 5.3 策略参数
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'strategy_params'
-    classification: 'STRATEGY_PARAMS'
+    database_name: 'quant_research'
+    table_name: 'strategy_parameters'
+    classification: 'strategy_parameters'
     description: '策略参数表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'param_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
+        comment: '参数ID'
       - name: 'strategy_id'
         type: 'VARCHAR'
-        length: 64
+        length: 50
         nullable: false
-      - name: 'strategy_name'
+        comment: '策略ID'
+      - name: 'param_name'
         type: 'VARCHAR'
-        length: 128
+        length: 50
         nullable: false
-      - name: 'param_key'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
+        comment: '参数名称'
       - name: 'param_value'
         type: 'TEXT'
         nullable: false
+        comment: '参数值'
       - name: 'param_type'
         type: 'VARCHAR'
-        length: 16
+        length: 20
         nullable: false
-      - name: 'param_description'
-        type: 'TEXT'
-        nullable: true
+        comment: '参数类型(string,int,float,bool,json)'
+      - name: 'description'
+        type: 'VARCHAR'
+        length: 200
+        comment: '参数描述'
+      - name: 'is_sensitive'
+        type: 'BOOLEAN'
+        default: false
+        comment: '是否敏感参数'
       - name: 'version'
         type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'is_active'
-        type: 'BOOLEAN'
-        nullable: false
-        default: 'TRUE'
-      - name: 'created_by'
-        type: 'VARCHAR'
-        length: 64
-        nullable: true
+        length: 20
+        default: '1.0'
+        comment: '版本号'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '更新时间'
     indexes:
-      - name: 'idx_strategy_version'
-        type: 'INDEX'
-        columns: ['strategy_id', 'version']
+      - name: 'uk_strategy_params_strategy_name'
+        columns: ['strategy_id', 'param_name']
+        unique: true
+      - name: 'idx_strategy_params_strategy'
+        columns: ['strategy_id']
 
-  # 5.4 系统配置
   - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
+    database_name: 'quant_research'
     table_name: 'system_config'
-    classification: 'SYSTEM_CONFIG'
+    classification: 'system_config'
     description: '系统配置表'
     columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
+      - name: 'config_id'
+        type: 'INT'
         primary_key: true
         auto_increment: true
+        comment: '配置ID'
+      - name: 'config_group'
+        type: 'VARCHAR'
+        length: 50
+        nullable: false
+        comment: '配置组'
       - name: 'config_key'
         type: 'VARCHAR'
-        length: 128
+        length: 100
         nullable: false
-        unique: true
+        comment: '配置键'
       - name: 'config_value'
         type: 'TEXT'
         nullable: false
-      - name: 'config_category'
-        type: 'VARCHAR'
-        length: 32
-        nullable: false
-      - name: 'value_type'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'description'
-        type: 'TEXT'
-        nullable: true
-      - name: 'is_sensitive'
-        type: 'BOOLEAN'
-        default: 'FALSE'
-        nullable: false
-      - name: 'is_readonly'
-        type: 'BOOLEAN'
-        default: 'FALSE'
-        nullable: false
-      - name: 'default_value'
-        type: 'TEXT'
-        nullable: true
-      - name: 'validation_rule'
-        type: 'TEXT'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-      - name: 'updated_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_category'
-        type: 'INDEX'
-        columns: ['config_category']
-
-  # 5.5 数据质量指标
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'data_quality_metrics'
-    classification: 'DATA_QUALITY_METRICS'
-    description: '数据质量指标表'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'metric_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-        unique: true
-      - name: 'data_classification'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
-      - name: 'table_name'
-        type: 'VARCHAR'
-        length: 128
-        nullable: false
-      - name: 'check_time'
-        type: 'TIMESTAMP'
-        nullable: false
-      - name: 'completeness_rate'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'freshness_seconds'
-        type: 'INT'
-        nullable: true
-      - name: 'accuracy_rate'
-        type: 'DOUBLE'
-        nullable: true
-      - name: 'missing_records'
-        type: 'INT'
-        nullable: true
-      - name: 'duplicate_records'
-        type: 'INT'
-        nullable: true
-      - name: 'invalid_records'
-        type: 'INT'
-        nullable: true
-      - name: 'total_records'
-        type: 'BIGINT'
-        nullable: true
-      - name: 'check_result'
-        type: 'VARCHAR'
-        length: 16
-        nullable: false
-      - name: 'check_details'
-        type: 'JSON'
-        nullable: true
-      - name: 'created_at'
-        type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP'
-        nullable: false
-    indexes:
-      - name: 'idx_classification_time'
-        type: 'INDEX'
-        columns: ['data_classification', 'check_time DESC']
-
-  # 5.6 用户配置
-  - database_type: 'MySQL'
-    database_name: 'mystocks_reference'
-    table_name: 'user_config'
-    classification: 'USER_CONFIG'
-    description: '用户配置表'
-    columns:
-      - name: 'id'
-        type: 'BIGINT UNSIGNED'
-        nullable: false
-        primary_key: true
-        auto_increment: true
-      - name: 'user_id'
-        type: 'VARCHAR'
-        length: 64
-        nullable: false
+        comment: '配置值'
       - name: 'config_type'
         type: 'VARCHAR'
-        length: 32
+        length: 20
         nullable: false
-      - name: 'config_name'
+        comment: '配置类型'
+      - name: 'description'
         type: 'VARCHAR'
-        length: 128
-        nullable: true
-      - name: 'config_data'
-        type: 'JSON'
-        nullable: false
-      - name: 'is_default'
+        length: 200
+        comment: '配置描述'
+      - name: 'is_sensitive'
         type: 'BOOLEAN'
-        default: 'FALSE'
-        nullable: false
-      - name: 'is_shared'
+        default: false
+        comment: '是否敏感配置'
+      - name: 'is_readonly'
         type: 'BOOLEAN'
-        default: 'FALSE'
-        nullable: false
+        default: false
+        comment: '是否只读'
       - name: 'created_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
         default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-        nullable: false
+        comment: '更新时间'
     indexes:
-      - name: 'idx_user_type'
-        type: 'INDEX'
-        columns: ['user_id', 'config_type']
+      - name: 'uk_system_config_group_key'
+        columns: ['config_group', 'config_key']
+        unique: true
+      - name: 'idx_system_config_group'
+        columns: ['config_group']
 
-# =====================================
-# 系统维护任务配置
-# =====================================
+# 监控系统配置
+monitoring:
+  enable: true
+  monitor_database: 'db_monitor'
+  log_retention_days: 30
+  alert_channels:
+    - type: 'email'
+      recipients: ['admin@mystocks.com']
+    - type: 'log'
+      level: 'ERROR'
+    - type: 'webhook'
+      url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+
+# 自动化维护配置
 maintenance:
-  auto_create_tables: true
-  safe_mode: true  # 安全模式: 添加列自动,删除/修改需确认
-  
-  daily_tasks:
-    - name: 'data_quality_check'
-      time: '01:00'
-      enabled: true
-      description: '数据质量检查'
-    - name: 'performance_monitoring'
-      time: '02:00'
-      enabled: true
-      description: '性能监控'
-    - name: 'backup_operations'
-      time: '03:00'
-      enabled: false
-      description: '备份操作'
-    - name: 'log_cleanup'
-      time: '04:00'
-      enabled: true
-      description: '日志清理'
-      
-  weekly_tasks:
-    - name: 'table_structure_validation'
-      day: 'sunday'
-      time: '05:00'
-      enabled: true
-      description: '表结构验证'
-    - name: 'database_optimization'
-      day: 'sunday'
-      time: '06:00'
-      enabled: false
-      description: '数据库优化'
+  backup:
+    enable: true
+    schedule: '0 2 * * *'  # 每天凌晨2点
+    retention_days: 7
+    backup_path: '/backup/mystocks'
+  data_quality_check:
+    enable: true
+    schedule: '0 1 * * *'  # 每天凌晨1点
+    completeness_threshold: 0.95
+    freshness_threshold_hours: 24
+  performance_monitoring:
+    enable: true
+    slow_query_threshold: 5  # 5秒
+    memory_threshold_mb: 1024
+    disk_threshold_percent: 80
+  log_cleanup:
+    enable: true
+    schedule: '0 4 * * *'  # 每天凌晨4点
+    retention_days: 30
+  table_structure_validation:
+    enable: true
+    schedule: '0 6 * * 0'  # 每周日凌晨6点
+  database_optimization:
+    enable: true
+    schedule: '0 5 * * 0'  # 每周日凌晨5点
+
+# 数据质量规则
+data_quality_rules:
+  completeness:
+    threshold: 0.95
+    required_columns: ['symbol', 'trade_date']
+  freshness:
+    daily_data_hours: 24
+    realtime_data_minutes: 5
+  accuracy:
+    price_range:
+      min: 0
+      max: 10000
+    volume_range:
+      min: 0
+      max: 1000000000000
+  consistency:
+    ohlc_check: true
+    duplicate_check: true
+
+# 告警配置
+alert_rules:
+  data_staleness:
+    threshold: 24
+    unit: 'hours'
+  table_creation_failure:
+    threshold: 1
+    unit: 'count'
+  slow_operation:
+    threshold: 5
+    unit: 'seconds'
+  disk_usage:
+    threshold: 80
+    unit: 'percent'
+  data_quality:
+    threshold: 0.8
+    unit: 'score'
+  error_rate:
+    threshold: 0.05
+    unit: 'ratio'
