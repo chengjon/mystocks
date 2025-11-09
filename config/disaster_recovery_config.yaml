@@ -1,0 +1,118 @@
+# MyStocks 灾备恢复配置
+# 版本: 2.0 (优化版 - 用于灾备恢复)
+# 创建日期: 2025-11-08
+# 说明: 仅包含灾备恢复所需的核心配置,删除了自动迁移和冗余信息
+
+version: '2.0'
+
+# 灾备恢复策略
+disaster_recovery:
+  backup_strategy: 'incremental'      # 增量备份
+  validation_schedule: 'daily'        # 每日验证
+  recovery_time_objective: '3min'     # 恢复时间目标: 3分钟
+
+# 数据库连接 (仅TDengine + PostgreSQL)
+databases:
+  tdengine:
+    host: '${TDENGINE_HOST:localhost}'
+    port: '${TDENGINE_REST_PORT:6041}'
+    user: '${TDENGINE_USER:root}'
+    password: '${TDENGINE_PASSWORD}'
+    database: '${TDENGINE_DATABASE:market_data}'
+
+  postgresql:
+    host: '${POSTGRESQL_HOST:localhost}'
+    port: '${POSTGRESQL_PORT:5432}'
+    user: '${POSTGRESQL_USER:postgres}'
+    password: '${POSTGRESQL_PASSWORD}'
+    database: '${POSTGRESQL_DATABASE:mystocks}'
+
+# 表结构 (16个核心表)
+tables:
+  # TDengine 超表 (高频时序数据)
+  - db: tdengine
+    name: tick_data
+    type: supertable
+    schema: 'ts TIMESTAMP, price DOUBLE, volume BIGINT, amount DOUBLE'
+    tags: 'symbol BINARY(16), exchange BINARY(16)'
+
+  - db: tdengine
+    name: minute_kline
+    type: supertable
+    schema: 'ts TIMESTAMP, open DOUBLE, high DOUBLE, low DOUBLE, close DOUBLE, volume BIGINT'
+    tags: 'symbol BINARY(16), interval TINYINT'
+
+  - db: tdengine
+    name: order_book_depth
+    type: supertable
+    schema: 'ts TIMESTAMP, bid_price1 DOUBLE, ask_price1 DOUBLE, bid_vol1 BIGINT, ask_vol1 BIGINT'
+    tags: 'symbol BINARY(16), depth TINYINT'
+
+  - db: tdengine
+    name: level2_snapshot
+    type: supertable
+    schema: 'ts TIMESTAMP, last_price DOUBLE, total_volume BIGINT, total_amount DOUBLE'
+    tags: 'symbol BINARY(16)'
+
+  - db: tdengine
+    name: index_intraday_quotes
+    type: supertable
+    schema: 'ts TIMESTAMP, index_value DOUBLE, change_pct DOUBLE'
+    tags: 'index_code BINARY(16)'
+
+  # PostgreSQL 混合表 (TimescaleDB)
+  - db: postgresql
+    name: daily_kline
+    type: hypertable
+    schema: 'ts TIMESTAMP, symbol VARCHAR(16), open NUMERIC, high NUMERIC, low NUMERIC, close NUMERIC, volume BIGINT'
+    partition_key: 'ts'
+
+  - db: postgresql
+    name: technical_indicators
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), indicator_name VARCHAR(50), value NUMERIC'
+
+  - db: postgresql
+    name: quant_factors
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), factor_name VARCHAR(50), value NUMERIC'
+
+  - db: postgresql
+    name: model_output
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, model_name VARCHAR(100), prediction JSONB, confidence NUMERIC'
+
+  - db: postgresql
+    name: trade_signals
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), signal_type VARCHAR(20), strength NUMERIC'
+
+  - db: postgresql
+    name: backtest_results
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, strategy_name VARCHAR(100), start_date DATE, end_date DATE, total_return NUMERIC'
+
+  - db: postgresql
+    name: risk_metrics
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, metric_name VARCHAR(50), value NUMERIC'
+
+  - db: postgresql
+    name: order_history
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), order_type VARCHAR(20), quantity INT, price NUMERIC'
+
+  - db: postgresql
+    name: trade_history
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), trade_type VARCHAR(20), quantity INT, price NUMERIC'
+
+  - db: postgresql
+    name: position_history
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, symbol VARCHAR(16), quantity INT, cost_basis NUMERIC'
+
+  - db: postgresql
+    name: fund_flow
+    type: standard
+    schema: 'id SERIAL PRIMARY KEY, ts TIMESTAMP, flow_type VARCHAR(20), amount NUMERIC, description TEXT'

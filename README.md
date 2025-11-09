@@ -871,9 +871,9 @@ curl -X POST http://localhost:8000/backtest \
 ### 📚 文档导航
 
 **快速开始**:
-- [`QUICKSTART.md`](./QUICKSTART.md) - 快速入门指南
-- [`START_HERE.md`](./START_HERE.md) - 项目起点
-- [`TASKMASTER_START_HERE.md`](./TASKMASTER_START_HERE.md) - Task Master工作流程
+- [`QUICKSTART.md`](./docs/guides/QUICKSTART.md) - 快速入门指南
+- [`IFLOW.md`](./docs/guides/IFLOW.md) - 项目工作流程
+- [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
 
 **架构设计文档** (`docs/architecture/`):
 - 核心架构评估与设计决策

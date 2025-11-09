@@ -526,8 +526,8 @@ import { init as klinechartsInit, dispose as klinechartsDispose } from 'klinecha
 
 const router = useRouter()
 
-// API 基础地址
-const API_BASE = 'http://localhost:8000/api'
+// API 基础地址 - 使用相对路径让Vite代理处理
+const API_BASE = '/api'
 
 // 获取 token
 const getToken = () => {
