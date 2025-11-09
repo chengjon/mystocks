@@ -1,13 +1,15 @@
 """
 测试TDXDataSource适配器
 """
+
 import pytest
 import pandas as pd
 from unittest.mock import Mock, patch, MagicMock
 import sys
-sys.path.insert(0, '/opt/claude/mystocks_spec')
 
-from adapters.tdx_adapter import TdxDataSource
+sys.path.insert(0, "/opt/claude/mystocks_spec")
+
+from src.adapters.tdx_adapter import TdxDataSource
 
 
 class TestTDXAdapter:
@@ -15,16 +17,16 @@ class TestTDXAdapter:
 
     def setup_method(self):
         """测试前准备"""
-        with patch('adapters.tdx_adapter.TdxHq_API'):
+        with patch("adapters.tdx_adapter.TdxHq_API"):
             self.adapter = TdxDataSource()
 
     def test_adapter_initialization(self):
         """测试适配器初始化"""
         assert self.adapter is not None
-        assert hasattr(self.adapter, 'get_real_time_data')
-        assert hasattr(self.adapter, 'get_kline_data')
+        assert hasattr(self.adapter, "get_real_time_data")
+        assert hasattr(self.adapter, "get_kline_data")
 
-    @patch('adapters.tdx_adapter.TdxHq_API')
+    @patch("adapters.tdx_adapter.TdxHq_API")
     def test_get_real_time_data_success(self, mock_api, sample_realtime_data):
         """测试获取实时数据成功场景"""
         # Mock TDX API
@@ -32,7 +34,7 @@ class TestTDXAdapter:
         mock_api_instance.get_security_quotes.return_value = [sample_realtime_data]
         mock_api.return_value = mock_api_instance
 
-        with patch.object(self.adapter, 'api', mock_api_instance):
+        with patch.object(self.adapter, "api", mock_api_instance):
             # 调用方法
             result = self.adapter.get_real_time_data("000001")
 
@@ -40,30 +42,34 @@ class TestTDXAdapter:
             assert result is not None
             assert isinstance(result, dict)
 
-    @patch('adapters.tdx_adapter.TdxHq_API')
+    @patch("adapters.tdx_adapter.TdxHq_API")
     def test_get_real_time_data_connection_fail(self, mock_api):
         """测试连接失败场景"""
         # Mock连接失败
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_quotes.side_effect = Exception("Connection failed")
+        mock_api_instance.get_security_quotes.side_effect = Exception(
+            "Connection failed"
+        )
         mock_api.return_value = mock_api_instance
 
-        with patch.object(self.adapter, 'api', mock_api_instance):
+        with patch.object(self.adapter, "api", mock_api_instance):
             # 调用方法
             result = self.adapter.get_real_time_data("000001")
 
             # 验证返回None或空结果
             assert result is None or result == {}
 
-    @patch('adapters.tdx_adapter.TdxHq_API')
+    @patch("adapters.tdx_adapter.TdxHq_API")
     def test_get_kline_data_daily(self, mock_api, sample_stock_data):
         """测试获取日K线数据"""
         # Mock返回数据
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict('records')
+        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict(
+            "records"
+        )
         mock_api.return_value = mock_api_instance
 
-        with patch.object(self.adapter, 'api', mock_api_instance):
+        with patch.object(self.adapter, "api", mock_api_instance):
             # 调用方法
             result = self.adapter.get_kline_data("000001", period="daily", count=10)
 
@@ -71,15 +77,17 @@ class TestTDXAdapter:
             if result is not None:
                 assert isinstance(result, (pd.DataFrame, list))
 
-    @patch('adapters.tdx_adapter.TdxHq_API')
+    @patch("adapters.tdx_adapter.TdxHq_API")
     def test_get_kline_data_minute(self, mock_api, sample_stock_data):
         """测试获取分钟K线数据"""
         # Mock返回数据
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict('records')
+        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict(
+            "records"
+        )
         mock_api.return_value = mock_api_instance
 
-        with patch.object(self.adapter, 'api', mock_api_instance):
+        with patch.object(self.adapter, "api", mock_api_instance):
             # 调用方法
             result = self.adapter.get_kline_data("000001", period="5m", count=50)
 
@@ -120,7 +128,7 @@ class TestTDXAdapter:
             except:
                 pass  # 允许API调用失败
 
-    @patch('adapters.tdx_adapter.TdxHq_API')
+    @patch("adapters.tdx_adapter.TdxHq_API")
     def test_server_failover(self, mock_api):
         """测试服务器切换机制"""
         # Mock第一个服务器失败，第二个成功
@@ -128,7 +136,7 @@ class TestTDXAdapter:
         mock_api_instance.connect.side_effect = [False, True]
         mock_api.return_value = mock_api_instance
 
-        with patch.object(self.adapter, 'api', mock_api_instance):
+        with patch.object(self.adapter, "api", mock_api_instance):
             # 适配器应该能自动切换服务器
             # 这里只验证不抛出异常
             try:
@@ -153,7 +161,9 @@ class TestTDXAdapter:
 
         for count in test_counts:
             try:
-                result = self.adapter.get_kline_data("000001", period="daily", count=count)
+                result = self.adapter.get_kline_data(
+                    "000001", period="daily", count=count
+                )
                 # 不抛出异常就通过
                 assert True
             except:
@@ -174,7 +184,7 @@ class TestTDXAdapterIntegration:
             if result is not None:
                 assert isinstance(result, dict)
                 # 验证必需字段
-                assert 'symbol' in result or 'price' in result
+                assert "symbol" in result or "price" in result
         except Exception as e:
             pytest.skip(f"TDX connection failed: {str(e)}")
 

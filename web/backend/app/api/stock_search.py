@@ -8,7 +8,10 @@ from fastapi import APIRouter, Query, HTTPException, Depends
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
-from app.services.stock_search_service import get_stock_search_service, StockSearchService
+from app.services.stock_search_service import (
+    get_stock_search_service,
+    StockSearchService,
+)
 from app.api.auth import get_current_user, User
 
 router = APIRouter()
@@ -16,6 +19,7 @@ router = APIRouter()
 
 class StockSearchResult(BaseModel):
     """股票搜索结果"""
+
     symbol: str = Field(..., description="股票代码")
     description: str = Field(..., description="股票名称")
     displaySymbol: str = Field(..., description="显示代码")
@@ -26,6 +30,7 @@ class StockSearchResult(BaseModel):
 
 class StockQuote(BaseModel):
     """股票报价"""
+
     symbol: Optional[str] = None
     name: Optional[str] = None
     current: float = Field(..., description="当前价格")
@@ -42,6 +47,7 @@ class StockQuote(BaseModel):
 
 class NewsItem(BaseModel):
     """新闻条目"""
+
     headline: str = Field(..., description="标题")
     summary: str = Field(..., description="摘要")
     source: str = Field(..., description="来源")
@@ -55,7 +61,7 @@ class NewsItem(BaseModel):
 async def search_stocks(
     q: str = Query(..., description="搜索关键词", min_length=1),
     market: str = Query("auto", description="市场类型: auto, cn, hk"),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
     搜索股票
@@ -76,7 +82,7 @@ async def search_stocks(
 async def get_stock_quote(
     symbol: str,
     market: str = Query("cn", description="市场类型: cn, hk"),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     获取股票实时报价
@@ -93,7 +99,9 @@ async def get_stock_quote(
         elif market.lower() == "hk":
             quote = service.get_hk_stock_realtime(symbol)
         else:
-            raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
+            raise HTTPException(
+                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
+            )
 
         if not quote:
             raise HTTPException(status_code=404, detail="未找到股票报价")
@@ -109,7 +117,7 @@ async def get_stock_quote(
 async def get_company_profile(
     symbol: str,
     market: str = Query("cn", description="市场类型: cn, hk"),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     获取公司基本信息（暂不支持）
@@ -120,7 +128,7 @@ async def get_company_profile(
     """
     raise HTTPException(
         status_code=501,
-        detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股"
+        detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
     )
 
 
@@ -129,7 +137,7 @@ async def get_stock_news(
     symbol: str,
     market: str = Query("cn", description="市场类型: cn, hk"),
     days: int = Query(7, description="获取最近几天的新闻", ge=1, le=30),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
     获取股票新闻
@@ -147,7 +155,9 @@ async def get_stock_news(
         elif market.lower() == "hk":
             news = service.get_hk_stock_news(symbol)
         else:
-            raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
+            raise HTTPException(
+                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
+            )
 
         return news
     except Exception as e:
@@ -158,7 +168,7 @@ async def get_stock_news(
 async def get_market_news(
     category: str = "general",
     market: str = Query("cn", description="市场类型: cn, hk"),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
     获取市场新闻
@@ -175,7 +185,9 @@ async def get_market_news(
         elif market.lower() == "hk":
             news = service.get_hk_stock_news()
         else:
-            raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
+            raise HTTPException(
+                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
+            )
 
         return news
     except Exception as e:
@@ -184,8 +196,7 @@ async def get_market_news(
 
 @router.get("/recommendation/{symbol}")
 async def get_recommendation_trends(
-    symbol: str,
-    current_user: User = Depends(get_current_user)
+    symbol: str, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     获取分析师推荐趋势（暂不支持）
@@ -195,14 +206,12 @@ async def get_recommendation_trends(
     """
     raise HTTPException(
         status_code=501,
-        detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股"
+        detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
     )
 
 
 @router.post("/cache/clear")
-async def clear_search_cache(
-    current_user: User = Depends(get_current_user)
-) -> Dict:
+async def clear_search_cache(current_user: User = Depends(get_current_user)) -> Dict:
     """
     清除搜索缓存
     """
@@ -210,9 +219,6 @@ async def clear_search_cache(
         service = get_stock_search_service()
         service.clear_cache()
 
-        return {
-            "success": True,
-            "message": "搜索缓存已清除"
-        }
+        return {"success": True, "message": "搜索缓存已清除"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"清除缓存失败: {str(e)}")

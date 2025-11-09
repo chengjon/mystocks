@@ -23,9 +23,12 @@ from app.adapters.base import (
     DataSourceStatus,
     DataSourceConfig,
     DataCategory,
-    DataSourceFactory
+    DataSourceFactory,
 )
-from app.adapters.eastmoney_enhanced import EastMoneyEnhancedAdapter, get_eastmoney_enhanced_adapter
+from app.adapters.eastmoney_enhanced import (
+    EastMoneyEnhancedAdapter,
+    get_eastmoney_enhanced_adapter,
+)
 from app.adapters.cninfo_adapter import CninfoAdapter, get_cninfo_adapter
 
 logger = logging.getLogger(__name__)
@@ -52,8 +55,10 @@ class MultiSourceManager:
         self._category_sources: Dict[DataCategory, List[DataSourceType]] = {}
         self._build_category_mapping()
 
-        logger.info("MultiSourceManager initialized with adapters: "
-                   f"{list(self._adapters.keys())}")
+        logger.info(
+            "MultiSourceManager initialized with adapters: "
+            f"{list(self._adapters.keys())}"
+        )
 
     def _initialize_adapters(self):
         """初始化所有数据源适配器"""
@@ -100,7 +105,9 @@ class MultiSourceManager:
 
         logger.info(f"Built category mapping: {len(self._category_sources)} categories")
 
-    def get_adapter(self, source_type: DataSourceType) -> Optional[BaseDataSourceAdapter]:
+    def get_adapter(
+        self, source_type: DataSourceType
+    ) -> Optional[BaseDataSourceAdapter]:
         """
         获取指定类型的适配器
 
@@ -119,7 +126,9 @@ class MultiSourceManager:
         Returns:
             List[BaseDataSourceAdapter]: 可用适配器列表
         """
-        return [adapter for adapter in self._adapters.values() if adapter.is_available()]
+        return [
+            adapter for adapter in self._adapters.values() if adapter.is_available()
+        ]
 
     def get_sources_for_category(self, category: DataCategory) -> List[DataSourceType]:
         """
@@ -137,7 +146,7 @@ class MultiSourceManager:
         self,
         category: DataCategory,
         fetch_func: Callable[[BaseDataSourceAdapter], pd.DataFrame],
-        cache_key: Optional[str] = None
+        cache_key: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         使用故障转移机制获取数据
@@ -159,7 +168,7 @@ class MultiSourceManager:
                     "success": True,
                     "data": cached_data,
                     "source": "cache",
-                    "cached": True
+                    "cached": True,
                 }
 
         # 获取支持该类别的数据源列表
@@ -170,7 +179,7 @@ class MultiSourceManager:
             return {
                 "success": False,
                 "error": f"No data source supports {category.value}",
-                "source": None
+                "source": None,
             }
 
         # 尝试从各个数据源获取数据（按优先级）
@@ -199,15 +208,17 @@ class MultiSourceManager:
                         "data": data,
                         "source": source_type.value,
                         "response_time": round(response_time, 3),
-                        "cached": False
+                        "cached": False,
                     }
 
                     # 更新缓存
                     if cache_key:
                         self._cache[cache_key] = (data, time.time())
 
-                    logger.info(f"Successfully fetched from {source_type.value} "
-                               f"({len(data)} rows in {response_time:.3f}s)")
+                    logger.info(
+                        f"Successfully fetched from {source_type.value} "
+                        f"({len(data)} rows in {response_time:.3f}s)"
+                    )
 
                     return result
 
@@ -225,13 +236,13 @@ class MultiSourceManager:
             "success": False,
             "error": "All data sources failed",
             "errors": errors,
-            "source": None
+            "source": None,
         }
 
     def fetch_realtime_quote(
         self,
         symbols: Optional[List[str]] = None,
-        source: Optional[DataSourceType] = None
+        source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
         """
         获取实时行情
@@ -252,14 +263,10 @@ class MultiSourceManager:
                     return {
                         "success": not data.empty,
                         "data": data,
-                        "source": source.value
+                        "source": source.value,
                     }
                 except Exception as e:
-                    return {
-                        "success": False,
-                        "error": str(e),
-                        "source": source.value
-                    }
+                    return {"success": False, "error": str(e), "source": source.value}
 
         # 使用故障转移机制
         cache_key = f"realtime_quote:{','.join(symbols) if symbols else 'all'}"
@@ -267,14 +274,14 @@ class MultiSourceManager:
         return self.fetch_with_fallback(
             DataCategory.REALTIME_QUOTE,
             lambda adapter: adapter.fetch_realtime_quote(symbols),
-            cache_key
+            cache_key,
         )
 
     def fetch_fund_flow(
         self,
         symbol: Optional[str] = None,
         timeframe: str = "今日",
-        source: Optional[DataSourceType] = None
+        source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
         """
         获取资金流向
@@ -292,27 +299,29 @@ class MultiSourceManager:
         # 如果指定了数据源
         if source:
             adapter = self._adapters.get(source)
-            if adapter and hasattr(adapter, 'fetch_fund_flow'):
+            if adapter and hasattr(adapter, "fetch_fund_flow"):
                 try:
                     data = adapter.fetch_fund_flow(symbol, timeframe)
                     return {
                         "success": not data.empty,
                         "data": data,
-                        "source": source.value
+                        "source": source.value,
                     }
                 except Exception as e:
                     return {"success": False, "error": str(e), "source": source.value}
 
         return self.fetch_with_fallback(
             DataCategory.FUND_FLOW,
-            lambda adapter: adapter.fetch_fund_flow(symbol, timeframe) if hasattr(adapter, 'fetch_fund_flow') else pd.DataFrame(),
-            cache_key
+            lambda adapter: (
+                adapter.fetch_fund_flow(symbol, timeframe)
+                if hasattr(adapter, "fetch_fund_flow")
+                else pd.DataFrame()
+            ),
+            cache_key,
         )
 
     def fetch_dragon_tiger(
-        self,
-        date_str: str,
-        source: Optional[DataSourceType] = None
+        self, date_str: str, source: Optional[DataSourceType] = None
     ) -> Dict[str, Any]:
         """
         获取龙虎榜
@@ -328,8 +337,12 @@ class MultiSourceManager:
 
         return self.fetch_with_fallback(
             DataCategory.DRAGON_TIGER,
-            lambda adapter: adapter.fetch_dragon_tiger(date_str) if hasattr(adapter, 'fetch_dragon_tiger') else pd.DataFrame(),
-            cache_key
+            lambda adapter: (
+                adapter.fetch_dragon_tiger(date_str)
+                if hasattr(adapter, "fetch_dragon_tiger")
+                else pd.DataFrame()
+            ),
+            cache_key,
         )
 
     def fetch_announcements(
@@ -338,7 +351,7 @@ class MultiSourceManager:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         category: Optional[str] = None,
-        source: Optional[DataSourceType] = None
+        source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
         """
         获取公告
@@ -363,38 +376,34 @@ class MultiSourceManager:
             return {
                 "success": False,
                 "error": f"Source {source.value} not available",
-                "source": source.value
+                "source": source.value,
             }
 
         try:
-            if hasattr(adapter, 'fetch_announcements'):
+            if hasattr(adapter, "fetch_announcements"):
                 data = adapter.fetch_announcements(
                     symbol=symbol,
                     start_date=start_date,
                     end_date=end_date,
-                    category=category
+                    category=category,
                 )
 
                 return {
                     "success": not data.empty,
                     "data": data,
                     "source": source.value,
-                    "count": len(data) if not data.empty else 0
+                    "count": len(data) if not data.empty else 0,
                 }
             else:
                 return {
                     "success": False,
                     "error": "fetch_announcements not supported",
-                    "source": source.value
+                    "source": source.value,
                 }
 
         except Exception as e:
             logger.error(f"Failed to fetch announcements: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "source": source.value
-            }
+            return {"success": False, "error": str(e), "source": source.value}
 
     def get_all_health_status(self) -> List[Dict[str, Any]]:
         """
@@ -410,21 +419,27 @@ class MultiSourceManager:
                 health = adapter.check_health()
                 stats = adapter.get_statistics()
 
-                statuses.append({
-                    "source_type": source_type.value,
-                    "status": health.status.value,
-                    "enabled": adapter.get_config().enabled,
-                    "priority": adapter.get_config().priority,
-                    "success_rate": health.success_rate,
-                    "avg_response_time": health.avg_response_time,
-                    "error_count": health.error_count,
-                    "last_check": health.last_check.isoformat(),
-                    "supported_categories": [cat.value for cat in health.supported_categories],
-                    **stats
-                })
+                statuses.append(
+                    {
+                        "source_type": source_type.value,
+                        "status": health.status.value,
+                        "enabled": adapter.get_config().enabled,
+                        "priority": adapter.get_config().priority,
+                        "success_rate": health.success_rate,
+                        "avg_response_time": health.avg_response_time,
+                        "error_count": health.error_count,
+                        "last_check": health.last_check.isoformat(),
+                        "supported_categories": [
+                            cat.value for cat in health.supported_categories
+                        ],
+                        **stats,
+                    }
+                )
 
             except Exception as e:
-                logger.error(f"Failed to get health status for {source_type.value}: {e}")
+                logger.error(
+                    f"Failed to get health status for {source_type.value}: {e}"
+                )
 
         return statuses
 

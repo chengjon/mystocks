@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：性能监控模块，跟踪查询时间、慢查询和性能指标
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,8 +7,7 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import time
 import logging
@@ -17,7 +16,10 @@ from functools import wraps
 from contextlib import contextmanager
 from datetime import datetime
 
-from monitoring.monitoring_database import MonitoringDatabase, get_monitoring_database
+from src.monitoring.monitoring_database import (
+    MonitoringDatabase,
+    get_monitoring_database,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +52,15 @@ class PerformanceMonitor:
         logger.info("✅ PerformanceMonitor initialized")
 
     @contextmanager
-    def track_operation(self,
-                        operation_name: str,
-                        classification: Optional[str] = None,
-                        database_type: Optional[str] = None,
-                        table_name: Optional[str] = None,
-                        query_sql: Optional[str] = None,
-                        auto_alert: bool = True):
+    def track_operation(
+        self,
+        operation_name: str,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        query_sql: Optional[str] = None,
+        auto_alert: bool = True,
+    ):
         """
         跟踪操作性能的上下文管理器
 
@@ -94,12 +98,12 @@ class PerformanceMonitor:
             self._record_metric(
                 metric_name=operation_name,
                 metric_value=execution_time_ms,
-                metric_type='QUERY_TIME',
+                metric_type="QUERY_TIME",
                 classification=classification,
                 database_type=database_type,
                 table_name=table_name,
                 query_sql=query_sql,
-                error_occurred=error_occurred
+                error_occurred=error_occurred,
             )
 
             # 慢查询检测和告警
@@ -110,7 +114,7 @@ class PerformanceMonitor:
                     classification=classification,
                     database_type=database_type,
                     table_name=table_name,
-                    query_sql=query_sql
+                    query_sql=query_sql,
                 )
             elif auto_alert and execution_time_ms >= self.WARNING_THRESHOLD_MS:
                 logger.warning(
@@ -118,42 +122,46 @@ class PerformanceMonitor:
                     f"({database_type}.{table_name})"
                 )
 
-    def _record_metric(self,
-                       metric_name: str,
-                       metric_value: float,
-                       metric_type: str = 'QUERY_TIME',
-                       classification: Optional[str] = None,
-                       database_type: Optional[str] = None,
-                       table_name: Optional[str] = None,
-                       query_sql: Optional[str] = None,
-                       error_occurred: bool = False):
+    def _record_metric(
+        self,
+        metric_name: str,
+        metric_value: float,
+        metric_type: str = "QUERY_TIME",
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        query_sql: Optional[str] = None,
+        error_occurred: bool = False,
+    ):
         """记录性能指标"""
         is_slow_query = metric_value >= self.SLOW_QUERY_THRESHOLD_MS
 
         # 添加错误标签
-        tags = {'error_occurred': error_occurred} if error_occurred else None
+        tags = {"error_occurred": error_occurred} if error_occurred else None
 
         # 记录到监控数据库
         self.monitoring_db.record_performance_metric(
             metric_name=metric_name,
             metric_value=metric_value,
             metric_type=metric_type,
-            metric_unit='ms',
+            metric_unit="ms",
             classification=classification,
             database_type=database_type,
             table_name=table_name,
             is_slow_query=is_slow_query,
             query_sql=query_sql if is_slow_query else None,
-            tags=tags
+            tags=tags,
         )
 
-    def _alert_slow_query(self,
-                          operation_name: str,
-                          execution_time_ms: int,
-                          classification: Optional[str] = None,
-                          database_type: Optional[str] = None,
-                          table_name: Optional[str] = None,
-                          query_sql: Optional[str] = None):
+    def _alert_slow_query(
+        self,
+        operation_name: str,
+        execution_time_ms: int,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        query_sql: Optional[str] = None,
+    ):
         """告警慢查询"""
         alert_title = f"慢查询检测: {operation_name}"
         alert_message = (
@@ -167,27 +175,30 @@ class PerformanceMonitor:
             alert_message += f"\nSQL: {query_sql[:200]}..."
 
         # 创建告警
-        from monitoring.alert_manager import get_alert_manager
+        from src.monitoring.alert_manager import get_alert_manager
+
         alert_manager = get_alert_manager()
         alert_manager.send_alert(
-            alert_level='WARNING',
-            alert_type='SLOW_QUERY',
+            alert_level="WARNING",
+            alert_type="SLOW_QUERY",
             alert_title=alert_title,
             alert_message=alert_message,
-            source='PerformanceMonitor',
+            source="PerformanceMonitor",
             classification=classification,
             database_type=database_type,
             table_name=table_name,
             additional_data={
-                'execution_time_ms': execution_time_ms,
-                'query_sql': query_sql
-            }
+                "execution_time_ms": execution_time_ms,
+                "query_sql": query_sql,
+            },
         )
 
-    def record_connection_time(self,
-                                database_type: str,
-                                connection_time_ms: float,
-                                connection_status: str = 'SUCCESS'):
+    def record_connection_time(
+        self,
+        database_type: str,
+        connection_time_ms: float,
+        connection_status: str = "SUCCESS",
+    ):
         """
         记录数据库连接时间
 
@@ -197,12 +208,12 @@ class PerformanceMonitor:
             connection_status: 连接状态 (SUCCESS/FAILED)
         """
         self.monitoring_db.record_performance_metric(
-            metric_name=f'{database_type}_connection',
+            metric_name=f"{database_type}_connection",
             metric_value=connection_time_ms,
-            metric_type='CONNECTION_TIME',
-            metric_unit='ms',
+            metric_type="CONNECTION_TIME",
+            metric_unit="ms",
             database_type=database_type,
-            tags={'status': connection_status}
+            tags={"status": connection_status},
         )
 
         # 连接时间过长告警 (>1秒)
@@ -211,13 +222,15 @@ class PerformanceMonitor:
                 f"⚠️  数据库连接较慢: {database_type} 耗时 {connection_time_ms}ms"
             )
 
-    def record_batch_operation(self,
-                                operation_name: str,
-                                batch_size: int,
-                                execution_time_ms: float,
-                                classification: Optional[str] = None,
-                                database_type: Optional[str] = None,
-                                table_name: Optional[str] = None):
+    def record_batch_operation(
+        self,
+        operation_name: str,
+        batch_size: int,
+        execution_time_ms: float,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+    ):
         """
         记录批量操作性能
 
@@ -231,24 +244,24 @@ class PerformanceMonitor:
         """
         # 记录批量大小
         self.monitoring_db.record_performance_metric(
-            metric_name=f'{operation_name}_batch_size',
+            metric_name=f"{operation_name}_batch_size",
             metric_value=batch_size,
-            metric_type='BATCH_SIZE',
-            metric_unit='count',
+            metric_type="BATCH_SIZE",
+            metric_unit="count",
             classification=classification,
             database_type=database_type,
-            table_name=table_name
+            table_name=table_name,
         )
 
         # 记录执行时间
         self.monitoring_db.record_performance_metric(
-            metric_name=f'{operation_name}_batch_time',
+            metric_name=f"{operation_name}_batch_time",
             metric_value=execution_time_ms,
-            metric_type='QUERY_TIME',
-            metric_unit='ms',
+            metric_type="QUERY_TIME",
+            metric_unit="ms",
             classification=classification,
             database_type=database_type,
-            table_name=table_name
+            table_name=table_name,
         )
 
         # 计算吞吐量 (records/second)
@@ -259,8 +272,7 @@ class PerformanceMonitor:
                 f"耗时{execution_time_ms}ms (吞吐量: {throughput:.0f} records/s)"
             )
 
-    def get_performance_summary(self,
-                                hours: int = 24) -> Dict[str, Any]:
+    def get_performance_summary(self, hours: int = 24) -> Dict[str, Any]:
         """
         获取性能摘要
 
@@ -273,18 +285,20 @@ class PerformanceMonitor:
         # 这里可以从监控数据库查询统计信息
         # 简化版本返回基本信息
         return {
-            'period_hours': hours,
-            'slow_query_count': 0,  # TODO: 从数据库查询
-            'avg_query_time_ms': 0,
-            'max_query_time_ms': 0,
-            'total_queries': 0
+            "period_hours": hours,
+            "slow_query_count": 0,  # TODO: 从数据库查询
+            "avg_query_time_ms": 0,
+            "max_query_time_ms": 0,
+            "total_queries": 0,
         }
 
 
-def performance_tracked(operation_name: str,
-                        classification: Optional[str] = None,
-                        database_type: Optional[str] = None,
-                        table_name: Optional[str] = None):
+def performance_tracked(
+    operation_name: str,
+    classification: Optional[str] = None,
+    database_type: Optional[str] = None,
+    table_name: Optional[str] = None,
+):
     """
     性能跟踪装饰器
 
@@ -296,6 +310,7 @@ def performance_tracked(operation_name: str,
         pass
     ```
     """
+
     def decorator(func: Callable):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -304,10 +319,12 @@ def performance_tracked(operation_name: str,
                 operation_name=operation_name,
                 classification=classification,
                 database_type=database_type,
-                table_name=table_name
+                table_name=table_name,
             ):
                 return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -323,12 +340,15 @@ def get_performance_monitor() -> PerformanceMonitor:
     return _performance_monitor
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """测试性能监控器"""
     import sys
-    sys.path.insert(0, '.')
 
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    sys.path.insert(0, ".")
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
 
     print("\n测试PerformanceMonitor...\n")
 
@@ -338,10 +358,7 @@ if __name__ == '__main__':
     # 测试1: 正常查询
     print("1. 测试正常查询跟踪...")
     with monitor.track_operation(
-        'test_query_normal',
-        'DAILY_KLINE',
-        'PostgreSQL',
-        'daily_kline'
+        "test_query_normal", "DAILY_KLINE", "PostgreSQL", "daily_kline"
     ):
         time.sleep(0.1)  # 模拟100ms查询
     print("   ✅ 正常查询已记录\n")
@@ -349,10 +366,7 @@ if __name__ == '__main__':
     # 测试2: 较慢查询
     print("2. 测试较慢查询 (警告)...")
     with monitor.track_operation(
-        'test_query_warning',
-        'DAILY_KLINE',
-        'PostgreSQL',
-        'daily_kline'
+        "test_query_warning", "DAILY_KLINE", "PostgreSQL", "daily_kline"
     ):
         time.sleep(2.5)  # 模拟2.5秒查询 (超过警告阈值)
     print("   ✅ 较慢查询已记录\n")
@@ -360,36 +374,36 @@ if __name__ == '__main__':
     # 测试3: 慢查询 (跳过告警以避免依赖AlertManager)
     print("3. 测试慢查询检测...")
     with monitor.track_operation(
-        'test_query_slow',
-        'TICK_DATA',
-        'TDengine',
-        'tick_data',
-        auto_alert=False  # 禁用告警
+        "test_query_slow",
+        "TICK_DATA",
+        "TDengine",
+        "tick_data",
+        auto_alert=False,  # 禁用告警
     ):
         time.sleep(5.5)  # 模拟5.5秒慢查询
     print("   ✅ 慢查询已记录\n")
 
     # 测试4: 连接时间记录
     print("4. 测试连接时间记录...")
-    monitor.record_connection_time('TDengine', 150.5, 'SUCCESS')
+    monitor.record_connection_time("TDengine", 150.5, "SUCCESS")
     print("   ✅ 连接时间已记录\n")
 
     # 测试5: 批量操作记录
     print("5. 测试批量操作记录...")
     monitor.record_batch_operation(
-        'batch_insert_tick',
+        "batch_insert_tick",
         batch_size=10000,
         execution_time_ms=850.2,
-        classification='TICK_DATA',
-        database_type='TDengine',
-        table_name='tick_data'
+        classification="TICK_DATA",
+        database_type="TDengine",
+        table_name="tick_data",
     )
     print("   ✅ 批量操作已记录\n")
 
     # 测试6: 装饰器用法
     print("6. 测试性能跟踪装饰器...")
 
-    @performance_tracked('decorated_query', 'DAILY_KLINE', 'PostgreSQL', 'daily_kline')
+    @performance_tracked("decorated_query", "DAILY_KLINE", "PostgreSQL", "daily_kline")
     def test_decorated_function():
         time.sleep(0.05)
         return "查询结果"

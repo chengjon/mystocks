@@ -56,12 +56,14 @@ class TechnicalAnalysisService:
     # 数据获取
     # ========================================================================
 
-    def get_stock_history(self,
-                          symbol: str,
-                          period: str = "daily",
-                          start_date: Optional[str] = None,
-                          end_date: Optional[str] = None,
-                          adjust: str = "qfq") -> pd.DataFrame:
+    def get_stock_history(
+        self,
+        symbol: str,
+        period: str = "daily",
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        adjust: str = "qfq",
+    ) -> pd.DataFrame:
         """
         获取股票历史数据
 
@@ -102,7 +104,7 @@ class TechnicalAnalysisService:
                 period=period,
                 start_date=start_date,
                 end_date=end_date,
-                adjust=adjust
+                adjust=adjust,
             )
 
             if df.empty:
@@ -110,30 +112,32 @@ class TechnicalAnalysisService:
                 return pd.DataFrame()
 
             # 重命名列
-            df = df.rename(columns={
-                '日期': 'date',
-                '开盘': 'open',
-                '收盘': 'close',
-                '最高': 'high',
-                '最低': 'low',
-                '成交量': 'volume',
-                '成交额': 'amount',
-                '涨跌幅': 'change_percent',
-                '涨跌额': 'change_amount',
-                '换手率': 'turnover_rate'
-            })
+            df = df.rename(
+                columns={
+                    "日期": "date",
+                    "开盘": "open",
+                    "收盘": "close",
+                    "最高": "high",
+                    "最低": "low",
+                    "成交量": "volume",
+                    "成交额": "amount",
+                    "涨跌幅": "change_percent",
+                    "涨跌额": "change_amount",
+                    "换手率": "turnover_rate",
+                }
+            )
 
             # 转换日期
-            df['date'] = pd.to_datetime(df['date'])
+            df["date"] = pd.to_datetime(df["date"])
 
             # 确保数值类型
-            numeric_cols = ['open', 'close', 'high', 'low', 'volume', 'amount']
+            numeric_cols = ["open", "close", "high", "low", "volume", "amount"]
             for col in numeric_cols:
                 if col in df.columns:
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
+                    df[col] = pd.to_numeric(df[col], errors="coerce")
 
             # 按日期排序
-            df = df.sort_values('date').reset_index(drop=True)
+            df = df.sort_values("date").reset_index(drop=True)
 
             # 缓存数据
             self._cache[cache_key] = (df, datetime.now())
@@ -164,9 +168,9 @@ class TechnicalAnalysisService:
             logger.warning("Insufficient data for trend indicators")
             return {}
 
-        close = df['close'].values
-        high = df['high'].values
-        low = df['low'].values
+        close = df["close"].values
+        high = df["high"].values
+        low = df["low"].values
 
         indicators = {}
 
@@ -175,22 +179,26 @@ class TechnicalAnalysisService:
             ma_periods = [5, 10, 20, 30, 60, 120, 250]
             for period in ma_periods:
                 if len(close) >= period:
-                    indicators[f'ma{period}'] = float(talib.MA(close, timeperiod=period)[-1])
+                    indicators[f"ma{period}"] = float(
+                        talib.MA(close, timeperiod=period)[-1]
+                    )
 
             # 指数移动平均线 (EMA)
             ema_periods = [12, 26, 50]
             for period in ema_periods:
                 if len(close) >= period:
-                    indicators[f'ema{period}'] = float(talib.EMA(close, timeperiod=period)[-1])
+                    indicators[f"ema{period}"] = float(
+                        talib.EMA(close, timeperiod=period)[-1]
+                    )
 
             # MACD
             if len(close) >= 34:
                 macd, macd_signal, macd_hist = talib.MACD(
                     close, fastperiod=12, slowperiod=26, signalperiod=9
                 )
-                indicators['macd'] = float(macd[-1])
-                indicators['macd_signal'] = float(macd_signal[-1])
-                indicators['macd_hist'] = float(macd_hist[-1])
+                indicators["macd"] = float(macd[-1])
+                indicators["macd_signal"] = float(macd_signal[-1])
+                indicators["macd_hist"] = float(macd_hist[-1])
 
             # DMI (ADX, +DI, -DI)
             if len(close) >= 28:
@@ -198,14 +206,14 @@ class TechnicalAnalysisService:
                 plus_di = talib.PLUS_DI(high, low, close, timeperiod=14)
                 minus_di = talib.MINUS_DI(high, low, close, timeperiod=14)
 
-                indicators['adx'] = float(adx[-1])
-                indicators['plus_di'] = float(plus_di[-1])
-                indicators['minus_di'] = float(minus_di[-1])
+                indicators["adx"] = float(adx[-1])
+                indicators["plus_di"] = float(plus_di[-1])
+                indicators["minus_di"] = float(minus_di[-1])
 
             # SAR (抛物线转向)
             if len(close) >= 2:
                 sar = talib.SAR(high, low, acceleration=0.02, maximum=0.2)
-                indicators['sar'] = float(sar[-1])
+                indicators["sar"] = float(sar[-1])
 
             logger.info(f"Calculated {len(indicators)} trend indicators")
             return indicators
@@ -233,9 +241,9 @@ class TechnicalAnalysisService:
             logger.warning("Insufficient data for momentum indicators")
             return {}
 
-        close = df['close'].values
-        high = df['high'].values
-        low = df['low'].values
+        close = df["close"].values
+        high = df["high"].values
+        low = df["low"].values
 
         indicators = {}
 
@@ -245,41 +253,43 @@ class TechnicalAnalysisService:
             for period in rsi_periods:
                 if len(close) >= period + 1:
                     rsi = talib.RSI(close, timeperiod=period)
-                    indicators[f'rsi{period}'] = float(rsi[-1])
+                    indicators[f"rsi{period}"] = float(rsi[-1])
 
             # KDJ (使用 STOCH 计算)
             if len(close) >= 14:
                 slowk, slowd = talib.STOCH(
-                    high, low, close,
+                    high,
+                    low,
+                    close,
                     fastk_period=9,
                     slowk_period=3,
                     slowk_matype=0,
                     slowd_period=3,
-                    slowd_matype=0
+                    slowd_matype=0,
                 )
                 # KDJ: K, D, J=3K-2D
                 k = slowk[-1]
                 d = slowd[-1]
                 j = 3 * k - 2 * d
 
-                indicators['kdj_k'] = float(k)
-                indicators['kdj_d'] = float(d)
-                indicators['kdj_j'] = float(j)
+                indicators["kdj_k"] = float(k)
+                indicators["kdj_d"] = float(d)
+                indicators["kdj_j"] = float(j)
 
             # CCI (顺势指标)
             if len(close) >= 20:
                 cci = talib.CCI(high, low, close, timeperiod=14)
-                indicators['cci'] = float(cci[-1])
+                indicators["cci"] = float(cci[-1])
 
             # WR (威廉指标)
             if len(close) >= 14:
                 willr = talib.WILLR(high, low, close, timeperiod=14)
-                indicators['willr'] = float(willr[-1])
+                indicators["willr"] = float(willr[-1])
 
             # ROC (变动率)
             if len(close) >= 12:
                 roc = talib.ROC(close, timeperiod=12)
-                indicators['roc'] = float(roc[-1])
+                indicators["roc"] = float(roc[-1])
 
             logger.info(f"Calculated {len(indicators)} momentum indicators")
             return indicators
@@ -306,9 +316,9 @@ class TechnicalAnalysisService:
             logger.warning("Insufficient data for volatility indicators")
             return {}
 
-        close = df['close'].values
-        high = df['high'].values
-        low = df['low'].values
+        close = df["close"].values
+        high = df["high"].values
+        low = df["low"].values
 
         indicators = {}
 
@@ -316,22 +326,20 @@ class TechnicalAnalysisService:
             # Bollinger Bands
             if len(close) >= 20:
                 upper, middle, lower = talib.BBANDS(
-                    close,
-                    timeperiod=20,
-                    nbdevup=2,
-                    nbdevdn=2,
-                    matype=0
+                    close, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0
                 )
-                indicators['bb_upper'] = float(upper[-1])
-                indicators['bb_middle'] = float(middle[-1])
-                indicators['bb_lower'] = float(lower[-1])
-                indicators['bb_width'] = float((upper[-1] - lower[-1]) / middle[-1] * 100)
+                indicators["bb_upper"] = float(upper[-1])
+                indicators["bb_middle"] = float(middle[-1])
+                indicators["bb_lower"] = float(lower[-1])
+                indicators["bb_width"] = float(
+                    (upper[-1] - lower[-1]) / middle[-1] * 100
+                )
 
             # ATR (平均真实波幅)
             if len(close) >= 14:
                 atr = talib.ATR(high, low, close, timeperiod=14)
-                indicators['atr'] = float(atr[-1])
-                indicators['atr_percent'] = float(atr[-1] / close[-1] * 100)
+                indicators["atr"] = float(atr[-1])
+                indicators["atr_percent"] = float(atr[-1] / close[-1] * 100)
 
             # Keltner Channel
             if len(close) >= 20:
@@ -342,14 +350,14 @@ class TechnicalAnalysisService:
                 kc_middle = ema20
                 kc_lower = ema20 - 2 * atr10
 
-                indicators['kc_upper'] = float(kc_upper[-1])
-                indicators['kc_middle'] = float(kc_middle[-1])
-                indicators['kc_lower'] = float(kc_lower[-1])
+                indicators["kc_upper"] = float(kc_upper[-1])
+                indicators["kc_middle"] = float(kc_middle[-1])
+                indicators["kc_lower"] = float(kc_lower[-1])
 
             # 标准差
             if len(close) >= 20:
                 stddev = talib.STDDEV(close, timeperiod=20, nbdev=1)
-                indicators['stddev'] = float(stddev[-1])
+                indicators["stddev"] = float(stddev[-1])
 
             logger.info(f"Calculated {len(indicators)} volatility indicators")
             return indicators
@@ -376,10 +384,10 @@ class TechnicalAnalysisService:
             logger.warning("Insufficient data for volume indicators")
             return {}
 
-        close = df['close'].values
-        volume = df['volume'].values
-        high = df['high'].values
-        low = df['low'].values
+        close = df["close"].values
+        volume = df["volume"].values
+        high = df["high"].values
+        low = df["low"].values
 
         indicators = {}
 
@@ -387,30 +395,30 @@ class TechnicalAnalysisService:
             # OBV (能量潮)
             if len(close) >= 2:
                 obv = talib.OBV(close, volume)
-                indicators['obv'] = float(obv[-1])
+                indicators["obv"] = float(obv[-1])
 
             # VWAP (成交量加权平均价)
             # VWAP = Σ(Price × Volume) / Σ(Volume)
-            if len(df) >= 1 and 'amount' in df.columns:
+            if len(df) >= 1 and "amount" in df.columns:
                 typical_price = (high + low + close) / 3
                 cumulative_tpv = (typical_price * volume).sum()
                 cumulative_volume = volume.sum()
 
                 if cumulative_volume > 0:
-                    indicators['vwap'] = float(cumulative_tpv / cumulative_volume)
+                    indicators["vwap"] = float(cumulative_tpv / cumulative_volume)
 
             # 成交量均线
             volume_ma_periods = [5, 10]
             for period in volume_ma_periods:
                 if len(volume) >= period:
                     vol_ma = talib.MA(volume.astype(float), timeperiod=period)
-                    indicators[f'volume_ma{period}'] = float(vol_ma[-1])
+                    indicators[f"volume_ma{period}"] = float(vol_ma[-1])
 
             # 量比 (今日成交量 / 5日平均成交量)
             if len(volume) >= 6:
                 vol_ma5 = talib.MA(volume.astype(float), timeperiod=5)
                 if vol_ma5[-2] > 0:  # 使用昨天的均量
-                    indicators['volume_ratio'] = float(volume[-1] / vol_ma5[-2])
+                    indicators["volume_ratio"] = float(volume[-1] / vol_ma5[-2])
 
             logger.info(f"Calculated {len(indicators)} volume indicators")
             return indicators
@@ -423,11 +431,13 @@ class TechnicalAnalysisService:
     # 综合分析
     # ========================================================================
 
-    def calculate_all_indicators(self,
-                                 symbol: str,
-                                 period: str = "daily",
-                                 start_date: Optional[str] = None,
-                                 end_date: Optional[str] = None) -> Dict:
+    def calculate_all_indicators(
+        self,
+        symbol: str,
+        period: str = "daily",
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict:
         """
         计算所有技术指标
 
@@ -452,23 +462,23 @@ class TechnicalAnalysisService:
             # 计算各类指标
             result = {
                 "symbol": symbol,
-                "latest_price": float(df['close'].iloc[-1]),
-                "latest_date": df['date'].iloc[-1].strftime("%Y-%m-%d"),
+                "latest_price": float(df["close"].iloc[-1]),
+                "latest_date": df["date"].iloc[-1].strftime("%Y-%m-%d"),
                 "data_points": len(df),
                 "trend": self.calculate_trend_indicators(df),
                 "momentum": self.calculate_momentum_indicators(df),
                 "volatility": self.calculate_volatility_indicators(df),
-                "volume": self.calculate_volume_indicators(df)
+                "volume": self.calculate_volume_indicators(df),
             }
 
             # 统计信息
             total_indicators = (
-                len(result['trend']) +
-                len(result['momentum']) +
-                len(result['volatility']) +
-                len(result['volume'])
+                len(result["trend"])
+                + len(result["momentum"])
+                + len(result["volatility"])
+                + len(result["volume"])
             )
-            result['total_indicators'] = total_indicators
+            result["total_indicators"] = total_indicators
 
             logger.info(f"Calculated {total_indicators} indicators for {symbol}")
             return result
@@ -481,11 +491,9 @@ class TechnicalAnalysisService:
     # 时间序列数据（用于图表）
     # ========================================================================
 
-    def get_indicator_series(self,
-                            symbol: str,
-                            indicator: str,
-                            period: str = "daily",
-                            length: int = 100) -> Dict:
+    def get_indicator_series(
+        self, symbol: str, indicator: str, period: str = "daily", length: int = 100
+    ) -> Dict:
         """
         获取指标的时间序列数据（用于前端图表）
 
@@ -504,14 +512,16 @@ class TechnicalAnalysisService:
         """
         try:
             # 获取历史数据
-            df = self.get_stock_history(symbol, period, length=length+50)  # 多取一些数据
+            df = self.get_stock_history(
+                symbol, period, length=length + 50
+            )  # 多取一些数据
 
             if df.empty:
                 return {"error": "No data available"}
 
             # 根据指标类型计算
             values = []
-            dates = df['date'].dt.strftime("%Y-%m-%d").tolist()
+            dates = df["date"].dt.strftime("%Y-%m-%d").tolist()
 
             # 这里可以根据indicator参数计算对应的指标序列
             # 简化处理，后续可以扩展
@@ -520,7 +530,7 @@ class TechnicalAnalysisService:
                 "symbol": symbol,
                 "indicator": indicator,
                 "dates": dates[-length:],
-                "values": values[-length:] if values else []
+                "values": values[-length:] if values else [],
             }
 
         except Exception as e:
@@ -552,50 +562,58 @@ class TechnicalAnalysisService:
         signals = []
 
         try:
-            close = df['close'].values
+            close = df["close"].values
 
             # MACD金叉/死叉
             if len(close) >= 34:
                 macd, signal, hist = talib.MACD(close)
                 if hist[-1] > 0 and hist[-2] <= 0:
-                    signals.append({
-                        "type": "macd_golden_cross",
-                        "signal": "buy",
-                        "strength": 0.7
-                    })
+                    signals.append(
+                        {"type": "macd_golden_cross", "signal": "buy", "strength": 0.7}
+                    )
                 elif hist[-1] < 0 and hist[-2] >= 0:
-                    signals.append({
-                        "type": "macd_death_cross",
-                        "signal": "sell",
-                        "strength": 0.7
-                    })
+                    signals.append(
+                        {"type": "macd_death_cross", "signal": "sell", "strength": 0.7}
+                    )
 
             # RSI超买超卖
             if len(close) >= 14:
                 rsi = talib.RSI(close, timeperiod=14)[-1]
                 if rsi < 30:
-                    signals.append({
-                        "type": "rsi_oversold",
-                        "signal": "buy",
-                        "strength": (30 - rsi) / 30
-                    })
+                    signals.append(
+                        {
+                            "type": "rsi_oversold",
+                            "signal": "buy",
+                            "strength": (30 - rsi) / 30,
+                        }
+                    )
                 elif rsi > 70:
-                    signals.append({
-                        "type": "rsi_overbought",
-                        "signal": "sell",
-                        "strength": (rsi - 70) / 30
-                    })
+                    signals.append(
+                        {
+                            "type": "rsi_overbought",
+                            "signal": "sell",
+                            "strength": (rsi - 70) / 30,
+                        }
+                    )
 
             # 计算综合信号
-            buy_signals = [s for s in signals if s['signal'] == 'buy']
-            sell_signals = [s for s in signals if s['signal'] == 'sell']
+            buy_signals = [s for s in signals if s["signal"] == "buy"]
+            sell_signals = [s for s in signals if s["signal"] == "sell"]
 
             if len(buy_signals) > len(sell_signals):
                 overall_signal = "buy"
-                signal_strength = sum(s['strength'] for s in buy_signals) / len(buy_signals) if buy_signals else 0
+                signal_strength = (
+                    sum(s["strength"] for s in buy_signals) / len(buy_signals)
+                    if buy_signals
+                    else 0
+                )
             elif len(sell_signals) > len(buy_signals):
                 overall_signal = "sell"
-                signal_strength = sum(s['strength'] for s in sell_signals) / len(sell_signals) if sell_signals else 0
+                signal_strength = (
+                    sum(s["strength"] for s in sell_signals) / len(sell_signals)
+                    if sell_signals
+                    else 0
+                )
             else:
                 overall_signal = "hold"
                 signal_strength = 0.5
@@ -607,8 +625,8 @@ class TechnicalAnalysisService:
                 "signal_count": {
                     "buy": len(buy_signals),
                     "sell": len(sell_signals),
-                    "total": len(signals)
-                }
+                    "total": len(signals),
+                },
             }
 
         except Exception as e:

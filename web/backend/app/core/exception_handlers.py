@@ -75,7 +75,7 @@ def handle_exceptions(
 
     Returns:
         Standardized error response on exception
-        """
+    """
 
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
@@ -92,9 +92,7 @@ def handle_exceptions(
                 raise
 
             except ValueError as e:
-                logger.warning(
-                    f"Validation error in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Validation error in {f.__name__}", error=str(e))
                 return {
                     error_key: "Validation Error",
                     message_key: str(e),
@@ -110,9 +108,7 @@ def handle_exceptions(
                 }, 400
 
             except PermissionError as e:
-                logger.warning(
-                    f"Permission denied in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Permission denied in {f.__name__}", error=str(e))
                 return {
                     error_key: "Permission Denied",
                     message_key: str(e),
@@ -149,9 +145,7 @@ def handle_exceptions(
                 raise
 
             except ValueError as e:
-                logger.warning(
-                    f"Validation error in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Validation error in {f.__name__}", error=str(e))
                 return {
                     error_key: "Validation Error",
                     message_key: str(e),
@@ -167,9 +161,7 @@ def handle_exceptions(
                 }, 400
 
             except PermissionError as e:
-                logger.warning(
-                    f"Permission denied in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Permission denied in {f.__name__}", error=str(e))
                 return {
                     error_key: "Permission Denied",
                     message_key: str(e),
@@ -229,9 +221,7 @@ def handle_validation_errors(func: Callable) -> Callable:
         try:
             return await func(*args, **kwargs)
         except (ValueError, KeyError) as e:
-            logger.warning(
-                f"Validation error in {func.__name__}", error=str(e)
-            )
+            logger.warning(f"Validation error in {func.__name__}", error=str(e))
             return {"error": "Validation Error", "message": str(e)}, 400
 
     @functools.wraps(func)
@@ -239,9 +229,7 @@ def handle_validation_errors(func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except (ValueError, KeyError) as e:
-            logger.warning(
-                f"Validation error in {func.__name__}", error=str(e)
-            )
+            logger.warning(f"Validation error in {func.__name__}", error=str(e))
             return {"error": "Validation Error", "message": str(e)}, 400
 
     if inspect.iscoroutinefunction(func):
@@ -271,13 +259,8 @@ def handle_database_errors(func: Callable) -> Callable:
             return await func(*args, **kwargs)
         except Exception as e:
             error_msg = str(e).lower()
-            if any(
-                x in error_msg
-                for x in ["database", "connection", "query", "sql"]
-            ):
-                logger.error(
-                    f"Database error in {func.__name__}", error=str(e)
-                )
+            if any(x in error_msg for x in ["database", "connection", "query", "sql"]):
+                logger.error(f"Database error in {func.__name__}", error=str(e))
                 return {
                     "error": "Database Error",
                     "message": "Database connection failed",
@@ -291,13 +274,8 @@ def handle_database_errors(func: Callable) -> Callable:
             return func(*args, **kwargs)
         except Exception as e:
             error_msg = str(e).lower()
-            if any(
-                x in error_msg
-                for x in ["database", "connection", "query", "sql"]
-            ):
-                logger.error(
-                    f"Database error in {func.__name__}", error=str(e)
-                )
+            if any(x in error_msg for x in ["database", "connection", "query", "sql"]):
+                logger.error(f"Database error in {func.__name__}", error=str(e))
                 return {
                     "error": "Database Error",
                     "message": "Database connection failed",

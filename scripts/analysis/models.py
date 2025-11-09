@@ -15,6 +15,7 @@ from datetime import datetime
 
 class CategoryEnum(Enum):
     """功能类别枚举"""
+
     CORE = "core"  # 核心功能
     AUXILIARY = "auxiliary"  # 辅助功能
     INFRASTRUCTURE = "infrastructure"  # 基础设施功能
@@ -25,6 +26,7 @@ class CategoryEnum(Enum):
 
 class SeverityEnum(Enum):
     """严重性级别枚举"""
+
     CRITICAL = "critical"  # 关键 (>=95% 相似度)
     HIGH = "high"  # 高 (80-94% 相似度)
     MEDIUM = "medium"  # 中 (60-79% 相似度)
@@ -33,6 +35,7 @@ class SeverityEnum(Enum):
 
 class PriorityEnum(Enum):
     """优先级枚举"""
+
     P0 = "p0"  # 紧急
     P1 = "p1"  # 高优先级
     P2 = "p2"  # 中优先级
@@ -42,6 +45,7 @@ class PriorityEnum(Enum):
 @dataclass
 class ParameterMetadata:
     """函数参数元数据"""
+
     name: str
     type_annotation: Optional[str] = None
     default_value: Optional[str] = None
@@ -51,6 +55,7 @@ class ParameterMetadata:
 @dataclass
 class FunctionMetadata:
     """函数元数据"""
+
     name: str
     line_number: int
     parameters: List[ParameterMetadata] = field(default_factory=list)
@@ -65,6 +70,7 @@ class FunctionMetadata:
 @dataclass
 class ClassMetadata:
     """类元数据"""
+
     name: str
     line_number: int
     base_classes: List[str] = field(default_factory=list)
@@ -77,6 +83,7 @@ class ClassMetadata:
 @dataclass
 class ModuleMetadata:
     """模块元数据"""
+
     file_path: str
     module_name: str
     category: CategoryEnum = CategoryEnum.UNKNOWN
@@ -93,6 +100,7 @@ class ModuleMetadata:
 @dataclass
 class CodeBlock:
     """代码块（用于相似性比较）"""
+
     file_path: str
     start_line: int
     end_line: int
@@ -106,6 +114,7 @@ class CodeBlock:
 @dataclass
 class DuplicationCase:
     """代码重复案例"""
+
     id: str
     severity: SeverityEnum
     blocks: List[CodeBlock] = field(default_factory=list)
@@ -119,6 +128,7 @@ class DuplicationCase:
 @dataclass
 class Dependency:
     """模块依赖关系"""
+
     source_module: str
     target_module: str
     import_type: str  # "import", "from_import", "dynamic"
@@ -128,6 +138,7 @@ class Dependency:
 @dataclass
 class OptimizationOpportunity:
     """优化机会"""
+
     id: str
     title: str
     category: str  # "performance", "architecture", "code_quality"
@@ -143,6 +154,7 @@ class OptimizationOpportunity:
 @dataclass
 class MergeRecommendation:
     """合并建议"""
+
     id: str
     title: str
     modules_to_merge: List[str] = field(default_factory=list)
@@ -157,6 +169,7 @@ class MergeRecommendation:
 @dataclass
 class DataFlow:
     """数据流"""
+
     id: str
     name: str
     description: str
@@ -169,6 +182,7 @@ class DataFlow:
 @dataclass
 class ArchitectureIssue:
     """架构问题"""
+
     id: str
     type: str  # "circular_dependency", "god_object", "tight_coupling", etc.
     severity: SeverityEnum
@@ -181,6 +195,7 @@ class ArchitectureIssue:
 @dataclass
 class ManualMetadata:
     """手册元数据"""
+
     version: str
     generation_date: datetime
     total_modules: int = 0
@@ -209,6 +224,7 @@ class ManualMetadata:
 @dataclass
 class ModuleInventory:
     """模块清单"""
+
     modules: List[ModuleMetadata] = field(default_factory=list)
     dependencies: List[Dependency] = field(default_factory=list)
     metadata: Optional[ManualMetadata] = None
@@ -241,6 +257,7 @@ class ModuleInventory:
 @dataclass
 class DuplicationIndex:
     """重复索引"""
+
     duplications: List[DuplicationCase] = field(default_factory=list)
     total_cases: int = 0
 
@@ -280,6 +297,7 @@ class DuplicationIndex:
 @dataclass
 class OptimizationRoadmap:
     """优化路线图"""
+
     opportunities: List[OptimizationOpportunity] = field(default_factory=list)
 
     # 按类别分组
@@ -307,8 +325,10 @@ class OptimizationRoadmap:
         quick_wins = []
         for opp in self.opportunities:
             if opp.priority in [PriorityEnum.P0, PriorityEnum.P1]:
-                if any(keyword in opp.effort_estimate.lower()
-                       for keyword in ["hour", "小时", "1 day", "1天"]):
+                if any(
+                    keyword in opp.effort_estimate.lower()
+                    for keyword in ["hour", "小时", "1 day", "1天"]
+                ):
                     quick_wins.append(opp)
         return quick_wins
 
@@ -316,6 +336,7 @@ class OptimizationRoadmap:
 @dataclass
 class ConsolidationGuide:
     """合并指南"""
+
     recommendations: List[MergeRecommendation] = field(default_factory=list)
 
     def add_recommendation(self, rec: MergeRecommendation):
@@ -332,6 +353,7 @@ class ConsolidationGuide:
 
 
 # 辅助函数
+
 
 def severity_from_similarity(token_sim: float, ast_sim: float) -> SeverityEnum:
     """根据相似度计算严重性级别"""
@@ -350,33 +372,38 @@ def categorize_module_by_path(file_path: str) -> CategoryEnum:
     path_lower = file_path.lower()
 
     # 核心功能特征
-    if any(keyword in path_lower for keyword in [
-        'unified_manager', 'core.py', 'data_access', 'main.py'
-    ]):
+    if any(
+        keyword in path_lower
+        for keyword in ["unified_manager", "core.py", "data_access", "main.py"]
+    ):
         return CategoryEnum.CORE
 
     # 辅助功能特征
-    if any(keyword in path_lower for keyword in [
-        'adapter', 'factory', 'strategy', 'backtest'
-    ]):
+    if any(
+        keyword in path_lower
+        for keyword in ["adapter", "factory", "strategy", "backtest"]
+    ):
         return CategoryEnum.AUXILIARY
 
     # 基础设施特征
-    if any(keyword in path_lower for keyword in [
-        'db_manager', 'database', 'config', 'model'
-    ]):
+    if any(
+        keyword in path_lower
+        for keyword in ["db_manager", "database", "config", "model"]
+    ):
         return CategoryEnum.INFRASTRUCTURE
 
     # 监控功能特征
-    if any(keyword in path_lower for keyword in [
-        'monitoring', 'alert', 'performance_monitor', 'data_quality'
-    ]):
+    if any(
+        keyword in path_lower
+        for keyword in ["monitoring", "alert", "performance_monitor", "data_quality"]
+    ):
         return CategoryEnum.MONITORING
 
     # 工具功能特征
-    if any(keyword in path_lower for keyword in [
-        'util', 'helper', 'decorator', 'validation'
-    ]):
+    if any(
+        keyword in path_lower
+        for keyword in ["util", "helper", "decorator", "validation"]
+    ):
         return CategoryEnum.UTILITY
 
     return CategoryEnum.UNKNOWN

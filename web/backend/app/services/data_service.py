@@ -19,7 +19,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 )
 
-from core.data_classification import DataClassification
+from src.core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ try:
     if parent_dir not in sys.path:
         sys.path.insert(0, parent_dir)
 
-    from adapters.akshare_adapter import AkshareDataSource
+    from src.adapters.akshare_adapter import AkshareDataSource
 
     AKSHARE_AVAILABLE = True
     logger.info("Akshare adapter imported successfully")

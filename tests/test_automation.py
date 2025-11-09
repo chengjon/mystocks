@@ -14,6 +14,7 @@
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
@@ -32,20 +33,21 @@ from automation import (
     NotificationConfig,
     NotificationChannel,
     NotificationLevel,
-    Notification
+    Notification,
 )
 
 from automation.predefined_tasks import (
     PredefinedTasks,
     create_daily_update_task,
     create_strategy_execution_task,
-    create_health_check_task
+    create_health_check_task,
 )
 
 
 # =============================================================================
 # JobLock Tests
 # =============================================================================
+
 
 class TestJobLock:
     """任务锁测试"""
@@ -109,25 +111,22 @@ class TestJobLock:
 # NotificationManager Tests
 # =============================================================================
 
+
 class TestNotificationManager:
     """通知管理器测试"""
 
     def test_basic_notification(self):
         """测试基本通知发送"""
-        config = NotificationConfig(
-            channels=[NotificationChannel.LOG]
-        )
+        config = NotificationConfig(channels=[NotificationChannel.LOG])
         manager = NotificationManager(config)
 
         result = manager.send_notification(
-            title="Test",
-            message="Test message",
-            level=NotificationLevel.INFO
+            title="Test", message="Test message", level=NotificationLevel.INFO
         )
 
         assert result == True
         assert len(manager.notifications) == 1
-        assert manager.stats['total_sent'] == 1
+        assert manager.stats["total_sent"] == 1
 
     def test_multiple_channels(self):
         """测试多渠道通知"""
@@ -137,39 +136,32 @@ class TestNotificationManager:
         manager = NotificationManager(config)
 
         result = manager.send_notification(
-            title="Multi-channel",
-            message="Test",
-            level=NotificationLevel.INFO
+            title="Multi-channel", message="Test", level=NotificationLevel.INFO
         )
 
         assert result == True
-        assert manager.stats['log_sent'] == 1
-        assert manager.stats['console_sent'] == 1
+        assert manager.stats["log_sent"] == 1
+        assert manager.stats["console_sent"] == 1
 
     def test_rate_limiting(self):
         """测试频率限制"""
         config = NotificationConfig(
-            channels=[NotificationChannel.LOG],
-            rate_limit=5  # 5秒限制
+            channels=[NotificationChannel.LOG], rate_limit=5  # 5秒限制
         )
         manager = NotificationManager(config)
 
         # 第一次发送应该成功
         result1 = manager.send_notification(
-            title="Same",
-            message="Same",
-            level=NotificationLevel.INFO
+            title="Same", message="Same", level=NotificationLevel.INFO
         )
         assert result1 == True
 
         # 立即再次发送应该被限制
         result2 = manager.send_notification(
-            title="Same",
-            message="Same",
-            level=NotificationLevel.INFO
+            title="Same", message="Same", level=NotificationLevel.INFO
         )
         assert result2 == False
-        assert manager.stats['rate_limited'] == 1
+        assert manager.stats["rate_limited"] == 1
 
     def test_success_notification(self):
         """测试成功通知"""
@@ -177,9 +169,7 @@ class TestNotificationManager:
         manager = NotificationManager(config)
 
         manager.send_success_notification(
-            task_name="test_task",
-            execution_time=12.5,
-            result="success"
+            task_name="test_task", execution_time=12.5, result="success"
         )
 
         assert len(manager.notifications) == 1
@@ -191,9 +181,7 @@ class TestNotificationManager:
         manager = NotificationManager(config)
 
         manager.send_failure_notification(
-            task_name="test_task",
-            error_message="Test error",
-            retry_count=2
+            task_name="test_task", error_message="Test error", retry_count=2
         )
 
         assert len(manager.notifications) == 1
@@ -205,10 +193,7 @@ class TestNotificationManager:
         manager = NotificationManager(config)
 
         manager.send_signal_notification(
-            strategy_name="momentum",
-            symbol="sh600000",
-            signal="buy",
-            price=10.52
+            strategy_name="momentum", symbol="sh600000", signal="buy", price=10.52
         )
 
         assert len(manager.notifications) == 1
@@ -222,9 +207,7 @@ class TestNotificationManager:
         # 发送多条通知
         for i in range(5):
             manager.send_notification(
-                title=f"Test {i}",
-                message="Test",
-                level=NotificationLevel.INFO
+                title=f"Test {i}", message="Test", level=NotificationLevel.INFO
             )
 
         history = manager.get_notification_history(limit=3)
@@ -234,7 +217,7 @@ class TestNotificationManager:
         """测试通知历史过滤"""
         config = NotificationConfig(
             channels=[NotificationChannel.LOG],
-            rate_limit=0  # Disable rate limiting for this test
+            rate_limit=0,  # Disable rate limiting for this test
         )
         manager = NotificationManager(config)
 
@@ -254,14 +237,15 @@ class TestNotificationManager:
         manager.send_notification("Test 2", "msg", NotificationLevel.ERROR)
 
         stats = manager.get_statistics()
-        assert stats['total_sent'] == 2
-        assert stats['total_notifications'] == 2
-        assert stats['success_rate'] == 100.0
+        assert stats["total_sent"] == 2
+        assert stats["total_notifications"] == 2
+        assert stats["success_rate"] == 100.0
 
 
 # =============================================================================
 # TaskScheduler Tests
 # =============================================================================
+
 
 class TestTaskScheduler:
     """任务调度器测试"""
@@ -283,7 +267,7 @@ class TestTaskScheduler:
             name="test_task",
             func=test_func,
             trigger_type="interval",
-            trigger_args={"seconds": 10}
+            trigger_args={"seconds": 10},
         )
 
         task_id = scheduler.add_task(config)
@@ -302,7 +286,7 @@ class TestTaskScheduler:
             func=test_func,
             trigger_type="interval",
             trigger_args={"seconds": 10},
-            enabled=False
+            enabled=False,
         )
 
         task_id = scheduler.add_task(config)
@@ -320,7 +304,7 @@ class TestTaskScheduler:
                 name=f"task_{i}",
                 func=test_func,
                 trigger_type="interval",
-                trigger_args={"seconds": 10}
+                trigger_args={"seconds": 10},
             )
             scheduler.add_task(config)
 
@@ -338,18 +322,19 @@ class TestTaskScheduler:
             name="test_task",
             func=test_func,
             trigger_type="interval",
-            trigger_args={"seconds": 10}
+            trigger_args={"seconds": 10},
         )
         scheduler.add_task(config)
 
         stats = scheduler.get_statistics()
-        assert stats['total_tasks'] == 1
-        assert stats['active_tasks'] == 1
+        assert stats["total_tasks"] == 1
+        assert stats["active_tasks"] == 1
 
 
 # =============================================================================
 # PredefinedTasks Tests
 # =============================================================================
+
 
 class TestPredefinedTasks:
     """预定义任务测试"""
@@ -358,46 +343,44 @@ class TestPredefinedTasks:
         """测试健康检查"""
         result = PredefinedTasks.health_check()
 
-        assert result['status'] in ['healthy', 'unhealthy']
-        assert 'services' in result
-        assert 'timestamp' in result
+        assert result["status"] in ["healthy", "unhealthy"]
+        assert "services" in result
+        assert "timestamp" in result
 
     def test_health_check_specific_services(self):
         """测试特定服务健康检查"""
-        result = PredefinedTasks.health_check(services=['database'])
+        result = PredefinedTasks.health_check(services=["database"])
 
-        assert 'database' in result['services']
-        assert result['services']['database'] == 'healthy'
+        assert "database" in result["services"]
+        assert result["services"]["database"] == "healthy"
 
     def test_generate_daily_report(self):
         """测试生成每日报告"""
         result = PredefinedTasks.generate_daily_report()
 
-        assert result['status'] == 'success'
-        assert 'date' in result
-        assert 'report' in result
+        assert result["status"] == "success"
+        assert "date" in result
+        assert "report" in result
 
     def test_create_daily_update_task(self):
         """测试创建每日更新任务配置"""
-        task = create_daily_update_task(market='sh', hour=16, minute=0)
+        task = create_daily_update_task(market="sh", hour=16, minute=0)
 
         assert task.name == "daily_data_update_sh"
         assert task.trigger_type == "cron"
         assert task.priority == TaskPriority.HIGH
-        assert task.kwargs['market'] == 'sh'
+        assert task.kwargs["market"] == "sh"
 
     def test_create_strategy_execution_task(self):
         """测试创建策略执行任务配置"""
         task = create_strategy_execution_task(
-            strategy_name="momentum",
-            hour=9,
-            minute=30
+            strategy_name="momentum", hour=9, minute=30
         )
 
         assert task.name == "execute_momentum"
         assert task.trigger_type == "cron"
-        assert task.kwargs['strategy_name'] == 'momentum'
-        assert 'daily_data_update_sh' in task.depends_on
+        assert task.kwargs["strategy_name"] == "momentum"
+        assert "daily_data_update_sh" in task.depends_on
 
     def test_create_health_check_task(self):
         """测试创建健康检查任务配置"""
@@ -405,7 +388,7 @@ class TestPredefinedTasks:
 
         assert task.name == "system_health_check"
         assert task.trigger_type == "interval"
-        assert task.trigger_args['minutes'] == 30
+        assert task.trigger_args["minutes"] == 30
         assert task.priority == TaskPriority.LOW
 
 
@@ -413,14 +396,13 @@ class TestPredefinedTasks:
 # Integration Tests
 # =============================================================================
 
+
 class TestIntegration:
     """集成测试"""
 
     def test_scheduler_with_notification(self):
         """测试调度器与通知集成"""
-        notification_config = NotificationConfig(
-            channels=[NotificationChannel.LOG]
-        )
+        notification_config = NotificationConfig(channels=[NotificationChannel.LOG])
         notification_mgr = NotificationManager(notification_config)
 
         scheduler = TaskScheduler(notification_manager=notification_mgr)
@@ -433,7 +415,7 @@ class TestIntegration:
             func=test_func,
             trigger_type="interval",
             trigger_args={"seconds": 10},
-            notify_on_success=True
+            notify_on_success=True,
         )
 
         scheduler.add_task(config)
@@ -454,7 +436,7 @@ class TestIntegration:
             func=task_func,
             trigger_type="interval",
             trigger_args={"seconds": 1},
-            max_retries=2
+            max_retries=2,
         )
 
         scheduler.add_task(config)
@@ -475,7 +457,7 @@ class TestIntegration:
             func=task1,
             trigger_type="interval",
             trigger_args={"seconds": 10},
-            next_tasks=["coordinated_task2"]
+            next_tasks=["coordinated_task2"],
         )
 
         config2 = TaskConfig(
@@ -483,7 +465,7 @@ class TestIntegration:
             func=task2,
             trigger_type="interval",
             trigger_args={"seconds": 10},
-            depends_on=["coordinated_task1"]
+            depends_on=["coordinated_task1"],
         )
 
         scheduler.add_task(config1)
@@ -498,5 +480,5 @@ class TestIntegration:
 # Run Tests
 # =============================================================================
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

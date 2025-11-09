@@ -21,9 +21,9 @@ import sys
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from adapters.tdx_adapter import TdxDataSource
-from ml_strategy.feature_engineering import RollingFeatureGenerator
-from ml_strategy.price_predictor import PricePredictorStrategy
+from src.adapters.tdx_adapter import TdxDataSource
+from src.ml_strategy.feature_engineering import RollingFeatureGenerator
+from src.ml_strategy.price_predictor import PricePredictorStrategy
 
 
 class TestMLIntegration:
@@ -33,22 +33,23 @@ class TestMLIntegration:
     def test_day_file(self):
         """测试数据文件路径"""
         return os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            'temp/pyprof/data/sh000001.day'
+            os.path.dirname(os.path.dirname(__file__)), "temp/pyprof/data/sh000001.day"
         )
 
     @pytest.fixture
     def sample_data(self):
         """生成模拟数据（如果测试文件不存在）"""
         n_samples = 500
-        df = pd.DataFrame({
-            'open': np.random.rand(n_samples) * 100 + 3000,
-            'high': np.random.rand(n_samples) * 100 + 3100,
-            'low': np.random.rand(n_samples) * 100 + 2900,
-            'close': np.random.rand(n_samples) * 100 + 3000,
-            'vol': np.random.rand(n_samples) * 1e8,
-            'amount': np.random.rand(n_samples) * 1e11
-        })
+        df = pd.DataFrame(
+            {
+                "open": np.random.rand(n_samples) * 100 + 3000,
+                "high": np.random.rand(n_samples) * 100 + 3100,
+                "low": np.random.rand(n_samples) * 100 + 2900,
+                "close": np.random.rand(n_samples) * 100 + 3000,
+                "vol": np.random.rand(n_samples) * 1e8,
+                "amount": np.random.rand(n_samples) * 1e11,
+            }
+        )
         return df
 
     def test_end_to_end_prediction_with_real_data(self, test_day_file):
@@ -70,7 +71,7 @@ class TestMLIntegration:
         # 2. 特征工程
         print("步骤 2: 生成特征...")
         generator = RollingFeatureGenerator(window_size=10)
-        X, y = generator.prepare_ml_data(df, target_col='close', forecast_horizon=1)
+        X, y = generator.prepare_ml_data(df, target_col="close", forecast_horizon=1)
 
         assert len(X) == len(y), "X 和 y 长度不匹配"
         assert X.shape[1] == 15, "特征数量不正确"
@@ -81,8 +82,10 @@ class TestMLIntegration:
         predictor = PricePredictorStrategy()
         metrics = predictor.train(X, y, test_size=0.2)
 
-        assert metrics['r2_score'] > 0.5, "模型性能太差"
-        print(f"   ✅ 训练完成: RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}")
+        assert metrics["r2_score"] > 0.5, "模型性能太差"
+        print(
+            f"   ✅ 训练完成: RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}"
+        )
 
         # 4. 预测
         print("步骤 4: 价格预测...")
@@ -116,7 +119,7 @@ class TestMLIntegration:
         # 1. 特征工程
         print("步骤 1: 生成特征...")
         generator = RollingFeatureGenerator(window_size=10)
-        X, y = generator.prepare_ml_data(df, target_col='close', forecast_horizon=1)
+        X, y = generator.prepare_ml_data(df, target_col="close", forecast_horizon=1)
 
         assert len(X) > 100, "数据量不足"
         print(f"   ✅ 特征: X={X.shape}, y={y.shape}")
@@ -126,13 +129,13 @@ class TestMLIntegration:
         predictor = PricePredictorStrategy()
         metrics = predictor.train(X, y, test_size=0.2)
 
-        assert 'rmse' in metrics, "缺少 RMSE 指标"
-        assert 'r2_score' in metrics, "缺少 R² 指标"
+        assert "rmse" in metrics, "缺少 RMSE 指标"
+        assert "r2_score" in metrics, "缺少 R² 指标"
         print(f"   ✅ RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}")
 
         # 3. 模型保存/加载
         print("步骤 3: 模型持久化...")
-        model_path = 'models/test_integration.pkl'
+        model_path = "models/test_integration.pkl"
         predictor.save_model(model_path)
 
         predictor2 = PricePredictorStrategy()
@@ -158,7 +161,7 @@ class TestMLIntegration:
         print("测试聚合特征...")
         generator_agg = RollingFeatureGenerator(window_size=10)
         X_agg, y_agg = generator_agg.prepare_ml_data(
-            df, target_col='close', feature_type='aggregate'
+            df, target_col="close", feature_type="aggregate"
         )
         print(f"   ✅ 聚合特征: X={X_agg.shape}")
 
@@ -166,7 +169,7 @@ class TestMLIntegration:
         print("测试原始滚动特征...")
         generator_raw = RollingFeatureGenerator(window_size=5)
         X_raw, y_raw = generator_raw.prepare_ml_data(
-            df, target_col='close', feature_type='raw'
+            df, target_col="close", feature_type="raw"
         )
         print(f"   ✅ 原始特征: X={X_raw.shape}")
 
@@ -217,6 +220,7 @@ class TestMLIntegration:
 
         # 测试训练时间
         import time
+
         predictor = PricePredictorStrategy()
 
         start_time = time.time()
@@ -229,11 +233,11 @@ class TestMLIntegration:
 
         # 验证性能要求
         assert training_time < 10, "训练时间过长（> 10秒）"
-        assert metrics['training_time'] > 0, "训练时间记录错误"
+        assert metrics["training_time"] > 0, "训练时间记录错误"
 
         print("\n✅ 性能指标测试通过")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 直接运行测试
-    pytest.main([__file__, '-v', '-s'])
+    pytest.main([__file__, "-v", "-s"])

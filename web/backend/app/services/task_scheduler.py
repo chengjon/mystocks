@@ -24,23 +24,19 @@ class TaskScheduler:
 
     def __init__(self):
         # 配置APScheduler
-        jobstores = {
-            'default': MemoryJobStore()
-        }
-        executors = {
-            'default': ThreadPoolExecutor(20)
-        }
+        jobstores = {"default": MemoryJobStore()}
+        executors = {"default": ThreadPoolExecutor(20)}
         job_defaults = {
-            'coalesce': True,  # 合并错过的任务
-            'max_instances': 3,  # 同一任务最多同时运行3个实例
-            'misfire_grace_time': 300  # 任务错过执行时间后的宽限时间(秒)
+            "coalesce": True,  # 合并错过的任务
+            "max_instances": 3,  # 同一任务最多同时运行3个实例
+            "misfire_grace_time": 300,  # 任务错过执行时间后的宽限时间(秒)
         }
 
         self.scheduler = AsyncIOScheduler(
             jobstores=jobstores,
             executors=executors,
             job_defaults=job_defaults,
-            timezone='Asia/Shanghai'
+            timezone="Asia/Shanghai",
         )
 
         self.scheduled_tasks: Dict[str, str] = {}  # task_id -> job_id mapping
@@ -82,7 +78,7 @@ class TaskScheduler:
                 args=[task_config.task_id],
                 id=task_config.task_id,
                 name=task_config.task_name,
-                replace_existing=True
+                replace_existing=True,
             )
 
             self.scheduled_tasks[task_config.task_id] = job.id
@@ -134,18 +130,22 @@ class TaskScheduler:
         """获取所有已调度的任务"""
         jobs = []
         for job in self.scheduler.get_jobs():
-            jobs.append({
-                'job_id': job.id,
-                'name': job.name,
-                'next_run_time': job.next_run_time.isoformat() if job.next_run_time else None,
-                'trigger': str(job.trigger)
-            })
+            jobs.append(
+                {
+                    "job_id": job.id,
+                    "name": job.name,
+                    "next_run_time": (
+                        job.next_run_time.isoformat() if job.next_run_time else None
+                    ),
+                    "trigger": str(job.trigger),
+                }
+            )
         return jobs
 
     def _create_trigger(self, schedule: TaskSchedule):
         """创建APScheduler触发器"""
         try:
-            if schedule.schedule_type == 'cron':
+            if schedule.schedule_type == "cron":
                 if not schedule.cron_expression:
                     return None
                 # 解析cron表达式
@@ -162,25 +162,24 @@ class TaskScheduler:
                     day_of_week=parts[4],
                     start_date=schedule.start_time,
                     end_date=schedule.end_time,
-                    timezone='Asia/Shanghai'
+                    timezone="Asia/Shanghai",
                 )
 
-            elif schedule.schedule_type == 'interval':
+            elif schedule.schedule_type == "interval":
                 if not schedule.interval_seconds:
                     return None
                 return IntervalTrigger(
                     seconds=schedule.interval_seconds,
                     start_date=schedule.start_time,
                     end_date=schedule.end_time,
-                    timezone='Asia/Shanghai'
+                    timezone="Asia/Shanghai",
                 )
 
-            elif schedule.schedule_type == 'once':
+            elif schedule.schedule_type == "once":
                 if not schedule.start_time:
                     return None
                 return DateTrigger(
-                    run_date=schedule.start_time,
-                    timezone='Asia/Shanghai'
+                    run_date=schedule.start_time, timezone="Asia/Shanghai"
                 )
 
             else:

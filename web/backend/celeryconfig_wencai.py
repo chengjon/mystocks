@@ -18,49 +18,42 @@ from celery.schedules import crontab
 # 添加到beat_schedule字典中
 WENCAI_BEAT_SCHEDULE = {
     # 每日9:00自动刷新所有查询
-    'wencai-refresh-all-daily': {
-        'task': 'wencai.scheduled_refresh_all',
-        'schedule': crontab(hour=9, minute=0),  # 每天 09:00
-        'args': (1,),  # pages=1
-        'kwargs': {'active_only': True},
-        'options': {
-            'expires': 3600,  # 任务1小时后过期
-        }
+    "wencai-refresh-all-daily": {
+        "task": "wencai.scheduled_refresh_all",
+        "schedule": crontab(hour=9, minute=0),  # 每天 09:00
+        "args": (1,),  # pages=1
+        "kwargs": {"active_only": True},
+        "options": {
+            "expires": 3600,  # 任务1小时后过期
+        },
     },
-
     # 每日凌晨2:00清理30天前的旧数据
-    'wencai-cleanup-old-data-daily': {
-        'task': 'wencai.cleanup_old_data',
-        'schedule': crontab(hour=2, minute=0),  # 每天 02:00
-        'args': (30,),  # days=30
-        'kwargs': {'dry_run': False},
-        'options': {
-            'expires': 7200,  # 任务2小时后过期
-        }
+    "wencai-cleanup-old-data-daily": {
+        "task": "wencai.cleanup_old_data",
+        "schedule": crontab(hour=2, minute=0),  # 每天 02:00
+        "args": (30,),  # days=30
+        "kwargs": {"dry_run": False},
+        "options": {
+            "expires": 7200,  # 任务2小时后过期
+        },
     },
-
     # 每小时获取统计信息（可选，用于监控）
-    'wencai-stats-hourly': {
-        'task': 'wencai.stats',
-        'schedule': crontab(minute=0),  # 每小时的0分
-        'options': {
-            'expires': 3600,
-        }
+    "wencai-stats-hourly": {
+        "task": "wencai.stats",
+        "schedule": crontab(minute=0),  # 每小时的0分
+        "options": {
+            "expires": 3600,
+        },
     },
-
     # 每周一早上9:30刷新所有查询（多页数据）
-    'wencai-refresh-all-weekly-full': {
-        'task': 'wencai.scheduled_refresh_all',
-        'schedule': crontab(
-            day_of_week=1,  # 周一
-            hour=9,
-            minute=30
-        ),
-        'args': (3,),  # pages=3，获取更多数据
-        'kwargs': {'active_only': True},
-        'options': {
-            'expires': 7200,
-        }
+    "wencai-refresh-all-weekly-full": {
+        "task": "wencai.scheduled_refresh_all",
+        "schedule": crontab(day_of_week=1, hour=9, minute=30),  # 周一
+        "args": (3,),  # pages=3，获取更多数据
+        "kwargs": {"active_only": True},
+        "options": {
+            "expires": 7200,
+        },
     },
 }
 

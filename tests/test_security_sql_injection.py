@@ -20,7 +20,7 @@ import os
 from unittest.mock import Mock, patch, MagicMock
 
 # Add project root to path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -48,9 +48,12 @@ class TestSQLInjectionVulnerabilities:
         # "stock_code = '1' OR '1'='1'"
         # Which is vulnerable to injection!
 
-        assert "OR" in vulnerable_condition, "SQL injection payload present in condition"
-        assert vulnerable_condition == "stock_code = '1' OR '1'='1'", \
-            "Vulnerable pattern detected - string concatenation without parameterization"
+        assert (
+            "OR" in vulnerable_condition
+        ), "SQL injection payload present in condition"
+        assert (
+            vulnerable_condition == "stock_code = '1' OR '1'='1'"
+        ), "Vulnerable pattern detected - string concatenation without parameterization"
 
     def test_sql_injection_in_where_in_clause(self):
         """
@@ -89,8 +92,9 @@ class TestSQLInjectionVulnerabilities:
 
         # Produces: id = '1'; DROP TABLE users; --'
         # Which could delete the entire table!
-        assert "DROP TABLE" in vulnerable_condition or ";" in vulnerable_condition, \
-            "Dangerous SQL injection payload in DELETE condition"
+        assert (
+            "DROP TABLE" in vulnerable_condition or ";" in vulnerable_condition
+        ), "Dangerous SQL injection payload in DELETE condition"
 
     def test_parameterized_query_protection(self):
         """
@@ -110,9 +114,12 @@ class TestSQLInjectionVulnerabilities:
 
         # The user input is never concatenated into the SQL string
         # Therefore, even with malicious input, the query is safe
-        assert ":user_id" in str(safe_query), "Parameterized query uses named parameters"
-        assert user_input not in str(safe_query), \
-            "User input not embedded in SQL string (safe)"
+        assert ":user_id" in str(
+            safe_query
+        ), "Parameterized query uses named parameters"
+        assert user_input not in str(
+            safe_query
+        ), "User input not embedded in SQL string (safe)"
 
     def test_psycopg2_parameterized_query_protection(self):
         """
@@ -145,8 +152,9 @@ class TestSQLInjectionVulnerabilities:
         # "SELECT * FROM users WHERE id = 1'; DELETE FROM users; --"
         # Which is a multi-statement attack!
 
-        assert ";" in unsafe_query or "DELETE" in unsafe_query, \
-            "Unsafe string concatenation allows multiple SQL statements"
+        assert (
+            ";" in unsafe_query or "DELETE" in unsafe_query
+        ), "Unsafe string concatenation allows multiple SQL statements"
 
     def test_f_string_with_user_input_vulnerability(self):
         """
@@ -180,8 +188,9 @@ class TestSQLInjectionVulnerabilities:
 
         # However, in the actual code, table_name seems to be internal
         # Still, best practice is to whitelist table names
-        assert ";" in vulnerable_query or "DROP" in vulnerable_query, \
-            "Potential table name injection"
+        assert (
+            ";" in vulnerable_query or "DROP" in vulnerable_query
+        ), "Potential table name injection"
 
 
 class TestDataAccessVulnerabilityPatterns:
@@ -195,6 +204,7 @@ class TestDataAccessVulnerabilityPatterns:
         Test vulnerability in _build_analysis_query method (line ~1200)
         This method builds queries with unescaped string values
         """
+
         # Simulating the vulnerable _build_analysis_query method
         def vulnerable_build_query(table_name, filters):
             base_query = f"SELECT * FROM {table_name}"
@@ -212,9 +222,7 @@ class TestDataAccessVulnerabilityPatterns:
             return base_query
 
         # Attack: Use SQL injection in filter value
-        filters = {
-            "stock_code": "600000' OR '1'='1"
-        }
+        filters = {"stock_code": "600000' OR '1'='1"}
 
         query = vulnerable_build_query("daily_kline", filters)
 
@@ -226,6 +234,7 @@ class TestDataAccessVulnerabilityPatterns:
         Test vulnerability in _build_delete_query method (line 1257)
         This method builds DELETE queries with unescaped conditions
         """
+
         def vulnerable_build_delete(table_name, filters):
             base_query = f"DELETE FROM {table_name}"
             conditions = []
@@ -243,15 +252,15 @@ class TestDataAccessVulnerabilityPatterns:
             return base_query
 
         # Attack: Use SQL injection to delete all records
-        filters = {
-            "id": "1' OR '1'='1"
-        }
+        filters = {"id": "1' OR '1'='1"}
 
         query = vulnerable_build_delete("user_watchlist", filters)
 
         # DANGEROUS: Could delete all rows
         assert "OR '1'='1" in query, "DELETE statement vulnerable to injection"
-        assert query.count("WHERE") == 1, "WHERE clause present (shows where injection is)"
+        assert (
+            query.count("WHERE") == 1
+        ), "WHERE clause present (shows where injection is)"
 
 
 class TestSecurityFixApproaches:
@@ -292,15 +301,18 @@ class TestSecurityFixApproaches:
         query, params = safe_build_query_sqlalchemy("daily_kline", filters)
 
         # The payload is in bind_params, NOT in the SQL string
-        assert "OR '1'='1" not in str(query), \
-            "SQL injection payload NOT embedded in query string"
-        assert params["param_0"] == "600000' OR '1'='1", \
-            "Payload safely stored in bind parameters"
+        assert "OR '1'='1" not in str(
+            query
+        ), "SQL injection payload NOT embedded in query string"
+        assert (
+            params["param_0"] == "600000' OR '1'='1"
+        ), "Payload safely stored in bind parameters"
 
     def test_fixed_psycopg2_parameterization(self):
         """
         FIXED approach: Use psycopg2 with %s placeholders
         """
+
         def safe_build_query_psycopg2(table_name, filters):
             # Build query with %s placeholders
             base_query = f"SELECT * FROM {table_name}"
@@ -322,16 +334,15 @@ class TestSecurityFixApproaches:
         query, params = safe_build_query_psycopg2("daily_kline", filters)
 
         # The payload is NOT in the SQL string
-        assert "OR '1'='1" not in query, \
-            "Payload NOT in SQL statement"
+        assert "OR '1'='1" not in query, "Payload NOT in SQL statement"
         assert "%s" in query, "Using %s placeholders"
-        assert params[0] == "600000' OR '1'='1", \
-            "Payload safely passed as parameter"
+        assert params[0] == "600000' OR '1'='1", "Payload safely passed as parameter"
 
     def test_fixed_where_in_clause(self):
         """
         FIXED approach: Safely handle WHERE IN clauses with parameterization
         """
+
         def safe_build_where_in(table_name, column, values):
             # For IN clauses, use one placeholder per value
             placeholders = ", ".join(["%s"] * len(values))
@@ -353,7 +364,18 @@ class TestSecurityFixApproaches:
         Never trust user input for table/column names
         """
         ALLOWED_TABLES = {"daily_kline", "minute_kline", "tick_data", "symbols_info"}
-        ALLOWED_COLUMNS = {"id", "symbol", "stock_code", "date", "time", "open", "high", "low", "close", "volume"}
+        ALLOWED_COLUMNS = {
+            "id",
+            "symbol",
+            "stock_code",
+            "date",
+            "time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+        }
 
         def safe_build_dynamic_query(table_name, columns_to_select, filters):
             # Validate table name
@@ -387,7 +409,7 @@ class TestSecurityFixApproaches:
         query, params = safe_build_dynamic_query(
             "daily_kline",
             ["symbol", "date", "close"],
-            {"symbol": "600000", "date": "2025-11-06"}
+            {"symbol": "600000", "date": "2025-11-06"},
         )
 
         assert "daily_kline" in query, "Valid table name used"
@@ -396,11 +418,7 @@ class TestSecurityFixApproaches:
 
         # Test with malicious table name - SHOULD FAIL
         with pytest.raises(ValueError):
-            safe_build_dynamic_query(
-                "daily_kline'; DROP TABLE--",
-                ["symbol"],
-                {}
-            )
+            safe_build_dynamic_query("daily_kline'; DROP TABLE--", ["symbol"], {})
 
 
 class TestSecurityScanResults:
@@ -417,7 +435,7 @@ class TestSecurityScanResults:
             "pattern": "values = \"','\".join(value)",
             "description": "String concatenation in WHERE IN clause without escaping",
             "impact": "Complete database compromise, arbitrary SQL execution",
-            "fix": "Use parameterized queries with %s placeholders"
+            "fix": "Use parameterized queries with %s placeholders",
         },
         {
             "id": "SQL-INJ-002",
@@ -427,7 +445,7 @@ class TestSecurityScanResults:
             "pattern": "f\"{key} = '{value}'\"",
             "description": "String concatenation in WHERE = clause without escaping",
             "impact": "Data theft, unauthorized access, data modification",
-            "fix": "Use SQLAlchemy text() with bind parameters or psycopg2 %s"
+            "fix": "Use SQLAlchemy text() with bind parameters or psycopg2 %s",
         },
         {
             "id": "SQL-INJ-003",
@@ -437,28 +455,28 @@ class TestSecurityScanResults:
             "pattern": "f\"{key} = '{value}'\" in DELETE",
             "description": "String concatenation in DELETE WHERE clause",
             "impact": "Unauthorized data deletion, data loss",
-            "fix": "Use parameterized queries"
+            "fix": "Use parameterized queries",
         },
         {
             "id": "SQL-INJ-004",
             "file": "data_access.py",
             "line": 601,
             "severity": "MEDIUM",
-            "pattern": "f\"INSERT INTO {table_name}...",
+            "pattern": 'f"INSERT INTO {table_name}...',
             "description": "F-string with table name (lower risk if name is controlled)",
             "impact": "Potential injection if table name is user-controlled",
-            "fix": "Whitelist allowed table names"
+            "fix": "Whitelist allowed table names",
         },
         {
             "id": "SQL-INJ-005",
             "file": "data_access/postgresql_access.py",
             "line": 291,
             "severity": "MEDIUM",
-            "pattern": "f\"SELECT {cols} FROM {table_name}\"",
+            "pattern": 'f"SELECT {cols} FROM {table_name}"',
             "description": "F-string with table/column names",
             "impact": "Potential injection if names are user-controlled",
-            "fix": "Whitelist table and column names"
-        }
+            "fix": "Whitelist table and column names",
+        },
     ]
 
     @pytest.mark.parametrize("vuln", VULNERABILITIES)
@@ -468,7 +486,12 @@ class TestSecurityScanResults:
         This test documents security issues found
         """
         assert vuln["id"], "Vulnerability has ID"
-        assert vuln["severity"] in ["CRITICAL", "HIGH", "MEDIUM", "LOW"], "Valid severity"
+        assert vuln["severity"] in [
+            "CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW",
+        ], "Valid severity"
         assert vuln["file"], "File location specified"
         assert vuln["impact"], "Impact documented"
         assert vuln["fix"], "Fix approach provided"

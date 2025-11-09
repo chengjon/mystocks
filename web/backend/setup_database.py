@@ -15,28 +15,29 @@ import pymysql
 from dotenv import load_dotenv
 
 # 加载环境变量
-env_path = Path(__file__).parent.parent.parent / '.env'
+env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(env_path)
+
 
 class DatabaseSetup:
     def __init__(self):
         # PostgreSQL配置
         self.pg_config = {
-            'host': os.getenv('POSTGRESQL_HOST', 'localhost'),
-            'port': int(os.getenv('POSTGRESQL_PORT', 5432)),
-            'user': os.getenv('POSTGRESQL_USER', 'postgres'),
-            'password': os.getenv('POSTGRESQL_PASSWORD', 'your_password'),
-            'database': os.getenv('POSTGRESQL_DATABASE', 'mystocks')
+            "host": os.getenv("POSTGRESQL_HOST", "localhost"),
+            "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
+            "user": os.getenv("POSTGRESQL_USER", "postgres"),
+            "password": os.getenv("POSTGRESQL_PASSWORD", "your_password"),
+            "database": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
         }
 
         # MySQL配置
         self.mysql_config = {
-            'host': os.getenv('MYSQL_HOST', 'localhost'),
-            'port': int(os.getenv('MYSQL_PORT', 3306)),
-            'user': os.getenv('MYSQL_USER', 'root'),
-            'password': os.getenv('MYSQL_PASSWORD', 'your_password'),
-            'database': os.getenv('MYSQL_DATABASE', 'quant_research'),
-            'charset': 'utf8mb4'
+            "host": os.getenv("MYSQL_HOST", "localhost"),
+            "port": int(os.getenv("MYSQL_PORT", 3306)),
+            "user": os.getenv("MYSQL_USER", "root"),
+            "password": os.getenv("MYSQL_PASSWORD", "your_password"),
+            "database": os.getenv("MYSQL_DATABASE", "quant_research"),
+            "charset": "utf8mb4",
         }
 
     def verify_timescaledb(self):
@@ -50,11 +51,13 @@ class DatabaseSetup:
             cur = conn.cursor()
 
             # 检查TimescaleDB扩展
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT extname, extversion
                 FROM pg_extension
                 WHERE extname = 'timescaledb';
-            """)
+            """
+            )
 
             result = cur.fetchone()
 
@@ -63,7 +66,9 @@ class DatabaseSetup:
                 print(f"✅ TimescaleDB已安装: {extname} v{extversion}")
 
                 # 获取TimescaleDB版本详细信息
-                cur.execute("SELECT extversion FROM pg_extension WHERE extname='timescaledb';")
+                cur.execute(
+                    "SELECT extversion FROM pg_extension WHERE extname='timescaledb';"
+                )
                 version = cur.fetchone()[0]
                 print(f"   版本: {version}")
 
@@ -94,22 +99,22 @@ class DatabaseSetup:
             cur = conn.cursor()
 
             # 读取SQL脚本
-            sql_file = Path(__file__).parent / 'init_tables.sql'
+            sql_file = Path(__file__).parent / "init_tables.sql"
 
             if not sql_file.exists():
                 print(f"❌ SQL文件不存在: {sql_file}")
                 return False
 
-            with open(sql_file, 'r', encoding='utf-8') as f:
+            with open(sql_file, "r", encoding="utf-8") as f:
                 sql_content = f.read()
 
             # 移除\echo命令(psql特有命令)
             sql_lines = []
-            for line in sql_content.split('\n'):
-                if not line.strip().startswith('\\echo'):
+            for line in sql_content.split("\n"):
+                if not line.strip().startswith("\\echo"):
                     sql_lines.append(line)
 
-            sql_content = '\n'.join(sql_lines)
+            sql_content = "\n".join(sql_lines)
 
             # 执行SQL
             print("⏳ 正在执行SQL脚本...")
@@ -117,35 +122,39 @@ class DatabaseSetup:
 
             # 验证表是否创建成功
             tables = [
-                'stock_fund_flow',
-                'etf_spot_data',
-                'chip_race_data',
-                'stock_lhb_detail',
-                'strategy_signals',
-                'backtest_trades',
-                'backtest_results'
+                "stock_fund_flow",
+                "etf_spot_data",
+                "chip_race_data",
+                "stock_lhb_detail",
+                "strategy_signals",
+                "backtest_trades",
+                "backtest_results",
             ]
 
             print("\n验证表创建状态:")
             for table in tables:
-                cur.execute(f"""
+                cur.execute(
+                    f"""
                     SELECT EXISTS (
                         SELECT FROM information_schema.tables
                         WHERE table_schema = 'public'
                         AND table_name = '{table}'
                     );
-                """)
+                """
+                )
                 exists = cur.fetchone()[0]
                 status = "✅" if exists else "❌"
                 print(f"   {status} {table}")
 
             # 检查hypertable
             print("\n验证TimescaleDB hypertable:")
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT hypertable_name
                 FROM timescaledb_information.hypertables
                 WHERE hypertable_schema = 'public';
-            """)
+            """
+            )
             hypertables = cur.fetchall()
 
             if hypertables:
@@ -162,6 +171,7 @@ class DatabaseSetup:
         except Exception as e:
             print(f"❌ 创建PostgreSQL表失败: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -176,13 +186,13 @@ class DatabaseSetup:
             cur = conn.cursor()
 
             # 读取SQL脚本
-            sql_file = Path(__file__).parent / 'init_mysql_tables.sql'
+            sql_file = Path(__file__).parent / "init_mysql_tables.sql"
 
             if not sql_file.exists():
                 print(f"❌ SQL文件不存在: {sql_file}")
                 return False
 
-            with open(sql_file, 'r', encoding='utf-8') as f:
+            with open(sql_file, "r", encoding="utf-8") as f:
                 sql_content = f.read()
 
             # 分割并执行每条SQL语句
@@ -192,15 +202,19 @@ class DatabaseSetup:
             cur.execute(f"USE {self.mysql_config['database']}")
 
             # 逐条执行SQL(跳过USE和SELECT语句)
-            for statement in sql_content.split(';'):
+            for statement in sql_content.split(";"):
                 statement = statement.strip()
-                if statement and not statement.startswith('USE') and not statement.startswith('SELECT'):
+                if (
+                    statement
+                    and not statement.startswith("USE")
+                    and not statement.startswith("SELECT")
+                ):
                     cur.execute(statement)
 
             conn.commit()
 
             # 验证表是否创建成功
-            tables = ['strategy_configs', 'dividend_data']
+            tables = ["strategy_configs", "dividend_data"]
 
             print("\n验证表创建状态:")
             for table in tables:
@@ -217,6 +231,7 @@ class DatabaseSetup:
         except Exception as e:
             print(f"❌ 创建MySQL表失败: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -246,13 +261,15 @@ class DatabaseSetup:
         print("=" * 60)
         print("\n下一步:")
         print("  1. 检查表结构: psql -d mystocks -c '\\dt'")
-        print("  2. 检查hypertable: psql -d mystocks -c \"SELECT * FROM timescaledb_information.hypertables;\"")
+        print(
+            '  2. 检查hypertable: psql -d mystocks -c "SELECT * FROM timescaledb_information.hypertables;"'
+        )
         print("  3. 检查MySQL表: mysql -e 'USE quant_research; SHOW TABLES;'")
 
         return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     setup = DatabaseSetup()
     success = setup.run()
     sys.exit(0 if success else 1)

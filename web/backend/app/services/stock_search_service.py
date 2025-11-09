@@ -16,6 +16,7 @@ from functools import lru_cache
 
 try:
     import akshare as ak
+
     AKSHARE_AVAILABLE = True
 except ImportError:
     AKSHARE_AVAILABLE = False
@@ -37,7 +38,12 @@ def parse_datetime_to_timestamp(value) -> float:
     elif isinstance(value, str):
         try:
             # 尝试解析常见的日期格式
-            for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S', '%Y/%m/%d']:
+            for fmt in [
+                "%Y-%m-%d %H:%M:%S",
+                "%Y-%m-%d",
+                "%Y/%m/%d %H:%M:%S",
+                "%Y/%m/%d",
+            ]:
                 try:
                     dt = datetime.strptime(value, fmt)
                     return dt.timestamp()
@@ -69,12 +75,14 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
     code = code.strip().upper()
 
     # If already has exchange suffix, validate and return
-    if re.match(r'^\d{6}\.(SH|SZ|HK)$', code):
+    if re.match(r"^\d{6}\.(SH|SZ|HK)$", code):
         return code
 
     # Validate 6-digit code without suffix
-    if not re.match(r'^\d{6}$', code):
-        raise ValueError(f"Invalid stock code format: {code}. Expected 6 digits optionally followed by .SH/.SZ/.HK")
+    if not re.match(r"^\d{6}$", code):
+        raise ValueError(
+            f"Invalid stock code format: {code}. Expected 6 digits optionally followed by .SH/.SZ/.HK"
+        )
 
     # Auto-detect exchange for A-share
     if market in ["cn", "auto"]:
@@ -82,15 +90,15 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
         first_three = code[:3]
 
         # Shanghai Stock Exchange
-        if first_three in ['600', '601', '603', '688']:
+        if first_three in ["600", "601", "603", "688"]:
             return f"{code}.SH"
-        elif first_digit == '6':
+        elif first_digit == "6":
             return f"{code}.SH"
 
         # Shenzhen Stock Exchange
-        elif first_three in ['000', '001', '002', '003', '300', '301']:
+        elif first_three in ["000", "001", "002", "003", "300", "301"]:
             return f"{code}.SZ"
-        elif first_digit in ['0', '3']:
+        elif first_digit in ["0", "3"]:
             return f"{code}.SZ"
 
     # H-share (Hong Kong)
@@ -103,7 +111,9 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
 
 class StockSearchError(Exception):
     """股票搜索错误"""
+
     pass
+
 
 class StockSearchService:
     """
@@ -116,9 +126,7 @@ class StockSearchService:
         初始化股票搜索服务
         """
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'MyStocks/1.0'
-        })
+        self.session.headers.update({"User-Agent": "MyStocks/1.0"})
         self.akshare_available = AKSHARE_AVAILABLE
 
     def _make_request(self, endpoint: str, params: Dict = None) -> Dict:
@@ -170,7 +178,7 @@ class StockSearchService:
                     "description": item.get("description"),
                     "displaySymbol": item.get("displaySymbol"),
                     "type": item.get("type"),
-                    "exchange": item.get("exchange")
+                    "exchange": item.get("exchange"),
                 }
                 results.append(stock_info)
 
@@ -197,13 +205,13 @@ class StockSearchService:
 
             return {
                 "current": data.get("c"),  # 当前价格
-                "change": data.get("d"),   # 变化量
+                "change": data.get("d"),  # 变化量
                 "percent_change": data.get("dp"),  # 变化百分比
-                "high": data.get("h"),     # 最高价
-                "low": data.get("l"),      # 最低价
-                "open": data.get("o"),     # 开盘价
+                "high": data.get("h"),  # 最高价
+                "low": data.get("l"),  # 最低价
+                "open": data.get("o"),  # 开盘价
                 "previous_close": data.get("pc"),  # 前收盘价
-                "timestamp": data.get("t")  # 时间戳
+                "timestamp": data.get("t"),  # 时间戳
             }
         except FinnhubAPIError as e:
             print(f"获取股票报价时发生错误: {e}")
@@ -237,13 +245,15 @@ class StockSearchService:
                 "ticker": data.get("ticker"),
                 "weburl": data.get("weburl"),
                 "logo": data.get("logo"),
-                "industry": data.get("finnhubIndustry")
+                "industry": data.get("finnhubIndustry"),
             }
         except FinnhubAPIError as e:
             print(f"获取公司信息时发生错误: {e}")
             return None
 
-    def get_company_news(self, symbol: str, from_date: str = None, to_date: str = None) -> List[Dict]:
+    def get_company_news(
+        self, symbol: str, from_date: str = None, to_date: str = None
+    ) -> List[Dict]:
         """
         获取公司新闻
 
@@ -257,16 +267,14 @@ class StockSearchService:
         """
         # 设置默认日期范围（最近7天）
         if not to_date:
-            to_date = datetime.now().strftime('%Y-%m-%d')
+            to_date = datetime.now().strftime("%Y-%m-%d")
         if not from_date:
-            from_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            from_date = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
 
         try:
-            data = self._make_request("company-news", {
-                "symbol": symbol,
-                "from": from_date,
-                "to": to_date
-            })
+            data = self._make_request(
+                "company-news", {"symbol": symbol, "from": from_date, "to": to_date}
+            )
 
             # 提取相关新闻信息
             news_list = []
@@ -279,7 +287,7 @@ class StockSearchService:
                     "url": item.get("url"),
                     "image": item.get("image"),
                     "related": item.get("related"),
-                    "category": item.get("category")
+                    "category": item.get("category"),
                 }
                 news_list.append(news_info)
 
@@ -311,7 +319,7 @@ class StockSearchService:
                     "datetime": item.get("datetime"),
                     "url": item.get("url"),
                     "image": item.get("image"),
-                    "category": item.get("category")
+                    "category": item.get("category"),
                 }
                 news_list.append(news_info)
 
@@ -333,23 +341,26 @@ class StockSearchService:
         try:
             data = self._make_request("stock/recommendation", {"symbol": symbol})
 
-            return [{
-                "period": item.get("period"),
-                "strong_buy": item.get("strongBuy"),
-                "buy": item.get("buy"),
-                "hold": item.get("hold"),
-                "sell": item.get("sell"),
-                "strong_sell": item.get("strongSell")
-            } for item in data]
+            return [
+                {
+                    "period": item.get("period"),
+                    "strong_buy": item.get("strongBuy"),
+                    "buy": item.get("buy"),
+                    "hold": item.get("hold"),
+                    "sell": item.get("sell"),
+                    "strong_sell": item.get("strongSell"),
+                }
+                for item in data
+            ]
         except FinnhubAPIError as e:
             print(f"获取推荐趋势时发生错误: {e}")
             return []
 
     def clear_cache(self):
         """清除搜索缓存"""
-        if hasattr(self, 'search_a_stocks'):
+        if hasattr(self, "search_a_stocks"):
             self.search_a_stocks.cache_clear()
-        if hasattr(self, 'search_hk_stocks'):
+        if hasattr(self, "search_hk_stocks"):
             self.search_hk_stocks.cache_clear()
 
     # ========== A股搜索功能 (AKShare) ==========
@@ -376,20 +387,20 @@ class StockSearchService:
             # 搜索匹配的股票
             query_upper = query.upper()
             matched_stocks = stock_info_df[
-                (stock_info_df['code'].str.contains(query_upper, case=False)) |
-                (stock_info_df['name'].str.contains(query, case=False))
+                (stock_info_df["code"].str.contains(query_upper, case=False))
+                | (stock_info_df["name"].str.contains(query, case=False))
             ]
 
             # 转换为列表格式
             results = []
             for _, row in matched_stocks.head(20).iterrows():  # 限制返回前20个结果
                 stock_info = {
-                    "symbol": row['code'],
-                    "description": row['name'],
-                    "displaySymbol": row['code'],
+                    "symbol": row["code"],
+                    "description": row["name"],
+                    "displaySymbol": row["code"],
                     "type": "A股",
-                    "exchange": self._get_a_stock_exchange(row['code']),
-                    "market": "CN"
+                    "exchange": self._get_a_stock_exchange(row["code"]),
+                    "market": "CN",
                 }
                 results.append(stock_info)
 
@@ -408,11 +419,11 @@ class StockSearchService:
         Returns:
             str: 交易所名称
         """
-        if code.startswith('6'):
+        if code.startswith("6"):
             return "上海证券交易所"
-        elif code.startswith('0') or code.startswith('3'):
+        elif code.startswith("0") or code.startswith("3"):
             return "深圳证券交易所"
-        elif code.startswith('8') or code.startswith('4'):
+        elif code.startswith("8") or code.startswith("4"):
             return "北京证券交易所"
         else:
             return "未知"
@@ -441,20 +452,20 @@ class StockSearchService:
             # 搜索匹配的股票
             query_upper = query.upper()
             matched_stocks = hk_stock_df[
-                (hk_stock_df['代码'].astype(str).str.contains(query_upper, case=False)) |
-                (hk_stock_df['名称'].str.contains(query, case=False))
+                (hk_stock_df["代码"].astype(str).str.contains(query_upper, case=False))
+                | (hk_stock_df["名称"].str.contains(query, case=False))
             ]
 
             # 转换为列表格式
             results = []
             for _, row in matched_stocks.head(20).iterrows():  # 限制返回前20个结果
                 stock_info = {
-                    "symbol": str(row['代码']),
-                    "description": row['名称'],
-                    "displaySymbol": str(row['代码']),
+                    "symbol": str(row["代码"]),
+                    "description": row["名称"],
+                    "displaySymbol": str(row["代码"]),
                     "type": "H股",
                     "exchange": "香港证券交易所",
-                    "market": "HK"
+                    "market": "HK",
                 }
                 results.append(stock_info)
 
@@ -480,7 +491,7 @@ class StockSearchService:
         try:
             # 获取实时行情
             df = ak.stock_hk_spot_em()
-            stock_data = df[df['代码'].astype(str) == symbol]
+            stock_data = df[df["代码"].astype(str) == symbol]
 
             if stock_data.empty:
                 return None
@@ -488,17 +499,17 @@ class StockSearchService:
             row = stock_data.iloc[0]
             return {
                 "symbol": symbol,
-                "name": row['名称'],
-                "current": float(row['最新价']),
-                "change": float(row['涨跌额']),
-                "percent_change": float(row['涨跌幅']),
-                "open": float(row['今开']),
-                "high": float(row['最高']),
-                "low": float(row['最低']),
-                "previous_close": float(row['昨收']),
-                "volume": float(row['成交量']),
-                "amount": float(row['成交额']),
-                "timestamp": datetime.now().timestamp()
+                "name": row["名称"],
+                "current": float(row["最新价"]),
+                "change": float(row["涨跌额"]),
+                "percent_change": float(row["涨跌幅"]),
+                "open": float(row["今开"]),
+                "high": float(row["最高"]),
+                "low": float(row["最低"]),
+                "previous_close": float(row["昨收"]),
+                "volume": float(row["成交量"]),
+                "amount": float(row["成交额"]),
+                "timestamp": datetime.now().timestamp(),
             }
         except Exception as e:
             print(f"获取港股实时行情时发生错误: {e}")
@@ -549,11 +560,11 @@ class StockSearchService:
                 return None
 
             # Extract numeric code for akshare query (akshare uses 6-digit codes without suffix)
-            code_for_query = normalized_code.split('.')[0]
+            code_for_query = normalized_code.split(".")[0]
 
             # 获取实时行情
             df = ak.stock_zh_a_spot_em()
-            stock_data = df[df['代码'] == code_for_query]
+            stock_data = df[df["代码"] == code_for_query]
 
             if stock_data.empty:
                 return None
@@ -561,18 +572,18 @@ class StockSearchService:
             row = stock_data.iloc[0]
             return {
                 "symbol": normalized_code,  # Return normalized code with exchange suffix
-                "name": row['名称'],
-                "current": float(row['最新价']),
-                "change": float(row['涨跌额']),
-                "percent_change": float(row['涨跌幅']),
-                "open": float(row['今开']),
-                "high": float(row['最高']),
-                "low": float(row['最低']),
-                "previous_close": float(row['昨收']),
-                "volume": float(row['成交量']),
-                "amount": float(row['成交额']),
-                "turnover_rate": float(row['换手率']) if '换手率' in row else None,
-                "timestamp": datetime.now().timestamp()
+                "name": row["名称"],
+                "current": float(row["最新价"]),
+                "change": float(row["涨跌额"]),
+                "percent_change": float(row["涨跌幅"]),
+                "open": float(row["今开"]),
+                "high": float(row["最高"]),
+                "low": float(row["最低"]),
+                "previous_close": float(row["昨收"]),
+                "volume": float(row["成交量"]),
+                "amount": float(row["成交额"]),
+                "turnover_rate": float(row["换手率"]) if "换手率" in row else None,
+                "timestamp": datetime.now().timestamp(),
             }
         except Exception as e:
             print(f"获取 A 股实时行情时发生错误: {e}")
@@ -610,12 +621,14 @@ class StockSearchService:
             news_list = []
             for _, row in news_df.head(30).iterrows():  # 限制返回前30条
                 news_info = {
-                    "headline": row.get('新闻标题', ''),
-                    "summary": row.get('新闻内容', '')[:200] if '新闻内容' in row else '',
-                    "source": row.get('新闻来源', '东方财富'),
-                    "datetime": parse_datetime_to_timestamp(row.get('发布时间')),
-                    "url": row.get('新闻链接', ''),
-                    "category": "A股新闻"
+                    "headline": row.get("新闻标题", ""),
+                    "summary": (
+                        row.get("新闻内容", "")[:200] if "新闻内容" in row else ""
+                    ),
+                    "source": row.get("新闻来源", "东方财富"),
+                    "datetime": parse_datetime_to_timestamp(row.get("发布时间")),
+                    "url": row.get("新闻链接", ""),
+                    "category": "A股新闻",
                 }
                 news_list.append(news_info)
 
@@ -630,7 +643,7 @@ class StockSearchService:
         period: str = "daily",
         adjust: str = "qfq",
         start_date: str = None,
-        end_date: str = None
+        end_date: str = None,
     ) -> Optional[Dict]:
         """
         获取 A 股 K 线数据（日线/周线/月线）
@@ -668,21 +681,25 @@ class StockSearchService:
                 return None
 
             # Extract numeric code for akshare (remove exchange suffix)
-            code_for_query = normalized_code.split('.')[0]
+            code_for_query = normalized_code.split(".")[0]
 
             # Format dates for akshare (YYYYMMDD format)
             if start_date:
-                start_date_formatted = start_date.replace('-', '')
+                start_date_formatted = start_date.replace("-", "")
             else:
                 # Default to 60 days ago
                 from datetime import datetime, timedelta
-                start_date_formatted = (datetime.now() - timedelta(days=90)).strftime('%Y%m%d')
+
+                start_date_formatted = (datetime.now() - timedelta(days=90)).strftime(
+                    "%Y%m%d"
+                )
 
             if end_date:
-                end_date_formatted = end_date.replace('-', '')
+                end_date_formatted = end_date.replace("-", "")
             else:
                 from datetime import datetime
-                end_date_formatted = datetime.now().strftime('%Y%m%d')
+
+                end_date_formatted = datetime.now().strftime("%Y%m%d")
 
             # Get K-line data from AKShare
             df = ak.stock_zh_a_hist(
@@ -690,7 +707,7 @@ class StockSearchService:
                 period=period,
                 start_date=start_date_formatted,
                 end_date=end_date_formatted,
-                adjust=adjust
+                adjust=adjust,
             )
 
             if df.empty:
@@ -698,35 +715,40 @@ class StockSearchService:
                 return None
 
             # Get stock name from first row
-            stock_name = df['股票名称'].iloc[0] if '股票名称' in df.columns else code_for_query
+            stock_name = (
+                df["股票名称"].iloc[0] if "股票名称" in df.columns else code_for_query
+            )
 
             # Convert DataFrame to list of data points
             data_points = []
             previous_close = None
 
             for idx, row in df.iterrows():
-                date_str = str(row['日期'])
+                date_str = str(row["日期"])
                 # Parse date and create timestamp
                 from datetime import datetime
-                if len(date_str) == 8:  # YYYYMMDD format
-                    date_obj = datetime.strptime(date_str, '%Y%m%d')
-                else:  # YYYY-MM-DD format
-                    date_obj = datetime.strptime(date_str.split(' ')[0], '%Y-%m-%d')
 
-                date_formatted = date_obj.strftime('%Y-%m-%d')
+                if len(date_str) == 8:  # YYYYMMDD format
+                    date_obj = datetime.strptime(date_str, "%Y%m%d")
+                else:  # YYYY-MM-DD format
+                    date_obj = datetime.strptime(date_str.split(" ")[0], "%Y-%m-%d")
+
+                date_formatted = date_obj.strftime("%Y-%m-%d")
                 timestamp = int(date_obj.timestamp())
 
-                open_price = float(row['开盘'])
-                high_price = float(row['最高'])
-                low_price = float(row['最低'])
-                close_price = float(row['收盘'])
-                volume = int(row['成交量']) if '成交量' in row else 0
-                amount = float(row['成交额']) if '成交额' in row else 0.0
+                open_price = float(row["开盘"])
+                high_price = float(row["最高"])
+                low_price = float(row["最低"])
+                close_price = float(row["收盘"])
+                volume = int(row["成交量"]) if "成交量" in row else 0
+                amount = float(row["成交额"]) if "成交额" in row else 0.0
 
                 # Calculate amplitude
                 if previous_close and previous_close > 0:
                     amplitude = ((high_price - low_price) / previous_close) * 100
-                    change_percent = ((close_price - previous_close) / previous_close) * 100
+                    change_percent = (
+                        (close_price - previous_close) / previous_close
+                    ) * 100
                 else:
                     amplitude = 0.0
                     change_percent = 0.0
@@ -741,7 +763,7 @@ class StockSearchService:
                     "volume": volume,
                     "amount": round(amount, 2),
                     "amplitude": round(amplitude, 2),
-                    "change_percent": round(change_percent, 2)
+                    "change_percent": round(change_percent, 2),
                 }
                 data_points.append(data_point)
                 previous_close = close_price
@@ -755,12 +777,13 @@ class StockSearchService:
                 "period": period,
                 "adjust": adjust,
                 "data": data_points,
-                "count": len(data_points)
+                "count": len(data_points),
             }
 
         except Exception as e:
             print(f"获取 K 线数据时发生错误: {e}")
             import traceback
+
             traceback.print_exc()
             return None
 
@@ -782,7 +805,7 @@ class StockSearchService:
         # 自动检测市场类型
         if market == "auto":
             # 如果查询包含中文，优先搜索 A 股
-            if any('\u4e00' <= char <= '\u9fff' for char in query):
+            if any("\u4e00" <= char <= "\u9fff" for char in query):
                 market = "cn"
             # 如果是纯数字且长度为6，可能是 A 股代码
             elif query.isdigit() and len(query) == 6:
@@ -814,6 +837,7 @@ class StockSearchService:
 
 # 创建全局实例
 _stock_search_service = None
+
 
 def get_stock_search_service() -> StockSearchService:
     """

@@ -9,19 +9,20 @@ MySQL/Redis集成测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from data_access.mysql_access import MySQLDataAccess
-from data_access.redis_access import RedisDataAccess
-from core.data_classification import DataClassification
+from src.data_access.mysql_access import MySQLDataAccess
+from src.data_access.redis_access import RedisDataAccess
+from src.core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("MySQL/Redis集成测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 # ==================== MySQL测试 ====================
 print("【MySQL测试】\n")
@@ -44,7 +45,7 @@ try:
     info = manager.get_routing_info(DataClassification.SYMBOLS_INFO)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'mysql', "股票信息应该路由到MySQL"
+    assert info["target_db"] == "mysql", "股票信息应该路由到MySQL"
     print("✅ 股票信息路由验证通过\n")
 
 except Exception as e:
@@ -56,7 +57,7 @@ try:
     info = manager.get_routing_info(DataClassification.TRADE_CALENDAR)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'mysql', "交易日历应该路由到MySQL"
+    assert info["target_db"] == "mysql", "交易日历应该路由到MySQL"
     print("✅ 交易日历路由验证通过\n")
 
 except Exception as e:
@@ -68,7 +69,7 @@ try:
     info = manager.get_routing_info(DataClassification.SYSTEM_CONFIG)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'mysql', "系统配置应该路由到MySQL"
+    assert info["target_db"] == "mysql", "系统配置应该路由到MySQL"
     print("✅ 系统配置路由验证通过\n")
 
 except Exception as e:
@@ -80,7 +81,7 @@ try:
     info = manager.get_routing_info(DataClassification.INDUSTRY_CLASS)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'mysql', "行业分类应该路由到MySQL"
+    assert info["target_db"] == "mysql", "行业分类应该路由到MySQL"
     print("✅ 行业分类路由验证通过\n")
 
 except Exception as e:
@@ -106,8 +107,8 @@ try:
     print(f"  路由目标: {info['target_db'].upper()}")
     print(f"  TTL: {info['ttl']}秒")
 
-    assert info['target_db'] == 'redis', "实时持仓应该路由到Redis"
-    assert info['ttl'] == 300, "实时持仓TTL应该是300秒"
+    assert info["target_db"] == "redis", "实时持仓应该路由到Redis"
+    assert info["ttl"] == 300, "实时持仓TTL应该是300秒"
     print("✅ 实时持仓路由验证通过\n")
 
 except Exception as e:
@@ -120,7 +121,7 @@ try:
     print(f"  路由目标: {info['target_db'].upper()}")
     print(f"  TTL: {info['ttl']}秒")
 
-    assert info['target_db'] == 'redis', "实时账户应该路由到Redis"
+    assert info["target_db"] == "redis", "实时账户应该路由到Redis"
     print("✅ 实时账户路由验证通过\n")
 
 except Exception as e:
@@ -132,7 +133,7 @@ try:
     info = manager.get_routing_info(DataClassification.ORDER_QUEUE)
     print(f"  路由目标: {info['target_db'].upper()}")
 
-    assert info['target_db'] == 'redis', "订单队列应该路由到Redis"
+    assert info["target_db"] == "redis", "订单队列应该路由到Redis"
     print("✅ 订单队列路由验证通过\n")
 
 except Exception as e:
@@ -142,8 +143,8 @@ except Exception as e:
 print("📍 测试10: Redis基本操作测试")
 try:
     # 测试String操作
-    test_key = 'test:unified_manager:position'
-    test_data = {'symbol': '600000.SH', 'quantity': 1000, 'cost': 15.5}
+    test_key = "test:unified_manager:position"
+    test_data = {"symbol": "600000.SH", "quantity": 1000, "cost": 15.5}
 
     redis_access.set(test_key, test_data, ttl=60)
     retrieved = redis_access.get(test_key)
@@ -152,15 +153,13 @@ try:
     print(f"  String操作: ✓")
 
     # 测试Hash操作
-    hash_key = 'test:account:user001'
-    redis_access.hmset(hash_key, {
-        'cash': 100000.0,
-        'available': 50000.0,
-        'total_assets': 200000.0
-    })
+    hash_key = "test:account:user001"
+    redis_access.hmset(
+        hash_key, {"cash": 100000.0, "available": 50000.0, "total_assets": 200000.0}
+    )
 
     account = redis_access.hgetall(hash_key)
-    assert 'cash' in account, "Hash操作失败"
+    assert "cash" in account, "Hash操作失败"
     print(f"  Hash操作: ✓")
 
     # 清理测试数据
@@ -177,9 +176,9 @@ try:
 except:
     pass
 
-print("="*80)
+print("=" * 80)
 print("✅ MySQL/Redis集成测试完成")
-print("="*80)
+print("=" * 80)
 print("\n测试总结:")
 print("\n【MySQL】")
 print("  ✅ 连接测试 - 通过")

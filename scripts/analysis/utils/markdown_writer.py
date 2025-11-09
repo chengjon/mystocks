@@ -17,13 +17,21 @@ from pathlib import Path
 from datetime import datetime
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import (
-    ModuleMetadata, CategoryEnum, DuplicationCase,
-    OptimizationOpportunity, MergeRecommendation,
-    DataFlow, ManualMetadata, ModuleInventory,
-    DuplicationIndex, OptimizationRoadmap, ConsolidationGuide
+    ModuleMetadata,
+    CategoryEnum,
+    DuplicationCase,
+    OptimizationOpportunity,
+    MergeRecommendation,
+    DataFlow,
+    ManualMetadata,
+    ModuleInventory,
+    DuplicationIndex,
+    OptimizationRoadmap,
+    ConsolidationGuide,
 )
 
 
@@ -45,7 +53,7 @@ class MarkdownWriter:
         category: CategoryEnum,
         modules: List[ModuleMetadata],
         category_name_cn: str,
-        category_description: str
+        category_description: str,
     ) -> str:
         """
         生成功能类别文档
@@ -64,7 +72,7 @@ class MarkdownWriter:
             CategoryEnum.AUXILIARY: "02-auxiliary-functions.md",
             CategoryEnum.INFRASTRUCTURE: "03-infrastructure-functions.md",
             CategoryEnum.MONITORING: "04-monitoring-functions.md",
-            CategoryEnum.UTILITY: "05-utility-functions.md"
+            CategoryEnum.UTILITY: "05-utility-functions.md",
         }
 
         filename = category_files.get(category, f"{category.value}-functions.md")
@@ -80,8 +88,7 @@ class MarkdownWriter:
         # 统计
         total_classes = sum(len(m.classes) for m in modules)
         total_functions = sum(
-            len(m.functions) + sum(len(c.methods) for c in m.classes)
-            for m in modules
+            len(m.functions) + sum(len(c.methods) for c in m.classes) for m in modules
         )
         total_lines = sum(m.lines_of_code for m in modules)
 
@@ -114,7 +121,9 @@ class MarkdownWriter:
                         lines.append(f"{cls.docstring}\n")
 
                     if cls.base_classes:
-                        lines.append(f"**继承**: {', '.join(f'`{b}`' for b in cls.base_classes)}\n")
+                        lines.append(
+                            f"**继承**: {', '.join(f'`{b}`' for b in cls.base_classes)}\n"
+                        )
 
                     # 方法列表
                     if cls.methods:
@@ -128,7 +137,7 @@ class MarkdownWriter:
                             )
 
                             if method.docstring:
-                                first_line = method.docstring.split('\n')[0]
+                                first_line = method.docstring.split("\n")[0]
                                 lines.append(f"  - {first_line}")
 
                         lines.append("")
@@ -139,29 +148,26 @@ class MarkdownWriter:
                 for func in module.functions:
                     params = self._format_parameters(func.parameters)
                     return_type = func.return_type or "None"
-                    lines.append(
-                        f"##### `{func.name}({params})` → `{return_type}`\n"
-                    )
+                    lines.append(f"##### `{func.name}({params})` → `{return_type}`\n")
                     lines.append(f"**位置**: [{module.file_path}:{func.line_number}]\n")
 
                     if func.docstring:
                         lines.append(f"{func.docstring}\n")
 
                     if func.decorators:
-                        lines.append(f"**装饰器**: {', '.join(f'`@{d}`' for d in func.decorators)}\n")
+                        lines.append(
+                            f"**装饰器**: {', '.join(f'`@{d}`' for d in func.decorators)}\n"
+                        )
 
             lines.append("---\n")
 
         # 写入文件
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         return str(filepath)
 
-    def generate_duplication_analysis(
-        self,
-        duplication_index: DuplicationIndex
-    ) -> str:
+    def generate_duplication_analysis(self, duplication_index: DuplicationIndex) -> str:
         """
         生成重复分析文档
 
@@ -181,9 +187,15 @@ class MarkdownWriter:
         lines.append("## 严重性分布\n")
         lines.append("| 严重性 | 案例数 | 描述 |")
         lines.append("|--------|--------|------|")
-        lines.append(f"| CRITICAL | {len(duplication_index.critical)} | 几乎完全相同，需立即处理 |")
-        lines.append(f"| HIGH | {len(duplication_index.high)} | 高度相似，建议优先处理 |")
-        lines.append(f"| MEDIUM | {len(duplication_index.medium)} | 显著相似，建议考虑合并 |")
+        lines.append(
+            f"| CRITICAL | {len(duplication_index.critical)} | 几乎完全相同，需立即处理 |"
+        )
+        lines.append(
+            f"| HIGH | {len(duplication_index.high)} | 高度相似，建议优先处理 |"
+        )
+        lines.append(
+            f"| MEDIUM | {len(duplication_index.medium)} | 显著相似，建议考虑合并 |"
+        )
         lines.append(f"| LOW | {len(duplication_index.low)} | 部分相似，可选优化 |\n")
 
         # CRITICAL 案例
@@ -214,15 +226,12 @@ class MarkdownWriter:
             lines.append("</details>\n")
 
         # 写入文件
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         return str(filepath)
 
-    def generate_optimization_roadmap(
-        self,
-        roadmap: OptimizationRoadmap
-    ) -> str:
+    def generate_optimization_roadmap(self, roadmap: OptimizationRoadmap) -> str:
         """
         生成优化路线图文档
 
@@ -265,15 +274,12 @@ class MarkdownWriter:
                 lines.extend(self._format_optimization(opp))
 
         # 写入文件
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         return str(filepath)
 
-    def generate_consolidation_guide(
-        self,
-        guide: ConsolidationGuide
-    ) -> str:
+    def generate_consolidation_guide(self, guide: ConsolidationGuide) -> str:
         """
         生成合并指南文档
 
@@ -301,21 +307,20 @@ class MarkdownWriter:
         for risk_level in ["low", "medium", "high"]:
             recs = guide.get_by_risk_level(risk_level)
             if recs:
-                risk_name = {"low": "低风险", "medium": "中风险", "high": "高风险"}[risk_level]
+                risk_name = {"low": "低风险", "medium": "中风险", "high": "高风险"}[
+                    risk_level
+                ]
                 lines.append(f"## {risk_name}合并\n")
                 for rec in recs:
                     lines.extend(self._format_merge_recommendation(rec))
 
         # 写入文件
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         return str(filepath)
 
-    def generate_data_flow_maps(
-        self,
-        data_flows: List[DataFlow]
-    ) -> str:
+    def generate_data_flow_maps(self, data_flows: List[DataFlow]) -> str:
         """
         生成数据流图文档
 
@@ -388,16 +393,16 @@ class MarkdownWriter:
 
             lines.append("### 流程步骤\n")
             for i, step in enumerate(flow.steps, 1):
-                module = step.get('module', 'Unknown')
-                function = step.get('function', 'Unknown')
-                action = step.get('action', '')
+                module = step.get("module", "Unknown")
+                function = step.get("function", "Unknown")
+                action = step.get("action", "")
                 lines.append(f"{i}. **{module}**.`{function}()` - {action}")
 
             lines.append("\n---\n")
 
         # 写入文件
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         return str(filepath)
 
@@ -408,10 +413,12 @@ class MarkdownWriter:
 
         param_strs = []
         for param in parameters:
-            if hasattr(param, 'name'):
+            if hasattr(param, "name"):
                 if param.type_annotation:
                     if param.default_value:
-                        param_strs.append(f"{param.name}: {param.type_annotation} = {param.default_value}")
+                        param_strs.append(
+                            f"{param.name}: {param.type_annotation} = {param.default_value}"
+                        )
                     else:
                         param_strs.append(f"{param.name}: {param.type_annotation}")
                 else:
@@ -446,12 +453,7 @@ class MarkdownWriter:
         """格式化优化机会"""
         lines = []
 
-        priority_emoji = {
-            "p0": "🔴",
-            "p1": "🟠",
-            "p2": "🟡",
-            "p3": "🟢"
-        }
+        priority_emoji = {"p0": "🔴", "p1": "🟠", "p2": "🟡", "p3": "🟢"}
         emoji = priority_emoji.get(opp.priority.value, "⚪")
 
         lines.append(f"### {emoji} {opp.title}\n")
@@ -477,11 +479,7 @@ class MarkdownWriter:
         """格式化合并建议"""
         lines = []
 
-        risk_emoji = {
-            "low": "🟢",
-            "medium": "🟡",
-            "high": "🔴"
-        }
+        risk_emoji = {"low": "🟢", "medium": "🟡", "high": "🔴"}
         emoji = risk_emoji.get(rec.risk_level, "⚪")
 
         lines.append(f"### {emoji} {rec.title}\n")

@@ -14,12 +14,17 @@ from typing import List, Optional, Tuple
 from datetime import datetime
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import (
-    ModuleMetadata, ClassMetadata, FunctionMetadata,
-    ParameterMetadata, CategoryEnum, estimate_complexity,
-    categorize_module_by_path
+    ModuleMetadata,
+    ClassMetadata,
+    FunctionMetadata,
+    ParameterMetadata,
+    CategoryEnum,
+    estimate_complexity,
+    categorize_module_by_path,
 )
 
 
@@ -46,7 +51,7 @@ class ASTParser:
             ModuleMetadata 对象，如果解析失败则返回 None
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 source = f.read()
 
             # 解析 AST
@@ -62,14 +67,16 @@ class ASTParser:
                 module_name=module_name,
                 category=categorize_module_by_path(relative_path),
                 docstring=ast.get_docstring(tree),
-                last_modified=datetime.fromtimestamp(os.path.getmtime(file_path))
+                last_modified=datetime.fromtimestamp(os.path.getmtime(file_path)),
             )
 
             # 计算代码行数
-            lines = source.split('\n')
+            lines = source.split("\n")
             module.lines_of_code = len(lines)
             module.blank_lines = sum(1 for line in lines if not line.strip())
-            module.comment_lines = sum(1 for line in lines if line.strip().startswith('#'))
+            module.comment_lines = sum(
+                1 for line in lines if line.strip().startswith("#")
+            )
 
             # 遍历顶级节点
             for node in tree.body:
@@ -77,7 +84,9 @@ class ASTParser:
                     # 解析类
                     class_meta = self._parse_class(node)
                     module.classes.append(class_meta)
-                elif isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
+                elif isinstance(node, ast.FunctionDef) or isinstance(
+                    node, ast.AsyncFunctionDef
+                ):
                     # 解析函数
                     func_meta = self._parse_function(node)
                     module.functions.append(func_meta)
@@ -103,7 +112,7 @@ class ASTParser:
         """获取模块名称"""
         relative_path = file_path.relative_to(self.project_root)
         parts = list(relative_path.parts[:-1]) + [relative_path.stem]
-        return '.'.join(parts)
+        return ".".join(parts)
 
     def _parse_class(self, node: ast.ClassDef) -> ClassMetadata:
         """
@@ -133,18 +142,22 @@ class ASTParser:
             base_classes=base_classes,
             docstring=ast.get_docstring(node),
             decorators=decorators,
-            is_abstract='ABC' in base_classes or 'abc.ABC' in base_classes
+            is_abstract="ABC" in base_classes or "abc.ABC" in base_classes,
         )
 
         # 解析方法
         for item in node.body:
-            if isinstance(item, ast.FunctionDef) or isinstance(item, ast.AsyncFunctionDef):
+            if isinstance(item, ast.FunctionDef) or isinstance(
+                item, ast.AsyncFunctionDef
+            ):
                 method_meta = self._parse_function(item)
                 class_meta.methods.append(method_meta)
 
         return class_meta
 
-    def _parse_function(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> FunctionMetadata:
+    def _parse_function(
+        self, node: ast.FunctionDef | ast.AsyncFunctionDef
+    ) -> FunctionMetadata:
         """
         解析函数定义
 
@@ -184,7 +197,7 @@ class ASTParser:
             is_async=isinstance(node, ast.AsyncFunctionDef),
             decorators=decorators,
             body_lines=body_lines,
-            complexity=complexity
+            complexity=complexity,
         )
 
     def _parse_parameters(self, args: ast.arguments) -> List[ParameterMetadata]:
@@ -206,27 +219,43 @@ class ASTParser:
         for arg, default in zip(all_args, defaults):
             param = ParameterMetadata(
                 name=arg.arg,
-                type_annotation=self._get_type_annotation(arg.annotation) if arg.annotation else None,
+                type_annotation=(
+                    self._get_type_annotation(arg.annotation)
+                    if arg.annotation
+                    else None
+                ),
                 default_value=self._get_default_value(default) if default else None,
-                is_required=default is None
+                is_required=default is None,
             )
             parameters.append(param)
 
         # 处理 *args
         if args.vararg:
-            parameters.append(ParameterMetadata(
-                name=f"*{args.vararg.arg}",
-                type_annotation=self._get_type_annotation(args.vararg.annotation) if args.vararg.annotation else None,
-                is_required=False
-            ))
+            parameters.append(
+                ParameterMetadata(
+                    name=f"*{args.vararg.arg}",
+                    type_annotation=(
+                        self._get_type_annotation(args.vararg.annotation)
+                        if args.vararg.annotation
+                        else None
+                    ),
+                    is_required=False,
+                )
+            )
 
         # 处理 **kwargs
         if args.kwarg:
-            parameters.append(ParameterMetadata(
-                name=f"**{args.kwarg.arg}",
-                type_annotation=self._get_type_annotation(args.kwarg.annotation) if args.kwarg.annotation else None,
-                is_required=False
-            ))
+            parameters.append(
+                ParameterMetadata(
+                    name=f"**{args.kwarg.arg}",
+                    type_annotation=(
+                        self._get_type_annotation(args.kwarg.annotation)
+                        if args.kwarg.annotation
+                        else None
+                    ),
+                    is_required=False,
+                )
+            )
 
         return parameters
 
@@ -284,7 +313,9 @@ class ASTParser:
             return f"{decorator.value.id}.{decorator.attr}"
         return "unknown"
 
-    def scan_directory(self, directory: Path, exclude_patterns: List[str] = None) -> List[ModuleMetadata]:
+    def scan_directory(
+        self, directory: Path, exclude_patterns: List[str] = None
+    ) -> List[ModuleMetadata]:
         """
         扫描目录下的所有 Python 文件
 
@@ -297,14 +328,22 @@ class ASTParser:
         """
         if exclude_patterns is None:
             exclude_patterns = [
-                '__pycache__', '.git', '.venv', 'venv',
-                'env', '.pytest_cache', '.mypy_cache',
-                'node_modules', 'build', 'dist', '.eggs'
+                "__pycache__",
+                ".git",
+                ".venv",
+                "venv",
+                "env",
+                ".pytest_cache",
+                ".mypy_cache",
+                "node_modules",
+                "build",
+                "dist",
+                ".eggs",
             ]
 
         modules = []
 
-        for py_file in directory.rglob('*.py'):
+        for py_file in directory.rglob("*.py"):
             # 检查是否应该排除
             should_exclude = False
             for pattern in exclude_patterns:
@@ -336,10 +375,10 @@ def extract_code_block(file_path: str, start_line: int, end_line: int) -> str:
         代码块字符串
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
             # 转换为 0-based index
-            return ''.join(lines[start_line-1:end_line])
+            return "".join(lines[start_line - 1 : end_line])
     except Exception as e:
         print(f"Error extracting code block from {file_path}: {e}")
         return ""
@@ -358,11 +397,11 @@ def tokenize_code(code: str) -> List[str]:
     import re
 
     # 移除注释和字符串字面量
-    code_no_comments = re.sub(r'#.*$', '', code, flags=re.MULTILINE)
-    code_no_strings = re.sub(r'["\'].*?["\']', '', code_no_comments)
+    code_no_comments = re.sub(r"#.*$", "", code, flags=re.MULTILINE)
+    code_no_strings = re.sub(r'["\'].*?["\']', "", code_no_comments)
 
     # 按空白和符号分词
-    tokens = re.findall(r'\w+|[^\w\s]', code_no_strings)
+    tokens = re.findall(r"\w+|[^\w\s]", code_no_strings)
 
     # 过滤空 token
     return [t for t in tokens if t.strip()]

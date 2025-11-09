@@ -7,7 +7,11 @@ from fastapi import APIRouter, HTTPException, Depends, Body
 from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
-from app.services.watchlist_service import get_watchlist_service, WatchlistService, WatchlistError
+from app.services.watchlist_service import (
+    get_watchlist_service,
+    WatchlistService,
+    WatchlistError,
+)
 from app.api.auth import get_current_user, User
 
 router = APIRouter()
@@ -15,6 +19,7 @@ router = APIRouter()
 
 class WatchlistItem(BaseModel):
     """自选股条目"""
+
     id: int
     symbol: str = Field(..., description="股票代码")
     display_name: str = Field(None, description="显示名称")
@@ -25,6 +30,7 @@ class WatchlistItem(BaseModel):
 
 class AddWatchlistRequest(BaseModel):
     """添加自选股请求"""
+
     symbol: str = Field(..., description="股票代码")
     display_name: str = Field(None, description="显示名称")
     exchange: str = Field(None, description="交易所")
@@ -36,21 +42,25 @@ class AddWatchlistRequest(BaseModel):
 
 class UpdateWatchlistNotesRequest(BaseModel):
     """更新备注请求"""
+
     notes: str = Field(..., description="备注内容")
 
 
 class CreateGroupRequest(BaseModel):
     """创建分组请求"""
+
     group_name: str = Field(..., description="分组名称")
 
 
 class UpdateGroupRequest(BaseModel):
     """更新分组请求"""
+
     group_name: str = Field(..., description="新的分组名称")
 
 
 class MoveStockRequest(BaseModel):
     """移动股票请求"""
+
     symbol: str = Field(..., description="股票代码")
     from_group_id: int = Field(..., description="原分组ID")
     to_group_id: int = Field(..., description="目标分组ID")
@@ -58,7 +68,7 @@ class MoveStockRequest(BaseModel):
 
 @router.get("/", response_model=List[WatchlistItem])
 async def get_my_watchlist(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
     获取当前用户的自选股列表
@@ -74,7 +84,7 @@ async def get_my_watchlist(
 
 @router.get("/symbols", response_model=List[str])
 async def get_my_watchlist_symbols(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> List[str]:
     """
     获取当前用户的自选股代码列表
@@ -90,8 +100,7 @@ async def get_my_watchlist_symbols(
 
 @router.post("/add")
 async def add_to_watchlist(
-    request: AddWatchlistRequest,
-    current_user: User = Depends(get_current_user)
+    request: AddWatchlistRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     添加股票到自选股列表
@@ -106,9 +115,11 @@ async def add_to_watchlist(
         if request.group_name:
             group = service.get_or_create_group(current_user.id, request.group_name)
             if group:
-                group_id = group['id']
+                group_id = group["id"]
             else:
-                raise HTTPException(status_code=500, detail=f"无法创建分组 '{request.group_name}'")
+                raise HTTPException(
+                    status_code=500, detail=f"无法创建分组 '{request.group_name}'"
+                )
 
         success = service.add_to_watchlist(
             user_id=current_user.id,
@@ -117,7 +128,7 @@ async def add_to_watchlist(
             exchange=request.exchange,
             market=request.market,
             notes=request.notes,
-            group_id=group_id
+            group_id=group_id,
         )
 
         if not success:
@@ -127,7 +138,7 @@ async def add_to_watchlist(
             "success": True,
             "message": "已添加到自选股",
             "symbol": request.symbol,
-            "group_name": request.group_name if request.group_name else "默认分组"
+            "group_name": request.group_name if request.group_name else "默认分组",
         }
     except HTTPException:
         raise
@@ -139,8 +150,7 @@ async def add_to_watchlist(
 
 @router.delete("/remove/{symbol}")
 async def remove_from_watchlist(
-    symbol: str,
-    current_user: User = Depends(get_current_user)
+    symbol: str, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     从自选股列表中删除股票
@@ -152,11 +162,7 @@ async def remove_from_watchlist(
         if not success:
             raise HTTPException(status_code=404, detail="自选股不存在或删除失败")
 
-        return {
-            "success": True,
-            "message": "已从自选股移除",
-            "symbol": symbol
-        }
+        return {"success": True, "message": "已从自选股移除", "symbol": symbol}
     except HTTPException:
         raise
     except Exception as e:
@@ -165,8 +171,7 @@ async def remove_from_watchlist(
 
 @router.get("/check/{symbol}")
 async def check_in_watchlist(
-    symbol: str,
-    current_user: User = Depends(get_current_user)
+    symbol: str, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     检查股票是否在自选股列表中
@@ -175,10 +180,7 @@ async def check_in_watchlist(
         service = get_watchlist_service()
         is_watched = service.is_in_watchlist(current_user.id, symbol)
 
-        return {
-            "symbol": symbol,
-            "is_in_watchlist": is_watched
-        }
+        return {"symbol": symbol, "is_in_watchlist": is_watched}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"检查自选股失败: {str(e)}")
 
@@ -187,7 +189,7 @@ async def check_in_watchlist(
 async def update_watchlist_notes(
     symbol: str,
     request: UpdateWatchlistNotesRequest,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     更新自选股备注
@@ -195,19 +197,13 @@ async def update_watchlist_notes(
     try:
         service = get_watchlist_service()
         success = service.update_watchlist_notes(
-            user_id=current_user.id,
-            symbol=symbol,
-            notes=request.notes
+            user_id=current_user.id, symbol=symbol, notes=request.notes
         )
 
         if not success:
             raise HTTPException(status_code=404, detail="自选股不存在或更新失败")
 
-        return {
-            "success": True,
-            "message": "备注已更新",
-            "symbol": symbol
-        }
+        return {"success": True, "message": "备注已更新", "symbol": symbol}
     except HTTPException:
         raise
     except Exception as e:
@@ -215,9 +211,7 @@ async def update_watchlist_notes(
 
 
 @router.get("/count")
-async def get_watchlist_count(
-    current_user: User = Depends(get_current_user)
-) -> Dict:
+async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
     """
     获取自选股数量
     """
@@ -225,17 +219,13 @@ async def get_watchlist_count(
         service = get_watchlist_service()
         count = service.get_watchlist_count(current_user.id)
 
-        return {
-            "count": count
-        }
+        return {"count": count}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取自选股数量失败: {str(e)}")
 
 
 @router.delete("/clear")
-async def clear_watchlist(
-    current_user: User = Depends(get_current_user)
-) -> Dict:
+async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
     """
     清空当前用户的自选股列表
     """
@@ -246,10 +236,7 @@ async def clear_watchlist(
         if not success:
             raise HTTPException(status_code=500, detail="清空自选股失败")
 
-        return {
-            "success": True,
-            "message": "自选股列表已清空"
-        }
+        return {"success": True, "message": "自选股列表已清空"}
     except HTTPException:
         raise
     except Exception as e:
@@ -258,10 +245,9 @@ async def clear_watchlist(
 
 # ==================== 分组管理 API ====================
 
+
 @router.get("/groups")
-async def get_user_groups(
-    current_user: User = Depends(get_current_user)
-) -> List[Dict]:
+async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
     """
     获取当前用户的所有自选股分组
     """
@@ -275,8 +261,7 @@ async def get_user_groups(
 
 @router.post("/groups")
 async def create_group(
-    request: CreateGroupRequest,
-    current_user: User = Depends(get_current_user)
+    request: CreateGroupRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     创建新的自选股分组
@@ -291,7 +276,7 @@ async def create_group(
         return {
             "success": True,
             "message": f"分组 '{request.group_name}' 创建成功",
-            "group": group
+            "group": group,
         }
     except HTTPException:
         raise
@@ -306,7 +291,7 @@ async def create_group(
 async def update_group(
     group_id: int,
     request: UpdateGroupRequest,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     修改分组名称
@@ -321,7 +306,7 @@ async def update_group(
         return {
             "success": True,
             "message": f"分组已更新为 '{request.group_name}'",
-            "group_id": group_id
+            "group_id": group_id,
         }
     except HTTPException:
         raise
@@ -331,8 +316,7 @@ async def update_group(
 
 @router.delete("/groups/{group_id}")
 async def delete_group(
-    group_id: int,
-    current_user: User = Depends(get_current_user)
+    group_id: int, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     删除分组（会同时删除该分组下的所有自选股）
@@ -342,13 +326,11 @@ async def delete_group(
         success = service.delete_group(current_user.id, group_id)
 
         if not success:
-            raise HTTPException(status_code=404, detail="分组不存在或无法删除（默认分组不能删除）")
+            raise HTTPException(
+                status_code=404, detail="分组不存在或无法删除（默认分组不能删除）"
+            )
 
-        return {
-            "success": True,
-            "message": "分组已删除",
-            "group_id": group_id
-        }
+        return {"success": True, "message": "分组已删除", "group_id": group_id}
     except HTTPException:
         raise
     except Exception as e:
@@ -357,8 +339,7 @@ async def delete_group(
 
 @router.get("/group/{group_id}")
 async def get_watchlist_by_group(
-    group_id: int,
-    current_user: User = Depends(get_current_user)
+    group_id: int, current_user: User = Depends(get_current_user)
 ) -> List[Dict]:
     """
     获取指定分组的自选股列表
@@ -373,8 +354,7 @@ async def get_watchlist_by_group(
 
 @router.put("/move")
 async def move_stock_to_group(
-    request: MoveStockRequest,
-    current_user: User = Depends(get_current_user)
+    request: MoveStockRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     将股票从一个分组移动到另一个分组
@@ -385,7 +365,7 @@ async def move_stock_to_group(
             user_id=current_user.id,
             symbol=request.symbol,
             from_group_id=request.from_group_id,
-            to_group_id=request.to_group_id
+            to_group_id=request.to_group_id,
         )
 
         if not success:
@@ -395,7 +375,7 @@ async def move_stock_to_group(
             "success": True,
             "message": f"股票 {request.symbol} 已移动到新分组",
             "symbol": request.symbol,
-            "to_group_id": request.to_group_id
+            "to_group_id": request.to_group_id,
         }
     except HTTPException:
         raise
@@ -405,7 +385,7 @@ async def move_stock_to_group(
 
 @router.get("/with-groups")
 async def get_watchlist_with_groups(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     获取所有分组及其包含的自选股（分组视图）

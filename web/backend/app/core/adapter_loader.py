@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 # 自动计算项目根目录（向上3级：app -> backend -> web -> mystocks_spec）
 BACKEND_DIR = Path(__file__).parent.parent  # app/
-WEB_DIR = BACKEND_DIR.parent                 # web/
-PROJECT_ROOT = WEB_DIR.parent                # mystocks_spec/
+WEB_DIR = BACKEND_DIR.parent  # web/
+PROJECT_ROOT = WEB_DIR.parent  # mystocks_spec/
 
 # 确保项目根目录在 sys.path 中（只添加一次）
 if str(PROJECT_ROOT) not in sys.path:
@@ -43,72 +43,95 @@ class AdapterLoader:
     @lru_cache(maxsize=1)
     def get_akshare_adapter(cls):
         """获取 AkShare 适配器实例（单例）"""
-        if 'akshare' not in cls._adapters:
+        if "akshare" not in cls._adapters:
             try:
-                from adapters.akshare_adapter import AkshareDataSource
-                cls._adapters['akshare'] = AkshareDataSource()
-                cls._health_status['akshare'] = {"healthy": True, "status": "initialized"}
+                from src.adapters.akshare_adapter import AkshareDataSource
+
+                cls._adapters["akshare"] = AkshareDataSource()
+                cls._health_status["akshare"] = {
+                    "healthy": True,
+                    "status": "initialized",
+                }
                 logger.info("✅ AkShare adapter loaded successfully")
             except Exception as e:
                 logger.error(f"❌ Failed to load AkShare adapter: {e}")
-                cls._health_status['akshare'] = {"healthy": False, "status": "failed", "error": str(e)}
+                cls._health_status["akshare"] = {
+                    "healthy": False,
+                    "status": "failed",
+                    "error": str(e),
+                }
                 raise
-        return cls._adapters['akshare']
+        return cls._adapters["akshare"]
 
     @classmethod
     @lru_cache(maxsize=1)
     def get_tdx_adapter(cls):
         """获取 TDX 适配器实例（单例）"""
-        if 'tdx' not in cls._adapters:
+        if "tdx" not in cls._adapters:
             try:
-                from adapters.tdx_adapter import TdxDataSource
-                cls._adapters['tdx'] = TdxDataSource()
-                cls._health_status['tdx'] = {"healthy": True, "status": "initialized"}
+                from src.adapters.tdx_adapter import TdxDataSource
+
+                cls._adapters["tdx"] = TdxDataSource()
+                cls._health_status["tdx"] = {"healthy": True, "status": "initialized"}
                 logger.info("✅ TDX adapter loaded successfully")
             except Exception as e:
                 logger.error(f"❌ Failed to load TDX adapter: {e}")
-                cls._health_status['tdx'] = {"healthy": False, "status": "failed", "error": str(e)}
+                cls._health_status["tdx"] = {
+                    "healthy": False,
+                    "status": "failed",
+                    "error": str(e),
+                }
                 raise
-        return cls._adapters['tdx']
+        return cls._adapters["tdx"]
 
     @classmethod
     @lru_cache(maxsize=1)
     def get_financial_adapter(cls):
         """获取 Financial 适配器实例（单例）"""
-        if 'financial' not in cls._adapters:
+        if "financial" not in cls._adapters:
             try:
-                from adapters.financial_adapter import FinancialDataSource
-                cls._adapters['financial'] = FinancialDataSource()
-                cls._health_status['financial'] = {"healthy": True, "status": "initialized"}
+                from src.adapters.financial_adapter import FinancialDataSource
+
+                cls._adapters["financial"] = FinancialDataSource()
+                cls._health_status["financial"] = {
+                    "healthy": True,
+                    "status": "initialized",
+                }
                 logger.info("✅ Financial adapter loaded successfully")
             except Exception as e:
                 logger.error(f"❌ Failed to load Financial adapter: {e}")
-                cls._health_status['financial'] = {"healthy": False, "status": "failed", "error": str(e)}
+                cls._health_status["financial"] = {
+                    "healthy": False,
+                    "status": "failed",
+                    "error": str(e),
+                }
                 raise
-        return cls._adapters['financial']
+        return cls._adapters["financial"]
 
     @classmethod
     def get_health_status(cls, adapter_name: Optional[str] = None) -> Dict:
         """获取适配器健康状态"""
         if adapter_name:
-            return cls._health_status.get(adapter_name, {"healthy": False, "status": "unknown"})
+            return cls._health_status.get(
+                adapter_name, {"healthy": False, "status": "unknown"}
+            )
         return cls._health_status
 
     @classmethod
     def check_adapter_health(cls, adapter_name: str) -> bool:
         """检查适配器是否健康"""
         try:
-            if adapter_name == 'akshare':
+            if adapter_name == "akshare":
                 adapter = cls.get_akshare_adapter()
-            elif adapter_name == 'tdx':
+            elif adapter_name == "tdx":
                 adapter = cls.get_tdx_adapter()
-            elif adapter_name == 'financial':
+            elif adapter_name == "financial":
                 adapter = cls.get_financial_adapter()
             else:
                 return False
 
             # 执行健康检查（如果适配器有 health_check 方法）
-            if hasattr(adapter, 'health_check'):
+            if hasattr(adapter, "health_check"):
                 return adapter.health_check()
 
             # 默认：如果能加载就认为健康
@@ -142,9 +165,9 @@ def get_adapter_health_status(adapter_name: Optional[str] = None) -> Dict:
 def check_all_adapters() -> Dict[str, bool]:
     """检查所有适配器健康状态"""
     return {
-        'akshare': AdapterLoader.check_adapter_health('akshare'),
-        'tdx': AdapterLoader.check_adapter_health('tdx'),
-        'financial': AdapterLoader.check_adapter_health('financial'),
+        "akshare": AdapterLoader.check_adapter_health("akshare"),
+        "tdx": AdapterLoader.check_adapter_health("tdx"),
+        "financial": AdapterLoader.check_adapter_health("financial"),
     }
 
 

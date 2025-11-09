@@ -23,7 +23,7 @@ class EmailService:
         smtp_port: int = None,
         username: str = None,
         password: str = None,
-        use_tls: bool = True
+        use_tls: bool = True,
     ):
         """
         初始化邮件服务
@@ -35,10 +35,10 @@ class EmailService:
             password: 邮箱密码或应用密码（默认从环境变量读取）
             use_tls: 是否使用TLS加密
         """
-        self.smtp_host = smtp_host or os.getenv('SMTP_HOST', 'smtp.gmail.com')
-        self.smtp_port = smtp_port or int(os.getenv('SMTP_PORT', '587'))
-        self.username = username or os.getenv('SMTP_USERNAME', '')
-        self.password = password or os.getenv('SMTP_PASSWORD', '')
+        self.smtp_host = smtp_host or os.getenv("SMTP_HOST", "smtp.gmail.com")
+        self.smtp_port = smtp_port or int(os.getenv("SMTP_PORT", "587"))
+        self.username = username or os.getenv("SMTP_USERNAME", "")
+        self.password = password or os.getenv("SMTP_PASSWORD", "")
         self.use_tls = use_tls
 
         # 验证配置
@@ -60,7 +60,7 @@ class EmailService:
         subject: str,
         content: str,
         content_type: str = "plain",
-        from_name: str = None
+        from_name: str = None,
     ) -> Dict[str, any]:
         """
         发送邮件
@@ -76,20 +76,19 @@ class EmailService:
             Dict: 发送结果 {"success": bool, "message": str}
         """
         if not self.is_configured():
-            return {
-                "success": False,
-                "message": "邮件服务未配置，请设置 SMTP 环境变量"
-            }
+            return {"success": False, "message": "邮件服务未配置，请设置 SMTP 环境变量"}
 
         try:
             # 创建邮件对象
             msg = MIMEMultipart()
-            msg['From'] = f"{from_name} <{self.username}>" if from_name else self.username
-            msg['To'] = ", ".join(to_addresses)
-            msg['Subject'] = Header(subject, 'utf-8')
+            msg["From"] = (
+                f"{from_name} <{self.username}>" if from_name else self.username
+            )
+            msg["To"] = ", ".join(to_addresses)
+            msg["Subject"] = Header(subject, "utf-8")
 
             # 添加邮件内容
-            content_mime = MIMEText(content, content_type, 'utf-8')
+            content_mime = MIMEText(content, content_type, "utf-8")
             msg.attach(content_mime)
 
             # 连接SMTP服务器并发送邮件
@@ -103,15 +102,12 @@ class EmailService:
 
             return {
                 "success": True,
-                "message": f"邮件已发送至 {', '.join(to_addresses)}"
+                "message": f"邮件已发送至 {', '.join(to_addresses)}",
             }
         except Exception as e:
             error_msg = f"发送邮件失败: {str(e)}"
             print(f"❌ {error_msg}")
-            return {
-                "success": False,
-                "message": error_msg
-            }
+            return {"success": False, "message": error_msg}
 
     def send_welcome_email(self, user_email: str, user_name: str) -> Dict[str, any]:
         """
@@ -155,7 +151,7 @@ class EmailService:
             subject=subject,
             content=content,
             content_type="html",
-            from_name="MyStocks Team"
+            from_name="MyStocks Team",
         )
 
     def send_daily_newsletter(
@@ -163,7 +159,7 @@ class EmailService:
         user_email: str,
         user_name: str,
         watchlist_symbols: List[str],
-        news_data: List[Dict]
+        news_data: List[Dict],
     ) -> Dict[str, any]:
         """
         发送每日新闻简报
@@ -177,14 +173,16 @@ class EmailService:
         Returns:
             Dict: 发送结果
         """
-        today = datetime.now().strftime('%Y年%m月%d日')
+        today = datetime.now().strftime("%Y年%m月%d日")
         subject = f"{today} MyStocks 每日新闻简报"
 
         # 构建新闻内容
         if news_data and len(news_data) > 0:
             news_content = ""
             for news in news_data[:10]:  # 最多10条新闻
-                news_time = datetime.fromtimestamp(news.get('datetime', 0)).strftime('%Y-%m-%d %H:%M')
+                news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime(
+                    "%Y-%m-%d %H:%M"
+                )
                 news_content += f"""
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
                     <h3 style="margin: 0 0 10px 0;">
@@ -202,7 +200,11 @@ class EmailService:
             news_content = "<p style='color: #999;'>今日暂无新闻更新</p>"
 
         # 构建自选股列表
-        watchlist_html = ", ".join(watchlist_symbols[:10]) if watchlist_symbols else "您还没有添加自选股"
+        watchlist_html = (
+            ", ".join(watchlist_symbols[:10])
+            if watchlist_symbols
+            else "您还没有添加自选股"
+        )
         if len(watchlist_symbols) > 10:
             watchlist_html += f" 等 {len(watchlist_symbols)} 只"
 
@@ -242,7 +244,7 @@ class EmailService:
             subject=subject,
             content=content,
             content_type="html",
-            from_name="MyStocks Daily"
+            from_name="MyStocks Daily",
         )
 
     def send_price_alert(
@@ -253,7 +255,7 @@ class EmailService:
         stock_name: str,
         current_price: float,
         alert_condition: str,
-        alert_price: float
+        alert_price: float,
     ) -> Dict[str, any]:
         """
         发送价格提醒邮件
@@ -315,12 +317,13 @@ class EmailService:
             subject=subject,
             content=content,
             content_type="html",
-            from_name="MyStocks Alert"
+            from_name="MyStocks Alert",
         )
 
 
 # 全局邮件服务实例（单例模式）
 _email_service = None
+
 
 def get_email_service() -> EmailService:
     """

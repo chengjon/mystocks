@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：TDX服务器配置模块，管理通达信服务器列表和连接参数
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,8 +7,7 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import os
 import logging
@@ -47,7 +46,7 @@ class TdxServerConfig:
         # 默认配置文件路径
         if config_file is None:
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            config_file = os.path.join(project_root, 'temp', 'connect.cfg')
+            config_file = os.path.join(project_root, "temp", "connect.cfg")
 
         self.config_file = config_file
         self.servers = []  # [(host, port, name), ...]
@@ -68,9 +67,11 @@ class TdxServerConfig:
         编码处理: connect.cfg使用GBK编码(中文Windows默认)
         """
         if not os.path.exists(self.config_file):
-            self.logger.warning(f"TDX配置文件不存在: {self.config_file}, 使用默认服务器")
+            self.logger.warning(
+                f"TDX配置文件不存在: {self.config_file}, 使用默认服务器"
+            )
             # 使用默认服务器
-            self.servers = [('101.227.73.20', 7709, '默认服务器')]
+            self.servers = [("101.227.73.20", 7709, "默认服务器")]
             self.primary_index = 0
             return
 
@@ -80,37 +81,39 @@ class TdxServerConfig:
             config = configparser.ConfigParser()
 
             try:
-                with open(self.config_file, 'r', encoding='gbk') as f:
+                with open(self.config_file, "r", encoding="gbk") as f:
                     config.read_file(f)
             except UnicodeDecodeError:
                 self.logger.warning("GBK编码失败,尝试UTF-8编码")
-                with open(self.config_file, 'r', encoding='utf-8') as f:
+                with open(self.config_file, "r", encoding="utf-8") as f:
                     config.read_file(f)
 
             # 解析[HQHOST]部分
-            if 'HQHOST' not in config:
+            if "HQHOST" not in config:
                 self.logger.error("配置文件中未找到[HQHOST]部分")
-                self.servers = [('101.227.73.20', 7709, '默认服务器')]
+                self.servers = [("101.227.73.20", 7709, "默认服务器")]
                 return
 
-            hq_section = config['HQHOST']
+            hq_section = config["HQHOST"]
 
             # 读取服务器总数和主服务器索引
-            host_num = int(hq_section.get('HostNum', '0'))
-            primary_host = int(hq_section.get('PrimaryHost', '1'))
+            host_num = int(hq_section.get("HostNum", "0"))
+            primary_host = int(hq_section.get("PrimaryHost", "1"))
 
-            self.logger.info(f"TDX配置: 共{host_num}个服务器, 主服务器索引={primary_host}")
+            self.logger.info(
+                f"TDX配置: 共{host_num}个服务器, 主服务器索引={primary_host}"
+            )
 
             # 解析每个服务器
             for i in range(1, host_num + 1):
-                host_key = f'IPAddress{i:02d}'
-                port_key = f'Port{i:02d}'
-                name_key = f'HostName{i:02d}'
+                host_key = f"IPAddress{i:02d}"
+                port_key = f"Port{i:02d}"
+                name_key = f"HostName{i:02d}"
 
                 if host_key in hq_section and port_key in hq_section:
                     host = hq_section[host_key].strip()
                     port = int(hq_section[port_key].strip())
-                    name = hq_section.get(name_key, f'服务器{i}').strip()
+                    name = hq_section.get(name_key, f"服务器{i}").strip()
 
                     # 过滤无效服务器(空IP或端口为0)
                     if host and port > 0:
@@ -130,7 +133,7 @@ class TdxServerConfig:
         except Exception as e:
             self.logger.error(f"解析TDX配置文件失败: {e}", exc_info=True)
             # 使用默认服务器
-            self.servers = [('101.227.73.20', 7709, '默认服务器')]
+            self.servers = [("101.227.73.20", 7709, "默认服务器")]
             self.primary_index = 0
 
     def get_primary_server(self) -> Tuple[str, int]:
@@ -146,7 +149,7 @@ class TdxServerConfig:
             >>> print(f"主服务器: {host}:{port}")
         """
         if not self.servers:
-            return ('101.227.73.20', 7709)
+            return ("101.227.73.20", 7709)
 
         host, port, _ = self.servers[self.primary_index]
         return (host, port)
@@ -163,7 +166,7 @@ class TdxServerConfig:
             - 主服务器繁忙时的备选方案
         """
         if not self.servers:
-            return ('101.227.73.20', 7709)
+            return ("101.227.73.20", 7709)
 
         host, port, _ = random.choice(self.servers)
         return (host, port)
@@ -226,7 +229,7 @@ class TdxServerConfig:
             >>>         continue  # 尝试下一个服务器
         """
         if not self.servers:
-            return [('101.227.73.20', 7709)]
+            return [("101.227.73.20", 7709)]
 
         # 1. 主服务器
         primary = self.servers[self.primary_index]
@@ -235,13 +238,15 @@ class TdxServerConfig:
         # 2. 其他服务器(随机选择)
         if len(self.servers) > 1 and max_count > 1:
             # 排除主服务器后的其他服务器
-            other_servers = [s for i, s in enumerate(self.servers) if i != self.primary_index]
+            other_servers = [
+                s for i, s in enumerate(self.servers) if i != self.primary_index
+            ]
 
             # 随机打乱顺序
             random.shuffle(other_servers)
 
             # 取前(max_count - 1)个
-            for server in other_servers[:max_count - 1]:
+            for server in other_servers[: max_count - 1]:
                 result.append((server[0], server[1]))
 
         return result
@@ -256,8 +261,10 @@ class TdxServerConfig:
             return "TdxServerConfig: 无可用服务器"
 
         primary = self.servers[self.primary_index]
-        return (f"TdxServerConfig: {len(self.servers)}个服务器, "
-                f"主服务器={primary[2]}({primary[0]}:{primary[1]})")
+        return (
+            f"TdxServerConfig: {len(self.servers)}个服务器, "
+            f"主服务器={primary[2]}({primary[0]}:{primary[1]})"
+        )
 
 
 # 全局单例(可选,避免重复解析配置文件)

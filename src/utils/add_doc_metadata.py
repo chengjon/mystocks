@@ -22,8 +22,13 @@ METADATA_TEMPLATE = """**创建人**: {creator}
 """
 
 
-def add_metadata(file_path: str, creator: str, version: str,
-                 approved_date: str = None, revision_notes: str = "添加文档元数据标记"):
+def add_metadata(
+    file_path: str,
+    creator: str,
+    version: str,
+    approved_date: str = None,
+    revision_notes: str = "添加文档元数据标记",
+):
     """
     为MD文档添加元数据
 
@@ -39,7 +44,7 @@ def add_metadata(file_path: str, creator: str, version: str,
         return False
 
     # 读取文件
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # 检查是否已有元数据
@@ -56,15 +61,15 @@ def add_metadata(file_path: str, creator: str, version: str,
         version=version,
         approved_date=approved,
         last_modified=today,
-        revision_notes=revision_notes
+        revision_notes=revision_notes,
     )
 
     # 找到第一个#标题后插入
-    lines = content.split('\n')
+    lines = content.split("\n")
     insert_index = 0
 
     for i, line in enumerate(lines):
-        if line.strip().startswith('#'):
+        if line.strip().startswith("#"):
             insert_index = i + 1
             break
 
@@ -73,8 +78,8 @@ def add_metadata(file_path: str, creator: str, version: str,
     lines.insert(insert_index + 1, metadata.strip())
 
     # 写回文件
-    new_content = '\n'.join(lines)
-    with open(file_path, 'w', encoding='utf-8') as f:
+    new_content = "\n".join(lines)
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
     print(f"✅ {file_path} 元数据添加成功")
@@ -91,28 +96,72 @@ def batch_add_metadata():
         ("CHANGELOG_v2.1.md", "Claude", "2.1.0", "2025-10-15", "v2.1版本更新日志"),
         ("QUICKSTART.md", "Claude", "2.1.0", "2025-10-15", "快速开始指南和开发规范"),
         ("DELIVERY_v2.1.md", "Claude", "2.1.0", "2025-10-15", "v2.1交付文档"),
-
         # 适配器文档
-        ("adapters/README.md", "JohnC & Claude", "2.0.0", "2025-08-01", "数据源适配器说明"),
-        ("adapters/README_TDX.md", "Claude", "2.1.0", "2025-10-15", "通达信TDX集成说明"),
-
+        (
+            "adapters/README.md",
+            "JohnC & Claude",
+            "2.0.0",
+            "2025-08-01",
+            "数据源适配器说明",
+        ),
+        (
+            "adapters/README_TDX.md",
+            "Claude",
+            "2.1.0",
+            "2025-10-15",
+            "通达信TDX集成说明",
+        ),
         # Web系统文档
         ("web/PORTS.md", "Claude", "2.1.0", "2025-10-15", "端口配置说明"),
-        ("web/TDX_SETUP_COMPLETE.md", "Claude", "2.1.0", "2025-10-15", "TDX设置完成文档"),
-
+        (
+            "web/TDX_SETUP_COMPLETE.md",
+            "Claude",
+            "2.1.0",
+            "2025-10-15",
+            "TDX设置完成文档",
+        ),
         # 监控系统文档
-        ("monitoring/grafana_setup.md", "Claude", "2.0.0", "2025-09-01", "Grafana监控设置"),
-        ("monitoring/MANUAL_SETUP_GUIDE.md", "Claude", "2.0.0", "2025-09-01", "手动设置指南"),
-        ("monitoring/生成监控数据说明.md", "Claude", "2.0.0", "2025-09-01", "监控数据生成说明"),
-
+        (
+            "monitoring/grafana_setup.md",
+            "Claude",
+            "2.0.0",
+            "2025-09-01",
+            "Grafana监控设置",
+        ),
+        (
+            "monitoring/MANUAL_SETUP_GUIDE.md",
+            "Claude",
+            "2.0.0",
+            "2025-09-01",
+            "手动设置指南",
+        ),
+        (
+            "monitoring/生成监控数据说明.md",
+            "Claude",
+            "2.0.0",
+            "2025-09-01",
+            "监控数据生成说明",
+        ),
         # 功能规格文档
-        ("specs/005-tdx-web-tdx/spec.md", "Claude & Spec-Kit", "1.0.0", "2025-10-15", "TDX功能规格"),
-        ("specs/005-tdx-web-tdx/README.md", "Claude", "1.0.0", "2025-10-15", "TDX功能README"),
+        (
+            "specs/005-tdx-web-tdx/spec.md",
+            "Claude & Spec-Kit",
+            "1.0.0",
+            "2025-10-15",
+            "TDX功能规格",
+        ),
+        (
+            "specs/005-tdx-web-tdx/README.md",
+            "Claude",
+            "1.0.0",
+            "2025-10-15",
+            "TDX功能README",
+        ),
     ]
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("批量添加文档元数据")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     added = 0
     skipped = 0
@@ -131,9 +180,9 @@ def batch_add_metadata():
             print(f"❌ {doc} 处理失败: {str(e)}")
             failed += 1
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"完成统计: 添加 {added}, 跳过 {skipped}, 失败 {failed}")
-    print("="*80)
+    print("=" * 80)
 
 
 def main():

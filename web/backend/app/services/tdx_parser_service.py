@@ -2,6 +2,7 @@
 通达信数据解析服务
 用于解析通达信二进制 .day 文件格式
 """
+
 import struct
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -20,7 +21,7 @@ class TdxDayFileParser:
     """
 
     RECORD_SIZE = 32
-    STRUCT_FORMAT = 'IIIIIfII'
+    STRUCT_FORMAT = "IIIIIfII"
 
     @staticmethod
     def parse_date(date_int: int) -> str:
@@ -61,7 +62,7 @@ class TdxDayFileParser:
 
         data_list = []
 
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             while True:
                 buffer = f.read(TdxDayFileParser.RECORD_SIZE)
                 if len(buffer) < TdxDayFileParser.RECORD_SIZE:
@@ -82,28 +83,32 @@ class TdxDayFileParser:
                 # 解析日期
                 trade_date = TdxDayFileParser.parse_date(date_int)
 
-                data_list.append({
-                    'code': stock_code or 'unknown',
-                    'tradeDate': trade_date,
-                    'open': open_price,
-                    'high': high_price,
-                    'low': low_price,
-                    'close': close_price,
-                    'amount': amount,
-                    'volume': volume
-                })
+                data_list.append(
+                    {
+                        "code": stock_code or "unknown",
+                        "tradeDate": trade_date,
+                        "open": open_price,
+                        "high": high_price,
+                        "low": low_price,
+                        "close": close_price,
+                        "amount": amount,
+                        "volume": volume,
+                    }
+                )
 
         # 创建 DataFrame
         df = pd.DataFrame(data_list)
 
         # 按日期排序
         if not df.empty:
-            df = df.sort_values('tradeDate').reset_index(drop=True)
+            df = df.sort_values("tradeDate").reset_index(drop=True)
 
         return df
 
     @staticmethod
-    def convert_to_csv(input_file: str, output_file: str, stock_code: str = None) -> str:
+    def convert_to_csv(
+        input_file: str, output_file: str, stock_code: str = None
+    ) -> str:
         """
         将 .day 文件转换为 CSV 文件
 
@@ -116,7 +121,7 @@ class TdxDayFileParser:
             str: 输出文件路径
         """
         df = TdxDayFileParser.read_tdx_day_file(input_file, stock_code)
-        df.to_csv(output_file, index=False, encoding='utf-8')
+        df.to_csv(output_file, index=False, encoding="utf-8")
         return output_file
 
     @staticmethod
@@ -141,9 +146,7 @@ class TdxDayFileParser:
 
     @staticmethod
     def get_date_range_data(
-        file_path: str,
-        start_date: str,
-        end_date: str
+        file_path: str, start_date: str, end_date: str
     ) -> pd.DataFrame:
         """
         获取指定日期范围的数据
@@ -162,7 +165,7 @@ class TdxDayFileParser:
             return df
 
         # 过滤日期范围
-        mask = (df['tradeDate'] >= start_date) & (df['tradeDate'] <= end_date)
+        mask = (df["tradeDate"] >= start_date) & (df["tradeDate"] <= end_date)
         return df[mask].reset_index(drop=True)
 
 
@@ -179,7 +182,9 @@ class TdxDataService:
         self.data_dir = Path(data_dir)
         self.parser = TdxDayFileParser()
 
-    def get_stock_data(self, stock_code: str, market: str = "sh") -> Optional[pd.DataFrame]:
+    def get_stock_data(
+        self, stock_code: str, market: str = "sh"
+    ) -> Optional[pd.DataFrame]:
         """
         获取股票数据
 
@@ -192,13 +197,17 @@ class TdxDataService:
         """
         # 构建文件路径
         market_dir = "sh" if market.lower() == "sh" else "sz"
-        file_path = self.data_dir / market_dir / "lday" / f"{market_dir}{stock_code}.day"
+        file_path = (
+            self.data_dir / market_dir / "lday" / f"{market_dir}{stock_code}.day"
+        )
 
         if not file_path.exists():
             return None
 
         try:
-            return self.parser.read_tdx_day_file(str(file_path), f"{market}{stock_code}")
+            return self.parser.read_tdx_day_file(
+                str(file_path), f"{market}{stock_code}"
+            )
         except Exception as e:
             print(f"读取股票数据失败: {e}")
             return None
@@ -240,10 +249,7 @@ class TdxDataService:
         return sorted(stocks)
 
     def export_to_csv(
-        self,
-        stock_code: str,
-        market: str,
-        output_dir: str = "./exports"
+        self, stock_code: str, market: str, output_dir: str = "./exports"
     ) -> Optional[str]:
         """
         导出股票数据到 CSV
@@ -269,6 +275,6 @@ class TdxDataService:
         output_file = output_path / f"{market}{stock_code}.csv"
 
         # 保存到 CSV
-        df.to_csv(output_file, index=False, encoding='utf-8')
+        df.to_csv(output_file, index=False, encoding="utf-8")
 
         return str(output_file)

@@ -16,7 +16,7 @@ from app.models.announcement import (
     AnnouncementMonitorRuleCreate,
     AnnouncementMonitorRuleUpdate,
     AnnouncementMonitorRuleResponse,
-    AnnouncementStatsResponse
+    AnnouncementStatsResponse,
 )
 
 router = APIRouter(prefix="/api/announcement", tags=["announcement"])
@@ -26,12 +26,13 @@ router = APIRouter(prefix="/api/announcement", tags=["announcement"])
 # API Endpoints
 # ============================================================================
 
+
 @router.post("/fetch")
 async def fetch_announcements(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
-    category: Optional[str] = Query("all", description="公告类别")
+    category: Optional[str] = Query("all", description="公告类别"),
 ):
     """
     从数据源获取并保存公告
@@ -55,14 +56,13 @@ async def fetch_announcements(
             start_date = end_date - timedelta(days=7)
 
         result = service.fetch_and_save_announcements(
-            symbol=symbol,
-            start_date=start_date,
-            end_date=end_date,
-            category=category
+            symbol=symbol, start_date=start_date, end_date=end_date, category=category
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Failed to fetch")
+            )
 
         return result
 
@@ -78,9 +78,11 @@ async def get_announcements(
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
     announcement_type: Optional[str] = Query(None, description="公告类型"),
-    min_importance: Optional[int] = Query(None, ge=0, le=5, description="最小重要性级别"),
+    min_importance: Optional[int] = Query(
+        None, ge=0, le=5, description="最小重要性级别"
+    ),
     page: int = Query(1, ge=1, description="页码"),
-    page_size: int = Query(20, ge=1, le=100, description="每页数量")
+    page_size: int = Query(20, ge=1, le=100, description="每页数量"),
 ):
     """
     查询公告列表
@@ -107,11 +109,13 @@ async def get_announcements(
             announcement_type=announcement_type,
             min_importance=min_importance,
             page=page,
-            page_size=page_size
+            page_size=page_size,
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Query failed")
+            )
 
         return result
 
@@ -144,17 +148,19 @@ async def get_today_announcements(
             end_date=today,
             min_importance=min_importance,
             page=1,
-            page_size=100
+            page_size=100,
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Query failed")
+            )
 
         return {
             "success": True,
             "date": today.isoformat(),
             "announcements": result["data"],
-            "count": result["total"]
+            "count": result["total"],
         }
 
     except HTTPException:
@@ -166,7 +172,7 @@ async def get_today_announcements(
 @router.get("/important")
 async def get_important_announcements(
     days: int = Query(7, ge=1, le=30, description="查询天数"),
-    min_importance: int = Query(3, ge=0, le=5, description="最小重要性级别")
+    min_importance: int = Query(3, ge=0, le=5, description="最小重要性级别"),
 ):
     """
     获取重要公告
@@ -189,11 +195,13 @@ async def get_important_announcements(
             end_date=end_date,
             min_importance=min_importance,
             page=1,
-            page_size=100
+            page_size=100,
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Query failed")
+            )
 
         return {
             "success": True,
@@ -201,7 +209,7 @@ async def get_important_announcements(
             "end_date": end_date.isoformat(),
             "min_importance": min_importance,
             "announcements": result["data"],
-            "count": result["total"]
+            "count": result["total"],
         }
 
     except HTTPException:
@@ -213,7 +221,7 @@ async def get_important_announcements(
 @router.get("/stock/{stock_code}")
 async def get_stock_announcements(
     stock_code: str = Path(..., description="股票代码"),
-    days: int = Query(30, ge=1, le=365, description="查询天数")
+    days: int = Query(30, ge=1, le=365, description="查询天数"),
 ):
     """
     获取指定股票的公告
@@ -236,11 +244,13 @@ async def get_stock_announcements(
             start_date=start_date,
             end_date=end_date,
             page=1,
-            page_size=100
+            page_size=100,
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Query failed")
+            )
 
         return {
             "success": True,
@@ -248,7 +258,7 @@ async def get_stock_announcements(
             "start_date": start_date.isoformat(),
             "end_date": end_date.isoformat(),
             "announcements": result["data"],
-            "count": result["total"]
+            "count": result["total"],
         }
 
     except HTTPException:
@@ -273,7 +283,9 @@ async def evaluate_monitor_rules():
         result = service.evaluate_monitor_rules()
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Evaluation failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Evaluation failed")
+            )
 
         return result
 
@@ -297,10 +309,7 @@ async def get_announcement_stats():
 
         # 获取今日公告
         today_result = service.get_announcements(
-            start_date=date.today(),
-            end_date=date.today(),
-            page=1,
-            page_size=1
+            start_date=date.today(), end_date=date.today(), page=1, page_size=1
         )
 
         # 获取重要公告
@@ -309,14 +318,11 @@ async def get_announcement_stats():
             end_date=date.today(),
             min_importance=3,
             page=1,
-            page_size=1
+            page_size=1,
         )
 
         # 获取总数
-        total_result = service.get_announcements(
-            page=1,
-            page_size=1
-        )
+        total_result = service.get_announcements(page=1, page_size=1)
 
         return {
             "total_count": total_result.get("total", 0),
@@ -324,7 +330,7 @@ async def get_announcement_stats():
             "important_count": important_result.get("total", 0),
             "by_source": {},
             "by_type": {},
-            "by_sentiment": {}
+            "by_sentiment": {},
         }
 
     except Exception as e:
@@ -348,9 +354,8 @@ async def get_announcement_types():
         return {
             "success": True,
             "types": [
-                {"code": code, "name": name}
-                for code, (_, name) in types.items()
-            ]
+                {"code": code, "name": name} for code, (_, name) in types.items()
+            ],
         }
 
     except Exception as e:

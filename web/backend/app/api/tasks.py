@@ -8,8 +8,12 @@ from typing import List, Optional, Dict, Any
 import structlog
 
 from app.models.task import (
-    TaskConfig, TaskExecution, TaskStatus, TaskType,
-    TaskStatistics, TaskResponse
+    TaskConfig,
+    TaskExecution,
+    TaskStatus,
+    TaskType,
+    TaskStatistics,
+    TaskResponse,
 )
 from app.services.task_manager import task_manager
 
@@ -46,7 +50,7 @@ async def unregister_task(task_id: str):
 @router.get("/", response_model=List[TaskConfig])
 async def list_tasks(
     task_type: Optional[TaskType] = None,
-    tags: Optional[str] = Query(None, description="Comma-separated tags")
+    tags: Optional[str] = Query(None, description="Comma-separated tags"),
 ):
     """列出所有任务"""
     try:
@@ -74,10 +78,7 @@ async def get_task(task_id: str):
 
 
 @router.post("/{task_id}/start", response_model=TaskResponse)
-async def start_task(
-    task_id: str,
-    params: Optional[Dict[str, Any]] = Body(None)
-):
+async def start_task(task_id: str, params: Optional[Dict[str, Any]] = Body(None)):
     """启动任务"""
     try:
         response = await task_manager.start_task(task_id, params)
@@ -108,8 +109,7 @@ async def stop_task(task_id: str):
 
 @router.get("/executions/", response_model=List[TaskExecution])
 async def list_executions(
-    task_id: Optional[str] = None,
-    limit: int = Query(100, ge=1, le=1000)
+    task_id: Optional[str] = None, limit: int = Query(100, ge=1, le=1000)
 ):
     """列出执行记录"""
     try:
@@ -126,7 +126,9 @@ async def get_execution(execution_id: str):
     try:
         execution = task_manager.get_execution(execution_id)
         if not execution:
-            raise HTTPException(status_code=404, detail=f"Execution {execution_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Execution {execution_id} not found"
+            )
         return execution
     except HTTPException:
         raise
@@ -166,7 +168,11 @@ async def export_config(output_path: str = Body(..., embed=True)):
     """导出任务配置"""
     try:
         task_manager.export_config(output_path)
-        return {"success": True, "message": "Configuration exported successfully", "path": output_path}
+        return {
+            "success": True,
+            "message": "Configuration exported successfully",
+            "path": output_path,
+        }
     except Exception as e:
         logger.error("Failed to export config", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
@@ -180,7 +186,7 @@ async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
         return {
             "success": True,
             "message": f"Cleaned up {count} old execution records",
-            "count": count
+            "count": count,
         }
     except Exception as e:
         logger.error("Failed to cleanup executions", error=str(e))
@@ -199,7 +205,7 @@ async def health_check():
             "status": "healthy",
             "total_tasks": total_tasks,
             "running_tasks": running_tasks,
-            "total_executions": total_executions
+            "total_executions": total_executions,
         }
     except Exception as e:
         logger.error("Health check failed", error=str(e))

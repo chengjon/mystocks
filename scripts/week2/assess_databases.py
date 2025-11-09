@@ -14,31 +14,35 @@ from typing import Dict, List, Any
 import json
 
 # 添加项目根目录到路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 try:
-    from data_access import TDengineDataAccess, PostgreSQLDataAccess, MySQLDataAccess, RedisDataAccess
+    from src.data_access import (
+        TDengineDataAccess,
+        PostgreSQLDataAccess,
+        MySQLDataAccess,
+        RedisDataAccess,
+    )
 except ImportError as e:
     print(f"警告: 无法导入数据访问模块: {e}")
     print("尝试从db_manager导入...")
-    from db_manager.database_manager import DatabaseTableManager
+    from src.db_manager.database_manager import DatabaseTableManager
 
 
 class DatabaseAssessor:
     """数据库评估器"""
 
     def __init__(self):
-        self.results = {
-            "assessment_time": datetime.now().isoformat(),
-            "databases": {}
-        }
+        self.results = {"assessment_time": datetime.now().isoformat(), "databases": {}}
 
     def assess_tdengine(self) -> Dict[str, Any]:
         """评估TDengine使用情况"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("评估 TDengine")
-        print("="*60)
+        print("=" * 60)
 
         try:
             td = TDengineDataAccess()
@@ -49,7 +53,7 @@ class DatabaseAssessor:
                 "total_size_mb": 0,
                 "total_rows": 0,
                 "tables": [],
-                "connection": "✓ 连接成功"
+                "connection": "✓ 连接成功",
             }
 
             # 获取数据库列表
@@ -61,7 +65,11 @@ class DatabaseAssessor:
                 for db in databases:
                     db_name = db[0]
                     # 跳过系统数据库
-                    if db_name.startswith('information_schema') or db_name == 'performance_schema' or db_name == 'log':
+                    if (
+                        db_name.startswith("information_schema")
+                        or db_name == "performance_schema"
+                        or db_name == "log"
+                    ):
                         continue
 
                     print(f"\n数据库: {db_name}")
@@ -74,7 +82,7 @@ class DatabaseAssessor:
                     db_info = {
                         "name": db_name,
                         "table_count": len(tables),
-                        "tables": []
+                        "tables": [],
                     }
 
                     # 评估每个表
@@ -83,7 +91,9 @@ class DatabaseAssessor:
 
                         try:
                             # 获取行数
-                            count_result = td.execute(f"SELECT COUNT(*) FROM `{table_name}`")
+                            count_result = td.execute(
+                                f"SELECT COUNT(*) FROM `{table_name}`"
+                            )
                             row_count = count_result[0][0] if count_result else 0
 
                             # 粗略估算大小（TDengine压缩比很高）
@@ -92,14 +102,16 @@ class DatabaseAssessor:
                             table_info = {
                                 "name": table_name,
                                 "rows": row_count,
-                                "estimated_size_mb": round(estimated_size_mb, 2)
+                                "estimated_size_mb": round(estimated_size_mb, 2),
                             }
 
                             db_info["tables"].append(table_info)
                             results["total_rows"] += row_count
                             results["total_size_mb"] += estimated_size_mb
 
-                            print(f"    {table_name}: {row_count:,} 行, ~{estimated_size_mb:.2f} MB")
+                            print(
+                                f"    {table_name}: {row_count:,} 行, ~{estimated_size_mb:.2f} MB"
+                            )
                         except Exception as e:
                             print(f"    {table_name}: 评估失败 - {e}")
 
@@ -117,17 +129,13 @@ class DatabaseAssessor:
 
         except Exception as e:
             print(f"✗ TDengine连接失败: {e}")
-            return {
-                "status": "error",
-                "connection": "✗ 连接失败",
-                "message": str(e)
-            }
+            return {"status": "error", "connection": "✗ 连接失败", "message": str(e)}
 
     def assess_postgresql(self) -> Dict[str, Any]:
         """评估PostgreSQL使用情况"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("评估 PostgreSQL")
-        print("="*60)
+        print("=" * 60)
 
         try:
             pg = PostgreSQLDataAccess()
@@ -137,7 +145,7 @@ class DatabaseAssessor:
                 "total_size_mb": 0,
                 "total_rows": 0,
                 "tables": [],
-                "connection": "✓ 连接成功"
+                "connection": "✓ 连接成功",
             }
 
             # 获取所有表的信息
@@ -159,12 +167,14 @@ class DatabaseAssessor:
                 size_mb = (size_bytes or 0) / 1024 / 1024
                 row_count = rows or 0
 
-                results["tables"].append({
-                    "schema": schema,
-                    "name": name,
-                    "size_mb": round(size_mb, 2),
-                    "rows": row_count
-                })
+                results["tables"].append(
+                    {
+                        "schema": schema,
+                        "name": name,
+                        "size_mb": round(size_mb, 2),
+                        "rows": row_count,
+                    }
+                )
 
                 results["total_size_mb"] += size_mb
                 results["total_rows"] += row_count
@@ -179,17 +189,13 @@ class DatabaseAssessor:
 
         except Exception as e:
             print(f"✗ PostgreSQL连接失败: {e}")
-            return {
-                "status": "error",
-                "connection": "✗ 连接失败",
-                "message": str(e)
-            }
+            return {"status": "error", "connection": "✗ 连接失败", "message": str(e)}
 
     def assess_mysql(self) -> Dict[str, Any]:
         """评估MySQL使用情况"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("评估 MySQL")
-        print("="*60)
+        print("=" * 60)
 
         try:
             mysql = MySQLDataAccess()
@@ -200,7 +206,7 @@ class DatabaseAssessor:
                 "total_size_mb": 0,
                 "total_rows": 0,
                 "tables": [],
-                "connection": "✓ 连接成功"
+                "connection": "✓ 连接成功",
             }
 
             # 获取当前数据库
@@ -231,11 +237,13 @@ class DatabaseAssessor:
                     total_size = ((data_len or 0) + (index_len or 0)) / 1024 / 1024
                     row_count = rows or 0
 
-                    results["tables"].append({
-                        "name": name,
-                        "rows": row_count,
-                        "size_mb": round(total_size, 2)
-                    })
+                    results["tables"].append(
+                        {
+                            "name": name,
+                            "rows": row_count,
+                            "size_mb": round(total_size, 2),
+                        }
+                    )
 
                     results["total_size_mb"] += total_size
                     results["total_rows"] += row_count
@@ -250,17 +258,13 @@ class DatabaseAssessor:
 
         except Exception as e:
             print(f"✗ MySQL连接失败: {e}")
-            return {
-                "status": "error",
-                "connection": "✗ 连接失败",
-                "message": str(e)
-            }
+            return {"status": "error", "connection": "✗ 连接失败", "message": str(e)}
 
     def assess_redis(self) -> Dict[str, Any]:
         """评估Redis使用情况"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("评估 Redis")
-        print("="*60)
+        print("=" * 60)
 
         try:
             redis = RedisDataAccess()
@@ -270,7 +274,7 @@ class DatabaseAssessor:
                 "total_keys": 0,
                 "used_memory": "0",
                 "sample_keys": [],
-                "connection": "✓ 连接成功"
+                "connection": "✓ 连接成功",
             }
 
             # 获取基本信息
@@ -281,7 +285,7 @@ class DatabaseAssessor:
             results["total_keys"] = db_keys
 
             # 获取内存使用
-            used_memory = info.get('used_memory_human', 'Unknown')
+            used_memory = info.get("used_memory_human", "Unknown")
             results["used_memory"] = used_memory
 
             print(f"总Key数量: {db_keys:,}")
@@ -291,12 +295,11 @@ class DatabaseAssessor:
             if db_keys > 0:
                 sample_keys = []
                 for key in redis.client.scan_iter(count=100):
-                    key_type = redis.client.type(key).decode('utf-8')
-                    key_str = key.decode('utf-8') if isinstance(key, bytes) else str(key)
-                    sample_keys.append({
-                        "key": key_str,
-                        "type": key_type
-                    })
+                    key_type = redis.client.type(key).decode("utf-8")
+                    key_str = (
+                        key.decode("utf-8") if isinstance(key, bytes) else str(key)
+                    )
+                    sample_keys.append({"key": key_str, "type": key_type})
                     if len(sample_keys) >= 100:
                         break
 
@@ -312,17 +315,13 @@ class DatabaseAssessor:
 
         except Exception as e:
             print(f"✗ Redis连接失败: {e}")
-            return {
-                "status": "error",
-                "connection": "✗ 连接失败",
-                "message": str(e)
-            }
+            return {"status": "error", "connection": "✗ 连接失败", "message": str(e)}
 
     def generate_report(self):
         """生成评估报告"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("开始数据库评估")
-        print("="*60)
+        print("=" * 60)
 
         # 评估所有数据库
         self.results["databases"]["tdengine"] = self.assess_tdengine()
@@ -331,9 +330,9 @@ class DatabaseAssessor:
         self.results["databases"]["redis"] = self.assess_redis()
 
         # 生成总结
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("评估总结")
-        print("="*60)
+        print("=" * 60)
 
         total_size = 0
         total_rows = 0
@@ -355,23 +354,25 @@ class DatabaseAssessor:
                 print(f"  状态: {db_result.get('connection', '✗ 失败')}")
                 print(f"  错误: {db_result.get('message', '未知错误')}")
 
-        print(f"\n" + "="*60)
+        print(f"\n" + "=" * 60)
         print(f"总计 ({successful_connections}/4 数据库成功连接):")
         print(f"  总大小: {total_size:.2f} MB (~{total_size/1024:.2f} GB)")
         print(f"  总行数: {total_rows:,}")
-        print("="*60)
+        print("=" * 60)
 
         # 保存结果
-        report_file = f"database_assessment_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(report_file, 'w', encoding='utf-8') as f:
+        report_file = (
+            f"database_assessment_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False)
 
         print(f"\n详细报告已保存到: {report_file}")
 
         # 生成简单的建议
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("初步建议")
-        print("="*60)
+        print("=" * 60)
 
         if total_size < 100:  # 小于100MB
             print("✓ 数据量很小(<100MB)，单一PostgreSQL数据库即可满足需求")
@@ -392,10 +393,10 @@ class DatabaseAssessor:
 
 def main():
     """主函数"""
-    print("="*60)
+    print("=" * 60)
     print("MyStocks 数据库评估工具")
     print("Week 2 Day 1 - 数据库使用情况评估")
-    print("="*60)
+    print("=" * 60)
 
     assessor = DatabaseAssessor()
     assessor.generate_report()

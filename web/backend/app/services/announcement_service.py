@@ -22,7 +22,7 @@ from app.models.announcement import (
     AnnouncementMonitorRule,
     AnnouncementMonitorRecord,
     AnnouncementCreate,
-    AnnouncementResponse
+    AnnouncementResponse,
 )
 from app.services.multi_source_manager import get_multi_source_manager
 from app.adapters.base import DataSourceType
@@ -69,7 +69,7 @@ class AnnouncementService:
             "*ST": 5,
             "风险": 3,
             "诉讼": 3,
-            "仲裁": 3
+            "仲裁": 3,
         }
 
         logger.info("AnnouncementService initialized")
@@ -79,7 +79,7 @@ class AnnouncementService:
         symbol: Optional[str] = None,
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
-        category: Optional[str] = None
+        category: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         获取并保存公告
@@ -100,43 +100,38 @@ class AnnouncementService:
                 start_date=start_date,
                 end_date=end_date,
                 category=category,
-                source=DataSourceType.CNINFO
+                source=DataSourceType.CNINFO,
             )
 
             if not result["success"]:
                 return {
                     "success": False,
-                    "error": result.get("error", "Failed to fetch announcements")
+                    "error": result.get("error", "Failed to fetch announcements"),
                 }
 
             df = result["data"]
 
             if df.empty:
-                return {
-                    "success": True,
-                    "message": "No new announcements",
-                    "count": 0
-                }
+                return {"success": True, "message": "No new announcements", "count": 0}
 
             # 保存到数据库
             saved_count, updated_count = self._save_announcements_to_db(df)
 
-            logger.info(f"Saved {saved_count} new announcements, updated {updated_count}")
+            logger.info(
+                f"Saved {saved_count} new announcements, updated {updated_count}"
+            )
 
             return {
                 "success": True,
                 "saved_count": saved_count,
                 "updated_count": updated_count,
                 "total_fetched": len(df),
-                "source": result["source"]
+                "source": result["source"],
             }
 
         except Exception as e:
             logger.error(f"Failed to fetch and save announcements: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     def _save_announcements_to_db(self, df: pd.DataFrame) -> tuple:
         """
@@ -155,34 +150,45 @@ class AnnouncementService:
         try:
             for _, row in df.iterrows():
                 # 检查是否已存在
-                existing = session.query(Announcement).filter(
-                    and_(
-                        Announcement.stock_code == row.get('stock_code'),
-                        Announcement.source_id == row.get('announcement_id'),
-                        Announcement.data_source == row.get('data_source', 'cninfo')
+                existing = (
+                    session.query(Announcement)
+                    .filter(
+                        and_(
+                            Announcement.stock_code == row.get("stock_code"),
+                            Announcement.source_id == row.get("announcement_id"),
+                            Announcement.data_source
+                            == row.get("data_source", "cninfo"),
+                        )
                     )
-                ).first()
+                    .first()
+                )
 
                 if existing:
                     # 更新现有记录
-                    existing.announcement_title = row.get('title', existing.announcement_title)
-                    existing.announcement_type = row.get('type', existing.announcement_type)
+                    existing.announcement_title = row.get(
+                        "title", existing.announcement_title
+                    )
+                    existing.announcement_type = row.get(
+                        "type", existing.announcement_type
+                    )
                     existing.updated_at = datetime.now()
                     updated_count += 1
                 else:
                     # 创建新记录
                     announcement = Announcement(
-                        stock_code=row.get('stock_code'),
-                        stock_name=row.get('stock_name'),
-                        announcement_title=row.get('title', ''),
-                        announcement_type=row.get('type'),
-                        publish_date=row.get('publish_date', date.today()),
-                        publish_time=row.get('publish_time'),
-                        url=row.get('pdf_url'),
-                        data_source=row.get('data_source', 'cninfo'),
-                        source_id=row.get('announcement_id'),
-                        importance_level=self._calculate_importance(row.get('title', '')),
-                        sentiment=self._analyze_sentiment(row.get('title', ''))
+                        stock_code=row.get("stock_code"),
+                        stock_name=row.get("stock_name"),
+                        announcement_title=row.get("title", ""),
+                        announcement_type=row.get("type"),
+                        publish_date=row.get("publish_date", date.today()),
+                        publish_time=row.get("publish_time"),
+                        url=row.get("pdf_url"),
+                        data_source=row.get("data_source", "cninfo"),
+                        source_id=row.get("announcement_id"),
+                        importance_level=self._calculate_importance(
+                            row.get("title", "")
+                        ),
+                        sentiment=self._analyze_sentiment(row.get("title", "")),
                     )
 
                     session.add(announcement)
@@ -253,17 +259,21 @@ class AnnouncementService:
 
         try:
             # 获取所有活跃规则
-            rules = session.query(AnnouncementMonitorRule).filter(
-                AnnouncementMonitorRule.is_active == True
-            ).all()
+            rules = (
+                session.query(AnnouncementMonitorRule)
+                .filter(AnnouncementMonitorRule.is_active == True)
+                .all()
+            )
 
             logger.info(f"Evaluating {len(rules)} active monitor rules")
 
             # 获取今天的公告
             today = date.today()
-            announcements = session.query(Announcement).filter(
-                Announcement.publish_date == today
-            ).all()
+            announcements = (
+                session.query(Announcement)
+                .filter(Announcement.publish_date == today)
+                .all()
+            )
 
             logger.info(f"Found {len(announcements)} announcements for today")
 
@@ -277,16 +287,13 @@ class AnnouncementService:
             return {
                 "success": True,
                 "rules_evaluated": len(rules),
-                "triggered_count": triggered_count
+                "triggered_count": triggered_count,
             }
 
         except Exception as e:
             session.rollback()
             logger.error(f"Failed to evaluate monitor rules: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
         finally:
             session.close()
@@ -295,7 +302,7 @@ class AnnouncementService:
         self,
         session: Session,
         rule: AnnouncementMonitorRule,
-        announcements: List[Announcement]
+        announcements: List[Announcement],
     ) -> int:
         """
         评估单个监控规则
@@ -312,12 +319,16 @@ class AnnouncementService:
 
         for announcement in announcements:
             # 检查是否已经触发过
-            existing = session.query(AnnouncementMonitorRecord).filter(
-                and_(
-                    AnnouncementMonitorRecord.rule_id == rule.id,
-                    AnnouncementMonitorRecord.announcement_id == announcement.id
+            existing = (
+                session.query(AnnouncementMonitorRecord)
+                .filter(
+                    and_(
+                        AnnouncementMonitorRecord.rule_id == rule.id,
+                        AnnouncementMonitorRecord.announcement_id == announcement.id,
+                    )
                 )
-            ).first()
+                .first()
+            )
 
             if existing:
                 continue
@@ -328,21 +339,22 @@ class AnnouncementService:
 
             # 创建监控记录
             matched_keywords = self._find_matched_keywords(
-                rule.keywords,
-                announcement.announcement_title
+                rule.keywords, announcement.announcement_title
             )
 
             record = AnnouncementMonitorRecord(
                 rule_id=rule.id,
                 announcement_id=announcement.id,
                 matched_keywords=matched_keywords,
-                triggered_at=datetime.now()
+                triggered_at=datetime.now(),
             )
 
             session.add(record)
             triggered_count += 1
 
-            logger.info(f"Rule '{rule.rule_name}' triggered for announcement {announcement.id}")
+            logger.info(
+                f"Rule '{rule.rule_name}' triggered for announcement {announcement.id}"
+            )
 
             # 发送通知（如果启用）
             if rule.notify_enabled:
@@ -351,9 +363,7 @@ class AnnouncementService:
         return triggered_count
 
     def _check_rule_conditions(
-        self,
-        rule: AnnouncementMonitorRule,
-        announcement: Announcement
+        self, rule: AnnouncementMonitorRule, announcement: Announcement
     ) -> bool:
         """
         检查规则条件是否满足
@@ -382,8 +392,7 @@ class AnnouncementService:
         # 检查关键词
         if rule.keywords:
             matched_keywords = self._find_matched_keywords(
-                rule.keywords,
-                announcement.announcement_title
+                rule.keywords, announcement.announcement_title
             )
             if not matched_keywords:
                 return False
@@ -413,7 +422,7 @@ class AnnouncementService:
         self,
         rule: AnnouncementMonitorRule,
         announcement: Announcement,
-        matched_keywords: list
+        matched_keywords: list,
     ):
         """
         发送通知
@@ -440,7 +449,7 @@ class AnnouncementService:
         announcement_type: Optional[str] = None,
         min_importance: Optional[int] = None,
         page: int = 1,
-        page_size: int = 20
+        page_size: int = 20,
     ) -> Dict[str, Any]:
         """
         查询公告
@@ -473,7 +482,9 @@ class AnnouncementService:
                 query = query.filter(Announcement.publish_date <= end_date)
 
             if announcement_type:
-                query = query.filter(Announcement.announcement_type == announcement_type)
+                query = query.filter(
+                    Announcement.announcement_type == announcement_type
+                )
 
             if min_importance is not None:
                 query = query.filter(Announcement.importance_level >= min_importance)
@@ -482,10 +493,12 @@ class AnnouncementService:
             total = query.count()
 
             # 分页
-            announcements = query.order_by(desc(Announcement.publish_date)) \
-                .offset((page - 1) * page_size) \
-                .limit(page_size) \
+            announcements = (
+                query.order_by(desc(Announcement.publish_date))
+                .offset((page - 1) * page_size)
+                .limit(page_size)
                 .all()
+            )
 
             return {
                 "success": True,
@@ -493,15 +506,12 @@ class AnnouncementService:
                 "total": total,
                 "page": page,
                 "page_size": page_size,
-                "total_pages": (total + page_size - 1) // page_size
+                "total_pages": (total + page_size - 1) // page_size,
             }
 
         except Exception as e:
             logger.error(f"Failed to query announcements: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
         finally:
             session.close()
@@ -514,12 +524,20 @@ class AnnouncementService:
             "stock_name": announcement.stock_name,
             "title": announcement.announcement_title,
             "type": announcement.announcement_type,
-            "publish_date": announcement.publish_date.isoformat() if announcement.publish_date else None,
-            "publish_time": announcement.publish_time.isoformat() if announcement.publish_time else None,
+            "publish_date": (
+                announcement.publish_date.isoformat()
+                if announcement.publish_date
+                else None
+            ),
+            "publish_time": (
+                announcement.publish_time.isoformat()
+                if announcement.publish_time
+                else None
+            ),
             "url": announcement.url,
             "importance_level": announcement.importance_level,
             "sentiment": announcement.sentiment,
-            "data_source": announcement.data_source
+            "data_source": announcement.data_source,
         }
 
 

@@ -11,12 +11,11 @@ TDX数据源适配器 MVP测试脚本
 
 import logging
 from datetime import datetime, timedelta
-from adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx_adapter import TdxDataSource
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -55,9 +54,9 @@ def test_real_time_quote():
 
     # 测试股票列表
     test_symbols = [
-        ('600519', '贵州茅台 - 沪市主板'),
-        ('000001', '平安银行 - 深市主板'),
-        ('300750', '宁德时代 - 创业板'),
+        ("600519", "贵州茅台 - 沪市主板"),
+        ("000001", "平安银行 - 深市主板"),
+        ("300750", "宁德时代 - 创业板"),
     ]
 
     success_count = 0
@@ -72,8 +71,10 @@ def test_real_time_quote():
                 print(f"  ✓ 获取成功")
                 print(f"    股票名称: {result['name']}")
                 print(f"    最新价: {result['price']:.2f}")
-                print(f"    涨跌: {result['price'] - result['pre_close']:.2f} "
-                      f"({(result['price'] / result['pre_close'] - 1) * 100:.2f}%)")
+                print(
+                    f"    涨跌: {result['price'] - result['pre_close']:.2f} "
+                    f"({(result['price'] / result['pre_close'] - 1) * 100:.2f}%)"
+                )
                 print(f"    成交量: {result['volume']:,}手")
                 print(f"    成交额: {result['amount'] / 1e8:.2f}亿")
                 print(f"    查询时间: {result['timestamp']}")
@@ -97,12 +98,12 @@ def test_stock_daily():
     tdx = TdxDataSource()
 
     # 获取最近3个月的数据
-    end_date = datetime.now().strftime('%Y-%m-%d')
-    start_date = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
+    end_date = datetime.now().strftime("%Y-%m-%d")
+    start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
     test_symbols = [
-        ('600519', '贵州茅台'),
-        ('000001', '平安银行'),
+        ("600519", "贵州茅台"),
+        ("000001", "平安银行"),
     ]
 
     success_count = 0
@@ -119,7 +120,11 @@ def test_stock_daily():
                 print(f"    实际日期范围: {df['date'].min()} ~ {df['date'].max()}")
                 print(f"    数据列: {list(df.columns)}")
                 print(f"\n  最近5个交易日:")
-                print(df[['date', 'open', 'high', 'low', 'close', 'volume']].tail(5).to_string(index=False))
+                print(
+                    df[["date", "open", "high", "low", "close", "volume"]]
+                    .tail(5)
+                    .to_string(index=False)
+                )
                 success_count += 1
             else:
                 print(f"  ✗ 未获取到数据")
@@ -140,12 +145,12 @@ def test_index_daily():
     tdx = TdxDataSource()
 
     # 获取最近3个月的数据
-    end_date = datetime.now().strftime('%Y-%m-%d')
-    start_date = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
+    end_date = datetime.now().strftime("%Y-%m-%d")
+    start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
     test_indices = [
-        ('000001', '上证指数'),
-        ('399001', '深证成指'),
+        ("000001", "上证指数"),
+        ("399001", "深证成指"),
     ]
 
     success_count = 0
@@ -162,7 +167,11 @@ def test_index_daily():
                 print(f"    实际日期范围: {df['date'].min()} ~ {df['date'].max()}")
                 print(f"    数据列: {list(df.columns)}")
                 print(f"\n  最近5个交易日:")
-                print(df[['date', 'open', 'high', 'low', 'close', 'volume']].tail(5).to_string(index=False))
+                print(
+                    df[["date", "open", "high", "low", "close", "volume"]]
+                    .tail(5)
+                    .to_string(index=False)
+                )
                 success_count += 1
             else:
                 print(f"  ✗ 未获取到数据")
@@ -186,10 +195,10 @@ def test_error_handling():
     print("\n测试无效股票代码:")
 
     invalid_cases = [
-        ('', '空字符串'),
-        ('12345', '5位数字'),
-        ('AAPL', '字母'),
-        ('999999', '不存在的代码前缀'),
+        ("", "空字符串"),
+        ("12345", "5位数字"),
+        ("AAPL", "字母"),
+        ("999999", "不存在的代码前缀"),
     ]
 
     for symbol, desc in invalid_cases:
@@ -212,11 +221,11 @@ def main():
     results = {}
 
     # 运行测试
-    results['server_config'] = test_server_config()
-    results['real_time_quote'] = test_real_time_quote()
-    results['stock_daily'] = test_stock_daily()
-    results['index_daily'] = test_index_daily()
-    results['error_handling'] = test_error_handling()
+    results["server_config"] = test_server_config()
+    results["real_time_quote"] = test_real_time_quote()
+    results["stock_daily"] = test_stock_daily()
+    results["index_daily"] = test_index_daily()
+    results["error_handling"] = test_error_handling()
 
     # 汇总结果
     print("\n" + "=" * 60)
@@ -240,5 +249,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

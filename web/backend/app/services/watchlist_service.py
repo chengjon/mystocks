@@ -13,6 +13,7 @@ import os
 
 class WatchlistError(Exception):
     """自选股操作错误"""
+
     pass
 
 
@@ -43,10 +44,7 @@ def serialize_row(row: dict) -> dict:
     Returns:
         序列化后的字典
     """
-    return {
-        key: serialize_datetime(value)
-        for key, value in row.items()
-    }
+    return {key: serialize_datetime(value) for key, value in row.items()}
 
 
 class WatchlistService:
@@ -63,11 +61,11 @@ class WatchlistService:
             self.db_config = db_config
         else:
             self.db_config = {
-                'host': os.getenv('POSTGRESQL_HOST', 'localhost'),
-                'port': int(os.getenv('POSTGRESQL_PORT', 5432)),
-                'database': os.getenv('POSTGRESQL_DATABASE', 'mystocks'),
-                'user': os.getenv('POSTGRESQL_USER', 'postgres'),
-                'password': os.getenv('POSTGRESQL_PASSWORD', '')
+                "host": os.getenv("POSTGRESQL_HOST", "localhost"),
+                "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
+                "database": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+                "user": os.getenv("POSTGRESQL_USER", "postgres"),
+                "password": os.getenv("POSTGRESQL_PASSWORD", ""),
             }
 
         self._ensure_table_exists()
@@ -136,10 +134,16 @@ class WatchlistService:
         except psycopg2.Error as e:
             print(f"创建自选股表时警告: {e}")
 
-    def add_to_watchlist(self, user_id: int, symbol: str,
-                        display_name: str = None, exchange: str = None,
-                        market: str = None, notes: str = None,
-                        group_id: int = None) -> bool:
+    def add_to_watchlist(
+        self,
+        user_id: int,
+        symbol: str,
+        display_name: str = None,
+        exchange: str = None,
+        market: str = None,
+        notes: str = None,
+        group_id: int = None,
+    ) -> bool:
         """
         添加股票到自选股列表
 
@@ -164,22 +168,28 @@ class WatchlistService:
                 with conn.cursor() as cur:
                     # 如果未指定分组，获取或创建默认分组
                     if group_id is None:
-                        cur.execute("""
+                        cur.execute(
+                            """
                             INSERT INTO watchlist_groups (user_id, group_name)
                             VALUES (%s, '默认分组')
                             ON CONFLICT (user_id, group_name) DO NOTHING
                             RETURNING id
-                        """, (user_id,))
+                        """,
+                            (user_id,),
+                        )
                         result = cur.fetchone()
 
                         if result:
                             group_id = result[0]
                         else:
                             # 如果已存在，获取其ID
-                            cur.execute("""
+                            cur.execute(
+                                """
                                 SELECT id FROM watchlist_groups
                                 WHERE user_id = %s AND group_name = '默认分组'
-                            """, (user_id,))
+                            """,
+                                (user_id,),
+                            )
                             group_id = cur.fetchone()[0]
 
                     # 添加自选股
@@ -193,14 +203,23 @@ class WatchlistService:
                         notes = EXCLUDED.notes,
                         added_at = EXCLUDED.added_at
                     """
-                    cur.execute(insert_sql, (
-                        user_id, group_id, stock_code, stock_name, notes, datetime.now()
-                    ))
+                    cur.execute(
+                        insert_sql,
+                        (
+                            user_id,
+                            group_id,
+                            stock_code,
+                            stock_name,
+                            notes,
+                            datetime.now(),
+                        ),
+                    )
                 conn.commit()
                 return True
         except psycopg2.Error as e:
             print(f"添加自选股时发生错误: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -434,23 +453,29 @@ class WatchlistService:
             with self._get_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     # 先尝试获取现有分组
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT id, group_name, created_at
                         FROM watchlist_groups
                         WHERE user_id = %s AND group_name = %s
-                    """, (user_id, group_name))
+                    """,
+                        (user_id, group_name),
+                    )
 
                     result = cur.fetchone()
                     if result:
                         return serialize_row(dict(result))
 
                     # 如果不存在，创建新分组
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT COALESCE(MAX(sort_order), -1) + 1 as next_order
                         FROM watchlist_groups
                         WHERE user_id = %s
-                    """, (user_id,))
-                    next_order = cur.fetchone()['next_order']
+                    """,
+                        (user_id,),
+                    )
+                    next_order = cur.fetchone()["next_order"]
 
                     insert_sql = """
                     INSERT INTO watchlist_groups (user_id, group_name)
@@ -482,21 +507,27 @@ class WatchlistService:
             with self._get_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     # 先检查分组是否已存在
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT id FROM watchlist_groups
                         WHERE user_id = %s AND group_name = %s
-                    """, (user_id, group_name))
+                    """,
+                        (user_id, group_name),
+                    )
 
                     if cur.fetchone():
                         raise WatchlistError(f"分组名称 '{group_name}' 已存在")
 
                     # 获取当前最大排序号
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT COALESCE(MAX(sort_order), -1) + 1 as next_order
                         FROM watchlist_groups
                         WHERE user_id = %s
-                    """, (user_id,))
-                    next_order = cur.fetchone()['next_order']
+                    """,
+                        (user_id,),
+                    )
+                    next_order = cur.fetchone()["next_order"]
 
                     # 插入新分组
                     insert_sql = """
@@ -512,7 +543,7 @@ class WatchlistService:
             raise  # 重新抛出自定义异常
         except psycopg2.IntegrityError as e:
             # UNIQUE 约束冲突
-            if 'unique' in str(e).lower():
+            if "unique" in str(e).lower():
                 raise WatchlistError(f"分组名称 '{group_name}' 已存在")
             raise WatchlistError(f"数据库完整性错误: {str(e)}")
         except psycopg2.Error as e:
@@ -561,16 +592,19 @@ class WatchlistService:
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
                     # 检查是否为默认分组
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT group_name FROM watchlist_groups
                         WHERE id = %s AND user_id = %s
-                    """, (group_id, user_id))
+                    """,
+                        (group_id, user_id),
+                    )
                     result = cur.fetchone()
 
                     if not result:
                         return False
 
-                    if result[0] == '默认分组':
+                    if result[0] == "默认分组":
                         print("不能删除默认分组")
                         return False
 
@@ -616,8 +650,9 @@ class WatchlistService:
             print(f"获取分组自选股时发生错误: {e}")
             return []
 
-    def move_stock_to_group(self, user_id: int, symbol: str,
-                           from_group_id: int, to_group_id: int) -> bool:
+    def move_stock_to_group(
+        self, user_id: int, symbol: str, from_group_id: int, to_group_id: int
+    ) -> bool:
         """
         将股票从一个分组移动到另一个分组
 
@@ -635,10 +670,13 @@ class WatchlistService:
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
                     # 检查目标分组是否存在
-                    cur.execute("""
+                    cur.execute(
+                        """
                         SELECT 1 FROM watchlist_groups
                         WHERE id = %s AND user_id = %s
-                    """, (to_group_id, user_id))
+                    """,
+                        (to_group_id, user_id),
+                    )
 
                     if not cur.fetchone():
                         print(f"目标分组 {to_group_id} 不存在")
@@ -650,13 +688,16 @@ class WatchlistService:
                     SET group_id = %s
                     WHERE user_id = %s AND stock_code = %s AND group_id = %s
                     """
-                    cur.execute(update_sql, (to_group_id, user_id, stock_code, from_group_id))
+                    cur.execute(
+                        update_sql, (to_group_id, user_id, stock_code, from_group_id)
+                    )
                     updated_count = cur.rowcount
                 conn.commit()
                 return updated_count > 0
         except psycopg2.Error as e:
             print(f"移动股票时发生错误: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -672,29 +713,28 @@ class WatchlistService:
         """
         try:
             groups = self.get_user_groups(user_id)
-            result = {
-                'groups': []
-            }
+            result = {"groups": []}
 
             for group in groups:
                 group_data = {
-                    'id': group['id'],
-                    'name': group['group_name'],
-                    'stock_count': group['stock_count'],
-                    'created_at': group['created_at'],
-                    'sort_order': group['sort_order'],
-                    'stocks': self.get_watchlist_by_group(user_id, group['id'])
+                    "id": group["id"],
+                    "name": group["group_name"],
+                    "stock_count": group["stock_count"],
+                    "created_at": group["created_at"],
+                    "sort_order": group["sort_order"],
+                    "stocks": self.get_watchlist_by_group(user_id, group["id"]),
                 }
-                result['groups'].append(group_data)
+                result["groups"].append(group_data)
 
             return result
         except Exception as e:
             print(f"获取分组视图时发生错误: {e}")
-            return {'groups': []}
+            return {"groups": []}
 
 
 # 创建全局实例
 _watchlist_service = None
+
 
 def get_watchlist_service() -> WatchlistService:
     """

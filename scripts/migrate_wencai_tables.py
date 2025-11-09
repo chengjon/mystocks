@@ -12,24 +12,26 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # 配置
 MYSQL_CONFIG = {
-    'host': os.getenv('MYSQL_HOST'),
-    'user': os.getenv('MYSQL_USER'),
-    'password': os.getenv('MYSQL_PASSWORD'),
-    'database': os.getenv('MYSQL_DATABASE'),
-    'port': int(os.getenv('MYSQL_PORT', 3306))
+    "host": os.getenv("MYSQL_HOST"),
+    "user": os.getenv("MYSQL_USER"),
+    "password": os.getenv("MYSQL_PASSWORD"),
+    "database": os.getenv("MYSQL_DATABASE"),
+    "port": int(os.getenv("MYSQL_PORT", 3306)),
 }
 
 POSTGRES_CONFIG = {
-    'host': os.getenv('POSTGRESQL_HOST'),
-    'user': os.getenv('POSTGRESQL_USER'),
-    'password': os.getenv('POSTGRESQL_PASSWORD'),
-    'database': os.getenv('POSTGRESQL_DATABASE'),
-    'port': int(os.getenv('POSTGRESQL_PORT', 5432))
+    "host": os.getenv("POSTGRESQL_HOST"),
+    "user": os.getenv("POSTGRESQL_USER"),
+    "password": os.getenv("POSTGRESQL_PASSWORD"),
+    "database": os.getenv("POSTGRESQL_DATABASE"),
+    "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
 }
+
 
 def migrate_wencai_table(mysql_table, pg_table, column_map=None):
     """迁移问财表数据，支持列名映射"""
@@ -70,21 +72,26 @@ def migrate_wencai_table(mysql_table, pg_table, column_map=None):
 
     print(f"  ✓ 完成")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # 迁移wencai_qs_1（列名映射：移除括号）
     print("=== 迁移wencai_qs_1 ===")
-    migrate_wencai_table('wencai_qs_1', 'wencai_qs_1', {
-        'a股市值(不含限售股)': 'a股市值'
-    })
+    migrate_wencai_table(
+        "wencai_qs_1", "wencai_qs_1", {"a股市值(不含限售股)": "a股市值"}
+    )
 
     # 迁移wencai_qs_2（列名映射：冒号改下划线）
     print("\n=== 迁移wencai_qs_2 ===")
-    migrate_wencai_table('wencai_qs_2', 'wencai_qs_2', {
-        '涨跌幅:前复权': '涨跌幅_前复权',
-        '涨跌幅:前复权_2': '涨跌幅_前复权_2',
-        '涨跌幅:前复权_3': '涨跌幅_前复权_3',
-        '涨跌幅:前复权_4': '涨跌幅_前复权_4',
-        '涨跌幅:前复权_5': '涨跌幅_前复权_5'
-    })
+    migrate_wencai_table(
+        "wencai_qs_2",
+        "wencai_qs_2",
+        {
+            "涨跌幅:前复权": "涨跌幅_前复权",
+            "涨跌幅:前复权_2": "涨跌幅_前复权_2",
+            "涨跌幅:前复权_3": "涨跌幅_前复权_3",
+            "涨跌幅:前复权_4": "涨跌幅_前复权_4",
+            "涨跌幅:前复权_5": "涨跌幅_前复权_5",
+        },
+    )
 
     print("\n✓ 所有问财表数据迁移完成")

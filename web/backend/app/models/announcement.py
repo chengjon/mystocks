@@ -6,8 +6,17 @@ Phase 3: ValueCell Migration - Multi-data Source Support
 from datetime import date, datetime
 from typing import Optional
 from sqlalchemy import (
-    Boolean, Column, Date, DateTime, Integer, String, Text,
-    DECIMAL, ForeignKey, Index, UniqueConstraint
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Integer,
+    String,
+    Text,
+    DECIMAL,
+    ForeignKey,
+    Index,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
@@ -22,9 +31,11 @@ from app.models.monitoring import Base
 # SQLAlchemy ORM Models
 # ============================================================================
 
+
 class Announcement(Base):
     """公告数据表"""
-    __tablename__ = 'announcement'
+
+    __tablename__ = "announcement"
 
     id = Column(Integer, primary_key=True)
     stock_code = Column(String(20), nullable=False, index=True)
@@ -52,10 +63,14 @@ class Announcement(Base):
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 关系
-    monitor_records = relationship("AnnouncementMonitorRecord", back_populates="announcement")
+    monitor_records = relationship(
+        "AnnouncementMonitorRecord", back_populates="announcement"
+    )
 
     __table_args__ = (
-        UniqueConstraint('stock_code', 'source_id', 'data_source', name='uq_announcement_source'),
+        UniqueConstraint(
+            "stock_code", "source_id", "data_source", name="uq_announcement_source"
+        ),
     )
 
     def __repr__(self):
@@ -64,7 +79,8 @@ class Announcement(Base):
 
 class AnnouncementMonitorRule(Base):
     """公告监控规则表"""
-    __tablename__ = 'announcement_monitor_rule'
+
+    __tablename__ = "announcement_monitor_rule"
 
     id = Column(Integer, primary_key=True)
     rule_name = Column(String(100), nullable=False, unique=True)
@@ -91,11 +107,18 @@ class AnnouncementMonitorRule(Base):
 
 class AnnouncementMonitorRecord(Base):
     """公告监控记录表"""
-    __tablename__ = 'announcement_monitor_record'
+
+    __tablename__ = "announcement_monitor_record"
 
     id = Column(Integer, primary_key=True)
-    rule_id = Column(Integer, ForeignKey('announcement_monitor_rule.id', ondelete='CASCADE'), index=True)
-    announcement_id = Column(Integer, ForeignKey('announcement.id', ondelete='CASCADE'), index=True)
+    rule_id = Column(
+        Integer,
+        ForeignKey("announcement_monitor_rule.id", ondelete="CASCADE"),
+        index=True,
+    )
+    announcement_id = Column(
+        Integer, ForeignKey("announcement.id", ondelete="CASCADE"), index=True
+    )
     matched_keywords = Column(JSONB, default=list)
     triggered_at = Column(DateTime, default=datetime.now, index=True)
     notified = Column(Boolean, default=False)
@@ -114,8 +137,10 @@ class AnnouncementMonitorRecord(Base):
 # Pydantic Schemas (for API)
 # ============================================================================
 
+
 class AnnouncementBase(BaseModel):
     """公告基础模型"""
+
     stock_code: str
     stock_name: Optional[str] = None
     announcement_title: str
@@ -135,11 +160,13 @@ class AnnouncementBase(BaseModel):
 
 class AnnouncementCreate(AnnouncementBase):
     """创建公告请求"""
+
     pass
 
 
 class AnnouncementResponse(AnnouncementBase):
     """公告响应"""
+
     id: int
     is_analyzed: bool
     created_at: datetime
@@ -151,6 +178,7 @@ class AnnouncementResponse(AnnouncementBase):
 
 class AnnouncementMonitorRuleBase(BaseModel):
     """公告监控规则基础模型"""
+
     rule_name: str
     keywords: list = Field(default_factory=list)
     announcement_types: list = Field(default_factory=list)
@@ -162,11 +190,13 @@ class AnnouncementMonitorRuleBase(BaseModel):
 
 class AnnouncementMonitorRuleCreate(AnnouncementMonitorRuleBase):
     """创建监控规则请求"""
+
     pass
 
 
 class AnnouncementMonitorRuleUpdate(BaseModel):
     """更新监控规则请求"""
+
     rule_name: Optional[str] = None
     keywords: Optional[list] = None
     announcement_types: Optional[list] = None
@@ -179,6 +209,7 @@ class AnnouncementMonitorRuleUpdate(BaseModel):
 
 class AnnouncementMonitorRuleResponse(AnnouncementMonitorRuleBase):
     """监控规则响应"""
+
     id: int
     is_active: bool
     created_by: Optional[int]
@@ -191,6 +222,7 @@ class AnnouncementMonitorRuleResponse(AnnouncementMonitorRuleBase):
 
 class AnnouncementMonitorRecordResponse(BaseModel):
     """监控记录响应"""
+
     id: int
     rule_id: int
     announcement_id: int
@@ -210,6 +242,7 @@ class AnnouncementMonitorRecordResponse(BaseModel):
 
 class AnnouncementSearchRequest(BaseModel):
     """公告搜索请求"""
+
     keywords: Optional[str] = None
     stock_code: Optional[str] = None
     announcement_type: Optional[str] = None
@@ -223,6 +256,7 @@ class AnnouncementSearchRequest(BaseModel):
 
 class AnnouncementStatsResponse(BaseModel):
     """公告统计响应"""
+
     total_count: int
     today_count: int
     important_count: int

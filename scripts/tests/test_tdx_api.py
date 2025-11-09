@@ -1,11 +1,12 @@
 """
 测试TDX API接口
 """
+
 import sys
 import os
 
 # 添加项目路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'web/backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "web/backend"))
 
 from fastapi.testclient import TestClient
 from app.main import app
@@ -27,8 +28,7 @@ def get_auth_token():
     """获取认证令牌"""
     print("\n=== 获取认证令牌 ===")
     response = client.post(
-        "/api/auth/login",
-        data={"username": "admin", "password": "admin123"}
+        "/api/auth/login", data={"username": "admin", "password": "admin123"}
     )
     print(f"Login Status: {response.status_code}")
     if response.status_code == 200:
@@ -79,7 +79,7 @@ def test_stock_kline(token):
     headers = {"Authorization": f"Bearer {token}"}
     response = client.get(
         "/api/tdx/kline?symbol=600519&period=5m&start_date=2025-10-14&end_date=2025-10-15",
-        headers=headers
+        headers=headers,
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
@@ -87,7 +87,7 @@ def test_stock_kline(token):
         print(f"股票代码: {data.get('code')}")
         print(f"周期: {data.get('period')}")
         print(f"数据条数: {data.get('count')}")
-        if data.get('data'):
+        if data.get("data"):
             print(f"最新一条: {data['data'][-1]}")
     else:
         print(f"Error: {response.json()}")
@@ -151,5 +151,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ 测试过程中出现错误: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

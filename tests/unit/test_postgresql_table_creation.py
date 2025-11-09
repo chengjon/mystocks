@@ -10,15 +10,16 @@ T022: PostgreSQL表创建单元测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pytest
-from core.config_driven_table_manager import ConfigDrivenTableManager
-from db_manager.connection_manager import DatabaseConnectionManager
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
+from src.db_manager.connection_manager import DatabaseConnectionManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("T022: PostgreSQL表创建单元测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 
 class TestPostgreSQLTableCreation:
@@ -59,11 +60,13 @@ class TestPostgreSQLTableCreation:
             cursor = conn.cursor()
 
             # 检查TimescaleDB扩展
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT extname, extversion
                 FROM pg_extension
                 WHERE extname = 'timescaledb'
-            """)
+            """
+            )
             result = cursor.fetchone()
             cursor.close()
             pool.putconn(conn)  # 归还连接
@@ -82,8 +85,9 @@ class TestPostgreSQLTableCreation:
         print("\n📍 测试3: 统计PostgreSQL表定义")
 
         pg_tables = [
-            t for t in self.manager.config['tables']
-            if t['database_type'] == 'PostgreSQL'
+            t
+            for t in self.manager.config["tables"]
+            if t["database_type"] == "PostgreSQL"
         ]
 
         print(f"  PostgreSQL表数量: {len(pg_tables)}")
@@ -91,11 +95,13 @@ class TestPostgreSQLTableCreation:
         # 根据table_config.yaml,应该有多个PostgreSQL表
         assert len(pg_tables) >= 10, f"PostgreSQL表数量不足: {len(pg_tables)}"
 
-        hypertables = [t for t in pg_tables if t.get('is_timescale_hypertable')]
+        hypertables = [t for t in pg_tables if t.get("is_timescale_hypertable")]
         print(f"  其中Hypertable: {len(hypertables)}")
 
         for table in pg_tables[:5]:  # 只显示前5个
-            is_hyper = "Hypertable" if table.get('is_timescale_hypertable') else "普通表"
+            is_hyper = (
+                "Hypertable" if table.get("is_timescale_hypertable") else "普通表"
+            )
             print(f"    - {table['table_name']} ({is_hyper})")
 
         print(f"  ✅ PostgreSQL表定义验证通过")
@@ -106,32 +112,37 @@ class TestPostgreSQLTableCreation:
 
         # 查找daily_kline表定义
         daily_kline = next(
-            (t for t in self.manager.config['tables']
-             if t['table_name'] == 'daily_kline'),
-            None
+            (
+                t
+                for t in self.manager.config["tables"]
+                if t["table_name"] == "daily_kline"
+            ),
+            None,
         )
 
         assert daily_kline is not None, "未找到daily_kline表定义"
-        assert daily_kline.get('is_timescale_hypertable', False), "daily_kline应该是Hypertable"
+        assert daily_kline.get(
+            "is_timescale_hypertable", False
+        ), "daily_kline应该是Hypertable"
 
         # 验证时间列
-        time_column = daily_kline.get('time_column')
+        time_column = daily_kline.get("time_column")
         assert time_column is not None, "应该配置时间列"
         print(f"  时间列: {time_column}")
 
         # 验证Chunk配置
-        chunk_interval = daily_kline.get('chunk_interval', '1 day')
+        chunk_interval = daily_kline.get("chunk_interval", "1 day")
         print(f"  Chunk间隔: {chunk_interval}")
 
         # 验证压缩配置
-        compression = daily_kline.get('compression', {})
-        if compression.get('enabled'):
+        compression = daily_kline.get("compression", {})
+        if compression.get("enabled"):
             print(f"  压缩策略: {compression.get('after_days')}天后压缩")
             print(f"  分段字段: {compression.get('segment_by')}")
             print(f"  排序字段: {compression.get('order_by')}")
 
         # 验证保留策略
-        retention_days = daily_kline.get('retention_days')
+        retention_days = daily_kline.get("retention_days")
         if retention_days:
             print(f"  保留策略: {retention_days}天")
 
@@ -143,8 +154,9 @@ class TestPostgreSQLTableCreation:
 
         try:
             pg_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'PostgreSQL'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "PostgreSQL"
             ]
 
             created_count = 0
@@ -157,7 +169,11 @@ class TestPostgreSQLTableCreation:
                     created = self.manager._create_table(table_def)
                     if created:
                         created_count += 1
-                        is_hyper = "Hypertable" if table_def.get('is_timescale_hypertable') else "表"
+                        is_hyper = (
+                            "Hypertable"
+                            if table_def.get("is_timescale_hypertable")
+                            else "表"
+                        )
                         print(f"  ✅ 创建: {table_def['table_name']} ({is_hyper})")
                     else:
                         skipped_count += 1
@@ -166,7 +182,9 @@ class TestPostgreSQLTableCreation:
                     error_count += 1
                     print(f"  ⚠️  失败: {table_def['table_name']} - {str(e)[:50]}")
 
-            print(f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个")
+            print(
+                f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
+            )
             print(f"  ✅ PostgreSQL表创建测试完成")
 
         except Exception as e:
@@ -179,13 +197,14 @@ class TestPostgreSQLTableCreation:
 
         try:
             pg_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'PostgreSQL'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "PostgreSQL"
             ]
 
             for table_def in pg_tables[:3]:  # 只检查前3个
-                table_name = table_def['table_name']
-                exists = self.manager._table_exists('PostgreSQL', table_name)
+                table_name = table_def["table_name"]
+                exists = self.manager._table_exists("PostgreSQL", table_name)
 
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
@@ -200,21 +219,21 @@ class TestPostgreSQLTableCreation:
         print("\n📍 测试7: 验证压缩策略")
 
         hypertables = [
-            t for t in self.manager.config['tables']
-            if t['database_type'] == 'PostgreSQL' and t.get('is_timescale_hypertable')
+            t
+            for t in self.manager.config["tables"]
+            if t["database_type"] == "PostgreSQL" and t.get("is_timescale_hypertable")
         ]
 
         print(f"  共有 {len(hypertables)} 个Hypertable")
 
         with_compression = [
-            t for t in hypertables
-            if t.get('compression', {}).get('enabled')
+            t for t in hypertables if t.get("compression", {}).get("enabled")
         ]
 
         print(f"  其中 {len(with_compression)} 个配置了压缩策略")
 
         for table in with_compression[:3]:
-            comp = table['compression']
+            comp = table["compression"]
             print(f"    - {table['table_name']}: {comp.get('after_days')}天后压缩")
 
         print(f"  ✅ 压缩策略验证通过")
@@ -255,10 +274,10 @@ def run_tests():
             failed += 1
             print(f"  ❌ 错误: {e}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"测试结果: 通过={passed}, 失败={failed}, 跳过={skipped}")
-    print("="*80)
+    print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

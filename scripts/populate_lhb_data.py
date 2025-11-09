@@ -14,8 +14,7 @@ from typing import List
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -36,13 +35,15 @@ def get_recent_trading_dates(days: int = 10) -> List[str]:
     while len(dates) < days:
         # Skip weekends
         if current_date.weekday() < 5:  # Monday=0, Sunday=6
-            dates.append(current_date.strftime('%Y-%m-%d'))
+            dates.append(current_date.strftime("%Y-%m-%d"))
         current_date -= timedelta(days=1)
 
     return dates
 
 
-def refresh_lhb_for_date(date_str: str, base_url: str = "http://localhost:8000") -> dict:
+def refresh_lhb_for_date(
+    date_str: str, base_url: str = "http://localhost:8000"
+) -> dict:
     """
     刷新指定日期的龙虎榜数据
 
@@ -105,4 +106,5 @@ def main():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

@@ -25,14 +25,14 @@ import time
 from datetime import datetime, timedelta
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from unified_manager import MyStocksUnifiedManager
-from core.data_classification import DataClassification
-from monitoring.monitoring_database import get_monitoring_database
-from monitoring.performance_monitor import get_performance_monitor
-from monitoring.data_quality_monitor import get_quality_monitor
-from monitoring.alert_manager import get_alert_manager
+from src.core.data_classification import DataClassification
+from src.monitoring.monitoring_database import get_monitoring_database
+from src.monitoring.performance_monitor import get_performance_monitor
+from src.monitoring.data_quality_monitor import get_quality_monitor
+from src.monitoring.alert_manager import get_alert_manager
 
 
 class TestUS3Monitoring(unittest.TestCase):
@@ -69,20 +69,22 @@ class TestUS3Monitoring(unittest.TestCase):
         print("-" * 100)
 
         # Given: 准备Tick数据
-        tick_data = pd.DataFrame({
-            'symbol': [f'60000{i%10}.SH' for i in range(1000)],
-            'price': [10.0 + i * 0.01 for i in range(1000)],
-            'volume': [1000 + i * 10 for i in range(1000)],
-            'ts': [datetime.now() for _ in range(1000)]
-        })
+        tick_data = pd.DataFrame(
+            {
+                "symbol": [f"60000{i%10}.SH" for i in range(1000)],
+                "price": [10.0 + i * 0.01 for i in range(1000)],
+                "volume": [1000 + i * 10 for i in range(1000)],
+                "ts": [datetime.now() for _ in range(1000)],
+            }
+        )
 
         # When: 保存数据
         print("  执行保存操作...")
         success = self.manager.save_data_by_classification(
             DataClassification.TICK_DATA,
             tick_data,
-            table_name='test_tick_us3',
-            timestamp_col='ts'
+            table_name="test_tick_us3",
+            timestamp_col="ts",
         )
 
         # Then: 验证结果
@@ -121,11 +123,11 @@ class TestUS3Monitoring(unittest.TestCase):
         if self.manager.enable_monitoring:
             print("  执行慢查询 (模拟6秒)...")
             with self.performance_monitor.track_operation(
-                operation_name='test_slow_query_us3',
-                classification='DAILY_KLINE',
-                database_type='postgresql',
-                table_name='daily_kline',
-                auto_alert=False  # 禁用自动告警以避免实际发送
+                operation_name="test_slow_query_us3",
+                classification="DAILY_KLINE",
+                database_type="postgresql",
+                table_name="daily_kline",
+                auto_alert=False,  # 禁用自动告警以避免实际发送
             ):
                 time.sleep(6.0)  # 模拟6秒慢查询
 
@@ -163,37 +165,39 @@ class TestUS3Monitoring(unittest.TestCase):
         results = {}
 
         # 1. 完整性检查
-        results['completeness'] = self.manager.check_data_quality(
+        results["completeness"] = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='completeness',
+            "daily_kline",
+            check_type="completeness",
             total_records=10000,
-            null_records=50  # 0.5% 缺失率
+            null_records=50,  # 0.5% 缺失率
         )
 
         # 2. 新鲜度检查
-        results['freshness'] = self.manager.check_data_quality(
+        results["freshness"] = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='freshness',
-            latest_timestamp=datetime.now() - timedelta(minutes=2)
+            "daily_kline",
+            check_type="freshness",
+            latest_timestamp=datetime.now() - timedelta(minutes=2),
         )
 
         # 3. 准确性检查
-        results['accuracy'] = self.manager.check_data_quality(
+        results["accuracy"] = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='accuracy',
+            "daily_kline",
+            check_type="accuracy",
             total_records=10000,
             invalid_records=10,  # 0.1% 无效率
-            validation_rules='price > 0 AND volume >= 0'
+            validation_rules="price > 0 AND volume >= 0",
         )
 
         # Then: 验证报告包含3个维度
         print("\n  质量报告:")
         for dimension, result in results.items():
-            if 'error' not in result:
-                print(f"    {dimension}: {result.get('check_status', 'UNKNOWN')} - {result.get('message', 'N/A')}")
+            if "error" not in result:
+                print(
+                    f"    {dimension}: {result.get('check_status', 'UNKNOWN')} - {result.get('message', 'N/A')}"
+                )
 
         self.assertTrue(len(results) == 3, "应该包含3个维度的检查")
         print("\n  ✅ 质量报告包含完整性、新鲜度、准确性3个维度")
@@ -222,16 +226,18 @@ class TestUS3Monitoring(unittest.TestCase):
         print("  检查数据完整性 (缺失率6%)...")
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline_us3',
-            check_type='completeness',
+            "daily_kline_us3",
+            check_type="completeness",
             total_records=10000,
             null_records=600,  # 6% 缺失率
-            threshold=threshold
+            threshold=threshold,
         )
 
         # Then: 验证告警生成
-        if 'error' not in result:
-            self.assertEqual(result.get('check_status'), 'WARNING', "缺失率6%应该WARNING")
+        if "error" not in result:
+            self.assertEqual(
+                result.get("check_status"), "WARNING", "缺失率6%应该WARNING"
+            )
             print("  ✅ 自动告警已生成")
             print("     - 告警类型: DATA_QUALITY")
             print(f"     - 缺失率: {result.get('missing_rate', 0):.1f}%")
@@ -260,17 +266,13 @@ class TestUS3Monitoring(unittest.TestCase):
         manager_no_monitor = MyStocksUnifiedManager(enable_monitoring=False)
 
         # When: 执行保存操作
-        test_data = pd.DataFrame({
-            'symbol': ['600000.SH'],
-            'position': [1000],
-            'cost': [10.5]
-        })
+        test_data = pd.DataFrame(
+            {"symbol": ["600000.SH"], "position": [1000], "cost": [10.5]}
+        )
 
         print("  执行保存操作...")
         success = manager_no_monitor.save_data_by_classification(
-            DataClassification.REALTIME_POSITIONS,
-            test_data,
-            table_name='test_fallback'
+            DataClassification.REALTIME_POSITIONS, test_data, table_name="test_fallback"
         )
 
         # Then: 验证业务操作成功
@@ -304,10 +306,10 @@ class TestUS3Monitoring(unittest.TestCase):
 
         # Given: 日志保留策略
         retention_policies = {
-            'operation_logs': '30天',
-            'performance_metrics': '90天',
-            'data_quality_checks': '7天',
-            'alert_records': '90天'
+            "operation_logs": "30天",
+            "performance_metrics": "90天",
+            "data_quality_checks": "7天",
+            "alert_records": "90天",
         }
 
         print("  日志保留策略:")
@@ -335,10 +337,12 @@ class TestUS3Monitoring(unittest.TestCase):
             print("\n📊 监控统计摘要:")
             stats = cls.manager.get_monitoring_statistics()
 
-            if stats.get('enabled'):
+            if stats.get("enabled"):
                 print(f"  告警统计: {stats.get('alerts', {})}")
                 print(f"  性能统计: {stats.get('performance', {})}")
-                print(f"  监控数据库: {'已连接' if stats.get('monitoring_db', {}).get('connected') else '未连接'}")
+                print(
+                    f"  监控数据库: {'已连接' if stats.get('monitoring_db', {}).get('connected') else '未连接'}"
+                )
 
         # 关闭连接
         cls.manager.close_all_connections()
@@ -358,12 +362,13 @@ class TestUS3Monitoring(unittest.TestCase):
         print("\n  🎉 US3 (独立监控与质量保证) 验收通过!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 配置日志
     import logging
+
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     # 运行测试

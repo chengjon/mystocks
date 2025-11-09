@@ -35,7 +35,7 @@ def test_get_all_logs():
             print(f"✅ 总日志数: {data.get('total')}")
             print(f"✅ 返回日志数: {data.get('filtered')}")
             print(f"\n前3条日志:")
-            for log in data.get('data', [])[:3]:
+            for log in data.get("data", [])[:3]:
                 print(f"  - [{log['level']}] {log['timestamp']}: {log['message']}")
             return True
         else:
@@ -70,8 +70,10 @@ def test_filter_errors_only():
             print(f"✅ 问题日志数: {data.get('filtered')}")
 
             # 验证所有日志都是WARNING/ERROR/CRITICAL级别
-            error_logs = data.get('data', [])
-            all_errors = all(log['level'] in ['WARNING', 'ERROR', 'CRITICAL'] for log in error_logs)
+            error_logs = data.get("data", [])
+            all_errors = all(
+                log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs
+            )
 
             if all_errors:
                 print(f"✅ 验证通过: 所有日志都是问题日志")
@@ -107,8 +109,8 @@ def test_filter_by_level():
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ ERROR级别日志数: {data.get('filtered')}")
 
-            error_logs = data.get('data', [])
-            all_error_level = all(log['level'] == 'ERROR' for log in error_logs)
+            error_logs = data.get("data", [])
+            all_error_level = all(log["level"] == "ERROR" for log in error_logs)
 
             if all_error_level:
                 print(f"✅ 验证通过: 所有日志都是ERROR级别")
@@ -143,8 +145,8 @@ def test_filter_by_category():
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ database分类日志数: {data.get('filtered')}")
 
-            db_logs = data.get('data', [])
-            all_database = all(log['category'] == 'database' for log in db_logs)
+            db_logs = data.get("data", [])
+            all_database = all(log["category"] == "database" for log in db_logs)
 
             if all_database:
                 print(f"✅ 验证通过: 所有日志都是database分类")
@@ -180,7 +182,7 @@ def test_pagination():
             print(f"✅ 总数: {data.get('total')}")
             print(f"✅ 返回数: {data.get('filtered')}")
 
-            logs = data.get('data', [])
+            logs = data.get("data", [])
             if len(logs) <= 5:
                 print(f"✅ 验证通过: 返回日志数 <= limit (5)")
             else:
@@ -208,7 +210,7 @@ def test_logs_summary():
 
         if response.status_code == 200:
             result = response.json()
-            data = result.get('data', {})
+            data = result.get("data", {})
 
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ 成功: {result.get('success')}")
@@ -216,11 +218,11 @@ def test_logs_summary():
             print(f"  - 总日志数: {data.get('total_logs')}")
             print(f"  - 最近错误数: {data.get('recent_errors_1h')}")
             print(f"\n各级别统计:")
-            level_counts = data.get('level_counts', {})
+            level_counts = data.get("level_counts", {})
             for level, count in level_counts.items():
                 print(f"  - {level}: {count}")
             print(f"\n各分类统计:")
-            category_counts = data.get('category_counts', {})
+            category_counts = data.get("category_counts", {})
             for category, count in category_counts.items():
                 print(f"  - {category}: {count}")
 

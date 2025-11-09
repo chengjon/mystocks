@@ -14,8 +14,8 @@ from pathlib import Path
 import logging
 
 # 数据库连接
-from db_manager.connection_manager import DatabaseConnectionManager
-from core.data_classification import DataClassification
+from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.core.data_classification import DataClassification
 
 logger = logging.getLogger(__name__)
 
@@ -41,26 +41,28 @@ class ConfigDrivenTableManager:
         self.config_path = config_path
         self.config = self._load_config()
         self.conn_manager = DatabaseConnectionManager()
-        self.safe_mode = self.config.get('maintenance', {}).get('safe_mode', True)
+        self.safe_mode = self.config.get("maintenance", {}).get("safe_mode", True)
 
-        logger.info(f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})")
+        logger.info(
+            f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})"
+        )
 
     def _load_config(self) -> Dict[str, Any]:
         """加载并验证YAML配置文件"""
         if not os.path.exists(self.config_path):
             raise FileNotFoundError(f"配置文件不存在: {self.config_path}")
 
-        with open(self.config_path, 'r', encoding='utf-8') as f:
+        with open(self.config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         # 验证配置版本
-        version = config.get('version', '未知')
+        version = config.get("version", "未知")
         logger.info(f"加载配置文件: {self.config_path} (version={version})")
 
         # 验证必需字段
-        if 'databases' not in config:
+        if "databases" not in config:
             raise ValueError("配置文件缺少 'databases' 字段")
-        if 'tables' not in config:
+        if "tables" not in config:
             raise ValueError("配置文件缺少 'tables' 字段")
 
         logger.info(f"配置文件包含 {len(config['tables'])} 个表定义")
@@ -77,30 +79,30 @@ class ConfigDrivenTableManager:
                 'errors': List[str]
             }
         """
-        result = {
-            'tables_created': 0,
-            'tables_skipped': 0,
-            'errors': []
-        }
+        result = {"tables_created": 0, "tables_skipped": 0, "errors": []}
 
         logger.info(f"开始初始化表 (total={len(self.config['tables'])})")
 
-        for table_def in self.config['tables']:
+        for table_def in self.config["tables"]:
             try:
                 created = self._create_table(table_def)
                 if created:
-                    result['tables_created'] += 1
-                    logger.info(f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
+                    result["tables_created"] += 1
+                    logger.info(
+                        f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})"
+                    )
                 else:
-                    result['tables_skipped'] += 1
+                    result["tables_skipped"] += 1
                     logger.info(f"⏭️ 跳过表: {table_def['table_name']} (已存在)")
             except Exception as e:
                 error_msg = f"{table_def['table_name']}: {str(e)}"
-                result['errors'].append(error_msg)
+                result["errors"].append(error_msg)
                 logger.error(f"❌ 创建表失败: {error_msg}")
 
-        logger.info(f"表初始化完成: created={result['tables_created']}, "
-                   f"skipped={result['tables_skipped']}, errors={len(result['errors'])}")
+        logger.info(
+            f"表初始化完成: created={result['tables_created']}, "
+            f"skipped={result['tables_skipped']}, errors={len(result['errors'])}"
+        )
 
         return result
 
@@ -114,31 +116,33 @@ class ConfigDrivenTableManager:
         Returns:
             True表示创建成功,False表示表已存在
         """
-        db_type = table_def['database_type']
-        table_name = table_def['table_name']
+        db_type = table_def["database_type"]
+        table_name = table_def["table_name"]
 
         # 检查表是否已存在
-        if self._table_exists(db_type, table_name, table_def.get('database_name')):
+        if self._table_exists(db_type, table_name, table_def.get("database_name")):
             return False
 
         # 根据数据库类型调用相应的创建方法
-        if db_type == 'TDengine':
+        if db_type == "TDengine":
             return self._create_tdengine_super_table(table_def)
-        elif db_type == 'PostgreSQL':
+        elif db_type == "PostgreSQL":
             return self._create_postgresql_table(table_def)
-        elif db_type == 'MySQL':
+        elif db_type == "MySQL":
             return self._create_mysql_table(table_def)
-        elif db_type == 'Redis':
+        elif db_type == "Redis":
             # Redis不需要预先创建表结构
             logger.info(f"Redis数据结构 {table_name} 无需预创建")
             return False
         else:
             raise ValueError(f"不支持的数据库类型: {db_type}")
 
-    def _table_exists(self, db_type: str, table_name: str, database_name: Optional[str] = None) -> bool:
+    def _table_exists(
+        self, db_type: str, table_name: str, database_name: Optional[str] = None
+    ) -> bool:
         """检查表是否存在"""
         try:
-            if db_type == 'TDengine':
+            if db_type == "TDengine":
                 conn = self.conn_manager.get_tdengine_connection()
                 cursor = conn.cursor()
                 cursor.execute(f"SHOW STABLES LIKE '{table_name}'")
@@ -146,28 +150,37 @@ class ConfigDrivenTableManager:
                 cursor.close()
                 return len(result) > 0
 
-            elif db_type == 'PostgreSQL':
+            elif db_type == "PostgreSQL":
                 conn = self.conn_manager.get_postgresql_connection()
                 cursor = conn.cursor()
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT EXISTS (
                         SELECT FROM information_schema.tables
                         WHERE table_name = %s
                     )
-                """, (table_name,))
+                """,
+                    (table_name,),
+                )
                 exists = cursor.fetchone()[0]
                 cursor.close()
                 self.conn_manager._return_postgresql_connection(conn)
                 return exists
 
-            elif db_type == 'MySQL':
+            elif db_type == "MySQL":
                 conn = self.conn_manager.get_mysql_connection()
                 cursor = conn.cursor()
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT COUNT(*)
                     FROM information_schema.tables
                     WHERE table_schema = %s AND table_name = %s
-                """, (database_name or self.config['databases']['mysql']['database'], table_name))
+                """,
+                    (
+                        database_name or self.config["databases"]["mysql"]["database"],
+                        table_name,
+                    ),
+                )
                 exists = cursor.fetchone()[0] > 0
                 cursor.close()
                 conn.close()
@@ -186,23 +199,23 @@ class ConfigDrivenTableManager:
         cursor = conn.cursor()
 
         try:
-            table_name = table_def['table_name']
-            columns = table_def['columns']
-            tags = table_def.get('tags', [])
+            table_name = table_def["table_name"]
+            columns = table_def["columns"]
+            tags = table_def.get("tags", [])
 
             # 构建列定义
             col_defs = []
             for col in columns:
-                col_type = col['type']
-                if 'length' in col:
+                col_type = col["type"]
+                if "length" in col:
                     col_type += f"({col['length']})"
-                nullable = '' if col.get('nullable', True) else ' NOT NULL'
+                nullable = "" if col.get("nullable", True) else " NOT NULL"
                 col_defs.append(f"{col['name']} {col_type}{nullable}")
 
             # 构建标签定义
             tag_defs = []
             for tag in tags:
-                tag_type = tag['type']
+                tag_type = tag["type"]
                 tag_defs.append(f"{tag['name']} {tag_type}")
 
             # 构建CREATE语句
@@ -217,14 +230,14 @@ class ConfigDrivenTableManager:
             cursor.execute(create_sql)
 
             # 设置压缩和保留策略
-            compression = table_def.get('compression', {})
-            if compression.get('enabled'):
-                codec = compression.get('codec', 'zstd').upper()
-                level = compression.get('level', 'medium').upper()
+            compression = table_def.get("compression", {})
+            if compression.get("enabled"):
+                codec = compression.get("codec", "zstd").upper()
+                level = compression.get("level", "medium").upper()
                 # TDengine 3.0+ 压缩配置 (注:实际语法可能需要调整)
                 logger.info(f"TDengine表 {table_name} 压缩配置: {codec} / {level}")
 
-            retention_days = table_def.get('retention_days')
+            retention_days = table_def.get("retention_days")
             if retention_days:
                 cursor.execute(f"ALTER STABLE {table_name} KEEP {retention_days}")
 
@@ -241,33 +254,37 @@ class ConfigDrivenTableManager:
         cursor = conn.cursor()
 
         try:
-            table_name = table_def['table_name']
-            columns = table_def['columns']
-            indexes = table_def.get('indexes', [])
-            is_hypertable = table_def.get('is_timescale_hypertable', False)
-            time_column = table_def.get('time_column', 'created_at')
+            table_name = table_def["table_name"]
+            columns = table_def["columns"]
+            indexes = table_def.get("indexes", [])
+            is_hypertable = table_def.get("is_timescale_hypertable", False)
+            time_column = table_def.get("time_column", "created_at")
 
             # 构建列定义
             col_defs = []
             primary_keys = []
 
             for col in columns:
-                col_type = col['type']
-                if 'length' in col and 'VARCHAR' in col_type:
+                col_type = col["type"]
+                if "length" in col and "VARCHAR" in col_type:
                     col_type = f"VARCHAR({col['length']})"
-                elif 'precision' in col and 'scale' in col:
+                elif "precision" in col and "scale" in col:
                     col_type = f"NUMERIC({col['precision']},{col['scale']})"
 
-                nullable = '' if col.get('nullable', True) else ' NOT NULL'
-                default = f" DEFAULT {col['default']}" if col.get('default') else ''
-                unique = ' UNIQUE' if col.get('unique') else ''
-                auto_inc = ' GENERATED ALWAYS AS IDENTITY' if col.get('auto_increment') else ''
+                nullable = "" if col.get("nullable", True) else " NOT NULL"
+                default = f" DEFAULT {col['default']}" if col.get("default") else ""
+                unique = " UNIQUE" if col.get("unique") else ""
+                auto_inc = (
+                    " GENERATED ALWAYS AS IDENTITY" if col.get("auto_increment") else ""
+                )
 
-                col_def = f"{col['name']} {col_type}{nullable}{default}{unique}{auto_inc}"
+                col_def = (
+                    f"{col['name']} {col_type}{nullable}{default}{unique}{auto_inc}"
+                )
                 col_defs.append(col_def)
 
-                if col.get('primary_key'):
-                    primary_keys.append(col['name'])
+                if col.get("primary_key"):
+                    primary_keys.append(col["name"])
 
             # 添加主键约束
             if primary_keys:
@@ -288,7 +305,7 @@ class ConfigDrivenTableManager:
 
             # 转换为Hypertable
             if is_hypertable:
-                chunk_interval = table_def.get('chunk_interval', '1 day')
+                chunk_interval = table_def.get("chunk_interval", "1 day")
                 hypertable_sql = f"""
                     SELECT create_hypertable(
                         '{table_name}',
@@ -301,42 +318,48 @@ class ConfigDrivenTableManager:
                 logger.info(f"✅ 转换为Hypertable: {table_name}")
 
                 # 设置压缩策略
-                compression = table_def.get('compression', {})
-                if compression.get('enabled'):
-                    after_days = compression.get('after_days', 30)
-                    segment_by = compression.get('segment_by', [])
-                    order_by = compression.get('order_by', f'{time_column} DESC')
+                compression = table_def.get("compression", {})
+                if compression.get("enabled"):
+                    after_days = compression.get("after_days", 30)
+                    segment_by = compression.get("segment_by", [])
+                    order_by = compression.get("order_by", f"{time_column} DESC")
 
                     # 启用压缩
-                    cursor.execute(f"""
+                    cursor.execute(
+                        f"""
                         ALTER TABLE {table_name} SET (
                             timescaledb.compress,
                             timescaledb.compress_segmentby = '{",".join(segment_by)}',
                             timescaledb.compress_orderby = '{order_by}'
                         )
-                    """)
+                    """
+                    )
 
                     # 添加压缩策略
-                    cursor.execute(f"""
+                    cursor.execute(
+                        f"""
                         SELECT add_compression_policy('{table_name}', INTERVAL '{after_days} days')
-                    """)
+                    """
+                    )
                     logger.info(f"✅ 配置压缩策略: {table_name} ({after_days}天后压缩)")
 
                 # 设置保留策略
-                retention_days = table_def.get('retention_days')
+                retention_days = table_def.get("retention_days")
                 if retention_days:
-                    cursor.execute(f"""
+                    cursor.execute(
+                        f"""
                         SELECT add_retention_policy('{table_name}', INTERVAL '{retention_days} days')
-                    """)
+                    """
+                    )
                     logger.info(f"✅ 配置保留策略: {table_name} ({retention_days}天)")
 
             # 创建索引
             for idx in indexes:
-                idx_name = idx['name']
-                idx_type = idx['type']
-                idx_columns = idx['columns']
+                idx_name = idx["name"]
+                idx_type = idx["type"]
+                idx_columns = idx["columns"]
 
-                if idx_type == 'UNIQUE':
+                if idx_type == "UNIQUE":
                     idx_sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {idx_name} ON {table_name} ({', '.join(idx_columns)})"
                 else:
                     idx_sql = f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} ({', '.join(idx_columns)})"
@@ -360,9 +383,9 @@ class ConfigDrivenTableManager:
         cursor = conn.cursor()
 
         try:
-            table_name = table_def['table_name']
-            columns = table_def['columns']
-            indexes = table_def.get('indexes', [])
+            table_name = table_def["table_name"]
+            columns = table_def["columns"]
+            indexes = table_def.get("indexes", [])
 
             # 构建列定义
             col_defs = []
@@ -370,38 +393,42 @@ class ConfigDrivenTableManager:
             unique_keys = []
 
             for col in columns:
-                col_type = col['type']
-                if 'length' in col and 'VARCHAR' in col_type:
+                col_type = col["type"]
+                if "length" in col and "VARCHAR" in col_type:
                     col_type = f"VARCHAR({col['length']})"
 
-                nullable = '' if col.get('nullable', True) else ' NOT NULL'
+                nullable = "" if col.get("nullable", True) else " NOT NULL"
 
                 # 处理默认值
-                default = ''
-                if 'default' in col:
-                    default_val = col['default']
+                default = ""
+                if "default" in col:
+                    default_val = col["default"]
                     # 处理特殊默认值
-                    if default_val == 'CURRENT_TIMESTAMP':
-                        default = ' DEFAULT CURRENT_TIMESTAMP'
-                    elif default_val == 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP':
-                        default = ' DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-                    elif default_val in ['TRUE', 'FALSE']:
-                        default = f' DEFAULT {default_val}'
+                    if default_val == "CURRENT_TIMESTAMP":
+                        default = " DEFAULT CURRENT_TIMESTAMP"
+                    elif default_val == "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP":
+                        default = (
+                            " DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                        )
+                    elif default_val in ["TRUE", "FALSE"]:
+                        default = f" DEFAULT {default_val}"
                     elif isinstance(default_val, str) and default_val.startswith("'"):
-                        default = f' DEFAULT {default_val}'
+                        default = f" DEFAULT {default_val}"
                     else:
                         default = f" DEFAULT '{default_val}'"
 
-                auto_inc = ' AUTO_INCREMENT' if col.get('auto_increment') else ''
-                comment = f" COMMENT '{col['comment']}'" if col.get('comment') else ''
+                auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
+                comment = f" COMMENT '{col['comment']}'" if col.get("comment") else ""
 
-                col_def = f"{col['name']} {col_type}{nullable}{default}{auto_inc}{comment}"
+                col_def = (
+                    f"{col['name']} {col_type}{nullable}{default}{auto_inc}{comment}"
+                )
                 col_defs.append(col_def)
 
-                if col.get('primary_key'):
-                    primary_keys.append(col['name'])
-                if col.get('unique'):
-                    unique_keys.append(col['name'])
+                if col.get("primary_key"):
+                    primary_keys.append(col["name"])
+                if col.get("unique"):
+                    unique_keys.append(col["name"])
 
             # 添加主键约束
             if primary_keys:
@@ -418,11 +445,11 @@ class ConfigDrivenTableManager:
 
             # 创建索引
             for idx in indexes:
-                idx_name = idx['name']
-                idx_type = idx['type']
-                idx_columns = idx['columns']
+                idx_name = idx["name"]
+                idx_type = idx["type"]
+                idx_columns = idx["columns"]
 
-                if idx_type == 'UNIQUE':
+                if idx_type == "UNIQUE":
                     idx_sql = f"CREATE UNIQUE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
                 else:
                     idx_sql = f"CREATE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
@@ -451,27 +478,25 @@ class ConfigDrivenTableManager:
         Returns:
             验证结果字典
         """
-        result = {
-            'tables_validated': 0,
-            'tables_mismatched': 0,
-            'errors': []
-        }
+        result = {"tables_validated": 0, "tables_mismatched": 0, "errors": []}
 
         logger.info("开始验证表结构")
 
-        for table_def in self.config['tables']:
+        for table_def in self.config["tables"]:
             try:
                 is_valid = self._validate_table_structure(table_def)
                 if is_valid:
-                    result['tables_validated'] += 1
+                    result["tables_validated"] += 1
                 else:
-                    result['tables_mismatched'] += 1
-                    result['errors'].append(f"{table_def['table_name']}: 表结构不匹配")
+                    result["tables_mismatched"] += 1
+                    result["errors"].append(f"{table_def['table_name']}: 表结构不匹配")
             except Exception as e:
-                result['errors'].append(f"{table_def['table_name']}: {str(e)}")
+                result["errors"].append(f"{table_def['table_name']}: {str(e)}")
 
-        logger.info(f"表结构验证完成: validated={result['tables_validated']}, "
-                   f"mismatched={result['tables_mismatched']}")
+        logger.info(
+            f"表结构验证完成: validated={result['tables_validated']}, "
+            f"mismatched={result['tables_mismatched']}"
+        )
 
         return result
 
@@ -483,10 +508,10 @@ class ConfigDrivenTableManager:
         # 3. 检查索引是否存在
         # 4. 检查约束是否正确
 
-        db_type = table_def['database_type']
-        table_name = table_def['table_name']
+        db_type = table_def["database_type"]
+        table_name = table_def["table_name"]
 
-        if not self._table_exists(db_type, table_name, table_def.get('database_name')):
+        if not self._table_exists(db_type, table_name, table_def.get("database_name")):
             logger.warning(f"表不存在: {table_name}")
             return False
 
@@ -511,7 +536,9 @@ class ConfigDrivenTableManager:
         # TODO: 实现自动添加列逻辑
         return True
 
-    def confirm_dangerous_operation(self, operation_type: str, table_name: str, details: str) -> bool:
+    def confirm_dangerous_operation(
+        self, operation_type: str, table_name: str, details: str
+    ) -> bool:
         """
         确认危险操作 (删除列/修改列)
 
@@ -531,15 +558,10 @@ class ConfigDrivenTableManager:
 
     def get_table_count_by_database(self) -> Dict[str, int]:
         """获取每个数据库的表数量统计"""
-        stats = {
-            'TDengine': 0,
-            'PostgreSQL': 0,
-            'MySQL': 0,
-            'Redis': 0
-        }
+        stats = {"TDengine": 0, "PostgreSQL": 0, "MySQL": 0, "Redis": 0}
 
-        for table_def in self.config['tables']:
-            db_type = table_def['database_type']
+        for table_def in self.config["tables"]:
+            db_type = table_def["database_type"]
             stats[db_type] = stats.get(db_type, 0) + 1
 
         return stats
@@ -547,16 +569,18 @@ class ConfigDrivenTableManager:
     def get_classification_mapping(self) -> Dict[str, str]:
         """获取数据分类到表名的映射"""
         mapping = {}
-        for table_def in self.config['tables']:
-            classification = table_def.get('classification')
+        for table_def in self.config["tables"]:
+            classification = table_def.get("classification")
             if classification:
-                mapping[classification] = table_def['table_name']
+                mapping[classification] = table_def["table_name"]
         return mapping
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 测试代码
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
 
     manager = ConfigDrivenTableManager()
 
@@ -577,7 +601,7 @@ if __name__ == '__main__':
     print(f"  创建: {result['tables_created']}个表")
     print(f"  跳过: {result['tables_skipped']}个表")
     print(f"  错误: {len(result['errors'])}个")
-    if result['errors']:
+    if result["errors"]:
         print("\n错误详情:")
-        for error in result['errors'][:5]:  # 只显示前5个错误
+        for error in result["errors"][:5]:  # 只显示前5个错误
             print(f"  - {error}")

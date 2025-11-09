@@ -5,6 +5,7 @@
 - indicator_calculator (161个TA-Lib指标) - EXISTING
 - data_service (OHLCV数据加载) - EXISTING
 """
+
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional
 from enum import Enum
@@ -18,10 +19,11 @@ logger = logging.getLogger(__name__)
 
 class StrategyCategory(Enum):
     """策略分类"""
+
     TREND_FOLLOWING = "trend_following"  # 趋势跟踪
-    MEAN_REVERSION = "mean_reversion"    # 均值回归
-    BREAKOUT = "breakout"                # 突破策略
-    VOLUME_BASED = "volume_based"        # 成交量策略
+    MEAN_REVERSION = "mean_reversion"  # 均值回归
+    BREAKOUT = "breakout"  # 突破策略
+    VOLUME_BASED = "volume_based"  # 成交量策略
 
 
 class StrategyBase(ABC):
@@ -31,7 +33,9 @@ class StrategyBase(ABC):
     所有策略必须继承此类并实现execute()方法
     """
 
-    def __init__(self, strategy_id: str, name: str, description: str, category: StrategyCategory):
+    def __init__(
+        self, strategy_id: str, name: str, description: str, category: StrategyCategory
+    ):
         self.strategy_id = strategy_id
         self.name = name
         self.description = description
@@ -39,11 +43,7 @@ class StrategyBase(ABC):
 
     @abstractmethod
     def execute(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        parameters: Dict[str, Any]
+        self, symbol: str, start_date: str, end_date: str, parameters: Dict[str, Any]
     ) -> pd.DataFrame:
         """
         执行策略生成交易信号
@@ -77,14 +77,13 @@ class StrategyRegistry:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def register_strategy(
-        self,
-        strategy_class: type[StrategyBase]
-    ):
+    def register_strategy(self, strategy_class: type[StrategyBase]):
         """注册策略"""
         strategy_instance = strategy_class()
         self._strategies[strategy_instance.strategy_id] = strategy_class
-        logger.info(f"注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}")
+        logger.info(
+            f"注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}"
+        )
 
     def get_strategy(self, strategy_id: str) -> Optional[StrategyBase]:
         """获取策略实例"""
@@ -97,13 +96,15 @@ class StrategyRegistry:
         strategies = []
         for strategy_class in self._strategies.values():
             instance = strategy_class()
-            strategies.append({
-                'strategy_id': instance.strategy_id,
-                'name': instance.name,
-                'description': instance.description,
-                'category': instance.category.value,
-                'default_parameters': instance.get_default_parameters()
-            })
+            strategies.append(
+                {
+                    "strategy_id": instance.strategy_id,
+                    "name": instance.name,
+                    "description": instance.description,
+                    "category": instance.category.value,
+                    "default_parameters": instance.get_default_parameters(),
+                }
+            )
         return strategies
 
 

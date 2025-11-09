@@ -79,11 +79,15 @@ class AdapterRegistry:
             KeyError: If adapter not registered
         """
         if name not in AdapterRegistry._adapter_classes:
-            raise KeyError(f"Adapter '{name}' not registered. Available: {list(AdapterRegistry._adapter_classes.keys())}")
+            raise KeyError(
+                f"Adapter '{name}' not registered. Available: {list(AdapterRegistry._adapter_classes.keys())}"
+            )
 
         if name not in AdapterRegistry._adapters:
             logger.info(f"📦 Instantiating adapter: {name}")
-            AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(name, *args, **kwargs)
+            AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(
+                name, *args, **kwargs
+            )
 
         return AdapterRegistry._adapters[name]
 
@@ -92,7 +96,11 @@ class AdapterRegistry:
         """Instantiate an adapter"""
         adapter_class = AdapterRegistry._adapter_classes[name]
         try:
-            if callable(adapter_class) and hasattr(adapter_class, '__name__') and adapter_class.__name__.startswith('get_'):
+            if (
+                callable(adapter_class)
+                and hasattr(adapter_class, "__name__")
+                and adapter_class.__name__.startswith("get_")
+            ):
                 # It's a factory function
                 return adapter_class(*args, **kwargs)
             else:
@@ -204,11 +212,12 @@ class AdapterFactory:
         return {
             "registered": len(AdapterRegistry.get_registered_adapters()),
             "loaded": len(AdapterRegistry.get_loaded_adapters()),
-            "adapters": list(AdapterRegistry.get_registered_adapters().keys())
+            "adapters": list(AdapterRegistry.get_registered_adapters().keys()),
         }
 
 
 # ==================== INITIALIZATION HELPERS ====================
+
 
 def init_default_adapters():
     """
@@ -218,6 +227,7 @@ def init_default_adapters():
     """
     try:
         from app.adapters.akshare_extension import get_akshare_extension
+
         AdapterFactory.register("akshare", get_akshare_extension, lazy_load=True)
         logger.info("✅ Registered akshare adapter")
     except ImportError:
@@ -225,6 +235,7 @@ def init_default_adapters():
 
     try:
         from app.adapters.eastmoney_adapter import get_eastmoney_adapter
+
         AdapterFactory.register("eastmoney", get_eastmoney_adapter, lazy_load=True)
         logger.info("✅ Registered eastmoney adapter")
     except ImportError:
@@ -232,6 +243,7 @@ def init_default_adapters():
 
     try:
         from app.adapters.tqlex_adapter import get_tqlex_adapter
+
         AdapterFactory.register("tqlex", get_tqlex_adapter, lazy_load=True)
         logger.info("✅ Registered tqlex adapter")
     except ImportError:
@@ -239,6 +251,7 @@ def init_default_adapters():
 
     try:
         from app.adapters.financial_adapter import get_financial_adapter
+
         AdapterFactory.register("financial", get_financial_adapter, lazy_load=True)
         logger.info("✅ Registered financial adapter")
     except ImportError:

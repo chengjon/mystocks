@@ -40,8 +40,13 @@ class BaseStrategy(ABC):
         self.description = description
 
     @abstractmethod
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         """
         检查股票是否符合策略条件
 
@@ -56,10 +61,12 @@ class BaseStrategy(ABC):
         """
         pass
 
-    def filter_date(self, data: pd.DataFrame, end_date: Optional[str] = None) -> pd.DataFrame:
+    def filter_date(
+        self, data: pd.DataFrame, end_date: Optional[str] = None
+    ) -> pd.DataFrame:
         """过滤数据到指定日期"""
         if end_date is not None:
-            mask = (data['date'] <= end_date)
+            mask = data["date"] <= end_date
             return data.loc[mask].copy()
         return data.copy()
 
@@ -78,11 +85,16 @@ class VolumeSurgeStrategy(BaseStrategy):
         super().__init__(
             name="volume_surge",
             name_cn="放量上涨",
-            description="成交量放大2倍以上且价格上涨的股票"
+            description="成交量放大2倍以上且价格上涨的股票",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -90,23 +102,28 @@ class VolumeSurgeStrategy(BaseStrategy):
             return False
 
         # 计算涨跌幅
-        p_change = data.iloc[-1]['p_change'] if 'p_change' in data.columns else \
-            (data.iloc[-1]['close'] - data.iloc[-2]['close']) / data.iloc[-2]['close'] * 100
+        p_change = (
+            data.iloc[-1]["p_change"]
+            if "p_change" in data.columns
+            else (data.iloc[-1]["close"] - data.iloc[-2]["close"])
+            / data.iloc[-2]["close"]
+            * 100
+        )
 
         # 条件1: 涨幅<2% 或 收盘价<开盘价
-        if p_change < 2 or data.iloc[-1]['close'] < data.iloc[-1]['open']:
+        if p_change < 2 or data.iloc[-1]["close"] < data.iloc[-1]["open"]:
             return False
 
         # 计算5日成交量均线
-        data.loc[:, 'vol_ma5'] = tl.MA(data['volume'].values, timeperiod=5)
-        data['vol_ma5'].fillna(0, inplace=True)
+        data.loc[:, "vol_ma5"] = tl.MA(data["volume"].values, timeperiod=5)
+        data["vol_ma5"].fillna(0, inplace=True)
 
         data = data.tail(n=threshold + 1)
         if len(data) < threshold + 1:
             return False
 
-        last_close = data.iloc[-1]['close']
-        last_vol = data.iloc[-1]['volume']
+        last_close = data.iloc[-1]["close"]
+        last_vol = data.iloc[-1]["volume"]
 
         # 条件2: 成交额不低于2亿
         amount = last_close * last_vol
@@ -114,7 +131,7 @@ class VolumeSurgeStrategy(BaseStrategy):
             return False
 
         # 条件3: 成交量/5日均量>=2
-        mean_vol = data.iloc[-2]['vol_ma5']  # 使用前一天的5日均量
+        mean_vol = data.iloc[-2]["vol_ma5"]  # 使用前一天的5日均量
         if mean_vol == 0:
             return False
 
@@ -135,11 +152,16 @@ class MABullishStrategy(BaseStrategy):
         super().__init__(
             name="ma_bullish",
             name_cn="均线多头",
-            description="短期均线在长期均线上方，多条均线向上发散"
+            description="短期均线在长期均线上方，多条均线向上发散",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 30) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 30,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -147,8 +169,8 @@ class MABullishStrategy(BaseStrategy):
             return False
 
         # 计算30日均线
-        data.loc[:, 'ma30'] = tl.MA(data['close'].values, timeperiod=30)
-        data['ma30'].fillna(0, inplace=True)
+        data.loc[:, "ma30"] = tl.MA(data["close"].values, timeperiod=30)
+        data["ma30"].fillna(0, inplace=True)
 
         data = data.tail(n=threshold)
 
@@ -156,9 +178,13 @@ class MABullishStrategy(BaseStrategy):
         step2 = round(threshold * 2 / 3)
 
         # 均线递增且涨幅超过20%
-        if (data.iloc[0]['ma30'] < data.iloc[step1]['ma30'] <
-                data.iloc[step2]['ma30'] < data.iloc[-1]['ma30'] and
-                data.iloc[-1]['ma30'] > 1.2 * data.iloc[0]['ma30']):
+        if (
+            data.iloc[0]["ma30"]
+            < data.iloc[step1]["ma30"]
+            < data.iloc[step2]["ma30"]
+            < data.iloc[-1]["ma30"]
+            and data.iloc[-1]["ma30"] > 1.2 * data.iloc[0]["ma30"]
+        ):
             return True
 
         return False
@@ -176,11 +202,16 @@ class TurtleTradingStrategy(BaseStrategy):
         super().__init__(
             name="turtle_trading",
             name_cn="海龟交易法则",
-            description="创出60日新高的股票"
+            description="创出60日新高的股票",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -190,8 +221,8 @@ class TurtleTradingStrategy(BaseStrategy):
         data = data.tail(n=threshold)
 
         # 找出最高价
-        max_price = data['close'].max()
-        last_close = data.iloc[-1]['close']
+        max_price = data["close"].max()
+        last_close = data.iloc[-1]["close"]
 
         # 当日收盘价是否等于或超过最高价
         return last_close >= max_price
@@ -211,11 +242,16 @@ class ConsolidationPlatformStrategy(BaseStrategy):
         super().__init__(
             name="consolidation_platform",
             name_cn="停机坪",
-            description="股价横盘整理，成交量缩小，蓄势待发"
+            description="股价横盘整理，成交量缩小，蓄势待发",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 15) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 15,
+    ) -> bool:
         origin_data = data.copy()
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
@@ -226,24 +262,30 @@ class ConsolidationPlatformStrategy(BaseStrategy):
         data = data.tail(n=threshold)
 
         # 计算p_change如果不存在
-        if 'p_change' not in data.columns:
-            data['p_change'] = data['close'].pct_change() * 100
+        if "p_change" not in data.columns:
+            data["p_change"] = data["close"].pct_change() * 100
 
         # 找出涨停日（涨幅>9.5%）
         for idx, row in data.iterrows():
-            if row['p_change'] > 9.5:
+            if row["p_change"] > 9.5:
                 # 检查是否创新高（类似海龟交易）
-                check_date = datetime.strptime(row['date'], '%Y-%m-%d')
-                turtle_check = TurtleTradingStrategy().check(symbol, origin_data, check_date, threshold)
+                check_date = datetime.strptime(row["date"], "%Y-%m-%d")
+                turtle_check = TurtleTradingStrategy().check(
+                    symbol, origin_data, check_date, threshold
+                )
 
-                if turtle_check and self._check_consolidation(data, row['close'], row['date']):
+                if turtle_check and self._check_consolidation(
+                    data, row["close"], row["date"]
+                ):
                     return True
 
         return False
 
-    def _check_consolidation(self, data: pd.DataFrame, limitup_price: float, limitup_date: str) -> bool:
+    def _check_consolidation(
+        self, data: pd.DataFrame, limitup_price: float, limitup_date: str
+    ) -> bool:
         """检查涨停后的整理形态"""
-        limitup_end = data.loc[data['date'] > limitup_date].head(n=3)
+        limitup_end = data.loc[data["date"] > limitup_date].head(n=3)
 
         if len(limitup_end) < 3:
             return False
@@ -252,17 +294,21 @@ class ConsolidationPlatformStrategy(BaseStrategy):
         consolidation_day23 = limitup_end.tail(n=2)
 
         # 第一天条件
-        if not (consolidation_day1['close'] > limitup_price and
-                consolidation_day1['open'] > limitup_price and
-                0.97 < consolidation_day1['close'] / consolidation_day1['open'] < 1.03):
+        if not (
+            consolidation_day1["close"] > limitup_price
+            and consolidation_day1["open"] > limitup_price
+            and 0.97 < consolidation_day1["close"] / consolidation_day1["open"] < 1.03
+        ):
             return False
 
         # 第2、3天条件
         for idx, row in consolidation_day23.iterrows():
-            if not (0.97 < (row['close'] / row['open']) < 1.03 and
-                    -5 < row['p_change'] < 5 and
-                    row['close'] > limitup_price and
-                    row['open'] > limitup_price):
+            if not (
+                0.97 < (row["close"] / row["open"]) < 1.03
+                and -5 < row["p_change"] < 5
+                and row["close"] > limitup_price
+                and row["open"] > limitup_price
+            ):
                 return False
 
         return True
@@ -284,11 +330,16 @@ class MA250PullbackStrategy(BaseStrategy):
         super().__init__(
             name="ma250_pullback",
             name_cn="回踩年线",
-            description="股价回踩250日均线获得支撑"
+            description="股价回踩250日均线获得支撑",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -296,49 +347,53 @@ class MA250PullbackStrategy(BaseStrategy):
             return False
 
         # 计算250日均线
-        data.loc[:, 'ma250'] = tl.MA(data['close'].values, timeperiod=250)
-        data['ma250'].fillna(0, inplace=True)
+        data.loc[:, "ma250"] = tl.MA(data["close"].values, timeperiod=250)
+        data["ma250"].fillna(0, inplace=True)
 
         data = data.tail(n=threshold)
 
         # 找出区间最高点和最低点
-        highest_idx = data['close'].idxmax()
+        highest_idx = data["close"].idxmax()
         highest_row = data.loc[highest_idx]
 
-        data_front = data.loc[data['date'] < highest_row['date']]
-        data_end = data.loc[data['date'] >= highest_row['date']]
+        data_front = data.loc[data["date"] < highest_row["date"]]
+        data_end = data.loc[data["date"] >= highest_row["date"]]
 
         if data_front.empty:
             return False
 
         # 条件1: 前段由年线以下向上突破
-        if not (data_front.iloc[0]['close'] < data_front.iloc[0]['ma250'] and
-                data_front.iloc[-1]['close'] > data_front.iloc[-1]['ma250']):
+        if not (
+            data_front.iloc[0]["close"] < data_front.iloc[0]["ma250"]
+            and data_front.iloc[-1]["close"] > data_front.iloc[-1]["ma250"]
+        ):
             return False
 
         if data_end.empty:
             return False
 
         # 条件2: 后段必须在年线以上运行
-        if (data_end['close'] < data_end['ma250']).any():
+        if (data_end["close"] < data_end["ma250"]).any():
             return False
 
         # 找出后段最低点
-        recent_lowest_idx = data_end['close'].idxmin()
+        recent_lowest_idx = data_end["close"].idxmin()
         recent_lowest_row = data_end.loc[recent_lowest_idx]
 
         # 条件3: 日期差在10-50日间
-        date_diff = (datetime.strptime(recent_lowest_row['date'], '%Y-%m-%d') -
-                     datetime.strptime(highest_row['date'], '%Y-%m-%d')).days
+        date_diff = (
+            datetime.strptime(recent_lowest_row["date"], "%Y-%m-%d")
+            - datetime.strptime(highest_row["date"], "%Y-%m-%d")
+        ).days
 
         if not (10 <= date_diff <= 50):
             return False
 
         # 条件4: 缩量比例>2
-        vol_ratio = highest_row['volume'] / recent_lowest_row['volume']
+        vol_ratio = highest_row["volume"] / recent_lowest_row["volume"]
 
         # 条件5: 回踩幅度<0.8
-        back_ratio = recent_lowest_row['close'] / highest_row['close']
+        back_ratio = recent_lowest_row["close"] / highest_row["close"]
 
         return vol_ratio > 2 and back_ratio < 0.8
 
@@ -357,11 +412,16 @@ class BreakthroughPlatformStrategy(BaseStrategy):
         super().__init__(
             name="breakthrough_platform",
             name_cn="突破平台",
-            description="股价突破前期平台高点"
+            description="股价突破前期平台高点",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         origin_data = data.copy()
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
@@ -370,8 +430,8 @@ class BreakthroughPlatformStrategy(BaseStrategy):
             return False
 
         # 计算60日均线
-        data.loc[:, 'ma60'] = tl.MA(data['close'].values, timeperiod=60)
-        data['ma60'].fillna(0, inplace=True)
+        data.loc[:, "ma60"] = tl.MA(data["close"].values, timeperiod=60)
+        data["ma60"].fillna(0, inplace=True)
 
         data = data.tail(n=threshold)
 
@@ -380,20 +440,20 @@ class BreakthroughPlatformStrategy(BaseStrategy):
         volume_surge = VolumeSurgeStrategy()
 
         for idx, row in data.iterrows():
-            if row['open'] < row['ma60'] <= row['close']:
-                check_date = datetime.strptime(row['date'], '%Y-%m-%d')
+            if row["open"] < row["ma60"] <= row["close"]:
+                check_date = datetime.strptime(row["date"], "%Y-%m-%d")
                 if volume_surge.check(symbol, origin_data, check_date, threshold):
-                    breakthrough_date = row['date']
+                    breakthrough_date = row["date"]
                     break
 
         if breakthrough_date is None:
             return False
 
         # 检查突破前的平台
-        data_front = data.loc[(data['date'] < breakthrough_date) & (data['ma60'] > 0)]
+        data_front = data.loc[(data["date"] < breakthrough_date) & (data["ma60"] > 0)]
 
         for idx, row in data_front.iterrows():
-            deviation = (row['ma60'] - row['close']) / row['ma60']
+            deviation = (row["ma60"] - row["close"]) / row["ma60"]
             if not (-0.05 < deviation < 0.2):
                 return False
 
@@ -416,11 +476,16 @@ class LowDrawdownStrategy(BaseStrategy):
         super().__init__(
             name="low_drawdown",
             name_cn="无大幅回撤",
-            description="上涨过程中回撤幅度较小的强势股"
+            description="上涨过程中回撤幅度较小的强势股",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -430,22 +495,24 @@ class LowDrawdownStrategy(BaseStrategy):
         data = data.tail(n=threshold)
 
         # 条件1: 60日涨幅必须大于60%
-        ratio_increase = (data.iloc[-1]['close'] - data.iloc[0]['close']) / data.iloc[0]['close']
+        ratio_increase = (data.iloc[-1]["close"] - data.iloc[0]["close"]) / data.iloc[
+            0
+        ]["close"]
         if ratio_increase < 0.6:
             return False
 
         # 计算p_change如果不存在
-        if 'p_change' not in data.columns:
-            data['p_change'] = data['close'].pct_change() * 100
+        if "p_change" not in data.columns:
+            data["p_change"] = data["close"].pct_change() * 100
 
         # 检查回撤条件
         previous_p_change = 100.0
         previous_open = -1000000.0
 
         for _, row in data.iterrows():
-            p_change = row['p_change']
-            close = row['close']
-            open_price = row['open']
+            p_change = row["p_change"]
+            close = row["close"]
+            open_price = row["open"]
 
             # 单日跌幅超7%
             if p_change < -7:
@@ -460,7 +527,10 @@ class LowDrawdownStrategy(BaseStrategy):
                 return False
 
             # 两日高开低走累计10%
-            if previous_open > 0 and (close - previous_open) / previous_open * 100 < -10:
+            if (
+                previous_open > 0
+                and (close - previous_open) / previous_open * 100 < -10
+            ):
                 return False
 
             previous_p_change = p_change
@@ -483,11 +553,16 @@ class HighTightFlagStrategy(BaseStrategy):
         super().__init__(
             name="high_tight_flag",
             name_cn="高而窄的旗形",
-            description="快速上涨后窄幅整理的旗形形态"
+            description="快速上涨后窄幅整理的旗形形态",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -497,8 +572,8 @@ class HighTightFlagStrategy(BaseStrategy):
         data = data.tail(n=threshold)
 
         # 计算p_change如果不存在
-        if 'p_change' not in data.columns:
-            data['p_change'] = data['close'].pct_change() * 100
+        if "p_change" not in data.columns:
+            data["p_change"] = data["close"].pct_change() * 100
 
         # 取24~10日前的数据（即倒数第24到倒数第10天）
         if len(data) < 24:
@@ -510,8 +585,8 @@ class HighTightFlagStrategy(BaseStrategy):
             return False
 
         # 条件2: 最高价/最低价>=1.9
-        low = flag_data['low'].min()
-        high = flag_data['high'].max()
+        low = flag_data["low"].min()
+        high = flag_data["high"].max()
         ratio_increase = high / low
 
         if ratio_increase < 1.9:
@@ -522,7 +597,7 @@ class HighTightFlagStrategy(BaseStrategy):
         found_consecutive = False
 
         for _, row in flag_data.iterrows():
-            p_change = row['p_change']
+            p_change = row["p_change"]
             if p_change >= 9.5:
                 if previous_p_change >= 9.5:
                     found_consecutive = True
@@ -548,11 +623,16 @@ class VolumeLimitDownStrategy(BaseStrategy):
         super().__init__(
             name="volume_limit_down",
             name_cn="放量跌停",
-            description="放量且跌停，识别恐慌性抛售"
+            description="放量且跌停，识别恐慌性抛售",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 60) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 60,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -560,23 +640,28 @@ class VolumeLimitDownStrategy(BaseStrategy):
             return False
 
         # 计算涨跌幅
-        p_change = data.iloc[-1]['p_change'] if 'p_change' in data.columns else \
-            (data.iloc[-1]['close'] - data.iloc[-2]['close']) / data.iloc[-2]['close'] * 100
+        p_change = (
+            data.iloc[-1]["p_change"]
+            if "p_change" in data.columns
+            else (data.iloc[-1]["close"] - data.iloc[-2]["close"])
+            / data.iloc[-2]["close"]
+            * 100
+        )
 
         # 条件1: 跌幅>9.5%
         if p_change > -9.5:
             return False
 
         # 计算5日成交量均线
-        data.loc[:, 'vol_ma5'] = tl.MA(data['volume'].values, timeperiod=5)
-        data['vol_ma5'].fillna(0, inplace=True)
+        data.loc[:, "vol_ma5"] = tl.MA(data["volume"].values, timeperiod=5)
+        data["vol_ma5"].fillna(0, inplace=True)
 
         data = data.tail(n=threshold + 1)
         if len(data) < threshold + 1:
             return False
 
-        last_close = data.iloc[-1]['close']
-        last_vol = data.iloc[-1]['volume']
+        last_close = data.iloc[-1]["close"]
+        last_vol = data.iloc[-1]["volume"]
 
         # 条件2: 成交额不低于2亿
         amount = last_close * last_vol
@@ -585,7 +670,7 @@ class VolumeLimitDownStrategy(BaseStrategy):
 
         # 条件3: 成交量/5日均量>=4
         data_prev = data.head(n=threshold)
-        mean_vol = data_prev.iloc[-1]['vol_ma5']
+        mean_vol = data_prev.iloc[-1]["vol_ma5"]
 
         if mean_vol == 0:
             return False
@@ -608,11 +693,16 @@ class LowATRGrowthStrategy(BaseStrategy):
         super().__init__(
             name="low_atr_growth",
             name_cn="低ATR成长",
-            description="ATR（平均真实波幅）较低但稳定增长"
+            description="ATR（平均真实波幅）较低但稳定增长",
         )
 
-    def check(self, symbol: str, data: pd.DataFrame, date: Optional[datetime] = None,
-              threshold: int = 10) -> bool:
+    def check(
+        self,
+        symbol: str,
+        data: pd.DataFrame,
+        date: Optional[datetime] = None,
+        threshold: int = 10,
+    ) -> bool:
         end_date = date.strftime("%Y-%m-%d") if date else None
         data = self.filter_date(data, end_date)
 
@@ -621,8 +711,8 @@ class LowATRGrowthStrategy(BaseStrategy):
             return False
 
         # 计算p_change如果不存在
-        if 'p_change' not in data.columns:
-            data['p_change'] = data['close'].pct_change() * 100
+        if "p_change" not in data.columns:
+            data["p_change"] = data["close"].pct_change() * 100
 
         # 取最近10个交易日
         data = data.tail(n=threshold)
@@ -631,8 +721,8 @@ class LowATRGrowthStrategy(BaseStrategy):
             return False
 
         # 找出最高和最低收盘价
-        highest_close = data['close'].max()
-        lowest_close = data['close'].min()
+        highest_close = data["close"].max()
+        lowest_close = data["close"].min()
 
         # 条件2: 最高/最低>1.1
         ratio = (highest_close - lowest_close) / lowest_close
@@ -640,7 +730,7 @@ class LowATRGrowthStrategy(BaseStrategy):
             return False
 
         # 条件3: 计算平均ATR（平均每日涨跌幅绝对值）
-        total_change = data['p_change'].abs().sum()
+        total_change = data["p_change"].abs().sum()
         atr = total_change / len(data)
 
         if atr > 10:

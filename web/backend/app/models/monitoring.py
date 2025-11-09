@@ -6,8 +6,19 @@ Phase 1: ValueCell Migration - Real-time Monitoring System
 from datetime import date, datetime
 from typing import Dict, List, Optional
 from sqlalchemy import (
-    Boolean, Column, Date, DateTime, Integer, String, Text,
-    DECIMAL, BigInteger, ForeignKey, Index, UniqueConstraint, TIMESTAMP
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Integer,
+    String,
+    Text,
+    DECIMAL,
+    BigInteger,
+    ForeignKey,
+    Index,
+    UniqueConstraint,
+    TIMESTAMP,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
@@ -18,11 +29,14 @@ Base = declarative_base()
 
 class AlertRule(Base):
     """告警规则表"""
-    __tablename__ = 'alert_rule'
+
+    __tablename__ = "alert_rule"
 
     id = Column(Integer, primary_key=True)
     rule_name = Column(String(100), nullable=False, unique=True)
-    rule_type = Column(String(50), nullable=False)  # price_change, volume_surge, technical_break, etc.
+    rule_type = Column(
+        String(50), nullable=False
+    )  # price_change, volume_surge, technical_break, etc.
     description = Column(Text)
     symbol = Column(String(20), index=True)  # NULL表示全市场规则
     stock_name = Column(String(100))
@@ -48,10 +62,11 @@ class AlertRule(Base):
 
 class AlertRecord(Base):
     """告警记录表"""
-    __tablename__ = 'alert_record'
+
+    __tablename__ = "alert_record"
 
     id = Column(Integer, primary_key=True)
-    rule_id = Column(Integer, ForeignKey('alert_rule.id', ondelete='SET NULL'))
+    rule_id = Column(Integer, ForeignKey("alert_rule.id", ondelete="SET NULL"))
     rule_name = Column(String(100))
 
     # 股票信息
@@ -61,7 +76,9 @@ class AlertRecord(Base):
     # 告警信息
     alert_time = Column(DateTime, default=datetime.now, index=True)
     alert_type = Column(String(50), nullable=False, index=True)
-    alert_level = Column(String(20), default='info', index=True)  # info, warning, critical
+    alert_level = Column(
+        String(20), default="info", index=True
+    )  # info, warning, critical
     alert_title = Column(String(200))
     alert_message = Column(Text)
     alert_details = Column(JSONB)
@@ -87,7 +104,8 @@ class AlertRecord(Base):
 
 class RealtimeMonitoring(Base):
     """实时监控数据表"""
-    __tablename__ = 'realtime_monitoring'
+
+    __tablename__ = "realtime_monitoring"
 
     id = Column(Integer, primary_key=True)
     symbol = Column(String(20), nullable=False, index=True)
@@ -126,9 +144,7 @@ class RealtimeMonitoring(Base):
 
     created_at = Column(DateTime, default=datetime.now)
 
-    __table_args__ = (
-        Index('idx_realtime_symbol_time', 'symbol', 'timestamp'),
-    )
+    __table_args__ = (Index("idx_realtime_symbol_time", "symbol", "timestamp"),)
 
     def __repr__(self):
         return f"<RealtimeMonitoring(id={self.id}, symbol='{self.symbol}', price={self.price})>"
@@ -136,7 +152,8 @@ class RealtimeMonitoring(Base):
 
 class DragonTigerList(Base):
     """龙虎榜数据表"""
-    __tablename__ = 'dragon_tiger_list'
+
+    __tablename__ = "dragon_tiger_list"
 
     id = Column(Integer, primary_key=True)
     symbol = Column(String(20), nullable=False, index=True)
@@ -166,7 +183,7 @@ class DragonTigerList(Base):
     created_at = Column(DateTime, default=datetime.now)
 
     __table_args__ = (
-        UniqueConstraint('symbol', 'trade_date', name='uq_dragon_tiger_symbol_date'),
+        UniqueConstraint("symbol", "trade_date", name="uq_dragon_tiger_symbol_date"),
     )
 
     def __repr__(self):
@@ -175,7 +192,8 @@ class DragonTigerList(Base):
 
 class MonitoringStatistics(Base):
     """监控统计表"""
-    __tablename__ = 'monitoring_statistics'
+
+    __tablename__ = "monitoring_statistics"
 
     id = Column(Integer, primary_key=True)
     stat_date = Column(Date, nullable=False, index=True)
@@ -202,7 +220,7 @@ class MonitoringStatistics(Base):
     created_at = Column(DateTime, default=datetime.now)
 
     __table_args__ = (
-        UniqueConstraint('stat_date', 'stat_hour', name='uq_monitoring_stat_date_hour'),
+        UniqueConstraint("stat_date", "stat_hour", name="uq_monitoring_stat_date_hour"),
     )
 
     def __repr__(self):
@@ -219,6 +237,7 @@ from enum import Enum
 
 class AlertRuleType(str, Enum):
     """告警规则类型枚举"""
+
     PRICE_CHANGE = "price_change"
     VOLUME_SURGE = "volume_surge"
     TECHNICAL_BREAK = "technical_break"
@@ -229,6 +248,7 @@ class AlertRuleType(str, Enum):
 
 class AlertLevel(str, Enum):
     """告警级别枚举"""
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -236,6 +256,7 @@ class AlertLevel(str, Enum):
 
 class AlertRuleCreate(BaseModel):
     """创建告警规则请求"""
+
     rule_name: str = Field(..., min_length=1, max_length=100)
     rule_type: AlertRuleType
     description: Optional[str] = None
@@ -247,15 +268,16 @@ class AlertRuleCreate(BaseModel):
     priority: int = Field(default=1, ge=1, le=5)
     is_active: bool = True
 
-    @validator('rule_name')
+    @validator("rule_name")
     def validate_rule_name(cls, v):
         if not v or not v.strip():
-            raise ValueError('规则名称不能为空')
+            raise ValueError("规则名称不能为空")
         return v.strip()
 
 
 class AlertRuleUpdate(BaseModel):
     """更新告警规则请求"""
+
     rule_name: Optional[str] = None
     description: Optional[str] = None
     parameters: Optional[Dict] = None
@@ -267,6 +289,7 @@ class AlertRuleUpdate(BaseModel):
 
 class AlertRuleResponse(BaseModel):
     """告警规则响应"""
+
     id: int
     rule_name: str
     rule_type: str
@@ -287,6 +310,7 @@ class AlertRuleResponse(BaseModel):
 
 class AlertRecordResponse(BaseModel):
     """告警记录响应"""
+
     id: int
     rule_id: Optional[int]
     rule_name: Optional[str]
@@ -309,6 +333,7 @@ class AlertRecordResponse(BaseModel):
 
 class RealtimeMonitoringResponse(BaseModel):
     """实时监控数据响应"""
+
     id: int
     symbol: str
     stock_name: Optional[str]
@@ -329,6 +354,7 @@ class RealtimeMonitoringResponse(BaseModel):
 
 class DragonTigerListResponse(BaseModel):
     """龙虎榜响应"""
+
     id: int
     symbol: str
     stock_name: Optional[str]
@@ -349,6 +375,7 @@ class DragonTigerListResponse(BaseModel):
 
 class MonitoringSummaryResponse(BaseModel):
     """监控摘要响应"""
+
     total_stocks: int = 0
     limit_up_count: int = 0
     limit_down_count: int = 0

@@ -26,7 +26,7 @@ from app.adapters.base import (
     DataSourceType,
     DataSourceStatus,
     DataSourceConfig,
-    DataCategory
+    DataCategory,
 )
 
 logger = logging.getLogger(__name__)
@@ -82,19 +82,21 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 priority=2,
                 enabled=True,
                 timeout=30,
-                retry_count=3
+                retry_count=3,
             )
 
         super().__init__(config)
 
         # 创建HTTP会话
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/json, text/javascript, */*',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-            'X-Requested-With': 'XMLHttpRequest'
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/json, text/javascript, */*",
+                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                "X-Requested-With": "XMLHttpRequest",
+            }
+        )
 
         logger.info("CninfoAdapter initialized")
 
@@ -105,10 +107,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         Returns:
             List[DataCategory]: 支持的数据类别
         """
-        return [
-            DataCategory.ANNOUNCEMENT,
-            DataCategory.FINANCIAL_REPORT
-        ]
+        return [DataCategory.ANNOUNCEMENT, DataCategory.FINANCIAL_REPORT]
 
     def fetch_announcements(
         self,
@@ -117,7 +116,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         end_date: Optional[date] = None,
         category: Optional[str] = "all",
         page: int = 1,
-        page_size: int = 30
+        page_size: int = 30,
     ) -> pd.DataFrame:
         """
         获取公告列表
@@ -154,21 +153,21 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 "column": "szse_main",  # 默认深圳主板
                 "tabName": "fulltext",
                 "plate": "",
-                "stock": symbol.split('.')[0] if symbol and '.' in symbol else symbol or "",
+                "stock": (
+                    symbol.split(".")[0] if symbol and "." in symbol else symbol or ""
+                ),
                 "searchkey": "",
                 "secid": "",
                 "category": category_code,
                 "trade": "",
                 "seDate": f"{start_date.strftime('%Y-%m-%d')}~{end_date.strftime('%Y-%m-%d')}",
                 "sortName": "announcementTime",
-                "sortType": "desc"
+                "sortType": "desc",
             }
 
             # 发送请求
             response = self.session.post(
-                self.ANNOUNCEMENT_API,
-                data=params,
-                timeout=self.config.timeout
+                self.ANNOUNCEMENT_API, data=params, timeout=self.config.timeout
             )
             response.raise_for_status()
 
@@ -176,14 +175,18 @@ class CninfoAdapter(BaseDataSourceAdapter):
             result = response.json()
 
             if result.get("returncode") != 200:
-                raise Exception(f"API returned error: {result.get('returnmsg', 'Unknown error')}")
+                raise Exception(
+                    f"API returned error: {result.get('returnmsg', 'Unknown error')}"
+                )
 
             # 提取公告数据
             announcements = result.get("announcements", [])
 
             if not announcements:
-                logger.info(f"No announcements found for {symbol or 'all'} "
-                           f"from {start_date} to {end_date}")
+                logger.info(
+                    f"No announcements found for {symbol or 'all'} "
+                    f"from {start_date} to {end_date}"
+                )
                 success = True  # 空结果也算成功
                 self.update_health_status(DataSourceStatus.AVAILABLE)
                 return data
@@ -200,30 +203,30 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 "announcementTime": "publish_time",
                 "adjunctUrl": "pdf_url",
                 "announcementId": "announcement_id",
-                "storageTime": "storage_time"
+                "storageTime": "storage_time",
             }
 
             data = data.rename(columns=column_mapping)
 
             # 选择需要的列
-            available_columns = [col for col in column_mapping.values() if col in data.columns]
+            available_columns = [
+                col for col in column_mapping.values() if col in data.columns
+            ]
             data = data[available_columns]
 
             # 转换日期格式
-            if 'publish_time' in data.columns:
-                data['publish_time'] = pd.to_datetime(
-                    data['publish_time'],
-                    unit='ms',
-                    errors='coerce'
+            if "publish_time" in data.columns:
+                data["publish_time"] = pd.to_datetime(
+                    data["publish_time"], unit="ms", errors="coerce"
                 )
-                data['publish_date'] = data['publish_time'].dt.date
+                data["publish_date"] = data["publish_time"].dt.date
 
             # 添加来源标识
-            data['data_source'] = 'cninfo'
+            data["data_source"] = "cninfo"
 
             # 构建完整URL
-            if 'pdf_url' in data.columns:
-                data['pdf_url'] = data['pdf_url'].apply(
+            if "pdf_url" in data.columns:
+                data["pdf_url"] = data["pdf_url"].apply(
                     lambda x: f"http://static.cninfo.com.cn/{x}" if x else None
                 )
 
@@ -251,7 +254,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         page: int = 1,
-        page_size: int = 30
+        page_size: int = 30,
     ) -> pd.DataFrame:
         """
         搜索公告（全文检索）
@@ -279,19 +282,17 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
             params = {
                 "searchkey": keywords,
-                "sdate": start_date.strftime('%Y-%m-%d'),
-                "edate": end_date.strftime('%Y-%m-%d'),
+                "sdate": start_date.strftime("%Y-%m-%d"),
+                "edate": end_date.strftime("%Y-%m-%d"),
                 "isfulltext": "false",
                 "sortName": "pubdate",
                 "sortType": "desc",
                 "pageNum": page,
-                "pageSize": page_size
+                "pageSize": page_size,
             }
 
             response = self.session.post(
-                self.FULLTEXT_API,
-                data=params,
-                timeout=self.config.timeout
+                self.FULLTEXT_API, data=params, timeout=self.config.timeout
             )
             response.raise_for_status()
 
@@ -305,8 +306,8 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
             if announcements:
                 data = pd.DataFrame(announcements)
-                data['data_source'] = 'cninfo'
-                data['search_keywords'] = keywords
+                data["data_source"] = "cninfo"
+                data["search_keywords"] = keywords
 
                 logger.info(f"Found {len(data)} announcements matching '{keywords}'")
 
@@ -340,7 +341,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         return {
             "announcement_id": announcement_id,
             "detail_available": False,
-            "note": "PDF content extraction requires additional implementation"
+            "note": "PDF content extraction requires additional implementation",
         }
 
     def get_announcement_types(self) -> Dict[str, tuple]:
@@ -367,7 +368,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         symbol: str,
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
-        period: str = "daily"
+        period: str = "daily",
     ) -> pd.DataFrame:
         """
         Cninfo不支持历史行情
