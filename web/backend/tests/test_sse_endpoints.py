@@ -18,10 +18,7 @@ from typing import List, Dict, Any
 import json
 
 # Mark all tests in this module
-pytestmark = [
-    pytest.mark.week2,
-    pytest.mark.sse
-]
+pytestmark = [pytest.mark.week2, pytest.mark.sse]
 
 
 class TestSSEBasicConnection:
@@ -34,16 +31,18 @@ class TestSSEBasicConnection:
         """
         with test_client.stream("GET", "/api/v1/sse/training") as response:
             assert response.status_code == 200
-            assert response.headers['content-type'] == 'text/event-stream; charset=utf-8'
-            assert response.headers['cache-control'] == 'no-cache'
+            assert (
+                response.headers["content-type"] == "text/event-stream; charset=utf-8"
+            )
+            assert response.headers["cache-control"] == "no-cache"
 
             # Read first event (connection confirmation)
             for line in response.iter_lines():
-                if line.startswith('data:'):
+                if line.startswith("data:"):
                     data = json.loads(line[5:])  # Remove 'data:' prefix
-                    assert 'event' in data
-                    assert data['event'] == 'connected'
-                    assert 'timestamp' in data
+                    assert "event" in data
+                    assert data["event"] == "connected"
+                    assert "timestamp" in data
                     break
 
     def test_backtest_sse_connection(self, test_client):
@@ -56,9 +55,9 @@ class TestSSEBasicConnection:
 
             # Read first event
             for line in response.iter_lines():
-                if line.startswith('data:'):
+                if line.startswith("data:"):
                     data = json.loads(line[5:])
-                    assert data['event'] == 'connected'
+                    assert data["event"] == "connected"
                     break
 
     def test_alerts_sse_connection(self, test_client):
@@ -70,9 +69,9 @@ class TestSSEBasicConnection:
             assert response.status_code == 200
 
             for line in response.iter_lines():
-                if line.startswith('data:'):
+                if line.startswith("data:"):
                     data = json.loads(line[5:])
-                    assert data['event'] == 'connected'
+                    assert data["event"] == "connected"
                     break
 
     def test_dashboard_sse_connection(self, test_client):
@@ -84,9 +83,9 @@ class TestSSEBasicConnection:
             assert response.status_code == 200
 
             for line in response.iter_lines():
-                if line.startswith('data:'):
+                if line.startswith("data:"):
                     data = json.loads(line[5:])
-                    assert data['event'] == 'connected'
+                    assert data["event"] == "connected"
                     break
 
 
@@ -109,7 +108,7 @@ class TestSSEBroadcasting:
             progress=50.0,
             status="running",
             message="Training in progress",
-            metrics={"loss": 0.5, "accuracy": 0.85}
+            metrics={"loss": 0.5, "accuracy": 0.85},
         )
 
         # Note: This test verifies the broadcast API works
@@ -131,7 +130,7 @@ class TestSSEBroadcasting:
             status="running",
             message="Simulating 2024-06-15",
             current_date="2024-06-15",
-            results={"total_return": 0.15}
+            results={"total_return": 0.15},
         )
 
     @pytest.mark.asyncio
@@ -150,7 +149,7 @@ class TestSSEBroadcasting:
             message="VaR exceeded threshold",
             metric_name="var_95",
             metric_value=0.06,
-            threshold=0.05
+            threshold=0.05,
         )
 
     @pytest.mark.asyncio
@@ -165,10 +164,7 @@ class TestSSEBroadcasting:
 
         await broadcaster.send_dashboard_update(
             update_type="metrics",
-            data={
-                "total_value": 1500000.0,
-                "daily_return": 0.025
-            }
+            data={"total_value": 1500000.0, "daily_return": 0.025},
         )
 
 
@@ -214,13 +210,13 @@ class TestSSEConnectionManager:
         manager = SSEConnectionManager()
 
         # Connect client
-        client_id, queue = await manager.connect('training')
+        client_id, queue = await manager.connect("training")
         assert client_id is not None
-        assert manager.get_connection_count('training') == 1
+        assert manager.get_connection_count("training") == 1
 
         # Disconnect client
-        await manager.disconnect('training', client_id)
-        assert manager.get_connection_count('training') == 0
+        await manager.disconnect("training", client_id)
+        assert manager.get_connection_count("training") == 0
 
     @pytest.mark.asyncio
     async def test_connection_manager_multiple_clients(self):
@@ -235,16 +231,16 @@ class TestSSEConnectionManager:
         # Connect multiple clients
         client_ids = []
         for i in range(5):
-            client_id, queue = await manager.connect('backtest')
+            client_id, queue = await manager.connect("backtest")
             client_ids.append(client_id)
 
-        assert manager.get_connection_count('backtest') == 5
+        assert manager.get_connection_count("backtest") == 5
 
         # Disconnect all
         for client_id in client_ids:
-            await manager.disconnect('backtest', client_id)
+            await manager.disconnect("backtest", client_id)
 
-        assert manager.get_connection_count('backtest') == 0
+        assert manager.get_connection_count("backtest") == 0
 
     @pytest.mark.asyncio
     async def test_connection_manager_broadcast(self):
@@ -257,32 +253,29 @@ class TestSSEConnectionManager:
         manager = SSEConnectionManager()
 
         # Connect clients
-        client1_id, queue1 = await manager.connect('alerts')
-        client2_id, queue2 = await manager.connect('alerts')
+        client1_id, queue1 = await manager.connect("alerts")
+        client2_id, queue2 = await manager.connect("alerts")
 
         # Consume the "connected" events first
         connected1 = await asyncio.wait_for(queue1.get(), timeout=1.0)
         connected2 = await asyncio.wait_for(queue2.get(), timeout=1.0)
-        assert connected1.event == 'connected'
-        assert connected2.event == 'connected'
+        assert connected1.event == "connected"
+        assert connected2.event == "connected"
 
         # Broadcast event
-        event = SSEEvent(
-            event='test_event',
-            data={'message': 'Test broadcast'}
-        )
-        await manager.broadcast('alerts', event)
+        event = SSEEvent(event="test_event", data={"message": "Test broadcast"})
+        await manager.broadcast("alerts", event)
 
         # Verify both clients received the broadcast event
         event1 = await asyncio.wait_for(queue1.get(), timeout=1.0)
         event2 = await asyncio.wait_for(queue2.get(), timeout=1.0)
 
-        assert event1.event == 'test_event'
-        assert event2.event == 'test_event'
+        assert event1.event == "test_event"
+        assert event2.event == "test_event"
 
         # Cleanup
-        await manager.disconnect('alerts', client1_id)
-        await manager.disconnect('alerts', client2_id)
+        await manager.disconnect("alerts", client1_id)
+        await manager.disconnect("alerts", client2_id)
 
 
 class TestSSEErrorHandling:
@@ -298,16 +291,13 @@ class TestSSEErrorHandling:
 
         manager = SSEConnectionManager(max_queue_size=2)
 
-        client_id, queue = await manager.connect('training')
+        client_id, queue = await manager.connect("training")
 
         # Fill the queue
         for i in range(3):
-            event = SSEEvent(
-                event='overflow_test',
-                data={'index': i}
-            )
+            event = SSEEvent(event="overflow_test", data={"index": i})
             try:
-                await manager.broadcast('training', event)
+                await manager.broadcast("training", event)
             except:
                 pass  # Expected to fail on overflow
 
@@ -324,13 +314,10 @@ class TestSSEErrorHandling:
 
         manager = SSEConnectionManager()
 
-        event = SSEEvent(
-            event='test',
-            data={'message': 'test'}
-        )
+        event = SSEEvent(event="test", data={"message": "test"})
 
         # Should not raise error for non-existent channel
-        await manager.broadcast('non_existent_channel', event)
+        await manager.broadcast("non_existent_channel", event)
 
 
 # Markers are registered in pytest.ini

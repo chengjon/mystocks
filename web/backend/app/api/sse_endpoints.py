@@ -31,7 +31,7 @@ router = APIRouter(prefix="/api/v1/sse", tags=["SSE实时推送"])
 @router.get("/training")
 async def sse_training_stream(
     request: Request,
-    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）")
+    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
     """
     SSE endpoint for model training progress updates
@@ -76,18 +76,18 @@ async def sse_training_stream(
     ```
     """
     return EventSourceResponse(
-        sse_event_generator(request, channel='training', client_id=client_id),
+        sse_event_generator(request, channel="training", client_id=client_id),
         headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no'  # Disable nginx buffering
-        }
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  # Disable nginx buffering
+        },
     )
 
 
 @router.get("/backtest")
 async def sse_backtest_stream(
     request: Request,
-    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）")
+    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
     """
     SSE endpoint for backtest execution progress updates
@@ -132,18 +132,15 @@ async def sse_backtest_stream(
     ```
     """
     return EventSourceResponse(
-        sse_event_generator(request, channel='backtest', client_id=client_id),
-        headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no'
-        }
+        sse_event_generator(request, channel="backtest", client_id=client_id),
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
 @router.get("/alerts")
 async def sse_alerts_stream(
     request: Request,
-    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）")
+    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
     """
     SSE endpoint for risk alert notifications
@@ -192,18 +189,15 @@ async def sse_alerts_stream(
     ```
     """
     return EventSourceResponse(
-        sse_event_generator(request, channel='alerts', client_id=client_id),
-        headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no'
-        }
+        sse_event_generator(request, channel="alerts", client_id=client_id),
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
 @router.get("/dashboard")
 async def sse_dashboard_stream(
     request: Request,
-    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）")
+    client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
     """
     SSE endpoint for real-time dashboard updates
@@ -257,11 +251,8 @@ async def sse_dashboard_stream(
     ```
     """
     return EventSourceResponse(
-        sse_event_generator(request, channel='dashboard', client_id=client_id),
-        headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no'
-        }
+        sse_event_generator(request, channel="dashboard", client_id=client_id),
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
@@ -281,12 +272,12 @@ async def sse_status():
         "channels": {
             channel: {
                 "connection_count": manager.get_connection_count(channel),
-                "clients": manager.get_clients(channel)
+                "clients": manager.get_clients(channel),
             }
             for channel in manager.get_channels()
-        }
+        },
     }
 
 
 # Export router
-__all__ = ['router']
+__all__ = ["router"]

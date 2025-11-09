@@ -14,16 +14,18 @@ print("\n当前工作目录:", os.getcwd())
 
 print("\n尝试导入...")
 try:
-    from adapters.customer_adapter import CustomerDataSource
+    from src.adapters.customer_adapter import CustomerDataSource
+
     print("✓ 导入成功")
-    
+
     print("\n尝试创建实例...")
     source = CustomerDataSource()
     print("✓ 实例创建成功")
-    
+
 except Exception as e:
     print(f"✗ 出现错误: {e}")
     import traceback
+
     traceback.print_exc()
 
 print("测试结束")

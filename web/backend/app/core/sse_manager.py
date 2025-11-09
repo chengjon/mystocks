@@ -36,22 +36,23 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SSEEvent:
     """SSE Event data structure"""
-    event: str                    # Event type (e.g., 'training_progress', 'backtest_update')
-    data: Dict[str, Any]         # Event payload
-    id: Optional[str] = None     # Event ID for client-side tracking
+
+    event: str  # Event type (e.g., 'training_progress', 'backtest_update')
+    data: Dict[str, Any]  # Event payload
+    id: Optional[str] = None  # Event ID for client-side tracking
     retry: Optional[int] = None  # Retry interval in milliseconds
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         result = {
-            'event': self.event,
-            'data': self.data,
-            'timestamp': datetime.now().isoformat()
+            "event": self.event,
+            "data": self.data,
+            "timestamp": datetime.now().isoformat(),
         }
         if self.id:
-            result['id'] = self.id
+            result["id"] = self.id
         if self.retry:
-            result['retry'] = self.retry
+            result["retry"] = self.retry
         return result
 
 
@@ -81,9 +82,13 @@ class SSEConnectionManager:
 
         self.max_queue_size = max_queue_size
 
-        logger.info(f"✅ SSEConnectionManager initialized (max_queue_size={max_queue_size})")
+        logger.info(
+            f"✅ SSEConnectionManager initialized (max_queue_size={max_queue_size})"
+        )
 
-    async def connect(self, channel: str, client_id: Optional[str] = None) -> tuple[str, asyncio.Queue]:
+    async def connect(
+        self, channel: str, client_id: Optional[str] = None
+    ) -> tuple[str, asyncio.Queue]:
         """
         Register a new SSE connection
 
@@ -104,21 +109,23 @@ class SSEConnectionManager:
         self._connections[channel][client_id] = queue
         self._client_channels[client_id].add(channel)
 
-        logger.info(f"🔗 SSE client connected: client_id={client_id}, channel={channel}, total_clients={self.get_connection_count(channel)}")
+        logger.info(
+            f"🔗 SSE client connected: client_id={client_id}, channel={channel}, total_clients={self.get_connection_count(channel)}"
+        )
 
         # Send initial connection event
         await self.send_to_client(
             channel=channel,
             client_id=client_id,
             event=SSEEvent(
-                event='connected',
+                event="connected",
                 data={
-                    'client_id': client_id,
-                    'channel': channel,
-                    'message': f'Connected to {channel} channel'
+                    "client_id": client_id,
+                    "channel": channel,
+                    "message": f"Connected to {channel} channel",
                 },
-                id=str(uuid.uuid4())
-            )
+                id=str(uuid.uuid4()),
+            ),
         )
 
         return client_id, queue
@@ -145,7 +152,9 @@ class SSEConnectionManager:
             if not self._connections[channel]:
                 del self._connections[channel]
 
-            logger.info(f"🔌 SSE client disconnected: client_id={client_id}, channel={channel}, remaining_clients={self.get_connection_count(channel)}")
+            logger.info(
+                f"🔌 SSE client disconnected: client_id={client_id}, channel={channel}, remaining_clients={self.get_connection_count(channel)}"
+            )
 
     async def broadcast(self, channel: str, event: SSEEvent):
         """
@@ -165,10 +174,7 @@ class SSEConnectionManager:
         for client_id, queue in list(self._connections[channel].items()):
             try:
                 # Non-blocking put with timeout
-                await asyncio.wait_for(
-                    queue.put(event),
-                    timeout=1.0
-                )
+                await asyncio.wait_for(queue.put(event), timeout=1.0)
                 client_count += 1
             except asyncio.TimeoutError:
                 logger.warning(f"Client queue full: {client_id}")
@@ -252,7 +258,7 @@ class SSEBroadcaster:
         progress: float,
         status: str,
         message: str,
-        metrics: Optional[Dict[str, Any]] = None
+        metrics: Optional[Dict[str, Any]] = None,
     ):
         """
         Broadcast model training progress
@@ -265,17 +271,17 @@ class SSEBroadcaster:
             metrics: Optional training metrics (loss, accuracy, etc.)
         """
         event = SSEEvent(
-            event='training_progress',
+            event="training_progress",
             data={
-                'task_id': task_id,
-                'progress': progress,
-                'status': status,
-                'message': message,
-                'metrics': metrics or {}
+                "task_id": task_id,
+                "progress": progress,
+                "status": status,
+                "message": message,
+                "metrics": metrics or {},
             },
-            id=str(uuid.uuid4())
+            id=str(uuid.uuid4()),
         )
-        await self.manager.broadcast('training', event)
+        await self.manager.broadcast("training", event)
 
     async def send_backtest_progress(
         self,
@@ -284,7 +290,7 @@ class SSEBroadcaster:
         status: str,
         message: str,
         current_date: Optional[str] = None,
-        results: Optional[Dict[str, Any]] = None
+        results: Optional[Dict[str, Any]] = None,
     ):
         """
         Broadcast backtest execution progress
@@ -298,18 +304,18 @@ class SSEBroadcaster:
             results: Optional partial results
         """
         event = SSEEvent(
-            event='backtest_progress',
+            event="backtest_progress",
             data={
-                'backtest_id': backtest_id,
-                'progress': progress,
-                'status': status,
-                'message': message,
-                'current_date': current_date,
-                'results': results or {}
+                "backtest_id": backtest_id,
+                "progress": progress,
+                "status": status,
+                "message": message,
+                "current_date": current_date,
+                "results": results or {},
             },
-            id=str(uuid.uuid4())
+            id=str(uuid.uuid4()),
         )
-        await self.manager.broadcast('backtest', event)
+        await self.manager.broadcast("backtest", event)
 
     async def send_risk_alert(
         self,
@@ -320,7 +326,7 @@ class SSEBroadcaster:
         metric_value: float,
         threshold: float,
         entity_type: Optional[str] = None,
-        entity_id: Optional[str] = None
+        entity_id: Optional[str] = None,
     ):
         """
         Broadcast risk alert notification
@@ -336,26 +342,22 @@ class SSEBroadcaster:
             entity_id: Optional entity identifier
         """
         event = SSEEvent(
-            event='risk_alert',
+            event="risk_alert",
             data={
-                'alert_type': alert_type,
-                'severity': severity,
-                'message': message,
-                'metric_name': metric_name,
-                'metric_value': metric_value,
-                'threshold': threshold,
-                'entity_type': entity_type,
-                'entity_id': entity_id
+                "alert_type": alert_type,
+                "severity": severity,
+                "message": message,
+                "metric_name": metric_name,
+                "metric_value": metric_value,
+                "threshold": threshold,
+                "entity_type": entity_type,
+                "entity_id": entity_id,
             },
-            id=str(uuid.uuid4())
+            id=str(uuid.uuid4()),
         )
-        await self.manager.broadcast('alerts', event)
+        await self.manager.broadcast("alerts", event)
 
-    async def send_dashboard_update(
-        self,
-        update_type: str,
-        data: Dict[str, Any]
-    ):
+    async def send_dashboard_update(self, update_type: str, data: Dict[str, Any]):
         """
         Broadcast dashboard data update
 
@@ -364,14 +366,11 @@ class SSEBroadcaster:
             data: Update data
         """
         event = SSEEvent(
-            event='dashboard_update',
-            data={
-                'update_type': update_type,
-                'data': data
-            },
-            id=str(uuid.uuid4())
+            event="dashboard_update",
+            data={"update_type": update_type, "data": data},
+            id=str(uuid.uuid4()),
         )
-        await self.manager.broadcast('dashboard', event)
+        await self.manager.broadcast("dashboard", event)
 
 
 # Global SSE manager instance (singleton)
@@ -397,9 +396,7 @@ def get_sse_broadcaster() -> SSEBroadcaster:
 
 
 async def sse_event_generator(
-    request: Request,
-    channel: str,
-    client_id: Optional[str] = None
+    request: Request, channel: str, client_id: Optional[str] = None
 ) -> AsyncGenerator[Dict[str, Any], None]:
     """
     SSE event generator for FastAPI endpoint
@@ -431,8 +428,8 @@ async def sse_event_generator(
             except asyncio.TimeoutError:
                 # Send keepalive ping every 30 seconds
                 yield {
-                    'event': 'ping',
-                    'data': {'timestamp': datetime.now().isoformat()}
+                    "event": "ping",
+                    "data": {"timestamp": datetime.now().isoformat()},
                 }
 
     finally:
@@ -442,10 +439,10 @@ async def sse_event_generator(
 
 # Export public API
 __all__ = [
-    'SSEEvent',
-    'SSEConnectionManager',
-    'SSEBroadcaster',
-    'get_sse_manager',
-    'get_sse_broadcaster',
-    'sse_event_generator'
+    "SSEEvent",
+    "SSEConnectionManager",
+    "SSEBroadcaster",
+    "get_sse_manager",
+    "get_sse_broadcaster",
+    "sse_event_generator",
 ]

@@ -20,8 +20,10 @@ router = APIRouter(prefix="/api/multi-source", tags=["multi-source"])
 # Pydantic Models
 # ============================================================================
 
+
 class DataSourceHealthResponse(BaseModel):
     """数据源健康状态响应"""
+
     source_type: str
     status: str
     enabled: bool
@@ -37,6 +39,7 @@ class DataSourceHealthResponse(BaseModel):
 
 class DataFetchResponse(BaseModel):
     """数据获取响应"""
+
     success: bool
     source: Optional[str] = None
     data: Optional[dict] = None
@@ -49,6 +52,7 @@ class DataFetchResponse(BaseModel):
 # ============================================================================
 # API Endpoints
 # ============================================================================
+
 
 @router.get("/health", response_model=List[DataSourceHealthResponse])
 async def get_all_data_sources_health():
@@ -86,12 +90,16 @@ async def get_data_source_health(source_type: str):
         try:
             source_enum = DataSourceType(source_type)
         except ValueError:
-            raise HTTPException(status_code=400, detail=f"Invalid source type: {source_type}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid source type: {source_type}"
+            )
 
         adapter = manager.get_adapter(source_enum)
 
         if not adapter:
-            raise HTTPException(status_code=404, detail=f"Data source not found: {source_type}")
+            raise HTTPException(
+                status_code=404, detail=f"Data source not found: {source_type}"
+            )
 
         health = adapter.check_health()
         stats = adapter.get_statistics()
@@ -106,7 +114,7 @@ async def get_data_source_health(source_type: str):
             "error_count": health.error_count,
             "last_check": health.last_check.isoformat(),
             "supported_categories": [cat.value for cat in health.supported_categories],
-            **stats
+            **stats,
         }
 
     except HTTPException:
@@ -118,7 +126,7 @@ async def get_data_source_health(source_type: str):
 @router.get("/realtime-quote")
 async def fetch_realtime_quote(
     symbols: Optional[str] = Query(None, description="股票代码，逗号分隔"),
-    source: Optional[str] = Query(None, description="指定数据源")
+    source: Optional[str] = Query(None, description="指定数据源"),
 ):
     """
     获取实时行情（支持多数据源）
@@ -134,7 +142,7 @@ async def fetch_realtime_quote(
         manager = get_multi_source_manager()
 
         # 解析股票代码
-        symbol_list = symbols.split(',') if symbols else None
+        symbol_list = symbols.split(",") if symbols else None
 
         # 解析数据源
         source_enum = None
@@ -148,12 +156,14 @@ async def fetch_realtime_quote(
         result = manager.fetch_realtime_quote(symbols=symbol_list, source=source_enum)
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Failed to fetch data")
+            )
 
         # 转换DataFrame为dict
         df = result.get("data")
         if df is not None and not df.empty:
-            result["data"] = df.to_dict('records')
+            result["data"] = df.to_dict("records")
             result["count"] = len(df)
 
         return result
@@ -168,7 +178,7 @@ async def fetch_realtime_quote(
 async def fetch_fund_flow(
     symbol: Optional[str] = Query(None, description="股票代码"),
     timeframe: str = Query("今日", description="时间范围：今日、3日、5日、10日"),
-    source: Optional[str] = Query(None, description="指定数据源")
+    source: Optional[str] = Query(None, description="指定数据源"),
 ):
     """
     获取资金流向（支持多数据源）
@@ -191,14 +201,18 @@ async def fetch_fund_flow(
             except ValueError:
                 raise HTTPException(status_code=400, detail=f"Invalid source: {source}")
 
-        result = manager.fetch_fund_flow(symbol=symbol, timeframe=timeframe, source=source_enum)
+        result = manager.fetch_fund_flow(
+            symbol=symbol, timeframe=timeframe, source=source_enum
+        )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Failed to fetch data")
+            )
 
         df = result.get("data")
         if df is not None and not df.empty:
-            result["data"] = df.to_dict('records')
+            result["data"] = df.to_dict("records")
             result["count"] = len(df)
 
         return result
@@ -212,7 +226,7 @@ async def fetch_fund_flow(
 @router.get("/dragon-tiger")
 async def fetch_dragon_tiger(
     date_str: str = Query(..., description="日期 (YYYY-MM-DD)"),
-    source: Optional[str] = Query(None, description="指定数据源")
+    source: Optional[str] = Query(None, description="指定数据源"),
 ):
     """
     获取龙虎榜（支持多数据源）
@@ -237,11 +251,13 @@ async def fetch_dragon_tiger(
         result = manager.fetch_dragon_tiger(date_str=date_str, source=source_enum)
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Failed to fetch data")
+            )
 
         df = result.get("data")
         if df is not None and not df.empty:
-            result["data"] = df.to_dict('records')
+            result["data"] = df.to_dict("records")
             result["count"] = len(df)
 
         return result
@@ -273,7 +289,7 @@ async def refresh_data_source_health():
             "success": True,
             "message": "Health status refreshed",
             "sources": len(statuses),
-            "statuses": statuses
+            "statuses": statuses,
         }
 
     except Exception as e:
@@ -292,10 +308,7 @@ async def clear_cache():
         manager = get_multi_source_manager()
         manager.clear_cache()
 
-        return {
-            "success": True,
-            "message": "Cache cleared successfully"
-        }
+        return {"success": True, "message": "Cache cleared successfully"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -323,7 +336,7 @@ async def get_supported_categories():
         return {
             "success": True,
             "categories": category_mapping,
-            "total_categories": len(category_mapping)
+            "total_categories": len(category_mapping),
         }
 
     except Exception as e:

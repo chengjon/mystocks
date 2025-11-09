@@ -18,11 +18,12 @@ TDX数据导入完整示例 (TDX Data Import Complete Example)
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date, timedelta
-from data_sources.tdx_binary_parser import TdxBinaryParser
-from data_sources.tdx_importer import TdxImporter
+from src.data_sources.tdx_binary_parser import TdxBinaryParser
+from src.data_sources.tdx_importer import TdxImporter
 
 
 def example_1_check_tdx_data():
@@ -39,13 +40,13 @@ def example_1_check_tdx_data():
 
     # 1.2 列出可用市场
     print("\n可用市场:")
-    for market in ['sh', 'sz']:
+    for market in ["sh", "sz"]:
         stocks = parser.list_available_stocks(market)
         print(f"  - {market.upper()}: {len(stocks)} 只股票")
 
     # 1.3 检查示例股票数据
     print("\n检查示例股票数据:")
-    test_symbols = ['sh000001', 'sh600000', 'sz000001', 'sz000002']
+    test_symbols = ["sh000001", "sh600000", "sz000001", "sz000002"]
 
     for symbol in test_symbols:
         latest_date = parser.get_latest_date(symbol)
@@ -56,7 +57,7 @@ def example_1_check_tdx_data():
 
     # 1.4 读取示例数据
     print("\n读取 sh000001 (上证指数) 最近5天数据:")
-    data = parser.read_day_data('sh000001', start_date=date.today() - timedelta(days=7))
+    data = parser.read_day_data("sh000001", start_date=date.today() - timedelta(days=7))
 
     if not data.empty:
         print(data.tail())
@@ -74,32 +75,35 @@ def example_2_parse_local_data():
 
     # 2.1 读取单只股票日线数据
     print("\n读取 sh600000 (浦发银行) 2024年数据:")
-    data = parser.read_day_data('sh600000', start_date=date(2024, 1, 1))
+    data = parser.read_day_data("sh600000", start_date=date(2024, 1, 1))
 
     if not data.empty:
         print(f"  ✓ 总记录数: {len(data)}")
         print(f"  ✓ 日期范围: {data['date'].min()} 至 {data['date'].max()}")
         print(f"\n  最近数据:")
-        print(data[['date', 'close', 'volume']].tail())
+        print(data[["date", "close", "volume"]].tail())
 
     # 2.2 读取多只股票
     print("\n读取多只股票最新数据:")
-    symbols = ['sh600000', 'sh600016', 'sh600036', 'sh600050']
+    symbols = ["sh600000", "sh600016", "sh600036", "sh600050"]
 
     summary = []
     for symbol in symbols:
         data = parser.read_day_data(symbol, start_date=date.today() - timedelta(days=1))
         if not data.empty:
             latest = data.iloc[-1]
-            summary.append({
-                'symbol': symbol,
-                'date': latest['date'],
-                'close': latest['close'],
-                'volume': latest['volume']
-            })
+            summary.append(
+                {
+                    "symbol": symbol,
+                    "date": latest["date"],
+                    "close": latest["close"],
+                    "volume": latest["volume"],
+                }
+            )
 
     if summary:
         import pandas as pd
+
         df = pd.DataFrame(summary)
         print(df.to_string(index=False))
 
@@ -114,20 +118,20 @@ def example_3_import_without_database():
 
     # 3.1 检查导入进度
     print("\n检查上海市场数据状态:")
-    progress = importer.get_import_progress('sh')
+    progress = importer.get_import_progress("sh")
     print(f"  总股票数: {progress['total_symbols']}")
     print(f"  有数据股票数（估算）: {progress['imported_symbols']}")
 
     # 3.2 模拟小批量导入
     print("\n模拟导入前20只股票的最近7天数据:")
-    test_symbols = importer.parser.list_available_stocks('sh')[:20]
+    test_symbols = importer.parser.list_available_stocks("sh")[:20]
 
     result = importer.import_market_daily(
-        market='sh',
+        market="sh",
         start_date=date.today() - timedelta(days=7),
         end_date=date.today(),
         symbols=test_symbols,
-        batch_size=10
+        batch_size=10,
     )
 
     print(f"\n导入结果:")
@@ -160,14 +164,14 @@ def example_4_import_to_database():
 
         # 导入前5只股票的最近1天数据（测试）
         print("\n导入测试数据（前5只股票，最近1天）:")
-        test_symbols = importer.parser.list_available_stocks('sh')[:5]
+        test_symbols = importer.parser.list_available_stocks("sh")[:5]
 
         result = importer.import_market_daily(
-            market='sh',
+            market="sh",
             start_date=date.today() - timedelta(days=1),
             end_date=date.today(),
             symbols=test_symbols,
-            batch_size=5
+            batch_size=5,
         )
 
         print("\n✓ 数据已保存到TDengine数据库")
@@ -204,10 +208,7 @@ def example_5_incremental_import():
 
     # 模拟增量导入（最近7天）
     print("模拟增量导入（最近7天，前10只股票）:")
-    result = importer.import_incremental(
-        market='sh',
-        lookback_days=7
-    )
+    result = importer.import_incremental(market="sh", lookback_days=7)
 
     print(f"\n增量导入完成:")
     print(f"  时间范围: {date.today() - timedelta(days=7)} 至 {date.today()}")
@@ -241,5 +242,5 @@ def main():
     print("\n  要启用数据库导入，请在代码中取消注释 example_4 和 example_5")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

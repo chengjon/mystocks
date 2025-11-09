@@ -26,33 +26,33 @@ load_dotenv()
 
 # 数据库配置
 MYSQL_CONFIG = {
-    'host': os.getenv('MYSQL_HOST'),
-    'user': os.getenv('MYSQL_USER'),
-    'password': os.getenv('MYSQL_PASSWORD'),
-    'database': os.getenv('MYSQL_DATABASE'),
-    'port': int(os.getenv('MYSQL_PORT', 3306))
+    "host": os.getenv("MYSQL_HOST"),
+    "user": os.getenv("MYSQL_USER"),
+    "password": os.getenv("MYSQL_PASSWORD"),
+    "database": os.getenv("MYSQL_DATABASE"),
+    "port": int(os.getenv("MYSQL_PORT", 3306)),
 }
 
 POSTGRES_CONFIG = {
-    'host': os.getenv('POSTGRESQL_HOST'),
-    'user': os.getenv('POSTGRESQL_USER'),
-    'password': os.getenv('POSTGRESQL_PASSWORD'),
-    'database': os.getenv('POSTGRESQL_DATABASE'),
-    'port': int(os.getenv('POSTGRESQL_PORT', 5432))
+    "host": os.getenv("POSTGRESQL_HOST"),
+    "user": os.getenv("POSTGRESQL_USER"),
+    "password": os.getenv("POSTGRESQL_PASSWORD"),
+    "database": os.getenv("POSTGRESQL_DATABASE"),
+    "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
 }
 
 # MySQL到PostgreSQL类型映射
 TYPE_MAPPING = {
-    'int': 'INTEGER',
-    'bigint': 'BIGINT',
-    'varchar': 'VARCHAR',
-    'text': 'TEXT',
-    'datetime': 'TIMESTAMP',
-    'date': 'DATE',
-    'decimal': 'NUMERIC',
-    'float': 'REAL',
-    'double': 'DOUBLE PRECISION',
-    'tinyint': 'SMALLINT',
+    "int": "INTEGER",
+    "bigint": "BIGINT",
+    "varchar": "VARCHAR",
+    "text": "TEXT",
+    "datetime": "TIMESTAMP",
+    "date": "DATE",
+    "decimal": "NUMERIC",
+    "float": "REAL",
+    "double": "DOUBLE PRECISION",
+    "tinyint": "SMALLINT",
 }
 
 
@@ -85,13 +85,13 @@ def convert_mysql_type_to_postgres(mysql_type):
     for mysql_prefix, pg_type in TYPE_MAPPING.items():
         if mysql_type_lower.startswith(mysql_prefix):
             # 仅VARCHAR保留长度信息，其他类型不保留
-            if 'varchar' in mysql_type_lower and '(' in mysql_type:
-                length = mysql_type[mysql_type.index('('):]
+            if "varchar" in mysql_type_lower and "(" in mysql_type:
+                length = mysql_type[mysql_type.index("(") :]
                 return f"{pg_type}{length}"
             return pg_type
 
     # 默认返回TEXT
-    return 'TEXT'
+    return "TEXT"
 
 
 def create_postgresql_table(table_name, columns, dry_run=False):
@@ -101,11 +101,11 @@ def create_postgresql_table(table_name, columns, dry_run=False):
     for col in columns:
         col_name = col[0]
         col_type = convert_mysql_type_to_postgres(col[1])
-        nullable = "NOT NULL" if col[2] == 'NO' else ""
+        nullable = "NOT NULL" if col[2] == "NO" else ""
 
         # 处理主键
-        if col[3] == 'PRI':
-            if 'int' in col[1].lower():
+        if col[3] == "PRI":
+            if "int" in col[1].lower():
                 column_defs.append(f"{col_name} SERIAL PRIMARY KEY")
             else:
                 column_defs.append(f"{col_name} {col_type} PRIMARY KEY {nullable}")
@@ -198,7 +198,7 @@ def verify_migration(table_name):
 
 def main():
     """主函数"""
-    dry_run = '--dry-run' in sys.argv
+    dry_run = "--dry-run" in sys.argv
 
     print("=" * 70)
     print("MySQL → PostgreSQL 数据迁移")
@@ -269,6 +269,6 @@ def main():
     return len(failed_tables) == 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)

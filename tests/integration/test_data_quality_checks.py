@@ -19,11 +19,11 @@ import os
 from datetime import datetime, timedelta
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from unified_manager import MyStocksUnifiedManager
-from core.data_classification import DataClassification
-from monitoring.data_quality_monitor import get_quality_monitor
+from src.core.data_classification import DataClassification
+from src.monitoring.data_quality_monitor import get_quality_monitor
 
 
 class TestDataQualityChecks(unittest.TestCase):
@@ -47,18 +47,18 @@ class TestDataQualityChecks(unittest.TestCase):
         # 使用统一管理器的质量检查接口
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='completeness',
+            "daily_kline",
+            check_type="completeness",
             total_records=10000,
             null_records=10,  # 0.1% 缺失率
-            threshold=5.0  # 5% 阈值
+            threshold=5.0,  # 5% 阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  缺失率: {result.get('missing_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'PASS', "缺失率低应该PASS")
+            self.assertEqual(result.get("check_status"), "PASS", "缺失率低应该PASS")
             print("  ✅ 完整性检查PASS")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -69,18 +69,20 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='completeness',
+            "daily_kline",
+            check_type="completeness",
             total_records=10000,
             null_records=600,  # 6% 缺失率
-            threshold=5.0  # 5% 阈值
+            threshold=5.0,  # 5% 阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  缺失率: {result.get('missing_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'WARNING', "缺失率超阈值应该WARNING")
+            self.assertEqual(
+                result.get("check_status"), "WARNING", "缺失率超阈值应该WARNING"
+            )
             print("  ✅ 完整性检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -91,18 +93,18 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='completeness',
+            "daily_kline",
+            check_type="completeness",
             total_records=10000,
             null_records=1200,  # 12% 缺失率 (超过阈值2倍)
-            threshold=5.0  # 5% 阈值
+            threshold=5.0,  # 5% 阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  缺失率: {result.get('missing_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'FAIL', "缺失率严重应该FAIL")
+            self.assertEqual(result.get("check_status"), "FAIL", "缺失率严重应该FAIL")
             print("  ✅ 完整性检查FAIL (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -116,17 +118,17 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.TICK_DATA,
-            'tick_data',
-            check_type='freshness',
+            "tick_data",
+            check_type="freshness",
             latest_timestamp=latest_time,
-            threshold_seconds=300  # 5分钟阈值
+            threshold_seconds=300,  # 5分钟阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  数据延迟: {result.get('data_delay_seconds', 0)}秒")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'PASS', "延迟小应该PASS")
+            self.assertEqual(result.get("check_status"), "PASS", "延迟小应该PASS")
             print("  ✅ 新鲜度检查PASS")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -140,17 +142,19 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.TICK_DATA,
-            'tick_data',
-            check_type='freshness',
+            "tick_data",
+            check_type="freshness",
             latest_timestamp=latest_time,
-            threshold_seconds=300  # 5分钟阈值
+            threshold_seconds=300,  # 5分钟阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  数据延迟: {result.get('data_delay_seconds', 0)}秒")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'WARNING', "延迟超阈值应该WARNING")
+            self.assertEqual(
+                result.get("check_status"), "WARNING", "延迟超阈值应该WARNING"
+            )
             print("  ✅ 新鲜度检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -161,19 +165,19 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='accuracy',
+            "daily_kline",
+            check_type="accuracy",
             total_records=10000,
             invalid_records=5,  # 0.05% 无效率
-            validation_rules='price > 0 AND volume >= 0',
-            threshold=1.0  # 1% 阈值
+            validation_rules="price > 0 AND volume >= 0",
+            threshold=1.0,  # 1% 阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  无效率: {result.get('invalid_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'PASS', "无效率低应该PASS")
+            self.assertEqual(result.get("check_status"), "PASS", "无效率低应该PASS")
             print("  ✅ 准确性检查PASS")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -184,19 +188,21 @@ class TestDataQualityChecks(unittest.TestCase):
 
         result = self.manager.check_data_quality(
             DataClassification.DAILY_KLINE,
-            'daily_kline',
-            check_type='accuracy',
+            "daily_kline",
+            check_type="accuracy",
             total_records=10000,
             invalid_records=150,  # 1.5% 无效率
-            validation_rules='price > 0 AND volume >= 0',
-            threshold=1.0  # 1% 阈值
+            validation_rules="price > 0 AND volume >= 0",
+            threshold=1.0,  # 1% 阈值
         )
 
-        if 'error' not in result:
+        if "error" not in result:
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  无效率: {result.get('invalid_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(result.get('check_status'), 'WARNING', "无效率超阈值应该WARNING")
+            self.assertEqual(
+                result.get("check_status"), "WARNING", "无效率超阈值应该WARNING"
+            )
             print("  ✅ 准确性检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -210,7 +216,7 @@ class TestDataQualityChecks(unittest.TestCase):
             self.quality_monitor.set_thresholds(
                 missing_rate_threshold=10.0,  # 10%
                 delay_threshold_seconds=600,  # 10分钟
-                invalid_rate_threshold=2.0   # 2%
+                invalid_rate_threshold=2.0,  # 2%
             )
             print("  ✅ 质量阈值已更新")
             print("    - 缺失率阈值: 10%")
@@ -232,12 +238,13 @@ class TestDataQualityChecks(unittest.TestCase):
         print("=" * 80 + "\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 配置日志
     import logging
+
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     # 运行测试

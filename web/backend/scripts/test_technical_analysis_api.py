@@ -14,9 +14,9 @@ headers = {}
 
 def print_section(title):
     """打印章节标题"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"  {title}")
-    print("="*80)
+    print("=" * 80)
 
 
 def test_health_check():
@@ -33,7 +33,9 @@ def test_get_all_indicators():
 
     # 测试贵州茅台
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/indicators", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/{symbol}/indicators", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -51,13 +53,13 @@ def test_get_all_indicators():
 
         # 显示部分指标
         print(f"\n部分趋势指标:")
-        for key in ['ma5', 'ma10', 'ma20', 'ema12', 'ema26']:
-            if key in data['trend']:
+        for key in ["ma5", "ma10", "ma20", "ema12", "ema26"]:
+            if key in data["trend"]:
                 print(f"  {key}: {data['trend'][key]:.2f}")
 
         print(f"\n部分动量指标:")
-        for key in ['rsi6', 'rsi12', 'kdj_k', 'kdj_d']:
-            if key in data['momentum']:
+        for key in ["rsi6", "rsi12", "kdj_k", "kdj_d"]:
+            if key in data["momentum"]:
                 print(f"  {key}: {data['momentum'][key]:.2f}")
 
     else:
@@ -75,7 +77,7 @@ def test_get_trend_indicators():
     if response.status_code == 200:
         data = response.json()
         print(f"指标数量: {data['count']}")
-        print(json.dumps(data['indicators'], indent=2, ensure_ascii=False))
+        print(json.dumps(data["indicators"], indent=2, ensure_ascii=False))
 
 
 def test_get_momentum_indicators():
@@ -83,14 +85,16 @@ def test_get_momentum_indicators():
     print_section("测试 4: 获取动量指标")
 
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/momentum", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/{symbol}/momentum", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"指标数量: {data['count']}")
 
-        indicators = data['indicators']
+        indicators = data["indicators"]
         print(f"\nRSI指标:")
         print(f"  RSI(6):  {indicators.get('rsi6', 'N/A')}")
         print(f"  RSI(12): {indicators.get('rsi12', 'N/A')}")
@@ -107,14 +111,16 @@ def test_get_volatility_indicators():
     print_section("测试 5: 获取波动性指标")
 
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/volatility", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/{symbol}/volatility", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"指标数量: {data['count']}")
 
-        indicators = data['indicators']
+        indicators = data["indicators"]
         print(f"\nBollinger Bands:")
         print(f"  上轨: {indicators.get('bb_upper', 'N/A')}")
         print(f"  中轨: {indicators.get('bb_middle', 'N/A')}")
@@ -131,13 +137,15 @@ def test_get_volume_indicators():
     print_section("测试 6: 获取成交量指标")
 
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/volume", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/{symbol}/volume", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"指标数量: {data['count']}")
-        print(json.dumps(data['indicators'], indent=2, ensure_ascii=False))
+        print(json.dumps(data["indicators"], indent=2, ensure_ascii=False))
 
 
 def test_get_trading_signals():
@@ -145,21 +153,27 @@ def test_get_trading_signals():
     print_section("测试 7: 获取交易信号")
 
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/signals", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/{symbol}/signals", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"\n综合信号: {data['overall_signal'].upper()}")
         print(f"信号强度: {data['signal_strength']:.2f}")
-        print(f"信号数量: 买入={data['signal_count']['buy']}, "
-              f"卖出={data['signal_count']['sell']}, "
-              f"总计={data['signal_count']['total']}")
+        print(
+            f"信号数量: 买入={data['signal_count']['buy']}, "
+            f"卖出={data['signal_count']['sell']}, "
+            f"总计={data['signal_count']['total']}"
+        )
 
-        if data['signals']:
+        if data["signals"]:
             print(f"\n具体信号:")
-            for sig in data['signals']:
-                print(f"  - [{sig['signal'].upper()}] {sig['type']}: 强度 {sig['strength']:.2f}")
+            for sig in data["signals"]:
+                print(
+                    f"  - [{sig['signal'].upper()}] {sig['type']}: 强度 {sig['strength']:.2f}"
+                )
         else:
             print(f"\n当前无明显交易信号")
 
@@ -172,7 +186,7 @@ def test_get_history():
     response = requests.get(
         f"{BASE_URL}/api/technical/{symbol}/history",
         params={"limit": 10},
-        headers=headers
+        headers=headers,
     )
 
     print(f"Status Code: {response.status_code}")
@@ -183,14 +197,16 @@ def test_get_history():
         print(f"数据点: {data['count']}")
 
         print(f"\n最近3天数据:")
-        for i in range(min(3, len(data['dates']))):
-            ohlcv = data['data'][-(i+1)]
-            print(f"  {data['dates'][-(i+1)]}: "
-                  f"开={ohlcv['open']:.2f}, "
-                  f"高={ohlcv['high']:.2f}, "
-                  f"低={ohlcv['low']:.2f}, "
-                  f"收={ohlcv['close']:.2f}, "
-                  f"量={ohlcv['volume']:,}")
+        for i in range(min(3, len(data["dates"]))):
+            ohlcv = data["data"][-(i + 1)]
+            print(
+                f"  {data['dates'][-(i+1)]}: "
+                f"开={ohlcv['open']:.2f}, "
+                f"高={ohlcv['high']:.2f}, "
+                f"低={ohlcv['low']:.2f}, "
+                f"收={ohlcv['close']:.2f}, "
+                f"量={ohlcv['volume']:,}"
+            )
 
 
 def test_batch_indicators():
@@ -201,7 +217,7 @@ def test_batch_indicators():
     response = requests.post(
         f"{BASE_URL}/api/technical/batch/indicators",
         params={"symbols": symbols},
-        headers=headers
+        headers=headers,
     )
 
     print(f"Status Code: {response.status_code}")
@@ -209,8 +225,10 @@ def test_batch_indicators():
         data = response.json()
         print(f"成功获取: {data['count']}/{len(symbols)} 只股票")
 
-        for stock in data['data']:
-            print(f"\n{stock['symbol']}: {stock['latest_price']:.2f} ({stock['latest_date']})")
+        for stock in data["data"]:
+            print(
+                f"\n{stock['symbol']}: {stock['latest_price']:.2f} ({stock['latest_date']})"
+            )
             print(f"  指标总数: {stock['total_indicators']}")
 
 
@@ -222,7 +240,7 @@ def test_weekly_period():
     response = requests.get(
         f"{BASE_URL}/api/technical/{symbol}/indicators",
         params={"period": "weekly"},
-        headers=headers
+        headers=headers,
     )
 
     print(f"Status Code: {response.status_code}")
@@ -241,11 +259,8 @@ def test_date_range():
     symbol = "600519"
     response = requests.get(
         f"{BASE_URL}/api/technical/{symbol}/indicators",
-        params={
-            "start_date": "2024-01-01",
-            "end_date": "2025-10-23"
-        },
-        headers=headers
+        params={"start_date": "2024-01-01", "end_date": "2025-10-23"},
+        headers=headers,
     )
 
     print(f"Status Code: {response.status_code}")
@@ -262,7 +277,9 @@ def test_pattern_detection():
     print_section("测试 12: 形态识别 (预留)")
 
     symbol = "600519"
-    response = requests.get(f"{BASE_URL}/api/technical/patterns/{symbol}", headers=headers)
+    response = requests.get(
+        f"{BASE_URL}/api/technical/patterns/{symbol}", headers=headers
+    )
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -272,10 +289,10 @@ def test_pattern_detection():
 
 def main():
     """运行所有测试"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("  MyStocks 技术分析系统 API 测试")
     print("  Phase 2: ValueCell Migration - Enhanced Technical Analysis")
-    print("="*80)
+    print("=" * 80)
 
     try:
         # 基础测试
@@ -329,6 +346,7 @@ def main():
     except Exception as e:
         print(f"\n❌ 测试失败: {e}")
         import traceback
+
         traceback.print_exc()
 
 

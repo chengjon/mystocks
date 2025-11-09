@@ -22,11 +22,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from models import (
-    ModuleInventory, ModuleMetadata, ClassMetadata,
-    FunctionMetadata, ParameterMetadata, CategoryEnum,
-    ManualMetadata, DataFlow
+    ModuleInventory,
+    ModuleMetadata,
+    ClassMetadata,
+    FunctionMetadata,
+    ParameterMetadata,
+    CategoryEnum,
+    ManualMetadata,
+    DataFlow,
 )
-from utils.markdown_writer import MarkdownWriter
+from src.utils.markdown_writer import MarkdownWriter
 
 
 def load_inventory(json_path: str) -> ModuleInventory:
@@ -39,107 +44,111 @@ def load_inventory(json_path: str) -> ModuleInventory:
     Returns:
         ModuleInventory 对象
     """
-    with open(json_path, 'r', encoding='utf-8') as f:
+    with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # 重建对象
     modules = []
 
-    for module_data in data['modules']:
+    for module_data in data["modules"]:
         # 重建函数
         functions = []
-        for func_data in module_data['functions']:
+        for func_data in module_data["functions"]:
             parameters = [
                 ParameterMetadata(
-                    name=p['name'],
-                    type_annotation=p.get('type_annotation'),
-                    default_value=p.get('default_value'),
-                    is_required=p.get('is_required', True)
+                    name=p["name"],
+                    type_annotation=p.get("type_annotation"),
+                    default_value=p.get("default_value"),
+                    is_required=p.get("is_required", True),
                 )
-                for p in func_data.get('parameters', [])
+                for p in func_data.get("parameters", [])
             ]
 
             func = FunctionMetadata(
-                name=func_data['name'],
-                line_number=func_data['line_number'],
+                name=func_data["name"],
+                line_number=func_data["line_number"],
                 parameters=parameters,
-                return_type=func_data.get('return_type'),
-                docstring=func_data.get('docstring'),
-                is_async=func_data.get('is_async', False),
-                decorators=func_data.get('decorators', []),
-                body_lines=func_data.get('body_lines', 0),
-                complexity=func_data.get('complexity', 0)
+                return_type=func_data.get("return_type"),
+                docstring=func_data.get("docstring"),
+                is_async=func_data.get("is_async", False),
+                decorators=func_data.get("decorators", []),
+                body_lines=func_data.get("body_lines", 0),
+                complexity=func_data.get("complexity", 0),
             )
             functions.append(func)
 
         # 重建类
         classes = []
-        for class_data in module_data['classes']:
+        for class_data in module_data["classes"]:
             # 重建方法
             methods = []
-            for method_data in class_data['methods']:
+            for method_data in class_data["methods"]:
                 parameters = [
                     ParameterMetadata(
-                        name=p['name'],
-                        type_annotation=p.get('type_annotation'),
-                        default_value=p.get('default_value'),
-                        is_required=p.get('is_required', True)
+                        name=p["name"],
+                        type_annotation=p.get("type_annotation"),
+                        default_value=p.get("default_value"),
+                        is_required=p.get("is_required", True),
                     )
-                    for p in method_data.get('parameters', [])
+                    for p in method_data.get("parameters", [])
                 ]
 
                 method = FunctionMetadata(
-                    name=method_data['name'],
-                    line_number=method_data['line_number'],
+                    name=method_data["name"],
+                    line_number=method_data["line_number"],
                     parameters=parameters,
-                    return_type=method_data.get('return_type'),
-                    docstring=method_data.get('docstring'),
-                    is_async=method_data.get('is_async', False),
-                    decorators=method_data.get('decorators', []),
-                    body_lines=method_data.get('body_lines', 0),
-                    complexity=method_data.get('complexity', 0)
+                    return_type=method_data.get("return_type"),
+                    docstring=method_data.get("docstring"),
+                    is_async=method_data.get("is_async", False),
+                    decorators=method_data.get("decorators", []),
+                    body_lines=method_data.get("body_lines", 0),
+                    complexity=method_data.get("complexity", 0),
                 )
                 methods.append(method)
 
             cls = ClassMetadata(
-                name=class_data['name'],
-                line_number=class_data['line_number'],
-                base_classes=class_data.get('base_classes', []),
+                name=class_data["name"],
+                line_number=class_data["line_number"],
+                base_classes=class_data.get("base_classes", []),
                 methods=methods,
-                docstring=class_data.get('docstring'),
-                decorators=class_data.get('decorators', []),
-                is_abstract=class_data.get('is_abstract', False)
+                docstring=class_data.get("docstring"),
+                decorators=class_data.get("decorators", []),
+                is_abstract=class_data.get("is_abstract", False),
             )
             classes.append(cls)
 
         # 重建模块
         module = ModuleMetadata(
-            file_path=module_data['file_path'],
-            module_name=module_data['module_name'],
-            category=CategoryEnum(module_data['category']),
+            file_path=module_data["file_path"],
+            module_name=module_data["module_name"],
+            category=CategoryEnum(module_data["category"]),
             classes=classes,
             functions=functions,
-            imports=module_data.get('imports', []),
-            docstring=module_data.get('docstring'),
-            lines_of_code=module_data['lines_of_code'],
-            blank_lines=module_data.get('blank_lines', 0),
-            comment_lines=module_data.get('comment_lines', 0),
-            last_modified=datetime.fromisoformat(module_data['last_modified']) if module_data.get('last_modified') else None
+            imports=module_data.get("imports", []),
+            docstring=module_data.get("docstring"),
+            lines_of_code=module_data["lines_of_code"],
+            blank_lines=module_data.get("blank_lines", 0),
+            comment_lines=module_data.get("comment_lines", 0),
+            last_modified=(
+                datetime.fromisoformat(module_data["last_modified"])
+                if module_data.get("last_modified")
+                else None
+            ),
         )
         modules.append(module)
 
     # 重建元数据
-    meta_data = data['metadata']
+    meta_data = data["metadata"]
     metadata = ManualMetadata(
-        version=meta_data['version'],
-        generation_date=datetime.fromisoformat(meta_data['generation_date']),
-        total_modules=meta_data['total_modules'],
-        total_classes=meta_data['total_classes'],
-        total_functions=meta_data['total_functions'],
-        total_lines=meta_data['total_lines'],
-        avg_function_complexity=meta_data.get('avg_function_complexity', 0.0),
-        max_function_complexity=meta_data.get('max_function_complexity', 0),
-        category_stats=meta_data.get('category_stats', {})
+        version=meta_data["version"],
+        generation_date=datetime.fromisoformat(meta_data["generation_date"]),
+        total_modules=meta_data["total_modules"],
+        total_classes=meta_data["total_classes"],
+        total_functions=meta_data["total_functions"],
+        total_lines=meta_data["total_lines"],
+        avg_function_complexity=meta_data.get("avg_function_complexity", 0.0),
+        max_function_complexity=meta_data.get("max_function_complexity", 0),
+        category_stats=meta_data.get("category_stats", {}),
     )
 
     inventory = ModuleInventory(modules=modules, metadata=metadata)
@@ -152,8 +161,8 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 
     category_info = {
         CategoryEnum.CORE: {
-            'name': '核心功能',
-            'description': '''
+            "name": "核心功能",
+            "description": """
 核心功能模块实现系统的主要业务逻辑和数据编排。这些模块是系统的核心，
 负责统一数据访问、数据分类路由、以及系统初始化和配置。
 
@@ -165,11 +174,11 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 - 多数据库协调管理
 
 **设计模式**: Manager Pattern, Strategy Pattern, Facade Pattern
-'''
+""",
         },
         CategoryEnum.AUXILIARY: {
-            'name': '辅助功能',
-            'description': '''
+            "name": "辅助功能",
+            "description": """
 辅助功能模块为核心功能提供扩展和支持，主要包括各种数据源适配器、
 工厂模式实现、交易策略、回测引擎等可插拔组件。
 
@@ -182,11 +191,11 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 - 实时数据处理
 
 **设计模式**: Adapter Pattern, Factory Pattern, Strategy Pattern
-'''
+""",
         },
         CategoryEnum.INFRASTRUCTURE: {
-            'name': '基础设施功能',
-            'description': '''
+            "name": "基础设施功能",
+            "description": """
 基础设施模块提供底层数据库连接管理、表结构定义、配置管理等基础服务。
 这些模块确保系统的稳定运行和数据持久化。
 
@@ -198,11 +207,11 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 - 数据迁移工具
 
 **设计模式**: Singleton Pattern, Connection Pool, Repository Pattern
-'''
+""",
         },
         CategoryEnum.MONITORING: {
-            'name': '监控功能',
-            'description': '''
+            "name": "监控功能",
+            "description": """
 监控功能模块提供系统运行状态监控、性能跟踪、数据质量检查和告警管理。
 确保系统健康运行和数据质量。
 
@@ -214,11 +223,11 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 - Grafana/Prometheus 集成
 
 **设计模式**: Observer Pattern, Strategy Pattern
-'''
+""",
         },
         CategoryEnum.UTILITY: {
-            'name': '工具功能',
-            'description': '''
+            "name": "工具功能",
+            "description": """
 工具功能模块提供各种通用辅助功能，包括日期处理、股票代码转换、
 列名映射、重试装饰器等。这些工具被其他模块广泛使用。
 
@@ -230,13 +239,17 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 - 数据验证工具
 
 **设计模式**: Decorator Pattern, Utility Pattern
-'''
-        }
+""",
+        },
     }
 
-    for category in [CategoryEnum.CORE, CategoryEnum.AUXILIARY,
-                     CategoryEnum.INFRASTRUCTURE, CategoryEnum.MONITORING,
-                     CategoryEnum.UTILITY]:
+    for category in [
+        CategoryEnum.CORE,
+        CategoryEnum.AUXILIARY,
+        CategoryEnum.INFRASTRUCTURE,
+        CategoryEnum.MONITORING,
+        CategoryEnum.UTILITY,
+    ]:
 
         modules = inventory.get_modules_by_category(category)
 
@@ -245,7 +258,7 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 
         info = category_info[category]
         filepath = writer.generate_category_document(
-            category, modules, info['name'], info['description']
+            category, modules, info["name"], info["description"]
         )
         print(f"  ✓ {info['name']}: {filepath}")
 
@@ -263,15 +276,27 @@ def generate_data_flows(inventory: ModuleInventory, writer: MarkdownWriter):
             data_classification="Market Data",
             database_target="TDengine",
             steps=[
-                {"module": "adapters/akshare_adapter", "function": "fetch_realtime_data",
-                 "action": "从 AKShare 获取实时行情数据"},
-                {"module": "unified_manager", "function": "save_data_by_classification",
-                 "action": "根据数据分类自动路由"},
-                {"module": "core", "function": "DataStorageStrategy.get_target_database",
-                 "action": "确定目标数据库为 TDengine"},
-                {"module": "data_access", "function": "TDengineDataAccess.save_market_data",
-                 "action": "保存到 TDengine 时序数据库"}
-            ]
+                {
+                    "module": "adapters/akshare_adapter",
+                    "function": "fetch_realtime_data",
+                    "action": "从 AKShare 获取实时行情数据",
+                },
+                {
+                    "module": "unified_manager",
+                    "function": "save_data_by_classification",
+                    "action": "根据数据分类自动路由",
+                },
+                {
+                    "module": "core",
+                    "function": "DataStorageStrategy.get_target_database",
+                    "action": "确定目标数据库为 TDengine",
+                },
+                {
+                    "module": "data_access",
+                    "function": "TDengineDataAccess.save_market_data",
+                    "action": "保存到 TDengine 时序数据库",
+                },
+            ],
         ),
         DataFlow(
             id="FLOW-002",
@@ -280,13 +305,22 @@ def generate_data_flows(inventory: ModuleInventory, writer: MarkdownWriter):
             data_classification="Reference Data",
             database_target="MySQL",
             steps=[
-                {"module": "adapters/akshare_adapter", "function": "fetch_stock_list",
-                 "action": "获取股票列表"},
-                {"module": "unified_manager", "function": "save_data_by_classification",
-                 "action": "分类为参考数据"},
-                {"module": "data_access", "function": "MySQLDataAccess.save_reference_data",
-                 "action": "保存到 MySQL"}
-            ]
+                {
+                    "module": "adapters/akshare_adapter",
+                    "function": "fetch_stock_list",
+                    "action": "获取股票列表",
+                },
+                {
+                    "module": "unified_manager",
+                    "function": "save_data_by_classification",
+                    "action": "分类为参考数据",
+                },
+                {
+                    "module": "data_access",
+                    "function": "MySQLDataAccess.save_reference_data",
+                    "action": "保存到 MySQL",
+                },
+            ],
         ),
         DataFlow(
             id="FLOW-003",
@@ -295,15 +329,27 @@ def generate_data_flows(inventory: ModuleInventory, writer: MarkdownWriter):
             data_classification="Derived Data",
             database_target="PostgreSQL",
             steps=[
-                {"module": "data_access", "function": "TDengineDataAccess.load_market_data",
-                 "action": "从 TDengine 加载原始市场数据"},
-                {"module": "indicators", "function": "calculate_indicators",
-                 "action": "计算技术指标（MA, MACD, RSI 等）"},
-                {"module": "unified_manager", "function": "save_data_by_classification",
-                 "action": "分类为衍生数据"},
-                {"module": "data_access", "function": "PostgreSQLDataAccess.save_derived_data",
-                 "action": "保存到 PostgreSQL"}
-            ]
+                {
+                    "module": "data_access",
+                    "function": "TDengineDataAccess.load_market_data",
+                    "action": "从 TDengine 加载原始市场数据",
+                },
+                {
+                    "module": "indicators",
+                    "function": "calculate_indicators",
+                    "action": "计算技术指标（MA, MACD, RSI 等）",
+                },
+                {
+                    "module": "unified_manager",
+                    "function": "save_data_by_classification",
+                    "action": "分类为衍生数据",
+                },
+                {
+                    "module": "data_access",
+                    "function": "PostgreSQLDataAccess.save_derived_data",
+                    "action": "保存到 PostgreSQL",
+                },
+            ],
         ),
         DataFlow(
             id="FLOW-004",
@@ -312,16 +358,28 @@ def generate_data_flows(inventory: ModuleInventory, writer: MarkdownWriter):
             data_classification="Transaction Data",
             database_target="Redis + PostgreSQL",
             steps=[
-                {"module": "strategy", "function": "execute_trade",
-                 "action": "执行交易策略"},
-                {"module": "data_access", "function": "RedisDataAccess.save_hot_data",
-                 "action": "保存活跃持仓到 Redis"},
-                {"module": "automation", "function": "archive_cold_data",
-                 "action": "定时归档冷数据"},
-                {"module": "data_access", "function": "PostgreSQLDataAccess.save_transaction_history",
-                 "action": "保存历史交易到 PostgreSQL"}
-            ]
-        )
+                {
+                    "module": "strategy",
+                    "function": "execute_trade",
+                    "action": "执行交易策略",
+                },
+                {
+                    "module": "data_access",
+                    "function": "RedisDataAccess.save_hot_data",
+                    "action": "保存活跃持仓到 Redis",
+                },
+                {
+                    "module": "automation",
+                    "function": "archive_cold_data",
+                    "action": "定时归档冷数据",
+                },
+                {
+                    "module": "data_access",
+                    "function": "PostgreSQLDataAccess.save_transaction_history",
+                    "action": "保存历史交易到 PostgreSQL",
+                },
+            ],
+        ),
     ]
 
     filepath = writer.generate_data_flow_maps(data_flows)
@@ -334,7 +392,10 @@ def main():
     print("=" * 60)
 
     # 加载清单
-    inventory_path = PROJECT_ROOT / "docs/function-classification-manual/metadata/module-inventory.json"
+    inventory_path = (
+        PROJECT_ROOT
+        / "docs/function-classification-manual/metadata/module-inventory.json"
+    )
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
@@ -377,7 +438,7 @@ def update_readme_stats(inventory: ModuleInventory):
     """更新 README 中的统计表"""
     readme_path = PROJECT_ROOT / "docs/function-classification-manual/README.md"
 
-    with open(readme_path, 'r', encoding='utf-8') as f:
+    with open(readme_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # 构建新的统计表
@@ -386,11 +447,11 @@ def update_readme_stats(inventory: ModuleInventory):
     stats_lines.append("|------|--------|--------|----------|")
 
     category_names = {
-        'core': '核心功能',
-        'auxiliary': '辅助功能',
-        'infrastructure': '基础设施',
-        'monitoring': '监控功能',
-        'utility': '工具功能'
+        "core": "核心功能",
+        "auxiliary": "辅助功能",
+        "infrastructure": "基础设施",
+        "monitoring": "监控功能",
+        "utility": "工具功能",
     }
 
     total_modules = 0
@@ -403,22 +464,23 @@ def update_readme_stats(inventory: ModuleInventory):
             stats_lines.append(
                 f"| {cat_name} | {stats['modules']} | {stats['functions']} | {stats['lines']:,} |"
             )
-            total_modules += stats['modules']
-            total_functions += stats['functions']
-            total_lines += stats['lines']
+            total_modules += stats["modules"]
+            total_functions += stats["functions"]
+            total_lines += stats["lines"]
 
     stats_lines.append(
         f"| **总计** | **{total_modules}** | **{total_functions}** | **{total_lines:,}** |"
     )
 
-    new_stats_table = '\n'.join(stats_lines)
+    new_stats_table = "\n".join(stats_lines)
 
     # 替换统计表
     import re
-    pattern = r'\| 类别 \| 模块数 \| 函数数 \| 代码行数 \|.*?\| \*\*总计\*\* \|.*?\|'
+
+    pattern = r"\| 类别 \| 模块数 \| 函数数 \| 代码行数 \|.*?\| \*\*总计\*\* \|.*?\|"
     content = re.sub(pattern, new_stats_table, content, flags=re.DOTALL)
 
-    with open(readme_path, 'w', encoding='utf-8') as f:
+    with open(readme_path, "w", encoding="utf-8") as f:
         f.write(content)
 
     print(f"  ✓ README 统计表已更新")

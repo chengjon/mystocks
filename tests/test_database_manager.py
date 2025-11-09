@@ -1,12 +1,14 @@
 """
 测试DatabaseTableManager数据库管理器
 """
+
 import pytest
 from unittest.mock import Mock, patch, MagicMock, mock_open
 import sys
-sys.path.insert(0, '/opt/claude/mystocks_spec')
 
-from db_manager.database_manager import DatabaseTableManager
+sys.path.insert(0, "/opt/claude/mystocks_spec")
+
+from src.db_manager.database_manager import DatabaseTableManager
 
 
 class TestDatabaseManager:
@@ -14,16 +16,16 @@ class TestDatabaseManager:
 
     def setup_method(self):
         """测试前准备"""
-        with patch('db_manager.database_manager.load_dotenv'):
+        with patch("db_manager.database_manager.load_dotenv"):
             self.manager = DatabaseTableManager()
 
     def test_manager_initialization(self):
         """测试管理器初始化"""
         assert self.manager is not None
-        assert hasattr(self.manager, 'get_mysql_connection')
-        assert hasattr(self.manager, 'get_postgresql_connection')
+        assert hasattr(self.manager, "get_mysql_connection")
+        assert hasattr(self.manager, "get_postgresql_connection")
 
-    @patch('db_manager.database_manager.pymysql.connect')
+    @patch("db_manager.database_manager.pymysql.connect")
     def test_get_mysql_connection_success(self, mock_connect):
         """测试获取MySQL连接成功"""
         # Mock连接
@@ -31,19 +33,22 @@ class TestDatabaseManager:
         mock_connect.return_value = mock_conn
 
         # 调用方法
-        with patch.dict('os.environ', {
-            'MYSQL_HOST': 'localhost',
-            'MYSQL_USER': 'root',
-            'MYSQL_PASSWORD': 'password',
-            'MYSQL_DATABASE': 'test_db'
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "MYSQL_HOST": "localhost",
+                "MYSQL_USER": "root",
+                "MYSQL_PASSWORD": "password",
+                "MYSQL_DATABASE": "test_db",
+            },
+        ):
             result = self.manager.get_mysql_connection()
 
             # 验证
             assert result is not None
             mock_connect.assert_called_once()
 
-    @patch('db_manager.database_manager.pymysql.connect')
+    @patch("db_manager.database_manager.pymysql.connect")
     def test_get_mysql_connection_failure(self, mock_connect):
         """测试MySQL连接失败"""
         # Mock连接失败
@@ -53,7 +58,7 @@ class TestDatabaseManager:
         with pytest.raises(Exception):
             self.manager.get_mysql_connection()
 
-    @patch('db_manager.database_manager.psycopg2.connect')
+    @patch("db_manager.database_manager.psycopg2.connect")
     def test_get_postgresql_connection_success(self, mock_connect):
         """测试获取PostgreSQL连接成功"""
         # Mock连接
@@ -61,19 +66,22 @@ class TestDatabaseManager:
         mock_connect.return_value = mock_conn
 
         # 调用方法
-        with patch.dict('os.environ', {
-            'POSTGRESQL_HOST': 'localhost',
-            'POSTGRESQL_USER': 'postgres',
-            'POSTGRESQL_PASSWORD': 'password',
-            'POSTGRESQL_DATABASE': 'test_db'
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "POSTGRESQL_HOST": "localhost",
+                "POSTGRESQL_USER": "postgres",
+                "POSTGRESQL_PASSWORD": "password",
+                "POSTGRESQL_DATABASE": "test_db",
+            },
+        ):
             result = self.manager.get_postgresql_connection()
 
             # 验证
             if result is not None:
                 mock_connect.assert_called_once()
 
-    @patch('db_manager.database_manager.taos.connect')
+    @patch("db_manager.database_manager.taos.connect")
     def test_get_tdengine_connection_success(self, mock_connect):
         """测试获取TDengine连接成功"""
         # Mock连接
@@ -81,18 +89,21 @@ class TestDatabaseManager:
         mock_connect.return_value = mock_conn
 
         # 调用方法
-        with patch.dict('os.environ', {
-            'TDENGINE_HOST': 'localhost',
-            'TDENGINE_USER': 'root',
-            'TDENGINE_PASSWORD': 'taosdata'
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "TDENGINE_HOST": "localhost",
+                "TDENGINE_USER": "root",
+                "TDENGINE_PASSWORD": "taosdata",
+            },
+        ):
             result = self.manager.get_tdengine_connection()
 
             # 验证
             if result is not None:
                 mock_connect.assert_called_once()
 
-    @patch('db_manager.database_manager.redis.Redis')
+    @patch("db_manager.database_manager.redis.Redis")
     def test_get_redis_connection_success(self, mock_redis):
         """测试获取Redis连接成功"""
         # Mock连接
@@ -100,40 +111,35 @@ class TestDatabaseManager:
         mock_redis.return_value = mock_conn
 
         # 调用方法
-        with patch.dict('os.environ', {
-            'REDIS_HOST': 'localhost',
-            'REDIS_PORT': '6379'
-        }):
+        with patch.dict(
+            "os.environ", {"REDIS_HOST": "localhost", "REDIS_PORT": "6379"}
+        ):
             result = self.manager.get_redis_connection()
 
             # 验证
             if result is not None:
                 mock_redis.assert_called_once()
 
-    @patch('builtins.open', new_callable=mock_open, read_data='version: 2.0\ntables: []')
-    @patch('db_manager.database_manager.yaml.safe_load')
+    @patch(
+        "builtins.open", new_callable=mock_open, read_data="version: 2.0\ntables: []"
+    )
+    @patch("db_manager.database_manager.yaml.safe_load")
     def test_load_table_config(self, mock_yaml, mock_file):
         """测试加载表配置"""
         # Mock YAML配置
         mock_yaml.return_value = {
-            'version': '2.0',
-            'tables': [
-                {
-                    'name': 'test_table',
-                    'database': 'mysql',
-                    'columns': []
-                }
-            ]
+            "version": "2.0",
+            "tables": [{"name": "test_table", "database": "mysql", "columns": []}],
         }
 
         # 调用方法
         try:
-            config = self.manager.load_table_config('test_config.yaml')
+            config = self.manager.load_table_config("test_config.yaml")
 
             # 验证
             assert config is not None
-            assert 'version' in config
-            assert 'tables' in config
+            assert "version" in config
+            assert "tables" in config
         except:
             # 如果方法不存在，跳过
             pytest.skip("load_table_config method not implemented")
@@ -156,11 +162,14 @@ class TestDatabaseManager:
     def test_connection_error_handling(self):
         """测试连接错误处理"""
         # 测试错误的连接参数
-        with patch.dict('os.environ', {
-            'MYSQL_HOST': 'invalid_host',
-            'MYSQL_USER': 'invalid_user',
-            'MYSQL_PASSWORD': 'invalid_password'
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "MYSQL_HOST": "invalid_host",
+                "MYSQL_USER": "invalid_user",
+                "MYSQL_PASSWORD": "invalid_password",
+            },
+        ):
             # 应该返回None或抛出异常，但不应该崩溃
             try:
                 result = self.manager.get_mysql_connection()
@@ -174,12 +183,12 @@ class TestDatabaseManager:
 class TestDatabaseOperations:
     """数据库操作测试"""
 
-    @patch('db_manager.database_manager.pymysql.connect')
+    @patch("db_manager.database_manager.pymysql.connect")
     def test_execute_query(self, mock_connect):
         """测试执行查询"""
         # Mock连接和cursor
         mock_cursor = MagicMock()
-        mock_cursor.fetchall.return_value = [('test',)]
+        mock_cursor.fetchall.return_value = [("test",)]
         mock_conn = MagicMock()
         mock_conn.cursor.return_value = mock_cursor
         mock_connect.return_value = mock_conn
@@ -188,7 +197,7 @@ class TestDatabaseOperations:
 
         # 测试查询
         try:
-            with patch.object(manager, 'get_mysql_connection', return_value=mock_conn):
+            with patch.object(manager, "get_mysql_connection", return_value=mock_conn):
                 conn = manager.get_mysql_connection()
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM test_table")
@@ -200,7 +209,7 @@ class TestDatabaseOperations:
             # 方法可能不存在
             pass
 
-    @patch('db_manager.database_manager.pymysql.connect')
+    @patch("db_manager.database_manager.pymysql.connect")
     def test_transaction_management(self, mock_connect):
         """测试事务管理"""
         # Mock连接
@@ -210,7 +219,7 @@ class TestDatabaseOperations:
         manager = DatabaseTableManager()
 
         try:
-            with patch.object(manager, 'get_mysql_connection', return_value=mock_conn):
+            with patch.object(manager, "get_mysql_connection", return_value=mock_conn):
                 conn = manager.get_mysql_connection()
 
                 # 测试commit

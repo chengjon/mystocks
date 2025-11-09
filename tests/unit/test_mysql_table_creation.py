@@ -10,15 +10,16 @@ T023: MySQL表创建单元测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pytest
-from core.config_driven_table_manager import ConfigDrivenTableManager
-from db_manager.connection_manager import DatabaseConnectionManager
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
+from src.db_manager.connection_manager import DatabaseConnectionManager
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("T023: MySQL表创建单元测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 
 class TestMySQLTableCreation:
@@ -53,8 +54,7 @@ class TestMySQLTableCreation:
         print("\n📍 测试2: 统计MySQL表定义")
 
         mysql_tables = [
-            t for t in self.manager.config['tables']
-            if t['database_type'] == 'MySQL'
+            t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"
         ]
 
         print(f"  MySQL表数量: {len(mysql_tables)}")
@@ -64,20 +64,30 @@ class TestMySQLTableCreation:
 
         # 按分类统计
         reference_tables = [
-            t for t in mysql_tables
-            if t.get('classification', '').endswith('_INFO') or
-               t.get('classification', '').endswith('_CLASS') or
-               t.get('classification', '').endswith('_CALENDAR') or
-               t.get('classification', '').endswith('_CONSTITUENTS') or
-               t.get('classification', '').endswith('_METRICS') or
-               t.get('classification', '').endswith('_DATA') or
-               t.get('classification', '').endswith('_RULES')
+            t
+            for t in mysql_tables
+            if t.get("classification", "").endswith("_INFO")
+            or t.get("classification", "").endswith("_CLASS")
+            or t.get("classification", "").endswith("_CALENDAR")
+            or t.get("classification", "").endswith("_CONSTITUENTS")
+            or t.get("classification", "").endswith("_METRICS")
+            or t.get("classification", "").endswith("_DATA")
+            or t.get("classification", "").endswith("_RULES")
         ]
 
         meta_tables = [
-            t for t in mysql_tables
-            if t.get('classification', '').startswith(('DATA_SOURCE', 'TASK_', 'STRATEGY_',
-                                                        'SYSTEM_', 'USER_', 'DATA_QUALITY'))
+            t
+            for t in mysql_tables
+            if t.get("classification", "").startswith(
+                (
+                    "DATA_SOURCE",
+                    "TASK_",
+                    "STRATEGY_",
+                    "SYSTEM_",
+                    "USER_",
+                    "DATA_QUALITY",
+                )
+            )
         ]
 
         print(f"  参考数据表: {len(reference_tables)}")
@@ -94,39 +104,42 @@ class TestMySQLTableCreation:
 
         # 查找stock_info表定义
         stock_info = next(
-            (t for t in self.manager.config['tables']
-             if t['table_name'] == 'stock_info'),
-            None
+            (
+                t
+                for t in self.manager.config["tables"]
+                if t["table_name"] == "stock_info"
+            ),
+            None,
         )
 
         assert stock_info is not None, "未找到stock_info表定义"
-        assert stock_info['database_type'] == 'MySQL', "stock_info应该在MySQL中"
+        assert stock_info["database_type"] == "MySQL", "stock_info应该在MySQL中"
 
         # 验证列定义
-        columns = stock_info.get('columns', [])
+        columns = stock_info.get("columns", [])
         assert len(columns) > 0, "列定义为空"
 
-        col_names = [col['name'] for col in columns]
-        assert 'id' in col_names, "缺少主键id列"
-        assert 'symbol' in col_names, "缺少symbol列"
-        assert 'name' in col_names, "缺少name列"
-        assert 'created_at' in col_names, "缺少created_at列"
-        assert 'updated_at' in col_names, "缺少updated_at列"
+        col_names = [col["name"] for col in columns]
+        assert "id" in col_names, "缺少主键id列"
+        assert "symbol" in col_names, "缺少symbol列"
+        assert "name" in col_names, "缺少name列"
+        assert "created_at" in col_names, "缺少created_at列"
+        assert "updated_at" in col_names, "缺少updated_at列"
 
         print(f"  列数量: {len(columns)}")
         print(f"  必需列验证: ✓")
 
         # 验证主键
-        primary_keys = [col['name'] for col in columns if col.get('primary_key')]
+        primary_keys = [col["name"] for col in columns if col.get("primary_key")]
         assert len(primary_keys) > 0, "应该有主键定义"
         print(f"  主键: {primary_keys}")
 
         # 验证唯一键
-        unique_cols = [col['name'] for col in columns if col.get('unique')]
+        unique_cols = [col["name"] for col in columns if col.get("unique")]
         print(f"  唯一键: {unique_cols if unique_cols else '无'}")
 
         # 验证索引
-        indexes = stock_info.get('indexes', [])
+        indexes = stock_info.get("indexes", [])
         print(f"  索引数量: {len(indexes)}")
         for idx in indexes[:3]:
             print(f"    - {idx['name']} ({idx['type']}): {idx['columns']}")
@@ -139,8 +152,9 @@ class TestMySQLTableCreation:
 
         try:
             mysql_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'MySQL'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "MySQL"
             ]
 
             created_count = 0
@@ -161,7 +175,9 @@ class TestMySQLTableCreation:
                     error_count += 1
                     print(f"  ⚠️  失败: {table_def['table_name']} - {str(e)[:50]}")
 
-            print(f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个")
+            print(
+                f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
+            )
             print(f"  ✅ MySQL表创建测试完成")
 
         except Exception as e:
@@ -174,15 +190,18 @@ class TestMySQLTableCreation:
 
         try:
             mysql_tables = [
-                t for t in self.manager.config['tables']
-                if t['database_type'] == 'MySQL'
+                t
+                for t in self.manager.config["tables"]
+                if t["database_type"] == "MySQL"
             ]
 
-            database_name = mysql_tables[0].get('database_name') if mysql_tables else None
+            database_name = (
+                mysql_tables[0].get("database_name") if mysql_tables else None
+            )
 
             for table_def in mysql_tables[:5]:  # 只检查前5个
-                table_name = table_def['table_name']
-                exists = self.manager._table_exists('MySQL', table_name, database_name)
+                table_name = table_def["table_name"]
+                exists = self.manager._table_exists("MySQL", table_name, database_name)
 
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
@@ -222,16 +241,15 @@ class TestMySQLTableCreation:
         print("\n📍 测试7: 验证自增主键配置")
 
         mysql_tables = [
-            t for t in self.manager.config['tables']
-            if t['database_type'] == 'MySQL'
+            t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"
         ]
 
         tables_with_auto_inc = []
         for table in mysql_tables:
-            columns = table.get('columns', [])
-            has_auto_inc = any(col.get('auto_increment') for col in columns)
+            columns = table.get("columns", [])
+            has_auto_inc = any(col.get("auto_increment") for col in columns)
             if has_auto_inc:
-                tables_with_auto_inc.append(table['table_name'])
+                tables_with_auto_inc.append(table["table_name"])
 
         print(f"  共有 {len(tables_with_auto_inc)} 个表使用自增主键")
 
@@ -277,10 +295,10 @@ def run_tests():
             failed += 1
             print(f"  ❌ 错误: {e}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"测试结果: 通过={passed}, 失败={failed}, 跳过={skipped}")
-    print("="*80)
+    print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

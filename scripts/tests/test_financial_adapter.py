@@ -14,7 +14,7 @@ project_root = os.path.dirname(
 sys.path.insert(0, project_root)
 
 # 直接从adapters目录导入FinancialDataSource
-from adapters.financial_adapter import FinancialDataSource
+from src.adapters.financial_adapter import FinancialDataSource
 
 
 def test_financial_adapter():

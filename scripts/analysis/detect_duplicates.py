@@ -23,11 +23,14 @@ sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from models import (
-    DuplicationCase, DuplicationIndex, SeverityEnum,
-    CodeBlock, ModuleInventory
+    DuplicationCase,
+    DuplicationIndex,
+    SeverityEnum,
+    CodeBlock,
+    ModuleInventory,
 )
-from utils.similarity import SimilarityDetector
-from utils.ast_parser import extract_code_block, tokenize_code
+from src.utils.similarity import SimilarityDetector
+from src.utils.ast_parser import extract_code_block, tokenize_code
 from generate_docs import load_inventory
 
 
@@ -82,10 +85,11 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
                 file1, func1, cls1 = func_list[i]
                 file2, func2, cls2 = func_list[j]
 
-                pair_key = tuple(sorted([
-                    f"{file1}:{func1.line_number}",
-                    f"{file2}:{func2.line_number}"
-                ]))
+                pair_key = tuple(
+                    sorted(
+                        [f"{file1}:{func1.line_number}", f"{file2}:{func2.line_number}"]
+                    )
+                )
 
                 if pair_key in checked_pairs:
                     continue
@@ -95,10 +99,12 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
                 full_path1 = str(PROJECT_ROOT / file1)
                 full_path2 = str(PROJECT_ROOT / file2)
 
-                code1 = extract_code_block(full_path1, func1.line_number,
-                                          func1.line_number + func1.body_lines)
-                code2 = extract_code_block(full_path2, func2.line_number,
-                                          func2.line_number + func2.body_lines)
+                code1 = extract_code_block(
+                    full_path1, func1.line_number, func1.line_number + func1.body_lines
+                )
+                code2 = extract_code_block(
+                    full_path2, func2.line_number, func2.line_number + func2.body_lines
+                )
 
                 if not code1 or not code2:
                     continue
@@ -116,12 +122,22 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
 
                     dup = detector.create_duplication_case(
                         [
-                            (file1, func1.line_number, func1.line_number + func1.body_lines, code1),
-                            (file2, func2.line_number, func2.line_number + func2.body_lines, code2)
+                            (
+                                file1,
+                                func1.line_number,
+                                func1.line_number + func1.body_lines,
+                                code1,
+                            ),
+                            (
+                                file2,
+                                func2.line_number,
+                                func2.line_number + func2.body_lines,
+                                code2,
+                            ),
                         ],
                         token_sim,
                         ast_sim,
-                        description
+                        description,
                     )
 
                     dup_index.add_duplication(dup)
@@ -144,18 +160,17 @@ def detect_pattern_duplicates(inventory: ModuleInventory, dup_index: Duplication
 
     # 定义要检测的模式
     patterns = {
-        'database_connection': [
-            'get_connection', 'connect', 'cursor', 'execute', 'commit', 'close'
+        "database_connection": [
+            "get_connection",
+            "connect",
+            "cursor",
+            "execute",
+            "commit",
+            "close",
         ],
-        'error_handling': [
-            'try', 'except', 'finally', 'raise', 'Exception'
-        ],
-        'data_validation': [
-            'if', 'is None', 'raise ValueError', 'assert'
-        ],
-        'logging': [
-            'logger', 'log', 'info', 'error', 'warning', 'debug'
-        ]
+        "error_handling": ["try", "except", "finally", "raise", "Exception"],
+        "data_validation": ["if", "is None", "raise ValueError", "assert"],
+        "logging": ["logger", "log", "info", "error", "warning", "debug"],
     }
 
     detector = SimilarityDetector(min_token_similarity=0.7, min_ast_similarity=0.6)
@@ -207,24 +222,29 @@ def analyze_duplicate_clusters(dup_index: DuplicationIndex) -> Dict:
     multi_file_clusters = {k: v for k, v in clusters.items() if len(k) >= 2}
 
     print(f"  重复集群数: {len(multi_file_clusters)}")
-    print(f"  最大集群: {max((len(files) for files in multi_file_clusters.keys()), default=0)} 个文件")
+    print(
+        f"  最大集群: {max((len(files) for files in multi_file_clusters.keys()), default=0)} 个文件"
+    )
 
     return {
-        'total_clusters': len(multi_file_clusters),
-        'clusters': [
+        "total_clusters": len(multi_file_clusters),
+        "clusters": [
             {
-                'files': list(files),
-                'duplication_count': len(dups),
-                'severity_breakdown': {
-                    'critical': sum(1 for d in dups if d.severity == SeverityEnum.CRITICAL),
-                    'high': sum(1 for d in dups if d.severity == SeverityEnum.HIGH),
-                    'medium': sum(1 for d in dups if d.severity == SeverityEnum.MEDIUM),
-                    'low': sum(1 for d in dups if d.severity == SeverityEnum.LOW)
-                }
+                "files": list(files),
+                "duplication_count": len(dups),
+                "severity_breakdown": {
+                    "critical": sum(
+                        1 for d in dups if d.severity == SeverityEnum.CRITICAL
+                    ),
+                    "high": sum(1 for d in dups if d.severity == SeverityEnum.HIGH),
+                    "medium": sum(1 for d in dups if d.severity == SeverityEnum.MEDIUM),
+                    "low": sum(1 for d in dups if d.severity == SeverityEnum.LOW),
+                },
             }
-            for files, dups in sorted(multi_file_clusters.items(),
-                                     key=lambda x: len(x[1]), reverse=True)[:10]
-        ]
+            for files, dups in sorted(
+                multi_file_clusters.items(), key=lambda x: len(x[1]), reverse=True
+            )[:10]
+        ],
     }
 
 
@@ -250,52 +270,54 @@ def generate_duplication_summary(dup_index: DuplicationIndex) -> str:
         for i, dup in enumerate(critical_and_high[:5], 1):
             lines.append(f"### {i}. {dup.id}")
             lines.append(f"- **严重性**: {dup.severity.value.upper()}")
-            lines.append(f"- **相似度**: Token {dup.token_similarity:.0%}, AST {dup.ast_similarity:.0%}")
+            lines.append(
+                f"- **相似度**: Token {dup.token_similarity:.0%}, AST {dup.ast_similarity:.0%}"
+            )
             lines.append(f"- **位置**: {len(dup.blocks)} 处")
             for block in dup.blocks[:3]:  # 只显示前3处
                 lines.append(f"  - `{block.file_path}:{block.start_line}`")
             lines.append("")
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def save_duplication_index(dup_index: DuplicationIndex, output_path: str):
     """保存重复索引到 JSON"""
 
     data = {
-        'total_cases': dup_index.total_cases,
-        'summary': {
-            'critical': len(dup_index.critical),
-            'high': len(dup_index.high),
-            'medium': len(dup_index.medium),
-            'low': len(dup_index.low)
+        "total_cases": dup_index.total_cases,
+        "summary": {
+            "critical": len(dup_index.critical),
+            "high": len(dup_index.high),
+            "medium": len(dup_index.medium),
+            "low": len(dup_index.low),
         },
-        'duplications': []
+        "duplications": [],
     }
 
     for dup in dup_index.duplications:
         dup_data = {
-            'id': dup.id,
-            'severity': dup.severity.value,
-            'token_similarity': dup.token_similarity,
-            'ast_similarity': dup.ast_similarity,
-            'description': dup.description,
-            'merge_suggestion': dup.merge_suggestion,
-            'affected_files': dup.affected_files,
-            'blocks': [
+            "id": dup.id,
+            "severity": dup.severity.value,
+            "token_similarity": dup.token_similarity,
+            "ast_similarity": dup.ast_similarity,
+            "description": dup.description,
+            "merge_suggestion": dup.merge_suggestion,
+            "affected_files": dup.affected_files,
+            "blocks": [
                 {
-                    'file_path': block.file_path,
-                    'start_line': block.start_line,
-                    'end_line': block.end_line,
-                    'function_name': block.function_name,
-                    'class_name': block.class_name
+                    "file_path": block.file_path,
+                    "start_line": block.start_line,
+                    "end_line": block.end_line,
+                    "function_name": block.function_name,
+                    "class_name": block.class_name,
                 }
                 for block in dup.blocks
-            ]
+            ],
         }
-        data['duplications'].append(dup_data)
+        data["duplications"].append(dup_data)
 
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     print(f"\n✓ 重复索引已保存: {output_path}")
@@ -307,7 +329,10 @@ def main():
     print("=" * 60)
 
     # 加载清单
-    inventory_path = PROJECT_ROOT / "docs/function-classification-manual/metadata/module-inventory.json"
+    inventory_path = (
+        PROJECT_ROOT
+        / "docs/function-classification-manual/metadata/module-inventory.json"
+    )
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
@@ -345,13 +370,16 @@ def main():
 
     # 生成摘要报告
     summary = generate_duplication_summary(dup_index)
-    summary_path = PROJECT_ROOT / "docs/function-classification-manual/duplication-summary.md"
-    with open(summary_path, 'w', encoding='utf-8') as f:
+    summary_path = (
+        PROJECT_ROOT / "docs/function-classification-manual/duplication-summary.md"
+    )
+    with open(summary_path, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"✓ 摘要报告已保存: {summary_path}")
 
     # 使用 markdown_writer 生成完整文档
-    from utils.markdown_writer import MarkdownWriter
+    from src.utils.markdown_writer import MarkdownWriter
+
     writer = MarkdownWriter(str(PROJECT_ROOT / "docs/function-classification-manual"))
     doc_path = writer.generate_duplication_analysis(dup_index)
     print(f"✓ 完整文档已生成: {doc_path}")

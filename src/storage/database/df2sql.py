@@ -6,7 +6,7 @@ update: 2025-09-12
 
 功能介绍：这是用来把dataframe保存到mysql的必备转化工具，可根据dataframe生成SQL建表命令
           这个版本是更新过的，它支持设置primary_key和字符集utf8mb4
-          
+
 修改日期：2025-09-12
 修改内容：增加了对大整数的支持，自动选择INT或BIGINT类型
 """
@@ -36,8 +36,12 @@ def create_sql_cmd(df, table_name, primary_key=None):
         elif pd.api.types.is_datetime64_any_dtype(dtype):
             create_table_query += f"{col} DATETIME, "  # 使用DATETIME而不是DATE
         elif pd.api.types.is_float_dtype(dtype):
-            max_decimals = df[col].apply(lambda x: len(str(x).split('.')[-1])).max()  # 获取浮点数小数点后的最大位数
-            float_length = min(max_decimals + 4, 38)  # 限制FLOAT小数点后数据长度最大为38
+            max_decimals = (
+                df[col].apply(lambda x: len(str(x).split(".")[-1])).max()
+            )  # 获取浮点数小数点后的最大位数
+            float_length = min(
+                max_decimals + 4, 38
+            )  # 限制FLOAT小数点后数据长度最大为38
             create_table_query += f"{col} FLOAT({float_length}), "
         elif pd.api.types.is_integer_dtype(dtype):
             # 检查整数的范围，如果超过INT范围则使用BIGINT
@@ -60,7 +64,7 @@ def create_sql_cmd(df, table_name, primary_key=None):
     if primary_key:
         create_table_query += f"PRIMARY KEY ({primary_key}), "
 
-    create_table_query = create_table_query.rstrip(', ') + ") CHARACTER SET utf8mb4"
+    create_table_query = create_table_query.rstrip(", ") + ") CHARACTER SET utf8mb4"
 
     # 返回创建表的SQL语句
     return create_table_query

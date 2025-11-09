@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class TaskType(str, Enum):
     """任务类型枚举"""
+
     CRON = "cron"  # 定时任务
     SUPERVISOR = "supervisor"  # 进程管理任务
     MANUAL = "manual"  # 手动任务
@@ -21,6 +22,7 @@ class TaskType(str, Enum):
 
 class TaskStatus(str, Enum):
     """任务状态枚举"""
+
     PENDING = "pending"  # 待执行
     RUNNING = "running"  # 运行中
     SUCCESS = "success"  # 成功完成
@@ -31,6 +33,7 @@ class TaskStatus(str, Enum):
 
 class TaskPriority(int, Enum):
     """任务优先级"""
+
     CRITICAL = 100  # 关键任务
     HIGH = 200  # 高优先级
     NORMAL = 500  # 普通优先级
@@ -40,6 +43,7 @@ class TaskPriority(int, Enum):
 
 class TaskSchedule(BaseModel):
     """任务调度配置"""
+
     schedule_type: str = Field(..., description="调度类型: cron, interval, once")
     cron_expression: Optional[str] = Field(None, description="Cron表达式")
     interval_seconds: Optional[int] = Field(None, description="执行间隔(秒)")
@@ -50,6 +54,7 @@ class TaskSchedule(BaseModel):
 
 class TaskConfig(BaseModel):
     """任务配置"""
+
     task_id: str = Field(..., description="任务ID")
     task_name: str = Field(..., description="任务名称")
     task_type: TaskType = Field(..., description="任务类型")
@@ -70,6 +75,7 @@ class TaskConfig(BaseModel):
 
 class TaskExecution(BaseModel):
     """任务执行记录"""
+
     execution_id: str = Field(..., description="执行ID")
     task_id: str = Field(..., description="任务ID")
     status: TaskStatus = Field(TaskStatus.PENDING, description="执行状态")
@@ -84,6 +90,7 @@ class TaskExecution(BaseModel):
 
 class TaskStatistics(BaseModel):
     """任务统计信息"""
+
     task_id: str
     task_name: str
     total_executions: int = 0
@@ -97,6 +104,7 @@ class TaskStatistics(BaseModel):
 
 class TaskResponse(BaseModel):
     """任务响应模型"""
+
     success: bool
     message: str
     data: Optional[Dict[str, Any]] = None

@@ -25,13 +25,13 @@ import logging
 import uuid
 
 # 导入核心模块
-from core import (
+from src.core import (
     DataClassification,
     DatabaseTarget,
     DataStorageStrategy,
     ConfigDrivenTableManager,
 )
-from monitoring import (
+from src.monitoring import (
     MonitoringDatabase,
     DataQualityMonitor,
     PerformanceMonitor,
@@ -41,7 +41,7 @@ from monitoring import (
 )
 
 # 导入现有数据库管理器
-from db_manager.database_manager import DatabaseTableManager, DatabaseType
+from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
 
 logger = logging.getLogger("MyStocksDataAccess")
 
@@ -147,7 +147,7 @@ class TDengineDataAccess(IDataAccessLayer):
             processed_data = self._preprocess_timeseries_data(data, classification)
 
             # 获取去重策略
-            from core import DeduplicationStrategy, DataStorageStrategy as DS
+            from src.core import DeduplicationStrategy, DataStorageStrategy as DS
 
             dedup_strategy = kwargs.get("dedup_strategy")
             if not dedup_strategy:
@@ -311,7 +311,7 @@ class TDengineDataAccess(IDataAccessLayer):
             处理后的数据
         """
         try:
-            from core import DeduplicationStrategy
+            from src.core import DeduplicationStrategy
 
             if strategy == DeduplicationStrategy.LATEST_WINS:
                 return self._handle_tdengine_latest_wins(
@@ -1203,10 +1203,19 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         """
         # SECURITY FIX: Whitelist table names to prevent injection through table_name
         ALLOWED_TABLES = {
-            "daily_kline", "minute_kline", "tick_data", "symbols_info",
-            "technical_indicators", "quantitative_factors", "model_outputs",
-            "trading_signals", "order_records", "transaction_records",
-            "position_records", "account_funds", "realtime_quotes"
+            "daily_kline",
+            "minute_kline",
+            "tick_data",
+            "symbols_info",
+            "technical_indicators",
+            "quantitative_factors",
+            "model_outputs",
+            "trading_signals",
+            "order_records",
+            "transaction_records",
+            "position_records",
+            "account_funds",
+            "realtime_quotes",
         }
         if table_name not in ALLOWED_TABLES:
             raise ValueError(f"Invalid table name: {table_name}")
@@ -1255,7 +1264,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         if "order_by" in kwargs:
             # WARNING: order_by is still a potential risk if user-controlled
             # TODO: Add whitelist for order_by columns
-            order_by = kwargs['order_by']
+            order_by = kwargs["order_by"]
             base_query += f" ORDER BY {order_by}"
         else:
             # 默认排序
@@ -1272,7 +1281,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         # 添加限制 - SECURITY: limit and offset should also use parameterization
         if "limit" in kwargs:
             # For LIMIT/OFFSET, use parameterized approach
-            limit_val = kwargs['limit']
+            limit_val = kwargs["limit"]
             if isinstance(limit_val, int):
                 base_query += f" LIMIT {limit_val}"  # Integers are safe for LIMIT
             else:
@@ -1280,7 +1289,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 params.append(limit_val)
 
         if "offset" in kwargs:
-            offset_val = kwargs['offset']
+            offset_val = kwargs["offset"]
             if isinstance(offset_val, int):
                 base_query += f" OFFSET {offset_val}"  # Integers are safe for OFFSET
             else:
@@ -1297,10 +1306,19 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         """
         # SECURITY FIX: Whitelist table names to prevent injection through table_name
         ALLOWED_TABLES = {
-            "daily_kline", "minute_kline", "tick_data", "symbols_info",
-            "technical_indicators", "quantitative_factors", "model_outputs",
-            "trading_signals", "order_records", "transaction_records",
-            "position_records", "account_funds", "realtime_quotes"
+            "daily_kline",
+            "minute_kline",
+            "tick_data",
+            "symbols_info",
+            "technical_indicators",
+            "quantitative_factors",
+            "model_outputs",
+            "trading_signals",
+            "order_records",
+            "transaction_records",
+            "position_records",
+            "account_funds",
+            "realtime_quotes",
         }
         if table_name not in ALLOWED_TABLES:
             raise ValueError(f"Invalid table name: {table_name}")

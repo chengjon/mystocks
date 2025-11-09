@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：自定义数据源适配器，支持用户扩展数据源
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,7 +7,7 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
+"""
 
 import pandas as pd
 from typing import Dict, List, Optional, Union
@@ -16,13 +16,16 @@ import os
 from datetime import datetime
 
 # 将当前目录的父目录的父目录添加到模块搜索路径中
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
-from interfaces.data_source import IDataSource
+from src.interfaces.data_source import IDataSource
 
 # 导入列名映射工具
 try:
-    from utils.column_mapper import ColumnMapper
+    from src.utils.column_mapper import ColumnMapper
+
     COLUMN_MAPPER_AVAILABLE = True
     print("[Customer] 列名映射工具加载成功")
 except ImportError:
@@ -52,6 +55,7 @@ class CustomerDataSource(IDataSource):
         # 尝试导入efinance
         try:
             import efinance as ef
+
             self.ef = ef
             self.efinance_available = True
             print("[Customer] efinance库导入成功")
@@ -63,6 +67,7 @@ class CustomerDataSource(IDataSource):
         # 尝试导入easyquotation
         try:
             import easyquotation as eq
+
             self.eq = eq
             self.easyquotation_available = True
             print("[Customer] easyquotation库导入成功")
@@ -73,10 +78,14 @@ class CustomerDataSource(IDataSource):
 
         print(f"[Customer] 数据源初始化完成:")
         print(f"  - efinance: {'可用' if self.efinance_available else '不可用'}")
-        print(f"  - easyquotation: {'可用' if self.easyquotation_available else '不可用'}")
+        print(
+            f"  - easyquotation: {'可用' if self.easyquotation_available else '不可用'}"
+        )
         print(f"  - 列名标准化: {'启用' if self.use_column_mapping else '禁用'}")
 
-    def _standardize_dataframe(self, df: pd.DataFrame, data_type: str = "stock_daily") -> pd.DataFrame:
+    def _standardize_dataframe(
+        self, df: pd.DataFrame, data_type: str = "stock_daily"
+    ) -> pd.DataFrame:
         """标准化DataFrame列名"""
         if not self.use_column_mapping or df.empty:
             return df
@@ -89,31 +98,35 @@ class CustomerDataSource(IDataSource):
         except Exception as e:
             print(f"[Customer] 列名标准化失败: {e}")
             return df
-        
-    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+
+    def get_stock_daily(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """获取股票日线数据-Customer实现"""
         print(f"[Customer] 尝试获取股票日线数据: {symbol}")
-        
+
         # efinance实现
         if self.efinance_available:
             try:
                 print("[Customer] 使用efinance获取股票日线数据")
                 # 使用正确的efinance API获取日线数据
                 # klt=101表示日K线数据
-                df = self.ef.stock.get_quote_history(symbol, beg=start_date, end=end_date, klt=101)
+                df = self.ef.stock.get_quote_history(
+                    symbol, beg=start_date, end=end_date, klt=101
+                )
                 if df is not None and not df.empty:
                     print(f"[Customer] efinance获取到{len(df)}行数据")
                     return df
             except Exception as e:
                 print(f"[Customer] efinance获取股票日线数据失败: {e}")
-        
+
         # easyquotation实现（如果efinance不可用）
         if self.easyquotation_available:
             try:
                 print("[Customer] 使用easyquotation获取股票日线数据")
                 # 注意：easyquotation主要用于实时数据，历史数据可能需要其他方式获取
                 # 这里只是一个示例实现
-                quotation = self.eq.use('sina')  # 使用sina源
+                quotation = self.eq.use("sina")  # 使用sina源
                 data = quotation.real([symbol])  # 获取实时数据
                 if data:
                     # 转换为DataFrame格式
@@ -122,14 +135,16 @@ class CustomerDataSource(IDataSource):
                     return df
             except Exception as e:
                 print(f"[Customer] easyquotation获取股票日线数据失败: {e}")
-        
+
         print("[Customer] 所有方法均未能获取到股票日线数据")
         return pd.DataFrame()
-    
-    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+
+    def get_index_daily(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """获取指数日线数据-Customer实现"""
         print(f"[Customer] 尝试获取指数日线数据: {symbol}")
-        
+
         # efinance实现
         if self.efinance_available:
             try:
@@ -141,14 +156,14 @@ class CustomerDataSource(IDataSource):
                     return df
             except Exception as e:
                 print(f"[Customer] efinance获取指数日线数据失败: {e}")
-        
+
         print("[Customer] 未能获取到指数日线数据")
         return pd.DataFrame()
-    
+
     def get_stock_basic(self, symbol: str) -> Dict:
         """获取股票基本信息-Customer实现"""
         print(f"[Customer] 尝试获取股票基本信息: {symbol}")
-        
+
         # efinance实现
         if self.efinance_available:
             try:
@@ -158,17 +173,17 @@ class CustomerDataSource(IDataSource):
                 if info is not None:
                     print("[Customer] efinance获取到股票基本信息")
                     # 将pandas.Series转换为字典
-                    return info.to_dict() if hasattr(info, 'to_dict') else dict(info)
+                    return info.to_dict() if hasattr(info, "to_dict") else dict(info)
             except Exception as e:
                 print(f"[Customer] efinance获取股票基本信息失败: {e}")
-        
+
         print("[Customer] 未能获取到股票基本信息")
         return {}
-    
+
     def get_index_components(self, symbol: str) -> List[str]:
         """获取指数成分股-Customer实现"""
         print(f"[Customer] 尝试获取指数成分股: {symbol}")
-        
+
         # efinance实现
         if self.efinance_available:
             try:
@@ -180,10 +195,10 @@ class CustomerDataSource(IDataSource):
                     return components
             except Exception as e:
                 print(f"[Customer] efinance获取指数成分股失败: {e}")
-        
+
         print("[Customer] 未能获取到指数成分股")
         return []
-    
+
     def get_real_time_data(self, symbol: str) -> Union[pd.DataFrame, Dict, str]:
         """获取实时数据-Customer实现（重点实现efinance的沪深市场A股最新状况功能）"""
         print(f"[Customer] 尝试获取实时数据: {symbol}")
@@ -193,7 +208,7 @@ class CustomerDataSource(IDataSource):
             try:
                 print("[Customer] 使用efinance获取沪深市场A股最新状况")
 
-                if symbol.lower() in ['sh', 'sz', 'hs']:  # 市场代码
+                if symbol.lower() in ["sh", "sz", "hs"]:  # 市场代码
                     # 获取沪深市场A股最新状况 - 这是用户特别要求的功能
                     df = self.ef.stock.get_realtime_quotes()
                     if df is not None and not df.empty:
@@ -201,35 +216,74 @@ class CustomerDataSource(IDataSource):
 
                         # 数据增强：添加时间戳和数据源标识
                         df = df.copy()
-                        df['fetch_timestamp'] = datetime.now()
-                        df['data_source'] = 'efinance'
-                        df['data_type'] = 'realtime_quotes'
-                        df['market'] = symbol.upper()
+                        df["fetch_timestamp"] = datetime.now()
+                        df["data_source"] = "efinance"
+                        df["data_type"] = "realtime_quotes"
+                        df["market"] = symbol.upper()
 
                         # 应用列名标准化
-                        standardized_df = self._standardize_dataframe(df, "realtime_quotes")
+                        standardized_df = self._standardize_dataframe(
+                            df, "realtime_quotes"
+                        )
 
                         # 只保留表结构中存在的核心列，去掉未映射的中文列名
-                        core_columns = ['symbol', 'name', 'pct_chg', 'close', 'high', 'low', 'open',
-                                       'change', 'turnover_rate', 'volume', 'amount', 'total_mv', 'circ_mv',
-                                       'fetch_timestamp', 'data_source', 'data_type', 'market']
+                        core_columns = [
+                            "symbol",
+                            "name",
+                            "pct_chg",
+                            "close",
+                            "high",
+                            "low",
+                            "open",
+                            "change",
+                            "turnover_rate",
+                            "volume",
+                            "amount",
+                            "total_mv",
+                            "circ_mv",
+                            "fetch_timestamp",
+                            "data_source",
+                            "data_type",
+                            "market",
+                        ]
 
                         # 保留存在的核心列
-                        available_columns = [col for col in core_columns if col in standardized_df.columns]
+                        available_columns = [
+                            col
+                            for col in core_columns
+                            if col in standardized_df.columns
+                        ]
                         standardized_df = standardized_df[available_columns]
 
                         # 数据清洗：处理数值型字段中的"-"和空值
-                        numeric_columns = ['pct_chg', 'close', 'high', 'low', 'open', 'change',
-                                         'turnover_rate', 'volume', 'amount', 'total_mv', 'circ_mv']
+                        numeric_columns = [
+                            "pct_chg",
+                            "close",
+                            "high",
+                            "low",
+                            "open",
+                            "change",
+                            "turnover_rate",
+                            "volume",
+                            "amount",
+                            "total_mv",
+                            "circ_mv",
+                        ]
 
                         for col in numeric_columns:
                             if col in standardized_df.columns:
                                 # 将"-"、"--"、空字符串等替换为None
-                                standardized_df[col] = standardized_df[col].replace(['-', '--', '', 'nan', 'NaN', 'None'], None)
+                                standardized_df[col] = standardized_df[col].replace(
+                                    ["-", "--", "", "nan", "NaN", "None"], None
+                                )
                                 # 确保数值型数据为float类型，无效值自动变为NaN
-                                standardized_df[col] = pd.to_numeric(standardized_df[col], errors='coerce')
+                                standardized_df[col] = pd.to_numeric(
+                                    standardized_df[col], errors="coerce"
+                                )
 
-                        print(f"[Customer] 数据处理完成：{len(standardized_df)}行数据，列名已标准化，数值清洗完成")
+                        print(
+                            f"[Customer] 数据处理完成：{len(standardized_df)}行数据，列名已标准化，数值清洗完成"
+                        )
                         return standardized_df
 
                 else:
@@ -241,7 +295,7 @@ class CustomerDataSource(IDataSource):
                         if all_quotes is not None and not all_quotes.empty:
                             # 过滤出指定股票
                             stock_data = None
-                            for col in ['股票代码', '代码', 'symbol']:
+                            for col in ["股票代码", "代码", "symbol"]:
                                 if col in all_quotes.columns:
                                     stock_data = all_quotes[all_quotes[col] == symbol]
                                     break
@@ -253,25 +307,39 @@ class CustomerDataSource(IDataSource):
                             if stock_data is not None and not stock_data.empty:
                                 print(f"[Customer] 从实时行情中找到股票{symbol}的数据")
                                 stock_data = stock_data.copy()
-                                stock_data['fetch_timestamp'] = datetime.now()
-                                stock_data['data_source'] = 'efinance'
+                                stock_data["fetch_timestamp"] = datetime.now()
+                                stock_data["data_source"] = "efinance"
 
                                 # 应用列名标准化
-                                standardized_data = self._standardize_dataframe(stock_data, "realtime_quotes")
-                                return standardized_data.to_dict('records')[0] if len(standardized_data) > 0 else {}
+                                standardized_data = self._standardize_dataframe(
+                                    stock_data, "realtime_quotes"
+                                )
+                                return (
+                                    standardized_data.to_dict("records")[0]
+                                    if len(standardized_data) > 0
+                                    else {}
+                                )
 
                         # 方法2：如果上面方法失败，尝试获取历史数据的最新点
                         print(f"[Customer] 尝试通过历史数据获取{symbol}最新行情")
-                        df = self.ef.stock.get_quote_history(symbol, klt=1)  # klt=1表示1分钟K线
+                        df = self.ef.stock.get_quote_history(
+                            symbol, klt=1
+                        )  # klt=1表示1分钟K线
                         if df is not None and not df.empty:
                             latest_data = df.tail(1).copy()
-                            latest_data['fetch_timestamp'] = datetime.now()
-                            latest_data['data_source'] = 'efinance'
+                            latest_data["fetch_timestamp"] = datetime.now()
+                            latest_data["data_source"] = "efinance"
 
                             # 应用列名标准化
-                            standardized_data = self._standardize_dataframe(latest_data, "stock_daily")
+                            standardized_data = self._standardize_dataframe(
+                                latest_data, "stock_daily"
+                            )
                             print(f"[Customer] 获取到股票{symbol}的最新数据")
-                            return standardized_data.to_dict('records')[0] if len(standardized_data) > 0 else {}
+                            return (
+                                standardized_data.to_dict("records")[0]
+                                if len(standardized_data) > 0
+                                else {}
+                            )
 
                     except Exception as stock_error:
                         print(f"[Customer] 获取单只股票数据时出错: {stock_error}")
@@ -284,9 +352,9 @@ class CustomerDataSource(IDataSource):
         if self.easyquotation_available:
             try:
                 print("[Customer] 智能切换到easyquotation获取实时数据")
-                quotation = self.eq.use('sina')  # 使用sina源
+                quotation = self.eq.use("sina")  # 使用sina源
 
-                if symbol.lower() in ['sh', 'sz', 'hs']:  # 市场代码
+                if symbol.lower() in ["sh", "sz", "hs"]:  # 市场代码
                     # 获取市场整体数据
                     print("[Customer] easyquotation获取市场快照数据")
                     try:
@@ -294,12 +362,18 @@ class CustomerDataSource(IDataSource):
                         if data:
                             print("[Customer] easyquotation获取到市场快照数据")
                             # 转换为DataFrame格式以保持一致性
-                            df = pd.DataFrame([data]) if isinstance(data, dict) else pd.DataFrame(data)
-                            df['fetch_timestamp'] = datetime.now()
-                            df['data_source'] = 'easyquotation'
+                            df = (
+                                pd.DataFrame([data])
+                                if isinstance(data, dict)
+                                else pd.DataFrame(data)
+                            )
+                            df["fetch_timestamp"] = datetime.now()
+                            df["data_source"] = "easyquotation"
 
                             # 应用列名标准化
-                            standardized_df = self._standardize_dataframe(df, "market_snapshot")
+                            standardized_df = self._standardize_dataframe(
+                                df, "market_snapshot"
+                            )
                             return standardized_df
                     except:
                         # 如果market_snapshot不可用，尝试其他方法
@@ -312,13 +386,19 @@ class CustomerDataSource(IDataSource):
                     data = quotation.real([symbol])
                     if data and symbol in data:
                         result = data[symbol].copy()
-                        result['fetch_timestamp'] = datetime.now()
-                        result['data_source'] = 'easyquotation'
+                        result["fetch_timestamp"] = datetime.now()
+                        result["data_source"] = "easyquotation"
 
                         # 将字典转换为DataFrame以便进行列名标准化
                         df = pd.DataFrame([result])
-                        standardized_df = self._standardize_dataframe(df, "realtime_quotes")
-                        standardized_result = standardized_df.to_dict('records')[0] if len(standardized_df) > 0 else result
+                        standardized_df = self._standardize_dataframe(
+                            df, "realtime_quotes"
+                        )
+                        standardized_result = (
+                            standardized_df.to_dict("records")[0]
+                            if len(standardized_df) > 0
+                            else result
+                        )
 
                         print(f"[Customer] easyquotation获取到股票{symbol}的实时数据")
                         return standardized_result
@@ -337,19 +417,23 @@ class CustomerDataSource(IDataSource):
             return result
         else:
             return pd.DataFrame()
-    
-    def get_market_calendar(self, start_date: str, end_date: str) -> Union[pd.DataFrame, str]:
+
+    def get_market_calendar(
+        self, start_date: str, end_date: str
+    ) -> Union[pd.DataFrame, str]:
         """获取交易日历-Customer实现"""
         print(f"[Customer] 尝试获取交易日历: {start_date} to {end_date}")
-        
+
         # 暂时没有直接的实现，返回空DataFrame
         print("[Customer] 交易日历功能暂未实现")
         return pd.DataFrame()
-    
-    def get_financial_data(self, symbol: str, period: str = "annual") -> Union[pd.DataFrame, str]:
+
+    def get_financial_data(
+        self, symbol: str, period: str = "annual"
+    ) -> Union[pd.DataFrame, str]:
         """获取财务数据-Customer实现"""
         print(f"[Customer] 尝试获取财务数据: {symbol}, period: {period}")
-        
+
         # efinance实现
         if self.efinance_available:
             try:
@@ -358,7 +442,11 @@ class CustomerDataSource(IDataSource):
                 df = self.ef.stock.get_all_company_performance()
                 if df is not None and not df.empty:
                     # 过滤指定股票的数据
-                    filtered_df = df[df['股票代码'] == symbol] if '股票代码' in df.columns else df[df['股票简称'] == symbol]
+                    filtered_df = (
+                        df[df["股票代码"] == symbol]
+                        if "股票代码" in df.columns
+                        else df[df["股票简称"] == symbol]
+                    )
                     if not filtered_df.empty:
                         print(f"[Customer] efinance获取到{len(filtered_df)}行财务数据")
                         return filtered_df
@@ -366,14 +454,16 @@ class CustomerDataSource(IDataSource):
                         print(f"[Customer] efinance未找到股票{symbol}的财务数据")
             except Exception as e:
                 print(f"[Customer] efinance获取财务数据失败: {e}")
-        
+
         print("[Customer] 未能获取到财务数据")
         return pd.DataFrame()
-    
-    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> Union[List[Dict], str]:
+
+    def get_news_data(
+        self, symbol: Optional[str] = None, limit: int = 10
+    ) -> Union[List[Dict], str]:
         """获取新闻数据-Customer实现"""
         print(f"[Customer] 尝试获取新闻数据: {symbol}")
-        
+
         # 暂时没有直接的实现，返回空列表
         print("[Customer] 新闻数据功能暂未实现")
         return []

@@ -42,9 +42,7 @@ class WencaiDataSource:
     DEFAULT_PAGES = 1
 
     def __init__(
-        self,
-        timeout: int = DEFAULT_TIMEOUT,
-        retry_count: int = DEFAULT_RETRY_COUNT
+        self, timeout: int = DEFAULT_TIMEOUT, retry_count: int = DEFAULT_RETRY_COUNT
     ):
         """
         初始化问财数据源
@@ -76,7 +74,7 @@ class WencaiDataSource:
             total=self.retry_count,
             backoff_factor=1,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET", "POST"]
+            allowed_methods=["GET", "POST"],
         )
 
         adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -85,11 +83,7 @@ class WencaiDataSource:
 
         return session
 
-    def fetch_data(
-        self,
-        query: str,
-        pages: int = DEFAULT_PAGES
-    ) -> pd.DataFrame:
+    def fetch_data(self, query: str, pages: int = DEFAULT_PAGES) -> pd.DataFrame:
         """
         从问财获取数据
 
@@ -136,11 +130,7 @@ class WencaiDataSource:
         all_data.reset_index(drop=True, inplace=True)
         return all_data
 
-    def _fetch_single_page(
-        self,
-        query: str,
-        page: int
-    ) -> pd.DataFrame:
+    def _fetch_single_page(self, query: str, page: int) -> pd.DataFrame:
         """
         获取单页数据
 
@@ -188,7 +178,7 @@ class WencaiDataSource:
                 self.WENCAI_API_URL,
                 params=params,
                 headers=headers,
-                timeout=self.timeout
+                timeout=self.timeout,
             )
             response.raise_for_status()
 
@@ -239,13 +229,13 @@ class WencaiDataSource:
 
         # 处理列名中的[内容]
         for col in cleaned_data.columns:
-            match = re.search(r'\[(.*?)\]', col)
+            match = re.search(r"\[(.*?)\]", col)
             if match:
                 bracket_content = match.group(1)
-                new_col = re.sub(r'\[.*?\]', '', col).strip()
+                new_col = re.sub(r"\[.*?\]", "", col).strip()
 
                 # 提取取数区间（从包含"涨停次数"的列）
-                if '涨停次数' in col:
+                if "涨停次数" in col:
                     fetch_interval = bracket_content
 
                 # 修改列名
@@ -257,15 +247,17 @@ class WencaiDataSource:
 
         # 添加取数区间列
         if fetch_interval:
-            cleaned_data['取数区间'] = fetch_interval
+            cleaned_data["取数区间"] = fetch_interval
 
         # 添加数据获取时间戳
-        cleaned_data['fetch_time'] = pd.Timestamp.now()
+        cleaned_data["fetch_time"] = pd.Timestamp.now()
 
         # 再次处理可能的重复列名
         cleaned_data = self._handle_duplicate_columns(cleaned_data)
 
-        logger.info(f"Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns")
+        logger.info(
+            f"Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns"
+        )
 
         return cleaned_data
 
@@ -318,22 +310,22 @@ class WencaiDataSource:
 
     def close(self):
         """关闭HTTP会话"""
-        if hasattr(self, 'session'):
+        if hasattr(self, "session"):
             self.session.close()
             logger.info("WencaiDataSource session closed")
 
 
 # 预定义的查询语句库
 WENCAI_QUERIES = {
-    'qs_1': "请列举出20天内出现过涨停，量比大于1.5倍以上，换手率大于3%，振幅小于5%，流通市值小于200亿的股票",
-    'qs_2': "请列出近2周内资金流入持续5天为正，且涨幅不超过5%的股票",
-    'qs_3': "请列出近3个月内出现过5日平均换手率大于30%的股票",
-    'qs_4': "20日涨跌幅小于10%，换手率小于10%，市值小于100亿元，周成交量环比增长率大于100%前20名，当日涨幅＜4%，排除ST",
-    'qs_5': "请列出2024年1月1日以来上市满10个月的股票里，平均换手率大于40%或者换手率标准差大于15%的股票",
-    'qs_6': "请列出现近1周内板块资金流入持续为正的板块名称",
-    'qs_7': "请列出现价小于30元、平均换手率大于20%、交易天数不少于250天的股票",
-    'qs_8': "今日热度前300",
-    'qs_9': "请列出均线多头排列，10天内有过涨停板，非ST，日线MACD金叉且日线KDJ金叉的股票"
+    "qs_1": "请列举出20天内出现过涨停，量比大于1.5倍以上，换手率大于3%，振幅小于5%，流通市值小于200亿的股票",
+    "qs_2": "请列出近2周内资金流入持续5天为正，且涨幅不超过5%的股票",
+    "qs_3": "请列出近3个月内出现过5日平均换手率大于30%的股票",
+    "qs_4": "20日涨跌幅小于10%，换手率小于10%，市值小于100亿元，周成交量环比增长率大于100%前20名，当日涨幅＜4%，排除ST",
+    "qs_5": "请列出2024年1月1日以来上市满10个月的股票里，平均换手率大于40%或者换手率标准差大于15%的股票",
+    "qs_6": "请列出现近1周内板块资金流入持续为正的板块名称",
+    "qs_7": "请列出现价小于30元、平均换手率大于20%、交易天数不少于250天的股票",
+    "qs_8": "今日热度前300",
+    "qs_9": "请列出均线多头排列，10天内有过涨停板，非ST，日线MACD金叉且日线KDJ金叉的股票",
 }
 
 

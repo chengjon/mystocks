@@ -9,10 +9,15 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from pydantic import BaseModel
 
 from app.models.monitoring import (
-    AlertRuleCreate, AlertRuleUpdate, AlertRuleResponse,
-    AlertRecordResponse, RealtimeMonitoringResponse,
-    DragonTigerListResponse, MonitoringSummaryResponse,
-    AlertLevel, AlertRuleType
+    AlertRuleCreate,
+    AlertRuleUpdate,
+    AlertRuleResponse,
+    AlertRecordResponse,
+    RealtimeMonitoringResponse,
+    DragonTigerListResponse,
+    MonitoringSummaryResponse,
+    AlertLevel,
+    AlertRuleType,
 )
 from app.services.monitoring_service import monitoring_service
 
@@ -23,10 +28,10 @@ router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 # 告警规则管理
 # ============================================================================
 
+
 @router.get("/alert-rules", response_model=List[AlertRuleResponse])
 async def get_alert_rules(
-    rule_type: Optional[AlertRuleType] = None,
-    is_active: Optional[bool] = None
+    rule_type: Optional[AlertRuleType] = None, is_active: Optional[bool] = None
 ):
     """
     获取告警规则列表
@@ -37,8 +42,7 @@ async def get_alert_rules(
     """
     try:
         rules = monitoring_service.get_alert_rules(
-            rule_type=rule_type.value if rule_type else None,
-            is_active=is_active
+            rule_type=rule_type.value if rule_type else None, is_active=is_active
         )
         return [AlertRuleResponse.from_orm(rule) for rule in rules]
     except Exception as e:
@@ -112,8 +116,10 @@ async def delete_alert_rule(rule_id: int):
 # 告警记录查询
 # ============================================================================
 
+
 class AlertRecordsResponse(BaseModel):
     """告警记录列表响应"""
+
     success: bool = True
     data: List[AlertRecordResponse]
     total: int
@@ -130,7 +136,7 @@ async def get_alert_records(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
 ):
     """
     查询告警记录
@@ -159,14 +165,14 @@ async def get_alert_records(
             start_date=start_date,
             end_date=end_date,
             limit=limit,
-            offset=offset
+            offset=offset,
         )
 
         return AlertRecordsResponse(
             data=[AlertRecordResponse.from_orm(r) for r in records],
             total=total,
             limit=limit,
-            offset=offset
+            offset=offset,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -205,6 +211,7 @@ async def mark_all_alerts_read():
 # 实时监控数据
 # ============================================================================
 
+
 @router.get("/realtime/{symbol}", response_model=RealtimeMonitoringResponse)
 async def get_realtime_monitoring(symbol: str):
     """
@@ -220,10 +227,13 @@ async def get_realtime_monitoring(symbol: str):
         session = monitoring_service.get_session()
         try:
             from app.models.monitoring import RealtimeMonitoring
-            record = session.query(RealtimeMonitoring)\
-                .filter(RealtimeMonitoring.symbol == symbol)\
-                .order_by(RealtimeMonitoring.timestamp.desc())\
+
+            record = (
+                session.query(RealtimeMonitoring)
+                .filter(RealtimeMonitoring.symbol == symbol)
+                .order_by(RealtimeMonitoring.timestamp.desc())
                 .first()
+            )
 
             if not record:
                 raise HTTPException(status_code=404, detail="未找到该股票的监控数据")
@@ -242,7 +252,7 @@ async def get_realtime_monitoring_list(
     symbols: Optional[str] = Query(None, description="逗号分隔的股票代码列表"),
     limit: int = Query(100, ge=1, le=1000),
     is_limit_up: Optional[bool] = None,
-    is_limit_down: Optional[bool] = None
+    is_limit_down: Optional[bool] = None,
 ):
     """
     获取实时监控数据列表
@@ -264,12 +274,13 @@ async def get_realtime_monitoring_list(
             from app.models.monitoring import RealtimeMonitoring
             from sqlalchemy import and_
 
-            query = session.query(RealtimeMonitoring)\
-                .filter(RealtimeMonitoring.trade_date == date.today())
+            query = session.query(RealtimeMonitoring).filter(
+                RealtimeMonitoring.trade_date == date.today()
+            )
 
             # 筛选指定股票
             if symbols:
-                symbol_list = [s.strip() for s in symbols.split(',')]
+                symbol_list = [s.strip() for s in symbols.split(",")]
                 query = query.filter(RealtimeMonitoring.symbol.in_(symbol_list))
 
             # 筛选涨跌停
@@ -280,9 +291,9 @@ async def get_realtime_monitoring_list(
 
             # 对于每只股票，只取最新的记录
             # 这里简化处理，实际应该用子查询
-            records = query.order_by(RealtimeMonitoring.timestamp.desc())\
-                          .limit(limit)\
-                          .all()
+            records = (
+                query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
+            )
 
             return [RealtimeMonitoringResponse.from_orm(r) for r in records]
         finally:
@@ -323,8 +334,8 @@ async def fetch_realtime_data(symbols: Optional[List[str]] = None):
             "data": {
                 "stocks_count": len(df),
                 "saved_count": count,
-                "alerts_triggered": len(alerts)
-            }
+                "alerts_triggered": len(alerts),
+            },
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -334,12 +345,13 @@ async def fetch_realtime_data(symbols: Optional[List[str]] = None):
 # 龙虎榜数据
 # ============================================================================
 
+
 @router.get("/dragon-tiger", response_model=List[DragonTigerListResponse])
 async def get_dragon_tiger_list(
     trade_date: Optional[date] = None,
     symbol: Optional[str] = None,
     min_net_amount: Optional[float] = None,
-    limit: int = Query(100, ge=1, le=500)
+    limit: int = Query(100, ge=1, le=500),
 ):
     """
     获取龙虎榜数据
@@ -363,17 +375,18 @@ async def get_dragon_tiger_list(
             if trade_date is None:
                 trade_date = date.today()
 
-            query = session.query(DragonTigerList)\
-                .filter(DragonTigerList.trade_date == trade_date)
+            query = session.query(DragonTigerList).filter(
+                DragonTigerList.trade_date == trade_date
+            )
 
             if symbol:
                 query = query.filter(DragonTigerList.symbol == symbol)
             if min_net_amount is not None:
                 query = query.filter(DragonTigerList.net_amount >= min_net_amount)
 
-            records = query.order_by(DragonTigerList.net_amount.desc())\
-                          .limit(limit)\
-                          .all()
+            records = (
+                query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
+            )
 
             return [DragonTigerListResponse.from_orm(r) for r in records]
         finally:
@@ -403,10 +416,7 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None):
         return {
             "success": True,
             "message": "龙虎榜数据获取成功",
-            "data": {
-                "trade_date": trade_date.isoformat(),
-                "count": count
-            }
+            "data": {"trade_date": trade_date.isoformat(), "count": count},
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -415,6 +425,7 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None):
 # ============================================================================
 # 监控摘要和统计
 # ============================================================================
+
 
 @router.get("/summary", response_model=MonitoringSummaryResponse)
 async def get_monitoring_summary():
@@ -447,21 +458,29 @@ async def get_today_statistics():
             from sqlalchemy import text
 
             # 今日告警摘要
-            alerts_summary = session.execute(text("SELECT * FROM v_today_alerts_summary")).fetchall()
+            alerts_summary = session.execute(
+                text("SELECT * FROM v_today_alerts_summary")
+            ).fetchall()
 
             # 活跃规则
-            active_rules = session.execute(text("SELECT * FROM v_active_alert_rules LIMIT 10")).fetchall()
+            active_rules = session.execute(
+                text("SELECT * FROM v_active_alert_rules LIMIT 10")
+            ).fetchall()
 
             # 实时监控摘要
-            realtime_summary = session.execute(text("SELECT * FROM v_realtime_summary")).fetchone()
+            realtime_summary = session.execute(
+                text("SELECT * FROM v_realtime_summary")
+            ).fetchone()
 
             return {
                 "success": True,
                 "data": {
                     "alerts_summary": [dict(row._mapping) for row in alerts_summary],
                     "active_rules": [dict(row._mapping) for row in active_rules],
-                    "realtime_summary": dict(realtime_summary._mapping) if realtime_summary else {}
-                }
+                    "realtime_summary": (
+                        dict(realtime_summary._mapping) if realtime_summary else {}
+                    ),
+                },
             }
         finally:
             session.close()
@@ -473,8 +492,10 @@ async def get_today_statistics():
 # 监控控制
 # ============================================================================
 
+
 class MonitoringControlRequest(BaseModel):
     """监控控制请求"""
+
     symbols: Optional[List[str]] = None
     interval: int = 60  # 更新间隔(秒)
 
@@ -494,10 +515,7 @@ async def start_monitoring(request: MonitoringControlRequest):
         return {
             "success": True,
             "message": "监控启动功能开发中",
-            "data": {
-                "symbols": request.symbols,
-                "interval": request.interval
-            }
+            "data": {"symbols": request.symbols, "interval": request.interval},
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -522,8 +540,8 @@ async def get_monitoring_status():
             "data": {
                 "is_monitoring": monitoring_service.is_monitoring,
                 "monitored_symbols": monitoring_service.monitored_symbols,
-                "monitored_count": len(monitoring_service.monitored_symbols)
-            }
+                "monitored_count": len(monitoring_service.monitored_symbols),
+            },
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

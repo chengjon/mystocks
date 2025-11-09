@@ -90,7 +90,7 @@ class UnifiedMarketDataService:
         adapter_name: str = "akshare",
         db_url: Optional[str] = None,
         pool_size: int = 10,
-        max_overflow: int = 20
+        max_overflow: int = 20,
     ):
         """
         Initialize market data service
@@ -115,15 +115,18 @@ class UnifiedMarketDataService:
             pool_pre_ping=True,
             echo=False,
             pool_size=pool_size,
-            max_overflow=max_overflow
+            max_overflow=max_overflow,
         )
         self.SessionLocal = sessionmaker(bind=self.engine)
 
         # Initialize adapter via factory
         from app.core.adapter_factory import AdapterFactory
+
         try:
             self.adapter = AdapterFactory.get(adapter_name)
-            logger.info(f"✅ Initialized market data service with adapter: {adapter_name}")
+            logger.info(
+                f"✅ Initialized market data service with adapter: {adapter_name}"
+            )
         except KeyError as e:
             logger.error(f"❌ Adapter '{adapter_name}' not registered: {str(e)}")
             raise
@@ -163,6 +166,7 @@ class UnifiedMarketDataService:
             KeyError: If adapter not found
         """
         from app.core.adapter_factory import AdapterFactory
+
         try:
             self.adapter = AdapterFactory.get(adapter_name)
             self.adapter_name = adapter_name
@@ -175,9 +179,7 @@ class UnifiedMarketDataService:
     # ==================== Fund Flow Methods ====================
 
     def fetch_and_save_fund_flow(
-        self,
-        symbol: Optional[str] = None,
-        timeframe: Union[str, int] = "1"
+        self, symbol: Optional[str] = None, timeframe: Union[str, int] = "1"
     ) -> Dict[str, Any]:
         """
         Fetch and save fund flow data from adapter
@@ -196,7 +198,9 @@ class UnifiedMarketDataService:
                 - error (str, optional): Error details if failed
         """
         try:
-            logger.info(f"📊 Fetching fund flow: symbol={symbol}, timeframe={timeframe}")
+            logger.info(
+                f"📊 Fetching fund flow: symbol={symbol}, timeframe={timeframe}"
+            )
 
             # Normalize timeframe for different adapters
             if self.adapter_name == "eastmoney" and isinstance(timeframe, int):
@@ -210,7 +214,7 @@ class UnifiedMarketDataService:
                     return {
                         "success": False,
                         "message": "Batch fetch not supported by this adapter",
-                        "error": f"Adapter {self.adapter_name} requires symbol parameter"
+                        "error": f"Adapter {self.adapter_name} requires symbol parameter",
                     }
                 df = self.adapter.get_stock_fund_flow(None, timeframe)
                 return self._save_fund_flow_batch(df, timeframe)
@@ -224,14 +228,11 @@ class UnifiedMarketDataService:
             return {
                 "success": False,
                 "message": "Failed to fetch fund flow data",
-                "error": str(e)
+                "error": str(e),
             }
 
     def _save_fund_flow_single(
-        self,
-        symbol: str,
-        data: Dict[str, Any],
-        timeframe: Union[str, int]
+        self, symbol: str, data: Dict[str, Any], timeframe: Union[str, int]
     ) -> Dict[str, Any]:
         """Save single symbol fund flow data"""
         if not data:
@@ -255,16 +256,20 @@ class UnifiedMarketDataService:
                     super_large_net_inflow=data.get("super_large_net_inflow", 0),
                     large_net_inflow=data.get("large_net_inflow", 0),
                     medium_net_inflow=data.get("medium_net_inflow", 0),
-                    small_net_inflow=data.get("small_net_inflow", 0)
+                    small_net_inflow=data.get("small_net_inflow", 0),
                 )
 
                 # Upsert strategy
-                existing = db.query(FundFlow).filter(
-                    and_(
-                        FundFlow.symbol == symbol,
-                        FundFlow.trade_date == fund_flow.trade_date
+                existing = (
+                    db.query(FundFlow)
+                    .filter(
+                        and_(
+                            FundFlow.symbol == symbol,
+                            FundFlow.trade_date == fund_flow.trade_date,
+                        )
                     )
-                ).first()
+                    .first()
+                )
 
                 if existing:
                     for key, value in fund_flow.__dict__.items():
@@ -280,7 +285,7 @@ class UnifiedMarketDataService:
                     "success": True,
                     "saved_count": 1,
                     "message": f"Saved fund flow for {symbol}",
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.utcnow().isoformat(),
                 }
 
             finally:
@@ -291,14 +296,10 @@ class UnifiedMarketDataService:
             return {
                 "success": False,
                 "message": "Failed to save fund flow",
-                "error": str(e)
+                "error": str(e),
             }
 
-    def _save_fund_flow_batch(
-        self,
-        df: pd.DataFrame,
-        timeframe: str
-    ) -> Dict[str, Any]:
+    def _save_fund_flow_batch(self, df: pd.DataFrame, timeframe: str) -> Dict[str, Any]:
         """Save batch fund flow data (multiple symbols)"""
         if df.empty:
             return {"success": False, "message": "No data to save"}
@@ -322,21 +323,37 @@ class UnifiedMarketDataService:
                             symbol=row.get("代码") or row.get("symbol"),
                             trade_date=today,
                             timeframe=tf_value,
-                            main_net_inflow=float(row.get(f"{timeframe}主力净流入-净额", 0) or 0),
-                            main_net_inflow_rate=float(row.get(f"{timeframe}主力净流入-净占比", 0) or 0),
-                            super_large_net_inflow=float(row.get(f"{timeframe}超大单净流入-净额", 0) or 0),
-                            large_net_inflow=float(row.get(f"{timeframe}大单净流入-净额", 0) or 0),
-                            medium_net_inflow=float(row.get(f"{timeframe}中单净流入-净额", 0) or 0),
-                            small_net_inflow=float(row.get(f"{timeframe}小单净流入-净额", 0) or 0)
+                            main_net_inflow=float(
+                                row.get(f"{timeframe}主力净流入-净额", 0) or 0
+                            ),
+                            main_net_inflow_rate=float(
+                                row.get(f"{timeframe}主力净流入-净占比", 0) or 0
+                            ),
+                            super_large_net_inflow=float(
+                                row.get(f"{timeframe}超大单净流入-净额", 0) or 0
+                            ),
+                            large_net_inflow=float(
+                                row.get(f"{timeframe}大单净流入-净额", 0) or 0
+                            ),
+                            medium_net_inflow=float(
+                                row.get(f"{timeframe}中单净流入-净额", 0) or 0
+                            ),
+                            small_net_inflow=float(
+                                row.get(f"{timeframe}小单净流入-净额", 0) or 0
+                            ),
                         )
 
                         # Check if exists
-                        existing = db.query(FundFlow).filter(
-                            and_(
-                                FundFlow.symbol == fund_flow.symbol,
-                                FundFlow.trade_date == today
+                        existing = (
+                            db.query(FundFlow)
+                            .filter(
+                                and_(
+                                    FundFlow.symbol == fund_flow.symbol,
+                                    FundFlow.trade_date == today,
+                                )
                             )
-                        ).first()
+                            .first()
+                        )
 
                         if existing:
                             for key, value in fund_flow.__dict__.items():
@@ -353,14 +370,16 @@ class UnifiedMarketDataService:
                         continue
 
                 db.commit()
-                logger.info(f"✅ Batch saved: {saved_count} records, skipped: {skipped_count}")
+                logger.info(
+                    f"✅ Batch saved: {saved_count} records, skipped: {skipped_count}"
+                )
 
                 return {
                     "success": True,
                     "saved_count": saved_count,
                     "skipped_count": skipped_count,
                     "message": f"Saved {saved_count} fund flow records",
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.utcnow().isoformat(),
                 }
 
             finally:
@@ -371,7 +390,7 @@ class UnifiedMarketDataService:
             return {
                 "success": False,
                 "message": "Failed to batch save fund flow",
-                "error": str(e)
+                "error": str(e),
             }
 
     def query_fund_flow(
@@ -380,7 +399,7 @@ class UnifiedMarketDataService:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         days: int = 7,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         Query fund flow data from database
@@ -411,7 +430,7 @@ class UnifiedMarketDataService:
                 query = query.filter(
                     and_(
                         FundFlow.trade_date >= start_date,
-                        FundFlow.trade_date <= end_date
+                        FundFlow.trade_date <= end_date,
                     )
                 )
 
@@ -427,8 +446,14 @@ class UnifiedMarketDataService:
                         "symbol": r.symbol,
                         "trade_date": r.trade_date.isoformat(),
                         "timeframe": r.timeframe,
-                        "main_net_inflow": float(r.main_net_inflow) if r.main_net_inflow else 0,
-                        "main_net_inflow_rate": float(r.main_net_inflow_rate) if r.main_net_inflow_rate else 0,
+                        "main_net_inflow": (
+                            float(r.main_net_inflow) if r.main_net_inflow else 0
+                        ),
+                        "main_net_inflow_rate": (
+                            float(r.main_net_inflow_rate)
+                            if r.main_net_inflow_rate
+                            else 0
+                        ),
                     }
                     for r in results
                 ]

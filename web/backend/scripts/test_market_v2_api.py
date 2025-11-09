@@ -9,6 +9,7 @@ from datetime import datetime
 
 BASE_URL = "http://localhost:8000"
 
+
 def print_response(response, title="响应"):
     """打印响应结果"""
     print(f"\n{'='*60}")
@@ -80,7 +81,7 @@ def test_lhb_refresh():
     """测试龙虎榜刷新"""
     print("\n🧪 测试7: 刷新龙虎榜数据（最近交易日）")
     # 使用最近的交易日日期
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().strftime("%Y-%m-%d")
     url = f"{BASE_URL}/api/market/v2/lhb/refresh?trade_date={today}"
     response = requests.post(url)
     print_response(response, "龙虎榜刷新")
@@ -134,9 +135,9 @@ def test_blocktrade_query():
 
 def main():
     """运行所有测试"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("市场数据V2 API测试")
-    print("="*60)
+    print("=" * 60)
 
     tests = [
         ("ETF数据刷新", test_etf_refresh),
@@ -163,9 +164,9 @@ def main():
             results.append((name, False))
 
     # 打印总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试总结")
-    print("="*60)
+    print("=" * 60)
     for name, success in results:
         status = "✅ 通过" if success else "❌ 失败"
         print(f"{status} - {name}")

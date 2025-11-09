@@ -17,14 +17,15 @@ from pathlib import Path
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent / 'web' / 'backend'))
+sys.path.insert(0, str(Path(__file__).parent.parent / "web" / "backend"))
 
 # Change to backend directory for imports to work
-os.chdir(str(Path(__file__).parent.parent / 'web' / 'backend'))
+os.chdir(str(Path(__file__).parent.parent / "web" / "backend"))
 
 # ============================================================================
 # PART 1: CSRF Token Manager Tests
 # ============================================================================
+
 
 class TestCSRFTokenManager:
     """Test CSRF token generation, validation, and management"""
@@ -34,6 +35,7 @@ class TestCSRFTokenManager:
         """Get CSRFTokenManager class from main.py"""
         try:
             from app.main import CSRFTokenManager
+
             return CSRFTokenManager
         except ImportError:
             # Fallback: create simple version for testing
@@ -74,10 +76,10 @@ class TestCSRFTokenManager:
 
         # Should have metadata
         token_info = manager.tokens[token]
-        assert 'created_at' in token_info
-        assert 'used' in token_info
-        assert token_info['used'] == False
-        assert isinstance(token_info['created_at'], float)
+        assert "created_at" in token_info
+        assert "used" in token_info
+        assert token_info["used"] == False
+        assert isinstance(token_info["created_at"], float)
 
     def test_csrf_token_validation_success(self):
         """Valid, non-expired token passes validation"""
@@ -93,7 +95,7 @@ class TestCSRFTokenManager:
         assert result == True
 
         # After validation, token should be marked as used
-        assert manager.tokens[token]['used'] == True
+        assert manager.tokens[token]["used"] == True
 
     def test_csrf_token_validation_invalid_token(self):
         """Invalid token fails validation"""
@@ -125,7 +127,7 @@ class TestCSRFTokenManager:
         token = manager.generate_token()
 
         # Simulate token expiration by setting created_at to past
-        manager.tokens[token]['created_at'] = time.time() - (manager.token_timeout + 1)
+        manager.tokens[token]["created_at"] = time.time() - (manager.token_timeout + 1)
 
         # Should fail validation
         result = manager.validate_token(token)
@@ -148,7 +150,7 @@ class TestCSRFTokenManager:
         token3 = manager.generate_token()
 
         # Expire first token
-        manager.tokens[token1]['created_at'] = time.time() - (manager.token_timeout + 1)
+        manager.tokens[token1]["created_at"] = time.time() - (manager.token_timeout + 1)
 
         # Cleanup
         manager.cleanup_expired_tokens()
@@ -163,6 +165,7 @@ class TestCSRFTokenManager:
 # PART 2: CSRF Middleware Tests
 # ============================================================================
 
+
 class TestCSRFMiddleware:
     """Test CSRF middleware enforcement on HTTP methods"""
 
@@ -172,6 +175,7 @@ class TestCSRFMiddleware:
         try:
             from fastapi.testclient import TestClient
             from app.main import app
+
             return TestClient(app)
         except ImportError as e:
             pytest.skip(f"Cannot import FastAPI app: {e}")
@@ -183,9 +187,9 @@ class TestCSRFMiddleware:
 
         assert response.status_code == 200
         data = response.json()
-        assert 'csrf_token' in data
-        assert data['token_type'] == 'Bearer'
-        assert data['expires_in'] == 3600
+        assert "csrf_token" in data
+        assert data["token_type"] == "Bearer"
+        assert data["expires_in"] == 3600
 
     def test_csrf_token_generation_returns_valid_format(self, test_client):
         """CSRF token endpoint returns properly formatted response"""
@@ -193,7 +197,7 @@ class TestCSRFMiddleware:
         assert response.status_code == 200
 
         data = response.json()
-        token = data['csrf_token']
+        token = data["csrf_token"]
 
         # Token should be non-empty string
         assert isinstance(token, str)
@@ -201,56 +205,53 @@ class TestCSRFMiddleware:
 
     def test_post_without_csrf_token_rejected(self, test_client):
         """POST request without CSRF token should be rejected"""
-        response = test_client.post(
-            "/api/data/example",
-            json={"data": "test"}
-        )
+        response = test_client.post("/api/data/example", json={"data": "test"})
 
         # Should return 403 Forbidden
         assert response.status_code == 403
         data = response.json()
-        assert data['error'] == 'CSRF token missing'
+        assert data["error"] == "CSRF token missing"
 
     def test_post_with_invalid_csrf_token_rejected(self, test_client):
         """POST request with invalid CSRF token should be rejected"""
         response = test_client.post(
             "/api/data/example",
             json={"data": "test"},
-            headers={"x-csrf-token": "invalid_token_xyz"}
+            headers={"x-csrf-token": "invalid_token_xyz"},
         )
 
         # Should return 403 Forbidden
         assert response.status_code == 403
         data = response.json()
-        assert data['error'] == 'CSRF token invalid'
+        assert data["error"] == "CSRF token invalid"
 
     def test_csrf_protection_on_all_state_modifying_methods(self, test_client):
         """CSRF protection applies to POST, PUT, PATCH, DELETE"""
 
         # Get a valid token first
         token_response = test_client.get("/api/csrf-token")
-        csrf_token = token_response.json()['csrf_token']
+        csrf_token = token_response.json()["csrf_token"]
 
         headers = {"x-csrf-token": csrf_token}
 
         # All these methods should require token (specific endpoint may not exist,
         # but the CSRF check should run first)
         methods = [
-            ('POST', '/api/data/example'),
-            ('PUT', '/api/data/example'),
-            ('PATCH', '/api/data/example'),
-            ('DELETE', '/api/data/example'),
+            ("POST", "/api/data/example"),
+            ("PUT", "/api/data/example"),
+            ("PATCH", "/api/data/example"),
+            ("DELETE", "/api/data/example"),
         ]
 
         # Test without token
         for method, path in methods:
-            if method == 'POST':
+            if method == "POST":
                 response = test_client.post(path, json={})
-            elif method == 'PUT':
+            elif method == "PUT":
                 response = test_client.put(path, json={})
-            elif method == 'PATCH':
+            elif method == "PATCH":
                 response = test_client.patch(path, json={})
-            elif method == 'DELETE':
+            elif method == "DELETE":
                 response = test_client.delete(path)
 
             # Should either be 403 (CSRF) or other error, but definitely not success
@@ -271,6 +272,7 @@ class TestCSRFMiddleware:
 # PART 3: CSP Header Tests
 # ============================================================================
 
+
 class TestContentSecurityPolicy:
     """Test Content-Security-Policy header implementation"""
 
@@ -278,20 +280,20 @@ class TestContentSecurityPolicy:
         """Verify CSP meta tag in index.html"""
         from pathlib import Path
 
-        html_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'index.html'
-        with open(html_path, 'r', encoding='utf-8') as f:
+        html_path = Path(__file__).parent.parent / "web" / "frontend" / "index.html"
+        with open(html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         # CSP meta tag should be present
-        assert 'Content-Security-Policy' in html_content
-        assert 'meta http-equiv' in html_content
+        assert "Content-Security-Policy" in html_content
+        assert "meta http-equiv" in html_content
 
     def test_csp_restricts_script_sources(self):
         """Verify CSP restricts script execution to self only"""
         from pathlib import Path
 
-        html_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'index.html'
-        with open(html_path, 'r', encoding='utf-8') as f:
+        html_path = Path(__file__).parent.parent / "web" / "frontend" / "index.html"
+        with open(html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         # Should have script-src 'self'
@@ -304,8 +306,8 @@ class TestContentSecurityPolicy:
         """Verify CSP frame-ancestors prevents clickjacking"""
         from pathlib import Path
 
-        html_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'index.html'
-        with open(html_path, 'r', encoding='utf-8') as f:
+        html_path = Path(__file__).parent.parent / "web" / "frontend" / "index.html"
+        with open(html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         # Should have frame-ancestors 'none'
@@ -315,8 +317,8 @@ class TestContentSecurityPolicy:
         """Verify CSP form-action restricts form submission"""
         from pathlib import Path
 
-        html_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'index.html'
-        with open(html_path, 'r', encoding='utf-8') as f:
+        html_path = Path(__file__).parent.parent / "web" / "frontend" / "index.html"
+        with open(html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         # Should have form-action 'self'
@@ -327,6 +329,7 @@ class TestContentSecurityPolicy:
 # PART 4: Frontend HTTP Client Tests
 # ============================================================================
 
+
 class TestHTTPClientCSRFHandling:
     """Test frontend HTTP client CSRF token management"""
 
@@ -335,61 +338,93 @@ class TestHTTPClientCSRFHandling:
         # Note: This tests the JavaScript client structure by reading the file
         from pathlib import Path
 
-        http_client_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'services' / 'httpClient.js'
-        with open(http_client_path, 'r', encoding='utf-8') as f:
+        http_client_path = (
+            Path(__file__).parent.parent
+            / "web"
+            / "frontend"
+            / "src"
+            / "services"
+            / "httpClient.js"
+        )
+        with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should define HttpClient class
-        assert 'class HttpClient' in js_content
+        assert "class HttpClient" in js_content
 
         # Should have CSRF token management
-        assert 'csrfToken' in js_content
-        assert 'initializeCsrfToken' in js_content
-        assert 'getCsrfToken' in js_content
+        assert "csrfToken" in js_content
+        assert "initializeCsrfToken" in js_content
+        assert "getCsrfToken" in js_content
 
     def test_http_client_csrf_token_endpoint(self):
         """HTTP client targets correct CSRF token endpoint"""
         from pathlib import Path
 
-        http_client_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'services' / 'httpClient.js'
-        with open(http_client_path, 'r', encoding='utf-8') as f:
+        http_client_path = (
+            Path(__file__).parent.parent
+            / "web"
+            / "frontend"
+            / "src"
+            / "services"
+            / "httpClient.js"
+        )
+        with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should have correct endpoint
-        assert '/api/csrf-token' in js_content
+        assert "/api/csrf-token" in js_content
 
     def test_http_client_adds_csrf_header_to_mutations(self):
         """HTTP client adds X-CSRF-Token header for state-modifying requests"""
         from pathlib import Path
 
-        http_client_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'services' / 'httpClient.js'
-        with open(http_client_path, 'r', encoding='utf-8') as f:
+        http_client_path = (
+            Path(__file__).parent.parent
+            / "web"
+            / "frontend"
+            / "src"
+            / "services"
+            / "httpClient.js"
+        )
+        with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should check for modifying methods
-        assert 'POST' in js_content
-        assert 'PUT' in js_content
-        assert 'PATCH' in js_content
-        assert 'DELETE' in js_content
+        assert "POST" in js_content
+        assert "PUT" in js_content
+        assert "PATCH" in js_content
+        assert "DELETE" in js_content
 
         # Should add header
-        assert 'X-CSRF-Token' in js_content or 'x-csrf-token' in js_content
+        assert "X-CSRF-Token" in js_content or "x-csrf-token" in js_content
 
     def test_http_client_credentials_included(self):
         """HTTP client includes credentials for session management"""
         from pathlib import Path
 
-        http_client_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'services' / 'httpClient.js'
-        with open(http_client_path, 'r', encoding='utf-8') as f:
+        http_client_path = (
+            Path(__file__).parent.parent
+            / "web"
+            / "frontend"
+            / "src"
+            / "services"
+            / "httpClient.js"
+        )
+        with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should include credentials
-        assert "credentials: 'include'" in js_content or 'credentials: "include"' in js_content
+        assert (
+            "credentials: 'include'" in js_content
+            or 'credentials: "include"' in js_content
+        )
 
 
 # ============================================================================
 # PART 5: Vue App Security Initialization Tests
 # ============================================================================
+
 
 class TestVueAppSecurityInit:
     """Test Vue app security initialization"""
@@ -398,37 +433,40 @@ class TestVueAppSecurityInit:
         """main.js calls initializeSecurity before mount"""
         from pathlib import Path
 
-        main_js_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'main.js'
-        with open(main_js_path, 'r', encoding='utf-8') as f:
+        main_js_path = (
+            Path(__file__).parent.parent / "web" / "frontend" / "src" / "main.js"
+        )
+        with open(main_js_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should import security initialization
-        assert 'initializeSecurity' in js_content
+        assert "initializeSecurity" in js_content
 
         # Should call it before mount
-        assert 'await initializeSecurity()' in js_content
+        assert "await initializeSecurity()" in js_content
 
         # Should handle errors gracefully
-        assert 'try' in js_content
-        assert 'catch' in js_content
+        assert "try" in js_content
+        assert "catch" in js_content
 
     def test_csrf_meta_tag_present(self):
         """index.html has CSRF token meta tag"""
         from pathlib import Path
 
-        html_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'index.html'
-        with open(html_path, 'r', encoding='utf-8') as f:
+        html_path = Path(__file__).parent.parent / "web" / "frontend" / "index.html"
+        with open(html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         # Should have CSRF meta tag
-        assert 'meta' in html_content
-        assert 'csrf-token' in html_content
-        assert 'content=' in html_content
+        assert "meta" in html_content
+        assert "csrf-token" in html_content
+        assert "content=" in html_content
 
 
 # ============================================================================
 # PART 6: Integration Tests
 # ============================================================================
+
 
 class TestXSSCSRFIntegration:
     """Integration tests for XSS/CSRF protection"""
@@ -439,6 +477,7 @@ class TestXSSCSRFIntegration:
         try:
             from fastapi.testclient import TestClient
             from app.main import app
+
             return TestClient(app)
         except ImportError as e:
             pytest.skip(f"Cannot import FastAPI app: {e}")
@@ -451,15 +490,12 @@ class TestXSSCSRFIntegration:
         token_response = test_client.get("/api/csrf-token")
         assert token_response.status_code == 200
 
-        csrf_token = token_response.json()['csrf_token']
+        csrf_token = token_response.json()["csrf_token"]
         assert isinstance(csrf_token, str)
         assert len(csrf_token) > 30
 
         # Step 2: Try POST without token (should fail)
-        response = test_client.post(
-            "/api/data/example",
-            json={"data": "test"}
-        )
+        response = test_client.post("/api/data/example", json={"data": "test"})
         assert response.status_code == 403
 
         # Step 3: Try POST with valid token (may fail for other reasons,
@@ -467,7 +503,7 @@ class TestXSSCSRFIntegration:
         response = test_client.post(
             "/api/data/example",
             json={"data": "test"},
-            headers={"x-csrf-token": csrf_token}
+            headers={"x-csrf-token": csrf_token},
         )
         # Should NOT be 403 Forbidden (CSRF check passed)
         assert response.status_code != 403
@@ -477,27 +513,23 @@ class TestXSSCSRFIntegration:
 
         # Get two tokens
         response1 = test_client.get("/api/csrf-token")
-        token1 = response1.json()['csrf_token']
+        token1 = response1.json()["csrf_token"]
 
         response2 = test_client.get("/api/csrf-token")
-        token2 = response2.json()['csrf_token']
+        token2 = response2.json()["csrf_token"]
 
         # Tokens should be different
         assert token1 != token2
 
         # Each should validate independently
         response_with_1 = test_client.post(
-            "/api/data/example",
-            json={},
-            headers={"x-csrf-token": token1}
+            "/api/data/example", json={}, headers={"x-csrf-token": token1}
         )
         # Should not be CSRF error
         assert response_with_1.status_code != 403
 
         response_with_2 = test_client.post(
-            "/api/data/example",
-            json={},
-            headers={"x-csrf-token": token2}
+            "/api/data/example", json={}, headers={"x-csrf-token": token2}
         )
         # Should not be CSRF error
         assert response_with_2.status_code != 403
@@ -507,6 +539,7 @@ class TestXSSCSRFIntegration:
 # PART 7: Security Best Practices Tests
 # ============================================================================
 
+
 class TestSecurityBestPractices:
     """Test implementation of security best practices"""
 
@@ -515,6 +548,7 @@ class TestSecurityBestPractices:
         """Get CSRFTokenManager class from main.py"""
         try:
             from app.main import CSRFTokenManager
+
             return CSRFTokenManager
         except ImportError:
             return None
@@ -558,38 +592,47 @@ class TestSecurityBestPractices:
         token = manager.generate_token()
 
         # Before validation
-        assert manager.tokens[token]['used'] == False
+        assert manager.tokens[token]["used"] == False
 
         # After validation
         manager.validate_token(token)
-        assert manager.tokens[token]['used'] == True
+        assert manager.tokens[token]["used"] == True
 
     def test_no_hardcoded_secrets(self):
         """No hardcoded secrets or credentials in code"""
         from pathlib import Path
 
         # Check main.py
-        main_py_path = Path(__file__).parent.parent / 'web' / 'backend' / 'app' / 'main.py'
-        with open(main_py_path, 'r', encoding='utf-8') as f:
+        main_py_path = (
+            Path(__file__).parent.parent / "web" / "backend" / "app" / "main.py"
+        )
+        with open(main_py_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Should not have hardcoded tokens or passwords
-        assert 'password=' not in content.lower()
+        assert "password=" not in content.lower()
         assert "'password'" not in content.lower()
 
         # Check httpClient.js
-        http_client_path = Path(__file__).parent.parent / 'web' / 'frontend' / 'src' / 'services' / 'httpClient.js'
-        with open(http_client_path, 'r', encoding='utf-8') as f:
+        http_client_path = (
+            Path(__file__).parent.parent
+            / "web"
+            / "frontend"
+            / "src"
+            / "services"
+            / "httpClient.js"
+        )
+        with open(http_client_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Should not have hardcoded tokens
-        assert 'api_key' not in content.lower()
-        assert 'secret' not in content.lower()
+        assert "api_key" not in content.lower()
+        assert "secret" not in content.lower()
 
 
 # ============================================================================
 # Test Execution
 # ============================================================================
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

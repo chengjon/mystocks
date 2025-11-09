@@ -5,6 +5,7 @@
 数据分类: DataClassification.TRADING_ANALYSIS (衍生数据-交易分析)
 存储目标: PostgreSQL+TimescaleDB
 """
+
 import os
 import requests
 import pandas as pd
@@ -32,7 +33,7 @@ class TqlexDataSource:
             token: TQLEX接口认证token (如未提供,从环境变量读取)
         """
         if token is None:
-            token = os.getenv('TQLEX_TOKEN')
+            token = os.getenv("TQLEX_TOKEN")
 
         if not token:
             logger.warning("TQLEX_TOKEN未配置,竞价抢筹功能将不可用")
@@ -44,14 +45,17 @@ class TqlexDataSource:
         self.token = token
         self.disabled = False
         self.session = requests.Session()
-        self.session.headers.update({
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
-            'User-Agent': 'MyStocks/1.0'
-        })
+        self.session.headers.update(
+            {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "User-Agent": "MyStocks/1.0",
+            }
+        )
 
     def _retry_api_call(self, func):
         """API调用重试装饰器 (复用akshare_adapter的模式)"""
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             last_exception = None
@@ -64,6 +68,7 @@ class TqlexDataSource:
                     if attempt < self.MAX_RETRIES:
                         time.sleep(self.RETRY_DELAY * attempt)
             raise last_exception if last_exception else Exception("未知错误")
+
         return wrapper
 
     def get_chip_race_open(self, date: Optional[str] = None) -> pd.DataFrame:
@@ -85,40 +90,40 @@ class TqlexDataSource:
 
         @self._retry_api_call
         def _fetch():
-            params = {'type': 'open'}
+            params = {"type": "open"}
             if date:
-                params['date'] = date
+                params["date"] = date
 
             response = self.session.get(
                 f"{self.BASE_URL}/chip_race",
                 params=params,
-                timeout=self.REQUEST_TIMEOUT
+                timeout=self.REQUEST_TIMEOUT,
             )
             response.raise_for_status()
 
             data = response.json()
-            if not data or 'data' not in data:
+            if not data or "data" not in data:
                 return pd.DataFrame()
 
-            df = pd.DataFrame(data['data'])
+            df = pd.DataFrame(data["data"])
 
             # 标准化列名(中文 -> 英文)
             column_mapping = {
-                '代码': 'symbol',
-                '名称': 'name',
-                '最新价': 'latest_price',
-                '涨跌幅': 'change_percent',
-                '昨收价': 'prev_close',
-                '今开价': 'open_price',
-                '开盘金额': 'race_amount',
-                '抢筹幅度': 'race_amplitude',
-                '抢筹委托金额': 'race_commission',
-                '抢筹成交金额': 'race_transaction',
-                '抢筹占比': 'race_ratio'
+                "代码": "symbol",
+                "名称": "name",
+                "最新价": "latest_price",
+                "涨跌幅": "change_percent",
+                "昨收价": "prev_close",
+                "今开价": "open_price",
+                "开盘金额": "race_amount",
+                "抢筹幅度": "race_amplitude",
+                "抢筹委托金额": "race_commission",
+                "抢筹成交金额": "race_transaction",
+                "抢筹占比": "race_ratio",
             }
 
             df = df.rename(columns=column_mapping)
-            df['race_type'] = 'open'  # 标记为早盘抢筹
+            df["race_type"] = "open"  # 标记为早盘抢筹
 
             return df
 
@@ -140,40 +145,40 @@ class TqlexDataSource:
 
         @self._retry_api_call
         def _fetch():
-            params = {'type': 'end'}
+            params = {"type": "end"}
             if date:
-                params['date'] = date
+                params["date"] = date
 
             response = self.session.get(
                 f"{self.BASE_URL}/chip_race",
                 params=params,
-                timeout=self.REQUEST_TIMEOUT
+                timeout=self.REQUEST_TIMEOUT,
             )
             response.raise_for_status()
 
             data = response.json()
-            if not data or 'data' not in data:
+            if not data or "data" not in data:
                 return pd.DataFrame()
 
-            df = pd.DataFrame(data['data'])
+            df = pd.DataFrame(data["data"])
 
             # 标准化列名
             column_mapping = {
-                '代码': 'symbol',
-                '名称': 'name',
-                '最新价': 'latest_price',
-                '涨跌幅': 'change_percent',
-                '昨收价': 'prev_close',
-                '收盘价': 'close_price',
-                '收盘金额': 'race_amount',
-                '抢筹幅度': 'race_amplitude',
-                '抢筹委托金额': 'race_commission',
-                '抢筹成交金额': 'race_transaction',
-                '抢筹占比': 'race_ratio'
+                "代码": "symbol",
+                "名称": "name",
+                "最新价": "latest_price",
+                "涨跌幅": "change_percent",
+                "昨收价": "prev_close",
+                "收盘价": "close_price",
+                "收盘金额": "race_amount",
+                "抢筹幅度": "race_amplitude",
+                "抢筹委托金额": "race_commission",
+                "抢筹成交金额": "race_transaction",
+                "抢筹占比": "race_ratio",
             }
 
             df = df.rename(columns=column_mapping)
-            df['race_type'] = 'end'  # 标记为尾盘抢筹
+            df["race_type"] = "end"  # 标记为尾盘抢筹
 
             return df
 

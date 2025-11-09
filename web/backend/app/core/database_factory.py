@@ -82,9 +82,7 @@ class DatabaseFactory:
         database = database or os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
         # Build connection URL
-        url = (
-            f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
-        )
+        url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
 
         # Create engine with connection pooling
         engine = create_engine(
@@ -95,9 +93,7 @@ class DatabaseFactory:
         )
 
         # Create session factory
-        SessionLocal = sessionmaker(
-            bind=engine, expire_on_commit=False
-        )
+        SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
         logger.info(
             "✅ PostgreSQL connection pool created",
@@ -153,9 +149,7 @@ class DatabaseFactory:
             echo=False,
         )
 
-        SessionLocal = sessionmaker(
-            bind=engine, expire_on_commit=False
-        )
+        SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
         logger.info(
             "✅ MySQL connection pool created",
@@ -212,9 +206,7 @@ def get_postgresql_engine():
     global _postgresql_engine, _postgresql_session
 
     if _postgresql_engine is None:
-        _postgresql_engine, _postgresql_session = (
-            DatabaseFactory.create_postgresql()
-        )
+        _postgresql_engine, _postgresql_session = DatabaseFactory.create_postgresql()
 
     return _postgresql_engine
 

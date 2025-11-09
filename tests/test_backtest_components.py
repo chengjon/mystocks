@@ -18,17 +18,17 @@ import numpy as np
 from datetime import date, timedelta
 from unittest.mock import Mock, patch
 import sys
-sys.path.insert(0, '/opt/claude/mystocks_spec')
 
-from backtest.vectorized_backtester import (
-    VectorizedBacktester, BacktestConfig, Trade
-)
+sys.path.insert(0, "/opt/claude/mystocks_spec")
+
+from backtest.vectorized_backtester import VectorizedBacktester, BacktestConfig, Trade
 from backtest.performance_metrics import PerformanceMetrics
 from backtest.risk_metrics import RiskMetrics
 from backtest.backtest_engine import BacktestEngine
 
 
 # ==================== VectorizedBacktester Tests ====================
+
 
 class TestBacktestConfig:
     """回测配置测试"""
@@ -43,14 +43,12 @@ class TestBacktestConfig:
         assert config.slippage_rate == 0.0001
         assert config.stamp_tax_rate == 0.001
         assert config.max_position_size == 1.0
-        assert config.position_mode == 'equal_weight'
+        assert config.position_mode == "equal_weight"
 
     def test_config_custom_values(self):
         """测试配置自定义值"""
         config = BacktestConfig(
-            initial_capital=200000.0,
-            commission_rate=0.0005,
-            max_position_size=0.5
+            initial_capital=200000.0, commission_rate=0.0005, max_position_size=0.5
         )
 
         assert config.initial_capital == 200000.0
@@ -64,9 +62,7 @@ class TestVectorizedBacktester:
     def setup_method(self):
         """测试前准备"""
         self.config = BacktestConfig(
-            initial_capital=100000,
-            commission_rate=0.0003,
-            slippage_rate=0.0001
+            initial_capital=100000, commission_rate=0.0003, slippage_rate=0.0001
         )
         self.backtester = VectorizedBacktester(self.config)
 
@@ -85,23 +81,18 @@ class TestVectorizedBacktester:
     def test_validate_data_missing_columns(self):
         """测试数据验证缺失列"""
         # 缺少必需列
-        invalid_price_data = pd.DataFrame({
-            'close': [100, 101, 102],
-            'volume': [1000, 1100, 1200]
-        })
+        invalid_price_data = pd.DataFrame(
+            {"close": [100, 101, 102], "volume": [1000, 1100, 1200]}
+        )
 
-        signals = pd.DataFrame({
-            'signal': ['buy', None, 'sell']
-        })
+        signals = pd.DataFrame({"signal": ["buy", None, "sell"]})
 
         with pytest.raises(ValueError, match="价格数据缺少必需列"):
             self.backtester._validate_data(invalid_price_data, signals)
 
     def test_validate_data_missing_signal_column(self, sample_price_data):
         """测试数据验证缺失信号列"""
-        invalid_signals = pd.DataFrame({
-            'invalid': ['buy', None, 'sell']
-        })
+        invalid_signals = pd.DataFrame({"invalid": ["buy", None, "sell"]})
 
         with pytest.raises(ValueError, match="信号数据必须包含 'signal' 列"):
             self.backtester._validate_data(sample_price_data, invalid_signals)
@@ -111,65 +102,63 @@ class TestVectorizedBacktester:
         result = self.backtester.run(sample_price_data, sample_signals)
 
         # 验证返回结构
-        assert 'trades' in result
-        assert 'equity_curve' in result
-        assert 'daily_returns' in result
-        assert 'summary' in result
+        assert "trades" in result
+        assert "equity_curve" in result
+        assert "daily_returns" in result
+        assert "summary" in result
 
         # 验证交易记录
-        trades = result['trades']
+        trades = result["trades"]
         assert isinstance(trades, list)
 
         # 验证权益曲线
-        equity_curve = result['equity_curve']
+        equity_curve = result["equity_curve"]
         assert isinstance(equity_curve, pd.DataFrame)
-        assert 'equity' in equity_curve.columns
+        assert "equity" in equity_curve.columns
         assert len(equity_curve) == len(sample_price_data)
 
         # 验证汇总统计
-        summary = result['summary']
-        assert 'total_return' in summary
-        assert 'total_trades' in summary
-        assert 'win_rate' in summary
+        summary = result["summary"]
+        assert "total_return" in summary
+        assert "total_trades" in summary
+        assert "win_rate" in summary
 
     def test_run_backtest_no_signals(self, sample_price_data):
         """测试无信号回测"""
         # 创建空信号
         empty_signals = pd.DataFrame(index=sample_price_data.index)
-        empty_signals['signal'] = None
+        empty_signals["signal"] = None
 
         result = self.backtester.run(sample_price_data, empty_signals)
 
         # 应该没有交易
-        assert len(result['trades']) == 0
+        assert len(result["trades"]) == 0
         # 权益应该等于初始资金
-        assert result['equity_curve']['equity'].iloc[-1] == self.config.initial_capital
+        assert result["equity_curve"]["equity"].iloc[-1] == self.config.initial_capital
 
     def test_run_backtest_buy_only(self, sample_price_data):
         """测试只买不卖"""
         signals = pd.DataFrame(index=sample_price_data.index)
-        signals['signal'] = None
-        signals.iloc[5]['signal'] = 'buy'
+        signals["signal"] = None
+        signals.iloc[5]["signal"] = "buy"
 
         result = self.backtester.run(sample_price_data, signals)
 
         # 应该强制平仓，有一笔交易
-        assert len(result['trades']) == 1
+        assert len(result["trades"]) == 1
         # 权益不等于初始资金（有盈亏）
-        assert result['equity_curve']['equity'].iloc[-1] != self.config.initial_capital
+        assert result["equity_curve"]["equity"].iloc[-1] != self.config.initial_capital
 
     def test_calculate_summary_no_trades(self):
         """测试无交易汇总"""
         self.backtester.trades = []
-        self.backtester.equity_curve = pd.DataFrame({
-            'equity': [100000] * 10
-        })
+        self.backtester.equity_curve = pd.DataFrame({"equity": [100000] * 10})
 
         summary = self.backtester._calculate_summary()
 
-        assert summary['total_trades'] == 0
-        assert summary['win_rate'] == 0.0
-        assert summary['total_return'] == 0.0
+        assert summary["total_trades"] == 0
+        assert summary["win_rate"] == 0.0
+        assert summary["total_return"] == 0.0
 
     def test_calculate_summary_with_trades(self):
         """测试有交易汇总"""
@@ -181,12 +170,12 @@ class TestVectorizedBacktester:
                 exit_date=date(2024, 1, 5),
                 exit_price=105,
                 shares=100,
-                direction='long',
+                direction="long",
                 pnl=500,
                 pnl_pct=0.05,
                 commission=10,
                 slippage=5,
-                holding_days=4
+                holding_days=4,
             ),
             Trade(
                 entry_date=date(2024, 1, 6),
@@ -194,27 +183,27 @@ class TestVectorizedBacktester:
                 exit_date=date(2024, 1, 10),
                 exit_price=103,
                 shares=100,
-                direction='long',
+                direction="long",
                 pnl=-200,
                 pnl_pct=-0.02,
                 commission=10,
                 slippage=5,
-                holding_days=4
-            )
+                holding_days=4,
+            ),
         ]
 
         self.backtester.trades = trades
-        self.backtester.equity_curve = pd.DataFrame({
-            'equity': [100000, 100500, 100300]
-        })
+        self.backtester.equity_curve = pd.DataFrame(
+            {"equity": [100000, 100500, 100300]}
+        )
         self.backtester.config.initial_capital = 100000
 
         summary = self.backtester._calculate_summary()
 
-        assert summary['total_trades'] == 2
-        assert summary['winning_trades'] == 1
-        assert summary['losing_trades'] == 1
-        assert summary['win_rate'] == 0.5
+        assert summary["total_trades"] == 2
+        assert summary["winning_trades"] == 1
+        assert summary["losing_trades"] == 1
+        assert summary["win_rate"] == 0.5
 
     def test_get_trades_df(self):
         """测试获取交易记录DataFrame"""
@@ -226,12 +215,12 @@ class TestVectorizedBacktester:
                 exit_date=date(2024, 1, 5),
                 exit_price=105,
                 shares=100,
-                direction='long',
+                direction="long",
                 pnl=500,
                 pnl_pct=0.05,
                 commission=10,
                 slippage=5,
-                holding_days=4
+                holding_days=4,
             )
         ]
 
@@ -240,8 +229,8 @@ class TestVectorizedBacktester:
 
         assert isinstance(trades_df, pd.DataFrame)
         assert len(trades_df) == 1
-        assert 'entry_date' in trades_df.columns
-        assert 'pnl' in trades_df.columns
+        assert "entry_date" in trades_df.columns
+        assert "pnl" in trades_df.columns
 
     def test_get_trades_df_empty(self):
         """测试获取空交易记录"""
@@ -253,6 +242,7 @@ class TestVectorizedBacktester:
 
 
 # ==================== PerformanceMetrics Tests ====================
+
 
 class TestPerformanceMetrics:
     """性能指标测试"""
@@ -267,9 +257,7 @@ class TestPerformanceMetrics:
 
     def test_total_return(self):
         """测试总收益率计算"""
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 105000, 110000]
-        })
+        equity_curve = pd.DataFrame({"equity": [100000, 105000, 110000]})
 
         total_return = self.metrics.total_return(equity_curve, 100000)
 
@@ -332,9 +320,9 @@ class TestPerformanceMetrics:
     def test_max_drawdown(self):
         """测试最大回撤计算"""
         # 创建有明显回撤的权益曲线
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 110000, 105000, 108000, 95000, 100000]
-        })
+        equity_curve = pd.DataFrame(
+            {"equity": [100000, 110000, 105000, 108000, 95000, 100000]}
+        )
 
         max_dd = self.metrics.max_drawdown(equity_curve)
 
@@ -344,9 +332,7 @@ class TestPerformanceMetrics:
     def test_max_drawdown_no_drawdown(self):
         """测试无回撤"""
         # 一直上涨
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 105000, 110000, 115000]
-        })
+        equity_curve = pd.DataFrame({"equity": [100000, 105000, 110000, 115000]})
 
         max_dd = self.metrics.max_drawdown(equity_curve)
 
@@ -355,9 +341,9 @@ class TestPerformanceMetrics:
     def test_max_drawdown_duration(self):
         """测试最大回撤持续时间"""
         # 创建有回撤的权益曲线
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 110000, 105000, 100000, 95000, 100000, 110000]
-        })
+        equity_curve = pd.DataFrame(
+            {"equity": [100000, 110000, 105000, 100000, 95000, 100000, 110000]}
+        )
 
         duration = self.metrics.max_drawdown_duration(equity_curve)
 
@@ -367,9 +353,7 @@ class TestPerformanceMetrics:
     def test_calmar_ratio(self):
         """测试卡尔玛比率"""
         returns = pd.Series([0.001] * 252)
-        equity_curve = pd.DataFrame({
-            'equity': 100000 * (1 + returns).cumprod()
-        })
+        equity_curve = pd.DataFrame({"equity": 100000 * (1 + returns).cumprod()})
 
         calmar = self.metrics.calmar_ratio(returns, equity_curve)
 
@@ -442,17 +426,23 @@ class TestPerformanceMetrics:
     def test_calculate_all_metrics(self, sample_backtest_result):
         """测试计算所有指标"""
         metrics = self.metrics.calculate_all_metrics(
-            equity_curve=sample_backtest_result['equity_curve'],
-            daily_returns=sample_backtest_result['daily_returns'],
-            trades=sample_backtest_result['trades'],
-            initial_capital=100000
+            equity_curve=sample_backtest_result["equity_curve"],
+            daily_returns=sample_backtest_result["daily_returns"],
+            trades=sample_backtest_result["trades"],
+            initial_capital=100000,
         )
 
         # 验证所有必需指标存在
         required_metrics = [
-            'total_return', 'annualized_return', 'sharpe_ratio',
-            'sortino_ratio', 'calmar_ratio', 'max_drawdown',
-            'volatility', 'var_95', 'cvar_95'
+            "total_return",
+            "annualized_return",
+            "sharpe_ratio",
+            "sortino_ratio",
+            "calmar_ratio",
+            "max_drawdown",
+            "volatility",
+            "var_95",
+            "cvar_95",
         ]
 
         for metric in required_metrics:
@@ -461,25 +451,26 @@ class TestPerformanceMetrics:
     def test_generate_report(self):
         """测试生成性能报告"""
         metrics = {
-            'initial_capital': 100000,
-            'final_capital': 110000,
-            'total_return': 0.10,
-            'annualized_return': 0.12,
-            'sharpe_ratio': 1.5,
-            'max_drawdown': 0.05,
-            'total_trades': 10,
-            'win_rate': 0.6
+            "initial_capital": 100000,
+            "final_capital": 110000,
+            "total_return": 0.10,
+            "annualized_return": 0.12,
+            "sharpe_ratio": 1.5,
+            "max_drawdown": 0.05,
+            "total_trades": 10,
+            "win_rate": 0.6,
         }
 
         report = self.metrics.generate_report(metrics)
 
         assert isinstance(report, str)
-        assert '回测性能报告' in report
-        assert '100,000.00' in report
-        assert '10.00%' in report
+        assert "回测性能报告" in report
+        assert "100,000.00" in report
+        assert "10.00%" in report
 
 
 # ==================== RiskMetrics Tests ====================
+
 
 class TestRiskMetrics:
     """风险指标测试"""
@@ -510,9 +501,7 @@ class TestRiskMetrics:
 
     def test_ulcer_index(self):
         """测试溃疡指数"""
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 110000, 105000, 95000, 100000]
-        })
+        equity_curve = pd.DataFrame({"equity": [100000, 110000, 105000, 95000, 100000]})
 
         ulcer = self.risk_metrics.ulcer_index(equity_curve)
 
@@ -521,9 +510,7 @@ class TestRiskMetrics:
 
     def test_pain_index(self):
         """测试痛苦指数"""
-        equity_curve = pd.DataFrame({
-            'equity': [100000, 110000, 105000, 95000, 100000]
-        })
+        equity_curve = pd.DataFrame({"equity": [100000, 110000, 105000, 95000, 100000]})
 
         pain = self.risk_metrics.pain_index(equity_curve)
 
@@ -575,9 +562,7 @@ class TestRiskMetrics:
     def test_burke_ratio(self):
         """测试Burke比率"""
         returns = pd.Series([0.001] * 252)
-        equity_curve = pd.DataFrame({
-            'equity': 100000 * (1 + returns).cumprod()
-        })
+        equity_curve = pd.DataFrame({"equity": 100000 * (1 + returns).cumprod()})
 
         burke = self.risk_metrics.burke_ratio(
             returns, equity_curve, risk_free_rate=0.03
@@ -596,8 +581,7 @@ class TestRiskMetrics:
     def test_recovery_factor(self):
         """测试恢复因子"""
         recovery = self.risk_metrics.recovery_factor(
-            total_return=0.20,
-            max_drawdown=0.10
+            total_return=0.20, max_drawdown=0.10
         )
 
         # 恢复因子 = 0.20 / 0.10 = 2.0
@@ -606,8 +590,7 @@ class TestRiskMetrics:
     def test_recovery_factor_zero_drawdown(self):
         """测试恢复因子（零回撤）"""
         recovery = self.risk_metrics.recovery_factor(
-            total_return=0.20,
-            max_drawdown=0.0
+            total_return=0.20, max_drawdown=0.0
         )
 
         # 零回撤应该返回0
@@ -630,19 +613,25 @@ class TestRiskMetrics:
     def test_calculate_all_risk_metrics(self, sample_backtest_result):
         """测试计算所有风险指标"""
         metrics = self.risk_metrics.calculate_all_risk_metrics(
-            equity_curve=sample_backtest_result['equity_curve'],
-            returns=sample_backtest_result['daily_returns'],
-            trades=sample_backtest_result['trades'],
+            equity_curve=sample_backtest_result["equity_curve"],
+            returns=sample_backtest_result["daily_returns"],
+            trades=sample_backtest_result["trades"],
             total_return=0.10,
             max_drawdown=0.05,
-            risk_free_rate=0.03
+            risk_free_rate=0.03,
         )
 
         # 验证所有必需指标存在
         required_metrics = [
-            'downside_deviation', 'ulcer_index', 'pain_index',
-            'skewness', 'kurtosis', 'tail_ratio',
-            'omega_ratio', 'burke_ratio', 'recovery_factor'
+            "downside_deviation",
+            "ulcer_index",
+            "pain_index",
+            "skewness",
+            "kurtosis",
+            "tail_ratio",
+            "omega_ratio",
+            "burke_ratio",
+            "recovery_factor",
         ]
 
         for metric in required_metrics:
@@ -651,24 +640,25 @@ class TestRiskMetrics:
     def test_generate_risk_report(self):
         """测试生成风险报告"""
         metrics = {
-            'downside_deviation': 0.05,
-            'ulcer_index': 3.5,
-            'pain_index': 0.02,
-            'skewness': 0.5,
-            'kurtosis': 2.0,
-            'tail_ratio': 1.2,
-            'omega_ratio': 1.5,
-            'burke_ratio': 0.8
+            "downside_deviation": 0.05,
+            "ulcer_index": 3.5,
+            "pain_index": 0.02,
+            "skewness": 0.5,
+            "kurtosis": 2.0,
+            "tail_ratio": 1.2,
+            "omega_ratio": 1.5,
+            "burke_ratio": 0.8,
         }
 
         report = self.risk_metrics.generate_risk_report(metrics)
 
         assert isinstance(report, str)
-        assert '风险分析报告' in report
-        assert '波动性指标' in report
+        assert "风险分析报告" in report
+        assert "波动性指标" in report
 
 
 # ==================== BacktestEngine Integration Tests ====================
+
 
 class TestBacktestEngine:
     """回测引擎集成测试"""
@@ -691,17 +681,17 @@ class TestBacktestEngine:
         result = self.engine.run(sample_price_data, sample_signals)
 
         # 验证返回结构
-        assert 'backtest' in result
-        assert 'performance' in result
-        assert 'risk' in result
-        assert 'metrics' in result
-        assert 'report' in result
-        assert 'config' in result
+        assert "backtest" in result
+        assert "performance" in result
+        assert "risk" in result
+        assert "metrics" in result
+        assert "report" in result
+        assert "config" in result
 
         # 验证报告
-        assert isinstance(result['report'], str)
-        assert '回测性能报告' in result['report']
-        assert '风险分析报告' in result['report']
+        assert isinstance(result["report"], str)
+        assert "回测性能报告" in result["report"]
+        assert "风险分析报告" in result["report"]
 
     def test_get_trades_df(self, sample_price_data, sample_signals):
         """测试获取交易记录"""
@@ -718,7 +708,7 @@ class TestBacktestEngine:
         equity_curve = self.engine.get_equity_curve()
 
         assert isinstance(equity_curve, pd.DataFrame)
-        assert 'equity' in equity_curve.columns
+        assert "equity" in equity_curve.columns
         assert len(equity_curve) == len(sample_price_data)
 
     def test_get_daily_returns(self, sample_price_data, sample_signals):
@@ -740,6 +730,7 @@ class TestBacktestEngine:
 
         # 验证文件创建
         import os
+
         assert os.path.exists(f"{filepath}_report.txt")
 
     def test_run_with_benchmark(self, sample_price_data, sample_signals):
@@ -747,22 +738,21 @@ class TestBacktestEngine:
         # 创建基准收益率
         benchmark_returns = pd.Series(
             np.random.randn(len(sample_price_data)) * 0.01,
-            index=sample_price_data.index
+            index=sample_price_data.index,
         )
 
         result = self.engine.run(
-            sample_price_data,
-            sample_signals,
-            benchmark_returns=benchmark_returns
+            sample_price_data, sample_signals, benchmark_returns=benchmark_returns
         )
 
         # 应该包含基准比较指标
-        assert 'alpha' in result['performance']
-        assert 'beta' in result['performance']
-        assert 'information_ratio' in result['performance']
+        assert "alpha" in result["performance"]
+        assert "beta" in result["performance"]
+        assert "information_ratio" in result["performance"]
 
 
 # ==================== Performance Tests ====================
+
 
 class TestBacktestPerformance:
     """回测性能测试"""
@@ -774,24 +764,27 @@ class TestBacktestPerformance:
 
         # 生成5年数据（约1260个交易日）
         n = 1260
-        dates = pd.date_range('2019-01-01', periods=n, freq='D')
+        dates = pd.date_range("2019-01-01", periods=n, freq="D")
 
-        price_data = pd.DataFrame({
-            'open': 100 + np.cumsum(np.random.randn(n) * 0.5),
-            'high': 100 + np.cumsum(np.random.randn(n) * 0.5) + 1,
-            'low': 100 + np.cumsum(np.random.randn(n) * 0.5) - 1,
-            'close': 100 + np.cumsum(np.random.randn(n) * 0.5),
-            'volume': np.random.uniform(1000000, 10000000, n)
-        }, index=dates)
+        price_data = pd.DataFrame(
+            {
+                "open": 100 + np.cumsum(np.random.randn(n) * 0.5),
+                "high": 100 + np.cumsum(np.random.randn(n) * 0.5) + 1,
+                "low": 100 + np.cumsum(np.random.randn(n) * 0.5) - 1,
+                "close": 100 + np.cumsum(np.random.randn(n) * 0.5),
+                "volume": np.random.uniform(1000000, 10000000, n),
+            },
+            index=dates,
+        )
 
         # 生成信号（每10天一个）
         signals = pd.DataFrame(index=dates)
-        signals['signal'] = None
+        signals["signal"] = None
         for i in range(0, n, 10):
             if i < n:
-                signals.iloc[i] = 'buy'
+                signals.iloc[i] = "buy"
             if i + 5 < n:
-                signals.iloc[i + 5] = 'sell'
+                signals.iloc[i + 5] = "sell"
 
         # 执行回测并计时
         config = BacktestConfig(initial_capital=100000)
@@ -806,9 +799,9 @@ class TestBacktestPerformance:
         assert elapsed < 5.0, f"Backtest took {elapsed:.2f}s, expected < 5.0s"
 
         # 验证结果正确
-        assert 'report' in result
-        assert result['backtest']['summary']['total_trades'] > 0
+        assert "report" in result
+        assert result["backtest"]["summary"]["total_trades"] > 0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

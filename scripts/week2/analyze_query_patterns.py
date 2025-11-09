@@ -21,15 +21,15 @@ class QueryPatternAnalyzer:
 
     def __init__(self):
         self.patterns = {
-            "select": r'(SELECT\s+.*?FROM\s+\w+)',
-            "insert": r'(INSERT\s+INTO\s+\w+)',
-            "update": r'(UPDATE\s+\w+\s+SET)',
-            "delete": r'(DELETE\s+FROM\s+\w+)',
-            "create_table": r'(CREATE\s+TABLE\s+\w+)',
-            "tdengine_stable": r'(CREATE\s+STABLE\s+\w+)',
-            "redis_get": r'(redis\.get\(|client\.get\()',
-            "redis_set": r'(redis\.set\(|client\.set\()',
-            "redis_hget": r'(redis\.hget\(|client\.hget\()',
+            "select": r"(SELECT\s+.*?FROM\s+\w+)",
+            "insert": r"(INSERT\s+INTO\s+\w+)",
+            "update": r"(UPDATE\s+\w+\s+SET)",
+            "delete": r"(DELETE\s+FROM\s+\w+)",
+            "create_table": r"(CREATE\s+TABLE\s+\w+)",
+            "tdengine_stable": r"(CREATE\s+STABLE\s+\w+)",
+            "redis_get": r"(redis\.get\(|client\.get\()",
+            "redis_set": r"(redis\.set\(|client\.set\()",
+            "redis_hget": r"(redis\.hget\(|client\.hget\()",
         }
 
         self.queries = defaultdict(list)
@@ -39,7 +39,7 @@ class QueryPatternAnalyzer:
     def analyze_file(self, file_path: Path):
         """分析单个Python文件"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
                 # 查找各类查询
@@ -48,19 +48,18 @@ class QueryPatternAnalyzer:
                     if matches:
                         for match in matches:
                             # 清理匹配结果
-                            clean_match = ' '.join(match.split())[:200]  # 限制长度
-                            self.queries[pattern_name].append({
-                                "file": str(file_path),
-                                "query": clean_match
-                            })
+                            clean_match = " ".join(match.split())[:200]  # 限制长度
+                            self.queries[pattern_name].append(
+                                {"file": str(file_path), "query": clean_match}
+                            )
                             self.file_stats[str(file_path)] += 1
 
                 # 提取表名
-                from_matches = re.findall(r'FROM\s+`?(\w+)`?', content, re.IGNORECASE)
+                from_matches = re.findall(r"FROM\s+`?(\w+)`?", content, re.IGNORECASE)
                 for table in from_matches:
                     self.table_access[table] += 1
 
-                into_matches = re.findall(r'INTO\s+`?(\w+)`?', content, re.IGNORECASE)
+                into_matches = re.findall(r"INTO\s+`?(\w+)`?", content, re.IGNORECASE)
                 for table in into_matches:
                     self.table_access[table] += 1
 
@@ -70,19 +69,26 @@ class QueryPatternAnalyzer:
     def scan_project(self, exclude_dirs=None):
         """扫描整个项目"""
         if exclude_dirs is None:
-            exclude_dirs = ['__pycache__', '.git', 'htmlcov', 'temp', '.pytest_cache', 'node_modules']
+            exclude_dirs = [
+                "__pycache__",
+                ".git",
+                "htmlcov",
+                "temp",
+                ".pytest_cache",
+                "node_modules",
+            ]
 
-        print("="*60)
+        print("=" * 60)
         print("扫描项目文件...")
-        print("="*60)
+        print("=" * 60)
 
         py_files = []
-        for root, dirs, files in os.walk('.'):
+        for root, dirs, files in os.walk("."):
             # 过滤排除的目录
             dirs[:] = [d for d in dirs if d not in exclude_dirs]
 
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith(".py"):
                     file_path = Path(root) / file
                     py_files.append(file_path)
 
@@ -96,15 +102,15 @@ class QueryPatternAnalyzer:
 
     def generate_report(self):
         """生成分析报告"""
-        print("="*60)
+        print("=" * 60)
         print("查询模式分析报告")
-        print("="*60)
+        print("=" * 60)
         print(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         report_lines = []
-        report_lines.append("="*60)
+        report_lines.append("=" * 60)
         report_lines.append("查询模式分析报告")
-        report_lines.append("="*60)
+        report_lines.append("=" * 60)
         report_lines.append(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report_lines.append("")
 
@@ -118,7 +124,9 @@ class QueryPatternAnalyzer:
         print(f"总查询数: {total_queries}")
         report_lines.append(f"总查询数: {total_queries}")
 
-        for query_type, queries in sorted(self.queries.items(), key=lambda x: len(x[1]), reverse=True):
+        for query_type, queries in sorted(
+            self.queries.items(), key=lambda x: len(x[1]), reverse=True
+        ):
             count = len(queries)
             percentage = (count / total_queries * 100) if total_queries > 0 else 0
             line = f"  {query_type:20s}: {count:4d} 次 ({percentage:5.1f}%)"
@@ -142,7 +150,9 @@ class QueryPatternAnalyzer:
         report_lines.append("\n3. 数据库操作频繁的文件 (Top 10)")
         report_lines.append("-" * 60)
 
-        for file_path, count in sorted(self.file_stats.items(), key=lambda x: x[1], reverse=True)[:10]:
+        for file_path, count in sorted(
+            self.file_stats.items(), key=lambda x: x[1], reverse=True
+        )[:10]:
             # 简化路径显示
             short_path = file_path if len(file_path) < 60 else "..." + file_path[-57:]
             line = f"  {short_path:60s}: {count:3d} 次"
@@ -150,13 +160,13 @@ class QueryPatternAnalyzer:
             report_lines.append(line)
 
         # 4. SELECT查询样本
-        if self.queries.get('select'):
+        if self.queries.get("select"):
             print("\n4. SELECT查询样本 (前5个)")
             print("-" * 60)
             report_lines.append("\n4. SELECT查询样本 (前5个)")
             report_lines.append("-" * 60)
 
-            for i, query in enumerate(self.queries['select'][:5], 1):
+            for i, query in enumerate(self.queries["select"][:5], 1):
                 print(f"  {i}. {query['query']}")
                 print(f"     文件: {query['file']}")
                 report_lines.append(f"  {i}. {query['query']}")
@@ -168,8 +178,11 @@ class QueryPatternAnalyzer:
         report_lines.append("\n5. 数据库特定操作统计")
         report_lines.append("-" * 60)
 
-        tdengine_count = len(self.queries.get('tdengine_stable', []))
-        redis_count = sum(len(self.queries.get(k, [])) for k in ['redis_get', 'redis_set', 'redis_hget'])
+        tdengine_count = len(self.queries.get("tdengine_stable", []))
+        redis_count = sum(
+            len(self.queries.get(k, []))
+            for k in ["redis_get", "redis_set", "redis_hget"]
+        )
 
         line1 = f"  TDengine STABLE操作: {tdengine_count} 次"
         line2 = f"  Redis操作: {redis_count} 次"
@@ -187,8 +200,10 @@ class QueryPatternAnalyzer:
         suggestions = []
 
         # 读写比分析
-        read_count = len(self.queries.get('select', []))
-        write_count = sum(len(self.queries.get(k, [])) for k in ['insert', 'update', 'delete'])
+        read_count = len(self.queries.get("select", []))
+        write_count = sum(
+            len(self.queries.get(k, [])) for k in ["insert", "update", "delete"]
+        )
 
         if read_count + write_count > 0:
             read_ratio = read_count / (read_count + write_count) * 100
@@ -203,7 +218,9 @@ class QueryPatternAnalyzer:
 
         # TDengine使用分析
         if tdengine_count == 0:
-            suggestion = "  • 未发现TDengine特定操作，可能可以用PostgreSQL+TimescaleDB替代"
+            suggestion = (
+                "  • 未发现TDengine特定操作，可能可以用PostgreSQL+TimescaleDB替代"
+            )
             print(suggestion)
             suggestions.append(suggestion)
         elif tdengine_count < 5:
@@ -228,7 +245,9 @@ class QueryPatternAnalyzer:
             concentration = top_5_access / total_access * 100
 
             if concentration > 80:
-                suggestion = f"  • 访问高度集中: Top 5表占{concentration:.1f}%，优化这些表即可"
+                suggestion = (
+                    f"  • 访问高度集中: Top 5表占{concentration:.1f}%，优化这些表即可"
+                )
                 print(suggestion)
                 suggestions.append(suggestion)
 
@@ -236,8 +255,8 @@ class QueryPatternAnalyzer:
 
         # 保存报告
         report_file = "query_patterns_analysis.txt"
-        with open(report_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(report_lines))
+        with open(report_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(report_lines))
 
         print(f"\n详细报告已保存到: {report_file}")
         print("\n下一步:")
@@ -250,10 +269,10 @@ class QueryPatternAnalyzer:
 
 def main():
     """主函数"""
-    print("="*60)
+    print("=" * 60)
     print("MyStocks 查询模式分析工具")
     print("Week 2 Day 1 - 查询模式分析")
-    print("="*60)
+    print("=" * 60)
     print()
 
     analyzer = QueryPatternAnalyzer()

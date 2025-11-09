@@ -20,6 +20,7 @@
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
@@ -33,14 +34,14 @@ from automation import (
     NotificationManager,
     NotificationConfig,
     NotificationChannel,
-    NotificationLevel
+    NotificationLevel,
 )
 
 from automation.predefined_tasks import (
     PredefinedTasks,
     create_daily_update_task,
     create_strategy_execution_task,
-    create_health_check_task
+    create_health_check_task,
 )
 
 
@@ -67,7 +68,7 @@ def example_1_basic_scheduling():
         trigger_args={"seconds": 5},
         kwargs={"task_id": "test_001"},
         max_retries=2,
-        timeout=10
+        timeout=10,
     )
 
     # 添加任务
@@ -104,7 +105,7 @@ def example_2_notification_system():
     notification_mgr.send_notification(
         title="系统启动",
         message="MyStocks量化交易系统已成功启动",
-        level=NotificationLevel.INFO
+        level=NotificationLevel.INFO,
     )
 
     # 2. 任务成功通知
@@ -112,15 +113,13 @@ def example_2_notification_system():
     notification_mgr.send_success_notification(
         task_name="数据更新",
         execution_time=15.3,
-        result="成功导入500只股票，总计10000条记录"
+        result="成功导入500只股票，总计10000条记录",
     )
 
     # 3. 任务失败通知
     print("\n3. 任务失败通知")
     notification_mgr.send_failure_notification(
-        task_name="策略执行",
-        error_message="数据库连接超时",
-        retry_count=2
+        task_name="策略执行", error_message="数据库连接超时", retry_count=2
     )
 
     # 4. 交易信号通知
@@ -130,12 +129,7 @@ def example_2_notification_system():
         symbol="sh600000",
         signal="buy",
         price=10.52,
-        context={
-            'ma_5': 10.45,
-            'ma_20': 10.38,
-            'rsi': 65.2,
-            'volume_ratio': 1.8
-        }
+        context={"ma_5": 10.45, "ma_20": 10.38, "rsi": 65.2, "volume_ratio": 1.8},
     )
 
     # 查看统计
@@ -156,26 +150,24 @@ def example_3_predefined_tasks():
     # 1. 健康检查任务
     print("\n1. 执行系统健康检查")
     health_result = PredefinedTasks.health_check(
-        services=['database', 'data_source', 'strategy']
+        services=["database", "data_source", "strategy"]
     )
     print(f"  结果: {health_result['status']}")
-    for service, status in health_result['services'].items():
+    for service, status in health_result["services"].items():
         print(f"    - {service}: {status}")
 
     # 2. 创建预定义任务配置
     print("\n2. 创建预定义任务配置")
 
     # 每日数据更新任务（16:00执行）
-    daily_update = create_daily_update_task(market='sh', hour=16, minute=0)
+    daily_update = create_daily_update_task(market="sh", hour=16, minute=0)
     print(f"  ✓ 每日数据更新任务: {daily_update.name}")
     print(f"      触发时间: 每天16:00")
     print(f"      优先级: {daily_update.priority.name}")
 
     # 策略执行任务（9:30执行）
     strategy_exec = create_strategy_execution_task(
-        strategy_name="momentum",
-        hour=9,
-        minute=30
+        strategy_name="momentum", hour=9, minute=30
     )
     print(f"  ✓ 策略执行任务: {strategy_exec.name}")
     print(f"      触发时间: 每天9:30（工作日）")
@@ -199,7 +191,7 @@ def example_4_integrated_system():
     print("\n1. 初始化通知管理器")
     notification_config = NotificationConfig(
         channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE],
-        rate_limit=60  # 1分钟内相同通知只发送一次
+        rate_limit=60,  # 1分钟内相同通知只发送一次
     )
     notification_mgr = NotificationManager(notification_config)
 
@@ -207,7 +199,7 @@ def example_4_integrated_system():
     print("\n2. 初始化调度器")
     scheduler = TaskScheduler(
         notification_manager=notification_mgr,
-        monitoring_db=None  # 可选：集成监控数据库
+        monitoring_db=None,  # 可选：集成监控数据库
     )
 
     # 3. 定义业务任务
@@ -225,10 +217,12 @@ def example_4_integrated_system():
         print("  [任务] 开始执行策略...")
         time.sleep(1)
         print("  [任务] 策略执行完成")
-        return {"signals": [
-            {"symbol": "sh600000", "signal": "buy", "price": 10.52},
-            {"symbol": "sh600016", "signal": "sell", "price": 5.23}
-        ]}
+        return {
+            "signals": [
+                {"symbol": "sh600000", "signal": "buy", "price": 10.52},
+                {"symbol": "sh600016", "signal": "sell", "price": 5.23},
+            ]
+        }
 
     # 4. 创建任务配置
     data_update_task = TaskConfig(
@@ -239,7 +233,7 @@ def example_4_integrated_system():
         priority=TaskPriority.HIGH,
         max_retries=3,
         notify_on_success=True,
-        notify_on_failure=True
+        notify_on_failure=True,
     )
 
     strategy_task = TaskConfig(
@@ -250,7 +244,7 @@ def example_4_integrated_system():
         priority=TaskPriority.NORMAL,
         max_retries=2,
         notify_on_failure=True,
-        depends_on=["sample_data_update"]
+        depends_on=["sample_data_update"],
     )
 
     # 5. 添加任务到调度器
@@ -292,7 +286,7 @@ def example_5_monitoring_and_stats():
         func=quick_task,
         trigger_type="interval",
         trigger_args={"seconds": 60},
-        max_retries=1
+        max_retries=1,
     )
 
     scheduler.add_task(task)
@@ -341,7 +335,7 @@ def main():
     # 设置日志
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     # 运行示例
@@ -367,7 +361,8 @@ def main():
     print("\n" + "=" * 80)
     print("如需启动调度器，请运行:")
     print("=" * 80)
-    print("""
+    print(
+        """
 # 启动调度器
 scheduler.start()
 
@@ -381,7 +376,8 @@ try:
 except KeyboardInterrupt:
     print("停止调度器...")
     scheduler.stop()
-""")
+"""
+    )
 
     print("\n" + "=" * 80)
     print("所有示例运行完成")
@@ -394,5 +390,5 @@ except KeyboardInterrupt:
     print("  4. 监控: 集成监控数据库记录所有任务执行")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

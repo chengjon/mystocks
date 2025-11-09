@@ -39,7 +39,7 @@ def test_run_single_strategy():
     params = {
         "strategy_code": "turtle_trading",
         "symbol": "600519",
-        "stock_name": "贵州茅台"
+        "stock_name": "贵州茅台",
     }
     response = requests.post(url, params=params)
     print_response(response, "单只股票策略运行结果")
@@ -53,7 +53,7 @@ def test_run_single_strategy_volume_surge():
     params = {
         "strategy_code": "volume_surge",
         "symbol": "000001",
-        "stock_name": "平安银行"
+        "stock_name": "平安银行",
     }
     response = requests.post(url, params=params)
     print_response(response, "放量上涨策略运行结果")
@@ -64,10 +64,7 @@ def test_run_batch_strategy_limited():
     """测试4: 批量运行策略（限制10只股票）"""
     print("\n🧪 测试4: 批量运行策略（限制10只）")
     url = f"{BASE_URL}/api/strategy/run/batch"
-    params = {
-        "strategy_code": "ma_bullish",
-        "limit": 10
-    }
+    params = {"strategy_code": "ma_bullish", "limit": 10}
     response = requests.post(url, params=params)
     print_response(response, "批量策略运行结果")
     return response.status_code == 200
@@ -79,7 +76,7 @@ def test_run_batch_specific_symbols():
     url = f"{BASE_URL}/api/strategy/run/batch"
     params = {
         "strategy_code": "turtle_trading",
-        "symbols": "600519,000001,000002,600000"
+        "symbols": "600519,000001,000002,600000",
     }
     response = requests.post(url, params=params)
     print_response(response, "指定股票批量策略运行结果")
@@ -100,10 +97,7 @@ def test_query_by_strategy():
     """测试7: 按策略查询结果"""
     print("\n🧪 测试7: 按策略查询结果（海龟交易）")
     url = f"{BASE_URL}/api/strategy/results"
-    params = {
-        "strategy_code": "turtle_trading",
-        "limit": 10
-    }
+    params = {"strategy_code": "turtle_trading", "limit": 10}
     response = requests.get(url, params=params)
     print_response(response, "海龟交易策略结果")
     return response.status_code == 200
@@ -113,10 +107,7 @@ def test_query_by_symbol():
     """测试8: 按股票查询结果"""
     print("\n🧪 测试8: 按股票查询结果（贵州茅台）")
     url = f"{BASE_URL}/api/strategy/results"
-    params = {
-        "symbol": "600519",
-        "limit": 10
-    }
+    params = {"symbol": "600519", "limit": 10}
     response = requests.get(url, params=params)
     print_response(response, "贵州茅台策略结果")
     return response.status_code == 200
@@ -126,10 +117,7 @@ def test_query_matched_only():
     """测试9: 只查询匹配的结果"""
     print("\n🧪 测试9: 只查询匹配的结果")
     url = f"{BASE_URL}/api/strategy/results"
-    params = {
-        "match_result": True,
-        "limit": 20
-    }
+    params = {"match_result": True, "limit": 20}
     response = requests.get(url, params=params)
     print_response(response, "匹配的策略结果")
     return response.status_code == 200
@@ -139,10 +127,7 @@ def test_get_matched_stocks():
     """测试10: 获取匹配指定策略的股票列表"""
     print("\n🧪 测试10: 获取匹配策略的股票列表")
     url = f"{BASE_URL}/api/strategy/matched-stocks"
-    params = {
-        "strategy_code": "turtle_trading",
-        "limit": 20
-    }
+    params = {"strategy_code": "turtle_trading", "limit": 20}
     response = requests.get(url, params=params)
     print_response(response, "匹配海龟交易策略的股票")
     return response.status_code == 200
@@ -162,10 +147,10 @@ def test_multiple_strategies():
     print("\n🧪 测试12: 测试多个不同策略")
 
     strategies_to_test = [
-        "volume_surge",      # 放量上涨
-        "ma_bullish",        # 均线多头
+        "volume_surge",  # 放量上涨
+        "ma_bullish",  # 均线多头
         "consolidation_platform",  # 停机坪
-        "low_drawdown"       # 无大幅回撤
+        "low_drawdown",  # 无大幅回撤
     ]
 
     test_symbols = ["600519", "000001", "600000"]
@@ -175,18 +160,17 @@ def test_multiple_strategies():
         for symbol in test_symbols:
             print(f"\n  运行策略 {strategy} on {symbol}")
             url = f"{BASE_URL}/api/strategy/run/single"
-            params = {
-                "strategy_code": strategy,
-                "symbol": symbol
-            }
+            params = {"strategy_code": strategy, "symbol": symbol}
             response = requests.post(url, params=params)
             if response.status_code == 200:
                 data = response.json()
-                results.append({
-                    "strategy": strategy,
-                    "symbol": symbol,
-                    "matched": data.get("data", {}).get("match_result", False)
-                })
+                results.append(
+                    {
+                        "strategy": strategy,
+                        "symbol": symbol,
+                        "matched": data.get("data", {}).get("match_result", False),
+                    }
+                )
 
     print(f"\n{'='*60}")
     print("多策略测试结果汇总")
@@ -200,9 +184,9 @@ def test_multiple_strategies():
 
 def main():
     """运行所有测试"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("股票策略系统API测试")
-    print("="*60)
+    print("=" * 60)
 
     tests = [
         ("获取策略定义", test_get_strategy_definitions),
@@ -229,9 +213,9 @@ def main():
             results.append((name, False))
 
     # 打印总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试总结")
-    print("="*60)
+    print("=" * 60)
     for name, success in results:
         status = "✅ 通过" if success else "❌ 失败"
         print(f"{status} - {name}")
@@ -241,9 +225,9 @@ def main():
     print(f"\n总计: {passed}/{total} 个测试通过")
 
     # 提示信息
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("使用说明")
-    print("="*60)
+    print("=" * 60)
     print("1. 访问 http://localhost:8000/api/docs 查看完整API文档")
     print("2. 策略代码列表:")
     print("   - volume_surge: 放量上涨")

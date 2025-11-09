@@ -19,7 +19,7 @@ def test_database_target_enum():
     """测试DatabaseTarget枚举只包含2种数据库"""
     print("\n=== 测试1: DatabaseTarget枚举验证 ===")
 
-    from core.data_classification import DatabaseTarget
+    from src.core.data_classification import DatabaseTarget
 
     targets = [t.value for t in DatabaseTarget]
     print(f"DatabaseTarget包含: {targets}")
@@ -38,8 +38,8 @@ def test_data_routing():
     """测试所有数据分类正确路由"""
     print("\n=== 测试2: 数据路由验证 ===")
 
-    from core.data_classification import DataClassification, DatabaseTarget
-    from core.data_storage_strategy import DataStorageStrategy
+    from src.core.data_classification import DataClassification, DatabaseTarget
+    from src.core.data_storage_strategy import DataStorageStrategy
 
     all_classifications = list(DataClassification)
     print(f"总数据分类数: {len(all_classifications)}")
@@ -64,7 +64,9 @@ def test_data_routing():
 
     assert tdengine_count > 0, "❌ TDengine应至少处理高频时序数据"
     assert postgresql_count > 0, "❌ PostgreSQL应处理其他所有数据"
-    assert tdengine_count + postgresql_count == len(all_classifications), "❌ 路由覆盖不完整"
+    assert tdengine_count + postgresql_count == len(
+        all_classifications
+    ), "❌ 路由覆盖不完整"
 
     print(f"✅ 所有{len(all_classifications)}项数据分类正确路由到2种数据库")
     return True
@@ -75,7 +77,8 @@ def test_data_access_imports():
     print("\n=== 测试3: 数据访问类导入验证 ===")
 
     try:
-        from data_access import TDengineDataAccess, PostgreSQLDataAccess
+        from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+
         print("✅ TDengineDataAccess导入成功")
         print("✅ PostgreSQLDataAccess导入成功")
     except ImportError as e:
@@ -84,14 +87,16 @@ def test_data_access_imports():
 
     # 验证不应存在的类无法导入
     try:
-        from data_access import MySQLDataAccess
+        from src.data_access import MySQLDataAccess
+
         print("❌ MySQLDataAccess不应存在但可以导入")
         return False
     except ImportError:
         print("✅ MySQLDataAccess已移除")
 
     try:
-        from data_access import RedisDataAccess
+        from src.data_access import RedisDataAccess
+
         print("❌ RedisDataAccess不应存在但可以导入")
         return False
     except ImportError:
@@ -152,8 +157,8 @@ def test_routing_statistics():
     """打印路由统计信息"""
     print("\n=== 路由统计摘要 ===")
 
-    from core.data_classification import DatabaseTarget
-    from core.data_storage_strategy import DataStorageStrategy
+    from src.core.data_classification import DatabaseTarget
+    from src.core.data_storage_strategy import DataStorageStrategy
 
     stats = DataStorageStrategy.get_routing_statistics()
 

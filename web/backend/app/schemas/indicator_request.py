@@ -2,6 +2,7 @@
 Pydantic Request Schemas for Indicator API
 定义指标计算API的请求数据模型
 """
+
 from pydantic import BaseModel, Field, validator
 from typing import List, Dict, Any, Optional
 from datetime import date, datetime
@@ -15,25 +16,20 @@ class IndicatorSpec(BaseModel):
     Example:
         {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
     """
-    abbreviation: str = Field(
-        ...,
-        description="指标缩写 (如 SMA, RSI, MACD)",
-        min_length=2,
-        max_length=20
-    )
-    parameters: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="指标参数字典"
-    )
 
-    @validator('abbreviation')
+    abbreviation: str = Field(
+        ..., description="指标缩写 (如 SMA, RSI, MACD)", min_length=2, max_length=20
+    )
+    parameters: Dict[str, Any] = Field(default_factory=dict, description="指标参数字典")
+
+    @validator("abbreviation")
     def abbreviation_must_be_uppercase(cls, v):
         """指标缩写必须为大写"""
         if not v.isupper():
             raise ValueError(f"指标缩写必须为大写: {v}")
         return v
 
-    @validator('parameters')
+    @validator("parameters")
     def parameters_must_be_valid(cls, v):
         """参数值必须为有效类型"""
         for key, value in v.items():
@@ -61,35 +57,24 @@ class IndicatorCalculateRequest(BaseModel):
             "use_cache": true
         }
     """
+
     symbol: str = Field(
         ...,
         description="股票代码 (格式: XXXXXX.SH 或 XXXXXX.SZ)",
         min_length=9,
-        max_length=9
+        max_length=9,
     )
-    start_date: date = Field(
-        ...,
-        description="开始日期 (YYYY-MM-DD)"
-    )
-    end_date: date = Field(
-        ...,
-        description="结束日期 (YYYY-MM-DD)"
-    )
+    start_date: date = Field(..., description="开始日期 (YYYY-MM-DD)")
+    end_date: date = Field(..., description="结束日期 (YYYY-MM-DD)")
     indicators: List[IndicatorSpec] = Field(
-        ...,
-        description="指标列表",
-        min_items=1,
-        max_items=10
+        ..., description="指标列表", min_items=1, max_items=10
     )
-    use_cache: bool = Field(
-        default=True,
-        description="是否使用缓存 (默认true)"
-    )
+    use_cache: bool = Field(default=True, description="是否使用缓存 (默认true)")
 
-    @validator('symbol')
+    @validator("symbol")
     def symbol_must_be_valid_format(cls, v):
         """验证股票代码格式"""
-        pattern = r'^\d{6}\.(SH|SZ)$'
+        pattern = r"^\d{6}\.(SH|SZ)$"
         if not re.match(pattern, v):
             raise ValueError(
                 f"股票代码格式无效: {v}. "
@@ -97,35 +82,29 @@ class IndicatorCalculateRequest(BaseModel):
             )
         return v
 
-    @validator('end_date')
+    @validator("end_date")
     def end_date_must_not_be_future(cls, v):
         """结束日期不能晚于今天"""
         today = date.today()
         if v > today:
-            raise ValueError(
-                f"结束日期不能晚于今天: {v} > {today}"
-            )
+            raise ValueError(f"结束日期不能晚于今天: {v} > {today}")
         return v
 
-    @validator('end_date')
+    @validator("end_date")
     def end_date_must_be_after_start_date(cls, v, values):
         """结束日期必须晚于开始日期"""
-        if 'start_date' in values:
-            start_date = values['start_date']
+        if "start_date" in values:
+            start_date = values["start_date"]
             if v <= start_date:
-                raise ValueError(
-                    f"结束日期必须晚于开始日期: {v} <= {start_date}"
-                )
+                raise ValueError(f"结束日期必须晚于开始日期: {v} <= {start_date}")
 
             # 检查日期范围不超过5年
             days_diff = (v - start_date).days
             if days_diff > 365 * 5:
-                raise ValueError(
-                    f"日期范围不能超过5年: {days_diff} 天 > 1825 天"
-                )
+                raise ValueError(f"日期范围不能超过5年: {days_diff} 天 > 1825 天")
         return v
 
-    @validator('indicators')
+    @validator("indicators")
     def indicators_must_not_have_duplicates(cls, v):
         """检查指标列表中是否有完全相同的指标(包括参数)"""
         # 将每个指标转换为可哈希的元组形式 (abbreviation, sorted(parameters.items()))
@@ -146,9 +125,7 @@ class IndicatorCalculateRequest(BaseModel):
                     duplicates.append(f"{abb}{dict(params)}")
                 seen.add(item)
 
-            raise ValueError(
-                f"指标列表中有完全相同的指标配置: {duplicates}"
-            )
+            raise ValueError(f"指标列表中有完全相同的指标配置: {duplicates}")
         return v
 
 
@@ -165,20 +142,13 @@ class IndicatorConfigCreateRequest(BaseModel):
             ]
         }
     """
-    name: str = Field(
-        ...,
-        description="配置名称",
-        min_length=1,
-        max_length=100
-    )
+
+    name: str = Field(..., description="配置名称", min_length=1, max_length=100)
     indicators: List[IndicatorSpec] = Field(
-        ...,
-        description="指标列表",
-        min_items=1,
-        max_items=20
+        ..., description="指标列表", min_items=1, max_items=20
     )
 
-    @validator('name')
+    @validator("name")
     def name_must_not_be_empty(cls, v):
         """配置名称不能为空或只包含空格"""
         if not v.strip():
@@ -196,20 +166,15 @@ class IndicatorConfigUpdateRequest(BaseModel):
             "indicators": [...]
         }
     """
+
     name: Optional[str] = Field(
-        None,
-        description="配置名称 (可选)",
-        min_length=1,
-        max_length=100
+        None, description="配置名称 (可选)", min_length=1, max_length=100
     )
     indicators: Optional[List[IndicatorSpec]] = Field(
-        None,
-        description="指标列表 (可选)",
-        min_items=1,
-        max_items=20
+        None, description="指标列表 (可选)", min_items=1, max_items=20
     )
 
-    @validator('name')
+    @validator("name")
     def name_must_not_be_empty_if_provided(cls, v):
         """如果提供了配置名称,不能为空或只包含空格"""
         if v is not None and not v.strip():
@@ -220,4 +185,4 @@ class IndicatorConfigUpdateRequest(BaseModel):
         # 至少需要提供一个字段
         @staticmethod
         def schema_extra(schema, model):
-            schema['minProperties'] = 1
+            schema["minProperties"] = 1

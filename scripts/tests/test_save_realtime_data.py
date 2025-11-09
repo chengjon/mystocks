@@ -20,7 +20,7 @@ from scripts.runtime.save_realtime_data import (
     RealtimeDataSaver,
     save_realtime_data_to_db,
 )
-from db_manager.database_manager import DatabaseType
+from src.db_manager.database_manager import DatabaseType
 
 
 def test_basic_save():

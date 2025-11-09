@@ -2,20 +2,30 @@
 机器学习 API 端点
 提供模型训练、预测、评估等功能
 """
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import Dict, Any, List
 import os
 from pathlib import Path
 
 from app.schemas.ml_schemas import (
-    TdxDataRequest, TdxDataResponse,
-    FeatureGenerationRequest, FeatureGenerationResponse,
-    ModelTrainRequest, ModelTrainResponse,
-    ModelPredictRequest, ModelPredictResponse,
-    ModelListResponse, ModelDetailResponse, ModelInfo,
-    HyperparameterSearchRequest, HyperparameterSearchResponse,
-    ModelEvaluationRequest, ModelEvaluationResponse,
-    MLResponse, ErrorResponse
+    TdxDataRequest,
+    TdxDataResponse,
+    FeatureGenerationRequest,
+    FeatureGenerationResponse,
+    ModelTrainRequest,
+    ModelTrainResponse,
+    ModelPredictRequest,
+    ModelPredictResponse,
+    ModelListResponse,
+    ModelDetailResponse,
+    ModelInfo,
+    HyperparameterSearchRequest,
+    HyperparameterSearchResponse,
+    ModelEvaluationRequest,
+    ModelEvaluationResponse,
+    MLResponse,
+    ErrorResponse,
 )
 from app.services.tdx_parser_service import TdxDataService
 from app.services.feature_engineering_service import FeatureEngineeringService
@@ -34,10 +44,10 @@ MODEL_DIR = os.getenv("ML_MODEL_DIR", "./models")
 
 # ==================== 通达信数据相关 ====================
 
+
 @router.post("/tdx/data", response_model=TdxDataResponse)
 async def get_tdx_data(
-    request: TdxDataRequest,
-    current_user: User = Depends(get_current_user)
+    request: TdxDataRequest, current_user: User = Depends(get_current_user)
 ):
     """
     获取通达信股票数据
@@ -51,17 +61,17 @@ async def get_tdx_data(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 转换为字典列表
-        data_list = df.to_dict('records')
+        data_list = df.to_dict("records")
 
         return TdxDataResponse(
             code=request.stock_code,
             market=request.market,
             data=data_list,
-            total_records=len(data_list)
+            total_records=len(data_list),
         )
 
     except Exception as e:
@@ -69,10 +79,7 @@ async def get_tdx_data(
 
 
 @router.get("/tdx/stocks/{market}", response_model=List[str])
-async def list_tdx_stocks(
-    market: str,
-    current_user: User = Depends(get_current_user)
-):
+async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_user)):
     """
     列出可用的股票代码
 
@@ -87,10 +94,10 @@ async def list_tdx_stocks(
 
 # ==================== 特征工程相关 ====================
 
+
 @router.post("/features/generate", response_model=FeatureGenerationResponse)
 async def generate_features(
-    request: FeatureGenerationRequest,
-    current_user: User = Depends(get_current_user)
+    request: FeatureGenerationRequest, current_user: User = Depends(get_current_user)
 ):
     """
     生成特征数据
@@ -107,24 +114,22 @@ async def generate_features(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 生成特征
         X, y, metadata = feature_service.prepare_model_data(
-            df,
-            step=request.step,
-            include_indicators=request.include_indicators
+            df, step=request.step, include_indicators=request.include_indicators
         )
 
         return FeatureGenerationResponse(
             success=True,
             message="特征生成成功",
-            total_samples=metadata['total_samples'],
-            feature_dim=metadata['feature_dim'],
-            step=metadata['step'],
-            feature_columns=metadata['feature_columns'],
-            metadata=metadata
+            total_samples=metadata["total_samples"],
+            feature_dim=metadata["feature_dim"],
+            step=metadata["step"],
+            feature_columns=metadata["feature_columns"],
+            metadata=metadata,
         )
 
     except Exception as e:
@@ -133,10 +138,10 @@ async def generate_features(
 
 # ==================== 模型训练相关 ====================
 
+
 @router.post("/models/train", response_model=ModelTrainResponse)
 async def train_model(
-    request: ModelTrainRequest,
-    current_user: User = Depends(get_current_user)
+    request: ModelTrainRequest, current_user: User = Depends(get_current_user)
 ):
     """
     训练预测模型
@@ -155,7 +160,7 @@ async def train_model(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 生成特征
@@ -166,9 +171,7 @@ async def train_model(
 
         # 训练模型
         metrics = ml_service.train(
-            X, y,
-            test_size=request.test_size,
-            model_params=request.model_params
+            X, y, test_size=request.test_size, model_params=request.model_params
         )
 
         # 保存模型
@@ -178,7 +181,7 @@ async def train_model(
             success=True,
             message=f"模型 {request.model_name} 训练成功",
             model_name=request.model_name,
-            metrics=metrics
+            metrics=metrics,
         )
 
     except Exception as e:
@@ -187,10 +190,10 @@ async def train_model(
 
 # ==================== 模型预测相关 ====================
 
+
 @router.post("/models/predict", response_model=ModelPredictResponse)
 async def predict_with_model(
-    request: ModelPredictRequest,
-    current_user: User = Depends(get_current_user)
+    request: ModelPredictRequest, current_user: User = Depends(get_current_user)
 ):
     """
     使用模型进行预测
@@ -207,8 +210,7 @@ async def predict_with_model(
 
         if not loaded:
             raise HTTPException(
-                status_code=404,
-                detail=f"模型不存在: {request.model_name}"
+                status_code=404, detail=f"模型不存在: {request.model_name}"
             )
 
         # 获取数据
@@ -217,12 +219,12 @@ async def predict_with_model(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 获取模型元数据
         metadata = ml_service.model_metadata
-        step = metadata.get('metrics', {}).get('step', 10)
+        step = metadata.get("metrics", {}).get("step", 10)
 
         # 生成特征（使用最新数据）
         X, y, _ = feature_service.prepare_model_data(df, step=step)
@@ -232,18 +234,20 @@ async def predict_with_model(
             last_X = X.tail(1)
             prediction = ml_service.predict(last_X)[0]
 
-            predictions = [{
-                "date": "T+1",
-                "predicted_price": float(prediction),
-                "confidence": None
-            }]
+            predictions = [
+                {
+                    "date": "T+1",
+                    "predicted_price": float(prediction),
+                    "confidence": None,
+                }
+            ]
 
             return ModelPredictResponse(
                 success=True,
                 message="预测成功",
                 model_name=request.model_name,
                 stock_code=request.stock_code,
-                predictions=predictions
+                predictions=predictions,
             )
         else:
             raise HTTPException(status_code=400, detail="数据不足，无法进行预测")
@@ -256,6 +260,7 @@ async def predict_with_model(
 
 # ==================== 模型管理相关 ====================
 
+
 @router.get("/models", response_model=ModelListResponse)
 async def list_models(current_user: User = Depends(get_current_user)):
     """列出所有已保存的模型"""
@@ -264,8 +269,7 @@ async def list_models(current_user: User = Depends(get_current_user)):
         models = ml_service.list_saved_models()
 
         return ModelListResponse(
-            total=len(models),
-            models=[ModelInfo(**model) for model in models]
+            total=len(models), models=[ModelInfo(**model) for model in models]
         )
 
     except Exception as e:
@@ -274,8 +278,7 @@ async def list_models(current_user: User = Depends(get_current_user)):
 
 @router.get("/models/{model_name}", response_model=ModelDetailResponse)
 async def get_model_detail(
-    model_name: str,
-    current_user: User = Depends(get_current_user)
+    model_name: str, current_user: User = Depends(get_current_user)
 ):
     """获取模型详情"""
     try:
@@ -283,10 +286,7 @@ async def get_model_detail(
         loaded = ml_service.load_model(model_name)
 
         if not loaded:
-            raise HTTPException(
-                status_code=404,
-                detail=f"模型不存在: {model_name}"
-            )
+            raise HTTPException(status_code=404, detail=f"模型不存在: {model_name}")
 
         # 获取特征重要性
         try:
@@ -298,7 +298,7 @@ async def get_model_detail(
             name=model_name,
             metadata=ml_service.model_metadata,
             training_history=ml_service.training_history,
-            feature_importance=feature_importance
+            feature_importance=feature_importance,
         )
 
     except HTTPException:
@@ -309,10 +309,12 @@ async def get_model_detail(
 
 # ==================== 超参数搜索 ====================
 
-@router.post("/models/hyperparameter-search", response_model=HyperparameterSearchResponse)
+
+@router.post(
+    "/models/hyperparameter-search", response_model=HyperparameterSearchResponse
+)
 async def hyperparameter_search(
-    request: HyperparameterSearchRequest,
-    current_user: User = Depends(get_current_user)
+    request: HyperparameterSearchRequest, current_user: User = Depends(get_current_user)
 ):
     """
     超参数搜索
@@ -330,7 +332,7 @@ async def hyperparameter_search(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 生成特征
@@ -341,18 +343,16 @@ async def hyperparameter_search(
 
         # 执行超参数搜索
         result = ml_service.hyperparameter_search(
-            X, y,
-            param_grid=request.param_grid,
-            cv=request.cv
+            X, y, param_grid=request.param_grid, cv=request.cv
         )
 
         return HyperparameterSearchResponse(
             success=True,
             message="超参数搜索完成",
-            best_params=result['best_params'],
-            best_rmse=result['best_rmse'],
-            best_mse=result['best_mse'],
-            cv_results=result['cv_results']
+            best_params=result["best_params"],
+            best_rmse=result["best_rmse"],
+            best_mse=result["best_mse"],
+            cv_results=result["cv_results"],
         )
 
     except Exception as e:
@@ -361,10 +361,10 @@ async def hyperparameter_search(
 
 # ==================== 模型评估 ====================
 
+
 @router.post("/models/evaluate", response_model=ModelEvaluationResponse)
 async def evaluate_model(
-    request: ModelEvaluationRequest,
-    current_user: User = Depends(get_current_user)
+    request: ModelEvaluationRequest, current_user: User = Depends(get_current_user)
 ):
     """
     评估模型性能
@@ -380,8 +380,7 @@ async def evaluate_model(
 
         if not loaded:
             raise HTTPException(
-                status_code=404,
-                detail=f"模型不存在: {request.model_name}"
+                status_code=404, detail=f"模型不存在: {request.model_name}"
             )
 
         # 获取数据
@@ -390,12 +389,12 @@ async def evaluate_model(
         if df is None or df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"未找到股票数据: {request.market}{request.stock_code}"
+                detail=f"未找到股票数据: {request.market}{request.stock_code}",
             )
 
         # 生成特征
         metadata = ml_service.model_metadata
-        step = metadata.get('metrics', {}).get('step', 10)
+        step = metadata.get("metrics", {}).get("step", 10)
         X, y, _ = feature_service.prepare_model_data(df, step=step)
 
         # 评估模型
@@ -405,7 +404,7 @@ async def evaluate_model(
             success=True,
             message="评估完成",
             model_name=request.model_name,
-            metrics=metrics
+            metrics=metrics,
         )
 
     except HTTPException:

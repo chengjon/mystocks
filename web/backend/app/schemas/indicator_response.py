@@ -2,6 +2,7 @@
 Pydantic Response Schemas for Indicator API
 定义指标计算API的响应数据模型
 """
+
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 from datetime import datetime
@@ -18,18 +19,12 @@ class IndicatorValueOutput(BaseModel):
             "display_name": "SMA(20)"
         }
     """
-    output_name: str = Field(
-        ...,
-        description="输出字段名称 (如 sma, macd, rsi)"
-    )
+
+    output_name: str = Field(..., description="输出字段名称 (如 sma, macd, rsi)")
     values: List[Optional[float]] = Field(
-        ...,
-        description="指标值数组 (与日期一一对应, None表示数据不足)"
+        ..., description="指标值数组 (与日期一一对应, None表示数据不足)"
     )
-    display_name: str = Field(
-        ...,
-        description="显示名称 (如 SMA(20), RSI(14))"
-    )
+    display_name: str = Field(..., description="显示名称 (如 SMA(20), RSI(14))")
 
 
 class IndicatorResult(BaseModel):
@@ -52,30 +47,19 @@ class IndicatorResult(BaseModel):
             "error": null
         }
     """
-    abbreviation: str = Field(
-        ...,
-        description="指标缩写"
-    )
-    parameters: Dict[str, Any] = Field(
-        ...,
-        description="使用的参数"
-    )
+
+    abbreviation: str = Field(..., description="指标缩写")
+    parameters: Dict[str, Any] = Field(..., description="使用的参数")
     outputs: List[IndicatorValueOutput] = Field(
-        default_factory=list,
-        description="指标输出列表"
+        default_factory=list, description="指标输出列表"
     )
     panel_type: str = Field(
-        ...,
-        description="面板类型: overlay (叠加主图) 或 oscillator (独立面板)"
+        ..., description="面板类型: overlay (叠加主图) 或 oscillator (独立面板)"
     )
     reference_lines: Optional[List[float]] = Field(
-        None,
-        description="参考线数值 (如 RSI 的 30, 70)"
+        None, description="参考线数值 (如 RSI 的 30, 70)"
     )
-    error: Optional[str] = Field(
-        None,
-        description="错误信息 (如果计算失败)"
-    )
+    error: Optional[str] = Field(None, description="错误信息 (如果计算失败)")
 
 
 class OHLCVData(BaseModel):
@@ -93,33 +77,15 @@ class OHLCVData(BaseModel):
             "turnover": [10800000, 12544000, ...]
         }
     """
-    dates: List[str] = Field(
-        ...,
-        description="日期列表 (YYYY-MM-DD 格式)"
-    )
-    open: List[float] = Field(
-        ...,
-        description="开盘价列表"
-    )
-    high: List[float] = Field(
-        ...,
-        description="最高价列表"
-    )
-    low: List[float] = Field(
-        ...,
-        description="最低价列表"
-    )
-    close: List[float] = Field(
-        ...,
-        description="收盘价列表"
-    )
-    volume: List[float] = Field(
-        ...,
-        description="成交量列表"
-    )
+
+    dates: List[str] = Field(..., description="日期列表 (YYYY-MM-DD 格式)")
+    open: List[float] = Field(..., description="开盘价列表")
+    high: List[float] = Field(..., description="最高价列表")
+    low: List[float] = Field(..., description="最低价列表")
+    close: List[float] = Field(..., description="收盘价列表")
+    volume: List[float] = Field(..., description="成交量列表")
     turnover: List[float] = Field(
-        default_factory=list,
-        description="成交额列表 (可选, 用于EMV和AVP指标)"
+        default_factory=list, description="成交额列表 (可选, 用于EMV和AVP指标)"
     )
 
 
@@ -152,39 +118,15 @@ class IndicatorCalculateResponse(BaseModel):
             "cached": false
         }
     """
-    symbol: str = Field(
-        ...,
-        description="股票代码"
-    )
-    symbol_name: str = Field(
-        ...,
-        description="股票名称"
-    )
-    start_date: str = Field(
-        ...,
-        description="开始日期 (YYYY-MM-DD)"
-    )
-    end_date: str = Field(
-        ...,
-        description="结束日期 (YYYY-MM-DD)"
-    )
-    ohlcv: OHLCVData = Field(
-        ...,
-        description="K线OHLCV数据"
-    )
-    indicators: List[IndicatorResult] = Field(
-        ...,
-        description="指标计算结果列表"
-    )
-    calculation_time_ms: float = Field(
-        ...,
-        description="计算耗时 (毫秒)",
-        ge=0
-    )
-    cached: bool = Field(
-        default=False,
-        description="是否来自缓存"
-    )
+
+    symbol: str = Field(..., description="股票代码")
+    symbol_name: str = Field(..., description="股票名称")
+    start_date: str = Field(..., description="开始日期 (YYYY-MM-DD)")
+    end_date: str = Field(..., description="结束日期 (YYYY-MM-DD)")
+    ohlcv: OHLCVData = Field(..., description="K线OHLCV数据")
+    indicators: List[IndicatorResult] = Field(..., description="指标计算结果列表")
+    calculation_time_ms: float = Field(..., description="计算耗时 (毫秒)", ge=0)
+    cached: bool = Field(default=False, description="是否来自缓存")
 
 
 class IndicatorMetadata(BaseModel):
@@ -219,46 +161,21 @@ class IndicatorMetadata(BaseModel):
             "min_data_points_formula": "timeperiod"
         }
     """
-    abbreviation: str = Field(
-        ...,
-        description="指标缩写"
-    )
-    full_name: str = Field(
-        ...,
-        description="完整英文名称"
-    )
-    chinese_name: str = Field(
-        ...,
-        description="中文名称"
-    )
+
+    abbreviation: str = Field(..., description="指标缩写")
+    full_name: str = Field(..., description="完整英文名称")
+    chinese_name: str = Field(..., description="中文名称")
     category: str = Field(
-        ...,
-        description="指标分类: trend, momentum, volatility, volume, candlestick"
+        ..., description="指标分类: trend, momentum, volatility, volume, candlestick"
     )
-    description: str = Field(
-        ...,
-        description="指标描述"
-    )
-    panel_type: str = Field(
-        ...,
-        description="面板类型: overlay 或 oscillator"
-    )
+    description: str = Field(..., description="指标描述")
+    panel_type: str = Field(..., description="面板类型: overlay 或 oscillator")
     parameters: List[Dict[str, Any]] = Field(
-        default_factory=list,
-        description="参数定义列表"
+        default_factory=list, description="参数定义列表"
     )
-    outputs: List[Dict[str, str]] = Field(
-        ...,
-        description="输出定义列表"
-    )
-    reference_lines: Optional[List[float]] = Field(
-        None,
-        description="参考线数值"
-    )
-    min_data_points_formula: str = Field(
-        ...,
-        description="最小数据点计算公式"
-    )
+    outputs: List[Dict[str, str]] = Field(..., description="输出定义列表")
+    reference_lines: Optional[List[float]] = Field(None, description="参考线数值")
+    min_data_points_formula: str = Field(..., description="最小数据点计算公式")
 
 
 class IndicatorRegistryResponse(BaseModel):
@@ -281,19 +198,10 @@ class IndicatorRegistryResponse(BaseModel):
             ]
         }
     """
-    total_count: int = Field(
-        ...,
-        description="指标总数",
-        ge=0
-    )
-    categories: Dict[str, int] = Field(
-        ...,
-        description="各分类指标数量"
-    )
-    indicators: List[IndicatorMetadata] = Field(
-        ...,
-        description="指标元数据列表"
-    )
+
+    total_count: int = Field(..., description="指标总数", ge=0)
+    categories: Dict[str, int] = Field(..., description="各分类指标数量")
+    indicators: List[IndicatorMetadata] = Field(..., description="指标元数据列表")
 
 
 class IndicatorConfigResponse(BaseModel):
@@ -314,34 +222,14 @@ class IndicatorConfigResponse(BaseModel):
             "last_used_at": "2024-01-03T09:00:00"
         }
     """
-    id: int = Field(
-        ...,
-        description="配置ID"
-    )
-    user_id: int = Field(
-        ...,
-        description="用户ID"
-    )
-    name: str = Field(
-        ...,
-        description="配置名称"
-    )
-    indicators: List[Dict[str, Any]] = Field(
-        ...,
-        description="指标列表 (JSON格式)"
-    )
-    created_at: datetime = Field(
-        ...,
-        description="创建时间"
-    )
-    updated_at: datetime = Field(
-        ...,
-        description="更新时间"
-    )
-    last_used_at: Optional[datetime] = Field(
-        None,
-        description="最后使用时间"
-    )
+
+    id: int = Field(..., description="配置ID")
+    user_id: int = Field(..., description="用户ID")
+    name: str = Field(..., description="配置名称")
+    indicators: List[Dict[str, Any]] = Field(..., description="指标列表 (JSON格式)")
+    created_at: datetime = Field(..., description="创建时间")
+    updated_at: datetime = Field(..., description="更新时间")
+    last_used_at: Optional[datetime] = Field(None, description="最后使用时间")
 
 
 class IndicatorConfigListResponse(BaseModel):
@@ -357,15 +245,9 @@ class IndicatorConfigListResponse(BaseModel):
             ]
         }
     """
-    total_count: int = Field(
-        ...,
-        description="配置总数",
-        ge=0
-    )
-    configs: List[IndicatorConfigResponse] = Field(
-        ...,
-        description="配置列表"
-    )
+
+    total_count: int = Field(..., description="配置总数", ge=0)
+    configs: List[IndicatorConfigResponse] = Field(..., description="配置列表")
 
 
 class ErrorDetail(BaseModel):
@@ -383,18 +265,10 @@ class ErrorDetail(BaseModel):
             }
         }
     """
-    error_code: str = Field(
-        ...,
-        description="错误代码"
-    )
-    error_message: str = Field(
-        ...,
-        description="错误消息"
-    )
-    details: Optional[Dict[str, Any]] = Field(
-        None,
-        description="错误详细信息"
-    )
+
+    error_code: str = Field(..., description="错误代码")
+    error_message: str = Field(..., description="错误消息")
+    details: Optional[Dict[str, Any]] = Field(None, description="错误详细信息")
 
 
 class APIResponse(BaseModel):
@@ -409,19 +283,8 @@ class APIResponse(BaseModel):
             "timestamp": "2024-01-01T10:00:00"
         }
     """
-    success: bool = Field(
-        ...,
-        description="请求是否成功"
-    )
-    data: Optional[Any] = Field(
-        None,
-        description="响应数据"
-    )
-    error: Optional[ErrorDetail] = Field(
-        None,
-        description="错误详情 (如果失败)"
-    )
-    timestamp: datetime = Field(
-        default_factory=datetime.now,
-        description="响应时间戳"
-    )
+
+    success: bool = Field(..., description="请求是否成功")
+    data: Optional[Any] = Field(None, description="响应数据")
+    error: Optional[ErrorDetail] = Field(None, description="错误详情 (如果失败)")
+    timestamp: datetime = Field(default_factory=datetime.now, description="响应时间戳")

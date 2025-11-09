@@ -32,15 +32,15 @@ logger = logging.getLogger(__name__)
 
 # 表名白名单 - 防止 SQL 注入
 ALLOWED_QUERY_TABLES = {
-    'qs_1': 'wencai_qs_1',
-    'qs_2': 'wencai_qs_2',
-    'qs_3': 'wencai_qs_3',
-    'qs_4': 'wencai_qs_4',
-    'qs_5': 'wencai_qs_5',
-    'qs_6': 'wencai_qs_6',
-    'qs_7': 'wencai_qs_7',
-    'qs_8': 'wencai_qs_8',
-    'qs_9': 'wencai_qs_9',
+    "qs_1": "wencai_qs_1",
+    "qs_2": "wencai_qs_2",
+    "qs_3": "wencai_qs_3",
+    "qs_4": "wencai_qs_4",
+    "qs_5": "wencai_qs_5",
+    "qs_6": "wencai_qs_6",
+    "qs_7": "wencai_qs_7",
+    "qs_8": "wencai_qs_8",
+    "qs_9": "wencai_qs_9",
 }
 
 
@@ -60,8 +60,8 @@ class WencaiService:
         """
         self.db = db
         self.adapter = WencaiDataSource(
-            timeout=getattr(settings, 'WENCAI_TIMEOUT', 30),
-            retry_count=getattr(settings, 'WENCAI_RETRY_COUNT', 3)
+            timeout=getattr(settings, "WENCAI_TIMEOUT", 30),
+            retry_count=getattr(settings, "WENCAI_RETRY_COUNT", 3),
         )
         # 复用全局 MySQL 引擎，避免每次请求创建新的连接池
         self.engine = get_mysql_engine()
@@ -83,7 +83,9 @@ class WencaiService:
         """
         table_name = ALLOWED_QUERY_TABLES.get(query_name)
         if not table_name:
-            raise ValueError(f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}")
+            raise ValueError(
+                f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}"
+            )
         return table_name
 
     def get_all_queries(self) -> List[Dict[str, Any]]:
@@ -111,19 +113,17 @@ class WencaiService:
             查询信息，不存在返回None
         """
         try:
-            query = self.db.query(WencaiQuery).filter(
-                WencaiQuery.query_name == query_name
-            ).first()
+            query = (
+                self.db.query(WencaiQuery)
+                .filter(WencaiQuery.query_name == query_name)
+                .first()
+            )
             return query.to_dict() if query else None
         except Exception as e:
             logger.error(f"Failed to get query {query_name}: {str(e)}")
             return None
 
-    def fetch_and_save(
-        self,
-        query_name: str,
-        pages: int = 1
-    ) -> Dict[str, Any]:
+    def fetch_and_save(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
         """
         获取并保存查询结果（核心方法）
 
@@ -145,10 +145,10 @@ class WencaiService:
         if not query_info:
             raise ValueError(f"Query '{query_name}' not found")
 
-        if not query_info.get('is_active'):
+        if not query_info.get("is_active"):
             raise ValueError(f"Query '{query_name}' is not active")
 
-        query_text = query_info.get('query_text')
+        query_text = query_info.get("query_text")
         logger.info(f"Query text: {query_text}")
 
         # 2. 调用适配器获取数据
@@ -157,11 +157,11 @@ class WencaiService:
             if raw_data.empty:
                 logger.warning("No data fetched from Wencai API")
                 return {
-                    'success': False,
-                    'message': '未获取到数据',
-                    'total_records': 0,
-                    'new_records': 0,
-                    'duplicate_records': 0
+                    "success": False,
+                    "message": "未获取到数据",
+                    "total_records": 0,
+                    "new_records": 0,
+                    "duplicate_records": 0,
                 }
 
             logger.info(f"Fetched {len(raw_data)} records from Wencai")
@@ -184,25 +184,21 @@ class WencaiService:
             logger.info(f"Save result: {save_result}")
 
             return {
-                'success': True,
-                'message': '数据获取成功',
-                'query_name': query_name,
-                'total_records': len(cleaned_data),
-                'new_records': save_result['new_records'],
-                'duplicate_records': save_result['duplicate_records'],
-                'table_name': save_result['table_name'],
-                'fetch_time': datetime.now()
+                "success": True,
+                "message": "数据获取成功",
+                "query_name": query_name,
+                "total_records": len(cleaned_data),
+                "new_records": save_result["new_records"],
+                "duplicate_records": save_result["duplicate_records"],
+                "table_name": save_result["table_name"],
+                "fetch_time": datetime.now(),
             }
 
         except Exception as e:
             logger.error(f"Failed to save data: {str(e)}", exc_info=True)
             raise
 
-    def _save_to_database(
-        self,
-        data: pd.DataFrame,
-        query_name: str
-    ) -> Dict[str, Any]:
+    def _save_to_database(self, data: pd.DataFrame, query_name: str) -> Dict[str, Any]:
         """
         保存数据到MySQL并去重
 
@@ -228,19 +224,18 @@ class WencaiService:
                 try:
                     # 读取现有数据（排除fetch_time列）
                     existing_data = pd.read_sql_table(table_name, self.engine)
-                    existing_data = existing_data.drop(columns=['fetch_time'], errors='ignore')
+                    existing_data = existing_data.drop(
+                        columns=["fetch_time"], errors="ignore"
+                    )
 
                     # 准备新数据（排除fetch_time列进行比较）
-                    new_data = data.drop(columns=['fetch_time'], errors='ignore')
+                    new_data = data.drop(columns=["fetch_time"], errors="ignore")
 
                     # 找出唯一记录
                     merged = pd.merge(
-                        new_data,
-                        existing_data,
-                        how='left',
-                        indicator=True
+                        new_data, existing_data, how="left", indicator=True
                     )
-                    unique_rows = merged['_merge'] == 'left_only'
+                    unique_rows = merged["_merge"] == "left_only"
                     data_to_save = data[unique_rows].copy()
 
                     duplicate_count = len(data) - len(data_to_save)
@@ -263,18 +258,18 @@ class WencaiService:
                 data_to_save.to_sql(
                     name=table_name,
                     con=self.engine,
-                    if_exists='append',
+                    if_exists="append",
                     index=False,
-                    chunksize=1000
+                    chunksize=1000,
                 )
                 logger.info(f"✅ Saved {len(data_to_save)} records to {table_name}")
             else:
                 logger.info("⚠️ No new records to save")
 
             return {
-                'table_name': table_name,
-                'new_records': len(data_to_save),
-                'duplicate_records': duplicate_count
+                "table_name": table_name,
+                "new_records": len(data_to_save),
+                "duplicate_records": duplicate_count,
             }
 
         except sqlalchemy_exc.SQLAlchemyError as e:
@@ -285,10 +280,7 @@ class WencaiService:
             raise
 
     def get_query_results(
-        self,
-        query_name: str,
-        limit: int = 100,
-        offset: int = 0
+        self, query_name: str, limit: int = 100, offset: int = 0
     ) -> Dict[str, Any]:
         """
         获取查询结果
@@ -303,17 +295,19 @@ class WencaiService:
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
-        logger.info(f"Getting results from {table_name}, limit={limit}, offset={offset}")
+        logger.info(
+            f"Getting results from {table_name}, limit={limit}, offset={offset}"
+        )
 
         try:
             inspector = inspect(self.engine)
             if not inspector.has_table(table_name):
                 return {
-                    'query_name': query_name,
-                    'total': 0,
-                    'results': [],
-                    'columns': [],
-                    'message': 'Table does not exist yet'
+                    "query_name": query_name,
+                    "total": 0,
+                    "results": [],
+                    "columns": [],
+                    "message": "Table does not exist yet",
                 }
 
             # 查询总数
@@ -340,22 +334,18 @@ class WencaiService:
                 latest_fetch_time = conn.execute(latest_query).scalar()
 
             return {
-                'query_name': query_name,
-                'total': total,
-                'results': rows,
-                'columns': list(columns),
-                'latest_fetch_time': latest_fetch_time
+                "query_name": query_name,
+                "total": total,
+                "results": rows,
+                "columns": list(columns),
+                "latest_fetch_time": latest_fetch_time,
             }
 
         except Exception as e:
             logger.error(f"Failed to get results: {str(e)}")
             raise
 
-    def get_query_history(
-        self,
-        query_name: str,
-        days: int = 7
-    ) -> Dict[str, Any]:
+    def get_query_history(self, query_name: str, days: int = 7) -> Dict[str, Any]:
         """
         获取查询历史统计
 
@@ -374,10 +364,10 @@ class WencaiService:
             inspector = inspect(self.engine)
             if not inspector.has_table(table_name):
                 return {
-                    'query_name': query_name,
-                    'date_range': [],
-                    'history': [],
-                    'total_days': 0
+                    "query_name": query_name,
+                    "date_range": [],
+                    "history": [],
+                    "total_days": 0,
                 }
 
             # 计算日期范围
@@ -398,29 +388,28 @@ class WencaiService:
                     ORDER BY date DESC
                     """
                 )
-                result = conn.execute(
-                    history_query,
-                    {"start_date": start_date}
-                )
+                result = conn.execute(history_query, {"start_date": start_date})
 
                 history = []
                 for row in result:
-                    history.append({
-                        'date': row.date.strftime('%Y-%m-%d'),
-                        'total_records': row.total_records,
-                        'fetch_count': row.fetch_count
-                    })
+                    history.append(
+                        {
+                            "date": row.date.strftime("%Y-%m-%d"),
+                            "total_records": row.total_records,
+                            "fetch_count": row.fetch_count,
+                        }
+                    )
 
             date_range = [
-                start_date.strftime('%Y-%m-%d'),
-                end_date.strftime('%Y-%m-%d')
+                start_date.strftime("%Y-%m-%d"),
+                end_date.strftime("%Y-%m-%d"),
             ]
 
             return {
-                'query_name': query_name,
-                'date_range': date_range,
-                'history': history,
-                'total_days': len(history)
+                "query_name": query_name,
+                "date_range": date_range,
+                "history": history,
+                "total_days": len(history),
             }
 
         except Exception as e:
@@ -429,7 +418,7 @@ class WencaiService:
 
     def close(self):
         """关闭资源"""
-        if hasattr(self, 'adapter'):
+        if hasattr(self, "adapter"):
             self.adapter.close()
         logger.info("WencaiService closed")
 

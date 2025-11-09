@@ -151,7 +151,7 @@ class DataClassification(str, Enum):
             cls.DAILY_KLINE.value,
             cls.ORDER_BOOK_DEPTH.value,
             cls.LEVEL2_SNAPSHOT.value,
-            cls.INDEX_QUOTES.value
+            cls.INDEX_QUOTES.value,
         ]
 
     @classmethod
@@ -166,7 +166,7 @@ class DataClassification(str, Enum):
             cls.FUNDAMENTAL_METRICS.value,
             cls.DIVIDEND_DATA.value,
             cls.SHAREHOLDER_DATA.value,
-            cls.MARKET_RULES.value
+            cls.MARKET_RULES.value,
         ]
 
     @classmethod
@@ -178,7 +178,7 @@ class DataClassification(str, Enum):
             cls.MODEL_OUTPUT.value,
             cls.TRADE_SIGNALS.value,
             cls.BACKTEST_RESULTS.value,
-            cls.RISK_METRICS.value
+            cls.RISK_METRICS.value,
         ]
 
     @classmethod
@@ -191,7 +191,7 @@ class DataClassification(str, Enum):
             cls.REALTIME_POSITIONS.value,
             cls.REALTIME_ACCOUNT.value,
             cls.FUND_FLOW.value,
-            cls.ORDER_QUEUE.value
+            cls.ORDER_QUEUE.value,
         ]
 
     @classmethod
@@ -203,7 +203,7 @@ class DataClassification(str, Enum):
             cls.STRATEGY_PARAMS.value,
             cls.SYSTEM_CONFIG.value,
             cls.DATA_QUALITY_METRICS.value,
-            cls.USER_CONFIG.value
+            cls.USER_CONFIG.value,
         ]
 
 

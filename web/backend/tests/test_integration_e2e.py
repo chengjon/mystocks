@@ -2,6 +2,7 @@
 End-to-End Integration Tests
 端到端集成测试 - 验证完整数据流
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
@@ -32,14 +33,14 @@ class TestE2EIndicatorCalculation:
 
         request_data = {
             "symbol": "600519.SH",
-            "start_date": start_date.strftime('%Y-%m-%d'),
-            "end_date": end_date.strftime('%Y-%m-%d'),
+            "start_date": start_date.strftime("%Y-%m-%d"),
+            "end_date": end_date.strftime("%Y-%m-%d"),
             "indicators": [
                 {"abbreviation": "SMA", "parameters": {"timeperiod": 5}},
                 {"abbreviation": "SMA", "parameters": {"timeperiod": 10}},
-                {"abbreviation": "RSI", "parameters": {"timeperiod": 14}}
+                {"abbreviation": "RSI", "parameters": {"timeperiod": 14}},
             ],
-            "use_cache": False
+            "use_cache": False,
         }
 
         # 执行请求
@@ -47,8 +48,11 @@ class TestE2EIndicatorCalculation:
 
         # 验证响应
         # Note: 可能返回 200(成功), 404(无数据), 或 422(日期无效)
-        assert response.status_code in [200, 404, 422], \
-            f"Unexpected status code: {response.status_code}"
+        assert response.status_code in [
+            200,
+            404,
+            422,
+        ], f"Unexpected status code: {response.status_code}"
 
         if response.status_code == 200:
             data = response.json()
@@ -82,7 +86,9 @@ class TestE2EIndicatorCalculation:
             # 验证计算时间
             assert data["calculation_time_ms"] > 0
 
-            print(f"✅ E2E Test Passed: Calculated {len(data['indicators'])} indicators")
+            print(
+                f"✅ E2E Test Passed: Calculated {len(data['indicators'])} indicators"
+            )
             print(f"   Data points: {len(ohlcv['dates'])}")
             print(f"   Calculation time: {data['calculation_time_ms']:.2f}ms")
 
@@ -119,9 +125,7 @@ class TestE2EIndicatorCalculation:
             "symbol": "INVALID",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ]
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -137,9 +141,7 @@ class TestE2EIndicatorCalculation:
             "symbol": "600519.SH",
             "start_date": "2024-12-31",  # 开始日期晚于结束日期
             "end_date": "2024-01-01",
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ]
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
         }
 
         response = client.post("/api/indicators/calculate", json=request_data)
@@ -160,16 +162,15 @@ class TestE2EIndicatorCalculation:
 
         request_data = {
             "symbol": "600519.SH",
-            "start_date": start_date.strftime('%Y-%m-%d'),
-            "end_date": end_date.strftime('%Y-%m-%d'),
-            "indicators": [
-                {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
-            ],
-            "use_cache": False
+            "start_date": start_date.strftime("%Y-%m-%d"),
+            "end_date": end_date.strftime("%Y-%m-%d"),
+            "indicators": [{"abbreviation": "SMA", "parameters": {"timeperiod": 20}}],
+            "use_cache": False,
         }
 
         # 执行多次请求,测量性能
         import time
+
         times = []
 
         for _ in range(3):
@@ -207,26 +208,24 @@ class TestDataServiceIntegration:
 
         try:
             df, ohlcv_data = data_service.get_daily_ohlcv(
-                symbol="000001.SZ",
-                start_date=start_date,
-                end_date=end_date
+                symbol="000001.SZ", start_date=start_date, end_date=end_date
             )
 
             # 验证数据格式
             assert len(df) > 0, "DataFrame should not be empty"
-            assert 'trade_date' in df.columns
-            assert 'open' in df.columns
-            assert 'high' in df.columns
-            assert 'low' in df.columns
-            assert 'close' in df.columns
-            assert 'volume' in df.columns
+            assert "trade_date" in df.columns
+            assert "open" in df.columns
+            assert "high" in df.columns
+            assert "low" in df.columns
+            assert "close" in df.columns
+            assert "volume" in df.columns
 
             # 验证OHLCV数组
-            assert 'open' in ohlcv_data
-            assert 'high' in ohlcv_data
-            assert 'low' in ohlcv_data
-            assert 'close' in ohlcv_data
-            assert 'volume' in ohlcv_data
+            assert "open" in ohlcv_data
+            assert "high" in ohlcv_data
+            assert "low" in ohlcv_data
+            assert "close" in ohlcv_data
+            assert "volume" in ohlcv_data
 
             print(f"✅ DataService Test Passed: Generated {len(df)} data points")
 
@@ -254,8 +253,8 @@ class TestDataServiceIntegration:
 
 if __name__ == "__main__":
     """运行集成测试"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("Running End-to-End Integration Tests")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     pytest.main([__file__, "-v", "--tb=short"])

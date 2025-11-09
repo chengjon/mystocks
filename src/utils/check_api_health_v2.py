@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''
+"""
 # 功能：Web API健康检查工具 v2.0 - 验证短期优化改进后的API端点
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -11,7 +11,7 @@
 #   - 自动获取JWT token进行认证测试
 #   - 生成详细的测试报告
 # 版权：MyStocks Project © 2025
-'''
+"""
 
 import requests
 import json
@@ -23,14 +23,17 @@ BASE_URL = "http://localhost:8000"
 TEST_USERNAME = "admin"
 TEST_PASSWORD = "admin123"
 
+
 class Colors:
     """终端颜色"""
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
+
+    GREEN = "\033[92m"
+    RED = "\033[91m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    BOLD = "\033[1m"
+    END = "\033[0m"
+
 
 class APIHealthChecker:
     """API健康检查器"""
@@ -72,11 +75,8 @@ class APIHealthChecker:
             # 尝试获取token
             resp = requests.post(
                 f"{BASE_URL}/api/auth/token",
-                data={
-                    "username": TEST_USERNAME,
-                    "password": TEST_PASSWORD
-                },
-                timeout=5
+                data={"username": TEST_USERNAME, "password": TEST_PASSWORD},
+                timeout=5,
             )
 
             if resp.status_code == 200:
@@ -88,9 +88,16 @@ class APIHealthChecker:
         except Exception as e:
             return False, str(e)
 
-    def test_endpoint(self, name: str, method: str, url: str, priority: str,
-                     need_auth: bool = False, params: Dict = None,
-                     data: Dict = None) -> Dict:
+    def test_endpoint(
+        self,
+        name: str,
+        method: str,
+        url: str,
+        priority: str,
+        need_auth: bool = False,
+        params: Dict = None,
+        data: Dict = None,
+    ) -> Dict:
         """测试单个API端点"""
         headers = {}
         if need_auth and self.token:
@@ -107,7 +114,7 @@ class APIHealthChecker:
                     "name": name,
                     "status": "SKIP",
                     "priority": priority,
-                    "error": f"不支持的HTTP方法: {method}"
+                    "error": f"不支持的HTTP方法: {method}",
                 }
 
             # 记录结果
@@ -118,7 +125,7 @@ class APIHealthChecker:
                 "priority": priority,
                 "status_code": resp.status_code,
                 "response_time": resp.elapsed.total_seconds() * 1000,  # ms
-                "need_auth": need_auth
+                "need_auth": need_auth,
             }
 
             if resp.status_code == 200:
@@ -153,21 +160,21 @@ class APIHealthChecker:
                 "name": name,
                 "status": "FAIL",
                 "priority": priority,
-                "error": "请求超时"
+                "error": "请求超时",
             }
         except requests.exceptions.ConnectionError:
             return {
                 "name": name,
                 "status": "FAIL",
                 "priority": priority,
-                "error": "连接失败"
+                "error": "连接失败",
             }
         except Exception as e:
             return {
                 "name": name,
                 "status": "FAIL",
                 "priority": priority,
-                "error": str(e)
+                "error": str(e),
             }
 
     def run_tests(self):
@@ -204,14 +211,14 @@ class APIHealthChecker:
                 "method": "GET",
                 "url": f"{BASE_URL}/api/system/health",
                 "priority": "P2",
-                "need_auth": False
+                "need_auth": False,
             },
             {
                 "name": "数据源列表",
                 "method": "GET",
                 "url": f"{BASE_URL}/api/system/datasources",
                 "priority": "P3",
-                "need_auth": False
+                "need_auth": False,
             },
             {
                 "name": "实时行情",
@@ -219,7 +226,7 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/market/quotes",
                 "priority": "P1",
                 "need_auth": False,
-                "params": {"symbols": "000001,600519"}
+                "params": {"symbols": "000001,600519"},
             },
             {
                 "name": "股票列表",
@@ -227,7 +234,7 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/market/stocks",
                 "priority": "P1",
                 "need_auth": False,
-                "params": {"limit": 10}
+                "params": {"limit": 10},
             },
             {
                 "name": "K线数据",
@@ -235,7 +242,7 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/data/kline",
                 "priority": "P2",
                 "need_auth": True,
-                "params": {"symbol": "000001.SZ", "limit": 10}
+                "params": {"symbol": "000001.SZ", "limit": 10},
             },
             {
                 "name": "财务数据",
@@ -243,16 +250,15 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/data/financial",
                 "priority": "P2",
                 "need_auth": True,
-                "params": {"symbol": "000001", "report_type": "balance", "limit": 5}
+                "params": {"symbol": "000001", "report_type": "balance", "limit": 5},
             },
-
             # 已有端点 (4个)
             {
                 "name": "TDX实时行情",
                 "method": "GET",
                 "url": f"{BASE_URL}/api/tdx/realtime/000001",
                 "priority": "P1",
-                "need_auth": False
+                "need_auth": False,
             },
             {
                 "name": "TDX K线数据",
@@ -260,7 +266,7 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/tdx/kline/000001",
                 "priority": "P1",
                 "need_auth": False,
-                "params": {"period": "daily", "count": 10}
+                "params": {"period": "daily", "count": 10},
             },
             {
                 "name": "用户登录",
@@ -268,7 +274,7 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/auth/login",
                 "priority": "P1",
                 "need_auth": False,
-                "data": {"username": TEST_USERNAME, "password": TEST_PASSWORD}
+                "data": {"username": TEST_USERNAME, "password": TEST_PASSWORD},
             },
             {
                 "name": "技术指标计算",
@@ -276,8 +282,8 @@ class APIHealthChecker:
                 "url": f"{BASE_URL}/api/indicators/calculate",
                 "priority": "P2",
                 "need_auth": True,
-                "data": {"symbol": "000001", "indicator": "MA", "period": 20}
-            }
+                "data": {"symbol": "000001", "indicator": "MA", "period": 20},
+            },
         ]
 
         # 执行测试
@@ -288,18 +294,22 @@ class APIHealthChecker:
 
             # 打印结果
             if result["status"] == "PASS":
-                detail = f"Status {result.get('status_code', 'N/A')}, " \
-                        f"响应时间: {result.get('response_time', 0):.0f}ms"
+                detail = (
+                    f"Status {result.get('status_code', 'N/A')}, "
+                    f"响应时间: {result.get('response_time', 0):.0f}ms"
+                )
                 if "data_keys" in result:
                     detail += f", 返回字段: {', '.join(result['data_keys'][:5])}"
-                self.print_result(test_case['name'], "PASS", detail)
+                self.print_result(test_case["name"], "PASS", detail)
             elif result["status"] == "FAIL":
-                error_msg = result.get('error', '未知错误')
-                if 'status_code' in result:
+                error_msg = result.get("error", "未知错误")
+                if "status_code" in result:
                     error_msg = f"Status {result['status_code']}: {error_msg}"
-                self.print_result(test_case['name'], "FAIL", error_msg)
+                self.print_result(test_case["name"], "FAIL", error_msg)
             else:
-                self.print_result(test_case['name'], "WARN", result.get('error', '警告'))
+                self.print_result(
+                    test_case["name"], "WARN", result.get("error", "警告")
+                )
 
             print()  # 空行
 
@@ -326,7 +336,9 @@ class APIHealthChecker:
         # 按优先级统计
         print(f"\n{Colors.BOLD}按优先级统计:{Colors.END}")
         for priority in ["P1", "P2", "P3"]:
-            priority_results = [r for r in self.results if r.get("priority") == priority]
+            priority_results = [
+                r for r in self.results if r.get("priority") == priority
+            ]
             if priority_results:
                 p_total = len(priority_results)
                 p_passed = sum(1 for r in priority_results if r["status"] == "PASS")
@@ -335,7 +347,9 @@ class APIHealthChecker:
 
         # 性能统计
         print(f"\n{Colors.BOLD}响应时间统计:{Colors.END}")
-        response_times = [r.get("response_time", 0) for r in self.results if r["status"] == "PASS"]
+        response_times = [
+            r.get("response_time", 0) for r in self.results if r["status"] == "PASS"
+        ]
         if response_times:
             avg_time = sum(response_times) / len(response_times)
             max_time = max(response_times)
@@ -349,10 +363,28 @@ class APIHealthChecker:
 
         checks = [
             ("API覆盖率 ≥ 80%", pass_rate >= 80),
-            ("所有P1端点可用", all(r["status"] == "PASS" for r in self.results if r.get("priority") == "P1" and r.get("name") not in ["用户登录", "技术指标计算"])),
-            ("新增6个端点至少5个可用", sum(1 for r in self.results[:6] if r["status"] == "PASS") >= 5),
-            ("TDX核心功能100%可用", all(r["status"] == "PASS" for r in self.results if "TDX" in r.get("name", ""))),
-            ("平均响应时间 < 500ms", avg_time < 500 if response_times else False)
+            (
+                "所有P1端点可用",
+                all(
+                    r["status"] == "PASS"
+                    for r in self.results
+                    if r.get("priority") == "P1"
+                    and r.get("name") not in ["用户登录", "技术指标计算"]
+                ),
+            ),
+            (
+                "新增6个端点至少5个可用",
+                sum(1 for r in self.results[:6] if r["status"] == "PASS") >= 5,
+            ),
+            (
+                "TDX核心功能100%可用",
+                all(
+                    r["status"] == "PASS"
+                    for r in self.results
+                    if "TDX" in r.get("name", "")
+                ),
+            ),
+            ("平均响应时间 < 500ms", avg_time < 500 if response_times else False),
         ]
 
         all_passed = True
@@ -365,7 +397,9 @@ class APIHealthChecker:
 
         print()
         if all_passed:
-            print(f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}")
+            print(
+                f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}"
+            )
         else:
             print(f"{Colors.YELLOW}⚠️  部分验收标准未通过，需要进一步优化。{Colors.END}")
 

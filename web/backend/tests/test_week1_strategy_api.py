@@ -11,6 +11,7 @@ Architecture Requirements:
 - Uses MonitoringDatabase for operation logging
 - Uses DataClassification for data routing
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime
@@ -42,8 +43,7 @@ class TestStrategyCRUD:
         Expected: 200 OK with pagination metadata
         """
         response = test_client.get(
-            "/api/v1/strategy/strategies",
-            params={"page": 1, "page_size": 10}
+            "/api/v1/strategy/strategies", params={"page": 1, "page_size": 10}
         )
 
         assert response.status_code == 200
@@ -58,8 +58,7 @@ class TestStrategyCRUD:
         Expected: 200 OK with filtered results
         """
         response = test_client.get(
-            "/api/v1/strategy/strategies",
-            params={"status": "active"}
+            "/api/v1/strategy/strategies", params={"status": "active"}
         )
 
         assert response.status_code == 200
@@ -72,13 +71,14 @@ class TestStrategyCRUD:
         Expected: 201 Created with strategy ID
         """
         response = test_client.post(
-            "/api/v1/strategy/strategies",
-            json=sample_strategy_data
+            "/api/v1/strategy/strategies", json=sample_strategy_data
         )
 
         # Note: May return 201 (created) or error if database not available
-        assert response.status_code in [201, 500], \
-            f"Unexpected status: {response.status_code}, body: {response.text}"
+        assert response.status_code in [
+            201,
+            500,
+        ], f"Unexpected status: {response.status_code}, body: {response.text}"
 
         if response.status_code == 201:
             data = response.json()
@@ -93,16 +93,18 @@ class TestStrategyCRUD:
         """
         invalid_data = {
             "name": "",  # Empty name should fail validation
-            "strategy_type": "invalid_type"
+            "strategy_type": "invalid_type",
         }
 
-        response = test_client.post(
-            "/api/v1/strategy/strategies",
-            json=invalid_data
-        )
+        response = test_client.post("/api/v1/strategy/strategies", json=invalid_data)
 
         # Should fail validation or return error
-        assert response.status_code in [200, 400, 422, 500]  # 200 if validation not implemented
+        assert response.status_code in [
+            200,
+            400,
+            422,
+            500,
+        ]  # 200 if validation not implemented
 
     def test_get_strategy_by_id_not_found(self, test_client):
         """
@@ -119,8 +121,7 @@ class TestStrategyCRUD:
         Expected: 404 Not Found for non-existent ID
         """
         response = test_client.put(
-            "/api/v1/strategy/strategies/99999",
-            json=sample_strategy_data
+            "/api/v1/strategy/strategies/99999", json=sample_strategy_data
         )
 
         assert response.status_code in [404, 500]
@@ -162,8 +163,7 @@ class TestModelManagement:
         }
 
         response = test_client.post(
-            "/api/v1/strategy/models/train",
-            json=incomplete_data
+            "/api/v1/strategy/models/train", json=incomplete_data
         )
 
         assert response.status_code in [400, 422, 500]
@@ -207,8 +207,7 @@ class TestBacktestExecution:
         }
 
         response = test_client.post(
-            "/api/v1/strategy/backtest/run",
-            json=incomplete_data
+            "/api/v1/strategy/backtest/run", json=incomplete_data
         )
 
         assert response.status_code in [400, 422, 500]
@@ -227,9 +226,7 @@ class TestBacktestExecution:
         Test GET /api/v1/strategy/backtest/results/{backtest_id}/chart-data
         Expected: 404 Not Found
         """
-        response = test_client.get(
-            "/api/v1/strategy/backtest/results/99999/chart-data"
-        )
+        response = test_client.get("/api/v1/strategy/backtest/results/99999/chart-data")
 
         assert response.status_code in [404, 500]
 
@@ -245,8 +242,7 @@ class TestStrategyAPIIntegration:
         """
         # Step 1: Create strategy
         create_response = test_client.post(
-            "/api/v1/strategy/strategies",
-            json=sample_strategy_data
+            "/api/v1/strategy/strategies", json=sample_strategy_data
         )
 
         # Skip if database not available
@@ -260,16 +256,13 @@ class TestStrategyAPIIntegration:
         updated_data["status"] = "active"
 
         update_response = test_client.put(
-            f"/api/v1/strategy/strategies/{strategy_id}",
-            json=updated_data
+            f"/api/v1/strategy/strategies/{strategy_id}", json=updated_data
         )
 
         assert update_response.status_code in [200, 500]
 
         # Step 3: Get strategy
-        get_response = test_client.get(
-            f"/api/v1/strategy/strategies/{strategy_id}"
-        )
+        get_response = test_client.get(f"/api/v1/strategy/strategies/{strategy_id}")
 
         assert get_response.status_code in [200, 500]
 
@@ -310,8 +303,4 @@ class TestStrategyAPIIntegration:
 
 
 # Test markers for different test categories
-pytestmark = [
-    pytest.mark.e2e,
-    pytest.mark.week1,
-    pytest.mark.strategy
-]
+pytestmark = [pytest.mark.e2e, pytest.mark.week1, pytest.mark.strategy]

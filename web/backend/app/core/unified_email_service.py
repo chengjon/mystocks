@@ -45,6 +45,7 @@ logger = structlog.get_logger()
 
 class EmailServiceError(Exception):
     """Email service error"""
+
     pass
 
 
@@ -89,7 +90,7 @@ class UnifiedEmailService:
         password: Optional[str] = None,
         use_tls: bool = True,
         from_name: str = "MyStocks",
-        timeout: int = 30
+        timeout: int = 30,
     ):
         """
         Initialize email service
@@ -160,7 +161,7 @@ class UnifiedEmailService:
             return {
                 "success": False,
                 "message": "Email service not configured",
-                "error": "SMTP_USERNAME and SMTP_PASSWORD not set"
+                "error": "SMTP_USERNAME and SMTP_PASSWORD not set",
             }
 
         # Normalize addresses
@@ -182,16 +183,12 @@ class UnifiedEmailService:
             # Send email
             self._send_smtp(msg, to_addresses, cc_addresses, bcc_addresses)
 
-            logger.info(
-                "✅ Email sent successfully",
-                to=to_addresses,
-                subject=subject
-            )
+            logger.info("✅ Email sent successfully", to=to_addresses, subject=subject)
 
             return {
                 "success": True,
                 "message": f"Email sent to {len(to_addresses)} recipient(s)",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
         except Exception as e:
@@ -199,12 +196,12 @@ class UnifiedEmailService:
                 "❌ Failed to send email",
                 error=str(e),
                 to=to_addresses,
-                subject=subject
+                subject=subject,
             )
             return {
                 "success": False,
                 "message": "Failed to send email",
-                "error": str(e)
+                "error": str(e),
             }
 
     def send_advanced(
@@ -238,7 +235,7 @@ class UnifiedEmailService:
             return {
                 "success": False,
                 "message": "Email service not configured",
-                "error": "SMTP_USERNAME and SMTP_PASSWORD not set"
+                "error": "SMTP_USERNAME and SMTP_PASSWORD not set",
             }
 
         # Normalize addresses
@@ -269,13 +266,13 @@ class UnifiedEmailService:
                 "✅ Email sent with attachments",
                 to=to_addresses,
                 subject=subject,
-                attachment_count=len(attachments) if attachments else 0
+                attachment_count=len(attachments) if attachments else 0,
             )
 
             return {
                 "success": True,
                 "message": f"Email sent to {len(to_addresses)} recipient(s)",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
         except Exception as e:
@@ -283,12 +280,12 @@ class UnifiedEmailService:
                 "❌ Failed to send email with attachments",
                 error=str(e),
                 to=to_addresses,
-                subject=subject
+                subject=subject,
             )
             return {
                 "success": False,
                 "message": "Failed to send email",
-                "error": str(e)
+                "error": str(e),
             }
 
     def _build_message(
@@ -333,10 +330,7 @@ class UnifiedEmailService:
 
             encoders.encode_base64(part)
             filename = os.path.basename(file_path)
-            part.add_header(
-                "Content-Disposition",
-                f"attachment; filename= {filename}"
-            )
+            part.add_header("Content-Disposition", f"attachment; filename= {filename}")
             msg.attach(part)
 
             logger.info(f"✅ Added attachment: {filename}")
@@ -362,17 +356,11 @@ class UnifiedEmailService:
 
         # Connect and send
         if self.use_tls:
-            server = smtplib.SMTP(
-                self.smtp_host,
-                self.smtp_port,
-                timeout=self.timeout
-            )
+            server = smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=self.timeout)
             server.starttls()
         else:
             server = smtplib.SMTP_SSL(
-                self.smtp_host,
-                self.smtp_port,
-                timeout=self.timeout
+                self.smtp_host, self.smtp_port, timeout=self.timeout
             )
 
         try:
@@ -389,7 +377,7 @@ class UnifiedEmailService:
             "username": self.username[:2] + "***" if self.username else "",
             "use_tls": self.use_tls,
             "from_name": self.from_name,
-            "configured": self.is_configured()
+            "configured": self.is_configured(),
         }
 
 

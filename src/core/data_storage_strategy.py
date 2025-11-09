@@ -11,7 +11,7 @@
 from typing import Dict, List, Optional
 from enum import Enum
 
-from core.data_classification import DataClassification, DatabaseTarget
+from src.core.data_classification import DataClassification, DatabaseTarget
 
 
 class DataStorageStrategy:
@@ -34,7 +34,6 @@ class DataStorageStrategy:
         DataClassification.ORDER_BOOK_DEPTH: DatabaseTarget.TDENGINE,
         DataClassification.LEVEL2_SNAPSHOT: DatabaseTarget.TDENGINE,
         DataClassification.INDEX_QUOTES: DatabaseTarget.TDENGINE,
-
         # 参考数据 (9项) - 相对静态 → MySQL
         DataClassification.SYMBOLS_INFO: DatabaseTarget.MYSQL,
         DataClassification.INDUSTRY_CLASS: DatabaseTarget.MYSQL,
@@ -45,7 +44,6 @@ class DataStorageStrategy:
         DataClassification.DIVIDEND_DATA: DatabaseTarget.MYSQL,
         DataClassification.SHAREHOLDER_DATA: DatabaseTarget.MYSQL,
         DataClassification.MARKET_RULES: DatabaseTarget.MYSQL,
-
         # 衍生数据 (6项) - 计算结果 → PostgreSQL (支持复杂分析)
         DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
         DataClassification.QUANT_FACTORS: DatabaseTarget.POSTGRESQL,
@@ -53,7 +51,6 @@ class DataStorageStrategy:
         DataClassification.TRADE_SIGNALS: DatabaseTarget.POSTGRESQL,
         DataClassification.BACKTEST_RESULTS: DatabaseTarget.POSTGRESQL,
         DataClassification.RISK_METRICS: DatabaseTarget.POSTGRESQL,
-
         # 交易数据 (7项) - 冷热分离策略
         DataClassification.ORDER_RECORDS: DatabaseTarget.POSTGRESQL,  # 历史订单 → PostgreSQL
         DataClassification.TRADE_RECORDS: DatabaseTarget.POSTGRESQL,  # 历史成交 → PostgreSQL
@@ -62,7 +59,6 @@ class DataStorageStrategy:
         DataClassification.REALTIME_ACCOUNT: DatabaseTarget.REDIS,  # 实时账户 → Redis
         DataClassification.FUND_FLOW: DatabaseTarget.POSTGRESQL,  # 资金流水 → PostgreSQL
         DataClassification.ORDER_QUEUE: DatabaseTarget.REDIS,  # 订单队列 → Redis
-
         # 元数据 (6项) - 配置管理 → MySQL
         DataClassification.DATA_SOURCE_STATUS: DatabaseTarget.MYSQL,
         DataClassification.TASK_SCHEDULE: DatabaseTarget.MYSQL,
@@ -95,7 +91,9 @@ class DataStorageStrategy:
         return cls._ROUTING_MAP[classification]
 
     @classmethod
-    def get_classifications_by_database(cls, database: DatabaseTarget) -> List[DataClassification]:
+    def get_classifications_by_database(
+        cls, database: DatabaseTarget
+    ) -> List[DataClassification]:
         """
         获取指定数据库负责的所有数据分类
 
@@ -201,7 +199,7 @@ class DataStorageRules:
         DatabaseTarget.MYSQL: {
             # MySQL参考数据无固定过期时间
             # 通过业务逻辑定期清理过时数据
-        }
+        },
     }
 
     # Redis缓存过期时间 (秒)

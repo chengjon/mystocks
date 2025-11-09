@@ -10,15 +10,16 @@ T024: 配置验证单元测试
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import yaml
-from core.config_driven_table_manager import ConfigDrivenTableManager
-from core.data_classification import DataClassification
+from src.core.config_driven_table_manager import ConfigDrivenTableManager
+from src.core.data_classification import DataClassification
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("T024: 配置验证单元测试")
-print("="*80 + "\n")
+print("=" * 80 + "\n")
 
 
 class TestConfigValidation:
@@ -35,11 +36,11 @@ class TestConfigValidation:
         print("📍 测试1: 验证配置文件结构")
 
         # 验证顶层字段
-        assert 'version' in self.config, "缺少version字段"
-        assert 'metadata' in self.config, "缺少metadata字段"
-        assert 'databases' in self.config, "缺少databases字段"
-        assert 'tables' in self.config, "缺少tables字段"
-        assert 'maintenance' in self.config, "缺少maintenance字段"
+        assert "version" in self.config, "缺少version字段"
+        assert "metadata" in self.config, "缺少metadata字段"
+        assert "databases" in self.config, "缺少databases字段"
+        assert "tables" in self.config, "缺少tables字段"
+        assert "maintenance" in self.config, "缺少maintenance字段"
 
         print(f"  配置版本: {self.config['version']}")
         print(f"  项目名称: {self.config['metadata']['project']}")
@@ -49,19 +50,19 @@ class TestConfigValidation:
         """测试2: 验证数据库配置"""
         print("\n📍 测试2: 验证数据库配置")
 
-        databases = self.config['databases']
+        databases = self.config["databases"]
 
         # 验证必需的数据库
-        required_dbs = ['tdengine', 'postgresql', 'mysql', 'redis']
+        required_dbs = ["tdengine", "postgresql", "mysql", "redis"]
         for db in required_dbs:
             assert db in databases, f"缺少{db}数据库配置"
             db_config = databases[db]
-            assert 'host' in db_config, f"{db}缺少host配置"
-            assert 'port' in db_config, f"{db}缺少port配置"
+            assert "host" in db_config, f"{db}缺少host配置"
+            assert "port" in db_config, f"{db}缺少port配置"
             print(f"  ✓ {db}: {db_config['host']}:{db_config['port']}")
 
         # 验证Redis DB配置
-        redis_db = databases['redis'].get('db', '${REDIS_DB:1}')
+        redis_db = databases["redis"].get("db", "${REDIS_DB:1}")
         print(f"  Redis DB: {redis_db}")
 
         print(f"  ✅ 数据库配置验证通过")
@@ -70,7 +71,7 @@ class TestConfigValidation:
         """测试3: 验证表数量"""
         print("\n📍 测试3: 验证表数量")
 
-        tables = self.config['tables']
+        tables = self.config["tables"]
         table_count = len(tables)
 
         print(f"  总表数: {table_count}")
@@ -82,9 +83,9 @@ class TestConfigValidation:
 
         # 验证表数量合理性
         assert table_count >= 20, f"表数量过少: {table_count}"
-        assert stats.get('TDengine', 0) >= 5, "TDengine表数量不足"
-        assert stats.get('PostgreSQL', 0) >= 10, "PostgreSQL表数量不足"
-        assert stats.get('MySQL', 0) >= 10, "MySQL表数量不足"
+        assert stats.get("TDengine", 0) >= 5, "TDengine表数量不足"
+        assert stats.get("PostgreSQL", 0) >= 10, "PostgreSQL表数量不足"
+        assert stats.get("MySQL", 0) >= 10, "MySQL表数量不足"
 
         print(f"  ✅ 表数量验证通过")
 
@@ -94,8 +95,8 @@ class TestConfigValidation:
 
         # 获取配置中的所有分类
         config_classifications = set()
-        for table in self.config['tables']:
-            classification = table.get('classification')
+        for table in self.config["tables"]:
+            classification = table.get("classification")
             if classification:
                 config_classifications.add(classification)
 
@@ -125,7 +126,7 @@ class TestConfigValidation:
         """测试5: 验证表名唯一性"""
         print("\n📍 测试5: 验证表名唯一性")
 
-        table_names = [t['table_name'] for t in self.config['tables']]
+        table_names = [t["table_name"] for t in self.config["tables"]]
         unique_names = set(table_names)
 
         print(f"  表名总数: {len(table_names)}")
@@ -146,14 +147,14 @@ class TestConfigValidation:
 
         missing_columns = []
 
-        for table in self.config['tables']:
-            table_name = table['table_name']
-            columns = table.get('columns', [])
-            col_names = [col['name'] for col in columns]
+        for table in self.config["tables"]:
+            table_name = table["table_name"]
+            columns = table.get("columns", [])
+            col_names = [col["name"] for col in columns]
 
             # 检查审计字段 (除Redis外)
-            if table['database_type'] != 'Redis':
-                if 'created_at' not in col_names:
+            if table["database_type"] != "Redis":
+                if "created_at" not in col_names:
                     missing_columns.append(f"{table_name}: 缺少created_at")
 
         if missing_columns:
@@ -172,8 +173,8 @@ class TestConfigValidation:
         tables_with_indexes = 0
         total_indexes = 0
 
-        for table in self.config['tables']:
-            indexes = table.get('indexes', [])
+        for table in self.config["tables"]:
+            indexes = table.get("indexes", [])
             if indexes:
                 tables_with_indexes += 1
                 total_indexes += len(indexes)
@@ -183,11 +184,11 @@ class TestConfigValidation:
 
         # 验证索引定义完整性
         invalid_indexes = []
-        for table in self.config['tables']:
-            for idx in table.get('indexes', []):
-                if 'name' not in idx:
+        for table in self.config["tables"]:
+            for idx in table.get("indexes", []):
+                if "name" not in idx:
                     invalid_indexes.append(f"{table['table_name']}: 索引缺少name")
-                if 'columns' not in idx or not idx['columns']:
+                if "columns" not in idx or not idx["columns"]:
                     invalid_indexes.append(f"{table['table_name']}: 索引缺少columns")
 
         if invalid_indexes:
@@ -204,21 +205,25 @@ class TestConfigValidation:
 
         tables_with_compression = []
 
-        for table in self.config['tables']:
-            compression = table.get('compression', {})
-            if compression.get('enabled'):
-                tables_with_compression.append({
-                    'name': table['table_name'],
-                    'db_type': table['database_type'],
-                    'codec': compression.get('codec', 'N/A'),
-                    'after_days': compression.get('after_days', 'N/A')
-                })
+        for table in self.config["tables"]:
+            compression = table.get("compression", {})
+            if compression.get("enabled"):
+                tables_with_compression.append(
+                    {
+                        "name": table["table_name"],
+                        "db_type": table["database_type"],
+                        "codec": compression.get("codec", "N/A"),
+                        "after_days": compression.get("after_days", "N/A"),
+                    }
+                )
 
         print(f"  配置压缩的表: {len(tables_with_compression)}")
 
         for table in tables_with_compression[:5]:
-            print(f"    - {table['name']} ({table['db_type']}): "
-                  f"{table['codec']} / {table['after_days']}天")
+            print(
+                f"    - {table['name']} ({table['db_type']}): "
+                f"{table['codec']} / {table['after_days']}天"
+            )
 
         assert len(tables_with_compression) > 0, "应该有表配置压缩策略"
         print(f"  ✅ 压缩配置验证通过")
@@ -229,21 +234,23 @@ class TestConfigValidation:
 
         tables_with_retention = []
 
-        for table in self.config['tables']:
-            retention_days = table.get('retention_days')
+        for table in self.config["tables"]:
+            retention_days = table.get("retention_days")
             if retention_days:
-                tables_with_retention.append({
-                    'name': table['table_name'],
-                    'days': retention_days,
-                    'db_type': table['database_type']
-                })
+                tables_with_retention.append(
+                    {
+                        "name": table["table_name"],
+                        "days": retention_days,
+                        "db_type": table["database_type"],
+                    }
+                )
 
         print(f"  配置保留策略的表: {len(tables_with_retention)}")
 
         # 按保留时间分组
-        short_term = [t for t in tables_with_retention if t['days'] <= 365]
-        mid_term = [t for t in tables_with_retention if 365 < t['days'] <= 1095]
-        long_term = [t for t in tables_with_retention if t['days'] > 1095]
+        short_term = [t for t in tables_with_retention if t["days"] <= 365]
+        mid_term = [t for t in tables_with_retention if 365 < t["days"] <= 1095]
+        long_term = [t for t in tables_with_retention if t["days"] > 1095]
 
         print(f"    短期(≤1年): {len(short_term)}")
         print(f"    中期(1-3年): {len(mid_term)}")
@@ -255,24 +262,24 @@ class TestConfigValidation:
         """测试10: 验证维护配置"""
         print("\n📍 测试10: 验证维护配置")
 
-        maintenance = self.config.get('maintenance', {})
+        maintenance = self.config.get("maintenance", {})
 
-        assert 'auto_create_tables' in maintenance, "缺少auto_create_tables配置"
-        assert 'safe_mode' in maintenance, "缺少safe_mode配置"
+        assert "auto_create_tables" in maintenance, "缺少auto_create_tables配置"
+        assert "safe_mode" in maintenance, "缺少safe_mode配置"
 
         print(f"  自动创建表: {maintenance.get('auto_create_tables')}")
         print(f"  安全模式: {maintenance.get('safe_mode')}")
 
         # 验证定时任务配置
-        daily_tasks = maintenance.get('daily_tasks', [])
-        weekly_tasks = maintenance.get('weekly_tasks', [])
+        daily_tasks = maintenance.get("daily_tasks", [])
+        weekly_tasks = maintenance.get("weekly_tasks", [])
 
         print(f"  日任务数: {len(daily_tasks)}")
         print(f"  周任务数: {len(weekly_tasks)}")
 
         for task in daily_tasks:
-            assert 'name' in task, "任务缺少name"
-            assert 'time' in task, "任务缺少time"
+            assert "name" in task, "任务缺少name"
+            assert "time" in task, "任务缺少time"
             print(f"    - {task['name']}: {task['time']}")
 
         print(f"  ✅ 维护配置验证通过")
@@ -312,10 +319,10 @@ def run_tests():
             failed += 1
             print(f"  ❌ 错误: {e}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"测试结果: 通过={passed}, 失败={failed}")
-    print("="*80)
+    print("=" * 80)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

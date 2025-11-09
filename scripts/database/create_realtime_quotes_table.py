@@ -12,16 +12,17 @@ from dotenv import load_dotenv
 # 加载环境变量
 load_dotenv()
 
+
 def create_realtime_quotes_table():
     """创建实时行情数据表"""
     try:
         # 连接PostgreSQL数据库
         conn = psycopg2.connect(
-            host=os.getenv('POSTGRESQL_HOST'),
-            port=os.getenv('POSTGRESQL_PORT'),
-            database=os.getenv('POSTGRESQL_DATABASE'),
-            user=os.getenv('POSTGRESQL_USER'),
-            password=os.getenv('POSTGRESQL_PASSWORD')
+            host=os.getenv("POSTGRESQL_HOST"),
+            port=os.getenv("POSTGRESQL_PORT"),
+            database=os.getenv("POSTGRESQL_DATABASE"),
+            user=os.getenv("POSTGRESQL_USER"),
+            password=os.getenv("POSTGRESQL_PASSWORD"),
         )
 
         cursor = conn.cursor()
@@ -93,5 +94,6 @@ def create_realtime_quotes_table():
         print(f"❌ 创建表失败: {str(e)}")
         return False
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     create_realtime_quotes_table()
