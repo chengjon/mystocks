@@ -281,23 +281,155 @@ class AlertManager:
 
 ## 📋 四、系统架构概览
 
-### 核心模块组织
+### 🗂️ 项目目录结构 (2025-11-09重组后)
+
+**项目已完成全面重组**: 从42个杂乱的根目录精简到13个科学组织的目录，符合Python最佳实践。
+
+#### 📁 根目录 (仅核心文件)
+```
+mystocks_spec/
+├── README.md                 # 项目主文档 (本文件)
+├── CLAUDE.md                 # Claude Code集成指南
+├── CHANGELOG.md              # 版本变更日志
+├── LICENSE                   # MIT许可证
+├── requirements.txt          # Python依赖清单
+├── core.py                   # 核心模块入口点
+├── data_access.py           # 数据访问入口点
+├── monitoring.py            # 监控模块入口点
+├── unified_manager.py       # 统一管理器入口点
+└── __init__.py              # Python包标识
+```
+
+#### 📂 主要目录组织
 
 ```
-MyStocks 系统架构
-├── core.py                    # 数据分类与路由策略
-├── data_access.py             # 统一数据访问层
-├── monitoring.py              # 独立监控与告警系统
-├── unified_manager.py         # 统一管理器与自动化
-├── system_demo.py             # 完整功能演示
-├── table_config.yaml          # 配置驱动表管理
-├── adapters/                  # 数据源适配器
-│   ├── financial_adapter.py   # 财务数据适配器
-│   ├── akshare_adapter.py     # Akshare数据源
-│   └── tushare_adapter.py     # Tushare数据源
-└── db_manager/                # 数据库管理基础
-    ├── database_manager.py    # 数据库连接管理
-    └── init_db_monitor.py     # 监控数据库初始化
+mystocks_spec/
+├── src/                      # 📦 所有源代码
+│   ├── adapters/            # 数据源适配器 (7个核心适配器)
+│   ├── core/                # 核心管理类 (数据分类、路由策略)
+│   ├── data_access/         # 数据库访问层 (TDengine/PostgreSQL)
+│   ├── data_sources/        # 数据导入模块
+│   ├── db_manager/          # 数据库管理 (兼容层 → src.storage.database)
+│   ├── gpu/                 # GPU加速模块
+│   ├── interfaces/          # 接口定义 (IDataSource等)
+│   ├── ml_strategy/         # 机器学习策略
+│   ├── monitoring/          # 监控和告警
+│   ├── reporting/           # 报告生成
+│   ├── storage/             # 存储层 (database/connection_manager)
+│   ├── utils/               # 工具函数 (column_mapper/date_utils等)
+│   └── visualization/       # 可视化工具
+│
+├── docs/                     # 📚 所有文档
+│   ├── api/                 # API文档
+│   ├── archived/            # 历史文档归档
+│   ├── architecture/        # 架构设计文档
+│   └── guides/              # 用户指南
+│
+├── config/                   # ⚙️ 配置文件
+│   ├── table_config.yaml    # 表结构配置
+│   ├── docker-compose.*.yml # Docker部署配置
+│   └── *.yaml              # 其他配置文件
+│
+├── scripts/                  # 🔧 脚本工具
+│   ├── tests/               # 测试脚本 (test_*.py)
+│   ├── runtime/             # 运行时脚本 (run_*.py, save_*.py)
+│   ├── database/            # 数据库脚本 (check_*.py, verify_*.py)
+│   ├── dev/                 # 开发工具脚本
+│   └── project/             # 项目管理脚本
+│
+├── data/                     # 💾 数据文件
+│   ├── cache/               # 缓存数据
+│   └── models/              # 机器学习模型
+│
+├── web/                      # 🌐 Web应用
+│   ├── backend/             # FastAPI后端
+│   └── frontend/            # Vue 3前端
+│
+├── tests/                    # 🧪 测试代码
+├── examples/                 # 📖 示例代码
+├── logs/                     # 📝 日志目录
+├── temp/                     # 🗂️ 临时文件
+│
+├── .archive/                 # 📦 归档内容 (历史代码/文档)
+│   ├── old_code/            # 旧代码备份
+│   ├── old_docs/            # 旧文档备份
+│   └── ARCHIVE_INDEX.md     # 归档索引
+│
+└── [开发工具目录]            # 🛠️ 开发工具 (不移动)
+    ├── .claude/             # Claude Code配置
+    ├── .taskmaster/         # TaskMaster配置
+    ├── .specify/            # Specify配置
+    └── .benchmarks/         # 性能基准
+```
+
+#### 🔑 重要变更说明
+
+**1. 统一导入路径** (2025-11-09):
+```python
+# ✅ 新的标准导入路径 (重组后)
+from src.core import ConfigDrivenTableManager
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.data_access.tdengine_access import TDengineDataAccess
+from src.db_manager import DatabaseTableManager  # 兼容层
+
+# ❌ 旧的导入路径 (已废弃)
+from core import ConfigDrivenTableManager
+from adapters.akshare_adapter import AkshareDataSource
+```
+
+**2. 兼容层设计**:
+- `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
+- 保证平滑过渡,旧导入路径仍然有效
+
+**3. 入口点文件**:
+根目录的 `.py` 文件 (`core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`) 是入口点文件:
+- 提供向后兼容性
+- 可作为快速访问点
+- 内部导入自 `src.*`
+
+**4. Git历史完整保留**:
+- 所有文件移动使用 `git mv` 命令
+- 完整保留了文件的Git历史记录
+- 可追溯每个文件的完整演进历史
+
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
+
+### 核心模块组织 (src/ 目录详解)
+
+```
+src/
+├── adapters/                 # 🔌 数据源适配器
+│   ├── tdx_adapter.py       # 通达信直连 (无限流, 1058行)
+│   ├── byapi_adapter.py     # REST API (涨跌停股池, 625行)
+│   ├── financial_adapter.py # 财务数据全能 (1078行)
+│   ├── akshare_adapter.py   # 免费全面 (510行)
+│   ├── baostock_adapter.py  # 高质量历史 (257行)
+│   ├── customer_adapter.py  # 实时行情专用 (378行)
+│   └── tushare_adapter.py   # 专业级 (199行)
+│
+├── core/                     # 🎯 核心管理类
+│   ├── config_driven_table_manager.py  # 配置驱动表管理
+│   ├── data_classification.py          # 数据分类枚举
+│   └── data_storage_strategy.py        # 存储策略路由
+│
+├── data_access/              # 🗄️ 数据库访问层
+│   ├── tdengine_access.py   # TDengine高频时序数据访问
+│   └── postgresql_access.py # PostgreSQL通用数据访问
+│
+├── storage/                  # 💽 存储层
+│   └── database/
+│       ├── connection_manager.py  # 数据库连接管理
+│       ├── database_manager.py    # 数据库表管理
+│       └── db_utils.py           # 数据库工具函数
+│
+├── monitoring/               # 📊 监控和告警
+│   ├── monitoring_database.py    # 监控数据库
+│   ├── performance_monitor.py    # 性能监控
+│   ├── data_quality_monitor.py   # 数据质量监控
+│   └── alert_manager.py          # 告警管理器
+│
+└── interfaces/               # 📐 接口定义
+    └── data_source.py       # IDataSource统一接口
 ```
 
 ### 技术特性
@@ -497,42 +629,202 @@ quality_report = manager.quality_monitor.generate_quality_report()
 print(f"数据质量评分: {quality_report['overall_score']:.2f}")
 ```
 
-## 📁 文件功能说明
+## 📁 文件与模块说明
 
-### 核心文件
-- `core.py` - 数据分类枚举、路由策略、配置驱动表管理
-- `unified_manager.py` - 统一管理器、系统入口、自动化维护
-- `data_access.py` - 各数据库专用访问器、统一数据接口
-- `monitoring.py` - 完整监控系统、告警机制、数据质量检查
-- `system_demo.py` - 系统功能全面演示和使用指南
-- `run_realtime_market_saver.py` - 沪深A股实时数据保存系统（efinance版）
+### 🎯 根目录入口点文件
 
-### 数据源适配器模块（7个核心适配器）
+**说明**: 根目录的Python文件是系统入口点,提供向后兼容性和快速访问:
 
-#### ⭐ v2.1核心适配器（推荐）
-- `adapters/tdx_adapter.py` (1058行) - 通达信直连，无限流，多周期K线
-- `adapters/byapi_adapter.py` (625行) - REST API，涨跌停股池，技术指标
+- `core.py` - 核心模块入口 → 导入自 `src.core`
+- `unified_manager.py` - 统一管理器入口 → 导入自 `src.core`
+- `data_access.py` - 数据访问入口 → 导入自 `src.data_access`
+- `monitoring.py` - 监控模块入口 → 导入自 `src.monitoring`
 
-#### 稳定生产适配器
-- `adapters/financial_adapter.py` (1078行) - 双数据源（efinance+easyquotation），财务数据全能
-- `adapters/akshare_adapter.py` (510行) - 免费全面，历史数据研究首选
-- `adapters/baostock_adapter.py` (257行) - 高质量历史数据，复权数据
-- `adapters/customer_adapter.py` (378行) - 实时行情专用
-- `adapters/tushare_adapter.py` (199行) - 专业级，需token
+**使用建议**:
+- ✅ 推荐: 直接从 `src.*` 导入 (标准路径)
+- ✅ 可选: 从根目录文件导入 (兼容性)
 
-详细特性对比请参阅：[ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+### 📦 src/ 源代码模块详解
 
-### 工具模块
-- `utils/column_mapper.py` - 统一列名映射管理器，支持中英文列名转换
+#### src/adapters/ - 数据源适配器 (7个核心适配器)
 
-### 配置文件
-- `table_config.yaml` - 完整表结构配置，支持所有5大数据分类
-- `.env` - 环境变量配置，数据库连接信息
+**⭐ v2.1核心适配器 (推荐)**:
+- `src/adapters/tdx_adapter.py` (1058行) - 通达信直连,无限流,多周期K线
+- `src/adapters/byapi_adapter.py` (625行) - REST API,涨跌停股池,技术指标
 
-### 扩展模块
-- `adapters/` - 数据源适配器，统一多种数据源接口
-- `db_manager/` - 数据库管理基础设施
-- `save_realtime_data.py` - 实时数据保存工具
+**稳定生产适配器**:
+- `src/adapters/financial_adapter.py` (1078行) - 双数据源(efinance+easyquotation),财务数据全能
+- `src/adapters/akshare_adapter.py` (510行) - 免费全面,历史数据研究首选
+- `src/adapters/baostock_adapter.py` (257行) - 高质量历史数据,复权数据
+- `src/adapters/customer_adapter.py` (378行) - 实时行情专用
+- `src/adapters/tushare_adapter.py` (199行) - 专业级,需token
+
+**导入示例**:
+```python
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.adapters.tdx_adapter import TdxDataSource
+```
+
+详细特性对比: [`docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+
+#### src/core/ - 核心管理类
+
+- `src/core/config_driven_table_manager.py` - 配置驱动表管理,YAML自动建表
+- `src/core/data_classification.py` - 5大数据分类枚举定义
+- `src/core/data_storage_strategy.py` - 智能路由策略,自动选择数据库
+
+**导入示例**:
+```python
+from src.core import ConfigDrivenTableManager, DataClassification
+```
+
+#### src/data_access/ - 数据库访问层
+
+- `src/data_access/tdengine_access.py` - TDengine高频时序数据访问
+- `src/data_access/postgresql_access.py` - PostgreSQL通用数据访问
+
+**导入示例**:
+```python
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+```
+
+#### src/storage/ - 存储层
+
+- `src/storage/database/connection_manager.py` - 数据库连接池管理
+- `src/storage/database/database_manager.py` - 数据库表管理器
+- `src/storage/database/db_utils.py` - 数据库工具函数
+
+**导入示例**:
+```python
+from src.storage.database import DatabaseConnectionManager, DatabaseTableManager
+```
+
+#### src/db_manager/ - 兼容层 (重要!)
+
+**说明**: `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
+
+- `src/db_manager/__init__.py` - 重导出 src.storage.database 的所有类
+- `src/db_manager/connection_manager.py` - 兼容包装器
+- `src/db_manager/database_manager.py` - 兼容包装器
+
+**导入示例** (两种方式等价):
+```python
+# 方式1: 通过兼容层 (旧代码可继续使用)
+from src.db_manager import DatabaseTableManager
+
+# 方式2: 直接导入 (推荐)
+from src.storage.database import DatabaseTableManager
+```
+
+#### src/monitoring/ - 监控和告警
+
+- `src/monitoring/monitoring_database.py` - 独立监控数据库
+- `src/monitoring/performance_monitor.py` - 性能监控,慢查询检测
+- `src/monitoring/data_quality_monitor.py` - 数据质量监控
+- `src/monitoring/alert_manager.py` - 多渠道告警管理
+
+**导入示例**:
+```python
+from src.monitoring import MonitoringDatabase, PerformanceMonitor, AlertManager
+```
+
+#### src/interfaces/ - 接口定义
+
+- `src/interfaces/data_source.py` - IDataSource统一接口定义
+
+**导入示例**:
+```python
+from src.interfaces import IDataSource
+```
+
+#### src/utils/ - 工具函数
+
+- `src/utils/column_mapper.py` - 统一列名映射,中英文转换
+- `src/utils/date_utils.py` - 日期时间工具函数
+- `src/utils/symbol_utils.py` - 股票代码工具函数
+- `src/utils/tdx_server_config.py` - 通达信服务器配置
+
+**导入示例**:
+```python
+from src.utils import ColumnMapper
+```
+
+### 🔧 scripts/ 脚本工具
+
+#### scripts/runtime/ - 运行时脚本
+
+- `scripts/runtime/run_realtime_market_saver.py` - 实时行情保存系统
+- `scripts/runtime/save_realtime_data.py` - 实时数据保存工具
+- `scripts/runtime/system_demo.py` - 系统功能演示
+
+**运行示例**:
+```bash
+python scripts/runtime/system_demo.py
+python scripts/runtime/run_realtime_market_saver.py
+```
+
+#### scripts/tests/ - 测试脚本
+
+- `scripts/tests/test_config_driven_table_manager.py` - 配置表管理器测试
+- `scripts/tests/test_financial_adapter.py` - 财务适配器测试
+- `scripts/tests/test_save_realtime_data.py` - 实时数据保存测试
+
+**运行示例**:
+```bash
+python scripts/tests/test_config_driven_table_manager.py
+pytest scripts/tests/ -v
+```
+
+#### scripts/database/ - 数据库脚本
+
+- `scripts/database/check_tdengine_tables.py` - TDengine表检查
+- `scripts/database/verify_tdengine_deployment.py` - TDengine部署验证
+
+**运行示例**:
+```bash
+python scripts/database/check_tdengine_tables.py
+```
+
+### ⚙️ config/ 配置文件
+
+- `config/table_config.yaml` - 完整表结构配置 (支持5大数据分类)
+- `config/docker-compose.tdengine.yml` - TDengine Docker配置
+- `config/docker-compose.postgresql.yml` - PostgreSQL Docker配置
+- `.env` - 环境变量配置 (数据库连接信息)
+
+**配置示例**:
+```yaml
+# config/table_config.yaml
+tables:
+  - name: stock_daily
+    database_type: postgresql
+    classification: daily_kline
+    schema:
+      - {name: symbol, type: VARCHAR(10)}
+      - {name: trade_date, type: DATE}
+```
+
+### 📚 docs/ 文档
+
+- `docs/guides/QUICKSTART.md` - 快速入门指南
+- `docs/guides/IFLOW.md` - 项目工作流程
+- `docs/architecture/` - 架构设计文档
+- `docs/api/` - API文档
+- `docs/archived/` - 历史文档归档
+
+### 🌐 web/ Web应用
+
+- `web/backend/` - FastAPI后端服务
+- `web/frontend/` - Vue 3 + Vite前端应用
+
+**启动示例**:
+```bash
+# 后端
+cd web/backend && uvicorn app.main:app --reload
+
+# 前端
+cd web/frontend && npm run dev
+```
 
 ## 🔧 高级功能
 

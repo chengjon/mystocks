@@ -4,6 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Note**: This file works in conjunction with the project constitution (`.specify/memory/constitution.md`) and the highest guidance document (`项目开发规范与指导文档.md`) to ensure consistent development practices.
 
+## 🗂️ 重大更新 (2025-11-09): 项目目录重组完成
+
+**目录结构优化**: 从42个杂乱的根目录精简到13个科学组织的目录
+
+**重组成果**:
+- ✅ 所有源代码整合到 `src/` 目录
+- ✅ 所有文档整合到 `docs/` 目录
+- ✅ 所有脚本整合到 `scripts/` 目录
+- ✅ 统一导入路径为 `from src.*` 格式
+- ✅ 创建 `src/db_manager/` 兼容层确保平滑过渡
+- ✅ Git历史完整保留 (使用 `git mv` 移动所有文件)
+- ✅ 目录混乱度降低 **69%**
+
+**新的导入路径标准**:
+```python
+# ✅ 推荐: 新的标准导入路径
+from src.core import ConfigDrivenTableManager, DataClassification
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+from src.db_manager import DatabaseTableManager  # 兼容层
+from src.monitoring import MonitoringDatabase, AlertManager
+from src.interfaces import IDataSource
+
+# ⚠️ 仍然有效: 旧的导入路径 (通过兼容层)
+from core import ConfigDrivenTableManager
+from db_manager.database_manager import DatabaseTableManager
+
+# ❌ 已废弃: 直接从根目录导入模块目录
+from adapters.akshare_adapter import AkshareDataSource
+```
+
+**脚本路径更新**:
+```bash
+# ✅ 新路径
+python scripts/runtime/system_demo.py
+python scripts/tests/test_config_driven_table_manager.py
+python scripts/database/check_tdengine_tables.py
+
+# ❌ 旧路径
+python system_demo.py
+python test_config_driven_table_manager.py
+```
+
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
+
+**核心原则**: 清晰的目录结构 + 科学的文件分类 + 完整的Git历史保留
+
+---
+
 ## ⚡ Week 3 Update (2025-10-19): Database Simplification
 
 **Major Change**: System simplified from 4 databases to 2 (TDengine + PostgreSQL)
@@ -127,39 +176,92 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
    - `PerformanceMonitor` tracks query performance and alerts on slow operations
    - `DataQualityMonitor` ensures data completeness, freshness, and accuracy
 
-### Key Components
+### Key Components (重组后的模块路径)
 
-#### Core Management Layer (`core.py`)
-- `DataClassification`: Enum defining 5-tier data classification
-- `DatabaseTarget`: Supported database types (**TDengine**, **PostgreSQL**)
-- `DataStorageStrategy`: Auto-routing logic mapping data types to optimal database
-- `ConfigDrivenTableManager`: YAML-driven table management
+#### Core Management Layer (`src/core/`)
+**位置**: `src/core/` 目录
+- `DataClassification`: 5大数据分类枚举定义
+- `DatabaseTarget`: 支持的数据库类型 (**TDengine**, **PostgreSQL**)
+- `DataStorageStrategy`: 智能路由逻辑,自动映射数据类型到最优数据库
+- `ConfigDrivenTableManager`: YAML配置驱动的表管理器
 
-#### Unified Access Layer (`unified_manager.py`)
-- `MyStocksUnifiedManager`: Single entry point for all data operations
-- `AutomatedMaintenanceManager`: Scheduled maintenance and health checks
-- Auto-routing: `save_data_by_classification()` and `load_data_by_classification()` methods
+**导入**:
+```python
+from src.core import ConfigDrivenTableManager, DataClassification
+from src.core.data_storage_strategy import DataStorageStrategy
+```
 
-#### Database Access Layer (`data_access.py`)
-- `TDengineDataAccess`: High-frequency time-series data (tick, minute bars)
-- `PostgreSQLDataAccess`: All other data (daily bars, indicators, reference data, metadata)
+#### Unified Access Layer (`src/core/` - unified_manager)
+**位置**: `src/core/unified_manager.py` + 根目录 `unified_manager.py` (入口点)
+- `MyStocksUnifiedManager`: 所有数据操作的统一入口点
+- `AutomatedMaintenanceManager`: 定时维护和健康检查
+- 自动路由方法: `save_data_by_classification()` 和 `load_data_by_classification()`
 
-#### Data Source Adapters (`adapters/`)
-- Unified interface `IDataSource` for all external data providers
-- `AkshareDataSource`: Chinese market data via Akshare
-- `BaostockDataSource`: Alternative Chinese market data
-- `FinancialDataSource`: Financial statements and fundamental data
+**导入**:
+```python
+from unified_manager import MyStocksUnifiedManager  # 通过根目录入口点
+# 或
+from src.core.unified_manager import MyStocksUnifiedManager  # 直接导入
+```
 
-#### Database Infrastructure (`db_manager/`)
-- `DatabaseTableManager`: Dual-database connection and table management
-- Supports **TDengine** (WebSocket/Native) and **PostgreSQL** (TimescaleDB extension)
-- Environment variable driven configuration for security
+#### Database Access Layer (`src/data_access/`)
+**位置**: `src/data_access/` 目录
+- `TDengineDataAccess`: 高频时序数据访问 (tick, 分钟K线)
+- `PostgreSQLDataAccess`: 所有其他数据访问 (日线、指标、参考数据、元数据)
 
-#### Monitoring and Quality (`monitoring.py`)
-- `MonitoringDatabase`: Independent monitoring database
-- `DataQualityMonitor`: Completeness, freshness, accuracy checks
-- `PerformanceMonitor`: Query performance tracking
-- `AlertManager`: Multi-channel alerting (email, webhook, log)
+**导入**:
+```python
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+```
+
+#### Data Source Adapters (`src/adapters/`)
+**位置**: `src/adapters/` 目录 (7个核心适配器)
+- 统一接口 `IDataSource` 定义于 `src/interfaces/data_source.py`
+- `AkshareDataSource`: Akshare中国市场数据
+- `BaostockDataSource`: Baostock历史数据
+- `FinancialDataSource`: 财务报表和基本面数据
+- `TdxDataSource`: 通达信直连数据源
+- `ByapiDataSource`: REST API数据源
+- `CustomerDataSource`: 实时行情数据源
+- `TushareDataSource`: Tushare专业数据源
+
+**导入**:
+```python
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.adapters.tdx_adapter import TdxDataSource
+from src.interfaces import IDataSource
+```
+
+#### Database Infrastructure (`src/storage/database/` + 兼容层 `src/db_manager/`)
+**实际位置**: `src/storage/database/` 目录
+**兼容层**: `src/db_manager/` (重导出 `src.storage.database` 的所有类)
+
+- `DatabaseTableManager`: 双数据库连接和表管理
+- `DatabaseConnectionManager`: 数据库连接池管理
+- 支持 **TDengine** (WebSocket/Native) 和 **PostgreSQL** (TimescaleDB扩展)
+- 环境变量驱动配置,确保安全性
+
+**导入** (两种方式均可):
+```python
+# 方式1: 通过兼容层 (旧代码可继续使用)
+from src.db_manager import DatabaseTableManager, DatabaseConnectionManager
+
+# 方式2: 直接导入 (推荐)
+from src.storage.database import DatabaseTableManager, DatabaseConnectionManager
+```
+
+#### Monitoring and Quality (`src/monitoring/`)
+**位置**: `src/monitoring/` 目录
+- `MonitoringDatabase`: 独立监控数据库
+- `DataQualityMonitor`: 数据完整性、准确性、新鲜度检查
+- `PerformanceMonitor`: 查询性能跟踪和慢查询检测
+- `AlertManager`: 多渠道告警 (邮件、Webhook、日志)
+
+**导入**:
+```python
+from src.monitoring import MonitoringDatabase, DataQualityMonitor
+from src.monitoring import PerformanceMonitor, AlertManager
+```
 
 ### Data Flow Architecture
 
