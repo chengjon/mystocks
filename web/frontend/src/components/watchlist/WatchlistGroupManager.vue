@@ -93,8 +93,8 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['update:modelValue', 'group-selected', 'group-created', 'group-updated', 'group-deleted'])
 
-// API配置
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+// API配置 - 使用相对路径让Vite代理处理
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 const getToken = () => localStorage.getItem('token')
 
 // 数据

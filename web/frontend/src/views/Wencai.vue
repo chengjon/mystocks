@@ -145,7 +145,7 @@ const guide = [
 // 加载统计信息
 const loadStatistics = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/market/wencai/queries')
+    const response = await fetch('/api/market/wencai/queries')
     if (response.ok) {
       const data = await response.json()
       totalRecords.value = data.total || 0

@@ -30,14 +30,14 @@ class CacheManager:
 
     # 缓存配置：TTL（秒）
     CACHE_STRATEGY = {
-        "stocks_basic": 3600,      # 1小时 - 股票基础信息
-        "daily_kline": 1800,       # 30分钟 - 日线数据
-        "fund_flow": 300,          # 5分钟 - 资金流向
-        "etf_spot": 60,            # 1分钟 - ETF实时行情
-        "chip_race": 300,          # 5分钟 - 竞价抢筹
-        "lhb": 86400,              # 24小时 - 龙虎榜
-        "wencai_results": 1800,    # 30分钟 - 问财查询结果
-        "real_time_quotes": 10,    # 10秒 - 实时行情（非常短）
+        "stocks_basic": 3600,  # 1小时 - 股票基础信息
+        "daily_kline": 1800,  # 30分钟 - 日线数据
+        "fund_flow": 300,  # 5分钟 - 资金流向
+        "etf_spot": 60,  # 1分钟 - ETF实时行情
+        "chip_race": 300,  # 5分钟 - 竞价抢筹
+        "lhb": 86400,  # 24小时 - 龙虎榜
+        "wencai_results": 1800,  # 30分钟 - 问财查询结果
+        "real_time_quotes": 10,  # 10秒 - 实时行情（非常短）
         "financial_report": 7200,  # 2小时 - 财务报表
     }
 
@@ -49,8 +49,19 @@ class CacheManager:
     @classmethod
     def generate_cache_key(cls, prefix: str, **kwargs) -> str:
         """生成缓存键"""
-        # 将参数排序并序列化
-        sorted_kwargs = sorted(kwargs.items())
+
+        # 将参数排序并序列化，处理特殊类型
+        def serialize_value(value):
+            """序列化特殊类型的值"""
+            from datetime import date, datetime
+
+            if isinstance(value, (date, datetime)):
+                return value.isoformat()
+            return value
+
+        # 转换所有值
+        serialized_kwargs = {k: serialize_value(v) for k, v in kwargs.items()}
+        sorted_kwargs = sorted(serialized_kwargs.items())
         param_str = json.dumps(sorted_kwargs, sort_keys=True)
         param_hash = hashlib.md5(param_str.encode()).hexdigest()[:8]
         return f"api:{prefix}:{param_hash}"
@@ -80,7 +91,7 @@ class CacheManager:
         _memory_cache[cache_key] = {
             "data": data,
             "expires_at": expires_at,
-            "created_at": datetime.now()
+            "created_at": datetime.now(),
         }
         logger.debug(f"💾 Cache set: {cache_key} (TTL: {ttl}s)")
 
@@ -88,7 +99,9 @@ class CacheManager:
     def clear_cache(cls, prefix: Optional[str] = None):
         """清除缓存"""
         if prefix:
-            keys_to_delete = [k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")]
+            keys_to_delete = [
+                k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")
+            ]
             for key in keys_to_delete:
                 del _memory_cache[key]
             logger.info(f"🗑️  Cleared cache: {prefix}* ({len(keys_to_delete)} keys)")
@@ -113,11 +126,15 @@ class CacheManager:
             "total_keys": total_keys,
             "valid_keys": valid_keys,
             "expired_keys": expired_keys,
-            "cache_types": list(set(k.split(":")[1] for k in _memory_cache.keys() if ":" in k))
+            "cache_types": list(
+                set(k.split(":")[1] for k in _memory_cache.keys() if ":" in k)
+            ),
         }
 
 
-def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool = False):
+def cache_response(
+    cache_type: str, ttl: Optional[int] = None, skip_cache: bool = False
+):
     """
     API响应缓存装饰器
 
@@ -131,6 +148,7 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
         async def get_fund_flow(symbol: str, timeframe: str):
             ...
     """
+
     def decorator(func: Callable):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -138,7 +156,11 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
                 return await func(*args, **kwargs)
 
             # 生成缓存键（排除 current_user 等敏感参数 + 依赖注入对象）
-            cache_params = {k: v for k, v in kwargs.items() if k not in ['current_user', 'request', 'service']}
+            cache_params = {
+                k: v
+                for k, v in kwargs.items()
+                if k not in ["current_user", "request", "service"]
+            }
             cache_key = CacheManager.generate_cache_key(cache_type, **cache_params)
 
             # 尝试获取缓存
@@ -150,7 +172,11 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
             result = await func(*args, **kwargs)
 
             # 缓存结果（只缓存成功的响应）
-            if result and isinstance(result, dict) and result.get("success") is not False:
+            if (
+                result
+                and isinstance(result, dict)
+                and result.get("success") is not False
+            ):
                 cache_ttl = ttl if ttl is not None else CacheManager.get_ttl(cache_type)
                 CacheManager.set_cache(cache_key, result, cache_ttl)
 
@@ -162,7 +188,11 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
             if skip_cache:
                 return func(*args, **kwargs)
 
-            cache_params = {k: v for k, v in kwargs.items() if k not in ['current_user', 'request', 'service']}
+            cache_params = {
+                k: v
+                for k, v in kwargs.items()
+                if k not in ["current_user", "request", "service"]
+            }
             cache_key = CacheManager.generate_cache_key(cache_type, **cache_params)
 
             cached_data = CacheManager.get_cache(cache_key)
@@ -171,7 +201,11 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
 
             result = func(*args, **kwargs)
 
-            if result and isinstance(result, dict) and result.get("success") is not False:
+            if (
+                result
+                and isinstance(result, dict)
+                and result.get("success") is not False
+            ):
                 cache_ttl = ttl if ttl is not None else CacheManager.get_ttl(cache_type)
                 CacheManager.set_cache(cache_key, result, cache_ttl)
 
@@ -179,6 +213,7 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
 
         # 根据函数类型返回对应的包装器
         import inspect
+
         if inspect.iscoroutinefunction(func):
             return async_wrapper
         else:

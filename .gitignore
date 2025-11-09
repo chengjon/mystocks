@@ -101,4 +101,17 @@ node_modules/
 
 # Task files
 # tasks.json
-# tasks/ 
+# tasks/
+
+# Development Tools (keep directories but ignore contents)
+.claude/
+.taskmaster/
+.specify/
+.benchmarks/
+.claude-trace/
+.cursor/
+
+# Exclude critical config files from being ignored
+!.claude/settings.json
+!.taskmaster/config.json
+!.mcp.json 
