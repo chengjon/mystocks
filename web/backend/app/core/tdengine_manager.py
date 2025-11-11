@@ -460,7 +460,9 @@ class TDengineManager:
                 cursor = conn.cursor()
 
                 # 如果SQL不是CREATE DATABASE，需要先USE数据库
-                if self._is_initialized and not sql.upper().startswith('CREATE DATABASE'):
+                if self._is_initialized and not sql.upper().startswith(
+                    "CREATE DATABASE"
+                ):
                     cursor.execute(f"USE {self.database}")
 
                 cursor.execute(sql)

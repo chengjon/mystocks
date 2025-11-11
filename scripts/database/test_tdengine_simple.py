@@ -17,12 +17,12 @@ env_file = project_root / ".env"
 
 if env_file.exists():
     # 手动加载 .env 文件 (不依赖 python-dotenv)
-    with open(env_file, 'r', encoding='utf-8') as f:
+    with open(env_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#'):
-                if '=' in line:
-                    key, value = line.split('=', 1)
+            if line and not line.startswith("#"):
+                if "=" in line:
+                    key, value = line.split("=", 1)
                     key = key.strip()
                     value = value.strip()
                     # 移除引号
@@ -77,14 +77,16 @@ def check_docker_status():
         result = subprocess.run(
             ["docker", "ps", "--filter", "name=tdengine", "--format", "{{.Status}}"],
             capture_output=True,
-            text=True
+            text=True,
         )
         if "Up" in result.stdout:
             print_check("✅", "TDengine容器正在运行", result.stdout.strip())
             return True
         else:
             print_check("❌", "TDengine容器未运行")
-            print_check("⚠️", "启动命令", "docker-compose -f docker-compose.tdengine.yml up -d")
+            print_check(
+                "⚠️", "启动命令", "docker-compose -f docker-compose.tdengine.yml up -d"
+            )
             return False
     except Exception as e:
         print_check("❌", "无法检查容器状态", str(e))
@@ -97,6 +99,7 @@ def test_taos_connection():
 
     try:
         import taos
+
         print_check("✅", "taos-py已安装")
     except ImportError:
         print_check("❌", "taos-py未安装")
@@ -217,6 +220,7 @@ def test_database_operations():
     except Exception as e:
         print_check("❌", "数据库操作失败", str(e))
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -251,7 +255,7 @@ def test_write_read_operations():
         try:
             # TDengine 使用直接 SQL 字符串，不使用参数化查询
             for row in test_data:
-                ts_str = row[0].strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # 格式化时间戳
+                ts_str = row[0].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # 格式化时间戳
                 insert_sql = f"INSERT INTO stock_tick (ts, symbol, price, volume, amount) VALUES ('{ts_str}', '{row[1]}', {row[2]}, {row[3]}, {row[4]})"
                 cursor.execute(insert_sql)
             print_check("✅", "数据插入成功", f"插入 {len(test_data)} 条记录")
@@ -263,7 +267,9 @@ def test_write_read_operations():
 
         # 查询数据
         try:
-            cursor.execute("SELECT * FROM stock_tick WHERE symbol='000001' ORDER BY ts DESC LIMIT 5")
+            cursor.execute(
+                "SELECT * FROM stock_tick WHERE symbol='000001' ORDER BY ts DESC LIMIT 5"
+            )
             results = cursor.fetchall()
             print_check("✅", "数据查询成功", f"查询到 {len(results)} 条记录")
             for row in results[:3]:
@@ -290,6 +296,7 @@ def test_write_read_operations():
     except Exception as e:
         print_check("❌", "写入/读取操作失败", str(e))
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -307,8 +314,12 @@ def print_summary(results):
     if failed == 0:
         print("\n  🎉 所有检查通过! TDengine 已准备好使用。")
         print("\n  下一步:")
-        print("  1. 检查数据库日志: docker-compose -f docker-compose.tdengine.yml logs tdengine")
-        print("  2. 启动后端服务: cd web/backend && python -m uvicorn app.main:app --reload")
+        print(
+            "  1. 检查数据库日志: docker-compose -f docker-compose.tdengine.yml logs tdengine"
+        )
+        print(
+            "  2. 启动后端服务: cd web/backend && python -m uvicorn app.main:app --reload"
+        )
         print("  3. 运行集成测试: pytest scripts/tests/test_tdengine_integration.py -v")
     else:
         print(f"\n  ⚠️  {failed} 个检查失败。请查看上述错误信息。")
