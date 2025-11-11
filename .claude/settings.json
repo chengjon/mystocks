@@ -21,6 +21,26 @@
           }
         ],
         "timeout": 3
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-database-schema-validator.sh"
+          }
+        ],
+        "timeout": 5
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-document-organizer.sh"
+          }
+        ],
+        "timeout": 5
       }
     ],
     "Stop": [
@@ -28,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-build-checker.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-python-quality-gate.sh"
           }
         ],
         "timeout": 120
@@ -39,7 +59,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-dev-docs-injector.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-task-master-injector.sh"
+          }
+        ],
+        "timeout": 5
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end-cleanup.sh"
           }
         ],
         "timeout": 5

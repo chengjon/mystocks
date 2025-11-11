@@ -13,6 +13,7 @@ Features:
 """
 
 import os
+import sys
 import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple
@@ -20,7 +21,15 @@ import structlog
 from taos import connect
 from taos.error import ProgrammingError
 
-from app.core.tdengine_pool import TDengineConnectionPool
+# 支持从脚本导入：尝试绝对导入，失败则使用相对导入
+try:
+    from web.backend.app.core.tdengine_pool import TDengineConnectionPool
+except (ImportError, ModuleNotFoundError):
+    try:
+        from app.core.tdengine_pool import TDengineConnectionPool
+    except (ImportError, ModuleNotFoundError):
+        # 作为备选方案，如果都失败则尝试从当前目录导入
+        from .tdengine_pool import TDengineConnectionPool
 
 logger = structlog.get_logger()
 
@@ -150,18 +159,18 @@ class TDengineManager:
             # 创建数据库
             self._create_database()
 
-            # 切换到目标数据库
-            self._execute(f"USE {self.database}")
+            # 标记为已初始化（这样后续的_execute会执行USE语句）
+            self._is_initialized = True
 
             # 创建缓存表
             self._create_cache_tables()
 
-            self._is_initialized = True
             logger.info("✅ TDengine 数据库初始化完成", database=self.database)
             return True
 
         except Exception as e:
             logger.error("❌ 数据库初始化失败", error=str(e))
+            self._is_initialized = False  # 初始化失败则重置状态
             return False
 
     def _create_database(self):
@@ -449,6 +458,11 @@ class TDengineManager:
             # Phase 3: 从连接池获取连接
             with self._pool.get_connection_context() as conn:
                 cursor = conn.cursor()
+
+                # 如果SQL不是CREATE DATABASE，需要先USE数据库
+                if self._is_initialized and not sql.upper().startswith('CREATE DATABASE'):
+                    cursor.execute(f"USE {self.database}")
+
                 cursor.execute(sql)
                 cursor.close()
             return True
@@ -467,6 +481,11 @@ class TDengineManager:
             # Phase 3: 从连接池获取连接
             with self._pool.get_connection_context() as conn:
                 cursor = conn.cursor()
+
+                # 确保选择了正确的数据库
+                if self._is_initialized:
+                    cursor.execute(f"USE {self.database}")
+
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 cursor.close()

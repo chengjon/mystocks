@@ -14,6 +14,7 @@ import time
 import uuid
 import secrets
 import json
+import os
 
 # 导入数据库连接管理
 from app.core.database import get_postgresql_engine, close_all_connections
@@ -29,6 +30,9 @@ from app.openapi_config import get_openapi_config, OPENAPI_TAGS
 
 # 导入Socket.IO服务器管理器
 from app.core.socketio_manager import get_socketio_manager
+
+# 导入 Swagger UI HTML 生成器
+from fastapi.openapi.docs import get_swagger_ui_html
 
 # 配置日志
 logger = structlog.get_logger()
@@ -137,12 +141,17 @@ app = FastAPI(
     contact=openapi_config.get("contact"),
     license_info=openapi_config.get("license_info"),
     openapi_tags=openapi_config["openapi_tags"],
-    docs_url="/api/docs",
+    docs_url=None,  # 禁用默认 Swagger UI（将手动配置本地版本）
     redoc_url="/api/redoc",
     swagger_ui_parameters=openapi_config.get("swagger_ui_parameters"),
     swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
     lifespan=lifespan,  # 添加生命周期管理
 )
+
+# 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
+import swagger_ui
+swagger_ui_path = os.path.join(os.path.dirname(swagger_ui.__file__), "static")
+app.mount("/swagger-ui-static", StaticFiles(directory=swagger_ui_path), name="swagger-ui-static")
 
 # 配置 CORS
 app.add_middleware(
@@ -314,6 +323,22 @@ async def get_csrf_token(request: Request):
 async def root():
     """根路径重定向到 API 文档"""
     return {"message": "MyStocks Web API", "docs": "/api/docs"}
+
+
+# 自定义 Swagger UI 端点（使用本地静态文件）
+@app.get("/api/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    """
+    自定义 Swagger UI 页面 - 使用本地静态文件
+    解决 CDN 被墙问题
+    """
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title=f"{openapi_config['title']} - Swagger UI",
+        swagger_js_url="/swagger-ui-static/swagger-ui-bundle.js",
+        swagger_css_url="/swagger-ui-static/swagger-ui.css",
+        swagger_favicon_url="/swagger-ui-static/favicon-32x32.png",
+    )
 
 
 # 导入 API 路由
