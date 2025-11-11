@@ -34,7 +34,7 @@ class ApifoxImporter:
         self.headers = {
             "Authorization": f"Bearer {self.access_token}",
             "X-Apifox-Api-Version": self.api_version,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
     def list_projects(self):
@@ -62,7 +62,7 @@ class ApifoxImporter:
 
         except requests.exceptions.RequestException as e:
             print(f"❌ 获取项目列表失败: {e}")
-            if hasattr(e.response, 'text'):
+            if hasattr(e.response, "text"):
                 print(f"   错误详情: {e.response.text}")
             return []
 
@@ -79,10 +79,7 @@ class ApifoxImporter:
         """
         url = f"{self.base_url}/v1/projects"
 
-        payload = {
-            "name": name,
-            "description": description
-        }
+        payload = {"name": name, "description": description}
 
         try:
             response = requests.post(url, headers=self.headers, json=payload)
@@ -99,7 +96,7 @@ class ApifoxImporter:
 
         except requests.exceptions.RequestException as e:
             print(f"❌ 创建项目失败: {e}")
-            if hasattr(e.response, 'text'):
+            if hasattr(e.response, "text"):
                 print(f"   错误详情: {e.response.text}")
             return None
 
@@ -120,7 +117,7 @@ class ApifoxImporter:
 
         # 读取 OpenAPI 文件
         try:
-            with open(openapi_file, 'r', encoding='utf-8') as f:
+            with open(openapi_file, "r", encoding="utf-8") as f:
                 openapi_content = f.read()
         except Exception as e:
             print(f"❌ 读取 OpenAPI 文件失败: {e}")
@@ -129,9 +126,9 @@ class ApifoxImporter:
         # 默认导入选项
         default_options = {
             "endpointOverwriteBehavior": "AUTO_MERGE",  # 自动合并
-            "schemaOverwriteBehavior": "AUTO_MERGE",    # 自动合并
-            "updateFolderOfChangedEndpoint": True,      # 更新目录
-            "prependBasePath": False                     # 不添加基础路径前缀
+            "schemaOverwriteBehavior": "AUTO_MERGE",  # 自动合并
+            "updateFolderOfChangedEndpoint": True,  # 更新目录
+            "prependBasePath": False,  # 不添加基础路径前缀
         }
 
         if options:
@@ -140,10 +137,7 @@ class ApifoxImporter:
         # 构建请求
         url = f"{self.base_url}/v1/projects/{self.project_id}/import-openapi"
 
-        payload = {
-            "input": openapi_content,
-            "options": default_options
-        }
+        payload = {"input": openapi_content, "options": default_options}
 
         print(f"\n🚀 开始导入 OpenAPI 文档到 Apifox...")
         print(f"   项目ID: {self.project_id}")
@@ -193,7 +187,7 @@ class ApifoxImporter:
 
         except requests.exceptions.RequestException as e:
             print(f"❌ 导入失败: {e}")
-            if hasattr(e.response, 'text'):
+            if hasattr(e.response, "text"):
                 print(f"   错误详情: {e.response.text}")
             return None
 
@@ -217,7 +211,7 @@ class ApifoxImporter:
             "endpointOverwriteBehavior": "AUTO_MERGE",
             "schemaOverwriteBehavior": "AUTO_MERGE",
             "updateFolderOfChangedEndpoint": True,
-            "prependBasePath": False
+            "prependBasePath": False,
         }
 
         if options:
@@ -226,12 +220,7 @@ class ApifoxImporter:
         # 构建请求
         url = f"{self.base_url}/v1/projects/{self.project_id}/import-openapi"
 
-        payload = {
-            "input": {
-                "url": openapi_url
-            },
-            "options": default_options
-        }
+        payload = {"input": {"url": openapi_url}, "options": default_options}
 
         print(f"\n🚀 开始从 URL 导入 OpenAPI 文档到 Apifox...")
         print(f"   项目ID: {self.project_id}")
@@ -249,12 +238,16 @@ class ApifoxImporter:
             print("✅ 导入完成!")
             print("\n📊 导入统计:")
             print("-" * 80)
-            print(f"   接口: 新增 {counters['endpointCreated']}, "
-                  f"更新 {counters['endpointUpdated']}, "
-                  f"失败 {counters['endpointFailed']}")
-            print(f"   数据模型: 新增 {counters['schemaCreated']}, "
-                  f"更新 {counters['schemaUpdated']}, "
-                  f"失败 {counters['schemaFailed']}")
+            print(
+                f"   接口: 新增 {counters['endpointCreated']}, "
+                f"更新 {counters['endpointUpdated']}, "
+                f"失败 {counters['endpointFailed']}"
+            )
+            print(
+                f"   数据模型: 新增 {counters['schemaCreated']}, "
+                f"更新 {counters['schemaUpdated']}, "
+                f"失败 {counters['schemaFailed']}"
+            )
             print("-" * 80)
 
             # 检查错误
@@ -268,7 +261,7 @@ class ApifoxImporter:
 
         except requests.exceptions.RequestException as e:
             print(f"❌ 导入失败: {e}")
-            if hasattr(e.response, 'text'):
+            if hasattr(e.response, "text"):
                 print(f"   错误详情: {e.response.text}")
             return None
 
@@ -306,7 +299,7 @@ def main():
     print("\n步骤 2/3: 导入 OpenAPI 文档")
 
     # 读取文件信息
-    with open(OPENAPI_FILE, 'r', encoding='utf-8') as f:
+    with open(OPENAPI_FILE, "r", encoding="utf-8") as f:
         openapi_data = json.load(f)
 
     api_count = len(openapi_data.get("paths", {}))
@@ -347,5 +340,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ 发生错误: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
