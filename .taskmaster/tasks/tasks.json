@@ -207,7 +207,7 @@
           "id": "6",
           "title": "核心E2E测试",
           "description": "搭建Playwright框架，编写登录->订阅->查询核心流程测试，测试数据管理",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "week": 2,
           "category": "P0-测试",
@@ -221,25 +221,25 @@
             {
               "id": "6.1",
               "title": "Playwright框架搭建",
-              "status": "pending",
+              "status": "done",
               "details": "项目初始化、配置文件、Page Object模式"
             },
             {
               "id": "6.2",
               "title": "编写登录流程测试",
-              "status": "pending",
+              "status": "done",
               "details": "用户登录、令牌获取、会话验证"
             },
             {
               "id": "6.3",
               "title": "编写订阅查询测试",
-              "status": "pending",
+              "status": "done",
               "details": "WebSocket连接、房间订阅、数据查询、缓存验证"
             },
             {
               "id": "6.4",
               "title": "测试数据管理和报告",
-              "status": "pending",
+              "status": "done",
               "details": "测试数据生成、清理机制、报告生成、截图保存"
             }
           ]
@@ -248,7 +248,7 @@
           "id": "7",
           "title": "容器化部署",
           "description": "Docker多阶段构建，Docker Compose编排，资源限制，环境变量管理，健康检查",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "week": 2,
           "category": "P0-部署",
@@ -284,7 +284,10 @@
               "status": "pending",
               "details": "应用健康检查、数据库连接检查、启动依赖管理"
             }
-          ]
+          ],
+          "metadata": {
+            "completedAt": "2025-11-11T17:55:43.465576"
+          }
         },
         {
           "id": "8",
@@ -330,7 +333,7 @@
           "id": "9",
           "title": "多房间订阅扩展",
           "description": "实现多房间同时订阅，房间管理逻辑，订阅权限控制，房间消息广播",
-          "status": "pending",
+          "status": "done",
           "priority": "high",
           "week": 2,
           "category": "P1-功能",
@@ -364,7 +367,7 @@
           "id": "10",
           "title": "Casbin权限集成",
           "description": "与FastAPI集成，行级数据权限，功能权限控制，权限策略配置",
-          "status": "pending",
+          "status": "done",
           "priority": "high",
           "week": 2,
           "category": "P1-安全",
@@ -377,25 +380,25 @@
             {
               "id": "10.1",
               "title": "Casbin集成",
-              "status": "pending",
+              "status": "done",
               "details": "安装配置、模型定义、FastAPI中间件集成"
             },
             {
               "id": "10.2",
               "title": "行级权限实现",
-              "status": "pending",
+              "status": "done",
               "details": "userId过滤、数据查询权限、修改权限验证"
             },
             {
               "id": "10.3",
               "title": "功能权限实现",
-              "status": "pending",
+              "status": "done",
               "details": "角色定义、权限映射、API端点保护"
             },
             {
               "id": "10.4",
               "title": "权限策略配置",
-              "status": "pending",
+              "status": "done",
               "details": "RBAC策���文件、权限规则定义、策略热更新"
             }
           ]
@@ -913,5 +916,6 @@
         }
       ]
     }
-  }
+  },
+  "currentTag": "master"
 }
