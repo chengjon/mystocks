@@ -1,57 +1,60 @@
 {
-    "version": "1.0",
-    "description": "Skill activation triggers for Claude Code (Reddit Case Study Pattern). Controls when skills automatically suggest or block actions. Based on 30万行代码 production experience.",
+    "version": "2.0",
+    "description": "Skill activation triggers for MyStocks project (Python/FastAPI + 双数据库架构). Based on Claude official hooks documentation and 30万行 production experience.",
     "skills": {
         "backend-dev-guidelines": {
             "type": "domain",
             "enforcement": "suggest",
             "priority": "high",
-            "description": "Backend development patterns: Routes → Controllers → Services → Repositories architecture",
+            "description": "Backend development patterns: FastAPI routers → Controllers → Services → Data Access Layer architecture",
             "promptTriggers": {
                 "keywords": [
-                    "backend",
-                    "API",
-                    "endpoint",
-                    "route",
-                    "routing",
-                    "controller",
-                    "service",
-                    "repository",
-                    "middleware",
-                    "validation",
-                    "database",
-                    "error handling",
-                    "authentication",
-                    "authorization"
+                    "backend", "后端",
+                    "API", "接口",
+                    "endpoint", "端点",
+                    "route", "routing", "路由",
+                    "controller", "控制器",
+                    "service", "服务",
+                    "repository", "仓储",
+                    "middleware", "中间件",
+                    "validation", "验证",
+                    "database", "数据库",
+                    "error handling", "错误处理",
+                    "authentication", "认证",
+                    "authorization", "授权",
+                    "FastAPI", "uvicorn",
+                    "pydantic", "schema"
                 ],
                 "intentPatterns": [
-                    "(create|add|implement|build).*?(route|endpoint|API|controller|service|repository)",
-                    "(fix|debug|handle).*?(error|exception|backend)",
-                    "(add|implement).*?(middleware|validation|auth)",
-                    "(organize|structure|refactor).*?(backend|service|API)",
-                    "(how to|best practice).*?(backend|route|controller|service)"
+                    "(create|add|implement|build|创建|添加|实现|构建).*?(route|endpoint|API|controller|service|repository|路由|端点|接口|控制器|服务)",
+                    "(fix|debug|handle|修复|调试|处理).*?(error|exception|backend|错误|异常|后端)",
+                    "(add|implement|添加|实现).*?(middleware|validation|auth|中间件|验证|认证)",
+                    "(organize|structure|refactor|组织|结构|重构).*?(backend|service|API|后端|服务)",
+                    "(how to|best practice|如何|最佳实践).*?(backend|route|controller|service|后端|路由|控制器|服务)"
                 ]
             },
             "fileTriggers": {
                 "pathPatterns": [
-                    "src/routes/**/*.ts",
-                    "src/controllers/**/*.ts",
-                    "src/services/**/*.ts",
-                    "src/repositories/**/*.ts",
-                    "backend/**/*.ts",
-                    "api/**/*.ts",
-                    "server/**/*.ts"
+                    "web/backend/app/**/*.py",
+                    "web/backend/app/routers/**/*.py",
+                    "web/backend/app/services/**/*.py",
+                    "src/**/*.py",
+                    "scripts/runtime/**/*.py"
                 ],
                 "pathExclusions": [
-                    "**/*.test.ts",
-                    "**/*.spec.ts"
+                    "**/*_test.py",
+                    "**/*test_*.py",
+                    "scripts/tests/**/*.py"
                 ],
                 "contentPatterns": [
-                    "router\\.",
-                    "app\\.(get|post|put|delete|patch)",
-                    "export.*Controller",
-                    "export.*Service",
-                    "export.*Repository"
+                    "@router\\.",
+                    "APIRouter",
+                    "FastAPI",
+                    "from fastapi import",
+                    "from pydantic import",
+                    "async def.*?(get|post|put|delete|patch)",
+                    "class.*Service:",
+                    "class.*Repository:"
                 ]
             }
         },
@@ -62,36 +65,34 @@
             "description": "Frontend development patterns: React 19, component architecture, state management, performance",
             "promptTriggers": {
                 "keywords": [
-                    "component",
+                    "component", "组件",
                     "react",
-                    "UI",
+                    "UI", "界面",
                     "interface",
-                    "page",
-                    "modal",
-                    "dialog",
-                    "form",
-                    "styling",
-                    "frontend",
-                    "state management",
+                    "page", "页面",
+                    "modal", "模态框",
+                    "dialog", "对话框",
+                    "form", "表单",
+                    "styling", "样式",
+                    "frontend", "前端",
+                    "state management", "状态管理",
                     "hooks",
-                    "performance",
-                    "rendering"
+                    "performance", "性能",
+                    "rendering", "渲染"
                 ],
                 "intentPatterns": [
-                    "(create|add|build|update|modify).*?(component|UI|page|modal|form)",
-                    "(how to|best practice).*?(component|react|frontend)",
-                    "(style|design|layout).*?(component|UI)",
-                    "(optimize|improve).*?(performance|rendering)"
+                    "(create|add|build|update|modify|创建|添加|构建|更新|修改).*?(component|UI|page|modal|form|组件|页面|模态框|表单)",
+                    "(how to|best practice|如何|最佳实践).*?(component|react|frontend|组件|前端)",
+                    "(style|design|layout|样式|设计|布局).*?(component|UI|组件)",
+                    "(optimize|improve|优化|改进).*?(performance|rendering|性能|渲染)"
                 ]
             },
             "fileTriggers": {
                 "pathPatterns": [
-                    "src/**/*.tsx",
-                    "src/**/*.jsx",
-                    "frontend/**/*.tsx",
-                    "frontend/**/*.jsx",
-                    "client/**/*.tsx",
-                    "client/**/*.jsx"
+                    "web/frontend/src/**/*.tsx",
+                    "web/frontend/src/**/*.jsx",
+                    "web/frontend/src/components/**/*.tsx",
+                    "web/frontend/src/pages/**/*.tsx"
                 ],
                 "pathExclusions": [
                     "**/*.test.tsx",
@@ -109,6 +110,58 @@
                 ]
             }
         },
+        "database-architecture-guidelines": {
+            "type": "domain",
+            "enforcement": "warn",
+            "priority": "critical",
+            "description": "MyStocks双数据库架构规范: TDengine (高频时序) + PostgreSQL (日线/参考/元数据)",
+            "promptTriggers": {
+                "keywords": [
+                    "database", "数据库",
+                    "TDengine", "时序数据库",
+                    "PostgreSQL", "TimescaleDB",
+                    "tick data", "tick数据",
+                    "minute data", "分钟数据",
+                    "daily bars", "日线数据",
+                    "table", "表",
+                    "schema", "架构",
+                    "migration", "迁移",
+                    "supertable", "超表",
+                    "hypertable", "混合表",
+                    "data classification", "数据分类",
+                    "storage strategy", "存储策略"
+                ],
+                "intentPatterns": [
+                    "(create|modify|alter|drop|创建|修改|删除).*?(table|schema|database|表|架构|数据库)",
+                    "(add|remove|change|添加|移除|修改).*?(column|field|constraint|index|列|字段|约束|索引)",
+                    "(store|save|persist|存储|保存).*?(tick|minute|daily|data|数据)",
+                    "(TDengine|PostgreSQL|TimescaleDB).*?(table|data|表|数据)",
+                    "(which|what|哪个|什么).*?(database|数据库).*?(use|store|使用|存储)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/data_access/**/*.py",
+                    "src/storage/database/**/*.py",
+                    "src/db_manager/**/*.py",
+                    "config/table_config.yaml",
+                    "config/mystocks_table_config.yaml",
+                    "src/core/unified_manager.py",
+                    "src/core/data_storage_strategy.py"
+                ],
+                "contentPatterns": [
+                    "TDengineDataAccess",
+                    "PostgreSQLDataAccess",
+                    "CREATE.*STABLE",
+                    "CREATE TABLE",
+                    "DataClassification",
+                    "DatabaseTarget",
+                    "tick_data",
+                    "minute_data",
+                    "daily_bars"
+                ]
+            }
+        },
         "skill-developer": {
             "type": "domain",
             "enforcement": "suggest",
@@ -117,20 +170,20 @@
             "promptTriggers": {
                 "keywords": [
                     "skill",
-                    "create skill",
-                    "add skill",
-                    "skill system",
-                    "skill triggers",
+                    "create skill", "创建技能",
+                    "add skill", "添加技能",
+                    "skill system", "技能系统",
+                    "skill triggers", "技能触发器",
                     "skill rules",
                     "skill-rules.json",
-                    "skill development",
+                    "skill development", "技能开发",
                     "SKILL.md",
-                    "skill activation"
+                    "skill activation", "技能激活"
                 ],
                 "intentPatterns": [
-                    "(how do|how does|explain).*?skill",
-                    "(create|add|modify|build).*?skill",
-                    "skill.*?(work|trigger|activate|system)",
+                    "(how do|how does|explain|如何|怎样|解释).*?skill",
+                    "(create|add|modify|build|创建|添加|修改|构建).*?skill",
+                    "skill.*?(work|trigger|activate|system|工作|触发|激活|系统)",
                     "skill-rules"
                 ]
             }
@@ -138,67 +191,21 @@
         "dev-docs-workflow": {
             "type": "domain",
             "enforcement": "suggest",
-            "priority": "medium",
-            "description": "Dev Docs three-file system (plan.md + context.md + tasks.md) for context preservation across sessions",
+            "priority": "low",
+            "description": "已弃用: 使用 Task Master 系统替代 Dev Docs. 参见 .taskmaster/CLAUDE.md",
             "promptTriggers": {
                 "keywords": [
                     "dev docs",
                     "development documentation",
-                    "context preservation",
-                    "session context",
-                    "task documentation",
-                    "plan.md",
-                    "context.md",
-                    "tasks.md"
+                    "task master", "任务管理",
+                    "taskmaster",
+                    "task tracking", "任务跟踪",
+                    ".taskmaster"
                 ],
                 "intentPatterns": [
-                    "(create|setup|initialize).*?dev docs",
-                    "(update|sync).*?dev docs",
-                    "(preserve|save).*?context",
-                    "context.*?(loss|reset|preservation)"
-                ]
-            }
-        },
-        "database-verification": {
-            "type": "domain",
-            "enforcement": "warn",
-            "priority": "high",
-            "description": "Database schema verification, migration safety, and query optimization",
-            "promptTriggers": {
-                "keywords": [
-                    "database",
-                    "schema",
-                    "migration",
-                    "database change",
-                    "alter table",
-                    "create table",
-                    "drop table",
-                    "prisma migrate",
-                    "database seed",
-                    "query optimization",
-                    "index"
-                ],
-                "intentPatterns": [
-                    "(create|modify|alter|drop).*?(table|schema|database)",
-                    "(add|remove|change).*?(column|field|constraint|index)",
-                    "(run|execute|apply).*?migration",
-                    "(optimize|improve).*?query"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "**/migrations/**/*.sql",
-                    "**/prisma/schema.prisma",
-                    "**/database/**/*.ts",
-                    "**/models/**/*.ts"
-                ],
-                "contentPatterns": [
-                    "CREATE TABLE",
-                    "ALTER TABLE",
-                    "DROP TABLE",
-                    "prisma\\.\\$",
-                    "prisma\\..*\\.create",
-                    "prisma\\..*\\.update"
+                    "(task master|taskmaster|任务管理)",
+                    "(create|setup|initialize).*?(task|dev docs|任务)",
+                    "(update|sync).*?(task|context|任务|上下文)"
                 ]
             }
         },
@@ -209,16 +216,16 @@
             "description": "Notification system development using Notification hooks, desktop notifications, and external integrations",
             "promptTriggers": {
                 "keywords": [
-                    "notification",
-                    "notify",
-                    "alert",
-                    "desktop notification",
+                    "notification", "通知",
+                    "notify", "提醒",
+                    "alert", "告警",
+                    "desktop notification", "桌面通知",
                     "slack notification",
                     "webhook"
                 ],
                 "intentPatterns": [
-                    "(add|create|implement).*?notification",
-                    "(setup|configure).*?notify",
+                    "(add|create|implement|添加|创建|实现).*?(notification|通知)",
+                    "(setup|configure|设置|配置).*?notify",
                     "notification.*?hook"
                 ]
             }
@@ -230,17 +237,61 @@
             "description": "Skill modularization pattern: main file <500 lines, detailed content in resources/ subdirectory",
             "promptTriggers": {
                 "keywords": [
-                    "500 line rule",
-                    "skill structure",
-                    "modular skill",
-                    "progressive disclosure",
-                    "resources directory"
+                    "500 line rule", "500行规则",
+                    "skill structure", "技能结构",
+                    "modular skill", "模块化技能",
+                    "progressive disclosure", "渐进式披露",
+                    "resources directory", "资源目录"
                 ],
                 "intentPatterns": [
                     "skill.*?too long",
                     "skill.*?structure",
                     "organize.*?skill",
-                    "split.*?skill"
+                    "split.*?skill",
+                    "技能.*?(太长|结构|组织|拆分)"
+                ]
+            }
+        },
+        "python-quality-patterns": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Python代码质量最佳实践: 类型注解、文档字符串、测试覆盖、导入规范",
+            "promptTriggers": {
+                "keywords": [
+                    "type hints", "类型注解",
+                    "mypy", "类型检查",
+                    "docstring", "文档字符串",
+                    "pytest", "测试",
+                    "black", "代码格式化",
+                    "pylint", "代码检查",
+                    "import path", "导入路径",
+                    "code quality", "代码质量"
+                ],
+                "intentPatterns": [
+                    "(add|implement|添加|实现).*?(type hint|annotation|类型注解)",
+                    "(fix|improve|修复|改进).*?(import|导入)",
+                    "(test|测试).*?(coverage|覆盖率)",
+                    "(format|lint|check|格式化|检查).*?code"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/**/*.py",
+                    "web/backend/**/*.py",
+                    "scripts/**/*.py"
+                ],
+                "pathExclusions": [
+                    "**/__pycache__/**",
+                    "**/.pytest_cache/**",
+                    "**/venv/**"
+                ],
+                "contentPatterns": [
+                    "def.*?\\(",
+                    "class.*:",
+                    "async def",
+                    "from.*import",
+                    "import.*"
                 ]
             }
         }
@@ -249,30 +300,37 @@
         "enforcement_types": {
             "suggest": "Skill suggestion appears but doesn't block execution (default for most skills)",
             "block": "Requires skill to be reviewed before proceeding (use sparingly for critical guardrails)",
-            "warn": "Shows prominent warning but allows proceeding (use for potentially dangerous operations)"
+            "warn": "Shows prominent warning but allows proceeding (use for potentially dangerous operations like database architecture violations)"
         },
         "priority_levels": {
-            "critical": "Highest - Always trigger when matched (security, data loss prevention)",
-            "high": "Important - Trigger for most matches (architectural patterns, best practices)",
+            "critical": "Highest - Always trigger when matched (database architecture, security, data loss prevention)",
+            "high": "Important - Trigger for most matches (architectural patterns, code quality, best practices)",
             "medium": "Moderate - Trigger for clear matches (optional workflows, meta-skills)",
-            "low": "Optional - Trigger only for explicit matches (nice-to-have suggestions)"
+            "low": "Optional - Trigger only for explicit matches (deprecated workflows, nice-to-have suggestions)"
+        },
+        "mystocks_specific": {
+            "database_architecture": "Critical skill! TDengine for tick/minute, PostgreSQL for daily/reference/metadata",
+            "import_paths": "Use 'from src.*' for new code, 'from db_manager.*' for compatibility",
+            "chinese_support": "All keywords support both English and Chinese (中文关键词)",
+            "project_structure": "web/ (frontend + backend), src/ (core business logic), scripts/ (utilities), config/ (configuration)"
         },
         "customization_guide": {
-            "pathPatterns": "⚠️ MUST CUSTOMIZE: Adjust to match YOUR project structure (src/, backend/, api/, etc.)",
-            "keywords": "Add domain-specific terms relevant to YOUR project (tech stack, libraries, frameworks)",
-            "intentPatterns": "Use regex for flexible user intent matching - test with real prompts",
-            "contentPatterns": "Match code signatures specific to YOUR codebase (class names, import patterns)"
+            "pathPatterns": "✅ CUSTOMIZED: Matched to MyStocks structure (web/backend/, src/, scripts/)",
+            "keywords": "✅ CUSTOMIZED: Added Chinese keywords and MyStocks tech stack (FastAPI, TDengine, PostgreSQL)",
+            "intentPatterns": "✅ CUSTOMIZED: Support both English and Chinese regex patterns",
+            "contentPatterns": "✅ CUSTOMIZED: Python/FastAPI signatures instead of TypeScript"
         },
         "reddit_case_insights": {
             "key_finding": "Claude doesn't automatically load/adopt all Skill documents! Must use UserPromptSubmit hook + skill-rules.json to force activation.",
-            "enforcement_philosophy": "Use 'suggest' for most (gentle reminders), 'warn' for dangerous operations, 'block' sparingly (only for critical guardrails like frontend-dev-guidelines in original case)",
-            "priority_strategy": "Set 'critical' for security/data, 'high' for architecture/patterns, 'medium' for workflows, 'low' for meta-skills",
+            "enforcement_philosophy": "Use 'suggest' for most (gentle reminders), 'warn' for database architecture violations, 'block' sparingly (only for critical data loss scenarios)",
+            "priority_strategy": "Set 'critical' for database architecture, 'high' for code quality/backend patterns, 'medium' for meta-skills, 'low' for deprecated workflows",
             "token_cost_warning": "More activated skills = more tokens consumed. Be selective with 'critical' priority."
         },
         "testing": {
-            "test_activation": "Try: 'Create a new API endpoint' - should activate backend-dev-guidelines",
-            "test_file_trigger": "Edit src/routes/users.ts - should activate backend-dev-guidelines",
-            "test_block": "If using block enforcement, test skip conditions work properly",
+            "test_activation_chinese": "试试: '创建一个新的API接口' - should activate backend-dev-guidelines",
+            "test_activation_english": "Try: 'Create a new API endpoint' - should activate backend-dev-guidelines",
+            "test_database_trigger": "Try: '存储tick数据到PostgreSQL' - should activate database-architecture-guidelines with warning",
+            "test_file_trigger": "Edit web/backend/app/routers/market.py - should activate backend-dev-guidelines",
             "debug_mode": "Set SKILL_ACTIVATION_DEBUG=true environment variable for detailed logs"
         }
     }

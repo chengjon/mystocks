@@ -1,0 +1,422 @@
+{
+  "$schema": "https://tr.designtokens.org/format/9-0-0/design-tokens.schema.json",
+  "name": "MyStocks Design Tokens",
+  "description": "MyStocks 量化交易平台设计系统 Token 定义",
+  "version": "1.0.0",
+
+  "colors": {
+    "$type": "color",
+    "primary": {
+      "$value": "#409EFF",
+      "$description": "主品牌色,用于主要按钮、链接、焦点状态"
+    },
+    "success": {
+      "$value": "#67C23A",
+      "$description": "成功状态色,上涨数据,买入信号"
+    },
+    "warning": {
+      "$value": "#E6A23C",
+      "$description": "警告色,中性数据"
+    },
+    "danger": {
+      "$value": "#F56C6C",
+      "$description": "错误状态色,下跌数据,卖出信号"
+    },
+    "info": {
+      "$value": "#909399",
+      "$description": "信息色,辅助信息,次要文本"
+    },
+
+    "financial": {
+      "$type": "color",
+      "up-limit": {
+        "$value": "#FF3333",
+        "$description": "涨停红,极端上涨"
+      },
+      "up": {
+        "$value": "#F56C6C",
+        "$description": "上涨红,正向涨幅"
+      },
+      "flat": {
+        "$value": "#909399",
+        "$description": "平盘灰,零涨跌"
+      },
+      "down": {
+        "$value": "#67C23A",
+        "$description": "下跌绿,负向跌幅"
+      },
+      "down-limit": {
+        "$value": "#00CC00",
+        "$description": "跌停绿,极端下跌"
+      }
+    },
+
+    "background": {
+      "$type": "color",
+      "page": {
+        "$value": "#F5F7FA",
+        "$description": "页面整体底色"
+      },
+      "card": {
+        "$value": "#FFFFFF",
+        "$description": "卡片、模态框背景"
+      },
+      "table-stripe": {
+        "$value": "#FAFAFA",
+        "$description": "表格斑马纹"
+      },
+      "hover": {
+        "$value": "#F5F7FA",
+        "$description": "列表项悬停背景"
+      },
+      "selected": {
+        "$value": "#ECF5FF",
+        "$description": "选中状态背景"
+      }
+    },
+
+    "border": {
+      "$type": "color",
+      "default": {
+        "$value": "#DCDFE6",
+        "$description": "默认边框色"
+      },
+      "light": {
+        "$value": "#E4E7ED",
+        "$description": "浅色边框"
+      },
+      "focus": {
+        "$value": "#409EFF",
+        "$description": "焦点边框"
+      }
+    },
+
+    "text": {
+      "$type": "color",
+      "primary": {
+        "$value": "#303133",
+        "$description": "主要文本,标题"
+      },
+      "regular": {
+        "$value": "#606266",
+        "$description": "常规文本,正文"
+      },
+      "secondary": {
+        "$value": "#909399",
+        "$description": "次要文本,辅助信息"
+      },
+      "placeholder": {
+        "$value": "#C0C4CC",
+        "$description": "占位文本"
+      }
+    }
+  },
+
+  "spacing": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "4px",
+      "$description": "极小间距,紧凑型元素"
+    },
+    "sm": {
+      "$value": "8px",
+      "$description": "小间距"
+    },
+    "md": {
+      "$value": "12px",
+      "$description": "中等间距,默认"
+    },
+    "lg": {
+      "$value": "16px",
+      "$description": "大间距,卡片内边距"
+    },
+    "xl": {
+      "$value": "20px",
+      "$description": "超大间距,卡片外边距"
+    },
+    "xxl": {
+      "$value": "24px",
+      "$description": "页面区块间距"
+    },
+    "xxxl": {
+      "$value": "32px",
+      "$description": "大区块间距"
+    }
+  },
+
+  "borderRadius": {
+    "$type": "dimension",
+    "none": {
+      "$value": "0px",
+      "$description": "无圆角"
+    },
+    "small": {
+      "$value": "2px",
+      "$description": "小圆角,Tag标签"
+    },
+    "default": {
+      "$value": "4px",
+      "$description": "默认圆角,按钮、输入框"
+    },
+    "medium": {
+      "$value": "8px",
+      "$description": "中圆角,卡片、弹窗"
+    },
+    "large": {
+      "$value": "16px",
+      "$description": "大圆角,大型容器"
+    },
+    "circle": {
+      "$value": "50%",
+      "$description": "圆形,头像、圆形按钮"
+    }
+  },
+
+  "fontSize": {
+    "$type": "dimension",
+    "title-xl": {
+      "$value": "28px",
+      "$description": "超大标题"
+    },
+    "title-lg": {
+      "$value": "24px",
+      "$description": "大标题"
+    },
+    "title-md": {
+      "$value": "20px",
+      "$description": "中标题"
+    },
+    "title-sm": {
+      "$value": "18px",
+      "$description": "小标题"
+    },
+    "body": {
+      "$value": "14px",
+      "$description": "正文"
+    },
+    "caption": {
+      "$value": "13px",
+      "$description": "辅助文本"
+    },
+    "small": {
+      "$value": "12px",
+      "$description": "小字"
+    },
+    "number-lg": {
+      "$value": "32px",
+      "$description": "数字大号,关键指标"
+    },
+    "number-md": {
+      "$value": "20px",
+      "$description": "数字中号,统计数据"
+    },
+    "number-sm": {
+      "$value": "14px",
+      "$description": "数字小号,表格数据"
+    }
+  },
+
+  "lineHeight": {
+    "$type": "dimension",
+    "title-xl": {
+      "$value": "36px"
+    },
+    "title-lg": {
+      "$value": "32px"
+    },
+    "title-md": {
+      "$value": "28px"
+    },
+    "title-sm": {
+      "$value": "26px"
+    },
+    "body": {
+      "$value": "22px"
+    },
+    "caption": {
+      "$value": "20px"
+    },
+    "small": {
+      "$value": "18px"
+    },
+    "number-lg": {
+      "$value": "40px"
+    },
+    "number-md": {
+      "$value": "28px"
+    },
+    "number-sm": {
+      "$value": "22px"
+    }
+  },
+
+  "fontWeight": {
+    "$type": "number",
+    "light": {
+      "$value": 300
+    },
+    "regular": {
+      "$value": 400
+    },
+    "medium": {
+      "$value": 500
+    },
+    "semibold": {
+      "$value": 600
+    },
+    "bold": {
+      "$value": 700
+    }
+  },
+
+  "fontFamily": {
+    "$type": "fontFamily",
+    "sans": {
+      "$value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "$description": "主字体栈"
+    },
+    "mono": {
+      "$value": "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace",
+      "$description": "等宽字体,用于数字、代码"
+    }
+  },
+
+  "shadow": {
+    "$type": "shadow",
+    "none": {
+      "$value": "none",
+      "$description": "无阴影"
+    },
+    "base": {
+      "$value": "0 2px 4px rgba(0, 0, 0, 0.05)",
+      "$description": "基础阴影,卡片默认"
+    },
+    "hover": {
+      "$value": "0 4px 8px rgba(0, 0, 0, 0.1)",
+      "$description": "悬停阴影"
+    },
+    "modal": {
+      "$value": "0 8px 16px rgba(0, 0, 0, 0.15)",
+      "$description": "深阴影,模态框"
+    }
+  },
+
+  "duration": {
+    "$type": "duration",
+    "micro": {
+      "$value": "150ms",
+      "$description": "微交互动画"
+    },
+    "default": {
+      "$value": "300ms",
+      "$description": "默认过渡"
+    },
+    "modal": {
+      "$value": "250ms",
+      "$description": "模态框动画"
+    },
+    "page": {
+      "$value": "400ms",
+      "$description": "页面切换"
+    }
+  },
+
+  "easing": {
+    "$type": "cubicBezier",
+    "ease-out": {
+      "$value": [0, 0, 0.2, 1],
+      "$description": "缓出"
+    },
+    "ease-in-out": {
+      "$value": [0.4, 0, 0.2, 1],
+      "$description": "缓进缓出"
+    },
+    "standard": {
+      "$value": [0.4, 0, 0.2, 1],
+      "$description": "标准缓动"
+    }
+  },
+
+  "breakpoint": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "768px",
+      "$description": "手机"
+    },
+    "sm": {
+      "$value": "768px",
+      "$description": "平板"
+    },
+    "md": {
+      "$value": "992px",
+      "$description": "小屏电脑"
+    },
+    "lg": {
+      "$value": "1200px",
+      "$description": "桌面"
+    },
+    "xl": {
+      "$value": "1920px",
+      "$description": "大屏"
+    }
+  },
+
+  "component": {
+    "button": {
+      "height": {
+        "$type": "dimension",
+        "large": {
+          "$value": "40px"
+        },
+        "default": {
+          "$value": "32px"
+        },
+        "small": {
+          "$value": "28px"
+        }
+      },
+      "padding": {
+        "$type": "dimension",
+        "large": {
+          "$value": "20px 15px"
+        },
+        "default": {
+          "$value": "12px 20px"
+        },
+        "small": {
+          "$value": "9px 15px"
+        }
+      }
+    },
+
+    "input": {
+      "height": {
+        "$type": "dimension",
+        "large": {
+          "$value": "40px"
+        },
+        "default": {
+          "$value": "32px"
+        },
+        "small": {
+          "$value": "24px"
+        }
+      }
+    },
+
+    "table": {
+      "row-height": {
+        "$type": "dimension",
+        "large": {
+          "$value": "56px"
+        },
+        "default": {
+          "$value": "48px"
+        },
+        "small": {
+          "$value": "40px"
+        }
+      }
+    }
+  }
+}

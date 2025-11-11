@@ -19,10 +19,23 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add project root directory to path (3 levels up: scripts/database/verify_tdengine_deployment.py)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
-# Set default environment variables if not set
+# Load .env file
+env_file = Path(project_root) / ".env"
+if env_file.exists():
+    with open(env_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                os.environ.setdefault(key, value)
+
+# Set default environment variables if not set by .env
 os.environ.setdefault("TDENGINE_HOST", "127.0.0.1")
 os.environ.setdefault("TDENGINE_PORT", "6030")
 os.environ.setdefault("TDENGINE_USER", "root")
