@@ -640,6 +640,9 @@ def get_openapi_config() -> Dict[str, Any]:
             "showExtensions": True,
             "showCommonExtensions": True,
             "syntaxHighlight.theme": "monokai",
+            # 使用国内可访问的 CDN 镜像（解决 cdn.jsdelivr.net 被墙问题）
+            "swagger_js_url": "https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.10.0/swagger-ui-bundle.js",
+            "swagger_css_url": "https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.10.0/swagger-ui.css",
         },
         "swagger_ui_oauth2_redirect_url": "/api/docs/oauth2-redirect",
     }

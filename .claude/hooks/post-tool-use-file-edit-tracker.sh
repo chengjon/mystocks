@@ -26,12 +26,12 @@
 #   1: 警告（显示 stderr 但继续）
 #   2: 阻止（一般不使用，除非严重错误）
 #
-# 日志格式 (~/.claude/edit_log.jsonl):
-#   {"timestamp":"2025-11-07T10:30:45Z","file_path":"src/index.ts","tool":"Edit","session_id":"abc123","repo":"/home/user/project"}
+# 日志格式 (.claude/edit_log.jsonl):
+#   {"timestamp":"2025-11-07T10:30:45Z","file_path":"src/index.py","tool":"Edit","session_id":"abc123","repo":"/opt/claude/mystocks_spec"}
 #
 # 清理策略:
-#   建议定期清理旧日志（保留最近 7 天）：
-#   find ~/.claude/edit_log.jsonl -mtime +7 -delete
+#   日志文件自动保留最后 10000 条记录
+#   SessionEnd hook 会在会话结束时清理当前会话的日志
 #
 # 安装方法:
 #   1. chmod +x post-tool-use-file-edit-tracker.sh
@@ -62,7 +62,8 @@
 set -euo pipefail
 
 # ===== 配置 =====
-EDIT_LOG_FILE="${CLAUDE_EDIT_LOG:-$HOME/.claude/edit_log.jsonl}"
+# 使用项目级日志文件（而不是全局 ~/.claude/）
+EDIT_LOG_FILE="${CLAUDE_EDIT_LOG:-.claude/edit_log.jsonl}"
 DEBUG_MODE="${EDIT_TRACKER_DEBUG:-false}"
 
 # ===== 调试日志函数 =====
