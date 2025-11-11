@@ -16,6 +16,79 @@
 - **[OpenAPI 规范 (YAML)](openapi.yaml)** - YAML 格式
 - **[API 前端映射](API_FRONTEND_MAPPING.md)** - 前端组件与API的对应关系
 
+### 🗂️ 任务完成总结
+
+#### 任务 15: 告警升级机制 (Task 15 - Alert Escalation Mechanism) ✅ COMPLETE
+- **[任务15完成总结](TASK_15_COMPLETION_SUMMARY.md)** - 多级告警升级和管理系统的完整报告
+  - 4个核心模块完整实现
+  - 13+ REST API 分析端点
+  - 1,100+ 行生产代码，2,300+ 行文档
+  - 企业级告警路由、聚合和通知系统
+
+- **[15.1 多级告警规则设计](TASK_15_ALERT_ESCALATION_DESIGN.md)** - 三层告警体系与升级逻辑
+  - L1 Critical (严重)、L2 Warning (警告)、L3 Info (信息) 告警分类
+  - 自动升级规则和时间阈值
+  - 40+ 告警完整映射表
+  - 根因分析提示和路由矩阵
+
+- **[15.2 告警聚合和抑制](TASK_15_ALERT_AGGREGATION_SUPPRESSION.md)** - 告警聚合引擎
+  - 时间窗口聚合 (0s/30s/60s)
+  - 基于标签的分组和关联分组
+  - 父子抑制规则 (根因抑制症状)
+  - AlertManager 完整配置示例
+
+- **[15.3 告警通知系统](TASK_15_ALERT_NOTIFICATION_SYSTEM.md)** - 多渠道通知实现
+  - Email (SMTP)、Slack、SMS (Twilio)、Webhooks、PagerDuty
+  - 异步并发投递和指数退避重试
+  - SQLite 通知历史数据库
+  - 完整的集成示例和测试工具
+
+- **[15.4 告警历史和统计](TASK_15_ALERT_HISTORY_ANALYTICS.md)** - 告警分析数据库层
+  - 完整的告警生命周期追踪
+  - 13+ REST API 分析端点
+  - 服务健康评分 (0-100)
+  - 告警相关性检测和趋势分析
+
+#### 任务 13: 监控和告警系统 (Task 13 - Monitoring & Alerting)
+- **[任务13完成总结](TASK_13_COMPLETION_SUMMARY.md)** - 监控与告警系统实现的完成报告
+  - 40+ 自定义监控指标定义
+  - Prometheus Exporter 完整实现
+  - Grafana 仪表板（18 个面板）
+  - 40+ 告警规则配置
+
+#### 任务 12: 契约测试框架 (Task 12 - Contract Testing)
+- **[任务12完成总结](TASK_12_COMPLETION_SUMMARY.md)** - 契约测试框架实现的完成报告
+  - 5个核心模块实现
+  - 29个单元测试（100%通过）
+  - GitHub Actions CI/CD集成
+  - 完整的API参考和框架指南
+
+#### 任务 11: 数据库索引优化 (Task 11 - Database Optimization)
+- **[任务11完成总结](TASK_11_COMPLETION_SUMMARY.md)** - 数据库索引优化任务的完成报告
+  - 数据库索引优化策略和性能基准: [DATABASE_INDEX_OPTIMIZATION_REPORT.md](DATABASE_INDEX_OPTIMIZATION_REPORT.md)
+  - 实现索引导航: [IMPLEMENTATION_INDEX.md](IMPLEMENTATION_INDEX.md)
+
+### 🧪 契约测试框架
+- **[契约测试 API 参考](CONTRACT_TESTING_API.md)** - 完整的 API 文档和 SDK 使用指南
+- **[契约测试框架指南](../guides/CONTRACT_TESTING_GUIDE.md)** - 框架使用教程和最佳实践
+
+### 📊 监控与告警 (Task 13)
+- **[监控指标定义](MONITORING_METRICS_DEFINITION.md)** - 40+ 自定义监控指标的完整规范
+  - 业务指标 (市场数据、用户行为、交易)
+  - 技术指标 (API、WebSocket、缓存、数据库)
+  - 告警指标 (系统健康、依赖可用性)
+- **[告警规则配置指南](ALERTING_CONFIGURATION_GUIDE.md)** - 告警规则、通知渠道和响应流程
+  - 40+ 告警规则跨 9 个类别
+  - Slack/PagerDuty/Email 多渠道通知
+  - 告警路由和抑制规则
+  - 响应工作流和 SLA
+
+### 🔌 Prometheus & Grafana 集成
+- **Prometheus 配置**: `config/prometheus.yml` - 15 个采集任务配置
+- **Grafana 仪表板**: `grafana_dashboard.json` - 18 个监控面板
+- **AlertManager 配置**: `config/alertmanager.yml` - 多渠道告警路由
+- **告警规则**: `config/alerts/mystocks-alerts.yml` - 40+ 告警规则
+
 ---
 
 ## 🌐 在线访问
@@ -297,9 +370,10 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 
 ---
 
-**最后更新**: 2025-11-10
-**文档版本**: 2.0.0
-**API 端点**: 218
+**最后更新**: 2025-11-12
+**文档版本**: 2.1.0
+**API 端点**: 231 (+13 Alert History/Analytics endpoints)
 **数据模型**: 96
+**完成任务**: Task 13 (Monitoring) ✅ | Task 15 (Alert Escalation) ✅
 
 _开始您的 API 探索之旅！_ 🚀
