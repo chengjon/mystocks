@@ -12,7 +12,9 @@ from decimal import Decimal
 from datetime import datetime, date
 
 # Calculate project root (3 levels up from script location)
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 # Import test data formats and schemas
@@ -59,6 +61,7 @@ from web.backend.app.schemas.base_schemas import (
 # TEST RESULTS TRACKING
 # ============================================================================
 
+
 class TestResults:
     def __init__(self):
         self.passed = 0
@@ -97,13 +100,14 @@ results = TestResults()
 # TIMESTAMP FORMAT TESTS
 # ============================================================================
 
+
 def test_iso_timestamp_format():
     """Test ISO 8601 timestamp generation"""
     try:
         ts = get_current_iso_timestamp()
         assert isinstance(ts, str), "Timestamp must be string"
-        assert ts.endswith('Z'), "ISO timestamp must end with Z"
-        assert 'T' in ts, "ISO timestamp must contain T separator"
+        assert ts.endswith("Z"), "ISO timestamp must end with Z"
+        assert "T" in ts, "ISO timestamp must contain T separator"
         results.add_pass("ISO 8601 timestamp generation")
     except Exception as e:
         results.add_fail("ISO 8601 timestamp generation", str(e))
@@ -136,16 +140,19 @@ def test_timestamp_format_enum():
 # DECIMAL PRECISION TESTS
 # ============================================================================
 
+
 def test_price_validation():
     """Test price validation and precision"""
     try:
         # Valid price
         price = validate_price(123.456)
-        assert price == Decimal('123.46'), f"Price should round to 2 decimals, got {price}"
+        assert price == Decimal(
+            "123.46"
+        ), f"Price should round to 2 decimals, got {price}"
 
         # Another valid price
-        price2 = validate_price(Decimal('1850.50'))
-        assert price2 == Decimal('1850.50')
+        price2 = validate_price(Decimal("1850.50"))
+        assert price2 == Decimal("1850.50")
 
         results.add_pass("Price validation and precision (2 decimals)")
     except Exception as e:
@@ -157,12 +164,15 @@ def test_percentage_validation():
     try:
         # Standard precision
         pct = validate_percentage(15.2569, high_precision=False)
-        assert pct == Decimal('15.26'), f"Standard percentage should be 2 decimals, got {pct}"
+        assert pct == Decimal(
+            "15.26"
+        ), f"Standard percentage should be 2 decimals, got {pct}"
 
         # High precision
         pct_high = validate_percentage(15.2569, high_precision=True)
-        assert pct_high == Decimal('15.2569') or pct_high == Decimal('15.25'), \
-            f"High precision percentage should be 4 decimals, got {pct_high}"
+        assert pct_high == Decimal("15.2569") or pct_high == Decimal(
+            "15.25"
+        ), f"High precision percentage should be 4 decimals, got {pct_high}"
 
         results.add_pass("Percentage validation (2-4 decimals)")
     except Exception as e:
@@ -185,7 +195,9 @@ def test_currency_validation():
     """Test currency validation and precision"""
     try:
         amount = validate_currency(123456789.5678)
-        assert amount == Decimal('123456789.57'), f"Currency should round to 2 decimals, got {amount}"
+        assert amount == Decimal(
+            "123456789.57"
+        ), f"Currency should round to 2 decimals, got {amount}"
 
         results.add_pass("Currency validation (2 decimals)")
     except Exception as e:
@@ -210,6 +222,7 @@ def test_precision_rules_constants():
 # SPECIAL FIELD FORMAT TESTS
 # ============================================================================
 
+
 def test_stock_symbol_validation():
     """Test stock symbol validation (6-digit format)"""
     try:
@@ -229,7 +242,9 @@ def test_stock_symbol_invalid():
         # Should reject non-numeric
         try:
             StockSymbolFormat.validate("60000A")
-            results.add_fail("Stock symbol invalid rejection", "Should reject non-numeric")
+            results.add_fail(
+                "Stock symbol invalid rejection", "Should reject non-numeric"
+            )
             return
         except ValueError:
             pass
@@ -237,7 +252,9 @@ def test_stock_symbol_invalid():
         # Should reject wrong length
         try:
             StockSymbolFormat.validate("60000")
-            results.add_fail("Stock symbol invalid rejection", "Should reject 5-digit code")
+            results.add_fail(
+                "Stock symbol invalid rejection", "Should reject 5-digit code"
+            )
             return
         except ValueError:
             pass
@@ -281,14 +298,12 @@ def test_data_format_constants():
 # RESPONSE SCHEMA TESTS
 # ============================================================================
 
+
 def test_success_response_schema():
     """Test SuccessResponse schema validation"""
     try:
         response = SuccessResponse(
-            status="success",
-            code=200,
-            message="Test successful",
-            data={"test": "data"}
+            status="success", code=200, message="Test successful", data={"test": "data"}
         )
 
         assert response.status == "success"
@@ -309,7 +324,7 @@ def test_error_response_schema():
             code=400,
             message="Bad request",
             error="INVALID_INPUT",
-            details={"field": "symbol"}
+            details={"field": "symbol"},
         )
 
         assert response.status == "error"
@@ -324,16 +339,14 @@ def test_error_response_schema():
 def test_pagination_info_schema():
     """Test PaginationInfo schema with auto-calculation"""
     try:
-        pagination = PaginationInfo(
-            page=1,
-            page_size=20,
-            total=100
-        )
+        pagination = PaginationInfo(page=1, page_size=20, total=100)
 
         assert pagination.page == 1
         assert pagination.page_size == 20
         assert pagination.total == 100
-        assert pagination.pages == 5, f"Should calculate 5 pages for 100 items, got {pagination.pages}"
+        assert (
+            pagination.pages == 5
+        ), f"Should calculate 5 pages for 100 items, got {pagination.pages}"
 
         results.add_pass("PaginationInfo schema with auto-calculation")
     except Exception as e:
@@ -349,13 +362,8 @@ def test_paginated_response_schema():
             message="Data retrieved",
             data={
                 "items": [{"id": 1}, {"id": 2}],
-                "pagination": {
-                    "page": 1,
-                    "page_size": 20,
-                    "total": 100,
-                    "pages": 5
-                }
-            }
+                "pagination": {"page": 1, "page_size": 20, "total": 100, "pages": 5},
+            },
         )
 
         assert response.status == "success"
@@ -377,8 +385,8 @@ def test_validation_error_response():
             error="VALIDATION_ERROR",
             details={
                 "symbol": ["Invalid stock symbol format"],
-                "price": ["Price must be positive"]
-            }
+                "price": ["Price must be positive"],
+            },
         )
 
         assert response.code == 400
@@ -397,7 +405,7 @@ def test_unauthorized_response():
             status="error",
             code=401,
             message="Authentication required",
-            error="UNAUTHORIZED"
+            error="UNAUTHORIZED",
         )
 
         assert response.code == 401
@@ -412,10 +420,7 @@ def test_forbidden_response():
     """Test ForbiddenResponse schema"""
     try:
         response = ForbiddenResponse(
-            status="error",
-            code=403,
-            message="Permission denied",
-            error="FORBIDDEN"
+            status="error", code=403, message="Permission denied", error="FORBIDDEN"
         )
 
         assert response.code == 403
@@ -430,10 +435,7 @@ def test_not_found_response():
     """Test NotFoundResponse schema"""
     try:
         response = NotFoundResponse(
-            status="error",
-            code=404,
-            message="Resource not found",
-            error="NOT_FOUND"
+            status="error", code=404, message="Resource not found", error="NOT_FOUND"
         )
 
         assert response.code == 404
@@ -451,7 +453,7 @@ def test_server_error_response():
             status="error",
             code=500,
             message="Internal server error",
-            error="INTERNAL_SERVER_ERROR"
+            error="INTERNAL_SERVER_ERROR",
         )
 
         assert response.code == 500
@@ -465,6 +467,7 @@ def test_server_error_response():
 # ============================================================================
 # FIELD SCHEMA TESTS
 # ============================================================================
+
 
 def test_stock_symbol_field_schema():
     """Test StockSymbolField Pydantic schema"""
@@ -481,7 +484,7 @@ def test_price_field_schema():
     """Test PriceField Pydantic schema"""
     try:
         field = PriceField(price=150.50)
-        assert field.price == Decimal('150.50')
+        assert field.price == Decimal("150.50")
 
         results.add_pass("PriceField Pydantic schema")
     except Exception as e:
@@ -492,7 +495,7 @@ def test_percentage_field_schema():
     """Test PercentageField Pydantic schema"""
     try:
         field = PercentageField(percentage=15.25)
-        assert field.percentage == Decimal('15.25')
+        assert field.percentage == Decimal("15.25")
 
         results.add_pass("PercentageField Pydantic schema")
     except Exception as e:
@@ -514,7 +517,7 @@ def test_currency_field_schema():
     """Test CurrencyField Pydantic schema"""
     try:
         field = CurrencyField(amount=123456789.50)
-        assert field.amount == Decimal('123456789.50')
+        assert field.amount == Decimal("123456789.50")
 
         results.add_pass("CurrencyField Pydantic schema")
     except Exception as e:
@@ -548,6 +551,7 @@ def test_timestamp_field_schema():
 # VALIDATION UTILITY TESTS
 # ============================================================================
 
+
 def test_http_header_formats():
     """Test HTTPHeaderFormats validation"""
     try:
@@ -572,7 +576,7 @@ def test_data_format_validator():
 
         validated = DataFormatValidator.validate_all_formats(data)
         assert validated["symbol"] == "600000"
-        assert validated["price"] == Decimal('150.50')
+        assert validated["price"] == Decimal("150.50")
         assert validated["volume"] == 1000000
 
         results.add_pass("DataFormatValidator.validate_all_formats")
@@ -587,7 +591,7 @@ def test_response_format_validation():
             "status": "success",
             "code": 200,
             "message": "OK",
-            "timestamp": "2025-11-11T12:34:56.789Z"
+            "timestamp": "2025-11-11T12:34:56.789Z",
         }
 
         is_valid = DataFormatValidator.validate_response_format(response)
@@ -601,6 +605,7 @@ def test_response_format_validation():
 # ============================================================================
 # PAGINATION REQUEST TESTS
 # ============================================================================
+
 
 def test_pagination_request_schema():
     """Test PaginationRequest schema"""
@@ -622,6 +627,7 @@ def test_pagination_request_schema():
 # ============================================================================
 # MAIN TEST EXECUTION
 # ============================================================================
+
 
 def run_all_tests():
     """Run all test suites"""
@@ -682,6 +688,6 @@ def run_all_tests():
     return 0 if results.failed == 0 else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit_code = run_all_tests()
     sys.exit(exit_code)

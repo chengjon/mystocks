@@ -20,17 +20,19 @@ from datetime import datetime
 from pathlib import Path
 
 # Add project root directory to path (3 levels up: scripts/database/verify_tdengine_deployment.py)
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 # Load .env file
 env_file = Path(project_root) / ".env"
 if env_file.exists():
-    with open(env_file, 'r', encoding='utf-8') as f:
+    with open(env_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                key, value = line.split('=', 1)
+            if line and not line.startswith("#") and "=" in line:
+                key, value = line.split("=", 1)
                 key = key.strip()
                 value = value.strip().strip('"').strip("'")
                 os.environ.setdefault(key, value)

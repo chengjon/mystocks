@@ -29,7 +29,10 @@ except (ImportError, ModuleNotFoundError):
     # Fallback for script execution
     import sys
     import os
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    project_root = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
@@ -50,6 +53,7 @@ except (ImportError, ModuleNotFoundError):
 # STANDARD RESPONSE SCHEMAS
 # ============================================================================
 
+
 class StandardResponse(BaseModel):
     """Base response schema for all API responses"""
 
@@ -58,7 +62,7 @@ class StandardResponse(BaseModel):
     message: str = Field(..., description="Response message")
     timestamp: str = Field(
         default_factory=get_current_iso_timestamp,
-        description="ISO 8601 timestamp when response was generated"
+        description="ISO 8601 timestamp when response was generated",
     )
 
     class Config:
@@ -67,7 +71,7 @@ class StandardResponse(BaseModel):
                 "status": "success",
                 "code": 200,
                 "message": "Operation successful",
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -76,10 +80,7 @@ class SuccessResponse(StandardResponse):
     """Standard success response with data"""
 
     status: str = Field(default="success")
-    data: Optional[Any] = Field(
-        None,
-        description="Response data payload"
-    )
+    data: Optional[Any] = Field(None, description="Response data payload")
 
     class Config:
         json_schema_extra = {
@@ -88,7 +89,7 @@ class SuccessResponse(StandardResponse):
                 "code": 200,
                 "message": "Data retrieved successfully",
                 "data": {"symbol": "600000", "price": 150.50},
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -99,8 +100,7 @@ class ErrorResponse(StandardResponse):
     status: str = Field(default="error")
     error: Optional[str] = Field(None, description="Error type/code")
     details: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Additional error details"
+        None, description="Additional error details"
     )
 
     class Config:
@@ -111,7 +111,7 @@ class ErrorResponse(StandardResponse):
                 "message": "Invalid request parameters",
                 "error": "INVALID_PARAMETERS",
                 "details": {"field": "symbol", "reason": "Invalid stock symbol format"},
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -124,20 +124,15 @@ class PaginationInfo(BaseModel):
     total: int = Field(..., ge=0, description="Total number of items")
     pages: Optional[int] = Field(None, ge=0, description="Total number of pages")
 
-    @validator('pages', pre=True, always=True)
+    @validator("pages", pre=True, always=True)
     def calculate_pages(cls, v, values):
-        if 'total' in values and 'page_size' in values:
-            return (values['total'] + values['page_size'] - 1) // values['page_size']
+        if "total" in values and "page_size" in values:
+            return (values["total"] + values["page_size"] - 1) // values["page_size"]
         return v if v is not None else 0
 
     class Config:
         json_schema_extra = {
-            "example": {
-                "page": 1,
-                "page_size": 20,
-                "total": 100,
-                "pages": 5
-            }
+            "example": {"page": 1, "page_size": 20, "total": 100, "pages": 5}
         }
 
 
@@ -146,8 +141,7 @@ class PaginatedResponse(StandardResponse):
 
     status: str = Field(default="success")
     data: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Response data with items and pagination info"
+        None, description="Response data with items and pagination info"
     )
 
     class Config:
@@ -159,16 +153,16 @@ class PaginatedResponse(StandardResponse):
                 "data": {
                     "items": [
                         {"symbol": "600000", "price": 150.50},
-                        {"symbol": "600001", "price": 45.25}
+                        {"symbol": "600001", "price": 45.25},
                     ],
                     "pagination": {
                         "page": 1,
                         "page_size": 20,
                         "total": 100,
-                        "pages": 5
-                    }
+                        "pages": 5,
+                    },
                 },
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -179,8 +173,7 @@ class ValidationErrorResponse(ErrorResponse):
     code: int = Field(default=400)
     error: str = Field(default="VALIDATION_ERROR")
     details: Dict[str, List[str]] = Field(
-        ...,
-        description="Field-level validation errors"
+        ..., description="Field-level validation errors"
     )
 
     class Config:
@@ -192,9 +185,9 @@ class ValidationErrorResponse(ErrorResponse):
                 "error": "VALIDATION_ERROR",
                 "details": {
                     "symbol": ["Invalid stock symbol format"],
-                    "price": ["Price must be positive"]
+                    "price": ["Price must be positive"],
                 },
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -212,7 +205,7 @@ class UnauthorizedResponse(ErrorResponse):
                 "code": 401,
                 "message": "Authentication required",
                 "error": "UNAUTHORIZED",
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -230,7 +223,7 @@ class ForbiddenResponse(ErrorResponse):
                 "code": 403,
                 "message": "Permission denied",
                 "error": "FORBIDDEN",
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -248,7 +241,7 @@ class NotFoundResponse(ErrorResponse):
                 "code": 404,
                 "message": "Resource not found",
                 "error": "NOT_FOUND",
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -266,7 +259,7 @@ class ServerErrorResponse(ErrorResponse):
                 "code": 500,
                 "message": "Internal server error",
                 "error": "INTERNAL_SERVER_ERROR",
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -275,16 +268,17 @@ class ServerErrorResponse(ErrorResponse):
 # STANDARD FIELD SCHEMAS
 # ============================================================================
 
+
 class StockSymbolField(BaseModel):
     """Stock symbol field (6-digit code)"""
 
     symbol: constr(min_length=6, max_length=6) = Field(
         ...,
-        pattern=r'^\d{6}$',
-        description="Stock symbol code (6 digits, e.g., '600000')"
+        pattern=r"^\d{6}$",
+        description="Stock symbol code (6 digits, e.g., '600000')",
     )
 
-    @validator('symbol')
+    @validator("symbol")
     def validate_symbol(cls, v):
         return StockSymbolFormat.validate(v)
 
@@ -296,13 +290,10 @@ class PriceField(BaseModel):
     """Price field with automatic precision handling"""
 
     price: Decimal = Field(
-        ...,
-        ge=0,
-        decimal_places=2,
-        description="Price with 2 decimal places"
+        ..., ge=0, decimal_places=2, description="Price with 2 decimal places"
     )
 
-    @validator('price', pre=True)
+    @validator("price", pre=True)
     def validate_price_value(cls, v):
         return validate_price(v)
 
@@ -315,13 +306,10 @@ class PercentageField(BaseModel):
     """Percentage field with automatic precision handling"""
 
     percentage: Decimal = Field(
-        ...,
-        ge=-100,
-        le=100,
-        description="Percentage value (2-4 decimal places)"
+        ..., ge=-100, le=100, description="Percentage value (2-4 decimal places)"
     )
 
-    @validator('percentage', pre=True)
+    @validator("percentage", pre=True)
     def validate_percentage_value(cls, v):
         return validate_percentage(v)
 
@@ -333,13 +321,9 @@ class PercentageField(BaseModel):
 class VolumeField(BaseModel):
     """Trading volume field"""
 
-    volume: int = Field(
-        ...,
-        ge=0,
-        description="Trading volume (integer)"
-    )
+    volume: int = Field(..., ge=0, description="Trading volume (integer)")
 
-    @validator('volume', pre=True)
+    @validator("volume", pre=True)
     def validate_volume_value(cls, v):
         return validate_volume(v)
 
@@ -351,12 +335,10 @@ class CurrencyField(BaseModel):
     """Currency amount field with automatic precision handling"""
 
     amount: Decimal = Field(
-        ...,
-        decimal_places=2,
-        description="Currency amount with 2 decimal places"
+        ..., decimal_places=2, description="Currency amount with 2 decimal places"
     )
 
-    @validator('amount', pre=True)
+    @validator("amount", pre=True)
     def validate_currency_value(cls, v):
         return validate_currency(v)
 
@@ -368,12 +350,11 @@ class CurrencyField(BaseModel):
 class DateField(BaseModel):
     """Date field (YYYY-MM-DD format)"""
 
-    date: constr(pattern=r'^\d{4}-\d{2}-\d{2}$') = Field(
-        ...,
-        description="Date in YYYY-MM-DD format"
+    date: constr(pattern=r"^\d{4}-\d{2}-\d{2}$") = Field(
+        ..., description="Date in YYYY-MM-DD format"
     )
 
-    @validator('date', pre=True)
+    @validator("date", pre=True)
     def validate_date_value(cls, v):
         return DateFormat.validate(v)
 
@@ -386,7 +367,7 @@ class TimestampField(BaseModel):
 
     timestamp: str = Field(
         default_factory=get_current_iso_timestamp,
-        description="ISO 8601 timestamp in UTC"
+        description="ISO 8601 timestamp in UTC",
     )
 
     class Config:
@@ -398,7 +379,7 @@ class MillisecondTimestampField(BaseModel):
 
     timestamp: int = Field(
         default_factory=get_current_ms_timestamp,
-        description="UTC millisecond timestamp"
+        description="UTC millisecond timestamp",
     )
 
     class Config:
@@ -409,24 +390,17 @@ class MillisecondTimestampField(BaseModel):
 # PAGINATION REQUEST/RESPONSE SCHEMAS
 # ============================================================================
 
+
 class PaginationRequest(BaseModel):
     """Standard pagination request parameters"""
 
     page: int = Field(default=1, ge=1, description="Page number (1-indexed)")
     page_size: int = Field(
-        default=20,
-        ge=1,
-        le=100,
-        description="Number of items per page"
+        default=20, ge=1, le=100, description="Number of items per page"
     )
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "page": 1,
-                "page_size": 20
-            }
-        }
+        json_schema_extra = {"example": {"page": 1, "page_size": 20}}
 
 
 class SortRequest(BaseModel):
@@ -434,36 +408,24 @@ class SortRequest(BaseModel):
 
     sort_by: Optional[str] = Field(None, description="Field to sort by")
     sort_order: Optional[str] = Field(
-        "asc",
-        pattern="^(asc|desc)$",
-        description="Sort order: 'asc' or 'desc'"
+        "asc", pattern="^(asc|desc)$", description="Sort order: 'asc' or 'desc'"
     )
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "sort_by": "price",
-                "sort_order": "desc"
-            }
-        }
+        json_schema_extra = {"example": {"sort_by": "price", "sort_order": "desc"}}
 
 
 class FilterRequest(BaseModel):
     """Standard filter request parameters"""
 
     filters: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Filter conditions as key-value pairs"
+        None, description="Filter conditions as key-value pairs"
     )
 
     class Config:
         json_schema_extra = {
             "example": {
-                "filters": {
-                    "symbol": "600000",
-                    "price_min": 100,
-                    "price_max": 200
-                }
+                "filters": {"symbol": "600000", "price_min": 100, "price_max": 200}
             }
         }
 
@@ -472,14 +434,12 @@ class FilterRequest(BaseModel):
 # AUTHENTICATION SCHEMAS
 # ============================================================================
 
+
 class AuthTokenResponse(StandardResponse):
     """Authentication token response"""
 
     status: str = Field(default="success")
-    data: Dict[str, Any] = Field(
-        ...,
-        description="Token information"
-    )
+    data: Dict[str, Any] = Field(..., description="Token information")
 
     class Config:
         json_schema_extra = {
@@ -491,9 +451,9 @@ class AuthTokenResponse(StandardResponse):
                     "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
                     "token_type": "Bearer",
                     "expires_in": 3600,
-                    "refresh_token": "refresh_token_here"
+                    "refresh_token": "refresh_token_here",
                 },
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -502,10 +462,7 @@ class CSRFTokenResponse(StandardResponse):
     """CSRF token response"""
 
     status: str = Field(default="success")
-    data: Dict[str, str] = Field(
-        ...,
-        description="CSRF token"
-    )
+    data: Dict[str, str] = Field(..., description="CSRF token")
 
     class Config:
         json_schema_extra = {
@@ -513,10 +470,8 @@ class CSRFTokenResponse(StandardResponse):
                 "status": "success",
                 "code": 200,
                 "message": "CSRF token generated",
-                "data": {
-                    "csrf_token": "550e8400-e29b-41d4-a716-446655440000"
-                },
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "data": {"csrf_token": "550e8400-e29b-41d4-a716-446655440000"},
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
@@ -524,6 +479,7 @@ class CSRFTokenResponse(StandardResponse):
 # ============================================================================
 # BATCH OPERATION SCHEMAS
 # ============================================================================
+
 
 class BatchOperation(BaseModel):
     """Single batch operation"""
@@ -537,7 +493,7 @@ class BatchOperation(BaseModel):
             "example": {
                 "operation": "create",
                 "data": {"symbol": "600000", "price": 150.50},
-                "id": "op_1"
+                "id": "op_1",
             }
         }
 
@@ -546,10 +502,7 @@ class BatchOperationRequest(BaseModel):
     """Batch operation request"""
 
     operations: List[BatchOperation] = Field(
-        ...,
-        min_items=1,
-        max_items=100,
-        description="List of operations to perform"
+        ..., min_items=1, max_items=100, description="List of operations to perform"
     )
 
     class Config:
@@ -559,13 +512,13 @@ class BatchOperationRequest(BaseModel):
                     {
                         "operation": "create",
                         "data": {"symbol": "600000", "price": 150.50},
-                        "id": "op_1"
+                        "id": "op_1",
                     },
                     {
                         "operation": "update",
                         "data": {"symbol": "600001", "price": 45.25},
-                        "id": "op_2"
-                    }
+                        "id": "op_2",
+                    },
                 ]
             }
         }
@@ -585,7 +538,7 @@ class BatchOperationResult(BaseModel):
                 "id": "op_1",
                 "success": True,
                 "data": {"id": 123},
-                "error": None
+                "error": None,
             }
         }
 
@@ -594,10 +547,7 @@ class BatchOperationResponse(StandardResponse):
     """Batch operation response"""
 
     status: str = Field(default="success")
-    data: Dict[str, Any] = Field(
-        ...,
-        description="Batch operation results"
-    )
+    data: Dict[str, Any] = Field(..., description="Batch operation results")
 
     class Config:
         json_schema_extra = {
@@ -607,38 +557,23 @@ class BatchOperationResponse(StandardResponse):
                 "message": "Batch operations completed",
                 "data": {
                     "results": [
-                        {
-                            "id": "op_1",
-                            "success": True,
-                            "data": {"id": 123}
-                        },
-                        {
-                            "id": "op_2",
-                            "success": False,
-                            "error": "Duplicate entry"
-                        }
+                        {"id": "op_1", "success": True, "data": {"id": 123}},
+                        {"id": "op_2", "success": False, "error": "Duplicate entry"},
                     ],
-                    "summary": {
-                        "total": 2,
-                        "succeeded": 1,
-                        "failed": 1
-                    }
+                    "summary": {"total": 2, "succeeded": 1, "failed": 1},
                 },
-                "timestamp": "2025-11-11T12:34:56.789Z"
+                "timestamp": "2025-11-11T12:34:56.789Z",
             }
         }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Base Schema Definitions Module")
     print("=" * 50)
 
     # Example: Create a success response
     response = SuccessResponse(
-        status="success",
-        code=200,
-        message="Test successful",
-        data={"test": "data"}
+        status="success", code=200, message="Test successful", data={"test": "data"}
     )
     print(f"\nSuccess Response:\n{response.json(indent=2)}")
 

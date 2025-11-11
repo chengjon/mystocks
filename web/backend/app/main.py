@@ -150,8 +150,13 @@ app = FastAPI(
 
 # 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
 import swagger_ui
+
 swagger_ui_path = os.path.join(os.path.dirname(swagger_ui.__file__), "static")
-app.mount("/swagger-ui-static", StaticFiles(directory=swagger_ui_path), name="swagger-ui-static")
+app.mount(
+    "/swagger-ui-static",
+    StaticFiles(directory=swagger_ui_path),
+    name="swagger-ui-static",
+)
 
 # 配置 CORS
 app.add_middleware(
