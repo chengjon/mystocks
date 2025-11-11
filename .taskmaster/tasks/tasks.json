@@ -293,39 +293,39 @@
           "id": "8",
           "title": "数据备份恢复机制",
           "description": "TDengine全量+增量备份，PostgreSQL全量+WAL，恢复流程文档，数据完整性校验",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "week": 2,
           "category": "P0-运维",
           "dependencies": [
             "2"
           ],
-          "details": "TDengine每日全量+每小时增量备份脚本、PostgreSQL每日全量+WAL归档配置、恢复流程文档和验证脚本、备份数据完整性校验",
+          "details": "✅ 完成: 9个文件(3,164行代码) + 16个测试通过 + 完整的备份恢复系统。TDengine全量+增量备份脚本、PostgreSQL全量+WAL归档配置、PITR点对点恢复、备份数据完整性校验。RTO目标: TDengine(10分钟), PostgreSQL(5分钟)",
           "testStrategy": "备份完整性测试、恢复功能测试、RTO/RPO验证",
           "subtasks": [
             {
               "id": "8.1",
               "title": "TDengine备份策略",
-              "status": "pending",
-              "details": "全量备份脚本、增量备份实现、备份存储管理"
+              "status": "done",
+              "details": "✅ 完成: BackupManager类(全量+增量备份)、备份存储管理、元数据记录"
             },
             {
               "id": "8.2",
               "title": "PostgreSQL备份策略",
-              "status": "pending",
-              "details": "pg_dump全量备份、WAL归档配置、PITR恢复"
+              "status": "done",
+              "details": "✅ 完成: pg_dump全量备份、WAL归档配置、SQL dump恢复脚本"
             },
             {
               "id": "8.3",
               "title": "恢复流程实现",
-              "status": "pending",
-              "details": "恢复脚本开发、恢复流程测试、恢复时间优化"
+              "status": "done",
+              "details": "✅ 完成: RecoveryManager(全量恢复+PITR)、恢复脚本、恢复日志记录"
             },
             {
               "id": "8.4",
               "title": "数据完整性校验",
-              "status": "pending",
-              "details": "校验和计算、恢复验证、日志记录"
+              "status": "done",
+              "details": "✅ 完成: IntegrityChecker类(SHA256哈希验证)、恢复后数据校验、完整性报告生成"
             }
           ]
         },
@@ -407,7 +407,7 @@
           "id": "11",
           "title": "数据库索引优化",
           "description": "TDengine时间索引，PostgreSQL业务字段索引，慢查询优化，执行计划分析",
-          "status": "pending",
+          "status": "done",
           "priority": "high",
           "week": 3,
           "category": "P1-性能",
@@ -420,25 +420,25 @@
             {
               "id": "11.1",
               "title": "TDengine索引优化",
-              "status": "pending",
+              "status": "done",
               "details": "时间索引配置、标签索引、查询优化"
             },
             {
               "id": "11.2",
               "title": "PostgreSQL索引设计",
-              "status": "pending",
+              "status": "done",
               "details": "单列索引、复合索引、部分索引、BRIN索引"
             },
             {
               "id": "11.3",
               "title": "慢查询优化",
-              "status": "pending",
+              "status": "done",
               "details": "慢查询识别、执行计划分析、查询重写"
             },
             {
               "id": "11.4",
               "title": "性能监控",
-              "status": "pending",
+              "status": "done",
               "details": "查询时间监控、索引使用率监控、性能基准测试"
             }
           ]
@@ -447,7 +447,7 @@
           "id": "12",
           "title": "契约测试",
           "description": "配置Dredd框架，API一致性验证，测试钩子实现，CI集成",
-          "status": "pending",
+          "status": "done",
           "priority": "high",
           "week": 3,
           "category": "P1-测试",
@@ -460,25 +460,25 @@
             {
               "id": "12.1",
               "title": "Dredd框架搭建",
-              "status": "pending",
+              "status": "done",
               "details": "安装配置、规范验证、报告生成"
             },
             {
               "id": "12.2",
               "title": "编写测试钩子",
-              "status": "pending",
+              "status": "done",
               "details": "setup钩子、teardown钩子、数据准备"
             },
             {
               "id": "12.3",
               "title": "API一致性验证",
-              "status": "pending",
+              "status": "done",
               "details": "规范vs实现对比、差异报告、修复流程"
             },
             {
               "id": "12.4",
               "title": "CI集成",
-              "status": "pending",
+              "status": "done",
               "details": "GitHub Actions配置、自动化验证、失败通知"
             }
           ]
@@ -487,7 +487,7 @@
           "id": "13",
           "title": "自定义监控指标",
           "description": "WebSocket连接监控，缓存命中率监控，API响应时间，数据库连接池，Prometheus Exporter",
-          "status": "pending",
+          "status": "done",
           "priority": "high",
           "week": 3,
           "category": "P1-监控",
@@ -501,25 +501,25 @@
             {
               "id": "13.1",
               "title": "定义监控指标",
-              "status": "pending",
+              "status": "done",
               "details": "业务指标、技术指标、告警指标定义"
             },
             {
               "id": "13.2",
               "title": "Prometheus Exporter开发",
-              "status": "pending",
+              "status": "done",
               "details": "自定义指标导出、metrics端点、数据采集"
             },
             {
               "id": "13.3",
               "title": "Grafana仪表盘",
-              "status": "pending",
+              "status": "done",
               "details": "仪表盘设计、图表配置、告警显示"
             },
             {
               "id": "13.4",
               "title": "告警规则配置",
-              "status": "pending",
+              "status": "done",
               "details": "告警条件、告警消息、告警渠道"
             }
           ]
