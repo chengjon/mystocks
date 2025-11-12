@@ -1,0 +1,29 @@
+{
+  "name": "Baseline Test",
+  "description": "Verify basic API performance with 100 concurrent users",
+  "target_users": 100,
+  "spawn_rate": 10,
+  "duration": 300,
+  "objectives": [
+    "Response time < 500ms for 95% of requests",
+    "Error rate < 1%",
+    "Database connection pool: 20-30 connections"
+  ],
+  "monitored_endpoints": [
+    "/health",
+    "/api/market/realtime/000001",
+    "/api/auth/login"
+  ],
+  "api_host": "http://localhost:8000",
+  "api_timeout": 30,
+  "generated_at": "2025-11-12T03:05:43.986636",
+  "task": "Task 14.1: Load Testing",
+  "performance_targets": {
+    "response_time_p50_ms": 200,
+    "response_time_p95_ms": 1000,
+    "response_time_p99_ms": 2000,
+    "error_rate_percent": 1.0,
+    "cache_hit_rate_percent": 70,
+    "throughput_requests_per_second": 500
+  }
+}
