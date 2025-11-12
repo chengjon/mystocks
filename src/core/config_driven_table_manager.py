@@ -501,40 +501,381 @@ class ConfigDrivenTableManager:
         return result
 
     def _validate_table_structure(self, table_def: Dict[str, Any]) -> bool:
-        """验证单个表结构"""
-        # TODO: 实现详细的表结构验证逻辑
-        # 1. 检查表是否存在
-        # 2. 检查列定义是否匹配
-        # 3. 检查索引是否存在
-        # 4. 检查约束是否正确
+        """
+        验证单个表结构
 
+        验证内容:
+        1. 检查表是否存在
+        2. 检查列定义是否匹配
+        3. 检查列数据类型是否正确
+        4. 检查主键和索引（可选）
+
+        Args:
+            table_def: 表定义字典
+
+        Returns:
+            True表示表结构完全匹配配置，False表示不匹配
+        """
         db_type = table_def["database_type"]
         table_name = table_def["table_name"]
+        database_name = table_def.get("database_name")
 
-        if not self._table_exists(db_type, table_name, table_def.get("database_name")):
-            logger.warning(f"表不存在: {table_name}")
+        # 1. 检查表是否存在
+        if not self._table_exists(db_type, table_name, database_name):
+            logger.warning(f"表不存在: {table_name} ({db_type})")
             return False
 
+        # 2. 获取实际表结构
+        try:
+            actual_columns = self._get_table_columns(db_type, table_name, database_name)
+        except Exception as e:
+            logger.error(f"无法获取表结构 {table_name}: {e}")
+            return False
+
+        # 3. 验证列定义
+        expected_columns = {col["name"]: col for col in table_def.get("columns", [])}
+        actual_column_names = {col["name"] for col in actual_columns}
+        expected_column_names = set(expected_columns.keys())
+
+        # 检查缺失的列
+        missing_columns = expected_column_names - actual_column_names
+        if missing_columns:
+            logger.warning(f"表 {table_name} 缺少列: {', '.join(missing_columns)}")
+            return False
+
+        # 检查多余的列（不算致命错误，只记录警告）
+        extra_columns = actual_column_names - expected_column_names
+        if extra_columns:
+            logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
+
+        # 4. 验证列数据类型
+        for actual_col in actual_columns:
+            col_name = actual_col["name"]
+            if col_name in expected_columns:
+                expected_type = expected_columns[col_name].get("type", "").upper()
+                actual_type = actual_col.get("type", "").upper()
+
+                # 类型匹配检查（考虑类型别名，如INT vs INTEGER）
+                if not self._types_match(expected_type, actual_type, db_type):
+                    logger.warning(
+                        f"表 {table_name} 列 {col_name} 类型不匹配: "
+                        f"期望 {expected_type}, 实际 {actual_type}"
+                    )
+                    return False
+
+        logger.info(f"✅ 表结构验证通过: {table_name}")
         return True
 
-    def safe_add_column(self, table_name: str, column_def: Dict[str, Any]) -> bool:
+    def _get_table_columns(
+        self, db_type: str, table_name: str, database_name: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        获取表的实际列结构
+
+        Args:
+            db_type: 数据库类型
+            table_name: 表名
+            database_name: 数据库名（可选）
+
+        Returns:
+            列定义列表，每个列包含 {name, type, nullable, default} 等字段
+        """
+        if db_type == "PostgreSQL":
+            return self._get_postgresql_columns(table_name, database_name)
+        elif db_type == "TDengine":
+            return self._get_tdengine_columns(table_name, database_name)
+        elif db_type == "MySQL":
+            return self._get_mysql_columns(table_name, database_name)
+        else:
+            logger.warning(f"不支持的数据库类型: {db_type}")
+            return []
+
+    def _get_postgresql_columns(
+        self, table_name: str, database_name: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """获取PostgreSQL表的列结构"""
+        try:
+            pool = self.conn_manager.get_postgresql_connection()
+            conn = pool.getconn()
+            cursor = conn.cursor()
+
+            # 查询INFORMATION_SCHEMA获取列信息
+            query = """
+                SELECT
+                    column_name,
+                    data_type,
+                    is_nullable,
+                    column_default
+                FROM information_schema.columns
+                WHERE table_name = %s
+                ORDER BY ordinal_position
+            """
+
+            cursor.execute(query, (table_name,))
+            rows = cursor.fetchall()
+
+            columns = []
+            for row in rows:
+                columns.append(
+                    {
+                        "name": row[0],
+                        "type": row[1],
+                        "nullable": row[2] == "YES",
+                        "default": row[3],
+                    }
+                )
+
+            cursor.close()
+            self.conn_manager._return_postgresql_connection(conn)
+
+            return columns
+
+        except Exception as e:
+            logger.error(f"查询PostgreSQL列结构失败 {table_name}: {e}")
+            return []
+
+    def _get_tdengine_columns(
+        self, table_name: str, database_name: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """获取TDengine超表的列结构"""
+        try:
+            conn = self.conn_manager.get_tdengine_connection()
+
+            # TDengine使用DESCRIBE TABLE查询列信息
+            if database_name:
+                full_table_name = f"{database_name}.{table_name}"
+            else:
+                full_table_name = table_name
+
+            query = f"DESCRIBE {full_table_name}"
+            cursor = conn.cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+            columns = []
+            for row in rows:
+                # TDengine DESCRIBE返回: (field_name, type, length, note)
+                columns.append(
+                    {
+                        "name": row[0],
+                        "type": row[1],
+                        "nullable": True,  # TDengine默认可空
+                        "default": None,
+                    }
+                )
+
+            cursor.close()
+            return columns
+
+        except Exception as e:
+            logger.error(f"查询TDengine列结构失败 {table_name}: {e}")
+            return []
+
+    def _get_mysql_columns(
+        self, table_name: str, database_name: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """获取MySQL表的列结构"""
+        try:
+            conn = self.conn_manager.get_mysql_connection()
+            cursor = conn.cursor()
+
+            # 查询INFORMATION_SCHEMA获取列信息
+            query = """
+                SELECT
+                    COLUMN_NAME,
+                    DATA_TYPE,
+                    IS_NULLABLE,
+                    COLUMN_DEFAULT
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME = %s
+                AND TABLE_SCHEMA = %s
+                ORDER BY ORDINAL_POSITION
+            """
+
+            db_name = database_name or os.getenv("MYSQL_DATABASE")
+            cursor.execute(query, (table_name, db_name))
+            rows = cursor.fetchall()
+
+            columns = []
+            for row in rows:
+                columns.append(
+                    {
+                        "name": row["COLUMN_NAME"],
+                        "type": row["DATA_TYPE"],
+                        "nullable": row["IS_NULLABLE"] == "YES",
+                        "default": row["COLUMN_DEFAULT"],
+                    }
+                )
+
+            cursor.close()
+            return columns
+
+        except Exception as e:
+            logger.error(f"查询MySQL列结构失败 {table_name}: {e}")
+            return []
+
+    def _types_match(self, expected_type: str, actual_type: str, db_type: str) -> bool:
+        """
+        检查数据类型是否匹配（考虑数据库的类型别名）
+
+        Args:
+            expected_type: 期望的数据类型
+            actual_type: 实际的数据类型
+            db_type: 数据库类型
+
+        Returns:
+            True表示类型匹配
+        """
+        # 转换为大写统一比较
+        expected = expected_type.upper().strip()
+        actual = actual_type.upper().strip()
+
+        # 完全匹配
+        if expected == actual:
+            return True
+
+        # PostgreSQL类型别名映射
+        if db_type == "PostgreSQL":
+            type_aliases = {
+                "INT": ["INTEGER", "INT4"],
+                "INTEGER": ["INT", "INT4"],
+                "BIGINT": ["INT8"],
+                "SMALLINT": ["INT2"],
+                "SERIAL": ["INT", "INTEGER"],
+                "BIGSERIAL": ["BIGINT"],
+                "FLOAT": ["DOUBLE PRECISION", "FLOAT8"],
+                "REAL": ["FLOAT4"],
+                "VARCHAR": ["CHARACTER VARYING"],
+                "CHAR": ["CHARACTER"],
+                "BOOL": ["BOOLEAN"],
+                "TIMESTAMP": ["TIMESTAMP WITHOUT TIME ZONE"],
+                "TIMESTAMPTZ": ["TIMESTAMP WITH TIME ZONE"],
+            }
+
+            for canonical, aliases in type_aliases.items():
+                if expected == canonical and actual in aliases:
+                    return True
+                if actual == canonical and expected in aliases:
+                    return True
+
+        # TDengine类型别名映射
+        elif db_type == "TDengine":
+            type_aliases = {
+                "INT": ["INTEGER"],
+                "BIGINT": ["LONG"],
+                "FLOAT": ["DOUBLE"],
+                "BINARY": ["VARCHAR"],
+                "NCHAR": ["VARCHAR"],
+            }
+
+            for canonical, aliases in type_aliases.items():
+                if expected == canonical and actual in aliases:
+                    return True
+                if actual == canonical and expected in aliases:
+                    return True
+
+        # MySQL类型别名映射
+        elif db_type == "MySQL":
+            type_aliases = {
+                "INT": ["INTEGER"],
+                "BOOL": ["BOOLEAN", "TINYINT"],
+                "DOUBLE": ["DOUBLE PRECISION"],
+            }
+
+            for canonical, aliases in type_aliases.items():
+                if expected == canonical and actual in aliases:
+                    return True
+                if actual == canonical and expected in aliases:
+                    return True
+
+        return False
+
+    def safe_add_column(
+        self,
+        table_name: str,
+        column_def: Dict[str, Any],
+        db_type: str,
+        database_name: Optional[str] = None,
+    ) -> bool:
         """
         安全模式: 自动添加列
 
+        在安全模式下,自动向现有表添加新列。
+        仅支持添加操作,删除和修改列必须手动确认。
+
         Args:
             table_name: 表名
-            column_def: 列定义字典
+            column_def: 列定义字典 {name, type, nullable, default}
+            db_type: 数据库类型 (PostgreSQL/TDengine/MySQL)
+            database_name: 数据库名（可选）
 
         Returns:
             True表示添加成功
+
+        Raises:
+            RuntimeError: 非安全模式下调用此方法
         """
         if not self.safe_mode:
             raise RuntimeError("非安全模式下不允许自动添加列")
 
-        logger.info(f"安全模式: 添加列 {column_def['name']} 到表 {table_name}")
+        col_name = column_def["name"]
+        col_type = column_def.get("type", "VARCHAR(255)")
+        nullable = column_def.get("nullable", True)
+        default = column_def.get("default")
 
-        # TODO: 实现自动添加列逻辑
-        return True
+        logger.info(f"安全模式: 添加列 {col_name} ({col_type}) 到表 {table_name}")
+
+        try:
+            # 构建ALTER TABLE语句
+            if db_type == "PostgreSQL":
+                sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type}"
+
+                if not nullable:
+                    sql += " NOT NULL"
+
+                if default is not None:
+                    sql += f" DEFAULT {default}"
+
+                # 执行SQL
+                pool = self.conn_manager.get_postgresql_connection()
+                conn = pool.getconn()
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                conn.commit()
+                cursor.close()
+                self.conn_manager._return_postgresql_connection(conn)
+
+            elif db_type == "TDengine":
+                # TDengine不支持ALTER TABLE ADD COLUMN
+                logger.warning(f"TDengine不支持动态添加列,请手动重建超表: {table_name}")
+                return False
+
+            elif db_type == "MySQL":
+                sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type}"
+
+                if not nullable:
+                    sql += " NOT NULL"
+
+                if default is not None:
+                    sql += f" DEFAULT {default}"
+
+                # 执行SQL
+                conn = self.conn_manager.get_mysql_connection()
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                conn.commit()
+                cursor.close()
+
+            else:
+                logger.error(f"不支持的数据库类型: {db_type}")
+                return False
+
+            logger.info(f"✅ 成功添加列: {table_name}.{col_name}")
+            return True
+
+        except Exception as e:
+            logger.error(f"添加列失败 {table_name}.{col_name}: {e}")
+            return False
 
     def confirm_dangerous_operation(
         self, operation_type: str, table_name: str, details: str
