@@ -1,0 +1,142 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+
+# The root route with all parameters
+route:
+  receiver: 'default'
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+
+  # Severity-based routing
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical'
+      group_wait: 0s
+      group_interval: 5m
+      repeat_interval: 1h
+
+    - match:
+        severity: warning
+      receiver: 'warning'
+      group_wait: 30s
+      group_interval: 10m
+      repeat_interval: 4h
+
+    - match:
+        category: data
+      receiver: 'data-team'
+      group_wait: 10s
+      group_interval: 10m
+
+    - match:
+        category: performance
+      receiver: 'performance-team'
+      group_wait: 10s
+      group_interval: 15m
+
+    - match:
+        category: health
+      receiver: 'on-call'
+      group_wait: 0s
+      group_interval: 5m
+      repeat_interval: 2h
+
+# Receiver definitions
+receivers:
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts'
+        send_resolved: true
+
+  - name: 'critical'
+    slack_configs:
+      - channel: '#mystocks-critical'
+        title: '🚨 CRITICAL ALERT'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+        send_resolved: true
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_SERVICE_KEY}'
+        description: '{{ .GroupLabels.alertname }}: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        details:
+          firing: '{{ range .Alerts.Firing }}{{ .Labels.instance }} - {{ .Annotations.summary }}\n{{ end }}'
+          resolved: '{{ range .Alerts.Resolved }}{{ .Labels.instance }}\n{{ end }}'
+
+  - name: 'warning'
+    slack_configs:
+      - channel: '#mystocks-warnings'
+        title: '⚠️ WARNING ALERT'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+        send_resolved: true
+
+  - name: 'data-team'
+    slack_configs:
+      - channel: '#mystocks-data-alerts'
+        title: '📊 Data Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+        send_resolved: true
+    email_configs:
+      - to: 'data-team@mystocks.com'
+        from: 'alertmanager@mystocks.com'
+        smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+        auth_username: '${SMTP_USER}'
+        auth_password: '${SMTP_PASSWORD}'
+        require_tls: true
+        html: |
+          <h2>{{ .GroupLabels.alertname }}</h2>
+          {{ range .Alerts }}
+          <p>{{ .Annotations.summary }}</p>
+          <p>{{ .Annotations.description }}</p>
+          {{ end }}
+
+  - name: 'performance-team'
+    slack_configs:
+      - channel: '#mystocks-performance'
+        title: '⚡ Performance Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+        send_resolved: true
+
+  - name: 'on-call'
+    slack_configs:
+      - channel: '#mystocks-oncall'
+        title: '🔴 ON-CALL ALERT'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+        send_resolved: true
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_ON_CALL_KEY}'
+        description: '{{ .GroupLabels.alertname }}'
+        details:
+          alerts: '{{ range .Alerts }}{{ .Labels.instance }}: {{ .Annotations.summary }} | {{ end }}'
+
+# Inhibition rules - suppress certain alerts when others are firing
+inhibit_rules:
+  # Suppress warning alerts when critical alerts are firing for same component
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'component']
+
+  # Suppress low cache hit rate alerts when database connection pool is exhausted
+  - source_match:
+      alertname: 'DatabaseConnectionPoolExhausted'
+    target_match:
+      alertname: 'LowCacheHitRate'
+
+  # Suppress data-related alerts when dependency is unavailable
+  - source_match:
+      alertname: 'DependencyCriticallyUnavailable'
+    target_match:
+      alertname: 'MarketDataProcessingBlocked'
+    equal: ['dependency_name', 'datasource']
+
+  # Suppress health status alerts when component is already marked unhealthy
+  - source_match:
+      alertname: 'ComponentUnhealthy'
+    target_match:
+      alertname: 'HighAPIErrorRate'
+    equal: ['component']

@@ -1,0 +1,109 @@
+{
+    "version": "2.0",
+    "description": "Python Quality Gate configuration for MyStocks project - replaces TypeScript build checker",
+    "errorThreshold": 10,
+    "note_errorThreshold": "初始阈值设为10，稳定后降至5。如果总错误数 >= 阈值，Stop hook阻止停止并要求修复。",
+    "repos": {
+        "/opt/claude/mystocks_spec": {
+            "qualityChecks": [
+                {
+                    "name": "critical_imports",
+                    "description": "验证关键模块可导入（核心架构完整性）",
+                    "command": "cd web/backend && python -c 'import sys; sys.path.insert(0, \".\"); from app.core.database import get_postgresql_engine; from src.core import ConfigDrivenTableManager; print(\"✅ 核心导入验证通过\")'",
+                    "critical": true,
+                    "timeout": 15,
+                    "errorPatterns": [
+                        "ModuleNotFoundError",
+                        "ImportError",
+                        "SyntaxError",
+                        "Traceback"
+                    ]
+                },
+                {
+                    "name": "backend_syntax",
+                    "description": "后端Python语法检查",
+                    "command": "find web/backend/app -name '*.py' -exec python -m py_compile {} \\; 2>&1",
+                    "critical": true,
+                    "timeout": 30,
+                    "errorPatterns": [
+                        "SyntaxError",
+                        "IndentationError",
+                        "TabError"
+                    ]
+                },
+                {
+                    "name": "core_syntax",
+                    "description": "核心模块Python语法检查",
+                    "command": "find src/core src/adapters src/data_access -name '*.py' -exec python -m py_compile {} \\; 2>&1",
+                    "critical": true,
+                    "timeout": 30,
+                    "errorPatterns": [
+                        "SyntaxError",
+                        "IndentationError",
+                        "TabError"
+                    ]
+                },
+                {
+                    "name": "type_hints_core",
+                    "description": "核心模块类型提示检查（非强制）",
+                    "command": "python -m mypy src/core/ --ignore-missing-imports --no-error-summary 2>&1 || true",
+                    "critical": false,
+                    "timeout": 45,
+                    "errorPatterns": [
+                        "error:"
+                    ],
+                    "note": "mypy需安装: pip install mypy"
+                },
+                {
+                    "name": "quick_tests",
+                    "description": "快速测试（最多3个失败后停止）",
+                    "command": "pytest scripts/tests/ -x --maxfail=3 -q --tb=no 2>&1 || true",
+                    "critical": false,
+                    "timeout": 60,
+                    "errorPatterns": [
+                        "FAILED",
+                        "ERROR"
+                    ],
+                    "note": "pytest需安装: pip install pytest"
+                }
+            ],
+            "skipPatterns": [
+                "**/__pycache__/**",
+                "**/*.pyc",
+                "**/.pytest_cache/**",
+                "**/venv/**",
+                "**/env/**",
+                "**/.venv/**"
+            ],
+            "timeout": 120,
+            "note_timeout": "所有检查的总超时时间（秒）。大型项目可增至180-240秒。"
+        }
+    },
+    "customization_guide": {
+        "step1": "确认项目路径 /opt/claude/mystocks_spec 正确（使用 pwd 获取）",
+        "step2": "根据实际需求调整 qualityChecks 数组（可添加 pylint, black 等）",
+        "step3": "设置 critical: true 的检查必须通过，否则阻止停止",
+        "step4": "调整 errorThreshold（10适合中型项目，大项目可增至15-20）",
+        "step5": "确保必需依赖已安装: pip install mypy pytest"
+    },
+    "quality_check_examples": {
+        "pylint_strict": "pylint src/core/ --errors-only --score=no",
+        "black_format": "black --check src/ web/backend/app/",
+        "import_order": "isort --check-only src/ web/backend/app/",
+        "security_scan": "bandit -r src/ web/backend/app/ -ll",
+        "complexity": "radon cc src/core/ -a -nb"
+    },
+    "mystocks_specific": {
+        "pattern": "PostToolUse file-edit-tracker.sh (非阻塞记录) → Stop python-quality-gate.sh (批量检查 + 错误>=10则阻止)",
+        "why_batch": "逐次编辑运行检查会产生噪音。批量检查允许临时中断，在Stop时统一验证。",
+        "dual_database_note": "数据库架构验证由独立的 post-tool-use-database-schema-validator.sh 处理",
+        "integration_with_taskmaster": "可在质量检查失败时建议使用 Task Master 创建修复任务"
+    },
+    "troubleshooting": {
+        "all_checks_fail": "手动测试命令: cd /opt/claude/mystocks_spec && python -c 'from src.core import ConfigDrivenTableManager'",
+        "timeout_exceeded": "增加 timeout 字段（和 settings.json 的 hook timeout）到180或240秒",
+        "false_positives": "调整 errorPatterns 以匹配实际错误输出格式",
+        "mypy_not_installed": "pip install mypy 或将 type_hints_core 的 critical 设为 false",
+        "pytest_not_installed": "pip install pytest 或将 quick_tests 的 critical 设为 false"
+    }
+}

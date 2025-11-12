@@ -1,0 +1,359 @@
+groups:
+  - name: mystocks-api-alerts
+    interval: 30s
+    rules:
+      # API Response Time Alerts
+      - alert: HighAPIResponseTime
+        expr: histogram_quantile(0.95, rate(mystocks_http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High API response time detected"
+          description: "API p95 response time is {{ $value | humanizeDuration }}, threshold is 1s"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalAPIResponseTime
+        expr: histogram_quantile(0.99, rate(mystocks_http_request_duration_seconds_bucket[5m])) > 5
+        for: 2m
+        labels:
+          severity: critical
+          category: performance
+        annotations:
+          summary: "Critical API response time detected"
+          description: "API p99 response time is {{ $value | humanizeDuration }}, threshold is 5s"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # API Error Rate Alerts
+      - alert: HighAPIErrorRate
+        expr: rate(mystocks_http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          category: errors
+        annotations:
+          summary: "High API error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }}, threshold is 5%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalAPIErrorRate
+        expr: rate(mystocks_http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          category: errors
+        annotations:
+          summary: "Critical API error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }}, threshold is 10%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-database-alerts
+    interval: 30s
+    rules:
+      # Database Connection Pool Alerts
+      - alert: HighDatabaseConnections
+        expr: mystocks_db_connections_active / mystocks_db_connections_total > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Database {{ $labels.database }} is using {{ $value | humanizePercentage }} of available connections"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: mystocks_db_connections_active >= mystocks_db_connections_total
+        for: 1m
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: "Database connection pool exhausted"
+          description: "Database {{ $labels.database }} has no available connections!"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Database Query Performance Alerts
+      - alert: SlowDatabaseQueries
+        expr: rate(mystocks_db_slow_queries_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "Slow database queries detected"
+          description: "{{ $value | humanize }} slow queries per second on {{ $labels.database }}/{{ $labels.table }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: DatabaseQueryTimeout
+        expr: histogram_quantile(0.95, rate(mystocks_db_query_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "Database query timeout risk"
+          description: "Database query p95 latency is {{ $value | humanizeDuration }} on {{ $labels.database }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-cache-alerts
+    interval: 30s
+    rules:
+      # Cache Performance Alerts
+      - alert: LowCacheHitRate
+        expr: mystocks_cache_hit_rate < 60
+        for: 10m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "Low cache hit rate detected"
+          description: "Cache {{ $labels.cache_type }} hit rate is {{ $value | humanize }}%, threshold is 60%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalCacheHitRate
+        expr: mystocks_cache_hit_rate < 30
+        for: 5m
+        labels:
+          severity: critical
+          category: performance
+        annotations:
+          summary: "Critical cache hit rate detected"
+          description: "Cache {{ $labels.cache_type }} hit rate is {{ $value | humanize }}%, threshold is 30%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Cache Memory Alerts
+      - alert: HighCacheMemoryUsage
+        expr: mystocks_cache_memory_usage_bytes / 1024 / 1024 > 500
+        for: 5m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High cache memory usage"
+          description: "Cache {{ $labels.cache_type }} is using {{ $value | humanize }}MB, threshold is 500MB"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-websocket-alerts
+    interval: 30s
+    rules:
+      # WebSocket Connection Alerts
+      - alert: HighWebSocketConnections
+        expr: mystocks_websocket_connections_active > 1000
+        for: 5m
+        labels:
+          severity: warning
+          category: connections
+        annotations:
+          summary: "High WebSocket connection count"
+          description: "{{ $value | humanize }} active WebSocket connections on {{ $labels.namespace }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalWebSocketConnections
+        expr: mystocks_websocket_connections_active > 5000
+        for: 2m
+        labels:
+          severity: critical
+          category: connections
+        annotations:
+          summary: "Critical WebSocket connection count"
+          description: "{{ $value | humanize }} active WebSocket connections on {{ $labels.namespace }}, possible connection leak"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-market-data-alerts
+    interval: 30s
+    rules:
+      # Market Data Processing Alerts
+      - alert: SlowMarketDataProcessing
+        expr: histogram_quantile(0.95, rate(mystocks_market_data_latency_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          category: data
+        annotations:
+          summary: "Slow market data processing detected"
+          description: "Market data processing latency is {{ $value | humanizeDuration }} for {{ $labels.datasource }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: MarketDataProcessingBlocked
+        expr: rate(mystocks_market_data_points_processed[1m]) == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: data
+        annotations:
+          summary: "Market data processing has stopped"
+          description: "No market data points processed from {{ $labels.datasource }} in the last minute"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-system-alerts
+    interval: 30s
+    rules:
+      # System Resource Alerts
+      - alert: HighCPUUsage
+        expr: mystocks_process_cpu_usage_percentage > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Component {{ $labels.component }} CPU usage is {{ $value | humanize }}%, threshold is 80%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalCPUUsage
+        expr: mystocks_process_cpu_usage_percentage > 95
+        for: 2m
+        labels:
+          severity: critical
+          category: resources
+        annotations:
+          summary: "Critical CPU usage detected"
+          description: "Component {{ $labels.component }} CPU usage is {{ $value | humanize }}%, threshold is 95%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: HighMemoryUsage
+        expr: mystocks_process_memory_usage_bytes / 1024 / 1024 / 1024 > 2
+        for: 5m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High memory usage detected"
+          description: "Component {{ $labels.component }} is using {{ $value | humanize }}GB, threshold is 2GB"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalMemoryUsage
+        expr: mystocks_process_memory_usage_bytes / 1024 / 1024 / 1024 > 4
+        for: 2m
+        labels:
+          severity: critical
+          category: resources
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Component {{ $labels.component }} is using {{ $value | humanize }}GB, threshold is 4GB"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: LowDiskSpace
+        expr: mystocks_disk_usage_bytes{type="free"} / mystocks_disk_usage_bytes{type="total"} < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "Low disk space warning"
+          description: "Disk {{ $labels.mount_point }} has only {{ $value | humanizePercentage }} free space"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: CriticalDiskSpace
+        expr: mystocks_disk_usage_bytes{type="free"} / mystocks_disk_usage_bytes{type="total"} < 0.05
+        for: 5m
+        labels:
+          severity: critical
+          category: resources
+        annotations:
+          summary: "Critical disk space alert"
+          description: "Disk {{ $labels.mount_point }} has only {{ $value | humanizePercentage }} free space!"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-health-alerts
+    interval: 30s
+    rules:
+      # Health Status Alerts
+      - alert: ComponentUnhealthy
+        expr: mystocks_health_status == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: health
+        annotations:
+          summary: "Component unhealthy"
+          description: "Component {{ $labels.component }} ({{ $labels.status_type }}) is unhealthy"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: DependencyUnavailable
+        expr: mystocks_dependency_availability < 90
+        for: 5m
+        labels:
+          severity: warning
+          category: health
+        annotations:
+          summary: "External dependency availability degraded"
+          description: "Dependency {{ $labels.dependency_name }} availability is {{ $value | humanize }}%, threshold is 90%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: DependencyCriticallyUnavailable
+        expr: mystocks_dependency_availability < 50
+        for: 2m
+        labels:
+          severity: critical
+          category: health
+        annotations:
+          summary: "External dependency critically unavailable"
+          description: "Dependency {{ $labels.dependency_name }} availability is only {{ $value | humanize }}%!"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-business-alerts
+    interval: 60s
+    rules:
+      # User Activity Alerts
+      - alert: NoActiveUserSessions
+        expr: mystocks_user_active_sessions == 0
+        for: 10m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "No active user sessions"
+          description: "No users are actively using {{ $labels.platform }} platform"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Data Quality Alerts
+      - alert: LowDataCompleteness
+        expr: mystocks_data_completeness_percentage < 90
+        for: 10m
+        labels:
+          severity: warning
+          category: data
+        annotations:
+          summary: "Low data completeness"
+          description: "Data completeness for {{ $labels.data_type }} from {{ $labels.source }} is {{ $value | humanize }}%, threshold is 90%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: StaleData
+        expr: mystocks_data_freshness_minutes > 60
+        for: 10m
+        labels:
+          severity: warning
+          category: data
+        annotations:
+          summary: "Data staleness detected"
+          description: "{{ $labels.data_type }} data is {{ $value | humanize }} minutes old, threshold is 60 minutes"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-aggregated-alerts
+    interval: 30s
+    rules:
+      # Overall System Health
+      - alert: MultipleAlertsActive
+        expr: count(mystocks_alerts_active) > 5
+        for: 5m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "Multiple alerts active simultaneously"
+          description: "{{ $value | humanize }} alerts are currently active, possible system-wide issue"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      - alert: ServiceDegraded
+        expr: count(mystocks_health_status == 0) > 2
+        for: 5m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Service degradation detected"
+          description: "{{ $value | humanize }} components are unhealthy"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
