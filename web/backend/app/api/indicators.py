@@ -9,6 +9,8 @@ import numpy as np
 import time
 import structlog
 
+from app.api.auth import get_current_active_user
+from app.core.security import User
 from app.schemas.indicator_request import (
     IndicatorCalculateRequest,
     IndicatorConfigCreateRequest,
@@ -334,7 +336,7 @@ async def calculate_indicators(request: IndicatorCalculateRequest):
 @router.post("/configs", response_model=IndicatorConfigResponse)
 async def create_indicator_config(
     request: IndicatorConfigCreateRequest,
-    user_id: int = 1,  # TODO: 从认证token中获取user_id
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     创建指标配置
@@ -352,6 +354,8 @@ async def create_indicator_config(
     }
     ```
     """
+    user_id = current_user.id
+
     try:
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
@@ -417,12 +421,14 @@ async def create_indicator_config(
 
 
 @router.get("/configs", response_model=IndicatorConfigListResponse)
-async def list_indicator_configs(user_id: int = 1):  # TODO: 从认证token中获取user_id
+async def list_indicator_configs(current_user: User = Depends(get_current_active_user)):
     """
     获取用户的指标配置列表
 
     返回当前用户的所有已保存指标配置
     """
+    user_id = current_user.id
+
     try:
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
@@ -476,13 +482,15 @@ async def list_indicator_configs(user_id: int = 1):  # TODO: 从认证token中�
 
 @router.get("/configs/{config_id}", response_model=IndicatorConfigResponse)
 async def get_indicator_config(
-    config_id: int, user_id: int = 1  # TODO: 从认证token中获取user_id
+    config_id: int, current_user: User = Depends(get_current_active_user)
 ):
     """
     获取指定的指标配置详情
 
     - **config_id**: 配置ID
     """
+    user_id = current_user.id
+
     try:
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
@@ -537,7 +545,7 @@ async def get_indicator_config(
 async def update_indicator_config(
     config_id: int,
     request: IndicatorConfigUpdateRequest,
-    user_id: int = 1,  # TODO: 从认证token中获取user_id
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     更新指标配置
@@ -546,6 +554,8 @@ async def update_indicator_config(
 
     - **config_id**: 配置ID
     """
+    user_id = current_user.id
+
     try:
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
@@ -624,13 +634,15 @@ async def update_indicator_config(
 
 @router.delete("/configs/{config_id}", status_code=204)
 async def delete_indicator_config(
-    config_id: int, user_id: int = 1  # TODO: 从认证token中获取user_id
+    config_id: int, current_user: User = Depends(get_current_active_user)
 ):
     """
     删除指标配置
 
     - **config_id**: 配置ID
     """
+    user_id = current_user.id
+
     try:
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
