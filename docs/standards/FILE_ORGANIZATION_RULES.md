@@ -92,6 +92,14 @@
   - `项目开发规范与指导文档.md`
   - `FILE_ORGANIZATION_RULES.md`（本文档）
 
+#### **docs/reports/** - 项目报告
+- **用途**: 技术负债评估、会话总结、任务完成报告、代码审查报告
+- **示例**:
+  - `TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md`
+  - `SESSION_COMPLETION_2025_11_06.md`
+  - `CODE_REVIEW_REPORT.md`
+  - `DEVELOPMENT_SUMMARY_2025.md`
+
 ---
 
 ### 3. **config/** - 配置文件
