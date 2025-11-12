@@ -1,0 +1,64 @@
+{
+  "name": "Peak Load Test",
+  "description": "Simulate market open/close peak traffic with 1000 users",
+  "target_users": 1000,
+  "spawn_rate": 50,
+  "duration": 600,
+  "scenarios": {
+    "day_traders": {
+      "user_count": 150,
+      "behavior": "high_frequency",
+      "avg_requests_per_second": 2.0,
+      "avg_response_time_target": 800
+    },
+    "swing_traders": {
+      "user_count": 250,
+      "behavior": "medium_frequency",
+      "avg_requests_per_second": 0.8,
+      "avg_response_time_target": 1000
+    },
+    "investors": {
+      "user_count": 400,
+      "behavior": "low_frequency",
+      "avg_requests_per_second": 0.2,
+      "avg_response_time_target": 1200
+    },
+    "analysts": {
+      "user_count": 150,
+      "behavior": "analysis_heavy",
+      "avg_requests_per_second": 1.5,
+      "avg_response_time_target": 1000
+    },
+    "monitoring": {
+      "user_count": 50,
+      "behavior": "monitoring",
+      "avg_requests_per_second": 0.1,
+      "avg_response_time_target": 500
+    }
+  },
+  "objectives": [
+    "Response time < 2s for 95% of requests",
+    "Error rate < 1%",
+    "Database connections: 60-100",
+    "WebSocket connections: > 500",
+    "Cache hit rate > 60%"
+  ],
+  "stress_points": [
+    "Market open (9:30)",
+    "Lunch break (11:30-13:00)",
+    "Market close (15:00)",
+    "After hours (18:00)"
+  ],
+  "api_host": "http://localhost:8000",
+  "api_timeout": 30,
+  "generated_at": "2025-11-12T03:05:43.987283",
+  "task": "Task 14.1: Load Testing",
+  "performance_targets": {
+    "response_time_p50_ms": 200,
+    "response_time_p95_ms": 1000,
+    "response_time_p99_ms": 2000,
+    "error_rate_percent": 1.0,
+    "cache_hit_rate_percent": 70,
+    "throughput_requests_per_second": 500
+  }
+}

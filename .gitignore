@@ -113,5 +113,9 @@ node_modules/
 
 # Exclude critical config files from being ignored
 !.claude/settings.json
+!.claude/hooks/
+!.claude/hooks/*.sh
+!.claude/build-checker-python.json
+!.claude/skill-rules.json
 !.taskmaster/config.json
 !.mcp.json 

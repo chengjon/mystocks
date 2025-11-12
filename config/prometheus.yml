@@ -1,0 +1,132 @@
+# Prometheus Configuration for MyStocks Monitoring
+# MyStocks监控系统Prometheus配置文件
+
+global:
+  scrape_interval: 15s      # 抓取间隔
+  evaluation_interval: 15s  # 评估告警规则间隔
+  external_labels:
+    monitor: 'mystocks-monitor'
+    environment: 'production'
+
+# 告警管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+# 告警规则文件
+rule_files:
+  - "alerts/*.yml"
+  - "alerts/mystocks-alerts.yml"
+
+# 采集配置
+scrape_configs:
+
+  # ==================== 后端API监控 ====================
+  - job_name: 'mystocks-backend'
+    static_configs:
+      - targets: ['localhost:8000']
+        labels:
+          instance: 'mystocks-backend-1'
+          service: 'api'
+
+    # 指标路径
+    metrics_path: '/metrics'
+
+    # 抓取超时
+    scrape_timeout: 10s
+
+    # 抓取间隔
+    scrape_interval: 15s
+
+    # 标签重写规则
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__scheme__]
+        target_label: scheme
+
+
+  # ==================== Grafana监控 ====================
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['localhost:3000']
+        labels:
+          instance: 'grafana-1'
+          service: 'grafana'
+
+    metrics_path: '/api/prom/metrics'
+    scrape_interval: 60s
+
+
+  # ==================== Prometheus自身监控 ====================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          instance: 'prometheus-1'
+          service: 'prometheus'
+
+    scrape_interval: 15s
+
+
+  # ==================== PostgreSQL监控 (可选) ====================
+  # 需要postgres_exporter运行在localhost:9187
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['localhost:9187']
+        labels:
+          instance: 'postgresql-1'
+          service: 'database'
+          database_type: 'postgresql'
+
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+    # 仅当PostgreSQL Exporter运行时启用
+    # 注释该部分以禁用
+
+
+  # ==================== Node Exporter (系统监控) ====================
+  # 需要node_exporter运行在localhost:9100
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          instance: 'node-1'
+          service: 'system'
+
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+    # 仅当Node Exporter运行时启用
+    # 注释该部分以禁用
+
+
+  # ==================== TDengine监控 (可选) ====================
+  # 需要TDengine监控导出器运行在localhost:9099
+  - job_name: 'tdengine'
+    static_configs:
+      - targets: ['localhost:9099']
+        labels:
+          instance: 'tdengine-1'
+          service: 'database'
+          database_type: 'tdengine'
+
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+    # 仅当TDengine Exporter运行时启用
+    # 注释该部分以禁用
+
+
+  # ==================== 应用程序实例 ====================
+  # 如果有多个后端实例，添加如下配置：
+  # - job_name: 'mystocks-backend-2'
+  #   static_configs:
+  #     - targets: ['localhost:8001']
+  #       labels:
+  #         instance: 'mystocks-backend-2'
+  #         service: 'api'
+  #   metrics_path: '/metrics'
+  #   scrape_interval: 15s
