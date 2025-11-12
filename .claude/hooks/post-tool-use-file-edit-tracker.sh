@@ -73,18 +73,36 @@ debug_log() {
     fi
 }
 
+# ===== 错误处理函数 =====
+error_exit() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
 # ===== 确保日志目录存在 =====
-mkdir -p "$(dirname "$EDIT_LOG_FILE")"
+mkdir -p "$(dirname "$EDIT_LOG_FILE")" || error_exit "Failed to create log directory"
 
 # ===== 读取 stdin JSON =====
-INPUT_JSON=$(cat)
+INPUT_JSON=$(cat 2>/dev/null || true)
 debug_log "Received input JSON"
 
-# ===== 提取必要字段 =====
-TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"')
-FILE_PATH=$(echo "$INPUT_JSON" | jq -r '.tool_input.file_path // empty')
-SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"')
-CWD=$(echo "$INPUT_JSON" | jq -r '.cwd // "unknown"')
+# ===== 验证 stdin 不为空 =====
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty stdin, skipping tracking"
+    exit 0
+fi
+
+# ===== 验证 JSON 有效性 =====
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON received, skipping tracking"
+    exit 0
+fi
+
+# ===== 提取必要字段（使用安全的 jq 调用） =====
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"' 2>/dev/null || echo "Unknown")
+FILE_PATH=$(echo "$INPUT_JSON" | jq -r '.tool_input.file_path // empty' 2>/dev/null || echo "")
+SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"' 2>/dev/null || echo "unknown")
+CWD=$(echo "$INPUT_JSON" | jq -r '.cwd // "unknown"' 2>/dev/null || echo "unknown")
 
 # ===== 如果没有文件路径，跳过（可能是其他类型的工具）=====
 if [ -z "$FILE_PATH" ]; then
@@ -99,7 +117,7 @@ if [ "$TOOL_NAME" != "Edit" ] && [ "$TOOL_NAME" != "Write" ]; then
 fi
 
 # ===== 检查工具是否成功 =====
-SUCCESS=$(echo "$INPUT_JSON" | jq -r '.tool_response.success // true')
+SUCCESS=$(echo "$INPUT_JSON" | jq -r '.tool_response.success // true' 2>/dev/null || echo "true")
 if [ "$SUCCESS" != "true" ]; then
     debug_log "Tool execution failed, skipping tracking"
     exit 0
