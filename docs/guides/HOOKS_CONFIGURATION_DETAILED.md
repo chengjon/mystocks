@@ -109,11 +109,12 @@ Hook 返回值的含义
 
 ## 当前项目 Hooks 详解
 
-### 1. post-tool-use-file-edit-tracker.sh
+### 1. post-tool-use-file-edit-tracker.sh ⚠️ (已修复)
 
 **文件位置**: `.claude/hooks/post-tool-use-file-edit-tracker.sh`
 **大小**: 5,104 字节
 **权限**: 可执行 (755)
+**状态**: ✅ 已修复 (2025-11-12)
 
 **配置** (settings.json):
 ```json
@@ -174,11 +175,12 @@ tail -10 .claude/edit_log.jsonl | jq .
 
 ---
 
-### 2. post-tool-use-database-schema-validator.sh
+### 2. post-tool-use-database-schema-validator.sh ⚠️ (已修复)
 
 **文件位置**: `.claude/hooks/post-tool-use-database-schema-validator.sh`
 **大小**: 7,164 字节
 **权限**: 可执行 (755)
+**状态**: ✅ 已修复 (2025-11-12)
 
 **配置** (settings.json):
 ```json
@@ -244,11 +246,12 @@ bash .claude/hooks/post-tool-use-database-schema-validator.sh < input.json
 
 ---
 
-### 3. post-tool-use-document-organizer.sh
+### 3. post-tool-use-document-organizer.sh ⚠️ (已修复)
 
 **文件位置**: `.claude/hooks/post-tool-use-document-organizer.sh`
 **大小**: 10,471 字节
 **权限**: 可执行 (755)
+**状态**: ✅ 已修复 (2025-11-12)
 
 **配置** (settings.json):
 ```json
@@ -639,6 +642,347 @@ bash /opt/claude/mystocks_spec/.claude/hooks/stop-python-quality-gate.sh \
 - ✅ `quick_tests` - PASS
 
 **状态**: ✅ 完全修复
+
+---
+
+## PostToolUse:Write Hooks 修复历史
+
+### 修复背景
+
+**修复日期**: 2025-11-12
+**相关提交**: commit 4ad3503
+**影响的 Hooks**: 3 个
+**问题类型**: JSON 输入验证和错误处理
+
+三个 PostToolUse:Write 事件 hooks 在处理无效 JSON 或空 stdin 输入时发生失败，导致非阻塞错误。这些 hooks 是文件管理和质量控制的重要组件，需要健壮的输入处理。
+
+### 问题分析
+
+#### 问题 1: JSON 解析失败导致脚本退出
+
+**症状**:
+```bash
+echo "{invalid json}" | bash post-tool-use-file-edit-tracker.sh
+# 输出: jq: parse error: Invalid numeric literal at line 1, column 9
+# 返回: exit code 5 (应该是 0，非阻塞)
+```
+
+**根本原因**:
+
+所有三个 hooks 都使用 `set -euo pipefail` 严格模式，这意味着任何命令失败都会导致脚本立即退出：
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail  # ← 问题在这里
+
+# 当 jq 遇到无效 JSON 时：
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"')
+# jq 返回 exit code 5 → 脚本立即退出，中断工作流
+```
+
+**涉及的 hooks**:
+1. `post-tool-use-file-edit-tracker.sh` - 编辑日志记录
+2. `post-tool-use-database-schema-validator.sh` - 数据库架构验证
+3. `post-tool-use-document-organizer.sh` - 文档位置检查
+
+#### 问题 2: 缺少 stdin 验证
+
+**症状**:
+```bash
+echo "" | bash post-tool-use-file-edit-tracker.sh
+# 返回 exit code 非零
+```
+
+**原因**:
+- 没有检查 stdin 是否为空
+- 没有验证 JSON 是否有效
+- 直接尝试解析可能导致错误
+
+### 修复方案
+
+#### 修复 1: 添加 stdin 输入验证
+
+```bash
+# ===== 安全地读取 stdin =====
+INPUT_JSON=$(cat 2>/dev/null || true)
+debug_log "Received input JSON"
+
+# ===== 检查 stdin 是否为空 =====
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty stdin, skipping"
+    exit 0  # 非阻塞返回
+fi
+
+# ===== 验证 JSON 有效性 =====
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON received, skipping"
+    exit 0  # 非阻塞返回，不中断工作流
+fi
+```
+
+**关键点**:
+- `cat 2>/dev/null || true`: 读取 stdin，即使失败也继续
+- `jq empty 2>/dev/null`: 验证 JSON 有效性，不返回输出
+- 任何验证失败都返回 `exit 0`（非阻塞）
+
+#### 修复 2: 安全的 jq 字段提取
+
+**之前（危险）**:
+```bash
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"')
+# 如果 jq 失败，脚本退出，exit code > 0
+```
+
+**之后（安全）**:
+```bash
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"' 2>/dev/null || echo "Unknown")
+#                                        ↑ 抑制错误          ↑ fallback 默认值
+```
+
+**优势**:
+- `2>/dev/null`: 抑制 jq 错误消息
+- `|| echo "default"`: 如果 jq 失败，使用默认值
+- 始终返回有效的值，从不中断脚本
+
+#### 修复 3: 增强的错误处理
+
+添加专用的错误处理函数，用于真正的错误情况：
+
+```bash
+error_exit() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+# 只用于真正的失败情况（例如无法创建目录）
+mkdir -p "$(dirname "$EDIT_LOG_FILE")" || error_exit "Failed to create log directory"
+```
+
+### 修改清单
+
+#### 1. post-tool-use-file-edit-tracker.sh
+**行数**: 62-126 (48 行增删)
+
+**关键修改**:
+- Line 76-80: 添加 `error_exit` 函数
+- Line 82-83: 添加目录创建检查
+- Line 85-98: 添加 stdin 空检查和 JSON 有效性验证
+- Line 102-105: 所有 jq 调用都添加 `2>/dev/null || fallback`
+- Line 120: SUCCESS 字段提取也添加安全检查
+
+**完整修复代码**:
+```bash
+# ===== 错误处理函数 =====
+error_exit() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+# ===== 确保日志目录存在 =====
+mkdir -p "$(dirname "$EDIT_LOG_FILE")" || error_exit "Failed to create log directory"
+
+# ===== 读取 stdin JSON =====
+INPUT_JSON=$(cat 2>/dev/null || true)
+debug_log "Received input JSON"
+
+# ===== 验证 stdin 不为空 =====
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty stdin, skipping tracking"
+    exit 0
+fi
+
+# ===== 验证 JSON 有效性 =====
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON received, skipping tracking"
+    exit 0
+fi
+
+# ===== 提取必要字段（使用安全的 jq 调用） =====
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"' 2>/dev/null || echo "Unknown")
+FILE_PATH=$(echo "$INPUT_JSON" | jq -r '.tool_input.file_path // empty' 2>/dev/null || echo "")
+SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"' 2>/dev/null || echo "unknown")
+CWD=$(echo "$INPUT_JSON" | jq -r '.cwd // "unknown"' 2>/dev/null || echo "unknown")
+SUCCESS=$(echo "$INPUT_JSON" | jq -r '.tool_response.success // false' 2>/dev/null || echo "false")
+```
+
+#### 2. post-tool-use-database-schema-validator.sh
+**行数**: 75-114 (40 行增删)
+
+**关键修改**: 同上（stdin 验证 + 安全 jq 调用）
+
+#### 3. post-tool-use-document-organizer.sh
+**行数**: 76-124 (50 行增删)
+
+**关键修改**: 同上 + 额外增强
+- 检查文件是否已在建议位置（Line 287-312）
+- 改进 git mv 安全指导（Line 334-352）
+
+### 测试验证
+
+#### Test Case 1: 无效 JSON
+```bash
+echo "{invalid json}" | bash post-tool-use-file-edit-tracker.sh
+# 预期结果:
+# ✅ Exit code: 0 (非阻塞，正确！)
+# ✅ 调试日志: "Invalid JSON received, skipping tracking"
+```
+
+#### Test Case 2: 空输入
+```bash
+echo "" | bash post-tool-use-file-edit-tracker.sh
+# 预期结果:
+# ✅ Exit code: 0 (非阻塞，正确！)
+# ✅ 调试日志: "Empty stdin, skipping tracking"
+```
+
+#### Test Case 3: 有效 JSON - Write 操作
+```bash
+cat > /tmp/test_write.json << 'EOF'
+{
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "docs/guides/test.md",
+    "content": "# Test"
+  },
+  "tool_response": {"success": true},
+  "session_id": "test-123",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+EOF
+
+bash post-tool-use-file-edit-tracker.sh < /tmp/test_write.json
+# 预期结果:
+# ✅ Exit code: 0
+# ✅ 编辑日志记录成功
+# ✅ 调试日志: "Recording edit for test.md..."
+```
+
+#### Test Case 4: 有效 JSON - Edit 操作
+```bash
+cat > /tmp/test_edit.json << 'EOF'
+{
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "src/core/config.py",
+    "old_string": "# Old",
+    "new_string": "# New"
+  },
+  "tool_response": {"success": true},
+  "session_id": "test-edit",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+EOF
+
+bash post-tool-use-file-edit-tracker.sh < /tmp/test_edit.json
+# 预期结果:
+# ✅ Exit code: 0
+# ✅ Edit 工具记录成功
+```
+
+#### Test Case 5: 数据库文件编辑
+```bash
+cat > /tmp/test_db.json << 'EOF'
+{
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "src/storage/database/database_manager.py",
+    "content": "# Database code"
+  },
+  "tool_response": {"success": true},
+  "session_id": "test-db",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+EOF
+
+bash post-tool-use-database-schema-validator.sh < /tmp/test_db.json
+# 预期结果:
+# ✅ Exit code: 0
+# ✅ Database validator: 不警告（正确的路径）
+```
+
+#### Test Case 6: 文档位置建议
+```bash
+cat > /tmp/test_doc.json << 'EOF'
+{
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "NEWGUIDE.md",
+    "content": "# New Guide"
+  },
+  "tool_response": {"success": true},
+  "session_id": "test-doc",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+EOF
+
+bash post-tool-use-document-organizer.sh < /tmp/test_doc.json
+# 预期结果:
+# ✅ Exit code: 0
+# ✅ 输出: "📁 文档文件不应放在根目录"
+# ✅ 建议: "建议位置: docs/guides/NEWGUIDE.md"
+```
+
+### 测试结果总结
+
+| 测试场景 | 预期结果 | 实际结果 | 状态 |
+|---------|---------|---------|------|
+| 无效 JSON | exit 0 | exit 0 | ✅ |
+| 空输入 | exit 0 | exit 0 | ✅ |
+| 有效 JSON (Write) | exit 0, 记录成功 | exit 0, 记录成功 | ✅ |
+| 有效 JSON (Edit) | exit 0, 跟踪成功 | exit 0, 跟踪成功 | ✅ |
+| 数据库文件 | exit 0, 无警告 | exit 0, 无警告 | ✅ |
+| 文档位置检查 | exit 0, 建议输出 | exit 0, 建议输出 | ✅ |
+
+### 改进总结
+
+| 方面 | 修复前 | 修复后 |
+|-----|-------|-------|
+| JSON 错误处理 | 失败导致 exit 5+ | 优雅处理，exit 0 |
+| stdin 验证 | 无检查 | 完整的验证流程 |
+| jq 调用安全性 | 直接调用，无 fallback | 所有调用都有 `\|\| fallback` |
+| 错误消息 | 隐式失败 | 显式的 debug_log |
+| 非阻塞性 | ✗ 经常中断工作流 | ✅ 始终非阻塞 |
+| 代码健壮性 | 低 (易损坏) | 高 (容错能力强) |
+
+### 部署和验证
+
+**修复已应用于**:
+- ✅ `.claude/hooks/post-tool-use-file-edit-tracker.sh`
+- ✅ `.claude/hooks/post-tool-use-database-schema-validator.sh`
+- ✅ `.claude/hooks/post-tool-use-document-organizer.sh`
+
+**启用调试模式进行测试**:
+```bash
+# 启用调试输出
+EDIT_TRACKER_DEBUG=true bash .claude/hooks/post-tool-use-file-edit-tracker.sh < input.json
+DATABASE_VALIDATOR_DEBUG=true bash .claude/hooks/post-tool-use-database-schema-validator.sh < input.json
+DOC_ORGANIZER_DEBUG=true bash .claude/hooks/post-tool-use-document-organizer.sh < input.json
+```
+
+**验证修复**:
+```bash
+# 测试每个 hook
+echo "{invalid}" | bash .claude/hooks/post-tool-use-file-edit-tracker.sh
+echo "Exit code should be 0: $?"
+
+echo "{invalid}" | bash .claude/hooks/post-tool-use-database-schema-validator.sh
+echo "Exit code should be 0: $?"
+
+echo "{invalid}" | bash .claude/hooks/post-tool-use-document-organizer.sh
+echo "Exit code should be 0: $?"
+```
+
+**回滚（如需要）**:
+```bash
+git revert 4ad3503
+```
+
+### 状态
+
+**修复状态**: ✅ 完全修复
+**测试状态**: ✅ 所有测试通过
+**部署状态**: ✅ 已提交到 git
+**功能状态**: ✅ 三个 hooks 都能优雅处理各种 JSON 输入错误
 
 ---
 

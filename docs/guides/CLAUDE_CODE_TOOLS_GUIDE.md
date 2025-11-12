@@ -566,6 +566,163 @@ fix: 修复 Stop Hook 错误 - 多行 JSON 解析和 Python 包结构
 
 ---
 
+### PostToolUse:Write Hooks JSON 错误处理修复 (2025-11-12)
+
+**问题描述**:
+三个 PostToolUse:Write 事件 hooks 在处理无效 JSON 或空 stdin 输入时发生失败，导致脚本返回错误的 exit code，中断工作流。
+
+**影响的 Hooks**:
+1. `post-tool-use-file-edit-tracker.sh` - 编辑日志记录
+2. `post-tool-use-database-schema-validator.sh` - 数据库架构验证
+3. `post-tool-use-document-organizer.sh` - 文档位置检查
+
+#### 问题 1: JSON 解析失败导致脚本退出
+
+**症状**:
+```bash
+echo "{invalid json}" | bash post-tool-use-file-edit-tracker.sh
+# 输出: jq: parse error: Invalid numeric literal at line 1, column 9
+# 返回: exit code 5 (应该是 0，非阻塞)
+```
+
+**根本原因**:
+```bash
+#!/usr/bin/env bash
+set -euo pipefail  # ← 严格模式：任何命令失败都会导致脚本退出
+
+# 当 jq 遇到无效 JSON 时：
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"')
+# jq 返回 exit code 5 → 脚本立即退出，中断工作流 ✗
+```
+
+**修复方案**:
+
+所有 jq 调用都添加错误处理和 fallback 值：
+
+```bash
+# ===== 安全的 jq 字段提取 =====
+TOOL_NAME=$(echo "$INPUT_JSON" | jq -r '.tool_name // "Unknown"' 2>/dev/null || echo "Unknown")
+#                                        ↑ 抑制错误                ↑ fallback 默认值
+```
+
+#### 问题 2: 缺少 stdin 验证
+
+**症状**:
+```bash
+echo "" | bash post-tool-use-file-edit-tracker.sh
+# 返回 exit code 非零
+```
+
+**根本原因**:
+- 没有检查 stdin 是否为空
+- 没有验证 JSON 是否有效
+- 直接尝试解析 jq 导致失败
+
+**修复方案**:
+
+添加完整的 stdin 验证流程：
+
+```bash
+# ===== 安全地读取 stdin =====
+INPUT_JSON=$(cat 2>/dev/null || true)
+
+# ===== 检查 stdin 是否为空 =====
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty stdin, skipping"
+    exit 0  # 非阻塞返回 ✅
+fi
+
+# ===== 验证 JSON 有效性 =====
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON received, skipping"
+    exit 0  # 非阻塞返回 ✅
+fi
+```
+
+#### 修复细节
+
+**修改文件**:
+1. `.claude/hooks/post-tool-use-file-edit-tracker.sh` (48 行增删)
+2. `.claude/hooks/post-tool-use-database-schema-validator.sh` (40 行增删)
+3. `.claude/hooks/post-tool-use-document-organizer.sh` (50 行增删)
+
+**修复的关键改进**:
+
+| 方面 | 修复前 | 修复后 |
+|-----|-------|-------|
+| JSON 错误处理 | 失败导致 exit 5+ | 优雅处理，exit 0 |
+| stdin 验证 | 无检查 | 完整的验证流程 |
+| jq 调用安全性 | 直接调用，无 fallback | 所有调用都有 `\|\| fallback` |
+| 错误消息 | 隐式失败 | 显式的 debug_log |
+| 非阻塞性 | ✗ 经常中断工作流 | ✅ 始终非阻塞 |
+
+#### 测试验证
+
+**测试结果**:
+```bash
+# Test 1: 无效 JSON
+echo "{invalid json}" | bash post-tool-use-file-edit-tracker.sh
+✅ Exit code: 0 (非阻塞，正确！)
+
+# Test 2: 空输入
+echo "" | bash post-tool-use-file-edit-tracker.sh
+✅ Exit code: 0 (非阻塞，正确！)
+
+# Test 3: 有效 JSON - Write 操作
+cat > /tmp/test.json << 'EOF'
+{
+  "tool_name": "Write",
+  "tool_input": {"file_path": "docs/test.md", "content": "# Test"},
+  "tool_response": {"success": true},
+  "session_id": "test-123",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+EOF
+bash post-tool-use-file-edit-tracker.sh < /tmp/test.json
+✅ Exit code: 0, 编辑日志记录成功
+
+# Test 4: 有效 JSON - Edit 操作
+✅ Exit code: 0, Edit 工具跟踪成功
+
+# Test 5: 数据库文件编辑
+✅ Exit code: 0, Database validator 无警告
+
+# Test 6: 文档位置建议
+✅ Exit code: 0, 文档位置建议输出正常
+```
+
+**所有测试通过**: ✅
+
+**Git 提交**:
+```
+commit 4ad3503
+Author: Claude Code
+Date:   2025-11-12
+
+fix: 修复 PostToolUse:Write hooks 的 JSON 错误处理和 stdin 验证
+
+问题分析:
+- PostToolUse:Write 三个 hooks 在处理无效的 JSON 或空 stdin 时失败
+- jq 命令失败导致 exit code 非零，阻塞工作流
+- 缺少适当的 JSON 有效性检查和错误恢复机制
+
+修复内容:
+1. post-tool-use-file-edit-tracker.sh
+   - 添加 stdin 空检查和 JSON 有效性验证
+   - 所有 jq 调用都添加错误处理
+
+2. post-tool-use-database-schema-validator.sh
+   - 同上的所有改进
+
+3. post-tool-use-document-organizer.sh
+   - 同上的所有改进
+   - 添加文件位置检查和改进 git mv 安全指导
+
+测试结果: ✅ 无效 JSON, 空输入, 有效 JSON 全部通过
+```
+
+---
+
 ## 常见问题和解决方案
 
 ### Hook 相关
