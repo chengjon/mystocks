@@ -230,7 +230,7 @@ if [[ "$RELATIVE_PATH" =~ ^docs/ ]]; then
         SUBDIR=$(echo "$FILE_DIRNAME" | cut -d'/' -f2)
 
         # 验证子目录是否有效
-        VALID_SUBDIRS=("guides" "archived" "architecture" "api" "standards")
+        VALID_SUBDIRS=("guides" "archived" "architecture" "api" "standards" "reports")
         IS_VALID_SUBDIR=false
 
         for valid in "${VALID_SUBDIRS[@]}"; do
@@ -242,7 +242,7 @@ if [[ "$RELATIVE_PATH" =~ ^docs/ ]]; then
 
         if [ "$IS_VALID_SUBDIR" = "false" ]; then
             VIOLATION="📁 无效的 docs/ 子目录: $SUBDIR"
-            SUGGESTION="docs/guides/ (或 api/, architecture/, standards/, archived/)"
+            SUGGESTION="docs/guides/ (或 api/, architecture/, standards/, reports/, archived/)"
         fi
     fi
 fi
