@@ -284,6 +284,33 @@ EOF
     exit 0
 fi
 
+# ===== 检查是否需要自动修复位置问题 =====
+# 如果文件已经在建议的位置,说明已经被正确放置,无需进一步操作
+SUGGESTED_FULL_PATH="$SUGGESTION$FILE_BASENAME"
+if [ -f "$SUGGESTED_FULL_PATH" ]; then
+    debug_log "File already exists at suggested location: $SUGGESTED_FULL_PATH"
+
+    # 输出一个信息性消息,说明文档已经在正确位置
+    CONTEXT_MESSAGE="📁 DOCUMENT ORGANIZATION
+
+✅ 文档已在正确位置: $SUGGESTED_FULL_PATH
+
+此 hook 检测到文档已经被放置在组织规则要求的位置,无需进一步操作。
+"
+    ESCAPED_CONTEXT=$(echo "$CONTEXT_MESSAGE" | jq -Rs .)
+
+    cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": $ESCAPED_CONTEXT
+  }
+}
+EOF
+
+    exit 0
+fi
+
 # ===== 构建建议消息 (注入给 Claude) =====
 CONTEXT_MESSAGE="📁 DOCUMENT ORGANIZATION SUGGESTION
 
@@ -306,8 +333,14 @@ CONTEXT_MESSAGE="📁 DOCUMENT ORGANIZATION SUGGESTION
   docs/archived/     - 已废弃文档 (历史参考,顶部标注废弃)
 
 💡 推荐操作:
-  1. 使用 'git mv' 移动文档到建议位置 (保留历史)
-     命令: git mv $RELATIVE_PATH $SUGGESTION$FILE_BASENAME
+  1. 确认源文件位置，然后使用 'git mv' 移动文档到建议位置 (保留历史)
+
+     如果文件已在 git 中：
+       git mv $RELATIVE_PATH $SUGGESTION$FILE_BASENAME
+
+     如果文件是新文件（未追踪）：
+       git add $SUGGESTION$FILE_BASENAME
+       git rm --cached $RELATIVE_PATH 2>/dev/null || true
 
   2. 更新所有引用此文档的链接
 
@@ -315,6 +348,8 @@ CONTEXT_MESSAGE="📁 DOCUMENT ORGANIZATION SUGGESTION
 
 参考: docs/standards/FILE_ORGANIZATION_RULES.md (完整规则)
       .claude/hooks/FILE_ORGANIZATION_GUIDE.md (快速指南)
+
+⚠️ 注意: 请确保先检查源文件是否存在再执行 'git mv' 命令。
 "
 
 # ===== 输出 JSON (通过 additionalContext 注入给 Claude) =====

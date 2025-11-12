@@ -1,5 +1,44 @@
 # MyStocks 更新日志
 
+## v1.3.1 (2025-11-12)
+
+### 🐛 Bug 修复
+
+#### Claude Code Hooks 系统完善
+- **PostToolUse:Write Hooks JSON 错误处理修复**
+  - 修复三个 PostToolUse:Write hooks 的 JSON 解析错误
+  - 添加完整的 stdin 验证流程（空检查 + JSON 有效性验证）
+  - 所有 jq 调用添加错误处理和 fallback 值
+  - 确保非阻塞行为，永不中断工作流
+
+#### 修复的 Hooks
+1. `post-tool-use-file-edit-tracker.sh` - 编辑日志记录
+2. `post-tool-use-database-schema-validator.sh` - 数据库架构验证
+3. `post-tool-use-document-organizer.sh` - 文档位置检查
+
+#### 技术细节
+- **问题**: 当 stdin 包含无效 JSON 或为空时，jq 命令失败导致 exit code > 0
+- **原因**: 脚本使用 `set -euo pipefail` 严格模式，任何命令失败都会导致退出
+- **修复**:
+  - stdin 验证：`if [ -z "$INPUT_JSON" ]; then exit 0; fi`
+  - JSON 验证：`if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then exit 0; fi`
+  - 安全 jq 调用：`jq ... 2>/dev/null || echo "default"`
+
+#### 测试结果
+- ✅ 无效 JSON: exit 0 (非阻塞)
+- ✅ 空输入: exit 0 (非阻塞)
+- ✅ 有效 JSON: exit 0 (正常处理)
+- ✅ Edit/Write 工具: 正常工作
+- ✅ 所有六个测试场景通过
+
+#### 📚 文档更新
+- `docs/guides/HOOKS_CONFIGURATION_DETAILED.md` - 添加详细的 PostToolUse:Write 修复历史
+- `docs/guides/CLAUDE_CODE_TOOLS_GUIDE.md` - 添加修复摘要和测试验证
+
+**Git 提交**: commit 4ad3503
+
+---
+
 ## v1.3.0 (2025-11-04)
 
 ### 🎉 重大更新
