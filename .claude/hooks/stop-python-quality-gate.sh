@@ -135,48 +135,25 @@ EOF
 fi
 
 # ===== 处理多行 JSON 对象的编辑日志 =====
-# 编辑日志包含多行 JSON 对象，使用 Python 进行处理
-EDITED_FILES=$(python3 << PYTHON_EOF
-import json
-import sys
+# 使用独立的 Python 脚本解析编辑日志
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARSE_SCRIPT="$SCRIPT_DIR/parse_edit_log.py"
 
-session_id = "$SESSION_ID"
-repos = set()
+if [ ! -f "$PARSE_SCRIPT" ]; then
+    error_log "Parse script not found: $PARSE_SCRIPT"
+    cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "Stop",
+    "decision": "allow",
+    "reason": "Parse script not found, allowing stop"
+  }
+}
+EOF
+    exit 0
+fi
 
-try:
-    with open("$EDIT_LOG_FILE", 'r', encoding='utf-8') as f:
-        content = f.read()
-        # 处理多行 JSON 对象
-        objects = []
-        current_obj = ""
-        brace_count = 0
-
-        for line in content.split('\n'):
-            line = line.strip()
-            if not line:
-                continue
-
-            current_obj += line + "\n"
-            brace_count += line.count('{') - line.count('}')
-
-            if brace_count == 0 and current_obj.strip():
-                try:
-                    obj = json.loads(current_obj)
-                    if obj.get('session_id') == session_id:
-                        repo = obj.get('repo')
-                        if repo:
-                            repos.add(repo)
-                    current_obj = ""
-                except json.JSONDecodeError:
-                    current_obj = ""
-
-        # 输出找到的仓库（按行分隔）
-        for repo in sorted(repos):
-            print(repo)
-except Exception as e:
-    sys.stderr.write(f"Error parsing edit log: {e}\n")
-PYTHON_EOF
-)
+EDITED_FILES=$(python3 "$PARSE_SCRIPT" "$EDIT_LOG_FILE" "$SESSION_ID" 2>&1)
 
 debug_log "Found repos: $EDITED_FILES"
 
