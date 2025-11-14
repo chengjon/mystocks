@@ -189,7 +189,18 @@ if [ -f "$BUILD_CONFIG_FILE" ]; then
         error_log "$BUILD_CONFIG_FILE contains invalid JSON, using defaults"
     else
         ERROR_THRESHOLD=$(echo "$BUILD_CONFIG" | jq -r '.errorThreshold // 10')
-        REPO_CONFIGS=$(echo "$BUILD_CONFIG" | jq -c '.repos // {}')
+
+        # 动态替换 $PROJECT_ROOT 占位符为实际项目根目录
+        PROJECT_ROOT=$(pwd)
+        REPO_CONFIGS=$(echo "$BUILD_CONFIG" | jq -c --arg root "$PROJECT_ROOT" '
+            .repos | to_entries | map(
+                if .key == "$PROJECT_ROOT" then
+                    .key = $root
+                else
+                    .
+                end
+            ) | from_entries
+        ')
     fi
 else
     debug_log "No quality check configuration found, using default settings"
