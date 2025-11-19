@@ -232,6 +232,31 @@ class DatabaseTarget(str, Enum):
         return [t.value for t in cls]
 
 
+class DeduplicationStrategy(str, Enum):
+    """
+    数据去重策略枚举
+
+    定义4种智能去重策略，用于处理重复数据的不同场景
+    """
+
+    LATEST_WINS = "latest_wins"
+    """最新数据覆盖旧数据 - 适用于全量且准确的新数据"""
+
+    FIRST_WINS = "first_wins"
+    """保留首次数据，拒绝重复 - 适用于一次性数据"""
+
+    MERGE = "merge"
+    """智能合并数据 - 适用于多源头、字段不完整的数据"""
+
+    REJECT = "reject"
+    """拒绝重复数据，记录警告 - 适用于严格去重场景"""
+
+    @classmethod
+    def get_all_strategies(cls) -> List[str]:
+        """返回所有去重策略列表"""
+        return [s.value for s in cls]
+
+
 # 版本信息
 __version__ = "1.0.0"
-__all__ = ["DataClassification", "DatabaseTarget"]
+__all__ = ["DataClassification", "DatabaseTarget", "DeduplicationStrategy"]
