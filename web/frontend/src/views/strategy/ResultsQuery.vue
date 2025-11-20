@@ -6,8 +6,9 @@
       </template>
 
       <!-- 查询表单 -->
-      <el-form :model="queryForm" inline>
-        <el-form-item label="策略">
+      <div class="query-header">
+        <el-form :model="queryForm" inline class="query-form">
+          <el-form-item label="策略">
           <el-select
             v-model="queryForm.strategy_code"
             placeholder="全部策略"
@@ -56,15 +57,26 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery" :loading="loading">
-            <el-icon><Search /></el-icon> 查询
+          <el-form-item>
+            <el-button type="primary" @click="handleQuery" :loading="loading">
+              <el-icon><Search /></el-icon> 查询
+            </el-button>
+            <el-button @click="handleReset">
+              <el-icon><RefreshLeft /></el-icon> 重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+        <div class="query-actions">
+          <el-button
+            type="success"
+            @click="handleExport"
+            :disabled="results.length === 0"
+          >
+            <el-icon><Download /></el-icon> 导出CSV
           </el-button>
-          <el-button @click="handleReset">
-            <el-icon><RefreshLeft /></el-icon> 重置
-          </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
+      </div>
 
       <!-- 结果表格 -->
       <el-table
@@ -171,7 +183,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search, RefreshLeft } from '@element-plus/icons-vue'
+import { Search, RefreshLeft, Download } from '@element-plus/icons-vue'
 import { strategyApi } from '@/api'
 
 // 响应式数据
@@ -283,6 +295,71 @@ const rerun = (row) => {
   // 这里可以触发单只运行
 }
 
+// 导出为CSV
+const handleExport = () => {
+  if (results.value.length === 0) {
+    ElMessage.warning('没有数据可导出')
+    return
+  }
+
+  try {
+    // CSV 标题行
+    const headers = [
+      '检查日期',
+      '策略代码',
+      '策略名称',
+      '股票代码',
+      '股票名称',
+      '匹配结果',
+      '最新价',
+      '涨跌幅(%)',
+      '匹配度评分',
+      '创建时间'
+    ]
+
+    // 数据行
+    const rows = results.value.map(row => [
+      row.check_date || '',
+      row.strategy_code || '',
+      getStrategyName(row.strategy_code),
+      row.symbol || '',
+      row.stock_name || '',
+      row.match_result ? '匹配' : '不匹配',
+      row.latest_price || '',
+      row.change_percent || '',
+      row.match_score || '',
+      row.created_at || ''
+    ])
+
+    // 生成CSV内容
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell =>
+        `"${String(cell).replace(/"/g, '""')}"`
+      ).join(','))
+    ].join('\n')
+
+    // 添加BOM以支持Excel正确显示中文
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+
+    // 创建下载链接
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `策略结果_${new Date().toISOString().slice(0, 10)}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    ElMessage.success(`成功导出 ${results.value.length} 条记录`)
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败: ' + error.message)
+  }
+}
+
 // 组件挂载时加载数据
 onMounted(() => {
   loadStrategies()
@@ -292,6 +369,25 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .results-query {
+  .query-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .query-form {
+      flex: 1;
+      min-width: 600px;
+    }
+
+    .query-actions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
   .price-up {
     color: #f56c6c;
   }

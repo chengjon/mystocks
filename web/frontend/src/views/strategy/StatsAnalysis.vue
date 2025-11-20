@@ -10,20 +10,45 @@
         </div>
       </template>
 
-      <!-- 日期选择 -->
-      <div class="date-selector">
-        <span>统计日期：</span>
-        <el-date-picker
-          v-model="checkDate"
-          type="date"
-          placeholder="选择日期"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          style="width: 200px; margin-right: 10px"
-        />
-        <el-button type="primary" @click="loadStats" :loading="loading">
-          查询
-        </el-button>
+      <!-- 日期选择和自动刷新 -->
+      <div class="toolbar">
+        <div class="date-selector">
+          <span>统计日期：</span>
+          <el-date-picker
+            v-model="checkDate"
+            type="date"
+            placeholder="选择日期"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            style="width: 200px; margin-right: 10px"
+          />
+          <el-button type="primary" @click="loadStats" :loading="loading">
+            查询
+          </el-button>
+        </div>
+
+        <div class="auto-refresh">
+          <el-switch
+            v-model="autoRefreshEnabled"
+            @change="toggleAutoRefresh"
+            active-text="自动刷新"
+            inactive-text=""
+          />
+          <el-select
+            v-model="refreshInterval"
+            style="width: 120px; margin-left: 10px"
+            :disabled="!autoRefreshEnabled"
+            @change="onIntervalChange"
+          >
+            <el-option label="30秒" :value="30" />
+            <el-option label="1分钟" :value="60" />
+            <el-option label="5分钟" :value="300" />
+            <el-option label="10分钟" :value="600" />
+          </el-select>
+          <el-tag v-if="autoRefreshEnabled && countdown > 0" type="info" style="margin-left: 10px">
+            {{ countdown }}秒后刷新
+          </el-tag>
+        </div>
       </div>
 
       <!-- 加载状态 -->
@@ -148,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, View, VideoPlay } from '@element-plus/icons-vue'
 import { strategyApi } from '@/api'
@@ -161,6 +186,13 @@ const stocksVisible = ref(false)
 const stocksLoading = ref(false)
 const matchedStocks = ref([])
 const selectedStrategy = ref(null)
+
+// 自动刷新相关
+const autoRefreshEnabled = ref(false)
+const refreshInterval = ref(60) // 默认60秒
+const countdown = ref(0)
+let refreshTimer = null
+let countdownTimer = null
 
 // 计算汇总数据
 const totalMatched = computed(() => {
@@ -250,9 +282,64 @@ const getPriceClass = (changePercent) => {
   return ''
 }
 
+// 切换自动刷新
+const toggleAutoRefresh = (enabled) => {
+  if (enabled) {
+    startAutoRefresh()
+  } else {
+    stopAutoRefresh()
+  }
+}
+
+// 刷新间隔改变
+const onIntervalChange = () => {
+  if (autoRefreshEnabled.value) {
+    stopAutoRefresh()
+    startAutoRefresh()
+  }
+}
+
+// 启动自动刷新
+const startAutoRefresh = () => {
+  countdown.value = refreshInterval.value
+
+  // 启动倒计时
+  countdownTimer = setInterval(() => {
+    countdown.value--
+    if (countdown.value <= 0) {
+      countdown.value = refreshInterval.value
+    }
+  }, 1000)
+
+  // 启动刷新定时器
+  refreshTimer = setInterval(() => {
+    loadStats()
+  }, refreshInterval.value * 1000)
+
+  ElMessage.success(`已启动自动刷新 (${refreshInterval.value}秒间隔)`)
+}
+
+// 停止自动刷新
+const stopAutoRefresh = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
+  if (countdownTimer) {
+    clearInterval(countdownTimer)
+    countdownTimer = null
+  }
+  countdown.value = 0
+}
+
 // 组件挂载时加载数据
 onMounted(() => {
   loadStats()
+})
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  stopAutoRefresh()
 })
 </script>
 
@@ -264,15 +351,29 @@ onMounted(() => {
     align-items: center;
   }
 
-  .date-selector {
+  .toolbar {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
 
-    span {
-      font-size: 14px;
-      color: #606266;
-      margin-right: 10px;
+    .date-selector {
+      display: flex;
+      align-items: center;
+
+      span {
+        font-size: 14px;
+        color: #606266;
+        margin-right: 10px;
+      }
+    }
+
+    .auto-refresh {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
   }
 
