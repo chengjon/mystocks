@@ -93,7 +93,7 @@ class DataClassification(str, Enum):
     """风险指标 - VaR、行业暴露度、Beta等,计算密集,多维度"""
 
     # ==================== 第4类: 交易数据 (7项) ====================
-    # 冷热分离 → PostgreSQL (冷) + Redis (热)
+    # 冷热分离 → PostgreSQL (冷) + TDengine (热)
 
     ORDER_RECORDS = "ORDER_RECORDS"
     """订单记录 - 历史委托记录,持久化,关联成交"""
@@ -105,19 +105,19 @@ class DataClassification(str, Enum):
     """持仓记录 - 历史持仓快照,持久化,历史回溯"""
 
     REALTIME_POSITIONS = "REALTIME_POSITIONS"
-    """实时持仓 - 当前持仓状态,热数据,高频读写 (Redis)"""
+    """实时持仓 - 当前持仓状态,热数据,高频读写 (TDengine)"""
 
     REALTIME_ACCOUNT = "REALTIME_ACCOUNT"
-    """实时账户 - 当前账户资金状态,热数据,高频更新 (Redis)"""
+    """实时账户 - 当前账户资金状态,热数据,高频更新 (TDengine)"""
 
     FUND_FLOW = "FUND_FLOW"
     """资金流水 - 资金转入/转出、手续费、分红到账,持久化,时序,审计"""
 
     ORDER_QUEUE = "ORDER_QUEUE"
-    """委托队列 - 未成交委托排队状态,热数据,实时更新 (Redis)"""
+    """委托队列 - 未成交委托排队状态,热数据,实时更新 (TDengine)"""
 
     # ==================== 第5类: 元数据 (6项) ====================
-    # 系统配置和监控 → MySQL/MariaDB
+    # 系统配置和监控 → PostgreSQL
 
     DATA_SOURCE_STATUS = "DATA_SOURCE_STATUS"
     """数据源状态 - 数据源健康度、更新状态、完整性校验,配置型,实时监控"""
@@ -211,20 +211,14 @@ class DatabaseTarget(str, Enum):
     """
     数据库类型枚举
 
-    定义系统支持的4种数据库类型,每种数据库针对特定数据特性优化
+    定义系统支持的2种数据库类型,每种数据库针对特定数据特性优化
     """
 
     TDENGINE = "tdengine"
-    """TDengine - 时序数据库,超高压缩比(20:1),极致写入性能,用于高频市场数据"""
+    """TDengine - 时序数据库,超高压缩比(20:1),极致写入性能,用于高频市场数据和实时热数据"""
 
     POSTGRESQL = "postgresql"
-    """PostgreSQL+TimescaleDB - 复杂时序查询,自动分区,用于历史分析和衍生数据"""
-
-    MYSQL = "mysql"
-    """MySQL/MariaDB - ACID合规,复杂JOIN,用于参考数据和元数据"""
-
-    REDIS = "redis"
-    """Redis - 亚毫秒级访问,用于实时状态和热数据"""
+    """PostgreSQL+TimescaleDB - 复杂时序查询,自动分区,ACID合规,用于参考数据、衍生数据、元数据和历史分析"""
 
     @classmethod
     def get_all_targets(cls) -> List[str]:
