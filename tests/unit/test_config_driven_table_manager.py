@@ -166,7 +166,7 @@ class TestConfigDrivenTableManager(unittest.TestCase):
                     "primary_key": True
                 },
                 {
-                    "name": "value",
+                    "name": "metric_value",
                     "type": "DOUBLE"
                 }
             ],

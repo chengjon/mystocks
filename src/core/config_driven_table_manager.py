@@ -208,6 +208,8 @@ class ConfigDrivenTableManager:
             tag_defs = []
             for tag in tags:
                 tag_type = tag["type"]
+                if "length" in tag:
+                    tag_type += f"({tag['length']})"
                 tag_defs.append(f"{tag['name']} {tag_type}")
 
             # 构建CREATE语句
