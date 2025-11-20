@@ -69,8 +69,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, VideoPlay, View } from '@element-plus/icons-vue'
-import axios from 'axios'
-import { API_ENDPOINTS } from '@/config/api'
+import { strategyApi } from '@/api'
 
 // 定义事件
 const emit = defineEmits(['run-strategy', 'view-results'])
@@ -83,7 +82,7 @@ const strategies = ref([])
 const loadStrategies = async () => {
   loading.value = true
   try {
-    const response = await axios.get(API_ENDPOINTS.strategy.definitions)
+    const response = await strategyApi.getDefinitions()
     if (response.data.success) {
       strategies.value = response.data.data
       ElMessage.success(`加载成功，共${strategies.value.length}个策略`)

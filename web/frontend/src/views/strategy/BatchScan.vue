@@ -149,8 +149,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, RefreshLeft } from '@element-plus/icons-vue'
-import axios from 'axios'
-import { API_ENDPOINTS } from '@/config/api'
+import { strategyApi } from '@/api'
 
 // 响应式数据
 const strategies = ref([])
@@ -177,7 +176,7 @@ const matchRate = computed(() => {
 // 加载策略列表
 const loadStrategies = async () => {
   try {
-    const response = await axios.get(API_ENDPOINTS.strategy.definitions)
+    const response = await strategyApi.getDefinitions()
     if (response.data.success) {
       strategies.value = response.data.data
     }
@@ -229,7 +228,7 @@ const handleScan = async () => {
       params.check_date = form.value.check_date
     }
 
-    const response = await axios.post(API_ENDPOINTS.strategy.runBatch, null, { params })
+    const response = await strategyApi.runBatch(params)
     result.value = response.data
 
     progress.value = 100
