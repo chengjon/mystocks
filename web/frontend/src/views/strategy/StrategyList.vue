@@ -10,13 +10,42 @@
         </div>
       </template>
 
+      <!-- 搜索和筛选 -->
+      <div class="filter-bar">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索策略名称或代码..."
+          clearable
+          style="width: 300px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+
+        <el-select
+          v-model="filterStatus"
+          placeholder="状态筛选"
+          clearable
+          style="width: 150px"
+        >
+          <el-option label="全部" value="" />
+          <el-option label="启用" :value="true" />
+          <el-option label="禁用" :value="false" />
+        </el-select>
+
+        <div class="filter-stats">
+          <el-tag type="info">共 {{ filteredStrategies.length }} 个策略</el-tag>
+        </div>
+      </div>
+
       <!-- 加载状态 -->
       <el-skeleton v-if="loading" :rows="5" animated />
 
       <!-- 策略列表 -->
-      <div v-else-if="strategies.length > 0" class="strategies-grid">
+      <div v-else-if="filteredStrategies.length > 0" class="strategies-grid">
         <el-card
-          v-for="strategy in strategies"
+          v-for="strategy in filteredStrategies"
           :key="strategy.strategy_code"
           class="strategy-card"
           shadow="hover"
@@ -60,15 +89,18 @@
       </div>
 
       <!-- 空状态 -->
-      <el-empty v-else description="暂无可用策略" />
+      <el-empty
+        v-else
+        :description="strategies.length === 0 ? '暂无可用策略' : '没有符合条件的策略'"
+      />
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Refresh, VideoPlay, View } from '@element-plus/icons-vue'
+import { Refresh, VideoPlay, View, Search } from '@element-plus/icons-vue'
 import { strategyApi } from '@/api'
 
 // 定义事件
@@ -77,6 +109,31 @@ const emit = defineEmits(['run-strategy', 'view-results'])
 // 响应式数据
 const loading = ref(false)
 const strategies = ref([])
+const searchKeyword = ref('')
+const filterStatus = ref('')
+
+// 筛选后的策略列表
+const filteredStrategies = computed(() => {
+  let result = strategies.value
+
+  // 按关键词搜索
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase()
+    result = result.filter(s =>
+      s.strategy_name_cn.toLowerCase().includes(keyword) ||
+      s.strategy_name_en.toLowerCase().includes(keyword) ||
+      s.strategy_code.toLowerCase().includes(keyword) ||
+      (s.description && s.description.toLowerCase().includes(keyword))
+    )
+  }
+
+  // 按状态筛选
+  if (filterStatus.value !== '') {
+    result = result.filter(s => s.is_active === filterStatus.value)
+  }
+
+  return result
+})
 
 // 加载策略列表
 const loadStrategies = async () => {
@@ -119,6 +176,18 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+
+    .filter-stats {
+      margin-left: auto;
+    }
   }
 
   .strategies-grid {
