@@ -9,8 +9,8 @@
 版本: 2.0.0 (简化为TDengine + PostgreSQL双数据库架构)
 """
 
-from src.data_access.tdengine_access import TDengineDataAccess
-from src.data_access.postgresql_access import PostgreSQLDataAccess
+from .tdengine_access import TDengineDataAccess
+from .postgresql_access import PostgreSQLDataAccess
 
 __all__ = [
     "TDengineDataAccess",

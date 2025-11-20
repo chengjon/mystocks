@@ -291,7 +291,7 @@ async def get_model_detail(
         # 获取特征重要性
         try:
             feature_importance = ml_service.get_feature_importance(top_k=20)
-        except:
+        except Exception:
             feature_importance = None
 
         return ModelDetailResponse(

@@ -1,12 +1,13 @@
 """
 监控系统 API 端点
-Phase 1: ValueCell Migration - Real-time Monitoring System
+Real-time Monitoring System
 """
 
 from datetime import date, datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, Depends
 from pydantic import BaseModel
+import os
 
 from app.models.monitoring import (
     AlertRuleCreate,
@@ -20,6 +21,7 @@ from app.models.monitoring import (
     AlertRuleType,
 )
 from app.services.monitoring_service import monitoring_service
+from app.mock.unified_mock_data import get_mock_data_manager
 
 router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 
@@ -442,8 +444,31 @@ async def get_monitoring_summary():
     - 未读告警数
     """
     try:
-        summary = monitoring_service.get_monitoring_summary()
-        return MonitoringSummaryResponse(**summary)
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            mock_manager = get_mock_data_manager()
+            monitoring_data = mock_manager.get_data("monitoring", alert_type="all")
+            
+            # 构建返回的监控摘要数据
+            summary = {
+                "total_stocks": 1568,
+                "limit_up_count": 23,
+                "limit_down_count": 5,
+                "strong_up_count": 127,
+                "strong_down_count": 89,
+                "avg_change_percent": 0.85,
+                "total_amount": 2456789000.0,
+                "active_alerts": 12,
+                "unread_alerts": 5
+            }
+            return MonitoringSummaryResponse(**summary)
+        else:
+            # 使用真实数据库
+            summary = monitoring_service.get_monitoring_summary()
+            return MonitoringSummaryResponse(**summary)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

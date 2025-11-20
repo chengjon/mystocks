@@ -1,0 +1,49 @@
+{
+    "mystocks_json_log": {
+        "title": "MyStocks JSON Log Format",
+        "description": "Loguru JSON格式的日志，用于MyStocks系统",
+        "regex": {
+            "std": {
+                "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}) (?<level>\\w+) (?<logger>\\S+) (?<file>\\S+):(?<line>\\d+) (?<function>\\S+) - (?<message>.*)$"
+            }
+        },
+        "level-field": "level",
+        "level": {
+            "error": "ERROR",
+            "warning": "WARNING",
+            "info": "INFO",
+            "debug": "DEBUG",
+            "trace": "TRACE",
+            "critical": "CRITICAL",
+            "success": "SUCCESS"
+        },
+        "sample": [
+            "2024-12-19T10:30:45.123+0800 INFO MyStocksDataAccess data_access.py:123 save_data - 数据保存成功"
+        ]
+    },
+    "mystocks_backend_logs": {
+        "title": "MyStocks Backend Development Logs",
+        "description": "开发环境日志格式，包含完整调试信息",
+        "regex": {
+            "std": {
+                "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}) (?<level>\\w+) (?<logger>\\S+) (?<file>\\S+):(?<line>\\d+) (?<function>\\S+) - (?<message>.*)$"
+            },
+            "request": {
+                "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}) \\[(?<level>\\w+)\\] request_id=(?<request_id>\\w+) duration=(?<duration>\\d+)ms path=(?<path>\\S+) status=(?<status>\\d+)(?: error=\"(?<error>[^\"]*)\")?"
+            }
+        },
+        "level-field": "level",
+        "level": {
+            "DEBUG": 0,
+            "INFO": 1,
+            "SUCCESS": 2,
+            "WARNING": 3,
+            "ERROR": 4,
+            "CRITICAL": 5
+        },
+        "sample": [
+            "2024-12-19T10:30:45.123+0800 INFO MyStocksDataAccess data_access.py:123 save_data - 数据保存成功",
+            "2024-12-19T10:30:46.456+0800 [INFO] request_id=abc123 duration=200ms path=/api/strategy status=200"
+        ]
+    }
+}

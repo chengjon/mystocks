@@ -314,7 +314,7 @@ class GPUDataProcessor:
                 used_memory = memory_info[1] - memory_info[0]
                 total_memory = memory_info[1]
                 return used_memory / total_memory
-            except:
+            except Exception:
                 return 0.0
         else:
             return 0.0

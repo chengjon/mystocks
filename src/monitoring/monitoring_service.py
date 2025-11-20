@@ -30,11 +30,11 @@ import pandas as pd
 import logging
 from dotenv import load_dotenv
 
-# 导入核心模块
+# 导入核心模块 (US3: 已移除DataStorageStrategy)
 from src.core import (
     DataClassification,
     DatabaseTarget,
-    DataStorageStrategy,
+    DataManager,
     ConfigDrivenTableManager,
 )
 

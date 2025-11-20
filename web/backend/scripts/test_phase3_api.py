@@ -1,6 +1,6 @@
 """
 Phase 3: Multi-source Integration Test Script
-ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 测试多数据源管理和公告监控系统
 """
@@ -374,7 +374,7 @@ def main():
     """运行所有测试"""
     print("\n" + "=" * 80)
     print("  MyStocks Phase 3: Multi-source Integration API 测试")
-    print("  ValueCell Migration - Multi-data Source Support")
+    print("  Multi-data Source Support")
     print("=" * 80)
 
     try:

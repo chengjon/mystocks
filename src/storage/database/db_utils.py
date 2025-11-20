@@ -6,9 +6,10 @@
 import os
 import pymysql
 from dotenv import load_dotenv
+from typing import Dict, Optional
 
 
-def create_databases_safely():
+def create_databases_safely() -> bool:
     """
     安全地创建所需的数据库
     所有连接参数从环境变量中读取
@@ -74,7 +75,7 @@ def create_databases_safely():
         return False
 
 
-def get_database_config(db_type):
+def get_database_config(db_type) -> Optional[Dict]:
     """
     安全地获取数据库配置
     :param db_type: 数据库类型 ('mysql', 'postgresql', 'tdengine', 'redis', 'mariadb')

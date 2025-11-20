@@ -28,9 +28,9 @@ import uuid
 from src.core import (
     DataClassification,
     DatabaseTarget,
-    DataStorageStrategy,
     ConfigDrivenTableManager,
 )
+from src.core.data_manager import DataManager
 from src.monitoring import (
     MonitoringDatabase,
     DataQualityMonitor,
@@ -44,6 +44,28 @@ from src.monitoring import (
 from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
 
 logger = logging.getLogger("MyStocksDataAccess")
+
+# US3: 使用DataManager代替DataStorageStrategy进行路由
+_data_manager = DataManager(enable_monitoring=False)
+
+
+def _get_database_name_from_classification(classification: DataClassification) -> str:
+    """
+    从数据分类获取数据库名称 (US3架构简化)
+
+    Args:
+        classification: 数据分类
+
+    Returns:
+        数据库名称字符串
+    """
+    target_db = _data_manager.get_target_database(classification)
+    # 将DatabaseTarget转换为数据库名称
+    database_name_map = {
+        DatabaseTarget.TDENGINE: "market_data",  # TDengine数据库名
+        DatabaseTarget.POSTGRESQL: "mystocks",  # PostgreSQL数据库名
+    }
+    return database_name_map.get(target_db, "mystocks")
 
 
 class IDataAccessLayer(ABC):
@@ -132,7 +154,7 @@ class TDengineDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             table_name or self._get_default_table_name(classification),
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "upsert_data",
         )
 
@@ -141,19 +163,16 @@ class TDengineDataAccess(IDataAccessLayer):
             actual_table_name = table_name or self._get_default_table_name(
                 classification
             )
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
 
             # 数据预处理
             processed_data = self._preprocess_timeseries_data(data, classification)
 
-            # 获取去重策略
-            from src.core import DeduplicationStrategy, DataStorageStrategy as DS
-
+            # 获取去重策略 (US3简化)
             dedup_strategy = kwargs.get("dedup_strategy")
             if not dedup_strategy:
-                dedup_strategy = DS.get_smart_deduplication_strategy(
-                    classification, kwargs.get("data_characteristics", {})
-                )
+                # 简化版：使用默认去重策略
+                dedup_strategy = "latest_wins"  # 最新数据覆盖旧数据
 
             # 应用TDengine特定的去重逻辑
             final_data = self._apply_tdengine_deduplication(
@@ -225,12 +244,12 @@ class TDengineDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "SELECT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
 
             # 构建查询语句
             query = self._build_timeseries_query(
@@ -380,7 +399,7 @@ class TDengineDataAccess(IDataAccessLayer):
                 return data
 
             # 构建查询现有数据的SQL
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
             conn = self.db_manager.get_connection(self.db_type, database_name)
 
             # 简化实现：基于时间范围查询
@@ -702,12 +721,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "INSERT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
 
             # 数据预处理
             processed_data = self._preprocess_analytical_data(data, classification)
@@ -779,12 +798,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "SELECT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
 
             # 构建查询语句 - SECURITY FIX: Now returns (sql, params)
             query, params = self._build_analytical_query(
@@ -839,12 +858,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "UPDATE",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
             key_columns = key_columns or self._get_default_key_columns(classification)
 
             # 获取连接
@@ -898,7 +917,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            _get_database_name_from_classification(classification),
             "DELETE",
         )
 
@@ -907,7 +926,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 logger.error("删除操作必须指定过滤条件")
                 return False
 
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = _get_database_name_from_classification(classification)
 
             # 获取连接
             conn = self.db_manager.get_connection(self.db_type, database_name)

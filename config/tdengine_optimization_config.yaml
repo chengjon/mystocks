@@ -1,0 +1,130 @@
+# TDengine 性能优化配置文件
+# 基于实际数据分析的优化建议
+
+version: "1.0"
+created: "2025-11-17"
+optimization_focus: "高频时序数据性能提升"
+
+# 超表结构优化配置
+super_tables:
+  tick_data:
+    retention_days: 30          # 数据保留30天
+    compression_ratio: 20       # 目标压缩比 20:1
+    memory_cache: true          # 启用内存缓存
+    tags:
+      - symbol: VARCHAR(20)     # 股票代码
+      - exchange: VARCHAR(10)   # 交易所
+      - market: VARCHAR(10)     # 市场类型
+  
+  minute_kline:
+    retention_days: 90          # 分钟线数据保留90天
+    compression_ratio: 15       # 目标压缩比 15:1
+    partition_interval: "1d"    # 按天分区
+    tags:
+      - symbol: VARCHAR(20)
+      - frequency: VARCHAR(10)  # 时间频率(1m,5m,15m等)
+
+  realtime_quote:
+    retention_days: 7           # 实时行情保留7天
+    compression_ratio: 10
+    memory_cache: true
+    tags:
+      - symbol: VARCHAR(20)
+      - quote_type: VARCHAR(20) # 报价类型
+
+# 查询优化策略
+query_optimization:
+  time_range_queries:
+    enabled: true
+    max_time_range_days: 30     # 单次查询最大时间范围
+    batch_size: 1000           # 批处理大小
+  
+  aggregation_queries:
+    enabled: true
+    window_functions:           # 时间窗口函数优化
+      - "1m"
+      - "5m" 
+      - "15m"
+      - "1h"
+      - "1d"
+  
+  limit_strategies:
+    default_limit: 1000
+    max_limit: 10000
+    enable_pagination: true
+
+# 存储优化配置
+storage_optimization:
+  compression:
+    enabled: true
+    algorithm: "delta2"         # 压缩算法
+    level: 6                   # 压缩级别(1-9)
+  
+  memory_management:
+    buffer_cache_size: "1GB"    # 缓冲区缓存
+    cache_block_size: "4KB"     # 缓存块大小
+    max_cache_blocks: 1000      # 最大缓存块数
+  
+  disk_optimization:
+    data_dir: "/var/lib/taos/data"
+    wal_level: 2               # Write-Ahead Logging级别
+    wal_retention_period: 3    # WAL保留期(天)
+
+# 性能监控配置
+monitoring:
+  query_performance:
+    enabled: true
+    slow_query_threshold_ms: 1000
+    log_slow_queries: true
+  
+  table_statistics:
+    enabled: true
+    collect_interval: 60       # 统计收集间隔(秒)
+  
+  alerts:
+    enabled: true
+    high_memory_usage: 80      # 内存使用率告警阈值
+    slow_queries_count: 10     # 慢查询告警阈值
+
+# 读写分离配置(可选)
+read_write_separation:
+  enabled: false
+  master_host: "192.168.123.104"
+  slave_hosts: []
+  read_replica_ratio: 0.3      # 读请求分配给从库的比例
+
+# 数据生命周期管理
+data_lifecycle:
+  hot_data_days: 7            # 热数据保留期
+  warm_data_days: 30          # 温数据保留期  
+  cold_data_days: 90          # 冷数据保留期
+  archive_strategy: "compress" # 归档策略: compress/delete
+
+# 具体表优化建议
+table_specific_optimizations:
+  stock_tick:
+    index_strategy: "time_based"  # 基于时间的索引
+    batch_insert_size: 1000      # 批量插入大小
+    write_buffer_size: "64KB"   # 写入缓冲区大小
+  
+  tick_data_000001_sz:
+    replication_factor: 1      # 副本因子
+    max_rows_per_file: 10000   # 每个文件最大行数
+    auto_partition: true       # 启用自动分区
+
+# 应用层优化建议
+application_optimization:
+  connection_pool:
+    min_connections: 5
+    max_connections: 20
+    connection_timeout: 30     # 连接超时(秒)
+  
+  query_caching:
+    enabled: true
+    cache_ttl_seconds: 300     # 缓存TTL 5分钟
+    cache_max_size: 1000       # 最大缓存条目数
+  
+  async_operations:
+    enabled: true
+    batch_size: 500           # 异步操作批大小
+    max_concurrent: 10        # 最大并发数

@@ -587,7 +587,7 @@ class ResourceScheduler:
                             'estimated_start_time': self._estimate_start_time(task)
                         })
                     all_tasks.extend(queue_tasks)
-                except:
+                except Exception:
                     pass
 
                 return all_tasks
@@ -847,7 +847,7 @@ class ResourceScheduler:
         """计算资源分配效率"""
         gpu_utilization = self.gpu_manager.get_gpu_stats().get('utilization', 0)
         running_tasks = len(self.running_tasks)
-        max_concurrent = self.config['max_concurrent_tasks]
+        max_concurrent = self.config['max_concurrent_tasks']
 
         # 资源效率 = GPU利用率 * 任务执行效率
         task_efficiency = self._calculate_task_efficiency()

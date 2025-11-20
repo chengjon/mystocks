@@ -192,7 +192,7 @@ USE db_monitor;
 {create_table_prefix} table_creation_log (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
     table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL', 'Redis', 'MySQL', 'MariaDB') NOT NULL COMMENT '数据库类型',
+    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
     database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
     creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -225,7 +225,7 @@ USE db_monitor;
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
     operation_id VARCHAR(100) NOT NULL COMMENT '操作ID',
     table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL', 'Redis', 'MySQL', 'MariaDB') NOT NULL COMMENT '数据库类型',
+    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
     database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
     operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE', 'save_data', 'save_data_with_dedup', 'load_data', 'upsert_data', 'insert_data') NOT NULL COMMENT '操作类型',
     operation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
@@ -246,7 +246,7 @@ USE db_monitor;
 {create_table_prefix} table_validation_log (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
     table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL', 'Redis', 'MySQL', 'MariaDB') NOT NULL COMMENT '数据库类型',
+    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
     database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
     validation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '验证时间',
     validation_status ENUM('pass', 'fail') NOT NULL COMMENT '验证状态',
@@ -421,7 +421,7 @@ def extract_table_name(sql_cmd):
         pattern = r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)"
         match = re.search(pattern, sql_cmd, re.IGNORECASE)
         return match.group(1) if match else "未知表"
-    except:
+    except Exception:
         return "未知表"
 
 

@@ -2,7 +2,7 @@
 应用配置管理
 """
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
 import os
 
@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     # 服务器配置
     host: str = "0.0.0.0"
     port: int = 8000
+    port_range_start: int = 8000
+    port_range_end: int = 8010
 
     # 数据库配置 - PostgreSQL 主数据库 (Week 3 简化: 仅使用PostgreSQL)
     # 从环境变量读取，pydantic-settings会自动从.env文件加载
@@ -40,12 +42,12 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
-    # CORS 配置
-    cors_origins: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:8080",
-        "http://localhost:5173",
-    ]
+    # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
+    cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
+    
+    @property
+    def cors_origins(self) -> List[str]:
+        return self.cors_origins_str.split(",")
 
     # 缓存配置 (Week 3 简化: 暂时禁用Redis缓存)
     enable_cache: bool = False  # Week 3简化: Redis已移除
@@ -68,10 +70,11 @@ class Settings(BaseSettings):
     wencai_default_pages: int = 1
     wencai_auto_refresh: bool = True
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = "allow"  # 允许额外字段
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        extra="allow"
+    )  # 允许额外字段
 
 
 # 创建全局配置实例

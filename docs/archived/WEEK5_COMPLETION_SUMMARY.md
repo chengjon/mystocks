@@ -1,7 +1,7 @@
 # Week 5 完成总结 - MyStocks MVP
 
 **完成日期**: 2025-10-24
-**实施方案**: ValueCell Plan A0 (最小化集成)
+**实施方案**:  Plan A0 (最小化集成)
 **状态**: ✅ 100% 完成
 
 ---
@@ -30,7 +30,7 @@
 - ✅ 零LLM依赖（直接数据访问）
 - ✅ 可选组件（不影响核心功能）
 
-**代码量**: 177行 (vs. ValueCell SEC Agent 665行，节省73%)
+**代码量**: 177行 (vs.  SEC Agent 665行，节省73%)
 
 **示例**:
 ```python
@@ -51,7 +51,7 @@ print(f"Filed: {filing['filing_date']}")
 - ✅ **Beta** - 市场敏感度系数
 - ✅ 与PerformanceMetrics互补
 
-**代码量**: 217行 (vs. ValueCell Risk Manager 323行，节省33%)
+**代码量**: 217行 (vs.  Risk Manager 323行，节省33%)
 
 **核心算法**:
 ```python
@@ -100,7 +100,7 @@ results = notifier.notify(
 
 ---
 
-## 🔄 ValueCell集成决策
+## 🔄 集成决策
 
 ### 方案对比
 
@@ -115,7 +115,7 @@ results = notifier.notify(
 
 **原则**: 提取核心算法，避免框架依赖
 
-**从ValueCell提取的价值**:
+**从提取的价值**:
 1. **SEC Agent (665行)** → SECFetcher (177行)
    - 提取: edgar库使用模式
    - 丢弃: LLM分析、Agno框架、异步管道
@@ -128,7 +128,7 @@ results = notifier.notify(
    - 提取: SMTP和Webhook逻辑
    - 丢弃: 复杂路由、重试机制
 
-**总结**: 从ValueCell 50,000行中提取800行核心价值，零框架依赖
+**总结**: 从 50,000行中提取800行核心价值，零框架依赖
 
 ---
 
@@ -177,7 +177,7 @@ $ python examples/week5_features_demo.py
 
 ### ROI对比
 
-| 指标 | Plan A0 (实施) | ValueCell完整集成 |
+| 指标 | Plan A0 (实施) | 完整集成 |
 |------|---------------|------------------|
 | 开发时间 | 1天 | 6-8周 |
 | 代码量 | 800行 | +48,000行 |
@@ -261,7 +261,7 @@ $ python examples/week5_features_demo.py
 1. **PLAN_A0_IMPLEMENTATION_GUIDE.md** - 完整实施指南
 2. **VALUECELL_FIRST_PRINCIPLES_ANALYSIS.md** - 第一性原理分析
 3. **MVP_IMPLEMENTATION_SUMMARY.md** - MVP总结（已更新Week 5）
-4. **START_HERE_VALUECELL.md** - ValueCell集成导航
+4. **START_HERE_VALUECELL.md** - 集成导航
 
 ---
 
@@ -270,7 +270,7 @@ $ python examples/week5_features_demo.py
 ### 成功因素
 
 1. **第一性原理思考**
-   - 从ValueCell 50,000行中识别出800行核心价值
+   - 从 50,000行中识别出800行核心价值
    - 避免框架依赖，直接实现算法
 
 2. **最小化原则**
@@ -288,11 +288,11 @@ $ python examples/week5_features_demo.py
 ### 经验教训
 
 **不要被代码量迷惑**:
-- ValueCell 50,000行 ≠ 50,000行价值
+-  50,000行 ≠ 50,000行价值
 - 98%是框架开销，只有2%是核心算法
 
 **框架是负债，不是资产**:
-- Agno/LangGraph适合ValueCell的多智能体平台
+- Agno/LangGraph适合的多智能体平台
 - 但不适合MyStocks的简化MVP
 
 **复用 ≠ 复制代码**:

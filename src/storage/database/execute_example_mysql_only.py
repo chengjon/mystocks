@@ -77,5 +77,5 @@ print("\n=== 测试完成 ===")
 try:
     os.remove(temp_config_file)
     print("临时配置文件已清理")
-except:
+except Exception:
     pass

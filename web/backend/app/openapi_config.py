@@ -277,7 +277,7 @@ OPENAPI_TAGS = [
     {
         "name": "monitoring",
         "description": """
-**实时监控模块 (ValueCell集成)**
+**实时监控模块**
 
 提供系统和数据的实时监控、告警功能。
 
@@ -458,7 +458,7 @@ TradingView图表组件集成。
     {
         "name": "technical-analysis",
         "description": """
-**技术分析模块 (ValueCell Phase 2)**
+**技术分析模块**
 
 增强的技术分析功能。
 
@@ -472,7 +472,7 @@ TradingView图表组件集成。
     {
         "name": "multi-source",
         "description": """
-**多数据源模块 (ValueCell Phase 3)**
+**多数据源模块**
 
 整合多个数据源，提供统一的数据访问接口。
 
@@ -487,7 +487,7 @@ TradingView图表组件集成。
     {
         "name": "announcement",
         "description": """
-**公告监控模块 (ValueCell Phase 3)**
+**公告监控模块**
 
 上市公司公告的抓取、解析和监控。
 

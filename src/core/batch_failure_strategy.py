@@ -60,10 +60,10 @@ class BatchOperationResult:
     execution_time_ms: float
     """执行时间(毫秒)"""
 
-    failed_indices: List[int] = None
+    failed_indices: Optional[List[int]] = None
     """失败记录的索引列表"""
 
-    error_messages: Dict[int, str] = None
+    error_messages: Optional[Dict[int, str]] = None
     """失败记录的错误消息 {index: error_message}"""
 
     retry_count: int = 0
@@ -98,8 +98,8 @@ class BatchOperationResult:
             "rollback_executed": self.rollback_executed,
             "failed_indices": (
                 self.failed_indices[:10]
-                if len(self.failed_indices) > 10
-                else self.failed_indices
+                if self.failed_indices and len(self.failed_indices) > 10
+                else (self.failed_indices or [])
             ),
             "error_sample": (
                 list(self.error_messages.values())[:3] if self.error_messages else []

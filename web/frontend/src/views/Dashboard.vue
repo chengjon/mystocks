@@ -23,7 +23,10 @@
       <el-col :xs="24" :md="16">
         <el-card class="chart-card">
           <template #header>
-            <span>市场热度中心</span>
+            <div class="flex-between">
+              <span>市场热度中心</span>
+              <el-button type="warning" size="small" @click="handleRetry" :loading="loading">重试</el-button>
+            </div>
           </template>
           <el-tabs v-model="activeMarketTab" class="market-tabs">
             <el-tab-pane label="市场热度" name="heat">
@@ -64,7 +67,10 @@
           <template #header>
             <div class="flex-between">
               <span>板块表现</span>
-              <el-button type="primary" size="small" @click="handleRefresh">刷新</el-button>
+              <div>
+                <el-button type="primary" size="small" @click="handleRefresh">刷新</el-button>
+                <el-button type="warning" size="small" @click="handleRetry" :loading="loading" style="margin-left: 10px">重试</el-button>
+              </div>
             </div>
           </template>
           <el-tabs v-model="activeSectorTab" class="sector-tabs">
@@ -196,72 +202,16 @@ const priceDistributionChartRef = ref(null)
 const capitalFlowChartRef = ref(null)
 const industryChartRef = ref(null)
 
-// Mock data for sector performance tabs
-const favoriteStocks = ref([
-  { symbol: '600519', name: '贵州茅台', price: 1680.50, change: 2.35, volume: '1.2万手', turnover: 0.85, industry: '白酒' },
-  { symbol: '000858', name: '五粮液', price: 158.20, change: 1.85, volume: '8.5万手', turnover: 2.15, industry: '白酒' },
-  { symbol: '300750', name: '宁德时代', price: 185.60, change: -1.25, volume: '15.2万手', turnover: 3.42, industry: '电池' },
-  { symbol: '601012', name: '隆基绿能', price: 25.80, change: 0.78, volume: '22.5万手', turnover: 4.58, industry: '光伏' },
-  { symbol: '002594', name: '比亚迪', price: 268.90, change: 3.15, volume: '18.9万手', turnover: 2.95, industry: '新能源车' }
-])
-
-const strategyStocks = ref([
-  { symbol: '688981', name: '中芯国际', price: 45.80, change: 5.25, strategy: '突破策略', score: 88, signal: '买入' },
-  { symbol: '002475', name: '立讯精密', price: 32.50, change: 3.85, strategy: '趋势跟踪', score: 85, signal: '买入' },
-  { symbol: '300059', name: '东方财富', price: 15.20, change: 2.15, strategy: '均线策略', score: 82, signal: '持有' },
-  { symbol: '600036', name: '招商银行', price: 38.90, change: -0.85, strategy: '价值投资', score: 78, signal: '持有' },
-  { symbol: '000001', name: '平安银行', price: 12.50, change: -1.95, strategy: '价值投资', score: 65, signal: '卖出' }
-])
-
-const industryStocks = ref([
-  { symbol: '600519', name: '贵州茅台', price: 1680.50, change: 2.35, industry: '白酒', industryRank: 1, marketCap: 21056 },
-  { symbol: '000858', name: '五粮液', price: 158.20, change: 1.85, industry: '白酒', industryRank: 2, marketCap: 6125 },
-  { symbol: '000568', name: '泸州老窖', price: 142.30, change: 1.55, industry: '白酒', industryRank: 3, marketCap: 2089 },
-  { symbol: '002304', name: '洋河股份', price: 98.50, change: 0.95, industry: '白酒', industryRank: 4, marketCap: 1516 },
-  { symbol: '600809', name: '山西汾酒', price: 185.60, change: 2.85, industry: '白酒', industryRank: 5, marketCap: 2268 }
-])
-
-const conceptStocks = ref([
-  { symbol: '300750', name: '宁德时代', price: 185.60, change: 3.25, concepts: ['新能源', '电池', 'MSCI'], conceptHeat: 98 },
-  { symbol: '688981', name: '中芯国际', price: 45.80, change: 5.25, concepts: ['芯片', '半导体', '华为概念'], conceptHeat: 95 },
-  { symbol: '600276', name: '恒瑞医药', price: 45.20, change: 2.15, concepts: ['医药', '创新药', '抗癌'], conceptHeat: 88 },
-  { symbol: '300122', name: '智飞生物', price: 78.50, change: 4.55, concepts: ['疫苗', '医药', '生物制品'], conceptHeat: 92 },
-  { symbol: '002230', name: '科大讯飞', price: 42.30, change: 6.85, concepts: ['AI', '人工智能', '语音识别'], conceptHeat: 96 }
-])
-
+// 初始化数据为空
+const favoriteStocks = ref([])
+const strategyStocks = ref([])
+const industryStocks = ref([])
+const conceptStocks = ref([])
 const stats = ref([
-  {
-    title: '总股票数',
-    value: '0',
-    trend: '较昨日 +0',
-    trendClass: 'up',
-    icon: 'TrendCharts',
-    color: '#409eff'
-  },
-  {
-    title: '活跃股票',
-    value: '0',
-    trend: '较昨日 +0',
-    trendClass: 'up',
-    icon: 'DataLine',
-    color: '#67c23a'
-  },
-  {
-    title: '数据更新',
-    value: '0',
-    trend: '今日更新',
-    trendClass: 'neutral',
-    icon: 'Refresh',
-    color: '#e6a23c'
-  },
-  {
-    title: '系统状态',
-    value: '正常',
-    trend: '所有服务运行中',
-    trendClass: 'up',
-    icon: 'CircleCheck',
-    color: '#67c23a'
-  }
+  { title: '总股票数', value: '0', icon: 'Document', color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
+  { title: '总市值', value: '0', icon: 'Money', color: '#67C23A', trend: '+0%', trendClass: 'up' },
+  { title: '市场分布', value: '0', icon: 'PieChart', color: '#E6A23C', trend: '+0%', trendClass: 'up' },
+  { title: '行业分布', value: '0', icon: 'Grid', color: '#F56C6C', trend: '+0%', trendClass: 'down' }
 ])
 
 let marketHeatChart = null
@@ -270,290 +220,424 @@ let priceDistributionChart = null
 let capitalFlowChart = null
 let industryChart = null
 
-// 不同行业分类标准的数据
-const industryData = {
-  csrc: {
-    categories: ['金融业', '房地产业', '制造业', '信息技术', '批发零售', '建筑业', '采矿业', '交通运输'],
-    values: [185.5, 125.3, 98.7, 85.2, 52.8, 45.6, -38.5, -65.2]
-  },
-  sw_l1: {
-    categories: ['计算机', '电子', '医药生物', '电力设备', '汽车', '食品饮料', '银行', '非银金融'],
-    values: [165.8, 142.5, 118.9, 95.3, 78.6, 65.4, -45.8, -88.9]
-  },
-  sw_l2: {
-    categories: ['半导体', '光学光电子', '计算机设备', '通信设备', '医疗器械', '化学制药', '白酒', '保险'],
-    values: [195.2, 158.7, 125.6, 98.5, 85.3, 72.1, -52.3, -95.6]
+// 更新行业资金流向图表
+const updateIndustryChart = async () => {
+  if (!industryChartRef.value) return
+
+  // 如果图表已存在，销毁重新创建
+  if (industryChart) {
+    industryChart.dispose()
+  }
+
+  industryChart = echarts.init(industryChartRef.value)
+  
+  try {
+    // 这里应该从API获取真实的行业资金流向数据
+    // 暂时使用模拟数据展示效果
+    const mockData = {
+      categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
+      values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
+    }
+    
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: (params) => {
+          const value = params[0].value
+          return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        top: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        name: '资金流向(亿元)',
+        axisLabel: {
+          formatter: (value) => value > 0 ? `+${value}` : value
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: mockData.categories,
+        axisLabel: {
+          interval: 0,
+          fontSize: 11
+        }
+      },
+      series: [
+        {
+          name: '资金流向',
+          type: 'bar',
+          data: mockData.values,
+          itemStyle: {
+            color: (params) => {
+              return params.value > 0 ? '#f56c6c' : '#67c23a'
+            }
+          },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (params) => {
+              const value = params.value
+              return value > 0 ? `+${value}亿` : `${value}亿`
+            },
+            fontSize: 10
+          }
+        }
+      ]
+    }
+    industryChart.setOption(option)
+  } catch (error) {
+    console.error('加载行业资金流向数据失败:', error)
+    ElMessage.error('加载行业资金流向数据失败')
   }
 }
 
-const updateIndustryChartData = () => {
-  if (!industryChart) return
-
-  const data = industryData[industryStandard.value]
+// 更新市场分布图表
+const updateMarketDistributionChart = (marketData) => {
+  if (!industryChartRef.value) return
+  
+  // 如果图表已存在，销毁重新创建
+  if (industryChart) {
+    industryChart.dispose()
+  }
+  
+  industryChart = echarts.init(industryChartRef.value)
+  
+  // 准备市场分布数据
+  const marketDistribution = marketData.by_market || {}
+  const marketNames = Object.keys(marketDistribution)
+  const marketValues = Object.values(marketDistribution)
+  
+  // 如果没有市场数据，显示提示信息
+  if (marketNames.length === 0) {
+    industryChart.setOption({
+      title: {
+        text: '暂无市场分布数据',
+        left: 'center',
+        top: 'center'
+      }
+    })
+    return
+  }
+  
   const option = {
+    title: {
+      text: '市场分布',
+      left: 'center'
+    },
     tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: (params) => {
-        const value = params[0].value
-        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
-      }
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)'
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: '10%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      name: '资金流向(亿元)',
-      axisLabel: {
-        formatter: (value) => value > 0 ? `+${value}` : value
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: data.categories,
-      axisLabel: {
-        interval: 0,
-        fontSize: 11
-      }
+    legend: {
+      orient: 'vertical',
+      left: 'left'
     },
     series: [
       {
-        name: '资金流向',
-        type: 'bar',
-        data: data.values,
-        itemStyle: {
-          color: (params) => {
-            return params.value > 0 ? '#f56c6c' : '#67c23a'
+        name: '市场分布',
+        type: 'pie',
+        radius: '50%',
+        data: marketNames.map((name, index) => ({
+          value: marketValues[index],
+          name: name
+        })),
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
-        },
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params) => {
-            const value = params.value
-            return value > 0 ? `+${value}亿` : `${value}亿`
-          },
-          fontSize: 10
         }
       }
     ]
   }
+  
   industryChart.setOption(option)
 }
 
-const updateIndustryChart = () => {
-  updateIndustryChartData()
+// 更新行业分布图表
+const updateIndustryDistributionChart = (marketData) => {
+  // 这里可以更新其他图表，比如行业分布柱状图
+  // 由于当前只有一个资金流向图表，我们暂时不实现这个功能
+  // 后续可以添加更多图表展示行业分布数据
 }
 
-const initMarketHeatChart = () => {
+const initMarketHeatChart = async () => {
   if (!marketHeatChartRef.value) return
 
   marketHeatChart = echarts.init(marketHeatChartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      name: '热度指数'
-    },
-    yAxis: {
-      type: 'category',
-      data: ['人工智能', '新能源车', '芯片半导体', '医药生物', '5G通信', '军工', '白酒', '光伏']
-    },
-    series: [
-      {
-        name: '市场热度',
-        type: 'bar',
-        data: [95, 88, 82, 78, 75, 72, 68, 65],
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-            { offset: 0, color: '#83bff6' },
-            { offset: 0.5, color: '#188df0' },
-            { offset: 1, color: '#188df0' }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        }
-      }
+  
+  try {
+    // 这里应该从API获取真实的市场热度数据
+    // 暂时使用模拟数据展示效果
+    const heatData = [
+      { name: '上证指数', value: 95 },
+      { name: '深证成指', value: 88 },
+      { name: '创业板指', value: 82 },
+      { name: '沪深300', value: 91 },
+      { name: '中证500', value: 78 },
+      { name: '中证1000', value: 72 },
+      { name: '科创板', value: 85 },
+      { name: '新三板', value: 65 }
     ]
+    
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        name: '热度指数'
+      },
+      yAxis: {
+        type: 'category',
+        data: heatData.map(item => item.name)
+      },
+      series: [
+        {
+          name: '市场热度',
+          type: 'bar',
+          data: heatData.map(item => item.value),
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: '#83bff6' },
+              { offset: 0.5, color: '#188df0' },
+              { offset: 1, color: '#188df0' }
+            ])
+          },
+          emphasis: {
+            focus: 'series'
+          }
+        }
+      ]
+    }
+    marketHeatChart.setOption(option)
+  } catch (error) {
+    console.error('加载市场热度数据失败:', error)
+    ElMessage.error('加载市场热度数据失败')
   }
-  marketHeatChart.setOption(option)
 }
 
-const initLeadingSectorChart = () => {
+const initLeadingSectorChart = async () => {
   if (!leadingSectorChartRef.value) return
 
   leadingSectorChart = echarts.init(leadingSectorChartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
+  
+  try {
+    // 这里应该从API获取真实的领涨板块数据
+    // 暂时使用模拟数据展示效果
+    const sectorData = [
+      { name: '半导体', change: 5.2 },
+      { name: '新能源车', change: 4.8 },
+      { name: '光伏', change: 4.5 },
+      { name: '医药', change: 3.9 },
+      { name: '白酒', change: 3.6 },
+      { name: '银行', change: 2.8 },
+      { name: '保险', change: 2.5 },
+      { name: '证券', change: 2.1 }
+    ]
+    
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: '{b}: {c}%'
       },
-      formatter: '{b}: {c}%'
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      name: '涨幅(%)',
-      axisLabel: {
-        formatter: '{value}%'
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: ['人工智能', '芯片', '新能源', '医疗', '5G', '军工', '消费', '金融']
-    },
-    series: [
-      {
-        name: '涨幅',
-        type: 'bar',
-        data: [8.5, 7.2, 6.8, 5.5, 4.9, 4.2, 3.8, 2.1],
-        itemStyle: {
-          color: (params) => {
-            return params.value > 0 ? '#f56c6c' : '#67c23a'
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        name: '涨幅(%)',
+        axisLabel: {
+          formatter: '{value}%'
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: sectorData.map(item => item.name)
+      },
+      series: [
+        {
+          name: '涨幅',
+          type: 'bar',
+          data: sectorData.map(item => item.change),
+          itemStyle: {
+            color: (params) => {
+              return params.value > 0 ? '#f56c6c' : '#67c23a'
+            }
           }
         }
-      }
-    ]
+      ]
+    }
+    leadingSectorChart.setOption(option)
+  } catch (error) {
+    console.error('加载领涨板块数据失败:', error)
+    ElMessage.error('加载领涨板块数据失败')
   }
-  leadingSectorChart.setOption(option)
 }
 
-const initPriceDistributionChart = () => {
+const initPriceDistributionChart = async () => {
   if (!priceDistributionChartRef.value) return
 
   priceDistributionChart = echarts.init(priceDistributionChartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: '{b}: {c}只 ({d}%)'
-    },
-    legend: {
-      bottom: '5%',
-      left: 'center'
-    },
-    series: [
-      {
-        name: '涨跌分布',
-        type: 'pie',
-        radius: ['40%', '70%'],
-        center: ['50%', '45%'],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: {
-          show: true,
-          formatter: '{b}\n{c}只'
-        },
-        emphasis: {
+  
+  try {
+    // 这里应该从API获取真实的涨跌分布数据
+    // 暂时使用模拟数据展示效果
+    const distributionData = [
+      { name: '上涨>5%', value: 120 },
+      { name: '上涨0-5%', value: 340 },
+      { name: '平盘', value: 80 },
+      { name: '下跌0-5%', value: 280 },
+      { name: '下跌>5%', value: 180 }
+    ]
+    
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c}只 ({d}%)'
+      },
+      legend: {
+        bottom: '5%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: '涨跌分布',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '45%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
           label: {
             show: true,
-            fontSize: 16,
-            fontWeight: 'bold'
-          }
-        },
-        data: [
-          { value: 450, name: '涨停', itemStyle: { color: '#f56c6c' } },
-          { value: 1250, name: '上涨', itemStyle: { color: '#fca5a5' } },
-          { value: 800, name: '平盘', itemStyle: { color: '#909399' } },
-          { value: 1150, name: '下跌', itemStyle: { color: '#86efac' } },
-          { value: 350, name: '跌停', itemStyle: { color: '#67c23a' } }
-        ]
-      }
-    ]
+            formatter: '{b}\n{c}只'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 16,
+              fontWeight: 'bold'
+            }
+          },
+          data: distributionData
+        }
+      ]
+    }
+    priceDistributionChart.setOption(option)
+  } catch (error) {
+    console.error('加载涨跌分布数据失败:', error)
+    ElMessage.error('加载涨跌分布数据失败')
   }
-  priceDistributionChart.setOption(option)
 }
 
-const initCapitalFlowChart = () => {
+const initCapitalFlowChart = async () => {
   if (!capitalFlowChartRef.value) return
 
   capitalFlowChart = echarts.init(capitalFlowChartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
+  
+  try {
+    // 这里应该从API获取真实的资金流向数据
+    // 暂时使用模拟数据展示效果
+    const flowData = [
+      { name: '主力资金', value: 120 },
+      { name: '散户资金', value: -80 },
+      { name: '机构资金', value: 90 },
+      { name: '北向资金', value: 60 },
+      { name: '南向资金', value: -30 },
+      { name: '融资融券', value: 40 }
+    ]
+    
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: (params) => {
+          const value = params[0].value
+          const absValue = Math.abs(value)
+          return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
+        }
       },
-      formatter: (params) => {
-        const value = params[0].value
-        const absValue = Math.abs(value)
-        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      name: '资金流向(亿元)',
-      axisLabel: {
-        formatter: (value) => value > 0 ? `+${value}` : value
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: ['超大单', '大单', '中单', '小单']
-    },
-    series: [
-      {
-        name: '资金流向',
-        type: 'bar',
-        data: [125.5, 85.3, -45.2, -165.6],
-        itemStyle: {
-          color: (params) => {
-            return params.value > 0 ? '#f56c6c' : '#67c23a'
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        name: '资金流向(亿元)',
+        axisLabel: {
+          formatter: (value) => value > 0 ? `+${value}` : value
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: flowData.map(item => item.name)
+      },
+      series: [
+        {
+          name: '资金流向',
+          type: 'bar',
+          data: flowData.map(item => item.value),
+          itemStyle: {
+            color: (params) => {
+              return params.value > 0 ? '#f56c6c' : '#67c23a'
+            }
           }
         }
-      }
-    ]
+      ]
+    }
+    capitalFlowChart.setOption(option)
+  } catch (error) {
+    console.error('加载资金流向数据失败:', error)
+    ElMessage.error('加载资金流向数据失败')
   }
-  capitalFlowChart.setOption(option)
 }
 
 const initCharts = async () => {
   await nextTick()
 
   // 初始化市场热度中心的各个图表
-  initMarketHeatChart()
-  initLeadingSectorChart()
-  initPriceDistributionChart()
-  initCapitalFlowChart()
+  await initMarketHeatChart()
+  await initLeadingSectorChart()
+  await initPriceDistributionChart()
+  await initCapitalFlowChart()
 
   // 初始化资金流向图表
   if (industryChartRef.value) {
-    industryChart = echarts.init(industryChartRef.value)
-    updateIndustryChartData()
+    await updateIndustryChart()
   }
 
   // 监听窗口大小变化
@@ -585,17 +669,76 @@ watch(activeMarketTab, async () => {
   }
 })
 
+// 监听行业标准切换
+watch(industryStandard, async () => {
+  await updateIndustryChart()
+})
+
 const loadData = async () => {
   loading.value = true
   try {
-    const response = await dataApi.getStocksBasic({ limit: 10 })
-    if (response.data && response.data.length > 0) {
-      stats.value[0].value = response.total?.toString() || response.data.length.toString()
+    // 获取股票基本信息
+    const stocksResponse = await dataApi.getStocksBasic({ limit: 10 })
+    if (stocksResponse.success && stocksResponse.data && stocksResponse.data.length > 0) {
+      stats.value[0].value = stocksResponse.total?.toString() || stocksResponse.data.length.toString()
+    } else {
+      throw new Error(stocksResponse.msg || 'API返回数据格式错误')
+    }
+    
+    // 获取市场概览数据
+    const marketResponse = await dataApi.getMarketOverview()
+    if (marketResponse.success && marketResponse.data) {
+      const marketData = marketResponse.data
+      
+      // 更新统计卡片数据
+      stats.value[1].value = marketData.total_stocks?.toString() || '0'
+      
+      // 如果有市场分布数据，更新第三个统计卡片
+      if (marketData.by_market) {
+        const marketEntries = Object.entries(marketData.by_market)
+        if (marketEntries.length > 0) {
+          const [market, count] = marketEntries[0]
+          stats.value[2].value = `${market}: ${count}`
+        }
+      }
+      
+      // 如果有行业分布数据，更新第四个统计卡片
+      if (marketData.by_industry) {
+        const industryEntries = Object.entries(marketData.by_industry)
+        if (industryEntries.length > 0) {
+          const [industry, count] = industryEntries[0]
+          stats.value[3].value = `${industry}: ${count}`
+        }
+      }
+      
+      // 更新图表数据
+      updateMarketDistributionChart(marketData)
+      updateIndustryDistributionChart(marketData)
+    } else {
+      throw new Error(marketResponse.msg || 'API返回数据格式错误')
     }
   } catch (error) {
-    ElMessage.error('加载数据失败')
+    console.error('加载数据失败:', error)
+    // 提供更友好的错误信息
+    if (error.response) {
+      ElMessage.error(`加载数据失败: ${error.response.data?.msg || error.response.data?.detail || '服务器错误'}`)
+    } else if (error.request) {
+      ElMessage.error('网络连接失败，请检查服务是否正常运行')
+    } else {
+      ElMessage.error(`加载数据失败: ${error.message}`)
+    }
   } finally {
     loading.value = false
+  }
+}
+
+// 添加重试机制
+const handleRetry = async () => {
+  try {
+    await loadData()
+    ElMessage.success('数据已刷新')
+  } catch (error) {
+    ElMessage.error('刷新失败，请稍后重试')
   }
 }
 

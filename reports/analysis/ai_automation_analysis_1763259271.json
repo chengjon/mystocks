@@ -1,0 +1,183 @@
+{
+  "timestamp": "2025-11-16 10:14:30",
+  "project_root": "/opt/claude/mystocks_spec",
+  "system_status": {
+    "cpu_info": {
+      "cores": 8,
+      "usage_percent": 5.5,
+      "load_average": [
+        0.5712890625,
+        0.6416015625,
+        0.58203125
+      ]
+    },
+    "memory_info": {
+      "total_gb": 23.39,
+      "available_gb": 16.9,
+      "usage_percent": 27.7
+    },
+    "disk_info": {
+      "total_gb": 1006.85,
+      "free_gb": 815.62,
+      "usage_percent": 13.91
+    },
+    "gpu_info": {
+      "available": true,
+      "gpus": [
+        {
+          "name": "NVIDIA GeForce RTX 2080",
+          "memory_total": 8192.0,
+          "memory_used": 1272.0,
+          "memory_util": 15.52734375,
+          "temperature": 66.0,
+          "load": 1.0
+        }
+      ]
+    },
+    "database_status": {
+      "postgresql": true,
+      "tdengine": true,
+      "postgresql_path": "/usr/bin/psql",
+      "tdengine_path": "/usr/bin/taos"
+    }
+  },
+  "ai_infrastructure": {
+    "gpu_api_system": {
+      "exists": true,
+      "path": "/opt/claude/mystocks_spec/src/gpu/api_system",
+      "files": {
+        "main_server.py": true,
+        "services/gpu_api_server.py": true,
+        "services/integrated_ml_service.py": true,
+        "utils/gpu_utils.py": true,
+        "PROJECT_SUMMARY.md": true,
+        "total_python_lines": 12739,
+        "python_file_count": 26
+      },
+      "ready": true
+    },
+    "ml_services": {
+      "ml_service": true,
+      "backtesting_service": true,
+      "real_time_service": true
+    },
+    "data_sources": {
+      "akshare": true,
+      "tdx": true,
+      "financial": true,
+      "byapi": true,
+      "baostock": true,
+      "customer": true,
+      "tushare": true
+    },
+    "api_endpoints": {
+      "monitoring": true,
+      "technical": true,
+      "multi_source": true,
+      "announcement": true
+    },
+    "monitoring_systems": {
+      "performance_monitor": true,
+      "data_quality_monitor": true,
+      "alert_manager": true,
+      "monitoring_database": true
+    }
+  },
+  "performance_metrics": {
+    "code_complexity": {
+      "total_lines": 160744,
+      "total_files": 287,
+      "languages": {
+        ".py": {
+          "files": 221,
+          "lines": 81355
+        },
+        ".md": {
+          "files": 17,
+          "lines": 6254
+        },
+        ".backup_complex_20251108": {
+          "files": 1,
+          "lines": 471
+        },
+        ".backup": {
+          "files": 6,
+          "lines": 53850
+        },
+        ".backup_20251108": {
+          "files": 1,
+          "lines": 583
+        },
+        ".csv": {
+          "files": 5,
+          "lines": 806
+        },
+        ".xml": {
+          "files": 1,
+          "lines": 3441
+        },
+        ".sh": {
+          "files": 3,
+          "lines": 784
+        },
+        ".ini": {
+          "files": 1,
+          "lines": 52
+        },
+        ".yml": {
+          "files": 4,
+          "lines": 447
+        },
+        ".html": {
+          "files": 14,
+          "lines": 10913
+        },
+        "": {
+          "files": 6,
+          "lines": 205
+        },
+        ".css": {
+          "files": 1,
+          "lines": 377
+        },
+        ".js": {
+          "files": 1,
+          "lines": 733
+        },
+        ".json": {
+          "files": 1,
+          "lines": 1
+        },
+        ".TAG": {
+          "files": 1,
+          "lines": 4
+        },
+        ".proto": {
+          "files": 2,
+          "lines": 244
+        },
+        ".yaml": {
+          "files": 1,
+          "lines": 224
+        }
+      }
+    },
+    "test_coverage": {
+      "tests_exist": true,
+      "test_file_count": 46,
+      "tests_path": "/opt/claude/mystocks_spec/tests"
+    },
+    "documentation": {
+      "docs_exist": true,
+      "doc_file_count": 308,
+      "docs_path": "/opt/claude/mystocks_spec/docs"
+    }
+  },
+  "automation_capabilities": {},
+  "recommendations": [
+    "✅ GPU加速系统可用，建议激活GPU加速AI计算",
+    "✅ GPU API系统已就绪，可以开始AI自动化集成测试",
+    "✅ 数据库环境完整，支持AI自动化数据处理",
+    "📚 代码库规模较大，建议建立完善的自动化测试体系"
+  ]
+}

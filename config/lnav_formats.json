@@ -1,0 +1,63 @@
+{
+  "backend_logs": {
+    "title": "MyStocks Backend Logs",
+    "description": "MyStocks FastAPI backend application logs with structured format",
+    "url": [
+      "file:///opt/claude/mystocks_spec/logs/backend.log",
+      "file:///opt/claude/mystocks_spec/logs/backend-combined.log"
+    ],
+    "sample": [
+      "2025-11-16 10:00:00 [INFO] request_id=abc123 duration=200ms path=/api/strategy status=200",
+      "2025-11-16 10:00:01 [WARNING] request_id=def456 duration=500ms path=/api/data error_timeout",
+      "2025-11-16 10:00:02 [ERROR] request_id=ghi789 duration=1000ms path=/api/market error_db_connection",
+      "2025-11-16 10:00:03 [INFO] request_id=jkl012 duration=150ms path=/api/indicators status=200",
+      "2025-11-16 10:00:04 [DEBUG] request_id=mno345 duration=80ms path=/api/auth action=login_success"
+    ],
+    "timestamp-format": [
+      "%Y-%m-%d %H:%M:%S",
+      "%Y-%m-%d %H:%M:%S.%f"
+    ],
+    "line-format": [
+      {
+        "field": "timestamp",
+        "kind": "time",
+        "format": "%Y-%m-%d %H:%M:%S"
+      },
+      " ",
+      {
+        "field": "level",
+        "kind": "string"
+      },
+      "] ",
+      {
+        "field": "request_id",
+        "kind": "string"
+      },
+      " ",
+      {
+        "field": "duration",
+        "kind": "string"
+      },
+      " ",
+      {
+        "field": "path",
+        "kind": "string"
+      },
+      {
+        "field": "status",
+        "kind": "string",
+        "optional": true
+      },
+      {
+        "field": "error",
+        "kind": "string",
+        "optional": true
+      },
+      {
+        "field": "action",
+        "kind": "string",
+        "optional": true
+      }
+    ]
+  }
+}

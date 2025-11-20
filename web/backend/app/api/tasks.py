@@ -6,6 +6,8 @@
 from fastapi import APIRouter, HTTPException, Query, Body
 from typing import List, Optional, Dict, Any
 import structlog
+import os
+from datetime import datetime, timedelta
 
 from app.models.task import (
     TaskConfig,
@@ -17,6 +19,9 @@ from app.models.task import (
 )
 from app.services.task_manager import task_manager
 
+# Mock数据支持
+use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+
 logger = structlog.get_logger()
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
@@ -24,6 +29,16 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 @router.post("/register", response_model=TaskResponse)
 async def register_task(task_config: TaskConfig):
     """注册新任务"""
+    if use_mock:
+        # Mock数据响应
+        import random
+        task_id = f"task_{random.randint(1000, 9999)}"
+        return TaskResponse(
+            success=True,
+            message="任务注册成功",
+            data={"task_id": task_id, "status": "registered"}
+        )
+    
     try:
         response = task_manager.register_task(task_config)
         if not response.success:
@@ -53,6 +68,26 @@ async def list_tasks(
     tags: Optional[str] = Query(None, description="Comma-separated tags"),
 ):
     """列出所有任务"""
+    if use_mock:
+        # Mock数据：返回模拟任务列表
+        from app.models.task import TaskConfig, TaskType
+        import random
+        
+        mock_tasks = []
+        for i in range(5):
+            task = TaskConfig(
+                task_id=f"task_{i+1000}",
+                name=f"模拟任务_{i+1}",
+                description=f"这是一个模拟任务_{i+1}",
+                task_type=TaskType.DATA_PROCESSING,
+                config={"param1": f"value{i+1}"},
+                tags=[f"tag{i+1}", "mock"],
+                enabled=True,
+                created_at=datetime.now() - timedelta(days=i)
+            )
+            mock_tasks.append(task)
+        return mock_tasks
+    
     try:
         tag_list = tags.split(",") if tags else None
         tasks = task_manager.list_tasks(task_type=task_type, tags=tag_list)
@@ -65,6 +100,22 @@ async def list_tasks(
 @router.get("/{task_id}", response_model=TaskConfig)
 async def get_task(task_id: str):
     """获取任务详情"""
+    if use_mock:
+        # Mock数据：返回模拟任务详情
+        from app.models.task import TaskConfig, TaskType
+        
+        task = TaskConfig(
+            task_id=task_id,
+            name=f"模拟任务_{task_id}",
+            description=f"任务{task_id}的详细描述",
+            task_type=TaskType.DATA_PROCESSING,
+            config={"param1": "mock_value", "batch_size": 100},
+            tags=["mock", "demo"],
+            enabled=True,
+            created_at=datetime.now() - timedelta(days=1)
+        )
+        return task
+    
     try:
         task = task_manager.get_task(task_id)
         if not task:
@@ -108,15 +159,34 @@ async def stop_task(task_id: str):
 
 
 @router.get("/executions/", response_model=List[TaskExecution])
-async def list_executions(
-    task_id: Optional[str] = None, limit: int = Query(100, ge=1, le=1000)
+async def list_task_executions(
+    task_id: Optional[str] = None,
+    limit: int = Query(50, ge=1, le=1000),
 ):
-    """列出执行记录"""
+    """列出任务执行历史"""
+    if use_mock:
+        # Mock数据：返回模拟执行历史
+        from app.models.task import TaskExecution, TaskStatus
+        
+        executions = []
+        for i in range(min(limit, 10)):
+            execution = TaskExecution(
+                execution_id=f"exec_{i+1000}",
+                task_id=task_id or f"task_{i%3+1000}",
+                status=TaskStatus.COMPLETED if i % 4 != 0 else TaskStatus.FAILED,
+                start_time=datetime.now() - timedelta(hours=i+1),
+                end_time=datetime.now() - timedelta(hours=i) + timedelta(minutes=30),
+                result={"processed": i*100, "success_rate": 95.0 + i},
+                error_message=None if i % 4 != 0 else "模拟错误信息"
+            )
+            executions.append(execution)
+        return executions
+    
     try:
         executions = task_manager.list_executions(task_id=task_id, limit=limit)
         return executions
     except Exception as e:
-        logger.error("Failed to list executions", error=str(e))
+        logger.error("Failed to list task executions", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -138,13 +208,54 @@ async def get_execution(execution_id: str):
 
 
 @router.get("/statistics/", response_model=Dict[str, TaskStatistics])
-async def get_statistics(task_id: Optional[str] = None):
+async def get_task_statistics():
     """获取任务统计信息"""
+    if use_mock:
+        # Mock数据：返回模拟统计信息
+        from app.models.task import TaskStatistics, TaskStatus
+        import random
+        
+        stats = {
+            "total_tasks": TaskStatistics(
+                count=25,
+                success_count=20,
+                failed_count=3,
+                running_count=2,
+                avg_execution_time=45.5,
+                success_rate=80.0
+            ),
+            "data_processing": TaskStatistics(
+                count=15,
+                success_count=12,
+                failed_count=2,
+                running_count=1,
+                avg_execution_time=30.2,
+                success_rate=80.0
+            ),
+            "backtest": TaskStatistics(
+                count=8,
+                success_count=6,
+                failed_count=1,
+                running_count=1,
+                avg_execution_time=120.8,
+                success_rate=75.0
+            ),
+            "alert": TaskStatistics(
+                count=2,
+                success_count=2,
+                failed_count=0,
+                running_count=0,
+                avg_execution_time=5.3,
+                success_rate=100.0
+            )
+        }
+        return stats
+    
     try:
-        statistics = task_manager.get_statistics(task_id=task_id)
-        return statistics
+        stats = task_manager.get_statistics()
+        return stats
     except Exception as e:
-        logger.error("Failed to get statistics", error=str(e))
+        logger.error("Failed to get task statistics", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -194,10 +305,23 @@ async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
 
 
 @router.get("/health")
-async def health_check():
-    """任务管理器健康检查"""
+async def tasks_health():
+    """任务管理健康检查"""
+    if use_mock:
+        # Mock数据：返回模拟健康状态
+        return {
+            "status": "healthy",
+            "total_tasks": 25,
+            "running_tasks": 3,
+            "total_executions": 156,
+            "last_check": datetime.now().isoformat(),
+            "mock_mode": True
+        }
+    
     try:
-        total_tasks = len(task_manager.tasks)
+        # 获取基本统计信息
+        tasks = task_manager.list_tasks()
+        total_tasks = len(tasks)
         running_tasks = len(task_manager.running_tasks)
         total_executions = len(task_manager.executions)
 

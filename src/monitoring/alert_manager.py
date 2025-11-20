@@ -77,6 +77,65 @@ class AlertManager:
         else:
             logger.info(log_msg)
 
+    def send_alert(
+        self,
+        alert_level: str,
+        alert_type: str,
+        alert_title: str,
+        alert_message: str,
+        source: Optional[str] = None,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        additional_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ):
+        """
+        发送告警 (兼容旧接口)
+
+        Args:
+            alert_level: 告警级别 (WARNING, CRITICAL, INFO)
+            alert_type: 告警类型
+            alert_title: 告警标题
+            alert_message: 告警消息
+            source: 告警来源
+            classification: 数据分类
+            database_type: 数据库类型
+            table_name: 表名
+            additional_data: 附加数据
+        """
+        # 转换级别
+        level_map = {
+            "CRITICAL": AlertLevel.CRITICAL,
+            "WARNING": AlertLevel.WARNING,
+            "INFO": AlertLevel.INFO,
+        }
+        level = level_map.get(alert_level.upper(), AlertLevel.INFO)
+
+        # 转换类型
+        type_map = {
+            "SLOW_QUERY": AlertType.SLOW_QUERY,
+            "DATA_QUALITY": AlertType.DATA_QUALITY,
+            "SYSTEM_ERROR": AlertType.SYSTEM_ERROR,
+            "CONNECTION_FAILURE": AlertType.CONNECTION_FAILURE,
+        }
+        a_type = type_map.get(alert_type.upper(), AlertType.SYSTEM_ERROR)
+
+        # 构建详情
+        details: Dict[str, Any] = {}
+        if source:
+            details["source"] = source
+        if classification:
+            details["classification"] = classification
+        if database_type:
+            details["database_type"] = database_type
+        if table_name:
+            details["table_name"] = table_name
+        if additional_data:
+            details.update(additional_data)
+
+        self.alert(level, a_type, alert_title, alert_message, details or None)
+
 
 # 单例实例
 _alert_manager_instance = None

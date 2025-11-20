@@ -52,18 +52,14 @@ class TestConfigValidation:
 
         databases = self.config["databases"]
 
-        # 验证必需的数据库
-        required_dbs = ["tdengine", "postgresql", "mysql", "redis"]
+        # 验证必需的数据库 (双数据库架构: TDengine + PostgreSQL)
+        required_dbs = ["tdengine", "postgresql"]
         for db in required_dbs:
             assert db in databases, f"缺少{db}数据库配置"
             db_config = databases[db]
             assert "host" in db_config, f"{db}缺少host配置"
             assert "port" in db_config, f"{db}缺少port配置"
             print(f"  ✓ {db}: {db_config['host']}:{db_config['port']}")
-
-        # 验证Redis DB配置
-        redis_db = databases["redis"].get("db", "${REDIS_DB:1}")
-        print(f"  Redis DB: {redis_db}")
 
         print(f"  ✅ 数据库配置验证通过")
 
@@ -81,11 +77,10 @@ class TestConfigValidation:
         for db_type, count in stats.items():
             print(f"    {db_type}: {count}个表")
 
-        # 验证表数量合理性
+        # 验证表数量合理性 (双数据库架构: TDengine + PostgreSQL)
         assert table_count >= 20, f"表数量过少: {table_count}"
         assert stats.get("TDengine", 0) >= 5, "TDengine表数量不足"
         assert stats.get("PostgreSQL", 0) >= 10, "PostgreSQL表数量不足"
-        assert stats.get("MySQL", 0) >= 10, "MySQL表数量不足"
 
         print(f"  ✅ 表数量验证通过")
 
@@ -152,10 +147,9 @@ class TestConfigValidation:
             columns = table.get("columns", [])
             col_names = [col["name"] for col in columns]
 
-            # 检查审计字段 (除Redis外)
-            if table["database_type"] != "Redis":
-                if "created_at" not in col_names:
-                    missing_columns.append(f"{table_name}: 缺少created_at")
+            # 检查审计字段
+            if "created_at" not in col_names:
+                missing_columns.append(f"{table_name}: 缺少created_at")
 
         if missing_columns:
             print(f"  ⚠️  发现缺失列 ({len(missing_columns)}个):")

@@ -363,10 +363,10 @@ class TDengineDataAccess:
         try:
             cursor = conn.cursor()
             cursor.execute(sql)
-            affected_rows = cursor.rowcount
+            affected_rows = cursor.rowcount or 0
             cursor.close()
 
-            return affected_rows
+            return int(affected_rows)
 
         except Exception as e:
             print(f"❌ 删除数据失败: {e}")

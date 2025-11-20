@@ -256,44 +256,62 @@ async def get_market_quotes(
     - symbols: 股票代码列表（可选）。不指定则返回热门股票行情
 
     **缓存策略:** 10秒TTL（实时行情需要较高频率更新）
-    **数据源**: TDX实时行情
+    **数据源**: TDX实时行情 或 Mock数据
     **返回**: 实时行情列表
     """
     try:
-        # 使用统一的适配器加载器（移除硬编码路径）
-        from app.core.adapter_loader import get_tdx_adapter
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("real_time_quotes", symbols=symbols)
+            return {
+                "success": True,
+                "data": mock_data.get("data", []),
+                "total": len(mock_data.get("data", [])),
+                "timestamp": mock_data.get("timestamp"),
+                "source": "mock"
+            }
+        else:
+            # 正常获取真实数据
+            # 使用统一的适配器加载器（移除硬编码路径）
+            from app.core.adapter_loader import get_tdx_adapter
 
-        tdx = get_tdx_adapter()
+            tdx = get_tdx_adapter()
 
-        # 如果未指定股票代码，返回热门股票
-        if not symbols:
-            symbols = "000001,600519,000858,601318,600036"  # 平安、茅台、五粮液、平安保险、招商银行
+            # 如果未指定股票代码，返回热门股票
+            if not symbols:
+                symbols = "000001,600519,000858,601318,600036"  # 平安、茅台、五粮液、平安保险、招商银行
 
-        symbol_list = [s.strip() for s in symbols.split(",")]
+            symbol_list = [s.strip() for s in symbols.split(",")]
 
-        # 🚀 性能优化：使用异步并发查询（替代同步循环）
-        import asyncio
-        from concurrent.futures import ThreadPoolExecutor
+            # 🚀 性能优化：使用异步并发查询（替代同步循环）
+            import asyncio
+            from concurrent.futures import ThreadPoolExecutor
 
-        async def fetch_single_quote(symbol: str):
-            """异步获取单个股票行情"""
-            try:
-                loop = asyncio.get_event_loop()
-                return await loop.run_in_executor(None, tdx.get_real_time_data, symbol)
-            except Exception:
-                return None  # 单个股票失败不影响其他股票
+            async def fetch_single_quote(symbol: str):
+                """异步获取单个股票行情"""
+                try:
+                    loop = asyncio.get_event_loop()
+                    return await loop.run_in_executor(None, tdx.get_real_time_data, symbol)
+                except Exception:
+                    return None  # 单个股票失败不影响其他股票
 
-        # 并发查询所有股票（100个股票从10秒降至1秒）
-        tasks = [fetch_single_quote(symbol) for symbol in symbol_list]
-        results = await asyncio.gather(*tasks)
-        quotes = [r for r in results if r is not None]
+            # 并发查询所有股票（100个股票从10秒降至1秒）
+            tasks = [fetch_single_quote(symbol) for symbol in symbol_list]
+            results = await asyncio.gather(*tasks)
+            quotes = [r for r in results if r is not None]
 
-        return {
-            "success": True,
-            "data": quotes,
-            "total": len(quotes),
-            "timestamp": datetime.now().isoformat(),
-        }
+            return {
+                "success": True,
+                "data": quotes,
+                "total": len(quotes),
+                "timestamp": datetime.now().isoformat(),
+                "source": "real"
+            }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取实时行情失败: {str(e)}")
@@ -315,64 +333,83 @@ async def get_stock_list(
     - security_type: 按证券类型筛选
     - limit: 返回数量限制
 
-    **数据源**: PostgreSQL stock_info表
+    **数据源**: PostgreSQL stock_info表 或 Mock数据
     **返回**: 股票列表
     """
     try:
-        from app.core.database import get_postgresql_session
-        from sqlalchemy import text
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_list", limit=limit, search=search, 
+                                             exchange=exchange, security_type=security_type)
+            return {
+                "success": True,
+                "data": mock_data.get("data", []),
+                "total": len(mock_data.get("data", [])),
+                "timestamp": mock_data.get("timestamp"),
+                "source": "mock"
+            }
+        else:
+            # 正常获取真实数据
+            from app.core.database import get_postgresql_session
+            from sqlalchemy import text
 
-        session = get_postgresql_session()
+            session = get_postgresql_session()
 
-        # 构建查询SQL
-        where_clauses = []
-        params = {}
+            # 构建查询SQL
+            where_clauses = []
+            params = {}
 
-        if search:
-            where_clauses.append("(symbol LIKE :search OR name LIKE :search)")
-            params["search"] = f"%{search}%"
+            if search:
+                where_clauses.append("(symbol LIKE :search OR name LIKE :search)")
+                params["search"] = f"%{search}%"
 
-        if exchange:
-            where_clauses.append("exchange = :exchange")
-            params["exchange"] = exchange
+            if exchange:
+                where_clauses.append("exchange = :exchange")
+                params["exchange"] = exchange
 
-        if security_type:
-            where_clauses.append("security_type = :security_type")
-            params["security_type"] = security_type
+            if security_type:
+                where_clauses.append("security_type = :security_type")
+                params["security_type"] = security_type
 
-        where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+            where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
 
-        sql = text(
-            f"""
-            SELECT
-                symbol,
-                name,
-                exchange,
-                security_type,
-                list_date,
-                status,
-                listing_board,
-                market_cap,
-                circulating_market_cap
-            FROM stock_info
-            WHERE {where_sql}
-            ORDER BY symbol
-            LIMIT :limit
-        """
-        )
-        params["limit"] = limit
+            sql = text(
+                f"""
+                SELECT
+                    symbol,
+                    name,
+                    exchange,
+                    security_type,
+                    list_date,
+                    status,
+                    listing_board,
+                    market_cap,
+                    circulating_market_cap
+                FROM stock_info
+                WHERE {where_sql}
+                ORDER BY symbol
+                LIMIT :limit
+            """
+            )
+            params["limit"] = limit
 
-        result = session.execute(sql, params)
-        stocks = [dict(row._mapping) for row in result]
+            result = session.execute(sql, params)
+            stocks = [dict(row._mapping) for row in result]
 
-        session.close()
+            session.close()
 
-        return {
-            "success": True,
-            "data": stocks,
-            "total": len(stocks),
-            "timestamp": datetime.now().isoformat(),
-        }
+            return {
+                "success": True,
+                "data": stocks,
+                "total": len(stocks),
+                "timestamp": datetime.now().isoformat(),
+                "source": "real"
+            }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"查询股票列表失败: {str(e)}")
@@ -463,71 +500,94 @@ async def get_market_heatmap(
       - "hk" - 香港股市
     - limit: 返回的股票数量 (10-200)
 
-    **数据源:** AKShare
+    **数据源:** AKShare 或 Mock数据
     **返回:** 股票列表，包含代码、名称、涨跌幅、价格、成交量、市值等
     """
     try:
-        import akshare as ak
-
-        # 根据市场类型选择数据源
-        if market == "cn":
-            # 获取A股实时行情
-            df = ak.stock_zh_a_spot_em()
-            df = df.head(limit)
-
-            # 数据转换
-            result = []
-            for _, row in df.iterrows():
-                try:
-                    result.append(
-                        {
-                            "symbol": row.get("代码", ""),
-                            "name": row.get("名称", ""),
-                            "price": float(row.get("最新价", 0)),
-                            "change": float(row.get("涨跌额", 0)),
-                            "change_pct": float(row.get("涨跌幅", 0)),
-                            "volume": int(row.get("成交量", 0)),
-                            "amount": float(row.get("成交额", 0)),
-                            "market_cap": (
-                                float(row.get("总市值", 0)) if "总市值" in row else None
-                            ),
-                        }
-                    )
-                except Exception as e:
-                    continue
-
-        elif market == "hk":
-            # 获取港股实时行情
-            df = ak.stock_hk_spot_em()
-            df = df.head(limit)
-
-            # 数据转换
-            result = []
-            for _, row in df.iterrows():
-                try:
-                    result.append(
-                        {
-                            "symbol": row.get("代码", ""),
-                            "name": row.get("名称", ""),
-                            "price": float(row.get("最新价", 0)),
-                            "change": float(row.get("涨跌额", 0)),
-                            "change_pct": float(row.get("涨跌幅", 0)),
-                            "volume": int(row.get("成交量", 0)),
-                            "amount": float(row.get("成交额", 0)),
-                            "market_cap": (
-                                float(row.get("总市值", 0)) if "总市值" in row else None
-                            ),
-                        }
-                    )
-                except Exception as e:
-                    continue
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("market_heatmap", market=market, limit=limit)
+            return {
+                "success": True,
+                "data": mock_data.get("data", []),
+                "total": len(mock_data.get("data", [])),
+                "timestamp": mock_data.get("timestamp"),
+                "source": "mock"
+            }
         else:
-            raise HTTPException(status_code=400, detail=f"不支持的市场类型: {market}")
+            # 正常获取真实数据
+            import akshare as ak
 
-        # 按涨跌幅排序
-        result = sorted(result, key=lambda x: x["change_pct"], reverse=True)
+            # 根据市场类型选择数据源
+            if market == "cn":
+                # 获取A股实时行情
+                df = ak.stock_zh_a_spot_em()
+                df = df.head(limit)
 
-        return result
+                # 数据转换
+                result = []
+                for _, row in df.iterrows():
+                    try:
+                        result.append(
+                            {
+                                "symbol": row.get("代码", ""),
+                                "name": row.get("名称", ""),
+                                "price": float(row.get("最新价", 0)),
+                                "change": float(row.get("涨跌额", 0)),
+                                "change_pct": float(row.get("涨跌幅", 0)),
+                                "volume": int(row.get("成交量", 0)),
+                                "amount": float(row.get("成交额", 0)),
+                                "market_cap": (
+                                    float(row.get("总市值", 0)) if "总市值" in row else None
+                                ),
+                            }
+                        )
+                    except Exception as e:
+                        continue
+
+            elif market == "hk":
+                # 获取港股实时行情
+                df = ak.stock_hk_spot_em()
+                df = df.head(limit)
+
+                # 数据转换
+                result = []
+                for _, row in df.iterrows():
+                    try:
+                        result.append(
+                            {
+                                "symbol": row.get("代码", ""),
+                                "name": row.get("名称", ""),
+                                "price": float(row.get("最新价", 0)),
+                                "change": float(row.get("涨跌额", 0)),
+                                "change_pct": float(row.get("涨跌幅", 0)),
+                                "volume": int(row.get("成交量", 0)),
+                                "amount": float(row.get("成交额", 0)),
+                                "market_cap": (
+                                    float(row.get("总市值", 0)) if "总市值" in row else None
+                                ),
+                            }
+                        )
+                    except Exception as e:
+                        continue
+            else:
+                raise HTTPException(status_code=400, detail=f"不支持的市场类型: {market}")
+
+            # 按涨跌幅排序
+            result = sorted(result, key=lambda x: x["change_pct"], reverse=True)
+
+            return {
+                "success": True,
+                "data": result,
+                "total": len(result),
+                "timestamp": datetime.now().isoformat(),
+                "source": "real"
+            }
 
     except ImportError:
         raise HTTPException(status_code=500, detail="AKShare库未安装")

@@ -1,6 +1,6 @@
 """
 Announcement API
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 公告查询和监控的API端点
 """
@@ -358,5 +358,227 @@ async def get_announcement_types():
             ],
         }
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/monitor-rules")
+async def get_monitor_rules():
+    """
+    获取监控规则列表
+
+    Returns:
+        List: 监控规则列表
+    """
+    try:
+        service = get_announcement_service()
+        session = service.SessionLocal()
+        
+        try:
+            rules = session.query(AnnouncementMonitorRule).filter(
+                AnnouncementMonitorRule.is_active == True
+            ).all()
+            
+            return [AnnouncementMonitorRuleResponse.from_orm(rule) for rule in rules]
+        finally:
+            session.close()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/monitor-rules")
+async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
+    """
+    创建监控规则
+
+    Args:
+        rule: 监控规则创建请求
+
+    Returns:
+        AnnouncementMonitorRuleResponse: 创建的规则
+    """
+    try:
+        service = get_announcement_service()
+        session = service.SessionLocal()
+        
+        try:
+            # 检查规则名称是否已存在
+            existing_rule = session.query(AnnouncementMonitorRule).filter(
+                AnnouncementMonitorRule.rule_name == rule.rule_name
+            ).first()
+            
+            if existing_rule:
+                raise HTTPException(status_code=400, detail="规则名称已存在")
+            
+            # 创建新规则
+            new_rule = AnnouncementMonitorRule(
+                rule_name=rule.rule_name,
+                keywords=rule.keywords,
+                announcement_types=rule.announcement_types,
+                stock_codes=rule.stock_codes,
+                min_importance_level=rule.min_importance_level,
+                notify_enabled=rule.notify_enabled,
+                notify_channels=rule.notify_channels,
+                is_active=True
+            )
+            
+            session.add(new_rule)
+            session.commit()
+            session.refresh(new_rule)
+            
+            return AnnouncementMonitorRuleResponse.from_orm(new_rule)
+        finally:
+            session.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/monitor-rules/{rule_id}")
+async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpdate):
+    """
+    更新监控规则
+
+    Args:
+        rule_id: 规则ID
+        updates: 更新内容
+
+    Returns:
+        AnnouncementMonitorRuleResponse: 更新后的规则
+    """
+    try:
+        service = get_announcement_service()
+        session = service.SessionLocal()
+        
+        try:
+            rule = session.query(AnnouncementMonitorRule).filter(
+                AnnouncementMonitorRule.id == rule_id
+            ).first()
+            
+            if not rule:
+                raise HTTPException(status_code=404, detail="规则不存在")
+            
+            # 更新字段
+            for field, value in updates.dict(exclude_unset=True).items():
+                if hasattr(rule, field):
+                    setattr(rule, field, value)
+            
+            session.commit()
+            session.refresh(rule)
+            
+            return AnnouncementMonitorRuleResponse.from_orm(rule)
+        finally:
+            session.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/monitor-rules/{rule_id}")
+async def delete_monitor_rule(rule_id: int):
+    """
+    删除监控规则
+
+    Args:
+        rule_id: 规则ID
+
+    Returns:
+        Dict: 操作结果
+    """
+    try:
+        service = get_announcement_service()
+        session = service.SessionLocal()
+        
+        try:
+            rule = session.query(AnnouncementMonitorRule).filter(
+                AnnouncementMonitorRule.id == rule_id
+            ).first()
+            
+            if not rule:
+                raise HTTPException(status_code=404, detail="规则不存在")
+            
+            session.delete(rule)
+            session.commit()
+            
+            return {"success": True, "message": "规则已删除"}
+        finally:
+            session.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/triggered-records")
+async def get_triggered_records(
+    rule_id: Optional[int] = Query(None, description="规则ID"),
+    stock_code: Optional[str] = Query(None, description="股票代码"),
+    page: int = Query(1, ge=1, description="页码"),
+    page_size: int = Query(20, ge=1, le=100, description="每页数量"),
+):
+    """
+    获取触发记录列表
+
+    Args:
+        rule_id: 规则ID
+        stock_code: 股票代码
+        page: 页码
+        page_size: 每页数量
+
+    Returns:
+        Dict: 触发记录列表
+    """
+    try:
+        service = get_announcement_service()
+        session = service.SessionLocal()
+        
+        try:
+            query = session.query(AnnouncementMonitorRecord).join(
+                AnnouncementMonitorRule
+            ).join(Announcement)
+            
+            # 应用过滤条件
+            if rule_id:
+                query = query.filter(AnnouncementMonitorRecord.rule_id == rule_id)
+            if stock_code:
+                query = query.filter(Announcement.stock_code == stock_code)
+            
+            # 获取总数
+            total = query.count()
+            
+            # 分页查询
+            records = query.order_by(AnnouncementMonitorRecord.triggered_at.desc()).offset(
+                (page - 1) * page_size
+            ).limit(page_size).all()
+            
+            # 转换为响应格式
+            result = []
+            for record in records:
+                result.append({
+                    "id": record.id,
+                    "rule_id": record.rule_id,
+                    "announcement_id": record.announcement_id,
+                    "matched_keywords": record.matched_keywords,
+                    "triggered_at": record.triggered_at.isoformat(),
+                    "notified": record.notified,
+                    "notified_at": record.notified_at.isoformat() if record.notified_at else None,
+                    "notification_result": record.notification_result,
+                    "rule_name": record.rule.rule_name,
+                    "announcement_title": record.announcement.announcement_title,
+                    "stock_code": record.announcement.stock_code
+                })
+            
+            return {
+                "success": True,
+                "data": result,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "total_pages": (total + page_size - 1) // page_size,
+            }
+        finally:
+            session.close()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

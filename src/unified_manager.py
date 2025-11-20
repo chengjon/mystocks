@@ -10,12 +10,11 @@ MyStocks统一数据管理器 - 简化版本 (US3 Architecture Simplification)
 
 import pandas as pd
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 from datetime import datetime
 
 from src.core.data_classification import DataClassification, DatabaseTarget
 from src.core.data_manager import DataManager
-from src.core.data_storage_strategy import DataStorageStrategy, DataStorageRules
 from src.core.batch_failure_strategy import (
     BatchFailureStrategy,
     BatchFailureHandler,
@@ -69,7 +68,7 @@ class MyStocksUnifiedManager:
         ```
     """
 
-    def __init__(self, enable_monitoring: bool = True):
+    def __init__(self, enable_monitoring: bool = True) -> None:
         """
         初始化统一管理器
 
@@ -196,12 +195,10 @@ class MyStocksUnifiedManager:
             路由信息字典
         """
         target_db = self._data_manager.get_target_database(classification)
-        retention = DataStorageRules.get_retention_days(classification)
 
         return {
             "classification": classification.value,
             "target_db": target_db.value,
-            "retention_days": retention,
         }
 
     def save_data_batch_with_strategy(
@@ -265,13 +262,16 @@ class MyStocksUnifiedManager:
         if self.enable_monitoring and self.performance_monitor:
             try:
                 stats["performance"] = self.performance_monitor.get_statistics()
-            except:
+            except Exception:
                 pass
 
         return stats
 
     def check_data_quality(
-        self, classification: DataClassification, table_name: str, **filters
+        self, 
+        classification: DataClassification, 
+        table_name: str, 
+        **filters: Union[str, int, float]
     ) -> Dict[str, Any]:
         """
         检查数据质量
@@ -308,7 +308,7 @@ class MyStocksUnifiedManager:
 
         return result
 
-    def close_all_connections(self):
+    def close_all_connections(self) -> None:
         """
         关闭所有数据库连接
         """
@@ -321,9 +321,9 @@ class MyStocksUnifiedManager:
         except Exception as e:
             logger.error(f"关闭连接时出错: {e}")
 
-    def __del__(self):
+    def __del__(self) -> None:
         """析构函数：确保连接被关闭"""
         try:
             self.close_all_connections()
-        except:
+        except Exception:
             pass

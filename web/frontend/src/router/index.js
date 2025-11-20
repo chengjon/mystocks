@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+// import { useAuthStore } from '@/stores/auth'  // 已移除认证依赖
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +14,7 @@ const router = createRouter({
       path: '/',
       component: () => import('@/layout/index.vue'),
       redirect: '/dashboard',
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: false },  // 已禁用认证要求
       children: [
         {
           path: 'dashboard',
@@ -77,10 +77,23 @@ const router = createRouter({
           meta: { title: '股票管理', icon: 'Grid' }
         },
         {
+          path: 'stock-detail/:symbol',
+          name: 'stock-detail',
+          component: () => import('@/views/StockDetail.vue'),
+          props: true,
+          meta: { title: '股票详情', icon: 'Document' }
+        },
+        {
           path: 'analysis',
           name: 'analysis',
           component: () => import('@/views/Analysis.vue'),
           meta: { title: '数据分析', icon: 'DataAnalysis' }
+        },
+        {
+          path: 'analysis/industry-concept',
+          name: 'industry-concept-analysis',
+          component: () => import('@/views/IndustryConceptAnalysis.vue'),
+          meta: { title: '行业概念分析', icon: 'Box' }
         },
         {
           path: 'technical',
@@ -99,6 +112,12 @@ const router = createRouter({
           name: 'risk',
           component: () => import('@/views/RiskMonitor.vue'),
           meta: { title: '风险监控', icon: 'Warning' }
+        },
+        {
+          path: 'announcement',
+          name: 'announcement',
+          component: () => import('@/views/announcement/AnnouncementMonitor.vue'),
+          meta: { title: '公告监控', icon: 'Document' }
         },
         {
           path: 'realtime',
@@ -188,19 +207,19 @@ const router = createRouter({
   ]
 })
 
-// 路由守卫
-router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore()
+// 路由守卫 - 已禁用认证检查
+// router.beforeEach(async (to, from, next) => {
+//   const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
-    // 需要登录但未登录,重定向到登录页
-    next({ name: 'login', query: { redirect: to.fullPath } })
-  } else if (to.name === 'login' && authStore.isAuthenticated) {
-    // 已登录,访问登录页,重定向到首页
-    next({ name: 'dashboard' })
-  } else {
-    next()
-  }
-})
+//   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
+//     // 需要登录但未登录,重定向到登录页
+//     next({ name: 'login', query: { redirect: to.fullPath } })
+//   } else if (to.name === 'login' && authStore.isAuthenticated) {
+//     // 已登录,访问登录页,重定向到首页
+//     next({ name: 'dashboard' })
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

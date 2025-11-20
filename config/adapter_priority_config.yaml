@@ -1,0 +1,39 @@
+# 适配器优先级配置
+# 用于数据源工厂中的故障转移机制
+
+# 实时行情数据适配器优先级
+realtime_quote:
+  - tdx
+  - customer
+  - akshare
+
+# 日线数据适配器优先级
+daily_kline:
+  - tdx
+  - akshare
+  - baostock
+
+# 财务数据适配器优先级
+financial_data:
+  - financial
+  - tushare
+
+# 技术指标数据适配器优先级
+technical_indicators:
+  - tdx
+  - akshare
+
+# 新闻数据适配器优先级
+news_data:
+  - byapi
+  - akshare
+
+# 默认适配器顺序（当没有特定配置时使用）
+default:
+  - tdx
+  - akshare
+  - baostock
+  - tushare
+  - financial
+  - customer
+  - byapi

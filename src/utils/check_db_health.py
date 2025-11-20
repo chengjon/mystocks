@@ -158,7 +158,7 @@ def check_tdengine_connection():
             cursor.execute("SELECT CLIENT_VERSION()")
             version_result = cursor.fetchone()
             version = version_result[0] if version_result else "Unknown"
-        except:
+        except Exception:
             # 如果CLIENT_VERSION()失败，尝试获取服务器信息
             cursor.execute("SHOW VARIABLES")
             version = "Connected"

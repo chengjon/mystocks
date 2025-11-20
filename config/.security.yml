@@ -1,0 +1,403 @@
+# MyStocks项目安全配置文件
+# 定义安全扫描规则和配置参数
+
+# 基础安全配置
+security:
+  # 扫描配置
+  scanning:
+    enabled: true
+    tools:
+      - bandit
+      - safety
+      - pip-audit
+      - basic_check
+    
+    # 扫描目标目录
+    scan_paths:
+      - src/
+      - web/
+      - scripts/
+      - config/
+    
+    # 排除目录
+    exclude_paths:
+      - "**/__pycache__/**"
+      - "**/node_modules/**"
+      - "**/venv/**"
+      - "**/.git/**"
+      - "**/test*/**"
+      - "**/.archive/**"
+      - "**/logs/**"
+      - "**/data/**"
+    
+    # 严重性级别配置
+    severity_levels:
+      critical:
+        fail_build: true
+        notify: true
+        auto_fix: false
+      high:
+        fail_build: true
+        notify: true
+        auto_fix: false
+      medium:
+        fail_build: false
+        notify: true
+        auto_fix: true
+      low:
+        fail_build: false
+        notify: false
+        auto_fix: true
+
+# 代码安全规则配置
+code_security:
+  # 敏感信息检测
+  secrets:
+    patterns:
+      - "(?i)(password\s*=\s*[\"'][^"']+[\"'])"
+      - "(?i)(api[_-]?key\s*=\s*[\"'][^"']+[\"'])"
+      - "(?i)(secret[_-]?key\s*=\s*[\"'][^"']+[\"'])"
+      - "(?i)(token\s*=\s*[\"'][^"']+[\"'])"
+      - "(?i)(private[_-]?key\s*=\s*[\"'][^"']+[\"'])"
+    
+    # 允许的密钥格式（示例）
+    allowed_patterns:
+      - "sk-[a-zA-Z0-9]{20,}"  # OpenAI API Key格式
+      - "ghp_[a-zA-Z0-9]{36}"  # GitHub Token格式
+
+  # SQL注入风险检测
+  sql_injection:
+    risky_patterns:
+      - "execute\s*\(\s*[\"'][^"']*\+"
+      - "cursor\.execute\s*\(\s*f[\"']"
+      - "cursor\.execute\s*\(\s*.*\+"
+    
+    safe_patterns:
+      - "execute\s*\(\s*\$?\d+\)"
+      - "execute\s*\(\s*.*%.*\)"
+
+  # 不安全函数检测
+  insecure_functions:
+    high_risk:
+      - "os.system"
+      - "subprocess.call.*shell=True"
+      - "exec"
+      - "eval"
+      - "compile"
+    
+    medium_risk:
+      - "random.random"
+      - "random.randint"
+      - "hashlib.md5"
+      - "hashlib.sha1"
+
+# 依赖安全配置
+dependency_security:
+  # 自动更新配置
+  auto_update:
+    enabled: false
+    schedule: "weekly"
+    
+    # 安全的依赖版本规则
+    version_rules:
+      "cryptography": ">=41.0.0"
+      "requests": ">=2.31.0"
+      "urllib3": ">=1.26.0"
+      "certifi": ">=2023.7.22"
+  
+  # 漏洞数据库更新
+  vulnerability_db:
+    update_frequency: "daily"
+    sources:
+      - "https://pyup.io/api/v1/safety/"
+      - "https://raw.githubusercontent.com/advisories/"
+  
+  # 已知漏洞CVE列表
+  cve_blacklist:
+    - "CVE-2023-38325"  # 某个已知漏洞
+    - "CVE-2023-27043"  # 某个已知漏洞
+
+# 文件安全配置
+file_security:
+  # 敏感文件模式
+  sensitive_patterns:
+    - "*.key"
+    - "*.pem"
+    - "*.p12"
+    - "*.p8"
+    - ".env*"
+    - "config.json"
+    - "secrets.yml"
+    - "id_rsa*"
+    - "id_dsa*"
+  
+  # 允许的配置文件
+  allowed_configs:
+    - ".env.example"
+    - ".env.template"
+    - "*.config.yaml.example"
+    - "*.config.yml.example"
+  
+  # 文件权限检查
+  file_permissions:
+    executable_files: ["*.sh", "*.py", "*.exe"]
+    sensitive_directories: [".env", ".ssh", ".aws"]
+
+# 网络安全配置
+network_security:
+  # API安全
+  api:
+    # 强制HTTPS
+    force_https: true
+    
+    # CORS配置
+    cors:
+      allowed_origins: ["https://mystocks.com", "https://www.mystocks.com"]
+      allowed_methods: ["GET", "POST", "PUT", "DELETE"]
+      allowed_headers: ["*"]
+      expose_headers: []
+    
+    # 认证要求
+    authentication:
+      required: true
+      jwt_expiry: "30m"
+      refresh_token_expiry: "7d"
+
+  # 数据库安全
+  database:
+    # 强制SSL连接
+    require_ssl: true
+    
+    # 连接加密
+    encryption:
+      at_rest: true
+      in_transit: true
+    
+    # 访问控制
+    access_control:
+      principle_of_least_privilege: true
+      audit_logging: true
+
+# 加密安全配置
+cryptography:
+  # 密码学算法配置
+  algorithms:
+    # 推荐算法
+    recommended:
+      - "AES-256-GCM"
+      - "ChaCha20-Poly1305"
+      - "RSA-4096"
+      - "Ed25519"
+      - "PBKDF2-HMAC-SHA256"
+    
+    # 不推荐算法
+    deprecated:
+      - "DES"
+      - "3DES"
+      - "MD5"
+      - "SHA1"
+      - "RC4"
+      - "Blowfish"
+  
+  # 密钥管理
+  key_management:
+    # 密钥长度要求
+    key_lengths:
+      symmetric: 256
+      rsa: 4096
+      ecdsa: 256
+    
+    # 密钥轮换
+    key_rotation:
+      enabled: true
+      interval: "90d"
+
+# 日志安全配置
+logging_security:
+  # 日志脱敏
+  data_masking:
+    enabled: true
+    patterns:
+      - "(?i)(password\s*[=:\s]\s*)([^\s\"'\]+)"
+      - "(?i)(api[_-]?key\s*[=:\s]\s*)([^\s\"'\]+)"
+      - "(?i)(secret[_-]?key\s*[=:\s]\s*)([^\s\"'\]+)"
+      - "(?i)(token\s*[=:\s]\s*)([^\s\"'\]+)"
+      - "(?i)(access[_-]?token\s*[=:\s]\s*)([^\s\"'\]+)"
+  
+  # 日志级别
+  log_levels:
+    security_events: "INFO"
+    authentication: "INFO"
+    authorization: "INFO"
+    data_access: "DEBUG"
+    errors: "ERROR"
+    warnings: "WARNING"
+
+# 监控和告警配置
+monitoring:
+  # 安全事件监控
+  security_events:
+    failed_logins:
+      threshold: 5
+      window: "5m"
+      action: "block_ip"
+    
+    suspicious_activity:
+      threshold: 10
+      window: "1h"
+      action: "alert_admin"
+    
+    data_exfiltration:
+      threshold: 1
+      window: "1m"
+      action: "immediate_alert"
+  
+  # 性能监控
+  performance:
+    response_time_threshold: "2s"
+    error_rate_threshold: "5%"
+    concurrent_requests_threshold: 100
+  
+  # 资源监控
+  resources:
+    cpu_usage_threshold: "80%"
+    memory_usage_threshold: "85%"
+    disk_usage_threshold: "90%"
+
+# 应急响应配置
+incident_response:
+  # 响应团队
+  team:
+    primary: "security-team@mystocks.com"
+    backup: "dev-team@mystocks.com"
+    escalation: "cto@mystocks.com"
+  
+  # 响应流程
+  workflow:
+    severity_levels:
+      critical:
+        response_time: "15m"
+        notification_channels: ["email", "slack", "sms"]
+        auto_actions: ["block_ip", "disable_user", "isolate_system"]
+      
+      high:
+        response_time: "1h"
+        notification_channels: ["email", "slack"]
+        auto_actions: ["alert_admin"]
+      
+      medium:
+        response_time: "4h"
+        notification_channels: ["email"]
+        auto_actions: []
+      
+      low:
+        response_time: "24h"
+        notification_channels: ["email"]
+        auto_actions: []
+
+# 合规性配置
+compliance:
+  # 数据保护
+  data_protection:
+    pii_classification: true
+    data_retention_policy: "7y"
+    data_anonymization: true
+  
+  # 审计要求
+  audit:
+    enabled: true
+    log_all_access: true
+    retention_period: "3y"
+  
+  # 访问控制
+  access_control:
+    rbac_enabled: true
+    mfa_required: true
+    session_timeout: "30m"
+    password_policy:
+      min_length: 12
+      require_uppercase: true
+      require_lowercase: true
+      require_numbers: true
+      require_symbols: true
+      max_age: "90d"
+
+# 开发安全配置
+development:
+  # 代码审查
+  code_review:
+    mandatory: true
+    required_approvals: 2
+    security_focus: true
+  
+  # 自动化检查
+  automated_checks:
+    pre_commit:
+      - "bandit"
+      - "black"
+      - "mypy"
+      - "flake8"
+    
+    pre_push:
+      - "full_security_scan"
+      - "dependency_check"
+      - "secrets_scan"
+    
+    ci_cd:
+      - "comprehensive_security_scan"
+      - "vulnerability_assessment"
+      - "penetration_testing"
+
+# 测试安全配置
+testing:
+  # 安全测试
+  security_testing:
+    enabled: true
+    frequency: "weekly"
+    
+    test_types:
+      - "static_analysis"
+      - "dynamic_analysis"
+      - "dependency_scanning"
+      - "secret_scanning"
+      - "configuration_review"
+  
+  # 渗透测试
+  penetration_testing:
+    enabled: true
+    frequency: "quarterly"
+    external_provider: false
+
+# 部署安全配置
+deployment:
+  # 环境隔离
+  environment_isolation:
+    development:
+      security_level: "low"
+      logging_level: "debug"
+      encryption_required: false
+    
+    staging:
+      security_level: "medium"
+      logging_level: "info"
+      encryption_required: true
+    
+    production:
+      security_level: "high"
+      logging_level: "warning"
+      encryption_required: true
+      monitoring_enabled: true
+  
+  # 容器安全
+  container_security:
+    non_root_user: true
+    read_only_root: true
+    no_privileged: true
+    image_scanning: true
+  
+  # 基础设施安全
+  infrastructure:
+    network_segmentation: true
+    firewall_rules: true
+    intrusion_detection: true
+    backup_encryption: true

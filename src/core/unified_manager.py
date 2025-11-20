@@ -18,13 +18,13 @@ MyStocks统一数据管理器 - 集成监控版本 (US1 + US3)
 import pandas as pd
 import time
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 from datetime import datetime
 
 from src.core.data_classification import DataClassification, DatabaseTarget
 
 logger = logging.getLogger(__name__)
-from src.core.data_storage_strategy import DataStorageStrategy, DataStorageRules
+# US3: 已移除DataStorageStrategy，使用DataManager进行路由
 from src.core.batch_failure_strategy import (
     BatchFailureStrategy,
     BatchFailureHandler,
@@ -34,6 +34,10 @@ from src.data_access import (
     TDengineDataAccess,
     PostgreSQLDataAccess,
 )
+# 注释掉不存在的MySQL导入 - 系统已简化为TDengine+PostgreSQL双数据库架构
+# from src.storage.database.database_manager import MySQLDataAccess
+# 注释掉不存在的Redis导入
+# from src.db_manager.redis_manager import RedisDataAccess
 from src.utils.failure_recovery_queue import FailureRecoveryQueue
 
 # 监控组件 (US3)
@@ -73,18 +77,24 @@ class MyStocksUnifiedManager:
         ```
     """
 
-    def __init__(self, enable_monitoring: bool = True):
+    # Type hints for optional monitoring components
+    monitoring_db: Optional[Any]
+    performance_monitor: Optional[Any]
+    quality_monitor: Optional[Any]
+    alert_manager: Optional[Any]
+
+    def __init__(self, enable_monitoring: bool = True) -> None:
         """
         初始化统一管理器
 
         Args:
             enable_monitoring: 是否启用监控功能 (默认True)
         """
-        # 初始化4个数据访问层
+        # 初始化2个数据访问层 (系统已简化为TDengine+PostgreSQL双数据库架构)
         self.tdengine = TDengineDataAccess()
         self.postgresql = PostgreSQLDataAccess()
-        self.mysql = MySQLDataAccess()
-        self.redis = RedisDataAccess()
+        # 注释掉不存在的Redis访问层
+        # self.redis = RedisDataAccess()
 
         # 初始化故障恢复队列
         self.recovery_queue = FailureRecoveryQueue()
@@ -113,15 +123,49 @@ class MyStocksUnifiedManager:
 
         print("✅ MyStocksUnifiedManager 初始化成功")
         print("   - 支持34个数据分类的自动路由")
-        print("   - 4种数据库连接就绪")
+        print("   - 2种数据库连接就绪 (TDengine + PostgreSQL)")
         print("   - 故障恢复队列已启用")
+
+    def _get_target_database(self, classification: DataClassification) -> DatabaseTarget:
+        """
+        根据数据分类获取目标数据库
+        
+        Args:
+            classification: 数据分类
+            
+        Returns:
+            DatabaseTarget: 目标数据库
+        """
+        # 简单的路由规则，根据数据分类选择数据库
+        if classification in [
+            DataClassification.TICK_DATA,
+            DataClassification.MINUTE_KLINE,
+            DataClassification.ORDER_BOOK_DEPTH,
+        ]:
+            return DatabaseTarget.TDENGINE
+        elif classification in [
+            DataClassification.DAILY_KLINE,
+            DataClassification.FUNDAMENTAL_METRICS,
+            DataClassification.SYMBOLS_INFO,
+            DataClassification.INDEX_CONSTITUENTS,
+            DataClassification.TRADE_CALENDAR,
+            DataClassification.TRADE_RECORDS,
+            DataClassification.POSITION_HISTORY,
+            DataClassification.SYSTEM_CONFIG,
+            DataClassification.TASK_SCHEDULE,
+            DataClassification.DATA_QUALITY_METRICS,
+        ]:
+            return DatabaseTarget.POSTGRESQL
+        else:
+            # 默认使用PostgreSQL
+            return DatabaseTarget.POSTGRESQL
 
     def save_data_by_classification(
         self,
         classification: DataClassification,
         data: pd.DataFrame,
         table_name: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> bool:
         """
         按分类保存数据 (核心方法 #1)
@@ -154,8 +198,10 @@ class MyStocksUnifiedManager:
             print("⚠️  数据为空,跳过保存")
             return True
 
-        # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
+        # US3: 使用DataManager进行路由
+        # from src.core.data_storage_strategy import DataManager
+        # 暂时使用简单的数据管理器替代
+        target_db = self._get_target_database(classification)
         operation_success = False
         rows_affected = 0
 
@@ -167,7 +213,7 @@ class MyStocksUnifiedManager:
                 database_type=target_db.value,
                 table_name=table_name,
             )
-            if self.enable_monitoring
+            if self.enable_monitoring and self.performance_monitor is not None
             else None
         )
 
@@ -188,19 +234,6 @@ class MyStocksUnifiedManager:
             elif target_db == DatabaseTarget.POSTGRESQL:
                 rows_affected = self.postgresql.insert_dataframe(table_name, data)
                 print(f"✅ PostgreSQL保存成功: {rows_affected}行")
-
-            elif target_db == DatabaseTarget.MYSQL:
-                rows_affected = self.mysql.insert_dataframe(table_name, data)
-                print(f"✅ MySQL保存成功: {rows_affected}行")
-
-            elif target_db == DatabaseTarget.REDIS:
-                # Redis使用特殊逻辑 (hash/list/string)
-                ttl = kwargs.get("ttl") or DataStorageRules.get_redis_ttl(
-                    classification
-                )
-                self._save_to_redis(table_name, data, ttl)
-                rows_affected = len(data)
-                print(f"✅ Redis保存成功: {rows_affected}条记录")
 
             operation_success = True
 
@@ -251,7 +284,7 @@ class MyStocksUnifiedManager:
             if context_manager:
                 try:
                     context_manager.__exit__(None, None, None)
-                except:
+                except Exception:
                     pass
 
     def load_data_by_classification(
@@ -261,7 +294,7 @@ class MyStocksUnifiedManager:
         filters: Optional[Dict[str, Any]] = None,
         columns: Optional[List[str]] = None,
         limit: Optional[int] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
         按分类加载数据 (核心方法 #2)
@@ -290,7 +323,8 @@ class MyStocksUnifiedManager:
             )
         """
         # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
+        # from src.core.data_storage_strategy import DataManager
+        target_db = self._get_target_database(classification)
 
         # 性能监控上下文 (US3)
         context_manager = (
@@ -300,7 +334,7 @@ class MyStocksUnifiedManager:
                 database_type=target_db.value,
                 table_name=table_name,
             )
-            if self.enable_monitoring
+            if self.enable_monitoring and self.performance_monitor is not None
             else None
         )
 
@@ -343,14 +377,6 @@ class MyStocksUnifiedManager:
                 else:
                     df = self.postgresql.query(table_name, columns, where, limit=limit)
 
-            elif target_db == DatabaseTarget.MYSQL:
-                # MySQL查询
-                df = self.mysql.query(table_name, columns, where, limit=limit)
-
-            elif target_db == DatabaseTarget.REDIS:
-                # Redis查询
-                df = self._load_from_redis(table_name, filters)
-
             print(f"✅ 查询成功: {len(df)}行")
 
             # 记录操作日志 (US3)
@@ -388,55 +414,59 @@ class MyStocksUnifiedManager:
             if context_manager:
                 try:
                     context_manager.__exit__(None, None, None)
-                except:
+                except Exception:
                     pass
 
-    def _save_to_redis(self, key: str, data: pd.DataFrame, ttl: Optional[int] = None):
+    def _save_to_redis(self, key: str, data: pd.DataFrame, ttl: Optional[int] = None) -> None:
         """
-        保存数据到Redis
+        保存数据到Redis (已注释)
 
         根据数据结构选择最优Redis数据类型:
         - 单条记录 → String
         - 多条记录 → Hash (key-value pairs)
         """
-        if len(data) == 1:
-            # 单条记录 → String
-            self.redis.set(key, data.iloc[0].to_dict(), ttl=ttl)
-        else:
-            # 多条记录 → Hash
-            for idx, row in data.iterrows():
-                field = str(row.get("symbol", idx))
-                self.redis.hset(key, field, row.to_dict())
-
-            if ttl:
-                self.redis.expire(key, ttl)
+        # 注释掉Redis相关代码，因为模块不存在
+        # if len(data) == 1:
+        #     # 单条记录 → String
+        #     self.redis.set(key, data.iloc[0].to_dict(), ttl=ttl)
+        # else:
+        #     # 多条记录 → Hash
+        #     for idx, row in data.iterrows():
+        #         field = str(row.get("symbol", idx))
+        #         self.redis.hset(key, field, row.to_dict())
+        #
+        #     if ttl:
+        #         self.redis.expire(key, ttl)
+        pass
 
     def _load_from_redis(
         self, key: str, filters: Optional[Dict[str, Any]] = None
     ) -> pd.DataFrame:
         """
-        从Redis加载数据
+        从Redis加载数据 (已注释)
 
         自动检测数据类型并返回DataFrame
         """
-        # 尝试String类型
-        value = self.redis.get(key)
-        if value:
-            return pd.DataFrame([value])
-
-        # 尝试Hash类型
-        data = self.redis.hgetall(key)
-        if data:
-            df = pd.DataFrame.from_dict(data, orient="index")
-
-            # 应用过滤器
-            if filters:
-                for col, val in filters.items():
-                    if col in df.columns:
-                        df = df[df[col] == val]
-
-            return df
-
+        # 注释掉Redis相关代码，因为模块不存在
+        # # 尝试String类型
+        # value = self.redis.get(key)
+        # if value:
+        #     return pd.DataFrame([value])
+        #
+        # # 尝试Hash类型
+        # data = self.redis.hgetall(key)
+        # if data:
+        #     df = pd.DataFrame.from_dict(data, orient="index")
+        #
+        #     # 应用过滤器
+        #     if filters:
+        #         for col, val in filters.items():
+        #             if col in df.columns:
+        #                 df = df[df[col] == val]
+        #
+        #     return df
+        #
+        # return pd.DataFrame()
         return pd.DataFrame()
 
     def _build_where_clause(self, filters: Dict[str, Any]) -> str:
@@ -473,12 +503,13 @@ class MyStocksUnifiedManager:
 
         return " AND ".join(conditions)
 
-    def get_routing_info(self, classification: DataClassification) -> Dict[str, Any]:
+    def get_routing_info(self, classification: DataClassification, **kwargs: Any) -> Dict[str, Any]:
         """
         获取数据分类的路由信息
 
         Args:
             classification: 数据分类
+            **kwargs: 可选参数，如 retention_days
 
         Returns:
             路由信息字典
@@ -487,9 +518,11 @@ class MyStocksUnifiedManager:
             info = manager.get_routing_info(DataClassification.TICK_DATA)
             # {'target_db': 'tdengine', 'retention_days': 30, 'ttl': None}
         """
-        target_db = DataStorageStrategy.get_target_database(classification)
-        retention = DataStorageRules.get_retention_days(classification)
-        ttl = DataStorageRules.get_redis_ttl(classification)
+        # from src.core.data_storage_strategy import DataManager
+        target_db = self._get_target_database(classification)
+        # US3: 移除DataStorageRules，使用简化配置
+        retention = kwargs.get("retention_days", None)  # 简化配置，从参数获取保留天数
+        ttl = None  # Redis已被移除
 
         return {"target_db": target_db.value, "retention_days": retention, "ttl": ttl}
 
@@ -499,7 +532,7 @@ class MyStocksUnifiedManager:
         data: pd.DataFrame,
         table_name: str,
         strategy: BatchFailureStrategy = BatchFailureStrategy.CONTINUE,
-        **kwargs,
+        **kwargs: Any,
     ) -> BatchOperationResult:
         """
         使用指定失败策略保存批量数据 (核心方法 #3)
@@ -541,7 +574,8 @@ class MyStocksUnifiedManager:
             )
 
         # 获取目标数据库
-        target_db = DataStorageStrategy.get_target_database(classification)
+        # from src.core.data_storage_strategy import DataManager
+        target_db = self._get_target_database(classification)
         print(
             f"📍 路由: {classification.value} → {target_db.value.upper()} (策略: {strategy.value.upper()})"
         )
@@ -560,12 +594,8 @@ class MyStocksUnifiedManager:
                     self.tdengine.insert_dataframe(table_name, batch, **kwargs)
                 elif target_db == DatabaseTarget.POSTGRESQL:
                     self.postgresql.insert_dataframe(table_name, batch)
-                elif target_db == DatabaseTarget.MYSQL:
-                    self.mysql.insert_dataframe(table_name, batch)
                 elif target_db == DatabaseTarget.REDIS:
-                    ttl = kwargs.get("ttl") or DataStorageRules.get_redis_ttl(
-                        classification
-                    )
+                    ttl = kwargs.get("ttl") or 86400  # 默认1天
                     self._save_to_redis(table_name, batch, ttl)
                 return True
             except Exception as e:
@@ -609,12 +639,14 @@ class MyStocksUnifiedManager:
             return {"enabled": False, "message": "监控功能未启用"}
 
         try:
-            stats = {
+            stats: Dict[str, Any] = {
                 "enabled": True,
-                "performance": self.performance_monitor.get_performance_summary(
-                    hours=24
+                "performance": (
+                    self.performance_monitor.get_performance_summary(hours=24)
+                    if self.performance_monitor is not None
+                    else {}
                 ),
-                "alerts": self.alert_manager.get_statistics(),
+                "alerts": {},  # AlertManager.get_statistics() 方法不存在，待实现
                 "monitoring_db": {"connected": self.monitoring_db is not None},
             }
             return stats
@@ -623,7 +655,7 @@ class MyStocksUnifiedManager:
             return {"enabled": True, "error": str(e)}
 
     def check_data_quality(
-        self, classification: DataClassification, table_name: str, **kwargs
+        self, classification: DataClassification, table_name: str, **kwargs: Any
     ) -> Dict[str, Any]:
         """
         执行数据质量检查 (US3)
@@ -655,9 +687,15 @@ class MyStocksUnifiedManager:
             return {"error": "监控功能未启用"}
 
         check_type = kwargs.get("check_type", "completeness")
-        target_db = DataStorageStrategy.get_target_database(classification)
+        # from src.core.data_storage_strategy import DataManager
+        target_db = self._get_target_database(classification)
 
         try:
+            result: Dict[str, Any] = {"error": f"未知的检查类型: {check_type}"}
+
+            if self.quality_monitor is None:
+                return {"error": "质量监控器未初始化"}
+
             if check_type == "completeness":
                 result = self.quality_monitor.check_completeness(
                     classification=classification.value,
@@ -685,8 +723,6 @@ class MyStocksUnifiedManager:
                     validation_rules=kwargs.get("validation_rules"),
                     threshold=kwargs.get("threshold"),
                 )
-            else:
-                result = {"error": f"未知的检查类型: {check_type}"}
 
             logger.info(f"✓ 数据质量检查完成: {table_name} - {check_type}")
             return result
@@ -695,13 +731,13 @@ class MyStocksUnifiedManager:
             logger.error(f"数据质量检查失败: {e}")
             return {"error": str(e)}
 
-    def close_all_connections(self):
+    def close_all_connections(self) -> None:
         """关闭所有数据库连接"""
         print("\n正在关闭所有数据库连接...")
         self.tdengine.close()
         self.postgresql.close_all()
-        self.mysql.close()
-        self.redis.close()
+        # self.mysql.close()  # MySQL已移除，系统使用TDengine+PostgreSQL双数据库架构
+        # self.redis.close()  # Redis已移除
         print("✅ 所有连接已关闭")
 
 

@@ -1,0 +1,18 @@
+# E2E测试专用依赖 - 跳过复杂依赖
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+sqlalchemy>=2.0.0
+
+# 测试相关
+playwright>=1.40.0
+pytest-playwright>=0.4.0
+pytest>=7.0.0
+httpx>=0.24.0
+
+# 基础依赖
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.30.0
+
+# 跳过复杂的TA-Lib等依赖
+# 这些在生产环境需要单独安装

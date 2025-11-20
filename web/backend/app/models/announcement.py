@@ -1,6 +1,6 @@
 """
 公告系统数据模型
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 """
 
 from datetime import date, datetime
@@ -20,7 +20,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel, Field
 
 # 使用与monitoring.py相同的Base

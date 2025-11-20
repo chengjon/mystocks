@@ -20,7 +20,7 @@ import pandas as pd
 from datetime import datetime
 
 # 导入MyStocks核心模块
-from src.core import DataClassification, DataStorageStrategy
+from src.core import DataClassification, DataManager
 from unified_manager import MyStocksUnifiedManager
 
 # 导入改进的customer适配器
@@ -78,7 +78,7 @@ def save_to_auto_routing(data, manager):
         # 这样避免了与日线数据的字段冲突问题
         classification = DataClassification.INDEX_QUOTES  # 使用指数行情分类
 
-        target_db = DataStorageStrategy.get_target_database(classification)
+        target_db = DataManager().get_target_database(classification)
         logger.info(f"🎯 使用自动路由保存数据")
         logger.info(f"📊 数据分类: {classification.value}")
         logger.info(f"📍 目标数据库: {target_db.value}")

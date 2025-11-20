@@ -1,0 +1,171 @@
+# Docker Compose for E2E Testing
+# 为端到端测试提供完整的服务环境
+
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: mystocks-postgres-test
+    environment:
+      POSTGRES_DB: mystocks_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./scripts/database/init-test.sql:/docker-entrypoint-initdb.d/init-test.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mystocks_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # Redis缓存
+  redis-test:
+    image: redis:7-alpine
+    container_name: mystocks-redis-test
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_test_data:/data
+    command: redis-server --appendonly yes --requirepass redis123
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # TDengine时序数据库 (用于时序数据测试)
+  tdengine-test:
+    image: tdengine/tdengine:latest
+    container_name: mystocks-tdengine-test
+    environment:
+      TAOS_USER: root
+      TAOS_PASSWORD: taosdata
+    ports:
+      - "6041:6041"
+      - "6030:6030"
+    volumes:
+      - tdengine_test_data:/var/lib/taos
+    networks:
+      - test-network
+
+  # 后端API服务
+  backend-test:
+    build:
+      context: ./web/backend
+      dockerfile: Dockerfile.test
+    container_name: mystocks-backend-test
+    environment:
+      - NODE_ENV=test
+      - USE_MOCK_DATA=true
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-test:5432/mystocks_test
+      - REDIS_URL=redis://:redis123@redis-test:6379/1
+      - TDENGINE_URL=root:taosdata@tdengine-test:6030
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      tdengine-test:
+        condition: service_started
+    volumes:
+      - ./src:/app/src:ro
+      - ./logs:/app/logs
+    networks:
+      - test-network
+    restart: unless-stopped
+
+  # 前端服务
+  frontend-test:
+    build:
+      context: ./web/frontend
+      dockerfile: Dockerfile.test
+    container_name: mystocks-frontend-test
+    environment:
+      - NODE_ENV=test
+      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_APP_TITLE=MyStocks Test
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend-test
+    volumes:
+      - ./web/frontend:/app
+      - /app/node_modules
+    networks:
+      - test-network
+    restart: unless-stopped
+
+  # 测试数据库监控
+  pgadmin-test:
+    image: dpage/pgadmin4:latest
+    container_name: mystocks-pgadmin-test
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@mystocks.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres-test
+    networks:
+      - test-network
+    profiles:
+      - monitoring
+
+  # Redis监控
+  redis-commander-test:
+    image: rediscommander/redis-commander:latest
+    container_name: mystocks-redis-commander-test
+    environment:
+      REDIS_HOSTS: local:redis-test:6379
+      HTTP_USER: admin
+      HTTP_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis-test
+    networks:
+      - test-network
+    profiles:
+      - monitoring
+
+  # 测试数据生成器
+  test-data-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-data
+    container_name: mystocks-test-data-gen
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-test:5432/mystocks_test
+      - USE_MOCK_DATA=true
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    profiles:
+      - data-setup
+
+volumes:
+  postgres_test_data:
+    driver: local
+  redis_test_data:
+    driver: local
+  tdengine_test_data:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge

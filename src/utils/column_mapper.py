@@ -16,7 +16,7 @@
 """
 
 import pandas as pd
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, List
 import warnings
 
 
@@ -232,7 +232,7 @@ class ColumnMapper:
     @classmethod
     def get_standard_columns(
         cls, data_type: str = "stock_daily", lang: str = "en"
-    ) -> list:
+    ) -> List[str]:
         """
         获取特定数据类型的标准列名
 

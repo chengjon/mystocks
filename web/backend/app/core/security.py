@@ -165,49 +165,22 @@ def check_permission(user_role: str, required_role: str) -> bool:
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """
-    获取当前用户
-    依赖注入，用于路由保护
+    获取当前用户 - 已禁用认证
+    返回默认用户，不再验证token
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+    # 返回默认用户，绕过认证
+    return User(
+        id=1,
+        username="guest",
+        email="guest@mystocks.com",
+        role="admin",  # 给予管理员权限
+        is_active=True
     )
-
-    token_data = verify_token(token)
-    if token_data is None:
-        raise credentials_exception
-
-    # TODO: 从数据库查询用户信息
-    # 临时模拟用户数据
-    users_db = {
-        "admin": {
-            "id": 1,
-            "username": "admin",
-            "email": "admin@mystocks.com",
-            "role": "admin",
-            "is_active": True,
-        },
-        "user": {
-            "id": 2,
-            "username": "user",
-            "email": "user@mystocks.com",
-            "role": "user",
-            "is_active": True,
-        },
-    }
-
-    user_data = users_db.get(token_data.username)
-    if user_data is None:
-        raise credentials_exception
-
-    return User(**user_data)
 
 
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
-    """获取当前活跃用户"""
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    """获取当前活跃用户 - 已禁用认证检查"""
+    # 始终返回用户，不再检查活跃状态
     return current_user

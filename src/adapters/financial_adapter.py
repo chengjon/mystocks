@@ -194,6 +194,9 @@ class FinancialDataSource(IDataSource):
         # - tushare: 专业财务数据接口(需token)
         # - byapi: 财务数据接口
         # - 新浪财经: 网页爬虫方法
+        # 
+        # 已添加对akshare的支持，可以获取更全面的财务数据
+        # 未来可考虑添加tushare等专业数据源支持
 
     def get_stock_daily(
         self, symbol: str, start_date: str, end_date: str

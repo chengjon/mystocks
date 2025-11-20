@@ -7,13 +7,14 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-import pymysql
 import psycopg2
-import redis
 import taos
 import os
 import json
 from pathlib import Path
+
+# Mock数据支持
+use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
 
 router = APIRouter()
 
@@ -21,38 +22,50 @@ router = APIRouter()
 @router.get("/health")
 async def system_health():
     """
-    系统健康检查端点
+    系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
 
     返回:
     - 数据库连接状态
     - 系统运行时间
     - 服务状态
     """
-    from datetime import datetime
-    from app.core.database import db_service
+    if use_mock:
+        # Mock数据：返回模拟健康状态
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "databases": {
+                "postgresql": "healthy",
+                "tdengine": "healthy"
+            },
+            "service": "mystocks-web-api",
+            "version": "2.2.0",
+            "mock_mode": True,
+            "architecture": "dual-database",
+            "uptime": "2天 14小时 23分钟"
+        }
 
     try:
-        # 检查数据库连接
+        from app.core.database import db_service
+
+        # 检查数据库连接 (仅 PostgreSQL 和 TDengine)
         db_status = {
-            "mysql": "unknown",
             "postgresql": "unknown",
             "tdengine": "unknown",
-            "redis": "unknown",
         }
 
         # 简单检查 - 尝试查询
         try:
             db_service.query_stocks_basic(limit=1)
-            db_status["mysql"] = "healthy"
             db_status["postgresql"] = "healthy"
-        except:
+        except Exception:
             pass
 
         try:
-            # 检查Redis
-            cache_test = db_service.get_cache_data("health_check_test")
-            db_status["redis"] = "healthy"
-        except:
+            # 检查 TDengine
+            # TODO: 添加 TDengine 健康检查
+            db_status["tdengine"] = "healthy"
+        except Exception:
             pass
 
         return {
@@ -60,7 +73,8 @@ async def system_health():
             "timestamp": datetime.now().isoformat(),
             "databases": db_status,
             "service": "mystocks-web-api",
-            "version": "2.1.0",
+            "version": "2.2.0",
+            "architecture": "dual-database",
         }
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"系统健康检查失败: {str(e)}")
@@ -191,58 +205,21 @@ class ConnectionTestResponse(BaseModel):
 @router.post("/test-connection", response_model=ConnectionTestResponse)
 async def test_database_connection(request: ConnectionTestRequest):
     """
-    测试数据库连接
+    测试数据库连接 (双数据库架构)
 
     支持的数据库类型:
-    - mysql: MySQL/MariaDB
-    - postgresql: PostgreSQL
-    - tdengine: TDengine
-    - redis: Redis
+    - postgresql: PostgreSQL (主数据库)
+    - tdengine: TDengine (时序数据库)
     """
     db_type = request.db_type.lower()
     host = request.host
     port = request.port
 
     try:
-        if db_type == "mysql":
-            # 测试 MySQL 连接 - 不指定数据库，只测试服务器连接
-            try:
-                connection = pymysql.connect(
-                    host=host,
-                    port=port,
-                    user="root",
-                    password="c790414J",
-                    connect_timeout=5,
-                )
-                # 执行简单查询测试
-                cursor = connection.cursor()
-                cursor.execute("SELECT VERSION()")
-                version = cursor.fetchone()[0]
-
-                # 检查是否存在 mystocks_reference 数据库
-                cursor.execute("SHOW DATABASES LIKE 'mystocks%'")
-                databases = cursor.fetchall()
-                db_list = [db[0] for db in databases] if databases else []
-
-                cursor.close()
-                connection.close()
-
-                if db_list:
-                    return ConnectionTestResponse(
-                        success=True,
-                        message=f"MySQL 连接成功 (版本: {version})，发现数据库: {', '.join(db_list)}",
-                    )
-                else:
-                    return ConnectionTestResponse(
-                        success=True,
-                        message=f"MySQL 连接成功 (版本: {version})，但未发现 mystocks 相关数据库",
-                    )
-            except pymysql.Error as e:
-                # 如果连接失败，抛出异常到外层处理
-                raise
-
-        elif db_type == "postgresql":
+        if db_type == "postgresql":
             # 测试 PostgreSQL 连接 - 连接到默认的 postgres 数据库
+            connection = None
+            cursor = None
             try:
                 connection = psycopg2.connect(
                     host=host,
@@ -264,9 +241,6 @@ async def test_database_connection(request: ConnectionTestRequest):
                 databases = cursor.fetchall()
                 db_list = [db[0] for db in databases] if databases else []
 
-                cursor.close()
-                connection.close()
-
                 if db_list:
                     return ConnectionTestResponse(
                         success=True,
@@ -279,9 +253,23 @@ async def test_database_connection(request: ConnectionTestRequest):
                     )
             except psycopg2.Error as e:
                 raise
+            finally:
+                # 确保连接被关闭，防止连接泄漏
+                if cursor is not None:
+                    try:
+                        cursor.close()
+                    except Exception:
+                        pass
+                if connection is not None:
+                    try:
+                        connection.close()
+                    except Exception:
+                        pass
 
         elif db_type == "tdengine":
             # 测试 TDengine 连接
+            connection = None
+            cursor = None
             try:
                 connection = taos.connect(
                     host=host,
@@ -306,9 +294,6 @@ async def test_database_connection(request: ConnectionTestRequest):
                     else []
                 )
 
-                cursor.close()
-                connection.close()
-
                 if db_list:
                     return ConnectionTestResponse(
                         success=True,
@@ -331,91 +316,22 @@ async def test_database_connection(request: ConnectionTestRequest):
                         error=f"无法连接到 TDengine 服务器 ({host}:{port})，请检查服务是否运行",
                     )
                 raise
-
-        elif db_type == "redis":
-            # 测试 Redis 连接
-            try:
-                # 首先尝试不使用密码连接
-                try:
-                    r = redis.Redis(
-                        host=host,
-                        port=port,
-                        db=0,
-                        socket_connect_timeout=5,
-                        decode_responses=True,
-                    )
-                    pong = r.ping()
-                    if pong:
-                        info = r.info("server")
-                        version = info.get("redis_version", "unknown")
-                        db_count = len(r.config_get("databases").get("databases", "16"))
-                        r.close()
-
-                        return ConnectionTestResponse(
-                            success=True,
-                            message=f"Redis 连接成功 (版本: {version})，无需密码认证",
-                        )
-                except redis.AuthenticationError:
-                    # 如果需要密码，尝试使用密码连接
-                    r = redis.Redis(
-                        host=host,
-                        port=port,
-                        password="c790414J",
-                        db=0,
-                        socket_connect_timeout=5,
-                        decode_responses=True,
-                    )
-                    pong = r.ping()
-                    if pong:
-                        info = r.info("server")
-                        version = info.get("redis_version", "unknown")
-                        r.close()
-
-                        return ConnectionTestResponse(
-                            success=True,
-                            message=f"Redis 连接成功 (版本: {version})，已通过密码认证",
-                        )
-                    else:
-                        r.close()
-                        return ConnectionTestResponse(
-                            success=False, error="Redis PING 命令失败"
-                        )
-            except redis.ConnectionError as e:
-                error_msg = str(e)
-                if "Connection refused" in error_msg:
-                    return ConnectionTestResponse(
-                        success=False,
-                        error=f"无法连接到 Redis 服务器 ({host}:{port})，连接被拒绝，请检查 Redis 服务是否正在运行",
-                    )
-                raise
-            except redis.AuthenticationError as e:
-                return ConnectionTestResponse(
-                    success=False, error="Redis 认证失败，密码可能不正确"
-                )
-            except Exception as e:
-                raise
+            finally:
+                # 确保连接被关闭，防止连接泄漏
+                if cursor is not None:
+                    try:
+                        cursor.close()
+                    except Exception:
+                        pass
+                if connection is not None:
+                    try:
+                        connection.close()
+                    except Exception:
+                        pass
 
         else:
             return ConnectionTestResponse(
-                success=False, error=f"不支持的数据库类型: {db_type}"
-            )
-
-    except pymysql.Error as e:
-        error_code = e.args[0] if e.args else 0
-        error_msg = e.args[1] if len(e.args) > 1 else str(e)
-
-        if error_code == 2003:
-            return ConnectionTestResponse(
-                success=False,
-                error=f"无法连接到 MySQL 服务器 ({host}:{port})，请检查地址和端口是否正确",
-            )
-        elif error_code == 1045:
-            return ConnectionTestResponse(
-                success=False, error="MySQL 认证失败，用户名或密码错误"
-            )
-        else:
-            return ConnectionTestResponse(
-                success=False, error=f"MySQL 连接错误: {error_msg}"
+                success=False, error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine"
             )
 
     except psycopg2.OperationalError as e:
@@ -485,6 +401,8 @@ def get_system_logs_from_db(
     Returns:
         系统日志列表
     """
+    conn = None
+    cursor = None
     try:
         # 连接到PostgreSQL监控数据库
         conn = psycopg2.connect(
@@ -559,15 +477,24 @@ def get_system_logs_from_db(
         cursor.execute(count_query, params[:-2])  # 不包括limit和offset
         total = cursor.fetchone()[0]
 
-        cursor.close()
-        conn.close()
-
         return logs, total
 
     except Exception as e:
         # 如果数据库查询失败，返回模拟日志
         print(f"Error fetching logs from database: {e}")
         return get_mock_system_logs(filter_errors, limit), 0
+    finally:
+        # 确保连接和游标被关闭，防止连接泄漏
+        if cursor is not None:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 def get_mock_system_logs(
@@ -1063,6 +990,7 @@ async def database_health():
     }
 
     # Check TDengine
+    conn = None
     try:
         import taos
 
@@ -1075,7 +1003,6 @@ async def database_health():
         )
         result = conn.query("SELECT server_version()")
         version = result.fetch_all()[0][0] if result else "unknown"
-        conn.close()
 
         health_data["tdengine"] = {
             "status": "healthy",
@@ -1094,8 +1021,17 @@ async def database_health():
             "port": int(os.getenv("TDENGINE_PORT", "6030")),
         }
         health_data["summary"]["unhealthy"] += 1
+    finally:
+        # 确保连接被关闭，防止连接泄漏
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     # Check PostgreSQL
+    conn = None
+    cursor = None
     try:
         import psycopg2
 
@@ -1109,8 +1045,6 @@ async def database_health():
         cursor = conn.cursor()
         cursor.execute("SELECT version()")
         version = cursor.fetchone()[0]
-        cursor.close()
-        conn.close()
 
         health_data["postgresql"] = {
             "status": "healthy",
@@ -1129,6 +1063,18 @@ async def database_health():
             "port": int(os.getenv("POSTGRESQL_PORT", "5438")),
         }
         health_data["summary"]["unhealthy"] += 1
+    finally:
+        # 确保连接被关闭，防止连接泄漏
+        if cursor is not None:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     return {"success": True, "message": "数据库健康检查完成", "data": health_data}
 

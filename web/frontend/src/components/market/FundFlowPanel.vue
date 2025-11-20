@@ -148,7 +148,7 @@ const chartRef = ref(null)
 let chartInstance = null
 
 // API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // 查询资金流向
 const handleQuery = async () => {

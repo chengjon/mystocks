@@ -50,7 +50,7 @@
 
 ---
 
-### Week 5: 工具增强（ValueCell Plan A0） ✅
+### Week 5: 工具增强（ Plan A0） ✅
 
 **已完成模块**:
 
@@ -563,7 +563,7 @@ for f in history:
 **特点**:
 - 零LLM依赖（直接访问SEC数据，无AI分析）
 - 可选组件（不安装edgar库不影响其他功能）
-- 简洁实现（177行 vs. ValueCell 665行SEC Agent）
+- 简洁实现（177行 vs.  665行SEC Agent）
 
 ---
 
@@ -783,9 +783,9 @@ if metrics['var_95_hist'] < -0.05:
 
 ---
 
-### Week 5: 工具增强（ValueCell Plan A0） ✅ 已完成
+### Week 5: 工具增强（ Plan A0） ✅ 已完成
 
-**目标**: 集成关键ValueCell功能（最小化方案）
+**目标**: 集成关键功能（最小化方案）
 
 **已完成**:
 - [x] SECFetcher - SEC EDGAR数据访问（177行）
@@ -795,7 +795,7 @@ if metrics['var_95_hist'] < -0.05:
 
 **实际**: 800行代码，1天完成
 
-**价值**: 从ValueCell 50,000行代码中提取核心算法价值，零框架依赖
+**价值**: 从 50,000行代码中提取核心算法价值，零框架依赖
 
 ---
 

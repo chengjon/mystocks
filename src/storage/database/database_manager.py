@@ -14,7 +14,7 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import (
     create_engine,
@@ -27,7 +27,7 @@ from sqlalchemy import (
     Boolean,
     Enum as SQLEnum,
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import psycopg2
 import redis
@@ -64,11 +64,11 @@ try:
                 TAOS_AVAILABLE = True
             except ImportError:
                 taos = None
-                TAOS_MODULE_TYPE = None
+                TAOS_MODULE_TYPE = ""
                 TAOS_AVAILABLE = False
 except Exception as e:
     taos = None
-    TAOS_MODULE_TYPE = None
+    TAOS_MODULE_TYPE = ""
     TAOS_AVAILABLE = False
 
 if TAOS_AVAILABLE:
@@ -81,7 +81,7 @@ MONITOR_DB_URL = os.getenv(
     "MONITOR_DB_URL", "mysql+pymysql://user:password@localhost/db_monitor"
 )
 
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
 class DatabaseType(Enum):
@@ -138,11 +138,11 @@ class TableOperationLog(Base):
     table_name = Column(String(255), nullable=False)
     database_type = Column(String(20), nullable=False)
     database_name = Column(String(255), nullable=False)
-    operation_type = Column(
+    operation_type: Any = Column(
         SQLEnum("CREATE", "ALTER", "DROP", "VALIDATE"), nullable=False
     )
     operation_time = Column(DateTime, default=datetime.utcnow)
-    operation_status = Column(
+    operation_status: Any = Column(
         SQLEnum("success", "failed", "processing"), nullable=False
     )
     operation_details = Column(JSON, nullable=False)
@@ -164,7 +164,7 @@ class TableValidationLog(Base):
 
 
 class DatabaseTableManager:
-    def __init__(self):
+    def __init__(self) -> None:
         # 初始化监控数据库连接
         self.monitor_engine = create_engine(MONITOR_DB_URL)
         Base.metadata.create_all(self.monitor_engine)
@@ -206,7 +206,7 @@ class DatabaseTableManager:
         }
 
         # 各数据库连接池
-        self.db_connections = {}
+        self.db_connections: Dict[str, Any] = {}
 
     def get_connection(self, db_type: DatabaseType, db_name: str, **kwargs):
         """获取数据库连接"""
@@ -271,12 +271,14 @@ class DatabaseTableManager:
                     database=db_name,
                 )
             elif db_type == DatabaseType.REDIS:
-                # Redis连接
+                # Redis连接 (项目当前未使用)
+                redis_port = config.get("port", 6379)
+                redis_db = config.get("db", 0)
                 conn = redis.Redis(
-                    host=config["host"],
-                    port=config["port"],
-                    db=config["db"],
-                    password=config["password"],
+                    host=str(config.get("host", "localhost")),
+                    port=int(redis_port) if redis_port is not None else 6379,
+                    db=int(redis_db) if redis_db is not None else 0,
+                    password=str(config.get("password")) if config.get("password") else None,
                     decode_responses=True,
                 )
             elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
@@ -495,7 +497,7 @@ class DatabaseTableManager:
             )
 
             if table_log:
-                table_log.modification_time = datetime.utcnow()
+                table_log.modification_time = datetime.utcnow()  # type: ignore[assignment]
                 self.monitor_session.commit()
 
             return True
@@ -605,12 +607,13 @@ class DatabaseTableManager:
         **kwargs,
     ) -> Dict:
         """验证表结构是否符合预期"""
-        validation_details = {
+        validation_details: Dict[str, Any] = {
             "expected_columns": expected_columns,
             "actual_columns": [],
             "matches": False,
             "issues": [],
         }
+        issues: List[str] = validation_details["issues"]
 
         try:
             # 获取实际表结构
@@ -619,7 +622,7 @@ class DatabaseTableManager:
             )
 
             if not actual_structure:
-                validation_details["issues"].append(
+                issues.append(
                     "Table does not exist or cannot be accessed"
                 )
                 validation_status = "fail"
@@ -637,14 +640,14 @@ class DatabaseTableManager:
                 # 检查缺失的列
                 for col_name in expected_cols:
                     if col_name not in actual_cols:
-                        validation_details["issues"].append(
+                        issues.append(
                             f"Missing column: {col_name}"
                         )
 
                 # 检查多余的列
                 for col_name in actual_cols:
                     if col_name not in expected_cols:
-                        validation_details["issues"].append(f"Extra column: {col_name}")
+                        issues.append(f"Extra column: {col_name}")
 
                 # 检查列属性
                 for col_name in expected_cols:
@@ -655,25 +658,25 @@ class DatabaseTableManager:
                         # 检查数据类型
                         if expected.get("type") and actual.get("type"):
                             if expected["type"].lower() != actual["type"].lower():
-                                validation_details["issues"].append(
+                                issues.append(
                                     f"Column {col_name} type mismatch: expected {expected['type']}, got {actual['type']}"
                                 )
 
                         # 检查是否允许为空
                         if "nullable" in expected and "nullable" in actual:
                             if expected["nullable"] != actual["nullable"]:
-                                validation_details["issues"].append(
+                                issues.append(
                                     f"Column {col_name} nullable mismatch: expected {expected['nullable']}, got {actual['nullable']}"
                                 )
 
                 # 确定验证状态
-                validation_details["matches"] = len(validation_details["issues"]) == 0
+                validation_details["matches"] = len(issues) == 0
                 validation_status = "pass" if validation_details["matches"] else "fail"
 
         except Exception as e:
             error_msg = str(e)
             logger.error(f"Failed to validate table {table_name}: {error_msg}")
-            validation_details["issues"].append(f"Validation error: {error_msg}")
+            issues.append(f"Validation error: {error_msg}")
             validation_status = "fail"
 
         # 记录验证结果
@@ -684,8 +687,8 @@ class DatabaseTableManager:
             validation_status=validation_status,
             validation_details=validation_details,
             issues_found=(
-                "; ".join(validation_details["issues"])
-                if validation_details["issues"]
+                "; ".join(issues)
+                if issues
                 else None
             ),
         )
@@ -694,7 +697,7 @@ class DatabaseTableManager:
 
         return validation_details
 
-    def batch_create_tables(self, config_file: str):
+    def batch_create_tables(self, config_file: str) -> Dict:
         """通过配置文件table_config.yaml批量创建表,若yaml格式修改，这个函数也要改
         连接参数将从环境变量中自动获取，无需在YAML中配置
         """
@@ -1015,7 +1018,7 @@ class DatabaseTableManager:
             logger.error(f"Failed to get table info for {table_name}: {str(e)}")
             return None
 
-    def close_all_connections(self):
+    def close_all_connections(self) -> None:
         """关闭所有数据库连接"""
         for conn_key, conn in self.db_connections.items():
             try:
@@ -1030,6 +1033,15 @@ class DatabaseTableManager:
         # 关闭监控会话
         if hasattr(self, "monitor_session"):
             self.monitor_session.close()
+
+    def __enter__(self):
+        """Context manager entry - 返回自身实例"""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - 确保关闭所有连接"""
+        self.close_all_connections()
+        return False  # 不抑制异常
 
 
 # 使用示例

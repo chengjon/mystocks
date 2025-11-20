@@ -112,7 +112,7 @@ class GPUUnifiedManager:
                     gpu_memory = (
                         cp.cuda.get_default_memory_pool().used_bytes() / 1024 / 1024
                     )
-                except:
+                except Exception:
                     gpu_memory = 0.0
 
             result = GPUProcessingResult(
@@ -407,7 +407,7 @@ class GPUUnifiedManager:
             import cupy as cp
 
             return cp.cuda.get_default_memory_pool().used_bytes() / 1024 / 1024
-        except:
+        except Exception:
             return 0.0
 
     def _collect_performance_metrics(self) -> Dict[str, float]:

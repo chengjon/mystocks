@@ -1,6 +1,6 @@
 """
 Multi-source Data API
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 提供多数据源管理和查询的API端点
 """

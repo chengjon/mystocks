@@ -51,7 +51,7 @@
 - **数据迁移**
   - `OPENSTOCK_MIGRATION_GUIDE.md` - OpenStock迁移指南
   - `OPENSTOCK_MIGRATION_SUMMARY.md` - 迁移总结
-  - `VALUECELL_MIGRATION_PLAN.md` - ValueCell迁移方案
+  - `VALUECELL_MIGRATION_PLAN.md` - 迁移方案
   - `INSTOCK_MIGRATION_REPORT.md` - InStock迁移报告
 
 - **系统集成**
@@ -88,7 +88,7 @@
   - `TRADINGVIEW_FIX_SUMMARY.md` - TradingView修复总结
   - `TRADINGVIEW_TROUBLESHOOTING.md` - TradingView故障排查
 
-- **ValueCell功能（三阶段）**
+- **功能（三阶段）**
   - `VALUECELL_PHASE1_COMPLETION.md` - 第1阶段完成报告
   - `VALUECELL_PHASE2_COMPLETION.md` - 第2阶段完成报告
   - `VALUECELL_PHASE3_COMPLETION.md` - 第3阶段完成报告
@@ -173,7 +173,7 @@
 - **Week 3 数据库简化**：4数据库 → 2数据库 (TDengine + PostgreSQL)
 - **架构优化**：见 `ARCHITECTURE_EVALUATION_REPORT_2025.md`
 - **Web集成完成**：见 `WEB_FINAL_STATUS_20251020.md`
-- **ValueCell全部完成**：3阶段完整，见 `VALUECELL_PHASE3_COMPLETION.md`
+- **全部完成**：3阶段完整，见 `VALUECELL_PHASE3_COMPLETION.md`
 
 ## 💡 使用建议
 

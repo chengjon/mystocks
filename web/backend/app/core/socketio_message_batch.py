@@ -53,7 +53,7 @@ class BatchMessage:
 
         try:
             return len(json.dumps(self.data).encode("utf-8"))
-        except:
+        except (TypeError, ValueError):
             return 1024  # 默认1KB
 
 

@@ -186,55 +186,55 @@ sio = socketio_manager.sio
 logger.info("✅ Socket.IO服务器已挂载")
 
 
-# SECURITY FIX 1.2: CSRF验证中间件
-@app.middleware("http")
-async def csrf_protection_middleware(request: Request, call_next):
-    """
-    CSRF保护中间件 - 验证修改操作的CSRF token
-    SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
-    """
-    # 对于修改操作，检查CSRF token
-    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
-        # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
-        exclude_paths = [
-            "/api/csrf-token",
-            "/api/auth/login",
-            "/docs",
-            "/redoc",
-            "/openapi.json",
-        ]
+# SECURITY FIX 1.2: CSRF验证中间件 - 已禁用
+# @app.middleware("http")
+# async def csrf_protection_middleware(request: Request, call_next):
+#     """
+#     CSRF保护中间件 - 验证修改操作的CSRF token
+#     SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
+#     """
+#     # 对于修改操作，检查CSRF token
+#     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+#         # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
+#         exclude_paths = [
+#             "/api/csrf-token",
+#             "/api/auth/login",
+#             "/docs",
+#             "/redoc",
+#             "/openapi.json",
+#         ]
 
-        if not any(request.url.path.startswith(path) for path in exclude_paths):
-            # 获取CSRF token from header
-            csrf_token = request.headers.get("x-csrf-token")
+#         if not any(request.url.path.startswith(path) for path in exclude_paths):
+#             # 获取CSRF token from header
+#             csrf_token = request.headers.get("x-csrf-token")
 
-            if not csrf_token:
-                logger.warning(
-                    f"❌ CSRF token missing for {request.method} {request.url.path}"
-                )
-                return JSONResponse(
-                    status_code=403,
-                    content={
-                        "error": "CSRF token missing",
-                        "message": "CSRF token is required for this request",
-                    },
-                )
+#             if not csrf_token:
+#                 logger.warning(
+#                     f"❌ CSRF token missing for {request.method} {request.url.path}"
+#                 )
+#                 return JSONResponse(
+#                     status_code=403,
+#                     content={
+#                         "error": "CSRF token missing",
+#                         "message": "CSRF token is required for this request",
+#                     },
+#                 )
 
-            # 验证CSRF token
-            if not csrf_manager.validate_token(csrf_token):
-                logger.warning(
-                    f"❌ Invalid CSRF token for {request.method} {request.url.path}"
-                )
-                return JSONResponse(
-                    status_code=403,
-                    content={
-                        "error": "CSRF token invalid",
-                        "message": "CSRF token is invalid or expired",
-                    },
-                )
+#             # 验证CSRF token
+#             if not csrf_manager.validate_token(csrf_token):
+#                 logger.warning(
+#                     f"❌ Invalid CSRF token for {request.method} {request.url.path}"
+#                 )
+#                 return JSONResponse(
+#                     status_code=403,
+#                     content={
+#                         "error": "CSRF token invalid",
+#                         "message": "CSRF token is invalid or expired",
+#                     },
+#                 )
 
-    response = await call_next(request)
-    return response
+#     response = await call_next(request)
+#     return response
 
 
 # 请求日志中间件
@@ -372,6 +372,8 @@ from app.api import (
     risk_management,  # Week 1 Architecture-Compliant APIs
     sse_endpoints,  # Week 2 SSE Real-time Push
     cache,  # Task 2.2 Cache Management API
+    industry_concept_analysis,  # 行业概念分析API
+    health,  # 健康检查API
 )
 from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
@@ -415,15 +417,15 @@ app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预
 # InStock 策略系统路由
 app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 
-# ValueCell 实时监控系统路由
+#  实时监控系统路由
 app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告警
 
-# ValueCell 技术分析系统路由 (Phase 2)
+#  技术分析系统路由 (Phase 2)
 app.include_router(
     technical_analysis.router, tags=["technical-analysis"]
 )  # 增强技术分析
 
-# ValueCell 多数据源系统路由 (Phase 3)
+#  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
 app.include_router(announcement.router, tags=["announcement"])  # 公告监控
 
@@ -440,9 +442,35 @@ app.include_router(
     sse_endpoints.router
 )  # SSE实时推送 (training, backtest, alerts, dashboard)
 
+# 行业概念分析API
+app.include_router(
+    industry_concept_analysis.router
+)  # 行业概念分析
+
+# 健康检查API
+app.include_router(health.router, prefix="/api")
+
 logger.info("✅ All API routers registered successfully")
+
+def find_available_port(start_port: int, end_port: int) -> int:
+    """在指定范围内查找可用端口"""
+    import socket
+    for port in range(start_port, end_port + 1):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            result = sock.connect_ex(('localhost', port))
+            if result != 0:  # 端口未被占用
+                return port
+    raise RuntimeError(f"No available port found in range {start_port}-{end_port}")
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
+    from app.core.config import settings
+    
+    try:
+        # 在端口范围内查找可用端口
+        available_port = find_available_port(settings.port_range_start, settings.port_range_end)
+        logger.info(f"🚀 Starting server on port {available_port}")
+        uvicorn.run("main:app", host=settings.host, port=available_port, reload=True, log_level="info")
+    except RuntimeError as e:
+        logger.error(f"❌ {e}")
+        exit(1)

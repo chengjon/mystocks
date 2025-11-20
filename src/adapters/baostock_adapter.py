@@ -54,7 +54,7 @@ class BaostockDataSource(IDataSource):
             self.available = False
             raise ImportError(f"Baostock不可用: {e}")
 
-    def __del__(self):
+    def __del__(self) -> None:
         # 退出时自动登出
         if hasattr(self, "bs"):
             self.bs.logout()

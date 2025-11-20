@@ -66,7 +66,7 @@ class APIHealthChecker:
         try:
             resp = requests.get(f"{BASE_URL}/api/docs", timeout=2)
             return resp.status_code == 200
-        except:
+        except Exception:
             return False
 
     def get_jwt_token(self) -> Tuple[bool, str]:
@@ -135,7 +135,7 @@ class APIHealthChecker:
                     json_data = resp.json()
                     if isinstance(json_data, dict):
                         result["data_keys"] = list(json_data.keys())
-                except:
+                except Exception:
                     pass
             elif resp.status_code == 401:
                 result["status"] = "FAIL"

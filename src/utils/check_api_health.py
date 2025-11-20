@@ -113,7 +113,7 @@ def check_backend_running() -> bool:
     try:
         resp = requests.get(f"{BASE_URL}/api/docs", timeout=2)
         return resp.status_code == 200
-    except:
+    except Exception:
         return False
 
 

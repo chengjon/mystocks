@@ -164,7 +164,7 @@ class GPUPerformanceBenchmark:
                 try:
                     gpu_processor = GPUDataProcessor(gpu_enabled=True)
                     gpu_processor.preprocess(data)
-                except:
+                except Exception:
                     pass
 
             # CPU预热
@@ -212,7 +212,7 @@ class GPUPerformanceBenchmark:
                 try:
                     gpu_generator = GPUFeatureGenerator(gpu_enabled=True)
                     gpu_generator.generate_features(data)
-                except:
+                except Exception:
                     pass
 
             # CPU预热
@@ -263,7 +263,7 @@ class GPUPerformanceBenchmark:
                 try:
                     gpu_predictor = GPUPricePredictor(gpu_enabled=True)
                     gpu_predictor.train_models(data)
-                except:
+                except Exception:
                     pass
 
             # CPU预热
@@ -320,7 +320,7 @@ class GPUPerformanceBenchmark:
             import cupy as cp
 
             return cp.cuda.get_default_memory_pool().used_bytes() / 1024 / 1024
-        except:
+        except Exception:
             return 0.0
 
     def run_comprehensive_benchmark(self) -> List[BenchmarkResult]:

@@ -89,10 +89,23 @@ debug_log() {
 
 # ===== 读取 stdin JSON =====
 INPUT_JSON=$(cat)
+
+# 检查输入是否为空
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty input received, skipping skill activation"
+    exit 0
+fi
+
+# 验证 JSON 格式
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON input, skipping skill activation"
+    exit 0
+fi
+
 debug_log "Received input JSON"
 
 # ===== 提取用户提示 =====
-PROMPT=$(echo "$INPUT_JSON" | jq -r '.prompt // empty')
+PROMPT=$(echo "$INPUT_JSON" | jq -r '.prompt // empty' 2>/dev/null || echo "")
 
 if [ -z "$PROMPT" ]; then
     debug_log "No prompt field found, skipping skill activation"
@@ -260,13 +273,14 @@ else
 fi
 
 # ===== 输出 JSON（stdout 会被注入到 Claude 上下文）=====
-cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "UserPromptSubmit",
-    "additionalContext": "$ACTIVATION_MESSAGE"
-  }
-}
-EOF
+# 使用 jq 生成有效的 JSON，确保所有特殊字符正确转义
+jq -n \
+  --arg context "$ACTIVATION_MESSAGE" \
+  '{
+    hookSpecificOutput: {
+      hookEventName: "UserPromptSubmit",
+      additionalContext: $context
+    }
+  }'
 
 exit 0

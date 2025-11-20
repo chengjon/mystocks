@@ -265,7 +265,7 @@ const dialogVisible = ref(false)
 const selectedRow = ref(null)
 
 // API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // 计算属性 - 统计信息
 const totalNetAmount = computed(() => {

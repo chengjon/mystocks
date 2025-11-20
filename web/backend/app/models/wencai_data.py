@@ -22,7 +22,7 @@ from sqlalchemy import (
     TIMESTAMP,
     Index,
 )
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.orm import declarative_base, declared_attr
 
 from app.core.database import Base
 

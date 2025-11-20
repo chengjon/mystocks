@@ -23,13 +23,13 @@ class DatabaseConnectionManager:
     管理4种数据库的连接池,提供统一的连接获取接口
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化连接管理器,验证必需的环境变量"""
         self._validate_env_variables()
         self._connections: Dict[str, Any] = {}
 
-    def _validate_env_variables(self):
-        """验证必需的环境变量是否存在"""
+    def _validate_env_variables(self) -> None:
+        """验证必需的环境变量是否存在 (US3: 移除MySQL和Redis依赖)"""
         required_vars = [
             # TDengine
             "TDENGINE_HOST",
@@ -43,18 +43,6 @@ class DatabaseConnectionManager:
             "POSTGRESQL_USER",
             "POSTGRESQL_PASSWORD",
             "POSTGRESQL_DATABASE",
-            # MySQL
-            "MYSQL_HOST",
-            "MYSQL_PORT",
-            "MYSQL_USER",
-            "MYSQL_PASSWORD",
-            "MYSQL_DATABASE",
-            # Redis
-            "REDIS_HOST",
-            "REDIS_PORT",
-            "REDIS_DB",
-            # Monitoring
-            "MONITOR_DB_URL",
         ]
 
         missing_vars = [var for var in required_vars if not os.getenv(var)]
@@ -62,12 +50,9 @@ class DatabaseConnectionManager:
         if missing_vars:
             raise EnvironmentError(
                 f"缺少必需的环境变量: {', '.join(missing_vars)}\n"
-                f"请参考 .env.example 文件配置环境变量"
+                f"请参考 .env.example 文件配置环境变量\n"
+                f"注意: MySQL和Redis已从US3架构中移除，不再需要这些环境变量"
             )
-
-        # 验证Redis数据库编号 (必须使用1-15,避开0号)
-        redis_db = int(os.getenv("REDIS_DB", "0"))
-        if redis_db == 0:
             raise ValueError(
                 "Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n"
                 "请使用1-15号数据库 (建议REDIS_DB=1)"
@@ -89,7 +74,7 @@ class DatabaseConnectionManager:
             if "tdengine" not in self._connections:
                 # WebSocket连接优先使用REST端口(6041),否则使用默认端口(6030)
                 tdengine_port = int(
-                    os.getenv("TDENGINE_REST_PORT", os.getenv("TDENGINE_PORT"))
+                    os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
                 )
 
                 conn = taosws.connect(
@@ -106,10 +91,10 @@ class DatabaseConnectionManager:
         except ImportError:
             raise ImportError("TDengine驱动未安装: pip install taospy>=2.7.0")
         except Exception as e:
-            tdengine_port = os.getenv("TDENGINE_REST_PORT", os.getenv("TDENGINE_PORT"))
+            port_str = os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
             raise ConnectionError(
                 f"TDengine连接失败: {e}\n"
-                f"请检查配置: {os.getenv('TDENGINE_HOST')}:{tdengine_port}"
+                f"请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}"
             )
 
     def get_postgresql_connection(self):
@@ -130,11 +115,11 @@ class DatabaseConnectionManager:
                 connection_pool = pool.SimpleConnectionPool(
                     minconn=1,
                     maxconn=20,
-                    host=os.getenv("POSTGRESQL_HOST"),
-                    port=int(os.getenv("POSTGRESQL_PORT")),
-                    user=os.getenv("POSTGRESQL_USER"),
-                    password=os.getenv("POSTGRESQL_PASSWORD"),
-                    database=os.getenv("POSTGRESQL_DATABASE"),
+                    host=os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
+                    port=int(os.getenv("POSTGRESQL_PORT", "5438")),
+                    user=os.getenv("POSTGRESQL_USER", "postgres"),
+                    password=os.getenv("POSTGRESQL_PASSWORD", ""),
+                    database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
                 )
                 self._connections["postgresql"] = connection_pool
 
@@ -150,7 +135,7 @@ class DatabaseConnectionManager:
                 f"请检查配置: {os.getenv('POSTGRESQL_HOST')}:{os.getenv('POSTGRESQL_PORT')}"
             )
 
-    def _return_postgresql_connection(self, conn):
+    def _return_postgresql_connection(self, conn) -> None:
         """
         归还PostgreSQL连接到连接池
 
@@ -176,11 +161,11 @@ class DatabaseConnectionManager:
 
             if "mysql" not in self._connections:
                 conn = pymysql.connect(
-                    host=os.getenv("MYSQL_HOST"),
-                    port=int(os.getenv("MYSQL_PORT")),
-                    user=os.getenv("MYSQL_USER"),
-                    password=os.getenv("MYSQL_PASSWORD"),
-                    database=os.getenv("MYSQL_DATABASE"),
+                    host=os.getenv("MYSQL_HOST", "192.168.123.104"),
+                    port=int(os.getenv("MYSQL_PORT", "3306")),
+                    user=os.getenv("MYSQL_USER", "root"),
+                    password=os.getenv("MYSQL_PASSWORD", ""),
+                    database=os.getenv("MYSQL_DATABASE", "mystocks"),
                     charset="utf8mb4",
                     cursorclass=cursors.DictCursor,
                 )
@@ -215,8 +200,8 @@ class DatabaseConnectionManager:
                 redis_db = int(os.getenv("REDIS_DB", "1"))
 
                 conn = redis.Redis(
-                    host=os.getenv("REDIS_HOST"),
-                    port=int(os.getenv("REDIS_PORT")),
+                    host=os.getenv("REDIS_HOST", "192.168.123.104"),
+                    port=int(os.getenv("REDIS_PORT", "6379")),
                     db=redis_db,
                     password=os.getenv("REDIS_PASSWORD") or None,
                     decode_responses=True,
@@ -239,7 +224,7 @@ class DatabaseConnectionManager:
                 f"请检查配置: {os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')} DB={os.getenv('REDIS_DB')}"
             )
 
-    def close_all_connections(self):
+    def close_all_connections(self) -> None:
         """关闭所有数据库连接"""
         for db_type, conn in self._connections.items():
             try:
@@ -258,10 +243,10 @@ class DatabaseConnectionManager:
 
     def test_all_connections(self) -> Dict[str, bool]:
         """
-        测试所有数据库连接
+        测试所有数据库连接 (US3架构: 只测试TDengine和PostgreSQL)
 
         Returns:
-            dict: 每个数据库的连接状态 {'tdengine': True, 'postgresql': True, ...}
+            dict: 每个数据库的连接状态 {'tdengine': True, 'postgresql': True}
         """
         results = {}
 
@@ -283,23 +268,6 @@ class DatabaseConnectionManager:
         except Exception as e:
             results["postgresql"] = False
             print(f"PostgreSQL连接失败: {e}")
-
-        # 测试MySQL
-        try:
-            conn = self.get_mysql_connection()
-            results["mysql"] = True
-        except Exception as e:
-            results["mysql"] = False
-            print(f"MySQL连接失败: {e}")
-
-        # 测试Redis
-        try:
-            conn = self.get_redis_connection()
-            conn.ping()
-            results["redis"] = True
-        except Exception as e:
-            results["redis"] = False
-            print(f"Redis连接失败: {e}")
 
         return results
 

@@ -1,6 +1,6 @@
 """
 监控系统数据模型
-Phase 1: ValueCell Migration - Real-time Monitoring System
+Real-time Monitoring System
 """
 
 from datetime import date, datetime
@@ -22,7 +22,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 

@@ -186,9 +186,9 @@ View → Show Components
 
 ---
 
-## 步骤 5: 创建 ValueCell 组件
+## 步骤 5: 创建  组件
 
-参考 `COMPONENT_LIBRARY_SPECIFICATION.md` 的 ValueCell 规范:
+参考 `COMPONENT_LIBRARY_SPECIFICATION.md` 的  规范:
 
 ### 5.1 基础结构
 
@@ -213,7 +213,7 @@ View → Show Components
    - 间距: 4px (来自 design-tokens.json spacing.xs)
 
 5. 创建 Symbol
-   - 命名: "ValueCell/Up/Default"
+   - 命名: "/Up/Default"
 ```
 
 ### 5.2 创建涨跌变体
@@ -263,13 +263,13 @@ View → Show Components
       └─ 标签: "银行" "蓝筹" (el-tag small)
 
 2. Price (当前价格)
-   └─ ValueCell 组件
+   └─  组件
       ├─ size: large
       ├─ show-icon: true
       └─ show-change: true
 
 3. Metrics (指标网格)
-   ├─ 涨跌额: ValueCell
+   ├─ 涨跌额: 
    ├─ 成交量: "123.45万"
    └─ 换手率: "1.23%"
 
@@ -356,7 +356,7 @@ View → Show Components
 
 ```
 - 文本单元格: Body/Regular, #606266
-- 数值单元格: 使用 ValueCell 组件
+- 数值单元格: 使用  组件
 - 操作单元格: Button/Text/Small
 - 单元格内边距: 12px
 ```
@@ -445,7 +445,7 @@ View → Show Components
    ├─ Success/
    └─ ...
 
-   ValueCell/
+   /
    ├─ Up/
    ├─ Down/
    └─ Flat/
@@ -506,7 +506,7 @@ View → Show Components
 
 - ✅ 颜色样式 (所有颜色变量)
 - ✅ 文本样式 (所有字体样式)
-- ✅ 组件库 (Buttons, ValueCell, StockCard, Table)
+- ✅ 组件库 (Buttons, , StockCard, Table)
 - ✅ 页面模板 (Dashboard, Stock List)
 - ✅ 图层结构 (文件夹组织)
 

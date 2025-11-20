@@ -1,6 +1,6 @@
 """
 技术分析系统 API 测试脚本
-Phase 2: ValueCell Migration - Enhanced Technical Analysis Test
+Enhanced Technical Analysis Test
 """
 
 import requests
@@ -291,7 +291,7 @@ def main():
     """运行所有测试"""
     print("\n" + "=" * 80)
     print("  MyStocks 技术分析系统 API 测试")
-    print("  Phase 2: ValueCell Migration - Enhanced Technical Analysis")
+    print("  Enhanced Technical Analysis")
     print("=" * 80)
 
     try:

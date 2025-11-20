@@ -67,7 +67,7 @@ print("【验收场景2】系统支持完整的34个数据分类的自动路由,
 print("📍 测试: 验证所有34个数据分类的路由")
 try:
     from src.core.data_classification import DataClassification
-    from src.core.data_storage_strategy import DataStorageStrategy
+    # DataStorageStrategy已移除
 
     all_classifications = list(DataClassification)
     total = len(all_classifications)
@@ -78,7 +78,7 @@ try:
 
     for classification in all_classifications:
         try:
-            target = DataStorageStrategy.get_target_database(classification)
+            target = DataManager().get_target_database(classification)
             info = manager.get_routing_info(classification)
             routed_count += 1
         except Exception as e:

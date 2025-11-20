@@ -144,7 +144,18 @@ class SubscriptionStorage:
         """断开数据库连接"""
         if self.connection:
             self.connection.close()
+            self.connection = None
             logger.info("✅ Disconnected from PostgreSQL")
+
+    def __enter__(self):
+        """Context manager entry - 自动连接数据库"""
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - 确保断开连接"""
+        self.disconnect()
+        return False  # 不抑制异常
 
     def setup_tables(self) -> bool:
         """创建数据库表"""

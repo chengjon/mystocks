@@ -31,7 +31,7 @@
 | 组件名称 | 变体数量 | 说明 |
 |---------|---------|------|
 | **Button** | 5 | Primary, Success, Warning, Danger, Info |
-| **ValueCell** | 3 | Up (涨), Down (跌), Flat (平) |
+| **** | 3 | Up (涨), Down (跌), Flat (平) |
 
 ---
 
@@ -154,12 +154,12 @@ MyStocks Figma 自动化脚本
 ...
 按钮组件创建完成
 
-【步骤 4/4】创建 ValueCell 组件
+【步骤 4/4】创建  组件
 ----------------------------------------
-✓ 创建 ValueCell 组件: Up
-✓ 创建 ValueCell 组件: Down
-✓ 创建 ValueCell 组件: Flat
-ValueCell 组件创建完成
+✓ 创建  组件: Up
+✓ 创建  组件: Down
+✓ 创建  组件: Flat
+ 组件创建完成
 
 ========================================
 ✅ 自动化脚本执行完成!
@@ -167,7 +167,7 @@ ValueCell 组件创建完成
 颜色样式: 25 个
 文本样式: 11 个
 按钮组件: 5 种类型
-ValueCell 组件: 3 种变体
+ 组件: 3 种变体
 ```
 
 ---
@@ -218,7 +218,7 @@ ValueCell 组件: 3 种变体
 ```
 1. 在画布上应该看到:
    - "Button Components" 框架（包含 5 个按钮）
-   - "ValueCell Components" 框架（包含 3 个 ValueCell）
+   - " Components" 框架（包含 3 个 ）
 
 2. 在 Assets 面板中
 3. 点击 "Components"
@@ -229,7 +229,7 @@ ValueCell 组件: 3 种变体
    │  ├─ Warning
    │  ├─ Danger
    │  └─ Info
-   └─ ValueCell/
+   └─ /
       ├─ Up
       ├─ Down
       └─ Flat
@@ -295,7 +295,7 @@ ValueCell 组件: 3 种变体
 2. 或手动滚动画布查找
 3. 组件位置:
    - Button Components: (0, 0)
-   - ValueCell Components: (0, 450)
+   -  Components: (0, 450)
 ```
 
 ### Q4: 运行后没有任何反应

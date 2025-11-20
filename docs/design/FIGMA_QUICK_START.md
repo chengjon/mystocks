@@ -227,7 +227,7 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 6. 现在您有一个带 5 种类型的按钮组件
 ```
 
-#### 步骤 10: 创建 ValueCell 组件
+#### 步骤 10: 创建  组件
 
 ##### 10.1 创建数值文本
 
@@ -286,10 +286,10 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 
 ```
 1. 选中整个组合 → Create component
-2. 命名: "ValueCell/Up/Default"
+2. 命名: "/Up/Default"
 3. 复制 2 次创建变体:
-   - ValueCell/Down/Default (颜色改为 Financial/Down #67C23A 绿色, 图标改为 ▼)
-   - ValueCell/Flat/Default (颜色改为 Financial/Flat #909399 灰色, 图标改为 —)
+   - /Down/Default (颜色改为 Financial/Down #67C23A 绿色, 图标改为 ▼)
+   - /Flat/Default (颜色改为 Financial/Flat #909399 灰色, 图标改为 —)
 4. 全选 3 个 → Combine as variants
 ```
 
@@ -329,7 +329,7 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 
 **中间: 当前价格**
 ```
-1. 插入 ValueCell 组件 (从 Assets 面板拖拽)
+1. 插入  组件 (从 Assets 面板拖拽)
 2. 切换到 Large 尺寸变体
 3. 修改数值为实际价格
 ```
@@ -337,7 +337,7 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 **底部: 指标网格**
 ```
 1. 创建 3 列网格:
-   Column 1: "涨跌额" + ValueCell
+   Column 1: "涨跌额" + 
    Column 2: "成交量" + "123.45万"
    Column 3: "换手率" + "1.23%"
 
@@ -346,7 +346,7 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 
 3. 数值样式:
    - Text: Body/Regular (14px, #303133)
-   - 或使用 ValueCell 组件
+   - 或使用  组件
 ```
 
 **最底部: 操作按钮**
@@ -467,7 +467,7 @@ URL: https://pixso.cn
 ✅ 文本样式 (Heading/XL, Body/Regular, Number/Large 等)
 ✅ 组件库
    ├─ Button (5 种类型变体)
-   ├─ ValueCell (3 种涨跌变体)
+   ├─  (3 种涨跌变体)
    └─ StockCard
 ✅ 页面结构
 ✅ 图层组织
@@ -487,7 +487,7 @@ URL: https://pixso.cn
 您现在已经:
 - ✅ 在 Figma 中创建了 MyStocks 设计系统
 - ✅ 导入了设计 Token
-- ✅ 创建了核心组件 (Button, ValueCell, StockCard)
+- ✅ 创建了核心组件 (Button, , StockCard)
 - ✅ 成功导入到 Pixso
 
 ---

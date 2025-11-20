@@ -500,7 +500,7 @@ class SyncProcessor:
                     error_message=str(e),
                     processed_by=self.worker_id,
                 )
-            except:
+            except Exception:
                 pass
 
             self.failed_count += 1
