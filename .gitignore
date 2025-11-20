@@ -34,8 +34,18 @@ env/
 
 # Environment Variables
 .env
+.env.*
 *.env
 !.env.example
+!.env.development.example
+config/.env.*
+!config/.env.example
+web/backend/.env.*
+!web/backend/.env.example
+
+# Development Tools
+.opencode/
+opencodetmp/
 
 # Database
 *.db
