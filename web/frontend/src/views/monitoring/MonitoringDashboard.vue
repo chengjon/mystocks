@@ -199,10 +199,7 @@ import {
   TrendCharts, CaretTop, CaretBottom, Bell, Monitor,
   Refresh, VideoCamera, Medal
 } from '@element-plus/icons-vue'
-import axios from 'axios'
-
-// API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+import { monitoringApi } from '@/api'
 
 // 响应式数据
 const summary = ref({})
@@ -221,8 +218,7 @@ const isMonitoring = ref(false)
 const fetchSummary = async () => {
   loading.value.summary = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/monitoring/summary`)
-    summary.value = response.data
+    summary.value = await monitoringApi.getSummary()
   } catch (error) {
     console.error('获取监控摘要失败:', error)
     ElMessage.error('获取监控摘要失败')
@@ -235,8 +231,7 @@ const fetchSummary = async () => {
 const fetchRealtimeData = async () => {
   loading.value.realtime = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/monitoring/realtime?limit=50`)
-    realtimeData.value = response.data
+    realtimeData.value = await monitoringApi.getRealtimeData({ limit: 50 })
   } catch (error) {
     console.error('获取实时数据失败:', error)
     ElMessage.error('获取实时数据失败')
@@ -249,8 +244,8 @@ const fetchRealtimeData = async () => {
 const fetchAlertRecords = async () => {
   loading.value.alerts = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/monitoring/alerts?limit=20`)
-    alertRecords.value = response.data.data || response.data
+    const response = await monitoringApi.getAlerts({ limit: 20 })
+    alertRecords.value = response.data || response
   } catch (error) {
     console.error('获取告警记录失败:', error)
     ElMessage.error('获取告警记录失败')
@@ -263,8 +258,7 @@ const fetchAlertRecords = async () => {
 const fetchDragonTigerData = async () => {
   loading.value.dragonTiger = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/monitoring/dragon-tiger?limit=20`)
-    dragonTigerData.value = response.data
+    dragonTigerData.value = await monitoringApi.getDragonTiger({ limit: 20 })
   } catch (error) {
     console.error('获取龙虎榜数据失败:', error)
     ElMessage.error('获取龙虎榜数据失败')
@@ -303,16 +297,11 @@ const getAlertLevelType = (level) => {
 const toggleMonitoring = async () => {
   try {
     if (isMonitoring.value) {
-      // 停止监控
-      await axios.post(`${API_BASE_URL}/api/monitoring/control/stop`)
+      await monitoringApi.stopMonitoring()
       isMonitoring.value = false
       ElMessage.success('监控已停止')
     } else {
-      // 开始监控
-      await axios.post(`${API_BASE_URL}/api/monitoring/control/start`, {
-        symbols: [],
-        interval: 60
-      })
+      await monitoringApi.startMonitoring()
       isMonitoring.value = true
       ElMessage.success('监控已启动')
     }

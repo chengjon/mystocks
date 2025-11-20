@@ -263,11 +263,8 @@ import {
   Search, TrendCharts, Speed, DataAnalysis,
   Histogram, Download, List, Operation, Cpu
 } from '@element-plus/icons-vue'
-import axios from 'axios'
+import { technicalApi } from '@/api'
 import * as echarts from 'echarts'
-
-// API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // 响应式数据
 const searchForm = reactive({
@@ -437,8 +434,8 @@ const fetchTechnicalData = async () => {
 
   try {
     // 获取指标数据
-    const response = await axios.get(`${API_BASE_URL}/api/technical/${searchForm.symbol}/indicators`)
-    indicatorsData.value = response.data.indicators || response.data
+    const response = await technicalApi.getIndicators(searchForm.symbol)
+    indicatorsData.value = response.indicators || response
 
     // 更新统计信息
     updateIndicatorStats()
@@ -446,7 +443,7 @@ const fetchTechnicalData = async () => {
     // 设置选中股票
     selectedStock.value = {
       symbol: searchForm.symbol,
-      name: response.data.stock_name || '未知股票'
+      name: response.stock_name || '未知股票'
     }
 
     // 渲染图表
@@ -647,15 +644,14 @@ const calculateBatchIndicators = async () => {
 
   try {
     const symbols = batchForm.symbols.split(',').map(s => s.trim()).filter(s => s)
-    
-    const response = await axios.post(`${API_BASE_URL}/api/technical/batch/indicators`, {
-      symbols: symbols,
+
+    const response = await technicalApi.getBatchIndicators(symbols, {
       indicators: batchForm.indicators
     })
 
-    batchResult.value = response.data
+    batchResult.value = response
 
-    if (response.data.success) {
+    if (response.success) {
       ElNotification({
         title: '批量计算完成',
         message: `成功计算 ${symbols.length} 只股票的技术指标`,

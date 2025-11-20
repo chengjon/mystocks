@@ -195,10 +195,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
-import axios from 'axios'
-
-// API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+import { monitoringApi } from '@/api'
 
 // 响应式数据
 const alertRules = ref([])
@@ -265,14 +262,7 @@ const ruleFormRef = ref(null)
 const fetchAlertRules = async () => {
   loading.value = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/monitoring/alert-rules`, {
-      params: {
-        page: pagination.page,
-        size: pagination.size
-      }
-    })
-    alertRules.value = response.data
-    // 更新总数（这里简化处理，实际API可能返回总数）
+    alertRules.value = await monitoringApi.getAlertRules()
     pagination.total = alertRules.value.length
   } catch (error) {
     console.error('获取告警规则失败:', error)
@@ -348,17 +338,15 @@ const editRule = (rule) => {
 const saveRule = async () => {
   try {
     await ruleFormRef.value.validate()
-    
+
     if (editingRule.value) {
-      // 更新规则
-      await axios.put(`${API_BASE_URL}/api/monitoring/alert-rules/${editingRule.value.id}`, ruleForm)
+      await monitoringApi.updateAlertRule(editingRule.value.id, ruleForm)
       ElMessage.success('规则更新成功')
     } else {
-      // 创建规则
-      await axios.post(`${API_BASE_URL}/api/monitoring/alert-rules`, ruleForm)
+      await monitoringApi.createAlertRule(ruleForm)
       ElMessage.success('规则创建成功')
     }
-    
+
     showCreateDialog.value = false
     resetForm()
     fetchAlertRules()
@@ -377,7 +365,7 @@ const deleteRule = async (id) => {
       type: 'warning'
     })
 
-    await axios.delete(`${API_BASE_URL}/api/monitoring/alert-rules/${id}`)
+    await monitoringApi.deleteAlertRule(id)
     ElMessage.success('规则删除成功')
     fetchAlertRules()
   } catch (error) {
@@ -391,13 +379,10 @@ const deleteRule = async (id) => {
 // 切换规则状态
 const toggleRuleStatus = async (rule) => {
   try {
-    await axios.put(`${API_BASE_URL}/api/monitoring/alert-rules/${rule.id}`, {
-      is_active: rule.is_active
-    })
+    await monitoringApi.updateAlertRule(rule.id, { is_active: rule.is_active })
     ElMessage.success(`规则已${rule.is_active ? '启用' : '停用'}`)
   } catch (error) {
     console.error('更新规则状态失败:', error)
-    // 恢复原来的值
     rule.is_active = !rule.is_active
     ElMessage.error('更新规则状态失败')
   }
