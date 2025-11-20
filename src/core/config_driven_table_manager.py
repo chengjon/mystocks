@@ -246,7 +246,8 @@ class ConfigDrivenTableManager:
 
     def _create_postgresql_table(self, table_def: Dict[str, Any]) -> bool:
         """创建PostgreSQL表 (支持TimescaleDB)"""
-        conn = self.conn_manager.get_postgresql_connection()
+        pool = self.conn_manager.get_postgresql_connection()
+        conn = pool.getconn()
         cursor = conn.cursor()
 
         try:
@@ -270,10 +271,15 @@ class ConfigDrivenTableManager:
                 nullable = "" if col.get("nullable", True) else " NOT NULL"
                 default = f" DEFAULT {col['default']}" if col.get("default") else ""
                 unique = " UNIQUE" if col.get("unique") else ""
-                auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
+
+                # PostgreSQL uses SERIAL instead of AUTO_INCREMENT
+                if col.get("auto_increment"):
+                    if "INT" in col_type.upper():
+                        col_type = "SERIAL"
+                    nullable = ""  # SERIAL is NOT NULL by default
 
                 col_defs.append(
-                    f"{col['name']} {col_type}{nullable}{default}{unique}{auto_inc}"
+                    f"{col['name']} {col_type}{nullable}{default}{unique}"
                 )
 
                 if col.get("primary_key"):
