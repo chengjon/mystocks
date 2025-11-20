@@ -172,8 +172,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, RefreshLeft } from '@element-plus/icons-vue'
-import axios from 'axios'
-import { API_ENDPOINTS } from '@/config/api'
+import { strategyApi } from '@/api'
 
 // 响应式数据
 const strategies = ref([])
@@ -198,7 +197,7 @@ const pagination = ref({
 // 加载策略列表
 const loadStrategies = async () => {
   try {
-    const response = await axios.get(API_ENDPOINTS.strategy.definitions)
+    const response = await strategyApi.getDefinitions()
     if (response.data.success) {
       strategies.value = response.data.data
     }
@@ -244,7 +243,7 @@ const handleQuery = async () => {
       params.match_result = queryForm.value.match_result
     }
 
-    const response = await axios.get(API_ENDPOINTS.strategy.results, { params })
+    const response = await strategyApi.getResults(params)
     if (response.data.success) {
       results.value = response.data.data
       pagination.value.total = response.data.total || results.value.length

@@ -151,8 +151,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, View, VideoPlay } from '@element-plus/icons-vue'
-import axios from 'axios'
-import { API_ENDPOINTS } from '@/config/api'
+import { strategyApi } from '@/api'
 
 // 响应式数据
 const loading = ref(false)
@@ -193,7 +192,7 @@ const loadStats = async () => {
       params.check_date = checkDate.value
     }
 
-    const response = await axios.get(API_ENDPOINTS.strategy.stats, { params })
+    const response = await strategyApi.getStats(params)
     if (response.data.success) {
       stats.value = response.data.data
       ElMessage.success('加载统计数据成功')
@@ -223,7 +222,7 @@ const viewMatchedStocks = async (stat) => {
       params.check_date = checkDate.value
     }
 
-    const response = await axios.get(API_ENDPOINTS.strategy.matchedStocks, { params })
+    const response = await strategyApi.getMatchedStocks(params)
     if (response.data.success) {
       matchedStocks.value = response.data.data
     } else {

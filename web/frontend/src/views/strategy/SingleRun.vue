@@ -102,8 +102,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, VideoPlay, RefreshLeft } from '@element-plus/icons-vue'
-import axios from 'axios'
-import { API_ENDPOINTS } from '@/config/api'
+import { strategyApi } from '@/api'
 
 // Props
 const props = defineProps({
@@ -135,7 +134,7 @@ watch(() => props.initialStrategy, (newVal) => {
 // 加载策略列表
 const loadStrategies = async () => {
   try {
-    const response = await axios.get(API_ENDPOINTS.strategy.definitions)
+    const response = await strategyApi.getDefinitions()
     if (response.data.success) {
       strategies.value = response.data.data
     }
@@ -176,7 +175,7 @@ const handleRun = async () => {
       params.check_date = form.value.check_date
     }
 
-    const response = await axios.post(API_ENDPOINTS.strategy.runSingle, null, { params })
+    const response = await strategyApi.runSingle(params)
     result.value = response.data
 
     if (response.data.success) {

@@ -358,6 +358,26 @@ export const strategyApi = {
   },
   async getBacktestChartData(backtestId) {
     return request.get(`/v1/strategy/backtest/results/${backtestId}/chart-data`)
+  },
+
+  // InStock 策略系统
+  async getDefinitions() {
+    return request.get('/api/strategy/definitions')
+  },
+  async runSingle(params) {
+    return request.post('/api/strategy/run/single', null, { params })
+  },
+  async runBatch(params) {
+    return request.post('/api/strategy/run/batch', null, { params })
+  },
+  async getResults(params) {
+    return request.get('/api/strategy/results', { params })
+  },
+  async getMatchedStocks(params) {
+    return request.get('/api/strategy/matched-stocks', { params })
+  },
+  async getStats(params) {
+    return request.get('/api/strategy/stats/summary', { params })
   }
 }
 
