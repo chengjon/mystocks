@@ -1,8 +1,8 @@
 """
 实时监控服务
-Phase 1: ValueCell Migration - Real-time Monitoring System
+Real-time Monitoring System
 
-基于 ValueCell 的监控模式,适配中国A股市场
+适配中国A股市场
 """
 
 import logging

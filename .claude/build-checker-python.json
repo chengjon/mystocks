@@ -4,12 +4,12 @@
     "errorThreshold": 10,
     "note_errorThreshold": "初始阈值设为10，稳定后降至5。如果总错误数 >= 阈值，Stop hook阻止停止并要求修复。",
     "repos": {
-        "/opt/claude/mystocks_spec": {
+        "$PROJECT_ROOT": {
             "qualityChecks": [
                 {
                     "name": "critical_imports",
                     "description": "验证关键模块可导入（核心架构完整性）",
-                    "command": "cd web/backend && python -c 'import sys; sys.path.insert(0, \".\"); from app.core.database import get_postgresql_engine; from src.core import ConfigDrivenTableManager; print(\"✅ 核心导入验证通过\")'",
+                    "command": "python -c 'import sys; sys.path.insert(0, \"web/backend\"); from app.core.database import get_postgresql_engine; print(\"✅ Backend导入OK\")' && python -c 'from src.core import ConfigDrivenTableManager; print(\"✅ 核心模块导入OK\")'",
                     "critical": true,
                     "timeout": 15,
                     "errorPatterns": [
@@ -80,7 +80,7 @@
         }
     },
     "customization_guide": {
-        "step1": "确认项目路径 /opt/claude/mystocks_spec 正确（使用 pwd 获取）",
+        "step1": "项目路径使用 $PROJECT_ROOT 占位符，脚本运行时自动替换为当前项目根目录",
         "step2": "根据实际需求调整 qualityChecks 数组（可添加 pylint, black 等）",
         "step3": "设置 critical: true 的检查必须通过，否则阻止停止",
         "step4": "调整 errorThreshold（10适合中型项目，大项目可增至15-20）",
@@ -100,7 +100,7 @@
         "integration_with_taskmaster": "可在质量检查失败时建议使用 Task Master 创建修复任务"
     },
     "troubleshooting": {
-        "all_checks_fail": "手动测试命令: cd /opt/claude/mystocks_spec && python -c 'from src.core import ConfigDrivenTableManager'",
+        "all_checks_fail": "手动测试命令: cd $PROJECT_ROOT && python -c 'from src.core import ConfigDrivenTableManager'",
         "timeout_exceeded": "增加 timeout 字段（和 settings.json 的 hook timeout）到180或240秒",
         "false_positives": "调整 errorPatterns 以匹配实际错误输出格式",
         "mypy_not_installed": "pip install mypy 或将 type_hints_core 的 critical 设为 false",

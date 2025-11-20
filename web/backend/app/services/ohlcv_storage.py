@@ -87,7 +87,18 @@ class OHLCVStorage:
         """断开数据库连接"""
         if self.connection:
             self.connection.close()
+            self.connection = None
             logger.info("✅ Disconnected from PostgreSQL")
+
+    def __enter__(self):
+        """Context manager entry - 自动连接数据库"""
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - 确保断开连接"""
+        self.disconnect()
+        return False  # 不抑制异常
 
     def _setup_tables(self) -> None:
         """创建TimescaleDB超表（如果不存在）"""

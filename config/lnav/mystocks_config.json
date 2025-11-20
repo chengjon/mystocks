@@ -1,0 +1,143 @@
+; MyStocks lnav 配置文件
+; 包含自定义查询和格式定义
+
+; 自定义查询
+[queries]
+; 错误相关查询
+error_only = "level = 'ERROR'"
+warning_only = "level = 'WARNING'"
+critical_issues = "level IN ('ERROR', 'CRITICAL')"
+data_errors = "message LIKE '%data%' AND level = 'ERROR'"
+
+; 性能相关查询
+slow_operations = "message LIKE '%耗时%' AND CAST(SUBSTR(message, INSTR(message, '耗时:') + 4, INSTR(message, 'ms') - INSTR(message, '耗时:') - 4) AS INTEGER) > 1000"
+save_operations = "message LIKE '%保存%'
+load_operations = "message LIKE '%加载%'
+
+; 模块相关查询
+data_access_logs = "module LIKE '%data_access%'
+unified_manager_logs = "module LIKE '%unified_manager%'
+config_logs = "module LIKE '%config%'
+
+; 时间相关查询
+recent_5min = "log_time > datetime('now', '-5 minutes')"
+recent_1hour = "log_time > datetime('now', '-1 hour')"
+today_logs = "date(log_time) = date('now')"
+
+; 自定义格式化
+[formats]
+; MyStocks标准日志格式
+mystocks_standard = {
+    "title": "MyStocks Standard Log Format",
+    "description": "MyStocks系统标准日志格式",
+    "regex": {
+        "std": {
+            "pattern": "^(?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?<level>\w+) \| (?<module>[^:]+):(?<function>[^:]+):(?<line>\d+) - (?<body>.*)$"
+        }
+    },
+    "level-field": "level",
+    "level": {
+        "error": "ERROR",
+        "warning": "WARNING", 
+        "info": "INFO",
+        "debug": "DEBUG",
+        "trace": "TRACE"
+    },
+    "value": {
+        "module": {
+            "kind": "string",
+            "identifier": true
+        },
+        "function": {
+            "kind": "string",
+            "identifier": true
+        },
+        "line": {
+            "kind": "integer"
+        }
+    },
+    "sample": [
+        {
+            "line": "2024-12-19 10:30:45.123 | INFO | data_access:save_data:123 - 数据保存成功"
+        }
+    ]
+}
+
+; MyStocks JSON日志格式
+mystocks_json = {
+    "title": "MyStocks JSON Log Format",
+    "description": "MyStocks系统JSON日志格式",
+    "json": true,
+    "level-field": "level",
+    "level": {
+        "error": "ERROR",
+        "warning": "WARNING",
+        "info": "INFO",
+        "debug": "DEBUG",
+        "trace": "TRACE"
+    },
+    "value": {
+        "module": {
+            "kind": "string",
+            "identifier": true
+        },
+        "function": {
+            "kind": "string",
+            "identifier": true
+        },
+        "line": {
+            "kind": "integer"
+        }
+    },
+    "sample": [
+        {
+            "line": "{\"timestamp\": \"2024-12-19T10:30:45.123456+08:00\", \"level\": \"INFO\", \"module\": \"data_access\", \"function\": \"save_data\", \"line\": 123, \"message\": \"数据保存成功\"}"
+        }
+    ]
+}
+
+; 视图配置
+[views]
+; 错误视图
+error_view = {
+    "name": "Errors",
+    "query": "level IN ('ERROR', 'CRITICAL')",
+    "order-by": "log_time DESC"
+}
+
+; 警告视图
+warning_view = {
+    "name": "Warnings",
+    "query": "level = 'WARNING'",
+    "order-by": "log_time DESC"
+}
+
+; 性能视图
+performance_view = {
+    "name": "Performance",
+    "query": "message LIKE '%耗时%'",
+    "order-by": "log_time DESC"
+}
+
+; 颜色配置
+[colors]
+; 错误级别颜色
+error_color = {
+    "level": "ERROR",
+    "color": "red"
+}
+
+warning_color = {
+    "level": "WARNING",
+    "color": "yellow"
+}
+
+info_color = {
+    "level": "INFO",
+    "color": "green"
+}
+
+debug_color = {
+    "level": "DEBUG",
+    "color": "blue"
+}

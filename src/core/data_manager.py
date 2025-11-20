@@ -154,8 +154,8 @@ class DataManager:
         # 如果监控未启用，使用null实现
         if not self.enable_monitoring or self._monitoring_db is None:
             null_monitor = _NullMonitoring()
-            self._monitoring_db = null_monitor
-            self._performance_monitor = null_monitor
+            self._monitoring_db = null_monitor  # type: ignore[assignment]
+            self._performance_monitor = null_monitor  # type: ignore[assignment]
 
         # 延迟导入以避免循环依赖
         from src.data_access import TDengineDataAccess, PostgreSQLDataAccess

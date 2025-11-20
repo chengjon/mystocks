@@ -1,0 +1,21 @@
+ai_processing:
+  batch_size: 1000
+  enabled: true
+  max_concurrent: 5
+  retry_count: 3
+  timeout: 300
+data_sources:
+  fallback:
+  - tdx
+  - financial
+  - byapi
+  primary: akshare
+  refresh_interval: 60
+gpu_acceleration:
+  enabled: false
+  fallback_to_cpu: true
+  memory_limit: 2GB
+monitoring:
+  error_alerts: true
+  log_level: INFO
+  performance_tracking: true

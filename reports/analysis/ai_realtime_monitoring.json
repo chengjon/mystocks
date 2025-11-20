@@ -1,0 +1,334 @@
+{
+  "monitoring_period": 60,
+  "total_samples": 6,
+  "metrics_data": [
+    {
+      "timestamp": "2025-11-16T10:14:38.310194",
+      "cpu_percent": 9.5,
+      "memory_percent": 27.7,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 699503323,
+        "bytes_recv": 200831142,
+        "packets_sent": 608398,
+        "packets_recv": 633066,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.60595703125,
+        0.64794921875,
+        0.58447265625
+      ],
+      "ai_processing_rate": 132,
+      "error_rate": 9.461382597215765,
+      "response_time": 1.8660135340866595,
+      "queue_size": 3,
+      "accuracy": 0.8538348391542279,
+      "throughput": 3493
+    },
+    {
+      "timestamp": "2025-11-16T10:14:49.394096",
+      "cpu_percent": 8.3,
+      "memory_percent": 27.8,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 700211076,
+        "bytes_recv": 200969674,
+        "packets_sent": 608916,
+        "packets_recv": 633615,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.92138671875,
+        0.71484375,
+        0.60791015625
+      ],
+      "ai_processing_rate": 112,
+      "error_rate": 1.9009238253801408,
+      "response_time": 3.2408083920670876,
+      "queue_size": 2,
+      "accuracy": 0.8383013989181297,
+      "throughput": 9795
+    },
+    {
+      "timestamp": "2025-11-16T10:15:00.395545",
+      "cpu_percent": 14.4,
+      "memory_percent": 28.0,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 700261648,
+        "bytes_recv": 200994844,
+        "packets_sent": 609206,
+        "packets_recv": 633870,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.85302734375,
+        0.70751953125,
+        0.60693359375
+      ],
+      "ai_processing_rate": 92,
+      "error_rate": 3.870777228163128,
+      "response_time": 2.6129583347618084,
+      "queue_size": 76,
+      "accuracy": 0.7590523748277291,
+      "throughput": 6455
+    },
+    {
+      "timestamp": "2025-11-16T10:15:11.396965",
+      "cpu_percent": 9.0,
+      "memory_percent": 28.2,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 701133429,
+        "bytes_recv": 201241379,
+        "packets_sent": 609627,
+        "packets_recv": 634340,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.88232421875,
+        0.71728515625,
+        0.611328125
+      ],
+      "ai_processing_rate": 72,
+      "error_rate": 2.812630965622885,
+      "response_time": 1.7626093194970114,
+      "queue_size": 16,
+      "accuracy": 0.878093172384524,
+      "throughput": 8938
+    },
+    {
+      "timestamp": "2025-11-16T10:15:22.495733",
+      "cpu_percent": 5.5,
+      "memory_percent": 28.5,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 701721451,
+        "bytes_recv": 201349173,
+        "packets_sent": 610191,
+        "packets_recv": 634905,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.8203125,
+        0.7099609375,
+        0.6103515625
+      ],
+      "ai_processing_rate": 90,
+      "error_rate": 0.8624876020102457,
+      "response_time": 4.301269876841706,
+      "queue_size": 50,
+      "accuracy": 0.942892678369896,
+      "throughput": 8831
+    },
+    {
+      "timestamp": "2025-11-16T10:15:33.497139",
+      "cpu_percent": 7.1,
+      "memory_percent": 28.6,
+      "disk_percent": 14.7,
+      "network_io": {
+        "bytes_sent": 701888676,
+        "bytes_recv": 201359351,
+        "packets_sent": 610365,
+        "packets_recv": 635073,
+        "errin": 0,
+        "errout": 0,
+        "dropin": 0,
+        "dropout": 0
+      },
+      "process_count": 213,
+      "boot_time": "2025-11-15T23:29:24",
+      "load_average": [
+        0.7744140625,
+        0.703125,
+        0.609375
+      ],
+      "ai_processing_rate": 140,
+      "error_rate": 0.7890126808765152,
+      "response_time": 1.561931076323086,
+      "queue_size": 61,
+      "accuracy": 0.7404621232369261,
+      "throughput": 2147
+    }
+  ],
+  "alert_history": [
+    {
+      "rule": "ai_error_rate",
+      "value": 9.461382597215765,
+      "threshold": 5,
+      "severity": "critical",
+      "message": "AI处理错误率过高: 9.461382597215765%",
+      "timestamp": "2025-11-16T10:14:39.311164",
+      "metric": {
+        "timestamp": "2025-11-16T10:14:38.310194",
+        "cpu_percent": 9.5,
+        "memory_percent": 27.7,
+        "disk_percent": 14.7,
+        "network_io": {
+          "bytes_sent": 699503323,
+          "bytes_recv": 200831142,
+          "packets_sent": 608398,
+          "packets_recv": 633066,
+          "errin": 0,
+          "errout": 0,
+          "dropin": 0,
+          "dropout": 0
+        },
+        "process_count": 213,
+        "boot_time": "2025-11-15T23:29:24",
+        "load_average": [
+          0.60595703125,
+          0.64794921875,
+          0.58447265625
+        ],
+        "ai_processing_rate": 132,
+        "error_rate": 9.461382597215765,
+        "response_time": 1.8660135340866595,
+        "queue_size": 3,
+        "accuracy": 0.8538348391542279,
+        "throughput": 3493
+      },
+      "notification_sent": true
+    },
+    {
+      "rule": "response_time_slow",
+      "value": 3.2408083920670876,
+      "threshold": 2.0,
+      "severity": "warning",
+      "message": "AI响应时间过长: 3.2408083920670876秒",
+      "timestamp": "2025-11-16T10:14:50.395160",
+      "metric": {
+        "timestamp": "2025-11-16T10:14:49.394096",
+        "cpu_percent": 8.3,
+        "memory_percent": 27.8,
+        "disk_percent": 14.7,
+        "network_io": {
+          "bytes_sent": 700211076,
+          "bytes_recv": 200969674,
+          "packets_sent": 608916,
+          "packets_recv": 633615,
+          "errin": 0,
+          "errout": 0,
+          "dropin": 0,
+          "dropout": 0
+        },
+        "process_count": 213,
+        "boot_time": "2025-11-15T23:29:24",
+        "load_average": [
+          0.92138671875,
+          0.71484375,
+          0.60791015625
+        ],
+        "ai_processing_rate": 112,
+        "error_rate": 1.9009238253801408,
+        "response_time": 3.2408083920670876,
+        "queue_size": 2,
+        "accuracy": 0.8383013989181297,
+        "throughput": 9795
+      },
+      "notification_sent": true
+    },
+    {
+      "rule": "response_time_slow",
+      "value": 2.6129583347618084,
+      "threshold": 2.0,
+      "severity": "warning",
+      "message": "AI响应时间过长: 2.6129583347618084秒",
+      "timestamp": "2025-11-16T10:15:01.396532",
+      "metric": {
+        "timestamp": "2025-11-16T10:15:00.395545",
+        "cpu_percent": 14.4,
+        "memory_percent": 28.0,
+        "disk_percent": 14.7,
+        "network_io": {
+          "bytes_sent": 700261648,
+          "bytes_recv": 200994844,
+          "packets_sent": 609206,
+          "packets_recv": 633870,
+          "errin": 0,
+          "errout": 0,
+          "dropin": 0,
+          "dropout": 0
+        },
+        "process_count": 213,
+        "boot_time": "2025-11-15T23:29:24",
+        "load_average": [
+          0.85302734375,
+          0.70751953125,
+          0.60693359375
+        ],
+        "ai_processing_rate": 92,
+        "error_rate": 3.870777228163128,
+        "response_time": 2.6129583347618084,
+        "queue_size": 76,
+        "accuracy": 0.7590523748277291,
+        "throughput": 6455
+      },
+      "notification_sent": true
+    },
+    {
+      "rule": "response_time_slow",
+      "value": 4.301269876841706,
+      "threshold": 2.0,
+      "severity": "warning",
+      "message": "AI响应时间过长: 4.301269876841706秒",
+      "timestamp": "2025-11-16T10:15:23.496714",
+      "metric": {
+        "timestamp": "2025-11-16T10:15:22.495733",
+        "cpu_percent": 5.5,
+        "memory_percent": 28.5,
+        "disk_percent": 14.7,
+        "network_io": {
+          "bytes_sent": 701721451,
+          "bytes_recv": 201349173,
+          "packets_sent": 610191,
+          "packets_recv": 634905,
+          "errin": 0,
+          "errout": 0,
+          "dropin": 0,
+          "dropout": 0
+        },
+        "process_count": 213,
+        "boot_time": "2025-11-15T23:29:24",
+        "load_average": [
+          0.8203125,
+          0.7099609375,
+          0.6103515625
+        ],
+        "ai_processing_rate": 90,
+        "error_rate": 0.8624876020102457,
+        "response_time": 4.301269876841706,
+        "queue_size": 50,
+        "accuracy": 0.942892678369896,
+        "throughput": 8831
+      },
+      "notification_sent": true
+    }
+  ]
+}

@@ -1,14 +1,16 @@
 """
 技术分析 API 端点
-Phase 2: ValueCell Migration - Enhanced Technical Analysis
+Enhanced Technical Analysis
 """
 
 from datetime import date
 from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
+import os
 
 from app.services.technical_analysis_service import technical_analysis_service
+from app.mock.unified_mock_data import get_mock_data_manager
 
 router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 
@@ -140,14 +142,63 @@ async def get_all_indicators(
     - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23
     """
     try:
-        result = technical_analysis_service.calculate_all_indicators(
-            symbol=symbol, period=period, start_date=start_date, end_date=end_date
-        )
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            mock_manager = get_mock_data_manager()
+            technical_data = mock_manager.get_data("technical", symbol=symbol)
+            
+            # 如果Mock数据不完整，补充默认值
+            result = {
+                "symbol": symbol,
+                "latest_price": 11.7,
+                "latest_date": "2025-11-13",
+                "data_points": 244,
+                "total_indicators": 19,
+                "trend": technical_data.get("indicators", {}).get("MA", {
+                    "ma5": 11.65,
+                    "ma10": 11.48,
+                    "ma20": 11.32,
+                    "ma30": 11.18,
+                    "ma60": 11.05,
+                    "macd": 0.023,
+                    "macd_signal": 0.018,
+                    "macd_hist": 0.005
+                }),
+                "momentum": technical_data.get("indicators", {}).get("RSI", {
+                    "rsi6": 74.61,
+                    "rsi12": 64.20,
+                    "rsi24": 55.64,
+                    "kdj_k": 84.69,
+                    "kdj_d": 87.67,
+                    "kdj_j": 78.72
+                }),
+                "volatility": technical_data.get("indicators", {}).get("ATR", {
+                    "bb_upper": 11.73,
+                    "bb_middle": 11.52,
+                    "bb_lower": 11.30,
+                    "atr": 0.146,
+                    "atr_percent": 1.25
+                }),
+                "volume": technical_data.get("indicators", {}).get("Volume", {
+                    "obv": 123456789,
+                    "mfi": 65.4,
+                    "vwap": 11.52
+                })
+            }
+            return AllIndicatorsResponse(**result)
+        else:
+            # 使用真实服务
+            result = technical_analysis_service.calculate_all_indicators(
+                symbol=symbol, period=period, start_date=start_date, end_date=end_date
+            )
 
-        if "error" in result:
-            raise HTTPException(status_code=400, detail=result["error"])
+            if "error" in result:
+                raise HTTPException(status_code=400, detail=result["error"])
 
-        return AllIndicatorsResponse(**result)
+            return AllIndicatorsResponse(**result)
 
     except HTTPException:
         raise

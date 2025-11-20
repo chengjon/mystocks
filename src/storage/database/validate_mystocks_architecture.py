@@ -25,7 +25,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 导入MyStocks核心模块
 from unified_manager import MyStocksUnifiedManager
-from src.core import DataClassification, DataStorageStrategy, DatabaseTarget
+from src.core import DataClassification, DataManager, DatabaseTarget
 from src.adapters.customer_adapter import CustomerDataSource
 
 
@@ -45,14 +45,14 @@ def test_data_classification_strategy():
     logger.info("=== 数据分类策略验证 ===")
 
     # 验证实时数据的路由
-    realtime_target = DataStorageStrategy.get_target_database(
+    realtime_target = DataManager().get_target_database(
         DataClassification.REALTIME_POSITIONS
     )
-    tick_target = DataStorageStrategy.get_target_database(DataClassification.TICK_DATA)
-    daily_target = DataStorageStrategy.get_target_database(
+    tick_target = DataManager().get_target_database(DataClassification.TICK_DATA)
+    daily_target = DataManager().get_target_database(
         DataClassification.DAILY_KLINE
     )
-    symbols_target = DataStorageStrategy.get_target_database(
+    symbols_target = DataManager().get_target_database(
         DataClassification.SYMBOLS_INFO
     )
 
@@ -72,7 +72,7 @@ def test_data_classification_strategy():
 
     routing_correct = True
     for classification, expected_target in expected_routing.items():
-        actual_target = DataStorageStrategy.get_target_database(classification)
+        actual_target = DataManager().get_target_database(classification)
         if actual_target != expected_target:
             logger.error(
                 f"❌ 路由错误: {classification.value} 期望→{expected_target.value}, 实际→{actual_target.value}"
@@ -327,7 +327,7 @@ def main():
         try:
             unified_manager.cleanup()
             logger.info("🧹 系统资源已清理")
-        except:
+        except Exception:
             pass
 
     # 总结验证结果

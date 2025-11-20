@@ -608,13 +608,66 @@ class TdxDataSource(IDataSource):
 
     def get_stock_basic(self, symbol: str) -> Dict:
         """获取股票基本信息 - Phase 6实现(有限支持)"""
-        self.logger.warning("get_stock_basic尚未实现")
-        return {}
+        try:
+            # 通过查询日线数据获取基本信息
+            df = self.get_stock_daily(symbol, datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%Y-%m-%d'))
+            
+            if not df.empty:
+                # 提取基本信息
+                latest_record = df.iloc[-1]  # 最新记录
+                
+                # 构建股票基本信息
+                basic_info = {
+                    'symbol': symbol,
+                    'name': latest_record.get('name', f'股票{symbol}'),  # 实际上可能需要单独的接口获取名称
+                    'market': 'SH' if symbol.startswith('6') else 'SZ',
+                    'category': 'stock',  # 类别可以是stock, index, fund等
+                    'status': 'trading',  # 交易状态
+                    'currency': 'CNY',  # 货币
+                    'industry': '',  # 行业信息，需要另外获取
+                    'area': '',  # 地区信息
+                    'list_date': latest_record.get('date', ''),  # 上市日期
+                    'total_shares': None,  # 总股本
+                    'float_shares': None,  # 流通股本
+                }
+                
+                return basic_info
+            else:
+                # 如果无法从日线数据获取，返回默认值
+                return {
+                    'symbol': symbol,
+                    'name': f'股票{symbol}',
+                    'market': 'SH' if symbol.startswith('6') else 'SZ',
+                    'category': 'stock',
+                    'status': 'unknown',
+                    'currency': 'CNY',
+                    'industry': '',
+                    'area': '',
+                    'list_date': '',
+                    'total_shares': None,
+                    'float_shares': None,
+                }
+        except Exception as e:
+            self.logger.error(f"获取股票基本信息失败 {symbol}: {str(e)}")
+            return {}
 
     def get_index_components(self, symbol: str) -> List[str]:
         """获取指数成分股 - Phase 7实现(有限支持)"""
-        self.logger.warning("get_index_components尚未实现")
-        return []
+        try:
+            # TDX API不直接支持获取指数成分股，返回空列表
+            # 这是一个已知限制，因为TDX API功能有限
+            self.logger.info(f"TDX不支持直接获取指数成分股: {symbol}")
+            
+            # 如果是常见的指数，我们可以返回模拟数据
+            if symbol in ['000001', '000300', '000016', '399001', '399006']:
+                # 这些是上证指数、沪深300、上证50、深证成指、创业板指
+                # 实际应用中应通过其他接口获取这些指数的成分股
+                self.logger.warning(f"{symbol} 为常见指数,但TDX不提供成分股查询")
+            
+            return []
+        except Exception as e:
+            self.logger.error(f"获取指数成分股失败 {symbol}: {str(e)}")
+            return []
 
     def get_real_time_data(self, symbol: str) -> Union[Dict, str]:
         """
@@ -744,8 +797,22 @@ class TdxDataSource(IDataSource):
 
     def get_financial_data(self, symbol: str, period: str = "quarter") -> pd.DataFrame:
         """获取财务数据 - Phase 6实现(有限支持)"""
-        self.logger.warning("get_financial_data尚未实现")
-        return pd.DataFrame()
+        try:
+            # TDX API不直接支持财务数据查询，返回空DataFrame
+            # 在实际应用中，这功能通常需要其他数据源支持
+            self.logger.info(f"TDX不支持财务数据查询: {symbol}, 建议使用其他数据源")
+            
+            # 返回包含列名的空DataFrame，以保持接口一致性
+            financial_columns = [
+                'symbol', 'report_date', 'eps', 'bvps', 'roe', 'roa',
+                'pe', 'pb', 'ps', 'pcf', 'total_revenue', 'net_profit',
+                'total_assets', 'total_liabilities', 'operating_cash_flow'
+            ]
+            
+            return pd.DataFrame(columns=financial_columns)
+        except Exception as e:
+            self.logger.error(f"获取财务数据失败 {symbol}: {str(e)}")
+            return pd.DataFrame()
 
     def get_news_data(self, symbol: str, limit: int = 20) -> List[Dict]:
         """获取新闻数据 - Phase 8 stub实现(TDX不支持)"""
@@ -1138,3 +1205,51 @@ class TdxDataSource(IDataSource):
         self.logger.info(f"成功读取{file_path}: {len(df)}条记录")
 
         return df
+
+    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取分钟K线数据
+        
+        Args:
+            symbol: str - 股票代码
+            period: str - 周期 (1m/5m/15m/30m/60m)
+            start_date: str - 开始日期
+            end_date: str - 结束日期
+            
+        Returns:
+            pd.DataFrame: 分钟K线数据
+        """
+        return self.get_stock_kline(symbol, start_date, end_date, period)
+
+    def get_industry_classify(self) -> pd.DataFrame:
+        """
+        获取行业分类数据（TDX不直接提供此功能，返回空DataFrame）
+        
+        Returns:
+            pd.DataFrame: 行业分类数据
+        """
+        self.logger.info("[TDX] 注意：TDX不直接提供行业分类数据，建议使用AkShare适配器")
+        return pd.DataFrame()
+
+    def get_concept_classify(self) -> pd.DataFrame:
+        """
+        获取概念分类数据（TDX不直接提供此功能，返回空DataFrame）
+        
+        Returns:
+            pd.DataFrame: 概念分类数据
+        """
+        self.logger.info("[TDX] 注意：TDX不直接提供概念分类数据，建议使用AkShare适配器")
+        return pd.DataFrame()
+
+    def get_stock_industry_concept(self, symbol: str) -> Dict:
+        """
+        获取个股的行业和概念分类信息（TDX不直接提供此功能，返回空字典）
+        
+        Args:
+            symbol: str - 股票代码
+            
+        Returns:
+            Dict: 个股行业和概念信息
+        """
+        self.logger.info(f"[TDX] 注意：TDX不直接提供个股 {symbol} 的行业和概念信息，建议使用AkShare适配器")
+        return {"symbol": symbol, "industries": [], "concepts": []}

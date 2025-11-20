@@ -20,6 +20,13 @@
         @change="handleDateRangeChange"
       />
 
+      <!-- 周期切换 -->
+      <el-radio-group v-model="selectedPeriod" size="default" @change="fetchKlineData" class="period-selector">
+        <el-radio-button label="day">日线</el-radio-button>
+        <el-radio-button label="week">周线</el-radio-button>
+        <el-radio-button label="month">月线</el-radio-button>
+      </el-radio-group>
+
       <el-button
         type="primary"
         :icon="Refresh"
@@ -27,6 +34,15 @@
         @click="refreshData"
       >
         刷新数据
+      </el-button>
+
+      <el-button
+        type="warning"
+        :icon="Refresh"
+        :loading="loading"
+        @click="handleRetry"
+      >
+        重试
       </el-button>
 
       <el-button
@@ -115,13 +131,16 @@ import { Refresh, Setting, FolderOpened, DocumentAdd, Files, ArrowDown } from '@
 import StockSearchBar from '@/components/technical/StockSearchBar.vue'
 import KLineChart from '@/components/technical/KLineChart.vue'
 import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
-import { indicatorService, handleIndicatorError } from '@/services/indicatorService'
+import { indicatorService, handleIndicatorError } from '@/services/indicatorService.ts'
+import { dataApi } from '@/api/index.js'
+import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
 
 // 状态管理
 const loading = ref(false)
 const selectedSymbol = ref('')
 const dateRange = ref([])
 const showIndicatorPanel = ref(false)
+const selectedPeriod = ref('day') // 新增周期选择
 
 // 选中的指标列表
 const selectedIndicators = ref([
@@ -138,6 +157,15 @@ const chartData = reactive({
   indicators: [],
   calculationTime: 0
 })
+
+// 添加重试机制
+const handleRetry = async () => {
+  if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
+    await fetchKlineData()
+  } else {
+    ElMessage.warning('请先选择股票代码和日期范围')
+  }
+}
 
 // 日期范围快捷选项
 const dateRangeShortcuts = [
@@ -194,27 +222,27 @@ const handleStockSearch = async (symbol) => {
     ]
   }
 
-  await fetchIndicatorData()
+  await fetchKlineData()
 }
 
 // 处理日期范围变化
 const handleDateRangeChange = () => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
-    fetchIndicatorData()
+    fetchKlineData()
   }
 }
 
 // 刷新数据
 const refreshData = () => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
-    fetchIndicatorData()
+    fetchKlineData()
   } else {
     ElMessage.warning('请先选择股票代码和日期范围')
   }
 }
 
-// 获取指标数据
-const fetchIndicatorData = async () => {
+// 获取K线数据并计算技术指标
+const fetchKlineData = async () => {
   if (!selectedSymbol.value) {
     ElMessage.warning('请输入股票代码')
     return
@@ -228,30 +256,76 @@ const fetchIndicatorData = async () => {
   loading.value = true
 
   try {
-    const response = await indicatorService.calculateIndicators({
+    // 调用K线API (使用market/kline端点)
+    const response = await dataApi.getKline({
       symbol: selectedSymbol.value,
       start_date: dateRange.value[0],
       end_date: dateRange.value[1],
-      indicators: selectedIndicators.value,
-      use_cache: false
+      period: selectedPeriod.value,
+      adjust: 'qfq' // 使用前复权
     })
 
-    // 更新图表数据
-    chartData.symbol = response.symbol
-    chartData.symbolName = response.symbol_name
-    chartData.ohlcv = response.ohlcv
-    chartData.indicators = response.indicators
-    chartData.calculationTime = response.calculation_time_ms
+    if (response.success && response.data && response.data.length > 0) {
+      // 转换数据格式以匹配现有图表组件 (处理market/kline返回的数据格式)
+      const dates = response.data.map(item => item.date)
+      const opens = response.data.map(item => item.open)
+      const highs = response.data.map(item => item.high)
+      const lows = response.data.map(item => item.low)
+      const closes = response.data.map(item => item.close)
+      const volumes = response.data.map(item => item.volume)
 
-    ElNotification({
-      title: '数据加载成功',
-      message: `成功加载 ${response.ohlcv.dates.length} 个数据点`,
-      type: 'success',
-      duration: 2000
-    })
+      // 更新图表数据
+      chartData.symbol = response.stock_code || selectedSymbol.value
+      chartData.symbolName = response.stock_name || selectedSymbol.value
+      chartData.ohlcv = {
+        dates,
+        open: opens,
+        high: highs,
+        low: lows,
+        close: closes,
+        volume: volumes
+      }
+
+      // 计算技术指标
+      const startTime = performance.now();
+      const calculatedIndicators = calculateTechnicalIndicators(
+        chartData.ohlcv,
+        selectedIndicators.value
+      );
+      const endTime = performance.now();
+      
+      // 将计算结果转换为图表组件需要的格式
+      const indicatorsResult = Object.keys(calculatedIndicators).map(key => {
+        const values = calculatedIndicators[key];
+        return {
+          abbreviation: key,
+          parameters: {},
+          outputs: [{
+            output_name: key,
+            values: values,
+            display_name: key
+          }],
+          panel_type: key.includes('rsi') || key.includes('macd') ? 'separate' : 'overlay'
+        };
+      });
+
+      chartData.indicators = indicatorsResult;
+      chartData.calculationTime = Math.round(endTime - startTime);
+
+      ElNotification({
+        title: '数据加载成功',
+        message: `成功加载 ${response.total} 个数据点，计算 ${selectedIndicators.value.length} 个指标`,
+        type: 'success',
+        duration: 2000
+      })
+    } else {
+      ElMessage.info('未找到该股票的历史数据')
+      // 清空图表数据
+      chartData.ohlcv = null
+    }
   } catch (error) {
-    console.error('Failed to fetch indicator data:', error)
-    const errorMessage = handleIndicatorError(error)
+    console.error('Failed to fetch kline data:', error)
+    const errorMessage = error.response?.data?.msg || error.message || '获取K线数据失败'
 
     ElNotification({
       title: '数据加载失败',
@@ -262,7 +336,7 @@ const fetchIndicatorData = async () => {
 
     // 如果是404错误(数据未找到)，提供友好提示
     if (error.response?.status === 404) {
-      ElMessage.info('数据库中暂无该股票的历史数据，系统将使用模拟数据展示')
+      ElMessage.info('数据库中暂无该股票的历史数据')
     }
   } finally {
     loading.value = false
@@ -275,7 +349,7 @@ const handleAddIndicator = (indicator) => {
 
   // 如果已经有数据，重新加载
   if (chartData.ohlcv) {
-    fetchIndicatorData()
+    fetchKlineData()
   }
 }
 
@@ -285,7 +359,7 @@ const handleRemoveIndicator = (index) => {
 
   // 如果已经有数据，重新加载
   if (chartData.ohlcv) {
-    fetchIndicatorData()
+    fetchKlineData()
   }
 }
 
@@ -408,7 +482,7 @@ const handleLoadConfig = async () => {
 
               // 如果已有数据，重新加载
               if (chartData.ohlcv) {
-                fetchIndicatorData()
+                fetchKlineData()
               }
 
               done()
@@ -515,6 +589,10 @@ window.deleteConfig = async (configId) => {
 
     .date-picker {
       width: 320px;
+    }
+
+    .period-selector {
+      margin-left: 12px;
     }
   }
 

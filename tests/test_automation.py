@@ -22,7 +22,7 @@ import time
 from datetime import datetime, timedelta
 from unittest.mock import Mock, MagicMock, patch
 
-from automation import (
+from src.ml_strategy.automation import (
     TaskScheduler,
     TaskConfig,
     TaskStatus,
@@ -36,7 +36,7 @@ from automation import (
     Notification,
 )
 
-from automation.predefined_tasks import (
+from src.ml_strategy.automation.predefined_tasks import (
     PredefinedTasks,
     create_daily_update_task,
     create_strategy_execution_task,

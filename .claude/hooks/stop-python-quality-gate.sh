@@ -29,15 +29,13 @@
 #   0: 质量检查通过或错误 < 阈值（允许停止）
 #   2: 质量检查失败且错误 ≥ 阈值（阻止停止，要求 Claude 修复）
 #
-# JSON 输出格式（使用官方推荐的 hookSpecificOutput 格式）:
-#   {
-#     "hookSpecificOutput": {
-#       "hookEventName": "Stop",
-#       "decision": "block",
-#       "reason": "发现 12 个错误。请修复后再停止。",
-#       "errorDetails": {
-#         "critical_imports": 0,
-#         "backend_syntax": 5,
+# JSON 输出格式（Stop hook 使用简单格式，不使用 hookSpecificOutput）:
+#   成功（允许停止）:
+#     {}
+#
+#   失败（阻止停止）:
+#     {
+#       "stopReason": "发现 12 个错误。请修复后再停止。详情：...",
 #         "core_syntax": 2,
 #         "type_hints_core": 3,
 #         "quick_tests": 2
@@ -114,7 +112,22 @@ error_log() {
 
 # ===== 读取 stdin JSON =====
 INPUT_JSON=$(cat)
-SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"')
+
+# 检查输入是否为空
+if [ -z "$INPUT_JSON" ]; then
+    debug_log "Empty input received, allowing stop"
+    echo '{}'
+    exit 0
+fi
+
+# 验证 JSON 格式
+if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
+    debug_log "Invalid JSON input, allowing stop"
+    echo '{}'
+    exit 0
+fi
+
+SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"' 2>/dev/null || echo "unknown")
 
 debug_log "Python Quality Gate started for session: $SESSION_ID"
 
@@ -122,15 +135,7 @@ debug_log "Python Quality Gate started for session: $SESSION_ID"
 if [ ! -f "$EDIT_LOG_FILE" ]; then
     debug_log "No edit log found at $EDIT_LOG_FILE, skipping quality check"
     # 输出成功结果（允许停止）
-    cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "allow",
-    "reason": "No files edited in this session"
-  }
-}
-EOF
+    echo '{}'
     exit 0
 fi
 
@@ -141,15 +146,7 @@ PARSE_SCRIPT="$SCRIPT_DIR/parse_edit_log.py"
 
 if [ ! -f "$PARSE_SCRIPT" ]; then
     error_log "Parse script not found: $PARSE_SCRIPT"
-    cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "allow",
-    "reason": "Parse script not found, allowing stop"
-  }
-}
-EOF
+    echo '{}'
     exit 0
 fi
 
@@ -159,15 +156,7 @@ debug_log "Found repos: $EDITED_FILES"
 
 if [ -z "$EDITED_FILES" ] || [ "$(echo "$EDITED_FILES" | wc -l)" -eq 0 ]; then
     debug_log "No files edited in this session, skipping quality check"
-    cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "allow",
-    "reason": "No files edited in this session"
-  }
-}
-EOF
+    echo '{}'
     exit 0
 fi
 
@@ -286,15 +275,7 @@ done <<< "$AFFECTED_REPOS"
 # ===== 决策：是否阻断 Stop =====
 if [ "$TOTAL_ERRORS" -eq 0 ]; then
     debug_log "✓ All quality checks passed, allowing stop"
-    cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "allow",
-    "reason": "✅ 所有质量检查通过！"
-  }
-}
-EOF
+    echo '{}'
     exit 0
 fi
 
@@ -302,53 +283,43 @@ if [ "$TOTAL_ERRORS" -lt "$ERROR_THRESHOLD" ]; then
     # 错误数低于阈值，警告但不阻断
     debug_log "⚠ Found $TOTAL_ERRORS errors, below threshold ($ERROR_THRESHOLD)"
 
-    # 构建错误详情 JSON
-    ERROR_DETAILS="{"
+    # 构建错误详情 JSON 数组
+    ERROR_DETAILS_ARRAY="[]"
     for check_name in "${!CHECK_ERRORS[@]}"; do
-        ERROR_DETAILS="$ERROR_DETAILS\"$check_name\": ${CHECK_ERRORS[$check_name]},"
+        ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "${CHECK_ERRORS[$check_name]}" '. += [{name: $name, errors: $count}]')
     done
-    ERROR_DETAILS="${ERROR_DETAILS%,}}"  # 移除最后的逗号
 
-    cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "allow",
-    "reason": "⚠️ 发现 $TOTAL_ERRORS 个错误，低于阈值 ($ERROR_THRESHOLD)。建议修复后再继续。",
-    "errorDetails": $ERROR_DETAILS
-  }
-}
-EOF
+    # 使用 jq 生成有效的 JSON（不阻断）
+    jq -n \
+      --arg msg "⚠️ 发现 $TOTAL_ERRORS 个错误，低于阈值 ($ERROR_THRESHOLD)。建议修复后再继续。" \
+      '{
+        systemMessage: $msg
+      }'
     exit 0
 fi
 
 # ===== 错误 ≥ 阈值，阻断 Stop =====
 debug_log "✗ Found $TOTAL_ERRORS errors (threshold: $ERROR_THRESHOLD), blocking stop"
 
-# 构建错误详情 JSON
-ERROR_DETAILS="{"
+# 构建错误详情 JSON 数组
+ERROR_DETAILS_ARRAY="[]"
 for check_name in "${!CHECK_ERRORS[@]}"; do
-    ERROR_DETAILS="$ERROR_DETAILS\"$check_name\": ${CHECK_ERRORS[$check_name]},"
+    ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "${CHECK_ERRORS[$check_name]}" '. += [{name: $name, errors: $count}]')
 done
-ERROR_DETAILS="${ERROR_DETAILS%,}}"
 
-# 构建原因字符串（转义换行符和引号）
-REASON="❌ Python 质量检查失败: 发现 $TOTAL_ERRORS 个错误（阈值: $ERROR_THRESHOLD）\n\n"
-REASON="${REASON}请修复以下错误后再停止：\n\n"
-REASON="${REASON}$(echo -e "$ERROR_SUMMARY" | sed 's/"/\\"/g' | tr '\n' '\\' | sed 's/\\/\\n/g')"
+# 构建原因字符串
+REASON="❌ Python 质量检查失败: 发现 $TOTAL_ERRORS 个错误（阈值: $ERROR_THRESHOLD）
 
-# 输出 JSON（阻断 Stop）
-cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "block",
-    "reason": "$(echo -e "$REASON" | sed 's/"/\\"/g' | head -c 1000)",
-    "errorDetails": $ERROR_DETAILS,
-    "suggestion": "使用 Task Master 创建修复任务: task-master add-task --prompt='修复质量检查错误'"
-  }
-}
-EOF
+请修复以下错误后再停止：
+
+$(echo -e "$ERROR_SUMMARY" | head -c 800)"
+
+# 使用 jq 生成有效的 JSON
+jq -n \
+  --arg reason "$REASON" \
+  '{
+    stopReason: $reason
+  }'
 
 # 退出码 2 = 阻止停止
 exit 2

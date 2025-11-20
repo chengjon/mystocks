@@ -11,7 +11,7 @@
 
 import time
 import logging
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, List
 from functools import wraps
 from contextlib import contextmanager
 from datetime import datetime
@@ -46,7 +46,7 @@ class PerformanceMonitor:
             monitoring_db: 监控数据库实例 (可选)
         """
         self.monitoring_db = monitoring_db or get_monitoring_database()
-        self._metrics_cache = []  # 本地缓存 (批量写入优化)
+        self._metrics_cache: List[Dict[str, Any]] = []  # 本地缓存 (批量写入优化)
         self._cache_size_limit = 100
 
         logger.info("✅ PerformanceMonitor initialized")
@@ -272,25 +272,96 @@ class PerformanceMonitor:
                 f"耗时{execution_time_ms}ms (吞吐量: {throughput:.0f} records/s)"
             )
 
-    def get_performance_summary(self, hours: int = 24) -> Dict[str, Any]:
+    def get_performance_summary(self, hours: int = 24) -> dict:
         """
         获取性能摘要
 
         Args:
-            hours: 统计时间范围(小时)
+            hours: 统计时间范围（小时）
 
         Returns:
             dict: 性能摘要
         """
-        # 这里可以从监控数据库查询统计信息
-        # 简化版本返回基本信息
-        return {
-            "period_hours": hours,
-            "slow_query_count": 0,  # TODO: 从数据库查询
-            "avg_query_time_ms": 0,
-            "max_query_time_ms": 0,
-            "total_queries": 0,
-        }
+        # 从监控数据库查询统计信息
+        try:
+            from src.monitoring.monitoring_database import get_monitoring_database
+            monitoring_db = get_monitoring_database()
+            
+            if monitoring_db:
+                # 查询慢查询数量
+                slow_query_count = monitoring_db.get_slow_query_count(hours)
+                
+                # 查询平均查询时间
+                avg_query_time = monitoring_db.get_average_query_time(hours)
+                
+                # 查询最大查询时间
+                max_query_time = monitoring_db.get_max_query_time(hours)
+                
+                # 查询总查询数
+                total_queries = monitoring_db.get_total_query_count(hours)
+                
+                return {
+                    "period_hours": hours,
+                    "slow_query_count": slow_query_count,
+                    "avg_query_time_ms": avg_query_time,
+                    "max_query_time_ms": max_query_time,
+                    "total_queries": total_queries,
+                }
+            else:
+                # 如果没有监控数据库连接，返回基本数据
+                return {
+                    "period_hours": hours,
+                    "slow_query_count": 0,
+                    "avg_query_time_ms": 0,
+                    "max_query_time_ms": 0,
+                    "total_queries": 0,
+                }
+        except Exception as e:
+            logger.warning(f"查询性能统计信息失败: {e}")
+            # 出错时返回基本数据
+            return {
+                "period_hours": hours,
+                "slow_query_count": 0,
+                "avg_query_time_ms": 0,
+                "max_query_time_ms": 0,
+                "total_queries": 0,
+            }
+
+    def record_operation(
+        self,
+        operation: str,
+        classification: str,
+        duration_ms: float,
+        success: bool = True,
+        **kwargs
+    ):
+        """
+        记录操作性能 (兼容旧接口)
+
+        Args:
+            operation: 操作类型 (如 'save_data', 'load_data')
+            classification: 数据分类
+            duration_ms: 执行时间(毫秒)
+            success: 操作是否成功
+            **kwargs: 其他参数
+        """
+        # 使用track_operation上下文管理器来记录操作
+        with self.track_operation(
+            operation_name=operation,
+            classification=classification,
+            database_type=kwargs.get('database_type'),
+            table_name=kwargs.get('table_name'),
+        ):
+            # 由于这是一个兼容性方法，我们直接记录指标而不实际执行操作
+            self._record_metric(
+                metric_name=operation,
+                metric_value=duration_ms,
+                metric_type="OPERATION_TIME",
+                classification=classification,
+                database_type=kwargs.get('database_type'),
+                table_name=kwargs.get('table_name'),
+                error_occurred=not success,
+            )
 
 
 def performance_tracked(

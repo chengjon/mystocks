@@ -645,7 +645,7 @@ class ComponentSelector:
             # 检查是否有GPU设备
             cp.cuda.Device(0)
             return True
-        except:
+        except Exception:
             return False
 
     def get_price_predictor(self, gpu_enabled: Optional[bool] = None):

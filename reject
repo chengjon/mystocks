@@ -1,0 +1,357 @@
+version: '2.0'
+metadata:
+  project: MyStocks量化交易系统
+  created_by: ConfigDrivenTableManager
+  last_updated: '2025-11-19T14:55:55.412725'
+  description: 基于原始设计理念的配置驱动表管理
+databases:
+  tdengine:
+    host: ${TDENGINE_HOST}
+    port: ${TDENGINE_PORT}
+    user: ${TDENGINE_USER}
+    password: ${TDENGINE_PASSWORD}
+    description: 高频行情数据专用库
+  postgresql:
+    host: ${POSTGRESQL_HOST}
+    port: ${POSTGRESQL_PORT}
+    user: ${POSTGRESQL_USER}
+    password: ${POSTGRESQL_PASSWORD}
+    description: 历史数据仓库+TimescaleDB
+  mysql:
+    host: ${MYSQL_HOST}
+    port: ${MYSQL_PORT}
+    user: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    description: 元数据与参考数据仓库
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    db: ${REDIS_DB}
+    description: 实时状态中心
+tables:
+- database_type: TDengine
+  database_name: market_data
+  table_name: tick_data
+  is_super_table: true
+  classification: tick_data
+  description: 股票Tick级成交数据
+  columns:
+  - name: ts
+    type: TIMESTAMP
+    nullable: false
+    comment: 时间戳
+  - name: price
+    type: FLOAT
+    comment: 成交价格
+  - name: volume
+    type: BIGINT
+    comment: 成交量
+  - name: amount
+    type: FLOAT
+    comment: 成交金额
+  - name: symbol
+    type: VARCHAR
+    length: 20
+    is_tag: true
+    comment: 股票代码
+  - name: exchange
+    type: VARCHAR
+    length: 10
+    is_tag: true
+    comment: 交易所
+- database_type: TDengine
+  database_name: market_data
+  table_name: minute_kline
+  is_super_table: true
+  classification: minute_kline
+  description: 分钟级K线数据
+  columns:
+  - name: ts
+    type: TIMESTAMP
+    nullable: false
+    comment: 时间戳
+  - name: open
+    type: FLOAT
+    comment: 开盘价
+  - name: high
+    type: FLOAT
+    comment: 最高价
+  - name: low
+    type: FLOAT
+    comment: 最低价
+  - name: close
+    type: FLOAT
+    comment: 收盘价
+  - name: volume
+    type: BIGINT
+    comment: 成交量
+  - name: amount
+    type: FLOAT
+    comment: 成交金额
+  - name: symbol
+    type: VARCHAR
+    length: 20
+    is_tag: true
+    comment: 股票代码
+  - name: frequency
+    type: VARCHAR
+    length: 10
+    is_tag: true
+    comment: 频率(1m,5m,15m,30m,60m)
+- database_type: PostgreSQL
+  database_name: mystocks
+  table_name: daily_kline
+  is_timescale_hypertable: true
+  time_column: trade_date
+  classification: daily_kline
+  description: 股票日线OHLCV数据
+  columns:
+  - name: symbol
+    type: VARCHAR
+    length: 20
+    nullable: false
+    comment: 股票代码
+  - name: trade_date
+    type: DATE
+    nullable: false
+    comment: 交易日期
+  - name: open
+    type: NUMERIC
+    precision: 10
+    scale: 4
+    comment: 开盘价
+  - name: high
+    type: NUMERIC
+    precision: 10
+    scale: 4
+    comment: 最高价
+  - name: low
+    type: NUMERIC
+    precision: 10
+    scale: 4
+    comment: 最低价
+  - name: close
+    type: NUMERIC
+    precision: 10
+    scale: 4
+    comment: 收盘价
+  - name: volume
+    type: BIGINT
+    comment: 成交量
+  - name: amount
+    type: NUMERIC
+    precision: 15
+    scale: 2
+    comment: 成交金额
+  - name: adj_factor
+    type: NUMERIC
+    precision: 10
+    scale: 6
+    comment: 复权因子
+  - name: created_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP
+    comment: 创建时间
+  - name: updated_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP
+    comment: 更新时间
+  indexes:
+  - name: idx_daily_kline_symbol_date
+    columns:
+    - symbol
+    - trade_date
+    unique: true
+  - name: idx_daily_kline_date
+    columns:
+    - trade_date
+  - name: idx_daily_kline_symbol
+    columns:
+    - symbol
+- database_type: PostgreSQL
+  database_name: mystocks
+  table_name: technical_indicators
+  is_timescale_hypertable: true
+  time_column: calc_date
+  classification: technical_indicators
+  description: 技术指标数据
+  columns:
+  - name: symbol
+    type: VARCHAR
+    length: 20
+    nullable: false
+    comment: 股票代码
+  - name: calc_date
+    type: DATE
+    nullable: false
+    comment: 计算日期
+  - name: indicator_name
+    type: VARCHAR
+    length: 50
+    nullable: false
+    comment: 指标名称
+  - name: indicator_value
+    type: NUMERIC
+    precision: 15
+    scale: 6
+    comment: 指标值
+  - name: indicator_params
+    type: JSONB
+    comment: 指标参数
+  - name: created_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP
+    comment: 创建时间
+  indexes:
+  - name: idx_tech_ind_symbol_date_name
+    columns:
+    - symbol
+    - calc_date
+    - indicator_name
+    unique: true
+  - name: idx_tech_ind_date
+    columns:
+    - calc_date
+  - name: idx_tech_ind_name
+    columns:
+    - indicator_name
+- database_type: MySQL
+  database_name: quant_research
+  table_name: symbols
+  classification: symbols_info
+  description: 股票代码信息表
+  columns:
+  - name: symbol_id
+    type: INT
+    primary_key: true
+    auto_increment: true
+    comment: 股票ID
+  - name: symbol
+    type: VARCHAR
+    length: 20
+    nullable: false
+    comment: 股票代码
+  - name: name
+    type: VARCHAR
+    length: 100
+    nullable: false
+    comment: 股票名称
+  - name: exchange
+    type: VARCHAR
+    length: 10
+    nullable: false
+    comment: 交易所
+  - name: sector
+    type: VARCHAR
+    length: 50
+    comment: 行业
+  - name: industry
+    type: VARCHAR
+    length: 50
+    comment: 子行业
+  - name: list_date
+    type: DATE
+    comment: 上市日期
+  - name: delist_date
+    type: DATE
+    comment: 退市日期
+  - name: is_active
+    type: BOOLEAN
+    default: true
+    comment: 是否有效
+  - name: created_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP
+    comment: 创建时间
+  - name: updated_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    comment: 更新时间
+  indexes:
+  - name: uk_symbols_symbol
+    columns:
+    - symbol
+    unique: true
+  - name: idx_symbols_exchange
+    columns:
+    - exchange
+  - name: idx_symbols_sector
+    columns:
+    - sector
+  - name: idx_symbols_active
+    columns:
+    - is_active
+- database_type: MySQL
+  database_name: quant_research
+  table_name: trade_calendar
+  classification: trade_calendar
+  description: 交易日历表
+  columns:
+  - name: calendar_id
+    type: INT
+    primary_key: true
+    auto_increment: true
+    comment: 日历ID
+  - name: exchange
+    type: VARCHAR
+    length: 10
+    nullable: false
+    comment: 交易所
+  - name: trade_date
+    type: DATE
+    nullable: false
+    comment: 日期
+  - name: is_trading_day
+    type: BOOLEAN
+    nullable: false
+    comment: 是否交易日
+  - name: is_weekend
+    type: BOOLEAN
+    default: false
+    comment: 是否周末
+  - name: is_holiday
+    type: BOOLEAN
+    default: false
+    comment: 是否节假日
+  - name: holiday_name
+    type: VARCHAR
+    length: 50
+    comment: 节假日名称
+  - name: created_at
+    type: TIMESTAMP
+    default: CURRENT_TIMESTAMP
+    comment: 创建时间
+  indexes:
+  - name: uk_trade_calendar_exchange_date
+    columns:
+    - exchange
+    - trade_date
+    unique: true
+  - name: idx_trade_calendar_date
+    columns:
+    - trade_date
+  - name: idx_trade_calendar_trading_day
+    columns:
+    - is_trading_day
+monitoring:
+  enable: true
+  monitor_database: db_monitor
+  log_retention_days: 30
+  alert_channels:
+  - type: email
+    recipients:
+    - admin@mystocks.com
+  - type: log
+    level: ERROR
+maintenance:
+  backup:
+    enable: true
+    schedule: 0 2 * * *
+    retention_days: 7
+  data_quality_check:
+    enable: true
+    schedule: 0 1 * * *
+  performance_monitoring:
+    enable: true
+    slow_query_threshold: 5

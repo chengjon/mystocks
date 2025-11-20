@@ -132,7 +132,7 @@ class TDengineDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             table_name or self._get_default_table_name(classification),
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "upsert_data",
         )
 
@@ -141,13 +141,13 @@ class TDengineDataAccess(IDataAccessLayer):
             actual_table_name = table_name or self._get_default_table_name(
                 classification
             )
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
 
             # 数据预处理
             processed_data = self._preprocess_timeseries_data(data, classification)
 
             # 获取去重策略
-            from src.core import DeduplicationStrategy, DataStorageStrategy as DS
+            from src.core import DeduplicationStrategy, DataManager
 
             dedup_strategy = kwargs.get("dedup_strategy")
             if not dedup_strategy:
@@ -225,12 +225,12 @@ class TDengineDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "SELECT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
 
             # 构建查询语句
             query = self._build_timeseries_query(
@@ -380,7 +380,7 @@ class TDengineDataAccess(IDataAccessLayer):
                 return data
 
             # 构建查询现有数据的SQL
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
             conn = self.db_manager.get_connection(self.db_type, database_name)
 
             # 简化实现：基于时间范围查询
@@ -702,12 +702,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "INSERT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
 
             # 数据预处理
             processed_data = self._preprocess_analytical_data(data, classification)
@@ -779,12 +779,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "SELECT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
 
             # 构建查询语句
             query = self._build_analytical_query(
@@ -839,12 +839,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "UPDATE",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
             key_columns = key_columns or self._get_default_key_columns(classification)
 
             # 获取连接
@@ -898,7 +898,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "DELETE",
         )
 
@@ -907,7 +907,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 logger.error("删除操作必须指定过滤条件")
                 return False
 
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
 
             # 获取连接
             conn = self.db_manager.get_connection(self.db_type, database_name)
@@ -1297,12 +1297,12 @@ class MySQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "upsert_data",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
             processed_data = self._preprocess_reference_data(data, classification)
 
             # 获取MySQL连接
@@ -1356,12 +1356,12 @@ class MySQLDataAccess(IDataAccessLayer):
         operation_id = self.monitoring_db.log_operation_start(
             actual_table_name,
             self.db_type.value,
-            DataStorageStrategy.get_database_name(classification),
+            DataManager().get_database_name(classification),
             "SELECT",
         )
 
         try:
-            database_name = DataStorageStrategy.get_database_name(classification)
+            database_name = DataManager().get_database_name(classification)
             query = self._build_reference_query(
                 classification, actual_table_name, filters, **kwargs
             )
@@ -1434,7 +1434,7 @@ class MySQLDataAccess(IDataAccessLayer):
             int: 影响的行数
         """
         try:
-            from src.core import DataStorageStrategy
+            # DataStorageStrategy已移除
             import pymysql
 
             # 获取主键列

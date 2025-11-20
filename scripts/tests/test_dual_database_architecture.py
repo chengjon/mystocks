@@ -39,7 +39,7 @@ def test_data_routing():
     print("\n=== 测试2: 数据路由验证 ===")
 
     from src.core.data_classification import DataClassification, DatabaseTarget
-    from src.core.data_storage_strategy import DataStorageStrategy
+    
 
     all_classifications = list(DataClassification)
     print(f"总数据分类数: {len(all_classifications)}")
@@ -48,7 +48,7 @@ def test_data_routing():
     postgresql_count = 0
 
     for classification in all_classifications:
-        target = DataStorageStrategy.get_target_database(classification)
+        target = DataManager().get_target_database(classification)
 
         if target == DatabaseTarget.TDENGINE:
             tdengine_count += 1
@@ -158,12 +158,12 @@ def test_routing_statistics():
     print("\n=== 路由统计摘要 ===")
 
     from src.core.data_classification import DatabaseTarget
-    from src.core.data_storage_strategy import DataStorageStrategy
+    
 
-    stats = DataStorageStrategy.get_routing_statistics()
+    stats = DataManager().get_routing_statistics()
 
     for db_type, count in stats.items():
-        classifications = DataStorageStrategy.get_classifications_by_database(db_type)
+        classifications = DataManager().get_classifications_by_database(db_type)
         print(f"\n{db_type.value.upper()} ({count}项):")
         for i, classification in enumerate(classifications, 1):
             print(f"  {i}. {classification.value}")

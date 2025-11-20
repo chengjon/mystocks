@@ -19,7 +19,7 @@
 | 🟢 **原生-Claude** | Claude 辅助开发 |
 | 🟡 **协作开发** | JohnC + Claude 共同开发 |
 | 🔴 **引用-OpenStock** | 从 OpenStock 项目引入 |
-| 🟠 **引用-ValueCell** | 从 ValueCell 项目迁移 |
+| 🟠 **已集成** | 已集成的功能|
 | 🟣 **引用-InStock** | 从 InStock 项目引入 |
 | 🔵 **引用-freqtrade** | 从 freqtrade 项目引入 |
 | ⚪ **引用-其他** | 从其他开源项目引入 |
@@ -57,9 +57,9 @@
 | 资金流向组件 | `web/frontend/src/components/market/FundFlow.vue` | 🟢 原生-Claude | ✅ | 资金流向可视化 |
 | ETF 数据组件 | `web/frontend/src/components/market/ETFData.vue` | 🟢 原生-Claude | ✅ | ETF 实时数据展示 |
 | 策略管理组件 | `web/frontend/src/components/strategy/` | 🟣 引用-InStock | ✅ | 策略管理界面 |
-| 监控告警组件 | `web/frontend/src/components/monitoring/` | 🟠 引用-ValueCell | ✅ | 实时监控和告警 |
-| 技术分析组件 | `web/frontend/src/components/technical/` | 🟠 引用-ValueCell | 📝 | 技术指标可视化 |
-| 多数据源组件 | `web/frontend/src/components/multisource/` | 🟠 引用-ValueCell | 📝 | 数据源健康监控 |
+| 监控告警组件 | `web/frontend/src/components/monitoring/` | 🟠 已集成 | ✅ | 实时监控和告警 |
+| 技术分析组件 | `web/frontend/src/components/technical/` | 🟠 已集成 | 📝 | 技术指标可视化 |
+| 多数据源组件 | `web/frontend/src/components/multisource/` | 🟠 已集成 | 📝 | 数据源健康监控 |
 
 ### 1.3 页面视图
 
@@ -68,9 +68,9 @@
 | 仪表板 | `web/frontend/src/views/Dashboard.vue` | 🟢 原生-Claude | ✅ | 系统概览仪表板 |
 | 市场数据 | `web/frontend/src/views/Market.vue` | 🟢 原生-Claude | ✅ | 市场数据展示页面 |
 | 策略管理 | `web/frontend/src/views/Strategy.vue` | 🟣 引用-InStock | ✅ | 策略管理页面 |
-| 实时监控 | `web/frontend/src/views/Monitoring.vue` | 🟠 引用-ValueCell | 📝 | 实时监控页面 |
-| 技术分析 | `web/frontend/src/views/TechnicalAnalysis.vue` | 🟠 引用-ValueCell | 📝 | 技术分析页面 |
-| 公告监控 | `web/frontend/src/views/Announcement.vue` | 🟠 引用-ValueCell | 📝 | 公告监控页面 |
+| 实时监控 | `web/frontend/src/views/Monitoring.vue` | 🟠 已集成 | 📝 | 实时监控页面 |
+| 技术分析 | `web/frontend/src/views/TechnicalAnalysis.vue` | 🟠 已集成 | 📝 | 技术分析页面 |
+| 公告监控 | `web/frontend/src/views/Announcement.vue` | 🟠 已集成 | 📝 | 公告监控页面 |
 
 ---
 
@@ -101,10 +101,10 @@
 | 通知 API | `web/backend/app/api/notification.py` | 🔴 引用-OpenStock | ✅ | 邮件通知功能 |
 | 机器学习 API | `web/backend/app/api/ml.py` | ⚪ 引用-pyprofiling | ✅ | ML 预测和分析 |
 | 策略管理 API | `web/backend/app/api/strategy.py` | 🟣 引用-InStock | ✅ | 股票策略筛选 |
-| 实时监控 API | `web/backend/app/api/monitoring.py` | 🟠 引用-ValueCell | ✅ | 实时监控和告警 (Phase 1) |
-| 技术分析 API | `web/backend/app/api/technical_analysis.py` | 🟠 引用-ValueCell | ✅ | 增强技术分析 (Phase 2) |
-| 多数据源 API | `web/backend/app/api/multi_source.py` | 🟠 引用-ValueCell | ✅ | 多数据源管理 (Phase 3) |
-| 公告监控 API | `web/backend/app/api/announcement.py` | 🟠 引用-ValueCell | ✅ | 公告监控 (Phase 3) |
+| 实时监控 API | `web/backend/app/api/monitoring.py` | 🟠 已集成 | ✅ | 实时监控和告警 (Phase 1) |
+| 技术分析 API | `web/backend/app/api/technical_analysis.py` | 🟠 已集成 | ✅ | 增强技术分析 (Phase 2) |
+| 多数据源 API | `web/backend/app/api/multi_source.py` | 🟠 已集成 | ✅ | 多数据源管理 (Phase 3) |
+| 公告监控 API | `web/backend/app/api/announcement.py` | 🟠 已集成 | ✅ | 公告监控 (Phase 3) |
 | 指标 API | `web/backend/app/api/indicators.py` | 🟢 原生-Claude | ✅ | 技术指标计算 |
 | 任务管理 API | `web/backend/app/api/tasks.py` | 🟢 原生-Claude | ✅ | 后台任务管理 |
 | 监控指标 API | `web/backend/app/api/metrics.py` | 🟢 原生-Claude | ✅ | Prometheus 监控指标 |
@@ -115,10 +115,10 @@
 |-----|---------|-----|-----|------|
 | 问财数据服务 | `web/backend/app/services/wencai_service.py` | 🟢 原生-Claude | ✅ | 问财数据处理逻辑 |
 | 策略服务 | `web/backend/app/services/strategy_service.py` | 🟣 引用-InStock | ✅ | 策略执行和管理 |
-| 实时监控服务 | `web/backend/app/services/monitoring_service.py` | 🟠 引用-ValueCell | ✅ | 监控和告警服务 (Phase 1) |
-| 技术分析服务 | `web/backend/app/services/technical_analysis_service.py` | 🟠 引用-ValueCell | ✅ | 技术指标计算服务 (Phase 2) |
-| 多数据源管理器 | `web/backend/app/services/multi_source_manager.py` | 🟠 引用-ValueCell | ✅ | 多数据源协调器 (Phase 3) |
-| 公告监控服务 | `web/backend/app/services/announcement_service.py` | 🟠 引用-ValueCell | ✅ | 公告监控服务 (Phase 3) |
+| 实时监控服务 | `web/backend/app/services/monitoring_service.py` | 🟠 已集成 | ✅ | 监控和告警服务 (Phase 1) |
+| 技术分析服务 | `web/backend/app/services/technical_analysis_service.py` | 🟠 已集成 | ✅ | 技术指标计算服务 (Phase 2) |
+| 多数据源管理器 | `web/backend/app/services/multi_source_manager.py` | 🟠 已集成 | ✅ | 多数据源协调器 (Phase 3) |
+| 公告监控服务 | `web/backend/app/services/announcement_service.py` | 🟠 已集成 | ✅ | 公告监控服务 (Phase 3) |
 
 ### 2.4 数据模型 (ORM)
 
@@ -126,8 +126,8 @@
 |-----|---------|-----|-----|------|
 | 问财查询模型 | `web/backend/app/models/wencai.py` | 🟢 原生-Claude | ✅ | 问财查询记录 |
 | 策略模型 | `web/backend/app/models/strategy.py` | 🟣 引用-InStock | ✅ | 策略定义和结果 |
-| 监控模型 | `web/backend/app/models/monitoring.py` | 🟠 引用-ValueCell | ✅ | 告警规则和记录 (Phase 1) |
-| 公告模型 | `web/backend/app/models/announcement.py` | 🟠 引用-ValueCell | ✅ | 公告数据模型 (Phase 3) |
+| 监控模型 | `web/backend/app/models/monitoring.py` | 🟠 已集成 | ✅ | 告警规则和记录 (Phase 1) |
+| 公告模型 | `web/backend/app/models/announcement.py` | 🟠 已集成 | ✅ | 公告数据模型 (Phase 3) |
 
 ---
 
@@ -161,14 +161,14 @@
 
 | 模块 | 文件路径 | 来源 | 状态 | 说明 |
 |-----|---------|-----|-----|------|
-| 适配器基类 | `adapters/base.py` / `web/backend/app/adapters/base.py` | 🟠 引用-ValueCell | ✅ | 统一数据源接口 (Phase 3) |
+| 适配器基类 | `adapters/base.py` / `web/backend/app/adapters/base.py` | 🟠 已集成 | ✅ | 统一数据源接口 (Phase 3) |
 | AKShare 适配器 | `adapters/akshare_adapter.py` | 🟡 协作开发 | ✅ | AKShare 数据源 |
 | 财务数据适配器 | `adapters/financial_adapter.py` | 🟡 协作开发 | ✅ | 财务数据综合适配器 |
 | 自定义适配器 | `adapters/customer_adapter.py` | 🟡 协作开发 | ✅ | efinance + easyquotation |
 | 问财适配器 | `adapters/wencai_adapter.py` / `web/backend/app/adapters/wencai_adapter.py` | 🟢 原生-Claude | ✅ | 问财数据源 |
 | 东方财富适配器 | `web/backend/app/adapters/eastmoney_adapter.py` | 🟢 原生-Claude | ✅ | 东方财富直接 API |
-| 东方财富增强适配器 | `web/backend/app/adapters/eastmoney_enhanced.py` | 🟠 引用-ValueCell | ✅ | 集成健康监控 (Phase 3) |
-| 巨潮资讯适配器 | `web/backend/app/adapters/cninfo_adapter.py` | 🟠 引用-ValueCell | ✅ | 官方公告数据源 (Phase 3) |
+| 东方财富增强适配器 | `web/backend/app/adapters/eastmoney_enhanced.py` | 🟠 已集成 | ✅ | 集成健康监控 (Phase 3) |
+| 巨潮资讯适配器 | `web/backend/app/adapters/cninfo_adapter.py` | 🟠 已集成 | ✅ | 官方公告数据源 (Phase 3) |
 | TDX 适配器 | `adapters/tdx_adapter.py` | 🟢 原生-Claude | ✅ | 通达信数据源 |
 | TQLEX 适配器 | `web/backend/app/adapters/tqlex_adapter.py` | 🟢 原生-Claude | ✅ | 竞价抢筹数据 |
 | AKShare 扩展 | `web/backend/app/adapters/akshare_extension.py` | 🟢 原生-Claude | ✅ | AKShare 功能扩展 |
@@ -201,8 +201,8 @@
 |-----|---------|-----|-----|------|
 | 问财查询表 | `web/backend/scripts/create_wencai_tables.sql` | 🟢 原生-Claude | ✅ | 问财数据表结构 |
 | 策略系统表 | `web/backend/scripts/create_strategy_tables.sql` | 🟣 引用-InStock | ✅ | 策略系统表结构 |
-| 监控系统表 | `web/backend/scripts/create_monitoring_tables.sql` | 🟠 引用-ValueCell | ✅ | 监控告警表 (Phase 1) |
-| 多数据源表 | `web/backend/scripts/create_multisource_tables.sql` | 🟠 引用-ValueCell | ✅ | 多数据源和公告表 (Phase 3) |
+| 监控系统表 | `web/backend/scripts/create_monitoring_tables.sql` | 🟠 已集成 | ✅ | 监控告警表 (Phase 1) |
+| 多数据源表 | `web/backend/scripts/create_multisource_tables.sql` | 🟠 已集成 | ✅ | 多数据源和公告表 (Phase 3) |
 
 ---
 
@@ -249,9 +249,9 @@
 | 回测组件测试 | `tests/test_backtest_components.py` | 🟢 原生-Claude | ✅ | 回测系统测试 |
 | 问财 API 测试 | `web/backend/scripts/test_wencai_api.sh` | 🟢 原生-Claude | ✅ | 问财 API 测试脚本 |
 | OpenStock API 测试 | `web/backend/scripts/test_openstock_apis.sh` | 🔴 引用-OpenStock | ✅ | OpenStock 功能测试 |
-| 监控 API 测试 | `web/backend/scripts/test_monitoring_api.py` | 🟠 引用-ValueCell | ✅ | 监控系统测试 (Phase 1) |
-| 技术分析 API 测试 | `web/backend/scripts/test_technical_analysis_api.py` | 🟠 引用-ValueCell | ✅ | 技术分析测试 (Phase 2) |
-| Phase 3 API 测试 | `web/backend/scripts/test_phase3_api.py` | 🟠 引用-ValueCell | ✅ | 多数据源测试 (Phase 3) |
+| 监控 API 测试 | `web/backend/scripts/test_monitoring_api.py` | 🟠 已集成 | ✅ | 监控系统测试 (Phase 1) |
+| 技术分析 API 测试 | `web/backend/scripts/test_technical_analysis_api.py` | 🟠 已集成 | ✅ | 技术分析测试 (Phase 2) |
+| Phase 3 API 测试 | `web/backend/scripts/test_phase3_api.py` | 🟠 已集成 | ✅ | 多数据源测试 (Phase 3) |
 
 ### 6.4 数据库脚本
 
@@ -297,14 +297,14 @@
 | 最高指示 | `最高指示.md` | 🔵 原生-JohnC | ✅ | 项目最高指导原则 |
 | 更新事项 | `更新事项.md` | 🟢 原生-Claude | ✅ | 待办事项 |
 
-### 7.3 ValueCell 迁移文档
+### 7.3  迁移文档
 
 | 模块 | 文件路径 | 来源 | 状态 | 说明 |
 |-----|---------|-----|-----|------|
-| ValueCell 迁移计划 | `VALUECELL_MIGRATION_PLAN.md` | 🟠 引用-ValueCell | ✅ | 5 阶段迁移计划 |
-| Phase 1 完成报告 | `VALUECELL_PHASE1_COMPLETION.md` | 🟠 引用-ValueCell | ✅ | 实时监控系统完成 |
-| Phase 2 完成报告 | `VALUECELL_PHASE2_COMPLETION.md` | 🟠 引用-ValueCell | ✅ | 技术分析系统完成 |
-| Phase 3 完成报告 | `VALUECELL_PHASE3_COMPLETION.md` | 🟠 引用-ValueCell | ✅ | 多数据源系统完成 |
+|  迁移计划 | `VALUECELL_MIGRATION_PLAN.md` | 🟠 已集成 | ✅ | 5 阶段迁移计划 |
+| Phase 1 完成报告 | `VALUECELL_PHASE1_COMPLETION.md` | 🟠 已集成 | ✅ | 实时监控系统完成 |
+| Phase 2 完成报告 | `VALUECELL_PHASE2_COMPLETION.md` | 🟠 已集成 | ✅ | 技术分析系统完成 |
+| Phase 3 完成报告 | `VALUECELL_PHASE3_COMPLETION.md` | 🟠 已集成 | ✅ | 多数据源系统完成 |
 
 ### 7.4 功能指南文档
 
@@ -462,7 +462,7 @@ web/backend/app/api/notification.py
 + 相关测试和文档
 ```
 
-### ValueCell 项目
+###  项目
 
 **引用模块**:
 - Phase 1: 实时监控和告警系统
@@ -549,7 +549,7 @@ calcu/  (需要重构)
 | 🟢 原生-Claude | ~150 | 65.2% |
 | 🔵 原生-JohnC | ~5 | 2.2% |
 | 🟡 协作开发 | ~25 | 10.9% |
-| 🟠 引用-ValueCell | ~20 | 8.7% |
+| 🟠 已集成 | ~20 | 8.7% |
 | 🔴 引用-OpenStock | ~8 | 3.5% |
 | 🟣 引用-InStock | ~5 | 2.2% |
 | ⚪ 引用-pyprofiling | ~3 | 1.3% |
@@ -613,7 +613,7 @@ calcu/  (需要重构)
 
 - 本文档与 `README.md` 保持同步
 - 重大变更需同时更新 `CHANGELOG.md`
-- ValueCell 迁移进度需同步到相应的 Phase 完成报告
+-  迁移进度需同步到相应的 Phase 完成报告
 
 ### 版本管理
 

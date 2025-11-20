@@ -1,6 +1,6 @@
 """
 公告监控服务
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 功能：
 - 定期获取最新公告

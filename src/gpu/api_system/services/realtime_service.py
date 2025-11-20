@@ -222,7 +222,7 @@ class RealTimeService(RealTimeServiceServicer):
                 return {}
 
             # 计算简单移动平均
-            sma_20 = sum(prices[-20:]) / 20 if len(prices) >= 20 sum(prices) / len(prices)
+            sma_20 = sum(prices[-20:]) / 20 if len(prices) >= 20 else sum(prices) / len(prices)
             sma_50 = sum(prices[-50:]) / 50 if len(prices) >= 50 else sum(prices) / len(prices)
 
             # 计算指数移动平均
@@ -529,8 +529,6 @@ class RealTimeService(RealTimeServiceServicer):
                 except Exception as e:
                     logger.error(f"流数据推送失败: {e}")
                     break
-
-            finally:
                 # 清理客户端
                 if client_id in self.stream_clients:
                     del self.stream_clients[client_id]

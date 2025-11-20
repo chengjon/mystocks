@@ -563,7 +563,7 @@ class RealtimeMarketDataSaver:
                     self.logger.info(
                         f"📈 系统总操作数: {op_stats.get('total_operations', 0)}"
                     )
-                except:
+                except Exception:
                     pass
 
                 self.logger.info("=" * 70)

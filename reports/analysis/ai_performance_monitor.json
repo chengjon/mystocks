@@ -1,0 +1,35 @@
+[
+  {
+    "metrics": {
+      "timestamp": "2025-11-16T09:54:04.465132",
+      "cpu_percent": 4.0,
+      "memory_percent": 27.5,
+      "disk_percent": 14.7,
+      "process_count": 213,
+      "load_average": 0.671875
+    },
+    "alerts": []
+  },
+  {
+    "metrics": {
+      "timestamp": "2025-11-16T09:54:15.466254",
+      "cpu_percent": 7.5,
+      "memory_percent": 27.5,
+      "disk_percent": 14.7,
+      "process_count": 213,
+      "load_average": 0.56787109375
+    },
+    "alerts": []
+  },
+  {
+    "metrics": {
+      "timestamp": "2025-11-16T09:54:26.560888",
+      "cpu_percent": 10.6,
+      "memory_percent": 27.9,
+      "disk_percent": 14.7,
+      "process_count": 213,
+      "load_average": 0.58349609375
+    },
+    "alerts": []
+  }
+]

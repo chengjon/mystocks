@@ -1,0 +1,8 @@
+# 安全扫描和依赖漏洞检测工具
+bandit[toml]>=1.7.5          # 代码安全静态分析
+safety>=3.2.1                 # 依赖漏洞扫描
+pip-audit>=2.7.0             # Python包安全审计
+semgrep>=1.50.0              # 代码安全规则引擎
+vulners>=1.1.1               # 漏洞数据库
+cryptography>=41.0.0         # 密码学库更新
+wheel>=0.43.0                # 包构建工具更新

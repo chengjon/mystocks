@@ -24,21 +24,21 @@
 
 ### 基本信息
 
-- **Base URL**: `http://localhost:8000`
-- **文档地址**: `http://localhost:8000/api/docs` (Swagger UI)
-- **备用文档**: `http://localhost:8000/api/redoc` (ReDoc)
-- **健康检查**: `http://localhost:8000/health`
+- **Base URL**: `http://localhost:8000` (端口范围: 8000-8010)
+- **文档地址**: `http://localhost:8000/api/docs` (Swagger UI, 端口范围: 8000-8010)
+- **备用文档**: `http://localhost:8000/api/redoc` (ReDoc, 端口范围: 8000-8010)
+- **健康检查**: `http://localhost:8000/health` (端口范围: 8000-8010)
 
 ### 第一个请求
 
 ```bash
-# 1. 健康检查
+# 1. 健康检查 (端口可能为8000-8010范围内的可用端口)
 curl http://localhost:8000/health
 
-# 2. 获取CSRF Token
+# 2. 获取CSRF Token (端口可能为8000-8010范围内的可用端口)
 curl http://localhost:8000/api/csrf-token
 
-# 3. 登录获取JWT Token
+# 3. 登录获取JWT Token (端口可能为8000-8010范围内的可用端口)
 curl -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -H "X-CSRF-Token: <your-csrf-token>" \
@@ -47,7 +47,7 @@ curl -X POST http://localhost:8000/api/auth/login \
     "password": "your-password"
   }'
 
-# 4. 使用JWT Token访问受保护的端点
+# 4. 使用JWT Token访问受保护的端点 (端口可能为8000-8010范围内的可用端口)
 curl http://localhost:8000/api/market/realtime \
   -H "Authorization: Bearer <your-jwt-token>"
 ```

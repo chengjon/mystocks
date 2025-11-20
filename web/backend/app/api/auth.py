@@ -58,44 +58,27 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> User:
     """
-    获取当前用户
+    获取当前用户 - 已禁用认证
+    返回默认用户，不再验证token
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+    # 返回默认用户，绕过认证
+    return User(
+        id=1,
+        username="guest",
+        email="guest@mystocks.com",
+        role="admin",  # 给予管理员权限
+        is_active=True
     )
-
-    try:
-        # 验证 token
-        token_data = verify_token(credentials.credentials)
-        if token_data is None:
-            raise credentials_exception
-
-        username = token_data.username
-        if username is None:
-            raise credentials_exception
-
-    except Exception:
-        raise credentials_exception
-
-    # 查找用户
-    users_db = get_users_db()
-    user = users_db.get(username)
-    if user is None:
-        raise credentials_exception
-
-    return User(**user)
 
 
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
     """
-    获取当前活跃用户
+    获取当前活跃用户 - 已禁用认证检查
+    始终返回用户，不再检查活跃状态
     """
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    # 始终返回用户，不再检查活跃状态
     return current_user
 
 

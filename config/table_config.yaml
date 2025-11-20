@@ -1267,6 +1267,415 @@ tables:
       - name: 'idx_system_config_group'
         columns: ['config_group']
 
+  # =====================================
+  # 新增表：行业分类数据 - PostgreSQL
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'industry_classifications'
+    is_timescale_hypertable: false  # 静态参考数据，不需要时序表
+    classification: 'reference_data'
+    description: '行业分类数据表'
+    columns:
+      - name: 'industry_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: '行业代码'
+      - name: 'industry_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '行业名称'
+      - name: 'stock_count'
+        type: 'INTEGER'
+        comment: '成分股数量'
+      - name: 'up_count'
+        type: 'INTEGER'
+        comment: '上涨股票数'
+      - name: 'down_count'
+        type: 'INTEGER'
+        comment: '下跌股票数'
+      - name: 'leader_stock'
+        type: 'VARCHAR'
+        length: 20
+        comment: '领涨股'
+      - name: 'latest_price'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '最新价'
+      - name: 'change_percent'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '涨跌幅(%)'
+      - name: 'change_amount'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '涨跌额'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '成交额'
+      - name: 'total_market_value'
+        type: 'NUMERIC'
+        precision: 20
+        scale: 2
+        comment: '总市值'
+      - name: 'turnover_rate'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '换手率(%)'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
+    indexes:
+      - name: 'uk_industry_classifications_code'
+        columns: ['industry_code']
+        unique: true
+      - name: 'idx_industry_classifications_name'
+        columns: ['industry_name']
+
+  # =====================================
+  # 新增表：概念分类数据 - PostgreSQL
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'concept_classifications'
+    is_timescale_hypertable: false  # 静态参考数据，不需要时序表
+    classification: 'reference_data'
+    description: '概念分类数据表'
+    columns:
+      - name: 'concept_code'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: '概念代码'
+      - name: 'concept_name'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '概念名称'
+      - name: 'stock_count'
+        type: 'INTEGER'
+        comment: '成分股数量'
+      - name: 'up_count'
+        type: 'INTEGER'
+        comment: '上涨股票数'
+      - name: 'down_count'
+        type: 'INTEGER'
+        comment: '下跌股票数'
+      - name: 'leader_stock'
+        type: 'VARCHAR'
+        length: 20
+        comment: '领涨股'
+      - name: 'latest_price'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '最新价'
+      - name: 'change_percent'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '涨跌幅(%)'
+      - name: 'change_amount'
+        type: 'NUMERIC'
+        precision: 10
+        scale: 4
+        comment: '涨跌额'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'NUMERIC'
+        precision: 15
+        scale: 2
+        comment: '成交额'
+      - name: 'total_market_value'
+        type: 'NUMERIC'
+        precision: 20
+        scale: 2
+        comment: '总市值'
+      - name: 'turnover_rate'
+        type: 'NUMERIC'
+        precision: 8
+        scale: 4
+        comment: '换手率(%)'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
+    indexes:
+      - name: 'uk_concept_classifications_code'
+        columns: ['concept_code']
+        unique: true
+      - name: 'idx_concept_classifications_name'
+        columns: ['concept_name']
+
+  # =====================================
+  # 新增表：个股行业概念关联数据 - PostgreSQL
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'stock_industry_concept_relations'
+    is_timescale_hypertable: false  # 静态参考数据，不需要时序表
+    classification: 'reference_data'
+    description: '个股行业概念关联关系表'
+    columns:
+      - name: 'relation_id'
+        type: 'BIGINT'
+        primary_key: true
+        auto_increment: true
+        comment: '关联ID'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: '股票代码'
+      - name: 'category_type'
+        type: 'VARCHAR'
+        length: 20
+        nullable: false
+        comment: '分类类型(industry/concept)'
+      - name: 'category_code'
+        type: 'VARCHAR'
+        length: 20
+        comment: '分类代码'
+      - name: 'category_name'
+        type: 'VARCHAR'
+        length: 100
+        comment: '分类名称'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: true
+        comment: '是否有效'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
+    indexes:
+      - name: 'idx_stock_industry_concept_symbol'
+        columns: ['symbol']
+      - name: 'idx_stock_industry_concept_type'
+        columns: ['category_type']
+      - name: 'idx_stock_industry_concept_name'
+        columns: ['category_name']
+      - name: 'idx_stock_industry_concept_symbol_type'
+        columns: ['symbol', 'category_type']
+        unique: true
+
+  # =====================================
+  # 新增表：分钟K线数据 - TDengine
+  # =====================================
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'minute_kline_1min'
+    is_super_table: true
+    classification: 'tick_data'
+    description: '1分钟K线数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'open'
+        type: 'FLOAT'
+        comment: '开盘价'
+      - name: 'high'
+        type: 'FLOAT'
+        comment: '最高价'
+      - name: 'low'
+        type: 'FLOAT'
+        comment: '最低价'
+      - name: 'close'
+        type: 'FLOAT'
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(1m)'
+
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'minute_kline_5min'
+    is_super_table: true
+    classification: 'tick_data'
+    description: '5分钟K线数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'open'
+        type: 'FLOAT'
+        comment: '开盘价'
+      - name: 'high'
+        type: 'FLOAT'
+        comment: '最高价'
+      - name: 'low'
+        type: 'FLOAT'
+        comment: '最低价'
+      - name: 'close'
+        type: 'FLOAT'
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(5m)'
+
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'minute_kline_15min'
+    is_super_table: true
+    classification: 'tick_data'
+    description: '15分钟K线数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'open'
+        type: 'FLOAT'
+        comment: '开盘价'
+      - name: 'high'
+        type: 'FLOAT'
+        comment: '最高价'
+      - name: 'low'
+        type: 'FLOAT'
+        comment: '最低价'
+      - name: 'close'
+        type: 'FLOAT'
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(15m)'
+
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'minute_kline_30min'
+    is_super_table: true
+    classification: 'tick_data'
+    description: '30分钟K线数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'open'
+        type: 'FLOAT'
+        comment: '开盘价'
+      - name: 'high'
+        type: 'FLOAT'
+        comment: '最高价'
+      - name: 'low'
+        type: 'FLOAT'
+        comment: '最低价'
+      - name: 'close'
+        type: 'FLOAT'
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(30m)'
+
+  - database_type: 'TDengine'
+    database_name: 'market_data'
+    table_name: 'minute_kline_60min'
+    is_super_table: true
+    classification: 'tick_data'
+    description: '60分钟K线数据'
+    columns:
+      - name: 'ts'
+        type: 'TIMESTAMP'
+        nullable: false
+        comment: '时间戳'
+      - name: 'open'
+        type: 'FLOAT'
+        comment: '开盘价'
+      - name: 'high'
+        type: 'FLOAT'
+        comment: '最高价'
+      - name: 'low'
+        type: 'FLOAT'
+        comment: '最低价'
+      - name: 'close'
+        type: 'FLOAT'
+        comment: '收盘价'
+      - name: 'volume'
+        type: 'BIGINT'
+        comment: '成交量'
+      - name: 'amount'
+        type: 'FLOAT'
+        comment: '成交金额'
+      - name: 'symbol'
+        type: 'VARCHAR'
+        length: 20
+        is_tag: true
+        comment: '股票代码'
+      - name: 'frequency'
+        type: 'VARCHAR'
+        length: 10
+        is_tag: true
+        comment: '频率(60m)'
+
 # 监控系统配置
 monitoring:
   enable: true

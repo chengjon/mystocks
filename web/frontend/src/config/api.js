@@ -37,7 +37,7 @@ export const API_ENDPOINTS = {
     stats: `${API_BASE_URL}/api/strategy/stats/summary`
   },
 
-  // 实时监控和告警系统 (Phase 1: ValueCell Migration)
+  // 实时监控和告警系统
   monitoring: {
     // 告警规则管理
     alertRules: `${API_BASE_URL}/api/monitoring/alert-rules`,
@@ -67,7 +67,7 @@ export const API_ENDPOINTS = {
     controlStatus: `${API_BASE_URL}/api/monitoring/control/status`
   },
 
-  // 技术分析系统 (Phase 2: ValueCell Migration)
+  // 技术分析系统
   technical: {
     // 综合指标
     allIndicators: (symbol) => `${API_BASE_URL}/api/technical/${symbol}/indicators`,
@@ -91,7 +91,7 @@ export const API_ENDPOINTS = {
     patterns: (symbol) => `${API_BASE_URL}/api/technical/patterns/${symbol}`
   },
 
-  // 多数据源管理系统 (Phase 3: ValueCell Migration)
+  // 多数据源管理系统
   multiSource: {
     // 健康状态
     health: `${API_BASE_URL}/api/multi-source/health`,
@@ -108,7 +108,7 @@ export const API_ENDPOINTS = {
     clearCache: `${API_BASE_URL}/api/multi-source/clear-cache`
   },
 
-  // 公告监控系统 (Phase 3: ValueCell Migration)
+  // 公告监控系统
   announcement: {
     // 公告获取
     fetch: `${API_BASE_URL}/api/announcement/fetch`,

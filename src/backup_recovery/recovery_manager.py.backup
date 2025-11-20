@@ -1,0 +1,399 @@
+"""
+恢复管理器 - 支持 TDengine 和 PostgreSQL 的完整恢复
+
+支持:
+- 点对点时间恢复 (PITR)
+- 表级恢复
+- 分阶段恢复（先恢复全量，再恢复增量）
+"""
+
+import os
+import gzip
+import tarfile
+import logging
+from datetime import datetime
+from pathlib import Path
+from typing import Optional, List, Tuple
+
+from src.storage.database import DatabaseConnectionManager
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+
+
+logger = logging.getLogger(__name__)
+
+
+class RecoveryManager:
+    """恢复管理器"""
+
+    def __init__(self, backup_base_path: str = "./backups"):
+        """
+        初始化恢复管理器
+
+        Args:
+            backup_base_path: 备份根目录
+        """
+        self.backup_base_path = Path(backup_base_path)
+        self.tdengine_backup_dir = self.backup_base_path / "tdengine"
+        self.postgresql_backup_dir = self.backup_base_path / "postgresql"
+        self.metadata_dir = self.backup_base_path / "metadata"
+        self.recovery_log_dir = self.backup_base_path / "recovery_logs"
+        self.recovery_log_dir.mkdir(parents=True, exist_ok=True)
+
+        # 创建数据库访问层
+        self.conn_manager = DatabaseConnectionManager()
+        self.tdengine_access = TDengineDataAccess()
+        self.postgresql_access = PostgreSQLDataAccess()
+
+    def restore_tdengine_from_full_backup(
+        self,
+        backup_id: str,
+        target_tables: Optional[List[str]] = None,
+        dry_run: bool = False,
+    ) -> Tuple[bool, str]:
+        """
+        从全量备份恢复 TDengine
+
+        Args:
+            backup_id: 备份 ID
+            target_tables: 指定要恢复的表，None 表示全部
+            dry_run: 是否为测试运行
+
+        Returns:
+            (success, message)
+        """
+        recovery_id = f"recovery_{backup_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        log_file = self.recovery_log_dir / f"{recovery_id}.log"
+
+        try:
+            logger.info(f"Starting TDengine restore from {backup_id}")
+            self._log_recovery(log_file, f"Starting restore from {backup_id}")
+
+            # 查找备份文件
+            backup_file = None
+            if (self.tdengine_backup_dir / f"{backup_id}.tar.gz").exists():
+                backup_file = self.tdengine_backup_dir / f"{backup_id}.tar.gz"
+            elif (self.tdengine_backup_dir / backup_id).exists():
+                backup_file = self.tdengine_backup_dir / backup_id
+            else:
+                msg = f"Backup not found: {backup_id}"
+                logger.error(msg)
+                self._log_recovery(log_file, msg)
+                return False, msg
+
+            # 解压备份
+            backup_dir = self.tdengine_backup_dir / f"{recovery_id}_extract"
+            backup_dir.mkdir(parents=True, exist_ok=True)
+
+            if backup_file.suffix == ".gz":
+                with tarfile.open(backup_file, "r:gz") as tar:
+                    # 安全地提取tar文件，防止路径遍历
+                    def is_safe_path(path, base_path):
+                        """检查tar文件中的路径是否安全，防止路径遍历"""
+                        import os
+                        # 规范化路径
+                        normalized_path = os.path.normpath(path)
+                        # 检查是否包含"../"或"..\"
+                        if ".." in normalized_path.split(os.sep) or ".." in normalized_path.split("/"):
+                            return False
+                        # 检查规范化后的路径是否以基础路径开头
+                        full_path = os.path.join(base_path, normalized_path)
+                        return os.path.commonpath([base_path, full_path]) == base_path
+                    
+                    # 验证所有成员路径
+                    for member in tar.getmembers():
+                        if not is_safe_path(member.name, str(backup_dir)):
+                            raise ValueError(f"Unsafe path in tar file: {member.name}")
+                    
+                    tar.extractall(backup_dir)
+            else:
+                # 已是解压目录
+                import shutil
+
+                shutil.copytree(backup_file, backup_dir, dirs_exist_ok=True)
+
+            self._log_recovery(log_file, f"Backup extracted to {backup_dir}")
+
+            # 恢复数据
+            restored_count = 0
+            parquet_files = list(backup_dir.glob("*.parquet"))
+
+            for parquet_file in parquet_files:
+                table_name = parquet_file.stem
+
+                # 检查是否在目标表列表中
+                if target_tables and table_name not in target_tables:
+                    continue
+
+                try:
+                    # 读取 Parquet 文件
+                    import pandas as pd
+
+                    df = pd.read_parquet(parquet_file)
+
+                    if not dry_run:
+                        # 清空表后恢复数据
+                        logger.info(f"Restoring table {table_name} with {len(df)} rows")
+                        self.tdengine_access.insert_dataframe(table_name, df)
+                        restored_count += 1
+
+                    self._log_recovery(
+                        log_file, f"Restored {table_name}: {len(df)} rows"
+                    )
+
+                except Exception as e:
+                    msg = f"Failed to restore {table_name}: {e}"
+                    logger.error(msg)
+                    self._log_recovery(log_file, msg)
+                    if not dry_run:
+                        return False, msg
+
+            # 清理提取的文件
+            import shutil
+
+            shutil.rmtree(backup_dir)
+
+            msg = f"TDengine restore completed: {restored_count} tables restored"
+            logger.info(msg)
+            self._log_recovery(log_file, msg)
+
+            return True, msg
+
+        except Exception as e:
+            msg = f"TDengine restore failed: {e}"
+            logger.error(msg)
+            self._log_recovery(log_file, msg)
+            return False, msg
+
+    def restore_postgresql_from_full_backup(
+        self,
+        backup_id: str,
+        target_tables: Optional[List[str]] = None,
+        dry_run: bool = False,
+    ) -> Tuple[bool, str]:
+        """
+        从全量备份恢复 PostgreSQL
+
+        Args:
+            backup_id: 备份 ID
+            target_tables: 指定要恢复的表，None 表示全部
+            dry_run: 是否为测试运行
+
+        Returns:
+            (success, message)
+        """
+        recovery_id = f"recovery_{backup_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        log_file = self.recovery_log_dir / f"{recovery_id}.log"
+
+        try:
+            logger.info(f"Starting PostgreSQL restore from {backup_id}")
+            self._log_recovery(log_file, f"Starting restore from {backup_id}")
+
+            # 查找备份文件
+            backup_file = None
+            if (self.postgresql_backup_dir / f"{backup_id}.sql.gz").exists():
+                backup_file = self.postgresql_backup_dir / f"{backup_id}.sql.gz"
+                compressed = True
+            elif (self.postgresql_backup_dir / f"{backup_id}.sql").exists():
+                backup_file = self.postgresql_backup_dir / f"{backup_id}.sql"
+                compressed = False
+            else:
+                msg = f"Backup not found: {backup_id}"
+                logger.error(msg)
+                self._log_recovery(log_file, msg)
+                return False, msg
+
+            # 解压备份文件（如果需要）
+            sql_file = self.postgresql_backup_dir / f"{recovery_id}_restore.sql"
+
+            if compressed:
+                with gzip.open(backup_file, "rb") as f_in:
+                    with open(sql_file, "wb") as f_out:
+                        f_out.writelines(f_in)
+            else:
+                import shutil
+
+                shutil.copy(backup_file, sql_file)
+
+            self._log_recovery(log_file, f"Backup extracted to {sql_file}")
+
+            if dry_run:
+                msg = "Dry run completed successfully (no changes made to database)"
+                logger.info(msg)
+                self._log_recovery(log_file, msg)
+                return True, msg
+
+            # 使用 psql 恢复数据
+            restore_cmd = (
+                f"psql "
+                f"--host {os.getenv('POSTGRESQL_HOST', 'localhost')} "
+                f"--port {os.getenv('POSTGRESQL_PORT', '5432')} "
+                f"--username {os.getenv('POSTGRESQL_USER', 'postgres')} "
+                f"--file {sql_file} "
+                f"{os.getenv('POSTGRESQL_DATABASE', 'mystocks')}"
+            )
+
+            result = os.system(
+                f"PGPASSWORD={os.getenv('POSTGRESQL_PASSWORD')} {restore_cmd}"
+            )
+
+            # 删除临时 SQL 文件
+            sql_file.unlink()
+
+            if result != 0:
+                msg = f"psql restore failed with exit code {result}"
+                logger.error(msg)
+                self._log_recovery(log_file, msg)
+                return False, msg
+
+            msg = "PostgreSQL restore completed successfully"
+            logger.info(msg)
+            self._log_recovery(log_file, msg)
+
+            return True, msg
+
+        except Exception as e:
+            msg = f"PostgreSQL restore failed: {e}"
+            logger.error(msg)
+            self._log_recovery(log_file, msg)
+            return False, msg
+
+    def restore_tdengine_point_in_time(
+        self,
+        target_time: datetime,
+        target_tables: Optional[List[str]] = None,
+    ) -> Tuple[bool, str]:
+        """
+        TDengine 点对点时间恢复 (PITR)
+
+        步骤:
+        1. 查找不晚于 target_time 的最近全量备份
+        2. 恢复全量备份
+        3. 查找所有增量备份直到 target_time
+        4. 按顺序应用增量备份
+
+        Args:
+            target_time: 目标恢复时间
+            target_tables: 指定要恢复的表
+
+        Returns:
+            (success, message)
+        """
+        recovery_id = f"pitr_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        log_file = self.recovery_log_dir / f"{recovery_id}.log"
+
+        try:
+            logger.info(f"Starting TDengine PITR restore to {target_time}")
+            self._log_recovery(log_file, f"Starting PITR restore to {target_time}")
+
+            # 查找最近的全量备份
+            from backup_manager import BackupManager
+
+            backup_mgr = BackupManager()
+            backups = backup_mgr.get_backup_list()
+
+            # 过滤 TDengine 全量备份
+            full_backups = [
+                b
+                for b in backups
+                if b.database == "tdengine"
+                and b.backup_type == "full"
+                and b.status == "success"
+                and datetime.fromisoformat(b.end_time) <= target_time
+            ]
+
+            if not full_backups:
+                msg = f"No full backup found before {target_time}"
+                logger.error(msg)
+                self._log_recovery(log_file, msg)
+                return False, msg
+
+            # 选择最近的全量备份
+            latest_full_backup = max(full_backups, key=lambda b: b.end_time)
+
+            logger.info(f"Using full backup: {latest_full_backup.backup_id}")
+            self._log_recovery(
+                log_file, f"Using full backup: {latest_full_backup.backup_id}"
+            )
+
+            # 恢复全量备份
+            success, msg = self.restore_tdengine_from_full_backup(
+                latest_full_backup.backup_id,
+                target_tables=target_tables,
+            )
+
+            if not success:
+                self._log_recovery(log_file, f"Full backup restore failed: {msg}")
+                return False, msg
+
+            # 查找后续增量备份
+            incremental_backups = [
+                b
+                for b in backups
+                if b.database == "tdengine"
+                and b.backup_type == "incremental"
+                and b.status == "success"
+                and datetime.fromisoformat(b.start_time)
+                >= datetime.fromisoformat(latest_full_backup.end_time)
+                and datetime.fromisoformat(b.end_time) <= target_time
+            ]
+
+            # 按时间排序并应用
+            incremental_backups.sort(key=lambda b: b.start_time)
+
+            for backup in incremental_backups:
+                logger.info(f"Applying incremental backup: {backup.backup_id}")
+                self._log_recovery(
+                    log_file, f"Applying incremental backup: {backup.backup_id}"
+                )
+
+                success, msg = self.restore_tdengine_from_full_backup(
+                    backup.backup_id,
+                    target_tables=target_tables,
+                )
+
+                if not success:
+                    self._log_recovery(
+                        log_file, f"Incremental backup restore failed: {msg}"
+                    )
+                    return False, msg
+
+            msg = f"PITR restore completed to {target_time}"
+            logger.info(msg)
+            self._log_recovery(log_file, msg)
+
+            return True, msg
+
+        except Exception as e:
+            msg = f"PITR restore failed: {e}"
+            logger.error(msg)
+            self._log_recovery(log_file, msg)
+            return False, msg
+
+    def get_recovery_time_objective(self) -> dict:
+        """
+        获取恢复目标
+
+        Returns:
+            {"tdengine": {"rto_minutes": 10, "rpo_minutes": 60}, ...}
+        """
+        return {
+            "tdengine": {
+                "rto_minutes": 10,  # 恢复时间目标：10分钟
+                "rpo_minutes": 60,  # 恢复点目标：1小时
+                "strategy": "full_backup (daily) + incremental_backup (hourly)",
+            },
+            "postgresql": {
+                "rto_minutes": 5,  # 恢复时间目标：5分钟
+                "rpo_minutes": 5,  # 恢复点目标：5分钟
+                "strategy": "full_backup (daily) + WAL_archiving (continuous)",
+            },
+        }
+
+    # ==================== 私有方法 ====================
+
+    def _log_recovery(self, log_file: Path, message: str):
+        """记录恢复日志"""
+        timestamp = datetime.now().isoformat()
+
+        with open(log_file, "a") as f:
+            f.write(f"[{timestamp}] {message}\n")

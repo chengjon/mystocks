@@ -1,6 +1,6 @@
 """
 Multi-source Data Manager
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 多数据源管理器：
 - 优先级路由：根据优先级选择最佳数据源

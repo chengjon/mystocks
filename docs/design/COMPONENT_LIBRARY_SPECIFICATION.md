@@ -30,7 +30,7 @@ src/components/
 │   ├── Table/
 │   └── Card/
 ├── business/          # 业务组件
-│   ├── ValueCell/     # 数值单元格
+│   ├── /     # 数值单元格
 │   ├── StockCard/     # 股票卡片
 │   └── TrendIndicator/
 ├── charts/            # 图表组件
@@ -277,7 +277,7 @@ const handleRowClick = (row, column, event) => {
     <el-table-column prop="name" label="股票名称" width="180" />
     <el-table-column prop="price" label="当前价" width="120">
       <template #default="{ row }">
-        <ValueCell :value="row.price" :change="row.change" />
+        < :value="row.price" :change="row.change" />
       </template>
     </el-table-column>
     <el-table-column prop="volume" label="成交量" sortable />
@@ -287,7 +287,7 @@ const handleRowClick = (row, column, event) => {
 <script setup>
 import { ref } from 'vue'
 import MyTable from '@/components/base/Table/MyTable.vue'
-import ValueCell from '@/components/business/ValueCell/ValueCell.vue'
+import  from '@/components/business//.vue'
 
 const tableData = ref([
   { code: '000001', name: '平安银行', price: 12.34, change: 2.5, volume: 123456 },
@@ -304,12 +304,12 @@ const handleRowClick = (row) => {
 
 ## 3. 业务组件
 
-### 3.1 ValueCell 数值单元格组件
+### 3.1  数值单元格组件
 
 #### 3.1.1 组件定义
 
 ```vue
-<!-- src/components/business/ValueCell/ValueCell.vue -->
+<!-- src/components/business//.vue -->
 <template>
   <span
     :class="[
@@ -478,10 +478,10 @@ const changeText = computed(() => {
 ```vue
 <template>
   <!-- 基本用法 -->
-  <ValueCell :value="12.34" :change="2.5" />
+  < :value="12.34" :change="2.5" />
 
   <!-- 带图标和涨跌幅 -->
-  <ValueCell
+  <
     :value="stockPrice"
     :change="priceChange"
     show-icon
@@ -490,12 +490,12 @@ const changeText = computed(() => {
   />
 
   <!-- 带单位 -->
-  <ValueCell :value="turnoverRate" :change="1.2" unit="%" />
+  < :value="turnoverRate" :change="1.2" unit="%" />
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import ValueCell from '@/components/business/ValueCell/ValueCell.vue'
+import  from '@/components/business//.vue'
 
 const stockPrice = ref(12.34)
 const priceChange = ref(2.5)
@@ -536,7 +536,7 @@ const turnoverRate = ref(3.45)
     </div>
 
     <div class="stock-price">
-      <ValueCell
+      <
         :value="stock.price"
         :change="stock.changePercent"
         show-icon
@@ -548,7 +548,7 @@ const turnoverRate = ref(3.45)
     <div class="stock-metrics">
       <div class="metric-item">
         <span class="metric-label">涨跌额</span>
-        <ValueCell :value="stock.changeAmount" :change="stock.changePercent" />
+        < :value="stock.changeAmount" :change="stock.changePercent" />
       </div>
       <div class="metric-item">
         <span class="metric-label">成交量</span>
@@ -574,7 +574,7 @@ const turnoverRate = ref(3.45)
 
 <script setup>
 import { Star } from '@element-plus/icons-vue'
-import ValueCell from '@/components/business/ValueCell/ValueCell.vue'
+import  from '@/components/business//.vue'
 
 const props = defineProps({
   stock: {
@@ -1088,7 +1088,7 @@ const handleCrosshair = (data) => {
             <span class="stock-name">{{ item.name }}</span>
           </div>
           <div class="search-item-info">
-            <ValueCell
+            <
               :value="item.price"
               :change="item.changePercent"
               size="small"
@@ -1111,7 +1111,7 @@ const handleCrosshair = (data) => {
 <script setup>
 import { ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import ValueCell from '@/components/business/ValueCell/ValueCell.vue'
+import  from '@/components/business//.vue'
 
 const props = defineProps({
   searchFn: {
@@ -1384,11 +1384,11 @@ const handleChange = (...args) => {
 // ComponentName.spec.ts
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ValueCell from '../ValueCell.vue'
+import  from '../.vue'
 
-describe('ValueCell', () => {
+describe('', () => {
   it('renders value correctly', () => {
-    const wrapper = mount(ValueCell, {
+    const wrapper = mount(, {
       props: {
         value: 12.34,
         change: 2.5
@@ -1399,7 +1399,7 @@ describe('ValueCell', () => {
   })
 
   it('applies correct color based on trend', () => {
-    const wrapper = mount(ValueCell, {
+    const wrapper = mount(, {
       props: {
         value: 12.34,
         change: 2.5  // Positive change
@@ -1410,7 +1410,7 @@ describe('ValueCell', () => {
   })
 
   it('emits click event', async () => {
-    const wrapper = mount(ValueCell, {
+    const wrapper = mount(, {
       props: {
         value: 12.34,
         change: 2.5

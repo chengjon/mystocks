@@ -49,7 +49,7 @@ def parse_datetime_to_timestamp(value) -> float:
                     return dt.timestamp()
                 except ValueError:
                     continue
-        except:
+        except Exception:
             pass
     # 如果无法解析，返回当前时间戳
     return datetime.now().timestamp()
@@ -610,7 +610,7 @@ class StockSearchService:
                 # 获取个股新闻
                 try:
                     news_df = ak.stock_news_em(symbol=symbol)
-                except:
+                except Exception:
                     print(f"无法获取股票 {symbol} 的新闻")
                     return []
             else:

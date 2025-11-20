@@ -1,0 +1,44 @@
+{
+    "$schema": "https://lnav.org/schemas/format-v1.schema.json",
+    "mystocks_log_format": {
+        "title": "MyStocks Log Format",
+        "description": "MyStocks系统日志格式定义",
+        "regex": {
+            "std": {
+                "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) \\| (?<level>\\w+) \\| (?<module>[^:]+):(?<function>[^:]+):(?<line>\\d+) - (?<body>.*)$"
+            }
+        },
+        "level-field": "level",
+        "level": {
+            "error": "ERROR",
+            "warning": "WARNING", 
+            "info": "INFO",
+            "debug": "DEBUG",
+            "trace": "TRACE"
+        },
+        "value": {
+            "module": {
+                "kind": "string",
+                "identifier": true
+            },
+            "function": {
+                "kind": "string",
+                "identifier": true
+            },
+            "line": {
+                "kind": "integer"
+            }
+        },
+        "sample": [
+            {
+                "line": "2024-12-19 10:30:45.123 | INFO | data_access:save_data:123 - 数据保存成功"
+            },
+            {
+                "line": "2024-12-19 10:31:22.456 | ERROR | unified_manager:load_data:456 - 数据加载失败: 表不存在"
+            },
+            {
+                "line": "2024-12-19 10:32:10.789 | WARNING | config_driven_table_manager:create_table:789 - 表已存在，跳过创建"
+            }
+        ]
+    }
+}

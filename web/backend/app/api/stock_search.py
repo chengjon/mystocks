@@ -71,9 +71,20 @@ async def search_stocks(
     - H 股（港股）：股票代码或名称
     """
     try:
-        service = get_stock_search_service()
-        results = service.unified_search(q, market=market)
-        return results
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_search", keyword=q, market=market)
+            return mock_data.get("data", [])
+        else:
+            # 正常获取真实数据
+            service = get_stock_search_service()
+            results = service.unified_search(q, market=market)
+            return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"搜索失败: {str(e)}")
 
@@ -92,21 +103,32 @@ async def get_stock_quote(
         market: 市场类型（cn=A股, hk=港股）
     """
     try:
-        service = get_stock_search_service()
-
-        if market.lower() == "cn":
-            quote = service.get_a_stock_realtime(symbol)
-        elif market.lower() == "hk":
-            quote = service.get_hk_stock_realtime(symbol)
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_quote", symbol=symbol, market=market)
+            return mock_data.get("data", {})
         else:
-            raise HTTPException(
-                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
-            )
+            # 正常获取真实数据
+            service = get_stock_search_service()
 
-        if not quote:
-            raise HTTPException(status_code=404, detail="未找到股票报价")
+            if market.lower() == "cn":
+                quote = service.get_a_stock_realtime(symbol)
+            elif market.lower() == "hk":
+                quote = service.get_hk_stock_realtime(symbol)
+            else:
+                raise HTTPException(
+                    status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
+                )
 
-        return quote
+            if not quote:
+                raise HTTPException(status_code=404, detail="未找到股票报价")
+
+            return quote
     except HTTPException:
         raise
     except Exception as e:
@@ -120,16 +142,32 @@ async def get_company_profile(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    获取公司基本信息（暂不支持）
+    获取公司基本信息
 
     Args:
         symbol: 股票代码
         market: 市场类型
     """
-    raise HTTPException(
-        status_code=501,
-        detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-    )
+    try:
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_profile", symbol=symbol, market=market)
+            return mock_data.get("data", {})
+        else:
+            # 正常获取真实数据
+            raise HTTPException(
+                status_code=501,
+                detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取公司信息失败: {str(e)}")
 
 
 @router.get("/news/{symbol}", response_model=List[NewsItem])
@@ -148,18 +186,29 @@ async def get_stock_news(
         days: 获取最近几天的新闻
     """
     try:
-        service = get_stock_search_service()
-
-        if market.lower() == "cn":
-            news = service.get_a_stock_news(symbol, days=days)
-        elif market.lower() == "hk":
-            news = service.get_hk_stock_news(symbol)
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_news", symbol=symbol, market=market, days=days)
+            return mock_data.get("data", [])
         else:
-            raise HTTPException(
-                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
-            )
+            # 正常获取真实数据
+            service = get_stock_search_service()
 
-        return news
+            if market.lower() == "cn":
+                news = service.get_a_stock_news(symbol, days=days)
+            elif market.lower() == "hk":
+                news = service.get_hk_stock_news(symbol)
+            else:
+                raise HTTPException(
+                    status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
+                )
+
+            return news
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取新闻失败: {str(e)}")
 
@@ -199,15 +248,31 @@ async def get_recommendation_trends(
     symbol: str, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    获取分析师推荐趋势（暂不支持）
+    获取分析师推荐趋势
 
     Args:
         symbol: 股票代码
     """
-    raise HTTPException(
-        status_code=501,
-        detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-    )
+    try:
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            from app.mock.unified_mock_data import get_mock_data_manager
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_recommendation", symbol=symbol)
+            return mock_data.get("data", {})
+        else:
+            # 正常获取真实数据
+            raise HTTPException(
+                status_code=501,
+                detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取分析师推荐失败: {str(e)}")
 
 
 @router.post("/cache/clear")

@@ -174,10 +174,10 @@ class PostgreSQLDataAccess:
             execute_values(cursor, sql, data)
             conn.commit()
 
-            rows_inserted = cursor.rowcount
+            rows_inserted = cursor.rowcount or 0
             cursor.close()
 
-            return rows_inserted
+            return int(rows_inserted)
 
         except Exception as e:
             conn.rollback()
@@ -244,10 +244,10 @@ class PostgreSQLDataAccess:
             execute_values(cursor, sql, data)
             conn.commit()
 
-            rows_affected = cursor.rowcount
+            rows_affected = cursor.rowcount or 0
             cursor.close()
 
-            return rows_affected
+            return int(rows_affected)
 
         except Exception as e:
             conn.rollback()
@@ -400,10 +400,10 @@ class PostgreSQLDataAccess:
             cursor.execute(sql)
             conn.commit()
 
-            rows_deleted = cursor.rowcount
+            rows_deleted = cursor.rowcount or 0
             cursor.close()
 
-            return rows_deleted
+            return int(rows_deleted)
 
         except Exception as e:
             conn.rollback()
@@ -493,9 +493,9 @@ class PostgreSQLDataAccess:
                 time_column = filters.get("time_column", "time")
                 return self.query_by_time_range(
                     table_name,
+                    time_column,
                     filters["start_time"],
                     filters["end_time"],
-                    time_column=time_column,
                 )
             elif "where" in filters:
                 # 自定义where条件
@@ -515,11 +515,15 @@ class PostgreSQLDataAccess:
             print(f"❌ 加载数据失败: {e}")
             return None
 
-    def close_all(self):
+    def close(self):
         """关闭所有连接"""
         if self.pool:
             self.pool.closeall()
             self.pool = None
+            
+    def close_all(self):
+        """关闭所有连接（兼容旧接口）"""
+        self.close()
 
 
 if __name__ == "__main__":

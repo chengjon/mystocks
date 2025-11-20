@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 import logging
 
 # 导入重构后的核心模块
-from src.core import DataClassification, DatabaseTarget, DataStorageStrategy
+from src.core import DataClassification, DatabaseTarget, DataManager
 from unified_manager import MyStocksUnifiedManager
 from src.monitoring import AlertLevel
 
@@ -141,8 +141,8 @@ class MyStocksV2Demo:
         ]
 
         for classification, description in classifications:
-            target_db = DataStorageStrategy.get_target_database(classification)
-            db_name = DataStorageStrategy.get_database_name(classification)
+            target_db = DataManager().get_target_database(classification)
+            db_name = DataManager().get_database_name(classification)
             print(f"📂 {description}")
             print(f"   → 自动路由到: {target_db.value} / {db_name}")
 

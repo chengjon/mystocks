@@ -88,7 +88,7 @@
     },
     {
       "name": "monitoring",
-      "description": "\n**实时监控模块 (ValueCell集成)**\n\n提供系统和数据的实时监控、告警功能。\n\n**监控维度**:\n- 系统性能\n- 数据质量\n- API调用\n- 缓存性能\n- 数据库性能\n\n**告警渠道**:\n- 邮件通知\n- Webhook\n- 日志记录\n"
+      "description": "\n**实时监控模块**\n\n提供系统和数据的实时监控、告警功能。\n\n**监控维度**:\n- 系统性能\n- 数据质量\n- API调用\n- 缓存性能\n- 数据库性能\n\n**告警渠道**:\n- 邮件通知\n- Webhook\n- 日志记录\n"
     },
     {
       "name": "sse",
@@ -136,15 +136,15 @@
     },
     {
       "name": "technical-analysis",
-      "description": "\n**技术分析模块 (ValueCell Phase 2)**\n\n增强的技术分析功能。\n\n**分析类型**:\n- 形态识别\n- 趋势分析\n- 支撑阻力\n- 量价分析\n"
+      "description": "\n**技术分析模块**\n\n增强的技术分析功能。\n\n**分析类型**:\n- 形态识别\n- 趋势分析\n- 支撑阻力\n- 量价分析\n"
     },
     {
       "name": "multi-source",
-      "description": "\n**多数据源模块 (ValueCell Phase 3)**\n\n整合多个数据源，提供统一的数据访问接口。\n\n**数据源**:\n- AKShare\n- Baostock\n- 东方财富\n- 通达信\n- Tushare\n"
+      "description": "\n**多数据源模块**\n\n整合多个数据源，提供统一的数据访问接口。\n\n**数据源**:\n- AKShare\n- Baostock\n- 东方财富\n- 通达信\n- Tushare\n"
     },
     {
       "name": "announcement",
-      "description": "\n**公告监控模块 (ValueCell Phase 3)**\n\n上市公司公告的抓取、解析和监控。\n\n**公告类型**:\n- 定期报告\n- 临时公告\n- 重大事项\n- 股东变动\n"
+      "description": "\n**公告监控模块**\n\n上市公司公告的抓取、解析和监控。\n\n**公告类型**:\n- 定期报告\n- 临时公告\n- 重大事项\n- 股东变动\n"
     }
   ],
   "paths": {

@@ -1,0 +1,13 @@
+{
+  "name": "mystocks-e2e-tests",
+  "version": "1.0.0",
+  "description": "MyStocks E2E Tests",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

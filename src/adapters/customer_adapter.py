@@ -375,7 +375,7 @@ class CustomerDataSource(IDataSource):
                                 df, "market_snapshot"
                             )
                             return standardized_df
-                    except:
+                    except Exception:
                         # 如果market_snapshot不可用，尝试其他方法
                         print("[Customer] market_snapshot不可用，尝试其他方法")
                         pass
@@ -424,9 +424,38 @@ class CustomerDataSource(IDataSource):
         """获取交易日历-Customer实现"""
         print(f"[Customer] 尝试获取交易日历: {start_date} to {end_date}")
 
-        # 暂时没有直接的实现，返回空DataFrame
-        print("[Customer] 交易日历功能暂未实现")
-        return pd.DataFrame()
+        # 使用akshare获取交易日历
+        try:
+            import akshare as ak
+            
+            # 获取交易日历
+            calendar_df = ak.tool_trade_date_hist_sina()
+            
+            # 过滤指定日期范围
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+            
+            # 确保日期列是datetime类型
+            calendar_df['trade_date'] = pd.to_datetime(calendar_df['trade_date'])
+            
+            # 过滤日期范围
+            filtered_df = calendar_df[
+                (calendar_df['trade_date'] >= start_date) & 
+                (calendar_df['trade_date'] <= end_date)
+            ]
+            
+            # 重命名列以符合标准格式
+            if 'trade_date' in filtered_df.columns:
+                filtered_df = filtered_df.rename(columns={'trade_date': 'date'})
+            
+            print(f"[Customer] 成功获取交易日历: {len(filtered_df)}个交易日")
+            return filtered_df
+        except ImportError:
+            print("[Customer] akshare库未安装，无法获取交易日历")
+            return pd.DataFrame()
+        except Exception as e:
+            print(f"[Customer] 获取交易日历时出错: {str(e)}")
+            return pd.DataFrame()
 
     def get_financial_data(
         self, symbol: str, period: str = "annual"
@@ -464,6 +493,43 @@ class CustomerDataSource(IDataSource):
         """获取新闻数据-Customer实现"""
         print(f"[Customer] 尝试获取新闻数据: {symbol}")
 
-        # 暂时没有直接的实现，返回空列表
-        print("[Customer] 新闻数据功能暂未实现")
-        return []
+        # 使用akshare获取新闻数据
+        try:
+            import akshare as ak
+            
+            if symbol:
+                # 获取个股新闻（如果有接口的话）
+                # akshare可能没有直接的个股新闻接口，这里提供通用新闻
+                news_data = ak.stock_news_em(symbol=symbol if len(symbol) == 6 else f"{symbol.zfill(6)}")
+                
+                if not news_data.empty:
+                    # 标准化新闻数据格式
+                    news_list = []
+                    for _, row in news_data.iterrows():
+                        news_item = {
+                            "title": row.get("title", ""),
+                            "content": row.get("content", ""),
+                            "publish_time": row.get("publish_time", ""),
+                            "source": row.get("source", ""),
+                            "url": row.get("url", ""),
+                            "symbol": symbol
+                        }
+                        news_list.append(news_item)
+                    
+                    print(f"[Customer] 成功获取{len(news_list)}条新闻数据")
+                    return news_list
+                else:
+                    # 如果没有个股新闻，返回通用财经新闻
+                    print("[Customer] 个股新闻未找到，返回空列表")
+                    return []
+            else:
+                # 获取通用财经新闻
+                # akshare可能没有通用财经新闻接口，返回空列表
+                print("[Customer] 未指定股票，返回空新闻列表")
+                return []
+        except ImportError:
+            print("[Customer] akshare库未安装，无法获取新闻数据")
+            return []
+        except Exception as e:
+            print(f"[Customer] 获取新闻数据时出错: {str(e)}")
+            return []

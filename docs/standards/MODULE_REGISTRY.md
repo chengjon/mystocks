@@ -109,7 +109,7 @@
 
 ## 🌐 三、Web管理平台
 
-### 3.1 后端API系统 ⭐ **原生 + ValueCell迁移**
+### 3.1 后端API系统 ⭐ **原生 + 迁移**
 
 #### A. 核心业务API（原生）
 
@@ -131,16 +131,16 @@
 | 机器学习 | `web/backend/app/api/ml.py` | ML模型预测API | 8个 | JohnC & Claude |
 | 策略管理 | `web/backend/app/api/strategy.py` | 策略定义和回测 | 10个 | JohnC & Claude |
 
-#### B. ValueCell迁移API（Phase 1-3）
+#### B. 迁移API（Phase 1-3）
 
 | API模块 | 文件路径 | 功能 | 端点数量 | 来源项目 | 迁移阶段 |
 |---------|---------|------|---------|---------|----------|
-| 实时监控 | `web/backend/app/api/monitoring.py` | 告警规则、实时行情、龙虎榜 | 12个 | ValueCell | Phase 1 |
-| 技术分析 | `web/backend/app/api/technical_analysis.py` | 26个技术指标、交易信号 | 8个 | ValueCell | Phase 2 |
-| 多数据源 | `web/backend/app/api/multi_source.py` | 数据源健康、优先级路由 | 12个 | ValueCell | Phase 3 |
-| 公告监控 | `web/backend/app/api/announcement.py` | 官方公告、监控规则 | 11个 | ValueCell | Phase 3 |
+| 实时监控 | `web/backend/app/api/monitoring.py` | 告警规则、实时行情、龙虎榜 | 12个 |  | Phase 1 |
+| 技术分析 | `web/backend/app/api/technical_analysis.py` | 26个技术指标、交易信号 | 8个 |  | Phase 2 |
+| 多数据源 | `web/backend/app/api/multi_source.py` | 数据源健康、优先级路由 | 12个 |  | Phase 3 |
+| 公告监控 | `web/backend/app/api/announcement.py` | 官方公告、监控规则 | 11个 |  | Phase 3 |
 
-**ValueCell迁移总结**:
+**迁移总结**:
 - **Phase 1**: 实时监控和告警系统（7种告警类型）
 - **Phase 2**: 增强技术分析系统（26个指标，4大类别）
 - **Phase 3**: 多数据源集成系统（EastMoney + Cninfo）
@@ -158,14 +158,14 @@
 | 任务管理服务 | `web/backend/app/services/task_manager.py` | 后台任务调度 | JohnC & Claude |
 | ML预测服务 | `web/backend/app/services/ml_prediction_service.py` | 机器学习预测 | JohnC & Claude |
 
-#### B. ValueCell迁移服务
+#### B. 迁移服务
 
 | 服务模块 | 文件路径 | 功能 | 来源项目 | 迁移阶段 |
 |---------|---------|------|---------|----------|
-| 监控服务 | `web/backend/app/services/monitoring_service.py` | 实时监控、告警管理 | ValueCell | Phase 1 |
-| 技术分析服务 | `web/backend/app/services/technical_analysis_service.py` | 26个技术指标计算 | ValueCell | Phase 2 |
-| 多数据源管理器 | `web/backend/app/services/multi_source_manager.py` | 数据源路由、故障转移 | ValueCell | Phase 3 |
-| 公告服务 | `web/backend/app/services/announcement_service.py` | 公告获取、监控评估 | ValueCell | Phase 3 |
+| 监控服务 | `web/backend/app/services/monitoring_service.py` | 实时监控、告警管理 |  | Phase 1 |
+| 技术分析服务 | `web/backend/app/services/technical_analysis_service.py` | 26个技术指标计算 |  | Phase 2 |
+| 多数据源管理器 | `web/backend/app/services/multi_source_manager.py` | 数据源路由、故障转移 |  | Phase 3 |
+| 公告服务 | `web/backend/app/services/announcement_service.py` | 公告获取、监控评估 |  | Phase 3 |
 
 ---
 
@@ -173,9 +173,9 @@
 
 | 适配器 | 文件路径 | 功能 | 来源 |
 |--------|---------|------|------|
-| 基础适配器 | `web/backend/app/adapters/base.py` | 适配器基类 | ValueCell Phase 3 |
-| 东方财富适配器 | `web/backend/app/adapters/eastmoney_enhanced.py` | EastMoney API封装 | ValueCell Phase 3 |
-| 巨潮资讯适配器 | `web/backend/app/adapters/cninfo_adapter.py` | Cninfo公告接口 | ValueCell Phase 3 |
+| 基础适配器 | `web/backend/app/adapters/base.py` | 适配器基类 |  Phase 3 |
+| 东方财富适配器 | `web/backend/app/adapters/eastmoney_enhanced.py` | EastMoney API封装 |  Phase 3 |
+| 巨潮资讯适配器 | `web/backend/app/adapters/cninfo_adapter.py` | Cninfo公告接口 |  Phase 3 |
 | AkShare扩展 | `web/backend/app/adapters/akshare_extension.py` | AkShare增强封装 | 原生扩展 |
 | 问财适配器 | `web/backend/app/adapters/wencai_adapter.py` | 同花顺问财接口 | 原生 |
 
@@ -333,7 +333,7 @@
 
 ## 📦 七、引入的第三方项目
 
-### 7.1 ValueCell项目 🔗 **引入**
+### 7.1 已迁移功能 🔗 **引入**
 
 **来源**: https://github.com/valuecell-project (假设)
 **引入时间**: 2025-10-15 ~ 2025-10-23
@@ -480,7 +480,7 @@
 - `stock_minute` - 分钟数据（TimescaleDB hypertable）
 - `realtime_quotes` - 实时行情
 
-#### C. ValueCell迁移表（Phase 1-3）
+#### C. 迁移表（Phase 1-3）
 - `alert_rule`, `alert_record` - 告警系统（Phase 1）
 - `realtime_monitoring`, `dragon_tiger_list` - 监控数据（Phase 1）
 - `data_source_config`, `data_source_health` - 多数据源（Phase 3）
@@ -526,7 +526,7 @@
   - ML策略: 100%
   - 工具测试: 100%
 
-ValueCell迁移: 10% (~5000行)
+迁移: 10% (~5000行)
   - Phase 1: 监控告警系统
   - Phase 2: 技术分析系统
   - Phase 3: 多数据源集成
@@ -543,7 +543,7 @@ ValueCell迁移: 10% (~5000行)
 | API类别 | 端点数量 | 来源 |
 |---------|---------|------|
 | 原生业务API | ~100个 | JohnC & Claude |
-| ValueCell迁移API | ~43个 | ValueCell Phase 1-3 |
+| 迁移API | ~43个 |  Phase 1-3 |
 | **合计** | **~143个** | - |
 
 ---

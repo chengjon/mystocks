@@ -1,6 +1,6 @@
 """
 Cninfo (巨潮资讯) Adapter
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 巨潮资讯网是中国证监会指定的上市公司信息披露网站
 提供官方、权威的公告数据，类似美国的SEC EDGAR系统

@@ -201,7 +201,7 @@ const drawerVisible = ref(false)
 const selectedETF = ref(null)
 
 // API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // 查询ETF数据
 const handleQuery = async () => {

@@ -28,6 +28,7 @@ if project_root not in sys.path:
 from unified_manager import MyStocksUnifiedManager
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
+from app.mock.unified_mock_data import get_mock_data_manager
 
 # 注意: backtest, model 模块需要确保存在
 try:
@@ -136,48 +137,79 @@ async def list_strategies(
             "page": 1,
             "page_size": 20
         }
+    
+    支持Mock数据模式切换
     """
     operation_start = datetime.now()
 
     try:
-        manager = MyStocksUnifiedManager()
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            mock_manager = get_mock_data_manager()
+            strategies_data = mock_manager.get_data("strategy", action="list")
+            
+            strategies = strategies_data.get("strategies", [])
+            
+            # 应用状态过滤
+            if status:
+                strategies = [s for s in strategies if s.get("status") == status]
+            
+            # 分页处理
+            total = len(strategies)
+            start = (page - 1) * page_size
+            end = start + page_size
+            items = strategies[start:end]
+            
+            return {"items": items, "total": total, "page": page, "page_size": page_size}
+        else:
+            # 使用真实数据库
+            manager = MyStocksUnifiedManager()
 
-        # 构建过滤条件
-        filters = {}
-        if status:
-            filters["status"] = status
+            # 构建过滤条件
+            filters = {}
+            if status:
+                filters["status"] = status
 
-        # 使用 UnifiedManager 加载数据
-        strategies = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="strategies",
-            filters=filters,
-        )
+            # 使用 UnifiedManager 加载数据
+            strategies = manager.load_data_by_classification(
+                classification=DataClassification.MODEL_OUTPUT,
+                table_name="strategies",
+                filters=filters,
+            )
 
-        # 分页处理
-        total = len(strategies) if strategies is not None else 0
-        start = (page - 1) * page_size
-        end = start + page_size
-        items = (
-            strategies.iloc[start:end].to_dict("records")
-            if strategies is not None
-            else []
-        )
+            # 分页处理
+            total = len(strategies) if strategies is not None else 0
+            start = (page - 1) * page_size
+            end = start + page_size
+            items = (
+                strategies.iloc[start:end].to_dict("records")
+                if strategies is not None
+                else []
+            )
 
-        # 记录操作到监控数据库
-        operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
-            operation_type="SELECT",
-            table_name="strategies",
-            operation_name="list_strategies",
-            rows_affected=len(items),
-            operation_time_ms=operation_time,
-            success=True,
-            details=f"status={status}, page={page}, page_size={page_size}",
-        )
+            # 记录操作到监控数据库
+            operation_time = (datetime.now() - operation_start).total_seconds() * 1000
+            get_monitoring_db().log_operation(
+                operation_type="SELECT",
+                table_name="strategies",
+                operation_name="list_strategies",
+                rows_affected=len(items),
+                operation_time_ms=operation_time,
+                success=True,
+                details=f"status={status}, page={page}, page_size={page_size}",
+            )
 
-        return {"items": items, "total": total, "page": page, "page_size": page_size}
+            return {"items": items, "total": total, "page": page, "page_size": page_size}
+            
     except Exception as e:
+        # 如果使用Mock数据模式失败，降级到真实数据库
+        if use_mock:
+            logger.warning(f"Mock数据获取失败，降级到真实数据库: {str(e)}")
+            return await list_strategies(status=status, page=page, page_size=page_size)
+        
         # 记录失败操作
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
         get_monitoring_db().log_operation(
@@ -202,32 +234,53 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns:
         创建的策略对象
+    
+    支持Mock数据模式切换
     """
     operation_start = datetime.now()
 
     try:
-        manager = MyStocksUnifiedManager()
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据 - 直接返回模拟结果
+            mock_strategy = {
+                "id": f"mock_strategy_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                "name": strategy_data.get("name", "Mock策略"),
+                "description": strategy_data.get("description", "Mock策略描述"),
+                "strategy_type": strategy_data.get("strategy_type", "technical"),
+                "parameters": strategy_data.get("parameters", {}),
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "status": strategy_data.get("status", "draft"),
+                "is_mock": True
+            }
+            return mock_strategy
+        else:
+            # 使用真实数据库
+            manager = MyStocksUnifiedManager()
 
-        # 添加时间戳
-        strategy_data["created_at"] = datetime.now()
-        strategy_data["updated_at"] = datetime.now()
-        strategy_data["status"] = strategy_data.get("status", "draft")
+            # 添加时间戳
+            strategy_data["created_at"] = datetime.now()
+            strategy_data["updated_at"] = datetime.now()
+            strategy_data["status"] = strategy_data.get("status", "draft")
 
-        # 使用 UnifiedManager 保存数据
-        import pandas as pd
+            # 使用 UnifiedManager 保存数据
+            import pandas as pd
 
-        strategy_df = pd.DataFrame([strategy_data])
+            strategy_df = pd.DataFrame([strategy_data])
 
-        result = manager.save_data_by_classification(
-            data=strategy_df,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="strategies",
-        )
+            result = manager.save_data_by_classification(
+                data=strategy_df,
+                classification=DataClassification.MODEL_OUTPUT,
+                table_name="strategies",
+            )
 
-        # 记录操作到监控数据库
-        operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
-            operation_type="INSERT",
+            # 记录操作到监控数据库
+            operation_time = (datetime.now() - operation_start).total_seconds() * 1000
+            get_monitoring_db().log_operation(
+                operation_type="INSERT",
             table_name="strategies",
             operation_name="create_strategy",
             rows_affected=1 if result else 0,

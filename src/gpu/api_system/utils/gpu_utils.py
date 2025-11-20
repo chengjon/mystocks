@@ -92,7 +92,7 @@ class GPUResourceManager:
             return 0
         try:
             return pynvml.nvmlDeviceGetCount()
-        except:
+        except Exception:
             return 0
 
     def get_gpu_memory_total(self, gpu_id: int) -> int:
@@ -102,7 +102,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetMemoryInfo(handle).total // (1024 * 1024)
-        except:
+        except Exception:
             return 0
 
     def get_gpu_memory_free(self, gpu_id: int) -> int:
@@ -112,7 +112,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetMemoryInfo(handle).free // (1024 * 1024)
-        except:
+        except Exception:
             return 0
 
     def get_gpu_memory_used(self, gpu_id: int) -> int:
@@ -122,7 +122,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetMemoryInfo(handle).used // (1024 * 1024)
-        except:
+        except Exception:
             return 0
 
     def get_gpu_utilization(self, gpu_id: int) -> float:
@@ -132,7 +132,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetUtilizationRates(handle).gpu
-        except:
+        except Exception:
             return 0
 
     def get_gpu_temperature(self, gpu_id: int) -> int:
@@ -142,7 +142,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
-        except:
+        except Exception:
             return 0
 
     def get_gpu_power_usage(self, gpu_id: int) -> int:
@@ -152,7 +152,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetPowerUsage(handle) // 1000
-        except:
+        except Exception:
             return 0
 
     def get_gpu_fan_speed(self, gpu_id: int) -> int:
@@ -162,7 +162,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             return pynvml.nvmlDeviceGetFanSpeed(handle)
-        except:
+        except Exception:
             return 0
 
     def get_gpu_pcie_bandwidth(self, gpu_id: int) -> float:
@@ -176,7 +176,7 @@ class GPUResourceManager:
                 handle, pynvml.NVML_PCIE_UTIL_COUNT
             )
             return total / 1024.0  # 转换为GB/s
-        except:
+        except Exception:
             return 0
 
     def get_gpu_ecc_memory_errors(self, gpu_id: int) -> int:
@@ -188,7 +188,7 @@ class GPUResourceManager:
             return pynvml.nvmlDeviceGetTotalEccErrors(
                 handle, pynvml.NVML_MEMORY_ERROR_TYPE_CORRECTED
             ).singleBitEccErrors
-        except:
+        except Exception:
             return 0
 
     def classify_gpu_priority(self, gpu_id: int):

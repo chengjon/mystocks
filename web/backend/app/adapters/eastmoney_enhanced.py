@@ -1,6 +1,6 @@
 """
 EastMoney Enhanced Adapter
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 This adapter enhances the existing EastMoneyAdapter with BaseDataSourceAdapter features:
 - Health monitoring

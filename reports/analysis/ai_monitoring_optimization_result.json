@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-11-16T10:15:44.499612",
+  "monitoring_summary": {
+    "total_samples": 6,
+    "alerts_triggered": 4,
+    "strategies_analyzed": 2
+  },
+  "strategy_summary": {
+    "total_strategies": 2,
+    "active_strategies": 2,
+    "performance_history_count": 2,
+    "strategies": {
+      "basic_trading": {
+        "status": "active",
+        "performance_count": 1,
+        "average_score": 72.47,
+        "last_analysis": "2025-11-16T10:15:44.499498"
+      },
+      "mean_reversion": {
+        "status": "active",
+        "performance_count": 1,
+        "average_score": 72.47,
+        "last_analysis": "2025-11-16T10:15:44.499555"
+      }
+    }
+  },
+  "alert_rules": [
+    "cpu_high",
+    "memory_high",
+    "disk_low",
+    "ai_error_rate",
+    "response_time_slow"
+  ],
+  "notification_channels": [
+    "email",
+    "webhook",
+    "log"
+  ]
+}

@@ -375,7 +375,7 @@ const testConnection = async (database) => {
   database.message = ''
 
   try {
-    const response = await axios.post('http://localhost:8888/api/system/test-connection', {
+    const response = await axios.post('http://localhost:8000/api/system/test-connection', {
       db_type: database.id,
       host: database.host,
       port: parseInt(database.port)
@@ -434,7 +434,7 @@ const fetchLogs = async () => {
     if (selectedLevel.value) params.level = selectedLevel.value
     if (selectedCategory.value) params.category = selectedCategory.value
 
-    const response = await axios.get('http://localhost:8888/api/system/logs', { params })
+    const response = await axios.get('http://localhost:8000/api/system/logs', { params })
 
     if (response.data.success) {
       logs.value = response.data.data
@@ -453,7 +453,7 @@ const fetchLogs = async () => {
 // 获取日志统计
 const fetchLogSummary = async () => {
   try {
-    const response = await axios.get('http://localhost:8888/api/system/logs/summary')
+    const response = await axios.get('http://localhost:8000/api/system/logs/summary')
     if (response.data.success) {
       logSummary.value = response.data.data
     }

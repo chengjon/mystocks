@@ -1,6 +1,6 @@
 """
 监控系统 API 测试脚本
-Phase 1: ValueCell Migration - Real-time Monitoring System Test
+Real-time Monitoring System Test
 """
 
 import requests
@@ -240,7 +240,7 @@ def main():
     """运行所有测试"""
     print("\n" + "=" * 80)
     print("  MyStocks 监控系统 API 测试")
-    print("  Phase 1: ValueCell Migration")
+    print("  Phase 1:  Migration")
     print("=" * 80)
 
     try:

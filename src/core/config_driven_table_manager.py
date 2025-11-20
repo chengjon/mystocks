@@ -21,79 +21,60 @@ logger = logging.getLogger(__name__)
 
 
 class ConfigDrivenTableManager:
-    """
-    配置驱动的表管理器
+    """配置驱动的表管理器"""
 
-    功能:
-    1. 从YAML配置文件读取表结构定义
-    2. 根据配置自动创建表 (TDengine Super Table, TimescaleDB Hypertable, MySQL表)
-    3. 验证表结构与配置一致性
-    4. 安全模式: 自动添加列,删除/修改需确认
-    """
-
-    def __init__(self, config_path: str = "config/table_config.yaml"):
+    def __init__(self, config_path: str = "config/table_config.yaml", safe_mode: bool = True) -> None:
         """
-        初始化配置驱动表管理器
+        初始化表管理器
 
         Args:
             config_path: 配置文件路径
+            safe_mode: 是否启用安全模式(默认True)
         """
-        self.config_path = config_path
-        self.config = self._load_config()
+        self.config_path = Path(config_path)
+        self.safe_mode = safe_mode
         self.conn_manager = DatabaseConnectionManager()
-        self.safe_mode = self.config.get("maintenance", {}).get("safe_mode", True)
 
-        logger.info(
-            f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})"
-        )
-
-    def _load_config(self) -> Dict[str, Any]:
-        """加载并验证YAML配置文件"""
-        if not os.path.exists(self.config_path):
+        if not self.config_path.exists():
             raise FileNotFoundError(f"配置文件不存在: {self.config_path}")
 
+        # 加载配置
+        self.config = self.load_config()
+        
+        logger.info(f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})")
+
+    def load_config(self) -> Dict[str, Any]:
+        """加载配置文件"""
         with open(self.config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
-        # 验证配置版本
-        version = config.get("version", "未知")
+        version = config.get("version", "1.0.0")
         logger.info(f"加载配置文件: {self.config_path} (version={version})")
-
-        # 验证必需字段
-        if "databases" not in config:
-            raise ValueError("配置文件缺少 'databases' 字段")
-        if "tables" not in config:
-            raise ValueError("配置文件缺少 'tables' 字段")
-
         logger.info(f"配置文件包含 {len(config['tables'])} 个表定义")
-        return config
 
-    def initialize_all_tables(self) -> Dict[str, Any]:
-        """
-        根据配置初始化所有表
+        return dict(config) if config else {}
 
-        Returns:
-            结果字典: {
-                'tables_created': int,
-                'tables_skipped': int,
-                'errors': List[str]
-            }
-        """
-        result = {"tables_created": 0, "tables_skipped": 0, "errors": []}
+    def initialize_tables(self) -> Dict[str, Any]:
+        """根据配置初始化所有表"""
+        config = self.load_config()
+        result: Dict[str, Any] = {
+            "tables_created": 0,
+            "tables_skipped": 0,
+            "errors": [],
+        }
 
-        logger.info(f"开始初始化表 (total={len(self.config['tables'])})")
+        logger.info(f"开始初始化表 (total={len(config['tables'])})")
 
-        for table_def in self.config["tables"]:
+        for table_def in config["tables"]:
             try:
                 created = self._create_table(table_def)
                 if created:
                     result["tables_created"] += 1
-                    logger.info(
-                        f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})"
-                    )
+                    logger.info(f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
                 else:
                     result["tables_skipped"] += 1
                     logger.info(f"⏭️ 跳过表: {table_def['table_name']} (已存在)")
+
             except Exception as e:
                 error_msg = f"{table_def['table_name']}: {str(e)}"
                 result["errors"].append(error_msg)
@@ -145,7 +126,13 @@ class ConfigDrivenTableManager:
             if db_type == "TDengine":
                 conn = self.conn_manager.get_tdengine_connection()
                 cursor = conn.cursor()
-                cursor.execute(f"SHOW STABLES LIKE '{table_name}'")
+                # 验证表名只包含字母、数字和下划线，防止SQL注入
+                import re
+                if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table_name):
+                    raise ValueError(f"Invalid table name: {table_name}")
+                
+                query = f"SHOW STABLES LIKE '{table_name}'"
+                cursor.execute(query)
                 result = cursor.fetchall()
                 cursor.close()
                 return len(result) > 0
@@ -165,7 +152,7 @@ class ConfigDrivenTableManager:
                 exists = cursor.fetchone()[0]
                 cursor.close()
                 self.conn_manager._return_postgresql_connection(conn)
-                return exists
+                return bool(exists)
 
             elif db_type == "MySQL":
                 conn = self.conn_manager.get_mysql_connection()
@@ -184,7 +171,7 @@ class ConfigDrivenTableManager:
                 exists = cursor.fetchone()[0] > 0
                 cursor.close()
                 conn.close()
-                return exists
+                return bool(exists)
 
             else:
                 return False
@@ -202,6 +189,11 @@ class ConfigDrivenTableManager:
             table_name = table_def["table_name"]
             columns = table_def["columns"]
             tags = table_def.get("tags", [])
+
+            # 验证表名防止SQL注入
+            import re
+            if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table_name):
+                raise ValueError(f"Invalid table name: {table_name}")
 
             # 构建列定义
             col_defs = []
@@ -239,7 +231,11 @@ class ConfigDrivenTableManager:
 
             retention_days = table_def.get("retention_days")
             if retention_days:
-                cursor.execute(f"ALTER STABLE {table_name} KEEP {retention_days}")
+                # 验证保留天数防止SQL注入
+                if not isinstance(retention_days, int) or retention_days <= 0:
+                    raise ValueError(f"Invalid retention days: {retention_days}")
+                query = f"ALTER STABLE {table_name} KEEP {retention_days}"
+                cursor.execute(query)
 
             cursor.close()
             return True
@@ -274,24 +270,17 @@ class ConfigDrivenTableManager:
                 nullable = "" if col.get("nullable", True) else " NOT NULL"
                 default = f" DEFAULT {col['default']}" if col.get("default") else ""
                 unique = " UNIQUE" if col.get("unique") else ""
-                auto_inc = (
-                    " GENERATED ALWAYS AS IDENTITY" if col.get("auto_increment") else ""
-                )
+                auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
 
-                col_def = (
+                col_defs.append(
                     f"{col['name']} {col_type}{nullable}{default}{unique}{auto_inc}"
                 )
-                col_defs.append(col_def)
 
                 if col.get("primary_key"):
                     primary_keys.append(col["name"])
 
             # 添加主键约束
             if primary_keys:
-                if is_hypertable:
-                    # TimescaleDB Hypertable需要在主键中包含时间列
-                    if time_column not in primary_keys:
-                        primary_keys.append(time_column)
                 col_defs.append(f"PRIMARY KEY ({', '.join(primary_keys)})")
 
             # 构建CREATE语句
@@ -303,77 +292,41 @@ class ConfigDrivenTableManager:
 
             cursor.execute(create_sql)
 
-            # 转换为Hypertable
+            # 如果是TimescaleDB超表
             if is_hypertable:
-                chunk_interval = table_def.get("chunk_interval", "1 day")
-                hypertable_sql = f"""
-                    SELECT create_hypertable(
-                        '{table_name}',
-                        '{time_column}',
-                        chunk_time_interval => INTERVAL '{chunk_interval}',
-                        if_not_exists => TRUE
-                    )
-                """
-                cursor.execute(hypertable_sql)
-                logger.info(f"✅ 转换为Hypertable: {table_name}")
-
-                # 设置压缩策略
-                compression = table_def.get("compression", {})
-                if compression.get("enabled"):
-                    after_days = compression.get("after_days", 30)
-                    segment_by = compression.get("segment_by", [])
-                    order_by = compression.get("order_by", f"{time_column} DESC")
-
-                    # 启用压缩
+                try:
                     cursor.execute(
-                        f"""
-                        ALTER TABLE {table_name} SET (
-                            timescaledb.compress,
-                            timescaledb.compress_segmentby = '{",".join(segment_by)}',
-                            timescaledb.compress_orderby = '{order_by}'
-                        )
-                    """
+                        f"SELECT create_hypertable('{table_name}', '{time_column}')"
                     )
-
-                    # 添加压缩策略
-                    cursor.execute(
-                        f"""
-                        SELECT add_compression_policy('{table_name}', INTERVAL '{after_days} days')
-                    """
-                    )
-                    logger.info(f"✅ 配置压缩策略: {table_name} ({after_days}天后压缩)")
-
-                # 设置保留策略
-                retention_days = table_def.get("retention_days")
-                if retention_days:
-                    cursor.execute(
-                        f"""
-                        SELECT add_retention_policy('{table_name}', INTERVAL '{retention_days} days')
-                    """
-                    )
-                    logger.info(f"✅ 配置保留策略: {table_name} ({retention_days}天)")
+                    logger.info(f"✅ 转换为Hypertable: {table_name}")
+                except Exception as e:
+                    logger.warning(f"转换为Hypertable失败: {e}")
 
             # 创建索引
             for idx in indexes:
-                idx_name = idx["name"]
-                idx_type = idx["type"]
+                idx_name = idx.get("name", f"idx_{table_name}_{idx['columns'][0]}")
                 idx_columns = idx["columns"]
+                is_unique = idx.get("unique", False)
 
-                if idx_type == "UNIQUE":
+                if is_unique:
                     idx_sql = f"CREATE UNIQUE INDEX IF NOT EXISTS {idx_name} ON {table_name} ({', '.join(idx_columns)})"
                 else:
                     idx_sql = f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} ({', '.join(idx_columns)})"
 
-                cursor.execute(idx_sql)
+                try:
+                    cursor.execute(idx_sql)
+                    logger.info(f"✅ 创建索引: {idx_name}")
+                except Exception as e:
+                    logger.warning(f"创建索引时出错 ({idx_name}): {e}")
 
-            conn.commit()
             cursor.close()
+            conn.commit()
             self.conn_manager._return_postgresql_connection(conn)
             return True
 
         except Exception as e:
-            conn.rollback()
             cursor.close()
+            conn.rollback()
             self.conn_manager._return_postgresql_connection(conn)
             raise RuntimeError(f"创建PostgreSQL表失败: {e}")
 
@@ -390,45 +343,33 @@ class ConfigDrivenTableManager:
             # 构建列定义
             col_defs = []
             primary_keys = []
-            unique_keys = []
 
             for col in columns:
                 col_type = col["type"]
                 if "length" in col and "VARCHAR" in col_type:
                     col_type = f"VARCHAR({col['length']})"
+                elif "precision" in col and "scale" in col:
+                    col_type = f"NUMERIC({col['precision']},{col['scale']})"
 
                 nullable = "" if col.get("nullable", True) else " NOT NULL"
-
+                
                 # 处理默认值
                 default = ""
                 if "default" in col:
                     default_val = col["default"]
-                    # 处理特殊默认值
-                    if default_val == "CURRENT_TIMESTAMP":
-                        default = " DEFAULT CURRENT_TIMESTAMP"
-                    elif default_val == "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP":
-                        default = (
-                            " DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-                        )
-                    elif default_val in ["TRUE", "FALSE"]:
-                        default = f" DEFAULT {default_val}"
-                    elif isinstance(default_val, str) and default_val.startswith("'"):
-                        default = f" DEFAULT {default_val}"
-                    else:
+                    if isinstance(default_val, str):
                         default = f" DEFAULT '{default_val}'"
+                    else:
+                        default = f" DEFAULT {default_val}"
 
                 auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
-                comment = f" COMMENT '{col['comment']}'" if col.get("comment") else ""
 
-                col_def = (
-                    f"{col['name']} {col_type}{nullable}{default}{auto_inc}{comment}"
+                col_defs.append(
+                    f"{col['name']} {col_type}{nullable}{default}{auto_inc}"
                 )
-                col_defs.append(col_def)
 
                 if col.get("primary_key"):
                     primary_keys.append(col["name"])
-                if col.get("unique"):
-                    unique_keys.append(col["name"])
 
             # 添加主键约束
             if primary_keys:
@@ -438,511 +379,161 @@ class ConfigDrivenTableManager:
             create_sql = f"""
                 CREATE TABLE IF NOT EXISTS {table_name} (
                     {', '.join(col_defs)}
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             """
 
             cursor.execute(create_sql)
 
             # 创建索引
             for idx in indexes:
-                idx_name = idx["name"]
-                idx_type = idx["type"]
+                idx_name = idx.get("name", f"idx_{table_name}_{idx['columns'][0]}")
                 idx_columns = idx["columns"]
+                is_unique = idx.get("unique", False)
 
-                if idx_type == "UNIQUE":
+                if is_unique:
                     idx_sql = f"CREATE UNIQUE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
                 else:
                     idx_sql = f"CREATE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
 
                 try:
                     cursor.execute(idx_sql)
+                    logger.info(f"✅ 创建索引: {idx_name}")
                 except Exception as e:
-                    # 索引可能已存在,忽略错误
                     logger.warning(f"创建索引时出错 ({idx_name}): {e}")
 
-            conn.commit()
             cursor.close()
+            conn.commit()
             conn.close()
             return True
 
         except Exception as e:
-            conn.rollback()
             cursor.close()
+            conn.rollback()
             conn.close()
             raise RuntimeError(f"创建MySQL表失败: {e}")
 
-    def validate_all_table_structures(self) -> Dict[str, Any]:
-        """
-        验证所有表结构与配置一致性
-
-        Returns:
-            验证结果字典
-        """
-        result = {"tables_validated": 0, "tables_mismatched": 0, "errors": []}
-
-        logger.info("开始验证表结构")
-
-        for table_def in self.config["tables"]:
-            try:
-                is_valid = self._validate_table_structure(table_def)
-                if is_valid:
-                    result["tables_validated"] += 1
-                else:
-                    result["tables_mismatched"] += 1
-                    result["errors"].append(f"{table_def['table_name']}: 表结构不匹配")
-            except Exception as e:
-                result["errors"].append(f"{table_def['table_name']}: {str(e)}")
-
-        logger.info(
-            f"表结构验证完成: validated={result['tables_validated']}, "
-            f"mismatched={result['tables_mismatched']}"
-        )
-
-        return result
-
-    def _validate_table_structure(self, table_def: Dict[str, Any]) -> bool:
-        """
-        验证单个表结构
-
-        验证内容:
-        1. 检查表是否存在
-        2. 检查列定义是否匹配
-        3. 检查列数据类型是否正确
-        4. 检查主键和索引（可选）
-
-        Args:
-            table_def: 表定义字典
-
-        Returns:
-            True表示表结构完全匹配配置，False表示不匹配
-        """
+    def validate_table_structure(self, table_def: Dict[str, Any]) -> bool:
+        """验证表结构是否符合配置"""
         db_type = table_def["database_type"]
         table_name = table_def["table_name"]
-        database_name = table_def.get("database_name")
 
-        # 1. 检查表是否存在
-        if not self._table_exists(db_type, table_name, database_name):
-            logger.warning(f"表不存在: {table_name} ({db_type})")
-            return False
-
-        # 2. 获取实际表结构
         try:
-            actual_columns = self._get_table_columns(db_type, table_name, database_name)
-        except Exception as e:
-            logger.error(f"无法获取表结构 {table_name}: {e}")
-            return False
+            # 检查表是否存在
+            if not self._table_exists(db_type, table_name, table_def.get("database_name")):
+                logger.warning(f"表不存在: {table_name} ({db_type})")
+                return False
 
-        # 3. 验证列定义
-        expected_columns = {col["name"]: col for col in table_def.get("columns", [])}
-        actual_column_names = {col["name"] for col in actual_columns}
-        expected_column_names = set(expected_columns.keys())
+            # 获取实际表结构
+            actual_structure = self._get_table_structure(db_type, table_name)
+            if not actual_structure:
+                logger.error(f"无法获取表结构 {table_name}: 结构为空")
+                return False
 
-        # 检查缺失的列
-        missing_columns = expected_column_names - actual_column_names
-        if missing_columns:
-            logger.warning(f"表 {table_name} 缺少列: {', '.join(missing_columns)}")
-            return False
+            # 验证列结构
+            expected_columns = {col["name"]: col for col in table_def["columns"]}
+            actual_columns = {col["name"]: col for col in actual_structure}
 
-        # 检查多余的列（不算致命错误，只记录警告）
-        extra_columns = actual_column_names - expected_column_names
-        if extra_columns:
-            logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
+            # 检查缺失的列
+            missing_columns = set(expected_columns.keys()) - set(actual_columns.keys())
+            if missing_columns:
+                logger.warning(f"表 {table_name} 缺少列: {', '.join(missing_columns)}")
+                return False
 
-        # 4. 验证列数据类型
-        for actual_col in actual_columns:
-            col_name = actual_col["name"]
-            if col_name in expected_columns:
-                expected_type = expected_columns[col_name].get("type", "").upper()
-                actual_type = actual_col.get("type", "").upper()
+            # 检查多余的列
+            extra_columns = set(actual_columns.keys()) - set(expected_columns.keys())
+            if extra_columns:
+                logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
 
-                # 类型匹配检查（考虑类型别名，如INT vs INTEGER）
-                if not self._types_match(expected_type, actual_type, db_type):
-                    logger.warning(
-                        f"表 {table_name} 列 {col_name} 类型不匹配: "
-                        f"期望 {expected_type}, 实际 {actual_type}"
-                    )
-                    return False
+            # 检查列类型
+            for col_name, expected_col in expected_columns.items():
+                if col_name in actual_columns:
+                    actual_col = actual_columns[col_name]
+                    expected_type = expected_col["type"]
+                    actual_type = actual_col["type"]
+                    
+                    # 简单类型匹配检查
+                    if expected_type.lower() not in actual_type.lower():
+                        logger.warning(
+                            f"表 {table_name} 列 {col_name} 类型不匹配: "
+                            f"期望 {expected_type}, 实际 {actual_type}"
+                        )
+                        return False
 
-        logger.info(f"✅ 表结构验证通过: {table_name}")
-        return True
-
-    def _get_table_columns(
-        self, db_type: str, table_name: str, database_name: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-        """
-        获取表的实际列结构
-
-        Args:
-            db_type: 数据库类型
-            table_name: 表名
-            database_name: 数据库名（可选）
-
-        Returns:
-            列定义列表，每个列包含 {name, type, nullable, default} 等字段
-        """
-        if db_type == "PostgreSQL":
-            return self._get_postgresql_columns(table_name, database_name)
-        elif db_type == "TDengine":
-            return self._get_tdengine_columns(table_name, database_name)
-        elif db_type == "MySQL":
-            return self._get_mysql_columns(table_name, database_name)
-        else:
-            logger.warning(f"不支持的数据库类型: {db_type}")
-            return []
-
-    def _get_postgresql_columns(
-        self, table_name: str, database_name: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-        """获取PostgreSQL表的列结构"""
-        try:
-            pool = self.conn_manager.get_postgresql_connection()
-            conn = pool.getconn()
-            cursor = conn.cursor()
-
-            # 查询INFORMATION_SCHEMA获取列信息
-            query = """
-                SELECT
-                    column_name,
-                    data_type,
-                    is_nullable,
-                    column_default
-                FROM information_schema.columns
-                WHERE table_name = %s
-                ORDER BY ordinal_position
-            """
-
-            cursor.execute(query, (table_name,))
-            rows = cursor.fetchall()
-
-            columns = []
-            for row in rows:
-                columns.append(
-                    {
-                        "name": row[0],
-                        "type": row[1],
-                        "nullable": row[2] == "YES",
-                        "default": row[3],
-                    }
-                )
-
-            cursor.close()
-            self.conn_manager._return_postgresql_connection(conn)
-
-            return columns
-
-        except Exception as e:
-            logger.error(f"查询PostgreSQL列结构失败 {table_name}: {e}")
-            return []
-
-    def _get_tdengine_columns(
-        self, table_name: str, database_name: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-        """获取TDengine超表的列结构"""
-        try:
-            conn = self.conn_manager.get_tdengine_connection()
-
-            # TDengine使用DESCRIBE TABLE查询列信息
-            if database_name:
-                full_table_name = f"{database_name}.{table_name}"
-            else:
-                full_table_name = table_name
-
-            query = f"DESCRIBE {full_table_name}"
-            cursor = conn.cursor()
-            cursor.execute(query)
-            rows = cursor.fetchall()
-
-            columns = []
-            for row in rows:
-                # TDengine DESCRIBE返回: (field_name, type, length, note)
-                columns.append(
-                    {
-                        "name": row[0],
-                        "type": row[1],
-                        "nullable": True,  # TDengine默认可空
-                        "default": None,
-                    }
-                )
-
-            cursor.close()
-            return columns
-
-        except Exception as e:
-            logger.error(f"查询TDengine列结构失败 {table_name}: {e}")
-            return []
-
-    def _get_mysql_columns(
-        self, table_name: str, database_name: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-        """获取MySQL表的列结构"""
-        try:
-            conn = self.conn_manager.get_mysql_connection()
-            cursor = conn.cursor()
-
-            # 查询INFORMATION_SCHEMA获取列信息
-            query = """
-                SELECT
-                    COLUMN_NAME,
-                    DATA_TYPE,
-                    IS_NULLABLE,
-                    COLUMN_DEFAULT
-                FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_NAME = %s
-                AND TABLE_SCHEMA = %s
-                ORDER BY ORDINAL_POSITION
-            """
-
-            db_name = database_name or os.getenv("MYSQL_DATABASE")
-            cursor.execute(query, (table_name, db_name))
-            rows = cursor.fetchall()
-
-            columns = []
-            for row in rows:
-                columns.append(
-                    {
-                        "name": row["COLUMN_NAME"],
-                        "type": row["DATA_TYPE"],
-                        "nullable": row["IS_NULLABLE"] == "YES",
-                        "default": row["COLUMN_DEFAULT"],
-                    }
-                )
-
-            cursor.close()
-            return columns
-
-        except Exception as e:
-            logger.error(f"查询MySQL列结构失败 {table_name}: {e}")
-            return []
-
-    def _types_match(self, expected_type: str, actual_type: str, db_type: str) -> bool:
-        """
-        检查数据类型是否匹配（考虑数据库的类型别名）
-
-        Args:
-            expected_type: 期望的数据类型
-            actual_type: 实际的数据类型
-            db_type: 数据库类型
-
-        Returns:
-            True表示类型匹配
-        """
-        # 转换为大写统一比较
-        expected = expected_type.upper().strip()
-        actual = actual_type.upper().strip()
-
-        # 完全匹配
-        if expected == actual:
+            logger.info(f"✅ 表结构验证通过: {table_name}")
             return True
 
-        # PostgreSQL类型别名映射
-        if db_type == "PostgreSQL":
-            type_aliases = {
-                "INT": ["INTEGER", "INT4"],
-                "INTEGER": ["INT", "INT4"],
-                "BIGINT": ["INT8"],
-                "SMALLINT": ["INT2"],
-                "SERIAL": ["INT", "INTEGER"],
-                "BIGSERIAL": ["BIGINT"],
-                "FLOAT": ["DOUBLE PRECISION", "FLOAT8"],
-                "REAL": ["FLOAT4"],
-                "VARCHAR": ["CHARACTER VARYING"],
-                "CHAR": ["CHARACTER"],
-                "BOOL": ["BOOLEAN"],
-                "TIMESTAMP": ["TIMESTAMP WITHOUT TIME ZONE"],
-                "TIMESTAMPTZ": ["TIMESTAMP WITH TIME ZONE"],
-            }
+        except Exception as e:
+            logger.error(f"表结构验证失败 {table_name}: {e}")
+            return False
 
-            for canonical, aliases in type_aliases.items():
-                if expected == canonical and actual in aliases:
-                    return True
-                if actual == canonical and expected in aliases:
-                    return True
-
-        # TDengine类型别名映射
-        elif db_type == "TDengine":
-            type_aliases = {
-                "INT": ["INTEGER"],
-                "BIGINT": ["LONG"],
-                "FLOAT": ["DOUBLE"],
-                "BINARY": ["VARCHAR"],
-                "NCHAR": ["VARCHAR"],
-            }
-
-            for canonical, aliases in type_aliases.items():
-                if expected == canonical and actual in aliases:
-                    return True
-                if actual == canonical and expected in aliases:
-                    return True
-
-        # MySQL类型别名映射
-        elif db_type == "MySQL":
-            type_aliases = {
-                "INT": ["INTEGER"],
-                "BOOL": ["BOOLEAN", "TINYINT"],
-                "DOUBLE": ["DOUBLE PRECISION"],
-            }
-
-            for canonical, aliases in type_aliases.items():
-                if expected == canonical and actual in aliases:
-                    return True
-                if actual == canonical and expected in aliases:
-                    return True
-
-        return False
-
-    def safe_add_column(
-        self,
-        table_name: str,
-        column_def: Dict[str, Any],
-        db_type: str,
-        database_name: Optional[str] = None,
-    ) -> bool:
-        """
-        安全模式: 自动添加列
-
-        在安全模式下,自动向现有表添加新列。
-        仅支持添加操作,删除和修改列必须手动确认。
-
-        Args:
-            table_name: 表名
-            column_def: 列定义字典 {name, type, nullable, default}
-            db_type: 数据库类型 (PostgreSQL/TDengine/MySQL)
-            database_name: 数据库名（可选）
-
-        Returns:
-            True表示添加成功
-
-        Raises:
-            RuntimeError: 非安全模式下调用此方法
-        """
-        if not self.safe_mode:
-            raise RuntimeError("非安全模式下不允许自动添加列")
-
-        col_name = column_def["name"]
-        col_type = column_def.get("type", "VARCHAR(255)")
-        nullable = column_def.get("nullable", True)
-        default = column_def.get("default")
-
-        logger.info(f"安全模式: 添加列 {col_name} ({col_type}) 到表 {table_name}")
-
+    def _get_table_structure(self, db_type: str, table_name: str) -> Optional[List[Dict]]:
+        """获取表结构信息"""
         try:
-            # 构建ALTER TABLE语句
             if db_type == "PostgreSQL":
-                sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type}"
-
-                if not nullable:
-                    sql += " NOT NULL"
-
-                if default is not None:
-                    sql += f" DEFAULT {default}"
-
-                # 执行SQL
-                pool = self.conn_manager.get_postgresql_connection()
-                conn = pool.getconn()
+                conn = self.conn_manager.get_postgresql_connection()
                 cursor = conn.cursor()
-                cursor.execute(sql)
-                conn.commit()
+                cursor.execute(
+                    """
+                    SELECT column_name, data_type
+                    FROM information_schema.columns
+                    WHERE table_name = %s
+                    ORDER BY ordinal_position
+                """,
+                    (table_name,),
+                )
+                result = cursor.fetchall()
                 cursor.close()
                 self.conn_manager._return_postgresql_connection(conn)
+                
+                return [{"name": row[0], "type": row[1]} for row in result]
 
             elif db_type == "TDengine":
-                # TDengine不支持ALTER TABLE ADD COLUMN
-                logger.warning(f"TDengine不支持动态添加列,请手动重建超表: {table_name}")
-                return False
+                conn = self.conn_manager.get_tdengine_connection()
+                cursor = conn.cursor()
+                cursor.execute(f"DESCRIBE {table_name}")
+                result = cursor.fetchall()
+                cursor.close()
+                
+                return [{"name": row[0], "type": row[1]} for row in result]
 
             elif db_type == "MySQL":
-                sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type}"
-
-                if not nullable:
-                    sql += " NOT NULL"
-
-                if default is not None:
-                    sql += f" DEFAULT {default}"
-
-                # 执行SQL
                 conn = self.conn_manager.get_mysql_connection()
                 cursor = conn.cursor()
-                cursor.execute(sql)
-                conn.commit()
+                cursor.execute(f"DESCRIBE {table_name}")
+                result = cursor.fetchall()
                 cursor.close()
+                conn.close()
+                
+                return [{"name": row[0], "type": row[1]} for row in result]
 
             else:
-                logger.error(f"不支持的数据库类型: {db_type}")
-                return False
-
-            logger.info(f"✅ 成功添加列: {table_name}.{col_name}")
-            return True
+                logger.warning(f"不支持的数据库类型: {db_type}")
+                return None
 
         except Exception as e:
-            logger.error(f"添加列失败 {table_name}.{col_name}: {e}")
-            return False
+            logger.error(f"获取表结构失败 {table_name}: {e}")
+            return None
 
-    def confirm_dangerous_operation(
-        self, operation_type: str, table_name: str, details: str
-    ) -> bool:
-        """
-        确认危险操作 (删除列/修改列)
 
-        Args:
-            operation_type: 操作类型 (DELETE_COLUMN/MODIFY_COLUMN)
-            table_name: 表名
-            details: 操作详情
-
-        Returns:
-            True表示用户确认执行
-        """
-        logger.warning(f"⚠️ 危险操作需要确认: {operation_type} on {table_name}")
-        logger.warning(f"详情: {details}")
-        logger.warning("此操作可能导致数据丢失,请手动执行!")
-
-        return False
-
-    def get_table_count_by_database(self) -> Dict[str, int]:
-        """获取每个数据库的表数量统计"""
-        stats = {"TDengine": 0, "PostgreSQL": 0, "MySQL": 0, "Redis": 0}
-
-        for table_def in self.config["tables"]:
-            db_type = table_def["database_type"]
-            stats[db_type] = stats.get(db_type, 0) + 1
-
-        return stats
-
-    def get_classification_mapping(self) -> Dict[str, str]:
-        """获取数据分类到表名的映射"""
-        mapping = {}
-        for table_def in self.config["tables"]:
-            classification = table_def.get("classification")
-            if classification:
-                mapping[classification] = table_def["table_name"]
-        return mapping
+def main():
+    """主函数 - 用于测试"""
+    try:
+        manager = ConfigDrivenTableManager()
+        result = manager.initialize_tables()
+        
+        print("\n表创建结果:")
+        print(f"  创建: {result['tables_created']}个表")
+        print(f"  跳过: {result['tables_skipped']}个表")
+        print(f"  错误: {len(result['errors'])}个")
+        
+        if result["errors"]:
+            print("\n错误详情:")
+            for error in result["errors"]:
+                print(f"  - {error}")
+                
+    except Exception as e:
+        print(f"❌ 初始化失败: {e}")
 
 
 if __name__ == "__main__":
-    # 测试代码
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
-
-    manager = ConfigDrivenTableManager()
-
-    # 显示统计信息
-    stats = manager.get_table_count_by_database()
-    print("\n表数量统计:")
-    for db_type, count in stats.items():
-        print(f"  {db_type}: {count}个表")
-
-    # 显示分类映射
-    mapping = manager.get_classification_mapping()
-    print(f"\n数据分类映射: {len(mapping)}个分类")
-
-    # 初始化所有表
-    print("\n开始初始化所有表...")
-    result = manager.initialize_all_tables()
-    print(f"\n初始化结果:")
-    print(f"  创建: {result['tables_created']}个表")
-    print(f"  跳过: {result['tables_skipped']}个表")
-    print(f"  错误: {len(result['errors'])}个")
-    if result["errors"]:
-        print("\n错误详情:")
-        for error in result["errors"][:5]:  # 只显示前5个错误
-            print(f"  - {error}")
+    main()

@@ -1,6 +1,6 @@
 """
 Data source adapter base classes and interfaces
-Phase 3: ValueCell Migration - Multi-data Source Support
+Multi-data Source Support
 
 This module provides the foundation for multi-source data integration with:
 - Unified data source interface

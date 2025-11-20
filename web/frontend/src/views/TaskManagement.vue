@@ -135,7 +135,7 @@ import TaskForm from '@/components/task/TaskForm.vue'
 import ExecutionHistory from '@/components/task/ExecutionHistory.vue'
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // 状态
 const loading = ref(false)

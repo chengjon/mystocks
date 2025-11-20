@@ -1,9 +1,9 @@
 """
 技术分析服务
-Phase 2: ValueCell Migration - Enhanced Technical Analysis
+Enhanced Technical Analysis
 
 基于 TA-Lib 提供全面的技术指标计算和分析
-参考 ValueCell 的 MarketDataProvider 和 TechnicalIndicators
+
 """
 
 import logging

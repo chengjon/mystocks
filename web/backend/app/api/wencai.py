@@ -14,6 +14,7 @@ from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.orm import Session
+import os
 
 from app.core.database import get_db, SessionLocal
 from app.services.wencai_service import WencaiService, get_wencai_service
@@ -29,6 +30,7 @@ from app.schemas.wencai_schemas import (
     WencaiHistoryResponse,
     WencaiErrorResponse,
 )
+from app.mock.unified_mock_data import get_mock_data_manager
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -53,12 +55,26 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     获取所有查询列表
 
     返回所有预定义的问财查询配置（qs_1 ~ qs_9）
+    支持Mock数据模式切换
     """
     try:
-        service = WencaiService(db=db)
-        queries = service.get_all_queries()
-
-        return WencaiQueryListResponse(queries=queries, total=len(queries))
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            mock_manager = get_mock_data_manager()
+            queries_data = mock_manager.get_data("wencai", query_name="all")
+            
+            return WencaiQueryListResponse(
+                queries=queries_data.get("queries", []), 
+                total=len(queries_data.get("queries", []))
+            )
+        else:
+            # 使用真实数据库
+            service = WencaiService(db=db)
+            queries = service.get_all_queries()
+            return WencaiQueryListResponse(queries=queries, total=len(queries))
 
     except Exception as e:
         logger.error(f"Failed to get queries: {str(e)}", exc_info=True)
@@ -111,7 +127,8 @@ async def execute_query(
     """
     执行问财查询
 
-    从问财API获取数据，清理、去重后保存到MySQL
+    从问财API获取数据，清理、去重后保存到数据库
+    支持Mock数据模式切换
 
     Args:
         request: 查询请求（包含query_name和pages）
@@ -121,13 +138,31 @@ async def execute_query(
     """
     try:
         logger.info(f"Executing query: {request.query_name}, pages={request.pages}")
-
-        service = WencaiService(db=db)
-        result = service.fetch_and_save(
-            query_name=request.query_name, pages=request.pages
-        )
-
-        return WencaiQueryResponse(**result)
+        
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据
+            mock_manager = get_mock_data_manager()
+            result_data = mock_manager.get_data("wencai", query_name=request.query_name)
+            
+            return WencaiQueryResponse(
+                query_name=request.query_name,
+                success=True,
+                message=f"Mock查询执行成功: {request.query_name}",
+                new_records=len(result_data.get("query_result", {}).get("results", [])),
+                total_records=len(result_data.get("query_result", {}).get("results", [])),
+                execution_time=0.1,
+                timestamp=datetime.now()
+            )
+        else:
+            # 使用真实数据库
+            service = WencaiService(db=db)
+            result = service.fetch_and_save(
+                query_name=request.query_name, pages=request.pages
+            )
+            return WencaiQueryResponse(**result)
 
     except ValueError as e:
         logger.warning(f"Validation error: {str(e)}")
@@ -276,6 +311,7 @@ async def execute_custom_query(
     执行自定义查询
 
     用户可以输入任意自然语言查询，直接获取结果
+    支持Mock数据模式切换
 
     Args:
         request: 自定义查询请求（包含query_text和pages）
@@ -287,36 +323,63 @@ async def execute_custom_query(
         logger.info(
             f"Executing custom query: {request.query_text[:50]}..., pages={request.pages}"
         )
-
-        service = WencaiService(db=db)
-
-        # 直接调用适配器获取数据
-        df = service.adapter.fetch_data(query=request.query_text, pages=request.pages)
-
-        if df.empty:
+        
+        # 检查是否使用Mock数据
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            # 使用Mock数据 - 模拟自定义查询
+            mock_manager = get_mock_data_manager()
+            
+            # 生成模拟查询结果
+            mock_results = [
+                {
+                    "stock_code": f"000{request.pages}{i:02d}",
+                    "stock_name": f"测试股票{i}",
+                    "current_price": round(10 + i * 0.5, 2),
+                    "change_percent": round((i % 10 - 5) * 0.1, 2),
+                    "volume": i * 1000,
+                    "market_cap": i * 1000000
+                } for i in range(request.pages * 10)
+            ]
+            
             return WencaiCustomQueryResponse(
                 success=True,
-                message="查询成功，但没有找到匹配的数据",
+                message=f"Mock自定义查询成功，共获取 {len(mock_results)} 条数据",
                 query_text=request.query_text,
-                total_records=0,
-                results=[],
-                columns=[],
+                total_records=len(mock_results),
+                results=mock_results,
+                columns=["stock_code", "stock_name", "current_price", "change_percent", "volume", "market_cap"],
                 fetch_time=datetime.now(),
             )
+        else:
+            # 使用真实数据库
+            service = WencaiService(db=db)
+            df = service.adapter.fetch_data(query=request.query_text, pages=request.pages)
 
-        # 转换为字典列表
-        results = df.to_dict("records")
-        columns = df.columns.tolist()
+            if df.empty:
+                return WencaiCustomQueryResponse(
+                    success=True,
+                    message="查询成功，但没有找到匹配的数据",
+                    query_text=request.query_text,
+                    total_records=0,
+                    results=[],
+                    columns=[],
+                    fetch_time=datetime.now(),
+                )
 
-        return WencaiCustomQueryResponse(
-            success=True,
-            message=f"查询成功，共获取 {len(results)} 条数据",
-            query_text=request.query_text,
-            total_records=len(results),
-            results=results,
-            columns=columns,
-            fetch_time=datetime.now(),
-        )
+            results = df.to_dict("records")
+            columns = df.columns.tolist()
+
+            return WencaiCustomQueryResponse(
+                success=True,
+                message=f"查询成功，共获取 {len(results)} 条数据",
+                query_text=request.query_text,
+                total_records=len(results),
+                results=results,
+                columns=columns,
+                fetch_time=datetime.now(),
+            )
 
     except ValueError as e:
         logger.warning(f"Validation error: {str(e)}")

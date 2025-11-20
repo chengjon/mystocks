@@ -14,13 +14,13 @@ import logging
 import sys
 import os
 
-# Add parent directory to path to import unified_manager
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-)
+# Add project root to path to import unified_manager
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'src'))
 
 from src.core.data_classification import DataClassification
-from unified_manager import MyStocksUnifiedManager
+from src.unified_manager import MyStocksUnifiedManager
 
 logger = logging.getLogger(__name__)
 

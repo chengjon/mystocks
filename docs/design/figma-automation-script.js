@@ -356,16 +356,16 @@ function createButtonComponent() {
 }
 
 /**
- * 创建 ValueCell 组件
+ * 创建 PriceCell 组件
  */
-async function createValueCellComponent() {
-  console.log("创建 ValueCell 组件...");
+async function createPriceCellComponent() {
+  console.log("创建 PriceCell 组件...");
 
   // 加载字体
   await figma.loadFontAsync({ family: "SF Mono", style: "Medium" });
 
   const frame = figma.createFrame();
-  frame.name = "ValueCell Components";
+  frame.name = "PriceCell Components";
   frame.x = 0;
   frame.y = 450;
   frame.resize(600, 200);
@@ -384,7 +384,7 @@ async function createValueCellComponent() {
     try {
       // 创建容器
       const cellFrame = figma.createFrame();
-      cellFrame.name = `ValueCell/${cellType.name}`;
+      cellFrame.name = `PriceCell/${cellType.name}`;
       cellFrame.layoutMode = "HORIZONTAL";
       cellFrame.itemSpacing = 4;
       cellFrame.primaryAxisAlignItems = "CENTER";
@@ -420,14 +420,14 @@ async function createValueCellComponent() {
       // 创建组件
       const component = figma.createComponentFromNode(cellFrame);
 
-      console.log(`✓ 创建 ValueCell 组件: ${cellType.name}`);
+      console.log(`✓ 创建 PriceCell 组件: ${cellType.name}`);
 
     } catch (error) {
-      console.error(`✗ 创建 ValueCell 组件失败: ${cellType.name}`, error);
+      console.error(`✗ 创建 PriceCell 组件失败: ${cellType.name}`, error);
     }
   }
 
-  console.log("ValueCell 组件创建完成");
+  console.log("PriceCell 组件创建完成");
   return frame;
 }
 
@@ -463,10 +463,10 @@ async function main() {
     createButtonComponent();
     console.log("");
 
-    // 步骤 4: 创建 ValueCell 组件
-    console.log("【步骤 4/4】创建 ValueCell 组件");
+    // 步骤 4: 创建 PriceCell 组件
+    console.log("【步骤 4/4】创建 PriceCell 组件");
     console.log("----------------------------------------");
-    await createValueCellComponent();
+    await createPriceCellComponent();
     console.log("");
 
     // 总结
@@ -476,7 +476,7 @@ async function main() {
     console.log(`颜色样式: ${colorResult.successCount} 个`);
     console.log(`文本样式: ${textResult.successCount} 个`);
     console.log("按钮组件: 5 种类型");
-    console.log("ValueCell 组件: 3 种变体");
+    console.log("PriceCell 组件: 3 种变体");
     console.log("");
     console.log("请检查左侧面板:");
     console.log("- Assets → Local styles → 查看样式");

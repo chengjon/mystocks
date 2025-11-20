@@ -1,4 +1,4 @@
-# MyStocks 量化交易数据管理系统 - IFLOW 工作指南
+# MyStocks 量化交易数据管理系统 - iFlow 工作指南
 
 ## 项目概览
 
@@ -6,22 +6,24 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 
 ### 核心特点
 
-- **🌐 现代化Web管理平台**: 基于FastAPI + Vue 3的全栈架构
-- **🤖 多智能体系统**: 集成ValueCell多智能体系统，支持实时监控、技术分析、多数据源集成
-- **📊 双数据库存储策略**: TDengine(高频时序) + PostgreSQL(通用数据)
-- **🔧 智能数据调用**: 统一接口规范，自动路由策略
-- **🏗️ 先进数据流设计**: 适配器模式、工厂模式、策略模式、观察者模式
-- **🚀 GPU加速支持**: RAPIDS (cuDF/cuML) 深度集成，支持WSL2环境
+- **现代化Web管理平台**: 基于FastAPI + Vue 3的全栈架构
+- **多智能体系统**: 集成多智能体系统，支持实时监控、技术分析、多数据源集成
+- **双数据库存储策略**: TDengine(高频时序) + PostgreSQL(通用数据)
+- **智能数据调用**: 统一接口规范，自动路由策略
+- **先进数据流设计**: 适配器模式、工厂模式、策略模式、观察者模式
+- **GPU加速支持**: RAPIDS (cuDF/cuML) 深度集成，支持WSL2环境
+- **统一错误处理**: 提供一致的错误处理策略和日志记录功能
+- **Vue + FastAPI 架构**: 已完成前端重构，支持实时推送和现代化UI
 
 ### 技术栈
 
-- **后端语言**: Python 3.8+
+- **后端语言**: Python 3.12+
 - **数据库**: TDengine 3.3.x + PostgreSQL 17.x (TimescaleDB扩展)
-- **Web框架**: FastAPI + Vue 3 + Element Plus
+- **Web框架**: FastAPI + Vue 3 + Element Plus + Pinia + Vue Router
 - **数据源**: akshare, baostock, tushare, efinance, 通达信等
 - **GPU加速**: RAPIDS (cuDF/cuML) - 支持WSL2环境
 - **监控**: Prometheus + Grafana (可选)
-- **Claude Code**: 7个生产就绪的Hooks系统
+- **实时通信**: Socket.IO, SSE (Server-Sent Events)
 
 ## 项目结构
 
@@ -40,6 +42,9 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 ├── unified_manager.py                 # 统一管理器入口点
 ├── data_access.py                     # 数据访问入口点
 ├── monitoring.py                      # 监控模块入口点
+├── ai_strategy_analyzer.py            # AI策略分析器
+├── gpu_ai_integration.py              # GPU AI集成管理器
+├── ai_monitoring_optimizer.py         # AI监控优化器
 └── __init__.py                        # Python包标识
 
 ├── src/                               # 📦 所有源代码
@@ -74,7 +79,18 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 │   │   └── alert_manager.py           # 告警管理器
 │   │
 │   ├── interfaces/                    # 接口定义
-│   │   └── data_source.py             # IDataSource统一接口
+│   │   └── data_source_interface.py   # DataSourceInterface统一接口
+│   │
+│   ├── database/                      # 数据库相关
+│   │   ├── database_service.py        # 数据库服务层
+│   │   └── mock_data_storage.py       # Mock数据存储层
+│   │
+│   ├── data_sources/                  # 数据源实现
+│   │   ├── mock_data_source.py        # Mock数据源实现
+│   │   └── real_data_source.py        # 真实数据源实现
+│   │
+│   ├── factories/                     # 工厂类
+│   │   └── data_source_factory.py     # 数据源工厂
 │   │
 │   ├── utils/                         # 工具模块
 │   │   └── column_mapper.py           # 统一列名映射
@@ -94,7 +110,38 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 │   ├── backend/                       # FastAPI后端
 │   │   ├── app/
 │   │   │   ├── api/                   # API端点
+│   │   │   │   ├── endpoints/         # 详细API端点
+│   │   │   │   │   ├── data.py        # 数据API
+│   │   │   │   │   ├── auth.py        # 认证API
+│   │   │   │   │   ├── system.py      # 系统API
+│   │   │   │   │   ├── indicators.py  # 指标API
+│   │   │   │   │   ├── market.py      # 市场API
+│   │   │   │   │   ├── tdx.py         # 通达信API
+│   │   │   │   │   ├── metrics.py     # 指标API
+│   │   │   │   │   ├── tasks.py       # 任务API
+│   │   │   │   │   ├── wencai.py      # 问财API
+│   │   │   │   │   ├── stock_search.py # 股票搜索API
+│   │   │   │   │   ├── watchlist.py   # 自选股API
+│   │   │   │   │   ├── tradingview.py # TradingView API
+│   │   │   │   │   ├── notification.py # 通知API
+│   │   │   │   │   ├── ml.py          # 机器学习API
+│   │   │   │   │   ├── market_v2.py   # 市场API V2
+│   │   │   │   │   ├── strategy.py    # 策略API
+│   │   │   │   │   ├── monitoring.py  # 监控API
+│   │   │   │   │   ├── technical_analysis.py # 技术分析API
+│   │   │   │   │   ├── multi_source.py # 多数据源API
+│   │   │   │   │   ├── announcement.py # 公告API
+│   │   │   │   │   ├── strategy_management.py # 策略管理API
+│   │   │   │   │   ├── risk_management.py # 风险管理API
+│   │   │   │   │   ├── sse_endpoints.py # SSE实时推送API
+│   │   │   │   │   ├── cache.py       # 缓存管理API
+│   │   │   │   │   └── pool_monitoring.py # 连接池监控API
 │   │   │   ├── core/                  # 核心服务
+│   │   │   │   ├── config.py          # 配置管理
+│   │   │   │   ├── database.py        # 数据库连接管理
+│   │   │   │   ├── cache_eviction.py  # 缓存淘汰调度器
+│   │   │   │   ├── socketio_manager.py # Socket.IO管理器
+│   │   │   │   └── openapi_config.py  # OpenAPI配置
 │   │   │   ├── models/                # 数据模型
 │   │   │   ├── services/              # 业务服务
 │   │   │   └── main.py                # 应用入口
@@ -104,14 +151,32 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 │   └── frontend/                      # Vue 3前端
 │       ├── src/
 │       │   ├── components/            # Vue组件
+│       │   │   ├── AI/                # AI相关组件
+│       │   │   ├── Monitoring/        # 监控相关组件
+│       │   │   ├── GPU/               # GPU相关组件
+│       │   │   └── common/            # 通用组件
 │       │   ├── views/                 # 页面视图
+│       │   │   ├── Home.vue           # 首页
+│       │   │   ├── AI/                # AI相关页面
+│       │   │   ├── Monitoring/        # 监控相关页面
+│       │   │   ├── GPU/               # GPU相关页面
+│       │   │   └── Settings.vue       # 设置页面
 │       │   ├── router/                # 路由配置
-│       │   └── main.js                # 应用入口
+│       │   ├── stores/                # Pinia状态管理
+│       │   ├── services/              # API调用服务
+│       │   ├── utils/                 # 工具函数
+│       │   ├── styles/                # 样式文件
+│       │   ├── assets/                # 静态资源
+│       │   └── main.ts                # 应用入口
+│       ├── public/                    # 静态资源
 │       ├── package.json               # 前端依赖
-│       └── vite.config.js             # Vite配置
+│       ├── tsconfig.json              # TypeScript配置
+│       ├── vite.config.ts             # Vite构建配置
+│       └── .env                       # 环境变量
 │
 ├── config/                            # ⚙️ 配置文件
 │   ├── table_config.yaml              # 完整表结构配置
+│   ├── adapter_priority_config.yaml   # 适配器优先级配置
 │   ├── docker-compose.tdengine.yml    # TDengine Docker配置
 │   ├── docker-compose.postgresql.yml  # PostgreSQL Docker配置
 │   └── docker-compose.yml             # Web平台Docker配置
@@ -124,6 +189,12 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 │
 ├── docs/                              # 📚 完整文档
 │   ├── guides/                        # 用户指南
+│   │   ├── Vue_FastAPI_AI_Strategy_Implementation_Guide.md    # AI策略实施指南
+│   │   ├── Vue_FastAPI_Monitoring_Implementation_Guide.md     # 监控系统实施指南
+│   │   ├── Vue_FastAPI_GPU_System_Implementation_Guide.md     # GPU系统实施指南
+│   │   ├── Vue_FastAPI_Deployment_Implementation_Guide.md     # 部署实施指南
+│   │   ├── Vue_FastAPI_Code_Reference_Guide.md                # 代码参考手册
+│   │   └── Vue_FastAPI_Implementation_Master_Guide.md         # 实施总指南
 │   ├── architecture/                  # 架构设计文档
 │   ├── api/                           # API文档
 │   └── features/                      # 功能特性文档
@@ -133,35 +204,18 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 ├── logs/                              # 📝 日志目录
 └── data/                              # 💾 数据文件
 
-├── gpu_api_system/                    # 🚀 GPU加速回测系统(可选)
-│   ├── services/                      # 核心服务
-│   ├── tests/                         # 完整测试套件
-│   ├── wsl2_gpu_init.py              # WSL2 GPU初始化
-│   └── utils/                         # 工具模块
+├── share/                             # 📚 共享文档和指南
+│   ├── README.md                      # 共享文档说明
+│   ├── AI_STRATEGY_GUIDE.md           # AI策略实施指南
+│   ├── GPU_SYSTEM_GUIDE.md            # GPU系统实施指南
+│   ├── MONITORING_GUIDE.md            # 监控系统实施指南
+│   ├── DEPLOYMENT_GUIDE.md            # 部署指南
+│   └── CODE_REFERENCE.md              # 代码参考手册
 │
 └── .archive/                          # 📦 归档内容 (历史代码/文档)
     ├── old_code/                      # 旧代码备份
     ├── old_docs/                      # 旧文档备份
     └── ARCHIVE_INDEX.md               # 归档索引
-```
-
-### 🔧 Claude Code Hooks系统
-
-**生产就绪**: 7个Hooks脚本，完整文档和配置
-
-```
-.claude/
-├── hooks/
-│   ├── user-prompt-submit-skill-activation.sh          # 技能激活
-│   ├── post-tool-use-file-edit-tracker.sh              # 编辑追踪
-│   ├── post-tool-use-database-schema-validator.sh      # 数据库验证
-│   ├── post-tool-use-document-organizer.sh             # 文档整理
-│   ├── stop-python-quality-gate.sh                     # 质量门禁
-│   ├── session-start-task-master-injector.sh           # 任务管理
-│   └── session-end-cleanup.sh                          # 会话清理
-├── commands/                     # 快捷命令
-├── skills/                       # 专业技能
-└── agents/                       # 专门代理
 ```
 
 ## 数据分类体系
@@ -198,7 +252,7 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 - ✅ Redis移除（配置的db1为空）
 - ✅ 系统复杂度降低50%
 
-## 核心模块详解
+## 核心架构组件
 
 ### 1. 统一管理器 (unified_manager.py)
 
@@ -223,40 +277,121 @@ data = manager.load_data_by_classification(
 
 - **tdx_adapter.py**: 通达信直连，无限流，多周期K线 (1058行)
 - **financial_adapter.py**: 双数据源(efinance+easyquotation)，财务数据全能 (1078行) 
-- **akshare_adapter.py**: 免费全面，历史数据研究首选 (510行)
+- **akshare_adapter.py**: 养生全面，历史数据研究首选 (510行)
 - **byapi_adapter.py**: REST API，涨跌停股池，技术指标 (625行)
 - **customer_adapter.py**: 实时行情专用 (378行)
 - **baostock_adapter.py**: 高质量历史数据 (257行)
 - **tushare_adapter.py**: 专业级，需token (199行)
 
-### 3. 监控与告警系统 (monitoring.py)
+### 3. 统一数据源接口 (interfaces/data_source_interface.py)
 
-- **操作监控**: 所有数据库操作自动记录
-- **性能监控**: 慢查询检测、响应时间统计
-- **质量监控**: 数据完整性、准确性、新鲜度检查
-- **告警机制**: 多渠道告警(邮件、Webhook、日志)
+定义了所有数据源必须实现的统一接口：
 
-### 4. Claude Code Hooks系统
+```python
+class DataSourceInterface(ABC):
+    @abstractmethod
+    def get_stock_list(self, params: Optional[Dict] = None) -> List[Dict]:
+        """获取股票列表"""
+        pass
+    
+    @abstractmethod
+    def get_real_time_quote(self, stock_code: str) -> Dict:
+        """获取实时行情"""
+        pass
+    
+    @abstractmethod
+    def get_technical_indicators(self, stock_code: str, start_date: str, end_date: str) -> List[Dict]:
+        """获取技术指标"""
+        pass
+    
+    # ... 其他方法
+```
 
-**生产就绪的7个Hooks**:
-1. **user-prompt-submit-skill-activation.sh** - 智能技能激活
-2. **post-tool-use-file-edit-tracker.sh** - 文件编辑追踪
-3. **post-tool-use-database-schema-validator.sh** - 数据库架构验证
-4. **post-tool-use-document-organizer.sh** - 文档组织检查
-5. **stop-python-quality-gate.sh** - Python代码质量门禁
-6. **session-start-task-master-injector.sh** - 会话开始任务注入
-7. **session-end-cleanup.sh** - 会话结束清理
+### 4. 数据源工厂模式 (factories/data_source_factory.py)
 
-**状态**: ✅ 100%完成，12/13测试通过(92%成功率)
+通过配置动态切换Mock/真实数据源：
+
+```python
+# 工厂类实现单例模式
+class DataSourceFactory:
+    def _initialize_data_source(self) -> None:
+        """
+        初始化数据源
+        根据环境变量USE_MOCK_DATA决定使用Mock数据还是真实数据
+        """
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
+        if use_mock:
+            self._data_source = MockDataSource()
+        else:
+            self._data_source = RealDataSource()
+    
+    def get_data_source(self) -> DataSourceInterface:
+        """
+        获取数据源实例
+        """
+        if self._data_source is None:
+            self._initialize_data_source()
+        return self._data_source
+```
+
+### 5. Mock与真实数据源实现
+
+- **MockDataSource**: 实现所有接口方法，返回模拟数据，支持数据存储验证
+- **RealDataSource**: 实现所有接口方法，调用数据库服务层访问真实数据
+
+### 6. 数据库服务层 (database/database_service.py)
+
+提供统一的数据库访问接口，适配双数据库架构：
+
+- **故障转移机制**: 根据配置文件定义的优先级自动切换数据源
+- **适配器统一调用**: 提供统一入口访问所有数据适配器
+- **数据存储一致性**: Mock数据也支持存储验证
+
+### 7. Mock数据存储层 (database/mock_data_storage.py)
+
+- 使用SQLite模拟真实数据库存储
+- 支持技术指标、实时行情、股票信息等多种数据类型
+- 用于测试数据落地逻辑
+
+## 优化特性
+
+### 1. 统一适配器调用方式
+
+通过`get_data_from_adapter`方法统一访问所有数据适配器：
+
+```python
+result = source.get_data_from_adapter('akshare', 'get_stock_list')
+```
+
+### 2. 适配器优先级与故障转移
+
+- 配置文件定义适配器优先级
+- 自动在失败适配器之间切换
+- 提供结果有效性检查
+
+### 3. Mock数据存储一致性
+
+- Mock数据在模拟数据库中正确存储
+- 与真实数据具有相同的存储逻辑
+- 便于测试数据落地功能
+
+### 4. Vue + FastAPI 架构优化
+
+- **现代前端**: 使用Vue 3 + TypeScript + Element Plus构建
+- **状态管理**: 使用Pinia进行状态管理
+- **路由系统**: 使用Vue Router进行页面路由
+- **实时通信**: 集成Socket.IO和SSE进行实时数据推送
+- **API设计**: 完整的RESTful API设计和WebSocket实时通信
 
 ## 构建和运行
 
 ### 环境要求
-- **Python**: 3.8+
+- **Python**: 3.12+
 - **TDengine**: 3.3.x (高频时序数据专用)
 - **PostgreSQL**: 17.x + TimescaleDB扩展
-- **GPU**: NVIDIA GPU + CUDA 11.8+ (可选，用于GPU加速)
-- **Node.js**: 16+ (Web前端)
+- **GPU**: NVIDIA GPU + CUDA 12.x+ (可选，用于GPU加速)
+- **Node.js**: 18+ (Web前端)
 
 ### 快速开始
 
@@ -318,113 +453,62 @@ npm run dev
 # 前端界面: http://localhost:5173
 ```
 
-#### 6. 实时数据获取
-
-```bash
-# 使用efinance获取实时行情并保存
-python run_realtime_market_saver.py
-
-# 持续运行(每5分钟获取一次)
-python run_realtime_market_saver.py --count -1 --interval 300
-```
-
-#### 7. Claude Code Hooks配置
-
-```bash
-# 查看可用的Hooks
-ls -la .claude/hooks/
-
-# 测试Hooks系统
-.claude/hooks/post-tool-use-file-edit-tracker.sh --test
-```
-
-#### 8. GPU加速系统 (可选)
-
-```bash
-# 初始化GPU环境(WSL2环境)
-cd gpu_api_system
-python wsl2_gpu_init.py
-
-# 启动GPU API服务
-python main_server.py
-
-# 运行性能测试
-./run_tests.sh all
-```
-
 ## 数据源适配器使用
 
 ### 基础使用示例
 
 ```python
-# 使用akshare适配器
-from src.adapters.akshare_adapter import AkshareDataSource
-import pandas as pd
+# 使用统一数据源工厂
+from src.factories.data_source_factory import get_data_source
+import os
 
-# 创建数据源实例
-adapter = AkshareDataSource()
+# 设置环境变量控制使用Mock/真实数据
+os.environ['USE_MOCK_DATA'] = 'false'  # 使用真实数据
+# os.environ['USE_MOCK_DATA'] = 'true'   # 使用Mock数据
 
-# 获取股票基本信息
-stock_info = adapter.get_stock_basic()
-print(f"获取到 {len(stock_info)} 只股票信息")
+# 获取数据源实例
+source = get_data_source()
 
-# 获取日线数据
-daily_data = adapter.get_stock_daily('600000', '2024-01-01', '2024-12-31')
-print(f"获取到 {len(daily_data)} 条日线数据")
+# 获取股票列表
+stock_list = source.get_stock_list()
+print(f"获取到 {len(stock_list)} 只股票信息")
 
-# 通过统一管理器保存数据
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
+# 获取实时行情
+realtime_quote = source.get_real_time_quote('600000')
+print(f"获取到实时行情: {realtime_quote}")
 
-manager = MyStocksUnifiedManager()
-manager.save_data_by_classification(daily_data, DataClassification.DAILY_KLINE)
+# 获取技术指标
+technical_indicators = source.get_technical_indicators('600000', '2024-01-01', '2024-12-31')
+print(f"获取到技术指标: {len(technical_indicators)} 条记录")
 ```
 
-### 财务数据适配器
+### 统一适配器调用
 
 ```python
-# 使用财务数据适配器(双数据源)
-from src.adapters.financial_adapter import FinancialDataSource
+# 统一调用不同适配器
+result = source.get_data_from_adapter('akshare', 'get_stock_list')
+print(f"适配器调用结果: {result}")
 
-adapter = FinancialDataSource()
-
-# 获取股票财务数据
-financial_data = adapter.get_stock_financial('600000')
-print(f"获取到财务数据: {financial_data.shape}")
-
-# 获取基本面数据
-basic_info = adapter.get_stock_basic_info('600000')
-print(f"获取到基本面信息: {basic_info}")
-```
-
-### 通达信适配器
-
-```python
-# 使用通达信适配器(直连，无限流)
-from src.adapters.tdx_adapter import TdxDataSource
-
-adapter = TdxDataSource()
-
-# 获取多周期K线数据
-kline_data = adapter.get_kline_data('600000', '1min', '2024-01-01', '2024-12-31')
-print(f"获取到1分钟K线数据: {len(kline_data)} 条")
+# 使用故障转移机制
+result = source.get_data_with_failover('realtime_quote', 'get_stock_daily', symbol='000001.SZ')
+print(f"故障转移调用结果: {result}")
 ```
 
 ## 核心功能模块
 
-### 1. 实时监控系统 (ValueCell Phase 1)
+### 1. 实时监控系统
 - **告警规则**: 7种告警类型(价格突破、成交量激增等)
 - **龙虎榜跟踪**: 实时监控大单交易
 - **资金流向分析**: 主力资金流入流出统计
 - **自定义规则**: 用户自定义监控条件
 
-### 2. 技术分析系统 (ValueCell Phase 2)
+### 2. 技术分析系统
 - **26个技术指标**: 趋势(MA、MACD)、动量(RSI、KDJ)、波动(ATR)、成交量(OBV)
 - **交易信号生成**: 基于技术指标的买卖信号
 - **可视化图表**: 实时K线图和指标图表
 - **批量计算**: 高效的批量指标计算
 
-### 3. 多数据源集成 (ValueCell Phase 3)
+### 3. 多数据源集成
 - **优先级路由**: 智能数据源选择和故障转移
 - **数据源健康监控**: 实时监控各数据源状态
 - **公告监控**: 类似SEC Agent的官方公告监控
@@ -436,11 +520,13 @@ print(f"获取到1分钟K线数据: {len(kline_data)} 条")
 - **智能三级缓存**: L1应用层 + L2 GPU内存 + L3 Redis，命中率>90%
 - **WSL2支持**: 完整解决WSL2下RAPIDS GPU访问问题
 
-### 5. Claude Code Hooks系统
-- **7个生产就绪Hooks**: 技能激活、编辑追踪、质量门禁等
-- **3个配置文件**: hooks、skills、agents完整配置
-- **完整文档**: 迁移指南、快速参考、故障排除
-- **100%测试覆盖**: 92%成功率，12/13测试通过
+### 5. Vue + FastAPI 现代化前端 (最新集成)
+- **Vue 3 + TypeScript**: 现代化前端框架
+- **Element Plus**: 企业级UI组件库
+- **Pinia**: 状态管理
+- **Vue Router**: 前端路由
+- **实时推送**: Socket.IO + SSE 实时数据推送
+- **响应式设计**: 适配各种屏幕尺寸
 
 ## Web API 使用
 
@@ -473,7 +559,22 @@ GET  /api/multi-source/realtime-quote     # 获取实时行情（多数据源）
 GET  /api/multi-source/fund-flow          # 获取资金流向（多数据源）
 GET  /api/announcement/today              # 获取今日公告
 GET  /api/announcement/important          # 获取重要公告
-POST /api/announcement/mmonitor/evaluate   # 评估监控规则
+POST /api/announcement/monitor/evaluate   # 评估监控规则
+```
+
+#### Vue + FastAPI 新增端点
+```
+GET  /api/socketio-status                 # Socket.IO服务器状态
+GET  /api/csrf-token                      # 获取CSRF Token
+GET  /api/stock-search                    # 股票搜索
+GET  /api/watchlist                       # 自选股管理
+GET  /api/tradingview                     # TradingView widgets
+GET  /api/notification                    # 邮件通知
+GET  /api/machine-learning                # 机器学习预测
+GET  /api/strategy                        # 股票策略筛选
+GET  /api/technical-analysis              # 技术分析
+GET  /api/pool-monitoring                 # 连接池监控
+GET  /api/cache                          # 缓存管理
 ```
 
 ### API使用示例
@@ -492,12 +593,26 @@ indicators = response.json()
 # 获取数据源健康状态
 response = requests.get('http://localhost:8888/api/multi-source/health')
 health_status = response.json()
+
+# 获取CSRF Token（用于修改操作）
+response = requests.get('http://localhost:8888/api/csrf-token')
+csrf_token = response.json()['csrf_token']
+
+# 使用CSRF Token进行POST请求
+headers = {
+    'x-csrf-token': csrf_token,
+    'Content-Type': 'application/json'
+}
+response = requests.post('http://localhost:8888/api/monitoring/alert-rules', 
+                        json={'rule_name': 'My Rule', 'rule_type': 'limit_up'}, 
+                        headers=headers)
 ```
 
 ## 开发规范
 
 ### 代码风格
 - **Python**: 遵循PEP 8规范，使用类型注解
+- **TypeScript**: 遵循TypeScript最佳实践，使用类型注解
 - **配置驱动**: 所有表结构通过YAML配置管理
 - **模块化设计**: 适配器模式，统一数据源接口
 - **错误处理**: 完善的异常处理和日志记录
@@ -509,23 +624,19 @@ health_status = response.json()
 - **性能测试**: GPU加速效果、缓存命中率
 - **端到端测试**: 完整工作流程验证
 - **契约测试**: API接口契约验证
+- **前端测试**: Playwright端到端测试
 
 ### 部署规范
 - **配置分离**: 环境变量和配置文件分离
 - **数据库监控**: 健康检查、性能监控
 - **日志管理**: 结构化日志，便于问题排查
 - **备份策略**: 自动数据备份和恢复
-
-### Claude Code集成
-- **Hooks系统**: 7个生产就绪的自动化脚本
-- **Skills配置**: 8个专业技能模板
-- **Agents配置**: 9个专门代理配置
-- **质量门禁**: 自动化代码质量检查
+- **CSRF保护**: 所有修改操作需要CSRF token验证
 
 ## 扩展开发
 
 ### 添加新数据源
-1. 实现`IDataSource`接口
+1. 实现`DataSourceInterface`接口
 2. 创建适配器类，继承基础适配器
 3. 注册到DataSourceFactory
 4. 在配置文件中添加连接参数
@@ -539,7 +650,15 @@ health_status = response.json()
 1. 后端: 在`web/backend/app/api/`中添加API端点
 2. 前端: 在`web/frontend/src/components/`中添加Vue组件
 3. 路由: 在`web/frontend/src/router/`中配置路由
-4. 样式: 使用Element Plus组件库
+4. 状态管理: 在`web/frontend/src/stores/`中添加Pinia store
+5. 样式: 使用Element Plus组件库
+
+### Vue + FastAPI 集成开发
+1. **API端点**: 在`web/backend/app/api/endpoints/`中添加新端点
+2. **前端服务**: 在`web/frontend/src/services/`中添加API服务
+3. **组件开发**: 在`web/frontend/src/components/`中添加Vue组件
+4. **状态管理**: 在`web/frontend/src/stores/`中添加Pinia store
+5. **路由配置**: 在`web/frontend/src/router/`中配置路由
 
 ### Claude Code Hooks开发
 1. 在`.claude/hooks/`中创建脚本
@@ -565,6 +684,12 @@ health_status = response.json()
 - **批处理**: 大数据集分批GPU处理
 - **智能缓存**: 三级缓存系统，命中率>90%
 
+### 前端性能优化
+- **代码分割**: 使用Vite进行代码分割
+- **懒加载**: 路由和组件懒加载
+- **缓存策略**: HTTP缓存和浏览器缓存
+- **资源优化**: 图片压缩，字体预加载
+
 ## 最佳实践
 
 ### 数据管理
@@ -584,12 +709,14 @@ health_status = response.json()
 - 加密存储敏感信息
 - 限制数据库访问权限
 - 记录操作审计日志
+- CSRF保护：所有修改操作需要CSRF token
 
-### Claude Code使用
-- 定期更新Hooks脚本
-- 监控Hook执行状态
-- 备份配置文件
-- 保持文档同步
+### 前端安全
+- 验证所有用户输入
+- 使用HTTPS传输
+- 实施CSP策略
+- 保护API端点
+- 防止XSS和CSRF攻击
 
 ## 故障排查
 
@@ -599,6 +726,8 @@ health_status = response.json()
 3. **GPU初始化失败**: 检查CUDA和驱动版本，WSL2需要特殊配置
 4. **Web服务启动失败**: 确认端口占用和依赖
 5. **数据源API限流**: 调整请求频率和重试策略
+6. **CSRF错误**: 检查前端是否正确获取和使用CSRF token
+7. **Socket.IO连接问题**: 检查后端Socket.IO服务状态
 
 ### 日志位置
 - **系统日志**: `mystocks_system.log`
@@ -615,19 +744,16 @@ health_status = response.json()
 
 ## 项目版本历史
 
-### v1.3.1 (2025-11-12)
-- **Claude Code Hooks系统完善**: 修复PostToolUse:Write Hooks JSON错误处理
-- **测试验证**: 6个测试场景全部通过
-- **文档更新**: 详细修复历史和配置指南
-
-### v1.3.0 (2025-11-04)
-- **GPU缓存优化**: 6大核心优化策略，命中率从80%提升至90%+
-- **WSL2 GPU支持**: 完全解决WSL2环境下RAPIDS GPU访问问题
-- **测试系统**: 160+测试用例，100%测试覆盖率
+### v3.1.0 (2025-11-16)
+- **Vue + FastAPI 架构完成**: 前端采用Vue 3 + TypeScript现代化架构
+- **实时推送系统**: 集成Socket.IO和SSE实时数据推送
+- **CSRF安全增强**: 添加CSRF token保护所有修改操作
+- **API端点扩展**: 新增多个功能模块API端点
+- **文档完善**: 创建完整的Vue + FastAPI实施指南套件
 
 ### v3.0.0 (2025-10-19)
 - **Week 3简化**: 数据库架构从4库简化为2库
-- **ValueCell集成**: 完成Phase 1-3功能迁移
+- **集成**: 完成Phase 1-3功能迁移
 - **项目重组**: 从42个目录精简到13个科学组织目录
 - **Web界面**: 完整的FastAPI + Vue 3管理平台
 - **GPU支持**: RAPIDS加速系统，包含WSL2支持
@@ -651,20 +777,23 @@ docker-compose up -d tdengine postgresql
 # 系统初始化
 python scripts/runtime/system_demo.py
 
-# 后端服务
+# 后端服务 (端口范围: 8000-8010)
 cd web/backend && python -m uvicorn app.main:app --reload
+# 系统会自动在8000-8010范围内查找可用端口并启动
 
-# 前端服务
+# 前端服务 (端口范围: 3000-3010)
 cd web/frontend && npm run dev
+# 系统会自动在3000-3010范围内查找可用端口并启动
 
 # GPU服务
-cd gpu_api_system && python main_server.py
+cd src/gpu/api_system && python main_server.py
 
 # 实时数据
 python run_realtime_market_saver.py --count -1 --interval 300
 
 # 测试系统
 pytest tests/ -v
+npm run test  # 前端测试
 
 # Claude Code
 .claude/hooks/session-start-task-master-injector.sh
@@ -681,14 +810,24 @@ from src.adapters import AkshareDataSource, TdxDataSource
 # 数据库访问
 from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
 
+# 统一数据源
+from src.factories.data_source_factory import get_data_source
+
 # 监控
 from src.monitoring import PerformanceMonitor, AlertManager
+
+# AI策略
+from ai_strategy_analyzer import AIStrategyAnalyzer
+
+# GPU系统
+from gpu_ai_integration import GPUAIIntegrationManager
 
 # Web后端
 from web.backend.app.main import app
 
-# GPU系统
-from gpu_api_system.services.gpu_api_server import GPUApiServer
+# Vue前端
+from web.frontend.src.stores import useStrategyStore, useMonitoringStore
+from web.frontend.src.services import strategyService, monitoringService
 ```
 
 ### 配置检查
@@ -702,10 +841,10 @@ python scripts/database/check_postgresql_tables.py
 
 # GPU状态
 nvidia-smi
-python gpu_api_system/wsl2_gpu_init.py
+python src/gpu/api_system/wsl2_gpu_init.py
 
-# Claude Code
-.claude/hooks/post-tool-use-file-edit-tracker.sh --test
+# 前端依赖
+cd web/frontend && npm list
 ```
 
 ## 支持和联系
@@ -715,7 +854,8 @@ python gpu_api_system/wsl2_gpu_init.py
 - **变更日志**: 详见 `CHANGELOG.md`
 - **问题排查**: 参考各模块的故障排查文档
 - **Claude Code**: 参见 `CLAUDE.md` 集成指南
+- **Vue + FastAPI 指南**: 参见 `docs/guides/` 目录下的实施指南套件
 
 ---
 
-*本文档基于MyStocks v1.3.1生成，最后更新: 2025-11-13*
+*本文档基于MyStocks v3.1.0生成，最后更新: 2025-11-16*
