@@ -55,23 +55,21 @@ class TestDataClassification(unittest.TestCase):
         
     def test_database_target_enum_values(self):
         """测试数据库目标枚举值"""
-        # 测试数据库目标枚举值
+        # 测试数据库目标枚举值 (当前架构只有TDengine和PostgreSQL)
         self.assertEqual(DatabaseTarget.TDENGINE.value, "tdengine")
         self.assertEqual(DatabaseTarget.POSTGRESQL.value, "postgresql")
-        self.assertEqual(DatabaseTarget.MYSQL.value, "mysql")
-        self.assertEqual(DatabaseTarget.REDIS.value, "redis")
-        
+
     def test_data_classification_count(self):
         """测试数据分类数量"""
-        # 验证枚举数量是否正确
+        # 验证枚举数量是否正确 (34个分类)
         all_classifications = list(DataClassification)
         self.assertEqual(len(all_classifications), 34)
-        
+
     def test_database_target_count(self):
         """测试数据库目标数量"""
-        # 验证数据库目标枚举数量
+        # 验证数据库目标枚举数量 (2个: TDengine + PostgreSQL)
         all_targets = list(DatabaseTarget)
-        self.assertEqual(len(all_targets), 4)
+        self.assertEqual(len(all_targets), 2)
 
 
 if __name__ == '__main__':
