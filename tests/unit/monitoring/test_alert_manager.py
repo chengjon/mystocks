@@ -220,15 +220,15 @@ class TestAlertManager:
             'gt',
             100.0
         )
-        
-        # 测试超过阈值
-        metric_data = {'value': 150.0, 'symbol': '000001'}
+
+        # 测试超过阈值 (偏离>50%应为critical)
+        metric_data = {'value': 160.0, 'symbol': '000001'}  # 60% deviation
         alerts = self.alert_manager.evaluate_alert_rules(metric_data)
-        
+
         assert len(alerts) == 1
         assert alerts[0]['rule_id'] == 'high_price'
-        assert alerts[0]['severity'] == 'critical'  # 偏离50%，应为critical
-        assert alerts[0]['current_value'] == 150.0
+        assert alerts[0]['severity'] == 'critical'  # 偏离60%，应为critical
+        assert alerts[0]['current_value'] == 160.0
         assert alerts[0]['threshold'] == 100.0
     
     def test_evaluate_alert_rules_lt_condition(self):
@@ -239,14 +239,14 @@ class TestAlertManager:
             'lt',
             10.0
         )
-        
-        # 测试低于阈值
-        metric_data = {'value': 5.0, 'symbol': '000001'}
+
+        # 测试低于阈值 (偏离>50%应为critical)
+        metric_data = {'value': 4.0, 'symbol': '000001'}  # 60% deviation
         alerts = self.alert_manager.evaluate_alert_rules(metric_data)
-        
+
         assert len(alerts) == 1
         assert alerts[0]['rule_id'] == 'low_price'
-        assert alerts[0]['severity'] == 'critical'  # 偏离50%，应为critical
+        assert alerts[0]['severity'] == 'critical'  # 偏离60%，应为critical
     
     def test_evaluate_alert_rules_no_trigger(self):
         """测试不触发告警的情况"""
