@@ -5,6 +5,7 @@
 ### 🚀 快速开始
 - **[Apifox 快速开始](APIFOX_QUICK_START.md)** - 5分钟上手 Apifox
 - **[API 使用指南](API_GUIDE.md)** - 完整的 API 使用教程
+- **[API 使用示例和最佳实践](API_EXAMPLES.md)** - 详细的代码示例、常见场景和客户端SDK 🆕
 - **[Swagger UI 指南](SWAGGER_UI_GUIDE.md)** - 本地 Swagger UI 使用
 
 ### 📋 导入指南
