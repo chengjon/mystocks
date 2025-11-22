@@ -374,6 +374,8 @@ from app.api import (
     cache,  # Task 2.2 Cache Management API
     industry_concept_analysis,  # 行业概念分析API
     health,  # 健康检查API
+    dashboard,  # Phase 4: 仪表盘API
+    strategy_mgmt,  # Phase 4: 策略管理API
 )
 from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
@@ -424,6 +426,10 @@ app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告
 app.include_router(
     technical_analysis.router, tags=["technical-analysis"]
 )  # 增强技术分析
+
+#  仪表盘系统路由 (Phase 4)
+app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
+app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理API
 
 #  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理

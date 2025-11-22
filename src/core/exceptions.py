@@ -212,6 +212,250 @@ class UnsupportedOperation(BusinessLogicException):
         super().__init__(f"不支持的操作: {operation}", "MSE7003", details)
 
 
+# ==================== 数据源相关异常 (Phase 1 新增) ====================
+
+class DataSourceException(MyStocksException):
+    """
+    数据源异常基类
+
+    所有数据源操作相关的异常都继承此类。
+    包含数据源类型、操作类型等上下文信息，便于排查问题。
+
+    Attributes:
+        source_type: 数据源类型 (mock/tdengine/postgresql/api)
+        operation: 操作类型 (query/insert/update/delete/connect)
+    """
+    def __init__(
+        self,
+        message: str,
+        error_code: str = "MSE8000",
+        source_type: Optional[str] = None,
+        operation: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None
+    ):
+        enhanced_details = details or {}
+        enhanced_details.update({
+            "source_type": source_type,
+            "operation": operation
+        })
+        super().__init__(message, error_code, enhanced_details)
+        self.source_type = source_type
+        self.operation = operation
+
+
+class DataSourceConnectionError(DataSourceException):
+    """
+    数据源连接错误
+
+    当无法连接到数据源时抛出此异常。
+    适用场景：
+    - 数据库连接失败
+    - API服务不可达
+    - 网络超时
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        connection_info: Optional[Dict[str, Any]] = None,
+        retry_count: int = 0
+    ):
+        details = {
+            "connection_info": connection_info,
+            "retry_count": retry_count
+        }
+        super().__init__(
+            message,
+            error_code="MSE8001",
+            source_type=source_type,
+            operation="connect",
+            details=details
+        )
+
+
+class DataSourceQueryError(DataSourceException):
+    """
+    数据源查询错误
+
+    当查询数据失败时抛出此异常。
+    适用场景：
+    - SQL语法错误
+    - 查询超时
+    - 返回数据格式不正确
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        query: Optional[str] = None,
+        params: Optional[Dict[str, Any]] = None,
+        error_type: Optional[str] = None
+    ):
+        details = {
+            "query": query,
+            "params": params,
+            "error_type": error_type  # syntax/timeout/format/other
+        }
+        super().__init__(
+            message,
+            error_code="MSE8002",
+            source_type=source_type,
+            operation="query",
+            details=details
+        )
+
+
+class DataSourceDataNotFound(DataSourceException):
+    """
+    数据源中未找到数据
+
+    当查询的数据不存在时抛出此异常。
+    适用场景：
+    - 股票代码不存在
+    - 日期范围内无数据
+    - 指定记录不存在
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        query_params: Optional[Dict[str, Any]] = None
+    ):
+        details = {"query_params": query_params}
+        super().__init__(
+            message,
+            error_code="MSE8003",
+            source_type=source_type,
+            operation="query",
+            details=details
+        )
+
+
+class DataSourceTimeout(DataSourceException):
+    """
+    数据源操作超时
+
+    当数据源操作超过预期时间时抛出此异常。
+    适用场景：
+    - 查询超时
+    - 写入超时
+    - 连接超时
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        operation: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
+        expected_seconds: Optional[float] = None
+    ):
+        details = {
+            "timeout_seconds": timeout_seconds,
+            "expected_seconds": expected_seconds
+        }
+        super().__init__(
+            message,
+            error_code="MSE8004",
+            source_type=source_type,
+            operation=operation,
+            details=details
+        )
+
+
+class DataSourceConfigError(DataSourceException):
+    """
+    数据源配置错误
+
+    当数据源配置不正确时抛出此异常。
+    适用场景：
+    - 缺少必需配置
+    - 配置值无效
+    - 配置格式错误
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        config_key: Optional[str] = None,
+        config_value: Any = None,
+        expected_value: Optional[str] = None
+    ):
+        details = {
+            "config_key": config_key,
+            "config_value": config_value,
+            "expected_value": expected_value
+        }
+        super().__init__(
+            message,
+            error_code="MSE8005",
+            source_type=source_type,
+            operation="config",
+            details=details
+        )
+
+
+class DataSourceDataFormatError(DataSourceException):
+    """
+    数据源返回数据格式错误
+
+    当数据源返回的数据格式与预期不符时抛出此异常。
+    适用场景：
+    - 缺少必需字段
+    - 字段类型不匹配
+    - JSON解析失败
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        expected_format: Optional[str] = None,
+        actual_format: Optional[str] = None,
+        sample_data: Optional[str] = None
+    ):
+        details = {
+            "expected_format": expected_format,
+            "actual_format": actual_format,
+            "sample_data": sample_data
+        }
+        super().__init__(
+            message,
+            error_code="MSE8006",
+            source_type=source_type,
+            operation="parse",
+            details=details
+        )
+
+
+class DataSourceUnavailable(DataSourceException):
+    """
+    数据源不可用
+
+    当数据源暂时不可用时抛出此异常（用于降级处理）。
+    适用场景：
+    - 数据源维护中
+    - 数据源过载
+    - 数据源健康检查失败
+    """
+    def __init__(
+        self,
+        message: str,
+        source_type: Optional[str] = None,
+        reason: Optional[str] = None,
+        estimated_recovery_time: Optional[str] = None
+    ):
+        details = {
+            "reason": reason,
+            "estimated_recovery_time": estimated_recovery_time
+        }
+        super().__init__(
+            message,
+            error_code="MSE8007",
+            source_type=source_type,
+            operation="health_check",
+            details=details
+        )
+
+
 # 全局异常处理装饰器
 def handle_exceptions(default_return: Any = None, reraise: bool = False, logger: Any = None) -> Any:
     """

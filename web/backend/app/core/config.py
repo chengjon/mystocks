@@ -52,6 +52,14 @@ class Settings(BaseSettings):
     # 缓存配置 (Week 3 简化: 暂时禁用Redis缓存)
     enable_cache: bool = False  # Week 3简化: Redis已移除
 
+    # Celery 异步任务配置
+    celery_broker_url: str = "redis://localhost:6379/0"
+    celery_result_backend: str = "redis://localhost:6379/1"
+    celery_task_track_started: bool = True
+    celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
+    celery_enable_utc: bool = True
+    celery_timezone: str = "Asia/Shanghai"
+
     # 文件上传配置
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     upload_dir: str = "uploads"
