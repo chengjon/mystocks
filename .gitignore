@@ -129,3 +129,10 @@ node_modules/
 !.claude/skill-rules.json
 !.taskmaster/config.json
 !.mcp.json 
+
+# Security sensitive files
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
