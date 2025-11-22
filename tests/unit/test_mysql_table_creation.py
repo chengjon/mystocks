@@ -22,8 +22,9 @@ print("T023: MySQL表创建单元测试")
 print("=" * 80 + "\n")
 
 
+@pytest.mark.skip(reason="MySQL已从架构中移除，系统使用TDengine+PostgreSQL双数据库架构")
 class TestMySQLTableCreation:
-    """MySQL表创建测试类"""
+    """MySQL表创建测试类 (已废弃 - MySQL从Week3开始已移除)"""
 
     @classmethod
     def setup_class(cls):
