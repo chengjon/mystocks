@@ -1,0 +1,45 @@
+[MASTER]
+# 忽略的模块（C扩展动态成员）
+extension-pkg-whitelist=talib,baostock,efinance,cupy,cudf,cuml,taospy
+
+# 忽略的路径
+ignore=temp,__pycache__,.git,venv,node_modules,.archive
+
+# 并行作业数
+jobs=4
+
+[MESSAGES CONTROL]
+# 禁用的检查
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0301,  # line-too-long (用black处理)
+    C0103,  # invalid-name (允许短变量名)
+    W0511,  # fixme (TODO注释)
+    W0612,  # unused-variable (开发中允许)
+    W0613,  # unused-argument (接口方法需要)
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0915,  # too-many-statements
+    E0401,  # import-error (路径问题单独处理)
+
+[FORMAT]
+max-line-length=120
+
+[DESIGN]
+max-args=10
+max-locals=20
+max-returns=10
+max-branches=15
+
+[TYPECHECK]
+# 生成成员的模块（动态属性）
+generated-members=talib.*,baostock.*,efinance.*,cupy.*,cudf.*,cuml.*
+
+[SIMILARITIES]
+# 忽略导入和注释的重复
+ignore-imports=yes
+ignore-comments=yes
+min-similarity-lines=10
