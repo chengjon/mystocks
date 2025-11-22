@@ -87,13 +87,20 @@ class MockTDengineDataAccess:
         """模拟查询时序数据"""
         if not self.connected:
             raise Exception("Not connected to TDengine")
-        
+
+        # 从查询中解析symbol
+        import re
+        symbol = '000001'  # 默认值
+        match = re.search(r"symbol='(\d+)'", query)
+        if match:
+            symbol = match.group(1)
+
         # 返回模拟的时序数据
         return pd.DataFrame({
             'timestamp': pd.date_range('2024-01-01 09:30:00', periods=100, freq='1min'),
             'price': [10.0 + i * 0.1 for i in range(100)],
             'volume': [1000 + i * 10 for i in range(100)],
-            'symbol': ['000001'] * 100
+            'symbol': [symbol] * 100
         })
 
 
