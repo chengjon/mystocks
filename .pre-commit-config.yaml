@@ -1,0 +1,84 @@
+# Pre-commit configuration for MyStocks project
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Code formatting
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        language_version: python3
+        args: ['--line-length=120']
+        exclude: ^(temp/|.archive/|node_modules/)
+
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--profile=black', '--line-length=120']
+        exclude: ^(temp/|.archive/|node_modules/)
+
+  # Linting (errors only for pre-commit)
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.2.3
+    hooks:
+      - id: pylint
+        args: ['--errors-only', '--rcfile=.pylintrc']
+        exclude: ^(temp/|.archive/|node_modules/|tests/)
+        additional_dependencies:
+          - pandas
+          - numpy
+          - pydantic
+          - fastapi
+
+  # Type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        args: ['--ignore-missing-imports', '--no-error-summary']
+        exclude: ^(temp/|.archive/|node_modules/|tests/)
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
+
+  # Security scanning
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: ['-c', 'config/.security.yml', '-ll']
+        exclude: ^(temp/|.archive/|tests/)
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(temp/|.archive/)
+      - id: end-of-file-fixer
+        exclude: ^(temp/|.archive/)
+      - id: check-yaml
+        exclude: ^(temp/|.archive/)
+      - id: check-json
+        exclude: ^(temp/|.archive/)
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: detect-private-key
+      - id: check-merge-conflict
+
+  # Python syntax check
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-check-blanket-noqa
+      - id: python-check-blanket-type-ignore
+      - id: python-no-eval
+      - id: python-no-log-warn
+
+# CI configuration
+ci:
+  autofix_prs: false
+  autoupdate_schedule: monthly
