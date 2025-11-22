@@ -41,6 +41,16 @@
           }
         ],
         "timeout": 5
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-mock-data-validator.sh"
+          }
+        ],
+        "timeout": 5
       }
     ],
     "Stop": [

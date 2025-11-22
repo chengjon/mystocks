@@ -170,6 +170,34 @@ python -c "from db_manager.database_manager import DatabaseTableManager; mgr = D
 
 ## High-Level Architecture
 
+### Mock数据使用规则 (重要)
+
+**核心原则**: 所有模拟数据必须通过 Mock 数据模块提供，**严禁在业务代码中直接硬编码数据**。
+
+详细规则请参阅: [`docs/guides/MOCK_DATA_USAGE_RULES.md`](./guides/MOCK_DATA_USAGE_RULES.md)
+
+**快速参考**:
+```python
+# ✅ 正确: 通过工厂函数获取Mock数据
+from src.data_sources.factory import get_timeseries_source
+source = get_timeseries_source(source_type="mock")
+data = source.get_kline_data(symbol, start_time, end_time, interval)
+
+# ❌ 错误: 直接硬编码数据
+historical_data = [
+    {"date": "2025-01-01", "close": 10.5},  # 严禁!
+]
+```
+
+**主要Mock模块**:
+- `src/data_sources/factory.py` - 数据源工厂入口
+- `src/data_sources/mock/timeseries_mock.py` - 时序数据
+- `src/data_sources/mock/relational_mock.py` - 关系数据
+- `src/data_sources/mock/business_mock.py` - 业务数据
+- `src/mock/` - 页面级Mock数据
+
+---
+
 ### Core Design Principles
 
 1. **Dual-Database Data Storage** (Week 3+): Right database for right workload
