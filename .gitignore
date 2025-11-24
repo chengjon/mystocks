@@ -1,138 +1,129 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# Virtual Environment
-venv/
-ENV/
-env/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Environment Variables
-.env
-.env.*
-*.env
-!.env.example
+!.claude/build-checker-python.json
+!.claude/hooks/
+!.claude/hooks/*.sh
+!.claude/settings.json
+!.claude/skill-rules.json
 !.env.development.example
-config/.env.*
+!.env.example
+!.mcp.json 
+!.taskmaster/config.json
 !config/.env.example
-web/backend/.env.*
+!data/backups/.gitkeep
 !web/backend/.env.example
-
-# Development Tools
-.opencode/
-opencodetmp/
-
+# !config/essential_data.csv
+# CSV files (test data, temporary exports, generated reports)
+# Data Files
 # Database
+# Dependency directories
+# Development Tools
+# Development Tools (keep directories but ignore contents)
+# Editor directories and files
+# Environment Variables
+# Environment variables
+# Exception: Keep essential reference CSV files if needed in the future
+# Exclude critical config files from being ignored
+# IDE
+# Jupyter
+# Logs
+# MyPy
+# OS
+# OS specific
+# Python
+# Security sensitive files
+# Task files
+# Temporary
+# Testing
+# Virtual Environment
+# tasks.json
+# tasks/
+*$py.class
+*.crt
+*.csv
 *.db
+*.egg
+*.egg-info/
+*.env
+*.ipynb
+*.key
+*.log
+*.njsproj
+*.ntvs*
+*.p12
+*.pem
+*.pfx
+*.py[cod]
+*.sln
+*.so
 *.sqlite
 *.sqlite3
-
-# Data Files
+*.suo
+*.sw?
+*.swo
+*.swp
+*.tmp
+*~
+.DS_Store
+.Python
+.benchmarks/
+.claude-trace/
+.claude/
+.coverage
+.cursor/
+.dmypy.json
+.eggs/
+.env
+.env
+.env.*
+.env.*.local
+.env.local
+.env.production.local
+.idea
+.idea/
+.installed.cfg
+.ipynb_checkpoints/
+.mypy_cache/
+.opencode/
+.pytest_cache/
+.specify/
+.taskmaster/
+.vscode
+.vscode/
+ENV/
+Thumbs.db
+__pycache__/
+build/
+config/.env
+config/.env.*
 data/*.csv
 data/*.json
 data/backups/*
-!data/backups/.gitkeep
-
-# CSV files (test data, temporary exports, generated reports)
-*.csv
-# Exception: Keep essential reference CSV files if needed in the future
-# !config/essential_data.csv
-
-# Logs
-*.log
-logs/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# MyPy
-.mypy_cache/
-.dmypy.json
+dev-debug.log
+develop-eggs/
+dist/
 dmypy.json
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Temporary
-tmp/
+downloads/
+eggs/
+env/
+htmlcov/
+lib/
+lib64/
+logs
+logs/
+node_modules/
+npm-debug.log*
+opencodetmp/
+parts/
+sdist/
 temp/
 temp_docs/
-*.tmp
-
-logs
-npm-debug.log*
+tmp/
+var/
+venv/
+web/backend/.env
+web/backend/.env.*
+web/frontend/.env
+wheels/
 yarn-debug.log*
 yarn-error.log*
-dev-debug.log
-# Dependency directories
-node_modules/
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# OS specific
-
-# Task files
-# tasks.json
-# tasks/
-
-# Development Tools (keep directories but ignore contents)
-.claude/
-.taskmaster/
-.specify/
-.benchmarks/
-.claude-trace/
-.cursor/
-
-# Exclude critical config files from being ignored
-!.claude/settings.json
-!.claude/hooks/
-!.claude/hooks/*.sh
-!.claude/build-checker-python.json
-!.claude/skill-rules.json
-!.taskmaster/config.json
-!.mcp.json 
-
-# Security sensitive files
-*.key
-*.pem
-*.crt
-*.p12
-*.pfx
