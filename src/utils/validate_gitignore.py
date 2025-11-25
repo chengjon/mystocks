@@ -13,11 +13,11 @@
 # 版权：MyStocks Project © 2025
 """
 
-import subprocess
 import os
 import re
+import subprocess
 from pathlib import Path
-from typing import List, Dict, Set
+from typing import Dict, List, Set
 
 
 class GitIgnoreValidator:
@@ -50,7 +50,7 @@ class GitIgnoreValidator:
 
         self.issues: List[Dict] = []
         self.warnings: List[Dict] = []
-        self.successes: List[Dict] = []
+        self.successes: List[str] = []
 
     def run_git_command(self, args: List[str]) -> str:
         """执行git命令"""
@@ -134,9 +134,7 @@ class GitIgnoreValidator:
         all_exist = True
         for gitignore_path in gitignore_files:
             if gitignore_path.exists():
-                self.successes.append(
-                    f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在"
-                )
+                self.successes.append(f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在")
             else:
                 self.issues.append(
                     {
@@ -159,20 +157,14 @@ class GitIgnoreValidator:
 
                 if pattern == "__pycache__":
                     commands.append("# 清理Python缓存")
-                    commands.append(
-                        "find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null"
-                    )
+                    commands.append("find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null")
                     commands.append("find . -type f -name '*.pyc' -delete")
                 elif pattern == "*.log":
                     commands.append("# 清理日志文件")
                     commands.append("find . -type f -name '*.log' -delete")
                 elif pattern == "node_modules":
-                    commands.append(
-                        "# 清理Node.js依赖（谨慎使用，可能需要重新npm install）"
-                    )
-                    commands.append(
-                        "# find . -type d -name 'node_modules' -exec rm -rf {} +"
-                    )
+                    commands.append("# 清理Node.js依赖（谨慎使用，可能需要重新npm install）")
+                    commands.append("# find . -type d -name 'node_modules' -exec rm -rf {} +")
 
         return commands
 
@@ -245,31 +237,19 @@ class GitIgnoreValidator:
         checks = [
             (
                 "git status不显示__pycache__目录",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__" for i in self.issues),
             ),
             (
                 "git status不显示*.pyc文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc" for i in self.issues),
             ),
             (
                 "git status不显示*.log文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log" for i in self.issues),
             ),
             (
                 "git status不显示.env文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == ".env"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == ".env" for i in self.issues),
             ),
             (
                 ".gitignore文件存在",

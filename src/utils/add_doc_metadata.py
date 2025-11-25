@@ -9,7 +9,7 @@
 import argparse
 import os
 from datetime import datetime
-
+from typing import Optional
 
 METADATA_TEMPLATE = """**创建人**: {creator}
 **版本**: {version}
@@ -26,7 +26,7 @@ def add_metadata(
     file_path: str,
     creator: str,
     version: str,
-    approved_date: str = None,
+    approved_date: Optional[str] = None,
     revision_notes: str = "添加文档元数据标记",
 ):
     """

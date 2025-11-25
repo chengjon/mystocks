@@ -16,7 +16,7 @@
 import os
 import re
 from datetime import datetime
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
 
 # Python头注释模板
 PYTHON_HEADER_TEMPLATE = """'''
@@ -55,7 +55,7 @@ class PythonHeaderAdder:
                 return True
         return False
 
-    def extract_shebang_and_encoding(self, content: str) -> Tuple[str, str]:
+    def extract_shebang_and_encoding(self, content: str) -> Tuple[str, str, str]:
         """提取文件的shebang和编码声明"""
         lines = content.split("\n", 3)
         shebang = ""
