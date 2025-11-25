@@ -6,7 +6,7 @@
 import os
 import re
 import glob
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 
 
 class SecurityChecker:
@@ -112,7 +112,7 @@ class SecurityChecker:
 
         return issues
 
-    def scan_directory(self, directory: str = None) -> List[Dict]:
+    def scan_directory(self, directory: Optional[str] = None) -> List[Dict]:
         """扫描目录中的所有Python文件"""
         if directory is None:
             directory = self.project_root
