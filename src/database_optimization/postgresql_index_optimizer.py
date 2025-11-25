@@ -5,9 +5,9 @@ PostgreSQL 索引优化器
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Optional
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,9 @@ class PostgreSQLIndexOptimizer:
         self.host = os.getenv("POSTGRESQL_HOST", "localhost")
         self.port = int(os.getenv("POSTGRESQL_PORT", "5432"))
         self.user = os.getenv("POSTGRESQL_USER", "postgres")
-        self.password = os.getenv("POSTGRESQL_PASSWORD", "password")
+        self.password = os.getenv("POSTGRESQL_PASSWORD")
+        if not self.password:
+            raise ValueError("POSTGRESQL_PASSWORD environment variable is required")
         self.database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
         self.optimization_stats = {
@@ -305,10 +307,7 @@ class PostgreSQLIndexOptimizer:
         brin = self.design_brin_indexes()
 
         total_indexes = (
-            single_col["total_indexes"]
-            + composite["total_indexes"]
-            + partial["total_indexes"]
-            + brin["total_indexes"]
+            single_col["total_indexes"] + composite["total_indexes"] + partial["total_indexes"] + brin["total_indexes"]
         )
 
         return {
