@@ -14,7 +14,7 @@ from datetime import datetime
 import psycopg2
 from psycopg2.extras import execute_values
 
-from src.db_manager.connection_manager import get_connection_manager
+from src.storage.database.connection_manager import get_connection_manager
 
 
 class PostgreSQLDataAccess:

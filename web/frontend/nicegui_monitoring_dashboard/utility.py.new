@@ -1,0 +1,12 @@
+# 通用工具函数
+
+"""
+通用工具函数
+"""
+
+
+def test_function():
+    return "This is a test"
+
+def another_test():
+    return "Another test"

@@ -35,14 +35,14 @@ class DataResponse:
             self.timestamp = datetime.now().isoformat()
     
     @classmethod
-    def success(cls, data: Union[pd.DataFrame, Dict, List, str], metadata: Optional[Dict] = None) -> 'DataResponse':
+    def create_success(cls, data: Union[pd.DataFrame, Dict, List, str], metadata: Optional[Dict] = None) -> 'DataResponse':
         """创建成功响应"""
         return cls(success=True, data=data, metadata=metadata)
-    
-    @classmethod  
-    def error(cls, error: str, metadata: Optional[Dict] = None) -> 'DataResponse':
+
+    @classmethod
+    def create_error(cls, error_msg: str, metadata: Optional[Dict] = None) -> 'DataResponse':
         """创建错误响应"""
-        return cls(success=False, error=error, metadata=metadata)
+        return cls(success=False, error=error_msg, metadata=metadata)
     
     @classmethod
     def empty(cls, message: str = "No data available") -> 'DataResponse':
@@ -310,7 +310,7 @@ def standardize_response(data: Union[pd.DataFrame, Dict, List],
     Returns:
         DataResponse: 标准化的响应
     """
-    return DataResponse.success(data=data, metadata=metadata)
+    return DataResponse.create_success(data=data, metadata=metadata)
 
 
 # =============================================================================
@@ -339,7 +339,7 @@ class BaseDataSource(IPriceDataSource):
     
     def _create_error_response(self, error: str) -> DataResponse:
         """创建错误响应"""
-        return DataResponse.error(error=error, metadata={"source": self.name})
+        return DataResponse.create_error(error_msg=error, metadata={"source": self.name})
 
 
 # =============================================================================
@@ -351,11 +351,11 @@ if __name__ == "__main__":
     print("=== 测试DataResponse ===")
     
     # 成功响应
-    success_resp = DataResponse.success(data={"test": "data"})
+    success_resp = DataResponse.create_success(data={"test": "data"})
     print(f"成功响应: {success_resp}")
-    
+
     # 错误响应
-    error_resp = DataResponse.error(error="Test error")
+    error_resp = DataResponse.create_error(error_msg="Test error")
     print(f"错误响应: {error_resp}")
     
     # 测试验证函数

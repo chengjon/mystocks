@@ -295,6 +295,7 @@ class BacktestVisualizer:
         fig, ax = plt.subplots(figsize=(12, 6))
 
         # 创建颜色映射
+        # pylint: disable=no-member
         cmap = plt.cm.RdYlGn
         im = ax.imshow(heatmap_data.values, cmap=cmap, aspect="auto", vmin=-10, vmax=10)
 

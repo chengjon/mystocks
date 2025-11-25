@@ -92,7 +92,13 @@ class GPUResourceManager:
             return 0
         try:
             return pynvml.nvmlDeviceGetCount()
-        except Exception:
+        except pynvml.NVMLError as e:
+            if hasattr(self, 'logger'):
+                self.logger.debug(f"NVIDIA GPU not available: {e}")
+            return 0
+        except (ImportError, AttributeError) as e:
+            if hasattr(self, 'logger'):
+                self.logger.warning(f"NVIDIA library not properly installed: {e}")
             return 0
 
     def get_gpu_memory_total(self, gpu_id: int) -> int:

@@ -41,7 +41,7 @@ from src.monitoring import (
 )
 
 # 导入现有数据库管理器
-from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
+from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
 logger = logging.getLogger("MyStocksDataAccess")
 

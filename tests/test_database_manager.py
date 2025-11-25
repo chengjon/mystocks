@@ -8,7 +8,7 @@ import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-from src.db_manager.database_manager import DatabaseTableManager
+from src.storage.database.database_manager import DatabaseTableManager
 
 
 class TestDatabaseManager:

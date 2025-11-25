@@ -108,7 +108,7 @@ class MonitoringDatabase:
         # 加载环境变量
         load_dotenv()
 
-        from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
+        from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
         self.monitor_db_url = monitor_db_url or os.getenv("MONITOR_DB_URL")
         self.db_manager = DatabaseTableManager()
@@ -160,11 +160,11 @@ class MonitoringDatabase:
                     logger.warning("监控表不完整，尝试创建监控表结构")
                     # 这里可以调用 init_db_monitor.py 的功能
                     try:
-                        from src.db_manager.init_db_monitor import (
-                            create_monitoring_database,
+                        from src.storage.database.init_db_monitor import (
+                            init_monitoring_database,
                         )
 
-                        create_monitoring_database()
+                        init_monitoring_database()
                         logger.info("监控表结构创建完成")
                     except Exception as e:
                         logger.error(f"创建监控表失败: {e}")

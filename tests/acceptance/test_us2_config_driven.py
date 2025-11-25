@@ -24,7 +24,7 @@ import shutil
 from pathlib import Path
 import pytest
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
-from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.storage.database.connection_manager import DatabaseConnectionManager
 
 print("\n" + "=" * 80)
 print("T025: US2配置驱动表结构管理验收测试")

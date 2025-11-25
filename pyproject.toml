@@ -1,0 +1,219 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mystocks"
+version = "2.0.0"
+description = "MyStocks - 量化交易系统"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "MyStocks Team"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "pandas>=2.0.0,<3.0.0",
+    "numpy>=1.24.0",
+    "requests>=2.31.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "python-multipart>=0.0.6",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0",
+    "aiofiles>=23.0.0",
+    "jinja2>=3.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0,<8.0.0",
+    "pytest-cov>=4.1.0,<5.0.0",
+    "pytest-asyncio>=0.21.0,<1.0.0",
+    "pytest-mock>=3.12.0,<4.0.0",
+    "pytest-xdist>=3.3.0,<4.0.0",
+    "pytest-benchmark>=4.0.0,<5.0.0",
+    "playwright>=1.40.0",
+    "black>=23.9.0,<24.0.0",
+    "isort>=5.12.0,<6.0.0",
+    "flake8>=6.1.0,<7.0.0",
+    "mypy>=1.6.0,<2.0.0",
+    "pylint>=3.0.0,<4.0.0",
+    "pre-commit>=3.5.0,<4.0.0",
+    "bandit>=1.7.5,<2.0.0",
+    "safety>=2.3.0,<3.0.0",
+]
+database = [
+    "psycopg2-binary>=2.9.7",
+    "taospy>=3.0.0",
+    "pymongo>=4.6.0",
+]
+gpu = [
+    "torch>=2.1.0",
+    "tensorflow>=2.15.0",
+    "nvidia-ml-py3>=12.535.108",
+    "cupy-cuda11x>=12.0.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocstrings[python]>=0.23.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=80",
+    "--benchmark-only",
+    "--benchmark-sort=mean",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "gpu: marks tests that require GPU",
+    "database: marks tests that require database",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+    "*/backup_*",
+    "*/archive/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | archive
+  | backup
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src", "app"]
+known_third_party = ["fastapi", "pydantic", "pandas", "numpy", "requests", "sqlalchemy"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "taos.*",
+    "taosws.*",
+    "pynvml.*",
+    "sklearn.*",
+    "pymongo.*",
+]
+ignore_missing_imports = true
+
+[tool.pylint.messages_control]
+enable = ["all"]
+disable = [
+    "missing-docstring",
+    "too-many-lines",
+    "too-many-instance-attributes",
+    "too-many-arguments",
+    "too-many-locals",
+    "too-many-branches",
+    "too-many-statements",
+    "duplicate-code",
+]
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pylint.design]
+max-args = 7
+max-locals = 15
+max-branches = 12
+max-statements = 50
+
+[tool.bandit]
+exclude_dirs = ["tests", "test_*", "*_test.py"]
+skips = ["B101", "B601"]
+
+[tool.benchmark]
+min_rounds = 5
+min_time = 0.005
+max_time = 1.0
+histogram = true
+save_data = true
+json_file = "benchmark_results.json"

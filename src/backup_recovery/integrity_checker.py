@@ -15,7 +15,7 @@ from typing import Dict, Any, Tuple, Optional
 from pathlib import Path
 
 # 数据库和存储访问
-from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.storage.database.connection_manager import DatabaseConnectionManager
 from src.data_access.tdengine_access import TDengineDataAccess
 from src.data_access.postgresql_access import PostgreSQLDataAccess
 from src.backup_recovery.backup_manager import BackupManager  # 用于获取备份元数据

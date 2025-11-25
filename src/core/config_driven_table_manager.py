@@ -14,7 +14,7 @@ from pathlib import Path
 import logging
 
 # 数据库连接
-from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.storage.database.connection_manager import DatabaseConnectionManager
 from src.core.data_classification import DataClassification
 
 logger = logging.getLogger(__name__)

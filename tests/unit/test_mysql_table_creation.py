@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 import pytest
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
-from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.storage.database.connection_manager import DatabaseConnectionManager
 
 print("\n" + "=" * 80)
 print("T023: MySQL表创建单元测试")

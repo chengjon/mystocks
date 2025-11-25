@@ -21,7 +21,7 @@ project_root = os.path.dirname(
 sys.path.insert(0, project_root)
 
 from src.adapters.customer_adapter import CustomerDataSource
-from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
+from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 from src.db_manager.df2sql import create_sql_cmd
 
 # 加载环境变量

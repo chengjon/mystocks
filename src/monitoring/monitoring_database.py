@@ -16,7 +16,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 
-from src.db_manager.connection_manager import DatabaseConnectionManager
+from src.storage.database.connection_manager import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)
 

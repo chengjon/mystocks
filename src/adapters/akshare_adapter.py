@@ -26,6 +26,7 @@ REQUEST_TIMEOUT = 10
 # 将当前目录的父目录的父目录添加到模块搜索路径中
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from src.utils.error_handler import retry_on_failure
 from src.interfaces.data_source import IDataSource
 from src.utils.date_utils import normalize_date
 from src.utils.symbol_utils import (
@@ -33,7 +34,23 @@ from src.utils.symbol_utils import (
     format_index_code_for_source,
 )
 from src.utils.column_mapper import ColumnMapper
-from src.utils.error_handler import UnifiedErrorHandler, retry_on_failure
+# 统一日志配置
+import logging
+from typing import Optional
+
+# 获取或创建logger
+logger = logging.getLogger(__name__)
+
+# 确保日志配置已设置
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
 
 
 class AkshareDataSource(IDataSource):
@@ -55,9 +72,7 @@ class AkshareDataSource(IDataSource):
         """
         self.api_timeout = api_timeout
         self.max_retries = max_retries
-        print(
-            f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)"
-        )
+        logger.info(f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)")
 
     def _retry_api_call(self, func):
         """API调用重试装饰器 - 使用统一错误处理"""
@@ -89,9 +104,9 @@ class AkshareDataSource(IDataSource):
             start_date = normalize_date(start_date)
             end_date = normalize_date(end_date)
 
-            print(
+            logger.info(str(
                 f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={start_date}, 结束日期={end_date}"
-            )
+            ))
 
             # 尝试多种API获取股票数据
             df = None
@@ -110,17 +125,17 @@ class AkshareDataSource(IDataSource):
                     adjust="qfq",  # 前复权
                     timeout=self.api_timeout,
                 )
-                print(
+                logger.info(str(
                     f"主要API调用成功，参数: symbol={stock_code}, start_date={start_date_fmt}, end_date={end_date_fmt}"
-                )
+                ))
             except Exception as e:
-                print(f"主要API调用失败: {e}")
+                logger.error(f"主要API调用失败: {e}")
                 df = None
 
             # 方法2: stock_zh_a_spot (备用API)
             if df is None or df.empty:
                 try:
-                    print("尝试备用API(stock_zh_a_spot)")
+                    logger.info(r"尝试备用API(stock_zh_a_spot)")
                     spot_df = ak.stock_zh_a_spot()
                     if spot_df is not None and not spot_df.empty:
                         # 筛选指定股票代码
@@ -139,20 +154,20 @@ class AkshareDataSource(IDataSource):
                                 }
                             )
                 except Exception as e:
-                    print(f"备用API调用失败: {e}")
+                    logger.error(f"备用API调用失败: {e}")
 
             if df is None or df.empty:
-                print("Akshare返回的数据为空")
+                logger.info(r"Akshare返回的数据为空")
                 return pd.DataFrame()
 
-            print(f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}")
+            logger.info(f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 使用统一列名映射器标准化列名
             df = ColumnMapper.to_english(df)
 
             return df
         except Exception as e:
-            print(f"Akshare获取股票日线数据失败: {e}")
+            logger.error(f"Akshare获取股票日线数据失败: {e}")
             import traceback
 
             traceback.print_exc()
@@ -172,15 +187,15 @@ class AkshareDataSource(IDataSource):
             start_date = normalize_date(start_date)
             end_date = normalize_date(end_date)
 
-            print(f"尝试获取指数数据: {symbol}")
+            logger.info(f"尝试获取指数数据: {symbol}")
 
             # 使用专门的格式化函数处理指数代码
             index_code = format_index_code_for_source(symbol, "akshare")
-            print(f"处理指数: {index_code}")
+            logger.info(f"处理指数: {index_code}")
 
             # 方法1: 新浪接口 (stock_zh_index_daily)
             try:
-                print("尝试新浪接口(stock_zh_index_daily)")
+                logger.info(r"尝试新浪接口(stock_zh_index_daily)")
                 df = ak.stock_zh_index_daily(symbol=index_code)
 
                 if df is not None and not df.empty:
@@ -192,14 +207,14 @@ class AkshareDataSource(IDataSource):
                     df = df[mask]
 
                     if not df.empty:
-                        print(f"新浪接口获取到{len(df)}行数据")
+                        logger.info(f"新浪接口获取到{len(df)}行数据")
                         return self._process_index_data(df)
             except Exception as e:
-                print(f"新浪接口调用失败: {e}")
+                logger.error(f"新浪接口调用失败: {e}")
 
             # 方法2: 东方财富接口 (stock_zh_index_daily_em)
             try:
-                print("尝试东方财富接口(stock_zh_index_daily_em)")
+                logger.info(r"尝试东方财富接口(stock_zh_index_daily_em)")
                 df = ak.stock_zh_index_daily_em(symbol=index_code)
 
                 if df is not None and not df.empty:
@@ -211,14 +226,14 @@ class AkshareDataSource(IDataSource):
                     df = df[mask]
 
                     if not df.empty:
-                        print(f"东方财富接口获取到{len(df)}行数据")
+                        logger.info(f"东方财富接口获取到{len(df)}行数据")
                         return self._process_index_data(df)
             except Exception as e:
-                print(f"东方财富接口调用失败: {e}")
+                logger.error(f"东方财富接口调用失败: {e}")
 
             # 方法3: 通用接口 (index_zh_a_hist)
             try:
-                print("尝试通用接口(index_zh_a_hist)")
+                logger.info(r"尝试通用接口(index_zh_a_hist)")
                 # 提取纯数字代码
                 pure_code = "".join(c for c in index_code if c.isdigit())
                 start_date_fmt = start_date.replace("-", "")
@@ -232,16 +247,16 @@ class AkshareDataSource(IDataSource):
                 )
 
                 if df is not None and not df.empty:
-                    print(f"通用接口获取到{len(df)}行数据")
+                    logger.info(f"通用接口获取到{len(df)}行数据")
                     return self._process_index_data(df)
             except Exception as e:
-                print(f"通用接口调用失败: {e}")
+                logger.error(f"通用接口调用失败: {e}")
 
-            print(f"所有接口均未能获取到指数 {index_code} 的数据")
+            logger.info(f"所有接口均未能获取到指数 {index_code} 的数据")
             return pd.DataFrame()
 
         except Exception as e:
-            print(f"Akshare获取指数日线数据失败: {e}")
+            logger.error(f"Akshare获取指数日线数据失败: {e}")
             import traceback
 
             traceback.print_exc()
@@ -263,7 +278,7 @@ class AkshareDataSource(IDataSource):
             df = ak.stock_individual_info_em(symbol=stock_code)
 
             if df is None or df.empty:
-                print(f"未能获取到股票 {stock_code} 的基本信息")
+                logger.info(f"未能获取到股票 {stock_code} 的基本信息")
                 return {}
 
             # 转换为字典
@@ -273,7 +288,7 @@ class AkshareDataSource(IDataSource):
 
             return info_dict
         except Exception as e:
-            print(f"Akshare获取股票基本信息失败: {e}")
+            logger.error(f"Akshare获取股票基本信息失败: {e}")
             return {}
 
     def get_index_components(self, symbol: str) -> List[str]:
@@ -284,7 +299,7 @@ class AkshareDataSource(IDataSource):
             df = ak.index_stock_cons(symbol=symbol)
 
             if df is None or df.empty:
-                print(f"未能获取到指数 {symbol} 的成分股")
+                logger.info(f"未能获取到指数 {symbol} 的成分股")
                 return []
 
             # 提取股票代码
@@ -293,10 +308,10 @@ class AkshareDataSource(IDataSource):
             elif "成分券代码" in df.columns:
                 return df["成分券代码"].tolist()
             else:
-                print(f"无法识别的成分股列名: {df.columns.tolist()}")
+                logger.info(f"无法识别的成分股列名: {df.columns.tolist()}")
                 return []
         except Exception as e:
-            print(f"Akshare获取指数成分股失败: {e}")
+            logger.error(f"Akshare获取指数成分股失败: {e}")
             return []
 
     def get_real_time_data(self, symbol: str) -> Dict[str, Any]:
@@ -306,19 +321,19 @@ class AkshareDataSource(IDataSource):
             df = ak.stock_zh_a_spot()
 
             if df is None or df.empty:
-                print(f"未能获取到股票 {symbol} 的实时数据")
+                logger.info(f"未能获取到股票 {symbol} 的实时数据")
                 return {}
 
             # 筛选指定股票
             filtered_df = df[df["代码"] == symbol]
             if filtered_df.empty:
-                print(f"未能找到股票 {symbol} 的实时数据")
+                logger.info(f"未能找到股票 {symbol} 的实时数据")
                 return {}
 
             # 转换为字典
             return filtered_df.iloc[0].to_dict()
         except Exception as e:
-            print(f"Akshare获取实时数据失败: {e}")
+            logger.error(f"Akshare获取实时数据失败: {e}")
             return {}
             return {}
 
@@ -329,20 +344,20 @@ class AkshareDataSource(IDataSource):
             df = ak.tool_trade_date_hist_sina()
 
             if df is None or df.empty:
-                print("未能获取到交易日历数据")
+                logger.info(r"未能获取到交易日历数据")
                 return pd.DataFrame()
 
             # 筛选日期范围
             df["trade_date"] = pd.to_datetime(df["trade_date"])
-            start_date = pd.to_datetime(date_utils.normalize_date(start_date))
-            end_date = pd.to_datetime(date_utils.normalize_date(end_date))
+            start_date = pd.to_datetime(normalize_date(start_date))
+            end_date = pd.to_datetime(normalize_date(end_date))
 
             mask = (df["trade_date"] >= start_date) & (df["trade_date"] <= end_date)
             filtered_df = df[mask]
 
             return filtered_df
         except Exception as e:
-            print(f"Akshare获取交易日历失败: {e}")
+            logger.error(f"Akshare获取交易日历失败: {e}")
             return pd.DataFrame()
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
@@ -350,15 +365,15 @@ class AkshareDataSource(IDataSource):
         try:
             # 使用stock_financial_abstract接口获取财务摘要数据
             stock_code = format_stock_code_for_source(symbol, "akshare")
-            df = ak.stock_financial_abstract(stock=stock_code)
+            df = ak.stock_financial_abstract(symbol=stock_code)
 
             if df is None or df.empty:
-                print(f"未能获取到股票 {symbol} 的财务数据")
+                logger.info(f"未能获取到股票 {symbol} 的财务数据")
                 return pd.DataFrame()
 
             return df
         except Exception as e:
-            print(f"Akshare获取财务数据失败: {e}")
+            logger.error(f"Akshare获取财务数据失败: {e}")
             return pd.DataFrame()
 
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
@@ -368,19 +383,23 @@ class AkshareDataSource(IDataSource):
             if symbol:
                 # 获取个股新闻
                 stock_code = format_stock_code_for_source(symbol, "akshare")
-                df = ak.stock_news_em(symbol=stock_code, pageSize=limit)
+                df = ak.stock_news_em(symbol=stock_code)
             else:
                 # 获取市场新闻
-                df = ak.stock_news_em(pageSize=limit)
+                df = ak.stock_news_em()
 
             if df is None or df.empty:
-                print("未能获取到新闻数据")
+                logger.info(r"未能获取到新闻数据")
                 return []
+
+            # 限制返回数量
+            if limit and len(df) > limit:
+                df = df.head(limit)
 
             # 转换为字典列表
             return df.to_dict("records")
         except Exception as e:
-            print(f"Akshare获取新闻数据失败: {e}")
+            logger.error(f"Akshare获取新闻数据失败: {e}")
             return []
 
     def get_ths_industry_summary(self) -> pd.DataFrame:
@@ -403,10 +422,10 @@ class AkshareDataSource(IDataSource):
         示例用法:
             >>> adapter = AkshareDataSource()
             >>> industry_data = adapter.get_ths_industry_summary()
-            >>> print(industry_data.head())
+            >>> logger.info(str(industry_data.head()))
         """
         try:
-            print("[Akshare] 开始获取同花顺行业一览表数据...")
+            logger.info(r"[Akshare] 开始获取同花顺行业一览表数据...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -417,12 +436,10 @@ class AkshareDataSource(IDataSource):
             df = _get_industry_data()
 
             if df is None or df.empty:
-                print("[Akshare] 未能获取到同花顺行业一览表数据")
+                logger.info(r"[Akshare] 未能获取到同花顺行业一览表数据")
                 return pd.DataFrame()
 
-            print(
-                f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 使用统一列名映射器标准化列名(如果需要)
             # 注意：这里保留原始中文列名，因为这是行业数据的特殊格式
@@ -435,7 +452,7 @@ class AkshareDataSource(IDataSource):
             return df
 
         except Exception as e:
-            print(f"[Akshare] 获取同花顺行业一览表数据失败: {e}")
+            logger.error(f"[Akshare] 获取同花顺行业一览表数据失败: {e}")
             import traceback
 
             traceback.print_exc()
@@ -465,10 +482,10 @@ class AkshareDataSource(IDataSource):
         示例用法:
             >>> adapter = AkshareDataSource()
             >>> bank_stocks = adapter.get_ths_industry_stocks("银行")
-            >>> print(bank_stocks.head())
+            >>> logger.info(str(bank_stocks.head()))
         """
         try:
-            print(f"[Akshare] 开始获取行业'{industry_name}'的成分股数据...")
+            logger.info(f"[Akshare] 开始获取行业'{industry_name}'的成分股数据...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -480,12 +497,10 @@ class AkshareDataSource(IDataSource):
             df = _get_industry_stocks()
 
             if df is None or df.empty:
-                print(f"[Akshare] 未能获取到行业'{industry_name}'的成分股数据")
+                logger.info(f"[Akshare] 未能获取到行业'{industry_name}'的成分股数据")
                 return pd.DataFrame()
 
-            print(
-                f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 添加行业信息和数据获取时间戳
             df["所属行业"] = industry_name
@@ -494,7 +509,7 @@ class AkshareDataSource(IDataSource):
             return df
 
         except Exception as e:
-            print(f"[Akshare] 获取行业'{industry_name}'成分股数据失败: {e}")
+            logger.error(f"[Akshare] 获取行业'{industry_name}'成分股数据失败: {e}")
             import traceback
 
             traceback.print_exc()
@@ -513,10 +528,10 @@ class AkshareDataSource(IDataSource):
         示例用法:
             >>> adapter = AkshareDataSource()
             >>> industry_names = adapter.get_ths_industry_names()
-            >>> print(industry_names.head())
+            >>> logger.info(str(industry_names.head()))
         """
         try:
-            print("[Akshare] 开始获取同花顺行业名称列表...")
+            logger.info(r"[Akshare] 开始获取同花顺行业名称列表...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -527,12 +542,10 @@ class AkshareDataSource(IDataSource):
             df = _get_industry_names()
 
             if df is None or df.empty:
-                print("[Akshare] 未能获取到同花顺行业名称列表")
+                logger.info(r"[Akshare] 未能获取到同花顺行业名称列表")
                 return pd.DataFrame()
 
-            print(
-                f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 添加数据获取时间戳
             df["数据获取时间"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -540,7 +553,7 @@ class AkshareDataSource(IDataSource):
             return df
 
         except Exception as e:
-            print(f"[Akshare] 获取同花顺行业名称列表失败: {e}")
+            logger.error(f"[Akshare] 获取同花顺行业名称列表失败: {e}")
             import traceback
 
             traceback.print_exc()
@@ -561,7 +574,7 @@ class AkshareDataSource(IDataSource):
         """
         # AkShare本身不直接支持分钟K线，需要通过TDX适配器获取
         # 这里返回空DataFrame，实际通过统一数据源调用TDX适配器
-        print(f"[Akshare] 注意：AkShare不直接支持分钟K线数据，建议使用TDX适配器")
+        logger.info(f"[Akshare] 注意：AkShare不直接支持分钟K线数据，建议使用TDX适配器")
         return pd.DataFrame()
 
     def get_industry_classify(self) -> pd.DataFrame:
@@ -578,7 +591,7 @@ class AkshareDataSource(IDataSource):
                 - leader_stock: 领涨股
         """
         try:
-            print("[Akshare] 开始获取行业分类数据...")
+            logger.info(r"[Akshare] 开始获取行业分类数据...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -589,10 +602,10 @@ class AkshareDataSource(IDataSource):
             df = _get_industry_classify()
 
             if df is None or df.empty:
-                print("[Akshare] 未能获取到行业分类数据")
+                logger.info(r"[Akshare] 未能获取到行业分类数据")
                 return pd.DataFrame()
 
-            print(f"[Akshare] 成功获取行业分类数据，共 {len(df)} 条记录")
+            logger.info(f"[Akshare] 成功获取行业分类数据，共 {len(df)} 条记录")
             
             # 标准化列名
             df = df.rename(columns={
@@ -617,7 +630,7 @@ class AkshareDataSource(IDataSource):
             return df
 
         except Exception as e:
-            print(f"[Akshare] 获取行业分类数据失败: {e}")
+            logger.error(f"[Akshare] 获取行业分类数据失败: {e}")
             import traceback
             traceback.print_exc()
             return pd.DataFrame()
@@ -636,7 +649,7 @@ class AkshareDataSource(IDataSource):
                 - leader_stock: 领涨股
         """
         try:
-            print("[Akshare] 开始获取概念分类数据...")
+            logger.info(r"[Akshare] 开始获取概念分类数据...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -647,10 +660,10 @@ class AkshareDataSource(IDataSource):
             df = _get_concept_classify()
 
             if df is None or df.empty:
-                print("[Akshare] 未能获取到概念分类数据")
+                logger.info(r"[Akshare] 未能获取到概念分类数据")
                 return pd.DataFrame()
 
-            print(f"[Akshare] 成功获取概念分类数据，共 {len(df)} 条记录")
+            logger.info(f"[Akshare] 成功获取概念分类数据，共 {len(df)} 条记录")
             
             # 标准化列名
             df = df.rename(columns={
@@ -675,7 +688,7 @@ class AkshareDataSource(IDataSource):
             return df
 
         except Exception as e:
-            print(f"[Akshare] 获取概念分类数据失败: {e}")
+            logger.error(f"[Akshare] 获取概念分类数据失败: {e}")
             import traceback
             traceback.print_exc()
             return pd.DataFrame()
@@ -694,7 +707,7 @@ class AkshareDataSource(IDataSource):
                 - concepts: 概念列表
         """
         try:
-            print(f"[Akshare] 开始获取个股 {symbol} 的行业和概念信息...")
+            logger.info(f"[Akshare] 开始获取个股 {symbol} 的行业和概念信息...")
 
             # 使用重试装饰器包装API调用
             @self._retry_api_call
@@ -705,10 +718,10 @@ class AkshareDataSource(IDataSource):
             df = _get_stock_industry()
 
             if df is None or df.empty:
-                print(f"[Akshare] 未能获取到个股 {symbol} 的信息")
+                logger.info(f"[Akshare] 未能获取到个股 {symbol} 的信息")
                 return {"symbol": symbol, "industries": [], "concepts": []}
 
-            print(f"[Akshare] 成功获取个股 {symbol} 的信息")
+            logger.info(f"[Akshare] 成功获取个股 {symbol} 的信息")
             
             # 提取行业和概念信息
             industries = []
@@ -734,7 +747,7 @@ class AkshareDataSource(IDataSource):
             }
 
         except Exception as e:
-            print(f"[Akshare] 获取个股 {symbol} 的行业和概念信息失败: {e}")
+            logger.error(f"[Akshare] 获取个股 {symbol} 的行业和概念信息失败: {e}")
             import traceback
             traceback.print_exc()
             return {"symbol": symbol, "industries": [], "concepts": []}

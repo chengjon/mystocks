@@ -29,7 +29,7 @@ try:
 except ImportError as e:
     print(f"警告: 无法导入数据访问模块: {e}")
     print("尝试从db_manager导入...")
-    from src.db_manager.database_manager import DatabaseTableManager
+    from src.storage.database.database_manager import DatabaseTableManager
 
 
 class DatabaseAssessor:
