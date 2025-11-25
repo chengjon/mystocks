@@ -1,3 +1,3 @@
 """MyStocks package modules"""
 
-__all__ = []
+__all__: list[str] = []

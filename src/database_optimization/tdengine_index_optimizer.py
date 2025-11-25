@@ -5,9 +5,9 @@ TDengine 索引优化器
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional
 import os
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,9 @@ class TDengineIndexOptimizer:
         self.host = os.getenv("TDENGINE_HOST", "localhost")
         self.port = int(os.getenv("TDENGINE_PORT", "6030"))
         self.user = os.getenv("TDENGINE_USER", "root")
-        self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+        self.password = os.getenv("TDENGINE_PASSWORD")
+        if not self.password:
+            raise ValueError("TDENGINE_PASSWORD environment variable is required")
         self.database = os.getenv("TDENGINE_DATABASE", "market_data")
 
         self.optimization_stats = {
