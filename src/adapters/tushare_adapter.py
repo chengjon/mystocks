@@ -139,7 +139,7 @@ class TushareDataSource(IDataSource):
                 return {}
 
             # 转换为字典
-            return df.iloc[0].to_dict()
+            return dict(df.iloc[0].to_dict())
         except Exception as e:
             print(f"Tushare获取股票基本信息失败: {e}")
             return {}
@@ -156,7 +156,7 @@ class TushareDataSource(IDataSource):
             if df is None or df.empty:
                 return []
 
-            return df["con_code"].tolist()
+            return list(df["con_code"].tolist())
         except Exception as e:
             print(f"Tushare获取指数成分股失败: {e}")
             return []
@@ -206,7 +206,7 @@ class TushareDataSource(IDataSource):
     ) -> Union[List[Dict], str]:
         """获取新闻数据-Tushare实现"""
         # Tushare的新闻数据功能有限
-        return {"error": "Tushare新闻数据功能有限，请使用其他数据源"}
+        return "Tushare新闻数据功能有限，请使用其他数据源"
 
     def _format_symbol_for_tushare(self, symbol: str) -> str:
         """格式化股票代码为Tushare格式"""

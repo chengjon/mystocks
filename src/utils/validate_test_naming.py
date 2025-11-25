@@ -24,8 +24,8 @@ class TestNamingValidator:
 
     def __init__(self, root_dir: str = "."):
         self.root_dir = Path(root_dir)
-        self.compliant_files = []
-        self.non_compliant_files = []
+        self.compliant_files: List[Path] = []
+        self.non_compliant_files: List[Path] = []
         self.ignored_dirs = {
             ".git",
             "node_modules",
