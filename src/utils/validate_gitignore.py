@@ -48,9 +48,9 @@ class GitIgnoreValidator:
             "data/backups/.gitkeep",
         ]
 
-        self.issues: List[str] = []
-        self.warnings: List[str] = []
-        self.successes: List[str] = []
+        self.issues: List[Dict] = []
+        self.warnings: List[Dict] = []
+        self.successes: List[Dict] = []
 
     def run_git_command(self, args: List[str]) -> str:
         """执行git命令"""
