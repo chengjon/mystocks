@@ -250,8 +250,9 @@ class DataSourceFactory:
         """创建数据源实例"""
         if name not in cls._registry:
             raise ValueError(f"Unknown data source: {name}")
-        
-        return cls._registry[name](**kwargs)
+
+        data_source_class = cls._registry[name]
+        return data_source_class(**kwargs)  # type: ignore[return-value]
     
     @classmethod
     def get_supported_sources(cls) -> List[str]:
