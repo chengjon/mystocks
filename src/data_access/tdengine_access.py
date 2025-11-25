@@ -12,7 +12,7 @@ import pandas as pd
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
 
-from src.db_manager.connection_manager import get_connection_manager
+from src.storage.database.connection_manager import get_connection_manager
 
 
 class TDengineDataAccess:

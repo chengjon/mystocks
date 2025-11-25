@@ -27,6 +27,11 @@ import numpy as np
 import logging
 from datetime import datetime
 
+# Scikit-learn
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import joblib
+
 # LightGBM
 try:
     from lightgbm import LGBMRegressor
@@ -35,11 +40,6 @@ try:
 except ImportError:
     LIGHTGBM_AVAILABLE = False
     logging.warning("LightGBM 未安装，预测功能不可用")
-
-# Scikit-learn
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-import joblib
 
 
 class PricePredictorStrategy:

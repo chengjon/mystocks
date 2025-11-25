@@ -77,6 +77,7 @@ class DatabaseConnectionManager:
                     os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
                 )
 
+                # pylint: disable=no-member
                 conn = taosws.connect(
                     host=os.getenv("TDENGINE_HOST"),
                     port=tdengine_port,

@@ -28,6 +28,10 @@ class TestPostgreSQLDataAccessReal:
         self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_pool
         self.mock_pool.getconn.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
+        # Add encoding attribute required by psycopg2.extras.execute_values
+        # execute_values accesses cursor.connection.encoding
+        self.mock_conn.encoding = 'UTF8'
+        self.mock_cursor.connection = self.mock_conn
 
         with patch('src.data_access.postgresql_access.get_connection_manager') as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
@@ -81,9 +85,14 @@ class TestPostgreSQLDataAccessReal:
             'date': ['2024-01-01', '2024-01-01']
         })
 
-        self.db.insert_dataframe('stocks', df)
+        # Mock execute_values as it requires complex psycopg2 internals
+        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
+            result = self.db.insert_dataframe('stocks', df)
 
-        assert self.mock_cursor.execute.called
+            mock_execute_values.assert_called_once()
+            # Verify the SQL pattern
+            call_args = mock_execute_values.call_args
+            assert 'INSERT INTO stocks' in call_args[0][1]
 
     def test_query(self):
         """测试查询"""
@@ -116,7 +125,8 @@ class TestPostgreSQLDataAccessReal:
         """测试删除数据"""
         self.mock_cursor.rowcount = 5
 
-        self.db.delete('stocks', {'symbol': '600519'})
+        # delete() expects (table_name: str, where: str) - where is a SQL string condition
+        self.db.delete('stocks', "symbol = '600519'")
 
         self.mock_cursor.execute.assert_called()
         call_args = self.mock_cursor.execute.call_args[0][0]
@@ -130,9 +140,15 @@ class TestPostgreSQLDataAccessReal:
             'date': ['2024-01-01']
         })
 
-        self.db.upsert_dataframe('stocks', df, conflict_columns=['symbol', 'date'])
+        # Mock execute_values as it requires complex psycopg2 internals
+        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
+            self.db.upsert_dataframe('stocks', df, conflict_columns=['symbol', 'date'])
 
-        self.mock_cursor.execute.assert_called()
+            mock_execute_values.assert_called_once()
+            # Verify the SQL pattern includes ON CONFLICT
+            call_args = mock_execute_values.call_args
+            assert 'INSERT INTO stocks' in call_args[0][1]
+            assert 'ON CONFLICT' in call_args[0][1]
 
     def test_execute_sql(self):
         """测试执行原始SQL"""
@@ -158,9 +174,13 @@ class TestPostgreSQLDataAccessReal:
             'price': [1750.50]
         })
 
-        self.db.save_data('stocks', df)
+        # save_data signature: (data, classification, table_name, **kwargs)
+        # Mock execute_values as it requires complex psycopg2 internals
+        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
+            result = self.db.save_data(df, None, 'stocks')
 
-        self.mock_cursor.execute.assert_called()
+            mock_execute_values.assert_called_once()
+            assert result is True
 
     def test_load_data(self):
         """测试load_data方法"""
@@ -198,6 +218,10 @@ class TestPostgreSQLDataAccessEdgeCases:
         self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_pool
         self.mock_pool.getconn.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
+        # Add encoding attribute required by psycopg2.extras.execute_values
+        # execute_values accesses cursor.connection.encoding
+        self.mock_conn.encoding = 'UTF8'
+        self.mock_cursor.connection = self.mock_conn
 
         with patch('src.data_access.postgresql_access.get_connection_manager') as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager

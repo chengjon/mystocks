@@ -189,6 +189,25 @@ class BacktestRequest(BaseModel):
         }
 
 
+class BacktestExecuteRequest(BaseModel):
+    """回测执行请求"""
+    strategy_id: int = Field(..., description="策略ID", ge=1)
+    user_id: int = Field(..., description="用户ID", ge=1)
+
+    # 回测范围
+    symbols: List[str] = Field(..., description="股票代码列表", min_items=1)
+    start_date: date = Field(..., description="开始日期")
+    end_date: date = Field(..., description="结束日期")
+
+    # 初始资金和成本
+    initial_capital: float = Field(100000.0, description="初始资金", ge=1000)
+    commission_rate: float = Field(0.0003, description="手续费率", ge=0, le=0.01)
+    slippage_rate: float = Field(0.001, description="滑点率", ge=0, le=0.01)
+
+    # 回测选项
+    benchmark: Optional[str] = Field(None, description="基准指数代码")
+
+
 # ============================================================================
 # 回测结果模型
 # ============================================================================
@@ -232,7 +251,7 @@ class PerformanceMetrics(BaseModel):
 
 class EquityCurvePoint(BaseModel):
     """权益曲线点"""
-    date: date = Field(..., description="日期")
+    date_field: date = Field(..., description="日期")
     equity: float = Field(..., description="权益", ge=0)
     drawdown: float = Field(..., description="回撤 (%)", le=0)
     benchmark_equity: Optional[float] = Field(None, description="基准权益")

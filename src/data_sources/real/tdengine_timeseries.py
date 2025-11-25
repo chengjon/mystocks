@@ -937,7 +937,8 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
             return float(df.iloc[-1]['close'])
 
-        except:
+        except (IndexError, ValueError, TypeError, KeyError) as e:
+            self.logger.error(f"Failed to get latest price for {symbol}: {e}")
             return 0.0
 
     def _calculate_ma(self, data: List[float], period: int) -> List[float]:

@@ -26,10 +26,10 @@ from enum import Enum
 import traceback
 
 # 导入现有的数据库管理模块
-from src.db_manager.database_manager import (
+from src.storage.database.database_manager import (
     DatabaseTableManager as OriginalDatabaseTableManager,
 )
-from src.db_manager.database_manager import DatabaseType
+from src.storage.database.database_manager import DatabaseType
 
 # 配置日志
 logging.basicConfig(

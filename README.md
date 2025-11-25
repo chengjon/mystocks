@@ -1,10 +1,49 @@
 # MyStocks 量化交易数据管理系统
 
 **创建人**: JohnC & Claude
-**版本**: 3.0.0
+**版本**: 3.1.0
 **批准日期**: 2025-10-15
-**最后修订**: 2025-10-24
-**本次修订内容**: Week 3数据库简化完成 + Adapter整理
+**最后修订**: 2025-11-22
+**本次修订内容**: Phase 6 技术债务修复进行中 + 文档更新
+
+---
+
+## 📊 Development Status (2025-11-22)
+
+### Project Progress Overview
+
+```
+Phase 1-3: Core System ████████████████████ 100% ✅
+Phase 4:   GPU API     ████████████████████ 100% ✅
+Phase 5:   Backtest    ████████████████████ 100% ✅
+Phase 6:   Tech Debt   ████████░░░░░░░░░░░░  40% 🔄
+```
+
+| Milestone | Description | Status |
+|-----------|-------------|--------|
+| Phase 1 | 实时监控和告警系统 (7种告警规则) | ✅ 完成 |
+| Phase 2 | 增强技术分析 (26个技术指标) | ✅ 完成 |
+| Phase 3 | 多数据源集成 (优先级路由/故障转移) | ✅ 完成 |
+| Phase 4 | GPU API System (回测引擎/ML服务) | ✅ 完成 |
+| Phase 5 | Backtest Engine (12个量化策略) | ✅ 完成 |
+| Phase 6 | 技术债务修复 (代码质量/测试覆盖) | 🔄 进行中 |
+
+### Technical Debt Remediation Progress
+
+**Phase 6.1**: Code Quality (代码质量)
+- ✅ 配置 `.pylintrc` (Pylint规则)
+- ✅ 配置 `.pre-commit-config.yaml` (提交钩子)
+- 🔄 修复 Pylint Errors: 215 → 目标 0
+
+**Phase 6.2**: Test Coverage (测试覆盖)
+- 当前覆盖率: ~6% → **目标: 80%**
+- PostgreSQL Access: 13% → 67% ✅
+- TDengine Access: 11% → 56% ✅
+- 单元测试数量: 459个
+
+**Phase 6.3**: Refactoring (代码重构)
+- ⏳ 高复杂度方法重构
+- ⏳ TODO 注释清理 (101个)
 
 ---
 
@@ -25,18 +64,24 @@
 
 ---
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](./CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](./CHANGELOG.md)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.114%2B-green.svg)](https://fastapi.tiangolo.com)
 [![Vue](https://img.shields.io/badge/Vue-3.4%2B-brightgreen.svg)](https://vuejs.org)
+[![TDengine](https://img.shields.io/badge/TDengine-3.3%2B-orange.svg)](https://tdengine.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17%2B-blue.svg)](https://postgresql.org)
+[![Test Coverage](https://img.shields.io/badge/coverage-6%25→80%25-yellow.svg)](./docs/reports/)
 
 MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
 
-**最新特性 ( Migration)**:
-- ✅ **Phase 1**: 实时监控和告警系统（龙虎榜、资金流向、自定义规则）
-- ✅ **Phase 2**: 增强技术分析系统（26个技术指标、交易信号生成）
+**最新特性**:
+- ✅ **Phase 1**: 实时监控和告警系统（龙虎榜、资金流向、7种告警规则）
+- ✅ **Phase 2**: 增强技术分析系统（26个技术指标、4大类别、交易信号生成）
 - ✅ **Phase 3**: 多数据源集成系统（优先级路由、自动故障转移、公告监控）
+- ✅ **Phase 4**: GPU API System（回测引擎15-20x加速、ML训练44x加速）
+- ✅ **Phase 5**: Backtest Engine（12个量化策略、完整回测框架）
+- 🔄 **Phase 6**: 技术债务修复（代码质量优化、测试覆盖率提升）
 
 ## 🎯 核心特点
 

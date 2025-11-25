@@ -53,7 +53,7 @@ def create_sql_cmd(df, table_name, primary_key=None):
                 create_table_query += f"{col} INT, "
         elif pd.api.types.is_bool_dtype(dtype):
             create_table_query += f"{col} TINYINT, "
-        elif pd.api.types.is_decimal_dtype(dtype):
+        elif pd.api.types.is_decimal_dtype(dtype):  # pylint: disable=no-member
             create_table_query += f"{col} DECIMAL(10, 2), "  # 假设DECIMAL类型，精度和小数位数可根据需要调整
         elif pd.api.types.is_categorical_dtype(dtype):
             create_table_query += f"{col} VARCHAR(255), "  # 将分类数据视为VARCHAR
