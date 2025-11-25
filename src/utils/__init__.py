@@ -1,4 +1,3 @@
-"""
-工具类包
-包含各种辅助函数和工具
-"""
+"""MyStocks package modules"""
+
+__all__ = []

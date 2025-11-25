@@ -476,6 +476,7 @@ class BaoStockData:
         if end_date is None:
             end_date = datetime.now().strftime("%Y-%m-%d")
 
+        # pylint: disable=no-member
         rs = bs.query_shibor_data(start_date=start_date, end_date=end_date)
         return self._rs_to_df(rs, "查询Shibor利率失败")
 

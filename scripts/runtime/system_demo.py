@@ -24,7 +24,7 @@ import logging
 # 导入重构后的核心模块
 from src.core import DataClassification, DatabaseTarget, DataManager
 from unified_manager import MyStocksUnifiedManager
-from src.monitoring import AlertLevel
+from src.monitoring.alert_manager import AlertLevel
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

@@ -924,6 +924,7 @@ class FinancialDataSource(IDataSource):
                 logger.info("使用efinance获取季报数据")
                 try:
                     # 尝试获取季度财务数据
+                    # pylint: disable=no-member
                     quarterly_data = self.ef.stock.get_quarterly_performance(
                         normalized_symbol
                     )

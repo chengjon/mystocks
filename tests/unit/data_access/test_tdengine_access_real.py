@@ -55,10 +55,11 @@ class TestTDengineDataAccessReal:
 
     def test_create_table(self):
         """测试创建子表"""
+        # create_table signature: (table_name, stable_name, tag_values)
         self.db.create_table(
             'tick_600519',
-            stable_name='tick_data',
-            tags={'symbol': '600519', 'exchange': 'SH'}
+            'tick_data',
+            {'symbol': '600519', 'exchange': 'SH'}
         )
 
         self.mock_cursor.execute.assert_called()
@@ -83,7 +84,8 @@ class TestTDengineDataAccessReal:
         start = datetime(2024, 1, 1, 9, 30, 0)
         end = datetime(2024, 1, 1, 11, 30, 0)
 
-        result = self.db.query_by_time_range('tick_data', start, end, symbol='600519')
+        # query_by_time_range signature: (table_name, start_time, end_time, columns=None, limit=None)
+        result = self.db.query_by_time_range('tick_data', start, end)
 
         self.mock_cursor.execute.assert_called()
 
@@ -148,7 +150,8 @@ class TestTDengineDataAccessReal:
             'volume': [1000]
         })
 
-        self.db.save_data('tick_600519', df)
+        # save_data signature: (data, classification, table_name, **kwargs)
+        self.db.save_data(df, None, 'tick_600519')
 
         self.mock_cursor.execute.assert_called()
 

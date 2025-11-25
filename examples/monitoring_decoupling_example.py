@@ -35,7 +35,7 @@ from src.monitoring.decoupled_monitoring import (
 )
 
 # 导入原有监控模块 (用于对比)
-# from src.monitoring import MonitoringDatabase, PerformanceMonitor
+# from src.monitoring.monitoring_database import MonitoringDatabase, PerformanceMonitor
 
 # =============================================================================
 # 重构前：耦合式监控的问题代码

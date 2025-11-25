@@ -15,7 +15,7 @@ import importlib
 # 添加项目路径到模块搜索路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.db_manager.database_manager import DatabaseTableManager, DatabaseType
+from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
 # 配置日志
 logging.basicConfig(

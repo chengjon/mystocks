@@ -15,6 +15,7 @@
 import asyncio
 import json
 import logging
+import os
 import smtplib
 import ssl
 from datetime import datetime, timedelta
@@ -940,7 +941,7 @@ if __name__ == "__main__":
             smtp_server="smtp.gmail.com",
             smtp_port=587,
             username="your_email@gmail.com",
-            password="your_app_password",
+            password=os.getenv("SMTP_PASSWORD"),  # Should be set via environment variable
             from_email="mystocks@system.com",
             to_emails=["admin@company.com", "ops@company.com"]
         )

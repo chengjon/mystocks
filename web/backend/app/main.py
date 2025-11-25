@@ -5,6 +5,7 @@ MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
@@ -15,6 +16,9 @@ import uuid
 import secrets
 import json
 import os
+
+# 导入配置
+from app.core.config import settings
 
 # 导入数据库连接管理
 from app.core.database import get_postgresql_engine, close_all_connections
@@ -161,20 +165,17 @@ app.mount(
 # 配置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:3003",
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:8080",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-    ],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# 配置响应压缩 (性能优化)
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1000,  # 仅压缩大于1KB的响应
+    compresslevel=5  # 压缩等级1-9, 5为平衡
 )
 
 # 初始化Socket.IO服务器
@@ -346,36 +347,13 @@ async def custom_swagger_ui_html():
     )
 
 
-# 导入 API 路由
+# 导入 API 路由 - 优化结构: 先导入，后统一挂载
 from app.api import (
-    data,
-    auth,
-    system,
-    indicators,
-    market,
-    tdx,
-    metrics,
-    tasks,
-    wencai,
-    stock_search,
-    watchlist,
-    tradingview,
-    notification,
-    ml,
-    market_v2,
-    strategy,
-    monitoring,
-    technical_analysis,
-    multi_source,
-    announcement,
-    strategy_management,
-    risk_management,  # Week 1 Architecture-Compliant APIs
-    sse_endpoints,  # Week 2 SSE Real-time Push
-    cache,  # Task 2.2 Cache Management API
-    industry_concept_analysis,  # 行业概念分析API
-    health,  # 健康检查API
-    dashboard,  # Phase 4: 仪表盘API
-    strategy_mgmt,  # Phase 4: 策略管理API
+    data, auth, system, indicators, market, tdx, metrics, tasks, wencai,
+    stock_search, watchlist, tradingview, notification, ml, market_v2,
+    strategy, monitoring, technical_analysis, multi_source, announcement,
+    strategy_management, risk_management, sse_endpoints, cache,
+    industry_concept_analysis, health, dashboard, strategy_mgmt
 )
 from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
