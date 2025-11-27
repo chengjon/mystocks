@@ -54,11 +54,10 @@ class CacheManager {
   
   init() {
     // 自动清理过期缓存
-    this.startAutoCleanup()
-    
-    // 监控内存使用
-    this.startMemoryMonitoring()
-    
+    this.cleanupIntervalId = setInterval(() => {
+      this.cleanup()
+    }, this.config.autoCleanupInterval)
+
     console.log('🗂️ 前端缓存管理器初始化完成')
   }
 
@@ -100,7 +99,7 @@ class CacheManager {
    */
   get(funcName, params = {}) {
     const key = this.generateKey(funcName, params)
-    const cacheItem = this.cache.get(key)
+    const cacheItem = this.memoryCache.get(key)
     
     if (this.isValid(cacheItem)) {
       return cacheItem.data
@@ -108,7 +107,7 @@ class CacheManager {
     
     // 缓存过期，删除缓存项
     if (cacheItem) {
-      this.cache.delete(key)
+      this.memoryCache.delete(key)
     }
     
     return null
@@ -124,7 +123,7 @@ class CacheManager {
       timestamp: Date.now(),
       ttl: ttl
     }
-    this.cache.set(key, cacheItem)
+    this.memoryCache.set(key, cacheItem)
   }
 
   /**
@@ -132,26 +131,26 @@ class CacheManager {
    */
   clear(funcName) {
     const keysToDelete = []
-    for (const key of this.cache.keys()) {
+    for (const key of this.memoryCache.keys()) {
       if (key.startsWith(`${funcName}:`)) {
         keysToDelete.push(key)
       }
     }
-    keysToDelete.forEach(key => this.cache.delete(key))
+    keysToDelete.forEach(key => this.memoryCache.delete(key))
   }
 
   /**
    * 清除所有缓存
    */
   clearAll() {
-    this.cache.clear()
+    this.memoryCache.clear()
   }
 
   /**
    * 获取缓存大小
    */
   getSize() {
-    return this.cache.size
+    return this.memoryCache.size
   }
 
   /**
@@ -159,7 +158,7 @@ class CacheManager {
    */
   getMemoryUsage() {
     let totalSize = 0
-    for (const [key, value] of this.cache.entries()) {
+    for (const [key, value] of this.memoryCache.entries()) {
       totalSize += key.length + JSON.stringify(value).length
     }
     return totalSize
@@ -170,12 +169,12 @@ class CacheManager {
    */
   cleanup() {
     const keysToDelete = []
-    for (const [key, cacheItem] of this.cache.entries()) {
+    for (const [key, cacheItem] of this.memoryCache.entries()) {
       if (!this.isValid(cacheItem)) {
         keysToDelete.push(key)
       }
     }
-    keysToDelete.forEach(key => this.cache.delete(key))
+    keysToDelete.forEach(key => this.memoryCache.delete(key))
   }
 
   /**
