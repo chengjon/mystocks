@@ -89,25 +89,31 @@
           <el-icon><Histogram /></el-icon>
           <template #title>回测分析</template>
         </el-menu-item>
-        <el-sub-menu index="/migration">
+        <el-sub-menu index="/demo">
           <template #title>
             <el-icon><Operation /></el-icon>
-            <span>迁移项目</span>
+            <span>功能演示</span>
           </template>
-          <el-menu-item index="/openstock-demo">
+          <el-menu-item index="/demo/openstock">
             <template #title>OpenStock</template>
           </el-menu-item>
-          <el-menu-item index="/pyprofiling-demo">
+          <el-menu-item index="/demo/pyprofiling">
             <template #title>PyProfiling</template>
           </el-menu-item>
-          <el-menu-item index="/freqtrade-demo">
+          <el-menu-item index="/demo/freqtrade">
             <template #title>Freqtrade</template>
           </el-menu-item>
-          <el-menu-item index="/stock-analysis-demo">
+          <el-menu-item index="/demo/stock-analysis">
             <template #title>Stock-Analysis</template>
           </el-menu-item>
-          <el-menu-item index="/tdxpy-demo">
+          <el-menu-item index="/demo/tdxpy">
             <template #title>pytdx</template>
+          </el-menu-item>
+          <el-menu-item index="/demo/phase4-dashboard">
+            <template #title>Phase 4 Dashboard</template>
+          </el-menu-item>
+          <el-menu-item index="/demo/wencai">
+            <template #title>Wencai</template>
           </el-menu-item>
         </el-sub-menu>
         <el-menu-item index="/settings">
