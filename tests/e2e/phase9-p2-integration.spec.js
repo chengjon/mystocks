@@ -9,14 +9,28 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
   test.beforeEach(async ({ page, browserName }) => {
     // 设置浏览器特定超时
     setPageTimeouts(page, browserName)
+
+    // 预热后端服务 - 发送初始请求以唤醒服务
+    try {
+      await page.request.get(`${API_BASE}/health`)
+    } catch (e) {
+      // 忽略预热请求的失败
+    }
   })
 
   // ==================== AnnouncementMonitor Tests ====================
   test.describe('AnnouncementMonitor.vue', () => {
-    test('should load announcement monitor page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/#/demo/announcement`)
+    test('should load announcement monitor page', async ({ page, browserName }) => {
+      await page.goto(`${BASE_URL}/#/demo/announcement`, { waitUntil: 'domcontentloaded' })
       await expect(page).toHaveTitle(/MyStocks/)
-      await page.waitForLoadState('networkidle')
+      // 用 domcontentloaded 代替 networkidle，避免 Firefox 长时间等待
+      await page.waitForLoadState('domcontentloaded')
+      // 额外等待确保组件加载完成
+      if (browserName === 'firefox') {
+        await page.waitForTimeout(2000)
+      } else if (browserName === 'webkit') {
+        await page.waitForTimeout(1500)
+      }
     })
 
     test('should display announcement statistics', async ({ page }) => {
@@ -75,10 +89,17 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
 
   // ==================== DatabaseMonitor Tests ====================
   test.describe('DatabaseMonitor.vue', () => {
-    test('should load database monitor page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/#/demo/database-monitor`)
+    test('should load database monitor page', async ({ page, browserName }) => {
+      await page.goto(`${BASE_URL}/#/demo/database-monitor`, { waitUntil: 'domcontentloaded' })
       await expect(page).toHaveTitle(/MyStocks/)
-      await page.waitForLoadState('networkidle')
+      // 用 domcontentloaded 代替 networkidle，避免 Firefox 长时间等待
+      await page.waitForLoadState('domcontentloaded')
+      // 额外等待确保组件加载完成
+      if (browserName === 'firefox') {
+        await page.waitForTimeout(2000)
+      } else if (browserName === 'webkit') {
+        await page.waitForTimeout(1500)
+      }
     })
 
     test('should fetch database health status', async ({ page }) => {
@@ -109,10 +130,17 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
 
   // ==================== TradeManagement Tests ====================
   test.describe('TradeManagement.vue', () => {
-    test('should load trade management page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/#/trade`)
+    test('should load trade management page', async ({ page, browserName }) => {
+      await page.goto(`${BASE_URL}/#/trade`, { waitUntil: 'domcontentloaded' })
       await expect(page).toHaveTitle(/MyStocks/)
-      await page.waitForLoadState('networkidle')
+      // 用 domcontentloaded 代替 networkidle，避免 Firefox 长时间等待
+      await page.waitForLoadState('domcontentloaded')
+      // 额外等待确保组件加载完成
+      if (browserName === 'firefox') {
+        await page.waitForTimeout(2000)
+      } else if (browserName === 'webkit') {
+        await page.waitForTimeout(1500)
+      }
     })
 
     test('should fetch portfolio overview', async ({ page }) => {
@@ -212,10 +240,17 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
 
   // ==================== MarketDataView Tests ====================
   test.describe('MarketDataView.vue', () => {
-    test('should load market data view page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/#/market-data`)
+    test('should load market data view page', async ({ page, browserName }) => {
+      await page.goto(`${BASE_URL}/#/market-data`, { waitUntil: 'domcontentloaded' })
       await expect(page).toHaveTitle(/MyStocks/)
-      await page.waitForLoadState('networkidle')
+      // 用 domcontentloaded 代替 networkidle，避免 Firefox 长时间等待
+      await page.waitForLoadState('domcontentloaded')
+      // 额外等待确保组件加载完成
+      if (browserName === 'firefox') {
+        await page.waitForTimeout(2000)
+      } else if (browserName === 'webkit') {
+        await page.waitForTimeout(1500)
+      }
     })
 
     test('should display market data tabs', async ({ page, browserName }) => {
