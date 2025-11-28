@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test'
+import { setPageTimeouts, smartWaitForElement } from './test-helpers'
 
 test.describe('Phase 9 P2 Pages Integration Tests', () => {
   // 测试配置
   const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3001'
   const API_BASE = 'http://localhost:8000'
 
-  test.beforeEach(async ({ page }) => {
-    // 设置默认超时
-    page.setDefaultTimeout(10000)
+  test.beforeEach(async ({ page, browserName }) => {
+    // 设置浏览器特定超时
+    setPageTimeouts(page, browserName)
   })
 
   // ==================== AnnouncementMonitor Tests ====================
@@ -217,15 +218,13 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
       await page.waitForLoadState('networkidle')
     })
 
-    test('should display market data tabs', async ({ page }) => {
+    test('should display market data tabs', async ({ page, browserName }) => {
       await page.goto(`${BASE_URL}/#/market-data`)
-      // 等待el-tabs容器加载
-      await page.waitForSelector('.el-tabs', { timeout: 5000 }).catch(() => {})
-      // 额外等待一秒确保内容渲染
-      await page.waitForTimeout(1000)
+      // 使用智能等待处理Firefox/WebKit的延迟
+      await smartWaitForElement(page, '.el-tabs', browserName)
 
       // 检查标签页是否存在 - 通过el-tab-pane标签查找
-      const tabPanes = await page.locator('.el-tab-pane')
+      const tabPanes = page.locator('.el-tab-pane')
       const paneCount = await tabPanes.count()
 
       // 应该至少有1个标签页
