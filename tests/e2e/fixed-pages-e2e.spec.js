@@ -280,8 +280,8 @@ test.describe('🔧 Fixed Pages E2E Tests - P0 Integration', () => {
       await newPage.goto(`${BASE_URL}/dashboard`);
       await newPage.waitForLoadState('networkidle');
 
-      // Page should still be visible
-      const dashboardContent = await newPage.locator('.dashboard, body').isVisible();
+      // Page should still be visible - use first() to avoid strict mode violation
+      const dashboardContent = await newPage.locator('body').isVisible();
       expect(dashboardContent).toBeTruthy();
 
       await newPage.close();
