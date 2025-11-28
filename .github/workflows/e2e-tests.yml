@@ -1,0 +1,153 @@
+name: E2E Tests - Phase 8
+
+on:
+  push:
+    branches: [main, develop, refactor/code-optimization-*]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: e2e-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  e2e-test:
+    name: E2E Tests (Phase 8)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start backend service
+        run: |
+          cd web/backend
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+        timeout-minutes: 2
+
+      - name: Start frontend service
+        run: |
+          cd web/frontend
+          npm run dev &
+          sleep 10
+        timeout-minutes: 3
+
+      - name: Wait for services to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/api/data/stocks/basic?limit=1 > /dev/null 2>&1; then
+              echo "✓ Backend service is ready"
+              break
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 1
+          done
+
+          for i in {1..30}; do
+            if curl -s http://localhost:3001 > /dev/null 2>&1; then
+              echo "✓ Frontend service is ready"
+              break
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 1
+          done
+        timeout-minutes: 2
+
+      - name: Run E2E tests (${{ matrix.browser }})
+        run: |
+          PLAYWRIGHT_TEST_BASE_URL=http://localhost:3001 \
+          npx playwright test tests/e2e/fixed-pages-e2e.spec.js \
+          --project=${{ matrix.browser }} \
+          --reporter=html \
+          --reporter=list
+        timeout-minutes: 20
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: e2e-test
+    if: always()
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Print test summary
+        run: |
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Browser | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Chromium | ${{ needs.e2e-test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Firefox | ${{ needs.e2e-test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| WebKit | ${{ needs.e2e-test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target**: ≥85% pass rate" >> $GITHUB_STEP_SUMMARY
+          echo "**Phase**: Phase 8 - P1 Deep Integration & Optimization" >> $GITHUB_STEP_SUMMARY
+
+  notification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    needs: e2e-test
+    if: failure()
+
+    steps:
+      - name: Notify on failure
+        run: |
+          echo "⚠️ E2E tests failed on ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
