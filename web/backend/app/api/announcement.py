@@ -325,6 +325,7 @@ async def get_announcement_stats():
         total_result = service.get_announcements(page=1, page_size=1)
 
         return {
+            "success": True,
             "total_count": total_result.get("total", 0),
             "today_count": today_result.get("total", 0),
             "important_count": important_result.get("total", 0),
