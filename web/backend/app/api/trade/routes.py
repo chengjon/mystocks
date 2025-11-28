@@ -195,9 +195,7 @@ async def execute_trade(trade_data: dict):
         # 验证必填字段
         required_fields = ["type", "symbol", "quantity", "price"]
         if not all(field in trade_data for field in required_fields):
-            raise HTTPException(
-                status_code=400, detail="缺少必填字段: type, symbol, quantity, price"
-            )
+            raise HTTPException(status_code=400, detail="缺少必填字段: type, symbol, quantity, price")
 
         trade_type = trade_data.get("type")
         if trade_type not in ["buy", "sell"]:

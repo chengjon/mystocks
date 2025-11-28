@@ -36,6 +36,9 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
+  /* Global timeout for all tests (30 seconds) */
+  timeout: 30000,
+
   /* Configure projects for major browsers */
   projects: [
     {
@@ -52,12 +55,16 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
       dependencies: ['setup'],
+      timeout: 40000,  // Firefox needs more time (40s vs default 30s)
+      retries: 2,      // Retry Firefox tests more aggressively
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
       dependencies: ['setup'],
+      timeout: 45000,  // WebKit is slowest (45s)
+      retries: 2,      // Retry WebKit tests more aggressively
     },
 
     /* Test against mobile viewports. */
