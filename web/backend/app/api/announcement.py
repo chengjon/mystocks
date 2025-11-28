@@ -7,17 +7,18 @@ Multi-data Source Support
 
 from datetime import date, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, Path
+
+from fastapi import APIRouter, HTTPException, Path, Query
 from pydantic import BaseModel
 
-from app.services.announcement_service import get_announcement_service
 from app.models.announcement import (
-    AnnouncementResponse,
     AnnouncementMonitorRuleCreate,
-    AnnouncementMonitorRuleUpdate,
     AnnouncementMonitorRuleResponse,
+    AnnouncementMonitorRuleUpdate,
+    AnnouncementResponse,
     AnnouncementStatsResponse,
 )
+from app.services.announcement_service import get_announcement_service
 
 router = APIRouter(prefix="/api/announcement", tags=["announcement"])
 
@@ -60,9 +61,7 @@ async def fetch_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Failed to fetch")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch"))
 
         return result
 
@@ -78,9 +77,7 @@ async def get_announcements(
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
     announcement_type: Optional[str] = Query(None, description="公告类型"),
-    min_importance: Optional[int] = Query(
-        None, ge=0, le=5, description="最小重要性级别"
-    ),
+    min_importance: Optional[int] = Query(None, ge=0, le=5, description="最小重要性级别"),
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
 ):
@@ -113,9 +110,7 @@ async def get_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Query failed")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
 
         return result
 
@@ -126,9 +121,7 @@ async def get_announcements(
 
 
 @router.get("/today")
-async def get_today_announcements(
-    min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")
-):
+async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")):
     """
     获取今日公告
 
@@ -152,9 +145,7 @@ async def get_today_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Query failed")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
 
         return {
             "success": True,
@@ -199,9 +190,7 @@ async def get_important_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Query failed")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
 
         return {
             "success": True,
@@ -248,9 +237,7 @@ async def get_stock_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Query failed")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
 
         return {
             "success": True,
@@ -283,9 +270,7 @@ async def evaluate_monitor_rules():
         result = service.evaluate_monitor_rules()
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Evaluation failed")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Evaluation failed"))
 
         return result
 
@@ -308,9 +293,7 @@ async def get_announcement_stats():
         service = get_announcement_service()
 
         # 获取今日公告
-        today_result = service.get_announcements(
-            start_date=date.today(), end_date=date.today(), page=1, page_size=1
-        )
+        today_result = service.get_announcements(start_date=date.today(), end_date=date.today(), page=1, page_size=1)
 
         # 获取重要公告
         important_result = service.get_announcements(
@@ -354,9 +337,7 @@ async def get_announcement_types():
 
         return {
             "success": True,
-            "types": [
-                {"code": code, "name": name} for code, (_, name) in types.items()
-            ],
+            "types": [{"code": code, "name": name} for code, (_, name) in types.items()],
         }
 
     except Exception as e:
@@ -374,12 +355,10 @@ async def get_monitor_rules():
     try:
         service = get_announcement_service()
         session = service.SessionLocal()
-        
+
         try:
-            rules = session.query(AnnouncementMonitorRule).filter(
-                AnnouncementMonitorRule.is_active == True
-            ).all()
-            
+            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
+
             return [AnnouncementMonitorRuleResponse.from_orm(rule) for rule in rules]
         finally:
             session.close()
@@ -401,16 +380,18 @@ async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
     try:
         service = get_announcement_service()
         session = service.SessionLocal()
-        
+
         try:
             # 检查规则名称是否已存在
-            existing_rule = session.query(AnnouncementMonitorRule).filter(
-                AnnouncementMonitorRule.rule_name == rule.rule_name
-            ).first()
-            
+            existing_rule = (
+                session.query(AnnouncementMonitorRule)
+                .filter(AnnouncementMonitorRule.rule_name == rule.rule_name)
+                .first()
+            )
+
             if existing_rule:
                 raise HTTPException(status_code=400, detail="规则名称已存在")
-            
+
             # 创建新规则
             new_rule = AnnouncementMonitorRule(
                 rule_name=rule.rule_name,
@@ -420,13 +401,13 @@ async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
                 min_importance_level=rule.min_importance_level,
                 notify_enabled=rule.notify_enabled,
                 notify_channels=rule.notify_channels,
-                is_active=True
+                is_active=True,
             )
-            
+
             session.add(new_rule)
             session.commit()
             session.refresh(new_rule)
-            
+
             return AnnouncementMonitorRuleResponse.from_orm(new_rule)
         finally:
             session.close()
@@ -451,23 +432,21 @@ async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpda
     try:
         service = get_announcement_service()
         session = service.SessionLocal()
-        
+
         try:
-            rule = session.query(AnnouncementMonitorRule).filter(
-                AnnouncementMonitorRule.id == rule_id
-            ).first()
-            
+            rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
+
             if not rule:
                 raise HTTPException(status_code=404, detail="规则不存在")
-            
+
             # 更新字段
             for field, value in updates.dict(exclude_unset=True).items():
                 if hasattr(rule, field):
                     setattr(rule, field, value)
-            
+
             session.commit()
             session.refresh(rule)
-            
+
             return AnnouncementMonitorRuleResponse.from_orm(rule)
         finally:
             session.close()
@@ -491,18 +470,16 @@ async def delete_monitor_rule(rule_id: int):
     try:
         service = get_announcement_service()
         session = service.SessionLocal()
-        
+
         try:
-            rule = session.query(AnnouncementMonitorRule).filter(
-                AnnouncementMonitorRule.id == rule_id
-            ).first()
-            
+            rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
+
             if not rule:
                 raise HTTPException(status_code=404, detail="规则不存在")
-            
+
             session.delete(rule)
             session.commit()
-            
+
             return {"success": True, "message": "规则已删除"}
         finally:
             session.close()
@@ -534,43 +511,46 @@ async def get_triggered_records(
     try:
         service = get_announcement_service()
         session = service.SessionLocal()
-        
+
         try:
-            query = session.query(AnnouncementMonitorRecord).join(
-                AnnouncementMonitorRule
-            ).join(Announcement)
-            
+            query = session.query(AnnouncementMonitorRecord).join(AnnouncementMonitorRule).join(Announcement)
+
             # 应用过滤条件
             if rule_id:
                 query = query.filter(AnnouncementMonitorRecord.rule_id == rule_id)
             if stock_code:
                 query = query.filter(Announcement.stock_code == stock_code)
-            
+
             # 获取总数
             total = query.count()
-            
+
             # 分页查询
-            records = query.order_by(AnnouncementMonitorRecord.triggered_at.desc()).offset(
-                (page - 1) * page_size
-            ).limit(page_size).all()
-            
+            records = (
+                query.order_by(AnnouncementMonitorRecord.triggered_at.desc())
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+                .all()
+            )
+
             # 转换为响应格式
             result = []
             for record in records:
-                result.append({
-                    "id": record.id,
-                    "rule_id": record.rule_id,
-                    "announcement_id": record.announcement_id,
-                    "matched_keywords": record.matched_keywords,
-                    "triggered_at": record.triggered_at.isoformat(),
-                    "notified": record.notified,
-                    "notified_at": record.notified_at.isoformat() if record.notified_at else None,
-                    "notification_result": record.notification_result,
-                    "rule_name": record.rule.rule_name,
-                    "announcement_title": record.announcement.announcement_title,
-                    "stock_code": record.announcement.stock_code
-                })
-            
+                result.append(
+                    {
+                        "id": record.id,
+                        "rule_id": record.rule_id,
+                        "announcement_id": record.announcement_id,
+                        "matched_keywords": record.matched_keywords,
+                        "triggered_at": record.triggered_at.isoformat(),
+                        "notified": record.notified,
+                        "notified_at": record.notified_at.isoformat() if record.notified_at else None,
+                        "notification_result": record.notification_result,
+                        "rule_name": record.rule.rule_name,
+                        "announcement_title": record.announcement.announcement_title,
+                        "stock_code": record.announcement.stock_code,
+                    }
+                )
+
             return {
                 "success": True,
                 "data": result,
