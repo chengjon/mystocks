@@ -254,7 +254,13 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
     })
 
     test('should display market data tabs', async ({ page, browserName }) => {
-      await page.goto(`${BASE_URL}/#/market-data`)
+      await page.goto(`${BASE_URL}/#/market-data`, { waitUntil: 'domcontentloaded' })
+      // 额外等待确保组件加载完成
+      if (browserName === 'firefox') {
+        await page.waitForTimeout(2000)
+      } else if (browserName === 'webkit') {
+        await page.waitForTimeout(1500)
+      }
       // 使用智能等待处理Firefox/WebKit的延迟
       await smartWaitForElement(page, '.el-tabs', browserName)
 
@@ -278,7 +284,7 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
       ]
 
       for (const pageUrl of pages) {
-        const response = await page.goto(pageUrl, { waitUntil: 'networkidle' })
+        const response = await page.goto(pageUrl, { waitUntil: 'domcontentloaded' })
         expect(response?.status()).toBeLessThan(400)
       }
     })
