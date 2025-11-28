@@ -25,7 +25,7 @@ from app.models.dashboard import (
     RiskAlert,
     ErrorResponse
 )
-from src.data_sources import get_business_source
+# from src.data_sources import get_business_source  # Module not found - disabled
 
 # 配置日志
 logger = logging.getLogger(__name__)
