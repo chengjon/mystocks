@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "description": "MyStocks 自动化测试日志聚合配置",
+  "author": "MyStocks Testing Team",
+  "created": "2025-11-26",
+
+  // 日志文件路径配置
+  "log_paths": {
+    "frontend": {
+      "access": "/opt/claude/mystocks_spec/logs/frontend-access.log",
+      "error": "/opt/claude/mystocks_spec/logs/frontend-error.log",
+      "combined": "/opt/claude/mystocks_spec/logs/frontend-combined.log"
+    },
+    "backend": {
+      "access": "/opt/claude/mystocks_spec/logs/backend-access.log",
+      "error": "/opt/claude/mystocks_spec/logs/backend-error.log",
+      "combined": "/opt/claude/mystocks_spec/logs/backend-combined.log"
+    },
+    "database": {
+      "monitor": "/opt/claude/mystocks_spec/logs/db-monitor-access.log",
+      "error": "/opt/claude/mystocks_spec/logs/db-monitor-error.log"
+    },
+    "tests": {
+      "playwright": "/opt/claude/mystocks_spec/tests/logs/playwright-*.log",
+      "e2e": "/opt/claude/mystocks_spec/tests/logs/e2e-*.log",
+      "api": "/opt/claude/mystocks_spec/tests/logs/api-*.log"
+    }
+  },
+
+  // 日志高亮规则
+  "highlight_rules": [
+    {
+      "name": "error_keywords",
+      "pattern": "\\b(ERROR|CRITICAL|FATAL|Exception|Traceback)\\b",
+      "color": "red",
+      "background_color": "black",
+      "bold": true
+    },
+    {
+      "name": "warning_keywords",
+      "pattern": "\\b(WARNING|WARN|Deprecated)\\b",
+      "color": "yellow",
+      "background_color": "black"
+    },
+    {
+      "name": "success_keywords",
+      "pattern": "\\b(SUCCESS|PASSED|✓|OK|200|201)\\b",
+      "color": "green",
+      "background_color": "black"
+    },
+    {
+      "name": "test_case_ids",
+      "pattern": "\\b(CASE-[A-Z0-9-]+)\\b",
+      "color": "cyan",
+      "background_color": "black",
+      "bold": true
+    },
+    {
+      "name": "http_status_codes",
+      "pattern": "\\b(40[0-9]|40[0-9]|50[0-9])\\b",
+      "color": "magenta",
+      "background_color": "black"
+    },
+    {
+      "name": "database_errors",
+      "pattern": "\\b(Connection refused|database error|SQL.*error)\\b",
+      "color": "red",
+      "background_color": "black",
+      "bold": true
+    },
+    {
+      "name": "api_endpoints",
+      "pattern": "\\b(/api/|/health|/auth)\\b",
+      "color": "blue",
+      "background_color": "black"
+    }
+  ],
+
+  // 测试用例关联规则
+  "test_case_mapping": {
+    "CASE-USER-AUTH": {
+      "description": "用户认证测试",
+      "keywords": ["login", "auth", "token", "logout"],
+      "expected_logs": ["frontend-access.log", "backend-access.log"]
+    },
+    "CASE-MARKET-REALTIME": {
+      "description": "实时行情测试",
+      "keywords": ["realtime", "quote", "market", "price"],
+      "expected_logs": ["backend-access.log", "frontend-access.log"]
+    },
+    "CASE-API-HEALTH": {
+      "description": "API健康检查测试",
+      "keywords": ["health", "status", "ping"],
+      "expected_logs": ["backend-access.log"]
+    },
+    "CASE-DATABASE-CONNECT": {
+      "description": "数据库连接测试",
+      "keywords": ["database", "connection", "postgresql", "tdengine"],
+      "expected_logs": ["backend-access.log", "db-monitor-access.log"]
+    }
+  },
+
+  // 日志过滤条件
+  "filter_presets": {
+    "errors_only": {
+      "description": "仅显示错误日志",
+      "patterns": ["ERROR", "Exception", "Traceback", "404", "500", "502", "503"]
+    },
+    "test_cases": {
+      "description": "仅显示测试用例相关日志",
+      "patterns": ["CASE-", "test", "playwright", "npx"]
+    },
+    "api_requests": {
+      "description": "仅显示API请求日志",
+      "patterns": ["/api/", "GET", "POST", "PUT", "DELETE", "HTTP"]
+    },
+    "database_operations": {
+      "description": "仅显示数据库操作日志",
+      "patterns": ["SELECT", "INSERT", "UPDATE", "DELETE", "COMMIT", "ROLLBACK", "postgresql", "tdengine"]
+    }
+  },
+
+  // 自定义视图配置
+  "custom_views": [
+    {
+      "name": "test_summary",
+      "description": "测试执行概览视图",
+      "columns": [
+        { "field": "timestamp", "width": 20 },
+        { "field": "log_level", "width": 8 },
+        { "field": "test_case_id", "width": 20 },
+        { "field": "message", "width": 80 }
+      ],
+      "filters": ["CASE-", "test", "playwright"]
+    },
+    {
+      "name": "error_analysis",
+      "description": "错误分析视图",
+      "columns": [
+        { "field": "timestamp", "width": 20 },
+        { "field": "error_type", "width": 15 },
+        { "field": "test_case_id", "width": 20 },
+        { "field": "stack_trace", "width": 100 }
+      ],
+      "filters": ["ERROR", "Exception", "Traceback", "404", "500"]
+    },
+    {
+      "name": "performance_metrics",
+      "description": "性能指标视图",
+      "columns": [
+        { "field": "timestamp", "width": 20 },
+        { "field": "response_time", "width": 12 },
+        { "field": "endpoint", "width": 30 },
+        { "field": "status_code", "width": 8 }
+      ],
+      "filters": ["ms", "response_time", "/api/"]
+    }
+  ],
+
+  // 实时监控配置
+  "monitoring": {
+    "refresh_interval": 1000,
+    "alert_thresholds": {
+      "error_rate": 0.1,  // 10% 错误率告警
+      "response_time": 2000,  // 2秒响应时间告警
+      "memory_usage": 0.8   // 80% 内存使用率告警
+    },
+    "alert_methods": ["console", "log"]
+  },
+
+  // 日志轮转配置
+  "log_rotation": {
+    "max_file_size": "100MB",
+    "max_files": 10,
+    "compress": true,
+    "retention_days": 30
+  },
+
+  // 导出配置
+  "export": {
+    "formats": ["json", "csv", "html"],
+    "default_format": "json",
+    "include_metadata": true
+  }
+}

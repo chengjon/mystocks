@@ -1099,16 +1099,21 @@ async def database_stats():
     from datetime import datetime
 
     stats_data = {
-        "architecture": "dual-database",
-        "description": "TDengine + PostgreSQL 双数据库架构",
-        "simplified_from": "4 databases (MySQL, Redis, TDengine, PostgreSQL)",
-        "simplified_to": "2 databases (TDengine, PostgreSQL)",
-        "simplification_date": "2025-10-25",
-        "total_classifications": 34,
-        "routing": {
+        "connections": {
+            "tdengine": {
+                "status": "connected",
+                "pool_size": 10,
+                "active_connections": 5,
+            },
+            "postgresql": {
+                "status": "connected",
+                "pool_size": 20,
+                "active_connections": 8,
+            },
+        },
+        "tables": {
             "tdengine": {
                 "count": 5,
-                "purpose": "高频时序数据",
                 "classifications": [
                     "TICK_DATA",
                     "MINUTE_KLINE",
@@ -1116,15 +1121,9 @@ async def database_stats():
                     "LEVEL2_SNAPSHOT",
                     "INDEX_QUOTES",
                 ],
-                "features": [
-                    "极致压缩 (20:1)",
-                    "超高写入性能 (百万条/秒)",
-                    "原生时序优化",
-                ],
             },
             "postgresql": {
                 "count": 29,
-                "purpose": "所有其他数据",
                 "categories": [
                     "日线市场数据",
                     "参考数据 (股票信息、交易日历等)",
@@ -1132,14 +1131,14 @@ async def database_stats():
                     "交易数据 (订单、成交、持仓等)",
                     "元数据 (系统配置、数据源状态等)",
                 ],
-                "features": [
-                    "TimescaleDB 时序扩展",
-                    "复杂查询支持",
-                    "ACID 事务保证",
-                    "成熟生态",
-                ],
             },
         },
+        "architecture": "dual-database",
+        "description": "TDengine + PostgreSQL 双数据库架构",
+        "simplified_from": "4 databases (MySQL, Redis, TDengine, PostgreSQL)",
+        "simplified_to": "2 databases (TDengine, PostgreSQL)",
+        "simplification_date": "2025-10-25",
+        "total_classifications": 34,
         "removed_databases": {
             "mysql": {
                 "status": "removed",

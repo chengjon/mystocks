@@ -1,0 +1,149 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]: MyStocks
+    - menubar [ref=e6]:
+      - menuitem "仪表盘" [ref=e7] [cursor=pointer]:
+        - img [ref=e9]
+        - text: 仪表盘
+      - menuitem "市场行情" [ref=e13]:
+        - generic [ref=e14] [cursor=pointer]:
+          - img [ref=e16]
+          - generic [ref=e18]: 市场行情
+          - img [ref=e20]
+      - menuitem "市场数据" [ref=e22]:
+        - generic [ref=e23] [cursor=pointer]:
+          - img [ref=e25]
+          - generic [ref=e27]: 市场数据
+          - img [ref=e29]
+      - menuitem "股票管理" [ref=e31] [cursor=pointer]:
+        - img [ref=e33]
+        - text: 股票管理
+      - menuitem "数据分析" [ref=e35] [cursor=pointer]:
+        - img [ref=e37]
+        - text: 数据分析
+      - menuitem "技术分析" [ref=e39] [cursor=pointer]:
+        - img [ref=e41]
+        - text: 技术分析
+      - menuitem "指标库" [ref=e43] [cursor=pointer]:
+        - img [ref=e45]
+        - text: 指标库
+      - menuitem "风险监控" [ref=e47] [cursor=pointer]:
+        - img [ref=e49]
+        - text: 风险监控
+      - menuitem "交易管理" [ref=e51] [cursor=pointer]:
+        - img [ref=e53]
+        - text: 交易管理
+      - menuitem "策略管理" [ref=e55] [cursor=pointer]:
+        - img [ref=e57]
+        - text: 策略管理
+      - menuitem "回测分析" [ref=e59] [cursor=pointer]:
+        - img [ref=e61]
+        - text: 回测分析
+      - menuitem "功能演示" [ref=e63]:
+        - generic [ref=e64] [cursor=pointer]:
+          - img [ref=e66]
+          - generic [ref=e68]: 功能演示
+          - img [ref=e70]
+      - menuitem "系统设置" [ref=e72] [cursor=pointer]:
+        - img [ref=e74]
+        - text: 系统设置
+  - generic [ref=e76]:
+    - generic [ref=e77]:
+      - img [ref=e80] [cursor=pointer]
+      - button [ref=e84] [cursor=pointer]:
+        - img [ref=e86]
+        - img [ref=e89]
+    - main [ref=e91]:
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e97] [cursor=pointer]:
+            - img [ref=e100]
+            - generic [ref=e102]:
+              - paragraph [ref=e103]: 总股票数
+              - heading "0" [level=3] [ref=e104]
+              - text: +0%
+          - generic [ref=e108] [cursor=pointer]:
+            - img [ref=e111]
+            - generic [ref=e115]:
+              - paragraph [ref=e116]: 总市值
+              - heading "0" [level=3] [ref=e117]
+              - text: +0%
+          - generic [ref=e121] [cursor=pointer]:
+            - img [ref=e124]
+            - generic [ref=e127]:
+              - paragraph [ref=e128]: 市场分布
+              - heading "0" [level=3] [ref=e129]
+              - text: +0%
+          - generic [ref=e133] [cursor=pointer]:
+            - img [ref=e136]
+            - generic [ref=e138]:
+              - paragraph [ref=e139]: 行业分布
+              - heading "0" [level=3] [ref=e140]
+              - text: +0%
+        - generic [ref=e141]:
+          - generic [ref=e143]:
+            - generic [ref=e145]:
+              - generic [ref=e146]: 市场热度中心
+              - button "重试" [disabled]:
+                - generic:
+                  - img
+                - generic: 重试
+            - generic [ref=e148]:
+              - tablist [ref=e152]:
+                - tab "市场热度" [selected] [ref=e154]
+                - tab "领涨板块" [ref=e155]
+                - tab "涨跌分布" [ref=e156]
+                - tab "资金流向" [ref=e157]
+              - tabpanel "市场热度" [ref=e159]
+          - generic [ref=e166]:
+            - generic [ref=e167]: 资金流向
+            - generic [ref=e169] [cursor=pointer]:
+              - generic:
+                - combobox [ref=e171]
+                - generic [ref=e172]: 证监会
+              - img [ref=e175]
+        - generic [ref=e183]:
+          - generic [ref=e185]:
+            - generic [ref=e186]: 板块表现
+            - generic [ref=e187]:
+              - button "刷新" [ref=e188] [cursor=pointer]:
+                - generic [ref=e189]: 刷新
+              - button "重试" [disabled]:
+                - generic:
+                  - img
+                - generic: 重试
+          - generic [ref=e191]:
+            - tablist [ref=e195]:
+              - tab "自选股" [selected] [ref=e197]
+              - tab "策略选股" [ref=e198]
+              - tab "行业选股" [ref=e199]
+              - tab "概念选股" [ref=e200]
+            - tabpanel "自选股" [ref=e202]:
+              - generic [ref=e203]:
+                - generic [ref=e204]:
+                  - table [ref=e206]:
+                    - rowgroup [ref=e215]:
+                      - row "代码 名称 现价 涨跌幅 成交量 换手率 所属行业" [ref=e216]:
+                        - cell "代码" [ref=e217]:
+                          - generic [ref=e218]: 代码
+                        - cell "名称" [ref=e219]:
+                          - generic [ref=e220]: 名称
+                        - cell "现价" [ref=e221]:
+                          - generic [ref=e222]: 现价
+                        - cell "涨跌幅" [ref=e223]:
+                          - generic [ref=e224]: 涨跌幅
+                        - cell "成交量" [ref=e225]:
+                          - generic [ref=e226]: 成交量
+                        - cell "换手率" [ref=e227]:
+                          - generic [ref=e228]: 换手率
+                        - cell "所属行业" [ref=e229]:
+                          - generic [ref=e230]: 所属行业
+                  - generic [ref=e234]:
+                    - table:
+                      - rowgroup
+                    - generic [ref=e236]: 暂无数据
+                - img [ref=e239]
+```

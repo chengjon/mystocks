@@ -3,40 +3,38 @@ FastAPI 主应用入口
 MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 """
 
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-from sqlalchemy import text
-import structlog
-import time
-import uuid
-import secrets
 import json
 import os
+import secrets
+import time
+import uuid
+from contextlib import asynccontextmanager
+
+import structlog
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
+# 导入 Swagger UI HTML 生成器
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+
+# 导入缓存淘汰调度器
+from app.core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
 
 # 导入配置
 from app.core.config import settings
 
 # 导入数据库连接管理
-from app.core.database import get_postgresql_engine, close_all_connections
-
-# 导入缓存淘汰调度器
-from app.core.cache_eviction import (
-    get_eviction_scheduler,
-    reset_eviction_scheduler,
-)
-
-# 导入OpenAPI配置
-from app.openapi_config import get_openapi_config, OPENAPI_TAGS
+from app.core.database import close_all_connections, get_postgresql_engine
 
 # 导入Socket.IO服务器管理器
 from app.core.socketio_manager import get_socketio_manager
 
-# 导入 Swagger UI HTML 生成器
-from fastapi.openapi.docs import get_swagger_ui_html
+# 导入OpenAPI配置
+from app.openapi_config import OPENAPI_TAGS, get_openapi_config
 
 # 配置日志
 logger = structlog.get_logger()
@@ -76,9 +74,7 @@ class CSRFTokenManager:
         """清理过期的tokens"""
         current_time = time.time()
         expired_tokens = [
-            token
-            for token, info in self.tokens.items()
-            if current_time - info["created_at"] > self.token_timeout
+            token for token, info in self.tokens.items() if current_time - info["created_at"] > self.token_timeout
         ]
         for token in expired_tokens:
             del self.tokens[token]
@@ -172,11 +168,7 @@ app.add_middleware(
 )
 
 # 配置响应压缩 (性能优化)
-app.add_middleware(
-    GZipMiddleware,
-    minimum_size=1000,  # 仅压缩大于1KB的响应
-    compresslevel=5  # 压缩等级1-9, 5为平衡
-)
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
@@ -349,11 +341,35 @@ async def custom_swagger_ui_html():
 
 # 导入 API 路由 - 优化结构: 先导入，后统一挂载
 from app.api import (
-    data, auth, system, indicators, market, tdx, metrics, tasks, wencai,
-    stock_search, watchlist, tradingview, notification, ml, market_v2,
-    strategy, monitoring, technical_analysis, multi_source, announcement,
-    strategy_management, risk_management, sse_endpoints, cache,
-    industry_concept_analysis, health, dashboard, strategy_mgmt
+    announcement,
+    auth,
+    cache,
+    dashboard,
+    data,
+    health,
+    indicators,
+    industry_concept_analysis,
+    market,
+    market_v2,
+    metrics,
+    ml,
+    monitoring,
+    multi_source,
+    notification,
+    risk_management,
+    sse_endpoints,
+    stock_search,
+    strategy,
+    strategy_management,
+    strategy_mgmt,
+    system,
+    tasks,
+    tdx,
+    technical_analysis,
+    trade,
+    tradingview,
+    watchlist,
+    wencai,
 )
 from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
@@ -363,33 +379,22 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix
-app.include_router(
-    market_v2.router, tags=["market-v2"]
-)  # market V2路由（东方财富直接API）
+app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
-app.include_router(
-    metrics.router, prefix="/api", tags=["metrics"]
-)  # Prometheus metrics
+app.include_router(metrics.router, prefix="/api", tags=["metrics"])  # Prometheus metrics
 app.include_router(
     pool_monitoring.router, prefix="/api", tags=["pool-monitoring"]
 )  # Phase 3 Task 19: Connection Pool Monitoring
 app.include_router(cache.router, prefix="/api", tags=["cache"])  # 缓存管理 (Task 2.2)
 app.include_router(tasks.router, tags=["tasks"])  # 任务管理
+app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理
 app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
 
 # OpenStock 迁移功能路由
-app.include_router(
-    stock_search.router, prefix="/api/stock-search", tags=["stock-search"]
-)  # 股票搜索
-app.include_router(
-    watchlist.router, prefix="/api/watchlist", tags=["watchlist"]
-)  # 自选股管理
-app.include_router(
-    tradingview.router, prefix="/api/tradingview", tags=["tradingview"]
-)  # TradingView widgets
-app.include_router(
-    notification.router, prefix="/api/notification", tags=["notification"]
-)  # 邮件通知
+app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])  # 股票搜索
+app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])  # 自选股管理
+app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])  # TradingView widgets
+app.include_router(notification.router, prefix="/api/notification", tags=["notification"])  # 邮件通知
 
 # PyProfiling 机器学习功能路由
 app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预测和分析
@@ -401,9 +406,7 @@ app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告警
 
 #  技术分析系统路由 (Phase 2)
-app.include_router(
-    technical_analysis.router, tags=["technical-analysis"]
-)  # 增强技术分析
+app.include_router(technical_analysis.router, tags=["technical-analysis"])  # 增强技术分析
 
 #  仪表盘系统路由 (Phase 4)
 app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
@@ -411,45 +414,41 @@ app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理
 
 #  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
-app.include_router(announcement.router, tags=["announcement"])  # 公告监控
+app.include_router(announcement.router, prefix="/api", tags=["announcement"])  # 公告监控
 
 # Week 1 Architecture-Compliant APIs (策略管理和风险管理)
-app.include_router(
-    strategy_management.router
-)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
-app.include_router(
-    risk_management.router
-)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(strategy_management.router)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(risk_management.router)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
 
 # Week 2 SSE Real-time Push (实时推送)
-app.include_router(
-    sse_endpoints.router
-)  # SSE实时推送 (training, backtest, alerts, dashboard)
+app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest, alerts, dashboard)
 
 # 行业概念分析API
-app.include_router(
-    industry_concept_analysis.router
-)  # 行业概念分析
+app.include_router(industry_concept_analysis.router)  # 行业概念分析
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")
 
 logger.info("✅ All API routers registered successfully")
 
+
 def find_available_port(start_port: int, end_port: int) -> int:
     """在指定范围内查找可用端口"""
     import socket
+
     for port in range(start_port, end_port + 1):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            result = sock.connect_ex(('localhost', port))
+            result = sock.connect_ex(("localhost", port))
             if result != 0:  # 端口未被占用
                 return port
     raise RuntimeError(f"No available port found in range {start_port}-{end_port}")
 
+
 if __name__ == "__main__":
     import uvicorn
+
     from app.core.config import settings
-    
+
     try:
         # 在端口范围内查找可用端口
         available_port = find_available_port(settings.port_range_start, settings.port_range_end)

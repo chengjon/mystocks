@@ -272,6 +272,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Minus, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import api from '@/utils/api'
 
 // 响应式数据
 const loading = ref(false)
@@ -284,62 +285,18 @@ let profitChartInstance = null
 
 // 投资组合数据
 const portfolio = reactive({
-  total_assets: 1050000,
-  available_cash: 150000,
-  position_value: 900000,
-  total_profit: 50000,
-  profit_rate: 5.26
+  total_assets: 0,
+  available_cash: 0,
+  position_value: 0,
+  total_profit: 0,
+  profit_rate: 0
 })
 
 // 持仓数据
-const positions = ref([
-  {
-    symbol: '600519',
-    stock_name: '贵州茅台',
-    quantity: 500,
-    cost_price: 1650.00,
-    current_price: 1750.00,
-    profit: 50000,
-    profit_rate: 6.06,
-    update_time: '2025-11-20 15:00:00'
-  },
-  {
-    symbol: '000858',
-    stock_name: '五粮液',
-    quantity: 1000,
-    cost_price: 145.00,
-    current_price: 150.00,
-    profit: 5000,
-    profit_rate: 3.45,
-    update_time: '2025-11-20 15:00:00'
-  }
-])
+const positions = ref([])
 
 // 交易记录
-const trades = ref([
-  {
-    trade_time: '2025-11-20 10:30:00',
-    type: 'buy',
-    symbol: '600519',
-    stock_name: '贵州茅台',
-    quantity: 500,
-    price: 1650.00,
-    commission: 82.50,
-    status: 'completed',
-    remark: '建仓'
-  },
-  {
-    trade_time: '2025-11-19 14:20:00',
-    type: 'buy',
-    symbol: '000858',
-    stock_name: '五粮液',
-    quantity: 1000,
-    price: 145.00,
-    commission: 145.00,
-    status: 'completed',
-    remark: '分批买入'
-  }
-])
+const trades = ref([])
 
 // 交易过滤
 const tradeFilter = reactive({
@@ -367,22 +324,50 @@ const tradeForm = reactive({
 
 // 统计数据
 const statistics = reactive({
-  total_trades: 15,
-  buy_count: 10,
-  sell_count: 5,
-  position_count: 2,
-  total_buy_amount: 1000000,
-  total_sell_amount: 100000,
-  total_commission: 5500,
-  realized_profit: 15000
+  total_trades: 0,
+  buy_count: 0,
+  sell_count: 0,
+  position_count: 0,
+  total_buy_amount: 0,
+  total_sell_amount: 0,
+  total_commission: 0,
+  realized_profit: 0
 })
+
+// 初始化数据 - onMounted 会调用
+const initializeData = async () => {
+  await Promise.all([loadPortfolio(), loadPositions(), loadStatistics(), loadTrades()])
+}
+
+// 加载投资组合概览
+const loadPortfolio = async () => {
+  try {
+    const response = await api.get('/trade/portfolio')
+    if (response.success && response.data) {
+      Object.assign(portfolio, response.data)
+    }
+  } catch (error) {
+    console.error('加载投资组合失败:', error)
+  }
+}
+
+// 加载持仓列表
+const loadPositions = async () => {
+  try {
+    const response = await api.get('/trade/positions')
+    if (response.success && response.data) {
+      positions.value = response.data
+    }
+  } catch (error) {
+    console.error('加载持仓失败:', error)
+  }
+}
 
 // 刷新持仓
 const refreshPositions = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await loadPositions()
     ElMessage.success('持仓数据已刷新')
   } catch (error) {
     console.error('刷新失败:', error)
@@ -396,12 +381,38 @@ const refreshPositions = async () => {
 const loadTrades = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const params = {
+      trade_type: tradeFilter.type || undefined,
+      symbol: tradeFilter.symbol || undefined,
+      page: tradePagination.page,
+      page_size: tradePagination.pageSize
+    }
+
+    // 移除undefined参数
+    Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
+
+    const response = await api.get('/trade/trades', { params })
+    if (response.success && response.data) {
+      trades.value = response.data
+      tradePagination.total = response.total || 0
+    }
   } catch (error) {
     console.error('加载失败:', error)
+    ElMessage.error('加载交易记录失败')
   } finally {
     loading.value = false
+  }
+}
+
+// 加载统计数据
+const loadStatistics = async () => {
+  try {
+    const response = await api.get('/trade/statistics')
+    if (response.success && response.data) {
+      Object.assign(statistics, response.data)
+    }
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
   }
 }
 
@@ -452,14 +463,26 @@ const submitTrade = async () => {
 
   submitting.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    ElMessage.success(`${tradeForm.type === 'buy' ? '买入' : '卖出'}成功`)
-    tradeDialogVisible.value = false
-    refreshPositions()
+    const tradeData = {
+      type: tradeForm.type,
+      symbol: tradeForm.symbol,
+      quantity: tradeForm.quantity,
+      price: tradeForm.price,
+      remark: tradeForm.remark
+    }
+
+    const response = await api.post('/trade/execute', tradeData)
+    if (response.success) {
+      ElMessage.success(`${tradeForm.type === 'buy' ? '买入' : '卖出'}成功: ${response.data.trade_id}`)
+      tradeDialogVisible.value = false
+      // 刷新数据
+      await Promise.all([loadPortfolio(), loadPositions(), loadStatistics(), loadTrades()])
+    } else {
+      ElMessage.error(response.message || '交易失败')
+    }
   } catch (error) {
     console.error('交易失败:', error)
-    ElMessage.error('交易失败')
+    ElMessage.error('交易失败: ' + (error.response?.data?.detail || error.message))
   } finally {
     submitting.value = false
   }
@@ -627,8 +650,9 @@ const handleResize = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', handleResize)
+  await initializeData()
 })
 
 onUnmounted(() => {
