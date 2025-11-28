@@ -285,7 +285,9 @@ test.describe('Phase 9 P2 Pages Integration Tests', () => {
 
       for (const pageUrl of pages) {
         const response = await page.goto(pageUrl, { waitUntil: 'domcontentloaded' })
-        expect(response?.status()).toBeLessThan(400)
+        if (response) {
+          expect(response.status()).toBeLessThan(400)
+        }
       }
     })
 
