@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('MyStocks 真实业务API + 数据对齐测试套件', () => {
   const API_BASE_URL = 'http://localhost:8000';
-  const FRONTEND_BASE_URL = 'http://localhost:3001';
+  const FRONTEND_BASE_URL = 'http://localhost:3006';
   let jwtToken; // 存储JWT令牌
   let testStockSymbol = '000001.SZ'; // 测试用股票代码
 
