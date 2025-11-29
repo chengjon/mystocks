@@ -3,7 +3,7 @@
  */
 
 const { test, expect } = require('@playwright/test');
-const FRONTEND_URL = 'http://localhost:3001';
+const FRONTEND_URL = 'http://localhost:3006';
 
 test.describe('MyStocks前端深度测试', () => {
 

@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
  * 5. 登出功能
  */
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3006';
 const TIMEOUT = 30000;
 
 test.describe('MyStocks 登录功能测试', () => {
