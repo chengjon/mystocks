@@ -140,7 +140,7 @@
 import { computed } from 'vue'
 import {
   Bell, Connection, Close, Select, Delete, CircleCheck,
-  Refresh, CircleFilled, Warning, CircleClose, InfoFilled
+  Refresh, Warning, InfoFilled
 } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import { useRiskAlerts } from '@/composables/useSSE'
