@@ -27,11 +27,12 @@ const helpers = {
 
     // 模拟用户登录
     login: async (page, username = TEST_USER.username, password = TEST_USER.password) => {
-        await page.goto(`${BASE_URL}/login`);
+        await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
+        await page.waitForSelector('[data-testid="username-input"]', { timeout: 10000 });
         await page.fill('[data-testid="username-input"]', username);
         await page.fill('[data-testid="password-input"]', password);
         await page.click('[data-testid="login-button"]');
-        await page.waitForURL(`${BASE_URL}/dashboard`);
+        await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 15000 });
     },
 
     // 测量元素加载时间
