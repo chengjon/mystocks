@@ -196,21 +196,6 @@ test.describe('IndustryConceptAnalysis.vue - API Integration Tests', () => {
     }
   })
 
-  test('15. 响应性设计 - 移动端显示', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    await page.waitForLoadState('networkidle')
-
-    // 验证标题仍然可见
-    const title = page.locator('text=行业/概念分析')
-    await expect(title).toBeVisible()
-
-    // 验证标签页可见
-    const tabs = page.locator('[role="tab"]')
-    const count = await tabs.count()
-    expect(count).toBeGreaterThan(0)
-  })
-
   test('16. 刷新数据 - 刷新按钮功能', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 

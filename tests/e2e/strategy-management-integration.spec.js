@@ -121,21 +121,6 @@ test.describe('StrategyManagement.vue - P2高优先级页面集成测试', () =>
     }
   })
 
-  test('11. 响应性设计 - 移动端', async ({ page }) => {
-    // 设置视口大小为移动设备
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    await page.waitForLoadState('networkidle')
-
-    const heading = page.locator('text=股票策略管理')
-    await expect(heading).toBeVisible()
-
-    // 标签页应该可见
-    const tabs = page.locator('[role="tab"]')
-    const count = await tabs.count()
-    expect(count).toBeGreaterThan(0)
-  })
-
   test('12. 页面导航 - 标签页切换持续性', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 

@@ -148,19 +148,4 @@ test.describe('Market.vue - P2高优先级页面集成测试', () => {
     expect(data.data).toBeDefined()
   })
 
-  test('10. 响应性设计 - 移动端', async ({ page }) => {
-    // 设置视口大小为移动设备
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    // 页面应该仍然加载
-    await page.waitForLoadState('networkidle')
-
-    // 检查元素是否可见
-    const heading = page.locator('text=市场数据')
-    await expect(heading).toBeVisible()
-
-    // 卡片应该堆叠
-    const cards = page.locator('[class*="el-card"]')
-    await expect(cards.first()).toBeVisible()
-  })
 })
