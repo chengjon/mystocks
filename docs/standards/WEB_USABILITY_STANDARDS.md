@@ -160,7 +160,6 @@ test('策略管理功能', async ({ page }) => {
 - Firefox ≥ 88
 - Safari ≥ 14
 - Edge ≥ 90
-- 移动端: iOS Safari ≥ 14, Android Chrome ≥ 90
 
 **测试通过标准:**
 - 功能一致性 = 100%
@@ -595,38 +594,18 @@ test('无障碍访问测试', async ({ page }) => {
 
 **支持设备和分辨率:**
 - 桌面端：≥ 1024x768
-- 平板端：768x1024 - 1024x1366
-- 手机端：320x568 - 414x896
-- 触摸设备：支持手势操作
+- 标准分辨率：1920x1080
 
 **响应式测试:**
 ```javascript
-// 响应式测试
-const devices = [
-  { name: 'Desktop', width: 1920, height: 1080 },
-  { name: 'Tablet', width: 768, height: 1024 },
-  { name: 'Mobile', width: 375, height: 667 }
-];
+// 桌面端响应式测试
+test(`响应式测试 - 桌面端`, async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto('/dashboard');
 
-devices.forEach(device => {
-  test(`响应式测试 - ${device.name}`, async ({ page }) => {
-    await page.setViewportSize({ width: device.width, height: device.height });
-    await page.goto('/dashboard');
-
-    // 验证布局适配
-    if (device.width < 768) {
-      await expect(page.locator('[data-testid="mobile-menu"]')).toBeVisible();
-      await expect(page.locator('[data-testid="sidebar"]')).toBeHidden();
-    } else {
-      await expect(page.locator('[data-testid="sidebar"]')).toBeVisible();
-    }
-
-    // 验证触摸操作（移动端）
-    if (device.width < 768) {
-      await page.tap('[data-testid="menu-button"]');
-      await expect(page.locator('[data-testid="mobile-menu-items"]')).toBeVisible();
-    }
-  });
+  // 验证布局适配
+  await expect(page.locator('[data-testid="sidebar"]')).toBeVisible();
+  await expect(page.locator('[data-testid="main-content"]')).toBeVisible();
 });
 ```
 
