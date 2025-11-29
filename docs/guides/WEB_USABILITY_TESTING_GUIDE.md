@@ -120,8 +120,6 @@ docker run -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:3000
 
 **设备支持:**
 - 桌面端 (1920x1080)
-- 平板端 (768x1024)
-- 移动端 (375x667)
 
 ### 📊 数据质量测试
 
