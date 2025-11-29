@@ -16,6 +16,7 @@
       >
         <el-form-item label="用户名" prop="username">
           <el-input
+            data-testid="username-input"
             v-model="loginForm.username"
             placeholder="请输入用户名"
             size="large"
@@ -25,6 +26,7 @@
 
         <el-form-item label="密码" prop="password">
           <el-input
+            data-testid="password-input"
             v-model="loginForm.password"
             type="password"
             placeholder="请输入密码"
@@ -37,6 +39,7 @@
 
         <el-form-item>
           <el-button
+            data-testid="login-button"
             type="primary"
             size="large"
             style="width: 100%"
