@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test';
  */
 
 // Base URL configuration
-const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3001';
+const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3006';
 
 test.describe('🔧 Fixed Pages E2E Tests - P0 Integration', () => {
 
