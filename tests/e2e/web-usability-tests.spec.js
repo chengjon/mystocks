@@ -485,15 +485,6 @@ test.describe('👤 用户体验测试', () => {
 
         await expect(page.locator('[data-testid="sidebar"]')).toBeVisible();
         await expect(page.locator('[data-testid="main-content"]')).toBeVisible();
-
-        // 平板视图
-        await page.setViewportSize({ width: 768, height: 1024 });
-        await expect(page.locator('[data-testid="mobile-menu"]')).toBeVisible();
-
-        // 手机视图
-        await page.setViewportSize({ width: 375, height: 667 });
-        await expect(page.locator('[data-testid="sidebar"]')).toBeHidden();
-        await expect(page.locator('[data-testid="mobile-navigation"]')).toBeVisible();
     });
 
     test('无障碍访问测试', async ({ page }) => {

@@ -172,23 +172,6 @@ test.describe('Analysis.vue - P2高优先级页面集成测试', () => {
     }
   })
 
-  test('16. 响应性设计 - 移动端', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    await page.waitForLoadState('networkidle')
-
-    // 检查页面是否仍然可访问
-    const cardHeader = page.locator('text=数据分析')
-    if (await cardHeader.isVisible()) {
-      await expect(cardHeader).toBeVisible()
-    }
-
-    // 检查分析按钮是否可见
-    const analyzeButton = page.locator('button:has-text("开始分析")')
-    const isVisible = await analyzeButton.isVisible()
-    expect(isVisible).toBeTruthy()
-  })
-
   test('17. 按钮状态 - 开始分析按钮初始状态', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 

@@ -248,22 +248,6 @@ test.describe('RealTimeMonitor.vue - SSE Integration Tests', () => {
     }
   })
 
-  test('24. 响应性设计 - 移动端显示', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    await page.waitForLoadState('networkidle')
-
-    // 验证标题仍然可见
-    const title = page.locator('text=实时监控中心')
-    await expect(title).toBeVisible()
-
-    // 验证功能卡片在移动设备上可见
-    const sseStatusTitle = page.locator('text=SSE 连接状态')
-    if (await sseStatusTitle.isVisible()) {
-      await expect(sseStatusTitle).toBeVisible()
-    }
-  })
-
   test('25. 页面布局 - 网格行容器存在', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 

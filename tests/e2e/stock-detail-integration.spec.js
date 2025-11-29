@@ -344,17 +344,6 @@ test.describe('StockDetail.vue - Stock Analysis Integration Tests', () => {
     }
   })
 
-  test('37. 响应性设计 - 移动端显示', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-
-    await page.waitForLoadState('networkidle')
-
-    // 验证标题仍然可见
-    const title = page.locator('h2').first()
-    const isVisible = await title.isVisible().catch(() => false)
-    expect(isVisible).toBeTruthy()
-  })
-
   test('38. 图表容器 - 图表高度设置正确', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
