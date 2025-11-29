@@ -15,7 +15,7 @@
           <el-card shadow="hover">
             <div class="stat-card">
               <div class="stat-icon tdengine">
-                <el-icon :size="40"><Database /></el-icon>
+                <span style="font-size: 32px; font-weight: bold;">🔲</span>
               </div>
               <div class="stat-info">
                 <div class="stat-value">{{ healthData.summary?.healthy || 0 }}/{{ healthData.summary?.total_databases || 2 }}</div>
@@ -202,7 +202,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Refresh, Database, Connection } from '@element-plus/icons-vue'
+import { Refresh, Connection } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 const loading = ref(false)
