@@ -107,7 +107,7 @@ export const dataApi = {
       300000 // 5分钟缓存
     )
   },
-  
+
   async getStocksIndustries() {
     return cacheManager.withCache(
       () => request.get('/data/stocks/industries'),
@@ -116,7 +116,7 @@ export const dataApi = {
       3600000 // 1小时缓存
     )
   },
-  
+
   async getStocksConcepts() {
     return cacheManager.withCache(
       () => request.get('/data/stocks/concepts'),
@@ -133,7 +133,7 @@ export const dataApi = {
       300000 // 5分钟缓存
     )
   },
-  
+
   async getMarketOverview() {
     return cacheManager.withCache(
       () => request.get('/data/markets/overview'),
@@ -142,7 +142,7 @@ export const dataApi = {
       600000 // 10分钟缓存
     )
   },
-  
+
   async searchStocks(keyword) {
     return cacheManager.withCache(
       () => request.get('/data/stocks/search', { params: { keyword } }),
@@ -151,11 +151,11 @@ export const dataApi = {
       180000 // 3分钟缓存
     )
   },
-  
+
   async getKline(params) {
     // 使用不需要认证的market/kline端点
     return cacheManager.withCache(
-      () => request.get('/market/kline', { 
+      () => request.get('/market/kline', {
         params: {
           ...params,
           stock_code: params.symbol, // 将symbol转换为stock_code参数
@@ -181,8 +181,8 @@ export const dataApi = {
 
   async getStockIntraday(symbol, date) {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/intraday', { 
-        params: { symbol, date } 
+      () => request.get('/data/stocks/intraday', {
+        params: { symbol, date }
       }),
       'stock_intraday',
       { symbol, date },
@@ -313,6 +313,22 @@ export const technicalApi = {
   // 技术形态检测
   async getPatterns(symbol) {
     return request.get(`/technical/patterns/${symbol}`)
+  },
+  // 快捷方法 - 趋势分析
+  async getTrend(symbol, params) {
+    return this.getTrendIndicators(symbol, params)
+  },
+  // 快捷方法 - 动量分析
+  async getMomentum(symbol, params) {
+    return this.getMomentumIndicators(symbol, params)
+  },
+  // 快捷方法 - 波动性分析
+  async getVolatility(symbol, params) {
+    return this.getVolatilityIndicators(symbol, params)
+  },
+  // 快捷方法 - 成交量分析
+  async getVolume(symbol, params) {
+    return this.getVolumeIndicators(symbol, params)
   }
 }
 
