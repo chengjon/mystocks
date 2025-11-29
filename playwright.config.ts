@@ -18,7 +18,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 5, // 5 workers for parallel execution
+  workers: process.env.CI ? 1 : 2, // 2 workers for parallel execution to avoid resource exhaustion
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
@@ -36,8 +36,8 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
-  /* Global timeout for all tests (30 seconds) */
-  timeout: 30000,
+  /* Global timeout for all tests (60 seconds) */
+  timeout: 60000,
 
   /* Configure projects for major browsers */
   projects: [
@@ -55,16 +55,16 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
       dependencies: ['setup'],
-      timeout: 40000,  // Firefox needs more time (40s vs default 30s)
-      retries: 2,      // Retry Firefox tests more aggressively
+      timeout: 60000,  // Firefox needs more time (60s)
+      retries: 1,      // Retry Firefox tests once
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
       dependencies: ['setup'],
-      timeout: 45000,  // WebKit is slowest (45s)
-      retries: 2,      // Retry WebKit tests more aggressively
+      timeout: 60000,  // WebKit timeout (60s)
+      retries: 1,      // Retry WebKit tests once
     },
 
     /* Test against mobile viewports. */
