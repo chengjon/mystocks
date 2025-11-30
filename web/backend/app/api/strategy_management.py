@@ -9,13 +9,14 @@ Version: 2.1.0 (Full Monitoring Integration)
 Date: 2025-10-24
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
-from typing import Optional, List, Dict, Any
-from datetime import datetime
 import asyncio
-import sys
 import os
+import sys
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import structlog
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -24,16 +25,17 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# 使用 MyStocksUnifiedManager 作为统一入口点
-from unified_manager import MyStocksUnifiedManager
+from app.mock.unified_mock_data import get_mock_data_manager
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
-from app.mock.unified_mock_data import get_mock_data_manager
+
+# 使用 MyStocksUnifiedManager 作为统一入口点
+from unified_manager import MyStocksUnifiedManager
 
 # 注意: backtest, model 模块需要确保存在
 try:
     from backtest import BacktestEngine
-    from model import RandomForestModel, LightGBMModel
+    from model import LightGBMModel, RandomForestModel
 except ImportError:
     BacktestEngine = None
     RandomForestModel = None
@@ -101,9 +103,7 @@ def get_monitoring_db():
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
         except Exception as e:
-            logger.warning(
-                f"MonitoringDatabase initialization failed, using fallback: {e}"
-            )
+            logger.warning(f"MonitoringDatabase initialization failed, using fallback: {e}")
 
             # 创建一个简单的fallback对象
             class MonitoringFallback:
@@ -119,9 +119,7 @@ def get_monitoring_db():
 
 
 @router.get("/strategies")
-async def list_strategies(
-    status: Optional[str] = None, page: int = 1, page_size: int = 20
-) -> Dict[str, Any]:
+async def list_strategies(status: Optional[str] = None, page: int = 1, page_size: int = 20) -> Dict[str, Any]:
     """
     获取策略列表
 
@@ -137,32 +135,32 @@ async def list_strategies(
             "page": 1,
             "page_size": 20
         }
-    
+
     支持Mock数据模式切换
     """
     operation_start = datetime.now()
 
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             strategies_data = mock_manager.get_data("strategy", action="list")
-            
+
             strategies = strategies_data.get("strategies", [])
-            
+
             # 应用状态过滤
             if status:
                 strategies = [s for s in strategies if s.get("status") == status]
-            
+
             # 分页处理
             total = len(strategies)
             start = (page - 1) * page_size
             end = start + page_size
             items = strategies[start:end]
-            
+
             return {"items": items, "total": total, "page": page, "page_size": page_size}
         else:
             # 使用真实数据库
@@ -184,11 +182,7 @@ async def list_strategies(
             total = len(strategies) if strategies is not None else 0
             start = (page - 1) * page_size
             end = start + page_size
-            items = (
-                strategies.iloc[start:end].to_dict("records")
-                if strategies is not None
-                else []
-            )
+            items = strategies.iloc[start:end].to_dict("records") if strategies is not None else []
 
             # 记录操作到监控数据库
             operation_time = (datetime.now() - operation_start).total_seconds() * 1000
@@ -203,13 +197,13 @@ async def list_strategies(
             )
 
             return {"items": items, "total": total, "page": page, "page_size": page_size}
-            
+
     except Exception as e:
         # 如果使用Mock数据模式失败，降级到真实数据库
         if use_mock:
             logger.warning(f"Mock数据获取失败，降级到真实数据库: {str(e)}")
             return await list_strategies(status=status, page=page, page_size=page_size)
-        
+
         # 记录失败操作
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
         get_monitoring_db().log_operation(
@@ -234,15 +228,15 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns:
         创建的策略对象
-    
+
     支持Mock数据模式切换
     """
     operation_start = datetime.now()
 
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据 - 直接返回模拟结果
             mock_strategy = {
@@ -254,7 +248,7 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Dict[str, Any]:
                 "created_at": datetime.now(),
                 "updated_at": datetime.now(),
                 "status": strategy_data.get("status", "draft"),
-                "is_mock": True
+                "is_mock": True,
             }
             return mock_strategy
         else:
@@ -281,13 +275,13 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Dict[str, Any]:
             operation_time = (datetime.now() - operation_start).total_seconds() * 1000
             get_monitoring_db().log_operation(
                 operation_type="INSERT",
-            table_name="strategies",
-            operation_name="create_strategy",
-            rows_affected=1 if result else 0,
-            operation_time_ms=operation_time,
-            success=result,
-            details=f"strategy_type={strategy_data.get('strategy_type')}",
-        )
+                table_name="strategies",
+                operation_name="create_strategy",
+                rows_affected=1 if result else 0,
+                operation_time_ms=operation_time,
+                success=result,
+                details=f"strategy_type={strategy_data.get('strategy_type')}",
+            )
 
         if result:
             return {"message": "策略创建成功", "data": strategy_data}
@@ -333,9 +327,7 @@ async def get_strategy(strategy_id: int) -> Dict[str, Any]:
 
 
 @router.put("/strategies/{strategy_id}")
-async def update_strategy(
-    strategy_id: int, strategy_update: Dict[str, Any]
-) -> Dict[str, Any]:
+async def update_strategy(strategy_id: int, strategy_update: Dict[str, Any]) -> Dict[str, Any]:
     """更新策略"""
     try:
         manager = MyStocksUnifiedManager()
@@ -386,9 +378,7 @@ async def delete_strategy(strategy_id: int) -> Dict[str, str]:
         # 而不是真正删除数据
         import pandas as pd
 
-        delete_data = pd.DataFrame(
-            [{"id": strategy_id, "status": "archived", "updated_at": datetime.now()}]
-        )
+        delete_data = pd.DataFrame([{"id": strategy_id, "status": "archived", "updated_at": datetime.now()}])
 
         result = manager.save_data_by_classification(
             data=delete_data,
@@ -410,9 +400,7 @@ async def delete_strategy(strategy_id: int) -> Dict[str, str]:
 
 
 @router.post("/models/train")
-async def train_model(
-    config: Dict[str, Any], background_tasks: BackgroundTasks
-) -> Dict[str, Any]:
+async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, Any]:
     """
     启动模型训练任务
 
@@ -454,9 +442,7 @@ async def train_model(
             table_name="models",
             filters={"name": config.get("name")},
         )
-        model_id = (
-            models.iloc[-1]["id"] if models is not None and len(models) > 0 else 1
-        )
+        model_id = models.iloc[-1]["id"] if models is not None and len(models) > 0 else 1
 
         # 后台任务训练模型
         task_id = f"train_{model_id}_{int(datetime.now().timestamp())}"
@@ -574,9 +560,7 @@ async def get_training_status(task_id: str) -> Dict[str, Any]:
 
 
 @router.get("/models")
-async def list_models(
-    model_type: Optional[str] = None, status: Optional[str] = None
-) -> List[Dict[str, Any]]:
+async def list_models(model_type: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
     """获取模型列表"""
     try:
         manager = MyStocksUnifiedManager()
@@ -603,9 +587,7 @@ async def list_models(
 
 
 @router.post("/backtest/run")
-async def run_backtest(
-    config: Dict[str, Any], background_tasks: BackgroundTasks
-) -> Dict[str, int]:
+async def run_backtest(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, int]:
     """
     执行回测
 
@@ -650,16 +632,10 @@ async def run_backtest(
             table_name="backtests",
             filters={"name": config.get("name")},
         )
-        backtest_id = (
-            backtests.iloc[-1]["id"]
-            if backtests is not None and len(backtests) > 0
-            else 1
-        )
+        backtest_id = backtests.iloc[-1]["id"] if backtests is not None and len(backtests) > 0 else 1
 
         # 后台任务执行回测
-        background_tasks.add_task(
-            run_backtest_task, backtest_id=backtest_id, config=config
-        )
+        background_tasks.add_task(run_backtest_task, backtest_id=backtest_id, config=config)
 
         return {"backtest_id": backtest_id}
 
@@ -675,9 +651,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
         # 更新状态为运行中
         import pandas as pd
 
-        running_data = pd.DataFrame(
-            [{"id": backtest_id, "status": "running", "started_at": datetime.now()}]
-        )
+        running_data = pd.DataFrame([{"id": backtest_id, "status": "running", "started_at": datetime.now()}])
         manager.save_data_by_classification(
             data=running_data,
             classification=DataClassification.MODEL_OUTPUT,
@@ -749,11 +723,7 @@ async def list_backtest_results(
         total = len(backtests) if backtests is not None else 0
         start = (page - 1) * page_size
         end = start + page_size
-        items = (
-            backtests.iloc[start:end].to_dict("records")
-            if backtests is not None
-            else []
-        )
+        items = backtests.iloc[start:end].to_dict("records") if backtests is not None else []
 
         return {"items": items, "total": total, "page": page, "page_size": page_size}
 
@@ -786,7 +756,94 @@ async def get_backtest_result(backtest_id: int) -> Dict[str, Any]:
 
 @router.get("/backtest/results/{backtest_id}/chart-data")
 async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
-    """获取回测图表数据"""
+    """
+    获取回测图表数据
+
+    获取指定回测任务的可视化图表数据，包括资金曲线、回撤曲线和收益分布等。
+    该端点专门为前端图表组件（如ECharts）提供格式化的时序数据。
+
+    **功能说明**:
+    - 提取回测结果中的时序数据
+    - 生成资金曲线（Equity Curve）数据点
+    - 计算回撤曲线（Drawdown Curve）数据
+    - 统计收益分布（Returns Distribution）直方图
+    - 返回前端图表库可直接使用的数据格式
+    - 支持多种图表类型的数据输出
+
+    **使用场景**:
+    - 回测结果页面的可视化展示
+    - 生成资金曲线图（折线图）
+    - 绘制回撤曲线图（面积图）
+    - 展示收益分布直方图
+    - 导出图表数据用于报告
+    - 对比多个回测结果
+
+    **路径参数**:
+    - backtest_id: 回测任务ID（整数）
+      - 必需参数
+      - 通过 /backtest/run 接口返回的ID
+      - 对应数据库中的回测记录
+
+    **返回值**:
+    - equity_curve: 资金曲线数据（数组）
+      - 每个元素: [timestamp, equity_value]
+      - 时间戳: ISO 8601格式或Unix时间戳
+      - 资金价值: 账户总资产（浮点数）
+    - drawdown_curve: 回撤曲线数据（数组）
+      - 每个元素: [timestamp, drawdown_percentage]
+      - 回撤百分比: 负值，如-0.15表示15%回撤
+    - returns_distribution: 收益分布数据（数组）
+      - 每个元素: [return_range, frequency]
+      - 收益区间: 如"-2%到-1%"
+      - 频率: 该区间的交易次数
+
+    **示例**:
+    ```bash
+    # 获取回测图表数据
+    curl -X GET "http://localhost:8000/api/v1/strategy/backtest/results/123/chart-data"
+    ```
+
+    **响应示例**:
+    ```json
+    {
+      "equity_curve": [
+        ["2024-01-01T00:00:00", 1000000],
+        ["2024-01-02T00:00:00", 1005230],
+        ["2024-01-03T00:00:00", 1012450],
+        ["2024-01-04T00:00:00", 1008900]
+      ],
+      "drawdown_curve": [
+        ["2024-01-01T00:00:00", 0],
+        ["2024-01-02T00:00:00", 0],
+        ["2024-01-03T00:00:00", 0],
+        ["2024-01-04T00:00:00", -0.0035]
+      ],
+      "returns_distribution": [
+        ["-3% to -2%", 5],
+        ["-2% to -1%", 12],
+        ["-1% to 0%", 45],
+        ["0% to 1%", 78],
+        ["1% to 2%", 42],
+        ["2% to 3%", 8]
+      ]
+    }
+    ```
+
+    **回测不存在响应**:
+    ```json
+    {
+      "detail": "回测不存在"
+    }
+    ```
+
+    **注意事项**:
+    - 该端点仅返回图表数据，不包含完整回测结果
+    - 数据格式已针对前端图表库优化（ECharts、Chart.js等）
+    - equity_curve数据点数量取决于回测周期和频率
+    - 如果回测尚未完成，部分字段可能为空数组
+    - 建议先调用 /backtest/results/{id} 检查回测状态
+    - 大数据量时可能需要前端分页或采样展示
+    """
     try:
         manager = MyStocksUnifiedManager()
 

@@ -3,12 +3,13 @@
 支持邮件发送、价格提醒等功能
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from typing import List, Dict, Optional
-from pydantic import BaseModel, Field, EmailStr
+from typing import Dict, List, Optional
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from pydantic import BaseModel, EmailStr, Field
+
+from app.api.auth import User, get_current_user
 from app.services.email_service import get_email_service
-from app.api.auth import get_current_user, User
 
 router = APIRouter()
 
@@ -68,11 +69,7 @@ async def get_email_service_status() -> Dict:
         "configured": is_configured,
         "smtp_host": email_service.smtp_host if is_configured else "未配置",
         "smtp_port": email_service.smtp_port if is_configured else 0,
-        "message": (
-            "邮件服务已配置"
-            if is_configured
-            else "邮件服务未配置，请设置 SMTP 环境变量"
-        ),
+        "message": ("邮件服务已配置" if is_configured else "邮件服务未配置，请设置 SMTP 环境变量"),
     }
 
 
@@ -130,9 +127,7 @@ async def send_welcome_email(
 
     # 在后台发送欢迎邮件
     def send_task():
-        result = email_service.send_welcome_email(
-            user_email=request.user_email, user_name=request.user_name
-        )
+        result = email_service.send_welcome_email(user_email=request.user_email, user_name=request.user_name)
         if result["success"]:
             print(f"✅ 欢迎邮件已发送至 {request.user_email}")
         else:
@@ -229,6 +224,77 @@ async def send_price_alert(
 async def send_test_email(current_user: User = Depends(get_current_user)) -> Dict:
     """
     发送测试邮件到当前用户邮箱
+
+    向已登录用户的注册邮箱发送测试邮件，用于验证邮件服务配置是否正确。该端点会
+    立即发送邮件，并返回发送结果。
+
+    **功能说明**:
+    - 发送HTML格式的测试邮件
+    - 验证SMTP服务器配置正确性
+    - 检查邮箱地址有效性
+    - 测试邮件发送延迟和送达率
+    - 同步返回发送结果（非后台任务）
+
+    **使用场景**:
+    - 初次配置邮件服务后的功能验证
+    - 检查邮件服务是否正常工作
+    - 验证用户邮箱地址是否有效
+    - 排查邮件发送失败问题
+    - 测试邮件模板渲染效果
+
+    **认证要求**:
+    - 需要用户登录（JWT Token认证）
+    - 用户必须在个人资料中设置了邮箱地址
+    - 无角色限制，所有用户均可使用
+
+    **返回值**:
+    成功响应:
+    - success: 发送成功标志（true）
+    - message: 成功消息描述
+    - recipient: 接收邮箱地址
+
+    失败响应:
+    - 400: 用户未设置邮箱
+    - 503: 邮件服务未配置
+    - 500: 邮件发送失败
+
+    **示例**:
+    ```bash
+    # 发送测试邮件（需要认证Token）
+    curl -X POST "http://localhost:8000/api/notification/test-email" \\
+      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    ```
+
+    **成功响应示例**:
+    ```json
+    {
+      "success": true,
+      "message": "测试邮件已发送至 user@example.com",
+      "recipient": "user@example.com"
+    }
+    ```
+
+    **用户未设置邮箱响应**:
+    ```json
+    {
+      "detail": "用户未设置邮箱"
+    }
+    ```
+
+    **邮件服务未配置响应**:
+    ```json
+    {
+      "detail": "邮件服务未配置"
+    }
+    ```
+
+    **注意事项**:
+    - 该端点会立即发送邮件，不使用后台任务
+    - 发送失败会抛出HTTP异常，前端需处理错误
+    - 测试邮件包含用户名和发送时间信息
+    - 频繁调用可能触发SMTP限流，建议间隔至少30秒
+    - 某些邮箱服务商可能将测试邮件标记为垃圾邮件
+    - 发送前会检查邮件服务配置状态
     """
     email_service = get_email_service()
 

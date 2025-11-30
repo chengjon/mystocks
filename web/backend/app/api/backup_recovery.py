@@ -4,17 +4,12 @@
 提供完整的备份、恢复、状态查询功能
 """
 
-from fastapi import APIRouter, HTTPException, Query, Body
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
-from src.backup_recovery import (
-    BackupManager,
-    RecoveryManager,
-    BackupScheduler,
-    IntegrityChecker,
-)
+from fastapi import APIRouter, Body, HTTPException, Query
 
+from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery"])
 
@@ -54,9 +49,7 @@ async def backup_tdengine_full():
 
 
 @router.post("/backup/tdengine/incremental")
-async def backup_tdengine_incremental(
-    since_backup_id: str = Query(..., description="上次备份的 ID")
-):
+async def backup_tdengine_incremental(since_backup_id: str = Query(..., description="上次备份的 ID")):
     """执行 TDengine 增量备份"""
     try:
         metadata = backup_manager.backup_tdengine_incremental(since_backup_id)
@@ -72,9 +65,7 @@ async def backup_tdengine_incremental(
             "error_message": metadata.error_message,
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Incremental backup failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Incremental backup failed: {str(e)}")
 
 
 @router.post("/backup/postgresql/full")
@@ -104,9 +95,7 @@ async def backup_postgresql_full():
 
 @router.get("/backups")
 async def list_backups(
-    database: Optional[str] = Query(
-        None, description="数据库类型 (tdengine/postgresql)"
-    ),
+    database: Optional[str] = Query(None, description="数据库类型 (tdengine/postgresql)"),
     backup_type: Optional[str] = Query(None, description="备份类型 (full/incremental)"),
     status: Optional[str] = Query(None, description="备份状态 (success/failed)"),
 ):
@@ -120,9 +109,7 @@ async def list_backups(
         if database:
             filtered_backups = [b for b in filtered_backups if b.database == database]
         if backup_type:
-            filtered_backups = [
-                b for b in filtered_backups if b.backup_type == backup_type
-            ]
+            filtered_backups = [b for b in filtered_backups if b.backup_type == backup_type]
         if status:
             filtered_backups = [b for b in filtered_backups if b.status == status]
 
@@ -203,9 +190,7 @@ async def restore_tdengine_pitr(
             raise HTTPException(status_code=500, detail=message)
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=400, detail=f"Invalid target_time format: {str(e)}"
-        )
+        raise HTTPException(status_code=400, detail=f"Invalid target_time format: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PITR recovery failed: {str(e)}")
 
@@ -254,9 +239,7 @@ async def start_scheduler():
         backup_scheduler.start()
         return {"success": True, "message": "Backup scheduler started"}
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to start scheduler: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to start scheduler: {str(e)}")
 
 
 @router.post("/scheduler/stop")
@@ -266,9 +249,7 @@ async def stop_scheduler():
         backup_scheduler.stop()
         return {"success": True, "message": "Backup scheduler stopped"}
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to stop scheduler: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to stop scheduler: {str(e)}")
 
 
 @router.get("/scheduler/jobs")
@@ -281,9 +262,7 @@ async def get_scheduled_jobs():
             "jobs": jobs,
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get scheduled jobs: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get scheduled jobs: {str(e)}")
 
 
 # ==================== 完整性检查端点 ====================
@@ -297,9 +276,7 @@ async def verify_backup_integrity(backup_id: str):
         metadata = backup_manager._load_metadata(backup_id)
 
         if not metadata:
-            raise HTTPException(
-                status_code=404, detail=f"Backup not found: {backup_id}"
-            )
+            raise HTTPException(status_code=404, detail=f"Backup not found: {backup_id}")
 
         # 验证恢复后的数据完整性
         if metadata["database"] == "tdengine":
@@ -313,9 +290,7 @@ async def verify_backup_integrity(backup_id: str):
                 metadata["total_rows"],
             )
         else:
-            raise HTTPException(
-                status_code=400, detail=f"Unknown database: {metadata['database']}"
-            )
+            raise HTTPException(status_code=400, detail=f"Unknown database: {metadata['database']}")
 
         # 生成报告
         report_file = integrity_checker.generate_integrity_report(
@@ -333,14 +308,68 @@ async def verify_backup_integrity(backup_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Integrity verification failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Integrity verification failed: {str(e)}")
 
 
 @router.post("/cleanup/old-backups")
 async def cleanup_old_backups(retention_days: int = Query(30, description="保留天数")):
-    """清理过期备份"""
+    """
+    清理过期备份文件
+
+    自动清理超过指定保留期的备份文件，释放存储空间。该端点会扫描所有备份目录，
+    删除创建时间早于保留天数的备份文件和元数据。
+
+    **功能说明**:
+    - 扫描所有 TDengine 和 PostgreSQL 备份目录
+    - 删除超过保留期的备份文件（.tar.gz）
+    - 删除对应的备份元数据（.json）
+    - 记录清理操作日志
+    - 返回清理统计信息
+
+    **使用场景**:
+    - 定期清理旧备份文件，避免磁盘空间不足
+    - 手动触发清理操作，释放存储空间
+    - 配置不同保留策略（如生产环境保留90天，测试环境保留7天）
+    - 备份策略调整后的批量清理
+
+    **参数**:
+    - retention_days: 备份保留天数（默认30天）
+      - 最小值: 1天
+      - 推荐值: 生产环境30-90天，测试环境7-14天
+      - 仅删除创建时间早于 (当前时间 - retention_days) 的备份
+
+    **返回值**:
+    - success: 操作是否成功（布尔值）
+    - message: 清理结果描述信息
+    - deleted_count (可选): 删除的备份文件数量
+    - freed_space_mb (可选): 释放的磁盘空间（MB）
+
+    **示例**:
+    ```bash
+    # 清理30天前的备份
+    curl -X POST "http://localhost:8000/api/backup-recovery/cleanup/old-backups?retention_days=30"
+
+    # 清理7天前的备份（测试环境）
+    curl -X POST "http://localhost:8000/api/backup-recovery/cleanup/old-backups?retention_days=7"
+    ```
+
+    **响应示例**:
+    ```json
+    {
+      "success": true,
+      "message": "Old backups (older than 30 days) removed",
+      "deleted_count": 15,
+      "freed_space_mb": 2048.5
+    }
+    ```
+
+    **注意事项**:
+    - 删除操作不可逆，请谨慎设置保留天数
+    - 建议在业务低峰期执行清理操作
+    - 清理前确保至少保留一个最新的全量备份
+    - 建议配置定时任务自动执行清理（如每周一次）
+    - 重要数据的备份建议保留更长时间
+    """
     try:
         backup_manager.retention_days = retention_days
         backup_manager.cleanup_old_backups()
