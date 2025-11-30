@@ -7,7 +7,7 @@ const { test, expect } = require('@playwright/test');
 const path = require('path');
 
 // 测试配置
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3006';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const API_URL = process.env.API_URL || 'http://localhost:8000';
 
 // 测试数据
