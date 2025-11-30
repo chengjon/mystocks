@@ -15,10 +15,18 @@ const TIMEOUT = 30000;
 
 test.describe('MyStocks 登录功能测试', () => {
   test.beforeEach(async ({ page }) => {
-    // 清空本地存储
-    await page.evaluate(() => localStorage.clear());
-    // 导航到登录页面
+    // 导航到登录页面（这会初始化 localStorage）
     await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
+    // 等待页面加载完成后再清空本地存储
+    await page.waitForLoadState('domcontentloaded');
+    // 清空本地存储
+    await page.evaluate(() => {
+      try {
+        localStorage.clear();
+      } catch (e) {
+        console.log('localStorage clear failed:', e);
+      }
+    });
   });
 
   test('1. 登录页面应该正确加载', async ({ page }) => {
