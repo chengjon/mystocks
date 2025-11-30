@@ -1,8 +1,26 @@
 import { test, expect } from '@playwright/test'
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+
 test.describe('RealTimeMonitor.vue - SSE Integration Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/real-time-monitor')
+    // 清空本地存储
+    await page.evaluate(() => localStorage.clear())
+
+    // 登录流程
+    await page.goto(`${BASE_URL}/login`)
+    await page.getByTestId('username-input').fill('admin')
+    await page.getByTestId('password-input').fill('admin123')
+    await page.getByTestId('login-button').click()
+
+    // 等待登录完成并验证 token 已保存
+    await page.waitForTimeout(2000)
+    const token = await page.evaluate(() => localStorage.getItem('token'))
+
+    // 如果登录成功，导航到实时监控页面
+    if (token) {
+      await page.goto(`${BASE_URL}/real-time-monitor`)
+    }
   })
 
   test('01. 页面加载 - 显示实时监控中心标题', async ({ page }) => {

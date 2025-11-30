@@ -74,8 +74,8 @@ export default defineConfig({
   testDir: 'tests/',
 
   // 全局测试钩子
-  globalSetup: require.resolve('./tests/setup/global-setup.ts'),
-  globalTeardown: require.resolve('./tests/setup/global-teardown.ts'),
+  globalSetup: require.resolve('./global-setup.ts'),
+  globalTeardown: require.resolve('./global-teardown.ts'),
 
   // 报告配置
   reportSlowTests: {
