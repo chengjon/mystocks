@@ -1,129 +1,206 @@
+# ========================================
+# Excluded Files and Folders
+# ========================================
+# This file defines patterns for files/folders that should NOT be tracked by Git
+# These are typically development artifacts, sensitive data, and project-irrelevant files
 
-
-!.claude/build-checker-python.json
-!.claude/hooks/
-!.claude/hooks/*.sh
-!.claude/settings.json
-!.claude/skill-rules.json
-!.env.development.example
-!.env.example
-!.mcp.json 
-!.taskmaster/config.json
-!config/.env.example
-!data/backups/.gitkeep
-!web/backend/.env.example
-# !config/essential_data.csv
-# CSV files (test data, temporary exports, generated reports)
-# Data Files
-# Database
-# Dependency directories
-# Development Tools
-# Development Tools (keep directories but ignore contents)
-# Editor directories and files
-# Environment Variables
-# Environment variables
-# Exception: Keep essential reference CSV files if needed in the future
-# Exclude critical config files from being ignored
-# IDE
-# Jupyter
-# Logs
-# MyPy
-# OS
-# OS specific
-# Python
-# Security sensitive files
-# Task files
-# Temporary
-# Testing
-# Virtual Environment
-# tasks.json
-# tasks/
-*$py.class
-*.crt
-*.csv
-*.db
-*.egg
-*.egg-info/
-*.env
-*.ipynb
-*.key
-*.log
-*.njsproj
-*.ntvs*
-*.p12
-*.pem
-*.pfx
-*.py[cod]
-*.sln
-*.so
-*.sqlite
-*.sqlite3
-*.suo
-*.sw?
-*.swo
-*.swp
-*.tmp
-*~
-.DS_Store
-.Python
-.benchmarks/
-.claude-trace/
-.claude/
-.coverage
-.cursor/
-.dmypy.json
-.eggs/
-.env
+# ========================================
+# SECURITY SENSITIVE FILES (CRITICAL)
+# ========================================
+# Environment Variables and Secrets
 .env
 .env.*
 .env.*.local
 .env.local
 .env.production.local
-.idea
-.idea/
-.installed.cfg
-.ipynb_checkpoints/
-.mypy_cache/
-.opencode/
-.pytest_cache/
-.specify/
-.taskmaster/
-.vscode
-.vscode/
-ENV/
-Thumbs.db
-__pycache__/
-build/
+!.env.example
+!.env.development.example
+
+# Database Credentials and Backups
 config/.env
 config/.env.*
-data/*.csv
-data/*.json
-data/backups/*
-dev-debug.log
-develop-eggs/
-dist/
-dmypy.json
-downloads/
-eggs/
-env/
-htmlcov/
-lib/
-lib64/
-logs
-logs/
-node_modules/
-npm-debug.log*
-opencodetmp/
-parts/
-sdist/
-temp/
-temp_docs/
-tmp/
-var/
-venv/
+config/.env.backup*
+config/.env.simplified
+!config/.env.example
+
+# Backend Environment Files
 web/backend/.env
 web/backend/.env.*
+!web/backend/.env.example
+
+# Frontend Environment Files
 web/frontend/.env
+web/frontend/.env.*
+!web/frontend/.env.development
+!web/frontend/.env.production
+
+# API Keys and Certificates
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+*.csr
+
+# Sensitive Backups
+.archive/sensitive-backups/
+config/.env.backup*
+*.backup
+*.bak
+
+# ========================================
+# DEVELOPMENT ARTIFACTS (PROJECT-IRRELEVANT)
+# ========================================
+# IDE and Editor Files
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+*.sw?
+*.tmp
+*~
+*.sln
+*.njsproj
+*.ntvs*
+*.suo
+
+# Python Development
+.Python
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 wheels/
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+.installed.cfg
+.dmypy.json
+dmypy.json
+.mypy_cache/
+.pytest_cache/
+
+# Node.js Development
+node_modules/
+npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Jupyter Notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# OS Specific Files
+.DS_Store
+Thumbs.db
+
+# ========================================
+# DEVELOPMENT TOOL DIRECTORIES
+# ========================================
+# Build and Artifact Directories
+/build/
+/dist/
+/htmlcov/
+
+# Temporary Development Directories
+/temp/
+/tmp/
+/temp_docs/
+/opencodetmp/
+/downloads/
+
+# Logging and Debug Files
+*.log
+dev-debug.log
+logs/
+
+# Benchmark Results
+.benchmarks/
+
+# Testing Artifacts
+test-results/
+.coverage
+htmlcov/
+
+# ========================================
+# PROJECT-SPECIFIC TEMPORARY FILES
+# ========================================
+# Claude Code Directories
+.claude-trace/
+.claude/
+!.claude/build-checker-python.json
+!.claude/hooks/
+!.claude/hooks/*.sh
+!.claude/settings.json
+!.claude/skill-rules.json
+
+# Task Management
+.taskmaster/
+!.taskmaster/config.json
+
+# Code Analysis
+.opencode/
+.specify/
+
+# ========================================
+# DATA AND CACHE FILES (DEVELOPMENT ONLY)
+# ========================================
+# CSV Files (test data, temporary exports)
+*.csv
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# JSON Data (temporary, generated)
+data/*.json
+
+# Data Backups (auto-generated, development only)
+data/backups/*
+!data/backups/.gitkeep
+
+# ========================================
+# ARCHIVE AND OLD CODE (NOT FOR PRODUCTION)
+# ========================================
+.archive/
+
+# ========================================
+# OTHER BUILD/DEPENDENCY ARTIFACTS
+# ========================================
+*.crt
+*.p12
+*.pem
+*.pfx
+
+# Jupyter
+*.ipynb
+
+# Virtual Environment
+venv/
+ENV/
+
+# Coverage
+.coverage
+
+# Generated Directories
+wheels/
+parts/
+lib/
+lib64/
