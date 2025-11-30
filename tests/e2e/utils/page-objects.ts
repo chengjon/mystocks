@@ -1,7 +1,7 @@
 /**
  * 页面对象模型 (Page Object Models)
  * 为Vue组件创建可复用的页面对象，简化E2E测试代码
- * 
+ *
  * 作者: Claude Code
  * 生成时间: 2025-11-14
  */
@@ -14,24 +14,24 @@ import { Page, expect, Locator } from '@playwright/test';
 export abstract class BasePage {
   protected page: Page;
   protected baseURL: string;
-  
+
   constructor(page: Page) {
     this.page = page;
-    this.baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+    this.baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';  // Per port allocation spec: Frontend 3000-3009
   }
-  
+
   /**
    * 导航到页面
    */
   abstract navigate(): Promise<void>;
-  
+
   /**
    * 等待页面加载完成
    */
   async waitForPageLoad(): Promise<void> {
     await this.page.waitForLoadState('networkidle');
   }
-  
+
   /**
    * 截取页面截图
    */
@@ -41,14 +41,14 @@ export abstract class BasePage {
       fullPage: true
     });
   }
-  
+
   /**
    * 获取页面标题
    */
   async getPageTitle(): Promise<string> {
     return await this.page.title();
   }
-  
+
   /**
    * 检查是否在当前页面
    */
@@ -66,7 +66,7 @@ export class LoginPage extends BasePage {
   private loginButton: Locator;
   private errorMessage: Locator;
   private registerLink: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.usernameInput = page.locator('[data-testid=username]');
@@ -75,33 +75,33 @@ export class LoginPage extends BasePage {
     this.errorMessage = page.locator('[data-testid=error-message]');
     this.registerLink = page.locator('[data-testid=register-link]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/login');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 输入用户名
    */
   async inputUsername(username: string): Promise<void> {
     await this.usernameInput.fill(username);
   }
-  
+
   /**
    * 输入密码
    */
   async inputPassword(password: string): Promise<void> {
     await this.passwordInput.fill(password);
   }
-  
+
   /**
    * 点击登录按钮
    */
   async clickLogin(): Promise<void> {
     await this.loginButton.click();
   }
-  
+
   /**
    * 执行完整登录流程
    */
@@ -110,7 +110,7 @@ export class LoginPage extends BasePage {
     await this.inputPassword(password);
     await this.clickLogin();
   }
-  
+
   /**
    * 获取错误消息
    */
@@ -121,21 +121,21 @@ export class LoginPage extends BasePage {
       return null;
     }
   }
-  
+
   /**
    * 检查是否显示错误消息
    */
   async isErrorMessageVisible(): Promise<boolean> {
     return await this.errorMessage.isVisible();
   }
-  
+
   /**
    * 点击注册链接
    */
   async clickRegister(): Promise<void> {
     await this.registerLink.click();
   }
-  
+
   /**
    * 检查登录表单是否可见
    */
@@ -160,7 +160,7 @@ export class DashboardPage extends BasePage {
   private conceptStocksTable: Locator;
   private refreshButton: Locator;
   private userMenu: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.welcomeMessage = page.locator('[data-testid=welcome-message]');
@@ -176,26 +176,26 @@ export class DashboardPage extends BasePage {
     this.refreshButton = page.locator('[data-testid=refresh-button]');
     this.userMenu = page.locator('[data-testid=user-menu]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/dashboard');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 检查欢迎消息是否可见
    */
   async isWelcomeMessageVisible(): Promise<boolean> {
     return await this.welcomeMessage.isVisible();
   }
-  
+
   /**
    * 获取统计卡片数量
    */
   async getStatsCardCount(): Promise<number> {
     return await this.marketStatsCards.count();
   }
-  
+
   /**
    * 检查图表是否可见
    */
@@ -206,16 +206,16 @@ export class DashboardPage extends BasePage {
       this.priceDistributionChart,
       this.capitalFlowChart
     ];
-    
+
     for (const chart of charts) {
       if (!await chart.isVisible()) {
         return false;
       }
     }
-    
+
     return true;
   }
-  
+
   /**
    * 检查表格数据是否加载
    */
@@ -226,23 +226,23 @@ export class DashboardPage extends BasePage {
       this.industryStocksTable,
       this.conceptStocksTable
     ];
-    
+
     for (const table of tables) {
       if (!await table.isVisible()) {
         return false;
       }
     }
-    
+
     return true;
   }
-  
+
   /**
    * 点击刷新按钮
    */
   async clickRefresh(): Promise<void> {
     await this.refreshButton.click();
   }
-  
+
   /**
    * 获取自选股表格数据
    */
@@ -250,7 +250,7 @@ export class DashboardPage extends BasePage {
     const rows = this.favoriteStocksTable.locator('tbody tr');
     const count = await rows.count();
     const data = [];
-    
+
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
       data.push({
@@ -260,10 +260,10 @@ export class DashboardPage extends BasePage {
         change: await row.locator('td:nth-child(4)').textContent()
       });
     }
-    
+
     return data;
   }
-  
+
   /**
    * 点击用户菜单
    */
@@ -281,7 +281,7 @@ export class StockSearchPage extends BasePage {
   private stockItems: Locator;
   private filterOptions: Locator;
   private searchButton: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.searchInput = page.locator('[data-testid=search-input]');
@@ -290,19 +290,19 @@ export class StockSearchPage extends BasePage {
     this.filterOptions = page.locator('[data-testid=filter-options]');
     this.searchButton = page.locator('[data-testid=search-button]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/market/stock-search');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 输入搜索关键词
    */
   async inputSearchKeyword(keyword: string): Promise<void> {
     await this.searchInput.fill(keyword);
   }
-  
+
   /**
    * 执行搜索
    */
@@ -312,28 +312,28 @@ export class StockSearchPage extends BasePage {
     }
     await this.searchButton.click();
   }
-  
+
   /**
    * 检查搜索结果是否显示
    */
   async areSearchResultsVisible(): Promise<boolean> {
     return await this.searchResults.isVisible();
   }
-  
+
   /**
    * 获取搜索结果数量
    */
   async getSearchResultsCount(): Promise<number> {
     return await this.stockItems.count();
   }
-  
+
   /**
    * 点击第一个搜索结果
    */
   async clickFirstResult(): Promise<void> {
     await this.stockItems.first().click();
   }
-  
+
   /**
    * 获取搜索结果列表
    */
@@ -341,7 +341,7 @@ export class StockSearchPage extends BasePage {
     const items = this.stockItems;
     const count = await items.count();
     const results = [];
-    
+
     for (let i = 0; i < count; i++) {
       const item = items.nth(i);
       results.push({
@@ -351,7 +351,7 @@ export class StockSearchPage extends BasePage {
         change: await item.locator('[data-testid=stock-change]').textContent()
       });
     }
-    
+
     return results;
   }
 }
@@ -367,7 +367,7 @@ export class TechnicalAnalysisPage extends BasePage {
   private klineChart: Locator;
   private indicatorsChart: Locator;
   private signalResults: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.stockSelector = page.locator('[data-testid=stock-selector]');
@@ -378,19 +378,19 @@ export class TechnicalAnalysisPage extends BasePage {
     this.indicatorsChart = page.locator('[data-testid=indicators-chart]');
     this.signalResults = page.locator('[data-testid=signal-results]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/technical-analysis');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 选择股票
    */
   async selectStock(stockCode: string): Promise<void> {
     await this.stockSelector.selectOption(stockCode);
   }
-  
+
   /**
    * 选择技术指标
    */
@@ -399,7 +399,7 @@ export class TechnicalAnalysisPage extends BasePage {
       await this.page.locator(`[data-testid=indicator-${indicator}]`).check();
     }
   }
-  
+
   /**
    * 执行技术分析
    */
@@ -408,21 +408,21 @@ export class TechnicalAnalysisPage extends BasePage {
     await this.selectIndicators(indicators);
     await this.analyzeButton.click();
   }
-  
+
   /**
    * 检查分析结果是否可见
    */
   async areAnalysisResultsVisible(): Promise<boolean> {
     return await this.analysisResults.isVisible();
   }
-  
+
   /**
    * 检查K线图是否可见
    */
   async isKlineChartVisible(): Promise<boolean> {
     return await this.klineChart.isVisible();
   }
-  
+
   /**
    * 获取分析结果数据
    */
@@ -442,7 +442,7 @@ export class WencaiPage extends BasePage {
   private queryResults: Locator;
   private predefinedQueries: Locator;
   private customQueryTab: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.querySelector = page.locator('[data-testid=query-selector]');
@@ -453,19 +453,19 @@ export class WencaiPage extends BasePage {
     this.predefinedQueries = page.locator('[data-testid=predefined-queries]');
     this.customQueryTab = page.locator('[data-testid=custom-query-tab]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/wencai');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 选择预定义查询
    */
   async selectPredefinedQuery(queryName: string): Promise<void> {
     await this.querySelector.selectOption(queryName);
   }
-  
+
   /**
    * 执行预定义查询
    */
@@ -473,21 +473,21 @@ export class WencaiPage extends BasePage {
     await this.selectPredefinedQuery(queryName);
     await this.executeQueryButton.click();
   }
-  
+
   /**
    * 切换到自定义查询
    */
   async switchToCustomQuery(): Promise<void> {
     await this.customQueryTab.click();
   }
-  
+
   /**
    * 输入自定义查询
    */
   async inputCustomQuery(query: string): Promise<void> {
     await this.customQueryInput.fill(query);
   }
-  
+
   /**
    * 执行自定义查询
    */
@@ -495,14 +495,14 @@ export class WencaiPage extends BasePage {
     await this.inputCustomQuery(query);
     await this.executeCustomQueryButton.click();
   }
-  
+
   /**
    * 检查查询结果是否显示
    */
   async areQueryResultsVisible(): Promise<boolean> {
     return await this.queryResults.isVisible();
   }
-  
+
   /**
    * 获取查询结果数据
    */
@@ -510,7 +510,7 @@ export class WencaiPage extends BasePage {
     const resultItems = this.queryResults.locator('[data-testid=query-result-item]');
     const count = await resultItems.count();
     const results = [];
-    
+
     for (let i = 0; i < count; i++) {
       const item = resultItems.nth(i);
       results.push({
@@ -518,7 +518,7 @@ export class WencaiPage extends BasePage {
         type: await item.getAttribute('data-type')
       });
     }
-    
+
     return results;
   }
 }
@@ -533,7 +533,7 @@ export class StrategyPage extends BasePage {
   private strategyResults: Locator;
   private createStrategyButton: Locator;
   private strategyForm: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.strategyList = page.locator('[data-testid=strategy-list]');
@@ -543,12 +543,12 @@ export class StrategyPage extends BasePage {
     this.createStrategyButton = page.locator('[data-testid=create-strategy-button]');
     this.strategyForm = page.locator('[data-testid=strategy-form]');
   }
-  
+
   async navigate(): Promise<void> {
     await this.page.goto('/strategy-management');
     await this.waitForPageLoad();
   }
-  
+
   /**
    * 获取策略列表
    */
@@ -556,7 +556,7 @@ export class StrategyPage extends BasePage {
     const items = this.strategyItems;
     const count = await items.count();
     const strategies = [];
-    
+
     for (let i = 0; i < count; i++) {
       const item = items.nth(i);
       strategies.push({
@@ -565,10 +565,10 @@ export class StrategyPage extends BasePage {
         description: await item.locator('[data-testid=strategy-description]').textContent()
       });
     }
-    
+
     return strategies;
   }
-  
+
   /**
    * 运行策略
    */
@@ -576,7 +576,7 @@ export class StrategyPage extends BasePage {
     await this.strategyItems.nth(strategyIndex).click();
     await this.runStrategyButton.click();
   }
-  
+
   /**
    * 创建新策略
    */
@@ -586,7 +586,7 @@ export class StrategyPage extends BasePage {
     await this.page.locator('[data-testid=strategy-description-input]').fill(description);
     await this.page.locator('[data-testid=save-strategy-button]').click();
   }
-  
+
   /**
    * 检查策略结果是否显示
    */
@@ -600,46 +600,46 @@ export class StrategyPage extends BasePage {
  */
 export class NavigationHelper {
   private page: Page;
-  
+
   constructor(page: Page) {
     this.page = page;
   }
-  
+
   /**
    * 导航到主页
    */
   async goToHome(): Promise<void> {
     await this.page.click('[data-testid=home-link]');
   }
-  
+
   /**
    * 导航到市场页面
    */
   async goToMarket(): Promise<void> {
     await this.page.click('[data-testid=market-link]');
   }
-  
+
   /**
    * 导航到技术分析页面
    */
   async goToTechnicalAnalysis(): Promise<void> {
     await this.page.click('[data-testid=technical-analysis-link]');
   }
-  
+
   /**
    * 导航到问财页面
    */
   async goToWencai(): Promise<void> {
     await this.page.click('[data-testid=wencai-link]');
   }
-  
+
   /**
    * 导航到策略页面
    */
   async goToStrategy(): Promise<void> {
     await this.page.click('[data-testid=strategy-link]');
   }
-  
+
   /**
    * 检查当前页面路径
    */
