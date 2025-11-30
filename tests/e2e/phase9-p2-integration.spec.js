@@ -3,7 +3,7 @@ import { setPageTimeouts, smartWaitForElement } from './test-helpers'
 
 test.describe('Phase 9 P2 Pages Integration Tests', () => {
   // 测试配置
-  const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3006'
+  const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000'
   const API_BASE = 'http://localhost:8000'
 
   test.beforeEach(async ({ page, browserName }) => {
