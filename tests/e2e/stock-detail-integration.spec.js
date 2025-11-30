@@ -1,9 +1,27 @@
 import { test, expect } from '@playwright/test'
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+const STOCK_CODE = '600519'
+
 test.describe('StockDetail.vue - Stock Analysis Integration Tests', () => {
   test.beforeEach(async ({ page }) => {
-    // 使用具体的股票代码访问
-    await page.goto('/stock-detail/600519')
+    // 清空本地存储
+    await page.evaluate(() => localStorage.clear())
+
+    // 登录流程
+    await page.goto(`${BASE_URL}/login`)
+    await page.getByTestId('username-input').fill('admin')
+    await page.getByTestId('password-input').fill('admin123')
+    await page.getByTestId('login-button').click()
+
+    // 等待登录完成并验证 token 已保存
+    await page.waitForTimeout(2000)
+    const token = await page.evaluate(() => localStorage.getItem('token'))
+
+    // 如果登录成功，导航到股票详情页面
+    if (token) {
+      await page.goto(`${BASE_URL}/stock-detail/${STOCK_CODE}`)
+    }
   })
 
   test('01. 页面加载 - 显示股票详情标题', async ({ page }) => {
