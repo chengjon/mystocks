@@ -161,6 +161,124 @@
 
 ---
 
+### 安全管理标准 (Security Standards) 🔒
+
+**最后更新**: 2025-11-30
+
+#### 13. **安全审计报告** - SECURITY_AUDIT_REPORT_20251130.md
+**核心成果**:
+- ✅ 移除 2 处真实数据库凭证 (CRITICAL)
+- ✅ 文档化 30+ 测试凭证 (ACCEPTABLE)
+- ✅ 验证 .gitignore 防护有效
+
+**关键问题**:
+- 🔴 CRITICAL: 真实密码 `c790414J` 在 `.env.example` 和 `config/.env.data_sources.example` → **已修复**
+- 🟡 MEDIUM: 硬编码测试凭证 `admin123` (30+ 文件) → **文档化为可接受**
+
+**合规性**: OWASP 2021, CWE-798, CWE-542
+
+---
+
+#### 14. **安全后续实施计划** - SECURITY_FOLLOWUP_PLAN_20251130.md
+**实施路线图** (3 个 Phase, 4-6 周):
+
+**Phase 1: 验证与落地 (1-3 天)** ✅ 当前进行中
+- [ ] 凭证占位符验证 (示例文件)
+- [ ] 端口适配和 E2E 测试验证
+- [ ] .gitignore 有效性验证
+- [ ] 团队 briefing 材料准备
+
+**Phase 2: 风险防控 (1-2 周)**
+- [ ] 完整凭证泄露审计 (git 历史、依赖项、工具)
+- [ ] 测试环境凭证优化 (30+ 文件迁移至 .env.test)
+- [ ] 安全监控集成 (Gitleaks / GitGuardian, 服务器监控)
+
+**Phase 3: 流程标准化 (2-4 周)**
+- [ ] 安全开发标准文档
+- [ ] 密钥管理系统实现 (HashiCorp Vault / 云服务)
+- [ ] 定期安全审计机制
+
+**资源要求**: ~4 周, 跨职能团队协作
+
+**成功指标**:
+- 📊 零新凭证泄露
+- 📊 100% 安全检查清单合规
+- 📊 零严重安全发现
+
+---
+
+#### 15. **安全快速参考** - SECURITY_QUICK_REFERENCE.md
+**面向**: 全体开发人员 (5-10 分钟快速查阅)
+
+**核心内容**:
+- ❌ 不要做这些 (真实代码示例)
+  - 提交真实凭证: ❌ `git add .env`
+  - 硬编码密码: ❌ `const PASSWORD = "admin123"`
+  - 存储凭证在注释: ❌ `# Password: c790414J`
+
+- ✅ 应该做这些 (最佳实践)
+  - 使用占位符: ✅ `POSTGRESQL_PASSWORD=your-postgres-password`
+  - 本地存储: ✅ `.env` (git-ignored)
+  - 环境变量: ✅ `process.env.TEST_PASSWORD`
+
+- 🔧 设置流程 (3 步快速指南)
+  - 复制示例文件: `cp .env.example .env`
+  - 编辑真实凭证: `nano .env`
+  - 验证: `git status | grep .env` (无输出)
+
+- 🚨 紧急操作 (凭证意外泄露)
+  - 立即停止提交
+  - 移除凭证并重新提交
+  - 轮换所有凭证
+  - 验证移除
+  - 记录事件
+
+---
+
+#### 16. **本地环境配置指南** - LOCAL_ENV_SETUP.md
+**面向**: 新开发人员 + 环境初始化
+
+**快速开始** (3 步):
+1. 复制示例文件: `cp .env.example .env`
+2. 编辑凭证: `nano .env` (替换占位符)
+3. 验证配置: `git status` (确认被忽略)
+
+**详细说明**:
+- PostgreSQL 配置 + 密码获取方式
+- TDengine 配置 + 连接验证
+- JWT 密钥生成 (推荐: `python3 -c "import secrets; print(secrets.token_urlsafe(32))"`)
+- 常见问题 (Q&A 格式)
+- 紧急恢复 (凭证轮换流程)
+
+**验证清单** (7 项):
+- [ ] `.env` 文件已创建并编辑
+- [ ] 所有占位符已替换为实际凭证
+- [ ] `git status` 不显示 `.env` 文件
+- [ ] 数据库连接成功
+- [ ] E2E 测试无端口错误
+
+---
+
+## 🔐 安全文档使用指南
+
+### 不同角色的使用顺序
+
+**新开发人员** (入职第一周):
+1. 📖 **LOCAL_ENV_SETUP.md** (20 min) - 本地环境快速配置
+2. 📖 **SECURITY_QUICK_REFERENCE.md** (10 min) - 日常安全规范
+3. 📖 **SECURITY_AUDIT_REPORT_20251130.md** (15 min) - 理解过去的问题
+
+**项目负责人/安全负责人** (审核和推进):
+1. 📋 **SECURITY_AUDIT_REPORT_20251130.md** (全面了解)
+2. 📋 **SECURITY_FOLLOWUP_PLAN_20251130.md** (实施路线图)
+3. ✅ 推进 Phase 1-3 执行
+
+**代码审查者** (PR 审查):
+1. 📌 **SECURITY_QUICK_REFERENCE.md** - 快速检查清单
+2. 📌 **SECURITY_AUDIT_REPORT_20251130.md** 第 7-8 章 - 合规性标准
+
+---
+
 ### 遗留文档 (Legacy / Variants)
 
 #### 13. **代码修改规则变体** - 代码修改规则-new.md, 代码修改规则-合并.md
