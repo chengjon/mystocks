@@ -10,7 +10,7 @@ test.describe("MyStocks 健康检查测试", () => {
 
   test("CASE-FRONTEND-HEALTH-001: 前端健康检查", async ({ page }) => {
     console.log("CASE-FRONTEND-HEALTH-001: 开始前端健康检查");
-    await page.goto("http://localhost:3006");
+    await page.goto("http://localhost:3000");
     await expect(page.locator("body")).toBeVisible();
     console.log("✅ CASE-FRONTEND-HEALTH-001: 前端健康检查通过");
   });

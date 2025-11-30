@@ -2,7 +2,7 @@
  * MyStocks Web应用端到端可用性测试套件
  *
  * 测试目标：
- * - 前端：http://localhost:3006 (Vue3 + Element Plus)
+ * - 前端：http://localhost:3000 (Vue3 + Element Plus)
  * - 后端：http://localhost:8000 (FastAPI + Swagger UI)
  *
  * 核心功能验证：
@@ -17,7 +17,7 @@ const { test, expect, chromium } = require('@playwright/test');
 
 // 测试配置
 const CONFIG = {
-  frontendUrl: 'http://localhost:3006',
+  frontendUrl: 'http://localhost:3000',
   backendUrl: 'http://localhost:8000',
   timeout: {
     navigation: 30000,
