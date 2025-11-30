@@ -3,25 +3,26 @@
 Real-time Monitoring System
 """
 
+import os
 from datetime import date, datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Query, Depends
-from pydantic import BaseModel
-import os
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+
+from app.mock.unified_mock_data import get_mock_data_manager
 from app.models.monitoring import (
-    AlertRuleCreate,
-    AlertRuleUpdate,
-    AlertRuleResponse,
+    AlertLevel,
     AlertRecordResponse,
-    RealtimeMonitoringResponse,
+    AlertRuleCreate,
+    AlertRuleResponse,
+    AlertRuleType,
+    AlertRuleUpdate,
     DragonTigerListResponse,
     MonitoringSummaryResponse,
-    AlertLevel,
-    AlertRuleType,
+    RealtimeMonitoringResponse,
 )
 from app.services.monitoring_service import monitoring_service
-from app.mock.unified_mock_data import get_mock_data_manager
 
 router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 
@@ -32,9 +33,7 @@ router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 
 
 @router.get("/alert-rules", response_model=List[AlertRuleResponse])
-async def get_alert_rules(
-    rule_type: Optional[AlertRuleType] = None, is_active: Optional[bool] = None
-):
+async def get_alert_rules(rule_type: Optional[AlertRuleType] = None, is_active: Optional[bool] = None):
     """
     获取告警规则列表
 
@@ -273,12 +272,11 @@ async def get_realtime_monitoring_list(
     try:
         session = monitoring_service.get_session()
         try:
-            from app.models.monitoring import RealtimeMonitoring
             from sqlalchemy import and_
 
-            query = session.query(RealtimeMonitoring).filter(
-                RealtimeMonitoring.trade_date == date.today()
-            )
+            from app.models.monitoring import RealtimeMonitoring
+
+            query = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == date.today())
 
             # 筛选指定股票
             if symbols:
@@ -293,9 +291,7 @@ async def get_realtime_monitoring_list(
 
             # 对于每只股票，只取最新的记录
             # 这里简化处理，实际应该用子查询
-            records = (
-                query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
-            )
+            records = query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
 
             return [RealtimeMonitoringResponse.from_orm(r) for r in records]
         finally:
@@ -377,18 +373,14 @@ async def get_dragon_tiger_list(
             if trade_date is None:
                 trade_date = date.today()
 
-            query = session.query(DragonTigerList).filter(
-                DragonTigerList.trade_date == trade_date
-            )
+            query = session.query(DragonTigerList).filter(DragonTigerList.trade_date == trade_date)
 
             if symbol:
                 query = query.filter(DragonTigerList.symbol == symbol)
             if min_net_amount is not None:
                 query = query.filter(DragonTigerList.net_amount >= min_net_amount)
 
-            records = (
-                query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
-            )
+            records = query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
 
             return [DragonTigerListResponse.from_orm(r) for r in records]
         finally:
@@ -445,13 +437,13 @@ async def get_monitoring_summary():
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             monitoring_data = mock_manager.get_data("monitoring", alert_type="all")
-            
+
             # 构建返回的监控摘要数据
             summary = {
                 "total_stocks": 1568,
@@ -462,7 +454,7 @@ async def get_monitoring_summary():
                 "avg_change_percent": 0.85,
                 "total_amount": 2456789000.0,
                 "active_alerts": 12,
-                "unread_alerts": 5
+                "unread_alerts": 5,
             }
             return MonitoringSummaryResponse(**summary)
         else:
@@ -483,28 +475,20 @@ async def get_today_statistics():
             from sqlalchemy import text
 
             # 今日告警摘要
-            alerts_summary = session.execute(
-                text("SELECT * FROM v_today_alerts_summary")
-            ).fetchall()
+            alerts_summary = session.execute(text("SELECT * FROM v_today_alerts_summary")).fetchall()
 
             # 活跃规则
-            active_rules = session.execute(
-                text("SELECT * FROM v_active_alert_rules LIMIT 10")
-            ).fetchall()
+            active_rules = session.execute(text("SELECT * FROM v_active_alert_rules LIMIT 10")).fetchall()
 
             # 实时监控摘要
-            realtime_summary = session.execute(
-                text("SELECT * FROM v_realtime_summary")
-            ).fetchone()
+            realtime_summary = session.execute(text("SELECT * FROM v_realtime_summary")).fetchone()
 
             return {
                 "success": True,
                 "data": {
                     "alerts_summary": [dict(row._mapping) for row in alerts_summary],
                     "active_rules": [dict(row._mapping) for row in active_rules],
-                    "realtime_summary": (
-                        dict(realtime_summary._mapping) if realtime_summary else {}
-                    ),
+                    "realtime_summary": (dict(realtime_summary._mapping) if realtime_summary else {}),
                 },
             }
         finally:
@@ -558,7 +542,76 @@ async def stop_monitoring():
 
 @router.get("/control/status")
 async def get_monitoring_status():
-    """获取监控状态"""
+    """
+    获取实时监控系统运行状态
+
+    查询当前监控系统的运行状态、监控范围和统计信息。该端点用于检查监控服务是否
+    正常运行，以及正在监控的股票列表。
+
+    **功能说明**:
+    - 返回监控服务运行状态（运行中/已停止）
+    - 提供当前监控的股票代码列表
+    - 统计监控股票数量
+    - 显示监控配置信息（更新间隔、告警规则数量等）
+    - 支持监控面板状态展示
+
+    **使用场景**:
+    - 监控面板实时状态展示
+    - 健康检查和服务可用性监测
+    - 调试监控服务启停状态
+    - 确认特定股票是否在监控范围内
+    - 运维监控系统状态查询
+
+    **返回值**:
+    - success: 请求是否成功（布尔值）
+    - data: 监控状态数据对象
+      - is_monitoring: 是否正在监控（布尔值）
+      - monitored_symbols: 监控的股票代码列表（数组）
+      - monitored_count: 监控股票数量（整数）
+      - update_interval (可选): 更新间隔秒数
+      - active_rules_count (可选): 活跃告警规则数量
+      - last_update_time (可选): 最后更新时间
+
+    **示例**:
+    ```bash
+    # 查询监控状态
+    curl -X GET "http://localhost:8000/api/monitoring/control/status"
+    ```
+
+    **响应示例**:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "is_monitoring": true,
+        "monitored_symbols": ["600519", "000001", "600036", "601318"],
+        "monitored_count": 4,
+        "update_interval": 60,
+        "active_rules_count": 12,
+        "last_update_time": "2025-11-30T10:30:45"
+      }
+    }
+    ```
+
+    **监控停止状态响应**:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "is_monitoring": false,
+        "monitored_symbols": [],
+        "monitored_count": 0
+      }
+    }
+    ```
+
+    **注意事项**:
+    - 该端点不需要认证即可访问（用于健康检查）
+    - 频繁调用不会影响监控性能
+    - 返回的股票列表可能很长，建议配合分页展示
+    - 监控状态变更后立即生效
+    - 配合 /control/start 和 /control/stop 端点使用
+    """
     try:
         return {
             "success": True,
