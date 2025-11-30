@@ -65,35 +65,19 @@ request.interceptors.response.use(
   }
 )
 
-// 认证 API - 已禁用认证功能
+// 认证 API
 export const authApi = {
   login(username, password) {
-    // 已禁用登录功能
-    return Promise.resolve({
-      success: false,
-      message: '登录功能已禁用'
-    })
+    return request.post('/auth/login', { username, password })
   },
   logout() {
-    // 已禁用登出功能
-    return Promise.resolve({
-      success: true,
-      message: '登出功能已禁用'
-    })
+    return request.post('/auth/logout')
   },
   getCurrentUser() {
-    // 已禁用获取用户信息
-    return Promise.resolve({
-      success: false,
-      message: '用户信息获取已禁用'
-    })
+    return request.get('/auth/user')
   },
   refreshToken() {
-    // 已禁用令牌刷新
-    return Promise.resolve({
-      success: false,
-      message: '令牌刷新已禁用'
-    })
+    return request.post('/auth/refresh')
   }
 }
 
