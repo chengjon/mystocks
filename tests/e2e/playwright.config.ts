@@ -1,7 +1,7 @@
 /**
  * Playwright E2E测试配置
  * 为Vue 3 + FastAPI架构优化的端到端测试配置
- * 
+ *
  * 作者: Claude Code
  * 生成时间: 2025-11-14
  */
@@ -10,14 +10,15 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * 测试环境配置
+ * Per port allocation spec: Frontend 3000-3009, Backend 8000-8009
  */
-const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 const apiURL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
 const timeout = parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000');
 
 export default defineConfig({
   testDir: './tests',
-  
+
   // 测试执行配置
   timeout,
   expect: {
@@ -63,7 +64,7 @@ export default defineConfig({
   // 开发服务器配置（已禁用，使用独立的服务器启动脚本）
   // webServer: {
   //   command: 'npm run dev',
-  //   url: 'http://localhost:5173',
+  //   url: 'http://localhost:3000',  // Per port allocation spec
   //   reuseExistingServer: !process.env.CI,
   //   timeout: 120000,
   // },
@@ -71,7 +72,7 @@ export default defineConfig({
   // 输出目录配置
   outputDir: 'test-results/',
   testDir: 'tests/',
-  
+
   // 全局测试钩子
   globalSetup: require.resolve('./tests/setup/global-setup.ts'),
   globalTeardown: require.resolve('./tests/setup/global-teardown.ts'),
@@ -91,19 +92,19 @@ export default defineConfig({
  */
 export const environments = {
   development: {
-    baseURL: 'http://localhost:5173',
-    apiURL: 'http://localhost:8000',
+    baseURL: 'http://localhost:3000',  // Per port allocation spec: Frontend 3000-3009
+    apiURL: 'http://localhost:8000',    // Backend 8000-8009
     headless: false,
     slowMo: 0,
   },
-  
+
   staging: {
     baseURL: 'https://staging.mystocks.company.com',
     apiURL: 'https://staging-api.mystocks.company.com',
     headless: true,
     slowMo: 0,
   },
-  
+
   production: {
     baseURL: 'https://mystocks.company.com',
     apiURL: 'https://api.mystocks.company.com',
@@ -124,7 +125,7 @@ export const testData = {
     },
     trader: {
       username: 'trader',
-      password: 'trader123', 
+      password: 'trader123',
       role: 'trader',
     },
     viewer: {
@@ -133,7 +134,7 @@ export const testData = {
       role: 'viewer',
     },
   },
-  
+
   stocks: {
     // 常用测试股票
     maotai: '600519',
@@ -142,7 +143,7 @@ export const testData = {
     zhongshang: '601012',
     ningde: '300750',
   },
-  
+
   queries: {
     // 常用问财查询
     strong_stocks: '强势股票',
@@ -163,7 +164,7 @@ export const performance = {
     TTFB: 600,  // 首字节时间 < 600ms
     TTI: 3500,  // 可交互时间 < 3.5秒
   },
-  
+
   apiResponse: {
     dashboard: 1000,  // 仪表盘API < 1秒
     market: 800,      // 市场数据API < 800ms
