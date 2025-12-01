@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "data_sources": {
+    "market": {
+      "name": "Market Data Source",
+      "type": "market",
+      "enabled": true,
+      "mode": "mock",
+      "base_url": null,
+      "timeout": 30.0,
+      "retry_count": 3,
+      "retry_delay": 1.0,
+      "health_check_interval": 60.0,
+      "fallback_enabled": true,
+      "cache_enabled": true,
+      "cache_ttl": 300
+    },
+    "dashboard": {
+      "name": "Dashboard Data Source",
+      "type": "dashboard",
+      "enabled": true,
+      "mode": "mock",
+      "base_url": null,
+      "timeout": 15.0,
+      "retry_count": 2,
+      "retry_delay": 0.5,
+      "health_check_interval": 30.0,
+      "fallback_enabled": false,
+      "cache_enabled": true,
+      "cache_ttl": 120
+    },
+    "technical_analysis": {
+      "name": "Technical Analysis Data Source",
+      "type": "technical_analysis",
+      "enabled": true,
+      "mode": "mock",
+      "base_url": null,
+      "timeout": 20.0,
+      "retry_count": 3,
+      "retry_delay": 1.0,
+      "health_check_interval": 60.0,
+      "fallback_enabled": true,
+      "cache_enabled": true,
+      "cache_ttl": 600
+    }
+  },
+  "global_settings": {
+    "default_timeout": 30.0,
+    "default_retry_count": 3,
+    "default_retry_delay": 1.0,
+    "health_check_interval": 60.0,
+    "metrics_retention_hours": 24,
+    "log_level": "INFO"
+  }
+}

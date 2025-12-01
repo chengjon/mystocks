@@ -33,6 +33,9 @@ from app.core.database import close_all_connections, get_postgresql_engine
 # 导入Socket.IO服务器管理器
 from app.core.socketio_manager import get_socketio_manager
 
+# 导入统一响应格式中间件
+from app.middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+
 # 导入OpenAPI配置
 from app.openapi_config import OPENAPI_TAGS, get_openapi_config
 
@@ -170,6 +173,10 @@ app.add_middleware(
 # 配置响应压缩 (性能优化)
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
+# 配置统一响应格式中间件 (API标准化)
+app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
+app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
+
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
 sio = socketio_manager.sio
@@ -258,29 +265,43 @@ async def log_requests(request: Request, call_next):
     return response
 
 
-# 全局异常处理
+# 全局异常处理 - 使用统一响应格式
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error("Unhandled exception", exc_info=exc)
+
+    # 获取请求ID
+    request_id = getattr(request.state, "request_id", str(id(request)))
+
+    # 使用统一响应格式
+    from app.core.responses import ErrorCodes, ResponseMessages, create_error_response
+
     return JSONResponse(
         status_code=500,
-        content={
-            "error": "Internal Server Error",
-            "message": "An unexpected error occurred",
-            "request_id": str(id(request)),
-        },
+        content=create_error_response(
+            error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+            message=ResponseMessages.INTERNAL_ERROR,
+            details={"exception": str(exc), "type": type(exc).__name__},
+            request_id=request_id,
+        ).dict(exclude_unset=True),
     )
 
 
-# 健康检查端点
+# 健康检查端点 - 使用统一响应格式
 @app.get("/health")
-async def health_check():
+async def health_check(request: Request):
     """系统健康检查"""
-    return {
-        "status": "healthy",
-        "timestamp": time.time(),
-        "service": "mystocks-web-api",
-    }
+    # 获取请求ID
+    request_id = getattr(request.state, "request_id", None)
+
+    from app.core.responses import create_health_response
+
+    return create_health_response(
+        service="mystocks-web-api",
+        status="healthy",
+        details={"timestamp": time.time(), "version": "1.0.0", "middleware": "response_format_enabled"},
+        request_id=request_id,
+    )
 
 
 # Socket.IO健康检查端点
@@ -316,11 +337,27 @@ async def get_csrf_token(request: Request):
     }
 
 
-# 根路径重定向到文档
+# 根路径重定向到文档 - 使用统一响应格式
 @app.get("/")
-async def root():
+async def root(request: Request):
     """根路径重定向到 API 文档"""
-    return {"message": "MyStocks Web API", "docs": "/api/docs"}
+    # 获取请求ID
+    request_id = getattr(request.state, "request_id", None)
+
+    from app.core.responses import create_success_response
+
+    return create_success_response(
+        data={
+            "message": "MyStocks Web API",
+            "docs": "/api/docs",
+            "swagger": "/api/docs",
+            "redoc": "/api/redoc",
+            "health": "/health",
+            "version": "1.0.0",
+        },
+        message="欢迎使用 MyStocks Web API",
+        request_id=request_id,
+    )
 
 
 # 自定义 Swagger UI 端点（使用本地静态文件）
@@ -346,6 +383,7 @@ from app.api import (
     cache,
     dashboard,
     data,
+    data_quality,
     health,
     indicators,
     industry_concept_analysis,
@@ -375,6 +413,7 @@ from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monit
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
+app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
