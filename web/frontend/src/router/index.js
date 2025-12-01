@@ -196,6 +196,12 @@ const router = createRouter({
           name: 'tdxpy-demo',
           component: () => import('@/views/TdxpyDemo.vue'),
           meta: { title: 'pytdx 功能演示', icon: 'Connection' }
+        },
+        {
+          path: 'smart-data-test',
+          name: 'smart-data-test',
+          component: () => import('@/views/SmartDataSourceTest.vue'),
+          meta: { title: '智能数据源测试', icon: 'Monitor' }
         }
       ]
     },

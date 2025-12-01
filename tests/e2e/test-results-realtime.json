@@ -1,0 +1,1473 @@
+🚀 开始MyStocks E2E测试全局设置...
+📡 验证测试环境连接...
+✅ 前端服务器连接正常: 200
+✅ 后端服务器连接正常: 500
+✅ 全局设置完成
+🧹 开始MyStocks E2E测试全局清理...
+✅ 全局清理完成
+{
+  "config": {
+    "configFile": "/opt/claude/mystocks_spec/tests/e2e/playwright.config.ts",
+    "rootDir": "/opt/claude/mystocks_spec/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/opt/claude/mystocks_spec/tests/e2e/global-setup.ts",
+    "globalTeardown": "/opt/claude/mystocks_spec/tests/e2e/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 60000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/opt/claude/mystocks_spec/tests/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/opt/claude/mystocks_spec/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "realtime-monitor-integration.spec.js",
+      "file": "realtime-monitor-integration.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "RealTimeMonitor.vue - SSE Integration Tests",
+          "file": "realtime-monitor-integration.spec.js",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "01. 页面加载 - 显示实时监控中心标题",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11543,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:28:25",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 25,
+                          "line": 28
+                        },
+                        "snippet": "  26 |\n  27 |     const title = page.locator('text=实时监控中心')\n> 28 |     await expect(title).toBeVisible({ timeout: 5000 })\n     |                         ^\n  29 |\n  30 |     const subtitle = page.locator('text=基于SSE (Server-Sent Events) 的实时推送系统')\n  31 |     await expect(subtitle).toBeVisible()"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 25,
+                            "line": 28
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n\n\n  26 |\n  27 |     const title = page.locator('text=实时监控中心')\n> 28 |     await expect(title).toBeVisible({ timeout: 5000 })\n     |                         ^\n  29 |\n  30 |     const subtitle = page.locator('text=基于SSE (Server-Sent Events) 的实时推送系统')\n  31 |     await expect(subtitle).toBeVisible()\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:28:25"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:02:48.442Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-41483--Tests-01-页面加载---显示实时监控中心标题-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-41483--Tests-01-页面加载---显示实时监控中心标题-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-41483--Tests-01-页面加载---显示实时监控中心标题-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 25,
+                        "line": 28
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-6421118a364ede21133a",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "02. 功能说明 - SSE功能说明卡片显示",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 17041,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时推送功能说明')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时推送功能说明')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时推送功能说明')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时推送功能说明')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:38:30",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 30,
+                          "line": 38
+                        },
+                        "snippet": "  36 |\n  37 |     const alertTitle = page.locator('text=实时推送功能说明')\n> 38 |     await expect(alertTitle).toBeVisible()\n     |                              ^\n  39 |\n  40 |     const description = page.locator('text=本页面展示了基于SSE')\n  41 |     await expect(description).toBeVisible()"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 30,
+                            "line": 38
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时推送功能说明')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时推送功能说明')\u001b[22m\n\n\n  36 |\n  37 |     const alertTitle = page.locator('text=实时推送功能说明')\n> 38 |     await expect(alertTitle).toBeVisible()\n     |                              ^\n  39 |\n  40 |     const description = page.locator('text=本页面展示了基于SSE')\n  41 |     await expect(description).toBeVisible()\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:38:30"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:02:48.415Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-49e89-Tests-02-功能说明---SSE功能说明卡片显示-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-49e89-Tests-02-功能说明---SSE功能说明卡片显示-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-49e89-Tests-02-功能说明---SSE功能说明卡片显示-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 30,
+                        "line": 38
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-38b0785d2456d4fc711e",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "03. 功能标签 - 显示4个主要功能标签",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 17836,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=模型训练进度')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=模型训练进度')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=模型训练进度')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=模型训练进度')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:52:31",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 31,
+                          "line": 52
+                        },
+                        "snippet": "  50 |     const metricsTag = page.locator('text=实时指标更新')\n  51 |\n> 52 |     await expect(trainingTag).toBeVisible()\n     |                               ^\n  53 |     await expect(backtestTag).toBeVisible()\n  54 |     await expect(alertTag).toBeVisible()\n  55 |     await expect(metricsTag).toBeVisible()"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 31,
+                            "line": 52
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=模型训练进度')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=模型训练进度')\u001b[22m\n\n\n  50 |     const metricsTag = page.locator('text=实时指标更新')\n  51 |\n> 52 |     await expect(trainingTag).toBeVisible()\n     |                               ^\n  53 |     await expect(backtestTag).toBeVisible()\n  54 |     await expect(alertTag).toBeVisible()\n  55 |     await expect(metricsTag).toBeVisible()\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:52:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:02:48.435Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-f41f6--Tests-03-功能标签---显示4个主要功能标签-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-f41f6--Tests-03-功能标签---显示4个主要功能标签-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-f41f6--Tests-03-功能标签---显示4个主要功能标签-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 31,
+                        "line": 52
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-fc601dd929296aba9b0e",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "04. 实时指标组件 - DashboardMetrics显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 6229,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:02:48.434Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-261ebc5b0f1c193432e7",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "05. 风险告警组件 - RiskAlerts显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5281,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:02:54.832Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-0362d62ad7f649d66cd0",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 70,
+              "column": 3
+            },
+            {
+              "title": "06. 训练进度组件 - TrainingProgress显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4946,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:00.166Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-951b1b677bf34e308e5d",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 84,
+              "column": 3
+            },
+            {
+              "title": "07. 回测进度组件 - BacktestProgress显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5076,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:01.412Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-f3227c6851015b4db225",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 98,
+              "column": 3
+            },
+            {
+              "title": "08. SSE状态卡片 - 卡片标题显示",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 15473,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 连接状态')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 连接状态')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 连接状态')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 连接状态')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:116:34",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 34,
+                          "line": 116
+                        },
+                        "snippet": "  114 |\n  115 |     const sseStatusTitle = page.locator('text=SSE 连接状态')\n> 116 |     await expect(sseStatusTitle).toBeVisible()\n      |                                  ^\n  117 |   })\n  118 |\n  119 |   test('09. SSE状态卡片 - 刷新按钮存在', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 34,
+                            "line": 116
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 连接状态')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 连接状态')\u001b[22m\n\n\n  114 |\n  115 |     const sseStatusTitle = page.locator('text=SSE 连接状态')\n> 116 |     await expect(sseStatusTitle).toBeVisible()\n      |                                  ^\n  117 |   })\n  118 |\n  119 |   test('09. SSE状态卡片 - 刷新按钮存在', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:116:34"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:05.144Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-369fc-n-Tests-08-SSE状态卡片---卡片标题显示-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-369fc-n-Tests-08-SSE状态卡片---卡片标题显示-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-369fc-n-Tests-08-SSE状态卡片---卡片标题显示-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 34,
+                        "line": 116
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-26687db8e7db7d2e9ea1",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 112,
+              "column": 3
+            },
+            {
+              "title": "09. SSE状态卡片 - 刷新按钮存在",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4784,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:06.637Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-1c4b994a94be4742fa50",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 119,
+              "column": 3
+            },
+            {
+              "title": "10. API集成 - SSE状态API可访问",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 4217,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:131:31",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 31,
+                          "line": 131
+                        },
+                        "snippet": "  129 |     // 测试SSE状态API端点\n  130 |     const response = await page.request.get('/api/v1/sse/status')\n> 131 |     expect(response.status()).toBeLessThan(500)\n      |                               ^\n  132 |   })\n  133 |\n  134 |   test('11. SSE状态信息 - 服务状态标签显示', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 31,
+                            "line": 131
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m\n\n  129 |     // 测试SSE状态API端点\n  130 |     const response = await page.request.get('/api/v1/sse/status')\n> 131 |     expect(response.status()).toBeLessThan(500)\n      |                               ^\n  132 |   })\n  133 |\n  134 |   test('11. SSE状态信息 - 服务状态标签显示', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:131:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:07.469Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-57d4a-ests-10-API集成---SSE状态API可访问-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-57d4a-ests-10-API集成---SSE状态API可访问-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-57d4a-ests-10-API集成---SSE状态API可访问-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 31,
+                        "line": 131
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-cdd127b32a52d246bfbb",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 128,
+              "column": 3
+            },
+            {
+              "title": "11. SSE状态信息 - 服务状态标签显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5212,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:06.655Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-260cedcd2ef0b6baa4f8",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "12. SSE状态信息 - 总连接数显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4574,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:11.559Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-d5447c3ddd33460e29aa",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 150,
+              "column": 3
+            },
+            {
+              "title": "13. SSE通道信息 - 训练通道显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 4550,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:12.728Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-99c9793a70b0b9ee726e",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 159,
+              "column": 3
+            },
+            {
+              "title": "14. SSE通道信息 - 回测通道显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4547,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:11.886Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-466ce5beaae0b4f668f1",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 168,
+              "column": 3
+            },
+            {
+              "title": "15. SSE通道信息 - 告警通道显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5039,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:16.137Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-28a96c3d8c1c31267945",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 177,
+              "column": 3
+            },
+            {
+              "title": "16. SSE通道信息 - 仪表板通道显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4794,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:16.429Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-a70f6f50169b814f9202",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 186,
+              "column": 3
+            },
+            {
+              "title": "17. SSE测试工具 - 卡片标题显示",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 15427,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 测试工具')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 测试工具')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 测试工具')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 测试工具')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:199:34",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 34,
+                          "line": 199
+                        },
+                        "snippet": "  197 |\n  198 |     const testToolsTitle = page.locator('text=SSE 测试工具')\n> 199 |     await expect(testToolsTitle).toBeVisible()\n      |                                  ^\n  200 |   })\n  201 |\n  202 |   test('18. SSE测试工具 - 测试说明显示', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 34,
+                            "line": 199
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=SSE 测试工具')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=SSE 测试工具')\u001b[22m\n\n\n  197 |\n  198 |     const testToolsTitle = page.locator('text=SSE 测试工具')\n> 199 |     await expect(testToolsTitle).toBeVisible()\n      |                                  ^\n  200 |   })\n  201 |\n  202 |   test('18. SSE测试工具 - 测试说明显示', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:199:34"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:17.446Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-15102-n-Tests-17-SSE测试工具---卡片标题显示-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-15102-n-Tests-17-SSE测试工具---卡片标题显示-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-15102-n-Tests-17-SSE测试工具---卡片标题显示-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 34,
+                        "line": 199
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-e2283e9b5cab1f68249f",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 195,
+              "column": 3
+            },
+            {
+              "title": "18. SSE测试工具 - 测试说明显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4084,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:21.367Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-07b65de3d9154ed8571d",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 202,
+              "column": 3
+            },
+            {
+              "title": "19. SSE测试按钮 - 测试训练进度按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4040,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:21.202Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-e5aa89bb55e0e9e39661",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 211,
+              "column": 3
+            },
+            {
+              "title": "20. SSE测试按钮 - 测试回测进度按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4239,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:21.240Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-f93d5146900ba4fc9c61",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 221,
+              "column": 3
+            },
+            {
+              "title": "21. SSE测试按钮 - 测试风险告警按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4048,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:25.258Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-f9b65d59ffada89cd03e",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 231,
+              "column": 3
+            },
+            {
+              "title": "22. SSE测试按钮 - 测试指标更新按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4043,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:25.499Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-752acf30e6ad1ebf3f84",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 241,
+              "column": 3
+            },
+            {
+              "title": "23. 刷新状态功能 - 点击刷新按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3918,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:25.561Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-6f31649690d94e2ab14f",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 251,
+              "column": 3
+            },
+            {
+              "title": "25. 页面布局 - 网格行容器存在",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 4637,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:273:22",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 22,
+                          "line": 273
+                        },
+                        "snippet": "  271 |     const rows = page.locator('[class*=\"el-row\"]')\n  272 |     const rowCount = await rows.count()\n> 273 |     expect(rowCount).toBeGreaterThan(0)\n      |                      ^\n  274 |   })\n  275 |\n  276 |   test('26. 页面布局 - 列容器存在', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 22,
+                            "line": 273
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  271 |     const rows = page.locator('[class*=\"el-row\"]')\n  272 |     const rowCount = await rows.count()\n> 273 |     expect(rowCount).toBeGreaterThan(0)\n      |                      ^\n  274 |   })\n  275 |\n  276 |   test('26. 页面布局 - 列容器存在', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:273:22"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:29.320Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-6504b-ion-Tests-25-页面布局---网格行容器存在-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-6504b-ion-Tests-25-页面布局---网格行容器存在-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-6504b-ion-Tests-25-页面布局---网格行容器存在-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 22,
+                        "line": 273
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-875a6fb93b82e55c7bc6",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 267,
+              "column": 3
+            },
+            {
+              "title": "26. 页面布局 - 列容器存在",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 4298,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:282:22",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 22,
+                          "line": 282
+                        },
+                        "snippet": "  280 |     const cols = page.locator('[class*=\"el-col\"]')\n  281 |     const colCount = await cols.count()\n> 282 |     expect(colCount).toBeGreaterThan(0)\n      |                      ^\n  283 |   })\n  284 |\n  285 |   test('27. 卡片容器 - 多个el-card存在', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 22,
+                            "line": 282
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  280 |     const cols = page.locator('[class*=\"el-col\"]')\n  281 |     const colCount = await cols.count()\n> 282 |     expect(colCount).toBeGreaterThan(0)\n      |                      ^\n  283 |   })\n  284 |\n  285 |   test('27. 卡片容器 - 多个el-card存在', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:282:22"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:29.512Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-b7506-ation-Tests-26-页面布局---列容器存在-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-b7506-ation-Tests-26-页面布局---列容器存在-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-b7506-ation-Tests-26-页面布局---列容器存在-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 22,
+                        "line": 282
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-4b22d67bd6fc9a4f41e7",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 276,
+              "column": 3
+            },
+            {
+              "title": "27. 卡片容器 - 多个el-card存在",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 4240,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m2\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m2\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:292:23",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 23,
+                          "line": 292
+                        },
+                        "snippet": "  290 |     const cardCount = await cards.count()\n  291 |     // 应该至少有功能说明、SSE状态、测试工具卡片\n> 292 |     expect(cardCount).toBeGreaterThanOrEqual(2)\n      |                       ^\n  293 |   })\n  294 |\n  295 |   test('28. 错误处理 - API不可用时页面仍可访问', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 23,
+                            "line": 292
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m2\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n\n  290 |     const cardCount = await cards.count()\n  291 |     // 应该至少有功能说明、SSE状态、测试工具卡片\n> 292 |     expect(cardCount).toBeGreaterThanOrEqual(2)\n      |                       ^\n  293 |   })\n  294 |\n  295 |   test('28. 错误处理 - API不可用时页面仍可访问', async ({ page }) => {\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:292:23"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:29.557Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-3dc28-Tests-27-卡片容器---多个el-card存在-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-3dc28-Tests-27-卡片容器---多个el-card存在-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-3dc28-Tests-27-卡片容器---多个el-card存在-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 23,
+                        "line": 292
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-bbbe3b75ab23a4587d64",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 285,
+              "column": 3
+            },
+            {
+              "title": "28. 错误处理 - API不可用时页面仍可访问",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 15439,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:300:25",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                          "column": 25,
+                          "line": 300
+                        },
+                        "snippet": "  298 |     // 页面应该在API失败时仍然加载\n  299 |     const title = page.locator('text=实时监控中心')\n> 300 |     await expect(title).toBeVisible()\n      |                         ^\n  301 |\n  302 |     // 验证主要UI元素仍然存在\n  303 |     const sseStatusTitle = page.locator('text=SSE 连接状态')"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                            "column": 25,
+                            "line": 300
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=实时监控中心')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=实时监控中心')\u001b[22m\n\n\n  298 |     // 页面应该在API失败时仍然加载\n  299 |     const title = page.locator('text=实时监控中心')\n> 300 |     await expect(title).toBeVisible()\n      |                         ^\n  301 |\n  302 |     // 验证主要UI元素仍然存在\n  303 |     const sseStatusTitle = page.locator('text=SSE 连接状态')\n    at /opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js:300:25"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:33.628Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-22771-sts-28-错误处理---API不可用时页面仍可访问-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-22771-sts-28-错误处理---API不可用时页面仍可访问-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/tests/e2e/test-results/realtime-monitor-integrati-22771-sts-28-错误处理---API不可用时页面仍可访问-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/tests/e2e/realtime-monitor-integration.spec.js",
+                        "column": 25,
+                        "line": 300
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-b7194972c22a1faea6e3",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 295,
+              "column": 3
+            },
+            {
+              "title": "29. 空状态处理 - SSE状态加载失败时显示空状态",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4394,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:34.611Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-ca4acfcb8f6fecaaf809",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 309,
+              "column": 3
+            },
+            {
+              "title": "30. 图标显示 - Monitor图标在SSE状态卡片",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4546,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-01T17:03:34.620Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7da7d2b09e03814abbbe-551ad4ef60a27357ebea",
+              "file": "realtime-monitor-integration.spec.js",
+              "line": 327,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-01T17:02:46.822Z",
+    "duration": 62424.659,
+    "expected": 19,
+    "skipped": 0,
+    "unexpected": 10,
+    "flaky": 0
+  }
+}

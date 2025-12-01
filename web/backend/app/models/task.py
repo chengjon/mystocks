@@ -3,9 +3,10 @@
 定义任务的数据结构和状态
 """
 
-from enum import Enum
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -18,6 +19,14 @@ class TaskType(str, Enum):
     DATA_SYNC = "data_sync"  # 数据同步任务
     INDICATOR_CALC = "indicator_calc"  # 指标计算任务
     MARKET_FETCH = "market_fetch"  # 市场数据获取任务
+    DATA_PROCESSING = "data_processing"  # 数据处理任务
+    STRATEGY_BACKTEST = "strategy_backtest"  # 策略回测任务
+    CACHE_CLEANUP = "cache_cleanup"  # 缓存清理任务
+    MARKET_SYNC = "market_sync"  # 市场数据同步
+    NOTIFICATION = "notification"  # 通知任务
+    HEALTH_CHECK = "health_check"  # 健康检查任务
+    CACHE_WARMUP = "cache_warmup"  # 缓存预热任务
+    REPORT_GENERATION = "report_generation"  # 报告生成任务
 
 
 class TaskStatus(str, Enum):

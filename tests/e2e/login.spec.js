@@ -15,18 +15,19 @@ const TIMEOUT = 30000;
 
 test.describe('MyStocks 登录功能测试', () => {
   test.beforeEach(async ({ page }) => {
-    // 导航到登录页面（这会初始化 localStorage）
-    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
-    // 等待页面加载完成后再清空本地存储
-    await page.waitForLoadState('domcontentloaded');
-    // 清空本地存储
-    await page.evaluate(() => {
+    // Phase 11.1 修复: 使用 addInitScript 安全操作 localStorage
+    await page.addInitScript(() => {
       try {
         localStorage.clear();
-      } catch (e) {
-        console.log('localStorage clear failed:', e);
+        console.log('Login: localStorage cleared via addInitScript');
+      } catch (error) {
+        console.log('Login: localStorage fallback');
+        (window).testStorage = {};
       }
     });
+
+    // 导航到登录页面
+    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
   });
 
   test('1. 登录页面应该正确加载', async ({ page }) => {

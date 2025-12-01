@@ -3,12 +3,14 @@
 提供策略执行、查询、管理等RESTful接口
 """
 
+import logging
+from datetime import date, datetime
+from typing import List, Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from typing import List, Optional
-from datetime import date, datetime
-import logging
 
+from app.services.data_source_factory import DataSourceFactory
 from app.services.strategy_service import get_strategy_service
 
 logger = logging.getLogger(__name__)
@@ -49,16 +51,24 @@ async def get_strategy_definitions():
         所有可用策略的定义列表
     """
     try:
-        service = get_strategy_service()
-        strategies = service.get_strategy_definitions()
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        strategy_adapter = await data_source_factory.get_data_source("strategy")
+
+        result = await strategy_adapter.get_data("definitions")
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
 
         return {
             "success": True,
-            "data": strategies,
-            "total": len(strategies),
+            "data": result.get("data", []),
+            "total": len(result.get("data", [])),
             "message": "获取策略定义成功",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"获取策略定义失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -87,31 +97,25 @@ async def run_strategy_single(
         策略执行结果
     """
     try:
-        service = get_strategy_service()
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        strategy_adapter = await data_source_factory.get_data_source("strategy")
 
-        # 解析日期
-        check_date_obj = None
-        if check_date:
-            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
+        params = {"strategy_code": strategy_code, "symbol": symbol, "stock_name": stock_name, "check_date": check_date}
 
-        result = service.run_strategy_for_stock(
-            strategy_code=strategy_code,
-            symbol=symbol,
-            stock_name=stock_name,
-            check_date=check_date_obj,
-        )
+        result = await strategy_adapter.get_data("run_single", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
 
         return {
             "success": result.get("success", False),
-            "data": {
-                "strategy_code": strategy_code,
-                "symbol": symbol,
-                "match_result": result.get("match_result", False),
-                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
-            },
+            "data": result.get("data", {}),
             "message": result.get("message", ""),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"运行单只股票策略失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -139,37 +143,31 @@ async def run_strategy_batch(
         批量执行结果统计
     """
     try:
-        service = get_strategy_service()
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        strategy_adapter = await data_source_factory.get_data_source("strategy")
 
-        # 解析股票列表
-        symbol_list = None
-        if symbols:
-            symbol_list = [s.strip() for s in symbols.split(",")]
+        params = {
+            "strategy_code": strategy_code,
+            "symbols": symbols,
+            "market": market,
+            "limit": limit,
+            "check_date": check_date,
+        }
 
-        # 解析日期
-        check_date_obj = None
-        if check_date:
-            check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
+        result = await strategy_adapter.get_data("run_batch", params)
 
-        result = service.run_strategy_batch(
-            strategy_code=strategy_code,
-            symbols=symbol_list,
-            check_date=check_date_obj,
-            limit=limit,
-        )
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
 
         return {
             "success": result.get("success", False),
-            "data": {
-                "strategy_code": strategy_code,
-                "total": result.get("total", 0),
-                "matched": result.get("matched", 0),
-                "failed": result.get("failed", 0),
-                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
-            },
+            "data": result.get("data", {}),
             "message": result.get("message", ""),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"批量运行策略失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -255,9 +253,7 @@ async def get_matched_stocks(
         if check_date:
             check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
-        stocks = service.get_matched_stocks(
-            strategy_code=strategy_code, check_date=check_date_obj, limit=limit
-        )
+        stocks = service.get_matched_stocks(strategy_code=strategy_code, check_date=check_date_obj, limit=limit)
 
         return {
             "success": True,
@@ -275,9 +271,7 @@ async def get_matched_stocks(
 
 
 @router.get("/stats/summary", tags=["strategy"])
-async def get_strategy_summary(
-    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD")
-):
+async def get_strategy_summary(check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD")):
     """
     获取策略统计摘要
 
