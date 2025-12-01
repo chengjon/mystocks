@@ -2,27 +2,24 @@
 认证相关 API
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Form
-from fastapi.security import (
-    HTTPBearer,
-    HTTPAuthorizationCredentials,
-    OAuth2PasswordRequestForm,
-)
-from typing import Dict, Any
 from datetime import timedelta
+from typing import Any, Dict
 
+from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
+
+from app.core.config import settings
 from app.core.security import (
-    User,
-    UserInDB,
     Token,
     TokenData,
+    User,
+    UserInDB,
     authenticate_user,
     create_access_token,
-    verify_token,
-    verify_password,
     get_password_hash,
+    verify_password,
+    verify_token,
 )
-from app.core.config import settings
 
 router = APIRouter()
 security = HTTPBearer()
@@ -58,27 +55,67 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> User:
     """
-    获取当前用户 - 已禁用认证
-    返回默认用户，不再验证token
+    获取当前用户 - 恢复认证验证
+    验证 JWT token 并返回授权用户信息
     """
-    # 返回默认用户，绕过认证
-    return User(
-        id=1,
-        username="guest",
-        email="guest@mystocks.com",
-        role="admin",  # 给予管理员权限
-        is_active=True
-    )
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        # 验证 JWT token
+        token_data = verify_token(credentials.credentials)
+        if token_data is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        username: str = token_data.username
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token claims",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid credentials: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # 从数据库获取用户信息
+    users_db = get_users_db()
+    user_dict = users_db.get(username)
+    if user_dict is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user = User(**user_dict)
+    return user
 
 
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
     """
-    获取当前活跃用户 - 已禁用认证检查
-    始终返回用户，不再检查活跃状态
+    获取当前活跃用户 - 验证用户活跃状态
+    检查用户是否处于活跃状态
     """
-    # 始终返回用户，不再检查活跃状态
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is inactive",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return current_user
 
 

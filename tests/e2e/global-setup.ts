@@ -8,7 +8,7 @@ async function globalSetup(config) {
   // 验证测试环境
   console.log('📡 验证测试环境连接...');
 
-  const frontendUrl = process.env.BASE_URL || 'http://localhost:3001';
+  const frontendUrl = process.env.BASE_URL || 'http://localhost:3000';
   const backendUrl = 'http://localhost:8000';
 
   try {

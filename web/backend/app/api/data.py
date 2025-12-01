@@ -6,19 +6,24 @@
 数据查询 API
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional, List, Dict, Any
-import pandas as pd
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
-from app.core.security import get_current_user, User
+from app.core.security import User, get_current_user
+
+logger = __import__("logging").getLogger(__name__)
+
+import os
 
 # 添加数据格式转换中间件
 import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../src'))
-from utils.data_format_converter import normalize_stock_data_format, normalize_api_response_format
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../src"))
+from utils.data_format_converter import normalize_api_response_format, normalize_stock_data_format
 
 router = APIRouter()
 
@@ -31,134 +36,65 @@ async def get_stocks_basic(
     industry: Optional[str] = Query(None, description="行业筛选"),
     concept: Optional[str] = Query(None, description="概念筛选"),
     market: Optional[str] = Query(None, description="市场筛选: SH/SZ"),
-    sort_field: Optional[str] = Query(None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume"),
+    sort_field: Optional[str] = Query(
+        None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume"
+    ),
     sort_order: Optional[str] = Query(None, description="排序方向: asc,desc"),
     current_user: User = Depends(get_current_user),
-) -> Dict[str, Any]:
+):
     """
     获取股票基本信息列表 - 支持行业/概念筛选、行情排序和分页
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
         # 参数校验
         if limit <= 0:
-            return {
-                "success": False,
-                "msg": "limit参数必须为正整数",
-                "timestamp": datetime.now().isoformat(),
-            }
-        
+            raise HTTPException(status_code=400, detail="limit参数必须为正整数")
+
         if limit > 1000:
-            return {
-                "success": False,
-                "msg": "limit参数不能超过1000",
-                "timestamp": datetime.now().isoformat(),
-            }
+            raise HTTPException(status_code=400, detail="limit参数不能超过1000")
 
-        # 构建缓存键
-        cache_key = f"stocks:basic:{limit}:{offset}:{search}:{industry}:{concept}:{market}:{sort_field}:{sort_order}"
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
 
-        # 尝试从缓存获取（仅缓存无排序的查询结果）
-        if not sort_field:
-            cached_data = db_service.get_cache_data(cache_key)
-            if cached_data:
-                return cached_data
+        factory = await get_data_source_factory()
 
-        # 查询数据库
-        df = db_service.query_stocks_basic(limit=1000)  # 先查询更多数据用于筛选
-
-        if df.empty:
-            return {
-                "success": True,
-                "data": [],
-                "total": 0,
-                "msg": "暂无股票数据",
-                "timestamp": datetime.now().isoformat(),
-            }
-
-        # 应用筛选条件
-        if search:
-            search_mask = df["symbol"].str.contains(search, case=False, na=False) | df[
-                "name"
-            ].str.contains(search, case=False, na=False)
-            df = df[search_mask]
-
-        if industry:
-            df = df[df["industry"] == industry]
-
-        if concept:
-            # 概念筛选（模拟数据，实际应该查询概念关联表）
-            df = df[df.get("concepts", "").str.contains(concept, case=False, na=False)]
-
-        if market:
-            df = df[df["market"] == market]
-
-        # 添加模拟实时行情数据
-        import random
-        random.seed(42 + len(df))  # 使用数据量作为种子确保一致性
-        
-        # 为每只股票生成模拟行情数据
-        if not df.empty:
-            df["price"] = [round(random.uniform(5.0, 200.0), 2) for _ in range(len(df))]
-            df["change"] = [round(random.uniform(-10.0, 10.0), 2) for _ in range(len(df))]
-            df["change_pct"] = df["change"] / (df["price"] - df["change"]) * 100
-            df["change_pct"] = df["change_pct"].round(2)
-            df["volume"] = [random.randint(100000, 10000000) for _ in range(len(df))]
-            df["turnover"] = [round(random.uniform(0.1, 10.0), 2) for _ in range(len(df))]
-
-        # 应用排序
-        if sort_field and sort_field in df.columns:
-            ascending = sort_order != "desc"
-            if sort_field in ["price", "change_pct", "turnover", "volume"]:
-                df = df.sort_values(by=sort_field, ascending=ascending, na_position="last")
-            else:
-                df = df.sort_values(by=sort_field, ascending=ascending, na_position="last")
-
-        # 计算总数（分页前）
-        total_count = len(df)
-
-        # 应用分页
-        df = df.iloc[offset:offset + limit]
-
-        # 如果有排序且分页了，移除缓存（分页结果不缓存）
-        if not sort_field and df.empty and offset == 0:
-            pass  # 可以缓存空结果
-        elif not sort_field and offset == 0:
-            pass  # 可以缓存第一页结果
-
-        # 标准化数据格式
-        df = normalize_stock_data_format(df)
-
-        # 转换为响应格式
-        result = {
-            "success": True,
-            "data": df.to_dict("records"),
-            "total": total_count,
+        # 构建请求参数
+        params = {
             "limit": limit,
             "offset": offset,
-            "timestamp": datetime.now().isoformat(),
+            "search": search,
+            "industry": industry,
+            "concept": concept,
+            "market": market,
+            "sort_field": sort_field,
+            "sort_order": sort_order,
         }
 
-        # 标准化API响应格式
-        result = normalize_api_response_format(result)
+        # 调用数据源工厂获取stocks/basic数据
+        result = await factory.get_data("data", "stocks/basic", params)
 
-        # 缓存结果（仅缓存无排序的第一页结果）
-        if not sort_field and offset == 0:
-            db_service.set_cache_data(cache_key, result, ttl=600)  # 缓存10分钟
-
-        return result
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "total": result.get("total", 0),
+                "limit": limit,
+                "offset": offset,
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取股票基本信息失败"))
 
     except HTTPException:
         raise
     except Exception as e:
-        error_result = {
-            "success": False,
-            "msg": f"查询股票基本信息失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-        # 记录错误日志
-        import logging
-        logging.error(f"查询股票基本信息失败: {str(e)}", exc_info=True)
-        return error_result
+        logger.error(f"查询股票基本信息失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"查询股票基本信息失败: {str(e)}")
 
 
 @router.get("/stocks/industries")
@@ -179,7 +115,7 @@ async def get_stocks_industries(
 
         # 查询数据库获取行业列表
         df = db_service.query_stocks_basic(limit=10000)
-        
+
         if df.empty:
             return {
                 "success": True,
@@ -191,10 +127,11 @@ async def get_stocks_industries(
         # 获取所有不重复的行业
         industries = df["industry"].dropna().unique().tolist()
         industries = sorted([industry for industry in industries if industry.strip()])
-        
+
         # 构建响应数据
-        industry_list = [{"industry_name": industry, "industry_code": f"IND_{i+1:03d}"} 
-                        for i, industry in enumerate(industries)]
+        industry_list = [
+            {"industry_name": industry, "industry_code": f"IND_{i+1:03d}"} for i, industry in enumerate(industries)
+        ]
 
         result = {
             "success": True,
@@ -215,6 +152,7 @@ async def get_stocks_industries(
             "timestamp": datetime.now().isoformat(),
         }
         import logging
+
         logging.error(f"获取行业列表失败: {str(e)}", exc_info=True)
         return error_result
 
@@ -237,15 +175,32 @@ async def get_stocks_concepts(
 
         # 模拟概念列表数据（实际应该从概念分类表查询）
         concepts = [
-            "人工智能", "新能源车", "光伏概念", "半导体", "医药生物", 
-            "军工概念", "5G概念", "区块链", "大数据", "云计算",
-            "物联网", "元宇宙", "数字货币", "新材料", "环保概念",
-            "消费电子", "食品饮料", "房地产开发", "银行", "保险"
+            "人工智能",
+            "新能源车",
+            "光伏概念",
+            "半导体",
+            "医药生物",
+            "军工概念",
+            "5G概念",
+            "区块链",
+            "大数据",
+            "云计算",
+            "物联网",
+            "元宇宙",
+            "数字货币",
+            "新材料",
+            "环保概念",
+            "消费电子",
+            "食品饮料",
+            "房地产开发",
+            "银行",
+            "保险",
         ]
-        
+
         # 构建响应数据
-        concept_list = [{"concept_name": concept, "concept_code": f"CON_{i+1:03d}"} 
-                       for i, concept in enumerate(concepts)]
+        concept_list = [
+            {"concept_name": concept, "concept_code": f"CON_{i+1:03d}"} for i, concept in enumerate(concepts)
+        ]
 
         result = {
             "success": True,
@@ -266,6 +221,7 @@ async def get_stocks_concepts(
             "timestamp": datetime.now().isoformat(),
         }
         import logging
+
         logging.error(f"获取概念列表失败: {str(e)}", exc_info=True)
         return error_result
 
@@ -280,6 +236,8 @@ async def get_daily_kline(
 ) -> Dict[str, Any]:
     """
     获取股票日线数据
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
         # 参数验证
@@ -292,70 +250,38 @@ async def get_daily_kline(
         if not start_date:
             start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
-        # 构建缓存键
-        cache_key = f"daily:{symbol}:{start_date}:{end_date}:{limit}"
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
 
-        # 尝试从缓存获取
-        cached_data = db_service.get_cache_data(cache_key)
-        if cached_data:
-            return cached_data
+        factory = await get_data_source_factory()
 
-        # 查询数据库
-        df = db_service.query_daily_kline(symbol, start_date, end_date)
+        # 构建请求参数
+        params = {"symbol": symbol, "start_date": start_date, "end_date": end_date, "limit": limit}
 
-        if df.empty:
+        # 调用数据源工厂获取stocks/daily数据
+        result = await factory.get_data("data", "stocks/daily", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
             return {
                 "success": True,
-                "data": [],
-                "message": f"未找到股票 {symbol} 在指定时间范围内的数据",
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "total": result.get("total", 0),
+                "limit": limit,
                 "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
             }
-
-        # 限制返回数量
-        df = df.tail(limit)
-
-        # 确保数据格式正确
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.sort_values("date")
-
-        # 标准化数据格式
-        df = normalize_stock_data_format(df)
-
-        # 转换为响应格式
-        data_records = []
-        for _, row in df.iterrows():
-            record = {
-                "date": row["date"].strftime("%Y-%m-%d"),
-                "open": float(row["open"]),
-                "high": float(row["high"]),
-                "low": float(row["low"]),
-                "close": float(row["close"]),
-                "volume": int(row["volume"]) if pd.notna(row["volume"]) else 0,
-                "amount": float(row["amount"]) if pd.notna(row["amount"]) else 0.0,
-            }
-            data_records.append(record)
-
-        result = {
-            "success": True,
-            "data": data_records,
-            "symbol": symbol,
-            "start_date": start_date,
-            "end_date": end_date,
-            "total": len(data_records),
-            "timestamp": datetime.now().isoformat(),
-        }
-
-        # 标准化API响应格式
-        result = normalize_api_response_format(result)
-
-        # 缓存结果（日线数据缓存时间较短）
-        db_service.set_cache_data(cache_key, result, ttl=300)  # 缓存5分钟
-
-        return result
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取日线数据失败"))
 
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"查询日线数据失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"查询日线数据失败: {str(e)}")
 
 
@@ -365,72 +291,38 @@ async def get_market_overview(
 ) -> Dict[str, Any]:
     """
     获取市场概览数据
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
-        # 构建缓存键
-        cache_key = "market:overview"
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
 
-        # 尝试从缓存获取
-        cached_data = db_service.get_cache_data(cache_key)
-        if cached_data:
-            return cached_data
+        factory = await get_data_source_factory()
 
-        # 查询股票基本信息用于统计
-        df = db_service.query_stocks_basic(limit=5000)
+        # 构建请求参数
+        params = {}
 
-        if df.empty:
+        # 调用数据源工厂获取markets/overview数据
+        result = await factory.get_data("data", "markets/overview", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
             return {
                 "success": True,
-                "data": {
-                    "total_stocks": 0,
-                    "by_market": {},
-                    "by_industry": {},
-                    "by_area": {},
-                },
-                "msg": "暂无股票数据",
+                "data": result.get("data", {}),
                 "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
             }
-
-        # 统计数据
-        total_stocks = len(df)
-
-        # 按市场统计
-        by_market = df["market"].value_counts().to_dict()
-
-        # 按行业统计（取前10）
-        by_industry = df["industry"].value_counts().head(10).to_dict()
-
-        # 按地区统计（取前10）
-        by_area = df["area"].value_counts().head(10).to_dict()
-
-        result = {
-            "success": True,
-            "data": {
-                "total_stocks": total_stocks,
-                "by_market": by_market,
-                "by_industry": by_industry,
-                "by_area": by_area,
-            },
-            "timestamp": datetime.now().isoformat(),
-        }
-
-        # 缓存结果（市场概览缓存时间较长）
-        db_service.set_cache_data(cache_key, result, ttl=3600)  # 缓存1小时
-
-        return result
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取市场概览失败"))
 
     except HTTPException:
         raise
     except Exception as e:
-        error_result = {
-            "success": False,
-            "msg": f"获取市场概览失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-        # 记录错误日志
-        import logging
-        logging.error(f"获取市场概览失败: {str(e)}", exc_info=True)
-        return error_result
+        logger.error(f"获取市场概览失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
 
 
 @router.get("/stocks/search")
@@ -441,59 +333,40 @@ async def search_stocks(
 ) -> Dict[str, Any]:
     """
     股票搜索接口
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
-        if not keyword or len(keyword.strip()) < 2:
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"keyword": keyword, "limit": limit}
+
+        # 调用数据源工厂获取stocks/search数据
+        result = await factory.get_data("data", "stocks/search", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
             return {
                 "success": True,
-                "data": [],
-                "message": "搜索关键词至少需要2个字符",
+                "data": result.get("data", []),
+                "keyword": keyword,
+                "total": result.get("total", 0),
+                "limit": limit,
                 "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
             }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "股票搜索失败"))
 
-        # 查询股票基本信息
-        df = db_service.query_stocks_basic(limit=5000)
-
-        if df.empty:
-            return {
-                "success": True,
-                "data": [],
-                "timestamp": datetime.now().isoformat(),
-            }
-
-        # 搜索匹配
-        keyword = keyword.strip().lower()
-        search_mask = df["symbol"].str.lower().str.contains(keyword, na=False) | df[
-            "name"
-        ].str.lower().str.contains(keyword, na=False)
-
-        matched_stocks = df[search_mask].head(limit)
-
-        # 转换为响应格式
-        result_data = []
-        for _, row in matched_stocks.iterrows():
-            result_data.append(
-                {
-                    "symbol": row["symbol"],
-                    "name": row["name"],
-                    "industry": row.get("industry", ""),
-                    "market": row.get("market", ""),
-                    "area": row.get("area", ""),
-                    "list_date": row.get("list_date", ""),
-                }
-            )
-
-        result = {
-            "success": True,
-            "data": result_data,
-            "keyword": keyword,
-            "total": len(result_data),
-            "timestamp": datetime.now().isoformat(),
-        }
-
-        return result
-
+    except HTTPException:
+        raise
     except Exception as e:
+        logger.error(f"股票搜索失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"股票搜索失败: {str(e)}")
 
 
@@ -532,14 +405,14 @@ async def get_kline_data(
                 "msg": "股票代码不能为空",
                 "timestamp": datetime.now().isoformat(),
             }
-        
+
         if not start_date or not end_date:
             return {
                 "success": False,
                 "msg": "开始日期和结束日期不能为空",
                 "timestamp": datetime.now().isoformat(),
             }
-        
+
         # 验证日期格式
         try:
             datetime.strptime(start_date, "%Y-%m-%d")
@@ -550,7 +423,7 @@ async def get_kline_data(
                 "msg": "日期格式错误，请使用YYYY-MM-DD格式",
                 "timestamp": datetime.now().isoformat(),
             }
-        
+
         # 验证周期参数
         valid_periods = ["day", "week", "month"]
         if period not in valid_periods:
@@ -591,24 +464,36 @@ async def get_kline_data(
         if period != "day":
             # 按指定周期聚合数据
             if period == "week":
-                df = df.resample('W-MON', on='date').agg({
-                    'open': 'first',
-                    'high': 'max',
-                    'low': 'min',
-                    'close': 'last',
-                    'volume': 'sum',
-                    'amount': 'sum'
-                }).dropna()
+                df = (
+                    df.resample("W-MON", on="date")
+                    .agg(
+                        {
+                            "open": "first",
+                            "high": "max",
+                            "low": "min",
+                            "close": "last",
+                            "volume": "sum",
+                            "amount": "sum",
+                        }
+                    )
+                    .dropna()
+                )
             elif period == "month":
-                df = df.resample('M', on='date').agg({
-                    'open': 'first',
-                    'high': 'max',
-                    'low': 'min',
-                    'close': 'last',
-                    'volume': 'sum',
-                    'amount': 'sum'
-                }).dropna()
-        
+                df = (
+                    df.resample("M", on="date")
+                    .agg(
+                        {
+                            "open": "first",
+                            "high": "max",
+                            "low": "min",
+                            "close": "last",
+                            "volume": "sum",
+                            "amount": "sum",
+                        }
+                    )
+                    .dropna()
+                )
+
         # 标准化数据格式
         df = normalize_stock_data_format(df)
 
@@ -650,6 +535,7 @@ async def get_kline_data(
         }
         # 记录错误日志
         import logging
+
         logging.error(f"查询K线数据失败: {str(e)}", exc_info=True)
         return error_result
 
@@ -658,9 +544,7 @@ async def get_kline_data(
 @router.get("/financial")
 async def get_financial_data(
     symbol: str = Query(..., description="股票代码，如: 000001"),
-    report_type: str = Query(
-        "balance", description="报表类型: balance/income/cashflow"
-    ),
+    report_type: str = Query("balance", description="报表类型: balance/income/cashflow"),
     period: str = Query("all", description="报告期: quarterly/annual/all"),
     limit: int = Query(20, ge=1, le=100, description="返回记录数限制"),
     current_user: User = Depends(get_current_user),
@@ -673,57 +557,46 @@ async def get_financial_data(
     - income: 利润表
     - cashflow: 现金流量表
 
-    **数据源**: AkShare财务数据
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
-        # 使用统一的适配器加载器（移除硬编码路径）
-        from app.core.adapter_loader import get_akshare_adapter
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
 
-        ak = get_akshare_adapter()
+        factory = await get_data_source_factory()
 
-        # 根据报表类型获取数据
-        if report_type == "balance":
-            df = ak.get_balance_sheet(symbol)
-        elif report_type == "income":
-            df = ak.get_income_statement(symbol)
-        elif report_type == "cashflow":
-            df = ak.get_cashflow_statement(symbol)
-        else:
-            raise HTTPException(
-                status_code=400, detail=f"不支持的报表类型: {report_type}"
-            )
+        # 构建请求参数
+        params = {"symbol": symbol, "report_type": report_type, "period": period, "limit": limit}
 
-        if df is None or df.empty:
+        # 调用数据源工厂获取financial数据
+        result = await factory.get_data("data", "financial", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
             return {
                 "success": True,
-                "data": [],
-                "message": f"未找到股票 {symbol} 的{report_type}数据",
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "report_type": report_type,
+                "period": period,
+                "total": result.get("total", 0),
+                "limit": limit,
                 "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
             }
-
-        # 限制返回数量
-        df = df.head(limit)
-
-        # 转换为响应格式
-        data_records = df.to_dict("records")
-
-        result = {
-            "success": True,
-            "data": data_records,
-            "symbol": symbol,
-            "report_type": report_type,
-            "total": len(data_records),
-            "timestamp": datetime.now().isoformat(),
-        }
-
-        return result
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取财务数据失败"))
 
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"查询财务数据失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"查询财务数据失败: {str(e)}")
 
+
 # ==================== Dashboard相关API ====================
+
 
 @router.get("/markets/price-distribution")
 async def get_price_distribution(
@@ -762,8 +635,9 @@ async def get_price_distribution(
         # 模拟涨跌情况（实际应该从实时行情数据计算）
         # 这里使用随机数据模拟
         import random
+
         random.seed(42)  # 固定种子确保结果一致
-        
+
         distribution = {
             "上涨>5%": random.randint(50, 200),
             "上涨0-5%": random.randint(200, 500),
@@ -806,20 +680,20 @@ async def get_hot_industries(
 
         # 查询行业分类数据
         query = """
-            SELECT 
+            SELECT
                 industry_name,
                 COUNT(*) as stock_count,
                 AVG(CASE WHEN pct_chg > 0 THEN 1.0 ELSE 0.0 END) as up_ratio,
                 AVG(pct_chg) as avg_change,
                 MAX(pct_chg) as max_change,
                 SUM(CASE WHEN pct_chg > 0 THEN pct_chg ELSE 0 END) as total_up_change
-            FROM stocks_basic 
+            FROM stocks_basic
             WHERE industry_name IS NOT NULL AND industry_name != ''
             GROUP BY industry_name
             ORDER BY avg_change DESC, stock_count DESC
             LIMIT :limit
         """
-        
+
         try:
             # 使用统一数据服务查询
             unified_service = UnifiedDataService()
@@ -827,29 +701,44 @@ async def get_hot_industries(
         except Exception:
             # 如果统一数据服务不可用，使用模拟数据
             import random
+
             random.seed(42)
-            
+
             industries = [
-                "半导体", "新能源汽车", "光伏设备", "医药生物", "白酒", 
-                "银行", "证券", "保险", "房地产", "食品饮料",
-                "家用电器", "计算机", "通信设备", "机械设备", "化工"
+                "半导体",
+                "新能源汽车",
+                "光伏设备",
+                "医药生物",
+                "白酒",
+                "银行",
+                "证券",
+                "保险",
+                "房地产",
+                "食品饮料",
+                "家用电器",
+                "计算机",
+                "通信设备",
+                "机械设备",
+                "化工",
             ]
-            
+
             df_data = []
             for i in range(min(limit, len(industries))):
                 avg_change = round(random.uniform(-3, 8), 2)
                 stock_count = random.randint(10, 200)
                 up_ratio = round(random.uniform(0.2, 0.9), 2)
-                
-                df_data.append({
-                    "industry_name": industries[i],
-                    "stock_count": stock_count,
-                    "avg_change": avg_change,
-                    "up_ratio": up_ratio,
-                    "max_change": round(random.uniform(2, 15), 2),
-                    "total_up_change": round(random.uniform(5, 50), 2)
-                })
-            
+
+                df_data.append(
+                    {
+                        "industry_name": industries[i],
+                        "stock_count": stock_count,
+                        "avg_change": avg_change,
+                        "up_ratio": up_ratio,
+                        "max_change": round(random.uniform(2, 15), 2),
+                        "total_up_change": round(random.uniform(5, 50), 2),
+                    }
+                )
+
             df = pd.DataFrame(df_data)
 
         if df.empty:
@@ -898,30 +787,45 @@ async def get_hot_concepts(
 
         # 模拟概念数据（实际应该从概念分类表查询）
         import random
+
         random.seed(42)
-        
+
         concepts = [
-            "人工智能", "芯片概念", "新能源汽车", "5G概念", "光伏概念",
-            "生物医药", "大数据", "云计算", "物联网", "机器人概念",
-            "虚拟现实", "区块链", "元宇宙", "数字经济", "碳中和"
+            "人工智能",
+            "芯片概念",
+            "新能源汽车",
+            "5G概念",
+            "光伏概念",
+            "生物医药",
+            "大数据",
+            "云计算",
+            "物联网",
+            "机器人概念",
+            "虚拟现实",
+            "区块链",
+            "元宇宙",
+            "数字经济",
+            "碳中和",
         ]
-        
+
         df_data = []
         for i in range(min(limit, len(concepts))):
             avg_change = round(random.uniform(-2, 10), 2)
             stock_count = random.randint(5, 50)
             up_ratio = round(random.uniform(0.3, 0.95), 2)
             concept_heat = random.randint(70, 100)
-            
-            df_data.append({
-                "concept_name": concepts[i],
-                "stock_count": stock_count,
-                "avg_change": avg_change,
-                "up_ratio": up_ratio,
-                "concept_heat": concept_heat,
-                "total_market_cap": round(random.uniform(1000, 10000), 2)
-            })
-        
+
+            df_data.append(
+                {
+                    "concept_name": concepts[i],
+                    "stock_count": stock_count,
+                    "avg_change": avg_change,
+                    "up_ratio": up_ratio,
+                    "concept_heat": concept_heat,
+                    "total_market_cap": round(random.uniform(1000, 10000), 2),
+                }
+            )
+
         df = pd.DataFrame(df_data)
 
         if df.empty:
@@ -953,6 +857,7 @@ async def get_hot_concepts(
 
 # ==================== StockDetail相关API ====================
 
+
 @router.get("/stocks/intraday")
 async def get_intraday_data(
     symbol: str = Query(..., description="股票代码，如: 000001.SZ"),
@@ -961,105 +866,55 @@ async def get_intraday_data(
 ) -> Dict[str, Any]:
     """
     获取股票分时数据（用于分时图显示）
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换
     """
     try:
         # 参数验证
         if not symbol:
-            return {
-                "success": False,
-                "msg": "股票代码不能为空",
-                "timestamp": datetime.now().isoformat(),
-            }
-        
+            raise HTTPException(status_code=400, detail="股票代码不能为空")
+
         # 设置默认日期为今天
         if not date:
             date = datetime.now().strftime("%Y-%m-%d")
-        
+
         # 验证日期格式
         try:
             datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
+            raise HTTPException(status_code=400, detail="日期格式错误，请使用YYYY-MM-DD格式")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"symbol": symbol, "date": date}
+
+        # 调用数据源工厂获取stocks/intraday数据
+        result = await factory.get_data("data", "stocks/intraday", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
             return {
-                "success": False,
-                "msg": "日期格式错误，请使用YYYY-MM-DD格式",
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "date": date,
+                "total": result.get("total", 0),
                 "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
             }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取分时数据失败"))
 
-        # 构建缓存键
-        cache_key = f"intraday:{symbol}:{date}"
-
-        # 尝试从缓存获取
-        cached_data = db_service.get_cache_data(cache_key)
-        if cached_data:
-            return cached_data
-
-        # 模拟分时数据（实际应该从数据库查询分钟线数据）
-        import random
-        random.seed(hash(symbol + date) % 1000)  # 基于股票代码和日期生成一致的随机数据
-        
-        # 生成当天分时数据（每5分钟一个数据点，从9:30到15:00）
-        intraday_data = []
-        base_price = round(random.uniform(8.0, 50.0), 2)  # 基础价格
-        
-        for i in range(78):  # 78个5分钟 = 390分钟 = 6.5小时（9:30-16:00）
-            # 计算当前时间
-            minute_count = i * 5
-            hour = 9 + minute_count // 60
-            minute = (minute_count % 60) + 30  # 从9:30开始
-            
-            if hour > 16 or (hour == 16 and minute > 0):  # 下午4点后停止
-                break
-            if hour == 12:  # 跳过午休时间（12:00-13:00）
-                hour = 13
-                minute = 0
-            
-            # 生成价格数据
-            change_factor = random.uniform(-0.02, 0.02)  # ±2%的随机波动
-            current_price = base_price * (1 + change_factor)
-            
-            # 确保价格不会过于偏离基础价格
-            if abs(current_price - base_price) > base_price * 0.1:
-                current_price = base_price + random.uniform(-base_price * 0.05, base_price * 0.05)
-            
-            # 生成成交量（开盘和收盘时段成交量较大）
-            base_volume = random.randint(100000, 1000000)
-            if i < 5 or i > 70:  # 开盘前30分钟和收盘前30分钟
-                volume = base_volume * 2
-            else:
-                volume = base_volume
-            
-            intraday_data.append({
-                "time": f"{hour:02d}:{minute:02d}",
-                "price": round(current_price, 2),
-                "volume": volume,
-                "amount": round(current_price * volume, 2)
-            })
-            
-            base_price = current_price  # 更新基础价格用于下一次计算
-
-        result = {
-            "success": True,
-            "data": intraday_data,
-            "symbol": symbol,
-            "date": date,
-            "total": len(intraday_data),
-            "timestamp": datetime.now().isoformat(),
-        }
-
-        # 缓存结果（分时数据缓存15分钟）
-        db_service.set_cache_data(cache_key, result, ttl=900)
-
-        return result
-
+    except HTTPException:
+        raise
     except Exception as e:
-        error_result = {
-            "success": False,
-            "msg": f"获取分时数据失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-        import logging
-        logging.error(f"获取分时数据失败: {str(e)}", exc_info=True)
-        return error_result
+        logger.error(f"获取分时数据失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取分时数据失败: {str(e)}")
 
 
 @router.get("/stocks/{symbol}/detail")
@@ -1089,24 +944,33 @@ async def get_stock_detail(
 
         # 查询股票基本信息
         df = db_service.query_stocks_basic(limit=1)
-        
+
         # 模拟股票详细信息
         import random
+
         random.seed(hash(symbol) % 1000)
-        
+
         # 根据股票代码确定市场
         market = "SH" if symbol.startswith("6") else "SZ"
-        
+
         # 模拟行业和概念
         industries = ["银行", "证券", "保险", "房地产", "食品饮料", "医药生物", "电子", "计算机", "通信设备"]
         concepts = [
-            "人工智能", "芯片概念", "新能源汽车", "5G概念", "光伏概念",
-            "生物医药", "大数据", "云计算", "物联网", "机器人概念"
+            "人工智能",
+            "芯片概念",
+            "新能源汽车",
+            "5G概念",
+            "光伏概念",
+            "生物医药",
+            "大数据",
+            "云计算",
+            "物联网",
+            "机器人概念",
         ]
-        
+
         selected_industry = random.choice(industries)
         selected_concepts = random.sample(concepts, random.randint(1, 3))
-        
+
         stock_detail = {
             "symbol": symbol,
             "name": f"股票{symbol[-3:]}",
@@ -1130,7 +994,7 @@ async def get_stock_detail(
             "turnover": round(random.uniform(0.1, 10), 2),
             "high": round(random.uniform(5, 100), 2),
             "low": round(random.uniform(5, 100), 2),
-            "open": round(random.uniform(5, 100), 2)
+            "open": round(random.uniform(5, 100), 2),
         }
 
         result = {
@@ -1151,6 +1015,7 @@ async def get_stock_detail(
             "timestamp": datetime.now().isoformat(),
         }
         import logging
+
         logging.error(f"获取股票详情失败: {str(e)}", exc_info=True)
         return error_result
 
@@ -1172,7 +1037,7 @@ async def get_trading_summary(
                 "msg": "股票代码不能为空",
                 "timestamp": datetime.now().isoformat(),
             }
-        
+
         # 验证周期参数
         valid_periods = ["1w", "1m", "3m", "6m", "1y"]
         if period not in valid_periods:
@@ -1192,24 +1057,19 @@ async def get_trading_summary(
 
         # 模拟交易摘要数据
         import random
+
         random.seed(hash(symbol + period) % 1000)
-        
+
         # 根据周期计算天数
-        period_days = {
-            "1w": 7,
-            "1m": 30,
-            "3m": 90,
-            "6m": 180,
-            "1y": 365
-        }
-        
+        period_days = {"1w": 7, "1m": 30, "3m": 90, "6m": 180, "1y": 365}
+
         days = period_days[period]
         base_price = round(random.uniform(10, 50), 2)
-        
+
         # 生成期间内的统计数据
         price_change = round(random.uniform(-20, 20), 2)
         price_change_pct = round((price_change / base_price) * 100, 2)
-        
+
         trading_summary = {
             "symbol": symbol,
             "period": period,
@@ -1232,14 +1092,14 @@ async def get_trading_summary(
             "trading_count": {
                 "up_days": random.randint(int(days * 0.3), int(days * 0.7)),
                 "down_days": random.randint(int(days * 0.2), int(days * 0.4)),
-                "flat_days": random.randint(0, int(days * 0.1))
+                "flat_days": random.randint(0, int(days * 0.1)),
             },
             "big_moves": {
                 "up_5pct_days": random.randint(0, 5),
                 "down_5pct_days": random.randint(0, 5),
                 "up_10pct_days": random.randint(0, 2),
-                "down_10pct_days": random.randint(0, 2)
-            }
+                "down_10pct_days": random.randint(0, 2),
+            },
         }
 
         result = {
@@ -1260,5 +1120,47 @@ async def get_trading_summary(
             "timestamp": datetime.now().isoformat(),
         }
         import logging
+
         logging.error(f"获取交易摘要失败: {str(e)}", exc_info=True)
         return error_result
+
+
+# ==================== 测试端点 (无认证) ====================
+
+
+@router.get("/test/factory")
+async def test_data_source_factory(
+    limit: int = Query(10, ge=1, le=100, description="测试数据返回数量限制")
+) -> Dict[str, Any]:
+    """
+    测试数据源工厂集成 (无需认证)
+    验证DataDataSourceAdapter是否正常工作
+    """
+    try:
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 测试stocks/basic端点
+        params = {"limit": limit}
+        result = await factory.get_data("data", "stocks/basic", params)
+
+        return {
+            "success": True,
+            "message": "数据源工厂测试成功",
+            "factory_status": {
+                "available_sources": factory.get_available_sources(),
+                "data_source_result": result,
+                "test_timestamp": datetime.now().isoformat(),
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"数据源工厂测试失败: {str(e)}", exc_info=True)
+        return {
+            "success": False,
+            "message": f"数据源工厂测试失败: {str(e)}",
+            "error_details": str(e),
+            "test_timestamp": datetime.now().isoformat(),
+        }

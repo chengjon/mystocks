@@ -1,5 +1,16 @@
 <template>
   <div class="dashboard">
+    <!-- 页面标题栏 - 包含智能数据源指示器 -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1 class="page-title">仪表盘</h1>
+        <p class="page-subtitle">实时市场概览与投资组合监控</p>
+      </div>
+      <div class="header-right">
+        <SmartDataIndicator ref="dataIndicator" />
+      </div>
+    </div>
+
     <el-row :gutter="20" class="stats-row">
       <el-col :xs="24" :sm="12" :md="6" v-for="stat in stats" :key="stat.title">
         <el-card class="stat-card">
@@ -191,6 +202,7 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import { ElMessage } from 'element-plus'
+import SmartDataIndicator from '@/components/common/SmartDataIndicator.vue'
 
 const loading = ref(false)
 const activeMarketTab = ref('heat')
@@ -230,7 +242,7 @@ const updateIndustryChart = async () => {
   }
 
   industryChart = echarts.init(industryChartRef.value)
-  
+
   try {
     // 这里应该从API获取真实的行业资金流向数据
     // 暂时使用模拟数据展示效果
@@ -238,7 +250,7 @@ const updateIndustryChart = async () => {
       categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
       values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
     }
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -304,19 +316,19 @@ const updateIndustryChart = async () => {
 // 更新市场分布图表
 const updateMarketDistributionChart = (marketData) => {
   if (!industryChartRef.value) return
-  
+
   // 如果图表已存在，销毁重新创建
   if (industryChart) {
     industryChart.dispose()
   }
-  
+
   industryChart = echarts.init(industryChartRef.value)
-  
+
   // 准备市场分布数据
   const marketDistribution = marketData.by_market || {}
   const marketNames = Object.keys(marketDistribution)
   const marketValues = Object.values(marketDistribution)
-  
+
   // 如果没有市场数据，显示提示信息
   if (marketNames.length === 0) {
     industryChart.setOption({
@@ -328,7 +340,7 @@ const updateMarketDistributionChart = (marketData) => {
     })
     return
   }
-  
+
   const option = {
     title: {
       text: '市场分布',
@@ -361,7 +373,7 @@ const updateMarketDistributionChart = (marketData) => {
       }
     ]
   }
-  
+
   industryChart.setOption(option)
 }
 
@@ -376,7 +388,7 @@ const initMarketHeatChart = async () => {
   if (!marketHeatChartRef.value) return
 
   marketHeatChart = echarts.init(marketHeatChartRef.value)
-  
+
   try {
     // 这里应该从API获取真实的市场热度数据
     // 暂时使用模拟数据展示效果
@@ -390,7 +402,7 @@ const initMarketHeatChart = async () => {
       { name: '科创板', value: 85 },
       { name: '新三板', value: 65 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -441,7 +453,7 @@ const initLeadingSectorChart = async () => {
   if (!leadingSectorChartRef.value) return
 
   leadingSectorChart = echarts.init(leadingSectorChartRef.value)
-  
+
   try {
     // 这里应该从API获取真实的领涨板块数据
     // 暂时使用模拟数据展示效果
@@ -455,7 +467,7 @@ const initLeadingSectorChart = async () => {
       { name: '保险', change: 2.5 },
       { name: '证券', change: 2.1 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -505,7 +517,7 @@ const initPriceDistributionChart = async () => {
   if (!priceDistributionChartRef.value) return
 
   priceDistributionChart = echarts.init(priceDistributionChartRef.value)
-  
+
   try {
     // 这里应该从API获取真实的涨跌分布数据
     // 暂时使用模拟数据展示效果
@@ -516,7 +528,7 @@ const initPriceDistributionChart = async () => {
       { name: '下跌0-5%', value: 280 },
       { name: '下跌>5%', value: 180 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'item',
@@ -564,7 +576,7 @@ const initCapitalFlowChart = async () => {
   if (!capitalFlowChartRef.value) return
 
   capitalFlowChart = echarts.init(capitalFlowChartRef.value)
-  
+
   try {
     // 这里应该从API获取真实的资金流向数据
     // 暂时使用模拟数据展示效果
@@ -576,7 +588,7 @@ const initCapitalFlowChart = async () => {
       { name: '南向资金', value: -30 },
       { name: '融资融券', value: 40 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -684,15 +696,15 @@ const loadData = async () => {
     } else {
       throw new Error(stocksResponse.msg || 'API返回数据格式错误')
     }
-    
+
     // 获取市场概览数据
     const marketResponse = await dataApi.getMarketOverview()
     if (marketResponse.success && marketResponse.data) {
       const marketData = marketResponse.data
-      
+
       // 更新统计卡片数据
       stats.value[1].value = marketData.total_stocks?.toString() || '0'
-      
+
       // 如果有市场分布数据，更新第三个统计卡片
       if (marketData.by_market) {
         const marketEntries = Object.entries(marketData.by_market)
@@ -701,7 +713,7 @@ const loadData = async () => {
           stats.value[2].value = `${market}: ${count}`
         }
       }
-      
+
       // 如果有行业分布数据，更新第四个统计卡片
       if (marketData.by_industry) {
         const industryEntries = Object.entries(marketData.by_industry)
@@ -710,7 +722,7 @@ const loadData = async () => {
           stats.value[3].value = `${industry}: ${count}`
         }
       }
-      
+
       // 更新图表数据
       updateMarketDistributionChart(marketData)
       updateIndustryDistributionChart(marketData)
@@ -755,6 +767,35 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dashboard {
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid #ebeef5;
+
+    .header-left {
+      .page-title {
+        margin: 0 0 4px 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #303133;
+      }
+
+      .page-subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #909399;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
   .stats-row {
     margin-bottom: 20px;
 

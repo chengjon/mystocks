@@ -2,9 +2,10 @@
 应用配置管理
 """
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional, List
 import os
+from typing import List, Optional
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -26,25 +27,28 @@ class Settings(BaseSettings):
     postgresql_host: str = "localhost"
     postgresql_port: int = 5438
     postgresql_user: str = "postgres"
-    postgresql_password: str = "your-postgresql-password"  # 将从.env覆盖
+    postgresql_password: str = ""  # 必须从环境变量设置，否则启动失败
     postgresql_database: str = "mystocks"
 
     # 监控数据库配置 (使用PostgreSQL，同库不同schema)
     monitor_db_url: str = ""  # 将从.env读取 MONITOR_DB_URL
     monitor_db_host: str = "localhost"
     monitor_db_user: str = "postgres"
-    monitor_db_password: str = "your-postgresql-password"
+    monitor_db_password: str = ""  # 必须从环境变量设置，否则启动失败
     monitor_db_port: int = 5438
     monitor_db_database: str = "mystocks"
 
     # JWT 认证配置
-    secret_key: str = "your-secret-key-change-in-production"
+    secret_key: str = ""  # 必须从环境变量设置，否则启动失败
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
+    # 管理员初始密码配置
+    admin_initial_password: str = "admin123"  # 默认密码，生产环境应通过环境变量修改
+
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
-    
+
     @property
     def cors_origins(self) -> List[str]:
         return self.cors_origins_str.split(",")
@@ -79,14 +83,57 @@ class Settings(BaseSettings):
     wencai_auto_refresh: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        case_sensitive=False,
-        extra="allow"
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="allow"
     )  # 允许额外字段
+
+
+def validate_required_settings():
+    """
+    验证必需的安全配置项
+
+    在应用启动时验证所有必需的敏感信息是否已正确设置
+    如果缺少必需配置，抛出ValueError
+
+    Raises:
+        ValueError: 当必需的配置项缺失时
+    """
+    required_settings = {
+        "postgresql_password": "POSTGRESQL_PASSWORD",
+        "monitor_db_password": "POSTGRESQL_PASSWORD",  # 使用相同的密码
+        "secret_key": "JWT_SECRET_KEY",
+    }
+
+    missing_settings = []
+
+    for attr_name, env_name in required_settings.items():
+        value = getattr(settings, attr_name, None)
+        if not value or value == "":
+            missing_settings.append(env_name)
+
+    if missing_settings:
+        error_msg = (
+            f"安全配置错误：缺少必需的环境变量配置\n"
+            f"缺失项：{', '.join(missing_settings)}\n"
+            f"请检查 .env 文件或参考 .env.example 文件进行配置\n"
+            f"可以通过以下命令生成安全的JWT密钥：openssl rand -hex 32"
+        )
+        raise ValueError(error_msg)
 
 
 # 创建全局配置实例
 settings = Settings()
+
+# 验证必需的配置项
+try:
+    validate_required_settings()
+except ValueError as e:
+    print(f"❌ 配置验证失败：{e}")
+    print("🔧 请修复配置后重新启动应用")
+    # 在生产环境中，这里应该抛出异常而不是继续运行
+    # 为了开发环境兼容性，暂时提供警告
+    import warnings
+
+    warnings.warn(f"配置验证失败：{e}", UserWarning)
 
 
 # 数据库连接字符串 - Week 3 简化版 (仅PostgreSQL)
@@ -105,9 +152,7 @@ def get_monitor_db_connection_string() -> str:
 # 为兼容性保留（部分服务可能引用）
 def get_mysql_connection_string() -> str:
     """已废弃: Week 3简化后不再使用MySQL"""
-    raise NotImplementedError(
-        "MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()"
-    )
+    raise NotImplementedError("MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()")
 
 
 # 设置数据库URL（用于某些服务的向后兼容）

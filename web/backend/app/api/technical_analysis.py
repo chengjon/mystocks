@@ -3,14 +3,16 @@
 Enhanced Technical Analysis
 """
 
+import os
 from datetime import date
 from typing import Dict, List, Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-import os
 
-from app.services.technical_analysis_service import technical_analysis_service
 from app.mock.unified_mock_data import get_mock_data_manager
+from app.services.data_source_factory import DataSourceFactory
+from app.services.technical_analysis_service import technical_analysis_service
 
 router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 
@@ -142,63 +144,30 @@ async def get_all_indicators(
     - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
-        if use_mock:
-            # 使用Mock数据
-            mock_manager = get_mock_data_manager()
-            technical_data = mock_manager.get_data("technical", symbol=symbol)
-            
-            # 如果Mock数据不完整，补充默认值
-            result = {
-                "symbol": symbol,
-                "latest_price": 11.7,
-                "latest_date": "2025-11-13",
-                "data_points": 244,
-                "total_indicators": 19,
-                "trend": technical_data.get("indicators", {}).get("MA", {
-                    "ma5": 11.65,
-                    "ma10": 11.48,
-                    "ma20": 11.32,
-                    "ma30": 11.18,
-                    "ma60": 11.05,
-                    "macd": 0.023,
-                    "macd_signal": 0.018,
-                    "macd_hist": 0.005
-                }),
-                "momentum": technical_data.get("indicators", {}).get("RSI", {
-                    "rsi6": 74.61,
-                    "rsi12": 64.20,
-                    "rsi24": 55.64,
-                    "kdj_k": 84.69,
-                    "kdj_d": 87.67,
-                    "kdj_j": 78.72
-                }),
-                "volatility": technical_data.get("indicators", {}).get("ATR", {
-                    "bb_upper": 11.73,
-                    "bb_middle": 11.52,
-                    "bb_lower": 11.30,
-                    "atr": 0.146,
-                    "atr_percent": 1.25
-                }),
-                "volume": technical_data.get("indicators", {}).get("Volume", {
-                    "obv": 123456789,
-                    "mfi": 65.4,
-                    "vwap": 11.52
-                })
-            }
-            return AllIndicatorsResponse(**result)
-        else:
-            # 使用真实服务
-            result = technical_analysis_service.calculate_all_indicators(
-                symbol=symbol, period=period, start_date=start_date, end_date=end_date
-            )
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-            if "error" in result:
-                raise HTTPException(status_code=400, detail=result["error"])
+        params = {"symbol": symbol, "period": period, "start_date": start_date, "end_date": end_date}
 
-            return AllIndicatorsResponse(**result)
+        result = await technical_analysis_adapter.get_data("indicators", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        # 转换为AllIndicatorsResponse格式
+        response_data = result.get("data", {})
+        return AllIndicatorsResponse(
+            symbol=response_data.get("symbol", symbol),
+            latest_price=response_data.get("latest_price", 0.0),
+            latest_date=response_data.get("latest_date", ""),
+            data_points=response_data.get("data_points", 0),
+            total_indicators=response_data.get("total_indicators", 0),
+            trend=response_data.get("trend", {}),
+            momentum=response_data.get("momentum", {}),
+            volatility=response_data.get("volatility", {}),
+            volume=response_data.get("volume", {}),
+        )
 
     except HTTPException:
         raise
@@ -207,9 +176,7 @@ async def get_all_indicators(
 
 
 @router.get("/{symbol}/trend", response_model=Dict)
-async def get_trend_indicators(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def get_trend_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     获取趋势指标
 
@@ -224,16 +191,22 @@ async def get_trend_indicators(
     - GET /api/technical/600519/trend
     """
     try:
-        df = technical_analysis_service.get_stock_history(symbol, period)
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        indicators = technical_analysis_service.calculate_trend_indicators(df)
+        params = {"symbol": symbol, "period": period}
+
+        result = await technical_analysis_adapter.get_data("trend", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
         return {
             "success": True,
             "symbol": symbol,
-            "indicators": indicators,
-            "count": len(indicators),
+            "indicators": result.get("data", {}).get("indicators", {}),
+            "count": result.get("data", {}).get("count", 0),
         }
 
     except HTTPException:
@@ -243,9 +216,7 @@ async def get_trend_indicators(
 
 
 @router.get("/{symbol}/momentum", response_model=Dict)
-async def get_momentum_indicators(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def get_momentum_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     获取动量指标
 
@@ -260,16 +231,22 @@ async def get_momentum_indicators(
     - GET /api/technical/600519/momentum
     """
     try:
-        df = technical_analysis_service.get_stock_history(symbol, period)
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        indicators = technical_analysis_service.calculate_momentum_indicators(df)
+        params = {"symbol": symbol, "period": period}
+
+        result = await technical_analysis_adapter.get_data("momentum", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
         return {
             "success": True,
             "symbol": symbol,
-            "indicators": indicators,
-            "count": len(indicators),
+            "indicators": result.get("data", {}).get("indicators", {}),
+            "count": result.get("data", {}).get("count", 0),
         }
 
     except HTTPException:
@@ -279,9 +256,7 @@ async def get_momentum_indicators(
 
 
 @router.get("/{symbol}/volatility", response_model=Dict)
-async def get_volatility_indicators(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def get_volatility_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     获取波动性指标
 
@@ -295,16 +270,22 @@ async def get_volatility_indicators(
     - GET /api/technical/600519/volatility
     """
     try:
-        df = technical_analysis_service.get_stock_history(symbol, period)
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        indicators = technical_analysis_service.calculate_volatility_indicators(df)
+        params = {"symbol": symbol, "period": period}
+
+        result = await technical_analysis_adapter.get_data("volatility", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
         return {
             "success": True,
             "symbol": symbol,
-            "indicators": indicators,
-            "count": len(indicators),
+            "indicators": result.get("data", {}).get("indicators", {}),
+            "count": result.get("data", {}).get("count", 0),
         }
 
     except HTTPException:
@@ -314,9 +295,7 @@ async def get_volatility_indicators(
 
 
 @router.get("/{symbol}/volume", response_model=Dict)
-async def get_volume_indicators(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def get_volume_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     获取成交量指标
 
@@ -330,16 +309,22 @@ async def get_volume_indicators(
     - GET /api/technical/600519/volume
     """
     try:
-        df = technical_analysis_service.get_stock_history(symbol, period)
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        indicators = technical_analysis_service.calculate_volume_indicators(df)
+        params = {"symbol": symbol, "period": period}
+
+        result = await technical_analysis_adapter.get_data("volume", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
         return {
             "success": True,
             "symbol": symbol,
-            "indicators": indicators,
-            "count": len(indicators),
+            "indicators": result.get("data", {}).get("indicators", {}),
+            "count": result.get("data", {}).get("count", 0),
         }
 
     except HTTPException:
@@ -349,9 +334,7 @@ async def get_volume_indicators(
 
 
 @router.get("/{symbol}/signals", response_model=Dict)
-async def get_trading_signals(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def get_trading_signals(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     获取交易信号
 
@@ -367,16 +350,18 @@ async def get_trading_signals(
     - GET /api/technical/600519/signals
     """
     try:
-        df = technical_analysis_service.get_stock_history(symbol, period)
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        signals = technical_analysis_service.generate_trading_signals(df)
+        params = {"symbol": symbol, "period": period}
 
-        if "error" in signals:
-            raise HTTPException(status_code=400, detail=signals["error"])
+        result = await technical_analysis_adapter.get_data("signals", params)
 
-        return {"success": True, "symbol": symbol, **signals}
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        return {"success": True, "symbol": symbol, **result.get("data", {})}
 
     except HTTPException:
         raise
@@ -412,30 +397,18 @@ async def get_stock_history(
     - GET /api/technical/600519/history?start_date=2024-01-01
     """
     try:
-        df = technical_analysis_service.get_stock_history(
-            symbol=symbol, period=period, start_date=start_date, end_date=end_date
-        )
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        if df.empty:
-            raise HTTPException(status_code=404, detail="No data available")
+        params = {"symbol": symbol, "period": period, "start_date": start_date, "end_date": end_date, "limit": limit}
 
-        # 限制返回数据量
-        df = df.tail(limit)
+        result = await technical_analysis_adapter.get_data("history", params)
 
-        # 转换为前端友好的格式
-        data = {
-            "symbol": symbol,
-            "period": period,
-            "count": len(df),
-            "dates": df["date"].dt.strftime("%Y-%m-%d").tolist(),
-            "data": df[["open", "close", "high", "low", "volume"]].to_dict("records"),
-        }
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
 
-        # 如果有涨跌幅数据，也包含进去
-        if "change_percent" in df.columns:
-            data["change_percent"] = df["change_percent"].tolist()
-
-        return {"success": True, **data}
+        return {"success": True, **result.get("data", {})}
 
     except HTTPException:
         raise
@@ -461,18 +434,18 @@ async def get_batch_indicators(
         if len(symbols) > 20:
             raise HTTPException(status_code=400, detail="Maximum 20 symbols allowed")
 
-        results = []
-        for symbol in symbols:
-            try:
-                result = technical_analysis_service.calculate_all_indicators(
-                    symbol=symbol, period=period
-                )
-                if "error" not in result:
-                    results.append(result)
-            except Exception as e:
-                logger.warning(f"Failed to get indicators for {symbol}: {e}")
+        # 使用数据源工厂
+        data_source_factory = DataSourceFactory()
+        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        return {"success": True, "count": len(results), "data": results}
+        params = {"symbols": symbols, "period": period}
+
+        result = await technical_analysis_adapter.get_data("batch_indicators", params)
+
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        return {"success": True, **result.get("data", {})}
 
     except HTTPException:
         raise
@@ -481,9 +454,7 @@ async def get_batch_indicators(
 
 
 @router.get("/patterns/{symbol}")
-async def detect_patterns(
-    symbol: str, period: str = Query("daily", description="数据周期")
-):
+async def detect_patterns(symbol: str, period: str = Query("daily", description="数据周期")):
     """
     检测技术形态 (预留功能)
 

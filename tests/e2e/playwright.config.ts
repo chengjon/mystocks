@@ -17,7 +17,7 @@ const apiURL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
 const timeout = parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000');
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: './',
 
   // 测试执行配置
   timeout,
@@ -71,11 +71,10 @@ export default defineConfig({
 
   // 输出目录配置
   outputDir: 'test-results/',
-  testDir: 'tests/',
 
   // 全局测试钩子
-  globalSetup: require.resolve('./global-setup.ts'),
-  globalTeardown: require.resolve('./global-teardown.ts'),
+  globalSetup: './global-setup.ts',
+  globalTeardown: './global-teardown.ts',
 
   // 报告配置
   reportSlowTests: {
