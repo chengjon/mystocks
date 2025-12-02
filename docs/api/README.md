@@ -12,6 +12,12 @@
 - **[Apifox 导入指南](APIFOX_IMPORT_GUIDE.md)** - 完整的导入操作手册
 - **[导入成功报告](APIFOX_IMPORT_SUCCESS.md)** - 最近一次导入结果
 
+### 🔧 API 开发指南
+- **[API 开发标准指南](API_DEVELOPMENT_GUIDELINES.md)** - REST API开发标准和最佳实践 🆕
+- **[API 开发检查清单](API_DEVELOPMENT_CHECKLIST.md)** - 开发过程中的质量检查清单 🆕
+- **[API 快速开始模板](API_QUICK_START_TEMPLATE.md)** - 5分钟创建新API端点的模板 🆕
+- **[API 端点文档](API_ENDPOINT_DOCUMENTATION.md)** - 完整的280+个API端点参考
+
 ### 📖 API 参考
 - **[OpenAPI 规范 (JSON)](openapi.json)** - OpenAPI 3.1.0 格式
 - **[OpenAPI 规范 (YAML)](openapi.yaml)** - YAML 格式
