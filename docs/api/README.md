@@ -18,6 +18,13 @@
 - **[API 快速开始模板](API_QUICK_START_TEMPLATE.md)** - 5分钟创建新API端点的模板 🆕
 - **[API 端点文档](API_ENDPOINT_DOCUMENTATION.md)** - 完整的280+个API端点参考
 
+### 🧪 API 合规性测试
+- **[API 合规性测试框架](API_COMPLIANCE_TESTING_FRAMEWORK.md)** - 完整的自动化测试框架 (1,200+ LOC) 🆕
+- **[API 合规性报告](API_COMPLIANCE_REPORT.md)** - 详细的合规性分析和改进建议 🆕
+- **[API 合规性改进建议](API_COMPLIANCE_IMPROVEMENTS.md)** - 具体的代码改进示例和最佳实践 🆕
+- **[API 合规性测试完成报告](API_COMPLIANCE_TEST_COMPLETION_REPORT.md)** - 测试框架部署和验证结果 🆕
+- **[合规性测试快速开始](README_COMPLIANCE_TESTING.md)** - 5分钟设置自动化测试环境 🆕
+
 ### 📖 API 参考
 - **[OpenAPI 规范 (JSON)](openapi.json)** - OpenAPI 3.1.0 格式
 - **[OpenAPI 规范 (YAML)](openapi.yaml)** - YAML 格式
