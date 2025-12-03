@@ -1,0 +1,435 @@
+name: API Compliance Testing
+
+on:
+  push:
+    branches: [ main, develop, refactor/* ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - compliance
+          - static
+          - documentation
+          - performance
+          - security
+
+jobs:
+  api-compliance-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          postgresql-client \
+          build-essential \
+          libpq-dev \
+          libta libta-dev \
+          libta-lib0
+
+    - name: Install Python dependencies
+      run: |
+        cd web/backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov pytest-html pytest-json-report
+
+    - name: Set up environment variables
+      run: |
+        cd web/backend
+        cat > .env << EOF
+        POSTGRESQL_HOST=localhost
+        POSTGRESQL_PORT=5432
+        POSTGRESQL_USER=testuser
+        POSTGRESQL_PASSWORD=testpassword
+        POSTGRESQL_DATABASE=testdb
+        JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only
+        CORS_ORIGINS_STR=http://localhost:3000,http://localhost:8080
+        DEBUG=true
+        LOG_LEVEL=INFO
+        EOF
+
+    - name: Wait for PostgreSQL
+      run: |
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U testuser; then
+            echo "PostgreSQL is ready"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 2
+        done
+
+    - name: Run API Compliance Tests
+      run: |
+        cd web/backend
+        if [[ "${{ github.event.inputs.test_type }}" == "compliance" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
+          echo "Running API Compliance Tests..."
+          python -m pytest tests/test_api_compliance.py \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=html \
+            --json-report \
+            --json-report-file=api-compliance-results.json \
+            -v \
+            --tb=short || true
+        fi
+
+    - name: Run Static Code Analysis Tests
+      run: |
+        cd web/backend
+        if [[ "${{ github.event.inputs.test_type }}" == "static" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
+          echo "Running Static Code Analysis Tests..."
+          python -m pytest tests/test_static_code_analysis.py \
+            --cov=app \
+            --cov-append \
+            --cov-report=xml \
+            --json-report \
+            --json-report-file=static-analysis-results.json \
+            -v \
+            --tb=short || true
+        fi
+
+    - name: Run Documentation Validation Tests
+      run: |
+        cd web/backend
+        if [[ "${{ github.event.inputs.test_type }}" == "documentation" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
+          echo "Running Documentation Validation Tests..."
+          python -m pytest tests/test_api_documentation_validation.py \
+            --cov=app \
+            --cov-append \
+            --cov-report=xml \
+            --json-report \
+            --json-report-file=documentation-validation-results.json \
+            -v \
+            --tb=short || true
+        fi
+
+    - name: Run Performance Tests
+      run: |
+        cd web/backend
+        if [[ "${{ github.event.inputs.test_type }}" == "performance" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
+          echo "Running Performance Tests..."
+          python -m pytest tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_response_time_benchmarks \
+            --cov=app \
+            --cov-append \
+            --cov-report=xml \
+            --json-report \
+            --json-report-file=performance-results.json \
+            -v \
+            --tb=short || true
+        fi
+
+    - name: Run Security Tests
+      run: |
+        cd web/backend
+        if [[ "${{ github.event.inputs.test_type }}" == "security" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
+          echo "Running Security Tests..."
+          python -m pytest tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_sql_injection_detection \
+            tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_xss_protection_validation \
+            tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_authentication_security \
+            --cov=app \
+            --cov-append \
+            --cov-report=xml \
+            --json-report \
+            --json-report-file=security-results.json \
+            -v \
+            --tb=short || true
+        fi
+
+    - name: Generate Comprehensive Test Report
+      run: |
+        cd web/backend
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+
+        # Load test results
+        results = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "python_version": "${{ matrix.python-version }}",
+            "test_suites": {}
+        }
+
+        test_files = [
+            ("api-compliance-results.json", "API Compliance"),
+            ("static-analysis-results.json", "Static Code Analysis"),
+            ("documentation-validation-results.json", "Documentation Validation"),
+            ("performance-results.json", "Performance Tests"),
+            ("security-results.json", "Security Tests")
+        ]
+
+        total_tests = 0
+        total_passed = 0
+        total_failed = 0
+        total_duration = 0
+
+        for filename, suite_name in test_files:
+            if os.path.exists(filename):
+                try:
+                    with open(filename, 'r') as f:
+                        data = json.load(f)
+
+                    summary = data.get('summary', {})
+                    tests = summary.get('total', 0)
+                    passed = summary.get('passed', 0)
+                    failed = summary.get('failed', 0)
+                    duration = summary.get('duration', 0)
+
+                    results["test_suites"][suite_name] = {
+                        "tests": tests,
+                        "passed": passed,
+                        "failed": failed,
+                        "duration": duration,
+                        "success_rate": (passed / tests * 100) if tests > 0 else 0
+                    }
+
+                    total_tests += tests
+                    total_passed += passed
+                    total_failed += failed
+                    total_duration += duration
+
+                except Exception as e:
+                    results["test_suites"][suite_name] = {
+                        "error": f"Failed to parse results: {str(e)}"
+                    }
+            else:
+                results["test_suites"][suite_name] = {
+                    "skipped": True,
+                    "reason": "Test file not found"
+                }
+
+        # Add overall summary
+        results["overall_summary"] = {
+            "total_tests": total_tests,
+            "total_passed": total_passed,
+            "total_failed": total_failed,
+            "total_duration": total_duration,
+            "overall_success_rate": (total_passed / total_tests * 100) if total_tests > 0 else 0,
+            "compliance_status": "PASS" if total_failed == 0 else "FAIL"
+        }
+
+        # Save comprehensive report
+        with open("comprehensive-test-report.json", "w") as f:
+            json.dump(results, f, indent=2)
+
+        # Print summary
+        print("\n" + "="*80)
+        print("API COMPLIANCE TEST SUITE SUMMARY")
+        print("="*80)
+        print(f"Python Version: ${{{{ matrix.python-version }}}}")
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {total_passed}")
+        print(f"Failed: {total_failed}")
+        print(f"Success Rate: {results['overall_summary']['overall_success_rate']:.1f}%")
+        print(f"Duration: {total_duration:.2f}s")
+        print(f"Status: {results['overall_summary']['compliance_status']}")
+
+        for suite_name, suite_data in results["test_suites"].items():
+            if "error" in suite_data:
+                print(f"\n{suite_name}: ERROR - {suite_data['error']}")
+            elif suite_data.get("skipped"):
+                print(f"\n{suite_name}: SKIPPED - {suite_data['reason']}")
+            else:
+                print(f"\n{suite_name}:")
+                print(f"  Tests: {suite_data['tests']}")
+                print(f"  Passed: {suite_data['passed']}")
+                print(f"  Failed: {suite_data['failed']}")
+                print(f"  Success Rate: {suite_data['success_rate']:.1f}%")
+
+        print("="*80)
+        EOF
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: api-compliance-test-results-python-${{ matrix.python-version }}
+        path: |
+          web/backend/comprehensive-test-report.json
+          web/backend/*results.json
+          web/backend/htmlcov/
+          web/backend/coverage.xml
+        retention-days: 30
+
+    - name: Comment PR with Results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+
+          try {
+            const reportPath = 'web/backend/comprehensive-test-report.json';
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+
+            const summary = report.overall_summary;
+            const status = summary.compliance_status;
+            const statusEmoji = status === 'PASS' ? '✅' : '❌';
+
+            let comment = `## API Compliance Test Results\n\n`;
+            comment += `${statusEmoji} **Status:** ${status}\n\n`;
+            comment += `**Overall Summary:**\n`;
+            comment += `- **Total Tests:** ${summary.total_tests}\n`;
+            comment += `- **Passed:** ${summary.total_passed}\n`;
+            comment += `- **Failed:** ${summary.total_failed}\n`;
+            comment += `- **Success Rate:** ${summary.overall_success_rate.toFixed(1)}%\n`;
+            comment += `- **Duration:** ${summary.total_duration.toFixed(2)}s\n\n`;
+
+            comment += `**Test Suite Results:**\n`;
+            for (const [suiteName, suiteData] of Object.entries(report.test_suites)) {
+              if (suiteData.skipped) {
+                comment += `- **${suiteName}:** ⏭️ Skipped - ${suiteData.reason}\n`;
+              } else if (suiteData.error) {
+                comment += `- **${suiteName}:** ❌ Error - ${suiteData.error}\n`;
+              } else {
+                const emoji = suiteData.failed === 0 ? '✅' : '❌';
+                comment += `- **${suiteName}:** ${emoji} ${suiteData.passed}/${suiteData.tests} (${suiteData.success_rate.toFixed(1)}%)\n`;
+              }
+            }
+
+            comment += `\n**Python Version:** ${report.python_version}\n`;
+            comment += `**Timestamp:** ${report.timestamp}\n\n`;
+            comment += `📊 [View detailed results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Could not read test results:', error.message);
+          }
+
+    - name: Update Badge
+      if: github.ref == 'refs/heads/main'
+      run: |
+        cd web/backend
+        python << 'EOF'
+        import json
+        import os
+
+        try:
+            with open('comprehensive-test-report.json', 'r') as f:
+                report = json.load(f)
+
+            success_rate = report['overall_summary']['overall_success_rate']
+            status = report['overall_summary']['compliance_status']
+
+            # Determine badge color
+            if status == 'PASS':
+                color = 'brightgreen'
+            elif success_rate >= 80:
+                color = 'yellow'
+            else:
+                color = 'red'
+
+            badge_url = f"https://img.shields.io/badge/API%20Compliance-{success_rate:.1f}%25-{color}"
+
+            # Create badge data
+            badge_data = {
+                "schemaVersion": 1,
+                "label": "API Compliance",
+                "message": f"{success_rate:.1f}%",
+                "color": color
+            }
+
+            with open('api-compliance-badge.json', 'w') as f:
+                json.dump(badge_data, f)
+
+            print(f"Badge created: {badge_url}")
+
+        except Exception as e:
+            print(f"Error creating badge: {e}")
+        EOF
+
+    - name: Check Compliance Threshold
+      run: |
+        cd web/backend
+        python << 'EOF'
+        import json
+        import sys
+
+        try:
+            with open('comprehensive-test-report.json', 'r') as f:
+                report = json.load(f)
+
+            success_rate = report['overall_summary']['overall_success_rate']
+            status = report['overall_summary']['compliance_status']
+
+            # Define compliance thresholds
+            MIN_SUCCESS_RATE = 75.0  # 75% minimum success rate
+            MAX_CRITICAL_FAILURES = 5  # Maximum critical failures allowed
+
+            critical_failures = 0
+            for suite_name, suite_data in report['test_suites'].items():
+                if not suite_data.get('skipped') and 'error' not in suite_data:
+                    # Count security and compliance failures as critical
+                    if 'Security' in suite_name or 'Compliance' in suite_name:
+                        critical_failures += suite_data.get('failed', 0)
+
+            print(f"Success Rate: {success_rate:.1f}% (minimum: {MIN_SUCCESS_RATE}%)")
+            print(f"Critical Failures: {critical_failures} (maximum: {MAX_CRITICAL_FAILURES})")
+
+            if success_rate < MIN_SUCCESS_RATE:
+                print(f"❌ FAILED: Success rate below minimum threshold")
+                sys.exit(1)
+
+            if critical_failures > MAX_CRITICAL_FAILURES:
+                print(f"❌ FAILED: Too many critical failures")
+                sys.exit(1)
+
+            print("✅ PASSED: All compliance thresholds met")
+
+        except Exception as e:
+            print(f"Error checking compliance: {e}")
+            sys.exit(1)
+        EOF
