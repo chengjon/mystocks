@@ -15,7 +15,7 @@ Endpoints:
 - DELETE /cache                   - 清除所有缓存
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from datetime import datetime
 from typing import Dict, Any, Optional
 import structlog
@@ -30,6 +30,7 @@ from app.core.cache_prewarming import (
     get_cache_monitor,
     get_prewarming_strategy,
 )
+from app.core.security import get_current_user, User
 
 logger = structlog.get_logger()
 
@@ -40,7 +41,9 @@ router = APIRouter(prefix="/cache", tags=["cache"])
 
 
 @router.get("/status")
-async def get_cache_status() -> Dict[str, Any]:
+async def get_cache_status(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     获取缓存统计信息
 
@@ -92,7 +95,10 @@ async def get_cache_status() -> Dict[str, Any]:
 
 @router.get("/{symbol}/{data_type}")
 async def get_cached_data(
-    symbol: str, data_type: str, timeframe: Optional[str] = Query(None)
+    symbol: str,
+    data_type: str,
+    timeframe: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     读取特定的缓存数据
@@ -186,6 +192,7 @@ async def write_cache_data(
     data: Dict[str, Any],
     timeframe: Optional[str] = Query(None),
     ttl_days: int = Query(7),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     写入或更新缓存数据
@@ -281,7 +288,10 @@ async def write_cache_data(
 
 
 @router.delete("/{symbol}")
-async def invalidate_symbol_cache(symbol: str) -> Dict[str, Any]:
+async def invalidate_symbol_cache(
+    symbol: str,
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     清除特定符号的缓存
 
@@ -336,7 +346,10 @@ async def invalidate_symbol_cache(symbol: str) -> Dict[str, Any]:
 
 
 @router.delete("")
-async def clear_all_cache(confirm: bool = Query(False)) -> Dict[str, Any]:
+async def clear_all_cache(
+    confirm: bool = Query(False),
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     清除所有缓存 (需要确认)
 
@@ -394,6 +407,7 @@ async def check_cache_freshness(
     symbol: str,
     data_type: str,
     max_age_days: int = Query(7),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     检查缓存是否新鲜（有效且未过期）
@@ -465,7 +479,9 @@ async def check_cache_freshness(
 
 
 @router.post("/evict/manual")
-async def manual_cache_eviction() -> Dict[str, Any]:
+async def manual_cache_eviction(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     手动触发缓存淘汰任务
 
@@ -515,7 +531,9 @@ async def manual_cache_eviction() -> Dict[str, Any]:
 
 
 @router.get("/eviction/stats")
-async def get_eviction_statistics() -> Dict[str, Any]:
+async def get_eviction_statistics(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     获取缓存淘汰策略统计信息
 
@@ -585,7 +603,9 @@ async def get_eviction_statistics() -> Dict[str, Any]:
 
 
 @router.post("/prewarming/trigger")
-async def trigger_cache_prewarming() -> Dict[str, Any]:
+async def trigger_cache_prewarming(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     触发缓存预热任务
 
@@ -634,7 +654,9 @@ async def trigger_cache_prewarming() -> Dict[str, Any]:
 
 
 @router.get("/prewarming/status")
-async def get_prewarming_status() -> Dict[str, Any]:
+async def get_prewarming_status(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     获取缓存预热状态
 
@@ -674,7 +696,9 @@ async def get_prewarming_status() -> Dict[str, Any]:
 
 
 @router.get("/monitoring/metrics")
-async def get_cache_monitoring_metrics() -> Dict[str, Any]:
+async def get_cache_monitoring_metrics(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     获取缓存监控指标
 
@@ -728,7 +752,9 @@ async def get_cache_monitoring_metrics() -> Dict[str, Any]:
 
 
 @router.get("/monitoring/health")
-async def get_cache_health_status() -> Dict[str, Any]:
+async def get_cache_health_status(
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
     获取缓存系统健康状态
 

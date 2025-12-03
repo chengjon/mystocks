@@ -13,6 +13,7 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
+from app.core.responses import create_success_response, create_error_response, ErrorCodes, ResponseMessages
 from app.core.security import User, get_current_user
 
 logger = __import__("logging").getLogger(__name__)
@@ -146,15 +147,12 @@ async def get_stocks_industries(
         return result
 
     except Exception as e:
-        error_result = {
-            "success": False,
-            "msg": f"获取行业列表失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
         import logging
-
         logging.error(f"获取行业列表失败: {str(e)}", exc_info=True)
-        return error_result
+        return create_error_response(
+            ErrorCodes.DATABASE_ERROR,
+            f"获取行业列表失败: {str(e)}"
+        ).model_dump()
 
 
 @router.get("/stocks/concepts")
@@ -215,15 +213,12 @@ async def get_stocks_concepts(
         return result
 
     except Exception as e:
-        error_result = {
-            "success": False,
-            "msg": f"获取概念列表失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
         import logging
-
         logging.error(f"获取概念列表失败: {str(e)}", exc_info=True)
-        return error_result
+        return create_error_response(
+            ErrorCodes.DATABASE_ERROR,
+            f"获取概念列表失败: {str(e)}"
+        ).model_dump()
 
 
 @router.get("/stocks/daily")
@@ -400,29 +395,35 @@ async def get_kline_data(
     try:
         # 参数验证
         if not symbol:
-            return {
-                "success": False,
-                "msg": "股票代码不能为空",
-                "timestamp": datetime.now().isoformat(),
-            }
+            raise HTTPException(
+                status_code=400,
+                detail=create_error_response(
+                    ErrorCodes.VALIDATION_ERROR,
+                    "股票代码不能为空"
+                ).model_dump()
+            )
 
         if not start_date or not end_date:
-            return {
-                "success": False,
-                "msg": "开始日期和结束日期不能为空",
-                "timestamp": datetime.now().isoformat(),
-            }
+            raise HTTPException(
+                status_code=400,
+                detail=create_error_response(
+                    ErrorCodes.VALIDATION_ERROR,
+                    "开始日期和结束日期不能为空"
+                ).model_dump()
+            )
 
         # 验证日期格式
         try:
             datetime.strptime(start_date, "%Y-%m-%d")
             datetime.strptime(end_date, "%Y-%m-%d")
         except ValueError:
-            return {
-                "success": False,
-                "msg": "日期格式错误，请使用YYYY-MM-DD格式",
-                "timestamp": datetime.now().isoformat(),
-            }
+            raise HTTPException(
+                status_code=400,
+                detail=create_error_response(
+                    ErrorCodes.VALIDATION_ERROR,
+                    "日期格式错误，请使用YYYY-MM-DD格式"
+                ).model_dump()
+            )
 
         # 验证周期参数
         valid_periods = ["day", "week", "month"]

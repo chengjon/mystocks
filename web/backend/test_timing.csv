@@ -4980,3 +4980,9 @@ web/backend/tests/test_data_source_factory.py::TestConvenienceFunctions::test_ge
 web/backend/tests/test_data_source_factory.py::TestConvenienceFunctions::test_get_technical_analysis_data,2025-12-01 15:44:39.892090,2025-12-01 15:44:39.912359,0.020,Fx
 web/backend/tests/test_data_source_factory.py::TestIntegrationScenarios::test_end_to_end_mock_workflow,2025-12-01 15:44:39.912810,2025-12-01 15:44:40.026994,0.114,Fa
 web/backend/tests/test_data_source_factory.py::TestIntegrationScenarios::test_hybrid_fallback_workflow,2025-12-01 15:44:40.027367,2025-12-01 15:44:40.049894,0.023,Fx
+------------------ -------------------------------------
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_unified_response_structure,2025-12-03 14:15:47.230479,2025-12-03 14:15:47.863241,0.633,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_authentication_requirements,2025-12-03 14:15:47.863671,2025-12-03 14:15:47.865194,0.002,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_parameter_validation_completeness,2025-12-03 14:15:47.865548,2025-12-03 14:15:47.867045,0.001,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2025-12-03 14:15:47.867421,2025-12-03 14:15:47.868850,0.001,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2025-12-03 14:15:47.869210,2025-12-03 14:15:47.870577,0.001,P

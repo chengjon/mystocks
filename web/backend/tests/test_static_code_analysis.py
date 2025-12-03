@@ -17,10 +17,11 @@ import ast
 import importlib
 import inspect
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any, Optional
-import pytest
 import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import pytest
 
 # Add the app directory to Python path for importing modules
 app_path = Path(__file__).parent.parent / "app"
@@ -39,59 +40,46 @@ class StaticCodeAnalyzer:
         self.services_directory = Path(__file__).parent.parent / "app" / "services"
 
         self.analysis_results = {
-            'summary': {
-                'files_analyzed': 0,
-                'total_issues': 0,
-                'critical_issues': 0,
-                'warnings': 0,
-                'suggestions': 0
-            },
-            'file_results': {},
-            'global_issues': []
+            "summary": {"files_analyzed": 0, "total_issues": 0, "critical_issues": 0, "warnings": 0, "suggestions": 0},
+            "file_results": {},
+            "global_issues": [],
         }
 
     def analyze_file(self, file_path: Path) -> Dict[str, Any]:
         """Analyze a single Python file for code quality issues"""
-        file_result = {
-            'path': str(file_path),
-            'issues': {
-                'critical': [],
-                'warnings': [],
-                'suggestions': []
-            }
-        }
+        file_result: Dict[str, Any] = {"path": str(file_path), "issues": {"critical": [], "warnings": [], "suggestions": []}}
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Parse AST
             tree = ast.parse(content)
 
             # Run all analyses
-            file_result['issues']['critical'].extend(self._check_security_vulnerabilities(tree, content))
-            file_result['issues']['critical'].extend(self._check_missing_imports(tree))
-            file_result['issues']['warnings'].extend(self._check_docstring_completeness(tree, file_path))
-            file_result['issues']['warnings'].extend(self._check_type_annotations(tree))
-            file_result['issues']['warnings'].extend(self._check_pydantic_models(tree, content))
-            file_result['issues']['suggestions'].extend(self._check_import_organization(content))
-            file_result['issues']['suggestions'].extend(self._check_error_handling_patterns(tree))
-            file_result['issues']['suggestions'].extend(self._check_code_complexity(tree))
+            file_result["issues"]["critical"].extend(self._check_security_vulnerabilities(tree, content))
+            file_result["issues"]["critical"].extend(self._check_missing_imports(tree))
+            file_result["issues"]["warnings"].extend(self._check_docstring_completeness(tree, file_path))
+            file_result["issues"]["warnings"].extend(self._check_type_annotations(tree))
+            file_result["issues"]["warnings"].extend(self._check_pydantic_models(tree, content))
+            file_result["issues"]["suggestions"].extend(self._check_import_organization(content))
+            file_result["issues"]["suggestions"].extend(self._check_error_handling_patterns(tree))
+            file_result["issues"]["suggestions"].extend(self._check_code_complexity(tree))
 
         except SyntaxError as e:
-            file_result['issues']['critical'].append(f"Syntax error: {str(e)}")
+            file_result["issues"]["critical"].append(f"Syntax error: {str(e)}")
         except Exception as e:
-            file_result['issues']['warnings'].append(f"Analysis error: {str(e)}")
+            file_result["issues"]["warnings"].append(f"Analysis error: {str(e)}")
 
         # Count issues
-        file_result['total_issues'] = (
-            len(file_result['issues']['critical']) +
-            len(file_result['issues']['warnings']) +
-            len(file_result['issues']['suggestions'])
+        file_result["total_issues"] = (
+            len(file_result["issues"]["critical"])
+            + len(file_result["issues"]["warnings"])
+            + len(file_result["issues"]["suggestions"])
         )
-        file_result['critical_count'] = len(file_result['issues']['critical'])
-        file_result['warning_count'] = len(file_result['issues']['warnings'])
-        file_result['suggestion_count'] = len(file_result['issues']['suggestions'])
+        file_result["critical_count"] = len(file_result["issues"]["critical"])
+        file_result["warning_count"] = len(file_result["issues"]["warnings"])
+        file_result["suggestion_count"] = len(file_result["issues"]["suggestions"])
 
         return file_result
 
@@ -114,17 +102,19 @@ class StaticCodeAnalyzer:
         # Check for SQL injection vulnerabilities
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
-                if hasattr(node.func, 'id'):
-                    if node.func.id == 'execute' and isinstance(node.args[0], ast.Str):
-                        if any(keyword in node.args[0].s.lower() for keyword in ['select', 'insert', 'update', 'delete']):
-                            if '%' in node.args[0].s or '$' in node.args[0].s:
+                if hasattr(node.func, "id"):
+                    if node.func.id == "execute" and isinstance(node.args[0], ast.Str):
+                        if any(
+                            keyword in node.args[0].s.lower() for keyword in ["select", "insert", "update", "delete"]
+                        ):
+                            if "%" in node.args[0].s or "$" in node.args[0].s:
                                 issues.append("Potential SQL injection vulnerability with string formatting")
 
         # Check for eval/exec usage
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
-                if hasattr(node.func, 'id'):
-                    if node.func.id in ['eval', 'exec']:
+                if hasattr(node.func, "id"):
+                    if node.func.id in ["eval", "exec"]:
                         issues.append(f"Dangerous function call: {node.func.id}")
 
         return issues
@@ -133,11 +123,11 @@ class StaticCodeAnalyzer:
         """Check for missing required imports for API endpoints"""
         issues = []
         required_imports = {
-            'APIRouter': 'fastapi',
-            'HTTPException': 'fastapi',
-            'Depends': 'fastapi',
-            'BaseModel': 'pydantic',
-            'Field': 'pydantic',
+            "APIRouter": "fastapi",
+            "HTTPException": "fastapi",
+            "Depends": "fastapi",
+            "BaseModel": "pydantic",
+            "Field": "pydantic",
         }
 
         imports = set()
@@ -152,8 +142,8 @@ class StaticCodeAnalyzer:
 
         # Check if it's an API file (contains router definition)
         has_router = any(
-            isinstance(node, ast.Assign) and
-            any(target.id == 'router' for target in node.targets if isinstance(target, ast.Name))
+            isinstance(node, ast.Assign)
+            and any(target.id == "router" for target in node.targets if isinstance(target, ast.Name))
             for node in ast.walk(tree)
         )
 
@@ -169,13 +159,13 @@ class StaticCodeAnalyzer:
         issues = []
 
         # Skip non-API files
-        if 'api' not in str(file_path).lower():
+        if "api" not in str(file_path).lower():
             return issues
 
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Skip private functions
-                if node.name.startswith('_'):
+                if node.name.startswith("_"):
                     continue
 
                 # Check if function has docstring
@@ -184,9 +174,9 @@ class StaticCodeAnalyzer:
                 else:
                     docstring = ast.get_docstring(node)
                     # Check docstring quality
-                    if len(docstring) < 20:
+                    if docstring and len(docstring) < 20:
                         issues.append(f"Function '{node.name}' has very brief docstring")
-                    if not any(param in docstring.lower() for param in ['param', 'args', 'returns', 'return']):
+                    if docstring and not any(param in docstring.lower() for param in ["param", "args", "returns", "return"]):
                         issues.append(f"Function '{node.name}' docstring missing parameter/return documentation")
 
         return issues
@@ -198,7 +188,7 @@ class StaticCodeAnalyzer:
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Skip private functions
-                if node.name.startswith('_'):
+                if node.name.startswith("_"):
                     continue
 
                 # Check return type annotation
@@ -207,7 +197,7 @@ class StaticCodeAnalyzer:
 
                 # Check parameter type annotations
                 for arg in node.args.args:
-                    if arg.arg == 'self':
+                    if arg.arg == "self":
                         continue
                     if not arg.annotation:
                         issues.append(f"Function '{node.name}' parameter '{arg.arg}' missing type annotation")
@@ -221,19 +211,16 @@ class StaticCodeAnalyzer:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 # Check if it inherits from BaseModel
-                if any(
-                    isinstance(base, ast.Name) and base.id == 'BaseModel'
-                    for base in node.bases
-                ):
+                if any(isinstance(base, ast.Name) and base.id == "BaseModel" for base in node.bases):
                     # Check for Field usage with examples
                     has_examples = False
                     for item in node.body:
                         if isinstance(item, ast.AnnAssign):
                             if isinstance(item.annotation, ast.Call):
-                                if hasattr(item.annotation.func, 'id'):
-                                    if item.annotation.func.id == 'Field':
+                                if hasattr(item.annotation.func, "id"):
+                                    if item.annotation.func.id == "Field":
                                         # Check for example in Field
-                                        if any(kw.arg == 'example' for kw in item.annotation.keywords):
+                                        if any(kw.arg == "example" for kw in item.annotation.keywords):
                                             has_examples = True
 
                     if not has_examples:
@@ -244,31 +231,27 @@ class StaticCodeAnalyzer:
     def _check_import_organization(self, content: str) -> List[str]:
         """Check import statement organization"""
         issues = []
-        lines = content.split('\n')
+        lines = content.split("\n")
 
-        import_sections = {
-            'stdlib': [],
-            'third_party': [],
-            'local': []
-        }
+        import_sections: Dict[str, List[str]] = {"stdlib": [], "third_party": [], "local": []}
 
         current_section = None
         for line in lines:
             stripped = line.strip()
-            if stripped.startswith('import ') or stripped.startswith('from '):
+            if stripped.startswith("import ") or stripped.startswith("from "):
                 # Determine section
-                if any(stripped.startswith(lib) for lib in ['import os', 'import sys', 'from pathlib']):
-                    current_section = 'stdlib'
-                elif any(lib in stripped for lib in ['fastapi', 'pydantic', 'sqlalchemy', 'pandas']):
-                    current_section = 'third_party'
-                elif 'app.' in stripped:
-                    current_section = 'local'
+                if any(stripped.startswith(lib) for lib in ["import os", "import sys", "from pathlib"]):
+                    current_section = "stdlib"
+                elif any(lib in stripped for lib in ["fastapi", "pydantic", "sqlalchemy", "pandas"]):
+                    current_section = "third_party"
+                elif "app." in stripped:
+                    current_section = "local"
 
                 if current_section:
                     import_sections[current_section].append(line)
 
         # Check for proper ordering (stdlib -> third_party -> local)
-        section_order = ['stdlib', 'third_party', 'local']
+        section_order = ["stdlib", "third_party", "local"]
         prev_line_num = -1
 
         for section in section_order:
@@ -288,24 +271,22 @@ class StaticCodeAnalyzer:
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 # Check if function handles exceptions
-                has_try_except = any(
-                    isinstance(child, ast.Try) for child in ast.walk(node)
-                )
+                has_try_except = any(isinstance(child, ast.Try) for child in ast.walk(node))
 
                 # Check for HTTPException usage
                 has_http_exception = any(
-                    isinstance(child, ast.Raise) and
-                    isinstance(child.exc, ast.Call) and
-                    isinstance(child.exc.func, ast.Name) and
-                    child.exc.func.id == 'HTTPException'
+                    isinstance(child, ast.Raise)
+                    and isinstance(child.exc, ast.Call)
+                    and isinstance(child.exc.func, ast.Name)
+                    and child.exc.func.id == "HTTPException"
                     for child in ast.walk(node)
                 )
 
                 # If function is an API endpoint (has route decorator)
                 is_api_endpoint = any(
-                    isinstance(child, ast.Call) and
-                    isinstance(child.func, ast.Attribute) and
-                    child.func.attr in ['get', 'post', 'put', 'delete', 'patch']
+                    isinstance(child, ast.Call)
+                    and isinstance(child.func, ast.Attribute)
+                    and child.func.attr in ["get", "post", "put", "delete", "patch"]
                     for child in node.decorator_list
                 )
 
@@ -353,14 +334,14 @@ class StaticCodeAnalyzer:
                 continue
 
             file_result = self.analyze_file(file_path)
-            self.analysis_results['file_results'][str(file_path)] = file_result
+            self.analysis_results["file_results"][str(file_path)] = file_result
 
             # Update summary
-            self.analysis_results['summary']['files_analyzed'] += 1
-            self.analysis_results['summary']['total_issues'] += file_result['total_issues']
-            self.analysis_results['summary']['critical_issues'] += file_result['critical_count']
-            self.analysis_results['summary']['warnings'] += file_result['warning_count']
-            self.analysis_results['summary']['suggestions'] += file_result['suggestion_count']
+            self.analysis_results["summary"]["files_analyzed"] += 1
+            self.analysis_results["summary"]["total_issues"] += file_result["total_issues"]
+            self.analysis_results["summary"]["critical_issues"] += file_result["critical_count"]
+            self.analysis_results["summary"]["warnings"] += file_result["warning_count"]
+            self.analysis_results["summary"]["suggestions"] += file_result["suggestion_count"]
 
         return self.analysis_results
 
@@ -371,7 +352,7 @@ class StaticCodeAnalyzer:
         report.append("STATIC CODE ANALYSIS REPORT")
         report.append("=" * 80)
 
-        summary = self.analysis_results['summary']
+        summary = self.analysis_results["summary"]
         report.append(f"Files Analyzed: {summary['files_analyzed']}")
         report.append(f"Total Issues: {summary['total_issues']}")
         report.append(f"  Critical: {summary['critical_issues']}")
@@ -380,24 +361,24 @@ class StaticCodeAnalyzer:
         report.append("")
 
         # File-by-file details
-        for file_path, file_result in self.analysis_results['file_results'].items():
-            if file_result['total_issues'] > 0:
+        for file_path, file_result in self.analysis_results["file_results"].items():
+            if file_result["total_issues"] > 0:
                 report.append(f"File: {file_path}")
                 report.append("-" * 40)
 
-                if file_result['issues']['critical']:
+                if file_result["issues"]["critical"]:
                     report.append("  CRITICAL ISSUES:")
-                    for issue in file_result['issues']['critical']:
+                    for issue in file_result["issues"]["critical"]:
                         report.append(f"    ❌ {issue}")
 
-                if file_result['issues']['warnings']:
+                if file_result["issues"]["warnings"]:
                     report.append("  WARNINGS:")
-                    for issue in file_result['issues']['warnings']:
+                    for issue in file_result["issues"]["warnings"]:
                         report.append(f"    ⚠️  {issue}")
 
-                if file_result['issues']['suggestions']:
+                if file_result["issues"]["suggestions"]:
                     report.append("  SUGGESTIONS:")
-                    for issue in file_result['issues']['suggestions']:
+                    for issue in file_result["issues"]["suggestions"]:
                         report.append(f"    💡 {issue}")
 
                 report.append("")
@@ -420,17 +401,15 @@ class TestStaticCodeAnalysis:
 
         # Count docstring issues
         docstring_issues = 0
-        for file_result in results['file_results'].values():
-            docstring_issues += sum(
-                1 for issue in file_result['issues']['warnings']
-                if 'docstring' in issue.lower()
-            )
+        for file_result in results["file_results"].values():
+            docstring_issues += sum(1 for issue in file_result["issues"]["warnings"] if "docstring" in issue.lower())
 
         # Allow some missing docstrings for now (threshold)
-        max_allowed_docstring_issues = len(results['file_results']) * 2  # 2 per file average
+        max_allowed_docstring_issues = len(results["file_results"]) * 2  # 2 per file average
 
-        assert docstring_issues <= max_allowed_docstring_issues, \
-            f"Too many docstring issues: {docstring_issues} (max allowed: {max_allowed_docstring_issues})"
+        assert (
+            docstring_issues <= max_allowed_docstring_issues
+        ), f"Too many docstring issues: {docstring_issues} (max allowed: {max_allowed_docstring_issues})"
 
     def test_type_annotation_completeness(self, static_analyzer):
         """Test that all functions have complete type annotations"""
@@ -438,17 +417,15 @@ class TestStaticCodeAnalysis:
 
         # Count type annotation issues
         type_issues = 0
-        for file_result in results['file_results'].values():
-            type_issues += sum(
-                1 for issue in file_result['issues']['warnings']
-                if 'type annotation' in issue.lower()
-            )
+        for file_result in results["file_results"].values():
+            type_issues += sum(1 for issue in file_result["issues"]["warnings"] if "type annotation" in issue.lower())
 
         # Type annotations should be mostly complete
-        max_allowed_type_issues = len(results['file_results']) * 3  # 3 per file average
+        max_allowed_type_issues = len(results["file_results"]) * 3  # 3 per file average
 
-        assert type_issues <= max_allowed_type_issues, \
-            f"Too many type annotation issues: {type_issues} (max allowed: {max_allowed_type_issues})"
+        assert (
+            type_issues <= max_allowed_type_issues
+        ), f"Too many type annotation issues: {type_issues} (max allowed: {max_allowed_type_issues})"
 
     def test_pydantic_model_definitions(self, static_analyzer):
         """Test that Pydantic models are properly defined with examples"""
@@ -456,15 +433,15 @@ class TestStaticCodeAnalysis:
 
         # Count Pydantic model issues
         pydantic_issues = 0
-        for file_result in results['file_results'].values():
+        for file_result in results["file_results"].values():
             pydantic_issues += sum(
-                1 for issue in file_result['issues']['warnings']
-                if 'pydantic' in issue.lower() or 'example' in issue.lower()
+                1
+                for issue in file_result["issues"]["warnings"]
+                if "pydantic" in issue.lower() or "example" in issue.lower()
             )
 
         # Should have examples in most Pydantic models
-        assert pydantic_issues <= 5, \
-            f"Too many Pydantic model issues: {pydantic_issues}"
+        assert pydantic_issues <= 5, f"Too many Pydantic model issues: {pydantic_issues}"
 
     def test_error_handling_patterns(self, static_analyzer):
         """Test that API endpoints have proper error handling"""
@@ -472,17 +449,17 @@ class TestStaticCodeAnalysis:
 
         # Count error handling issues
         error_handling_issues = 0
-        for file_result in results['file_results'].values():
+        for file_result in results["file_results"].values():
             error_handling_issues += sum(
-                1 for issue in file_result['issues']['suggestions']
-                if 'error handling' in issue.lower()
+                1 for issue in file_result["issues"]["suggestions"] if "error handling" in issue.lower()
             )
 
         # Most API endpoints should have error handling
-        max_allowed_error_issues = len(results['file_results']) * 2  # 2 per file average
+        max_allowed_error_issues = len(results["file_results"]) * 2  # 2 per file average
 
-        assert error_handling_issues <= max_allowed_error_issues, \
-            f"Too many error handling issues: {error_handling_issues}"
+        assert (
+            error_handling_issues <= max_allowed_error_issues
+        ), f"Too many error handling issues: {error_handling_issues}"
 
     def test_import_organization(self, static_analyzer):
         """Test that imports are properly organized"""
@@ -490,15 +467,11 @@ class TestStaticCodeAnalysis:
 
         # Count import organization issues
         import_issues = 0
-        for file_result in results['file_results'].values():
-            import_issues += sum(
-                1 for issue in file_result['issues']['suggestions']
-                if 'import' in issue.lower()
-            )
+        for file_result in results["file_results"].values():
+            import_issues += sum(1 for issue in file_result["issues"]["suggestions"] if "import" in issue.lower())
 
         # Should have minimal import organization issues
-        assert import_issues <= 3, \
-            f"Too many import organization issues: {import_issues}"
+        assert import_issues <= 3, f"Too many import organization issues: {import_issues}"
 
     def test_security_vulnerability_detection(self, static_analyzer):
         """Test that no security vulnerabilities are present"""
@@ -506,12 +479,11 @@ class TestStaticCodeAnalysis:
 
         # Count security issues
         security_issues = 0
-        for file_result in results['file_results'].values():
-            security_issues += len(file_result['issues']['critical'])
+        for file_result in results["file_results"].values():
+            security_issues += len(file_result["issues"]["critical"])
 
         # Should have zero critical security issues
-        assert security_issues == 0, \
-            f"Security vulnerabilities found: {security_issues}"
+        assert security_issues == 0, f"Security vulnerabilities found: {security_issues}"
 
     def test_comprehensive_static_analysis(self, static_analyzer):
         """Run comprehensive static analysis and ensure quality standards"""
@@ -522,24 +494,27 @@ class TestStaticCodeAnalysis:
         print(f"\n{report}")
 
         # Quality thresholds
-        total_files = results['summary']['files_analyzed']
+        total_files = results["summary"]["files_analyzed"]
         max_critical_issues = 0
         max_total_issues = total_files * 10  # 10 issues per file average
         min_quality_score = 0.8  # 80% quality score
 
         # Assert quality standards
-        assert results['summary']['critical_issues'] <= max_critical_issues, \
-            f"Too many critical issues: {results['summary']['critical_issues']}"
+        assert (
+            results["summary"]["critical_issues"] <= max_critical_issues
+        ), f"Too many critical issues: {results['summary']['critical_issues']}"
 
-        assert results['summary']['total_issues'] <= max_total_issues, \
-            f"Too many total issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+        assert (
+            results["summary"]["total_issues"] <= max_total_issues
+        ), f"Too many total issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
 
         # Calculate quality score (fewer issues = higher score)
         max_possible_issues = total_files * 20  # Assume 20 issues max per file
-        quality_score = 1.0 - (results['summary']['total_issues'] / max_possible_issues)
+        quality_score = 1.0 - (results["summary"]["total_issues"] / max_possible_issues)
 
-        assert quality_score >= min_quality_score, \
-            f"Code quality score {quality_score:.2%} is below required {min_quality_score:.2%}"
+        assert (
+            quality_score >= min_quality_score
+        ), f"Code quality score {quality_score:.2%} is below required {min_quality_score:.2%}"
 
     def test_code_complexity(self, static_analyzer):
         """Test that code complexity is within acceptable limits"""
@@ -547,15 +522,15 @@ class TestStaticCodeAnalysis:
 
         # Count complexity issues
         complexity_issues = 0
-        for file_result in results['file_results'].values():
+        for file_result in results["file_results"].values():
             complexity_issues += sum(
-                1 for issue in file_result['issues']['suggestions']
-                if 'long' in issue.lower() or 'nesting' in issue.lower() or 'complexity' in issue.lower()
+                1
+                for issue in file_result["issues"]["suggestions"]
+                if "long" in issue.lower() or "nesting" in issue.lower() or "complexity" in issue.lower()
             )
 
         # Should have minimal complexity issues
-        assert complexity_issues <= 5, \
-            f"Too many complexity issues: {complexity_issues}"
+        assert complexity_issues <= 5, f"Too many complexity issues: {complexity_issues}"
 
     def test_endpoint_function_analysis(self):
         """Test that all endpoint functions follow best practices"""
@@ -574,10 +549,7 @@ class TestStaticCodeAnalysis:
                 sig = inspect.signature(func)
 
                 # Check for dependency injection
-                has_deps = any(
-                    'Depends' in str(param.annotation)
-                    for param in sig.parameters.values()
-                )
+                has_deps = any("Depends" in str(param.annotation) for param in sig.parameters.values())
 
                 # Check for proper docstring
                 if not func.__doc__ or len(func.__doc__.strip()) < 20:
@@ -587,8 +559,7 @@ class TestStaticCodeAnalysis:
                 issues.append(f"Could not analyze endpoint {func.__name__}: {str(e)}")
 
         # Allow some issues for now
-        assert len(issues) <= 10, \
-            f"Too many endpoint function issues: {len(issues)}"
+        assert len(issues) <= 10, f"Too many endpoint function issues: {len(issues)}"
 
 
 if __name__ == "__main__":

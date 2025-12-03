@@ -167,6 +167,7 @@ class PerformanceSecurityValidator:
 
         for endpoint in test_endpoints:
             for payload in sql_payloads:
+                response = None
                 try:
                     if endpoint['method'] == 'GET':
                         params = {endpoint['param']: payload}
@@ -238,6 +239,7 @@ class PerformanceSecurityValidator:
 
         for endpoint in test_endpoints:
             for payload in xss_payloads:
+                response = None
                 try:
                     if endpoint['method'] == 'GET':
                         params = {endpoint['param']: payload}
@@ -301,6 +303,7 @@ class PerformanceSecurityValidator:
 
         for endpoint in test_endpoints:
             for payload in test_payloads:
+                response = None
                 try:
                     if endpoint['method'] == 'GET':
                         params = {endpoint['param']: payload['value']}
