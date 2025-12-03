@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 import psycopg2
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 
 from app.core.responses import (
@@ -19,6 +19,7 @@ from app.core.responses import (
     create_health_response,
     create_success_response,
 )
+from app.core.security import get_current_user, User
 
 router = APIRouter(tags=["health"])
 
@@ -291,7 +292,9 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
 
 
 @router.get("/health/detailed")
-async def detailed_health_check():
+async def detailed_health_check(
+    current_user: User = Depends(get_current_user)
+):
     """
     详细健康检查
 
@@ -320,7 +323,10 @@ async def detailed_health_check():
 
 
 @router.get("/reports/health/{timestamp}")
-async def get_health_report(timestamp: str):
+async def get_health_report(
+    timestamp: str,
+    current_user: User = Depends(get_current_user)
+):
     """
     获取健康检查报告
 
