@@ -73,8 +73,8 @@ code_security:
       - "cursor\\.execute\\s*\\(\\s*.*\\+"
 
     safe_patterns:
-      - "execute\s*\(\s*\$?\d+\)"
-      - "execute\s*\(\s*.*%.*\)"
+      - "execute\\s*\\(\\s*\\$?\\d+\\)"
+      - "execute\\s*\\(\\s*.*%.*\\)"
 
   # 不安全函数检测
   insecure_functions:

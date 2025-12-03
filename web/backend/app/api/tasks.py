@@ -4,11 +4,13 @@
 """
 
 import os
+import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query, Path
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics, TaskStatus, TaskType
 from app.services.task_manager import task_manager
@@ -18,6 +20,208 @@ use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
+
+
+# ============================================================================
+# Enhanced Validation Models
+# ============================================================================
+
+
+class TaskRegistrationRequest(BaseModel):
+    """任务注册请求"""
+
+    name: str = Field(
+        ...,
+        description="任务名称",
+        min_length=1,
+        max_length=100
+    )
+    description: Optional[str] = Field(
+        None,
+        description="任务描述",
+        max_length=500
+    )
+    task_type: str = Field(
+        ...,
+        description="任务类型",
+        regex=r'^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$'
+    )
+    config: Dict[str, Any] = Field(
+        ...,
+        description="任务配置参数"
+    )
+    tags: Optional[List[str]] = Field(
+        None,
+        description="任务标签"
+    )
+    enabled: bool = Field(
+        True,
+        description="是否启用"
+    )
+    schedule: Optional[str] = Field(
+        None,
+        description="调度表达式(cron格式)",
+        max_length=100
+    )
+
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        """验证任务名称"""
+        if not v.strip():
+            raise ValueError('任务名称不能为空')
+
+        # 检查是否包含特殊字符
+        if re.search(r'[<>"\'/\\]', v):
+            raise ValueError('任务名称不能包含特殊字符: < > " \' / \\')
+
+        return v.strip()
+
+    @field_validator('description')
+    @classmethod
+    def validate_description(cls, v: Optional[str]) -> Optional[str]:
+        """验证任务描述"""
+        if v is None:
+            return v
+
+        # 检查是否包含恶意脚本标签
+        if re.search(r'<script|javascript:|onload=|onerror=', v, re.IGNORECASE):
+            raise ValueError('任务描述包含不安全的脚本或标签')
+
+        return v.strip()
+
+    @field_validator('config')
+    @classmethod
+    def validate_config(cls, v: Dict[str, Any]) -> Dict[str, Any]:
+        """验证任务配置"""
+        if not v:
+            raise ValueError('任务配置不能为空')
+
+        # 限制配置大小
+        import json
+        if len(json.dumps(v)) > 10000:  # 10KB限制
+            raise ValueError('任务配置过大，请减小配置内容')
+
+        return v
+
+    @field_validator('tags')
+    @classmethod
+    def validate_tags(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+        """验证任务标签"""
+        if v is None:
+            return v
+
+        if len(v) > 10:
+            raise ValueError('任务标签数量不能超过10个')
+
+        for tag in v:
+            if not tag:
+                raise ValueError('标签不能为空')
+            if len(tag) > 20:
+                raise ValueError(f'标签 "{tag}" 长度超过限制')
+            if re.search(r'[<>"\'/\\]', tag):
+                raise ValueError(f'标签 "{tag}" 包含特殊字符')
+
+        return [tag.strip() for tag in v]
+
+    @field_validator('schedule')
+    @classmethod
+    def validate_schedule(cls, v: Optional[str]) -> Optional[str]:
+        """验证调度表达式"""
+        if v is None:
+            return v
+
+        # 基本的cron格式验证 (分 时 日 月 周)
+        cron_pattern = r'^(\*|([0-9]|[1-5][0-9])\/\d+|([0-9]|[1-5][0-9])|([0-9]|[1-5][0-9])-([0-9]|[1-5][0-9])|([0-9]|[1-5][0-9])(,([0-9]|[1-5][0-9]))*)\s+(\*|([0-9]|1[0-9]|2[0-3])\/\d+|([0-9]|1[0-9]|2[0-3])|([0-9]|1[0-9]|2[0-3])-([0-9]|1[0-9]|2[0-3])|([0-9]|1[0-9]|2[0-3])(,([0-9]|1[0-9]|2[0-3]))*)\s+(\*|([1-9]|[1-2][0-9]|3[0-1])\/\d+|([1-9]|[1-2][0-9]|3[0-1])|([1-9]|[1-2][0-9]|3[0-1])-([1-9]|[1-2][0-9]|3[0-1])|([1-9]|[1-2][0-9]|3[0-1])(,([1-9]|[1-2][0-9]|3[0-1]))*)\s+(\*|([1-9]|1[0-2])\/\d+|([1-9]|1[0-2])|([1-9]|1[0-2])-([1-9]|1[0-2])|([1-9]|1[0-2])(,([1-9]|1[0-2]))*)\s+(\*|([0-6])\/\d+|([0-6])|([0-6])-([0-6])|([0-6])(,([0-6]))*)$'
+
+        if not re.match(cron_pattern, v):
+            raise ValueError('无效的cron表达式格式')
+
+        return v
+
+
+class TaskQueryParams(BaseModel):
+    """任务查询参数"""
+
+    task_type: Optional[str] = Field(
+        None,
+        description="任务类型",
+        regex=r'^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$'
+    )
+    tags: Optional[str] = Field(
+        None,
+        description="逗号分隔的任务标签",
+        max_length=200
+    )
+    status: Optional[str] = Field(
+        None,
+        description="任务状态",
+        regex=r'^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$'
+    )
+    enabled: Optional[bool] = Field(
+        None,
+        description="是否启用"
+    )
+    limit: int = Field(
+        50,
+        description="返回数量",
+        ge=1,
+        le=200
+    )
+    offset: int = Field(
+        0,
+        description="偏移量",
+        ge=0,
+        le=10000
+    )
+
+    @field_validator('tags')
+    @classmethod
+    def validate_tags(cls, v: Optional[str]) -> Optional[str]:
+        """验证标签参数"""
+        if v is None:
+            return v
+
+        tags = v.split(',')
+        if len(tags) > 10:
+            raise ValueError('查询标签数量不能超过10个')
+
+        for tag in tags:
+            tag = tag.strip()
+            if not tag:
+                raise ValueError('标签不能为空')
+            if len(tag) > 20:
+                raise ValueError(f'标签 "{tag}" 长度超过限制')
+
+        return v
+
+
+class TaskExecutionRequest(BaseModel):
+    """任务执行请求"""
+
+    task_id: str = Field(
+        ...,
+        description="任务ID",
+        min_length=1,
+        max_length=50,
+        regex=r'^[a-zA-Z0-9_-]+$'
+    )
+    force: bool = Field(
+        False,
+        description="是否强制执行"
+    )
+    params: Optional[Dict[str, Any]] = Field(
+        None,
+        description="执行参数"
+    )
+
+    @field_validator('task_id')
+    @classmethod
+    def validate_task_id(cls, v: str) -> str:
+        """验证任务ID"""
+        if not re.match(r'^[a-zA-Z0-9_-]+$', v):
+            raise ValueError('任务ID只能包含字母、数字、下划线和连字符')
+        return v
 
 
 @router.post("/register", response_model=TaskResponse)
@@ -41,7 +245,9 @@ async def register_task(task_config: TaskConfig):
 
 
 @router.delete("/{task_id}", response_model=TaskResponse)
-async def unregister_task(task_id: str):
+async def unregister_task(
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, regex=r'^[a-zA-Z0-9_-]+$')
+):
     """注销任务"""
     try:
         response = task_manager.unregister_task(task_id)
@@ -55,8 +261,12 @@ async def unregister_task(task_id: str):
 
 @router.get("/", response_model=List[TaskConfig])
 async def list_tasks(
-    task_type: Optional[TaskType] = None,
-    tags: Optional[str] = Query(None, description="Comma-separated tags"),
+    task_type: Optional[str] = Query(None, description="任务类型", regex=r'^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$'),
+    tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
+    status: Optional[str] = Query(None, description="任务状态", regex=r'^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$'),
+    enabled: Optional[bool] = Query(None, description="是否启用"),
+    limit: int = Query(50, description="返回数量", ge=1, le=200),
+    offset: int = Query(0, description="偏移量", ge=0, le=10000),
 ):
     """列出所有任务"""
     if use_mock:
@@ -90,7 +300,9 @@ async def list_tasks(
 
 
 @router.get("/{task_id}", response_model=TaskConfig)
-async def get_task(task_id: str):
+async def get_task(
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, regex=r'^[a-zA-Z0-9_-]+$')
+):
     """获取任务详情"""
     if use_mock:
         # Mock数据：返回模拟任务详情
