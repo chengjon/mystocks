@@ -6,8 +6,8 @@
 import re
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path
-from pydantic import BaseModel, Field, field_validator, EmailStr
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.services.data_source_factory import DataSourceFactory
@@ -22,195 +22,131 @@ class WatchlistItem(BaseModel):
     symbol: str = Field(..., description="股票代码", min_length=1, max_length=20)
     display_name: Optional[str] = Field(None, description="显示名称", max_length=100)
     exchange: Optional[str] = Field(None, description="交易所", max_length=20)
-    added_at: str = Field(..., description="添加时间", pattern=r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$')
+    added_at: str = Field(..., description="添加时间", pattern=r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
     notes: Optional[str] = Field(None, description="备注", max_length=500)
 
 
 class AddWatchlistRequest(BaseModel):
     """添加自选股请求"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r'^[A-Z0-9.]+$'
-    )
-    display_name: Optional[str] = Field(
-        None,
-        description="显示名称",
-        max_length=100
-    )
-    exchange: Optional[str] = Field(
-        None,
-        description="交易所",
-        max_length=20,
-        pattern=r'^[A-Z]+$'
-    )
-    market: Optional[str] = Field(
-        None,
-        description="市场（CN/HK/US）",
-        max_length=5,
-        pattern=r'^(CN|HK|US)$'
-    )
-    notes: Optional[str] = Field(
-        None,
-        description="备注",
-        max_length=500
-    )
-    group_id: Optional[int] = Field(
-        None,
-        description="分组ID",
-        ge=1
-    )
-    group_name: Optional[str] = Field(
-        None,
-        description="分组名称（如果不存在则自动创建）",
-        min_length=1,
-        max_length=50
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    display_name: Optional[str] = Field(None, description="显示名称", max_length=100)
+    exchange: Optional[str] = Field(None, description="交易所", max_length=20, pattern=r"^[A-Z]+$")
+    market: Optional[str] = Field(None, description="市场（CN/HK/US）", max_length=5, pattern=r"^(CN|HK|US)$")
+    notes: Optional[str] = Field(None, description="备注", max_length=500)
+    group_id: Optional[int] = Field(None, description="分组ID", ge=1)
+    group_name: Optional[str] = Field(None, description="分组名称（如果不存在则自动创建）", min_length=1, max_length=50)
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
-    @field_validator('exchange')
+    @field_validator("exchange")
     @classmethod
     def validate_exchange(cls, v: Optional[str]) -> Optional[str]:
         """验证交易所代码"""
         if v is None:
             return v
-        valid_exchanges = ['NYSE', 'NASDAQ', 'AMEX', 'SSE', 'SZSE', 'HKEX', 'NSE', 'BSE']
+        valid_exchanges = ["NYSE", "NASDAQ", "AMEX", "SSE", "SZSE", "HKEX", "NSE", "BSE"]
         if v.upper() not in valid_exchanges:
             raise ValueError(f'交易所代码无效，支持的交易所: {", ".join(valid_exchanges)}')
         return v.upper()
 
-    @field_validator('group_name')
+    @field_validator("group_name")
     @classmethod
     def validate_group_name(cls, v: Optional[str]) -> Optional[str]:
         """验证分组名称"""
         if v is None:
             return v
         if not v.strip():
-            raise ValueError('分组名称不能为空')
+            raise ValueError("分组名称不能为空")
         # 检查是否包含特殊字符
         if re.search(r'[<>"\'/\\]', v):
-            raise ValueError('分组名称不能包含特殊字符: < > " \' / \\')
+            raise ValueError("分组名称不能包含特殊字符: < > \" ' / \\")
         return v.strip()
 
 
 class UpdateWatchlistNotesRequest(BaseModel):
     """更新备注请求"""
 
-    notes: str = Field(
-        ...,
-        description="备注内容",
-        min_length=0,
-        max_length=500
-    )
+    notes: str = Field(..., description="备注内容", min_length=0, max_length=500)
 
-    @field_validator('notes')
+    @field_validator("notes")
     @classmethod
     def validate_notes(cls, v: str) -> str:
         """验证备注内容"""
         # 检查是否包含恶意脚本标签
-        if re.search(r'<script|javascript:|onload=|onerror=', v, re.IGNORECASE):
-            raise ValueError('备注内容包含不安全的脚本或标签')
+        if re.search(r"<script|javascript:|onload=|onerror=", v, re.IGNORECASE):
+            raise ValueError("备注内容包含不安全的脚本或标签")
         return v.strip()
 
 
 class CreateGroupRequest(BaseModel):
     """创建分组请求"""
 
-    group_name: str = Field(
-        ...,
-        description="分组名称",
-        min_length=1,
-        max_length=50,
-        pattern=r'^[^\s<>"\'/\\]+$'
-    )
+    group_name: str = Field(..., description="分组名称", min_length=1, max_length=50, pattern=r'^[^\s<>"\'/\\]+$')
 
-    @field_validator('group_name')
+    @field_validator("group_name")
     @classmethod
     def validate_group_name(cls, v: str) -> str:
         """验证分组名称"""
         if not v.strip():
-            raise ValueError('分组名称不能为空')
+            raise ValueError("分组名称不能为空")
         # 检查是否包含特殊字符
         if re.search(r'[<>"\'/\\]', v):
-            raise ValueError('分组名称不能包含特殊字符: < > " \' / \\')
+            raise ValueError("分组名称不能包含特殊字符: < > \" ' / \\")
         # 检查是否为纯空格
         if v.isspace():
-            raise ValueError('分组名称不能全是空格')
+            raise ValueError("分组名称不能全是空格")
         return v.strip()
 
 
 class UpdateGroupRequest(BaseModel):
     """更新分组请求"""
 
-    group_name: str = Field(
-        ...,
-        description="新的分组名称",
-        min_length=1,
-        max_length=50,
-        pattern=r'^[^\s<>"\'/\\]+$'
-    )
+    group_name: str = Field(..., description="新的分组名称", min_length=1, max_length=50, pattern=r'^[^\s<>"\'/\\]+$')
 
-    @field_validator('group_name')
+    @field_validator("group_name")
     @classmethod
     def validate_group_name(cls, v: str) -> str:
         """验证分组名称"""
         if not v.strip():
-            raise ValueError('分组名称不能为空')
+            raise ValueError("分组名称不能为空")
         # 检查是否包含特殊字符
         if re.search(r'[<>"\'/\\]', v):
-            raise ValueError('分组名称不能包含特殊字符: < > " \' / \\')
+            raise ValueError("分组名称不能包含特殊字符: < > \" ' / \\")
         return v.strip()
 
 
 class MoveStockRequest(BaseModel):
     """移动股票请求"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r'^[A-Z0-9.]+$'
-    )
-    from_group_id: int = Field(
-        ...,
-        description="原分组ID",
-        ge=1
-    )
-    to_group_id: int = Field(
-        ...,
-        description="目标分组ID",
-        ge=1
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    from_group_id: int = Field(..., description="原分组ID", ge=1)
+    to_group_id: int = Field(..., description="目标分组ID", ge=1)
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
-    @field_validator('to_group_id')
+    @field_validator("to_group_id")
     @classmethod
     def validate_group_ids(cls, v: int, info) -> int:
         """验证不能移动到同一个分组"""
-        if 'from_group_id' in info.data and v == info.data['from_group_id']:
-            raise ValueError('不能移动到同一个分组')
+        if "from_group_id" in info.data and v == info.data["from_group_id"]:
+            raise ValueError("不能移动到同一个分组")
         return v
 
 
@@ -312,8 +248,8 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
 
 @router.delete("/remove/{symbol}")
 async def remove_from_watchlist(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r'^[A-Z0-9.]+$'),
-    current_user: User = Depends(get_current_user)
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     从自选股列表中删除股票
@@ -339,8 +275,8 @@ async def remove_from_watchlist(
 
 @router.get("/check/{symbol}")
 async def check_in_watchlist(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r'^[A-Z0-9.]+$'),
-    current_user: User = Depends(get_current_user)
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     检查股票是否在自选股列表中
@@ -367,7 +303,7 @@ async def check_in_watchlist(
 @router.put("/notes/{symbol}")
 async def update_watchlist_notes(
     request: UpdateWatchlistNotesRequest,
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r'^[A-Z0-9.]+$'),
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -511,8 +447,7 @@ async def update_group(
 
 @router.delete("/groups/{group_id}")
 async def delete_group(
-    group_id: int = Path(..., description="分组ID", ge=1),
-    current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     删除分组（会同时删除该分组下的所有自选股）
@@ -533,8 +468,7 @@ async def delete_group(
 
 @router.get("/group/{group_id}")
 async def get_watchlist_by_group(
-    group_id: int = Path(..., description="分组ID", ge=1),
-    current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
 ) -> List[Dict]:
     """
     获取指定分组的自选股列表

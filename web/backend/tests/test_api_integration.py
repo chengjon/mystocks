@@ -10,9 +10,10 @@ P1改进 API集成测试框架
 遵循项目测试规范和API设计标准
 """
 
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
-from datetime import datetime
 
 # 导入应用
 from app.main import app
@@ -153,10 +154,7 @@ class TestCSRFProtection:
     def test_post_without_csrf_token_returns_403(self, client):
         """测试没有CSRF Token的POST请求返回403或422"""
         # 尝试没有CSRF token的POST请求
-        response = client.post(
-            "/api/v1/auth/login",
-            json={"username": "test", "password": "test"}
-        )
+        response = client.post("/api/v1/auth/login", json={"username": "test", "password": "test"})
 
         # 应该返回403 Forbidden或422 Unprocessable Entity
         assert response.status_code in [403, 422]
@@ -174,9 +172,7 @@ class TestCSRFProtection:
 
         # 使用CSRF Token进行请求（即使会失败，也验证token被接受）
         response = client.post(
-            "/api/v1/auth/login",
-            json={"username": "test", "password": "test"},
-            headers={"x-csrf-token": csrf_token}
+            "/api/v1/auth/login", json={"username": "test", "password": "test"}, headers={"x-csrf-token": csrf_token}
         )
 
         # 验证CSRF token被接受（可能因其他原因失败）
@@ -213,10 +209,7 @@ class TestCORS:
 
     def test_cors_headers_present(self, client):
         """测试CORS头信息"""
-        response = client.get(
-            "/health",
-            headers={"Origin": "http://localhost:3000"}
-        )
+        response = client.get("/health", headers={"Origin": "http://localhost:3000"})
 
         # 检查CORS相关头
         # 注意：具体的CORS头取决于应用配置
@@ -224,10 +217,7 @@ class TestCORS:
 
     def test_options_request_allowed(self, client):
         """测试OPTIONS请求被允许或不被允许"""
-        response = client.options(
-            "/health",
-            headers={"Origin": "http://localhost:3000"}
-        )
+        response = client.options("/health", headers={"Origin": "http://localhost:3000"})
 
         # OPTIONS请求可能返回200或204（如果被允许）或405（如果不被允许）
         assert response.status_code in [200, 204, 405]
@@ -301,10 +291,7 @@ class TestAuthEndpoints:
 
     def test_login_endpoint_requires_credentials(self, client):
         """测试登录端点需要凭证"""
-        response = client.post(
-            "/api/v1/auth/login",
-            json={}  # 空凭证
-        )
+        response = client.post("/api/v1/auth/login", json={})  # 空凭证
 
         # 应该返回400或401或422（验证错误）
         assert response.status_code in [400, 401, 422, 403]

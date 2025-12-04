@@ -229,7 +229,9 @@ class IndicatorOptimizationRequest(BaseModel):
     end_date: datetime = Field(..., description="结束日期")
     indicator_abbr: constr(min_length=1, max_length=10) = Field(..., description="指标简称")
     parameter_ranges: Dict[str, List[Union[int, float]]] = Field(..., description="参数范围")
-    optimization_target: str = Field("profit", pattern="^(profit|sharpe|max_drawdown|win_rate)$", description="优化目标")
+    optimization_target: str = Field(
+        "profit", pattern="^(profit|sharpe|max_drawdown|win_rate)$", description="优化目标"
+    )
     max_iterations: int = Field(50, ge=1, le=200, description="最大迭代次数")
 
 

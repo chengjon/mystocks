@@ -375,7 +375,9 @@ async def list_tasks(
         pattern=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
     ),
     tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
-    status: Optional[str] = Query(None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"),
+    status: Optional[str] = Query(
+        None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"
+    ),
     enabled: Optional[bool] = Query(None, description="是否启用"),
     limit: int = Query(50, description="返回数量", ge=1, le=200),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
