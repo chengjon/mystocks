@@ -285,10 +285,7 @@ async def get_all_indicators(
 
         if circuit_breaker.is_open():
             logger.warning(f"⚠️ Circuit breaker for technical_analysis is OPEN")
-            raise HTTPException(
-                status_code=503,
-                detail="技术分析服务暂不可用，请稍后重试"
-            )
+            raise HTTPException(status_code=503, detail="技术分析服务暂不可用，请稍后重试")
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -306,7 +303,9 @@ async def get_all_indicators(
             circuit_breaker.record_success()
         except Exception as api_error:
             circuit_breaker.record_failure()
-            logger.error(f"❌ Technical analysis API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            logger.error(
+                f"❌ Technical analysis API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"
+            )
             raise
 
         if "error" in result:

@@ -202,8 +202,7 @@ async def get_fund_flow(
             # 熔断器打开，使用降级策略返回缓存数据
             logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data")
             return create_success_response(
-                data={"fund_flow": [], "total": 0},
-                message=f"市场数据服务暂不可用，请稍后重试"
+                data={"fund_flow": [], "total": 0}, message=f"市场数据服务暂不可用，请稍后重试"
             )
 
         # 使用数据源工厂获取市场数据
@@ -667,10 +666,7 @@ async def get_kline_data(
         if circuit_breaker.is_open():
             # 熔断器打开，使用降级策略
             logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
-            raise HTTPException(
-                status_code=503,
-                detail="市场数据服务暂不可用，请稍后重试"
-            )
+            raise HTTPException(status_code=503, detail="市场数据服务暂不可用，请稍后重试")
 
         service = get_stock_search_service()
         try:
