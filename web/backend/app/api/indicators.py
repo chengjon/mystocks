@@ -26,7 +26,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
-from app.core.config import get_settings
+from app.core.config import settings
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
@@ -51,7 +51,6 @@ from app.services.indicator_calculator import IndicatorCalculationError, Insuffi
 from app.services.indicator_registry import IndicatorCategory, get_indicator_registry
 
 logger = structlog.get_logger()
-settings = get_settings()
 router = APIRouter()
 
 
@@ -230,7 +229,7 @@ class IndicatorOptimizationRequest(BaseModel):
     end_date: datetime = Field(..., description="结束日期")
     indicator_abbr: constr(min_length=1, max_length=10) = Field(..., description="指标简称")
     parameter_ranges: Dict[str, List[Union[int, float]]] = Field(..., description="参数范围")
-    optimization_target: str = Field("profit", regex="^(profit|sharpe|max_drawdown|win_rate)$", description="优化目标")
+    optimization_target: str = Field("profit", pattern="^(profit|sharpe|max_drawdown|win_rate)$", description="优化目标")
     max_iterations: int = Field(50, ge=1, le=200, description="最大迭代次数")
 
 

@@ -22,7 +22,7 @@ class WatchlistItem(BaseModel):
     symbol: str = Field(..., description="股票代码", min_length=1, max_length=20)
     display_name: Optional[str] = Field(None, description="显示名称", max_length=100)
     exchange: Optional[str] = Field(None, description="交易所", max_length=20)
-    added_at: str = Field(..., description="添加时间", regex=r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$')
+    added_at: str = Field(..., description="添加时间", pattern=r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$')
     notes: Optional[str] = Field(None, description="备注", max_length=500)
 
 
@@ -45,7 +45,7 @@ class AddWatchlistRequest(BaseModel):
         None,
         description="交易所",
         max_length=20,
-        regex=r'^[A-Z]+$'
+        pattern=r'^[A-Z]+$'
     )
     market: Optional[str] = Field(
         None,

@@ -22,12 +22,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocke
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 from app.api.auth import User, get_current_active_user, get_current_user
-from app.core.config import get_settings
+from app.core.config import settings
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.services.email_service import get_email_service
 
 logger = structlog.get_logger()
-settings = get_settings()
 router = APIRouter()
 
 
@@ -42,8 +41,8 @@ class SendEmailRequest(BaseModel):
     content: constr(min_length=1, max_length=100000, strip_whitespace=True) = Field(
         ..., description="邮件内容，1-100000字符"
     )
-    content_type: str = Field("plain", regex="^(plain|html)$", description="内容类型: plain 或 html")
-    priority: str = Field("normal", regex="^(low|normal|high|urgent)$", description="邮件优先级")
+    content_type: str = Field("plain", pattern="^(plain|html)$", description="内容类型: plain 或 html")
+    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级")
     scheduled_at: Optional[datetime] = Field(None, description="定时发送时间（UTC），为空则立即发送")
 
     @validator("to_addresses")
@@ -74,7 +73,7 @@ class SendWelcomeEmailRequest(BaseModel):
         ..., description="用户姓名，1-100字符"
     )
     welcome_offer: Optional[str] = Field(None, max_length=500, description="欢迎优惠信息，最多500字符")
-    language: str = Field("zh-CN", regex="^(zh-CN|en-US)$", description="邮件语言")
+    language: str = Field("zh-CN", pattern="^(zh-CN|en-US)$", description="邮件语言")
 
 
 class SendNewsletterRequest(BaseModel):
@@ -86,7 +85,7 @@ class SendNewsletterRequest(BaseModel):
         ..., min_items=1, max_items=50, description="自选股列表，1-50个股票代码"
     )
     news_data: List[Dict] = Field(..., min_items=1, max_items=100, description="新闻数据，1-100条新闻")
-    newsletter_type: str = Field("daily", regex="^(daily|weekly|monthly)$", description="简报类型")
+    newsletter_type: str = Field("daily", pattern="^(daily|weekly|monthly)$", description="简报类型")
 
     @validator("watchlist_symbols")
     def validate_symbols(cls, v):
@@ -101,12 +100,12 @@ class SendPriceAlertRequest(BaseModel):
 
     user_email: EmailStr = Field(..., description="用户邮箱")
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
-    symbol: constr(min_length=1, max_length=20, strip_whitespace=True, regex=r"^[A-Za-z0-9\.]+$") = Field(
+    symbol: constr(min_length=1, max_length=20, strip_whitespace=True, pattern=r"^[A-Za-z0-9\.]+$") = Field(
         ..., description="股票代码"
     )
     stock_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="股票名称")
     current_price: float = Field(..., gt=0, description="当前价格，必须大于0")
-    alert_condition: str = Field(..., regex="^(高于|低于|突破|跌破)$", description="提醒条件")
+    alert_condition: str = Field(..., pattern="^(高于|低于|突破|跌破)$", description="提醒条件")
     alert_price: float = Field(..., gt=0, description="提醒价格，必须大于0")
     percentage_change: Optional[float] = Field(None, ge=-100, le=1000, description="价格变化百分比，-100%到1000%")
 
@@ -128,11 +127,11 @@ class RealTimeNotification(BaseModel):
 
     notification_id: str = Field(..., description="通知唯一ID")
     user_id: int = Field(..., description="用户ID")
-    type: str = Field(..., regex="^(price_alert|news|system|reminder)$", description="通知类型")
+    type: str = Field(..., pattern="^(price_alert|news|system|reminder)$", description="通知类型")
     title: constr(min_length=1, max_length=200) = Field(..., description="通知标题")
     message: constr(min_length=1, max_length=1000) = Field(..., description="通知内容")
     data: Optional[Dict] = Field(None, description="通知相关数据")
-    priority: str = Field("normal", regex="^(low|normal|high|urgent)$", description="优先级")
+    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="优先级")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
     expires_at: Optional[datetime] = Field(None, description="过期时间")
     action_required: bool = Field(False, description="是否需要用户操作")

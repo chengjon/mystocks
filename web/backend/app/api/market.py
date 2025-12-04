@@ -57,7 +57,7 @@ router = APIRouter(prefix="/api/market", tags=["市场数据"])
 class MarketDataRequest(BaseModel):
     """市场数据请求基类"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
 
     @field_validator("symbol")
     @classmethod
@@ -73,8 +73,8 @@ class MarketDataRequest(BaseModel):
 class FundFlowRequest(BaseModel):
     """资金流向请求参数"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
-    timeframe: str = Field("1", description="时间维度: 1/3/5/10天", regex=r"^[13510]$")
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    timeframe: str = Field("1", description="时间维度: 1/3/5/10天", pattern=r"^[13510]$")
     start_date: Optional[date] = Field(None, description="开始日期")
     end_date: Optional[date] = Field(None, description="结束日期")
 
@@ -109,10 +109,10 @@ class FundFlowRequest(BaseModel):
 class ETFQueryParams(BaseModel):
     """ETF查询参数"""
 
-    symbol: Optional[str] = Field(None, description="ETF代码", min_length=1, max_length=10, regex=r"^[A-Z0-9]+$")
+    symbol: Optional[str] = Field(None, description="ETF代码", min_length=1, max_length=10, pattern=r"^[A-Z0-9]+$")
     keyword: Optional[str] = Field(None, description="关键词搜索", min_length=1, max_length=50)
-    market: Optional[str] = Field(None, description="市场类型", regex=r"^(SH|SZ)$")
-    category: Optional[str] = Field(None, description="ETF类型", regex=r"^(股票|债券|商品|货币|QDII)$")
+    market: Optional[str] = Field(None, description="市场类型", pattern=r"^(SH|SZ)$")
+    category: Optional[str] = Field(None, description="ETF类型", pattern=r"^(股票|债券|商品|货币|QDII)$")
     limit: int = Field(100, description="返回数量", ge=1, le=500)
     offset: int = Field(0, description="偏移量", ge=0, le=10000)
 
@@ -144,8 +144,8 @@ class ETFQueryParams(BaseModel):
 class RefreshRequest(BaseModel):
     """数据刷新请求"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
-    timeframe: Optional[str] = Field(None, description="时间维度", regex=r"^[13510]$")
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    timeframe: Optional[str] = Field(None, description="时间维度", pattern=r"^[13510]$")
 
     @field_validator("symbol")
     @classmethod
@@ -165,7 +165,7 @@ class RefreshRequest(BaseModel):
 @cache_response("fund_flow", ttl=300)  # 🚀 添加5分钟缓存
 async def get_fund_flow(
     symbol: str = Query(..., description="股票代码", min_length=1, max_length=20),
-    timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天", regex=r"^[13510]$"),
+    timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天", pattern=r"^[13510]$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     current_user: User = Depends(get_current_user),
@@ -254,8 +254,8 @@ async def get_fund_flow(
 
 @router.post("/fund-flow/refresh", summary="刷新资金流向")
 async def refresh_fund_flow(
-    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$"),
-    timeframe: str = Query(default="1", description="时间维度", regex=r"^[13510]$"),
+    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    timeframe: str = Query(default="1", description="时间维度", pattern=r"^[13510]$"),
     service: MarketDataService = Depends(get_market_data_service),
 ):
     """
@@ -296,10 +296,10 @@ async def refresh_fund_flow(
 @router.get("/etf/list", summary="查询ETF列表")
 @cache_response("etf_spot", ttl=60)  # 🚀 添加1分钟缓存（ETF行情更新较快）
 async def get_etf_list(
-    symbol: Optional[str] = Query(None, description="ETF代码", min_length=1, max_length=10, regex=r"^[A-Z0-9]+$"),
+    symbol: Optional[str] = Query(None, description="ETF代码", min_length=1, max_length=10, pattern=r"^[A-Z0-9]+$"),
     keyword: Optional[str] = Query(None, description="关键词搜索", min_length=1, max_length=50),
-    market: Optional[str] = Query(None, description="市场类型", regex=r"^(SH|SZ)$"),
-    category: Optional[str] = Query(None, description="ETF类型", regex=r"^(股票|债券|商品|货币|QDII)$"),
+    market: Optional[str] = Query(None, description="市场类型", pattern=r"^(SH|SZ)$"),
+    category: Optional[str] = Query(None, description="ETF类型", pattern=r"^(股票|债券|商品|货币|QDII)$"),
     limit: int = Query(default=100, description="返回数量", ge=1, le=500),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
     service: MarketDataService = Depends(get_market_data_service),
@@ -623,9 +623,9 @@ async def get_stock_list(
 async def get_kline_data(
     stock_code: str = Query(..., description="股票代码（6位数字或带交易所后缀）"),
     period: str = Query(
-        default="daily", description="时间周期: daily/weekly/monthly", regex=r"^(daily|weekly|monthly)$"
+        default="daily", description="时间周期: daily/weekly/monthly", pattern=r"^(daily|weekly|monthly)$"
     ),
-    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", regex=r"^(qfq|hfq|)$"),
+    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", pattern=r"^(qfq|hfq|)$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
 ):
