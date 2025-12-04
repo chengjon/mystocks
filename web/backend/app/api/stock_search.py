@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.api.auth import User, get_current_user
+from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import APIResponse, ErrorResponse, create_error_response
 from app.schema import ResponseModel, StockListQueryModel, StockSymbolModel  # 导入P0改进的验证模型
 from app.services.stock_search_service import StockSearchService, get_stock_search_service
@@ -275,7 +276,9 @@ async def search_stocks(
             )
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details
+            )
 
         # 清理搜索关键词，防止注入攻击
         clean_query = re.sub(r'[<>"\'/\\;]', "", validated_params.query.strip())
@@ -316,14 +319,36 @@ async def search_stocks(
             offset = (validated_params.page - 1) * validated_params.page_size
             return results[offset : offset + validated_params.page_size]
         else:
+            # P0改进 Task 3: 使用熔断器保护外部API调用
+            circuit_breaker = get_circuit_breaker("stock_search")
+
+            if circuit_breaker.is_open():
+                # 熔断器打开，降级到Mock数据
+                logger.warning(f"⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
+                from app.mock.unified_mock_data import get_mock_data_manager
+
+                mock_manager = get_mock_data_manager()
+                mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
+                results = mock_data.get("data", [])
+
+                # 应用分页
+                offset = (validated_params.page - 1) * validated_params.page_size
+                return results[offset : offset + validated_params.page_size]
+
             # 正常获取真实数据
             service = get_stock_search_service()
-            results = service.unified_search(
-                clean_query,
-                market=market,
-                limit=validated_params.page_size,
-                offset=(validated_params.page - 1) * validated_params.page_size,
-            )
+            try:
+                results = service.unified_search(
+                    clean_query,
+                    market=market,
+                    limit=validated_params.page_size,
+                    offset=(validated_params.page - 1) * validated_params.page_size,
+                )
+                circuit_breaker.record_success()
+            except Exception as api_error:
+                circuit_breaker.record_failure()
+                logger.error(f"❌ Stock search API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+                raise
 
             # 应用排序
             if validated_params.sort_by and validated_params.sort_by != "relevance":
