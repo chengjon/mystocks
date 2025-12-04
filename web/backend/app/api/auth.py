@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
 from app.core.config import settings
+from app.core.responses import create_success_response
 from app.core.security import (
     Token,
     TokenData,
@@ -218,3 +219,77 @@ def check_permission(user_role: str, required_role: str) -> bool:
     role_hierarchy = {"user": 0, "admin": 1}
 
     return role_hierarchy.get(user_role, 0) >= role_hierarchy.get(required_role, 0)
+
+
+# SECURITY FIX 1.2: CSRF Token获取端点
+@router.get("/csrf/token")
+async def get_csrf_token():
+    """
+    获取CSRF保护令牌 - v1版本 (标准化端点)
+
+    用于防止跨站请求伪造（CSRF）攻击。
+    前端应该在发送修改请求（POST/PUT/PATCH/DELETE）时，
+    在X-CSRF-Token请求头中包含此令牌。
+
+    **响应示例**:
+    ```json
+    {
+        "code": "SUCCESS",
+        "message": "CSRF token generated successfully",
+        "data": {
+            "token": "...base64-encoded-token...",
+            "token_type": "csrf",
+            "expires_in": 3600
+        },
+        "timestamp": 1733318400.123
+    }
+    ```
+
+    **使用示例**:
+    ```javascript
+    // 获取CSRF token
+    const response = await fetch('/api/v1/auth/csrf/token');
+    const { data } = await response.json();
+    const csrfToken = data.token;
+
+    // 发送受保护的请求
+    fetch('/api/v1/data', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ... })
+    });
+    ```
+
+    **错误码**:
+    - SUCCESS: Token生成成功
+    - INTERNAL_SERVER_ERROR: Token生成失败
+
+    **HTTP状态码**:
+    - 200: 成功获取token
+    - 500: 服务器错误
+
+    **Rate Limit**: 无限制（CSRF token获取不计入速率限制）
+    """
+    from app.main import csrf_manager
+
+    try:
+        # 生成新的CSRF token
+        token = csrf_manager.generate_token()
+
+        return create_success_response(
+            data={
+                "token": token,
+                "token_type": "csrf",
+                "expires_in": csrf_manager.token_timeout,
+            },
+            message="CSRF token generated successfully",
+        )
+    except Exception as e:
+        return create_success_response(
+            data=None,
+            message=f"Failed to generate CSRF token: {str(e)}",
+            code="INTERNAL_SERVER_ERROR",
+        )

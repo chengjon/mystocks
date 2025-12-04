@@ -19,12 +19,19 @@ from datetime import date, datetime
 from typing import List, Optional
 
 import pymysql
-from fastapi import APIRouter, Depends, HTTPException, Query, Path
-from pydantic import BaseModel, Field, field_validator
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.cache_utils import cache_response, clear_api_cache  # 导入缓存工具
-from app.core.responses import create_success_response, create_error_response, ErrorCodes, ResponseMessages
-from app.core.security import get_current_user, User
+from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
+from app.core.security import User, get_current_user
+from app.schema import (  # 导入P0改进的验证模型
+    DateRangeModel,
+    ErrorResponseModel,
+    MarketDataQueryModel,
+    ResponseModel,
+    StockSymbolModel,
+)
 from app.schemas.market_schemas import (
     ChipRaceRequest,
     ChipRaceResponse,
@@ -49,73 +56,51 @@ router = APIRouter(prefix="/api/market", tags=["市场数据"])
 class MarketDataRequest(BaseModel):
     """市场数据请求基类"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        regex=r'^[A-Z0-9.]+$'
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
 
 class FundFlowRequest(BaseModel):
     """资金流向请求参数"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        regex=r'^[A-Z0-9.]+$'
-    )
-    timeframe: str = Field(
-        "1",
-        description="时间维度: 1/3/5/10天",
-        regex=r'^[13510]$'
-    )
-    start_date: Optional[date] = Field(
-        None,
-        description="开始日期"
-    )
-    end_date: Optional[date] = Field(
-        None,
-        description="结束日期"
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
+    timeframe: str = Field("1", description="时间维度: 1/3/5/10天", regex=r"^[13510]$")
+    start_date: Optional[date] = Field(None, description="开始日期")
+    end_date: Optional[date] = Field(None, description="结束日期")
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
-    @field_validator('end_date')
+    @field_validator("end_date")
     @classmethod
     def validate_date_range(cls, v: Optional[date], values) -> Optional[date]:
         """验证结束日期必须大于开始日期"""
-        if v is None or 'start_date' not in values or values['start_date'] is None:
+        if v is None or "start_date" not in values or values["start_date"] is None:
             return v
 
-        if v <= values['start_date']:
-            raise ValueError('结束日期必须大于开始日期')
+        if v <= values["start_date"]:
+            raise ValueError("结束日期必须大于开始日期")
 
         # 限制查询范围不能超过1年
-        time_diff = v - values['start_date']
+        time_diff = v - values["start_date"]
         if time_diff.days > 365:
-            raise ValueError('查询时间范围不能超过365天')
+            raise ValueError("查询时间范围不能超过365天")
 
         return v
 
@@ -123,43 +108,14 @@ class FundFlowRequest(BaseModel):
 class ETFQueryParams(BaseModel):
     """ETF查询参数"""
 
-    symbol: Optional[str] = Field(
-        None,
-        description="ETF代码",
-        min_length=1,
-        max_length=10,
-        regex=r'^[A-Z0-9]+$'
-    )
-    keyword: Optional[str] = Field(
-        None,
-        description="关键词搜索",
-        min_length=1,
-        max_length=50
-    )
-    market: Optional[str] = Field(
-        None,
-        description="市场类型",
-        regex=r'^(SH|SZ)$'
-    )
-    category: Optional[str] = Field(
-        None,
-        description="ETF类型",
-        regex=r'^(股票|债券|商品|货币|QDII)$'
-    )
-    limit: int = Field(
-        100,
-        description="返回数量",
-        ge=1,
-        le=500
-    )
-    offset: int = Field(
-        0,
-        description="偏移量",
-        ge=0,
-        le=10000
-    )
+    symbol: Optional[str] = Field(None, description="ETF代码", min_length=1, max_length=10, regex=r"^[A-Z0-9]+$")
+    keyword: Optional[str] = Field(None, description="关键词搜索", min_length=1, max_length=50)
+    market: Optional[str] = Field(None, description="市场类型", regex=r"^(SH|SZ)$")
+    category: Optional[str] = Field(None, description="ETF类型", regex=r"^(股票|债券|商品|货币|QDII)$")
+    limit: int = Field(100, description="返回数量", ge=1, le=500)
+    offset: int = Field(0, description="偏移量", ge=0, le=10000)
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: Optional[str]) -> Optional[str]:
         """验证ETF代码"""
@@ -167,7 +123,7 @@ class ETFQueryParams(BaseModel):
             return v
         return v.upper()
 
-    @field_validator('keyword')
+    @field_validator("keyword")
     @classmethod
     def validate_keyword(cls, v: Optional[str]) -> Optional[str]:
         """验证搜索关键词"""
@@ -175,11 +131,11 @@ class ETFQueryParams(BaseModel):
             return v
 
         # 检查是否包含SQL注入模式
-        sql_patterns = ['union', 'select', 'insert', 'update', 'delete', 'drop', 'exec']
+        sql_patterns = ["union", "select", "insert", "update", "delete", "drop", "exec"]
         v_lower = v.lower()
         for pattern in sql_patterns:
             if pattern in v_lower:
-                raise ValueError('搜索关键词包含不安全内容')
+                raise ValueError("搜索关键词包含不安全内容")
 
         return v.strip()
 
@@ -187,27 +143,17 @@ class ETFQueryParams(BaseModel):
 class RefreshRequest(BaseModel):
     """数据刷新请求"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        regex=r'^[A-Z0-9.]+$'
-    )
-    timeframe: Optional[str] = Field(
-        None,
-        description="时间维度",
-        regex=r'^[13510]$'
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
+    timeframe: Optional[str] = Field(None, description="时间维度", regex=r"^[13510]$")
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
 
@@ -217,10 +163,10 @@ class RefreshRequest(BaseModel):
 @router.get("/fund-flow", summary="查询资金流向")
 @cache_response("fund_flow", ttl=300)  # 🚀 添加5分钟缓存
 async def get_fund_flow(
-    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, regex=r'^[A-Z0-9.]+$'),
-    timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天", regex=r'^[13510]$'),
-    start_date: Optional[date] = Query(None, description="开始日期"),
-    end_date: Optional[date] = Query(None, description="结束日期"),
+    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20),
+    timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天", regex=r"^[13510]$"),
+    start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
+    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -233,9 +179,21 @@ async def get_fund_flow(
 
     **缓存策略:** 5分钟TTL（减少数据库压力）
     **数据源:** 数据源工厂（Mock/Real/Hybrid模式）
+    **验证:** P0改进 Task 2 - 使用Pydantic验证模型
     **返回:** 资金流向列表
     """
     try:
+        # P0改进: 使用MarketDataQueryModel验证输入参数
+        # 将字符串日期转换为datetime对象用于验证
+        from datetime import datetime as dt_convert
+
+        validated_params = MarketDataQueryModel(
+            symbol=symbol,
+            start_date=dt_convert.strptime(start_date, "%Y-%m-%d") if start_date else dt_convert.now(),
+            end_date=dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else dt_convert.now(),
+            interval="daily",  # fund-flow使用daily间隔
+        )
+
         # 使用数据源工厂获取市场数据
         from app.services.data_source_factory import get_data_source_factory
 
@@ -246,10 +204,10 @@ async def get_fund_flow(
             "market",
             "fund-flow",
             {
-                "symbol": symbol,
+                "symbol": validated_params.symbol,
                 "timeframe": timeframe,
-                "start_date": str(start_date) if start_date else None,
-                "end_date": str(end_date) if end_date else None,
+                "start_date": validated_params.start_date.strftime("%Y-%m-%d") if start_date else None,
+                "end_date": validated_params.end_date.strftime("%Y-%m-%d") if end_date else None,
             },
         )
 
@@ -258,24 +216,26 @@ async def get_fund_flow(
         fund_flow_data = [FundFlowResponse.model_validate(r) for r in data]
 
         return create_success_response(
-            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)},
-            message=f"获取{symbol}资金流向数据成功"
+            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)}, message=f"获取{symbol}资金流向数据成功"
         )
 
+    except ValidationError as ve:
+        # P0改进: 标准化验证错误响应
+        error_details = [{"field": err["loc"][0], "message": err["msg"]} for err in ve.errors()]
+        return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取资金流向数据失败: {str(e)}"
-            ).model_dump()
+                ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取资金流向数据失败: {str(e)}"
+            ).model_dump(),
         )
 
 
 @router.post("/fund-flow/refresh", summary="刷新资金流向")
 async def refresh_fund_flow(
-    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, regex=r'^[A-Z0-9.]+$'),
-    timeframe: str = Query(default="1", description="时间维度", regex=r'^[13510]$'),
+    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$"),
+    timeframe: str = Query(default="1", description="时间维度", regex=r"^[13510]$"),
     service: MarketDataService = Depends(get_market_data_service),
 ):
     """
@@ -290,14 +250,13 @@ async def refresh_fund_flow(
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    ErrorCodes.OPERATION_FAILED,
-                    result.get("message", "刷新资金流向数据失败")
-                ).model_dump()
+                    ErrorCodes.OPERATION_FAILED, result.get("message", "刷新资金流向数据失败")
+                ).model_dump(),
             )
 
         return create_success_response(
             data={"symbol": symbol, "timeframe": timeframe, "refreshed": True},
-            message=result.get("message", f"{symbol}资金流向数据刷新成功")
+            message=result.get("message", f"{symbol}资金流向数据刷新成功"),
         )
 
     except HTTPException:
@@ -306,9 +265,8 @@ async def refresh_fund_flow(
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR,
-                f"刷新资金流向数据时发生错误: {str(e)}"
-            ).model_dump()
+                ErrorCodes.INTERNAL_SERVER_ERROR, f"刷新资金流向数据时发生错误: {str(e)}"
+            ).model_dump(),
         )
 
 
@@ -318,10 +276,10 @@ async def refresh_fund_flow(
 @router.get("/etf/list", summary="查询ETF列表")
 @cache_response("etf_spot", ttl=60)  # 🚀 添加1分钟缓存（ETF行情更新较快）
 async def get_etf_list(
-    symbol: Optional[str] = Query(None, description="ETF代码", min_length=1, max_length=10, regex=r'^[A-Z0-9]+$'),
+    symbol: Optional[str] = Query(None, description="ETF代码", min_length=1, max_length=10, regex=r"^[A-Z0-9]+$"),
     keyword: Optional[str] = Query(None, description="关键词搜索", min_length=1, max_length=50),
-    market: Optional[str] = Query(None, description="市场类型", regex=r'^(SH|SZ)$'),
-    category: Optional[str] = Query(None, description="ETF类型", regex=r'^(股票|债券|商品|货币|QDII)$'),
+    market: Optional[str] = Query(None, description="市场类型", regex=r"^(SH|SZ)$"),
+    category: Optional[str] = Query(None, description="ETF类型", regex=r"^(股票|债券|商品|货币|QDII)$"),
     limit: int = Query(default=100, description="返回数量", ge=1, le=500),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
     service: MarketDataService = Depends(get_market_data_service),
@@ -343,16 +301,13 @@ async def get_etf_list(
 
         return create_success_response(
             data={"etf_list": etf_data, "total": len(etf_data), "symbol": symbol, "keyword": keyword},
-            message=f"获取ETF列表成功，共{len(etf_data)}条记录"
+            message=f"获取ETF列表成功，共{len(etf_data)}条记录",
         )
 
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取ETF列表失败: {str(e)}"
-            ).model_dump()
+            detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取ETF列表失败: {str(e)}").model_dump(),
         )
 
 
@@ -517,18 +472,15 @@ async def get_market_quotes(
                 "total": len(quotes_data),
                 "symbols": symbol_list,
                 "source": result.get("source", "market"),
-                "endpoint": result.get("endpoint", "quotes")
+                "endpoint": result.get("endpoint", "quotes"),
             },
-            message=f"获取{len(symbol_list)}只股票实时行情成功"
+            message=f"获取{len(symbol_list)}只股票实时行情成功",
         )
 
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取实时行情失败: {str(e)}"
-            ).model_dump()
+            detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取实时行情失败: {str(e)}").model_dump(),
         )
 
 
@@ -570,9 +522,9 @@ async def get_stock_list(
                     "source": "mock",
                     "search": search,
                     "exchange": exchange,
-                    "security_type": security_type
+                    "security_type": security_type,
                 },
-                message="获取股票列表成功（Mock数据）"
+                message="获取股票列表成功（Mock数据）",
             )
         else:
             # 正常获取真实数据
@@ -632,18 +584,15 @@ async def get_stock_list(
                     "source": "real",
                     "search": search,
                     "exchange": exchange,
-                    "security_type": security_type
+                    "security_type": security_type,
                 },
-                message=f"获取股票列表成功，共{len(stocks)}条记录"
+                message=f"获取股票列表成功，共{len(stocks)}条记录",
             )
 
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.DATABASE_ERROR,
-                f"查询股票列表失败: {str(e)}"
-            ).model_dump()
+            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询股票列表失败: {str(e)}").model_dump(),
         )
 
 
@@ -653,8 +602,10 @@ async def get_stock_list(
 @router.get("/kline", summary="查询K线数据")
 async def get_kline_data(
     stock_code: str = Query(..., description="股票代码（6位数字或带交易所后缀）"),
-    period: str = Query(default="daily", description="时间周期: daily/weekly/monthly"),
-    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串"),
+    period: str = Query(
+        default="daily", description="时间周期: daily/weekly/monthly", regex=r"^(daily|weekly|monthly)$"
+    ),
+    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", regex=r"^(qfq|hfq|)$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
 ):
@@ -674,14 +625,25 @@ async def get_kline_data(
     - start_date/end_date: 日期范围（可选，默认最近60个交易日）
 
     **数据源**: AKShare stock_zh_a_hist()
+    **验证**: P0改进 Task 2 - 使用MarketDataQueryModel验证参数
     **返回**: K线数据数组，包含OHLCV及技术指标
     """
     try:
+        from datetime import datetime as dt_convert
+
         from app.services.stock_search_service import get_stock_search_service
+
+        # P0改进: 使用MarketDataQueryModel验证输入参数
+        validated_params = MarketDataQueryModel(
+            symbol=stock_code,
+            start_date=dt_convert.strptime(start_date, "%Y-%m-%d") if start_date else dt_convert.now(),
+            end_date=dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else dt_convert.now(),
+            interval=period,
+        )
 
         service = get_stock_search_service()
         result = service.get_a_stock_kline(
-            symbol=stock_code,
+            symbol=validated_params.symbol,
             period=period,
             adjust=adjust,
             start_date=start_date,
@@ -697,6 +659,10 @@ async def get_kline_data(
 
         return {"success": True, **result, "timestamp": datetime.now().isoformat()}
 
+    except ValidationError as ve:
+        # P0改进: 标准化验证错误响应
+        error_details = [{"field": err["loc"][0], "message": err["msg"]} for err in ve.errors()]
+        return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except ValueError as e:
         # Invalid stock code format or parameters
         raise HTTPException(status_code=400, detail=str(e))
