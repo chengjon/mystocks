@@ -23,6 +23,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.cache_utils import cache_response, clear_api_cache  # 导入缓存工具
+from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.core.security import User, get_current_user
 from app.schema import (  # 导入P0改进的验证模型
@@ -194,22 +195,41 @@ async def get_fund_flow(
             interval="daily",  # fund-flow使用daily间隔
         )
 
+        # P0改进 Task 3: 使用熔断器保护外部API调用
+        circuit_breaker = get_circuit_breaker("market_data")
+
+        if circuit_breaker.is_open():
+            # 熔断器打开，使用降级策略返回缓存数据
+            logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data")
+            return create_success_response(
+                data={"fund_flow": [], "total": 0},
+                message=f"市场数据服务暂不可用，请稍后重试"
+            )
+
         # 使用数据源工厂获取市场数据
         from app.services.data_source_factory import get_data_source_factory
 
         factory = await get_data_source_factory()
 
         # 调用数据源工厂获取fund-flow数据
-        result = await factory.get_data(
-            "market",
-            "fund-flow",
-            {
-                "symbol": validated_params.symbol,
-                "timeframe": timeframe,
-                "start_date": validated_params.start_date.strftime("%Y-%m-%d") if start_date else None,
-                "end_date": validated_params.end_date.strftime("%Y-%m-%d") if end_date else None,
-            },
-        )
+        try:
+            result = await factory.get_data(
+                "market",
+                "fund-flow",
+                {
+                    "symbol": validated_params.symbol,
+                    "timeframe": timeframe,
+                    "start_date": validated_params.start_date.strftime("%Y-%m-%d") if start_date else None,
+                    "end_date": validated_params.end_date.strftime("%Y-%m-%d") if end_date else None,
+                },
+            )
+            # 成功调用，记录成功
+            circuit_breaker.record_success()
+        except Exception as api_error:
+            # API调用失败，记录失败并打开熔断器
+            circuit_breaker.record_failure()
+            logger.error(f"❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            raise
 
         # 转换为响应格式
         data = result.get("data", [])
@@ -641,14 +661,33 @@ async def get_kline_data(
             interval=period,
         )
 
+        # P0改进 Task 3: 使用熔断器保护外部API调用
+        circuit_breaker = get_circuit_breaker("market_data")
+
+        if circuit_breaker.is_open():
+            # 熔断器打开，使用降级策略
+            logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
+            raise HTTPException(
+                status_code=503,
+                detail="市场数据服务暂不可用，请稍后重试"
+            )
+
         service = get_stock_search_service()
-        result = service.get_a_stock_kline(
-            symbol=validated_params.symbol,
-            period=period,
-            adjust=adjust,
-            start_date=start_date,
-            end_date=end_date,
-        )
+        try:
+            result = service.get_a_stock_kline(
+                symbol=validated_params.symbol,
+                period=period,
+                adjust=adjust,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            # 成功调用，记录成功
+            circuit_breaker.record_success()
+        except Exception as api_error:
+            # API调用失败，记录失败
+            circuit_breaker.record_failure()
+            logger.error(f"❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            raise
 
         if result is None:
             raise HTTPException(status_code=404, detail=f"股票代码 {stock_code} 不存在或暂无K线数据")
