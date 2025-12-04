@@ -245,6 +245,120 @@ export const mockStrategiesData = {
 };
 
 /**
+ * Mock data for risk monitoring
+ */
+export const mockRiskMetrics = {
+  overall: {
+    risk_level: 'medium',
+    risk_score: 65,
+    var_95: 2500,
+    max_drawdown: 5.2,
+    portfolio_beta: 1.2,
+  },
+  positions: [
+    {
+      symbol: '000001',
+      name: '平安银行',
+      position_risk: 'low',
+      concentration: 15.5,
+      volatility: 18.5,
+      beta: 0.95,
+      var_contribution: 800,
+    },
+    {
+      symbol: '600000',
+      name: '浦发银行',
+      position_risk: 'medium',
+      concentration: 12.3,
+      volatility: 22.1,
+      beta: 1.1,
+      var_contribution: 650,
+    },
+  ],
+  alerts: [
+    {
+      id: 'ALERT001',
+      type: 'high_leverage',
+      severity: 'high',
+      message: 'Portfolio leverage exceeds 3x',
+      triggered_at: new Date(Date.now() - 300000).toISOString(),
+    },
+    {
+      id: 'ALERT002',
+      type: 'concentration',
+      severity: 'medium',
+      message: 'Single position concentration > 20%',
+      triggered_at: new Date(Date.now() - 1800000).toISOString(),
+    },
+  ],
+  total: 2,
+};
+
+/**
+ * Mock data for tasks
+ */
+export const mockTasksData = {
+  tasks: [
+    {
+      id: 'TASK001',
+      title: '执行买入订单',
+      description: 'Buy 100 shares of 000001',
+      status: 'pending',
+      priority: 'high',
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      due_at: new Date(Date.now() + 3600000).toISOString(),
+    },
+    {
+      id: 'TASK002',
+      title: '风险评估',
+      description: 'Assess portfolio risk',
+      status: 'completed',
+      priority: 'medium',
+      created_at: new Date(Date.now() - 86400000).toISOString(),
+      completed_at: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ],
+  total: 2,
+};
+
+/**
+ * Mock data for settings
+ */
+export const mockSettingsData = {
+  account: {
+    username: 'testuser',
+    email: 'test@example.com',
+    language: 'zh-CN',
+    timezone: 'Asia/Shanghai',
+    theme: 'dark',
+  },
+  notifications: {
+    email_alerts: true,
+    sms_alerts: false,
+    push_alerts: true,
+    trading_alerts: true,
+    risk_alerts: true,
+    market_news: true,
+  },
+  api_keys: [
+    {
+      id: 'KEY001',
+      name: 'Production API Key',
+      created_at: new Date(Date.now() - 2592000000).toISOString(),
+      last_used: new Date(Date.now() - 86400000).toISOString(),
+      status: 'active',
+    },
+    {
+      id: 'KEY002',
+      name: 'Test API Key',
+      created_at: new Date(Date.now() - 1209600000).toISOString(),
+      last_used: null,
+      status: 'inactive',
+    },
+  ],
+};
+
+/**
  * Setup mock API responses for a page
  */
 export async function setupMockApis(page: Page, mocks: MockApiConfig[]): Promise<void> {
