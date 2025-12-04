@@ -31,14 +31,14 @@ class StrategyRunRequest(BaseModel):
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     )
     symbol: Optional[str] = Field(
         None,
         description="单个股票代码",
         min_length=1,
         max_length=20,
-        regex=r'^[A-Z0-9.]+$'
+        pattern=r'^[A-Z0-9.]+$'
     )
     symbols: Optional[List[str]] = Field(
         None,
@@ -47,7 +47,7 @@ class StrategyRunRequest(BaseModel):
     check_date: Optional[str] = Field(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     )
     limit: Optional[int] = Field(
         None,
@@ -149,19 +149,19 @@ class StrategyQueryParams(BaseModel):
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     )
     symbol: Optional[str] = Field(
         None,
         description="股票代码",
         min_length=1,
         max_length=20,
-        regex=r'^[A-Z0-9.]+$'
+        pattern=r'^[A-Z0-9.]+$'
     )
     check_date: Optional[str] = Field(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     )
     match_result: Optional[bool] = Field(
         None,
@@ -200,7 +200,7 @@ class MarketFilterParams(BaseModel):
     market: str = Field(
         "A",
         description="市场类型",
-        regex=r'^(A|SH|SZ|CYB|KCB)$'
+        pattern=r'^(A|SH|SZ|CYB|KCB)$'
     )
     limit: Optional[int] = Field(
         None,
@@ -277,14 +277,14 @@ async def run_strategy_single(
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     ),
     symbol: str = Query(
         ...,
         description="股票代码",
         min_length=1,
         max_length=20,
-        regex=r'^[A-Z0-9.]+$'
+        pattern=r'^[A-Z0-9.]+$'
     ),
     stock_name: Optional[str] = Query(
         None,
@@ -294,7 +294,7 @@ async def run_strategy_single(
     check_date: Optional[str] = Query(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     ),
 ):
     """
@@ -357,7 +357,7 @@ async def run_strategy_batch(
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     ),
     symbols: Optional[str] = Query(
         None,
@@ -367,7 +367,7 @@ async def run_strategy_batch(
     market: Optional[str] = Query(
         "A",
         description="市场类型 (A/SH/SZ/CYB/KCB)",
-        regex=r'^(A|SH|SZ|CYB|KCB)$'
+        pattern=r'^(A|SH|SZ|CYB|KCB)$'
     ),
     limit: Optional[int] = Query(
         None,
@@ -378,7 +378,7 @@ async def run_strategy_batch(
     check_date: Optional[str] = Query(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     ),
 ):
     """
@@ -452,19 +452,19 @@ async def query_strategy_results(
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     ),
     symbol: Optional[str] = Query(
         None,
         description="股票代码",
         min_length=1,
         max_length=20,
-        regex=r'^[A-Z0-9.]+$'
+        pattern=r'^[A-Z0-9.]+$'
     ),
     check_date: Optional[str] = Query(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     ),
     match_result: Optional[bool] = Query(
         None,
@@ -546,12 +546,12 @@ async def get_matched_stocks(
         description="策略代码",
         min_length=1,
         max_length=50,
-        regex=r'^[a-z0-9_]+$'
+        pattern=r'^[a-z0-9_]+$'
     ),
     check_date: Optional[str] = Query(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     ),
     limit: int = Query(
         100,
@@ -601,7 +601,7 @@ async def get_strategy_summary(
     check_date: Optional[str] = Query(
         None,
         description="检查日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
+        pattern=r'^\d{4}-\d{2}-\d{2}$'
     )
 ):
     """

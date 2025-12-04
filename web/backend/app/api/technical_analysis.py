@@ -30,10 +30,10 @@ router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 class TechnicalAnalysisRequest(BaseModel):
     """技术分析请求参数"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
-    period: str = Field("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$")
-    start_date: Optional[str] = Field(None, description="开始日期 YYYY-MM-DD", regex=r"^\d{4}-\d{2}-\d{2}$")
-    end_date: Optional[str] = Field(None, description="结束日期 YYYY-MM-DD", regex=r"^\d{4}-\d{2}-\d{2}$")
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    period: str = Field("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$")
+    start_date: Optional[str] = Field(None, description="开始日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
+    end_date: Optional[str] = Field(None, description="结束日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
     limit: Optional[int] = Field(None, description="数据点数量限制", ge=10, le=5000)
 
     @field_validator("symbol")
@@ -112,8 +112,8 @@ class TechnicalAnalysisRequest(BaseModel):
 class TrendIndicatorsRequest(BaseModel):
     """趋势指标请求参数"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
-    period: str = Field("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$")
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    period: str = Field("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$")
     ma_periods: Optional[List[int]] = Field(None, description="自定义移动平均线周期")
 
     @field_validator("ma_periods")
@@ -233,7 +233,7 @@ class TradingSignalsResponse(BaseModel):
 @router.get("/{symbol}/indicators", response_model=AllIndicatorsResponse)
 async def get_all_indicators(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20),
-    period: str = Query("daily", description="数据周期: daily, weekly, monthly", regex=r"^(daily|weekly|monthly)$"),
+    period: str = Query("daily", description="数据周期: daily, weekly, monthly", pattern=r"^(daily|weekly|monthly)$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     limit: Optional[int] = Query(None, description="数据点数量限制", ge=10, le=5000),
@@ -334,8 +334,8 @@ async def get_all_indicators(
 
 @router.get("/{symbol}/trend", summary="获取趋势指标")
 async def get_trend_indicators(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$"),
-    period: str = Query("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$"),
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    period: str = Query("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$"),
     ma_periods: Optional[str] = Query(None, description="自定义MA周期，逗号分隔，如: 5,10,20"),
 ):
     """

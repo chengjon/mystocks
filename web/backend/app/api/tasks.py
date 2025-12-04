@@ -50,7 +50,7 @@ class TaskRegistrationRequest(BaseModel):
     task_type: str = Field(
         ...,
         description="任务类型",
-        regex=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
+        pattern=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
     )
     config: Dict[str, Any] = Field(..., description="任务配置参数")
     tags: Optional[List[str]] = Field(None, description="任务标签")
@@ -234,10 +234,10 @@ class TaskQueryParams(BaseModel):
     task_type: Optional[str] = Field(
         None,
         description="任务类型",
-        regex=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
+        pattern=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
     )
     tags: Optional[str] = Field(None, description="逗号分隔的任务标签", max_length=200)
-    status: Optional[str] = Field(None, description="任务状态", regex=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$")
+    status: Optional[str] = Field(None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$")
     enabled: Optional[bool] = Field(None, description="是否启用")
     limit: int = Field(50, description="返回数量", ge=1, le=200)
     offset: int = Field(0, description="偏移量", ge=0, le=10000)
@@ -266,7 +266,7 @@ class TaskQueryParams(BaseModel):
 class TaskExecutionRequest(BaseModel):
     """任务执行请求"""
 
-    task_id: str = Field(..., description="任务ID", min_length=1, max_length=50, regex=r"^[a-zA-Z0-9_-]+$")
+    task_id: str = Field(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
     force: bool = Field(False, description="是否强制执行")
     params: Optional[Dict[str, Any]] = Field(None, description="执行参数")
 
@@ -333,7 +333,7 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
 
 @router.delete("/{task_id}", response_model=TaskResponse)
 async def unregister_task(
-    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, regex=r"^[a-zA-Z0-9_-]+$"),
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -372,10 +372,10 @@ async def list_tasks(
     task_type: Optional[str] = Query(
         None,
         description="任务类型",
-        regex=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
+        pattern=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
     ),
     tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
-    status: Optional[str] = Query(None, description="任务状态", regex=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"),
+    status: Optional[str] = Query(None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"),
     enabled: Optional[bool] = Query(None, description="是否启用"),
     limit: int = Query(50, description="返回数量", ge=1, le=200),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
@@ -442,7 +442,7 @@ async def list_tasks(
 
 @router.get("/{task_id}", response_model=TaskConfig)
 async def get_task(
-    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, regex=r"^[a-zA-Z0-9_-]+$")
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
 ):
     """获取任务详情"""
     if use_mock:

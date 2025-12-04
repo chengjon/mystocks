@@ -103,7 +103,7 @@ class SearchRequest(BaseModel):
     """搜索请求模型"""
 
     query: str = Field(..., description="搜索关键词", min_length=1, max_length=100)
-    market: str = Field("auto", description="市场类型", regex=r"^(auto|cn|hk)$")
+    market: str = Field("auto", description="市场类型", pattern=r"^(auto|cn|hk)$")
     limit: int = Field(20, description="返回结果数量", ge=1, le=100)
 
     @field_validator("query")
@@ -244,7 +244,7 @@ def sanitize_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
 @router.get("/search", response_model=List[StockSearchResult])
 async def search_stocks(
     q: str = Query(..., description="搜索关键词", min_length=1, max_length=100),
-    market: str = Query("auto", description="市场类型: auto, cn, hk", regex=r"^(auto|cn|hk)$"),
+    market: str = Query("auto", description="市场类型: auto, cn, hk", pattern=r"^(auto|cn|hk)$"),
     page: int = Query(1, description="页码", ge=1, le=10000),
     page_size: int = Query(20, description="每页数量", ge=1, le=100),
     sort_by: str = Query("relevance", description="排序字段"),
@@ -367,7 +367,7 @@ async def search_stocks(
 @router.get("/quote/{symbol}", response_model=StockQuote)
 async def get_stock_quote(
     symbol: str,
-    market: str = Query("cn", description="市场类型: cn, hk", regex=r"^(cn|hk)$"),
+    market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
