@@ -214,6 +214,37 @@ export const mockPositionsData = {
 };
 
 /**
+ * Mock data for strategies
+ */
+export const mockStrategiesData = {
+  strategies: [
+    {
+      id: 'STRAT001',
+      name: 'Momentum Strategy',
+      type: 'momentum',
+      status: 'running',
+      created_at: new Date(Date.now() - 604800000).toISOString(),
+      updated_at: new Date().toISOString(),
+      win_rate: 65.5,
+      total_return: 15.2,
+      sharpe_ratio: 1.8,
+    },
+    {
+      id: 'STRAT002',
+      name: 'Mean Reversion',
+      type: 'mean_reversion',
+      status: 'stopped',
+      created_at: new Date(Date.now() - 1209600000).toISOString(),
+      updated_at: new Date().toISOString(),
+      win_rate: 58.3,
+      total_return: 8.7,
+      sharpe_ratio: 1.2,
+    },
+  ],
+  total: 2,
+};
+
+/**
  * Setup mock API responses for a page
  */
 export async function setupMockApis(page: Page, mocks: MockApiConfig[]): Promise<void> {
