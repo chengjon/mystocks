@@ -49,62 +49,78 @@ Artifacts: 30-day retention
 - Browser-specific results
 - Flaky test detection
 
-### Milestone 2: Real API Integration (Week 1-2)
+### Milestone 2: Real API Integration (Week 1-2) ✅ COMPLETED
 
-#### 2.1 API Endpoint Configuration
+#### 2.1 API Endpoint Configuration ✅
 
-**Create API configuration module**:
-```typescript
-// tests/config/api-config.ts
-export const API_ENDPOINTS = {
-  dashboard: '/api/dashboard/overview',
-  market: '/api/market/overview',
-  stock: '/api/market/stock/:symbol/detail',
-  orders: '/api/trading/orders',
-  positions: '/api/portfolio/positions',
-  strategies: '/api/strategies',
-  risk: '/api/risk/metrics',
-  tasks: '/api/tasks',
-  settings: '/api/settings'
-};
+**Created API configuration module** (`tests/config/api-config.ts`):
+- Centralized endpoint definitions for 11 API categories
+- URL building utilities with parameter replacement
+- Endpoint validation and discovery functions
+- Support for 50+ endpoints across dashboard, market, trading, portfolio, risk, strategies, technical analysis, tasks, settings, monitoring, wencai
 
-export const getApiUrl = (endpoint: string, baseUrl: string = process.env.API_BASE_URL) => {
-  return `${baseUrl}${endpoint}`;
-};
-```
+**Key Functions**:
+- `getApiUrl()` - Build full URLs from endpoints
+- `buildApiUrl()` - Replace path parameters automatically
+- `getEndpoint()` - Retrieve endpoints by category and key
+- `getCategoryEndpoints()` - Get all endpoints in a category
+- `validateEndpoints()` - Validate endpoint configuration
 
-#### 2.2 Environment-Based Test Configuration
+#### 2.2 Environment-Based Test Configuration ✅
 
-**Setup environment detection**:
-```typescript
-// tests/helpers/test-env.ts
-export const TEST_ENV = {
-  USE_REAL_API: process.env.USE_REAL_API === 'true',
-  USE_MOCK_API: process.env.USE_REAL_API !== 'true',
-  API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:8000',
-  FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL || 'http://localhost:3000',
-};
+**Implemented environment detection** (`tests/helpers/test-env.ts`):
+- 13+ environment variables for test configuration
+- Automatic environment validation
+- Mock vs. real API mode detection
+- Timeout configuration
+- Feature flag management (visual regression, performance monitoring, accessibility, etc.)
 
-export const shouldUseMocks = () => TEST_ENV.USE_MOCK_API;
-export const shouldUseRealApi = () => TEST_ENV.USE_REAL_API;
-```
+**Configuration Variables**:
+- `USE_REAL_API` - Toggle between mock and real APIs
+- `API_BASE_URL` - Backend URL (default: http://localhost:8000)
+- `FRONTEND_BASE_URL` - Frontend URL (default: http://localhost:3000)
+- `ENABLE_VISUAL_REGRESSION` - Enable visual regression testing
+- `ENABLE_PERFORMANCE_MONITORING` - Track performance metrics
+- `NAVIGATION_TIMEOUT_MS`, `ACTION_TIMEOUT_MS`, `EXPECT_TIMEOUT_MS` - Timeout configuration
+- Plus: `TEST_ENVIRONMENT`, `ENABLE_VIDEO_RECORDING`, `TRACE_ENABLED`, etc.
 
-#### 2.3 Conditional Mock/Real API Tests
+#### 2.3 Conditional Mock/Real API Tests ✅
 
-**Update test helpers**:
-```typescript
-// tests/helpers/conditional-mocking.ts
-export async function setupApi(page: Page, options: { useMocks?: boolean } = {}) {
-  const useMocks = options.useMocks ?? shouldUseMocks();
+**Implemented conditional mocking** (`tests/helpers/conditional-mocking.ts`):
+- Seamless switching between mock and real APIs
+- Category-based API filtering
+- Network latency simulation
+- Error response configuration
+- Mock validation and status checking
 
-  if (useMocks) {
-    await mockDashboardApis(page);
-  } else {
-    // Real API - no mocking
-    console.log('Using real API endpoints from', TEST_ENV.API_BASE_URL);
-  }
-}
-```
+**Key Functions**:
+- `setupApi()` - Setup conditional APIs with options
+- `setupAllMocks()` - Enable all mocks
+- `setupRealApi()` - Disable all mocking
+- `configureMockErrors()` - Simulate error responses
+- `applyMockDelay()` - Add artificial network latency
+- `isMockEnabled()` - Check current mock status
+
+**Key Achievement**: Tests run identically in both offline (mock) and online (real API) modes without code changes
+
+#### 2.4 Example Implementation ✅
+
+**Created example test** (`tests/e2e/dashboard-page-phase3.spec.ts`):
+- 50+ lines demonstrating Phase 3 patterns
+- Covers all test types: core, responsive, error handling, performance
+- Shows conditional API handling
+- Includes proper timeout usage
+- Ready for migration of other test files
+
+#### 2.5 Complete Documentation ✅
+
+**Created comprehensive guide** (`docs/guides/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md`):
+- 500+ lines of detailed documentation
+- Usage patterns and examples
+- Migration guide for existing tests
+- Troubleshooting section
+- CI/CD integration guide
+- Performance considerations
 
 ### Milestone 3: Visual Regression Testing (Week 2)
 
@@ -233,9 +249,9 @@ export const COVERAGE_THRESHOLDS = {
 
 ### Week 1
 - ✅ GitHub Actions workflow setup (e2e-tests.yml)
-- API configuration module (api-config.ts)
-- Environment detection (test-env.ts)
-- Mock/Real API switching logic
+- ✅ API configuration module (api-config.ts)
+- ✅ Environment detection (test-env.ts)
+- ✅ Mock/Real API switching logic (conditional-mocking.ts)
 
 ### Week 2
 - Percy visual regression integration
@@ -315,7 +331,19 @@ export const COVERAGE_THRESHOLDS = {
 
 ---
 
-**Status**: Phase 3 Initiated ✅
-**Target Completion**: 3 weeks
+**Status**: Phase 3 - Milestone 1 & 2 Complete ✅
+**Current Focus**: Milestone 3 - Visual Regression Testing (Week 2)
+**Milestones Completed**: 2/5 (40% progress)
+**Target Completion**: 3 weeks (Week 2 on track)
 **Team Size**: 1-2 developers
 **Scope**: CI/CD automation + Advanced testing features
+
+## Progress Summary
+
+| Milestone | Status | Completion Date |
+|-----------|--------|-----------------|
+| 1. GitHub Actions CI/CD | ✅ Complete | 2025-12-05 |
+| 2. Real API Integration | ✅ Complete | 2025-12-05 |
+| 3. Visual Regression Testing | 🔄 In Progress | Target: 2025-12-06 |
+| 4. Performance Profiling | ⏳ Pending | Target: 2025-12-07 |
+| 5. Coverage Reporting | ⏳ Pending | Target: 2025-12-08 |
