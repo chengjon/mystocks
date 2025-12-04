@@ -489,6 +489,34 @@ export class TechnicalAnalysisPage extends BasePage {
   }
 
   /**
+   * Click on indicator by index
+   */
+  async clickIndicator(index: number): Promise<void> {
+    const items = this.page.locator(this.INDICATOR_ITEM);
+    await items.nth(index).click();
+  }
+
+  /**
+   * Get first indicator data
+   */
+  async getFirstIndicatorData(): Promise<{
+    name: string;
+    abbr: string;
+    category: string;
+  }> {
+    const item = this.page.locator(this.INDICATOR_ITEM).first();
+    const name = await item.locator('[data-field="name"]').textContent();
+    const abbr = await item.locator('[data-field="abbr"]').textContent();
+    const category = await item.locator('[data-field="category"]').textContent();
+
+    return {
+      name: name || '',
+      abbr: abbr || '',
+      category: category || '',
+    };
+  }
+
+  /**
    * Verify page loaded
    */
   async verifyPageLoaded(): Promise<boolean> {
@@ -602,6 +630,72 @@ export class TradeManagementPage extends BasePage {
     await this.click(this.EXPORT_BUTTON);
     // Wait for download to complete
     await this.page.waitForEvent('download');
+  }
+
+  /**
+   * Search positions
+   */
+  async searchPositions(query: string): Promise<void> {
+    await this.fill(this.SEARCH_INPUT, query);
+    await this.waitForDataLoad(this.LOADING);
+  }
+
+  /**
+   * Get first order data
+   */
+  async getFirstOrderData(): Promise<{
+    symbol?: string;
+    stock?: string;
+    quantity?: number;
+    qty?: number;
+    price?: number;
+    order_price?: number;
+  } | null> {
+    const item = this.page.locator(this.ORDER_ITEM).first();
+    const exists = await item.count();
+
+    if (!exists) return null;
+
+    const symbol = await item.locator('[data-field="symbol"], [data-field="stock"]').textContent();
+    const quantity = await item.locator('[data-field="quantity"], [data-field="qty"]').textContent();
+    const price = await item.locator('[data-field="price"], [data-field="order_price"]').textContent();
+
+    return {
+      symbol: symbol || undefined,
+      quantity: quantity ? parseInt(quantity) : undefined,
+      price: price ? parseFloat(price) : undefined,
+    };
+  }
+
+  /**
+   * Get first position data
+   */
+  async getFirstPositionData(): Promise<{
+    symbol?: string;
+    stock?: string;
+    quantity?: number;
+    qty?: number;
+    price?: number;
+    cost_price?: number;
+    profit?: number;
+    loss?: number;
+  } | null> {
+    const item = this.page.locator(this.POSITION_ITEM).first();
+    const exists = await item.count();
+
+    if (!exists) return null;
+
+    const symbol = await item.locator('[data-field="symbol"], [data-field="stock"]').textContent();
+    const quantity = await item.locator('[data-field="quantity"], [data-field="qty"]').textContent();
+    const price = await item.locator('[data-field="price"], [data-field="cost_price"]').textContent();
+    const profit = await item.locator('[data-field="profit"], [data-field="profit_loss"]').textContent();
+
+    return {
+      symbol: symbol || undefined,
+      quantity: quantity ? parseInt(quantity) : undefined,
+      price: price ? parseFloat(price) : undefined,
+      profit: profit ? parseFloat(profit) : undefined,
+    };
   }
 
   /**
