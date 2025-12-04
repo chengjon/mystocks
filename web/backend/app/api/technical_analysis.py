@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
+from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.core.security import User, get_current_user
 from app.mock.unified_mock_data import get_mock_data_manager
@@ -275,20 +276,38 @@ async def get_all_indicators(
         except ValidationError as ve:
             # P0改进: 标准化验证错误响应
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details
+            )
+
+        # P0改进 Task 3: 使用熔断器保护外部API调用
+        circuit_breaker = get_circuit_breaker("technical_analysis")
+
+        if circuit_breaker.is_open():
+            logger.warning(f"⚠️ Circuit breaker for technical_analysis is OPEN")
+            raise HTTPException(
+                status_code=503,
+                detail="技术分析服务暂不可用，请稍后重试"
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
+        try:
+            technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {
-            "symbol": validated_params.symbol,
-            "period": period,
-            "start_date": validated_params.start_date.strftime("%Y-%m-%d") if validated_params.start_date else None,
-            "end_date": validated_params.end_date.strftime("%Y-%m-%d") if validated_params.end_date else None,
-        }
+            params = {
+                "symbol": validated_params.symbol,
+                "period": period,
+                "start_date": validated_params.start_date.strftime("%Y-%m-%d") if validated_params.start_date else None,
+                "end_date": validated_params.end_date.strftime("%Y-%m-%d") if validated_params.end_date else None,
+            }
 
-        result = await technical_analysis_adapter.get_data("indicators", params)
+            result = await technical_analysis_adapter.get_data("indicators", params)
+            circuit_breaker.record_success()
+        except Exception as api_error:
+            circuit_breaker.record_failure()
+            logger.error(f"❌ Technical analysis API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            raise
 
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
@@ -340,7 +359,9 @@ async def get_trend_indicators(
             validated_symbol = StockSymbolModel(symbol=symbol)
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -400,7 +421,9 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
             validated_symbol = StockSymbolModel(symbol=symbol)
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -448,7 +471,9 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
             validated_symbol = StockSymbolModel(symbol=symbol)
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -496,7 +521,9 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
             validated_symbol = StockSymbolModel(symbol=symbol)
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -546,7 +573,9 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
             validated_symbol = StockSymbolModel(symbol=symbol)
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
-            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
