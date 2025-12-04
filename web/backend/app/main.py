@@ -186,55 +186,56 @@ sio = socketio_manager.sio
 logger.info("✅ Socket.IO服务器已挂载")
 
 
-# SECURITY FIX 1.2: CSRF验证中间件 - 已禁用
-# @app.middleware("http")
-# async def csrf_protection_middleware(request: Request, call_next):
-#     """
-#     CSRF保护中间件 - 验证修改操作的CSRF token
-#     SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
-#     """
-#     # 对于修改操作，检查CSRF token
-#     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
-#         # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
-#         exclude_paths = [
-#             "/api/csrf-token",
-#             "/api/auth/login",
-#             "/docs",
-#             "/redoc",
-#             "/openapi.json",
-#         ]
+# SECURITY FIX 1.2: CSRF验证中间件
+@app.middleware("http")
+async def csrf_protection_middleware(request: Request, call_next):
+    """
+    CSRF保护中间件 - 验证修改操作的CSRF token
+    SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
+    """
+    # 对于修改操作，检查CSRF token
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
+        exclude_paths = [
+            "/api/v1/csrf/token",
+            "/api/csrf-token",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/swagger-ui",
+        ]
 
-#         if not any(request.url.path.startswith(path) for path in exclude_paths):
-#             # 获取CSRF token from header
-#             csrf_token = request.headers.get("x-csrf-token")
+        if not any(request.url.path.startswith(path) for path in exclude_paths):
+            # 获取CSRF token from header
+            csrf_token = request.headers.get("x-csrf-token")
 
-#             if not csrf_token:
-#                 logger.warning(
-#                     f"❌ CSRF token missing for {request.method} {request.url.path}"
-#                 )
-#                 return JSONResponse(
-#                     status_code=403,
-#                     content={
-#                         "error": "CSRF token missing",
-#                         "message": "CSRF token is required for this request",
-#                     },
-#                 )
+            if not csrf_token:
+                logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "code": "CSRF_TOKEN_MISSING",
+                        "message": "CSRF token is required for this request",
+                        "data": None,
+                    },
+                )
 
-#             # 验证CSRF token
-#             if not csrf_manager.validate_token(csrf_token):
-#                 logger.warning(
-#                     f"❌ Invalid CSRF token for {request.method} {request.url.path}"
-#                 )
-#                 return JSONResponse(
-#                     status_code=403,
-#                     content={
-#                         "error": "CSRF token invalid",
-#                         "message": "CSRF token is invalid or expired",
-#                     },
-#                 )
+            # 验证CSRF token
+            if not csrf_manager.validate_token(csrf_token):
+                logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "code": "CSRF_TOKEN_INVALID",
+                        "message": "CSRF token is invalid or expired",
+                        "data": None,
+                    },
+                )
 
-#     response = await call_next(request)
-#     return response
+    response = await call_next(request)
+    return response
 
 
 # 请求日志中间件
@@ -414,7 +415,7 @@ from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monit
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
 app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix

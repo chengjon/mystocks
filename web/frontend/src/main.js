@@ -9,7 +9,8 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
-// import { initializeSecurity } from './services/httpClient.js'  // 已移除CSRF初始化
+// SECURITY FIX 1.2: 导入CSRF初始化函数
+import { initializeSecurity } from './services/httpClient.js'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -25,6 +26,13 @@ app.use(ElementPlus, {
   locale: zhCn,
 })
 
-// SECURITY FIX 1.2: 已禁用CSRF保护，直接挂载应用
-app.mount('#app')
-
+// SECURITY FIX 1.2: 启用CSRF保护
+// 应用启动时初始化CSRF token，然后挂载应用
+initializeSecurity().then(() => {
+  console.log('✅ Security initialization complete')
+}).catch(err => {
+  console.warn('⚠️ Security initialization failed:', err)
+  // 继续挂载应用，即使CSRF初始化失败
+}).finally(() => {
+  app.mount('#app')
+})

@@ -8,12 +8,13 @@ import re
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends, Path
-from pydantic import BaseModel, Field, field_validator
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from app.core.responses import create_success_response, create_error_response, ErrorCodes, ResponseMessages
-from app.core.security import get_current_user, User
+from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
+from app.core.security import User, get_current_user
 from app.mock.unified_mock_data import get_mock_data_manager
+from app.schema import ResponseModel, StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
 from app.services.technical_analysis_service import technical_analysis_service
 
@@ -28,46 +29,23 @@ router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 class TechnicalAnalysisRequest(BaseModel):
     """技术分析请求参数"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        regex=r'^[A-Z0-9.]+$'
-    )
-    period: str = Field(
-        "daily",
-        description="数据周期",
-        regex=r'^(daily|weekly|monthly)$'
-    )
-    start_date: Optional[str] = Field(
-        None,
-        description="开始日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
-    )
-    end_date: Optional[str] = Field(
-        None,
-        description="结束日期 YYYY-MM-DD",
-        regex=r'^\d{4}-\d{2}-\d{2}$'
-    )
-    limit: Optional[int] = Field(
-        None,
-        description="数据点数量限制",
-        ge=10,
-        le=5000
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
+    period: str = Field("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$")
+    start_date: Optional[str] = Field(None, description="开始日期 YYYY-MM-DD", regex=r"^\d{4}-\d{2}-\d{2}$")
+    end_date: Optional[str] = Field(None, description="结束日期 YYYY-MM-DD", regex=r"^\d{4}-\d{2}-\d{2}$")
+    limit: Optional[int] = Field(None, description="数据点数量限制", ge=10, le=5000)
 
-    @field_validator('symbol')
+    @field_validator("symbol")
     @classmethod
     def validate_symbol(cls, v: str) -> str:
         """验证股票代码格式"""
-        if v.startswith('.'):
-            raise ValueError('股票代码不能以点开头')
-        if '..' in v:
-            raise ValueError('股票代码不能包含连续的点')
+        if v.startswith("."):
+            raise ValueError("股票代码不能以点开头")
+        if ".." in v:
+            raise ValueError("股票代码不能包含连续的点")
         return v.upper()
 
-    @field_validator('start_date', 'end_date')
+    @field_validator("start_date", "end_date")
     @classmethod
     def validate_dates(cls, v: Optional[str], field) -> Optional[str]:
         """验证日期格式和范围"""
@@ -80,52 +58,52 @@ class TechnicalAnalysisRequest(BaseModel):
 
             # 检查日期不能是未来
             if parsed_date > today:
-                raise ValueError(f'{field.name}不能是未来日期')
+                raise ValueError(f"{field.name}不能是未来日期")
 
             # 检查日期不能太久远
             if parsed_date.year < 1990:
-                raise ValueError(f'{field.name}不能早于1990年')
+                raise ValueError(f"{field.name}不能早于1990年")
 
             return v
         except ValueError as e:
             if "does not match format" in str(e):
-                raise ValueError('日期格式错误，请使用 YYYY-MM-DD 格式')
+                raise ValueError("日期格式错误，请使用 YYYY-MM-DD 格式")
             raise
 
-    @field_validator('end_date')
+    @field_validator("end_date")
     @classmethod
     def validate_date_range(cls, v: Optional[str], values) -> Optional[str]:
         """验证结束日期必须大于开始日期"""
-        if v is None or 'start_date' not in values or values['start_date'] is None:
+        if v is None or "start_date" not in values or values["start_date"] is None:
             return v
 
         try:
             end_date = datetime.strptime(v, "%Y-%m-%d").date()
-            start_date = datetime.strptime(values['start_date'], "%Y-%m-%d").date()
+            start_date = datetime.strptime(values["start_date"], "%Y-%m-%d").date()
 
             if end_date <= start_date:
-                raise ValueError('结束日期必须大于开始日期')
+                raise ValueError("结束日期必须大于开始日期")
 
             return v
         except ValueError:
-            raise ValueError('日期范围无效，结束日期必须大于开始日期')
+            raise ValueError("日期范围无效，结束日期必须大于开始日期")
 
-    @field_validator('limit')
+    @field_validator("limit")
     @classmethod
     def validate_limit_for_period(cls, v: Optional[int], values) -> Optional[int]:
         """根据周期验证数据量限制"""
         if v is None:
             return v
 
-        period = values.get('period', 'daily')
+        period = values.get("period", "daily")
 
         # 根据周期设置合理的上限
-        if period == 'daily' and v > 5000:
-            raise ValueError('日线数据最多返回5000个数据点')
-        elif period == 'weekly' and v > 1000:
-            raise ValueError('周线数据最多返回1000个数据点')
-        elif period == 'monthly' and v > 300:
-            raise ValueError('月线数据最多返回300个数据点')
+        if period == "daily" and v > 5000:
+            raise ValueError("日线数据最多返回5000个数据点")
+        elif period == "weekly" and v > 1000:
+            raise ValueError("周线数据最多返回1000个数据点")
+        elif period == "monthly" and v > 300:
+            raise ValueError("月线数据最多返回300个数据点")
 
         return v
 
@@ -133,24 +111,11 @@ class TechnicalAnalysisRequest(BaseModel):
 class TrendIndicatorsRequest(BaseModel):
     """趋势指标请求参数"""
 
-    symbol: str = Field(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        regex=r'^[A-Z0-9.]+$'
-    )
-    period: str = Field(
-        "daily",
-        description="数据周期",
-        regex=r'^(daily|weekly|monthly)$'
-    )
-    ma_periods: Optional[List[int]] = Field(
-        None,
-        description="自定义移动平均线周期"
-    )
+    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$")
+    period: str = Field("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$")
+    ma_periods: Optional[List[int]] = Field(None, description="自定义移动平均线周期")
 
-    @field_validator('ma_periods')
+    @field_validator("ma_periods")
     @classmethod
     def validate_ma_periods(cls, v: Optional[List[int]]) -> Optional[List[int]]:
         """验证移动平均线周期"""
@@ -158,11 +123,11 @@ class TrendIndicatorsRequest(BaseModel):
             return v
 
         if len(v) > 10:  # 限制最多10个MA周期
-            raise ValueError('移动平均线周期数量不能超过10个')
+            raise ValueError("移动平均线周期数量不能超过10个")
 
         for period in v:
             if period < 1 or period > 500:
-                raise ValueError(f'移动平均线周期 {period} 必须在1-500之间')
+                raise ValueError(f"移动平均线周期 {period} 必须在1-500之间")
 
         return sorted(set(v))  # 去重并排序
 
@@ -266,10 +231,10 @@ class TradingSignalsResponse(BaseModel):
 
 @router.get("/{symbol}/indicators", response_model=AllIndicatorsResponse)
 async def get_all_indicators(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, regex=r'^[A-Z0-9.]+$'),
-    period: str = Query("daily", description="数据周期: daily, weekly, monthly", regex=r'^(daily|weekly|monthly)$'),
-    start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD", regex=r'^\d{4}-\d{2}-\d{2}$'),
-    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD", regex=r'^\d{4}-\d{2}-\d{2}$'),
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20),
+    period: str = Query("daily", description="数据周期: daily, weekly, monthly", regex=r"^(daily|weekly|monthly)$"),
+    start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
+    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     limit: Optional[int] = Query(None, description="数据点数量限制", ge=10, le=5000),
 ):
     """
@@ -280,9 +245,12 @@ async def get_all_indicators(
     - period: 数据周期 (daily, weekly, monthly)
     - start_date: 开始日期 (可选)
     - end_date: 结束日期 (可选)
+    - limit: 数据点数量限制 (可选)
 
     返回:
     - 包含趋势、动量、波动性、成交量指标的综合数据
+
+    **验证**: P0改进 Task 2 - 使用TechnicalIndicatorQueryModel验证参数
 
     示例:
     - GET /api/technical/600519/indicators
@@ -290,11 +258,35 @@ async def get_all_indicators(
     - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23
     """
     try:
+        from datetime import datetime as dt_convert
+
+        # P0改进: 使用TechnicalIndicatorQueryModel验证输入参数
+        try:
+            # 默认技术指标列表
+            default_indicators = ["MA", "EMA", "MACD", "RSI", "KDJ", "BOLL", "ATR"]
+
+            validated_params = TechnicalIndicatorQueryModel(
+                symbol=symbol,
+                indicators=default_indicators,
+                period=limit or 20,  # 使用limit作为期间长度，默认20
+                start_date=dt_convert.strptime(start_date, "%Y-%m-%d").date() if start_date else None,
+                end_date=dt_convert.strptime(end_date, "%Y-%m-%d").date() if end_date else None,
+            )
+        except ValidationError as ve:
+            # P0改进: 标准化验证错误响应
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period, "start_date": start_date, "end_date": end_date}
+        params = {
+            "symbol": validated_params.symbol,
+            "period": period,
+            "start_date": validated_params.start_date.strftime("%Y-%m-%d") if validated_params.start_date else None,
+            "end_date": validated_params.end_date.strftime("%Y-%m-%d") if validated_params.end_date else None,
+        }
 
         result = await technical_analysis_adapter.get_data("indicators", params)
 
@@ -323,8 +315,8 @@ async def get_all_indicators(
 
 @router.get("/{symbol}/trend", summary="获取趋势指标")
 async def get_trend_indicators(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, regex=r'^[A-Z0-9.]+$'),
-    period: str = Query("daily", description="数据周期", regex=r'^(daily|weekly|monthly)$'),
+    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, regex=r"^[A-Z0-9.]+$"),
+    period: str = Query("daily", description="数据周期", regex=r"^(daily|weekly|monthly)$"),
     ma_periods: Optional[str] = Query(None, description="自定义MA周期，逗号分隔，如: 5,10,20"),
 ):
     """
@@ -337,37 +329,43 @@ async def get_trend_indicators(
     - DMI (动向指标): ADX, +DI, -DI
     - SAR (抛物线转向指标)
 
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
     示例:
     - GET /api/technical/600519/trend
     """
     try:
+        # P0改进: 使用StockSymbolModel验证股票代码
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+        except ValidationError as ve:
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period}
+        params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("trend", params)
 
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
-                    ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                    result["error"]
-                ).model_dump()
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
             )
 
         data = result.get("data", {})
 
         return create_success_response(
             data={
-                "symbol": symbol,
+                "symbol": validated_symbol.symbol,
                 "indicators": data.get("indicators", {}),
                 "count": data.get("count", 0),
-                "period": period
+                "period": period,
             },
-            message=f"获取{symbol}趋势指标成功"
+            message=f"获取{validated_symbol.symbol}趋势指标成功",
         )
 
     except HTTPException:
@@ -375,10 +373,7 @@ async def get_trend_indicators(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR,
-                f"获取趋势指标失败: {str(e)}"
-            ).model_dump()
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取趋势指标失败: {str(e)}").model_dump(),
         )
 
 
@@ -394,15 +389,24 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
     - WR (威廉指标)
     - ROC (变动率指标)
 
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
     示例:
     - GET /api/technical/600519/momentum
     """
     try:
+        # P0改进: 使用StockSymbolModel验证股票代码
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+        except ValidationError as ve:
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period}
+        params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("momentum", params)
 
@@ -411,7 +415,7 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
 
         return {
             "success": True,
-            "symbol": symbol,
+            "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
         }
@@ -433,15 +437,24 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
     - Keltner Channel (肯特纳通道)
     - Standard Deviation (标准差)
 
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
     示例:
     - GET /api/technical/600519/volatility
     """
     try:
+        # P0改进: 使用StockSymbolModel验证股票代码
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+        except ValidationError as ve:
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period}
+        params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("volatility", params)
 
@@ -450,7 +463,7 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
 
         return {
             "success": True,
-            "symbol": symbol,
+            "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
         }
@@ -472,15 +485,24 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
     - Volume MA (成交量均线): 5, 10日
     - Volume Ratio (量比)
 
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
     示例:
     - GET /api/technical/600519/volume
     """
     try:
+        # P0改进: 使用StockSymbolModel验证股票代码
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+        except ValidationError as ve:
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period}
+        params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("volume", params)
 
@@ -489,7 +511,7 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
 
         return {
             "success": True,
-            "symbol": symbol,
+            "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
         }
@@ -513,36 +535,38 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
     - rsi_oversold: RSI超卖 (买入信号)
     - rsi_overbought: RSI超买 (卖出信号)
 
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
     示例:
     - GET /api/technical/600519/signals
     """
     try:
+        # P0改进: 使用StockSymbolModel验证股票代码
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+        except ValidationError as ve:
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details)
+
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
         technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
-        params = {"symbol": symbol, "period": period}
+        params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("signals", params)
 
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
-                    ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                    result["error"]
-                ).model_dump()
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
             )
 
         signals_data = result.get("data", {})
 
         return create_success_response(
-            data={
-                "symbol": symbol,
-                "signals": signals_data,
-                "period": period
-            },
-            message=f"获取{symbol}交易信号成功"
+            data={"symbol": validated_symbol.symbol, "signals": signals_data, "period": period},
+            message=f"获取{validated_symbol.symbol}交易信号成功",
         )
 
     except HTTPException:
@@ -550,10 +574,7 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR,
-                f"获取交易信号失败: {str(e)}"
-            ).model_dump()
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取交易信号失败: {str(e)}").model_dump(),
         )
 
 

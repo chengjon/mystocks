@@ -14,7 +14,8 @@ class HttpClient {
   constructor(baseURL = API_BASE_URL) {
     this.baseURL = baseURL
     this.csrfToken = null
-    this.csrfTokenEndpoint = `${baseURL}/api/csrf-token`
+    // 更新至v1标准版本端点
+    this.csrfTokenEndpoint = `${baseURL}/api/v1/auth/csrf/token`
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
@@ -35,7 +36,18 @@ class HttpClient {
 
       if (response.ok) {
         const data = await response.json()
-        this.csrfToken = data.csrf_token
+
+        // 处理两种响应格式
+        // 新的v1格式: { code, message, data: { token, ... } }
+        // 旧格式: { csrf_token, ... }
+        if (data.data && data.data.token) {
+          this.csrfToken = data.data.token
+        } else if (data.csrf_token) {
+          this.csrfToken = data.csrf_token
+        } else {
+          console.warn('⚠️ Unexpected CSRF token response format:', data)
+          return null
+        }
 
         // 将CSRF token存储到meta标签中，供其他模块使用
         const csrfMetaTag = document.querySelector('meta[name="csrf-token"]')
