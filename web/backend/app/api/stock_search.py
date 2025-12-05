@@ -22,6 +22,15 @@ from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断
 from app.core.responses import APIResponse, ErrorResponse, create_error_response
 from app.schema import ResponseModel, StockListQueryModel, StockSymbolModel  # 导入P0改进的验证模型
 from app.services.stock_search_service import StockSearchService, get_stock_search_service
+from src.core.exceptions import (
+    DatabaseNotFoundError,
+    DatabaseOperationError,
+    DataFetchError,
+    DataValidationError,
+    NetworkError,
+    ServiceError,
+    UnauthorizedAccessError,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -345,10 +354,19 @@ async def search_stocks(
                     offset=(validated_params.page - 1) * validated_params.page_size,
                 )
                 circuit_breaker.record_success()
+            except (DataFetchError, ServiceError, NetworkError) as api_error:
+                circuit_breaker.record_failure()
+                logger.error(
+                    f"❌ Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
+                    extra=api_error.to_dict(),
+                )
+                raise HTTPException(status_code=503, detail="股票搜索服务暂时不可用，请稍后重试") from api_error
             except Exception as api_error:
                 circuit_breaker.record_failure()
-                logger.error(f"❌ Stock search API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
-                raise
+                logger.error(
+                    f"❌ Stock search API failed with unexpected error: {str(api_error)}, failures: {circuit_breaker.failure_count}"
+                )
+                raise HTTPException(status_code=500, detail="股票搜索失败，请稍后重试") from api_error
 
             # 应用排序
             if validated_params.sort_by and validated_params.sort_by != "relevance":
@@ -359,9 +377,12 @@ async def search_stocks(
 
     except HTTPException:
         raise
+    except (DataFetchError, DataValidationError, ServiceError) as e:
+        logger.error(f"Stock search failed for user {current_user.username}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=400, detail="搜索参数无效或数据源暂时不可用，请稍后重试") from e
     except Exception as e:
-        logger.error(f"Stock search failed for user {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="搜索失败，请稍后重试")
+        logger.error(f"Stock search failed for user {current_user.username}: {str(e)}")
+        raise HTTPException(status_code=500, detail="搜索失败，请稍后重试") from e
 
 
 @router.get("/quote/{symbol}", response_model=StockQuote)
@@ -434,9 +455,14 @@ async def get_stock_quote(
         raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except (DataFetchError, NetworkError, ServiceError) as e:
+        logger.error(
+            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}", extra=e.to_dict()
+        )
+        raise HTTPException(status_code=503, detail="数据源暂时不可用，请稍后重试") from e
     except Exception as e:
-        logger.error(f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e}")
-        raise HTTPException(status_code=500, detail="获取报价失败，请稍后重试")
+        logger.error(f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取报价失败，请稍后重试") from e
 
 
 @router.get("/profile/{symbol}")
@@ -471,8 +497,12 @@ async def get_company_profile(
             )
     except HTTPException:
         raise
+    except (DataFetchError, ServiceError) as e:
+        logger.error(f"Get company profile failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="公司信息服务暂时不可用，请稍后重试") from e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取公司信息失败: {str(e)}")
+        logger.error(f"Get company profile failed for symbol {symbol}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取公司信息失败，请稍后重试") from e
 
 
 @router.get("/news/{symbol}", response_model=List[NewsItem])
@@ -513,8 +543,12 @@ async def get_stock_news(
                 raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
 
             return news
+    except (DataFetchError, ServiceError, NetworkError) as e:
+        logger.error(f"Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取新闻失败: {str(e)}")
+        logger.error(f"Get stock news failed for symbol {symbol}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取新闻失败，请稍后重试") from e
 
 
 @router.get("/news/market/{category}", response_model=List[NewsItem])
@@ -541,8 +575,12 @@ async def get_market_news(
             raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
 
         return news
+    except (DataFetchError, ServiceError, NetworkError) as e:
+        logger.error(f"Get market news failed for category {category}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="市场新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取市场新闻失败: {str(e)}")
+        logger.error(f"Get market news failed for category {category}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取市场新闻失败，请稍后重试") from e
 
 
 @router.get("/recommendation/{symbol}")
@@ -572,8 +610,12 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
             )
     except HTTPException:
         raise
+    except (DataFetchError, ServiceError) as e:
+        logger.error(f"Get recommendation trends failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="推荐分析服务暂时不可用，请稍后重试") from e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取分析师推荐失败: {str(e)}")
+        logger.error(f"Get recommendation trends failed for symbol {symbol}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取分析师推荐失败，请稍后重试") from e
 
 
 @router.post("/cache/clear", response_model=APIResponse)
@@ -604,9 +646,12 @@ async def clear_search_cache(current_user: User = Depends(get_current_user)) -> 
 
     except HTTPException:
         raise
+    except (DatabaseNotFoundError, ServiceError) as e:
+        logger.error(f"Failed to clear search cache for admin {current_user.username}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=500, detail="清除缓存失败") from e
     except Exception as e:
-        logger.error(f"Failed to clear search cache for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="清除缓存失败")
+        logger.error(f"Failed to clear search cache for admin {current_user.username}: {str(e)}")
+        raise HTTPException(status_code=500, detail="清除缓存失败") from e
 
 
 # ==================== 管理员专用分析端点 ====================
@@ -679,9 +724,14 @@ async def get_search_analytics(
 
     except HTTPException:
         raise
+    except (DatabaseNotFoundError, DataValidationError) as e:
+        logger.error(
+            f"Failed to get search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
+        )
+        raise HTTPException(status_code=500, detail="获取搜索分析数据失败") from e
     except Exception as e:
-        logger.error(f"Failed to get search analytics for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="获取搜索分析数据失败")
+        logger.error(f"Failed to get search analytics for admin {current_user.username}: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取搜索分析数据失败") from e
 
 
 @router.post("/analytics/cleanup", response_model=APIResponse)
@@ -726,9 +776,14 @@ async def cleanup_search_analytics(
 
     except HTTPException:
         raise
+    except (DatabaseNotFoundError, DatabaseOperationError) as e:
+        logger.error(
+            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
+        )
+        raise HTTPException(status_code=500, detail="清理搜索分析数据失败") from e
     except Exception as e:
-        logger.error(f"Failed to cleanup search analytics for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="清理搜索分析数据失败")
+        logger.error(f"Failed to cleanup search analytics for admin {current_user.username}: {str(e)}")
+        raise HTTPException(status_code=500, detail="清理搜索分析数据失败") from e
 
 
 @router.get("/rate-limits/status", response_model=APIResponse)
@@ -776,6 +831,11 @@ async def get_rate_limits_status(
 
     except HTTPException:
         raise
+    except (DatabaseNotFoundError, DataValidationError) as e:
+        logger.error(
+            f"Failed to get rate limits status for admin {current_user.username}: {e.message}", extra=e.to_dict()
+        )
+        raise HTTPException(status_code=500, detail="获取频率限制状态失败") from e
     except Exception as e:
-        logger.error(f"Failed to get rate limits status for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="获取频率限制状态失败")
+        logger.error(f"Failed to get rate limits status for admin {current_user.username}: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取频率限制状态失败") from e
