@@ -8,11 +8,12 @@
 """
 
 import logging
-from datetime import date, datetime
-from typing import Optional
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from app.core.cache_manager import CacheManager
 from app.core.responses import (
     ErrorCodes,
     ResponseMessages,
@@ -38,6 +39,18 @@ from app.models.dashboard import (
 
 # 配置日志
 logger = logging.getLogger(__name__)
+
+# 全局缓存管理器
+_cache_manager: Optional[CacheManager] = None
+
+
+def get_cache_manager() -> CacheManager:
+    """获取或初始化缓存管理器（单例模式）"""
+    global _cache_manager
+    if _cache_manager is None:
+        _cache_manager = CacheManager()
+    return _cache_manager
+
 
 # 创建路由器
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"], responses={404: {"description": "Not found"}})
@@ -357,6 +370,119 @@ def build_risk_alert_summary(raw_data: list) -> Optional[RiskAlertSummary]:
 
 
 # ============================================================================
+# 缓存辅助函数
+# ============================================================================
+
+
+def _generate_cache_key(user_id: int, trade_date: Optional[date]) -> str:
+    """
+    生成缓存键
+
+    Args:
+        user_id: 用户ID
+        trade_date: 交易日期
+
+    Returns:
+        缓存键 (格式: dashboard_user_{user_id}_{date})
+    """
+    date_str = (trade_date or date.today()).isoformat()
+    return f"dashboard_user_{user_id}_{date_str}"
+
+
+def _try_get_cached_dashboard(
+    cache_manager: CacheManager,
+    user_id: int,
+    trade_date: Optional[date],
+) -> tuple[Optional[Dict[str, Any]], bool]:
+    """
+    尝试从缓存获取仪表盘数据
+
+    Args:
+        cache_manager: 缓存管理器实例
+        user_id: 用户ID
+        trade_date: 交易日期
+
+    Returns:
+        (缓存数据, 缓存是否命中)
+        如果命中缓存，返回 (数据, True)
+        如果未命中缓存，返回 (None, False)
+    """
+    try:
+        cache_key = _generate_cache_key(user_id, trade_date)
+        cached_data = cache_manager.fetch_from_cache(
+            symbol=f"user_{user_id}",
+            data_type="dashboard",
+            timeframe="1d",
+        )
+
+        if cached_data and isinstance(cached_data, dict):
+            logger.info(f"✅ 仪表盘缓存命中: {cache_key}")
+            return cached_data, True
+        else:
+            logger.debug(f"⚠️ 仪表盘缓存未命中: {cache_key}")
+            return None, False
+
+    except Exception as e:
+        logger.warning(f"缓存读取失败，将继续获取新数据: {str(e)}")
+        return None, False
+
+
+def _cache_dashboard_data(
+    cache_manager: CacheManager,
+    user_id: int,
+    trade_date: Optional[date],
+    dashboard_data: Dict[str, Any],
+    ttl_hours: int = 24,
+) -> bool:
+    """
+    将仪表盘数据写入缓存
+
+    Args:
+        cache_manager: 缓存管理器实例
+        user_id: 用户ID
+        trade_date: 交易日期
+        dashboard_data: 要缓存的仪表盘数据
+        ttl_hours: 缓存生存时间（小时）
+
+    Returns:
+        True 如果缓存成功，False 否则
+    """
+    try:
+        cache_key = _generate_cache_key(user_id, trade_date)
+
+        # 为缓存数据添加元数据
+        cache_entry = {
+            "dashboard_data": dashboard_data,
+            "user_id": user_id,
+            "trade_date": (trade_date or date.today()).isoformat(),
+            "cached_at": datetime.now().isoformat(),
+            "ttl_hours": ttl_hours,
+        }
+
+        success = cache_manager.write_to_cache(
+            symbol=f"user_{user_id}",
+            data_type="dashboard",
+            timeframe="1d",
+            data=cache_entry,
+            ttl_days=(ttl_hours + 23) // 24,  # 四舍五入到天
+            timestamp=datetime.now(),
+        )
+
+        # Ensure bool return type
+        success_bool: bool = bool(success)
+        if success_bool:
+            logger.info(f"✅ 仪表盘数据已缓存: {cache_key}")
+        else:
+            logger.warning(f"⚠️ 仪表盘数据缓存失败: {cache_key}")
+
+        return success_bool
+
+    except Exception as e:
+        logger.warning(f"缓存写入失败: {str(e)}")
+        return False
+
+
+# ============================================================================
 # API端点
 # ============================================================================
 
@@ -374,6 +500,7 @@ async def get_dashboard_summary(
     include_watchlist: bool = Query(True, description="是否包含自选股"),
     include_portfolio: bool = Query(True, description="是否包含持仓"),
     include_alerts: bool = Query(True, description="是否包含风险预警"),
+    bypass_cache: bool = Query(False, description="是否跳过缓存直接获取新数据"),
 ):
     """
     获取仪表盘汇总数据
@@ -385,6 +512,7 @@ async def get_dashboard_summary(
     - include_watchlist: 是否包含自选股（默认true）
     - include_portfolio: 是否包含持仓（默认true）
     - include_alerts: 是否包含风险预警（默认true）
+    - bypass_cache: 是否跳过缓存（默认false）
 
     **返回数据**:
     - 市场概览: 指数数据、涨跌家数、榜单等
@@ -392,35 +520,64 @@ async def get_dashboard_summary(
     - 持仓: 持仓列表、总盈亏等
     - 风险预警: 预警列表、未读数量等
     """
+    cache_manager = get_cache_manager()
+    cache_hit = False
+
     try:
-        # 使用数据源工厂获取仪表盘数据
-        logger.info(f"获取用户{user_id}的仪表盘数据")
+        # 第1阶段：尝试从缓存获取数据
+        if not bypass_cache:
+            cached_entry, cache_hit = _try_get_cached_dashboard(
+                cache_manager,
+                user_id,
+                trade_date,
+            )
+            if cache_hit and cached_entry:
+                logger.info(f"仪表盘缓存命中: user_id={user_id}, trade_date={trade_date}")
+                raw_dashboard = cached_entry.get("dashboard_data", {})
+            else:
+                raw_dashboard = None
+        else:
+            logger.info(f"跳过缓存获取仪表盘数据: user_id={user_id}")
+            raw_dashboard = None
 
-        # 使用数据源工厂
-        from app.services.data_source_factory import get_data_source_factory
+        # 第2阶段：如果缓存未命中，从数据源获取新数据
+        if not cache_hit or raw_dashboard is None:
+            logger.info(f"从数据源获取用户{user_id}的仪表盘数据")
 
-        factory = await get_data_source_factory()
+            # 使用数据源工厂
+            from app.services.data_source_factory import get_data_source_factory
 
-        # 构建请求参数
-        params = {
-            "user_id": user_id,
-            "trade_date": trade_date.isoformat() if trade_date else None,
-            "include_market": include_market,
-            "include_watchlist": include_watchlist,
-            "include_portfolio": include_portfolio,
-            "include_alerts": include_alerts,
-        }
+            factory = await get_data_source_factory()
 
-        # 调用数据源工厂获取dashboard/summary数据
-        raw_dashboard = await factory.get_data("dashboard", "summary", params)
+            # 构建请求参数
+            params = {
+                "user_id": user_id,
+                "trade_date": trade_date.isoformat() if trade_date else None,
+                "include_market": include_market,
+                "include_watchlist": include_watchlist,
+                "include_portfolio": include_portfolio,
+                "include_alerts": include_alerts,
+            }
 
-        # 构建响应数据
+            # 调用数据源工厂获取dashboard/summary数据
+            raw_dashboard = await factory.get_data("dashboard", "summary", params)
+
+            # 第3阶段：将新数据写入缓存
+            _cache_dashboard_data(
+                cache_manager,
+                user_id,
+                trade_date,
+                raw_dashboard,
+                ttl_hours=24,  # 缓存24小时
+            )
+
+        # 第4阶段：构建响应数据
         response = DashboardResponse(
             user_id=user_id,
             trade_date=trade_date or date.today(),
             generated_at=datetime.now(),
             data_source=raw_dashboard.get("data_source", "data_source_factory"),
-            cache_hit=False,  # TODO: 实现缓存机制后更新
+            cache_hit=cache_hit,  # ✅ 实现缓存机制：根据实际缓存命中状态更新
         )
 
         # 根据参数选择性包含各模块数据
@@ -436,7 +593,12 @@ async def get_dashboard_summary(
         if include_alerts and "risk_alerts" in raw_dashboard:
             response.risk_alerts = build_risk_alert_summary(raw_dashboard["risk_alerts"])
 
-        logger.info(f"仪表盘数据获取成功: user_id={user_id}")
+        # 记录缓存统计
+        cache_stats = cache_manager.get_cache_stats()
+        logger.info(
+            f"仪表盘数据获取成功: user_id={user_id}, cache_hit={cache_hit}, "
+            f"hit_rate={cache_stats.get('hit_rate', 'N/A')}"
+        )
         return response
 
     except ValueError as e:
