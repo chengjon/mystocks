@@ -67,7 +67,16 @@ repos:
       - id: check-added-large-files
         args: ['--maxkb=1000']
       - id: detect-private-key
+        exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|scripts/)
       - id: check-merge-conflict
+
+  # Custom secret detection (detects common credential patterns)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--allow-missing-credentials']
+        exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|\.archive/)
 
   # Python syntax check
   - repo: https://github.com/pre-commit/pygrep-hooks
