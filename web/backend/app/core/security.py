@@ -113,19 +113,45 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
 
     从数据库查询用户信息并验证密码。
     如果数据库连接失败，回退到模拟用户数据。
+
+    Args:
+        username: 用户名
+        password: 密码（明文）
+
+    Returns:
+        UserInDB: 验证成功的用户信息，验证失败返回None
+
+    Process:
+        1. 首先尝试从PostgreSQL数据库查询用户
+        2. 如果数据库查询成功，验证密码
+        3. 如果数据库连接失败，回退到环境变量配置的模拟用户数据
+        4. 返回验证成功的用户或None
     """
+    from app.core.config import settings
+    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError, DataValidationError
+
+    # 首先尝试从数据库查询用户
     try:
-        # 首先尝试从数据库查询用户
         user = get_user_from_database(username)
         if user and verify_password(password, user.hashed_password):
             return user
-    except Exception as e:
+        # 如果数据库中找不到用户或密码不匹配，继续尝试模拟数据
+        if user:
+            # 用户存在但密码错误
+            return None
+
+    except (DatabaseConnectionError, DatabaseOperationError, DataValidationError) as e:
         # 数据库查询失败时记录错误但不抛出异常
-        print(f"Database authentication failed, falling back to mock data: {e}")
+        # 系统将回退到模拟用户数据
+        print(
+            f"Database authentication failed (will use fallback mock data): "
+            f"{type(e).__name__}: {e.message if hasattr(e, 'message') else str(e)}"
+        )
+    except Exception as e:
+        # 捕获其他意外异常
+        print(f"Unexpected error during database authentication, using fallback: {str(e)}")
 
     # 回退到模拟用户数据 - 使用环境变量配置的密码
-    from app.core.config import settings
-
     # 获取管理员初始密码
     admin_initial_password = getattr(settings, "admin_initial_password", "admin123")
     user_initial_password = "user123"  # 默认用户密码
@@ -170,13 +196,50 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
 
     Returns:
         UserInDB: 数据库中的用户信息，如果用户不存在返回None
+
+    Process:
+        1. 尝试从PostgreSQL数据库根据ID查询用户
+        2. 如果数据库查询失败，回退到模拟用户数据
+        3. 返回用户信息或None
     """
+    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError, DataValidationError
+
     try:
         # 从数据库查询用户
         return get_user_from_database_by_id(user_id)
+    except (DatabaseConnectionError, DatabaseOperationError, DataValidationError) as e:
+        # 数据库查询失败时记录错误但不抛出异常
+        # 系统将回退到模拟用户数据
+        print(
+            f"Database user lookup failed for ID {user_id} "
+            f"(will use fallback): {type(e).__name__}: {e.message if hasattr(e, 'message') else str(e)}"
+        )
+        # 回退到模拟数据
+        mock_users = {
+            1: {
+                "id": 1,
+                "username": "admin",
+                "email": "admin@mystocks.com",
+                "hashed_password": "$2b$12$JzXL46bSlDVnMJlDvkV7q.u5gY6pVEYNV18otWdH8FwHD3uRcV1ia",
+                "role": "admin",
+                "is_active": True,
+            },
+            2: {
+                "id": 2,
+                "username": "user",
+                "email": "user@mystocks.com",
+                "hashed_password": "$2b$12$8aBh8ytBXEX0B0okxvYqPO428xzvnJlnA6c.q/ua6BS6z33ZP3WnK",
+                "role": "user",
+                "is_active": True,
+            },
+        }
+        user_data = mock_users.get(user_id)
+        if user_data:
+            return UserInDB(**user_data)
+        return None
     except Exception as e:
-        # 数据库查询失败时记录错误
-        print(f"Database user lookup failed for ID {user_id}: {e}")
+        # 捕获其他意外异常
+        print(f"Unexpected error during user lookup by ID {user_id}: {str(e)}")
         return None
 
 
@@ -189,11 +252,40 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
 
     Returns:
         UserInDB: 用户信息，如果用户不存在返回None
+
+    Raises:
+        DatabaseConnectionError: 数据库连接失败
+        DataValidationError: 用户名无效
+        DatabaseOperationError: 数据库操作失败
     """
-    # TODO: 实现真实的数据库查询逻辑
-    # 这里应该连接PostgreSQL查询users表
-    # 暂时返回None，让系统回退到模拟数据
-    return None
+    from app.core.database import get_postgresql_session
+    from app.db import UserRepository
+    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
+
+    session = None
+    try:
+        session = get_postgresql_session()
+        repository = UserRepository(session)
+        return repository.get_user_by_username(username)
+
+    except DatabaseConnectionError:
+        # 重新抛出连接错误让调用者处理
+        raise
+    except DatabaseOperationError:
+        # 重新抛出操作错误让调用者处理
+        raise
+    except Exception as e:
+        # 捕获其他异常并转换为DatabaseOperationError
+        raise DatabaseOperationError(
+            message=f"Failed to retrieve user from database: {str(e)}",
+            code="DB_OPERATION_FAILED",
+            severity="HIGH",
+            original_exception=e,
+        )
+    finally:
+        # 确保会话被关闭
+        if session:
+            session.close()
 
 
 def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
@@ -205,11 +297,40 @@ def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
 
     Returns:
         UserInDB: 用户信息，如果用户不存在返回None
+
+    Raises:
+        DatabaseConnectionError: 数据库连接失败
+        DataValidationError: 用户ID无效
+        DatabaseOperationError: 数据库操作失败
     """
-    # TODO: 实现真实的数据库查询逻辑
-    # 这里应该连接PostgreSQL查询users表
-    # 暂时返回None，让系统回退到模拟数据
-    return None
+    from app.core.database import get_postgresql_session
+    from app.db import UserRepository
+    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
+
+    session = None
+    try:
+        session = get_postgresql_session()
+        repository = UserRepository(session)
+        return repository.get_user_by_id(user_id)
+
+    except DatabaseConnectionError:
+        # 重新抛出连接错误让调用者处理
+        raise
+    except DatabaseOperationError:
+        # 重新抛出操作错误让调用者处理
+        raise
+    except Exception as e:
+        # 捕获其他异常并转换为DatabaseOperationError
+        raise DatabaseOperationError(
+            message=f"Failed to retrieve user from database by ID: {str(e)}",
+            code="DB_OPERATION_FAILED",
+            severity="HIGH",
+            original_exception=e,
+        )
+    finally:
+        # 确保会话被关闭
+        if session:
+            session.close()
 
 
 def check_permission(user_role: str, required_role: str) -> bool:

@@ -25,31 +25,10 @@ from app.core.security import (
 router = APIRouter()
 security = HTTPBearer()
 
-# 模拟用户数据库 - 使用预先计算的密码哈希
-# TODO: 替换为真实的数据库存储
-USERS_DB = {
-    "admin": {
-        "id": 1,
-        "username": "admin",
-        "email": "admin@mystocks.com",
-        "hashed_password": "$2b$12$JzXL46bSlDVnMJlDvkV7q.u5gY6pVEYNV18otWdH8FwHD3uRcV1ia",  # admin123
-        "role": "admin",
-        "is_active": True,
-    },
-    "user": {
-        "id": 2,
-        "username": "user",
-        "email": "user@mystocks.com",
-        "hashed_password": "$2b$12$8aBh8ytBXEX0B0okxvYqPO428xzvnJlnA6c.q/ua6BS6z33ZP3WnK",  # user123
-        "role": "user",
-        "is_active": True,
-    },
-}
-
-
-def get_users_db():
-    """获取用户数据库"""
-    return USERS_DB
+# User database now backed by PostgreSQL via security.py
+# The authenticate_user() and get_user_from_database() functions
+# handle database queries with automatic fallback to mock data
+# if the database is unavailable.
 
 
 async def get_current_user(
@@ -90,17 +69,24 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # 从数据库获取用户信息
-    users_db = get_users_db()
-    user_dict = users_db.get(username)
-    if user_dict is None:
+    # 从安全模块获取用户信息（数据库或模拟数据）
+    from app.core.security import authenticate_user_by_id
+
+    user_in_db = authenticate_user_by_id(token_data.user_id)
+    if user_in_db is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = User(**user_dict)
+    user = User(
+        id=user_in_db.id,
+        username=user_in_db.username,
+        email=user_in_db.email,
+        role=user_in_db.role,
+        is_active=user_in_db.is_active,
+    )
     return user
 
 
@@ -197,19 +183,50 @@ async def refresh_token(
 async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """
     获取用户列表（仅管理员）
+    从PostgreSQL数据库获取所有活跃用户
     """
     if not check_permission(current_user.role, "admin"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="权限不足")
 
-    users_db = get_users_db()
-    users = []
-    for username, user_data in users_db.items():
-        user_info = user_data.copy()
-        # 不返回密码哈希
-        user_info.pop("hashed_password", None)
-        users.append(user_info)
+    try:
+        from app.core.database import get_postgresql_session
+        from app.db import UserRepository
+        from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
 
-    return {"users": users, "total": len(users)}
+        session = get_postgresql_session()
+        try:
+            repository = UserRepository(session)
+            users_list = repository.get_all_users()
+
+            users = []
+            for user in users_list:
+                user_info = {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                    "is_active": user.is_active,
+                    # 不返回密码哈希
+                }
+                users.append(user_info)
+
+            return {"users": users, "total": len(users)}
+
+        finally:
+            session.close()
+
+    except (DatabaseConnectionError, DatabaseOperationError) as e:
+        # 数据库查询失败时返回错误响应
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Failed to retrieve users: {str(e)}",
+        )
+    except Exception as e:
+        # 捕获其他异常
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving users: {str(e)}",
+        )
 
 
 def check_permission(user_role: str, required_role: str) -> bool:
