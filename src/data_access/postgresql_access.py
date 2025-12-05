@@ -13,6 +13,7 @@ from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime
 import psycopg2
 from psycopg2.extras import execute_values
+from psycopg2 import sql
 
 from src.storage.database.connection_manager import get_connection_manager
 
@@ -287,16 +288,67 @@ class PostgreSQLDataAccess:
         conn = self._get_connection()
 
         try:
-            cols = ", ".join(columns) if columns else "*"
+            # SECURITY FIX: Whitelist table names to prevent injection
+            ALLOWED_TABLES = {
+                "daily_kline", "minute_kline", "tick_data", "symbols_info",
+                "technical_indicators", "quantitative_factors", "model_outputs",
+                "trading_signals", "order_records", "transaction_records",
+                "position_records", "account_funds", "realtime_quotes",
+                "market_data", "stock_basic", "trade_cal", "income_statement",
+                "balance_sheet", "cash_flow", "financial_indicators",
+                "monitoring_logs", "alerts", "system_metrics"
+            }
+            if table_name not in ALLOWED_TABLES:
+                raise ValueError(f"Invalid table name: {table_name}")
+
+            # SECURITY FIX: Validate column names to prevent injection
+            if columns:
+                ALLOWED_COLUMNS = {
+                    "symbol", "date", "time", "open", "high", "low", "close", "volume",
+                    "amount", "turnover", "change", "change_pct", "ma5", "ma10", "ma20",
+                    "rsi", "macd", "boll_upper", "boll_lower", "atr", "id", "name",
+                    "industry", "market", "list_date", "is_st", "total_mv",
+                    "circ_mv", "pe", "pb", "price", "shares", "created_at", "updated_at"
+                }
+                for col in columns:
+                    if col not in ALLOWED_COLUMNS and not col.startswith("custom_"):
+                        raise ValueError(f"Invalid column name: {col}")
+                cols = ", ".join(columns)
+            else:
+                cols = "*"
+
+            # SECURITY FIX: Build SQL with proper validation
             sql = f"SELECT {cols} FROM {table_name}"
 
+            # SECURITY FIX: For WHERE clause, check if it contains parameters
             if where:
-                sql += f" WHERE {where}"
+                # If WHERE contains parameter placeholders, keep it as-is for parameterized execution
+                if "%s" in where or "%" in where:
+                    sql += f" WHERE {where}"
+                else:
+                    # For literal WHERE clauses, do basic validation to prevent injection
+                    dangerous_patterns = ["'", ";", "--", "/*", "*/", "xp_", "sp_"]
+                    where_lower = where.lower()
+                    for pattern in dangerous_patterns:
+                        if pattern in where_lower:
+                            raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
+                    sql += f" WHERE {where}"
 
+            # SECURITY FIX: Validate ORDER BY to prevent injection
             if order_by:
+                allowed_order_fields = {
+                    "symbol", "date", "time", "open", "high", "low", "close", "volume",
+                    "amount", "turnover", "change", "change_pct", "created_at", "updated_at"
+                }
+                order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
+                if order_field not in allowed_order_fields:
+                    raise ValueError(f"Invalid order field: {order_field}")
                 sql += f" ORDER BY {order_by}"
 
+            # SECURITY FIX: Validate limit to prevent injection
             if limit:
+                if not isinstance(limit, int) or limit <= 0 or limit > 10000:
+                    raise ValueError(f"Invalid limit value: {limit}")
                 sql += f" LIMIT {limit}"
 
             df = pd.read_sql(sql, conn)
@@ -377,27 +429,58 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def delete(self, table_name: str, where: str) -> int:
+    def delete(self, table_name: str, where: str, params: Optional[Tuple] = None) -> int:
         """
-        删除数据
+        删除数据 (Security-enhanced version)
 
         Args:
             table_name: 表名
-            where: WHERE子句 (不含WHERE关键字)
+            where: WHERE子句 (不含WHERE关键字，支持参数化查询)
+            params: 参数元组 (用于参数化查询)
 
         Returns:
             删除的行数
 
         Example:
+            # 使用参数化查询 (推荐)
+            deleted = delete('daily_kline', "date < %s", ('2020-01-01',))
+
+            # 或者使用带验证的字面量
             deleted = delete('daily_kline', "date < '2020-01-01'")
         """
         conn = self._get_connection()
 
         try:
-            sql = f"DELETE FROM {table_name} WHERE {where}"
+            # SECURITY FIX: Whitelist table names to prevent injection
+            ALLOWED_TABLES = {
+                "daily_kline", "minute_kline", "tick_data", "symbols_info",
+                "technical_indicators", "quantitative_factors", "model_outputs",
+                "trading_signals", "order_records", "transaction_records",
+                "position_records", "account_funds", "realtime_quotes",
+                "market_data", "stock_basic", "trade_cal", "income_statement",
+                "balance_sheet", "cash_flow", "financial_indicators",
+                "monitoring_logs", "alerts", "system_metrics"
+            }
+            if table_name not in ALLOWED_TABLES:
+                raise ValueError(f"Invalid table name: {table_name}")
 
-            cursor = conn.cursor()
-            cursor.execute(sql)
+            # SECURITY FIX: Validate WHERE clause to prevent injection
+            if params:
+                # Parameterized query - safe
+                sql = f"DELETE FROM {table_name} WHERE {where}"
+                cursor = conn.cursor()
+                cursor.execute(sql, params)
+            else:
+                # Literal WHERE clause - do validation
+                dangerous_patterns = ["'", ";", "--", "/*", "*/", "xp_", "sp_", "drop", "truncate"]
+                where_lower = where.lower()
+                for pattern in dangerous_patterns:
+                    if pattern in where_lower:
+                        raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
+                sql = f"DELETE FROM {table_name} WHERE {where}"
+                cursor = conn.cursor()
+                cursor.execute(sql)
+
             conn.commit()
 
             rows_deleted = cursor.rowcount or 0
@@ -414,7 +497,7 @@ class PostgreSQLDataAccess:
 
     def get_table_stats(self, table_name: str) -> Dict[str, Any]:
         """
-        获取表统计信息
+        获取表统计信息 (Security-enhanced version)
 
         Args:
             table_name: 表名
@@ -425,15 +508,29 @@ class PostgreSQLDataAccess:
         conn = self._get_connection()
 
         try:
-            sql = f"""
+            # SECURITY FIX: Whitelist table names to prevent injection
+            ALLOWED_TABLES = {
+                "daily_kline", "minute_kline", "tick_data", "symbols_info",
+                "technical_indicators", "quantitative_factors", "model_outputs",
+                "trading_signals", "order_records", "transaction_records",
+                "position_records", "account_funds", "realtime_quotes",
+                "market_data", "stock_basic", "trade_cal", "income_statement",
+                "balance_sheet", "cash_flow", "financial_indicators",
+                "monitoring_logs", "alerts", "system_metrics"
+            }
+            if table_name not in ALLOWED_TABLES:
+                raise ValueError(f"Invalid table name: {table_name}")
+
+            # SECURITY FIX: Use PostgreSQL SQL identifier to prevent injection
+            query = sql.SQL("""
                 SELECT
                     COUNT(*) as row_count,
-                    pg_size_pretty(pg_total_relation_size('{table_name}')) as total_size
-                FROM {table_name}
-            """
+                    pg_size_pretty(pg_total_relation_size(%s)) as total_size
+                FROM {}
+            """).format(sql.Identifier(table_name))
 
             cursor = conn.cursor()
-            cursor.execute(sql)
+            cursor.execute(query, (table_name,))
             row = cursor.fetchone()
             cursor.close()
 

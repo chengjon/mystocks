@@ -22,22 +22,22 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 # 导入缓存淘汰调度器
-from app.core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
+from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
 
 # 导入配置
-from app.core.config import settings
+from .core.config import settings
 
 # 导入数据库连接管理
-from app.core.database import close_all_connections, get_postgresql_engine
+from .core.database import close_all_connections, get_postgresql_engine
 
 # 导入Socket.IO服务器管理器
-from app.core.socketio_manager import get_socketio_manager
+from .core.socketio_manager import get_socketio_manager
 
 # 导入统一响应格式中间件
-from app.middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
 
 # 导入OpenAPI配置
-from app.openapi_config import OPENAPI_TAGS, get_openapi_config
+from .openapi_config import OPENAPI_TAGS, get_openapi_config
 
 # 配置日志
 logger = structlog.get_logger()
@@ -275,7 +275,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     request_id = getattr(request.state, "request_id", str(id(request)))
 
     # 使用统一响应格式
-    from app.core.responses import ErrorCodes, ResponseMessages, create_error_response
+    from .core.responses import ErrorCodes, ResponseMessages, create_error_response
 
     return JSONResponse(
         status_code=500,
@@ -295,7 +295,7 @@ async def health_check(request: Request):
     # 获取请求ID
     request_id = getattr(request.state, "request_id", None)
 
-    from app.core.responses import create_health_response
+    from .core.responses import create_health_response
 
     return create_health_response(
         service="mystocks-web-api",
@@ -345,7 +345,7 @@ async def root(request: Request):
     # 获取请求ID
     request_id = getattr(request.state, "request_id", None)
 
-    from app.core.responses import create_success_response
+    from .core.responses import create_success_response
 
     return create_success_response(
         data={
@@ -378,7 +378,7 @@ async def custom_swagger_ui_html():
 
 
 # 导入 API 路由 - 优化结构: 先导入，后统一挂载
-from app.api import (
+from .api import (
     announcement,
     auth,
     cache,
@@ -410,7 +410,7 @@ from app.api import (
     watchlist,
     wencai,
 )
-from app.api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
+from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
@@ -487,7 +487,7 @@ def find_available_port(start_port: int, end_port: int) -> int:
 if __name__ == "__main__":
     import uvicorn
 
-    from app.core.config import settings
+    from .core.config import settings
 
     try:
         # 在端口范围内查找可用端口
