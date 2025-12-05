@@ -35,7 +35,7 @@ const menuConfig = [
       {
         id: 'market-realtime',
         title: '实时行情',
-        path: '/market/realtime',
+        path: '/tdx-market',
         icon: 'DataLine',
         disabled: false
       },

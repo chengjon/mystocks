@@ -5,6 +5,7 @@
 import os
 from typing import List, Optional
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -44,7 +45,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # 管理员初始密码配置
-    admin_initial_password: str = "admin123"  # 默认密码，生产环境应通过环境变量修改
+    admin_initial_password: str = Field(default="", env="ADMIN_INITIAL_PASSWORD")  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
