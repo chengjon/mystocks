@@ -1,497 +1,400 @@
 """
-统一异常定义模块
-定义MyStocks系统中所有自定义异常类型
+MyStocks Custom Exception Hierarchy
+
+This module defines all custom exceptions used throughout the MyStocks application.
+For details, see docs/guides/PHASE1_EXCEPTION_HIERARCHY.md
 """
 
-from typing import Any, Dict, List, Optional
+import traceback
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 
 class MyStocksException(Exception):
-    """MyStocks系统基础异常类"""
-    def __init__(self, message: str, error_code: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
-        super().__init__(message)
+    """Base exception class for all MyStocks application exceptions."""
+
+    severity_levels = ("CRITICAL", "HIGH", "MEDIUM", "LOW")
+    default_code = "UNKNOWN_ERROR"
+    default_severity = "HIGH"
+
+    def __init__(
+        self,
+        message: str,
+        code: Optional[str] = None,
+        severity: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
+        original_exception: Optional[Exception] = None,
+    ):
         self.message = message
-        self.error_code = error_code or "MSE0001"
-        self.details = details or {}
-        self.timestamp = self._get_timestamp()
+        self.code = code or self.default_code
+        self.severity = severity or self.default_severity
+        self.context = context or {}
+        self.original_exception = original_exception
+        self.timestamp = datetime.now()
 
-    def _get_timestamp(self) -> str:
-        from datetime import datetime
-        return datetime.now().isoformat()
+        if original_exception and not isinstance(original_exception, MyStocksException):
+            self.context["original_error"] = str(original_exception)
+            self.context["original_traceback"] = traceback.format_exc()
 
-    def __str__(self) -> str:
-        return f"[{self.error_code}] {self.message} | Details: {self.details}"
+        super().__init__(self.format_message())
 
+    def format_message(self) -> str:
+        parts = [f"[{self.code}] {self.message}"]
+        if self.context:
+            context_str = ", ".join(f"{k}={v}" for k, v in self.context.items())
+            parts.append(f"Context: {context_str}")
+        return " | ".join(parts)
 
-class DataException(MyStocksException):
-    """数据相关异常基类"""
-    pass
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "type": self.__class__.__name__,
+            "message": self.message,
+            "code": self.code,
+            "severity": self.severity,
+            "context": self.context,
+            "timestamp": self.timestamp.isoformat(),
+            "original_exception": str(self.original_exception) if self.original_exception else None,
+        }
 
-
-class DataNotFoundException(DataException):
-    """数据未找到异常"""
-    def __init__(self, message: str, symbol: Optional[str] = None, data_type: Optional[str] = None):
-        details = {"symbol": symbol, "data_type": data_type}
-        super().__init__(message, "MSE1001", details)
-
-
-class DataValidationError(DataException):
-    """数据验证异常"""
-    def __init__(self, message: str, validation_errors: Optional[List[Any]] = None):
-        details = {"validation_errors": validation_errors}
-        super().__init__(message, "MSE1002", details)
-
-
-class DataIntegrityException(DataException):
-    """数据完整性异常"""
-    def __init__(self, message: str, table_name: Optional[str] = None, record_id: Optional[str] = None):
-        details = {"table_name": table_name, "record_id": record_id}
-        super().__init__(message, "MSE1003", details)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(code={self.code!r}, severity={self.severity!r})"
 
 
-class DataQualityException(DataException):
-    """数据质量异常"""
-    def __init__(self, message: str, quality_issues: Optional[List[Any]] = None):
-        details = {"quality_issues": quality_issues}
-        super().__init__(message, "MSE1004", details)
+# Data Source Exceptions
+class DataSourceException(MyStocksException):
+    """Base exception for data source operations."""
+
+    default_code = "DATA_SOURCE_ERROR"
 
 
+class NetworkError(DataSourceException):
+    """Raised when network operation fails."""
+
+    default_code = "NETWORK_ERROR"
+    default_severity = "HIGH"
+
+
+class DataFetchError(DataSourceException):
+    """Raised when data fetch operation fails."""
+
+    default_code = "DATA_FETCH_FAILED"
+    default_severity = "HIGH"
+
+
+class DataParseError(DataSourceException):
+    """Raised when data parsing/deserialization fails."""
+
+    default_code = "DATA_PARSE_ERROR"
+    default_severity = "MEDIUM"
+
+
+class DataValidationError(DataSourceException):
+    """Raised when data validation fails."""
+
+    default_code = "DATA_VALIDATION_ERROR"
+    default_severity = "MEDIUM"
+
+
+# Database Exceptions
 class DatabaseException(MyStocksException):
-    """数据库相关异常"""
-    pass
+    """Base exception for database operations."""
+
+    default_code = "DATABASE_ERROR"
 
 
 class DatabaseConnectionError(DatabaseException):
-    """数据库连接异常"""
-    def __init__(self, message: str, db_type: Optional[str] = None, connection_info: Optional[Dict[str, Any]] = None):
-        details = {"db_type": db_type, "connection_info": connection_info}
-        super().__init__(message, "MSE2001", details)
+    """Raised when database connection fails."""
+
+    default_code = "DATABASE_CONNECTION_ERROR"
+    default_severity = "CRITICAL"
 
 
-class DatabaseQueryError(DatabaseException):
-    """数据库查询异常"""
-    def __init__(self, message: str, query: Optional[str] = None, params: Optional[Dict[str, Any]] = None):
-        details = {"query": query, "params": params}
-        super().__init__(message, "MSE2002", details)
+class DatabaseOperationError(DatabaseException):
+    """Raised when database query/insert/update/delete fails."""
+
+    default_code = "DATABASE_OPERATION_ERROR"
+    default_severity = "HIGH"
 
 
 class DatabaseIntegrityError(DatabaseException):
-    """数据库完整性异常"""
-    def __init__(self, message: str, constraint: Optional[str] = None, table: Optional[str] = None):
-        details = {"constraint": constraint, "table": table}
-        super().__init__(message, "MSE2003", details)
+    """Raised when database constraint is violated."""
+
+    default_code = "DATABASE_INTEGRITY_ERROR"
+    default_severity = "HIGH"
 
 
-class ConfigException(MyStocksException):
-    """配置相关异常"""
-    pass
+class DatabaseNotFoundError(DatabaseException):
+    """Raised when requested database resource is not found."""
+
+    default_code = "DATABASE_NOT_FOUND"
+    default_severity = "MEDIUM"
 
 
-class ConfigFileNotFound(ConfigException):
-    """配置文件未找到异常"""
-    def __init__(self, file_path: str):
-        details = {"file_path": file_path}
-        super().__init__(f"配置文件未找到: {file_path}", "MSE3001", details)
+# Cache Exceptions
+class CacheException(MyStocksException):
+    """Base exception for caching operations."""
+
+    default_code = "CACHE_ERROR"
 
 
-class ConfigValueError(ConfigException):
-    """配置值错误异常"""
-    def __init__(self, key: str, value: Any, expected_type: Optional[str] = None):
-        details = {"key": key, "value": value, "expected_type": expected_type}
-        super().__init__(f"配置值错误: {key}={value}", "MSE3002", details)
+class CacheStoreError(CacheException):
+    """Raised when failed to store value in cache."""
+
+    default_code = "CACHE_STORE_ERROR"
+    default_severity = "MEDIUM"
 
 
-class ConfigValidationFailed(ConfigException):
-    """配置验证失败异常"""
-    def __init__(self, validation_errors: list):
-        details = {"validation_errors": validation_errors}
-        super().__init__("配置验证失败", "MSE3003", details)
+class CacheRetrievalError(CacheException):
+    """Raised when failed to retrieve value from cache."""
+
+    default_code = "CACHE_RETRIEVAL_ERROR"
+    default_severity = "MEDIUM"
 
 
-class NetworkException(MyStocksException):
-    """网络相关异常"""
-    pass
+class CacheInvalidationError(CacheException):
+    """Raised when cache invalidation fails."""
+
+    default_code = "CACHE_INVALIDATION_ERROR"
+    default_severity = "LOW"
 
 
-class NetworkConnectionError(NetworkException):
-    """网络连接异常"""
-    def __init__(self, message: str, url: Optional[str] = None, timeout: Optional[float] = None):
-        details = {"url": url, "timeout": timeout}
-        super().__init__(message, "MSE4001", details)
+# Configuration Exceptions
+class ConfigurationException(MyStocksException):
+    """Base exception for configuration errors."""
+
+    default_code = "CONFIGURATION_ERROR"
 
 
-class NetworkTimeoutError(NetworkException):
-    """网络超时异常"""
-    def __init__(self, message: str, timeout: Optional[float] = None, url: Optional[str] = None):
-        details = {"timeout": timeout, "url": url}
-        super().__init__(message, "MSE4002", details)
+class ConfigNotFoundError(ConfigurationException):
+    """Raised when required configuration is missing."""
+
+    default_code = "CONFIG_NOT_FOUND"
+    default_severity = "CRITICAL"
 
 
-class HTTPError(NetworkException):
-    """HTTP错误异常"""
-    def __init__(self, status_code: int, message: str, url: Optional[str] = None, response: Optional[str] = None):
-        details = {"status_code": status_code, "url": url, "response": response}
-        super().__init__(f"HTTP错误: {status_code} - {message}", "MSE4003", details)
+class ConfigInvalidError(ConfigurationException):
+    """Raised when configuration value is invalid."""
+
+    default_code = "CONFIG_INVALID"
+    default_severity = "HIGH"
 
 
-class SecurityException(MyStocksException):
-    """安全相关异常"""
-    pass
+class ConfigValidationError(ConfigurationException):
+    """Raised when configuration validation fails."""
+
+    default_code = "CONFIG_VALIDATION_ERROR"
+    default_severity = "HIGH"
 
 
-class AuthenticationError(SecurityException):
-    """认证错误异常"""
-    def __init__(self, message: str, user_id: Optional[str] = None):
-        details = {"user_id": user_id}
-        super().__init__(message, "MSE5001", details)
+# Validation Exceptions
+class ValidationException(MyStocksException):
+    """Base exception for data validation failures."""
+
+    default_code = "VALIDATION_ERROR"
 
 
-class AuthorizationError(SecurityException):
-    """授权错误异常"""
-    def __init__(self, message: str, user_id: Optional[str] = None, resource: Optional[str] = None):
-        details = {"user_id": user_id, "resource": resource}
-        super().__init__(message, "MSE5002", details)
+class SchemaValidationError(ValidationException):
+    """Raised when data schema doesn't match expected format."""
+
+    default_code = "SCHEMA_VALIDATION_ERROR"
+    default_severity = "MEDIUM"
 
 
-class DataAccessError(SecurityException):
-    """数据访问错误异常"""
-    def __init__(self, message: str, user_id: Optional[str] = None, table_name: Optional[str] = None):
-        details = {"user_id": user_id, "table_name": table_name}
-        super().__init__(message, "MSE5003", details)
+class DataTypeError(ValidationException):
+    """Raised when data type doesn't match expected type."""
+
+    default_code = "DATA_TYPE_ERROR"
+    default_severity = "MEDIUM"
 
 
-class ProcessingException(MyStocksException):
-    """数据处理相关异常"""
-    pass
+class RangeError(ValidationException):
+    """Raised when value is out of acceptable range."""
+
+    default_code = "RANGE_ERROR"
+    default_severity = "MEDIUM"
 
 
-class BatchProcessingError(ProcessingException):
-    """批量处理错误异常"""
-    def __init__(self, message: str, failed_records: Optional[List[Any]] = None, total_records: Optional[int] = None):
-        details = {"failed_records": failed_records or [], "total_records": total_records}
-        super().__init__(message, "MSE6001", details)
+class RequiredFieldError(ValidationException):
+    """Raised when required field is missing."""
+
+    default_code = "REQUIRED_FIELD_ERROR"
+    default_severity = "MEDIUM"
 
 
-class DataFormatError(ProcessingException):
-    """数据格式错误异常"""
-    def __init__(self, message: str, expected_format: Optional[str] = None, actual_format: Optional[str] = None):
-        details = {"expected_format": expected_format, "actual_format": actual_format}
-        super().__init__(message, "MSE6002", details)
-
-
-class ValidationException(ProcessingException):
-    """验证错误异常"""
-    def __init__(self, message: str, field: Optional[str] = None, value: Any = None, validation_rule: Optional[str] = None):
-        details = {"field": field, "value": value, "validation_rule": validation_rule}
-        super().__init__(message, "MSE6003", details)
-
-
+# Business Logic Exceptions
 class BusinessLogicException(MyStocksException):
-    """业务逻辑相关异常"""
-    pass
+    """Base exception for business rule violations."""
+
+    default_code = "BUSINESS_LOGIC_ERROR"
 
 
-class TradingRuleViolation(BusinessLogicException):
-    """交易规则违反异常"""
-    def __init__(self, message: str, rule: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
-        details = {"rule": rule, "context": context}
-        super().__init__(message, "MSE7001", details)
+class InsufficientFundsError(BusinessLogicException):
+    """Raised when account has insufficient funds for operation."""
+
+    default_code = "INSUFFICIENT_FUNDS"
+    default_severity = "HIGH"
 
 
-class RiskControlException(BusinessLogicException):
-    """风控相关异常"""
-    def __init__(self, message: str, risk_level: Optional[str] = None, risk_factors: Optional[List[Any]] = None):
-        details = {"risk_level": risk_level, "risk_factors": risk_factors}
-        super().__init__(message, "MSE7002", details)
+class InvalidStrategyError(BusinessLogicException):
+    """Raised when strategy parameters are invalid."""
+
+    default_code = "INVALID_STRATEGY"
+    default_severity = "HIGH"
 
 
-class UnsupportedOperation(BusinessLogicException):
-    """不支持的操作异常"""
-    def __init__(self, operation: str, reason: Optional[str] = None):
-        details = {"operation": operation, "reason": reason}
-        super().__init__(f"不支持的操作: {operation}", "MSE7003", details)
+class BacktestError(BusinessLogicException):
+    """Raised when backtest execution fails."""
+
+    default_code = "BACKTEST_ERROR"
+    default_severity = "HIGH"
 
 
-# ==================== 数据源相关异常 (Phase 1 新增) ====================
+class TradeExecutionError(BusinessLogicException):
+    """Raised when trade execution fails."""
 
-class DataSourceException(MyStocksException):
-    """
-    数据源异常基类
-
-    所有数据源操作相关的异常都继承此类。
-    包含数据源类型、操作类型等上下文信息，便于排查问题。
-
-    Attributes:
-        source_type: 数据源类型 (mock/tdengine/postgresql/api)
-        operation: 操作类型 (query/insert/update/delete/connect)
-    """
-    def __init__(
-        self,
-        message: str,
-        error_code: str = "MSE8000",
-        source_type: Optional[str] = None,
-        operation: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
-    ):
-        enhanced_details = details or {}
-        enhanced_details.update({
-            "source_type": source_type,
-            "operation": operation
-        })
-        super().__init__(message, error_code, enhanced_details)
-        self.source_type = source_type
-        self.operation = operation
+    default_code = "TRADE_EXECUTION_ERROR"
+    default_severity = "HIGH"
 
 
-class DataSourceConnectionError(DataSourceException):
-    """
-    数据源连接错误
+# Authentication Exceptions
+class AuthenticationException(MyStocksException):
+    """Base exception for authentication failures."""
 
-    当无法连接到数据源时抛出此异常。
-    适用场景：
-    - 数据库连接失败
-    - API服务不可达
-    - 网络超时
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        connection_info: Optional[Dict[str, Any]] = None,
-        retry_count: int = 0
-    ):
-        details = {
-            "connection_info": connection_info,
-            "retry_count": retry_count
-        }
-        super().__init__(
-            message,
-            error_code="MSE8001",
-            source_type=source_type,
-            operation="connect",
-            details=details
-        )
+    default_code = "AUTHENTICATION_ERROR"
 
 
-class DataSourceQueryError(DataSourceException):
-    """
-    数据源查询错误
+class InvalidCredentialsError(AuthenticationException):
+    """Raised when username/password is incorrect."""
 
-    当查询数据失败时抛出此异常。
-    适用场景：
-    - SQL语法错误
-    - 查询超时
-    - 返回数据格式不正确
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        query: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
-        error_type: Optional[str] = None
-    ):
-        details = {
-            "query": query,
-            "params": params,
-            "error_type": error_type  # syntax/timeout/format/other
-        }
-        super().__init__(
-            message,
-            error_code="MSE8002",
-            source_type=source_type,
-            operation="query",
-            details=details
-        )
+    default_code = "INVALID_CREDENTIALS"
+    default_severity = "MEDIUM"
 
 
-class DataSourceDataNotFound(DataSourceException):
-    """
-    数据源中未找到数据
+class TokenExpiredError(AuthenticationException):
+    """Raised when JWT token has expired."""
 
-    当查询的数据不存在时抛出此异常。
-    适用场景：
-    - 股票代码不存在
-    - 日期范围内无数据
-    - 指定记录不存在
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        query_params: Optional[Dict[str, Any]] = None
-    ):
-        details = {"query_params": query_params}
-        super().__init__(
-            message,
-            error_code="MSE8003",
-            source_type=source_type,
-            operation="query",
-            details=details
-        )
+    default_code = "TOKEN_EXPIRED"
+    default_severity = "MEDIUM"
 
 
-class DataSourceTimeout(DataSourceException):
-    """
-    数据源操作超时
+class TokenInvalidError(AuthenticationException):
+    """Raised when JWT token is invalid or malformed."""
 
-    当数据源操作超过预期时间时抛出此异常。
-    适用场景：
-    - 查询超时
-    - 写入超时
-    - 连接超时
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        operation: Optional[str] = None,
-        timeout_seconds: Optional[float] = None,
-        expected_seconds: Optional[float] = None
-    ):
-        details = {
-            "timeout_seconds": timeout_seconds,
-            "expected_seconds": expected_seconds
-        }
-        super().__init__(
-            message,
-            error_code="MSE8004",
-            source_type=source_type,
-            operation=operation,
-            details=details
-        )
+    default_code = "TOKEN_INVALID"
+    default_severity = "MEDIUM"
 
 
-class DataSourceConfigError(DataSourceException):
-    """
-    数据源配置错误
+class UnauthorizedAccessError(AuthenticationException):
+    """Raised when access to resource is denied."""
 
-    当数据源配置不正确时抛出此异常。
-    适用场景：
-    - 缺少必需配置
-    - 配置值无效
-    - 配置格式错误
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        config_key: Optional[str] = None,
-        config_value: Any = None,
-        expected_value: Optional[str] = None
-    ):
-        details = {
-            "config_key": config_key,
-            "config_value": config_value,
-            "expected_value": expected_value
-        }
-        super().__init__(
-            message,
-            error_code="MSE8005",
-            source_type=source_type,
-            operation="config",
-            details=details
-        )
+    default_code = "UNAUTHORIZED_ACCESS"
+    default_severity = "MEDIUM"
 
 
-class DataSourceDataFormatError(DataSourceException):
-    """
-    数据源返回数据格式错误
+# Timeout Exceptions
+class TimeoutException(MyStocksException):
+    """Base exception for operation timeouts."""
 
-    当数据源返回的数据格式与预期不符时抛出此异常。
-    适用场景：
-    - 缺少必需字段
-    - 字段类型不匹配
-    - JSON解析失败
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        expected_format: Optional[str] = None,
-        actual_format: Optional[str] = None,
-        sample_data: Optional[str] = None
-    ):
-        details = {
-            "expected_format": expected_format,
-            "actual_format": actual_format,
-            "sample_data": sample_data
-        }
-        super().__init__(
-            message,
-            error_code="MSE8006",
-            source_type=source_type,
-            operation="parse",
-            details=details
-        )
+    default_code = "TIMEOUT_ERROR"
 
 
-class DataSourceUnavailable(DataSourceException):
-    """
-    数据源不可用
+class NetworkTimeoutError(TimeoutException):
+    """Raised when network operation times out."""
 
-    当数据源暂时不可用时抛出此异常（用于降级处理）。
-    适用场景：
-    - 数据源维护中
-    - 数据源过载
-    - 数据源健康检查失败
-    """
-    def __init__(
-        self,
-        message: str,
-        source_type: Optional[str] = None,
-        reason: Optional[str] = None,
-        estimated_recovery_time: Optional[str] = None
-    ):
-        details = {
-            "reason": reason,
-            "estimated_recovery_time": estimated_recovery_time
-        }
-        super().__init__(
-            message,
-            error_code="MSE8007",
-            source_type=source_type,
-            operation="health_check",
-            details=details
-        )
+    default_code = "NETWORK_TIMEOUT"
+    default_severity = "HIGH"
 
 
-# 全局异常处理装饰器
-def handle_exceptions(default_return: Any = None, reraise: bool = False, logger: Any = None) -> Any:
-    """
-    异常处理装饰器
+class DatabaseTimeoutError(TimeoutException):
+    """Raised when database query times out."""
 
-    Args:
-        default_return: 异常发生时的默认返回值
-        reraise: 是否重新抛出异常
-        logger: 日志记录器实例
-    """
-    from functools import wraps
+    default_code = "DATABASE_TIMEOUT"
+    default_severity = "HIGH"
 
-    def decorator(func: Any) -> Any:
-        @wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
-            try:
-                return func(*args, **kwargs)
-            except MyStocksException:
-                # MyStocks自定义异常直接处理
-                raise
-            except Exception as e:
-                # 记录原始异常信息
-                if logger:
-                    logger.error(
-                        f"函数 {func.__name__} 执行出错: {str(e)}",
-                        exc_info=True,
-                        extra={
-                            "function": func.__name__,
-                            "args": str(args)[:200],  # 限制长度
-                            "kwargs": str(kwargs)[:200]  # 限制长度
-                        }
-                    )
 
-                if reraise:
-                    raise
+class OperationTimeoutError(TimeoutException):
+    """Raised when generic operation times out."""
 
-                return default_return
-        return wrapper
-    return decorator
+    default_code = "OPERATION_TIMEOUT"
+    default_severity = "MEDIUM"
+
+
+# External Service Exceptions
+class ExternalServiceException(MyStocksException):
+    """Base exception for external service failures."""
+
+    default_code = "EXTERNAL_SERVICE_ERROR"
+
+
+class ServiceUnavailableError(ExternalServiceException):
+    """Raised when external service is unavailable."""
+
+    default_code = "SERVICE_UNAVAILABLE"
+    default_severity = "HIGH"
+
+
+class ServiceError(ExternalServiceException):
+    """Raised when external service returns an error."""
+
+    default_code = "SERVICE_ERROR"
+    default_severity = "HIGH"
+
+
+class RateLimitError(ExternalServiceException):
+    """Raised when rate limit is exceeded."""
+
+    default_code = "RATE_LIMIT_EXCEEDED"
+    default_severity = "MEDIUM"
+
+
+class UnexpectedResponseError(ExternalServiceException):
+    """Raised when external service returns unexpected response."""
+
+    default_code = "UNEXPECTED_RESPONSE"
+    default_severity = "MEDIUM"
+
+
+# Exception Registry
+EXCEPTION_REGISTRY = {
+    "NetworkError": NetworkError,
+    "DataFetchError": DataFetchError,
+    "DataParseError": DataParseError,
+    "DataValidationError": DataValidationError,
+    "DatabaseConnectionError": DatabaseConnectionError,
+    "DatabaseOperationError": DatabaseOperationError,
+    "DatabaseIntegrityError": DatabaseIntegrityError,
+    "DatabaseNotFoundError": DatabaseNotFoundError,
+    "CacheStoreError": CacheStoreError,
+    "CacheRetrievalError": CacheRetrievalError,
+    "CacheInvalidationError": CacheInvalidationError,
+    "ConfigNotFoundError": ConfigNotFoundError,
+    "ConfigInvalidError": ConfigInvalidError,
+    "ConfigValidationError": ConfigValidationError,
+    "SchemaValidationError": SchemaValidationError,
+    "DataTypeError": DataTypeError,
+    "RangeError": RangeError,
+    "RequiredFieldError": RequiredFieldError,
+    "InsufficientFundsError": InsufficientFundsError,
+    "InvalidStrategyError": InvalidStrategyError,
+    "BacktestError": BacktestError,
+    "TradeExecutionError": TradeExecutionError,
+    "InvalidCredentialsError": InvalidCredentialsError,
+    "TokenExpiredError": TokenExpiredError,
+    "TokenInvalidError": TokenInvalidError,
+    "UnauthorizedAccessError": UnauthorizedAccessError,
+    "NetworkTimeoutError": NetworkTimeoutError,
+    "DatabaseTimeoutError": DatabaseTimeoutError,
+    "OperationTimeoutError": OperationTimeoutError,
+    "ServiceUnavailableError": ServiceUnavailableError,
+    "ServiceError": ServiceError,
+    "RateLimitError": RateLimitError,
+    "UnexpectedResponseError": UnexpectedResponseError,
+}
+
+
+def get_exception_class(exception_name: str) -> Optional[type]:
+    """Get exception class by name."""
+    return EXCEPTION_REGISTRY.get(exception_name)
+
+
+__all__ = list(EXCEPTION_REGISTRY.keys()) + ["MyStocksException", "EXCEPTION_REGISTRY", "get_exception_class"]
