@@ -16,19 +16,11 @@ try:
     from src.utils.tdx_server_config import TdxServerConfig
 
     print("\n=== 初始化TDX数据源 ===")
-    # 使用本地TDX安装目录下的配置文件
-    tdx_config_path = "/mnt/d/ProgramData/TDX_new/connect.cfg"
-    if os.path.exists(tdx_config_path):
-        print(f"使用本地配置文件: {tdx_config_path}")
-        tdx = TdxDataSource(config_file=tdx_config_path)
-    else:
-        print("未找到本地配置文件，使用默认配置")
-        tdx = TdxDataSource()
-
+    tdx = TdxDataSource()
+        
     print(f"连接到: {tdx.tdx_host}:{tdx.tdx_port}")
 
-    print("\n=== 测试实时行情获取 ===")
-    # 测试获取实时行情
+    print("\n=== 测试实时行情获取 ===")    # 测试获取实时行情
     test_symbols = ["510300", "600519", "000001"]  # ETF + 茅台 + 平安银行
 
     for symbol in test_symbols:

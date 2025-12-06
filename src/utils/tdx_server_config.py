@@ -12,9 +12,11 @@
 import os
 import logging
 import configparser
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 import random
+from dotenv import load_dotenv
 
+load_dotenv() # Load environment variables from .env
 
 class TdxServerConfig:
     """
@@ -45,8 +47,12 @@ class TdxServerConfig:
 
         # 默认配置文件路径
         if config_file is None:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            config_file = os.path.join(project_root, "temp", "connect.cfg")
+            tdx_path_from_env = os.getenv("TDX_PATH")
+            if tdx_path_from_env:
+                config_file = os.path.join(tdx_path_from_env, "connect.cfg")
+            else:
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                config_file = os.path.join(project_root, "temp", "connect.cfg")
 
         self.config_file = config_file
         self.servers = []  # [(host, port, name), ...]
