@@ -32,7 +32,6 @@ repos:
           - numpy
           - pydantic
           - fastapi
-          - nicegui
 
   # Type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
