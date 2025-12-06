@@ -46,7 +46,7 @@
             <el-tab-pane label="领涨板块" name="leading">
               <div ref="leadingSectorChartRef" style="height: 350px"></div>
             </el-tab-pane>
-            <el-tab-pane label="涨跌分布" name="distribution">
+            <el-tab-pane label="市场分布" name="distribution">
               <div ref="priceDistributionChartRef" style="height: 350px"></div>
             </el-tab-pane>
             <el-tab-pane label="资金流向" name="capital">
@@ -315,14 +315,15 @@ const updateIndustryChart = async () => {
 
 // 更新市场分布图表
 const updateMarketDistributionChart = (marketData) => {
-  if (!industryChartRef.value) return
+  // 注意：这个图表现在在"市场分布"tab中，使用priceDistributionChartRef
+  if (!priceDistributionChartRef.value) return
 
-  // 如果图表已存在，销毁重新创建
-  if (industryChart) {
-    industryChart.dispose()
+  // 创建专用的市场分布图表实例
+  if (window.marketDistributionChartInstance) {
+    window.marketDistributionChartInstance.dispose()
   }
 
-  industryChart = echarts.init(industryChartRef.value)
+  window.marketDistributionChartInstance = echarts.init(priceDistributionChartRef.value)
 
   // 准备市场分布数据
   const marketDistribution = marketData.by_market || {}
@@ -331,7 +332,7 @@ const updateMarketDistributionChart = (marketData) => {
 
   // 如果没有市场数据，显示提示信息
   if (marketNames.length === 0) {
-    industryChart.setOption({
+    window.marketDistributionChartInstance.setOption({
       title: {
         text: '暂无市场分布数据',
         left: 'center',
@@ -343,25 +344,28 @@ const updateMarketDistributionChart = (marketData) => {
 
   const option = {
     title: {
-      text: '市场分布',
-      left: 'center'
+      text: 'A股市场分布',
+      left: 'center',
+      top: 20
     },
     tooltip: {
       trigger: 'item',
-      formatter: '{a} <br/>{b}: {c} ({d}%)'
+      formatter: '{a} <br/>{b}: {c}只股票 ({d}%)'
     },
     legend: {
       orient: 'vertical',
-      left: 'left'
+      left: 'left',
+      top: 60
     },
     series: [
       {
         name: '市场分布',
         type: 'pie',
-        radius: '50%',
+        radius: ['30%', '70%'],
+        center: ['60%', '50%'],
         data: marketNames.map((name, index) => ({
           value: marketValues[index],
-          name: name
+          name: name === 'SH' ? '上海证券交易所' : name === 'SZ' ? '深圳证券交易所' : name
         })),
         emphasis: {
           itemStyle: {
@@ -369,12 +373,16 @@ const updateMarketDistributionChart = (marketData) => {
             shadowOffsetX: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
+        },
+        label: {
+          show: true,
+          formatter: '{b}\n{c}只\n{d}%'
         }
       }
     ]
   }
 
-  industryChart.setOption(option)
+  window.marketDistributionChartInstance.setOption(option)
 }
 
 // 更新行业分布图表
@@ -659,6 +667,7 @@ const initCharts = async () => {
     priceDistributionChart?.resize()
     capitalFlowChart?.resize()
     industryChart?.resize()
+    window.marketDistributionChartInstance?.resize()
   })
 }
 
@@ -673,7 +682,8 @@ watch(activeMarketTab, async () => {
       leadingSectorChart?.resize()
       break
     case 'distribution':
-      priceDistributionChart?.resize()
+      // 对于市场分布图表，需要调整专用实例的大小
+      window.marketDistributionChartInstance?.resize()
       break
     case 'capital':
       capitalFlowChart?.resize()
@@ -703,7 +713,13 @@ const loadData = async () => {
       const marketData = marketResponse.data
 
       // 更新统计卡片数据
-      stats.value[1].value = marketData.total_stocks?.toString() || '0'
+      if (marketData.total_market_cap !== undefined) {
+        // 显示真实的总市值数据（单位：万亿元）
+        stats.value[1].value = `${marketData.total_market_cap}万亿`
+      } else {
+        // 如果没有市值数据，显示总股票数
+        stats.value[1].value = marketData.total_stocks?.toString() || '0'
+      }
 
       // 如果有市场分布数据，更新第三个统计卡片
       if (marketData.by_market) {

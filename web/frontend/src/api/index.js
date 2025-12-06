@@ -16,20 +16,29 @@ const request = axios.create({
 // 导入行业概念分析API
 import industryConceptApi from './industryConcept'
 
-// 请求拦截器 - 已移除认证头
-// request.interceptors.request.use(
-//   config => {
-//     const token = localStorage.getItem('token')
-//     if (token) {
-//       config.headers['Authorization'] = `Bearer ${token}`
-//     }
-//     return config
-//   },
-//   error => {
-//     console.error('Request error:', error)
-//     return Promise.reject(error)
-//   }
-// )
+// 请求拦截器 - 开发环境使用mock认证
+request.interceptors.request.use(
+  config => {
+    // 在开发环境中使用mock token
+    const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost'
+
+    if (isDevelopment) {
+      // 使用固定的开发环境token
+      config.headers['Authorization'] = 'Bearer dev-mock-token-for-development'
+    } else {
+      // 生产环境使用真实的token
+      const token = localStorage.getItem('token')
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`
+      }
+    }
+    return config
+  },
+  error => {
+    console.error('Request error:', error)
+    return Promise.reject(error)
+  }
+)
 
 // 响应拦截器
 request.interceptors.response.use(
