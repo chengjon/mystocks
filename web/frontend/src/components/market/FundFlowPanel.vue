@@ -128,11 +128,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
-import axios from 'axios'
+import request from '@/api'
 
 // 响应式数据
 const queryForm = reactive({
@@ -147,8 +147,7 @@ const refreshing = ref(false)
 const chartRef = ref(null)
 let chartInstance = null
 
-// API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+// 使用配置好的request实例，baseURL已经在api/index.js中配置
 
 // 查询资金流向
 const handleQuery = async () => {
@@ -169,13 +168,13 @@ const handleQuery = async () => {
       params.end_date = dateRange.value[1]
     }
 
-    const response = await axios.get(`${API_BASE}/api/market/fund-flow`, { params })
-    fundFlowData.value = response.data
+    const response = await request.get('/market/fund-flow', { params })
+    fundFlowData.value = response.data.fund_flow || []
 
-    if (response.data.length === 0) {
+    if (fundFlowData.value.length === 0) {
       ElMessage.info('未查询到数据')
     } else {
-      ElMessage.success(`查询成功: ${response.data.length}条记录`)
+      ElMessage.success(`查询成功: ${fundFlowData.value.length}条记录`)
       // 渲染图表
       await nextTick()
       renderChart()
@@ -196,7 +195,7 @@ const handleRefresh = async () => {
 
   refreshing.value = true
   try {
-    await axios.post(`${API_BASE}/api/market/fund-flow/refresh`, null, {
+    await request.post('/market/fund-flow/refresh', null, {
       params: {
         symbol: queryForm.symbol,
         timeframe: queryForm.timeframe
@@ -246,37 +245,59 @@ const renderChart = () => {
     chartInstance = echarts.init(chartRef.value)
   }
 
-  const dates = fundFlowData.value.map(d => d.trade_date).reverse()
-  const mainFlow = fundFlowData.value.map(d => (d.main_net_inflow / 100000000).toFixed(2)).reverse()
-  const superLargeFlow = fundFlowData.value.map(d => (d.super_large_net_inflow / 100000000).toFixed(2)).reverse()
-  const largeFlow = fundFlowData.value.map(d => (d.large_net_inflow / 100000000).toFixed(2)).reverse()
+  const dates = fundFlowData.value.map(d => d.trade_date)
+  const mainFlow = fundFlowData.value.map(d => d.main_net_inflow.toFixed(2))
+  const superLargeFlow = fundFlowData.value.map(d => d.super_large_net_inflow.toFixed(2))
+  const largeFlow = fundFlowData.value.map(d => d.large_net_inflow.toFixed(2))
+
+  console.log('Chart data:', { dates, mainFlow, superLargeFlow, largeFlow })
 
   const option = {
     title: {
       text: `${queryForm.symbol} 资金流向趋势`,
-      left: 'center'
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' }
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
+      formatter: function (params) {
+        let result = params[0].axisValue + '<br/>'
+        params.forEach(param => {
+          const value = parseFloat(param.value)
+          const color = value >= 0 ? '#67C23A' : '#F56C6C'
+          result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
+        })
+        return result
+      }
     },
     legend: {
       data: ['主力净流入', '超大单', '大单'],
-      top: 30
+      top: 40,
+      itemGap: 20
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
+      left: '5%',
+      right: '5%',
+      bottom: '10%',
+      top: '20%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: dates
+      data: dates,
+      axisLabel: { interval: 0, rotate: 45 }
     },
     yAxis: {
       type: 'value',
-      name: '金额(亿元)'
+      name: '金额(万元)',
+      nameTextStyle: { padding: [0, 0, 0, 40] },
+      axisLabel: {
+        formatter: function(value) {
+          return value + '万'
+        }
+      },
+      splitLine: { show: true, lineStyle: { type: 'dashed', color: '#E4E7ED' } }
     },
     series: [
       {
@@ -284,26 +305,43 @@ const renderChart = () => {
         type: 'line',
         data: mainFlow,
         smooth: true,
-        itemStyle: { color: '#409EFF' }
+        itemStyle: { color: '#409EFF' },
+        lineStyle: { width: 3 },
+        symbol: 'circle',
+        symbolSize: 8,
+        emphasis: { focus: 'series' }
       },
       {
         name: '超大单',
         type: 'line',
         data: superLargeFlow,
         smooth: true,
-        itemStyle: { color: '#F56C6C' }
+        itemStyle: { color: '#F56C6C' },
+        lineStyle: { width: 3 },
+        symbol: 'triangle',
+        symbolSize: 8,
+        emphasis: { focus: 'series' }
       },
       {
         name: '大单',
         type: 'line',
         data: largeFlow,
         smooth: true,
-        itemStyle: { color: '#E6A23C' }
+        itemStyle: { color: '#E6A23C' },
+        lineStyle: { width: 3 },
+        symbol: 'diamond',
+        symbolSize: 8,
+        emphasis: { focus: 'series' }
       }
     ]
   }
 
-  chartInstance.setOption(option)
+  chartInstance.setOption(option, true)
+
+  // 调整图表大小
+  nextTick(() => {
+    chartInstance.resize()
+  })
 }
 
 // 监听数据变化
@@ -313,10 +351,32 @@ watch(() => fundFlowData.value, () => {
   }
 })
 
+// 监听窗口大小变化
+const handleResize = () => {
+  if (chartInstance) {
+    chartInstance.resize()
+  }
+}
+
 // 组件挂载
 onMounted(() => {
   // 默认查询
   handleQuery()
+
+  // 添加窗口大小监听
+  window.addEventListener('resize', handleResize)
+})
+
+// 组件卸载
+onUnmounted(() => {
+  // 移除事件监听
+  window.removeEventListener('resize', handleResize)
+
+  // 销毁图表实例
+  if (chartInstance) {
+    chartInstance.dispose()
+    chartInstance = null
+  }
 })
 </script>
 
