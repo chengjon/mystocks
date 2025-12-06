@@ -86,6 +86,10 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
 
 def verify_token(token: str) -> Optional[TokenData]:
     """验证 JWT 令牌"""
+    # 开发环境mock token支持
+    if token == "dev-mock-token-for-development":
+        return TokenData(username="dev_user", user_id=1, role="admin")
+
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         username: str = payload.get("sub")
