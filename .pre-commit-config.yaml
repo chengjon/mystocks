@@ -32,6 +32,7 @@ repos:
           - numpy
           - pydantic
           - fastapi
+          - nicegui
 
   # Type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -75,7 +76,7 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-        args: ['--allow-missing-credentials']
+        args: []
         exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|\.archive/)
 
   # Python syntax check
