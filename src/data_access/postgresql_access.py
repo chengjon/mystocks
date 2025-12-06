@@ -8,12 +8,13 @@ PostgreSQL数据访问层
 版本: 1.0.0
 """
 
-import pandas as pd
-from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
+import pandas as pd
 import psycopg2
-from psycopg2.extras import execute_values
 from psycopg2 import sql
+from psycopg2.extras import execute_values
 
 from src.storage.database.connection_manager import get_connection_manager
 
@@ -46,9 +47,7 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.putconn(conn)
 
-    def create_table(
-        self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None
-    ):
+    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
         """
         创建普通表
 
@@ -72,9 +71,7 @@ class PostgreSQLDataAccess:
 
         try:
             # 构建字段列表
-            fields = ",\n    ".join(
-                [f"{name} {dtype}" for name, dtype in schema.items()]
-            )
+            fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
 
             # 添加主键约束
             if primary_key:
@@ -96,9 +93,7 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def create_hypertable(
-        self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"
-    ):
+    def create_hypertable(self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"):
         """
         将表转换为TimescaleDB时序表(Hypertable)
 
@@ -229,9 +224,7 @@ class PostgreSQLDataAccess:
             if update_columns is None:
                 update_columns = [col for col in columns if col not in conflict_columns]
 
-            update_str = ", ".join(
-                [f"{col} = EXCLUDED.{col}" for col in update_columns]
-            )
+            update_str = ", ".join([f"{col} = EXCLUDED.{col}" for col in update_columns])
 
             # Upsert SQL
             sql = f"""
@@ -290,13 +283,29 @@ class PostgreSQLDataAccess:
         try:
             # SECURITY FIX: Whitelist table names to prevent injection
             ALLOWED_TABLES = {
-                "daily_kline", "minute_kline", "tick_data", "symbols_info",
-                "technical_indicators", "quantitative_factors", "model_outputs",
-                "trading_signals", "order_records", "transaction_records",
-                "position_records", "account_funds", "realtime_quotes",
-                "market_data", "stock_basic", "trade_cal", "income_statement",
-                "balance_sheet", "cash_flow", "financial_indicators",
-                "monitoring_logs", "alerts", "system_metrics"
+                "daily_kline",
+                "minute_kline",
+                "tick_data",
+                "symbols_info",
+                "technical_indicators",
+                "quantitative_factors",
+                "model_outputs",
+                "trading_signals",
+                "order_records",
+                "transaction_records",
+                "position_records",
+                "account_funds",
+                "realtime_quotes",
+                "market_data",
+                "stock_basic",
+                "trade_cal",
+                "income_statement",
+                "balance_sheet",
+                "cash_flow",
+                "financial_indicators",
+                "monitoring_logs",
+                "alerts",
+                "system_metrics",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
@@ -304,11 +313,40 @@ class PostgreSQLDataAccess:
             # SECURITY FIX: Validate column names to prevent injection
             if columns:
                 ALLOWED_COLUMNS = {
-                    "symbol", "date", "time", "open", "high", "low", "close", "volume",
-                    "amount", "turnover", "change", "change_pct", "ma5", "ma10", "ma20",
-                    "rsi", "macd", "boll_upper", "boll_lower", "atr", "id", "name",
-                    "industry", "market", "list_date", "is_st", "total_mv",
-                    "circ_mv", "pe", "pb", "price", "shares", "created_at", "updated_at"
+                    "symbol",
+                    "date",
+                    "time",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "turnover",
+                    "change",
+                    "change_pct",
+                    "ma5",
+                    "ma10",
+                    "ma20",
+                    "rsi",
+                    "macd",
+                    "boll_upper",
+                    "boll_lower",
+                    "atr",
+                    "id",
+                    "name",
+                    "industry",
+                    "market",
+                    "list_date",
+                    "is_st",
+                    "total_mv",
+                    "circ_mv",
+                    "pe",
+                    "pb",
+                    "price",
+                    "shares",
+                    "created_at",
+                    "updated_at",
                 }
                 for col in columns:
                     if col not in ALLOWED_COLUMNS and not col.startswith("custom_"):
@@ -337,8 +375,20 @@ class PostgreSQLDataAccess:
             # SECURITY FIX: Validate ORDER BY to prevent injection
             if order_by:
                 allowed_order_fields = {
-                    "symbol", "date", "time", "open", "high", "low", "close", "volume",
-                    "amount", "turnover", "change", "change_pct", "created_at", "updated_at"
+                    "symbol",
+                    "date",
+                    "time",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "turnover",
+                    "change",
+                    "change_pct",
+                    "created_at",
+                    "updated_at",
                 }
                 order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
                 if order_field not in allowed_order_fields:
@@ -383,16 +433,12 @@ class PostgreSQLDataAccess:
         Returns:
             查询结果DataFrame
         """
-        where_clause = (
-            f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
-        )
+        where_clause = f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
 
         if filters:
             where_clause += f" AND {filters}"
 
-        return self.query(
-            table_name, columns, where_clause, order_by=f"{time_column} ASC"
-        )
+        return self.query(table_name, columns, where_clause, order_by=f"{time_column} ASC")
 
     def execute_sql(self, sql: str, params: Optional[Tuple] = None) -> pd.DataFrame:
         """
@@ -453,13 +499,29 @@ class PostgreSQLDataAccess:
         try:
             # SECURITY FIX: Whitelist table names to prevent injection
             ALLOWED_TABLES = {
-                "daily_kline", "minute_kline", "tick_data", "symbols_info",
-                "technical_indicators", "quantitative_factors", "model_outputs",
-                "trading_signals", "order_records", "transaction_records",
-                "position_records", "account_funds", "realtime_quotes",
-                "market_data", "stock_basic", "trade_cal", "income_statement",
-                "balance_sheet", "cash_flow", "financial_indicators",
-                "monitoring_logs", "alerts", "system_metrics"
+                "daily_kline",
+                "minute_kline",
+                "tick_data",
+                "symbols_info",
+                "technical_indicators",
+                "quantitative_factors",
+                "model_outputs",
+                "trading_signals",
+                "order_records",
+                "transaction_records",
+                "position_records",
+                "account_funds",
+                "realtime_quotes",
+                "market_data",
+                "stock_basic",
+                "trade_cal",
+                "income_statement",
+                "balance_sheet",
+                "cash_flow",
+                "financial_indicators",
+                "monitoring_logs",
+                "alerts",
+                "system_metrics",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
@@ -510,24 +572,42 @@ class PostgreSQLDataAccess:
         try:
             # SECURITY FIX: Whitelist table names to prevent injection
             ALLOWED_TABLES = {
-                "daily_kline", "minute_kline", "tick_data", "symbols_info",
-                "technical_indicators", "quantitative_factors", "model_outputs",
-                "trading_signals", "order_records", "transaction_records",
-                "position_records", "account_funds", "realtime_quotes",
-                "market_data", "stock_basic", "trade_cal", "income_statement",
-                "balance_sheet", "cash_flow", "financial_indicators",
-                "monitoring_logs", "alerts", "system_metrics"
+                "daily_kline",
+                "minute_kline",
+                "tick_data",
+                "symbols_info",
+                "technical_indicators",
+                "quantitative_factors",
+                "model_outputs",
+                "trading_signals",
+                "order_records",
+                "transaction_records",
+                "position_records",
+                "account_funds",
+                "realtime_quotes",
+                "market_data",
+                "stock_basic",
+                "trade_cal",
+                "income_statement",
+                "balance_sheet",
+                "cash_flow",
+                "financial_indicators",
+                "monitoring_logs",
+                "alerts",
+                "system_metrics",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
 
             # SECURITY FIX: Use PostgreSQL SQL identifier to prevent injection
-            query = sql.SQL("""
+            query = sql.SQL(
+                """
                 SELECT
                     COUNT(*) as row_count,
                     pg_size_pretty(pg_total_relation_size(%s)) as total_size
                 FROM {}
-            """).format(sql.Identifier(table_name))
+            """
+            ).format(sql.Identifier(table_name))
 
             cursor = conn.cursor()
             cursor.execute(query, (table_name,))
@@ -545,9 +625,7 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def save_data(
-        self, data: pd.DataFrame, classification, table_name: str, **kwargs
-    ) -> bool:
+    def save_data(self, data: pd.DataFrame, classification, table_name: str, **kwargs) -> bool:
         """
         保存数据（DataManager API适配器）
 
@@ -599,9 +677,7 @@ class PostgreSQLDataAccess:
                 sql = f"SELECT * FROM {table_name} WHERE {filters['where']}"
                 if "limit" in filters:
                     sql += f" LIMIT {filters['limit']}"
-                return self.query(
-                    table_name, where=filters["where"], limit=filters.get("limit")
-                )
+                return self.query(table_name, where=filters["where"], limit=filters.get("limit"))
             else:
                 # 查询全表（带limit）
                 sql = f"SELECT * FROM {table_name}"
@@ -617,7 +693,7 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.closeall()
             self.pool = None
-            
+
     def close_all(self):
         """关闭所有连接（兼容旧接口）"""
         self.close()

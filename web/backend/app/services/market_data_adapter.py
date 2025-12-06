@@ -159,7 +159,7 @@ class MarketDataSourceAdapter(IDataSource):
             mock_manager = self._get_mock_manager()
 
             # 使用统一的get_data方法
-            result = mock_manager.get_data(endpoint, params)
+            result = mock_manager.get_data(endpoint, **params)
 
             return {
                 "status": "success",

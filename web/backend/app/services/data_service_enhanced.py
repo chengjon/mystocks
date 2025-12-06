@@ -15,11 +15,12 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from pydantic import ValidationError
 
 # Add project root to path to import unified_manager
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'src'))
+sys.path.insert(0, os.path.join(project_root, "src"))
 
 from src.core.data_classification import DataClassification
 from src.core.unified_manager import MyStocksUnifiedManager
@@ -39,6 +40,7 @@ try:
         validate_dataframe,
     )
     from src.core.monitoring import get_alert_manager, get_api_monitor, get_metrics_collector
+
     ENHANCED_ERROR_HANDLING = True
 except ImportError as e:
     logging.getLogger(__name__).warning(f"Enhanced error handling not available: {e}")
@@ -64,9 +66,7 @@ try:
     import os
     import sys
 
-    parent_dir = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    )
+    parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     if parent_dir not in sys.path:
         sys.path.insert(0, parent_dir)
 
@@ -177,9 +177,7 @@ class EnhancedDataService:
             # Validate result DataFrame
             if ENHANCED_ERROR_HANDLING:
                 validate_dataframe(
-                    df,
-                    required_columns=["trade_date", "open", "high", "low", "close", "volume"],
-                    min_rows=1
+                    df, required_columns=["trade_date", "open", "high", "low", "close", "volume"], min_rows=1
                 )
 
             # Convert to TA-Lib format
@@ -216,10 +214,12 @@ class EnhancedDataService:
             logger.error(f"Failed to load daily OHLCV data: {e}")
             raise
 
-    def _load_data_with_retry(self, symbol: str, start_date: datetime, end_date: datetime) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
+    def _load_data_with_retry(
+        self, symbol: str, start_date: datetime, end_date: datetime
+    ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
         """带重试机制的数据加载"""
 
-        @handle_errors(max_attempts=3, delay_strategy=lambda x: 1.0 * (2 ** x))
+        @handle_errors(max_attempts=3, delay_strategy=lambda x: 1.0 * (2**x))
         def _load_from_sources():
             # Load data from PostgreSQL via UnifiedManager
             if self.unified_manager:
@@ -231,9 +231,7 @@ class EnhancedDataService:
 
             # If data not found and auto_fetch enabled, fetch from Akshare
             if df.empty and self.auto_fetch:
-                logger.info(
-                    f"Data not found in database, fetching from Akshare for {symbol}"
-                )
+                logger.info(f"Data not found in database, fetching from Akshare for {symbol}")
                 df = self._fetch_and_save_from_akshare(symbol, start_date, end_date)
 
             return df
@@ -271,37 +269,34 @@ class EnhancedDataService:
             "timestamp": datetime.now().isoformat(),
             "service": "EnhancedDataService",
             "status": "healthy",
-            "components": {}
+            "components": {},
         }
 
         # Check unified manager
         health_status["components"]["unified_manager"] = {
             "status": "available" if self.unified_manager else "unavailable",
-            "type": "database"
+            "type": "database",
         }
 
         # Check cache
-        health_status["components"]["cache"] = {
-            "status": "available" if self.cache else "unavailable",
-            "type": "cache"
-        }
+        health_status["components"]["cache"] = {"status": "available" if self.cache else "unavailable", "type": "cache"}
 
         # Check akshare adapter
         health_status["components"]["akshare_adapter"] = {
             "status": "available" if self.akshare_adapter else "unavailable",
-            "type": "data_source"
+            "type": "data_source",
         }
 
         # Check error handling
         health_status["components"]["error_handling"] = {
             "status": "available" if ENHANCED_ERROR_HANDLING else "unavailable",
-            "type": "monitoring"
+            "type": "monitoring",
         }
 
         # Check monitoring
         health_status["components"]["monitoring"] = {
             "status": "available" if self.api_monitor else "unavailable",
-            "type": "monitoring"
+            "type": "monitoring",
         }
 
         # Get circuit breaker status
@@ -309,7 +304,7 @@ class EnhancedDataService:
             health_status["components"]["circuit_breaker"] = {
                 "status": "closed" if self.circuit_breaker.state == "CLOSED" else "open",
                 "type": "circuit_breaker",
-                "failure_count": getattr(self.circuit_breaker, 'failure_count', 0)
+                "failure_count": getattr(self.circuit_breaker, "failure_count", 0),
             }
 
         # Check overall health
@@ -332,14 +327,12 @@ class EnhancedDataService:
         performance_metrics = {
             "timestamp": datetime.now().isoformat(),
             "service": "EnhancedDataService",
-            "metrics": metrics_summary
+            "metrics": metrics_summary,
         }
 
         return performance_metrics
 
-    def _load_from_unified_manager(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _load_from_unified_manager(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """从UnifiedManager加载数据 (带错误处理)"""
         try:
             # Use load_data_by_classification to query PostgreSQL daily_kline table
@@ -372,9 +365,7 @@ class EnhancedDataService:
             logger.error(f"Failed to load from UnifiedManager: {e}")
             raise DatabaseQueryError(f"数据库查询失败: {str(e)}")
 
-    def _fetch_and_save_from_akshare(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """从Akshare获取数据并保存到数据库 (带错误处理)"""
         try:
             if not self.akshare_adapter:
@@ -382,9 +373,7 @@ class EnhancedDataService:
                 return pd.DataFrame()
 
             # Call Akshare adapter to fetch data
-            logger.info(
-                f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}"
-            )
+            logger.info(f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}")
 
             df = self.akshare_adapter.get_stock_daily(
                 symbol=symbol,
@@ -402,19 +391,13 @@ class EnhancedDataService:
             df_save = pd.DataFrame(
                 {
                     "symbol": symbol,
-                    "trade_date": (
-                        pd.to_datetime(df["date"])
-                        if "date" in df.columns
-                        else pd.to_datetime(df.index)
-                    ),
+                    "trade_date": (pd.to_datetime(df["date"]) if "date" in df.columns else pd.to_datetime(df.index)),
                     "open": df["open"],
                     "high": df["high"],
                     "low": df["low"],
                     "close": df["close"],
                     "volume": df["volume"],
-                    "amount": df.get(
-                        "amount", df["volume"] * df["close"]
-                    ),  # Calculate if missing
+                    "amount": df.get("amount", df["volume"] * df["close"]),  # Calculate if missing
                 }
             )
 
@@ -464,21 +447,15 @@ class EnhancedDataService:
         np.random.seed(hash(symbol) % 2**32)  # Consistent seed per symbol
 
         # Generate returns
-        returns = np.random.normal(
-            0.001, 0.02, len(dates)
-        )  # 0.1% daily return, 2% volatility
+        returns = np.random.normal(0.001, 0.02, len(dates))  # 0.1% daily return, 2% volatility
         prices = base_price * np.exp(np.cumsum(returns))
 
         # Generate OHLC from close prices
         volatility = 0.01  # 1% intraday volatility
 
         opens = prices * (1 + np.random.normal(0, volatility, len(dates)))
-        highs = np.maximum(opens, prices) * (
-            1 + np.abs(np.random.normal(0, volatility, len(dates)))
-        )
-        lows = np.minimum(opens, prices) * (
-            1 - np.abs(np.random.normal(0, volatility, len(dates)))
-        )
+        highs = np.maximum(opens, prices) * (1 + np.abs(np.random.normal(0, volatility, len(dates))))
+        lows = np.minimum(opens, prices) * (1 - np.abs(np.random.normal(0, volatility, len(dates))))
         closes = prices
 
         # Generate volume
@@ -558,9 +535,7 @@ class EnhancedDataService:
         except Exception:
             return False
 
-    def get_available_date_range(
-        self, symbol: str
-    ) -> Optional[Tuple[datetime, datetime]]:
+    def get_available_date_range(self, symbol: str) -> Optional[Tuple[datetime, datetime]]:
         """获取股票可用的数据日期范围"""
         try:
             if not self.unified_manager:
