@@ -218,11 +218,11 @@ logging_security:
   data_masking:
     enabled: true
     patterns:
-      - "(?i)(password\s*[=:\s]\s*)([^\s\"'\]+)"
-      - "(?i)(api[_-]?key\s*[=:\s]\s*)([^\s\"'\]+)"
-      - "(?i)(secret[_-]?key\s*[=:\s]\s*)([^\s\"'\]+)"
-      - "(?i)(token\s*[=:\s]\s*)([^\s\"'\]+)"
-      - "(?i)(access[_-]?token\s*[=:\s]\s*)([^\s\"'\]+)"
+      - '(?i)(password\s*[=:\s]\s*)([^\s"''\]+)'
+      - '(?i)(api[_-]?key\s*[=:\s]\s*)([^\s"''\]+)'
+      - '(?i)(secret[_-]?key\s*[=:\s]\s*)([^\s"''\]+)'
+      - '(?i)(token\s*[=:\s]\s*)([^\s"''\]+)'
+      - '(?i)(access[_-]?token\s*[=:\s]\s*)([^\s"''\]+)'
 
   # 日志级别
   log_levels:
