@@ -69,12 +69,13 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             if logger:
                 logger.error(f"未处理的异常: {str(e)}", exc_info=True)
 
-            return create_error_response(
+            error_response = create_error_response(
                 error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
                 message=ResponseMessages.INTERNAL_ERROR,
                 details={"exception": str(e)},
                 request_id=request_id,
             )
+            return JSONResponse(content=error_response.model_dump(exclude_unset=True), status_code=500)
 
     def _create_error_response(self, status_code: int, detail: str, request_id: str) -> JSONResponse:
         """创建统一的错误响应"""
@@ -83,7 +84,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
         error_response = create_error_response(error_code=error_code, message=detail, request_id=request_id)
 
-        return JSONResponse(content=error_response.dict(exclude_unset=True), status_code=status_code)
+        return JSONResponse(content=error_response.model_dump(exclude_unset=True), status_code=status_code)
 
     def _get_error_code(self, status_code: int) -> str:
         """根据HTTP状态码获取错误代码"""

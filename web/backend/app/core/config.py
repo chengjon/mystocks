@@ -45,7 +45,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # 管理员初始密码配置
-    admin_initial_password: str = Field(default="", env="ADMIN_INITIAL_PASSWORD")  # 必须从环境变量设置，生产环境不得为空
+    admin_initial_password: str = Field(
+        default="", env="ADMIN_INITIAL_PASSWORD"
+    )  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
