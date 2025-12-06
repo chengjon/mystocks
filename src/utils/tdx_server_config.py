@@ -33,7 +33,7 @@ class TdxServerConfig:
         >>> random_server = config.get_random_server()
     """
 
-    def __init__(self, config_file: str = None):
+    def __init__(self, config_file: Optional[str] = None):
         """
         初始化TDX服务器配置管理器
 
