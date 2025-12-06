@@ -15,7 +15,7 @@ import sys
 import time
 from datetime import datetime
 from functools import wraps
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 
@@ -54,12 +54,13 @@ class TdxDataSource(IDataSource):
 
     def __init__(
         self,
-        tdx_host: str = None,
-        tdx_port: int = None,
-        max_retries: int = None,
-        retry_delay: int = None,
-        api_timeout: int = None,
+        tdx_host: Optional[str] = None,
+        tdx_port: Optional[int] = None,
+        max_retries: Optional[int] = None,
+        retry_delay: Optional[int] = None,
+        api_timeout: Optional[int] = None,
         use_server_config: bool = True,
+        config_file: Optional[str] = None,
     ):
         """
         初始化TDX数据源适配器
@@ -71,6 +72,7 @@ class TdxDataSource(IDataSource):
             retry_delay: 重试延迟秒数 (默认从环境变量TDX_RETRY_DELAY读取,默认1)
             api_timeout: API超时时间 (默认从环境变量TDX_API_TIMEOUT读取,默认10)
             use_server_config: 是否使用connect.cfg配置的服务器列表(默认True)
+            config_file: connect.cfg文件路径(可选)
         """
         # T005: 配置加载
         self.max_retries = int(max_retries or os.getenv("TDX_MAX_RETRIES", "3"))
@@ -82,9 +84,10 @@ class TdxDataSource(IDataSource):
 
         # 服务器配置管理
         self.use_server_config = use_server_config
+        self.server_config: Optional[TdxServerConfig] = None
         if use_server_config:
             try:
-                self.server_config = TdxServerConfig()
+                self.server_config = TdxServerConfig(config_file)
                 self.tdx_host, self.tdx_port = self.server_config.get_primary_server()
                 self.logger.info(f"TDX适配器初始化: 使用connect.cfg配置")
                 self.logger.info(f"主服务器: {self.tdx_host}:{self.tdx_port}")
@@ -634,7 +637,7 @@ class TdxDataSource(IDataSource):
             self.logger.error(f"获取指数成分股失败 {symbol}: {str(e)}")
             return []
 
-    def get_real_time_data(self, symbol: str) -> Union[Dict, str]:
+    def get_real_time_data(self, symbol: str) -> Optional[Dict]:
         """
         获取实时行情数据
 
