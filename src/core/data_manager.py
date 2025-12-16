@@ -24,6 +24,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 
 from src.core.data_classification import DataClassification, DatabaseTarget
+from src.storage.database.database_manager import DatabaseTableManager
 
 logger = logging.getLogger(__name__)
 
@@ -127,12 +128,13 @@ class DataManager:
         DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
     }
 
-    def __init__(self, enable_monitoring: bool = False):
+    def __init__(self, enable_monitoring: bool = False, db_manager: DatabaseTableManager = None):
         """
         初始化DataManager
 
         Args:
             enable_monitoring: 是否启用监控 (默认False以简化架构)
+            db_manager: 数据库表管理器 (依赖注入，可选)
         """
         # 监控开关 (US3简化 - 默认关闭)
         self.enable_monitoring = enable_monitoring
@@ -157,12 +159,16 @@ class DataManager:
             self._monitoring_db = null_monitor  # type: ignore[assignment]
             self._performance_monitor = null_monitor  # type: ignore[assignment]
 
+        # DEPENDENCY INJECTION: Accept db_manager as parameter, create if not provided
+        self._db_manager = db_manager or DatabaseTableManager()
+
         # 延迟导入以避免循环依赖
         from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
 
         # 初始化数据库访问层（US3简化版本不需要监控参数）
-        self._tdengine = TDengineDataAccess()
-        self._postgresql = PostgreSQLDataAccess()
+        # DEPENDENCY INJECTION: Pass both db_manager and monitoring_db
+        self._tdengine = TDengineDataAccess(self._db_manager, self._monitoring_db)
+        self._postgresql = PostgreSQLDataAccess(self._db_manager, self._monitoring_db)
 
         # 适配器注册表
         self._adapters: Dict[str, Any] = {}
