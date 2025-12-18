@@ -1,388 +1,714 @@
-# Claude AI Assistant 项目使用记录
+<!-- OPENSPEC:START -->
+# OpenSpec Instructions
 
-## 项目概述
-MyStocks量化交易数据管理系统 - AI驱动的股票量化分析平台
+These instructions are for AI assistants working in this project.
 
-## 最新进展 (2025-11-29)
+Always open `@/openspec/AGENTS.md` when the request:
+- Mentions planning or proposals (words like proposal, spec, change, plan)
+- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
+- Sounds ambiguous and you need the authoritative spec before coding
 
-### Phase 10: E2E 全面覆盖 - 优先级页面完整集成 ✅ 完成
-**启动日期**: 2025-11-29
-**完成日期**: 2025-11-29
-**成果**: 110 个 E2E 测试，覆盖 4 个 P1 页面，构建零错误
+Use `@/openspec/AGENTS.md` to learn:
+- How to create and apply change proposals
+- Spec format and conventions
+- Project structure and guidelines
 
-**完成内容**:
-- ✅ Milestone 1: RealTimeMonitor.vue (30 tests)
-  - SSE 实时监控中心功能验证
-  - 实时推送系统 (训练进度、回测进度、风险告警)
-  - SSE 连接状态和测试工具
-  - API: `/api/v1/sse/status`
+Keep this managed block so 'openspec update' can refresh the instructions.
 
-- ✅ Milestone 2: StockDetail.vue (40 tests)
-  - 股票分析页完整功能验证
-  - K线、分时、时间范围选择
-  - 技术指标 (MA, RSI, MACD, BOLL, ATR 等)
-  - 交易摘要、交易执行表单
-  - API: 4 个核心端点集成
+<!-- OPENSPEC:END -->
 
-- ✅ Milestone 3: IndicatorLibrary.vue (40 tests)
-  - 技术指标库注册表 (161 个 TA-Lib 指标)
-  - 搜索和分类过滤
-  - 参数表、输出字段、参考线显示
-  - API: `/api/technical/indicators/registry`
+# CLAUDE.md
 
-- ✅ Milestone 4: Wencai.vue (40 tests)
-  - 问财自然语言选股工具
-  - 4 标签页导航 (查询、我的、分析、指南)
-  - 9 个预定义查询模板
-  - 功能说明和快速入门指南
-  - API: `/api/market/wencai/queries`
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**技术成就**:
-- ✅ 零构建错误 (npm build: 15.07s)
-- ✅ 110 个测试用例全部有效
-- ✅ 多浏览器支持 (Chrome, Firefox, Safari)
-- ✅ 完整 API 集成验证
-- ✅ 错误处理和空状态覆盖
+**Note**: This file works in conjunction with the project constitution (`.specify/memory/constitution.md`) and the highest guidance document (`项目开发规范与指导文档.md`) to ensure consistent development practices.
 
-**下一步**: Phase 11 - P1 失败测试修复 + P2 页面 E2E 扩展
+## 🗂️ 重大更新 (2025-11-09): 项目目录重组完成
 
-### Phase 8: P1 深度集成与优化 ✅ 完成 (之前)
-- ✅ E2E 测试失败分析和修复
-- ✅ P1 页面集成评估 (2/6 = 33.3%)
-- ✅ P2+ 页面系统评估 (23/47 = 48.9%)
+**目录结构优化**: 从42个杂乱的根目录精简到13个科学组织的目录
 
-### Phase 7: P0 修复验证 + E2E 测试 + 性能优化 ✅ 完成
-- ✅ 修复了 4 个前端构建错误 (图标导入、API 方法)
-- ✅ 完成 72 个 E2E 测试用例，77.8% 通过 (56/72)
-- ✅ 优化 Sass 废弃 API 和代码分割
-- ✅ P1 页面 API 集成评估完成 (5/6, 83.3%)
+**重组成果**:
+- ✅ 所有源代码整合到 `src/` 目录
+- ✅ 所有文档整合到 `docs/` 目录
+- ✅ 所有脚本整合到 `scripts/` 目录
+- ✅ 统一导入路径为 `from src.*` 格式
+- ✅ 创建 `src/db_manager/` 兼容层确保平滑过渡
+- ✅ Git历史完整保留 (使用 `git mv` 移动所有文件)
+- ✅ 目录混乱度降低 **69%**
 
-### Phase 6: 综合错误处理和恢复机制 ✅ 完成
-- 实现了完整的错误分类、重试策略、熔断器模式
-- 添加了实时监控和警报系统
-- 集成到数据服务层，提供强大的容错能力
+**新的导入路径标准**:
+```python
+# ✅ 推荐: 新的标准导入路径
+from src.core import ConfigDrivenTableManager, DataClassification
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+from src.db_manager import DatabaseTableManager  # 兼容层
+from src.monitoring import MonitoringDatabase, AlertManager
+from src.interfaces import IDataSource
 
-### 核心技术实现
+# ⚠️ 仍然有效: 旧的导入路径 (通过兼容层)
+from core import ConfigDrivenTableManager
+from db_manager.database_manager import DatabaseTableManager
 
-#### 1. 综合错误处理系统 (`src/core/error_handling.py`)
-- **错误分类**: 6种错误类型 (数据库、网络、验证、系统、业务、超时、资源)
-- **严重程度**: 4级分类 (低、中、高、严重)
-- **重试策略**: 指数退避 (1-60秒) 和线性退避 (1-10秒)
-- **熔断器**: 5次失败后熔断，60秒自动恢复
-- **装饰器**: `@handle_errors` 支持自定义重试次数、延迟策略、回退值
-- **数据验证**: DataFrame完整性检查、空值比例验证
-- **安全执行**: `safe_execute` 包装器，异常时自动记录
+# ❌ 已废弃: 直接从根目录导入模块目录
+from adapters.akshare_adapter import AkshareDataSource
+```
 
-#### 2. 监控和警报系统 (`src/core/monitoring.py`)
-- **指标收集器**: 支持计数器、仪表、直方图、计时器
-- **系统监控**: CPU、内存、磁盘、网络IO实时监控
-- **API监控**: 请求量、响应时间、错误率统计
-- **警报管理**: 可配置规则、多严重程度、自动解除
-- **仪表板数据**: JSON格式实时监控数据
+**脚本路径更新**:
+```bash
+# ✅ 新路径
+python scripts/runtime/system_demo.py
+python scripts/tests/test_config_driven_table_manager.py
+python scripts/database/check_tdengine_tables.py
 
-#### 3. 增强数据服务 (`web/backend/app/services/data_service_enhanced.py`)
-- **错误处理集成**: 完整集成综合错误处理系统
-- **自动重试**: 数据库查询失败时自动重试
-- **熔断器保护**: 防止级联数据库故障
-- **性能监控**: API请求和响应时间自动记录
-- **健康检查**: 多组件状态监控端点
-- **优雅降级**: 异常时使用模拟数据或缓存
+# ❌ 旧路径
+python system_demo.py
+python test_config_driven_table_manager.py
+```
 
-#### 4. 技术特性
-- **线程安全**: 所有指标收集操作都是线程安全的
-- **历史限制**: 自动限制历史数据量，防止内存泄漏
-- **百分位数计算**: P95、P99等性能指标
-- **实时监控**: 30秒间隔的系统资源监控
-- **配置驱动**: 通过环境变量和配置文件管理
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
 
-## 使用的主要工具和技能
-
-### 开发工具
-- **Claude Code**: 主要开发环境和代码编辑器
-- **Git**: 版本控制和代码管理
-- **FastAPI**: 后端API框架
-- **Vue.js 3**: 前端响应式框架
-- **PostgreSQL**: 主数据库，连接池优化
-- **TDengine**: 时序数据库，高性能存储
-- **Docker**: 容器化部署
-
-### AI技能使用
-- **javascript-typescript**: 现代JavaScript和TypeScript最佳实践
-- **backend-development**: 后端架构设计和API设计原则
-- **database-architect**: 数据库架构优化设计
-- **python-development**: Python性能优化和错误处理
-
-## 项目结构特点
-
-### Week 3 简化架构
-- 移除MySQL和Redis依赖，降低复杂度
-- 专注PostgreSQL + TDengine双核心架构
-- 连接池参数优化 (pool_size=20, max_overflow=40)
-- 超时配置 (pool_timeout=30秒)
-
-### 错误处理和监控
-- 生产级错误处理机制
-- 实时监控仪表板
-- 自动警报和恢复策略
-- 性能指标收集和分析
-- 熔断器模式保护关键组件
-
-## 当前运行状态
-
-### 后端服务 (FastAPI)
-- **端口**: 8000
-- **热重载**: 开发模式已启用
-- **错误处理**: 综合错误处理已集成
-- **监控**: 实时监控运行中
-
-### 前端服务 (Vue.js 3)
-- **端口**: 3001
-- **开发模式**: 热重载已启用
-- **API集成**: 与后端WebSocket连接正常
-
-### 数据库状态
-- **PostgreSQL**: 连接池优化完成，运行稳定
-- **TDengine**: 时序数据存储正常
-- **缓存**: 智能缓存系统已配置
-
-## Phase 7 完成详情 (2025-11-27)
-
-### 1. 构建错误修复
-- ✅ RiskAlerts.vue: CircleFilled/CircleClose → CircleCheck/Warning
-- ✅ Market.vue: 移除 marketApiV2，使用 dataApi.getMarketOverview()
-- ✅ Architecture.vue: Database → DataBoard 图标
-- ✅ DatabaseMonitor.vue: Database → DataBoard 图标
-- **结果**: 零构建错误，npm build ✓ 成功
-
-### 2. E2E 自动化测试
-- ✅ 创建 72 个测试用例 (4 个修复页面 + API + 图标 + 边界情景)
-- ✅ 77.8% 通过率 (56/72 通过)
-- ✅ 多浏览器支持 (Chrome, Firefox, Safari)
-- ✅ 完整报告: `/docs/reports/E2E_TEST_REPORT_2025-11-26.md`
-
-### 3. 性能优化
-- ✅ Sass 废弃 API: 修改 `vite.config.js` 添加 `api: 'modern'`
-- ✅ 代码分割: 分离 element-plus (930KB), icons (171KB), echarts (1034KB)
-- ✅ Chunk 阈值: 从 500KB 提升到 600KB
-- ✅ 构建时间: 11.95s (稳定)
-
-### 4. P1 页面评估
-- ✅ 检查 6 个 P1 优先级页面
-- ✅ 5/6 页面已有 API 集成 (83.3%)
-- ✅ 评估报告: `/docs/reports/P1_INTEGRATION_ASSESSMENT.md`
-
-## 下一步计划 (Phase 8)
-
-### Phase 8: P1 深度集成与优化 (2-3 天)
-- [ ] 修复失败的 E2E 测试选择器
-- [ ] P1 页面 100% 集成验证
-- [ ] P2 优先级页面评估 (30+ 页面)
-- [ ] CI/CD 自动化测试集成
-
-### 中期目标 (1 周)
-- P1 完成度: 100% (6/6 页面)
-- 总体 API 集成: >= 35%
-- E2E 测试通过率: >= 85%
-
-### 长期目标
-- 建立完整的DevOps监控体系
-- 实现自动化的性能调优
-- 建立生产环境的高可用性保障
-- 扩展机器学习预测能力
+**核心原则**: 清晰的目录结构 + 科学的文件分类 + 完整的Git历史保留
 
 ---
 
-## 🔒 端口分配要求 (MANDATORY)
+## 📊 Current Development Status (2025-11-22)
 
-**项目**: MyStocks Spec (mystocks_spec)
-**强制执行**: 严格遵守以下端口分配规范
-**生效日期**: 2025-11-30
+### Development Progress Summary
 
-### 前端端口分配 (Frontend Ports)
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1-3 | Core System (监控/技术分析/多数据源) | ✅ 完成 |
+| Phase 4 | GPU API System (回测引擎/ML服务) | ✅ 完成 |
+| Phase 5 | Backtest Engine (12个策略) | ✅ 完成 |
+| Phase 6 | Technical Debt Remediation | ✅ 完成 |
+| Phase 6.4 | GPU加速引擎集成与测试 | ✅ 完成 (68.58x性能提升) |
 
-**范围**: `3000 - 3009`
+### GPU加速引擎开发成果
 
-| 端口 | 应用 | 用途 | 状态 |
-|------|------|------|------|
-| 3000 | 主前端应用 | Vite 开发服务器（首选端口） | ✅ |
-| 3001 | 备用前端 | 若 3000 被占用 | 可用 |
-| 3002-3009 | 其他前端应用 | 多开发实例 | 可用 |
+**Phase 6.4 完成情况**:
+- **集成测试成功率**: 100% (从85.7%优化到100%)
+- **平均性能提升**: 68.58x
+- **矩阵运算加速比**: 187.35x (最大306.62x)
+- **内存操作加速比**: 82.53x (最大372.72x)
+- **峰值性能**: 662.52 GFLOPS
+- **长期稳定性**: 83.3%成功率，100%并发安全
 
-**启动命令规范**:
-```bash
-# ✅ 正确: 明确指定端口 3000-3009 范围内
-cd web/frontend && npm run dev -- --port 3000
-cd web/frontend && VITE_PORT=3002 npm run dev
+**关键技术突破**:
+- **HAL层架构**: 4层抽象设计，策略隔离，故障容灾
+- **算法优化**: Strassen算法(O(n^2.807))，分块矩阵乘法，CUDA流并行
+- **内存管理**: 智能内存池，100%命中率，自动清理机制
+- **标准化接口**: GPU/CPU回退机制，生产级稳定性保障
 
-# ❌ 错误: 使用了 3010+ 或 5173 等范围外的端口
-cd web/frontend && npm run dev  # Vite 可能随意选择
+**文档与经验**: 完整的开发经验已记录在 [`docs/api/GPU开发经验总结.md`](./docs/api/GPU开发经验总结.md)
+
+### Technical Debt Status (技术债务现状)
+
+**代码质量指标** (Pylint Analysis):
+- Errors: 215 (严重问题，需优先修复)
+- Warnings: 2,606 (潜在问题)
+- Refactoring: 571 (需要重构)
+- Convention: 1,858 (代码风格)
+
+**测试覆盖率目标**:
+- 当前覆盖率: ~6% → **目标: 80%**
+- 单元测试: 459个 (部分失败)
+- data_access层: PostgreSQL 67%, TDengine 56%
+
+**修复计划**:
+1. ✅ Phase 1: 配置 `.pylintrc` 和 `.pre-commit-config.yaml`
+2. 🔄 Phase 2: 提升测试覆盖率 (进行中)
+3. ⏳ Phase 3: 重构高复杂度方法
+
+### Core Architecture (核心架构)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    MyStocks Unified Manager                 │
+│              (统一数据访问和路由入口点)                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
+│  │  Adapters   │    │    Core     │    │  Monitoring │     │
+│  │  (7个)      │    │  (分类/路由) │    │  (监控/告警) │     │
+│  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘     │
+│         │                  │                  │             │
+│  ┌──────▼──────────────────▼──────────────────▼──────┐     │
+│  │              Data Access Layer                     │     │
+│  │         (TDengineAccess / PostgreSQLAccess)        │     │
+│  └──────────────────────┬────────────────────────────┘     │
+│                         │                                   │
+├─────────────────────────┼───────────────────────────────────┤
+│  ┌──────────────────────┴──────────────────────┐           │
+│  │              Storage Layer                   │           │
+│  │  ┌─────────────────┐  ┌─────────────────┐   │           │
+│  │  │    TDengine     │  │   PostgreSQL    │   │           │
+│  │  │  (高频时序数据)   │  │  (所有其他数据)  │   │           │
+│  │  │  Tick/分钟K线    │  │  日线/参考/交易  │   │           │
+│  │  └─────────────────┘  └─────────────────┘   │           │
+│  └─────────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 后端端口分配 (Backend Ports)
+### Key Dependencies (主要依赖)
 
-**范围**: `8000 - 8009`
+**核心框架**:
+- Python 3.12+ / FastAPI 0.114+ / Vue 3.4+
+- pandas 2.0+ / numpy 1.24+ / pydantic 2.0+
 
-| 端口 | 应用 | 用途 | 状态 |
-|------|------|------|------|
-| 8000 | FastAPI 主服务 | REST API + WebSocket | ✅ |
-| 8001 | 备用后端 | 若 8000 被占用 | 可用 |
-| 8002-8009 | 其他后端服务 | 微服务 / 分布式开发 | 可用 |
+**数据库**:
+- TDengine 3.3+ (高频时序) / PostgreSQL 17+ (通用存储)
+- TimescaleDB 2.x (时序扩展)
 
-**启动命令规范**:
-```bash
-# ✅ 正确: 明确指定端口 8000-8009
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+**GPU加速** (可选):
+- CUDA 12.x / cuDF 25.10+ / cuML 25.10+ / CuPy 13.6+
 
-# ❌ 错误: 使用了 8010+ 或其他范围外的端口
-python -m uvicorn main:app  # 可能随意选择端口
-```
+**GPU加速引擎开发经验**: 详细的GPU开发经验、问题解决方案和最佳实践请参考 [`docs/api/GPU开发经验总结.md`](./docs/api/GPU开发经验总结.md)
 
-### 端口分配映射表
-
-```
-┌─────────────────────────────────────────┐
-│      MyStocks Spec 端口分配             │
-├─────────────────────────────────────────┤
-│                                         │
-│  🔵 前端 (Frontend):                   │
-│     Port 3000-3009                      │
-│     用途: Vue 3 开发服务器              │
-│     当前: 3000 (primary)                │
-│                                         │
-│  🔴 后端 (Backend):                    │
-│     Port 8000-8009                      │
-│     用途: FastAPI REST API + WebSocket  │
-│     当前: 8000 (primary)                │
-│                                         │
-│  🟡 测试 (E2E Tests):                  │
-│     连接到: http://localhost:3000-3009 │
-│     API 基础: http://localhost:8000    │
-│                                         │
-└─────────────────────────────────────────┘
-```
-
-### 监督和执行机制
-
-#### 1. 启动前检查
-每次启动前，**必须** 验证端口分配：
-
-```bash
-# 检查前端端口占用情况
-lsof -i :3000 && echo "⚠️  3000 已被占用" || echo "✅ 3000 可用"
-
-# 检查后端端口占用情况
-lsof -i :8000 && echo "⚠️  8000 已被占用" || echo "✅ 8000 可用"
-
-# 若端口被占用，请：
-# 1. 使用范围内的其他端口 (3001-3009 或 8001-8009)
-# 2. 更新对应的配置文件或环境变量
-# 3. 确保 E2E 测试配置也相应更新
-```
-
-#### 2. 环境变量配置
-在 `.env` 和 `playwright.config.js` 中明确指定端口：
-
-```bash
-# .env 文件示例
-VITE_PORT=3000                    # 前端端口
-VITE_API_BASE=http://localhost:8000  # 后端 API 基址
-
-# web/frontend/playwright.config.js
-baseURL: 'http://localhost:3000',  # E2E 测试访问地址
-```
-
-#### 3. 开发约定
-所有开发人员 **必须** 遵守：
-
-| 规范 | 要求 |
-|------|------|
-| 前端启动 | 在 3000-3009 范围内启动 |
-| 后端启动 | 在 8000-8009 范围内启动 |
-| 端口冲突 | 选择范围内的其他可用端口 |
-| 测试运行 | 确保前后端都在指定范围内 |
-| PR 提交 | 端口配置不应被提交 (使用 .env.example) |
-| 文档更新 | 若改变端口配置，更新此部分 |
-
-#### 4. 违规处理
-如果发现不遵守端口规范：
-
-- 🟡 **第一次**: 代码审查评论，要求修正
-- 🟠 **第二次**: 阻止合并，需要解决端口问题
-- 🔴 **第三次**: 会议讨论，分析根本原因，制定改进计划
-
-#### 5. 自动化检查
-E2E 测试运行前，自动验证端口配置：
-
-```javascript
-// 测试启动前检查
-beforeAll(async () => {
-  const frontendUrl = process.env.BASE_URL || 'http://localhost:3000';
-  const backendUrl = process.env.API_BASE || 'http://localhost:8000';
-
-  // 验证端口在允许范围内
-  const frontendPort = new URL(frontendUrl).port;
-  const backendPort = new URL(backendUrl).port;
-
-  if (!['3000','3001','3002','3003','3004','3005','3006','3007','3008','3009'].includes(frontendPort)) {
-    throw new Error(`❌ 前端端口 ${frontendPort} 不在允许范围 (3000-3009)`);
-  }
-  if (!['8000','8001','8002','8003','8004','8005','8006','8007','8008','8009'].includes(backendPort)) {
-    throw new Error(`❌ 后端端口 ${backendPort} 不在允许范围 (8000-8009)`);
-  }
-});
-```
-
-### 常见端口冲突解决
-
-**问题**: Vite 说端口 3000 被占用
-
-```bash
-# ✅ 解决方案 1: 指定允许范围内的其他端口
-npm run dev -- --port 3002
-
-# ✅ 解决方案 2: 查找占用进程并关闭
-lsof -i :3000
-kill -9 <PID>
-
-# ✅ 解决方案 3: 使用不同端口并更新配置
-VITE_PORT=3003 npm run dev
-# 同时更新 playwright.config.js 的 baseURL
-```
-
-**问题**: FastAPI 启动失败，端口已被占用
-
-```bash
-# ✅ 解决方案: 使用允许范围内的其他端口
-python -m uvicorn main:app --port 8001
-
-# 更新 .env 中的 API_BASE
-echo "API_BASE=http://localhost:8001" >> .env
-```
-
-### 快速参考
-
-**启动完整开发环境**:
-```bash
-# Terminal 1: 后端 (8000)
-cd /opt/claude/mystocks_spec
-python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000
-
-# Terminal 2: 前端 (3000)
-cd /opt/claude/mystocks_spec/web/frontend
-npm run dev -- --port 3000
-
-# Terminal 3: E2E 测试
-cd /opt/claude/mystocks_spec
-npx playwright test  # 自动连接到 http://localhost:3000
-```
-
-### 最后更新
-- **日期**: 2025-11-30
-- **内容**: 强制端口分配规范，严格执行范围 3000-3009 (前端) 和 8000-8009 (后端)
-- **版本**: 1.0
-- **强制级别**: 🔒 MANDATORY
+**数据源**:
+- akshare / baostock / tushare / efinance
 
 ---
 
-**最后更新**: 2025-11-29 (移除移动端支持)
-**状态**: Phase 10 完成，Web 桌面端专用 ✅
+## ⚡ Week 3 Update (2025-10-19): Database Simplification
+
+**Major Change**: System simplified from 4 databases to 2 (TDengine + PostgreSQL)
+
+**Migration Completed**:
+- ✅ MySQL data migrated to PostgreSQL (18 tables, 299 rows)
+- ✅ Redis removed (configured db1 was empty)
+- ✅ Architecture complexity reduced by 50%
+- ✅ **TDengine retained**: Specialized for high-frequency time-series market data
+- ✅ **PostgreSQL**: Handles all other data types with TimescaleDB extension
+
+**New Configuration**: See `.env` for 2-database setup (TDengine + PostgreSQL).
+
+**Philosophy**: Right Tool for Right Job, Simplicity > Unnecessary Complexity
+
+---
+
+## Project Overview
+
+MyStocks is a professional quantitative trading data management system that uses a **dual-database architecture** optimized for different data characteristics. The system is built on adapter and factory patterns to provide unified data access layers with configuration-driven automation.
+
+**Current Architecture** (Post-Week 3):
+- **TDengine**: High-frequency time-series market data (tick/minute data) with extreme compression
+- **PostgreSQL + TimescaleDB**: All other data types (daily bars, reference data, derived data, metadata)
+- **GPU加速引擎**: 高性能矩阵运算和算法加速，实现68.58x平均性能提升
+- **Optimized Operations**: Right database for right workload, reduced unnecessary complexity
+
+## Common Development Commands
+
+### Environment Setup
+```bash
+# Install dependencies (dual-database setup)
+pip install pandas numpy pyyaml psycopg2-binary taospy akshare
+
+# Create .env file with database configuration
+# Required environment variables for 2-database architecture:
+# TDengine (high-frequency time-series data):
+# - TDENGINE_HOST, TDENGINE_PORT, TDENGINE_USER, TDENGINE_PASSWORD, TDENGINE_DATABASE
+# PostgreSQL (all other data):
+# - POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT, POSTGRESQL_DATABASE
+# - MONITOR_DB_URL (uses PostgreSQL for monitoring database)
+
+# Note: MySQL (pymysql) and Redis removed after Week 3 simplification
+```
+
+### System Initialization and Management
+```bash
+# Initialize the complete system
+python -c "from unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
+
+# Run system demonstration
+python scripts/runtime/system_demo.py
+
+# Validate database connections and table structures
+python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
+
+# Run realtime market data saver
+python scripts/runtime/run_realtime_market_saver.py
+
+# Check database connections (TDengine + PostgreSQL)
+python scripts/database/check_tdengine_tables.py
+python scripts/database/verify_tdengine_deployment.py
+```
+
+### Testing
+```bash
+# Test unified manager functionality
+python scripts/tests/test_config_driven_table_manager.py
+
+# Test financial adapter
+python scripts/tests/test_financial_adapter.py
+
+# Test dual database architecture
+python scripts/tests/test_dual_database_architecture.py
+
+# Test realtime data functionality
+python scripts/tests/test_save_realtime_data.py
+
+# Test TDX adapter
+python scripts/tests/test_tdx_mvp.py
+
+# Test GPU acceleration engine (if available)
+python test_gpu_integration.py
+python test_performance_comparison.py
+python test_long_term_stability.py
+```
+
+### Configuration Management
+```bash
+# View current table configuration
+python -c "
+import yaml
+with open('table_config.yaml', 'r', encoding='utf-8') as f:
+    config = yaml.safe_load(f)
+print(f'Configuration version: {config.get(\"version\", \"unknown\")}')
+print(f'Tables configured: {len(config.get(\"tables\", []))}')
+"
+
+# Create tables from configuration
+python -c "from db_manager.database_manager import DatabaseTableManager; mgr = DatabaseTableManager(); mgr.batch_create_tables('table_config.yaml')"
+```
+
+## High-Level Architecture
+
+### Mock数据使用规则 (重要)
+
+**核心原则**: 所有模拟数据必须通过 Mock 数据模块提供，**严禁在业务代码中直接硬编码数据**。
+
+详细规则请参阅: [`docs/guides/MOCK_DATA_USAGE_RULES.md`](./guides/MOCK_DATA_USAGE_RULES.md)
+
+**快速参考**:
+```python
+# ✅ 正确: 通过工厂函数获取Mock数据
+from src.data_sources.factory import get_timeseries_source
+source = get_timeseries_source(source_type="mock")
+data = source.get_kline_data(symbol, start_time, end_time, interval)
+
+# ❌ 错误: 直接硬编码数据
+historical_data = [
+    {"date": "2025-01-01", "close": 10.5},  # 严禁!
+]
+```
+
+**主要Mock模块**:
+- `src/data_sources/factory.py` - 数据源工厂入口
+- `src/data_sources/mock/timeseries_mock.py` - 时序数据
+- `src/data_sources/mock/relational_mock.py` - 关系数据
+- `src/data_sources/mock/business_mock.py` - 业务数据
+- `src/mock/` - 页面级Mock数据
+
+---
+
+### Core Design Principles
+
+1. **Dual-Database Data Storage** (Week 3+): Right database for right workload
+   - **High-Frequency Market Data** (高频时序数据): Tick/minute data → **TDengine** (extreme compression, ultra-high write performance)
+   - **Daily Market Data** (日线数据): Daily bars, historical data → **PostgreSQL TimescaleDB** hypertables
+   - **Reference Data** (参考数据): Relatively static descriptive data → **PostgreSQL** standard tables
+   - **Derived Data** (衍生数据): Computed analytical results → **PostgreSQL** standard tables
+   - **Transaction Data** (交易数据): Orders, positions, portfolios → **PostgreSQL** standard tables
+   - **Meta Data** (元数据): System configuration and metadata → **PostgreSQL** standard tables
+
+2. **Optimized Architecture** (Post-Week 3): 2-database strategy balances performance and simplicity
+   - **TDengine database**: `market_data` (超表: tick_data, minute_data)
+   - **PostgreSQL database**: `mystocks` (所有其他表 + TimescaleDB混合表)
+   - Unified access layer abstracts database differences
+   - Monitoring database in PostgreSQL tracks all operations
+
+3. **Configuration-Driven Management**: All table structures managed through YAML configuration
+   - `table_config.yaml` defines complete table schemas
+   - `ConfigDrivenTableManager` automates table creation and validation
+
+4. **Complete Monitoring Integration**: Separate monitoring database tracks all operations
+   - `MonitoringDatabase` logs all operations independent of business databases
+   - `PerformanceMonitor` tracks query performance and alerts on slow operations
+   - `DataQualityMonitor` ensures data completeness, freshness, and accuracy
+
+### Key Components (重组后的模块路径)
+
+#### Core Management Layer (`src/core/`)
+**位置**: `src/core/` 目录
+- `DataClassification`: 5大数据分类枚举定义
+- `DatabaseTarget`: 支持的数据库类型 (**TDengine**, **PostgreSQL**)
+- `DataStorageStrategy`: 智能路由逻辑,自动映射数据类型到最优数据库
+- `ConfigDrivenTableManager`: YAML配置驱动的表管理器
+
+**导入**:
+```python
+from src.core import ConfigDrivenTableManager, DataClassification
+from src.core.data_storage_strategy import DataStorageStrategy
+```
+
+#### Unified Access Layer (`src/core/` - unified_manager)
+**位置**: `src/core/unified_manager.py` + 根目录 `unified_manager.py` (入口点)
+- `MyStocksUnifiedManager`: 所有数据操作的统一入口点
+- `AutomatedMaintenanceManager`: 定时维护和健康检查
+- 自动路由方法: `save_data_by_classification()` 和 `load_data_by_classification()`
+
+**导入**:
+```python
+from unified_manager import MyStocksUnifiedManager  # 通过根目录入口点
+# 或
+from src.core.unified_manager import MyStocksUnifiedManager  # 直接导入
+```
+
+#### Database Access Layer (`src/data_access/`)
+**位置**: `src/data_access/` 目录
+- `TDengineDataAccess`: 高频时序数据访问 (tick, 分钟K线)
+- `PostgreSQLDataAccess`: 所有其他数据访问 (日线、指标、参考数据、元数据)
+
+**导入**:
+```python
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+```
+
+#### Data Source Adapters (`src/adapters/`)
+**位置**: `src/adapters/` 目录 (7个核心适配器)
+- 统一接口 `IDataSource` 定义于 `src/interfaces/data_source.py`
+- `AkshareDataSource`: Akshare中国市场数据
+- `BaostockDataSource`: Baostock历史数据
+- `FinancialDataSource`: 财务报表和基本面数据
+- `TdxDataSource`: 通达信直连数据源
+- `ByapiDataSource`: REST API数据源
+- `CustomerDataSource`: 实时行情数据源
+- `TushareDataSource`: Tushare专业数据源
+
+**导入**:
+```python
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.adapters.tdx_adapter import TdxDataSource
+from src.interfaces import IDataSource
+```
+
+#### Database Infrastructure (`src/storage/database/` + 兼容层 `src/db_manager/`)
+**实际位置**: `src/storage/database/` 目录
+**兼容层**: `src/db_manager/` (重导出 `src.storage.database` 的所有类)
+
+- `DatabaseTableManager`: 双数据库连接和表管理
+- `DatabaseConnectionManager`: 数据库连接池管理
+- 支持 **TDengine** (WebSocket/Native) 和 **PostgreSQL** (TimescaleDB扩展)
+- 环境变量驱动配置,确保安全性
+
+**导入** (两种方式均可):
+```python
+# 方式1: 通过兼容层 (旧代码可继续使用)
+from src.db_manager import DatabaseTableManager, DatabaseConnectionManager
+
+# 方式2: 直接导入 (推荐)
+from src.storage.database import DatabaseTableManager, DatabaseConnectionManager
+```
+
+#### Monitoring and Quality (`src/monitoring/`)
+**位置**: `src/monitoring/` 目录
+- `MonitoringDatabase`: 独立监控数据库
+- `DataQualityMonitor`: 数据完整性、准确性、新鲜度检查
+- `PerformanceMonitor`: 查询性能跟踪和慢查询检测
+- `AlertManager`: 多渠道告警 (邮件、Webhook、日志)
+
+**导入**:
+```python
+from src.monitoring import MonitoringDatabase, DataQualityMonitor
+from src.monitoring import PerformanceMonitor, AlertManager
+```
+
+#### GPU Acceleration Engine (`src/gpu/`)
+**位置**: `src/gpu/` 目录
+- **Hardware Abstraction Layer (HAL)**: `src/gpu/core/hardware_abstraction/`
+  - `GPUResourceManager`: GPU资源管理器，策略隔离和故障容灾
+  - `StrategyGPUContext`: 策略GPU上下文管理
+  - `MemoryPool`: 智能内存池管理，100%命中率
+- **Kernel Layer**: `src/gpu/core/kernels/`
+  - `MatrixKernelEngine`: 矩阵运算引擎，支持Strassen算法和分块优化
+  - `TransformKernelEngine`: 数据变换引擎，支持FFT等算法
+  - `StandardizedKernelInterface`: 标准化内核接口，支持GPU/CPU回退
+- **API System**: `src/gpu/api_system/`
+  - `gpu_api_server`: GPU加速API服务器
+  - 集成测试和性能监控
+
+**核心成就**:
+- **68.58x平均性能提升**，矩阵运算最高187.35x加速比
+- **662+ GFLOPS峰值性能**，100%集成测试通过率
+- **生产级稳定性**，长期运行验证和故障容灾机制
+
+**导入**:
+```python
+from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager
+from src.gpu.core.kernels.matrix_kernels import MatrixKernelEngine
+from src.gpu.core.kernels.standardized_interface import StandardizedKernelInterface
+```
+
+### Data Flow Architecture
+
+1. **Data Ingestion**: External adapters → Unified Manager → Auto-routing
+2. **Storage Strategy**: Classification determines optimal database automatically
+3. **Access Pattern**: Unified interface regardless of underlying database
+4. **Monitoring**: All operations logged to separate monitoring database
+5. **Quality Assurance**: Automated data quality checks and alerts
+
+### Database Specialization Strategy
+
+- **TDengine**: Extreme compression (20:1 ratio), ultra-high write performance for high-frequency market data (tick/minute)
+  - Native time-series database optimized for IoT and financial data
+  - Automatic data retention policies
+  - Superior performance for time-range queries on tick data
+
+- **PostgreSQL + TimescaleDB**: Robust relational database with time-series optimization
+  - ACID compliance for all transactional data
+  - Complex JOIN operations on reference and derived data
+  - TimescaleDB hypertables for daily market data
+  - Full-text search and advanced indexing
+
+## Important Implementation Notes
+
+### Configuration Management
+- All database connections configured via environment variables (never hardcode credentials)
+- `table_config.yaml` contains complete table schemas with support for all database types
+- Tables auto-created on system initialization via `ConfigDrivenTableManager`
+
+### Data Operations
+- Always use `MyStocksUnifiedManager` as the primary entry point
+- Classification-based methods: `save_data_by_classification()`, `load_data_by_classification()`
+- System automatically selects optimal database based on data classification
+
+### Error Handling and Monitoring
+- All operations automatically logged to monitoring database
+- Performance metrics tracked and slow operations flagged
+- Data quality checks run automatically with configurable thresholds
+
+### Testing and Validation
+- Use `system_demo.py` for comprehensive system testing
+- Individual component tests available in `test_*.py` files
+- Database validation available via `check_*_tables.py` scripts
+
+### Dual-Database Support
+- **TDengine** for high-frequency time-series data (tick, minute bars)
+- **PostgreSQL** for all other data types (daily bars, reference, metadata)
+- Unified access layer abstracts database differences
+- Seamless connection management and automatic routing
+
+This architecture enables efficient handling of quantitative trading data by using the right database for each workload, with comprehensive monitoring and configuration-driven automation.
+
+## File Organization Rules
+
+**Philosophy**: Maintain a clean, minimal root directory with logical categorization by functionality. Every file should have a clear, rule-based location.
+
+**代码大小优化规范**: 为了保证代码的可维护性和可读性，强烈建议遵循[《代码文件长度优化规范》](./CODE_SIZE_OPTIMIZATION_REPORT.md)。该规范要求：
+
+1. **代码文件长度限制**: 单个Python文件应控制在2000行以内，大于此限制的文件需要进行模块化拆分
+2. **模块化拆分原则**: 将大文件按照功能拆分为多个小文件，每个文件专注于特定功能
+3. **向后兼容性**: 拆分后的代码应保持原有的导入路径不变，确保现有代码可以正常工作
+4. **排除目录**: temp目录及其子目录下的所有文件不纳入长度优化范围
+
+遵循此规范有助于提高代码质量，降低维护难度，并提升开发效率。详细内容请参阅[《代码文件长度优化规范》](./CODE_SIZE_OPTIMIZATION_REPORT.md)。
+
+### Root Directory Standards
+
+**ONLY these 5 core files belong in root**:
+- `README.md` - Project overview and main documentation
+- `CLAUDE.md` - Claude Code integration guide (this file)
+- `CHANGELOG.md` - Version history and changes
+- `requirements.txt` - Python dependencies
+- `.mcp.json` - MCP server configuration
+
+**All other files MUST be organized into subdirectories**.
+
+### Directory Structure and Rules
+
+#### 1. **scripts/** - All Executable Scripts
+
+Organized by functionality into 4 categories:
+
+**scripts/tests/** - Test Files
+- **Pattern**: Files prefixed with `test_`
+- **Purpose**: Unit tests, integration tests, acceptance tests
+- **Examples**: `test_config_driven_table_manager.py`, `test_financial_adapter.py`
+- **Special files**: `test_requirements.txt`, `coverage.xml`
+
+**scripts/runtime/** - Production Runtime Scripts
+- **Pattern**: Files prefixed with `run_`, `save_`, `monitor_`, or `*_demo.py`
+- **Purpose**: Production data collection, monitoring, demonstrations
+- **Examples**: `run_realtime_market_saver.py`, `save_realtime_data.py`, `system_demo.py`
+
+**scripts/database/** - Database Operations
+- **Pattern**: Files prefixed with `check_`, `verify_`, `create_`
+- **Purpose**: Database initialization, validation, management
+- **Examples**: `check_tdengine_tables.py`, `verify_tdengine_deployment.py`
+
+**scripts/dev/** - Development Tools
+- **Pattern**: Development utilities not fitting other categories
+- **Purpose**: Code validation, testing utilities, development aids
+- **Examples**: `gpu_test_examples.py`, `validate_documentation_consistency.py`
+- **Special files**: `git_commit_comments.txt`
+
+#### 2. **docs/** - Documentation Files
+
+**docs/guides/** - User and Developer Guides
+- **Files**: `QUICKSTART.md`, `IFLOW.md`, tutorial documents
+- **Purpose**: Getting started guides, workflow documentation
+
+**docs/archived/** - Deprecated Documentation
+- **Files**: `START_HERE.md`, `TASKMASTER_START_HERE.md` (kept for historical reference)
+- **Purpose**: Preserve old documentation without cluttering active docs
+- **Rule**: Add deprecation notice at top of file when archiving
+
+**docs/architecture/** - Architecture Design Documents
+- **Purpose**: System design, technical architecture documentation
+- **Examples**: Database design docs, system architecture diagrams
+
+**docs/api/** - API Documentation
+- **Purpose**: API reference, endpoint documentation, SDK guides
+
+#### 3. **config/** - Configuration Files
+
+**All configuration files** (regardless of extension):
+- **Extensions**: `.yaml`, `.yml`, `.ini`, `.toml`, `docker-compose.*.yml`
+- **Examples**:
+  - `mystocks_table_config.yaml` - Table structure definitions
+  - `docker-compose.tdengine.yml` - Docker setup
+  - `pytest.ini` - Test configuration
+  - `.readthedocs.yaml` - Documentation build config
+
+#### 4. **reports/** - Generated Reports and Analysis
+
+**Pattern**: Files generated by analysis scripts, timestamped if recurring
+- **Extensions**: `.json`, `.txt`, analysis outputs
+- **Examples**:
+  - `database_assessment_20251019_165817.json`
+  - `query_patterns_analysis.txt`
+  - `dump_result.txt`
+  - `WENCAI_INTEGRATION_FILES.txt`
+
+**Naming Convention**: Use ISO date format for timestamped files: `YYYYMMDD_HHMMSS`
+
+### File Lifecycle Management
+
+#### Pre-Classification (Proactive)
+
+**When creating new files**, place them directly in the correct location:
+
+1. **Determine file purpose**: Test? Runtime? Configuration? Documentation?
+2. **Match against rules**: Use the directory structure above
+3. **Create in correct location**: Never create in root unless it's one of the 5 core files
+
+**Example Pre-Classification**:
+```python
+# Creating a new test file
+# ✅ CORRECT: Create directly in scripts/tests/
+with open('scripts/tests/test_new_feature.py', 'w') as f:
+    f.write(test_code)
+
+# ❌ INCORRECT: Creating in root
+with open('test_new_feature.py', 'w') as f:
+    f.write(test_code)
+```
+
+#### Post-Classification (Reactive)
+
+**When organizing existing files**:
+
+1. **Identify misplaced files**: Use `ls` or `find` to list root directory files
+2. **Categorize by rules**: Match each file against the directory structure rules
+3. **Plan the reorganization**: Create a categorization plan before execution
+4. **Use git mv**: Preserve file history when moving tracked files
+5. **Update references**: Update all import paths, documentation links
+6. **Validate**: Test that moved files work correctly
+
+**Post-Classification Workflow**:
+```bash
+# 1. List root directory files (exclude core 5)
+ls -1 | grep -v -E '^(README\.md|CLAUDE\.md|CHANGELOG\.md|requirements\.txt|\.mcp\.json)$'
+
+# 2. For each file, determine correct location using rules above
+
+# 3. Move files (use git mv for tracked files)
+git mv test_something.py scripts/tests/
+git mv run_collector.py scripts/runtime/
+git mv config.yaml config/
+git mv analysis_report.txt reports/
+
+# 4. Update references in affected files
+
+# 5. Commit with descriptive message
+git commit -m "refactor: organize files according to directory structure rules"
+```
+
+### Import Path Management for Scripts
+
+**Critical Rule**: All scripts in nested directories must calculate project root correctly.
+
+**Standard Pattern for scripts in `scripts/**/`**:
+```python
+import sys
+import os
+from pathlib import Path
+
+# Calculate project root (3 levels up from script location)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+# Now you can import from project root
+from core import ConfigDrivenTableManager
+from adapters.akshare_adapter import AkshareDataSource
+from db_manager.database_manager import DatabaseTableManager
+```
+
+**Explanation**:
+- Script in `scripts/tests/test_something.py`
+- `__file__` → `scripts/tests/test_something.py`
+- `os.path.dirname(__file__)` → `scripts/tests/`
+- `os.path.dirname(os.path.dirname(__file__))` → `scripts/`
+- `os.path.dirname(os.path.dirname(os.path.dirname(__file__)))` → project root `/opt/claude/mystocks_spec/`
+
+### Git Best Practices
+
+**Always use `git mv` for tracked files**:
+```bash
+# ✅ CORRECT: Preserves file history
+git mv old_location/file.py new_location/file.py
+
+# ❌ INCORRECT: Breaks file history
+mv old_location/file.py new_location/file.py
+git add new_location/file.py
+```
+
+**For untracked files**, regular `mv` is fine:
+```bash
+# For files not in git yet
+mv untracked_file.log reports/
+```
+
+### Validation Checklist
+
+After any file reorganization:
+
+- [ ] Root directory contains only the 5 core files
+- [ ] All scripts properly categorized in scripts/{tests,runtime,database,dev}
+- [ ] All documentation in docs/{guides,archived,architecture,api}
+- [ ] All configuration files in config/
+- [ ] All reports in reports/
+- [ ] All moved scripts have updated import paths (3-level dirname)
+- [ ] All documentation links updated to new paths
+- [ ] `git status` shows moves (not deletions + additions)
+- [ ] All tests pass after reorganization
+- [ ] `scripts/README.md` is up to date
+
+### Common Mistakes to Avoid
+
+1. **Creating files in root**: Always use subdirectories unless it's one of the 5 core files
+2. **Wrong import paths**: Remember to use 3-level dirname for scripts in nested directories
+3. **Using `mv` instead of `git mv`**: Always preserve git history
+4. **Forgetting to update references**: Check all imports, documentation links
+5. **Mixing purposes**: Don't put test files in runtime/, or config files in docs/
+
+### Reference Documentation
+
+For detailed directory contents and file inventory:
+- **Complete documentation structure**: See `docs/DOCUMENTATION_STRUCTURE.md`
+- **Script organization guide**: See `scripts/README.md`
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md
