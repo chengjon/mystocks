@@ -6,7 +6,7 @@ This plan outlines the phases and tasks required to address the identified techn
 
 ### Goal: Reduce Pylint errors and enforce coding standards.
 
-- [ ] Task: Review and update `.pylintrc` configuration.
+- [~] Task: Review and update `.pylintrc` configuration.
     - [ ] Write Tests: Ensure Pylint config is valid.
     - [ ] Implement Feature: Update `.pylintrc` based on project standards.
 - [ ] Task: Configure `.pre-commit-config.yaml` for automated code quality checks.
