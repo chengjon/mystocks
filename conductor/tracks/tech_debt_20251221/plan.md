@@ -9,9 +9,9 @@ This plan outlines the phases and tasks required to address the identified techn
 - [x] Task: Review and update `.pylintrc` configuration. [a948965]
     - [x] Write Tests: Ensure Pylint config is valid.
     - [x] Implement Feature: Update `.pylintrc` based on project standards.
-- [x] Task: Configure `.pre-commit-config.yaml` for automated code quality checks. [c697c55]
-    - [ ] Write Tests: Validate pre-commit hooks.
-    - [ ] Implement Feature: Setup pre-commit hooks for Pylint.
+- [x] Task: Configure `.pre-commit-config.yaml` for automated code quality checks. [434a029]
+    - [x] Write Tests: Validate pre-commit hooks.
+    - [x] Implement Feature: Setup pre-commit hooks for Pylint.
 - [x] Task: Systematically fix all Pylint errors (initial pass).
     - [x] Write Tests: Introduce Pylint check into CI/local.
     - [x] Implement Feature: Refactor code to resolve Pylint warnings/errors.
