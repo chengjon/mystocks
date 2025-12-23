@@ -213,11 +213,19 @@ def get_trading_signals(stock_code: str) -> Dict:
         "symbol": stock_code,
         "latest_date": datetime.datetime.now().strftime("%Y-%m-%d"),
         "signals": {
-            "signal_type": "买入" if hash(stock_code) % 3 == 0 else ("卖出" if hash(stock_code) % 3 == 1 else "持有"),
+            "signal_type": "买入"
+            if hash(stock_code) % 3 == 0
+            else ("卖出" if hash(stock_code) % 3 == 1 else "持有"),
             "signal": (
                 "MA金叉"
                 if hash(stock_code) % 4 == 0
-                else ("RSI超卖" if hash(stock_code) % 4 == 1 else "MACD金叉" if hash(stock_code) % 4 == 2 else "无信号")
+                else (
+                    "RSI超卖"
+                    if hash(stock_code) % 4 == 1
+                    else "MACD金叉"
+                    if hash(stock_code) % 4 == 2
+                    else "无信号"
+                )
             ),
             "strength": round(0.6 + (hash(stock_code) % 0.4), 2),
             "confidence": round(0.7 + (hash(stock_code) % 0.3), 2),
@@ -229,36 +237,106 @@ def get_trading_signals(stock_code: str) -> Dict:
     return result
 
 
-def get_kline_data(stock_code: str) -> Dict:
+def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
     """获取K线历史数据
-
     Args:
         stock_code: str - 股票代码
-
+        start_date: str - 开始日期 (YYYY-MM-DD)
+        end_date: str - 结束日期 (YYYY-MM-DD)
     Returns:
         Dict: K线历史数据
     """
     # 生成K线历史数据
+    start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+    end_dt = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    
+    dates = []
+    current_dt = start_dt
+    while current_dt <= end_dt:
+        dates.append(current_dt.strftime("%Y-%m-%d"))
+        current_dt += datetime.timedelta(days=1)
+
+    data = []
+    for i in range(len(dates)):
+        open_price = round(95 + (hash(stock_code + str(i)) % 10), 2)
+        close_price = round(96 + (hash(stock_code + str(i)) % 8), 2)
+        high_price = round(98 + (hash(stock_code + str(i)) % 6), 2)
+        low_price = round(94 + (hash(stock_code + str(i)) % 6), 2)
+        volume = int(1000000 + (hash(stock_code + str(i)) % 9000000))
+        data.append({
+            "open": open_price,
+            "close": close_price,
+            "high": high_price,
+            "low": low_price,
+            "volume": volume,
+        })
+
     result = {
         "symbol": stock_code,
         "period": "daily",
-        "count": 30,
-        "dates": [(datetime.datetime.now() - datetime.timedelta(days=29 - i)).strftime("%Y-%m-%d") for i in range(30)],
-        "data": [
-            {
-                "open": round(95 + (hash(stock_code + str(i)) % 10), 2),
-                "close": round(96 + (hash(stock_code + str(i)) % 8), 2),
-                "high": round(98 + (hash(stock_code + str(i)) % 6), 2),
-                "low": round(94 + (hash(stock_code + str(i)) % 6), 2),
-                "volume": int(1000000 + (hash(stock_code + str(i)) % 9000000)),
-            }
-            for i in range(30)
+        "count": len(dates),
+        "dates": dates,
+        "data": data,
+        "change_percent": [
+            round(-2 + (hash(stock_code + str(i)) % 4), 2) for i in range(len(dates))
         ],
-        "change_percent": [round(-2 + (hash(stock_code + str(i)) % 4), 2) for i in range(30)],
     }
 
     return result
 
+def calculate_indicators(request: Dict) -> Dict:
+    """计算技术指标（对应/indicators/calculate API）
+
+    Args:
+        request: Dict - 请求参数，包含 symbol, start_date, end_date, indicators
+
+    Returns:
+        Dict: 包含OHLCV数据和计算出的技术指标
+    """
+    symbol = request.get("symbol")
+    start_date = request.get("start_date")
+    end_date = request.get("end_date")
+    indicators_to_calculate = request.get("indicators", [])
+
+    if not all([symbol, start_date, end_date]):
+        return {"error": "Missing required parameters: symbol, start_date, end_date"}
+
+    # 获取K线数据
+    kline_data = get_kline_data(symbol, start_date, end_date)
+
+    # 模拟计算指标
+    calculated_indicators = {}
+    for indicator in indicators_to_calculate:
+        if indicator in ["ma5", "ma10", "ma20"]:
+            # 模拟均线
+            calculated_indicators[indicator] = [
+                round(random.uniform(90, 110), 2) for _ in range(len(kline_data["dates"]))
+            ]
+        elif indicator == "macd":
+            calculated_indicators["macd"] = {
+                "macd": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+                "signal": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+                "hist": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+            }
+        elif indicator == "rsi":
+            calculated_indicators["rsi"] = [
+                round(random.uniform(30, 70), 2) for _ in range(len(kline_data["dates"]))
+            ]
+        # 可以添加更多指标的模拟计算
+
+    return {
+        "symbol": symbol,
+        "symbol_name": f"Mock_{symbol}",
+        "ohlcv": {
+            "dates": kline_data["dates"],
+            "open": [d["open"] for d in kline_data["data"]],
+            "high": [d["high"] for d in kline_data["data"]],
+            "low": [d["low"] for d in kline_data["data"]],
+            "close": [d["close"] for d in kline_data["data"]],
+            "volume": [d["volume"] for d in kline_data["data"]],
+        },
+        "indicators": calculated_indicators,
+    }
 
 def get_pattern_recognition(stock_code: str) -> Dict:
     """获取形态识别结果
@@ -270,7 +348,16 @@ def get_pattern_recognition(stock_code: str) -> Dict:
         Dict: 形态识别结果
     """
     # 生成形态识别数据
-    patterns = ["头肩底", "双底", "三重顶", "上升三角形", "下降三角形", "矩形整理", "楔形", "旗形"]
+    patterns = [
+        "头肩底",
+        "双底",
+        "三重顶",
+        "上升三角形",
+        "下降三角形",
+        "矩形整理",
+        "楔形",
+        "旗形",
+    ]
 
     result = {
         "symbol": stock_code,
@@ -294,7 +381,10 @@ def get_pattern_recognition(stock_code: str) -> Dict:
     return result
 
 
-def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
+
+def generate_realistic_price(
+    base_price: float = 100.0, volatility: float = 0.02
+) -> float:
     """生成真实感的价格数据
 
     Args:

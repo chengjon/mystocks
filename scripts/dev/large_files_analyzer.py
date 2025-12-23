@@ -15,7 +15,7 @@ class FileInfo(TypedDict):
     relative_path: str
 
 
-def analyze_python_files():
+def analyze_python_files(root_dir: str = "/opt/claude/mystocks_spec"):
     """分析Python文件大小和结构"""
     large_files: List[FileInfo] = []
     total_lines = 0
@@ -24,7 +24,7 @@ def analyze_python_files():
     print("分析时间: 2025-11-25 14:43:19")
     print()
 
-    for root, _, files in os.walk("/opt/claude/mystocks_spec"):
+    for root, _, files in os.walk(root_dir):
         # 跳过某些目录
         if any(
             ignore in root
@@ -52,7 +52,7 @@ def analyze_python_files():
                                 path=file_path,
                                 lines=lines,
                                 relative_path=os.path.relpath(
-                                    file_path, "/opt/claude/mystocks_spec"
+                                    file_path, root_dir
                                 ),
                             )
                         )
@@ -63,7 +63,7 @@ def analyze_python_files():
     large_files.sort(key=lambda x: x["lines"], reverse=True)
 
     print(
-        f"总Python文件数: {len(list(Path('/opt/claude/mystocks_spec').rglob('*.py')))}"
+        f"总Python文件数: {len(list(Path(root_dir).rglob('*.py')))}"
     )
     print(f"总代码行数: {total_lines:,}")
     print(f"超过2000行的文件: {len(large_files)}个")
