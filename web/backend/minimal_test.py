@@ -1,16 +1,14 @@
 """
 创建最小化配置测试
 """
-import os
 
 # 创建一个最小化的配置类，不包含任何列表字段
 from pydantic_settings import BaseSettings
-from typing import Optional, List
 
 
 class MinimalSettings(BaseSettings):
     """最小化配置类，排除可能有问题的列表字段"""
-    
+
     # 应用基础配置
     app_name: str = "MyStocks Web"
     app_version: str = "2.0.0"
@@ -64,4 +62,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"创建最小化配置实例失败: {e}")
         import traceback
+
         traceback.print_exc()

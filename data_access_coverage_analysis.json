@@ -1,0 +1,38 @@
+{
+  "postgresql_coverage": 0,
+  "tdengine_coverage": 0,
+  "postgresql_target": 67,
+  "tdengine_target": 56,
+  "plan": [
+    {
+      "module": "PostgreSQL Access",
+      "current": 0,
+      "target": 67,
+      "priority": "HIGH"
+    },
+    {
+      "module": "TDengine Access",
+      "current": 0,
+      "target": 56,
+      "priority": "HIGH"
+    }
+  ],
+  "postgresql_suggestions": [
+    "添加 1 个类的单元测试",
+    "添加 12 个方法的单元测试",
+    "添加 3 个函数的单元测试",
+    "添加错误处理和异常情况的测试",
+    "添加边界条件测试",
+    "添加集成测试场景",
+    "添加性能测试用例"
+  ],
+  "tdengine_suggestions": [
+    "添加 1 个类的单元测试",
+    "添加 5 个方法的单元测试",
+    "添加 7 个函数的单元测试",
+    "添加错误处理和异常情况的测试",
+    "添加边界条件测试",
+    "添加集成测试场景",
+    "添加性能测试用例"
+  ]
+}

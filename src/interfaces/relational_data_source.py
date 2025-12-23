@@ -13,9 +13,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Union, Any, Tuple
-from datetime import datetime, date
-import pandas as pd
+from typing import List, Dict, Optional, Any
 
 
 class IRelationalDataSource(ABC):
@@ -37,10 +35,7 @@ class IRelationalDataSource(ABC):
 
     @abstractmethod
     def get_watchlist(
-        self,
-        user_id: int,
-        list_type: str = "favorite",
-        include_stock_info: bool = True
+        self, user_id: int, list_type: str = "favorite", include_stock_info: bool = True
     ) -> List[Dict[str, Any]]:
         """
         获取自选股列表
@@ -90,7 +85,7 @@ class IRelationalDataSource(ABC):
         user_id: int,
         symbol: str,
         list_type: str = "favorite",
-        note: Optional[str] = None
+        note: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         添加股票到自选列表
@@ -124,10 +119,7 @@ class IRelationalDataSource(ABC):
 
     @abstractmethod
     def remove_from_watchlist(
-        self,
-        user_id: int,
-        symbol: str,
-        list_type: Optional[str] = None
+        self, user_id: int, symbol: str, list_type: Optional[str] = None
     ) -> bool:
         """
         从自选列表移除股票
@@ -149,11 +141,7 @@ class IRelationalDataSource(ABC):
 
     @abstractmethod
     def update_watchlist_note(
-        self,
-        user_id: int,
-        symbol: str,
-        list_type: str,
-        note: str
+        self, user_id: int, symbol: str, list_type: str, note: str
     ) -> bool:
         """
         更新自选股备注
@@ -181,7 +169,7 @@ class IRelationalDataSource(ABC):
         self,
         user_id: int,
         strategy_type: Optional[str] = None,
-        status: Optional[str] = None
+        status: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         获取策略配置列表
@@ -235,7 +223,7 @@ class IRelationalDataSource(ABC):
         name: str,
         strategy_type: str,
         parameters: Dict[str, Any],
-        description: Optional[str] = None
+        description: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         保存策略配置
@@ -260,10 +248,7 @@ class IRelationalDataSource(ABC):
 
     @abstractmethod
     def update_strategy_status(
-        self,
-        strategy_id: int,
-        user_id: int,
-        status: str
+        self, strategy_id: int, user_id: int, status: str
     ) -> bool:
         """
         更新策略状态
@@ -285,11 +270,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def delete_strategy_config(
-        self,
-        strategy_id: int,
-        user_id: int
-    ) -> bool:
+    def delete_strategy_config(self, strategy_id: int, user_id: int) -> bool:
         """
         删除策略配置
 
@@ -316,7 +297,7 @@ class IRelationalDataSource(ABC):
         user_id: int,
         symbol: Optional[str] = None,
         alert_type: Optional[str] = None,
-        enabled_only: bool = True
+        enabled_only: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         获取风险预警配置
@@ -366,7 +347,7 @@ class IRelationalDataSource(ABC):
         condition: str,
         threshold: float,
         notification_methods: List[str],
-        enabled: bool = True
+        enabled: bool = True,
     ) -> Dict[str, Any]:
         """
         保存风险预警配置
@@ -392,12 +373,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def toggle_risk_alert(
-        self,
-        alert_id: int,
-        user_id: int,
-        enabled: bool
-    ) -> bool:
+    def toggle_risk_alert(self, alert_id: int, user_id: int, enabled: bool) -> bool:
         """
         启用/禁用风险预警
 
@@ -420,10 +396,7 @@ class IRelationalDataSource(ABC):
     # ==================== 用户配置管理 ====================
 
     @abstractmethod
-    def get_user_preferences(
-        self,
-        user_id: int
-    ) -> Dict[str, Any]:
+    def get_user_preferences(self, user_id: int) -> Dict[str, Any]:
         """
         获取用户偏好设置
 
@@ -462,9 +435,7 @@ class IRelationalDataSource(ABC):
 
     @abstractmethod
     def update_user_preferences(
-        self,
-        user_id: int,
-        preferences: Dict[str, Any]
+        self, user_id: int, preferences: Dict[str, Any]
     ) -> bool:
         """
         更新用户偏好设置
@@ -491,7 +462,7 @@ class IRelationalDataSource(ABC):
         self,
         symbols: Optional[List[str]] = None,
         market: Optional[str] = None,
-        industry: Optional[str] = None
+        industry: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         获取股票基础信息
@@ -529,11 +500,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def search_stocks(
-        self,
-        keyword: str,
-        limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
         """
         搜索股票
 
@@ -566,10 +533,7 @@ class IRelationalDataSource(ABC):
     # ==================== 行业概念板块 ====================
 
     @abstractmethod
-    def get_industry_list(
-        self,
-        classification: str = "sw"
-    ) -> List[Dict[str, Any]]:
+    def get_industry_list(self, classification: str = "sw") -> List[Dict[str, Any]]:
         """
         获取行业分类列表
 
@@ -628,10 +592,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_stocks_by_industry(
-        self,
-        industry_code: str
-    ) -> List[str]:
+    def get_stocks_by_industry(self, industry_code: str) -> List[str]:
         """
         获取行业成分股
 
@@ -649,10 +610,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_stocks_by_concept(
-        self,
-        concept_code: str
-    ) -> List[str]:
+    def get_stocks_by_concept(self, concept_code: str) -> List[str]:
         """
         获取概念成分股
 

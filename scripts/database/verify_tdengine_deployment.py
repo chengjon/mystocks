@@ -15,7 +15,6 @@ Run this after: docker-compose -f docker-compose.tdengine.yml up -d
 import os
 import sys
 import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
 

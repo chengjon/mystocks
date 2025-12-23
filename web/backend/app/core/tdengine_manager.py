@@ -13,13 +13,10 @@ Features:
 """
 
 import os
-import sys
 import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple
 import structlog
-from taos import connect
-from taos.error import ProgrammingError
 
 # 支持从脚本导入：尝试绝对导入，失败则使用相对导入
 try:
@@ -283,7 +280,7 @@ class TDengineManager:
             """
 
             self._execute(sql)
-            logger.debug(f"✅ 数据已写入", symbol=symbol, data_type=data_type)
+            logger.debug("✅ 数据已写入", symbol=symbol, data_type=data_type)
             return True
 
         except Exception as e:
@@ -343,10 +340,10 @@ class TDengineManager:
                 # 更新命中次数
                 self._update_hit_count(symbol, data_type)
 
-                logger.debug(f"✅ 读取缓存成功", symbol=symbol, data_type=data_type)
+                logger.debug("✅ 读取缓存成功", symbol=symbol, data_type=data_type)
                 return data
             else:
-                logger.debug(f"⚠️ 缓存不存在", symbol=symbol, data_type=data_type)
+                logger.debug("⚠️ 缓存不存在", symbol=symbol, data_type=data_type)
                 return None
 
         except Exception as e:

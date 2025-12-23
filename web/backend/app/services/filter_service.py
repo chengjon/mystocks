@@ -19,7 +19,7 @@ Date: 2025-11-07
 import re
 from typing import Dict, List, Optional, Any, Callable, Set, Union
 from dataclasses import dataclass, field
-from datetime import datetime, time
+from datetime import datetime
 from enum import Enum
 import structlog
 from decimal import Decimal
@@ -221,9 +221,9 @@ class FilterEvaluator:
     def __init__(self):
         """初始化评估器"""
         self.subscriptions: Dict[str, Subscription] = {}
-        self.matched_subscriptions: Dict[str, List[str]] = (
-            {}
-        )  # symbol -> subscription_ids
+        self.matched_subscriptions: Dict[
+            str, List[str]
+        ] = {}  # symbol -> subscription_ids
 
         # 指标
         self.evaluations = 0
@@ -391,9 +391,9 @@ class SubscriptionManager:
     ):
         """初始化管理器"""
         self.subscriptions: Dict[str, Subscription] = {}
-        self.user_subscriptions: Dict[str, List[str]] = (
-            {}
-        )  # user_id -> subscription_ids
+        self.user_subscriptions: Dict[
+            str, List[str]
+        ] = {}  # user_id -> subscription_ids
         self.evaluator = evaluator or FilterEvaluator()
         self.dispatcher = dispatcher or AlertDispatcher()
 

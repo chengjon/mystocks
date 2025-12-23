@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 import numpy as np
-from datetime import date
 
 # 导入策略和回测模块
 from strategy.templates.momentum_template import MomentumStrategy
@@ -92,7 +91,7 @@ def main():
     engine = BacktestEngine(config=config, risk_free_rate=0.03)
     result = engine.run(price_data, signals)
 
-    print(f"  ✓ 回测完成")
+    print("  ✓ 回测完成")
     print(f"     - 总收益率: {result['metrics'].get('total_return', 0):.2%}")
     print(f"     - 年化收益率: {result['metrics'].get('annualized_return', 0):.2%}")
     print(f"     - 夏普比率: {result['metrics'].get('sharpe_ratio', 0):.3f}")

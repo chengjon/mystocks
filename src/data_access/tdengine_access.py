@@ -10,7 +10,7 @@ TDengine数据访问层
 
 import pandas as pd
 from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from src.storage.database.connection_manager import get_connection_manager
 
@@ -64,14 +64,15 @@ class TDengineDataAccess:
             f"CREATE STABLE IF NOT EXISTS {stable_name} ({fields}) TAGS ({tag_fields})"
         )
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.close()
             print(f"✅ 超表创建成功: {stable_name}")
         except Exception as e:
             print(f"❌ 超表创建失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def create_table(
         self, table_name: str, stable_name: str, tag_values: Dict[str, Any]
@@ -99,13 +100,14 @@ class TDengineDataAccess:
             f"CREATE TABLE IF NOT EXISTS {table_name} USING {stable_name} TAGS ({tags})"
         )
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
-            cursor.close()
         except Exception as e:
             print(f"❌ 子表创建失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def insert_dataframe(
         self, table_name: str, df: pd.DataFrame, timestamp_col: str = "ts"
@@ -165,14 +167,15 @@ class TDengineDataAccess:
             batch = rows[i : i + batch_size]
             sql = f"INSERT INTO {table_name} ({columns}) VALUES {', '.join(batch)}"
 
+            cursor = conn.cursor()
             try:
-                cursor = conn.cursor()
                 cursor.execute(sql)
                 total_inserted += len(batch)
-                cursor.close()
             except Exception as e:
                 print(f"❌ 批量插入失败 (批次{i // batch_size + 1}): {e}")
                 raise
+            finally:
+                cursor.close()
 
         return total_inserted
 
@@ -213,16 +216,16 @@ class TDengineDataAccess:
         sql = f"""
             SELECT {cols}
             FROM {table_name}
-            WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'
-              AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'
+            WHERE ts >= '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+              AND ts < '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
             ORDER BY ts ASC
         """
 
         if limit:
             sql += f" LIMIT {limit}"
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
 
             # 获取列名
@@ -230,7 +233,6 @@ class TDengineDataAccess:
 
             # 获取数据
             rows = cursor.fetchall()
-            cursor.close()
 
             # 转换为DataFrame
             df = pd.DataFrame(rows, columns=column_names)
@@ -240,6 +242,8 @@ class TDengineDataAccess:
         except Exception as e:
             print(f"❌ 查询失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def query_latest(self, table_name: str, limit: int = 100) -> pd.DataFrame:
         """
@@ -261,13 +265,12 @@ class TDengineDataAccess:
             LIMIT {limit}
         """
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
 
             column_names = [desc[0] for desc in cursor.description]
             rows = cursor.fetchall()
-            cursor.close()
 
             df = pd.DataFrame(rows, columns=column_names)
             return df
@@ -275,6 +278,8 @@ class TDengineDataAccess:
         except Exception as e:
             print(f"❌ 查询最新数据失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def aggregate_to_kline(
         self,
@@ -318,18 +323,17 @@ class TDengineDataAccess:
                 LAST({price_col}) as close,
                 SUM({volume_col}) as volume
             FROM {table_name}
-            WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'
-              AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'
+            WHERE ts >= '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+              AND ts < '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
             INTERVAL({interval})
         """
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
 
             column_names = [desc[0] for desc in cursor.description]
             rows = cursor.fetchall()
-            cursor.close()
 
             df = pd.DataFrame(rows, columns=column_names)
             return df
@@ -337,6 +341,8 @@ class TDengineDataAccess:
         except Exception as e:
             print(f"❌ K线聚合失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def delete_by_time_range(
         self, table_name: str, start_time: datetime, end_time: datetime
@@ -356,21 +362,22 @@ class TDengineDataAccess:
 
         sql = f"""
             DELETE FROM {table_name}
-            WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'
-              AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'
+            WHERE ts >= '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+              AND ts < '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
         """
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
             affected_rows = cursor.rowcount or 0
-            cursor.close()
 
             return int(affected_rows)
 
         except Exception as e:
             print(f"❌ 删除数据失败: {e}")
             raise
+        finally:
+            cursor.close()
 
     def get_table_info(self, table_name: str) -> Dict[str, Any]:
         """
@@ -392,12 +399,11 @@ class TDengineDataAccess:
             FROM {table_name}
         """
 
+        cursor = conn.cursor()
         try:
-            cursor = conn.cursor()
             cursor.execute(sql)
 
             row = cursor.fetchone()
-            cursor.close()
 
             return {
                 "row_count": row[0] if row else 0,
@@ -408,6 +414,8 @@ class TDengineDataAccess:
         except Exception as e:
             print(f"❌ 获取表信息失败: {e}")
             return {"row_count": 0, "start_time": None, "end_time": None}
+        finally:
+            cursor.close()
 
     def save_data(
         self, data: pd.DataFrame, classification, table_name: str, **kwargs

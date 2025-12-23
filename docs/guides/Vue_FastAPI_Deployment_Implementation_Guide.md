@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的部署实施指导，结合mystocks_spec项目的成熟经验，针对Vue.js前端和FastAPI后端的架构特点进行专门优化。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支)  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支)
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -248,11 +248,11 @@ class Settings(BaseSettings):
     app_name: str = "MyStocks AI Platform"
     app_version: str = "1.0.0"
     debug: bool = False
-    
+
     # 数据库配置
     database_url: str = os.getenv("DATABASE_URL", "postgresql://admin:password@localhost:5432/mystocks")
     tdengine_url: str = os.getenv("TDENGINE_URL", "taos://localhost:6030")
-    
+
     # API配置
     api_prefix: str = "/api/v1"
     allowed_origins: list = [
@@ -261,20 +261,20 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "https://yourdomain.com"
     ]
-    
+
     # GPU加速配置
     gpu_enabled: bool = os.getenv("GPU_ENABLED", "false").lower() == "true"
-    
+
     # 缓存配置
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379")
-    
+
     # 日志配置
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
-    
+
     # 安全配置
     secret_key: str = os.getenv("SECRET_KEY", "your-super-secret-key-change-this")
     access_token_expire_minutes: int = 60 * 24 * 7  # 7天
-    
+
     class Config:
         env_file = ".env"
 
@@ -361,9 +361,9 @@ async def readiness_check() -> Dict[str, Any]:
         "redis": await check_redis_connection(),
         "gpu": await check_gpu_availability()
     }
-    
+
     all_healthy = all(check.get("status") == "healthy" for check in checks.values())
-    
+
     return {
         "status": "ready" if all_healthy else "not_ready",
         "timestamp": datetime.utcnow().isoformat(),
@@ -375,14 +375,14 @@ async def liveness_check() -> Dict[str, Any]:
     """存活检查端点"""
     # 检查服务基本功能
     start_time = time.time()
-    
+
     # 模拟简单操作
     try:
         # 这里可以添加一些轻量级的检查操作
         result = {"status": "healthy", "response_time": time.time() - start_time}
     except Exception as e:
         result = {"status": "unhealthy", "error": str(e)}
-    
+
     return {
         "status": result["status"],
         "timestamp": datetime.utcnow().isoformat(),
@@ -414,7 +414,7 @@ async def check_gpu_availability() -> Dict[str, Any]:
             gpus = GPUtil.getGPUs()
             if gpus:
                 return {
-                    "status": "healthy", 
+                    "status": "healthy",
                     "message": f"GPU available: {len(gpus)} devices found",
                     "gpu_count": len(gpus)
                 }
@@ -518,7 +518,7 @@ npm run build
 # 检查构建结果
 if [ $? -eq 0 ]; then
     echo "✅ 前端构建成功"
-    
+
     # 复制到Nginx目录
     if [ -d "/usr/share/nginx/html" ]; then
         echo "🔄 复制构建结果到Nginx..."
@@ -592,7 +592,7 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             # 超时设置
             proxy_connect_timeout 60s;
             proxy_send_timeout 60s;
@@ -634,41 +634,41 @@ jobs:
       matrix:
         python-version: [3.12]
         node-version: [18.x]
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install Python dependencies
       run: |
         cd backend
         pip install -r requirements.txt
         pip install pytest pytest-cov
-    
+
     - name: Run Python tests
       run: |
         cd backend
         pytest tests/ --cov=app/ --cov-report=xml
-    
+
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    
+
     - name: Install Node.js dependencies
       run: |
         cd frontend
         npm ci
-    
+
     - name: Run Node.js tests
       run: |
         cd frontend
         npm run test:unit
-    
+
     - name: Run linting
       run: |
         cd frontend
@@ -679,18 +679,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-    
+
     - name: Build frontend
       run: |
         cd frontend
         npm ci
         npm run build
-    
+
     - name: Upload frontend artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -702,19 +702,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
-    
+
     - name: Build backend Docker image
       run: |
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest ./backend
-    
+
     - name: Log in to registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
-    
+
     - name: Push backend image
       run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
 
@@ -723,16 +723,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: production
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Download frontend build
       uses: actions/download-artifact@v3
       with:
         name: frontend-build
         path: frontend/dist
-    
+
     - name: Deploy to production
       run: |
         # 这里添加实际的部署命令
@@ -809,18 +809,18 @@ from typing import Callable
 
 class PerformanceMiddleware(BaseHTTPMiddleware):
     """性能监控中间件"""
-    
+
     def __init__(self, app):
         super().__init__(app)
         self.logger = logging.getLogger("performance")
-    
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         start_time = time.time()
-        
+
         response = await call_next(request)
-        
+
         process_time = time.time() - start_time
-        
+
         # 记录性能指标
         self.logger.info(
             f"REQUEST - {request.method} {request.url.path} "
@@ -828,11 +828,11 @@ class PerformanceMiddleware(BaseHTTPMiddleware):
             f"- Time: {process_time:.3f}s "
             f"- IP: {request.client.host}"
         )
-        
+
         # 这里可以添加到Prometheus等监控系统
         if hasattr(request.state, 'metrics'):
             request.state.metrics.add_request_time(process_time)
-        
+
         return response
 
 # 在main.py中使用
@@ -851,15 +851,15 @@ from datetime import datetime
 
 def setup_logging():
     """配置日志系统"""
-    
+
     # 获取日志级别
     log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
     level = getattr(logging, log_level)
-    
+
     # 配置根日志记录器
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
-    
+
     # 创建JSON格式的日志处理器
     if os.getenv('JSON_LOGS', 'false').lower() == 'true':
         json_handler = logging.StreamHandler()
@@ -881,13 +881,13 @@ def setup_logging():
         )
         console_handler.setFormatter(formatter)
         root_logger.addHandler(console_handler)
-    
+
     # 配置特定模块的日志级别
     logging.getLogger("uvicorn").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
-    
+
     # 文件日志
     if os.getenv('LOG_TO_FILE', 'false').lower() == 'true':
         file_handler = logging.FileHandler('app.log')
@@ -1055,6 +1055,6 @@ curl http://localhost:8080/health
 
 ---
 
-**文档版本**: v1.0  
-**更新时间**: 2025-11-16  
+**文档版本**: v1.0
+**更新时间**: 2025-11-16
 **维护者**: MyStocks开发团队

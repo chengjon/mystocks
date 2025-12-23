@@ -18,7 +18,7 @@ src/storage/database/connection_manager.py:133: in get_postgresql_connection
     raise ConnectionError(
 E   ConnectionError: PostgreSQL连接失败: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
 E   	Is the server running on that host and accepting TCP/IP connections?
-E   
+E
 E   请检查配置: localhost:5432</failure></testcase><testcase classname="tests.unit.test_config_driven_table_manager.TestConfigDrivenTableManager" name="test_create_tdengine_table" time="7.725"><failure message="ConnectionError: TDengine连接失败: [0xE001] Internal error: `WebSocket internal error: IO error: Connection refused (os error 111)`&#10;请检查配置: localhost:6030">src/storage/database/connection_manager.py:80: in get_tdengine_connection
     conn = taosws.connect(
 E   taosws.ConnectionError: [0xE001] Internal error: `WebSocket internal error: IO error: Connection refused (os error 111)`

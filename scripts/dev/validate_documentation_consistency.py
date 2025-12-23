@@ -16,7 +16,6 @@
 import os
 import re
 from typing import Dict, List, Tuple
-from pathlib import Path
 
 
 # 颜色输出
@@ -31,9 +30,9 @@ class Colors:
 
 def print_section(title: str):
     """打印章节标题"""
-    print(f"\n{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.ENDC}")
+    print(f"\n{Colors.BOLD}{Colors.BLUE}{'=' * 60}{Colors.ENDC}")
     print(f"{Colors.BOLD}{Colors.BLUE}{title}{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.ENDC}\n")
+    print(f"{Colors.BOLD}{Colors.BLUE}{'=' * 60}{Colors.ENDC}\n")
 
 
 def print_pass(msg: str):
@@ -80,7 +79,7 @@ def check_data_classification_count(
 
     for pattern in patterns_34:
         if re.search(pattern, content, re.IGNORECASE):
-            issues.append(f"发现错误的34项数据分类声明 (应为23项)")
+            issues.append("发现错误的34项数据分类声明 (应为23项)")
             break
 
     # 检查是否有正确的23项声明
@@ -358,7 +357,7 @@ def main():
     print(f"总文档数: {total_docs}")
     print(f"通过文档: {passed_docs} {Colors.GREEN}✅{Colors.ENDC}")
     print(f"失败文档: {failed_docs} {Colors.RED}❌{Colors.ENDC}")
-    print(f"通过率: {passed_docs/total_docs*100:.1f}%")
+    print(f"通过率: {passed_docs / total_docs * 100:.1f}%")
 
     # 详细结果
     print_section("详细验证结果")
@@ -389,7 +388,7 @@ def main():
         f.write(f"- 总文档数: {total_docs}\n")
         f.write(f"- 通过文档: {passed_docs} ✅\n")
         f.write(f"- 失败文档: {failed_docs} ❌\n")
-        f.write(f"- 通过率: {passed_docs/total_docs*100:.1f}%\n\n")
+        f.write(f"- 通过率: {passed_docs / total_docs * 100:.1f}%\n\n")
 
         f.write("## 详细结果\n\n")
         f.write("| 文档 | 状态 | 通过检查 | 总检查 | 问题 |\n")

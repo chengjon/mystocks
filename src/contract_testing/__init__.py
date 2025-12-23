@@ -14,7 +14,11 @@ Modules:
 from .contract_engine import ContractTestEngine
 from .spec_validator import SpecificationValidator, APIEndpoint, HTTPMethod, Parameter
 from .test_hooks import TestHooksManager, HookContext, HookType, Hook
-from .api_consistency_checker import APIConsistencyChecker, DiscrepancyReport, DiscrepancyType
+from .api_consistency_checker import (
+    APIConsistencyChecker,
+    DiscrepancyReport,
+    DiscrepancyType,
+)
 from .report_generator import ContractTestReportGenerator
 
 __all__ = [

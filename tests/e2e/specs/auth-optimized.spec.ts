@@ -1,26 +1,26 @@
 /**
  * 用户认证流程端到端测试 - 优化版本
- * 
+ *
  * 优化特性:
  * 1. 非Docker环境兼容
  * 2. 增强错误处理和超时管理
  * 3. 灵活的元素定位策略
  * 4. Mock数据系统集成
  * 5. 性能监控集成
- * 
+ *
  * 作者: Claude Code
  * 生成时间: 2025-11-14
  */
 
 import { test, expect, Page } from '@playwright/test';
 import { LoginPage } from '../utils/page-objects';
-import { 
-  UserAuth, 
-  ScreenshotHelper, 
-  PerformanceTester, 
-  UIHelper, 
+import {
+  UserAuth,
+  ScreenshotHelper,
+  PerformanceTester,
+  UIHelper,
   ConsoleMonitor,
-  ReportHelper 
+  ReportHelper
 } from '../utils/test-helpers';
 
 test.describe('用户认证流程 - 优化版本', () => {
@@ -30,7 +30,7 @@ test.describe('用户认证流程 - 优化版本', () => {
   test.beforeEach(async ({ page: testPage }) => {
     page = testPage;
     loginPage = new LoginPage(page);
-    
+
     // 设置页面基础配置
     page.setDefaultTimeout(30000);
     page.setDefaultNavigationTimeout(30000);
@@ -57,14 +57,14 @@ test.describe('用户认证流程 - 优化版本', () => {
         'input[placeholder*="用户"]',
         'input[type="text"]'
       ];
-      
+
       const passwordSelectors = [
         '[data-testid=password]',
         'input[name="password"]',
         'input[placeholder*="密码"]',
         'input[type="password"]'
       ];
-      
+
       const buttonSelectors = [
         '[data-testid=login-button]',
         'button[type="submit"]',
@@ -106,7 +106,7 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('记录页面性能', async () => {
       const performance = await PerformanceTester.measurePageLoad(page, '/login');
       console.log('页面加载性能:', performance);
-      
+
       // 验证基本性能预算
       expect(performance.totalTime).toBeLessThan(10000); // 10秒内加载完成
     });
@@ -128,14 +128,14 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('执行登录流程', async () => {
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       // 填写登录表单
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
-      
+
       // 提交表单
       await page.click('[data-testid=login-button]');
-      
+
       // 等待跳转
       await page.waitForURL('/dashboard', { timeout: 10000 });
     });
@@ -143,7 +143,7 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('验证登录状态', async () => {
       // 等待用户菜单可见
       await UIHelper.waitForElementVisible(page, '[data-testid=user-menu]');
-      
+
       // 验证用户信息显示
       await UIHelper.waitForElementVisible(page, '[data-testid=welcome-message]');
     });
@@ -156,7 +156,7 @@ test.describe('用户认证流程 - 优化版本', () => {
           user: localStorage.getItem('user_info')
         };
       });
-      
+
       expect(localStorageData.token).toBeTruthy();
       expect(localStorageData.user).toBeTruthy();
     });
@@ -176,7 +176,7 @@ test.describe('用户认证流程 - 优化版本', () => {
       await page.fill('[data-testid=username]', 'invaliduser');
       await page.fill('[data-testid=password]', 'wrongpassword');
       await page.click('[data-testid=login-button]');
-      
+
       // 等待错误消息显示
       await UIHelper.waitForElementVisible(page, '[data-testid=error-message]');
     });
@@ -184,14 +184,14 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('验证错误处理', async () => {
       const errorMessage = await page.locator('[data-testid=error-message]').textContent();
       expect(errorMessage).toBeTruthy();
-      
+
       // 验证仍然在登录页面
       await expect(page).toHaveURL('/login');
     });
 
     test.step('验证控制台错误监控', async () => {
       const errors = await ConsoleMonitor.monitorConsoleErrors(page);
-      
+
       // 如果有API调用失败，记录但不中断测试
       if (errors.length > 0) {
         console.log('检测到的控制台错误:', errors);
@@ -212,7 +212,7 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('测试空字段提交', async () => {
       // 直接点击登录按钮（空字段）
       await page.click('[data-testid=login-button]');
-      
+
       // 等待验证错误显示
       await page.waitForTimeout(1000);
     });
@@ -220,7 +220,7 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('验证前端验证', async () => {
       // 检查是否有验证错误提示
       const validationErrors = await page.locator('.field-error, [data-testid*="error"]').count();
-      
+
       // 如果有验证错误，验证其可见性
       if (validationErrors > 0) {
         await expect(page.locator('.field-error, [data-testid*="error"]').first()).toBeVisible();
@@ -231,7 +231,7 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 只填写用户名
       await page.fill('[data-testid=username]', 'testuser');
       await page.click('[data-testid=login-button]');
-      
+
       // 等待并验证密码字段错误提示
       await page.waitForTimeout(1000);
     });
@@ -245,24 +245,24 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('执行登录', async () => {
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
       await page.click('[data-testid=login-button]');
-      
+
       await page.waitForURL('/dashboard');
     });
 
     test.step('执行登出操作', async () => {
       // 点击用户菜单
       await page.click('[data-testid=user-menu]');
-      
+
       // 等待菜单展开
       await page.waitForTimeout(500);
-      
+
       // 点击登出按钮
       await page.click('[data-testid=logout-button]');
-      
+
       // 等待重定向到登录页
       await page.waitForURL('/login', { timeout: 10000 });
     });
@@ -275,24 +275,24 @@ test.describe('用户认证流程 - 优化版本', () => {
           user: localStorage.getItem('user_info')
         };
       });
-      
+
       expect(localStorageData.token).toBeNull();
       expect(localStorageData.user).toBeNull();
-      
+
       // 验证sessionStorage已清除
       const sessionStorageData = await page.evaluate(() => {
         return {
           sessionToken: sessionStorage.getItem('session_token')
         };
       });
-      
+
       expect(sessionStorageData.sessionToken).toBeNull();
     });
 
     test.step('验证路由重定向', async () => {
       // 尝试访问受保护的页面
       await page.goto('/dashboard');
-      
+
       // 应该重定向到登录页
       await expect(page).toHaveURL('/login');
     });
@@ -306,11 +306,11 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('登录验证', async () => {
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
       await page.click('[data-testid=login-button]');
-      
+
       await page.waitForURL('/dashboard');
     });
 
@@ -327,10 +327,10 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('验证会话过期处理', async () => {
       // 刷新页面
       await page.reload();
-      
+
       // 应该重定向到登录页
       await expect(page).toHaveURL('/login');
-      
+
       // 验证显示过期提示（如果有）
       const expiredMessage = await page.locator('[data-testid=session-expired]').count();
       if (expiredMessage > 0) {
@@ -355,10 +355,10 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('测试未认证访问受保护页面', async () => {
       for (const pagePath of protectedPages) {
         await page.goto(pagePath);
-        
+
         // 应该重定向到登录页
         await expect(page).toHaveURL('/login', { timeout: 5000 });
-        
+
         // 等待页面稳定
         await page.waitForTimeout(500);
       }
@@ -368,21 +368,21 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 先登录
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
       await page.click('[data-testid=login-button]');
-      
+
       await page.waitForURL('/dashboard');
-      
+
       // 测试访问其他受保护页面
       for (const pagePath of protectedPages.slice(1)) { // 跳过dashboard（已在该页面）
         await page.goto(pagePath);
         await UIHelper.waitForNetworkIdle(page);
-        
+
         // 验证页面正常加载（不重定向到登录页）
         expect(page.url()).not.toContain('/login');
-        
+
         await page.waitForTimeout(1000);
       }
     });
@@ -396,20 +396,20 @@ test.describe('用户认证流程 - 优化版本', () => {
     test.step('勾选记住密码并登录', async () => {
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       // 勾选记住密码
       const rememberCheckbox = page.locator('[data-testid=remember-password]');
       if (await rememberCheckbox.count() > 0) {
         await rememberCheckbox.check();
       }
-      
+
       // 填写表单
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
-      
+
       // 提交
       await page.click('[data-testid=login-button]');
-      
+
       await page.waitForURL('/dashboard');
     });
 
@@ -417,13 +417,13 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 登出
       await page.click('[data-testid=user-menu]');
       await page.click('[data-testid=logout-button]');
-      
+
       await page.waitForURL('/login');
-      
+
       // 验证用户名是否被记住
       const rememberedUsername = await page.locator('[data-testid=username]').inputValue();
       expect(rememberedUsername).toBe('testuser');
-      
+
       // 验证密码字段应该为空
       const passwordValue = await page.locator('[data-testid=password]').inputValue();
       expect(passwordValue).toBe('');
@@ -444,12 +444,12 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 测试Tab键导航
       await page.keyboard.press('Tab');
       await expect(page.locator('[data-testid=username]')).toBeFocused();
-      
+
       await page.keyboard.press('Tab');
       await expect(page.locator('[data-testid=password]')).toBeFocused();
-      
+
       await page.keyboard.press('Tab');
-      
+
       // 验证焦点在按钮上
       const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
       expect(['BUTTON', 'INPUT']).toContain(focusedElement);
@@ -459,12 +459,12 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 使用键盘填写和提交表单
       await page.keyboard.press('Tab'); // 用户名字段
       await page.keyboard.type('testuser');
-      
+
       await page.keyboard.press('Tab'); // 密码字段
       await page.keyboard.type('password123');
-      
+
       await page.keyboard.press('Enter'); // 提交表单
-      
+
       // 验证提交成功
       await page.waitForURL('/dashboard', { timeout: 10000 });
     });
@@ -473,15 +473,15 @@ test.describe('用户认证流程 - 优化版本', () => {
       // 检查基本的可访问性属性
       const usernameField = page.locator('[data-testid=username]');
       const passwordField = page.locator('[data-testid=password]');
-      
+
       // 验证是否有适当的属性
       const usernameAria = await usernameField.getAttribute('aria-label');
       const passwordAria = await passwordField.getAttribute('aria-label');
-      
+
       // 如果没有aria-label，验证placeholder是否存在
       const usernamePlaceholder = await usernameField.getAttribute('placeholder');
       const passwordPlaceholder = await passwordField.getAttribute('placeholder');
-      
+
       expect(usernameAria || usernamePlaceholder).toBeTruthy();
       expect(passwordAria || passwordPlaceholder).toBeTruthy();
     });
@@ -494,18 +494,18 @@ test.describe('用户认证流程 - 优化版本', () => {
   test('性能基准测试', async () => {
     test.step('登录页面性能测试', async () => {
       const performance = await PerformanceTester.measurePageLoad(page, '/login');
-      
+
       // 定义性能预算
       const budgets = {
         FCP: 2000, // First Contentful Paint < 2s
         LCP: 4000, // Largest Contentful Paint < 4s
         TTFB: 600  // Time To First Byte < 600ms
       };
-      
+
       const validation = await PerformanceTester.validatePerformance(page, '/login', budgets);
-      
+
       console.log('性能测试结果:', validation);
-      
+
       // 记录性能违规但不失败测试
       if (!validation.passed) {
         console.warn('性能预算违规:', validation.violations);
@@ -514,24 +514,24 @@ test.describe('用户认证流程 - 优化版本', () => {
 
     test.step('登录流程响应时间测试', async () => {
       const startTime = Date.now();
-      
+
       await page.goto('/login');
       await UIHelper.waitForNetworkIdle(page);
-      
+
       await page.fill('[data-testid=username]', 'testuser');
       await page.fill('[data-testid=password]', 'password123');
-      
+
       const fillEndTime = Date.now();
       await page.click('[data-testid=login-button]');
       await page.waitForURL('/dashboard');
       const loginEndTime = Date.now();
-      
+
       const fillTime = fillEndTime - startTime;
       const totalLoginTime = loginEndTime - startTime;
-      
+
       console.log(`表单填写时间: ${fillTime}ms`);
       console.log(`总登录时间: ${totalLoginTime}ms`);
-      
+
       // 验证登录时间在合理范围内
       expect(totalLoginTime).toBeLessThan(15000); // 15秒内完成登录
     });

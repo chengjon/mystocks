@@ -14,7 +14,7 @@
 ```python
 class IDataSource(abc.ABC):
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame
-    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame  
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame
     def get_stock_basic(self, symbol: str) -> Dict
     def get_index_components(self, symbol: str) -> List[str]
     def get_real_time_data(self, symbol: str) -> Union[Dict, str]
@@ -31,13 +31,13 @@ class IDataSource(abc.ABC):
 # 核心价格数据接口 (所有数据源必须实现)
 class IPriceDataSource(abc.ABC):
     """核心价格数据接口 - 所有数据源的基础要求"""
-    
+
     @abc.abstractmethod
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据"""
         pass
-    
-    @abc.abstractmethod  
+
+    @abc.abstractmethod
     def get_real_time_data(self, symbol: str) -> Dict[str, Any]:
         """获取实时数据"""
         pass
@@ -45,26 +45,26 @@ class IPriceDataSource(abc.ABC):
 # 指数数据接口 (可选实现)
 class IIndexDataSource(abc.ABC):
     """指数数据接口 - 仅需要指数功能的实现"""
-    
+
     @abc.abstractmethod
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取指数日线数据"""
         pass
-    
+
     @abc.abstractmethod
     def get_index_components(self, symbol: str) -> List[str]:
         """获取指数成分股"""
         pass
 
-# 基础信息接口 (可选实现)  
+# 基础信息接口 (可选实现)
 class IBasicInfoSource(abc.ABC):
     """基础信息接口 - 仅需要基础信息的实现"""
-    
+
     @abc.abstractmethod
     def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
         """获取股票基本信息"""
         pass
-    
+
     @abc.abstractmethod
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
         """获取交易日历"""
@@ -73,12 +73,12 @@ class IBasicInfoSource(abc.ABC):
 # 高级数据接口 (可选实现)
 class IAdvancedDataSource(abc.ABC):
     """高级数据接口 - 需要财务和新闻数据的实现"""
-    
+
     @abc.abstractmethod
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
         """获取财务数据"""
         pass
-    
+
     @abc.abstractmethod
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         """获取新闻数据"""
@@ -96,16 +96,16 @@ class IDataSource(IPriceDataSource, IIndexDataSource, IBasicInfoSource, IAdvance
 # 市场数据接口
 class IMarketDataSource(abc.ABC):
     """市场数据接口 - 专门处理价格和交易数据"""
-    
+
     @abc.abstractmethod
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame
-    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame  
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame
     def get_real_time_data(self, symbol: str) -> Dict[str, Any]
 
 # 参考数据接口
 class IReferenceDataSource(abc.ABC):
     """参考数据接口 - 处理静态和半静态信息"""
-    
+
     @abc.abstractmethod
     def get_stock_basic(self, symbol: str) -> Dict[str, Any]
     def get_index_components(self, symbol: str) -> List[str]
@@ -114,7 +114,7 @@ class IReferenceDataSource(abc.ABC):
 # 衍生数据接口
 class IDerivedDataSource(abc.ABC):
     """衍生数据接口 - 处理计算和推导数据"""
-    
+
     @abc.abstractmethod
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]
@@ -137,12 +137,12 @@ class DataResponse:
     data: Optional[Union[pd.DataFrame, Dict, List]] = None
     error: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
-    
+
     @classmethod
     def success(cls, data: Union[pd.DataFrame, Dict, List], metadata: Optional[Dict] = None):
         return cls(success=True, data=data, metadata=metadata)
-    
-    @classmethod  
+
+    @classmethod
     def error(cls, error: str):
         return cls(success=False, error=error)
 ```
@@ -155,7 +155,7 @@ class IDataSourceV1(IPriceDataSource, IIndexDataSource):
     pass
 
 class IDataSourceV2(IPriceDataSource, IBasicInfoSource):
-    """数据接口 v2.0 - 重构版本"""  
+    """数据接口 v2.0 - 重构版本"""
     pass
 ```
 
@@ -195,7 +195,7 @@ class IDataSourceV2(IPriceDataSource, IBasicInfoSource):
 - 定义统一返回类型
 - 创建接口文档
 
-### 第2-3周: 核心适配器更新  
+### 第2-3周: 核心适配器更新
 - 更新2-3个主要适配器
 - 实现新的返回类型格式
 - 建立兼容性层

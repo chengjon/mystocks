@@ -33,11 +33,9 @@
 - 扩展性强:便于添加新的财务数据源
 """
 import pandas as pd
-from typing import Dict, List, Optional, Union
+from typing import Dict
 import sys
-import os
-import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # 导入loguru而不是logging
 from loguru import logger
@@ -194,7 +192,7 @@ class FinancialDataSource(IDataSource):
         # - tushare: 专业财务数据接口(需token)
         # - byapi: 财务数据接口
         # - 新浪财经: 网页爬虫方法
-        # 
+        #
         # 已添加对akshare的支持，可以获取更全面的财务数据
         # 未来可考虑添加tushare等专业数据源支持
 
@@ -490,7 +488,7 @@ class FinancialDataSource(IDataSource):
             if (normalized_start_date or normalized_end_date) and (
                 data is None or (isinstance(data, pd.DataFrame) and data.empty)
             ):
-                logger.warning(f"使用日期参数未获取到数据，尝试获取全部数据并过滤...")
+                logger.warning("使用日期参数未获取到数据，尝试获取全部数据并过滤...")
                 data = self.ef.stock.get_quote_history(formatted_code)
                 if (
                     data is not None

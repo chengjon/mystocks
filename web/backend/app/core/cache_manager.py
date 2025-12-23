@@ -17,10 +17,9 @@ Features:
 - 完整的错误处理
 """
 
-import json
 import asyncio
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Any
 import structlog
 import time
 from threading import Lock
@@ -79,23 +78,23 @@ class CacheManager:
             "batch_operations": 0,
             "total_response_time": 0.0,
         }
-        
+
         # 内存缓存层 - 替代Redis
         self._memory_cache = {}
         self._cache_ttl = {}
         self._cache_lock = Lock()
         self._access_patterns = defaultdict(list)
-        
+
         # 配置参数
         self._max_memory_entries = 10000  # 内存缓存最大条目数
         self._default_ttl = 300  # 默认TTL 5分钟
         self._tiered_ttl = {
-            "tick_data": 30,      # 30秒
-            "realtime_quote": 60, # 1分钟
+            "tick_data": 30,  # 30秒
+            "realtime_quote": 60,  # 1分钟
             "minute_kline": 300,  # 5分钟
-            "fund_flow": 600,     # 10分钟
-            "etf": 1800,          # 30分钟
-            "default": 300        # 默认5分钟
+            "fund_flow": 600,  # 10分钟
+            "etf": 1800,  # 30分钟
+            "default": 300,  # 默认5分钟
         }
 
         logger.info("🔧 初始化缓存管理器(含内存缓存层)")
@@ -111,7 +110,7 @@ class CacheManager:
     ) -> Optional[Dict[str, Any]]:
         """
         从缓存读取数据 (优化后的 Cache-Aside 模式)
-        
+
         采用三级缓存策略：内存缓存 -> TDengine缓存 -> 数据源
 
         Args:
@@ -125,7 +124,7 @@ class CacheManager:
         """
         start_time = time.time()
         self._cache_stats["reads"] += 1
-        
+
         # 记录访问模式
         self._record_access_pattern(symbol, data_type)
 
@@ -141,7 +140,7 @@ class CacheManager:
                     symbol=symbol,
                     data_type=data_type,
                     hit_rate=self._calculate_hit_rate(),
-                    response_time=response_time
+                    response_time=response_time,
                 )
                 return memory_result
 
@@ -157,7 +156,7 @@ class CacheManager:
                 response_time = time.time() - start_time
                 self._update_performance_stats(response_time, True)
                 self._cache_stats["hits"] += 1
-                
+
                 # 将数据回填到内存缓存
                 enriched_data = {
                     "data": cache_data,
@@ -165,13 +164,13 @@ class CacheManager:
                     "timestamp": datetime.utcnow().isoformat(),
                 }
                 self._add_to_memory_cache(symbol, data_type, timeframe, enriched_data)
-                
+
                 logger.debug(
                     "✅ TDengine缓存命中",
                     symbol=symbol,
                     data_type=data_type,
                     hit_rate=self._calculate_hit_rate(),
-                    response_time=response_time
+                    response_time=response_time,
                 )
                 return enriched_data
 
@@ -179,13 +178,13 @@ class CacheManager:
             self._cache_stats["misses"] += 1
             response_time = time.time() - start_time
             self._update_performance_stats(response_time, False)
-            
+
             logger.debug(
                 "⚠️ 缓存未命中",
                 symbol=symbol,
                 data_type=data_type,
                 hit_rate=self._calculate_hit_rate(),
-                response_time=response_time
+                response_time=response_time,
             )
             return None
 
@@ -197,7 +196,7 @@ class CacheManager:
                 symbol=symbol,
                 data_type=data_type,
                 error=str(e),
-                response_time=response_time
+                response_time=response_time,
             )
             return None
 
@@ -212,7 +211,7 @@ class CacheManager:
     ) -> bool:
         """
         写入数据到缓存 (优化后的写入策略)
-        
+
         同时写入内存缓存和TDengine缓存，确保数据一致性
 
         Args:
@@ -273,7 +272,11 @@ class CacheManager:
                 )
                 return True
             else:
-                logger.warning("⚠️ TDengine写入失败，但内存缓存已更新", symbol=symbol, data_type=data_type)
+                logger.warning(
+                    "⚠️ TDengine写入失败，但内存缓存已更新",
+                    symbol=symbol,
+                    data_type=data_type,
+                )
                 return True  # 内存缓存成功就认为部分成功
 
         except Exception as e:
@@ -301,52 +304,59 @@ class CacheManager:
             删除的记录数
         """
         total_deleted = 0
-        
+
         try:
             with self._cache_lock:
                 # 首先清理内存缓存
                 if symbol and data_type:
                     # 清除特定符号+数据类型的缓存
                     cache_key = self.get_cache_key(symbol, data_type)
-                    
+
                     if cache_key in self._memory_cache:
                         del self._memory_cache[cache_key]
                         total_deleted += 1
-                    
+
                     if cache_key in self._cache_ttl:
                         del self._cache_ttl[cache_key]
-                    
+
                     if cache_key in self._access_patterns:
                         del self._access_patterns[cache_key]
-                    
+
                     logger.info("🗑️ 清除内存缓存", symbol=symbol, data_type=data_type)
-                
+
                 elif symbol:
                     # 清除特定符号的所有缓存
                     keys_to_delete = [
-                        key for key in self._memory_cache.keys()
+                        key
+                        for key in self._memory_cache.keys()
                         if key.startswith(symbol)
                     ]
-                    
+
                     for key in keys_to_delete:
                         del self._memory_cache[key]
                         total_deleted += 1
-                        
+
                         if key in self._cache_ttl:
                             del self._cache_ttl[key]
                         if key in self._access_patterns:
                             del self._access_patterns[key]
-                    
-                    logger.info("🗑️ 清除符号所有内存缓存", symbol=symbol, count=len(keys_to_delete))
-                
+
+                    logger.info(
+                        "🗑️ 清除符号所有内存缓存",
+                        symbol=symbol,
+                        count=len(keys_to_delete),
+                    )
+
                 else:
                     # 清除所有内存缓存
                     total_deleted = self.clear_memory_cache()
                     logger.warning("🗑️ 清除所有内存缓存")
-            
+
             # 清理TDengine缓存（异步）
             if symbol and data_type:
-                tdengine_deleted = self.tdengine.clear_expired_cache(days=0)  # 需要实现精确删除
+                tdengine_deleted = self.tdengine.clear_expired_cache(
+                    days=0
+                )  # 需要实现精确删除
                 total_deleted += tdengine_deleted
             elif symbol:
                 tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
@@ -359,7 +369,7 @@ class CacheManager:
                 "✅ 缓存清除完成",
                 symbol=symbol,
                 data_type=data_type,
-                total_deleted=total_deleted
+                total_deleted=total_deleted,
             )
             return total_deleted
 
@@ -398,32 +408,32 @@ class CacheManager:
             # 优化：并发读取内存缓存，先处理最可能命中的数据
             memory_cache_futures = []
             tdengine_cache_futures = []
-            
+
             # 预过滤：避免重复查询
             unique_queries = []
             seen_keys = set()
-            
+
             for query in queries:
                 symbol = query.get("symbol")
                 data_type = query.get("data_type")
-                
+
                 if not symbol or not data_type:
                     continue
-                    
+
                 query_key = f"{symbol}:{data_type}:{query.get('timeframe', '1d')}"
                 if query_key not in seen_keys:
                     seen_keys.add(query_key)
                     unique_queries.append(query)
-            
+
             # 批量内存缓存查询
             with self._cache_lock:
                 for query in unique_queries:
                     symbol = query.get("symbol")
                     data_type = query.get("data_type")
                     timeframe = query.get("timeframe", "1d")
-                    
+
                     cache_key = self.get_cache_key(symbol, data_type, timeframe)
-                    
+
                     if cache_key in self._memory_cache:
                         # 内存缓存命中
                         if not self._is_cache_expired(cache_key):
@@ -440,23 +450,25 @@ class CacheManager:
 
             # 对于未命中的查询，批量TDengine查询
             remaining_queries = [
-                query for query in unique_queries
+                query
+                for query in unique_queries
                 if self.get_cache_key(
-                    query.get("symbol"), 
-                    query.get("data_type"), 
-                    query.get("timeframe", "1d")
-                ) not in results
+                    query.get("symbol"),
+                    query.get("data_type"),
+                    query.get("timeframe", "1d"),
+                )
+                not in results
             ]
-            
+
             if remaining_queries:
                 # 批量TDengine查询
                 for query in remaining_queries:
                     symbol = query.get("symbol")
                     data_type = query.get("data_type")
                     timeframe = query.get("timeframe", "1d")
-                    
+
                     cache_key = self.get_cache_key(symbol, data_type, timeframe)
-                    
+
                     try:
                         cache_data = self.tdengine.read_cache(
                             symbol=symbol,
@@ -464,7 +476,7 @@ class CacheManager:
                             timeframe=timeframe,
                             days=query.get("days", 1),
                         )
-                        
+
                         if cache_data:
                             enriched_data = {
                                 "data": cache_data,
@@ -474,28 +486,32 @@ class CacheManager:
                             results[cache_key] = enriched_data
                             self._cache_stats["hits"] += 1
                             success_count += 1
-                            
+
                             # 回填内存缓存
-                            self._add_to_memory_cache(symbol, data_type, timeframe, enriched_data)
+                            self._add_to_memory_cache(
+                                symbol, data_type, timeframe, enriched_data
+                            )
                         else:
                             results[cache_key] = None
                             self._cache_stats["misses"] += 1
-                    
+
                     except Exception as e:
-                        logger.warning(f"批量读取单项失败 {symbol}:{data_type}", error=str(e))
+                        logger.warning(
+                            f"批量读取单项失败 {symbol}:{data_type}", error=str(e)
+                        )
                         results[cache_key] = None
                         self._cache_stats["misses"] += 1
-            
+
             response_time = time.time() - start_time
             self._update_performance_stats(response_time, success_count > 0)
-            
+
             logger.info(
-                f"✅ 批量读取完成",
+                "✅ 批量读取完成",
                 total=len(unique_queries),
                 success=success_count,
                 unique_queries=len(unique_queries),
                 response_time=response_time,
-                hit_rate=success_count / max(len(unique_queries), 1)
+                hit_rate=success_count / max(len(unique_queries), 1),
             )
             return results
 
@@ -543,7 +559,7 @@ class CacheManager:
                     count += 1
 
             logger.info(
-                f"✅ 批量写入完成",
+                "✅ 批量写入完成",
                 total=len(records),
                 success=count,
             )
@@ -628,8 +644,8 @@ class CacheManager:
             统计信息字典
         """
         hit_rate = self._calculate_hit_rate()
-        avg_response_time = (
-            self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
+        avg_response_time = self._cache_stats["total_response_time"] / max(
+            self._cache_stats["reads"], 1
         )
 
         stats = {
@@ -648,7 +664,9 @@ class CacheManager:
 
         # 添加响应时间分布统计
         if "response_time_distribution" in self._cache_stats:
-            stats["response_time_distribution"] = self._cache_stats["response_time_distribution"]
+            stats["response_time_distribution"] = self._cache_stats[
+                "response_time_distribution"
+            ]
 
         # 从 TDengine 获取额外统计
         try:
@@ -684,7 +702,7 @@ class CacheManager:
     ) -> Optional[Dict[str, Any]]:
         """从内存缓存读取数据"""
         cache_key = self.get_cache_key(symbol, data_type, timeframe or "1d")
-        
+
         with self._cache_lock:
             if cache_key in self._memory_cache:
                 # 检查TTL
@@ -692,11 +710,11 @@ class CacheManager:
                     del self._memory_cache[cache_key]
                     del self._cache_ttl[cache_key]
                     return None
-                
+
                 # 更新访问统计
                 self._access_patterns[cache_key].append(datetime.utcnow())
                 return self._memory_cache[cache_key]
-        
+
         return None
 
     def _add_to_memory_cache(
@@ -708,24 +726,26 @@ class CacheManager:
     ) -> None:
         """写入数据到内存缓存"""
         cache_key = self.get_cache_key(symbol, data_type, timeframe)
-        
+
         with self._cache_lock:
             # 检查缓存大小限制
             if len(self._memory_cache) >= self._max_memory_entries:
                 self._evict_memory_cache()
-            
+
             # 计算TTL
             ttl_seconds = self._get_tiered_ttl(data_type)
-            
+
             self._memory_cache[cache_key] = data
-            self._cache_ttl[cache_key] = datetime.utcnow() + timedelta(seconds=ttl_seconds)
+            self._cache_ttl[cache_key] = datetime.utcnow() + timedelta(
+                seconds=ttl_seconds
+            )
             self._access_patterns[cache_key].append(datetime.utcnow())
 
     def _is_cache_expired(self, cache_key: str) -> bool:
         """检查缓存是否过期"""
         if cache_key not in self._cache_ttl:
             return True
-        
+
         return datetime.utcnow() > self._cache_ttl[cache_key]
 
     def _get_tiered_ttl(self, data_type: str) -> int:
@@ -736,17 +756,17 @@ class CacheManager:
         """内存缓存淘汰策略 (LRU + 基于访问频率)"""
         if not self._memory_cache:
             return
-        
+
         # 简单LRU策略：删除访问频率最低的条目
         lru_key = None
-        min_access = float('inf')
-        
+        min_access = float("inf")
+
         for key, access_times in self._access_patterns.items():
             access_freq = len(access_times)
             if access_freq < min_access:
                 min_access = access_freq
                 lru_key = key
-        
+
         if lru_key and lru_key in self._memory_cache:
             del self._memory_cache[lru_key]
             del self._cache_ttl[lru_key]
@@ -779,7 +799,7 @@ class CacheManager:
                     timeframe=timeframe,
                     data=data,
                     timestamp=timestamp,
-                )
+                ),
             )
             return result
         except Exception as e:
@@ -789,18 +809,19 @@ class CacheManager:
     def _update_performance_stats(self, response_time: float, hit: bool) -> None:
         """更新性能统计"""
         self._cache_stats["total_response_time"] += response_time
-        
+
         # 记录响应时间分布
         if hit:
             cache_level = "memory" if response_time < 0.001 else "tdengine"
         else:
             cache_level = "miss"
-        
+
         if "response_time_distribution" not in self._cache_stats:
             self._cache_stats["response_time_distribution"] = {}
-        
-        self._cache_stats["response_time_distribution"][cache_level] = \
+
+        self._cache_stats["response_time_distribution"][cache_level] = (
             self._cache_stats["response_time_distribution"].get(cache_level, 0) + 1
+        )
 
     def get_memory_cache_stats(self) -> Dict[str, Any]:
         """获取内存缓存统计"""
@@ -809,7 +830,7 @@ class CacheManager:
             total_size_mb = sum(
                 len(str(data)) for data in self._memory_cache.values()
             ) / (1024 * 1024)  # 估算大小
-            
+
             # 计算各数据类型的分布
             type_distribution = defaultdict(int)
             for cache_key in self._memory_cache.keys():
@@ -817,7 +838,7 @@ class CacheManager:
                 if len(parts) >= 2:
                     data_type = parts[0]
                     type_distribution[data_type] += 1
-            
+
             return {
                 "total_entries": total_entries,
                 "max_entries": self._max_memory_entries,
@@ -844,12 +865,11 @@ class CacheManager:
             # 清理过期条目
             expired_count = 0
             now = datetime.utcnow()
-            
+
             expired_keys = [
-                key for key, expire_time in self._cache_ttl.items()
-                if now > expire_time
+                key for key, expire_time in self._cache_ttl.items() if now > expire_time
             ]
-            
+
             for key in expired_keys:
                 if key in self._memory_cache:
                     del self._memory_cache[key]
@@ -857,10 +877,10 @@ class CacheManager:
                 if key in self._access_patterns:
                     del self._access_patterns[key]
                 expired_count += 1
-            
+
             # 记录优化结果
             stats_before = self.get_memory_cache_stats()
-            
+
             return {
                 "expired_entries_removed": expired_count,
                 "entries_after_cleanup": len(self._memory_cache),
@@ -882,70 +902,70 @@ class CacheManager:
             "timestamp": datetime.utcnow().isoformat(),
             "components": {},
             "performance_metrics": {},
-            "issues": []
+            "issues": [],
         }
-        
+
         try:
             # 检查 TDengine 连接
             tdengine_healthy = self.tdengine.health_check()
             health_status["components"]["tdengine"] = {
                 "healthy": tdengine_healthy,
-                "status": "OK" if tdengine_healthy else "ERROR"
+                "status": "OK" if tdengine_healthy else "ERROR",
             }
-            
+
             if not tdengine_healthy:
                 health_status["overall_healthy"] = False
                 health_status["issues"].append("TDengine connection failed")
-            
+
             # 检查内存缓存
             memory_stats = self.get_memory_cache_stats()
             memory_healthy = (
-                memory_stats["usage_percentage"] < 95 and
-                len(self._memory_cache) < self._max_memory_entries
+                memory_stats["usage_percentage"] < 95
+                and len(self._memory_cache) < self._max_memory_entries
             )
-            
+
             health_status["components"]["memory_cache"] = {
                 "healthy": memory_healthy,
                 "status": "OK" if memory_healthy else "WARNING",
                 "usage_percentage": memory_stats["usage_percentage"],
-                "total_entries": memory_stats["total_entries"]
+                "total_entries": memory_stats["total_entries"],
             }
-            
+
             if not memory_healthy:
                 health_status["issues"].append("Memory cache usage high")
-            
+
             # 性能指标
             hit_rate = self._calculate_hit_rate()
-            avg_response_time = (
-                self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
+            avg_response_time = self._cache_stats["total_response_time"] / max(
+                self._cache_stats["reads"], 1
             )
-            
+
             performance_healthy = (
-                hit_rate > 0.5 and  # 命中率应该大于50%
-                avg_response_time < 1.0  # 平均响应时间小于1秒
+                hit_rate > 0.5  # 命中率应该大于50%
+                and avg_response_time < 1.0  # 平均响应时间小于1秒
             )
-            
+
             health_status["performance_metrics"] = {
                 "hit_rate": hit_rate,
                 "avg_response_time_ms": round(avg_response_time * 1000, 2),
-                "performance_healthy": performance_healthy
+                "performance_healthy": performance_healthy,
             }
-            
+
             if not performance_healthy:
                 health_status["overall_healthy"] = False
                 if hit_rate < 0.5:
                     health_status["issues"].append("Cache hit rate too low")
                 if avg_response_time > 1.0:
                     health_status["issues"].append("Response time too slow")
-            
+
             logger.info(
                 "🔍 缓存系统健康检查完成",
                 overall_healthy=health_status["overall_healthy"],
-                issues=len(health_status["issues"])
+                issues=len(health_status["issues"]),
             )
-            
+
             return health_status
-            
+
         except Exception as e:
             logger.error("❌ 缓存系统健康检查失败", error=str(e))
             health_status["overall_healthy"] = False

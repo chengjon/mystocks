@@ -29,14 +29,14 @@ def test_server_config():
 
     try:
         tdx = TdxDataSource()
-        print(f"✓ TDX适配器初始化成功")
+        print("✓ TDX适配器初始化成功")
         print(f"  主服务器: {tdx.tdx_host}:{tdx.tdx_port}")
 
         if tdx.use_server_config and tdx.server_config:
             print(f"  可用服务器总数: {tdx.server_config.get_server_count()}")
-            print(f"  使用connect.cfg配置: ✓")
+            print("  使用connect.cfg配置: ✓")
         else:
-            print(f"  使用环境变量配置")
+            print("  使用环境变量配置")
 
         return True
     except Exception as e:
@@ -68,7 +68,7 @@ def test_real_time_quote():
             result = tdx.get_real_time_data(symbol)
 
             if isinstance(result, dict):
-                print(f"  ✓ 获取成功")
+                print("  ✓ 获取成功")
                 print(f"    股票名称: {result['name']}")
                 print(f"    最新价: {result['price']:.2f}")
                 print(
@@ -119,7 +119,7 @@ def test_stock_daily():
                 print(f"  ✓ 获取成功: {len(df)}条数据")
                 print(f"    实际日期范围: {df['date'].min()} ~ {df['date'].max()}")
                 print(f"    数据列: {list(df.columns)}")
-                print(f"\n  最近5个交易日:")
+                print("\n  最近5个交易日:")
                 print(
                     df[["date", "open", "high", "low", "close", "volume"]]
                     .tail(5)
@@ -127,7 +127,7 @@ def test_stock_daily():
                 )
                 success_count += 1
             else:
-                print(f"  ✗ 未获取到数据")
+                print("  ✗ 未获取到数据")
 
         except Exception as e:
             print(f"  ✗ 异常: {e}")
@@ -166,7 +166,7 @@ def test_index_daily():
                 print(f"  ✓ 获取成功: {len(df)}条数据")
                 print(f"    实际日期范围: {df['date'].min()} ~ {df['date'].max()}")
                 print(f"    数据列: {list(df.columns)}")
-                print(f"\n  最近5个交易日:")
+                print("\n  最近5个交易日:")
                 print(
                     df[["date", "open", "high", "low", "close", "volume"]]
                     .tail(5)
@@ -174,7 +174,7 @@ def test_index_daily():
                 )
                 success_count += 1
             else:
-                print(f"  ✗ 未获取到数据")
+                print("  ✗ 未获取到数据")
 
         except Exception as e:
             print(f"  ✗ 异常: {e}")

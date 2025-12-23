@@ -12,9 +12,8 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Union, Any, Tuple
-from datetime import datetime, date
-import pandas as pd
+from typing import List, Dict, Optional, Any
+from datetime import date
 
 
 class IBusinessDataSource(ABC):
@@ -37,9 +36,7 @@ class IBusinessDataSource(ABC):
 
     @abstractmethod
     def get_dashboard_summary(
-        self,
-        user_id: int,
-        trade_date: Optional[date] = None
+        self, user_id: int, trade_date: Optional[date] = None
     ) -> Dict[str, Any]:
         """
         获取仪表盘汇总数据
@@ -124,10 +121,7 @@ class IBusinessDataSource(ABC):
 
     @abstractmethod
     def get_sector_performance(
-        self,
-        sector_type: str,
-        trade_date: Optional[date] = None,
-        limit: int = 20
+        self, sector_type: str, trade_date: Optional[date] = None, limit: int = 20
     ) -> List[Dict[str, Any]]:
         """
         获取板块表现
@@ -177,7 +171,7 @@ class IBusinessDataSource(ABC):
         start_date: date,
         end_date: date,
         initial_capital: float,
-        universe: Optional[List[str]] = None
+        universe: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         执行策略回测
@@ -270,7 +264,7 @@ class IBusinessDataSource(ABC):
         user_id: int,
         backtest_id: Optional[str] = None,
         strategy_id: Optional[int] = None,
-        limit: int = 10
+        limit: int = 10,
     ) -> List[Dict[str, Any]]:
         """
         获取回测结果列表
@@ -295,9 +289,7 @@ class IBusinessDataSource(ABC):
 
     @abstractmethod
     def calculate_risk_metrics(
-        self,
-        user_id: int,
-        portfolio: Optional[Dict[str, float]] = None
+        self, user_id: int, portfolio: Optional[Dict[str, float]] = None
     ) -> Dict[str, Any]:
         """
         计算风险指标
@@ -355,10 +347,7 @@ class IBusinessDataSource(ABC):
         pass
 
     @abstractmethod
-    def check_risk_alerts(
-        self,
-        user_id: int
-    ) -> List[Dict[str, Any]]:
+    def check_risk_alerts(self, user_id: int) -> List[Dict[str, Any]]:
         """
         检查风险预警
 
@@ -397,7 +386,7 @@ class IBusinessDataSource(ABC):
         self,
         user_id: int,
         strategy_ids: Optional[List[int]] = None,
-        trade_date: Optional[date] = None
+        trade_date: Optional[date] = None,
     ) -> List[Dict[str, Any]]:
         """
         分析交易信号
@@ -437,9 +426,7 @@ class IBusinessDataSource(ABC):
 
     @abstractmethod
     def get_portfolio_analysis(
-        self,
-        user_id: int,
-        include_history: bool = False
+        self, user_id: int, include_history: bool = False
     ) -> Dict[str, Any]:
         """
         获取持仓分析
@@ -500,10 +487,7 @@ class IBusinessDataSource(ABC):
 
     @abstractmethod
     def perform_attribution_analysis(
-        self,
-        user_id: int,
-        start_date: date,
-        end_date: date
+        self, user_id: int, start_date: date, end_date: date
     ) -> Dict[str, Any]:
         """
         执行归因分析
@@ -569,7 +553,7 @@ class IBusinessDataSource(ABC):
         user_id: int,
         criteria: Dict[str, Any],
         sort_by: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         执行股票筛选

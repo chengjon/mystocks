@@ -19,11 +19,9 @@ Date: 2025-11-13
 import requests
 import json
 import time
-import asyncio
-import websockets
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Any
 from pathlib import Path
 
 
@@ -61,7 +59,9 @@ class ImprovedRealtimeValidator:
             self.results.append(data_result)
         else:
             print("\n3️⃣ 跳过实时数据测试 (API不可用)")
-            self.results.append({"test": "Simple Data", "success": False, "error": "API unavailable"})
+            self.results.append(
+                {"test": "Simple Data", "success": False, "error": "API unavailable"}
+            )
 
         # 4. 核心数据源检查
         print("\n4️⃣ 核心数据源检查")
@@ -84,9 +84,17 @@ class ImprovedRealtimeValidator:
 
         issues = []
         checks = {
-            "数据库密码配置": bool(os.getenv("POSTGRESQL_PASSWORD") and os.getenv("POSTGRESQL_PASSWORD") != "your_password"),
-            "TDengine密码配置": bool(os.getenv("TDENGINE_PASSWORD") and os.getenv("TDENGINE_PASSWORD") != "taosdata"),
-            "TDX数据路径": bool(os.getenv("TDX_DATA_PATH") and Path(os.getenv("TDX_DATA_PATH")).exists()),
+            "数据库密码配置": bool(
+                os.getenv("POSTGRESQL_PASSWORD")
+                and os.getenv("POSTGRESQL_PASSWORD") != "your_password"
+            ),
+            "TDengine密码配置": bool(
+                os.getenv("TDENGINE_PASSWORD")
+                and os.getenv("TDENGINE_PASSWORD") != "taosdata"
+            ),
+            "TDX数据路径": bool(
+                os.getenv("TDX_DATA_PATH") and Path(os.getenv("TDX_DATA_PATH")).exists()
+            ),
             "Python依赖": self._check_python_dependencies(),
         }
 
@@ -95,9 +103,10 @@ class ImprovedRealtimeValidator:
         # 检查服务端口
         try:
             import socket
+
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
-            result = sock.connect_ex(('localhost', 8000))
+            result = sock.connect_ex(("localhost", 8000))
             sock.close()
             checks["Web服务端口"] = result == 0
         except:
@@ -117,7 +126,7 @@ class ImprovedRealtimeValidator:
             "checks": checks,
             "passed": passed,
             "total": total_checks,
-            "issues": issues
+            "issues": issues,
         }
 
     def _check_python_dependencies(self) -> bool:
@@ -147,14 +156,14 @@ class ImprovedRealtimeValidator:
                     "duration": time.time() - start_time,
                     "response_time_ms": response.elapsed.total_seconds() * 1000,
                     "status": data.get("status", "unknown"),
-                    "service": data.get("service", "unknown")
+                    "service": data.get("service", "unknown"),
                 }
             else:
                 return {
                     "test": "HTTP API Health",
                     "success": False,
                     "duration": time.time() - start_time,
-                    "error": f"HTTP {response.status_code}: {response.text[:100]}"
+                    "error": f"HTTP {response.status_code}: {response.text[:100]}",
                 }
 
         except Exception as e:
@@ -162,7 +171,7 @@ class ImprovedRealtimeValidator:
                 "test": "HTTP API Health",
                 "success": False,
                 "duration": time.time() - start_time,
-                "error": str(e)
+                "error": str(e),
             }
 
     def _test_simple_data(self) -> Dict[str, Any]:
@@ -188,7 +197,11 @@ class ImprovedRealtimeValidator:
                 except:
                     pass
 
-            success_rate = (working_endpoints / len(simple_endpoints) * 100) if simple_endpoints else 0
+            success_rate = (
+                (working_endpoints / len(simple_endpoints) * 100)
+                if simple_endpoints
+                else 0
+            )
 
             return {
                 "test": "Simple Data",
@@ -197,7 +210,7 @@ class ImprovedRealtimeValidator:
                 "working_endpoints": working_endpoints,
                 "total_endpoints": len(simple_endpoints),
                 "success_rate": success_rate,
-                "note": f"测试了{len(simple_endpoints)}个轻量API端点"
+                "note": f"测试了{len(simple_endpoints)}个轻量API端点",
             }
 
         except Exception as e:
@@ -205,7 +218,7 @@ class ImprovedRealtimeValidator:
                 "test": "Simple Data",
                 "success": False,
                 "duration": time.time() - start_time,
-                "error": str(e)
+                "error": str(e),
             }
 
     def _test_core_data_sources(self) -> Dict[str, Any]:
@@ -234,7 +247,9 @@ class ImprovedRealtimeValidator:
             except Exception as e:
                 details.append(f"❌ {name}: {str(e)[:50]}")
 
-        success_rate = (sources_working / sources_tested * 100) if sources_tested > 0 else 0
+        success_rate = (
+            (sources_working / sources_tested * 100) if sources_tested > 0 else 0
+        )
 
         return {
             "test": "Core Data Sources",
@@ -244,7 +259,7 @@ class ImprovedRealtimeValidator:
             "sources_working": sources_working,
             "success_rate": success_rate,
             "details": details,
-            "note": "只测试核心数据源，跳过复杂的数据获取"
+            "note": "只测试核心数据源，跳过复杂的数据获取",
         }
 
     def _test_websocket_capability(self) -> Dict[str, Any]:
@@ -255,17 +270,17 @@ class ImprovedRealtimeValidator:
         try:
             # 简单的WebSocket连接测试
             import socket
-            
+
             # 检查端口6041是否存在（TDengine WebSocket）
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
-            tdengine_port = sock.connect_ex(('localhost', 6041))
+            tdengine_port = sock.connect_ex(("localhost", 6041))
             sock.close()
 
             # 检查端口8000是否存在（我们的Web服务）
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
-            web_port = sock.connect_ex(('localhost', 8000))
+            web_port = sock.connect_ex(("localhost", 8000))
             sock.close()
 
             ports_status = {
@@ -282,7 +297,7 @@ class ImprovedRealtimeValidator:
                 "ports_tested": len(ports_status),
                 "working_ports": working_ports,
                 "ports_status": ports_status,
-                "note": "检查WebSocket相关端口可用性"
+                "note": "检查WebSocket相关端口可用性",
             }
 
         except Exception as e:
@@ -290,7 +305,7 @@ class ImprovedRealtimeValidator:
                 "test": "WebSocket Capability",
                 "success": False,
                 "duration": time.time() - start_time,
-                "error": str(e)
+                "error": str(e),
             }
 
     def _print_result(self, result: Dict[str, Any]):
@@ -298,24 +313,30 @@ class ImprovedRealtimeValidator:
         status_icon = "✅" if result.get("success", False) else "❌"
         test_name = result.get("test", "Unknown")
         duration = result.get("duration", 0)
-        
+
         print(f"   {status_icon} {test_name}: {duration:.2f}s")
-        
+
         if result.get("success"):
             if "response_time_ms" in result:
                 print(f"      📊 响应时间: {result['response_time_ms']:.1f}ms")
             if "working_endpoints" in result:
-                print(f"      📊 可用端点: {result['working_endpoints']}/{result['total_endpoints']}")
+                print(
+                    f"      📊 可用端点: {result['working_endpoints']}/{result['total_endpoints']}"
+                )
             if "sources_working" in result:
-                print(f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}")
+                print(
+                    f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}"
+                )
             if "working_ports" in result:
-                print(f"      📊 端口可用: {result['working_ports']}/{result['ports_tested']}")
+                print(
+                    f"      📊 端口可用: {result['working_ports']}/{result['ports_tested']}"
+                )
             if "passed" in result:
                 print(f"      📊 环境检查: {result['passed']}/{result['total']}项通过")
         else:
             error = result.get("error", "未知错误")
             print(f"      ❌ 错误: {error}")
-            
+
             # 显示详细信息
             if "details" in result:
                 for detail in result["details"][:3]:  # 只显示前3个
@@ -331,10 +352,22 @@ class ImprovedRealtimeValidator:
 
         # 分类评估
         core_functionality = {
-            "environment": any("Environment" in r.get("test", "") and r.get("success") for r in self.results),
-            "api_health": any("HTTP API Health" in r.get("test", "") and r.get("success") for r in self.results),
-            "data_access": any("Simple Data" in r.get("test", "") and r.get("success") for r in self.results),
-            "websocket": any("WebSocket" in r.get("test", "") and r.get("success") for r in self.results),
+            "environment": any(
+                "Environment" in r.get("test", "") and r.get("success")
+                for r in self.results
+            ),
+            "api_health": any(
+                "HTTP API Health" in r.get("test", "") and r.get("success")
+                for r in self.results
+            ),
+            "data_access": any(
+                "Simple Data" in r.get("test", "") and r.get("success")
+                for r in self.results
+            ),
+            "websocket": any(
+                "WebSocket" in r.get("test", "") and r.get("success")
+                for r in self.results
+            ),
         }
 
         critical_issues = []
@@ -342,7 +375,7 @@ class ImprovedRealtimeValidator:
 
         if not core_functionality["environment"]:
             critical_issues.append("环境配置不完整，需要设置数据库连接和路径")
-        
+
         if not core_functionality["api_health"]:
             critical_issues.append("Web服务API不可用，检查服务状态")
 
@@ -359,14 +392,18 @@ class ImprovedRealtimeValidator:
                 "total_tests": total_tests,
                 "successful_tests": successful_tests,
                 "success_rate": success_rate,
-                "total_duration": total_duration
+                "total_duration": total_duration,
             },
             "core_functionality": core_functionality,
-            "overall_status": "HEALTHY" if success_rate >= 75 else "NEEDS_ATTENTION" if success_rate >= 50 else "CRITICAL",
+            "overall_status": "HEALTHY"
+            if success_rate >= 75
+            else "NEEDS_ATTENTION"
+            if success_rate >= 50
+            else "CRITICAL",
             "critical_issues": critical_issues,
             "improvement_areas": improvement_areas,
             "detailed_results": self.results,
-            "recommendations": self._generate_improved_recommendations()
+            "recommendations": self._generate_improved_recommendations(),
         }
 
         # 打印改进摘要
@@ -389,10 +426,16 @@ class ImprovedRealtimeValidator:
 
         if core_functionality["api_health"]:
             print("\n🟢 核心功能状态:")
-            print(f"   • 环境配置: {'✅' if core_functionality['environment'] else '❌'}")
+            print(
+                f"   • 环境配置: {'✅' if core_functionality['environment'] else '❌'}"
+            )
             print(f"   • API健康: {'✅' if core_functionality['api_health'] else '❌'}")
-            print(f"   • 数据访问: {'✅' if core_functionality['data_access'] else '❌'}")
-            print(f"   • WebSocket: {'✅' if core_functionality['websocket'] else '❌'}")
+            print(
+                f"   • 数据访问: {'✅' if core_functionality['data_access'] else '❌'}"
+            )
+            print(
+                f"   • WebSocket: {'✅' if core_functionality['websocket'] else '❌'}"
+            )
 
         # 保存详细报告
         report_file = f"/opt/claude/mystocks_spec/logs/improved_realtime_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
@@ -408,7 +451,9 @@ class ImprovedRealtimeValidator:
         recommendations = []
 
         # 基于环境检查结果
-        env_result = next((r for r in self.results if r.get("test") == "Environment Check"), None)
+        env_result = next(
+            (r for r in self.results if r.get("test") == "Environment Check"), None
+        )
         if env_result and not env_result.get("success"):
             checks = env_result.get("checks", {})
             if not checks.get("TDX数据路径", False):
@@ -418,8 +463,14 @@ class ImprovedRealtimeValidator:
 
         # 基于核心功能状态
         core_status = {
-            "api_health": any(r.get("test") == "HTTP API Health" and r.get("success") for r in self.results),
-            "data_access": any("Simple Data" in r.get("test", "") and r.get("success") for r in self.results),
+            "api_health": any(
+                r.get("test") == "HTTP API Health" and r.get("success")
+                for r in self.results
+            ),
+            "data_access": any(
+                "Simple Data" in r.get("test", "") and r.get("success")
+                for r in self.results
+            ),
         }
 
         if not core_status["api_health"]:

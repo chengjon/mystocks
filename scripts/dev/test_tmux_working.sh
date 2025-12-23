@@ -18,7 +18,7 @@ tmux split-window -h
 echo "第一个分割完成"
 
 tmux select-pane -t 0
-tmux split-window -v  
+tmux split-window -v
 echo "第二个分割完成"
 
 tmux select-pane -t 1
@@ -33,7 +33,7 @@ echo "发送命令到每个窗格..."
 # 直接使用索引选择
 tmux select-pane -t 0
 tmux send-keys "echo 'Pane 0: Backend' && pwd && ls -la"
-tmux select-pane -t 1  
+tmux select-pane -t 1
 tmux send-keys "echo 'Pane 1: Frontend' && pwd && ls -la"
 tmux select-pane -t 2
 tmux send-keys "echo 'Pane 2: Monitoring' && pwd && ls -la"

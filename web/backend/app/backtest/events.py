@@ -3,6 +3,7 @@ Event Types for Event-Driven Backtesting
 
 定义回测系统中的所有事件类型
 """
+
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -11,10 +12,11 @@ from decimal import Decimal
 
 class EventType(str, Enum):
     """事件类型枚举"""
-    MARKET = "market"     # 市场数据事件
-    SIGNAL = "signal"     # 交易信号事件
-    ORDER = "order"       # 订单事件
-    FILL = "fill"         # 成交事件
+
+    MARKET = "market"  # 市场数据事件
+    SIGNAL = "signal"  # 交易信号事件
+    ORDER = "order"  # 订单事件
+    FILL = "fill"  # 成交事件
 
 
 class Event:
@@ -23,6 +25,7 @@ class Event:
 
     所有事件的基类
     """
+
     def __init__(self, event_type: EventType):
         self.event_type = event_type
         self.timestamp = datetime.now()
@@ -34,6 +37,7 @@ class MarketEvent(Event):
 
     当新的市场数据到达时触发
     """
+
     def __init__(
         self,
         symbol: str,
@@ -43,7 +47,7 @@ class MarketEvent(Event):
         low_price: Decimal,
         close_price: Decimal,
         volume: int,
-        adj_close: Optional[Decimal] = None
+        adj_close: Optional[Decimal] = None,
     ):
         super().__init__(EventType.MARKET)
         self.symbol = symbol
@@ -68,13 +72,14 @@ class SignalEvent(Event):
 
     策略生成的交易信号
     """
+
     def __init__(
         self,
         symbol: str,
         trade_date: datetime,
         signal_type: str,  # 'LONG', 'SHORT', 'EXIT'
         strength: float = 1.0,  # 信号强度 0-1
-        reason: Optional[str] = None
+        reason: Optional[str] = None,
     ):
         super().__init__(EventType.SIGNAL)
         self.symbol = symbol
@@ -96,15 +101,16 @@ class OrderEvent(Event):
 
     由信号生成的订单
     """
+
     def __init__(
         self,
         symbol: str,
         trade_date: datetime,
         order_type: str,  # 'MARKET', 'LIMIT', 'STOP'
-        action: str,      # 'BUY', 'SELL'
+        action: str,  # 'BUY', 'SELL'
         quantity: int,
         price: Optional[Decimal] = None,  # For LIMIT/STOP orders
-        strategy_id: Optional[int] = None
+        strategy_id: Optional[int] = None,
     ):
         super().__init__(EventType.ORDER)
         self.symbol = symbol
@@ -128,16 +134,17 @@ class FillEvent(Event):
 
     订单执行后的成交记录
     """
+
     def __init__(
         self,
         symbol: str,
         trade_date: datetime,
-        action: str,           # 'BUY', 'SELL'
+        action: str,  # 'BUY', 'SELL'
         quantity: int,
-        fill_price: Decimal,   # 实际成交价格
-        commission: Decimal,   # 手续费
-        slippage: Decimal = Decimal('0'),  # 滑点
-        strategy_id: Optional[int] = None
+        fill_price: Decimal,  # 实际成交价格
+        commission: Decimal,  # 手续费
+        slippage: Decimal = Decimal("0"),  # 滑点
+        strategy_id: Optional[int] = None,
     ):
         super().__init__(EventType.FILL)
         self.symbol = symbol
@@ -164,12 +171,13 @@ class ProgressEvent(Event):
     """
     进度更新事件（用于WebSocket推送）
     """
+
     def __init__(
         self,
         backtest_id: int,
         progress: float,  # 0-100
         current_date: datetime,
-        message: str
+        message: str,
     ):
         super().__init__(EventType.MARKET)  # 复用MARKET类型
         self.backtest_id = backtest_id
@@ -180,9 +188,9 @@ class ProgressEvent(Event):
     def to_dict(self):
         """转换为字典用于JSON序列化"""
         return {
-            'backtest_id': self.backtest_id,
-            'progress': round(self.progress, 2),
-            'current_date': self.current_date.isoformat(),
-            'message': self.message,
-            'timestamp': self.timestamp.isoformat()
+            "backtest_id": self.backtest_id,
+            "progress": round(self.progress, 2),
+            "current_date": self.current_date.isoformat(),
+            "message": self.message,
+            "timestamp": self.timestamp.isoformat(),
         }

@@ -1,0 +1,566 @@
+# GitHub Actions: AI Test Optimization Integration
+# AI测试优化器集成工作流
+
+name: AI Test Optimization
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [ develop ]
+  schedule:
+    # 每周一上午9点运行全量分析
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: '分析范围'
+        required: true
+        default: 'changed'
+        type: choice
+        options:
+        - changed
+        - core
+        - adapters
+        - monitoring
+        - all
+      generate_tests:
+        description: '生成测试代码'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.12'
+  AI_OPTIMIZER_CACHE_DIR: /tmp/ai_optimizer_cache
+
+jobs:
+  # 检测变更文件
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    outputs:
+      python-files: ${{ steps.changes.outputs.python-files }}
+      has-python-changes: ${{ steps.changes.outputs.has-python-changes }}
+      core-changed: ${{ steps.changes.outputs.core-changed }}
+      adapters-changed: ${{ steps.changes.outputs.adapters-changed }}
+      monitoring-changed: ${{ steps.changes.outputs.monitoring-changed }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Detect Python file changes
+      id: changes
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # PR模式：比较PR分支与目标分支
+          BASE_BRANCH=${{ github.base_ref }}
+          echo "Analyzing changes against $BASE_BRANCH"
+
+          # 获取变更的Python文件
+          CHANGED_FILES=$(git diff --name-only origin/$BASE_BRANCH...HEAD | grep '\.py$' || echo "")
+          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+          # 检查是否有Python文件变更
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "has-python-changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-python-changes=false" >> $GITHUB_OUTPUT
+          fi
+
+          # 检查特定目录变更
+          if echo "$CHANGED_FILES" | grep -q "src/core/"; then
+            echo "core-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "core-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -q "src/adapters/"; then
+            echo "adapters-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "adapters-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -q "src/monitoring/"; then
+            echo "monitoring-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "monitoring-changed=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          # Push模式：比较当前提交与上一个提交
+          CHANGED_FILES=$(git diff --name-only HEAD~1 | grep '\.py$' || echo "")
+          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "has-python-changes=$(if [ -n "$CHANGED_FILES" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_OUTPUT
+        fi
+
+  # AI测试优化分析
+  ai-optimization:
+    name: AI Test Optimization Analysis
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      needs.detect-changes.outputs.has-python-changes == 'true'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov ast-tools memory-profiler
+
+    - name: Create cache directory
+      run: |
+        mkdir -p ${{ env.AI_OPTIMIZER_CACHE_DIR }}
+
+    - name: Determine analysis scope
+      id: scope
+      run: |
+        case "${{ github.event_name }}" in
+          "schedule")
+            SCOPE="all"
+            FILES="src/"
+            ;;
+          "workflow_dispatch")
+            SCOPE="${{ github.event.inputs.scope }}"
+            case "$SCOPE" in
+              "changed")
+                FILES="${{ needs.detect-changes.outputs.python-files }}"
+                ;;
+              "core")
+                FILES="src/core/"
+                ;;
+              "adapters")
+                FILES="src/adapters/"
+                ;;
+              "monitoring")
+                FILES="src/monitoring/"
+                ;;
+              "all")
+                FILES="src/"
+                ;;
+            esac
+            ;;
+          *)
+            FILES="${{ needs.detect-changes.outputs.python-files }}"
+            SCOPE="changed"
+            ;;
+        esac
+
+        echo "scope=$SCOPE" >> $GITHUB_OUTPUT
+        echo "files=$FILES" >> $GITHUB_OUTPUT
+        echo "Analysis scope: $SCOPE"
+        echo "Files to analyze: $FILES"
+
+    - name: Run AI Test Optimizer
+      id: optimizer
+      run: |
+        echo "🤖 Running AI Test Optimizer..."
+        echo "Scope: ${{ steps.scope.outputs.scope }}"
+        echo "Files: ${{ steps.scope.outputs.files }}"
+
+        # 构建命令参数
+        OPTIMIZER_CMD="python scripts/ai_test_optimizer.py"
+
+        if [ -n "${{ steps.scope.outputs.files }}" ]; then
+          OPTIMIZER_CMD="$OPTIMIZER_CMD ${{ steps.scope.outputs.files }}"
+        fi
+
+        OPTIMIZER_CMD="$OPTIMIZER_CMD --batch --verbose --output optimization-report.md"
+
+        # 添加测试生成参数（如果需要）
+        if [ "${{ github.event.inputs.generate_tests }}" = "true" ] || [ "${{ steps.scope.outputs.scope }}" = "all" ]; then
+          OPTIMIZER_CMD="$OPTIMIZER_CMD --generate-tests"
+        fi
+
+        # 运行优化器
+        echo "Running: $OPTIMIZER_CMD"
+
+        # 捕获输出和退出码
+        set +e
+        eval $OPTIMIZER_CMD 2>&1 | tee optimizer-output.log
+        OPTIMIZER_EXIT_CODE=$?
+        set -e
+
+        echo "Optimizer exit code: $OPTIMIZER_EXIT_CODE"
+        echo "optimizer-exit-code=$OPTIMIZER_EXIT_CODE" >> $GITHUB_OUTPUT
+
+        # 检查是否生成了报告
+        if [ -f optimization-report.md ]; then
+          echo "optimizer-report-generated=true" >> $GITHUB_OUTPUT
+          echo "✅ Optimization report generated"
+        else
+          echo "optimizer-report-generated=false" >> $GITHUB_OUTPUT
+          echo "❌ No optimization report generated"
+        fi
+
+        # 检查是否生成了测试
+        if [ -d ai_generated_tests ]; then
+          TEST_COUNT=$(find ai_generated_tests -name "*.py" | wc -l)
+          echo "optimizer-tests-generated=$TEST_COUNT" >> $GITHUB_OUTPUT
+          echo "✅ Generated $TEST_COUNT test files"
+        else
+          echo "optimizer-tests-generated=0" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Quality Gate Check
+      id: quality-gate
+      run: |
+        QUALITY_PASSED=true
+        QUALITY_ISSUES=""
+
+        if [ -f optimization-report.md ]; then
+          echo "🔍 Performing quality gate checks..."
+
+          # 检查低质量模块（质量评分 < 70）
+          LOW_QUALITY_COUNT=$(grep -c "质量评分: [0-6][0-9]\." optimization-report.md || echo "0")
+          echo "Low quality modules: $LOW_QUALITY_COUNT"
+
+          if [ "$LOW_QUALITY_COUNT" -gt 0 ]; then
+            QUALITY_PASSED=false
+            QUALITY_ISSUES="$QUALITY_ISSUES 发现 $LOW_QUALITY_COUNT 个低质量模块; "
+          fi
+
+          # 检查极低覆盖率模块（覆盖率 < 50%）
+          LOW_COVERAGE_COUNT=$(grep -c "当前覆盖率: [0-4][0-9]\." optimization-report.md || echo "0")
+          echo "Low coverage modules: $LOW_COVERAGE_COUNT"
+
+          if [ "$LOW_COVERAGE_COUNT" -gt 0 ]; then
+            QUALITY_PASSED=false
+            QUALITY_ISSUES="$QUALITY_ISSUES 发现 $LOW_COVERAGE_COUNT 个极低覆盖率模块; "
+          fi
+
+          # 检查复杂度问题
+          COMPLEXITY_ISSUES_COUNT=$(grep -c "复杂度" optimization-report.md || echo "0")
+          echo "Complexity issues: $COMPLEXITY_ISSUES_COUNT"
+
+          if [ "$COMPLEXITY_ISSUES_COUNT" -gt 5 ]; then
+            QUALITY_PASSED=false
+            QUALITY_ISSUES="$QUALITY_ISSUES 复杂度问题过多 ($COMPLEXITY_ISSUES_COUNT 个); "
+          fi
+        else
+          QUALITY_PASSED=false
+          QUALITY_ISSUES="未生成优化报告; "
+        fi
+
+        echo "quality-passed=$QUALITY_PASSED" >> $GITHUB_OUTPUT
+        echo "quality-issues=$QUALITY_ISSUES" >> $GITHUB_OUTPUT
+
+        if [ "$QUALITY_PASSED" = "true" ]; then
+          echo "✅ Quality gate passed"
+        else
+          echo "❌ Quality gate failed: $QUALITY_ISSUES"
+        fi
+
+    - name: Run Generated Tests
+      if: steps.optimizer.outputs.optimizer-tests-generated > 0
+      run: |
+        echo "🧪 Running generated tests..."
+
+        # 运行生成的测试
+        pytest ai_generated_tests/ -v --tb=short --junitxml=generated-tests-results.xml
+
+        # 生成覆盖率报告
+        pytest ai_generated_tests/ --cov=src --cov-report=xml --cov-report=html || echo "Coverage report generation completed with warnings"
+
+    - name: Upload Optimization Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: ai-optimization-report
+        path: |
+          optimization-report.md
+          optimizer-output.log
+        retention-days: 30
+
+    - name: Upload Generated Tests
+      uses: actions/upload-artifact@v3
+      if: steps.optimizer.outputs.optimizer-tests-generated > 0
+      with:
+        name: ai-generated-tests
+        path: ai_generated_tests/
+        retention-days: 7
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: steps.optimizer.outputs.optimizer-tests-generated > 0
+      with:
+        name: generated-tests-results
+        path: |
+          generated-tests-results.xml
+          htmlcov/
+        retention-days: 7
+
+    - name: Upload Coverage Reports
+      uses: codecov/codecov-action@v3
+      if: steps.optimizer.outputs.optimizer-tests-generated > 0
+      with:
+        files: ./coverage.xml
+        flags: ai-generated-tests
+        name: AI Generated Tests Coverage
+        fail_ci_if_error: false
+
+  # 质量门禁检查
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: ai-optimization
+    if: always() && (needs.ai-optimization.result == 'success' || needs.ai-optimization.result == 'failure')
+
+    outputs:
+      quality-pass: ${{ steps.gate.outputs.quality-pass }}
+
+    steps:
+    - name: Download optimization report
+      uses: actions/download-artifact@v3
+      with:
+        name: ai-optimization-report
+
+    - name: Quality Gate Evaluation
+      id: gate
+      run: |
+        if [ -f optimization-report.md ]; then
+          echo "📋 Analyzing optimization report..."
+
+          # 提取关键指标
+          AVG_COVERAGE=$(grep "平均覆盖率:" optimization-report.md | grep -o "[0-9.]*" || echo "0")
+          AVG_QUALITY=$(grep "平均质量评分:" optimization-report.md | grep -o "[0-9.]*" || echo "0")
+          NEEDS_OPTIMIZATION=$(grep -c "需要优化的模块:" optimization-report.md | grep -o "[0-9]*" || echo "0")
+
+          echo "Average coverage: ${AVG_COVERAGE}%"
+          echo "Average quality: ${AVG_QUALITY}/100"
+          echo "Modules needing optimization: ${NEEDS_OPTIMIZATION}"
+
+          # 质量门禁标准
+          MIN_COVERAGE=75
+          MIN_QUALITY=70
+          MAX_NEEDING_OPTIMIZATION=5
+
+          QUALITY_PASSED=true
+          GATE_ISSUES=""
+
+          # 检查覆盖率
+          if (( $(echo "$AVG_COVERAGE < $MIN_COVERAGE" | bc -l) )); then
+            QUALITY_PASSED=false
+            GATE_ISSUES="$GATE_ISSUES 覆盖率不达标 (${AVG_COVERAGE}% < ${MIN_COVERAGE}%); "
+          fi
+
+          # 检查质量评分
+          if (( $(echo "$AVG_QUALITY < $MIN_QUALITY" | bc -l) )); then
+            QUALITY_PASSED=false
+            GATE_ISSUES="$GATE_ISSUES 质量评分不达标 (${AVG_QUALITY} < ${MIN_QUALITY}); "
+          fi
+
+          # 检查需要优化的模块数
+          if [ "$NEEDS_OPTIMIZATION" -gt "$MAX_NEEDING_OPTIMIZATION" ]; then
+            QUALITY_PASSED=false
+            GATE_ISSUES="$GATE_ISSUES 需要优化的模块过多 (${NEEDS_OPTIMIZATION} > ${MAX_NEEDING_OPTIMIZATION}); "
+          fi
+
+          echo "quality-pass=$QUALITY_PASSED" >> $GITHUB_OUTPUT
+          echo "gate-issues=$GATE_ISSUES" >> $GITHUB_OUTPUT
+          echo "avg-coverage=$AVG_COVERAGE" >> $GITHUB_OUTPUT
+          echo "avg-quality=$AVG_QUALITY" >> $GITHUB_OUTPUT
+
+          if [ "$QUALITY_PASSED" = "true" ]; then
+            echo "✅ Quality gate passed"
+          else
+            echo "❌ Quality gate failed: $GATE_ISSUES"
+          fi
+        else
+          echo "quality-pass=false" >> $GITHUB_OUTPUT
+          echo "gate-issues=Optimization report not found" >> $GITHUB_OUTPUT
+          echo "❌ Quality gate failed: Optimization report not found"
+        fi
+
+  # PR评论（仅在PR时运行）
+  pr-comment:
+    name: PR Comment
+    runs-on: ubuntu-latest
+    needs: [ai-optimization, quality-gate]
+    if: github.event_name == 'pull_request' && (needs.ai-optimization.result == 'success' || needs.ai-optimization.result == 'failure')
+
+    steps:
+    - name: Download optimization report
+      uses: actions/download-artifact@v3
+      with:
+        name: ai-optimization-report
+
+    - name: Download test results
+      uses: actions/download-artifact@v3
+      if: needs.ai-optimization.outputs.optimizer-tests-generated > 0
+      with:
+        name: generated-tests-results
+
+    - name: Comment on PR
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+
+          // 读取优化报告
+          let reportContent = "";
+          let summary = "";
+          let details = "";
+
+          if (fs.existsSync('optimization-report.md')) {
+            reportContent = fs.readFileSync('optimization-report.md', 'utf8');
+
+            // 提取总体统计
+            const statsMatch = reportContent.match(/## 📊 总体统计[\s\S]*?(?=##|$)/);
+            if (statsMatch) {
+              summary += statsMatch[0] + '\n\n';
+            }
+
+            // 提取详细建议（限制长度）
+            const detailsMatch = reportContent.match(/## 📋 详细优化建议[\s\S]*?(?=##|$)/);
+            if (detailsMatch) {
+              // 只显示前3个模块的建议
+              const sections = detailsMatch[0].split('### ').slice(1, 4);
+              details += '### ' + sections.join('### ');
+            }
+          }
+
+          // 构建评论内容
+          let comment = `## 🤖 AI测试优化报告\n\n`;
+
+          if (summary) {
+            comment += summary;
+          }
+
+          // 添加质量门禁结果
+          const qualityPassed = '${{ needs.quality-gate.outputs.quality-pass }}' === 'true';
+          if (qualityPassed) {
+            comment += '### ✅ 质量门禁\n\n所有质量检查通过，代码可以合并。\n\n';
+          } else {
+            comment += '### ❌ 质量门禁\n\n';
+            comment += '代码质量检查未完全通过，请检查以下问题：\n';
+            comment += '- ${{ needs.quality-gate.outputs.gate-issues }}\n\n';
+          }
+
+          if (details) {
+            comment += details + '\n';
+          }
+
+          // 添加测试结果
+          if (fs.existsSync('generated-tests-results.xml')) {
+            comment += '### 🧪 生成的测试\n\n';
+            comment += '✅ 已生成并运行测试用例，详细结果请查看Actions报告。\n\n';
+          }
+
+          comment += `---\n\n`;
+          comment += `**📊 质量指标**\n`;
+          comment += `- 平均覆盖率: ${{ needs.quality-gate.outputs.avg-coverage }}%\n`;
+          comment += `- 平均质量评分: ${{ needs.quality-gate.outputs.avg-quality }}/100\n\n`;
+
+          comment += `📋 [查看完整报告](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+          comment += `🤖 [AI测试优化器文档](https://github.com/${{ github.repository }}/blob/main/docs/guides/AI_TEST_OPTIMIZER_USER_GUIDE.md)\n`;
+
+          // 检查是否已经评论过
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+
+          const botComment = comments.find(comment =>
+            comment.body.includes('🤖 AI测试优化报告') &&
+            comment.user.type === 'Bot'
+          );
+
+          if (botComment) {
+            // 更新现有评论
+            await github.rest.issues.updateComment({
+              comment_id: botComment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+            console.log('Updated existing AI optimization comment');
+          } else {
+            // 创建新评论
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: comment
+            });
+            console.log('Created new AI optimization comment');
+          }
+
+  # 总结报告
+  summary:
+    name: AI Optimization Summary
+    runs-on: ubuntu-latest
+    needs: [ai-optimization, quality-gate]
+    if: always()
+
+    steps:
+    - name: Download reports
+      uses: actions/download-artifact@v3
+      with:
+        name: ai-optimization-report
+
+    - name: Generate Summary
+      run: |
+        echo "📊 AI测试优化执行摘要"
+        echo "=========================="
+        echo "执行时间: $(date)"
+        echo "仓库: ${{ github.repository }}"
+        echo "分支: ${{ github.ref_name }}"
+        echo "事件: ${{ github.event_name }}"
+        echo ""
+
+        if [ -f optimization-report.md ]; then
+          echo "✅ 优化报告生成成功"
+
+          # 提取关键信息
+          echo "📈 关键指标:"
+          grep -E "(平均覆盖率|平均质量评分|需要优化的模块)" optimization-report.md | sed 's/^/- /'
+
+          echo ""
+          echo "🎯 质量门禁结果:"
+          if [ "${{ needs.quality-gate.outputs.quality-pass }}" = "true" ]; then
+            echo "✅ 质量门禁通过"
+          else
+            echo "❌ 质量门禁失败"
+            echo "问题: ${{ needs.quality-gate.outputs.gate-issues }}"
+          fi
+
+          echo ""
+          echo "📋 生成的文件:"
+          if [ "${{ needs.ai-optimization.outputs.optimizer-tests-generated }}" -gt 0 ]; then
+            echo "- 测试文件: ${{ needs.ai-optimization.outputs.optimizer-tests-generated }} 个"
+          fi
+          echo "- 优化报告: optimization-report.md"
+        else
+          echo "❌ 未生成优化报告"
+        fi
+
+        echo ""
+        echo "🔗 详细报告:"
+        echo "- Actions运行: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        echo "- 优化报告: 查看上传的artifacts"

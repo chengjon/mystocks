@@ -5,9 +5,8 @@
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional
-import re
+from datetime import datetime
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +119,9 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
+            "critical_queries": sum(
+                1 for q in slow_queries if q["severity"] == "CRITICAL"
+            ),
             "high_priority_queries": sum(
                 1 for q in slow_queries if q["severity"] == "HIGH"
             ),
@@ -217,7 +218,9 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
+            "critical_queries": sum(
+                1 for q in slow_queries if q["severity"] == "CRITICAL"
+            ),
             "high_priority_queries": sum(
                 1 for q in slow_queries if q["severity"] == "HIGH"
             ),
@@ -285,9 +288,7 @@ class SlowQueryAnalyzer:
                     "impact": "Requires sorting entire result set",
                 }
             )
-            optimization_suggestions.append(
-                "Create index on GROUP BY columns"
-            )
+            optimization_suggestions.append("Create index on GROUP BY columns")
 
         return {
             "query": query[:100] + "..." if len(query) > 100 else query,

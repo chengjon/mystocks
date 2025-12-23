@@ -191,7 +191,7 @@ class DatabasePerformanceMonitor:
 
             if removed_metrics > 0 or removed_alerts > 0:
                 logger.info(
-                    f"🧹 Cleaned up metrics and alerts",
+                    "🧹 Cleaned up metrics and alerts",
                     removed_metrics=removed_metrics,
                     removed_alerts=removed_alerts,
                 )
@@ -358,9 +358,7 @@ class DatabasePerformanceMonitor:
 
     def get_recent_alerts(self, limit: int = 100) -> List[Dict[str, Any]]:
         """获取最近告警"""
-        recent = sorted(
-            self.slow_query_alerts, key=lambda x: x.timestamp, reverse=True
-        )
+        recent = sorted(self.slow_query_alerts, key=lambda x: x.timestamp, reverse=True)
         return [a.to_dict() for a in recent[:limit]]
 
     def get_table_performance(self) -> Dict[str, Dict[str, Any]]:

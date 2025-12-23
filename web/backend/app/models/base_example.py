@@ -5,11 +5,10 @@
 """
 
 from typing import List, Dict
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query
 from app.models.base import (
     BaseResponse,
     PagedResponse,
-    ErrorResponse,
     HealthCheckResponse,
     success_response,
     error_response,

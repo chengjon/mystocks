@@ -3,6 +3,7 @@ Random Search Optimizer
 
 随机搜索优化器 - 随机采样参数组合
 """
+
 from typing import Dict, Any, List, Optional
 import random
 import logging
@@ -11,7 +12,7 @@ import time
 from app.backtest.optimization.base import (
     BaseOptimizer,
     OptimizationResult,
-    ParameterSpace
+    ParameterSpace,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,10 +34,10 @@ class RandomSearchOptimizer(BaseOptimizer):
         self,
         strategy_type: str,
         parameter_spaces: List[ParameterSpace],
-        objective: str = 'sharpe_ratio',
+        objective: str = "sharpe_ratio",
         maximize: bool = True,
         n_iterations: int = 100,
-        random_seed: Optional[int] = None
+        random_seed: Optional[int] = None,
     ):
         """
         初始化随机搜索优化器
@@ -74,9 +75,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         return params
 
     def _generate_unique_parameters(
-        self,
-        existing: List[Dict[str, Any]],
-        max_attempts: int = 100
+        self, existing: List[Dict[str, Any]], max_attempts: int = 100
     ) -> Optional[Dict[str, Any]]:
         """
         生成唯一的参数组合 (避免重复)
@@ -110,7 +109,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         early_stop: bool = True,
         patience: int = 20,
         min_improvement: float = 0.001,
-        **kwargs
+        **kwargs,
     ) -> List[OptimizationResult]:
         """
         执行随机搜索优化
@@ -125,7 +124,9 @@ class RandomSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info(f"开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}")
+        logger.info(
+            f"开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}"
+        )
 
         start_time = time.time()
 
@@ -165,7 +166,9 @@ class RandomSearchOptimizer(BaseOptimizer):
 
             # 日志
             current_score = result.get_score(self.objective)
-            best_score = self.best_result.get_score(self.objective) if self.best_result else 0
+            best_score = (
+                self.best_result.get_score(self.objective) if self.best_result else 0
+            )
 
             if (iteration + 1) % 10 == 0 or iteration == 0:
                 logger.info(
@@ -208,7 +211,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         market_data: Dict[str, Any] = None,
         n_restarts: int = 3,
         iterations_per_restart: int = None,
-        **kwargs
+        **kwargs,
     ) -> List[OptimizationResult]:
         """
         带重启的随机搜索
@@ -254,8 +257,9 @@ class RandomSearchOptimizer(BaseOptimizer):
                 else:
                     score = self.best_result.get_score(self.objective)
                     best_score = best_overall.get_score(self.objective)
-                    if (self.maximize and score > best_score) or \
-                       (not self.maximize and score < best_score):
+                    if (self.maximize and score > best_score) or (
+                        not self.maximize and score < best_score
+                    ):
                         best_overall = self.best_result
 
             # 恢复迭代次数
@@ -314,14 +318,17 @@ class RandomSearchOptimizer(BaseOptimizer):
         scores = [r.get_score(self.objective) for r in self.results]
 
         return {
-            'total_explored': len(self.results),
-            'unique_combinations': len(self.results),  # 随机搜索都是唯一的
-            'score_mean': sum(scores) / len(scores),
-            'score_std': (sum((s - sum(scores)/len(scores))**2 for s in scores) / len(scores)) ** 0.5,
-            'score_min': min(scores),
-            'score_max': max(scores),
-            'convergence_iteration': self._find_convergence_point(),
-            'random_seed': self.random_seed
+            "total_explored": len(self.results),
+            "unique_combinations": len(self.results),  # 随机搜索都是唯一的
+            "score_mean": sum(scores) / len(scores),
+            "score_std": (
+                sum((s - sum(scores) / len(scores)) ** 2 for s in scores) / len(scores)
+            )
+            ** 0.5,
+            "score_min": min(scores),
+            "score_max": max(scores),
+            "convergence_iteration": self._find_convergence_point(),
+            "random_seed": self.random_seed,
         }
 
     def _find_convergence_point(self, threshold: float = 0.01) -> int:

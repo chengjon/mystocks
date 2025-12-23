@@ -3,10 +3,9 @@
 提供模型训练、预测、评估等功能
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import Dict, Any, List
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
 import os
-from pathlib import Path
 
 from app.schemas.ml_schemas import (
     TdxDataRequest,
@@ -24,8 +23,6 @@ from app.schemas.ml_schemas import (
     HyperparameterSearchResponse,
     ModelEvaluationRequest,
     ModelEvaluationResponse,
-    MLResponse,
-    ErrorResponse,
 )
 from app.services.tdx_parser_service import TdxDataService
 from app.services.feature_engineering_service import FeatureEngineeringService

@@ -9,9 +9,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
 from decimal import Decimal
-from datetime import datetime, timedelta
 
 from app.services.data_aggregation_service import (
     Tick,
@@ -20,7 +18,6 @@ from app.services.data_aggregation_service import (
     TimeframeBuffer,
     BarValidator,
     AggregationEngine,
-    TIMEFRAME_SECONDS,
     get_aggregation_engine,
     reset_aggregation_engine,
 )

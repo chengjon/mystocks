@@ -1,0 +1,1525 @@
+项目文件整理报告
+===================
+生成时间: Mon Dec 15 08:23:12 CST 2025
+项目路径: .
+模式: 试运行
+
+目录结构:
+.
+├── AGENTS.md
+├── ARCHIVED.md
+├── CLAUDE.md
+├── CODE_COMPLETENESS_REPORT.md
+├── CODE_SIZE_OPTIMIZATION_REPORT.md
+├── IFLOW.md
+├── IMPLEMENTATION_GUIDE.md
+├── LICENSE
+├── PORT_CONFIGURATION.md
+├── README.md
+├── SYSTEM_OPTIMIZATION_PLAN.md
+├── TECHNICAL_DEBT_ANALYSIS_REPORT.md
+├── TEST_COVERAGE_SUMMARY.md
+├── WEB_AUTOMATION_TEST_PLAN.md
+├── WEB_PAGES_DOCUMENTATION.md
+├── __init__.py
+├── ai_alerts.log
+├── ai_automation_analysis_1763426351.json
+├── ai_strategy_analysis_result.json
+├── bandit_report.json
+├── bug-reports-backup.jsonl
+├── calcu
+│   ├── block
+│   │   └── 板块表现算法.md
+│   ├── readme.md
+│   └── yield
+├── code_quality_report.json
+├── config
+│   ├── TDX目录规则 .md
+│   ├── __init__.py
+│   ├── adapter_priority_config.yaml
+│   ├── ai_automation_config.yaml
+│   ├── alertmanager.yml
+│   ├── alerts
+│   │   └── mystocks-alerts.yml
+│   ├── automation_config.yaml
+│   ├── cache_optimization_config.yaml
+│   ├── calendars
+│   │   ├── day.txt
+│   │   └── day_future.txt
+│   ├── data_sources.json
+│   ├── disaster_recovery_config.yaml
+│   ├── docker-compose.tdengine.yml
+│   ├── docker-compose.test.yml
+│   ├── grafana-dashboard-provider.yml
+│   ├── grafana-datasource.yml
+│   ├── grafana_dashboard.json
+│   ├── lnav
+│   │   ├── formats
+│   │   ├── mystocks_config.json
+│   │   └── mystocks_log.json
+│   ├── lnav_formats.json
+│   ├── logging_config.py
+│   ├── mypy.ini
+│   ├── prometheus.yml
+│   ├── pytest.ini
+│   ├── realtime_market_config.env
+│   ├── redis_fixation_config.env
+│   ├── setup.cfg
+│   ├── simple_config.env
+│   ├── strategy_config.yaml
+│   ├── table_config.yaml
+│   ├── table_config.yaml.backup_20251108
+│   ├── tdengine_optimization_config.yaml
+│   └── tmux.conf
+├── data
+│   ├── cache
+│   ├── models
+│   │   ├── sh000001_demo.pkl
+│   │   ├── test_integration.pkl
+│   │   └── test_predictor.pkl
+│   ├── recovery_queue.db
+│   └── {backups}
+├── data_source_calls.log
+├── directory-structure-report.txt
+├── docs
+│   ├── 01-项目总览与核心规范
+│   │   ├── README.md
+│   │   ├── 开发与安全规范.md
+│   │   ├── 开发工具链指南.md
+│   │   └── 项目总览.md
+│   ├── 02-架构与设计文档
+│   │   ├── ML集成完成报告.md
+│   │   ├── Mock数据系统指南.md
+│   │   ├── README.md
+│   │   ├── 备份策略架构优化.md
+│   │   ├── 如何添加数据分类.md
+│   │   └── 数据源架构设计.md
+│   ├── 03-API与功能文档
+│   │   ├── API接口对齐报告.md
+│   │   ├── README.md
+│   │   ├── WENCAI实施完成报告.md
+│   │   └── Web访问指南.md
+│   ├── 04-测试与质量保障文档
+│   │   ├── README.md
+│   │   ├── 常见测试问题与解决方案.md
+│   │   ├── 技术债务分析报告.md
+│   │   ├── 测试价值分析报告.md
+│   │   └── 测试策略与规范.md
+│   ├── 05-部署与运维监控文档
+│   │   ├── README.md
+│   │   ├── 数据同步故障排除.md
+│   │   ├── 日志查看工具集成.md
+│   │   └── 运维效果分析报告.md
+│   ├── 06-项目管理与报告
+│   │   ├── README.md
+│   │   ├── 代码优化执行报告.md
+│   │   ├── 历史指南
+│   │   ├── 文档优化完成报告.md
+│   │   ├── 文档优化计划.md
+│   │   ├── 文档清理完成报告.md
+│   │   ├── 文档管理指南.md
+│   │   ├── 文档结构说明.md
+│   │   ├── 文档迁移计划.md
+│   │   ├── 文档验证报告.md
+│   │   ├── 项目状态报告.md
+│   │   └── 项目进度追踪与风险管控.md
+│   ├── AGENTS.md
+│   ├── CHANGELOG.md
+│   ├── CLAUDE.md
+│   ├── IFLOW.md
+│   ├── api
+│   │   ├── AGENTS_AUDIT_REPORT.md
+│   │   ├── AGENTS_QUICK_REFERENCE.md
+│   │   ├── FINAL_AGENTS_CLEANUP_REPORT.md
+│   │   ├── README.md
+│   │   ├── TECHNICAL_DEBT_ANALYSIS_REPORT.md
+│   │   └── WEB_PAGES_API_MAPPING.md
+│   ├── database
+│   ├── guides
+│   │   ├── AGENTS_CLEANUP_COMPLETION_SUMMARY.md
+│   │   ├── AGENTS_CLEANUP_FINAL_STATUS.md
+│   │   ├── AGENTS_DOCUMENTATION_INDEX.md
+│   │   ├── CLAUDE_AGENTS_SUMMARY.md
+│   │   ├── CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md
+│   │   ├── SECURITY_CI_CD_INTEGRATION.md
+│   │   ├── SECURITY_CODING_STANDARDS.md
+│   │   ├── SECURITY_TESTING_GUIDELINES.md
+│   │   ├── STOCKS_SPEC_COMMAND_GUIDE.md
+│   │   ├── database_indexes_report.md
+│   │   ├── hook-analysis-report.md
+│   │   └── hook-optimization-summary.md
+│   ├── reports
+│   │   ├── CODE_REVIEW_FINDINGS.md
+│   │   └── MENU_CONFIGURATION_MERGE_REPORT.md
+│   ├── security
+│   └── 归档文档
+│       ├── README.md
+│       ├── 临时文档
+│       ├── 旧API文档
+│       ├── 旧功能文档
+│       ├── 旧报告文档
+│       ├── 旧架构文档
+│       ├── 旧标准文档
+│       ├── 旧测试文档
+│       ├── 旧设计文档
+│       └── 旧部署文档
+├── ecosystem.config.js
+├── ecosystem.production.config.js
+├── examples
+│   ├── adapter_refactoring_example.py
+│   ├── automation_example.py
+│   ├── data_source_usage_example.py
+│   ├── mock_data_demo.py
+│   ├── monitoring_decoupling_example.py
+│   ├── tdx_import_example.py
+│   └── tdx_usage_examples.py
+├── file-organization-report.txt
+├── financial_adapter.log
+├── first_wins
+├── flake8_report.txt
+├── gpu_ai_integration_report.json
+├── htmlcov
+│   ├── class_index.html
+│   ├── coverage_html_cb_6fb7b396.js
+│   ├── favicon_32_cb_58284776.png
+│   ├── function_index.html
+│   ├── index.html
+│   ├── keybd_closed_cb_ce680311.png
+│   ├── status.json
+│   ├── style_cb_6b508a39.css
+│   ├── z_01270a9997bd102e___init___py.html
+│   ├── z_01270a9997bd102e_routes_py.html
+│   ├── z_0618756b1ff51bca___init___py.html
+│   ├── z_0618756b1ff51bca_batch_failure_strategy_py.html
+│   ├── z_0618756b1ff51bca_classification_root_py.html
+│   ├── z_0618756b1ff51bca_config_driven_table_manager_py.html
+│   ├── z_0618756b1ff51bca_config_loader_py.html
+│   ├── z_0618756b1ff51bca_data_classification_py.html
+│   ├── z_0618756b1ff51bca_data_manager_py.html
+│   ├── z_0618756b1ff51bca_exceptions_py.html
+│   ├── z_0618756b1ff51bca_logging_py.html
+│   ├── z_0618756b1ff51bca_unified_manager_py.html
+│   ├── z_07a9cb3e6c8c2aa5___init___py.html
+│   ├── z_07a9cb3e6c8c2aa5_postgresql_access_py.html
+│   ├── z_07a9cb3e6c8c2aa5_tdengine_access_py.html
+│   ├── z_0aa0ffbeb19dd445___init___py.html
+│   ├── z_0aa0ffbeb19dd445_routes_py.html
+│   ├── z_145eef247bfb46b6___init___py.html
+│   ├── z_145eef247bfb46b6_core_py.html
+│   ├── z_145eef247bfb46b6_data_access_py.html
+│   ├── z_145eef247bfb46b6_monitoring_py.html
+│   ├── z_145eef247bfb46b6_unified_manager_py.html
+│   ├── z_1a32a2480bee56e8___init___py.html
+│   ├── z_1a32a2480bee56e8_main_py.html
+│   ├── z_1a32a2480bee56e8_openapi_config_py.html
+│   ├── z_1ed4f8546fe0f548___init___py.html
+│   ├── z_1ed4f8546fe0f548_feature_engineering_py.html
+│   ├── z_1ed4f8546fe0f548_ml_strategy_py.html
+│   ├── z_1ed4f8546fe0f548_price_predictor_py.html
+│   ├── z_229de9cde8889e19___init___py.html
+│   ├── z_229de9cde8889e19_stock_strategies_py.html
+│   ├── z_229de9cde8889e19_strategy_base_py.html
+│   ├── z_3117475a4eb9d633___init___py.html
+│   ├── z_3117475a4eb9d633_backtest_tasks_py.html
+│   ├── z_3117475a4eb9d633_data_sync_py.html
+│   ├── z_3117475a4eb9d633_market_data_py.html
+│   ├── z_3117475a4eb9d633_wencai_tasks_py.html
+│   ├── z_3244967df01e8d54___init___py.html
+│   ├── z_3244967df01e8d54_business_mock_py.html
+│   ├── z_3244967df01e8d54_relational_mock_py.html
+│   ├── z_3244967df01e8d54_timeseries_mock_py.html
+│   ├── z_3cfb39343f61fa3d_cache_eviction_py.html
+│   ├── z_3cfb39343f61fa3d_cache_integration_py.html
+│   ├── z_3cfb39343f61fa3d_cache_manager_py.html
+│   ├── z_3cfb39343f61fa3d_cache_prewarming_py.html
+│   ├── z_3cfb39343f61fa3d_cache_utils_py.html
+│   ├── z_3cfb39343f61fa3d_config_py.html
+│   ├── z_3cfb39343f61fa3d_data_formats_py.html
+│   ├── z_3cfb39343f61fa3d_database_py.html
+│   ├── z_3cfb39343f61fa3d_reconnection_manager_py.html
+│   ├── z_3cfb39343f61fa3d_security_py.html
+│   ├── z_3cfb39343f61fa3d_socketio_manager_py.html
+│   ├── z_3cfb39343f61fa3d_sse_manager_py.html
+│   ├── z_3cfb39343f61fa3d_tdengine_manager_py.html
+│   ├── z_3cfb39343f61fa3d_tdengine_pool_py.html
+│   ├── z_4e655627e8308d6f_announcement_service_py.html
+│   ├── z_4e655627e8308d6f_data_service_py.html
+│   ├── z_4e655627e8308d6f_email_service_py.html
+│   ├── z_4e655627e8308d6f_feature_engineering_service_py.html
+│   ├── z_4e655627e8308d6f_indicator_calculator_py.html
+│   ├── z_4e655627e8308d6f_indicator_registry_py.html
+│   ├── z_4e655627e8308d6f_market_data_service_py.html
+│   ├── z_4e655627e8308d6f_market_data_service_v2_py.html
+│   ├── z_4e655627e8308d6f_ml_prediction_service_py.html
+│   ├── z_4e655627e8308d6f_monitoring_service_py.html
+│   ├── z_4e655627e8308d6f_multi_source_manager_py.html
+│   ├── z_4e655627e8308d6f_realtime_streaming_service_py.html
+│   ├── z_4e655627e8308d6f_stock_search_service_py.html
+│   ├── z_4e655627e8308d6f_strategy_service_py.html
+│   ├── z_4e655627e8308d6f_task_manager_py.html
+│   ├── z_4e655627e8308d6f_tdx_parser_service_py.html
+│   ├── z_4e655627e8308d6f_tdx_service_py.html
+│   ├── z_4e655627e8308d6f_technical_analysis_service_py.html
+│   ├── z_4e655627e8308d6f_tradingview_widget_service_py.html
+│   ├── z_4e655627e8308d6f_watchlist_service_py.html
+│   ├── z_4e655627e8308d6f_wencai_service_py.html
+│   ├── z_524b34ad92908d17___init___py.html
+│   ├── z_524b34ad92908d17_api_consistency_checker_py.html
+│   ├── z_524b34ad92908d17_contract_engine_py.html
+│   ├── z_524b34ad92908d17_report_generator_py.html
+│   ├── z_524b34ad92908d17_spec_validator_py.html
+│   ├── z_524b34ad92908d17_test_hooks_py.html
+│   ├── z_52ff6c46db01ba29___init___py.html
+│   ├── z_52ff6c46db01ba29_talib_wrapper_py.html
+│   ├── z_52ff6c46db01ba29_tdx_functions_py.html
+│   ├── z_59316e99a4994648_base_schemas_py.html
+│   ├── z_59316e99a4994648_indicator_request_py.html
+│   ├── z_59316e99a4994648_indicator_response_py.html
+│   ├── z_59316e99a4994648_market_schemas_py.html
+│   ├── z_59316e99a4994648_ml_schemas_py.html
+│   ├── z_59316e99a4994648_tdx_schemas_py.html
+│   ├── z_59316e99a4994648_wencai_schemas_py.html
+│   ├── z_5bcf113b662d6d69___init___py.html
+│   ├── z_5bcf113b662d6d69_base_py.html
+│   ├── z_5bcf113b662d6d69_genetic_py.html
+│   ├── z_5bcf113b662d6d69_grid_search_py.html
+│   ├── z_5bcf113b662d6d69_random_search_py.html
+│   ├── z_67184d388fcfae1e___init___py.html
+│   ├── z_67184d388fcfae1e_routes_py.html
+│   ├── z_68eb92ab90433819___init___py.html
+│   ├── z_68eb92ab90433819_announcement_py.html
+│   ├── z_68eb92ab90433819_base_example_py.html
+│   ├── z_68eb92ab90433819_base_py.html
+│   ├── z_68eb92ab90433819_dashboard_py.html
+│   ├── z_68eb92ab90433819_indicator_config_py.html
+│   ├── z_68eb92ab90433819_market_data_py.html
+│   ├── z_68eb92ab90433819_monitoring_py.html
+│   ├── z_68eb92ab90433819_schemas_py.html
+│   ├── z_68eb92ab90433819_strategy_py.html
+│   ├── z_68eb92ab90433819_strategy_schemas_py.html
+│   ├── z_68eb92ab90433819_sync_message_py.html
+│   ├── z_68eb92ab90433819_task_py.html
+│   ├── z_68eb92ab90433819_websocket_message_py.html
+│   ├── z_68eb92ab90433819_wencai_data_py.html
+│   ├── z_6e971d0aa22d9363___init___py.html
+│   ├── z_6e971d0aa22d9363_business_data_source_py.html
+│   ├── z_6e971d0aa22d9363_data_source_interface_py.html
+│   ├── z_6e971d0aa22d9363_data_source_py.html
+│   ├── z_6e971d0aa22d9363_refactored_interfaces_py.html
+│   ├── z_6e971d0aa22d9363_relational_data_source_py.html
+│   ├── z_6e971d0aa22d9363_timeseries_data_source_py.html
+│   ├── z_7530dad8cd1eb93b___init___py.html
+│   ├── z_7530dad8cd1eb93b_ai_alert_manager_py.html
+│   ├── z_7530dad8cd1eb93b_ai_realtime_monitor_py.html
+│   ├── z_7530dad8cd1eb93b_alert_history_py.html
+│   ├── z_7530dad8cd1eb93b_alert_manager_py.html
+│   ├── z_7530dad8cd1eb93b_alert_notifier_py.html
+│   ├── z_7530dad8cd1eb93b_data_quality_monitor_py.html
+│   ├── z_7530dad8cd1eb93b_decoupled_monitoring_py.html
+│   ├── z_7530dad8cd1eb93b_gpu_integration_manager_py.html
+│   ├── z_7530dad8cd1eb93b_gpu_performance_optimizer_py.html
+│   ├── z_7530dad8cd1eb93b_intelligent_threshold_manager_py.html
+│   ├── z_7530dad8cd1eb93b_metrics_collector_py.html
+│   ├── z_7530dad8cd1eb93b_monitoring_database_py.html
+│   ├── z_7530dad8cd1eb93b_monitoring_service_py.html
+│   ├── z_7530dad8cd1eb93b_multi_channel_alert_manager_py.html
+│   ├── z_7530dad8cd1eb93b_performance_monitor_py.html
+│   ├── z_762715a5096110dd___init___py.html
+│   ├── z_762715a5096110dd_backtest_repository_py.html
+│   ├── z_762715a5096110dd_strategy_repository_py.html
+│   ├── z_7748faaab8bf852d_announcement_py.html
+│   ├── z_7748faaab8bf852d_auth_py.html
+│   ├── z_7748faaab8bf852d_backup_recovery_py.html
+│   ├── z_7748faaab8bf852d_cache_py.html
+│   ├── z_7748faaab8bf852d_data_py.html
+│   ├── z_7748faaab8bf852d_health_py.html
+│   ├── z_7748faaab8bf852d_indicators_py.html
+│   ├── z_7748faaab8bf852d_industry_concept_analysis_py.html
+│   ├── z_7748faaab8bf852d_market_py.html
+│   ├── z_7748faaab8bf852d_market_v2_py.html
+│   ├── z_7748faaab8bf852d_metrics_py.html
+│   ├── z_7748faaab8bf852d_ml_py.html
+│   ├── z_7748faaab8bf852d_monitoring_py.html
+│   ├── z_7748faaab8bf852d_multi_source_py.html
+│   ├── z_7748faaab8bf852d_notification_py.html
+│   ├── z_7748faaab8bf852d_prometheus_exporter_py.html
+│   ├── z_7748faaab8bf852d_risk_management_py.html
+│   ├── z_7748faaab8bf852d_sse_endpoints_py.html
+│   ├── z_7748faaab8bf852d_stock_search_py.html
+│   ├── z_7748faaab8bf852d_strategy_management_py.html
+│   ├── z_7748faaab8bf852d_strategy_py.html
+│   ├── z_7748faaab8bf852d_system_py.html
+│   ├── z_7748faaab8bf852d_tasks_py.html
+│   ├── z_7748faaab8bf852d_tdx_py.html
+│   ├── z_7748faaab8bf852d_technical_analysis_py.html
+│   ├── z_7748faaab8bf852d_test_announcement_api_py.html
+│   ├── z_7748faaab8bf852d_tradingview_py.html
+│   ├── z_7748faaab8bf852d_watchlist_py.html
+│   ├── z_7748faaab8bf852d_wencai_py.html
+│   ├── z_7b3351522505f850_pool_monitoring_py.html
+│   ├── z_7fbc33c0234e1ac6___init___py.html
+│   ├── z_7fbc33c0234e1ac6_base_py.html
+│   ├── z_7fbc33c0234e1ac6_mysql_py.html
+│   ├── z_7fbc33c0234e1ac6_postgresql_py.html
+│   ├── z_7fbc33c0234e1ac6_redis_py.html
+│   ├── z_7fbc33c0234e1ac6_tdengine_py.html
+│   ├── z_8796a0096d2d7a54___init___py.html
+│   ├── z_8796a0096d2d7a54_connection_manager_py.html
+│   ├── z_8796a0096d2d7a54_database_manager_py.html
+│   ├── z_8796a0096d2d7a54_db_utils_py.html
+│   ├── z_8a3204ddea6d6116___init___py.html
+│   ├── z_8a3204ddea6d6116_backup_manager_py.html
+│   ├── z_8a3204ddea6d6116_backup_scheduler_py.html
+│   ├── z_8a3204ddea6d6116_integrity_checker_py.html
+│   ├── z_8a3204ddea6d6116_recovery_manager_py.html
+│   ├── z_8b7ed8e96cad1236___init___py.html
+│   ├── z_8b7ed8e96cad1236_tick_receiver_py.html
+│   ├── z_8c6693128d30f47e___init___py.html
+│   ├── z_987cb8dbd7f58333___init___py.html
+│   ├── z_987cb8dbd7f58333_pdf_generator_py.html
+│   ├── z_99c1608d642d3d9e___init___py.html
+│   ├── z_99c1608d642d3d9e_adx_py.html
+│   ├── z_99c1608d642d3d9e_base_py.html
+│   ├── z_99c1608d642d3d9e_bollinger_breakout_py.html
+│   ├── z_99c1608d642d3d9e_breakout_py.html
+│   ├── z_99c1608d642d3d9e_cci_py.html
+│   ├── z_99c1608d642d3d9e_dual_ma_py.html
+│   ├── z_99c1608d642d3d9e_factory_py.html
+│   ├── z_99c1608d642d3d9e_grid_py.html
+│   ├── z_99c1608d642d3d9e_kdj_py.html
+│   ├── z_99c1608d642d3d9e_macd_py.html
+│   ├── z_99c1608d642d3d9e_mean_reversion_py.html
+│   ├── z_99c1608d642d3d9e_momentum_py.html
+│   ├── z_99c1608d642d3d9e_sar_py.html
+│   ├── z_99c1608d642d3d9e_turtle_py.html
+│   ├── z_9b08cca0c6ce8ade___init___py.html
+│   ├── z_9b08cca0c6ce8ade_akshare_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_akshare_proxy_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_baostock_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_byapi_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_customer_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_data_source_manager_py.html
+│   ├── z_9b08cca0c6ce8ade_financial_adapter_example_py.html
+│   ├── z_9b08cca0c6ce8ade_financial_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_tdx_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_test_customer_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_test_financial_adapter_py.html
+│   ├── z_9b08cca0c6ce8ade_test_simple_py.html
+│   ├── z_9b08cca0c6ce8ade_tushare_adapter_py.html
+│   ├── z_9bbebddf9106f61c___init___py.html
+│   ├── z_9d4a59eaa94404f3___init___py.html
+│   ├── z_9d4a59eaa94404f3_backtest_engine_py.html
+│   ├── z_9d4a59eaa94404f3_events_py.html
+│   ├── z_9d4a59eaa94404f3_execution_handler_py.html
+│   ├── z_9d4a59eaa94404f3_performance_metrics_py.html
+│   ├── z_9d4a59eaa94404f3_portfolio_manager_py.html
+│   ├── z_9d4a59eaa94404f3_risk_manager_py.html
+│   ├── z_9e122e40c3fa0521___init___py.html
+│   ├── z_9e122e40c3fa0521_baostock_importer_py.html
+│   ├── z_9e122e40c3fa0521_factory_py.html
+│   ├── z_9e122e40c3fa0521_mock_data_source_py.html
+│   ├── z_9e122e40c3fa0521_real_data_source_py.html
+│   ├── z_9e122e40c3fa0521_tdx_binary_parser_py.html
+│   ├── z_9e122e40c3fa0521_tdx_importer_py.html
+│   ├── z_9f5e9ce9939930b0___init___py.html
+│   ├── z_9f5e9ce9939930b0_connection_manager_py.html
+│   ├── z_9f5e9ce9939930b0_database_manager_py.html
+│   ├── z_9f5e9ce9939930b0_db_utils_py.html
+│   ├── z_9f5e9ce9939930b0_df2sql_py.html
+│   ├── z_9f5e9ce9939930b0_execute_example_mysql_only_py.html
+│   ├── z_9f5e9ce9939930b0_execute_example_py.html
+│   ├── z_9f5e9ce9939930b0_fix_database_connections_py.html
+│   ├── z_9f5e9ce9939930b0_fixed_example_py.html
+│   ├── z_9f5e9ce9939930b0_init_db_monitor_py.html
+│   ├── z_9f5e9ce9939930b0_save_realtime_market_data_offline_py.html
+│   ├── z_9f5e9ce9939930b0_save_realtime_market_data_py.html
+│   ├── z_9f5e9ce9939930b0_save_realtime_market_data_simple_py.html
+│   ├── z_9f5e9ce9939930b0_security_check_py.html
+│   ├── z_9f5e9ce9939930b0_test_database_menu_py.html
+│   ├── z_9f5e9ce9939930b0_test_jupyter_compatibility_py.html
+│   ├── z_9f5e9ce9939930b0_test_multi_directory_py.html
+│   ├── z_9f5e9ce9939930b0_test_simple_py.html
+│   ├── z_9f5e9ce9939930b0_test_tdengine_py.html
+│   ├── z_9f5e9ce9939930b0_validate_mystocks_architecture_py.html
+│   ├── z_a1dee01b5e353332___init___py.html
+│   ├── z_a1dee01b5e353332_circuit_breaker_py.html
+│   ├── z_a1dee01b5e353332_rate_limiter_py.html
+│   ├── z_a1dee01b5e353332_request_router_py.html
+│   ├── z_a1dee01b5e353332_request_transformer_py.html
+│   ├── z_a3e12ab1beeba5a2___init___py.html
+│   ├── z_a3e12ab1beeba5a2_backtest_visualizer_py.html
+│   ├── z_a3e12ab1beeba5a2_chart_generator_py.html
+│   ├── z_a3e12ab1beeba5a2_complete_example_py.html
+│   ├── z_a5fb6c4b92b99bb9___init___py.html
+│   ├── z_a5fb6c4b92b99bb9_backtest_engine_py.html
+│   ├── z_a5fb6c4b92b99bb9_performance_metrics_py.html
+│   ├── z_a5fb6c4b92b99bb9_risk_metrics_py.html
+│   ├── z_a5fb6c4b92b99bb9_vectorized_backtester_py.html
+│   ├── z_a842e2a8efb4920c___init___py.html
+│   ├── z_a842e2a8efb4920c_base_strategy_py.html
+│   ├── z_a842e2a8efb4920c_signal_manager_py.html
+│   ├── z_a842e2a8efb4920c_stock_screener_py.html
+│   ├── z_a842e2a8efb4920c_strategy_executor_py.html
+│   ├── z_aaa5e77aa80a7f7d___init___py.html
+│   ├── z_aaa5e77aa80a7f7d_coverage_report_py.html
+│   ├── z_aaa5e77aa80a7f7d_simple_coverage_check_py.html
+│   ├── z_aaa5e77aa80a7f7d_unified_mock_data_py.html
+│   ├── z_c02420289d778acb___init___py.html
+│   ├── z_cbed29eee4d42193___init___py.html
+│   ├── z_cbed29eee4d42193_notification_manager_py.html
+│   ├── z_cbed29eee4d42193_predefined_tasks_py.html
+│   ├── z_cbed29eee4d42193_scheduler_py.html
+│   ├── z_d026f51e51333d2e___init___py.html
+│   ├── z_d026f51e51333d2e_composite_business_py.html
+│   ├── z_d026f51e51333d2e_postgresql_relational_py.html
+│   ├── z_d026f51e51333d2e_tdengine_timeseries_py.html
+│   ├── z_d4dab79261f93a64___init___py.html
+│   ├── z_d4dab79261f93a64_akshare_py.html
+│   ├── z_d4dab79261f93a64_base_py.html
+│   ├── z_d4dab79261f93a64_data_access_py.html
+│   ├── z_d4dab79261f93a64_postgresql_py.html
+│   ├── z_d4dab79261f93a64_tdengine_py.html
+│   ├── z_da656cc43bf503b9___init___py.html
+│   ├── z_da656cc43bf503b9_performance_monitor_py.html
+│   ├── z_da656cc43bf503b9_postgresql_index_optimizer_py.html
+│   ├── z_da656cc43bf503b9_slow_query_analyzer_py.html
+│   ├── z_da656cc43bf503b9_tdengine_index_optimizer_py.html
+│   ├── z_e0d445f7b83e5a07___init___py.html
+│   ├── z_e0d445f7b83e5a07_routes_py.html
+│   ├── z_e6dbd10ac9192bf1___init___py.html
+│   ├── z_e6dbd10ac9192bf1_akshare_extension_py.html
+│   ├── z_e6dbd10ac9192bf1_base_py.html
+│   ├── z_e6dbd10ac9192bf1_cninfo_adapter_py.html
+│   ├── z_e6dbd10ac9192bf1_eastmoney_adapter_py.html
+│   ├── z_e6dbd10ac9192bf1_eastmoney_enhanced_py.html
+│   ├── z_e6dbd10ac9192bf1_tqlex_adapter_py.html
+│   ├── z_e6dbd10ac9192bf1_wencai_adapter_py.html
+│   ├── z_f1aa34bc7b1afc18_database_service_py.html
+│   ├── z_f1b38b22aeb65474___init___py.html
+│   ├── z_f1b38b22aeb65474_add_doc_metadata_py.html
+│   ├── z_f1b38b22aeb65474_add_python_headers_py.html
+│   ├── z_f1b38b22aeb65474_check_api_health_py.html
+│   ├── z_f1b38b22aeb65474_check_api_health_v2_py.html
+│   ├── z_f1b38b22aeb65474_check_db_health_py.html
+│   ├── z_f1b38b22aeb65474_column_mapper_py.html
+│   ├── z_f1b38b22aeb65474_data_format_converter_py.html
+│   ├── z_f1b38b22aeb65474_data_source_logger_py.html
+│   ├── z_f1b38b22aeb65474_data_source_validator_py.html
+│   ├── z_f1b38b22aeb65474_date_utils_py.html
+│   ├── z_f1b38b22aeb65474_db_connection_retry_py.html
+│   ├── z_f1b38b22aeb65474_error_handler_py.html
+│   ├── z_f1b38b22aeb65474_failure_recovery_queue_py.html
+│   ├── z_f1b38b22aeb65474_logging_config_py.html
+│   ├── z_f1b38b22aeb65474_symbol_utils_py.html
+│   ├── z_f1b38b22aeb65474_tdx_server_config_py.html
+│   ├── z_f1b38b22aeb65474_test_logs_api_py.html
+│   ├── z_f1b38b22aeb65474_validate_gitignore_py.html
+│   ├── z_f1b38b22aeb65474_validate_test_naming_py.html
+│   └── z_f9bb3bf387c1b34d___init___py.html
+├── latest_wins
+├── lnav
+│   ├── config.json
+│   └── formats.json
+├── load_test_reports
+│   ├── load_test_plan.json
+│   ├── load_test_scenarios.md
+│   ├── scenario_1_config.json
+│   ├── scenario_2_config.json
+│   ├── scenario_3_config.json
+│   └── scenario_4_config.json
+├── logs
+├── merge
+├── metrics
+│   ├── baseline_loc.txt
+│   ├── baseline_performance.json
+│   └── us3_performance_test.json
+├── mock_data_storage
+│   └── mock_data.db
+├── monitoring
+│   ├── alertmanager
+│   ├── grafana
+│   └── prometheus
+├── mypy.ini
+├── mypy_report.txt
+├── mystocks_system.log
+├── openspec
+│   ├── AGENTS.md
+│   ├── changes
+│   │   ├── archive
+│   │   ├── comprehensive-testing-solution
+│   │   ├── fix-current-tech-debt
+│   │   ├── implement-api-web-alignment
+│   │   └── technical-debt-remediation
+│   ├── project.md
+│   └── specs
+├── package-lock.json
+├── package.json
+├── phase1_completion_report.json
+├── playwright-report
+│   ├── data
+│   │   ├── 023d581e13635e3780b255a2a01e31d46a002207.png
+│   │   ├── 23547a31a999d845961ef42c93cd9c349d76b5f2.md
+│   │   ├── 7e4393669ee3b2f5a05a932be04f1950cd3143ca.webm
+│   │   ├── a9d711d4f204e6ea07d585f4f139ebf4063d7641.md
+│   │   ├── bc7fcadaf7bae02afea39b69e4138f34e21e7d2d.webm
+│   │   ├── c57490b793dce19dd314f6f1197fe543bde9111c.zip
+│   │   └── dc161e575c770a4e6964e5104f4e45c221f2d06e.png
+│   ├── index.html
+│   ├── test-results.json
+│   └── trace
+│       ├── assets
+│       ├── codeMirrorModule.C3UTv-Ge.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.ConWv5KN.css
+│       ├── index.BxQ34UMZ.js
+│       ├── index.C4Y3Aw8n.css
+│       ├── index.html
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.BWTwXl41.js
+│       ├── uiMode.Btcz36p_.css
+│       ├── uiMode.html
+│       └── xtermModule.DYP7pi_n.css
+├── playwright.config.simple.ts
+├── playwright.config.ts
+├── playwright.config.web.ts
+├── playwright.e2e.config.ts
+├── playwright.simple-e2e.config.ts
+├── pm2.config.js
+├── pylint-report-src.txt
+├── pylint_report.json
+├── pyproject.toml
+├── pytest.ini
+├── realtime_data_save.log
+├── reject
+├── reports
+│   ├── analysis
+│   │   ├── ai_automation_analysis_1763257896.json
+│   │   ├── ai_automation_analysis_1763259271.json
+│   │   ├── ai_automation_improvements_1763258018.json
+│   │   ├── ai_automation_improvements_1763260512.json
+│   │   ├── ai_automation_result.json
+│   │   ├── ai_monitoring_optimization_result.json
+│   │   ├── ai_performance_monitor.json
+│   │   ├── ai_realtime_monitoring.json
+│   │   ├── ai_strategy_analysis_result.json
+│   │   ├── automation_test_deployment_report.json
+│   │   ├── gpu_ai_integration_report.json
+│   │   ├── package-lock.json
+│   │   └── package.json
+│   ├── bandit_results.json
+│   ├── coverage.xml
+│   ├── e2e
+│   ├── final_scan.json
+│   ├── integration
+│   │   └── test-results.xml
+│   ├── metrics
+│   ├── performance
+│   │   └── baseline.txt
+│   ├── pip_audit_results.json
+│   ├── quick_scan.json
+│   ├── safety_results.json
+│   ├── security_scan_summary.md
+│   ├── semgrep_results.json
+│   ├── test-report.md
+│   ├── test_report.html
+│   └── unit
+│       └── test-results.xml
+├── requirements-mock.txt
+├── requirements-security.txt
+├── requirements.txt
+├── requirements_freeze.txt
+├── run_compliance_test.py
+├── safety_report.json
+├── scripts
+│   ├── README.md
+│   ├── ai_automation_workflow.py
+│   ├── ai_performance_monitor.py
+│   ├── analysis
+│   │   ├── __init__.py
+│   │   ├── classifier.py
+│   │   ├── detect_duplicates.py
+│   │   ├── generate_consolidation_guide.py
+│   │   ├── generate_docs.py
+│   │   ├── generate_optimization_roadmap.py
+│   │   ├── models.py
+│   │   ├── scan_codebase.py
+│   │   └── utils
+│   ├── automation
+│   │   ├── deploy.sh
+│   │   ├── health_check.sh
+│   │   ├── health_check_simple.sh
+│   │   ├── health_check_v2.sh
+│   │   ├── monitor.sh
+│   │   └── regression_test.sh
+│   ├── check_dependencies.sh
+│   ├── cicd_pipeline.sh
+│   ├── code_quality_check.py
+│   ├── data_sync
+│   │   ├── base_data_source.py
+│   │   ├── sync_concept_classify.py
+│   │   ├── sync_industry_classify.py
+│   │   ├── sync_minute_kline.py
+│   │   ├── sync_stock_basic.py
+│   │   ├── sync_stock_industry_concept.py
+│   │   └── sync_stock_kline.py
+│   ├── database
+│   │   ├── add_missing_indexes.sql
+│   │   ├── add_missing_indexes_fixed.sql
+│   │   ├── check_tdengine_tables.py
+│   │   ├── create_indexes_sql.sql
+│   │   ├── create_missing_indexes.py
+│   │   ├── create_realtime_quotes_table.py
+│   │   ├── final_index_optimization.sql
+│   │   ├── test_tdengine_simple.py
+│   │   ├── validate_indexes.py
+│   │   ├── verify_indexes.sql
+│   │   └── verify_tdengine_deployment.py
+│   ├── db
+│   │   ├── create_new_tables.py
+│   │   ├── migrations
+│   │   ├── performance_comparison_test.py
+│   │   ├── performance_test.py
+│   │   └── run_migration.py
+│   ├── deploy
+│   │   └── automation_test_deployment.py
+│   ├── dev
+│   │   ├── add_doc_metadata.py
+│   │   ├── add_python_headers.py
+│   │   ├── ai_automation_analyzer.py
+│   │   ├── ai_automation_improver.py
+│   │   ├── ai_monitoring_optimizer.py
+│   │   ├── ai_strategy_analyzer.py
+│   │   ├── alert_system_optimization.py
+│   │   ├── api_docs_completion.py
+│   │   ├── check-port-allocation.sh
+│   │   ├── check_api_health.py
+│   │   ├── check_api_health_v2.py
+│   │   ├── check_configuration_security.py
+│   │   ├── check_db_health.py
+│   │   ├── check_file_count.py
+│   │   ├── check_file_lines.py
+│   │   ├── check_file_sizes.py
+│   │   ├── check_file_syntax.py
+│   │   ├── check_hardcoded_secrets.py
+│   │   ├── check_password_policy.py
+│   │   ├── check_sql_injection.py
+│   │   ├── cleanup_temp_files.py
+│   │   ├── configs
+│   │   ├── debug_api_scan.py
+│   │   ├── debug_market_py.py
+│   │   ├── dev-environment.sh
+│   │   ├── execute_cleanup.py
+│   │   ├── execute_monitoring_merge.py
+│   │   ├── file_cleanup_analyzer.py
+│   │   ├── file_count_baseline.json
+│   │   ├── frontend_preparation_validation.py
+│   │   ├── generate_tests.py
+│   │   ├── get-docker.sh
+│   │   ├── git_commit_comments.txt
+│   │   ├── gpu_ai_integration.py
+│   │   ├── gpu_test_examples.py
+│   │   ├── hooks_production_validation.py
+│   │   ├── import_test_data.py
+│   │   ├── improved_realtime_validation.py
+│   │   ├── large_files_analyzer.py
+│   │   ├── merge_small_files.py
+│   │   ├── ml_feature_engineering_validation.py
+│   │   ├── monitoring_duplication_analyzer.py
+│   │   ├── realtime_streaming_validation.py
+│   │   ├── setup_lnav.sh
+│   │   ├── simplified_realtime_validation.py
+│   │   ├── small_files_analyzer.py
+│   │   ├── split_file.py
+│   │   ├── split_kline_dashboard.py
+│   │   ├── split_kline_dashboard_final.py
+│   │   ├── split_kline_dashboard_fixed.py
+│   │   ├── split_simple.py
+│   │   ├── start-dev-simple.sh
+│   │   ├── start-dev.sh
+│   │   ├── start-tmux-simple.sh
+│   │   ├── start_with_mock.sh
+│   │   ├── strategy_backtesting_validation.py
+│   │   ├── test_tmux.sh
+│   │   ├── test_tmux_fixed.sh
+│   │   ├── test_tmux_simple.sh
+│   │   ├── test_tmux_working.sh
+│   │   ├── test_toolchain.sh
+│   │   ├── tmux_session.sh
+│   │   ├── unify_logging.py
+│   │   ├── validate_documentation_consistency.py
+│   │   ├── validate_gitignore.py
+│   │   ├── validate_test_naming.py
+│   │   ├── verify_data_chain.sh
+│   │   └── 检查系统状态.py
+│   ├── generate_frontend_types.py
+│   ├── generate_mock_files.py
+│   ├── maintenance
+│   │   ├── check-structure.sh
+│   │   ├── organize-files.sh
+│   │   └── test-system.sh
+│   ├── migrate_mysql_to_postgresql.py
+│   ├── migrate_wencai_tables.py
+│   ├── monitoring
+│   │   └── mystocks_monitor.sh
+│   ├── populate_lhb_data.py
+│   ├── populate_stock_info.py
+│   ├── port_status.py
+│   ├── project
+│   │   ├── cleanup.sh
+│   │   ├── reorganize_project.sh
+│   │   ├── rollback_cleanup.sh
+│   │   └── update_imports.py
+│   ├── quick_validation.sh
+│   ├── run_test.sh
+│   ├── run_tests.sh
+│   ├── run_three_level_tests.sh
+│   ├── runtime
+│   │   ├── backup_recovery_cli.py
+│   │   ├── import_to_apifox.py
+│   │   ├── monitor_cache_stats.py
+│   │   ├── run_realtime_market_saver.py
+│   │   ├── save_realtime_data.py
+│   │   └── system_demo.py
+│   ├── security
+│   │   ├── basic_security_check.py
+│   │   ├── run_security_scan.sh
+│   │   ├── security_scanner.py
+│   │   └── validate_environment.py
+│   ├── setup_lnav.sh
+│   ├── setup_tmux_session.sh
+│   ├── stocks_spec.sh
+│   ├── test_all_endpoints.sh
+│   ├── test_api_fixes.sh
+│   ├── test_data_consistency.py
+│   ├── tests
+│   │   ├── LOAD_TESTING_GUIDE.md
+│   │   ├── LOAD_TEST_QUICK_REFERENCE.md
+│   │   ├── buger_integration_test.py
+│   │   ├── coverage.xml
+│   │   ├── demo_all_strategies.py
+│   │   ├── demo_backtest_features.py
+│   │   ├── demo_optimization.py
+│   │   ├── demo_strategy_templates.py
+│   │   ├── fix_fstring_syntax.py
+│   │   ├── load_test_locustfile.py
+│   │   ├── load_test_scenarios.py
+│   │   ├── load_test_user_behaviors.py
+│   │   ├── manage-test-env.sh
+│   │   ├── phase1_completion_summary.py
+│   │   ├── run-e2e-tests.sh
+│   │   ├── run-playwright-tests.sh
+│   │   ├── run-tests-no-docker.bat
+│   │   ├── run-tests-no-docker.sh
+│   │   ├── simple_websocket_test.py
+│   │   ├── test-env-checker.py
+│   │   ├── test_backup_recovery.py
+│   │   ├── test_composite_business_source.py
+│   │   ├── test_config_driven_table_manager.py
+│   │   ├── test_connection_pool.py
+│   │   ├── test_connection_pool_integration.py
+│   │   ├── test_contract_testing.py
+│   │   ├── test_customer_realtime_data.py
+│   │   ├── test_data_formats.py
+│   │   ├── test_database_optimization.py
+│   │   ├── test_dual_database_architecture.py
+│   │   ├── test_end_to_end_mock.py
+│   │   ├── test_enhanced_mock_data.py
+│   │   ├── test_financial_adapter.py
+│   │   ├── test_gpu_environment.py
+│   │   ├── test_import.py
+│   │   ├── test_integration_simple.py
+│   │   ├── test_logs_api.py
+│   │   ├── test_memory_direct.py
+│   │   ├── test_memory_integration_simple.py
+│   │   ├── test_memory_integration_verification.py
+│   │   ├── test_memory_management_integration.py
+│   │   ├── test_memory_management_summary.py
+│   │   ├── test_memory_simple.py
+│   │   ├── test_ml_demo.py
+│   │   ├── test_mock_business_data_source.py
+│   │   ├── test_mock_data_system.py
+│   │   ├── test_mock_data_validation.py
+│   │   ├── test_mock_data_validation_simple.py
+│   │   ├── test_mock_simple.py
+│   │   ├── test_mock_system.py
+│   │   ├── test_postgresql_relational_source.py
+│   │   ├── test_requirements.txt
+│   │   ├── test_save_realtime_data.py
+│   │   ├── test_security_authentication.py
+│   │   ├── test_security_owasp_top10.py
+│   │   ├── test_simple_end_to_end.py
+│   │   ├── test_tdengine_timeseries_source.py
+│   │   ├── test_tdx_adapter.py
+│   │   ├── test_tdx_api.py
+│   │   ├── test_tdx_multiperiod.py
+│   │   ├── test_tdx_mvp.py
+│   │   ├── test_tdx_path_validation.py
+│   │   ├── test_ths_industry.py
+│   │   ├── test_timing.csv
+│   │   ├── test_us2_acceptance.py
+│   │   ├── validate_composite_quick.py
+│   │   ├── web-usability-runner.js
+│   │   ├── web-usability-runner.sh
+│   │   └── websocket_stress_test.py
+│   ├── tmux
+│   │   └── mystocks-test.conf
+│   ├── track_progress.sh
+│   ├── utils
+│   │   ├── api_utils.py
+│   │   └── date_utils.py
+│   ├── web
+│   │   └── frontend
+│   ├── week2
+│   │   ├── README.md
+│   │   ├── analyze_query_patterns.py
+│   │   ├── assess_databases.py
+│   │   ├── backup_all_databases.sh
+│   │   └── poc_test.sql
+│   └── week3
+│       └── migration_utils.py
+├── set-ports.sh
+├── setup_compliance_testing.sh
+├── share
+│   ├── AI_STRATEGY_GUIDE.md
+│   ├── CODE_REFERENCE.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── GPU_SYSTEM_GUIDE.md
+│   ├── MONITORING_GUIDE.md
+│   └── README.md
+├── simple_p2_test.py
+├── specs
+│   ├── 001-fix-5-critical
+│   │   ├── checklists
+│   │   ├── contracts
+│   │   ├── data-model.md
+│   │   ├── plan.md
+│   │   ├── quickstart.md
+│   │   ├── research.md
+│   │   ├── spec.md
+│   │   └── tasks.md
+│   ├── 001-readme-md-md
+│   │   ├── checklists
+│   │   ├── contracts
+│   │   ├── data-model.md
+│   │   ├── plan.md
+│   │   ├── quickstart.md
+│   │   ├── research.md
+│   │   ├── spec.md
+│   │   ├── tasks.md
+│   │   └── 改进执行报告.md
+│   └── 002-arch-optimization
+│       ├── IMPLEMENTATION_READY_SUMMARY.md
+│       ├── KICKOFF_CHECKLIST.md
+│       ├── PHASE1_COMPLETION_REPORT.md
+│       ├── PHASE2_BACKEND_COMPLETION_REPORT.md
+│       ├── PHASE2_WEB_FOUNDATION_COMPLETION_REPORT.md
+│       ├── PLANNING_COMPLETION_REPORT.md
+│       ├── START_NOW.md
+│       ├── T011_ROUTE_STRUCTURE_VERIFICATION.md
+│       ├── T012_FRONTEND_STACK_VERIFICATION.md
+│       ├── T024_DOCUMENTATION_CONSISTENCY_VERIFICATION.md
+│       ├── T037_CRITICAL_FINDING.md
+│       ├── TASKS_V2_UPDATE_REPORT.md
+│       ├── US1_COMPLETION_REPORT.md
+│       ├── US2_PROGRESS_REPORT.md
+│       ├── checklists
+│       ├── contracts
+│       ├── data-model.md
+│       ├── plan.md
+│       ├── progress
+│       ├── progress\015\015
+│       ├── quickstart.md
+│       ├── research.md
+│       ├── spec.md
+│       └── tasks.md
+├── src
+│   ├── README.md
+│   ├── __init__.py
+│   ├── adapters
+│   │   ├── __init__.py
+│   │   ├── akshare
+│   │   ├── akshare_adapter.py
+│   │   ├── akshare_proxy_adapter.py
+│   │   ├── baostock
+│   │   ├── baostock_adapter.py
+│   │   ├── byapi_adapter.py
+│   │   ├── customer_adapter.py
+│   │   ├── data_source_manager.py
+│   │   ├── financial_adapter.py
+│   │   ├── financial_adapter_example.py
+│   │   ├── tdx
+│   │   ├── tdx_adapter.py
+│   │   ├── test_customer_adapter.py
+│   │   ├── test_financial_adapter.py
+│   │   ├── test_simple.py
+│   │   └── tushare_adapter.py
+│   ├── api
+│   │   └── alert_history_routes.py
+│   ├── backup_recovery
+│   │   ├── __init__.py
+│   │   ├── backup_manager.py
+│   │   ├── backup_scheduler.py
+│   │   ├── integrity_checker.py
+│   │   └── recovery_manager.py
+│   ├── contract_testing
+│   │   ├── __init__.py
+│   │   ├── api_consistency_checker.py
+│   │   ├── contract_engine.py
+│   │   ├── report_generator.py
+│   │   ├── spec_validator.py
+│   │   └── test_hooks.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── batch_failure_strategy.py
+│   │   ├── config.py
+│   │   ├── config_driven_table_manager.py
+│   │   ├── config_driven_table_manager.py.backup_20251108
+│   │   ├── config_loader.py
+│   │   ├── connection_pool_config.py
+│   │   ├── data_classification.py
+│   │   ├── data_manager.py
+│   │   ├── database.py
+│   │   ├── database_pool.py
+│   │   ├── error_handling.py
+│   │   ├── exceptions.py
+│   │   ├── logging.py
+│   │   ├── memory_manager.py
+│   │   ├── models
+│   │   ├── monitoring.py
+│   │   ├── services
+│   │   └── unified_manager.py
+│   ├── core.py
+│   ├── data_access
+│   │   ├── __init__.py
+│   │   ├── postgresql_access.py
+│   │   └── tdengine_access.py
+│   ├── data_access.py
+│   ├── data_sources
+│   │   ├── README_TDX.md
+│   │   ├── __init__.py
+│   │   ├── baostock_importer.py
+│   │   ├── factory.py
+│   │   ├── mock
+│   │   ├── mock_data_source.py
+│   │   ├── real
+│   │   ├── real_data_source.py
+│   │   ├── tdx
+│   │   ├── tdx_binary_parser.py
+│   │   └── tdx_importer.py
+│   ├── database
+│   │   ├── database_service.py
+│   │   ├── mock_data_storage.py
+│   │   └── stocks_db_service.py
+│   ├── database_optimization
+│   │   ├── __init__.py
+│   │   ├── performance_monitor.py
+│   │   ├── postgresql_index_optimizer.py
+│   │   ├── slow_query_analyzer.py
+│   │   └── tdengine_index_optimizer.py
+│   ├── db_manager
+│   │   └── __init__.py
+│   ├── factories
+│   │   └── data_source_factory.py
+│   ├── gpu
+│   │   ├── accelerated
+│   │   ├── api_system
+│   │   ├── data_processing_interfaces.py
+│   │   └── data_processor_factory.py
+│   ├── interfaces
+│   │   ├── README.md
+│   │   ├── __init__.py
+│   │   ├── business_data_source.py
+│   │   ├── data_source.py
+│   │   ├── data_source_interface.py
+│   │   ├── refactored_interfaces.py
+│   │   ├── relational_data_source.py
+│   │   └── timeseries_data_source.py
+│   ├── ml_strategy
+│   │   ├── __init__.py
+│   │   ├── automation
+│   │   ├── backtest
+│   │   ├── feature_engineering.py
+│   │   ├── indicators
+│   │   ├── ml_strategy.py
+│   │   ├── price_predictor.py
+│   │   ├── realtime
+│   │   └── strategy
+│   ├── monitoring
+│   │   ├── __init__.py
+│   │   ├── ai_alert_manager.py
+│   │   ├── ai_realtime_monitor.py
+│   │   ├── alert_history.py
+│   │   ├── alert_manager.py
+│   │   ├── alert_manager.py.backup_complex_20251108
+│   │   ├── alert_notifier.py
+│   │   ├── alerts
+│   │   ├── data_quality_monitor.py
+│   │   ├── decoupled_monitoring.py
+│   │   ├── gpu_integration_manager.py
+│   │   ├── gpu_performance_optimizer.py
+│   │   ├── intelligent_threshold_manager.py
+│   │   ├── metrics_collector.py
+│   │   ├── monitoring_database.py
+│   │   ├── monitoring_service.py
+│   │   ├── multi_channel_alert_manager.py
+│   │   ├── performance
+│   │   ├── performance_monitor.py
+│   │   └── quality
+│   ├── reporting
+│   │   ├── __init__.py
+│   │   └── pdf_generator.py
+│   ├── routes
+│   │   ├── dashboard_routes.py
+│   │   ├── monitoring_routes.py
+│   │   ├── stocks_routes.py
+│   │   ├── strategy_routes.py
+│   │   ├── technical_routes.py
+│   │   └── wencai_routes.py
+│   ├── storage
+│   │   ├── __init__.py
+│   │   ├── access
+│   │   ├── database
+│   │   └── models
+│   ├── temp
+│   │   └── connect.cfg
+│   ├── unified_manager.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── add_doc_metadata.py
+│   │   ├── add_python_headers.py
+│   │   ├── check_api_health.py
+│   │   ├── check_api_health_v2.py
+│   │   ├── check_db_health.py
+│   │   ├── column_mapper.py
+│   │   ├── data_format_converter.py
+│   │   ├── data_source_logger.py
+│   │   ├── data_source_validator.py
+│   │   ├── date_utils.py
+│   │   ├── db_connection_retry.py
+│   │   ├── error_handler.py
+│   │   ├── failure_recovery_queue.py
+│   │   ├── logging_config.py
+│   │   ├── symbol_utils.py
+│   │   ├── tdx_server_config.py
+│   │   ├── test_logs_api.py
+│   │   ├── validate_gitignore.py
+│   │   └── validate_test_naming.py
+│   └── visualization
+│       ├── __init__.py
+│       ├── backtest_visualizer.py
+│       ├── chart_generator.py
+│       └── complete_example.py
+├── technical_debt_analyzer.py
+├── technical_debt_assessment_report.md
+├── technical_debt_remediation_plan.md
+├── temp
+│   └── connect.cfg
+├── test-directory-org
+│   ├── LICENSE
+│   ├── README.md
+│   ├── api-guide.md
+│   ├── app.log
+│   ├── build.sh
+│   ├── cache_file.cache
+│   ├── check-structure.sh
+│   ├── cleanup.sh
+│   ├── code-analysis.json
+│   ├── config.json
+│   ├── coverage.json
+│   ├── deploy.sh
+│   ├── deployment-guide.md
+│   ├── error.log
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── settings.yaml
+│   ├── subdir1
+│   │   ├── config.ini
+│   │   └── temp.tmp
+│   ├── subdir2
+│   │   └── sub.log
+│   ├── temp_data.tmp
+│   ├── test-report.json
+│   ├── test_main.py
+│   ├── user-manual.md
+│   └── utils.py
+├── test-results.log
+├── test_jwt_authentication.py
+├── test_p2_modules.py
+├── test_phase4b_security_improvements.py
+├── test_tdx_connection.py
+├── test_tdx_real_data.py
+├── test_timing.csv
+├── test_web_readiness.py
+├── tests
+│   ├── README.md
+│   ├── __init__.py
+│   ├── acceptance
+│   │   ├── __init__.py
+│   │   ├── test_us2_config_driven.py
+│   │   └── test_us3_monitoring.py
+│   ├── ai
+│   │   ├── __init__.py
+│   │   ├── test_ai_assisted_testing.py
+│   │   ├── test_data_analyzer.py
+│   │   ├── test_data_manager.py
+│   │   ├── test_integration_system.py
+│   │   ├── test_optimizer.py
+│   │   └── test_prediction_analyzer.py
+│   ├── analysis
+│   │   └── test_trend_analysis.py
+│   ├── benchmarks
+│   ├── chaos
+│   │   ├── test_fault_injection.py
+│   │   └── test_resilience_framework.py
+│   ├── ci
+│   │   └── test_continuous_integration.py
+│   ├── comprehensive-test.spec.ts
+│   ├── config
+│   │   ├── api-config.ts
+│   │   ├── coverage-config.ts
+│   │   └── test_config.py
+│   ├── conftest.py
+│   ├── conftest.py.backup
+│   ├── contract
+│   │   ├── __init__.py
+│   │   ├── contract_engine.py
+│   │   ├── contract_validator.py
+│   │   ├── models.py
+│   │   ├── report_generator.py
+│   │   ├── test_contract_executor.py
+│   │   ├── test_contract_generator.py
+│   │   ├── test_contract_validator.py
+│   │   ├── test_executor.py
+│   │   └── test_reverse_contract_generator.py
+│   ├── dashboard
+│   │   └── test_dashboard.py
+│   ├── data
+│   │   ├── __init__.py
+│   │   ├── test_data_manager.py
+│   │   └── test_data_optimizer.py
+│   ├── demo-test-fixed.spec.ts
+│   ├── demo-test-simple.spec.ts
+│   ├── demo-test.spec.ts
+│   ├── docs
+│   │   └── DATABASE_TEST_README.md
+│   ├── e2e
+│   │   ├── README.md
+│   │   ├── analysis-integration.spec.js
+│   │   ├── business-api-data-alignment.spec.js
+│   │   ├── business-driven-api-tests.spec.js
+│   │   ├── critical
+│   │   ├── dashboard-page-phase3.spec.ts
+│   │   ├── dashboard-page.spec.ts
+│   │   ├── fixed-pages-e2e.spec.js
+│   │   ├── frontend-deep-dive.spec.js
+│   │   ├── global-setup.ts
+│   │   ├── global-teardown.ts
+│   │   ├── health-check.spec.js
+│   │   ├── indicator-library-integration.spec.js
+│   │   ├── industry-concept-integration.spec.js
+│   │   ├── login.spec.js
+│   │   ├── market-data-integration.spec.js
+│   │   ├── market-page.spec.ts
+│   │   ├── market-view-integration.spec.js
+│   │   ├── mystocks-comprehensive-api.spec.js
+│   │   ├── mystocks-comprehensive-e2e.spec.js
+│   │   ├── pages
+│   │   ├── phase9-p2-integration.spec.js
+│   │   ├── playwright.config.ts
+│   │   ├── real-api-endpoints.spec.js
+│   │   ├── realtime-monitor-integration.spec.js
+│   │   ├── realtime-monitor.spec.ts
+│   │   ├── risk-monitor-integration.spec.js
+│   │   ├── risk-monitor-page.spec.ts
+│   │   ├── settings-page.spec.ts
+│   │   ├── specs
+│   │   ├── stock-detail-integration.spec.js
+│   │   ├── stock-detail-page.spec.ts
+│   │   ├── strategy-management-integration.spec.js
+│   │   ├── strategy-management-page.spec.ts
+│   │   ├── task-management-page.spec.ts
+│   │   ├── technical-analysis-page.spec.ts
+│   │   ├── test-helpers.ts
+│   │   ├── test-results
+│   │   ├── test-results-realtime.json
+│   │   ├── test_dashboard_page.py
+│   │   ├── test_web_e2e.py
+│   │   ├── trade-management-integration.spec.js
+│   │   ├── trade-management-page.spec.ts
+│   │   ├── utils
+│   │   ├── web-usability-tests.spec.js
+│   │   └── wencai-integration.spec.js
+│   ├── env-test.spec.ts
+│   ├── fixtures
+│   │   └── factory.ts
+│   ├── helpers
+│   │   ├── api-helpers.ts
+│   │   ├── assertions.ts
+│   │   ├── conditional-mocking.ts
+│   │   ├── coverage-reporter.ts
+│   │   ├── page-objects.ts
+│   │   ├── performance-monitor.ts
+│   │   ├── sse-tester.ts
+│   │   ├── test-env.ts
+│   │   ├── visual-regression.ts
+│   │   └── websocket-tester.ts
+│   ├── integration
+│   │   ├── __init__.py
+│   │   ├── ai
+│   │   ├── chaos
+│   │   ├── contract
+│   │   ├── data
+│   │   ├── performance
+│   │   ├── security
+│   │   ├── test_api_integration.py
+│   │   ├── test_comprehensive_manager.py
+│   │   ├── test_dashboard_api.py
+│   │   ├── test_data_quality_checks.py
+│   │   ├── test_datasource_switching.py
+│   │   ├── test_operation_logging.py
+│   │   ├── test_performance_monitoring.py
+│   │   ├── test_postgresql_integration.py
+│   │   ├── test_strategy_mgmt_api.py
+│   │   ├── test_tdengine_integration.py
+│   │   ├── test_three_layer_integration.py
+│   │   └── test_us1_acceptance.py
+│   ├── logs
+│   │   ├── playwright-api.log
+│   │   ├── playwright-auth.log
+│   │   └── playwright-health.log
+│   ├── markers.py
+│   ├── metrics
+│   │   ├── test_metrics_dashboard.py
+│   │   └── test_quality_metrics.py
+│   ├── monitoring
+│   │   ├── __init__.py
+│   │   ├── config.json
+│   │   ├── templates
+│   │   ├── test_integration_notifications.py
+│   │   ├── test_metrics_analytics.py
+│   │   └── test_monitoring_alerts.py
+│   ├── openapi.json
+│   ├── orchestration
+│   │   └── test_orchestration.py
+│   ├── performance
+│   │   ├── test_advanced_performance_monitor.py
+│   │   ├── test_baseline_latency.py
+│   │   ├── test_load_generator.py
+│   │   ├── test_performance_integration.py
+│   │   ├── test_performance_optimizer.py
+│   │   ├── test_performance_suite.py
+│   │   ├── test_stress_test.py
+│   │   └── test_us3_architecture_performance.py
+│   ├── pipeline
+│   │   └── test_data_pipeline.py
+│   ├── playwright-report
+│   │   └── index.html
+│   ├── pytest.ini
+│   ├── reporting
+│   │   └── test_report_generator.py
+│   ├── reports
+│   │   ├── API_Test_Fix_Report_20251126.md
+│   │   ├── Business_API_Coverage_Analysis_20251126.md
+│   │   ├── MyStocks_API_Test_Report_20251126_123146.md
+│   │   ├── MyStocks_Test_Report_20251126_084237.md
+│   │   ├── summary-20251126_084237.json
+│   │   └── template.md
+│   ├── results
+│   ├── run_all_tests.py
+│   ├── security
+│   │   ├── test_security_compliance.py
+│   │   └── test_security_vulnerabilities.py
+│   ├── setup
+│   │   ├── global-setup.ts
+│   │   ├── global-teardown.ts
+│   │   └── no-docker-setup.ts
+│   ├── simple-test.spec.ts
+│   ├── smoke
+│   ├── test-results
+│   ├── test_ai_monitoring_system.py
+│   ├── test_akshare_adapter.py
+│   ├── test_api_endpoints.py
+│   ├── test_automation.py
+│   ├── test_backtest_components.py
+│   ├── test_basic.py
+│   ├── test_check_db_health.py
+│   ├── test_data_format.py
+│   ├── test_database_manager.py
+│   ├── test_database_service.py
+│   ├── test_db_connections.py
+│   ├── test_db_queries.py
+│   ├── test_dual_data_source.py
+│   ├── test_frontend.py
+│   ├── test_frontend_backend_integration.py
+│   ├── test_gpu_performance_optimizer.py
+│   ├── test_import.py
+│   ├── test_minimal.py
+│   ├── test_ml_integration.py
+│   ├── test_runner.py
+│   ├── test_security_encryption.py
+│   ├── test_security_sql_injection.py
+│   ├── test_security_xss_csrf.py
+│   ├── test_simple.py
+│   ├── test_tdx_adapter.py
+│   ├── test_tdx_binary_read.py
+│   ├── test_type_annotations.py
+│   ├── ultra-simple.spec.ts
+│   ├── unit
+│   │   ├── __init__.py
+│   │   ├── adapters
+│   │   ├── api
+│   │   ├── core
+│   │   ├── data_access
+│   │   ├── ml_strategy
+│   │   ├── monitoring
+│   │   ├── security
+│   │   ├── services
+│   │   ├── storage
+│   │   ├── test_backtest_engine.py
+│   │   ├── test_column_mapper.py
+│   │   ├── test_config_driven_table_manager.py
+│   │   ├── test_config_validation.py
+│   │   ├── test_data_classification.py
+│   │   ├── test_data_classification_enhanced.py
+│   │   ├── test_data_source_interface.py
+│   │   ├── test_database_service_unit.py
+│   │   ├── test_error_handler.py
+│   │   ├── test_gpu_performance_optimizer_enhanced.py
+│   │   ├── test_mysql_table_creation.py
+│   │   ├── test_postgresql_table_creation.py
+│   │   ├── test_tdengine_table_creation.py
+│   │   ├── test_unified_manager.py
+│   │   └── utils
+│   ├── utils
+│   │   └── tdx_test_helpers.py
+│   └── validation
+│       └── test_validation_models.py
+├── verify_refactoring.py
+├── vitest.config.ts
+├── web
+│   ├── PORTS.md
+│   ├── README.md
+│   ├── TASK_MANAGEMENT.md
+│   ├── TASK_MANAGEMENT_SUMMARY.md
+│   ├── TDX_SETUP_COMPLETE.md
+│   ├── WENCAI_FRONTEND_INTEGRATION.md
+│   ├── WENCAI_INTEGRATION_UPDATED.md
+│   ├── __init__.py
+│   ├── backend
+│   │   ├── API_ARCHITECTURE_ANALYSIS.md
+│   │   ├── API_EXPLORATION_INDEX.md
+│   │   ├── API_QUICK_REFERENCE.md
+│   │   ├── BACKEND_IMPLEMENTATION_SUMMARY.md
+│   │   ├── BUG_FIX_REPORT_20251020.md
+│   │   ├── CODE_DUPLICATION_ANALYSIS.md
+│   │   ├── CODE_QUALITY_REFACTORING_INDEX.md
+│   │   ├── CONFIG_PATCHES.md
+│   │   ├── CONSOLIDATION_IMPLEMENTATION_GUIDE.md
+│   │   ├── DUPLICATION_ANALYSIS_SUMMARY.txt
+│   │   ├── Dockerfile
+│   │   ├── TASK_1_4_PHASE_2_COMPLETION_REPORT.md
+│   │   ├── WEEK2_DAY3_SSE_COMPLETION.md
+│   │   ├── WENCAI_CONFIG_UPDATE_GUIDE.md
+│   │   ├── __init__.py
+│   │   ├── ai_alerts.log
+│   │   ├── app
+│   │   ├── backend.log
+│   │   ├── backend.pid
+│   │   ├── celeryconfig_wencai.py
+│   │   ├── config
+│   │   ├── coverage.xml
+│   │   ├── debug_config.py
+│   │   ├── detailed_debug.py
+│   │   ├── docs
+│   │   ├── examples
+│   │   ├── financial_adapter.log
+│   │   ├── gpu_optimization_state.json
+│   │   ├── htmlcov
+│   │   ├── init_mysql_tables.sql
+│   │   ├── init_tables.sql
+│   │   ├── init_tables_simple.sql
+│   │   ├── load_env.py
+│   │   ├── logs
+│   │   ├── migrations
+│   │   ├── minimal_test.py
+│   │   ├── models
+│   │   ├── pm2.config.json
+│   │   ├── policies
+│   │   ├── requirements-test.txt
+│   │   ├── requirements.txt
+│   │   ├── run_server.py
+│   │   ├── scripts
+│   │   ├── server.log
+│   │   ├── setup_database.py
+│   │   ├── start_server.py
+│   │   ├── test_app_import.py
+│   │   ├── test_openstock_apis.sh
+│   │   ├── test_timing.csv
+│   │   ├── tests
+│   │   └── web
+│   ├── docker-compose.yml
+│   ├── frontend
+│   │   ├── FIX_EXECUTEQUERY.md
+│   │   ├── FRONTEND_IMPLEMENTATION_SUMMARY.md
+│   │   ├── FRONTEND_SSE_INTEGRATION_COMPLETE.md
+│   │   ├── QUICK_REFERENCE.md
+│   │   ├── README_DEBUGGING.md
+│   │   ├── README_SSE_INTEGRATION.md
+│   │   ├── STRATEGY_MANAGEMENT_GUIDE.md
+│   │   ├── UI_UX_OPTIMIZATION_REPORT.md
+│   │   ├── VUE_DEBUGGING_GUIDE.md
+│   │   ├── VUE_FILES_STATISTICS.md
+│   │   ├── WATCHLIST_GROUP_MANAGER_ELEMENTS.md
+│   │   ├── WEB_DIAGNOSTIC_REPORT.md
+│   │   ├── WENCAI_FINAL_TEST.md
+│   │   ├── WENCAI_TEST_GUIDE.md
+│   │   ├── WENCAI_V2_SUMMARY.md
+│   │   ├── WENCAI_V2_TEST_GUIDE.md
+│   │   ├── core.py
+│   │   ├── dist
+│   │   ├── docs
+│   │   ├── frontend.log
+│   │   ├── index.html
+│   │   ├── nicegui_monitoring_dashboard_kline.py
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── playwright.config.js
+│   │   ├── quick-debug.sh
+│   │   ├── src
+│   │   ├── test-results
+│   │   ├── tests
+│   │   ├── vite.config.js
+│   │   ├── 改进需求-用户反馈.md
+│   │   └── 页面功能与改进需求.md
+│   ├── frontend_status.py
+│   └── start_dev.sh
+├── 技术负债修复报告.md
+├── 文件目录管理方案.md
+└── 目录管理解决方案总结.md
+
+224 directories, 1270 files
+
+文件分类统计:
+   8733 .|js
+   8723 .|json
+   5962 .|ts
+   2821 .|map
+   1533 .|md
+   1366 .|mjs
+   1222 .|pyc
+    996 .|py
+    599 .|html
+    385 .|cjs
+    194 .|cts
+    184 .|css
+    144 .|scss
+     98 .|sh
+     82 .|mts
+     81 .|vue
+     65 .|yml
+     54 .|txt
+     31 .|log
+     25 .|jst

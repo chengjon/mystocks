@@ -1,6 +1,6 @@
 # 项目状态快速索引
 
-**生成时间**: 2025-11-11  
+**生成时间**: 2025-11-11
 **项目**: MyStocks Quantitative Trading System
 
 ---
@@ -8,17 +8,17 @@
 ## 🎯 快速导航
 
 ### 完整报告
-📄 **详细报告** → `/docs/PROJECT_STATUS_REPORT.md`  
+📄 **详细报告** → `/docs/PROJECT_STATUS_REPORT.md`
 包含所有的详细分析、指标和建议
 
 ### Hooks系统
-📦 **完整迁移包** → `/tmp/hooks/`  
+📦 **完整迁移包** → `/tmp/hooks/`
 - 7个生产就绪的hooks脚本
 - 3个配置文件
 - 6个详细文档
 - 共19个文件,224KB
 
-📖 **迁移指南** → `/tmp/hooks/docs/HOOKS_MIGRATION_GUIDE.md` (1500+行)  
+📖 **迁移指南** → `/tmp/hooks/docs/HOOKS_MIGRATION_GUIDE.md` (1500+行)
 📖 **快速参考** → `/tmp/hooks/docs/HOOKS_QUICK_REFERENCE.md`
 
 ---
@@ -229,6 +229,5 @@ python scripts/database/verify_tdengine_deployment.py
 
 ---
 
-**最后更新**: 2025-11-11  
+**最后更新**: 2025-11-11
 **下次更新**: 按需或每周一次
-

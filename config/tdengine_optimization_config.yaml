@@ -15,7 +15,7 @@ super_tables:
       - symbol: VARCHAR(20)     # 股票代码
       - exchange: VARCHAR(10)   # 交易所
       - market: VARCHAR(10)     # 市场类型
-  
+
   minute_kline:
     retention_days: 90          # 分钟线数据保留90天
     compression_ratio: 15       # 目标压缩比 15:1
@@ -38,16 +38,16 @@ query_optimization:
     enabled: true
     max_time_range_days: 30     # 单次查询最大时间范围
     batch_size: 1000           # 批处理大小
-  
+
   aggregation_queries:
     enabled: true
     window_functions:           # 时间窗口函数优化
       - "1m"
-      - "5m" 
+      - "5m"
       - "15m"
       - "1h"
       - "1d"
-  
+
   limit_strategies:
     default_limit: 1000
     max_limit: 10000
@@ -59,12 +59,12 @@ storage_optimization:
     enabled: true
     algorithm: "delta2"         # 压缩算法
     level: 6                   # 压缩级别(1-9)
-  
+
   memory_management:
     buffer_cache_size: "1GB"    # 缓冲区缓存
     cache_block_size: "4KB"     # 缓存块大小
     max_cache_blocks: 1000      # 最大缓存块数
-  
+
   disk_optimization:
     data_dir: "/var/lib/taos/data"
     wal_level: 2               # Write-Ahead Logging级别
@@ -76,11 +76,11 @@ monitoring:
     enabled: true
     slow_query_threshold_ms: 1000
     log_slow_queries: true
-  
+
   table_statistics:
     enabled: true
     collect_interval: 60       # 统计收集间隔(秒)
-  
+
   alerts:
     enabled: true
     high_memory_usage: 80      # 内存使用率告警阈值
@@ -96,7 +96,7 @@ read_write_separation:
 # 数据生命周期管理
 data_lifecycle:
   hot_data_days: 7            # 热数据保留期
-  warm_data_days: 30          # 温数据保留期  
+  warm_data_days: 30          # 温数据保留期
   cold_data_days: 90          # 冷数据保留期
   archive_strategy: "compress" # 归档策略: compress/delete
 
@@ -106,7 +106,7 @@ table_specific_optimizations:
     index_strategy: "time_based"  # 基于时间的索引
     batch_insert_size: 1000      # 批量插入大小
     write_buffer_size: "64KB"   # 写入缓冲区大小
-  
+
   tick_data_000001_sz:
     replication_factor: 1      # 副本因子
     max_rows_per_file: 10000   # 每个文件最大行数
@@ -118,12 +118,12 @@ application_optimization:
     min_connections: 5
     max_connections: 20
     connection_timeout: 30     # 连接超时(秒)
-  
+
   query_caching:
     enabled: true
     cache_ttl_seconds: 300     # 缓存TTL 5分钟
     cache_max_size: 1000       # 最大缓存条目数
-  
+
   async_operations:
     enabled: true
     batch_size: 500           # 异步操作批大小

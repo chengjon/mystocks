@@ -291,7 +291,7 @@ npm run dev -- --debug
    ```javascript
    // 在浏览器控制台中执行
    console.log('VITE_USE_MOCK:', import.meta.env.VITE_USE_MOCK)
-   
+
    // 测试API调用
    fetch('/api/data/stocks/basic')
      .then(res => res.json())
@@ -302,7 +302,7 @@ npm run dev -- --debug
    ```bash
    # 清理浏览器缓存
    # Chrome: Ctrl+Shift+Delete -> 清除缓存和Cookie
-   
+
    # 清理服务缓存
    cd web/backend
    rm -rf __pycache__/
@@ -586,9 +586,9 @@ pm2 logs mystocks-frontend
 
 ---
 
-**项目交付状态**: ✅ 完成  
-**交付时间**: 2025-11-17  
+**项目交付状态**: ✅ 完成
+**交付时间**: 2025-11-17
 **总体评价**: 🌟 优秀（可直接投入使用）
 
-*本文档基于MyStocks v1.3.1生成，最后更新: 2025-11-17*  
+*本文档基于MyStocks v1.3.1生成，最后更新: 2025-11-17*
 *文档版本: PROJECT_FULL_DOC.md v1.0*

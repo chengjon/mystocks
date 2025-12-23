@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''
+"""
 # 功能：验证测试文件命名规范是否符合pytest约定
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -11,12 +11,10 @@
 #   - 统计符合/不符合pytest规范的文件
 #   - 提供修复建议
 # 版权：MyStocks Project © 2025
-'''
+"""
 
-import os
-import re
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import List, Dict
 
 
 class TestNamingValidator:
@@ -27,8 +25,14 @@ class TestNamingValidator:
         self.compliant_files = []
         self.non_compliant_files = []
         self.ignored_dirs = {
-            '.git', 'node_modules', 'venv', '.venv',
-            'env', '__pycache__', '.pytest_cache', 'htmlcov'
+            ".git",
+            "node_modules",
+            "venv",
+            ".venv",
+            "env",
+            "__pycache__",
+            ".pytest_cache",
+            "htmlcov",
         }
 
     def find_all_test_files(self) -> List[Path]:
@@ -37,9 +41,9 @@ class TestNamingValidator:
 
         # 排除的文件名模式（业务代码，不是测试）
         excluded_patterns = [
-            'validate_test_naming.py',  # 验证工具本身
-            'backtest_engine.py',       # 回测引擎业务代码
-            'test_monitoring_with_redis.py',  # 监控数据生成脚本
+            "validate_test_naming.py",  # 验证工具本身
+            "backtest_engine.py",  # 回测引擎业务代码
+            "test_monitoring_with_redis.py",  # 监控数据生成脚本
         ]
 
         for py_file in self.root_dir.rglob("*.py"):
@@ -52,7 +56,7 @@ class TestNamingValidator:
                 continue
 
             # 检查文件名是否包含'test'
-            if 'test' in py_file.name.lower():
+            if "test" in py_file.name.lower():
                 test_files.append(py_file)
 
         return test_files
@@ -63,7 +67,7 @@ class TestNamingValidator:
 
         # pytest规范: 测试文件必须以test_开头或以_test.py结尾
         # 推荐: 统一使用test_开头
-        if filename.startswith('test_') and filename.endswith('.py'):
+        if filename.startswith("test_") and filename.endswith(".py"):
             return True
 
         return False
@@ -79,10 +83,12 @@ class TestNamingValidator:
                 self.non_compliant_files.append(test_file)
 
         return {
-            'total': len(test_files),
-            'compliant': len(self.compliant_files),
-            'non_compliant': len(self.non_compliant_files),
-            'compliance_rate': (len(self.compliant_files) / len(test_files) * 100) if test_files else 100.0
+            "total": len(test_files),
+            "compliant": len(self.compliant_files),
+            "non_compliant": len(self.non_compliant_files),
+            "compliance_rate": (len(self.compliant_files) / len(test_files) * 100)
+            if test_files
+            else 100.0,
         }
 
     def suggest_rename(self, file_path: Path) -> str:
@@ -93,20 +99,28 @@ class TestNamingValidator:
         name_without_ext = filename[:-3]
 
         # 如果以_test结尾,转换为test_开头
-        if name_without_ext.endswith('_test'):
+        if name_without_ext.endswith("_test"):
             base_name = name_without_ext[:-5]  # 移除_test
             return f"test_{base_name}.py"
 
         # 如果包含test但不符合规范
-        if 'test' in name_without_ext.lower():
+        if "test" in name_without_ext.lower():
             # 尝试提取test之后的部分
-            parts = name_without_ext.split('_')
-            if 'test' in parts:
+            parts = name_without_ext.split("_")
+            if "test" in parts:
                 # 找到test的位置
-                test_index = parts.index('test')
+                test_index = parts.index("test")
                 # 重组为test_开头
-                remaining = '_'.join(parts[test_index + 1:]) if test_index + 1 < len(parts) else '_'.join(parts[:test_index])
-                return f"test_{remaining}.py" if remaining else f"test_{name_without_ext}.py"
+                remaining = (
+                    "_".join(parts[test_index + 1 :])
+                    if test_index + 1 < len(parts)
+                    else "_".join(parts[:test_index])
+                )
+                return (
+                    f"test_{remaining}.py"
+                    if remaining
+                    else f"test_{name_without_ext}.py"
+                )
 
         # 默认直接加test_前缀
         return f"test_{name_without_ext}.py"
@@ -121,7 +135,7 @@ class TestNamingValidator:
         report.append("=" * 80 + "\n")
 
         # 统计信息
-        report.append(f"📊 统计信息:")
+        report.append("📊 统计信息:")
         report.append(f"  - 总测试文件数: {stats['total']}")
         report.append(f"  - ✅ 符合规范: {stats['compliant']} 个")
         report.append(f"  - ❌ 不符合规范: {stats['non_compliant']} 个")
@@ -129,7 +143,7 @@ class TestNamingValidator:
 
         # 符合规范的文件（仅显示前10个）
         if self.compliant_files:
-            report.append(f"✅ 符合规范的文件 (前10个):")
+            report.append("✅ 符合规范的文件 (前10个):")
             for i, file_path in enumerate(self.compliant_files[:10], 1):
                 report.append(f"  {i}. {file_path.relative_to(self.root_dir)}")
             if len(self.compliant_files) > 10:
@@ -138,13 +152,15 @@ class TestNamingValidator:
 
         # 不符合规范的文件及修复建议
         if self.non_compliant_files:
-            report.append(f"❌ 不符合规范的文件及修复建议:")
+            report.append("❌ 不符合规范的文件及修复建议:")
             for i, file_path in enumerate(self.non_compliant_files, 1):
                 suggested_name = self.suggest_rename(file_path)
                 rel_path = file_path.relative_to(self.root_dir)
                 report.append(f"  {i}. {rel_path}")
                 report.append(f"     建议: {file_path.parent}/{suggested_name}")
-                report.append(f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}")
+                report.append(
+                    f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}"
+                )
             report.append("")
 
         # 验收标准
@@ -153,8 +169,8 @@ class TestNamingValidator:
         report.append("=" * 80)
 
         checks = [
-            ("所有测试文件以test_开头", stats['non_compliant'] == 0),
-            ("合规率 ≥ 95%", stats['compliance_rate'] >= 95.0),
+            ("所有测试文件以test_开头", stats["non_compliant"] == 0),
+            ("合规率 ≥ 95%", stats["compliance_rate"] >= 95.0),
         ]
 
         all_passed = True
@@ -188,12 +204,12 @@ def main():
 
     # 返回退出码
     stats = {
-        'total': len(validator.compliant_files) + len(validator.non_compliant_files),
-        'compliant': len(validator.compliant_files),
-        'non_compliant': len(validator.non_compliant_files)
+        "total": len(validator.compliant_files) + len(validator.non_compliant_files),
+        "compliant": len(validator.compliant_files),
+        "non_compliant": len(validator.non_compliant_files),
     }
 
-    if stats['non_compliant'] > 0:
+    if stats["non_compliant"] > 0:
         return 1
     else:
         return 0

@@ -8,7 +8,6 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Callable
-from collections import defaultdict
 import concurrent.futures
 from pathlib import Path
 import json
@@ -20,7 +19,6 @@ from app.models.task import (
     TaskType,
     TaskStatistics,
     TaskResponse,
-    TaskPriority,
 )
 
 logger = logging.getLogger(__name__)

@@ -1,0 +1,14 @@
+************* Module mystocks_spec.src.data_access
+src/data_access.py:335:0: C0303: Trailing whitespace (trailing-whitespace)
+src/data_access.py:1191:39: C0303: Trailing whitespace (trailing-whitespace)
+src/data_access.py:1192:48: C0303: Trailing whitespace (trailing-whitespace)
+src/data_access.py:1:0: C0302: Too many lines in module (1357/1000) (too-many-lines)
+src/data_access.py:321:12: C0415: Import outside toplevel (src.core.DeduplicationStrategy) (import-outside-toplevel)
+src/data_access.py:1034:8: C0415: Import outside toplevel (sqlalchemy) (import-outside-toplevel)
+src/data_access.py:1075:19: W0718: Catching too general exception Exception (broad-exception-caught)
+src/data_access.py:1082:20: W0107: Unnecessary pass statement (unnecessary-pass)
+src/data_access.py:1205:4: R0912: Too many branches (21/15) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 9.82/10 (previous run: 8.61/10, +1.21)
+

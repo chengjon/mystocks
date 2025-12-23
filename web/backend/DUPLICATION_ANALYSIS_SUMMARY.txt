@@ -22,54 +22,54 @@ CRITICAL DUPLICATIONS (Must Fix):
            announcement_service.py, and 5+ more services
    Issue: _build_db_url() and engine initialization repeated in every service
    Fix: Create app/core/database_factory.py
-   
+
 2. SERVICE FACTORIES (8+ instances = 80+ duplicate LOC)
    Files: All service files in app/services/
    Issue: Singleton pattern repeated with _service_instance = None; get_service()
    Fix: Create generic app/core/service_factory.py
-   
+
 3. ENVIRONMENT VARIABLES (10+ instances = 120+ duplicate LOC)
    Files: market_data_service.py, email_service.py, watchlist_service.py, etc.
    Issue: os.getenv() calls for SMTP, PostgreSQL, TQLEX repeated across files
    Fix: Extend app/core/config.py with all environment configurations
-   
+
 4. ERROR HANDLING (805+ occurrences = 200+ duplicate LOC)
    Files: All 20+ API endpoint files in app/api/
    Issue: try/except blocks and HTTPException wrapping repeated 100+ times
    Fix: Create app/core/exception_handlers.py with decorator pattern
-   
+
 SIGNIFICANT DUPLICATIONS (Should Fix):
 
 5. MARKET DATA SERVICES (2 parallel implementations = 300+ duplicate LOC)
    Files: market_data_service.py (Akshare) vs market_data_service_v2.py (EastMoney)
    Issue: fetch_and_save_*() functions 90% identical, different adapters
    Fix: Merge into single service with pluggable adapter pattern
-   
+
 6. EMAIL SERVICES (2 implementations = 150+ duplicate LOC)
    Files: email_service.py and email_notification_service.py
    Issue: SMTP config reading and send() logic duplicated
    Fix: Consolidate into single EmailService
-   
+
 7. ADAPTER FACTORIES (6+ adapters = 100+ duplicate LOC)
    Files: eastmoney_adapter.py, tqlex_adapter.py, wencai_adapter.py, etc.
    Issue: get_adapter() factory function pattern repeated in each adapter
    Fix: Create centralized app/adapters/adapter_factory.py
-   
+
 8. LOGGING PATTERNS (Inconsistent across codebase = 50+ lines)
    Files: All service and adapter files
    Issue: Mix of logging.getLogger() and structlog.get_logger()
    Fix: Standardize on single logging approach with central config
-   
+
 MODERATE DUPLICATIONS (Nice to Fix):
 
 9. VALIDATION PATTERNS (3+ instances = 60+ duplicate LOC)
    Issue: Stock symbol and date range validation repeated in multiple endpoints
    Fix: Create app/core/validators.py with reusable validation functions
-   
+
 10. CACHE MANAGEMENT (Partially centralized = 40+ duplicate LOC)
     Issue: Cache strategy in CacheManager but not consistently used
     Fix: Expand cache_utils.py and require its use in all API endpoints
-    
+
 11. RESPONSE WRAPPERS (35+ instances = 80+ duplicate LOC)
     Issue: Manual dict construction for responses repeated across API
     Fix: Create response schema classes and use Pydantic models
@@ -143,7 +143,7 @@ BEFORE (Duplicate in each service):
         db_url = os.getenv('DATABASE_URL') or self._build_db_url()
         self.engine = create_engine(db_url, pool_pre_ping=True, echo=False)
         self.SessionLocal = sessionmaker(bind=self.engine)
-    
+
     def _build_db_url(self) -> str:
         return (
             f"postgresql://{os.getenv('POSTGRESQL_USER')}:"
@@ -155,7 +155,7 @@ BEFORE (Duplicate in each service):
 
 AFTER (Centralized factory):
     from app.core.database_factory import DatabaseFactory
-    
+
     def __init__(self):
         self.engine = DatabaseFactory.get_postgresql_engine()
         self.SessionLocal = DatabaseFactory.get_postgresql_session()
@@ -167,7 +167,7 @@ Location: market_data_service.py, email_service.py, watchlist_service.py, etc.
 
 BEFORE (In each service file):
     _market_data_service = None
-    
+
     def get_market_data_service() -> MarketDataService:
         global _market_data_service
         if _market_data_service is None:
@@ -176,7 +176,7 @@ BEFORE (In each service file):
 
 AFTER (Generic factory):
     from app.core.service_factory import ServiceFactory
-    
+
     def get_market_data_service() -> MarketDataService:
         return ServiceFactory.get_service(MarketDataService)
 

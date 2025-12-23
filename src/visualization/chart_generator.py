@@ -15,8 +15,7 @@ K线图和信号可视化 (Chart Generator)
 import pandas as pd
 import numpy as np
 import mplfinance as mpf
-from typing import Dict, List, Optional, Tuple
-from datetime import date, datetime
+from typing import Dict, Optional, Tuple
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import logging

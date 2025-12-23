@@ -30,7 +30,6 @@ def gpu_available():
             initialize_wsl2_gpu()
 
         import cudf
-        import cuml
 
         # 简单的GPU测试
         df = cudf.DataFrame({"a": [1, 2, 3]})

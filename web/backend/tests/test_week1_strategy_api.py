@@ -13,8 +13,6 @@ Architecture Requirements:
 """
 
 import pytest
-from fastapi.testclient import TestClient
-from datetime import datetime
 
 
 class TestStrategyCRUD:

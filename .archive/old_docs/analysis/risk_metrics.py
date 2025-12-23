@@ -38,9 +38,7 @@ class ExtendedRiskMetrics:
 
     @staticmethod
     def value_at_risk(
-        returns: pd.Series,
-        confidence_level: float = 0.95,
-        method: str = 'historical'
+        returns: pd.Series, confidence_level: float = 0.95, method: str = "historical"
     ) -> float:
         """
         Calculate Value at Risk (VaR)
@@ -67,11 +65,11 @@ class ExtendedRiskMetrics:
             logger.warning("Empty returns series provided to VaR calculation")
             return 0.0
 
-        if method == 'historical':
+        if method == "historical":
             # Use empirical percentile
             return float(np.percentile(returns, (1 - confidence_level) * 100))
 
-        elif method == 'parametric':
+        elif method == "parametric":
             # Assume normal distribution
             mean = returns.mean()
             std = returns.std()
@@ -88,10 +86,7 @@ class ExtendedRiskMetrics:
             )
 
     @staticmethod
-    def conditional_var(
-        returns: pd.Series,
-        confidence_level: float = 0.95
-    ) -> float:
+    def conditional_var(returns: pd.Series, confidence_level: float = 0.95) -> float:
         """
         Calculate Conditional VaR (CVaR / Expected Shortfall)
 
@@ -113,9 +108,7 @@ class ExtendedRiskMetrics:
         if len(returns) == 0:
             return 0.0
 
-        var = ExtendedRiskMetrics.value_at_risk(
-            returns, confidence_level, 'historical'
-        )
+        var = ExtendedRiskMetrics.value_at_risk(returns, confidence_level, "historical")
         worst_returns = returns[returns <= var]
 
         if len(worst_returns) == 0:
@@ -124,10 +117,7 @@ class ExtendedRiskMetrics:
         return float(worst_returns.mean())
 
     @staticmethod
-    def beta(
-        asset_returns: pd.Series,
-        market_returns: pd.Series
-    ) -> float:
+    def beta(asset_returns: pd.Series, market_returns: pd.Series) -> float:
         """
         Calculate Beta (market sensitivity)
 
@@ -154,20 +144,16 @@ class ExtendedRiskMetrics:
             return 0.0
 
         # Align series
-        aligned_data = pd.DataFrame({
-            'asset': asset_returns,
-            'market': market_returns
-        }).dropna()
+        aligned_data = pd.DataFrame(
+            {"asset": asset_returns, "market": market_returns}
+        ).dropna()
 
         if len(aligned_data) < 2:
             return 0.0
 
-        covariance = np.cov(
-            aligned_data['asset'],
-            aligned_data['market']
-        )[0][1]
+        covariance = np.cov(aligned_data["asset"], aligned_data["market"])[0][1]
 
-        market_variance = np.var(aligned_data['market'])
+        market_variance = np.var(aligned_data["market"])
 
         if market_variance == 0:
             return 0.0
@@ -176,8 +162,7 @@ class ExtendedRiskMetrics:
 
     @staticmethod
     def calculate_all(
-        returns: pd.Series,
-        market_returns: Optional[pd.Series] = None
+        returns: pd.Series, market_returns: Optional[pd.Series] = None
     ) -> Dict[str, float]:
         """
         Calculate all extended risk metrics
@@ -198,20 +183,20 @@ class ExtendedRiskMetrics:
             >>> print(f"Beta: {metrics['beta']:.2f}")
         """
         metrics = {
-            'var_95_hist': ExtendedRiskMetrics.value_at_risk(
-                returns, 0.95, 'historical'
+            "var_95_hist": ExtendedRiskMetrics.value_at_risk(
+                returns, 0.95, "historical"
             ),
-            'var_95_param': ExtendedRiskMetrics.value_at_risk(
-                returns, 0.95, 'parametric'
+            "var_95_param": ExtendedRiskMetrics.value_at_risk(
+                returns, 0.95, "parametric"
             ),
-            'var_99_hist': ExtendedRiskMetrics.value_at_risk(
-                returns, 0.99, 'historical'
+            "var_99_hist": ExtendedRiskMetrics.value_at_risk(
+                returns, 0.99, "historical"
             ),
-            'cvar_95': ExtendedRiskMetrics.conditional_var(returns, 0.95),
-            'cvar_99': ExtendedRiskMetrics.conditional_var(returns, 0.99)
+            "cvar_95": ExtendedRiskMetrics.conditional_var(returns, 0.95),
+            "cvar_99": ExtendedRiskMetrics.conditional_var(returns, 0.99),
         }
 
         if market_returns is not None and len(market_returns) > 0:
-            metrics['beta'] = ExtendedRiskMetrics.beta(returns, market_returns)
+            metrics["beta"] = ExtendedRiskMetrics.beta(returns, market_returns)
 
         return metrics

@@ -12,7 +12,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
-import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import execute_values
 
@@ -47,7 +46,9 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.putconn(conn)
 
-    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
+    def create_table(
+        self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None
+    ):
         """
         创建普通表
 
@@ -71,7 +72,9 @@ class PostgreSQLDataAccess:
 
         try:
             # 构建字段列表
-            fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
+            fields = ",\n    ".join(
+                [f"{name} {dtype}" for name, dtype in schema.items()]
+            )
 
             # 添加主键约束
             if primary_key:
@@ -93,7 +96,9 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def create_hypertable(self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"):
+    def create_hypertable(
+        self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"
+    ):
         """
         将表转换为TimescaleDB时序表(Hypertable)
 
@@ -224,7 +229,9 @@ class PostgreSQLDataAccess:
             if update_columns is None:
                 update_columns = [col for col in columns if col not in conflict_columns]
 
-            update_str = ", ".join([f"{col} = EXCLUDED.{col}" for col in update_columns])
+            update_str = ", ".join(
+                [f"{col} = EXCLUDED.{col}" for col in update_columns]
+            )
 
             # Upsert SQL
             sql = f"""
@@ -369,7 +376,9 @@ class PostgreSQLDataAccess:
                     where_lower = where.lower()
                     for pattern in dangerous_patterns:
                         if pattern in where_lower:
-                            raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
+                            raise ValueError(
+                                f"Potentially dangerous SQL pattern detected: {pattern}"
+                            )
                     sql += f" WHERE {where}"
 
             # SECURITY FIX: Validate ORDER BY to prevent injection
@@ -390,7 +399,9 @@ class PostgreSQLDataAccess:
                     "created_at",
                     "updated_at",
                 }
-                order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
+                order_field = order_by.split()[
+                    0
+                ]  # Extract field name from "DESC" or "ASC"
                 if order_field not in allowed_order_fields:
                     raise ValueError(f"Invalid order field: {order_field}")
                 sql += f" ORDER BY {order_by}"
@@ -433,12 +444,16 @@ class PostgreSQLDataAccess:
         Returns:
             查询结果DataFrame
         """
-        where_clause = f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
+        where_clause = (
+            f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
+        )
 
         if filters:
             where_clause += f" AND {filters}"
 
-        return self.query(table_name, columns, where_clause, order_by=f"{time_column} ASC")
+        return self.query(
+            table_name, columns, where_clause, order_by=f"{time_column} ASC"
+        )
 
     def execute_sql(self, sql: str, params: Optional[Tuple] = None) -> pd.DataFrame:
         """
@@ -475,7 +490,9 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def delete(self, table_name: str, where: str, params: Optional[Tuple] = None) -> int:
+    def delete(
+        self, table_name: str, where: str, params: Optional[Tuple] = None
+    ) -> int:
         """
         删除数据 (Security-enhanced version)
 
@@ -534,11 +551,23 @@ class PostgreSQLDataAccess:
                 cursor.execute(sql, params)
             else:
                 # Literal WHERE clause - do validation
-                dangerous_patterns = ["'", ";", "--", "/*", "*/", "xp_", "sp_", "drop", "truncate"]
+                dangerous_patterns = [
+                    "'",
+                    ";",
+                    "--",
+                    "/*",
+                    "*/",
+                    "xp_",
+                    "sp_",
+                    "drop",
+                    "truncate",
+                ]
                 where_lower = where.lower()
                 for pattern in dangerous_patterns:
                     if pattern in where_lower:
-                        raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
+                        raise ValueError(
+                            f"Potentially dangerous SQL pattern detected: {pattern}"
+                        )
                 sql = f"DELETE FROM {table_name} WHERE {where}"
                 cursor = conn.cursor()
                 cursor.execute(sql)
@@ -625,7 +654,9 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def save_data(self, data: pd.DataFrame, classification, table_name: str, **kwargs) -> bool:
+    def save_data(
+        self, data: pd.DataFrame, classification, table_name: str, **kwargs
+    ) -> bool:
         """
         保存数据（DataManager API适配器）
 
@@ -677,7 +708,9 @@ class PostgreSQLDataAccess:
                 sql = f"SELECT * FROM {table_name} WHERE {filters['where']}"
                 if "limit" in filters:
                     sql += f" LIMIT {filters['limit']}"
-                return self.query(table_name, where=filters["where"], limit=filters.get("limit"))
+                return self.query(
+                    table_name, where=filters["where"], limit=filters.get("limit")
+                )
             else:
                 # 查询全表（带limit）
                 sql = f"SELECT * FROM {table_name}"

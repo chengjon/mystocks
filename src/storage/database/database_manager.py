@@ -14,7 +14,7 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Any, Optional, Tuple, TYPE_CHECKING
+from typing import Dict, List, Any, Optional
 import sqlalchemy as sa
 from sqlalchemy import (
     create_engine,
@@ -66,7 +66,7 @@ try:
                 taos = None
                 TAOS_MODULE_TYPE = ""
                 TAOS_AVAILABLE = False
-except Exception as e:
+except Exception:
     taos = None
     TAOS_MODULE_TYPE = ""
     TAOS_AVAILABLE = False
@@ -226,7 +226,7 @@ class DatabaseTableManager:
         missing_params = [param for param in required_params if not config.get(param)]
         if missing_params:
             raise ValueError(
-                f"{db_type.value} 连接参数不完整，缺少: {", ".join(missing_params)}。请检查.env文件配置"
+                f"{db_type.value} 连接参数不完整，缺少: {', '.join(missing_params)}。请检查.env文件配置"
             )
 
         try:
@@ -278,7 +278,9 @@ class DatabaseTableManager:
                     host=str(config.get("host", "localhost")),
                     port=int(redis_port) if redis_port is not None else 6379,
                     db=int(redis_db) if redis_db is not None else 0,
-                    password=str(config.get("password")) if config.get("password") else None,
+                    password=str(config.get("password"))
+                    if config.get("password")
+                    else None,
                     decode_responses=True,
                 )
             elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
@@ -622,9 +624,7 @@ class DatabaseTableManager:
             )
 
             if not actual_structure:
-                issues.append(
-                    "Table does not exist or cannot be accessed"
-                )
+                issues.append("Table does not exist or cannot be accessed")
                 validation_status = "fail"
             else:
                 validation_details["actual_columns"] = actual_structure.get(
@@ -640,9 +640,7 @@ class DatabaseTableManager:
                 # 检查缺失的列
                 for col_name in expected_cols:
                     if col_name not in actual_cols:
-                        issues.append(
-                            f"Missing column: {col_name}"
-                        )
+                        issues.append(f"Missing column: {col_name}")
 
                 # 检查多余的列
                 for col_name in actual_cols:
@@ -686,11 +684,7 @@ class DatabaseTableManager:
             database_name=db_name,
             validation_status=validation_status,
             validation_details=validation_details,
-            issues_found=(
-                "; ".join(issues)
-                if issues
-                else None
-            ),
+            issues_found=("; ".join(issues) if issues else None),
         )
         self.monitor_session.add(validation_log)
         self.monitor_session.commit()
@@ -964,9 +958,9 @@ class DatabaseTableManager:
             elif db_type == DatabaseType.POSTGRESQL:
                 cursor.execute(
                     f"""
-                    SELECT column_name, data_type, is_nullable, column_default, 
+                    SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
-                    FROM information_schema.columns 
+                    FROM information_schema.columns
                     WHERE table_name = '{table_name}'
                     ORDER BY ordinal_position
                 """

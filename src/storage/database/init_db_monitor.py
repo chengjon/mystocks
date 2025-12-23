@@ -83,7 +83,7 @@ def find_env_file(default_path="mystocks/.env"):
     # 如果所有路径都找不到，抛出详细错误
     error_msg = f"""
 环境变量文件未找到！已尝试以下路径：
-{''.join([f"  {i}. {os.path.abspath(path)}\n" for i, path in enumerate(possible_paths, 1)])}
+{"".join([f"  {i}. {os.path.abspath(path)}\n" for i, path in enumerate(possible_paths, 1)])}
 请确保：
 1. .env 文件存在于正确位置
 2. 当前工作目录正确 (当前: {os.getcwd()})
@@ -181,8 +181,8 @@ def get_sql_commands(
     )
 
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -343,7 +343,7 @@ def create_database_and_tables(drop_existing=False):
         total_time = time.time() - start_time
 
         # 输出成功统计
-        logger.success(f"✓ 数据库初始化完成!")
+        logger.success("✓ 数据库初始化完成!")
         logger.info(
             f"📊 执行统计: 成功 {executed_commands} / 失败 {failed_commands} / 总计 {total_commands}"
         )

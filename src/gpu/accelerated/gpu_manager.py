@@ -7,14 +7,13 @@ GPU加速统一管理器
 
 import time
 import logging
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 import pandas as pd
-import numpy as np
 
 # GPU组件导入
-from .price_predictor_gpu import GPUPricePredictor, PredictionResult, ModelPerformance
-from .feature_generator_gpu import GPUFeatureGenerator, FeatureSet
+from .price_predictor_gpu import GPUPricePredictor
+from .feature_generator_gpu import GPUFeatureGenerator
 from .data_processor_gpu import GPUDataProcessor, ProcessingConfig
 
 
@@ -502,26 +501,26 @@ class GPUUnifiedManager:
 MyStocks GPU加速使用报告
 ==========================
 
-🚀 GPU环境状态: {'✅ 启用' if self.gpu_enabled else '❌ 禁用'}
+🚀 GPU环境状态: {"✅ 启用" if self.gpu_enabled else "❌ 禁用"}
 
 📊 性能统计:
-  • 总处理时间: {summary['total_processing_time']:.2f}秒
-  • 总处理数据量: {summary['total_data_processed']}行
-  • GPU操作次数: {summary['gpu_enabled_operations']}
-  • CPU回退次数: {summary['cpu_fallback_operations']}
-  • 平均加速比: {summary['average_speedup']:.2f}x
+  • 总处理时间: {summary["total_processing_time"]:.2f}秒
+  • 总处理数据量: {summary["total_data_processed"]}行
+  • GPU操作次数: {summary["gpu_enabled_operations"]}
+  • CPU回退次数: {summary["cpu_fallback_operations"]}
+  • 平均加速比: {summary["average_speedup"]:.2f}x
 
 🔧 GPU组件状态:
-  • 数据处理器: {'✅ 启用' if summary['gpu_components_status']['data_processor']['enabled'] else '❌ 禁用'}
-  • 特征生成器: {'✅ 启用' if summary['gpu_components_status']['feature_generator']['enabled'] else '❌ 禁用'}
-  • 价格预测器: {'✅ 启用' if summary['gpu_components_status']['price_predictor']['enabled'] else '❌ 禁用'}
-  • 模型训练状态: {'✅ 已训练' if summary['gpu_components_status']['price_predictor']['is_fitted'] else '❌ 未训练'}
-  • 总预测次数: {summary['gpu_components_status']['price_predictor']['total_predictions']}
+  • 数据处理器: {"✅ 启用" if summary["gpu_components_status"]["data_processor"]["enabled"] else "❌ 禁用"}
+  • 特征生成器: {"✅ 启用" if summary["gpu_components_status"]["feature_generator"]["enabled"] else "❌ 禁用"}
+  • 价格预测器: {"✅ 启用" if summary["gpu_components_status"]["price_predictor"]["enabled"] else "❌ 禁用"}
+  • 模型训练状态: {"✅ 已训练" if summary["gpu_components_status"]["price_predictor"]["is_fitted"] else "❌ 未训练"}
+  • 总预测次数: {summary["gpu_components_status"]["price_predictor"]["total_predictions"]}
 
 ⚙️  配置信息:
-  • 并行任务数: {summary['configuration']['n_jobs']}
-  • 块大小: {summary['configuration']['chunk_size']}
-  • 内存限制: {summary['configuration']['memory_limit_gb']}GB
+  • 并行任务数: {summary["configuration"]["n_jobs"]}
+  • 块大小: {summary["configuration"]["chunk_size"]}
+  • 内存限制: {summary["configuration"]["memory_limit_gb"]}GB
 
 💡 使用建议:
   • 如果GPU操作失败频繁增加，建议检查GPU内存使用情况

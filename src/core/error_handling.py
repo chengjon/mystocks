@@ -10,10 +10,10 @@ import asyncio
 import logging
 import time
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
 
@@ -44,7 +44,12 @@ class ErrorCategory(Enum):
 class RetryableError(Exception):
     """可重试错误基类"""
 
-    def __init__(self, message: str, category: ErrorCategory, severity: ErrorSeverity = ErrorSeverity.MEDIUM):
+    def __init__(
+        self,
+        message: str,
+        category: ErrorCategory,
+        severity: ErrorSeverity = ErrorSeverity.MEDIUM,
+    ):
         super().__init__(message)
         self.category = category
         self.severity = severity
@@ -54,7 +59,12 @@ class RetryableError(Exception):
 class NonRetryableError(Exception):
     """不可重试错误基类"""
 
-    def __init__(self, message: str, category: ErrorCategory, severity: ErrorSeverity = ErrorSeverity.HIGH):
+    def __init__(
+        self,
+        message: str,
+        category: ErrorCategory,
+        severity: ErrorSeverity = ErrorSeverity.HIGH,
+    ):
         super().__init__(message)
         self.category = category
         self.severity = severity
@@ -100,7 +110,10 @@ class ErrorRecoveryStrategy:
 
     @staticmethod
     def exponential_backoff(
-        base_delay: float = 1.0, max_delay: float = 60.0, backoff_factor: float = 2.0, jitter: bool = True
+        base_delay: float = 1.0,
+        max_delay: float = 60.0,
+        backoff_factor: float = 2.0,
+        jitter: bool = True,
     ) -> Callable[[int], float]:
         """指数退避策略"""
 
@@ -134,7 +147,10 @@ class ErrorHandler:
         self.error_stats: Dict[str, Dict[str, int]] = {}
 
     def log_error(
-        self, error: Exception, context: Optional[Dict[str, Any]] = None, attempt: Optional[int] = None
+        self,
+        error: Exception,
+        context: Optional[Dict[str, Any]] = None,
+        attempt: Optional[int] = None,
     ) -> None:
         """记录错误"""
         if not self.enable_logging:
@@ -166,7 +182,9 @@ class ErrorHandler:
         # 记录分类
         category = getattr(error, "category", "unknown")
 
-        log_message = f"[{timestamp}] ERROR [{severity}] [{category}] " f"{error_type}: {str(error)}"
+        log_message = (
+            f"[{timestamp}] ERROR [{severity}] [{category}] {error_type}: {str(error)}"
+        )
 
         if attempt is not None:
             log_message += f" (attempt {attempt})"
@@ -264,7 +282,9 @@ def handle_errors(
                         elif reraise:
                             raise
                         else:
-                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
+                            logger.error(
+                                f"Failed to execute {func.__name__} after {max_attempts} attempts"
+                            )
                             return None
 
             return None
@@ -300,7 +320,9 @@ def handle_errors(
                         elif reraise:
                             raise
                         else:
-                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
+                            logger.error(
+                                f"Failed to execute {func.__name__} after {max_attempts} attempts"
+                            )
                             return None
 
             return None
@@ -318,7 +340,10 @@ class CircuitBreaker:
     """熔断器"""
 
     def __init__(
-        self, failure_threshold: int = 5, recovery_timeout: float = 60.0, expected_exception: type = Exception
+        self,
+        failure_threshold: int = 5,
+        recovery_timeout: float = 60.0,
+        expected_exception: type = Exception,
     ):
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -348,7 +373,10 @@ class CircuitBreaker:
         return wrapper
 
     def _should_attempt_reset(self) -> bool:
-        return self.last_failure_time and time.time() - self.last_failure_time >= self.recovery_timeout
+        return (
+            self.last_failure_time
+            and time.time() - self.last_failure_time >= self.recovery_timeout
+        )
 
     def _on_success(self) -> None:
         self.failure_count = 0
@@ -363,7 +391,10 @@ class CircuitBreaker:
 
 
 def validate_dataframe(
-    df: pd.DataFrame, required_columns: Optional[list] = None, min_rows: int = 0, max_empty_ratio: float = 0.5
+    df: pd.DataFrame,
+    required_columns: Optional[list] = None,
+    min_rows: int = 0,
+    max_empty_ratio: float = 0.5,
 ) -> bool:
     """
     验证DataFrame
@@ -399,12 +430,16 @@ def validate_dataframe(
         empty_ratio = empty_cells / total_cells if total_cells > 0 else 1.0
 
         if empty_ratio > max_empty_ratio:
-            raise ValidationError(f"DataFrame空值比例({empty_ratio:.2f})超过限制({max_empty_ratio:.2f})")
+            raise ValidationError(
+                f"DataFrame空值比例({empty_ratio:.2f})超过限制({max_empty_ratio:.2f})"
+            )
 
     return True
 
 
-def safe_execute(func: Callable, *args, default_return: Any = None, log_errors: bool = True, **kwargs) -> Any:
+def safe_execute(
+    func: Callable, *args, default_return: Any = None, log_errors: bool = True, **kwargs
+) -> Any:
     """
     安全执行函数
 
@@ -423,7 +458,9 @@ def safe_execute(func: Callable, *args, default_return: Any = None, log_errors: 
     except Exception as e:
         if log_errors:
             error_handler = get_error_handler()
-            error_handler.log_error(e, {"function": func.__name__, "args": args, "kwargs": kwargs})
+            error_handler.log_error(
+                e, {"function": func.__name__, "args": args, "kwargs": kwargs}
+            )
         return default_return
 
 

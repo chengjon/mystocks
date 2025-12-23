@@ -43,7 +43,7 @@ print_header() {
 # 检查lnav是否安装
 check_lnav_installation() {
     print_header "lnav安装检查"
-    
+
     if ! command -v lnav &> /dev/null; then
         print_error "lnav未安装"
         echo ""
@@ -55,22 +55,22 @@ check_lnav_installation() {
         echo ""
         return 1
     fi
-    
+
     local version=$(lnav -V 2>/dev/null | head -1 || echo "Unknown")
     print_success "lnav已安装: $version"
-    
+
     return 0
 }
 
 # 创建lnav配置
 create_lnav_config() {
     local env=$1
-    
+
     print_header "创建lnav配置 ($env)"
-    
+
     local config_dir="$HOME/.config/lnav"
     mkdir -p "$config_dir"
-    
+
     case $env in
         development)
             create_development_config "$config_dir/formats.json"
@@ -83,16 +83,16 @@ create_lnav_config() {
             exit 1
             ;;
     esac
-    
+
     print_success "lnav配置创建完成: $config_dir/formats.json"
 }
 
 # 开发环境配置 (包含调试字段)
 create_development_config() {
     local config_file=$1
-    
+
     print_success "创建开发环境配置 (包含调试字段)"
-    
+
     cat > "$config_file" << 'EOF'
 {
     "mystocks_backend_logs": {
@@ -147,7 +147,7 @@ create_development_config() {
             "2024-12-19T10:30:48.012+0800 [WARNING] performance cpu=85% memory=512MB api_service"
         ]
     },
-    
+
     "mystocks_system_logs": {
         "title": "MyStocks System Logs",
         "description": "系统级日志 (PM2、数据库等)",
@@ -165,7 +165,7 @@ create_development_config() {
             "2024-12-19T10:30:46.456+0800 [ERROR] database=postgresql query_time=500ms rows=0 Connection failed"
         ]
     },
-    
+
     "mysql_query_logs": {
         "title": "MySQL Query Logs",
         "description": "MySQL慢查询日志格式",
@@ -216,9 +216,9 @@ EOF
 # 生产环境配置 (精简字段，专注性能)
 create_production_config() {
     local config_file=$1
-    
+
     print_success "创建生产环境配置 (精简字段，专注性能)"
-    
+
     cat > "$config_file" << 'EOF'
 {
     "mystocks_backend_logs": {
@@ -264,7 +264,7 @@ create_production_config() {
             "2024-12-19T10:30:47.789+0800 [ERROR] request_id=def456 duration=500ms path=/api/data status=500 error=\"Database connection failed\""
         ]
     },
-    
+
     "mystocks_pm2_logs": {
         "title": "PM2 Process Logs",
         "description": "PM2进程管理日志",
@@ -310,14 +310,14 @@ EOF
 # 验证配置
 validate_config() {
     print_header "验证lnav配置"
-    
+
     local config_file="$HOME/.config/lnav/formats.json"
-    
+
     if [ ! -f "$config_file" ]; then
         print_error "配置文件不存在: $config_file"
         return 1
     fi
-    
+
     # 验证JSON格式
     if command -v jq &> /dev/null; then
         if ! jq empty "$config_file" 2>/dev/null; then
@@ -328,44 +328,44 @@ validate_config() {
     else
         print_warning "jq未安装，跳过JSON格式验证"
     fi
-    
+
     # 测试lnav配置
     if ! lnav -c ":quit" "$config_file" 2>/dev/null; then
         print_warning "lnav配置测试失败"
     else
         print_success "lnav配置测试通过"
     fi
-    
+
     print_success "配置验证完成"
 }
 
 # 显示使用指南
 show_usage_guide() {
     print_header "lnav使用指南"
-    
+
     echo -e "${GREEN}基本操作:${NC}"
     echo -e "  ${CYAN}lnav $LOG_DIR${NC}                    # 启动lnav并监控日志"
     echo -e "  ${CYAN}lnav $LOG_DIR/*.log${NC}             # 监控多个日志文件"
     echo -e "  ${CYAN}lnav -t $LOG_DIR${NC}                # 进入时间旅行模式"
     echo ""
-    
+
     echo -e "${GREEN}过滤和搜索:${NC}"
     echo -e "  ${CYAN}:filter-in ERROR${NC}                # 过滤错误日志"
     echo -e "  ${CYAN}:filter-in -v INFO${NC}              # 过滤掉INFO日志"
     echo -e "  ${CYAN}:search /request_id=abc${NC}         # 搜索特定request_id"
     echo ""
-    
+
     echo -e "${GREEN}SQL查询 (开发环境):${NC}"
     echo -e "  ${CYAN}:sql-query SELECT COUNT(*) FROM log WHERE level='ERROR'${NC}  # 错误计数"
     echo -e "  ${CYAN}:sql-query SELECT path, AVG(duration) FROM log GROUP BY path${NC}  # 平均响应时间"
     echo ""
-    
+
     echo -e "${GREEN}统计和图表:${NC}"
     echo -e "  ${CYAN}:stats${NC}                          # 显示日志统计信息"
     echo -e "  ${CYAN}:histogram -f duration${NC}          # 响应时间分布图"
     echo -e "  ${CYAN}:timeline${NC}                       # 时间轴视图"
     echo ""
-    
+
     echo -e "${GREEN}其他功能:${NC}"
     echo -e "  ${CYAN}:quit${NC}                           # 退出lnav"
     echo -e "  ${CYAN}:help${NC}                           # 显示帮助"
@@ -376,7 +376,7 @@ show_usage_guide() {
 # 显示帮助信息
 show_help() {
     print_header "MyStocks lnav配置安装器 v2.0"
-    
+
     echo "用法: $0 [环境] [选项]"
     echo ""
     echo "环境:"
@@ -401,7 +401,7 @@ main() {
     local env="development"
     local validate_only=false
     local show_guide=false
-    
+
     # 解析命令行参数
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -428,35 +428,35 @@ main() {
                 ;;
         esac
     done
-    
+
     # 显示标题
     print_header "MyStocks lnav配置安装器 v2.0"
     echo ""
-    
+
     if [ "$show_guide" = true ]; then
         show_usage_guide
         exit 0
     fi
-    
+
     # 检查lnav安装
     if ! check_lnav_installation; then
         exit 1
     fi
-    
+
     if [ "$validate_only" = true ]; then
         validate_config
         exit 0
     fi
-    
+
     # 创建配置
     create_lnav_config "$env"
-    
+
     # 验证配置
     validate_config
-    
+
     # 显示使用指南
     show_usage_guide
-    
+
     print_success "lnav配置安装完成！"
 }
 

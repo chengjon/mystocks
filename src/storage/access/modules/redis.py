@@ -14,9 +14,8 @@ import pandas as pd
 import logging
 import json
 import os
-from typing import Dict, List, Optional, Union, Tuple, Any
+from typing import Dict, List, Union, Any
 
-from src.storage.access.modules.base import get_database_name_from_classification
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
 
@@ -128,7 +127,9 @@ class RedisDataAccess:
 
     def delete_realtime_data(self, key: str) -> bool:
         """从Redis删除数据"""
-        operation_id = self.monitoring_db.log_operation_start(key, "Redis", "0", "DELETE")
+        operation_id = self.monitoring_db.log_operation_start(
+            key, "Redis", "0", "DELETE"
+        )
 
         try:
             self.redis_client.delete(key)
@@ -155,12 +156,12 @@ class RedisDataAccess:
         try:
             # 转换DataFrame为JSON
             data_json = data.to_json(orient="records")
-            
+
             # 保存到Redis
             self.redis_client.setex(key, expire, data_json)
-            
+
             logger.info(f"DataFrame保存到Redis成功: {key}, {len(data)}行")
-            
+
             return True
 
         except Exception as e:
@@ -176,13 +177,13 @@ class RedisDataAccess:
         try:
             # 从Redis获取JSON数据
             json_data = self.redis_client.get(key)
-            
+
             if json_data:
                 # 将JSON转换为DataFrame
                 data = pd.read_json(json_data, orient="records")
-                
+
                 logger.info(f"从Redis加载DataFrame成功: {key}, {len(data)}行")
-                
+
                 return data
             else:
                 logger.warning(f"Redis中找不到数据: {key}")
@@ -203,29 +204,26 @@ class RedisDataAccess:
         try:
             # 将数据添加到Hash
             result = self.redis_client.hset(key, mapping=data)
-            
+
             # 设置过期时间
             self.redis_client.expire(key, expire)
-            
+
             logger.info(f"Redis Hash更新成功: {key}, {result}字段")
-            
+
             return True
 
         except Exception as e:
             logger.error(f"Redis Hash更新失败: {e}")
             return False
 
-    def get_realtime_data_keys(
-        self, 
-        pattern: str = "*"
-    ) -> List[str]:
+    def get_realtime_data_keys(self, pattern: str = "*") -> List[str]:
         """获取符合模式的键名列表"""
         try:
             # 使用模式匹配获取键
             keys = self.redis_client.keys(pattern)
-            
+
             logger.info(f"获取Redis键列表成功: {len(keys)}个键")
-            
+
             return keys
 
         except Exception as e:
@@ -237,13 +235,13 @@ class RedisDataAccess:
         try:
             # 获取匹配的键
             keys = self.redis_client.keys(pattern)
-            
+
             if keys:
                 # 删除匹配的键
                 count = self.redis_client.delete(*keys)
-                
+
                 logger.info(f"清理Redis数据成功: {count}个键")
-                
+
                 return count
             else:
                 logger.info("没有找到匹配的数据")
@@ -303,13 +301,13 @@ class RedisDataAccess:
         """缓存计算结果"""
         # 生成键
         key_parts = [f"{classification.value}:{operation}"]
-        
+
         # 添加参数信息到键中
         for k, v in sorted(params.items()):
             key_parts.append(f"{k}={str(v)}")
-            
+
         key = ":".join(key_parts)
-        
+
         return self.save_realtime_data(classification, key, data, expire)
 
     def get_cached_result_for_computation(
@@ -322,11 +320,11 @@ class RedisDataAccess:
         """获取缓存的计算结果"""
         # 生成键
         key_parts = [f"{classification.value}:{operation}"]
-        
+
         # 添加参数信息到键中
         for k, v in sorted(params.items()):
             key_parts.append(f"{k}={str(v)}")
-            
+
         key = ":".join(key_parts)
-        
+
         return self.load_realtime_data(classification, key, expected_type)

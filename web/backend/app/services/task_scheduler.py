@@ -4,8 +4,7 @@
 """
 
 import logging
-from datetime import datetime
-from typing import Dict, Optional, List
+from typing import Dict, List
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger

@@ -569,7 +569,7 @@ Args:
     df: 输入的DataFrame
     target_lang: 目标语言，"en"或"cn"
     custom_mapping: 自定义映射规则
-    
+
 Returns:
     pd.DataFrame: 标准化后的DataFrame
 
@@ -613,10 +613,10 @@ Returns:
 
 Args:
     date_str: 需要格式化的日期字符串或日期对象
-    
+
 Returns:
     str: 格式化后的日期字符串 (YYYY-MM-DD)
-    
+
 Raises:
     ValueError: 如果日期格式无法识别
 
@@ -630,7 +630,7 @@ Args:
     start_date: 开始日期
     end_date: 结束日期 (如果提供了days参数，则忽略此参数)
     days: 从开始日期算起的天数 (可选)，可以是整数或字符串
-    
+
 Returns:
     tuple: (标准化开始日期, 标准化结束日期)
 
@@ -642,7 +642,7 @@ Returns:
 
 Args:
     date_str: 日期字符串
-    
+
 Returns:
     bool: 日期是否有效
 
@@ -713,9 +713,9 @@ Returns:
 **位置**: [utils/symbol_utils.py:8]
 
 标准化股票代码格式
-支持格式: 
+支持格式:
 - 基本格式: 000001, 600000
-- 后缀格式: 000001.SZ, 600000.SH 
+- 后缀格式: 000001.SZ, 600000.SH
 - 前缀格式: sz000001, SH600000
 - 点分隔格式: sz.000001, sh.600000
 - Baostock格式: sh.600000, sz.000001
@@ -725,10 +725,10 @@ Returns:
 
 参数:
     code: 输入的股票代码(可以是字符串、整数或浮点数)
-    
+
 返回:
     标准化后的6位数字股票代码
-    
+
 异常:
     ValueError: 当输入为空或无法识别的格式时抛出
 
@@ -740,7 +740,7 @@ Returns:
 
 参数:
     code: 股票代码(可以是任何支持的格式)
-    
+
 返回:
     str: 交易所代码 (SH/SZ/BJ)
 
@@ -755,10 +755,10 @@ Returns:
     source_type: 数据源类型
         - 'akshare': AKShare格式 (600000) - 6位纯数字
         - 'baostock': Baostock格式 (sh.600000) - 交易所.代码
-        
+
 返回:
     str: 适合指定数据源的股票代码格式
-    
+
 异常:
     ValueError: 当数据源类型无效时抛出
 
@@ -776,10 +776,10 @@ Returns:
         - 'suffix': 后缀格式 (600001.SH)
         - 'baostock': Baostock格式 (sh.600000)
         - 'akshare': AKShare格式 (600000)
-        
+
 返回:
     str: 格式化后的股票代码
-    
+
 异常:
     ValueError: 当格式类型无效时抛出
 
@@ -791,7 +791,7 @@ Returns:
 
 参数:
     code: 股票代码
-    
+
 返回:
     bool: 股票代码是否有效
 
@@ -806,10 +806,10 @@ Returns:
     source_type: 数据源类型
         - 'akshare': AKShare格式 (通常是 sh000001, sz399001 或 000001, 399001)
         - 'baostock': Baostock格式 (sh.000001, sz.399001)
-        
+
 返回:
     str: 适合指定数据源的指数代码格式
-    
+
 异常:
     ValueError: 当数据源类型无效时抛出
 
@@ -818,9 +818,9 @@ Returns:
 **位置**: [utils/symbol_utils.py:243]
 
 标准化指数代码格式
-支持格式: 
+支持格式:
 - 基本格式: 000001, 399001
-- 后缀格式: 000001.SH, 399001.SZ 
+- 后缀格式: 000001.SH, 399001.SZ
 - 前缀格式: sh000001, SZ399001
 - 点分隔格式: sh.000001, sz.399001
 
@@ -828,10 +828,10 @@ Returns:
 
 参数:
     code: 输入的指数代码(可以是字符串、整数或浮点数)
-    
+
 返回:
     标准化后的6位数字指数代码
-    
+
 异常:
     ValueError: 当输入为空或无法识别的格式时抛出
 

@@ -5,7 +5,7 @@ Real-time Monitoring System Test
 
 import requests
 import json
-from datetime import date, datetime
+from datetime import date
 
 # API base URL
 BASE_URL = "http://localhost:8000"
@@ -87,7 +87,7 @@ def test_update_alert_rule(rule_id):
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
-        print(f"更新成功!")
+        print("更新成功!")
         print(f"  描述: {data['description']}")
         print(f"  优先级: {data['priority']}")
 
@@ -106,7 +106,7 @@ def test_fetch_realtime_data():
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
-        print(f"数据获取成功!")
+        print("数据获取成功!")
         print(json.dumps(data, indent=2, ensure_ascii=False))
 
 
@@ -232,7 +232,7 @@ def test_delete_alert_rule(rule_id):
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
-        print(f"删除成功!")
+        print("删除成功!")
         print(json.dumps(data, indent=2, ensure_ascii=False))
 
 

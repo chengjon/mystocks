@@ -4,21 +4,22 @@ Database Migration Script for Phase 4
 
 执行PostgreSQL数据库迁移，创建策略管理和回测相关的表结构
 """
+
 import os
 import sys
 import logging
-from pathlib import Path
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -26,21 +27,17 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     """获取PostgreSQL数据库连接"""
     # 从环境变量读取配置
-    host = os.getenv('POSTGRESQL_HOST', 'localhost')
-    port = os.getenv('POSTGRESQL_PORT', '5432')
-    user = os.getenv('POSTGRESQL_USER', 'postgres')
-    password = os.getenv('POSTGRESQL_PASSWORD', '')
-    database = os.getenv('POSTGRESQL_DATABASE', 'mystocks')
+    host = os.getenv("POSTGRESQL_HOST", "localhost")
+    port = os.getenv("POSTGRESQL_PORT", "5432")
+    user = os.getenv("POSTGRESQL_USER", "postgres")
+    password = os.getenv("POSTGRESQL_PASSWORD", "")
+    database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
     logger.info(f"连接PostgreSQL数据库: {host}:{port}/{database}")
 
     try:
         conn = psycopg2.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            database=database
+            host=host, port=port, user=user, password=password, database=database
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         logger.info("数据库连接成功")
@@ -62,7 +59,7 @@ def check_table_exists(conn, table_name):
                     AND table_name = %s
                 )
                 """,
-                (table_name,)
+                (table_name,),
             )
             exists = cursor.fetchone()[0]
             return exists
@@ -77,7 +74,7 @@ def run_migration(conn, migration_file):
 
     # 读取SQL文件
     try:
-        with open(migration_file, 'r', encoding='utf-8') as f:
+        with open(migration_file, "r", encoding="utf-8") as f:
             sql_content = f.read()
     except Exception as e:
         logger.error(f"读取迁移文件失败: {str(e)}")
@@ -97,10 +94,10 @@ def run_migration(conn, migration_file):
 def verify_migration(conn):
     """验证迁移结果"""
     expected_tables = [
-        'user_strategies',
-        'backtest_results',
-        'backtest_equity_curves',
-        'backtest_trades'
+        "user_strategies",
+        "backtest_results",
+        "backtest_equity_curves",
+        "backtest_trades",
     ]
 
     logger.info("验证迁移结果...")
@@ -133,8 +130,8 @@ def main():
     logger.info("=" * 60)
 
     # 获取迁移文件路径
-    migrations_dir = os.path.join(project_root, 'scripts', 'db', 'migrations')
-    migration_file = os.path.join(migrations_dir, '001_create_strategy_tables.sql')
+    migrations_dir = os.path.join(project_root, "scripts", "db", "migrations")
+    migration_file = os.path.join(migrations_dir, "001_create_strategy_tables.sql")
 
     if not os.path.exists(migration_file):
         logger.error(f"迁移文件不存在: {migration_file}")
@@ -143,15 +140,15 @@ def main():
     # 连接数据库
     try:
         conn = get_db_connection()
-    except Exception as e:
-        logger.error(f"数据库连接失败，退出")
+    except Exception:
+        logger.error("数据库连接失败，退出")
         sys.exit(1)
 
     try:
         # 检查表是否已存在
         logger.info("检查表是否已存在...")
         tables_exist = []
-        for table_name in ['user_strategies', 'backtest_results']:
+        for table_name in ["user_strategies", "backtest_results"]:
             exists = check_table_exists(conn, table_name)
             if exists:
                 tables_exist.append(table_name)
@@ -159,7 +156,7 @@ def main():
         if tables_exist:
             logger.warning(f"以下表已存在: {', '.join(tables_exist)}")
             response = input("是否继续执行迁移 (可能会失败)? (y/N): ")
-            if response.lower() != 'y':
+            if response.lower() != "y":
                 logger.info("迁移已取消")
                 conn.close()
                 return

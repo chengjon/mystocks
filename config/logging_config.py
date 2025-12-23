@@ -85,7 +85,6 @@ def db_sink(message):
     """
     try:
         import psycopg2
-        from datetime import datetime
         import json
         import os
 
@@ -139,7 +138,7 @@ def db_sink(message):
         cursor.close()
         conn.close()
 
-    except Exception as e:
+    except Exception:
         # 数据库日志失败不应影响主程序，静默处理
         pass
 
@@ -237,4 +236,4 @@ __all__ = ["logger", "get_logger", "temporary_level", "log_performance"]
 # 初始化完成日志
 logger.info("Loguru 日志系统初始化完成")
 logger.info(f"日志目录: {LOG_DIR}")
-logger.info(f"日志级别: 控制台=INFO, 文件=DEBUG, 数据库=WARNING")
+logger.info("日志级别: 控制台=INFO, 文件=DEBUG, 数据库=WARNING")

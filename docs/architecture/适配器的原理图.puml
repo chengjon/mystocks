@@ -13,7 +13,7 @@ package "用户层 (应用程序)" <<Rectangle,PRIMARY_COLOR>> {
     + run_strategy()
     + analyze_data()
   }
-  
+
   class "主程序入口" as MainEntry {
     - manager: UnifiedDataManager
     + main()
@@ -36,7 +36,7 @@ package "核心管理层" <<Rectangle,SECONDARY_COLOR>> {
     + get_index_components(symbol, source_type) -> List[str]
     + compare_data_sources(symbol, start_date, end_date)
   }
-  
+
   class "数据源工厂" as DataSourceFactory {
     - _source_types: Dict[str, Type[IDataSource]]
     --
@@ -93,7 +93,7 @@ package "数据源适配器层" <<Rectangle,SECONDARY_COLOR>> {
     + get_financial_data(symbol, period) -> Union[DataFrame, str]
     + get_news_data(symbol, limit) -> Union[List[Dict], str]
   }
-  
+
   class "Tushare适配器" as TushareAdapter {
     - api_token: str
     + get_stock_daily(...) -> DataFrame
@@ -113,7 +113,7 @@ package "工具层" <<Rectangle,UTIL_COLOR>> {
     + validate_columns(df, required_columns, strict) -> Tuple
     + add_custom_mapping(custom_mapping, target_lang)
   }
-  
+
   class "代码格式化工具" as SymbolUtils {
     + normalize_stock_code(code) -> str
     + get_stock_exchange(code) -> str
@@ -122,7 +122,7 @@ package "工具层" <<Rectangle,UTIL_COLOR>> {
     + normalize_index_code(code) -> str
     + is_valid_stock_code(code) -> bool
   }
-  
+
   class "日期处理工具" as DateUtils {
     + normalize_date(date) -> str
     + get_date_range(start_date, end_date, days) -> Tuple
@@ -138,7 +138,7 @@ package "外部数据源" <<Rectangle,#E0E0E0>> {
     + index_zh_a_hist()
     + ...
   }
-  
+
   class "Baostock库" as BaostockAPI {
     + login()
     + logout()
@@ -146,7 +146,7 @@ package "外部数据源" <<Rectangle,#E0E0E0>> {
     + query_stock_basic()
     + ...
   }
-  
+
   class "Tushare库" as TushareAPI {
     + daily()
     + stock_basic()

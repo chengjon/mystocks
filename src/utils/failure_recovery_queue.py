@@ -9,8 +9,7 @@
 
 import sqlite3
 import json
-from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 
 class FailureRecoveryQueue:

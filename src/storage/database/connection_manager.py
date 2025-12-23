@@ -74,7 +74,9 @@ class DatabaseConnectionManager:
             if "tdengine" not in self._connections:
                 # WebSocket连接优先使用REST端口(6041),否则使用默认端口(6030)
                 tdengine_port = int(
-                    os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
+                    os.getenv("TDENGINE_REST_PORT")
+                    or os.getenv("TDENGINE_PORT")
+                    or "6030"
                 )
 
                 # pylint: disable=no-member
@@ -92,7 +94,9 @@ class DatabaseConnectionManager:
         except ImportError:
             raise ImportError("TDengine驱动未安装: pip install taospy>=2.7.0")
         except Exception as e:
-            port_str = os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
+            port_str = (
+                os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
+            )
             raise ConnectionError(
                 f"TDengine连接失败: {e}\n"
                 f"请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}"

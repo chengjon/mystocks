@@ -8,5 +8,5 @@ __all__ = [
     "get_monitoring_database",
     "DataQualityMonitor",
     "PerformanceMonitor",
-    "AlertManager"
+    "AlertManager",
 ]

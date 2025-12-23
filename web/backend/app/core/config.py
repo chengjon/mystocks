@@ -2,8 +2,7 @@
 应用配置管理
 """
 
-import os
-from typing import List, Optional
+from typing import List
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -50,7 +49,9 @@ class Settings(BaseSettings):
     )  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
-    cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
+    cors_origins_str: str = (
+        "http://localhost:3000,http://localhost:8080,http://localhost:5173"
+    )
 
     @property
     def cors_origins(self) -> List[str]:
@@ -155,7 +156,9 @@ def get_monitor_db_connection_string() -> str:
 # 为兼容性保留（部分服务可能引用）
 def get_mysql_connection_string() -> str:
     """已废弃: Week 3简化后不再使用MySQL"""
-    raise NotImplementedError("MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()")
+    raise NotImplementedError(
+        "MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()"
+    )
 
 
 # 设置数据库URL（用于某些服务的向后兼容）

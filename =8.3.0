@@ -1,0 +1,5 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Requirement already satisfied: pytest in /root/miniconda3/envs/stock/lib/python3.12/site-packages (7.4.4)
+Requirement already satisfied: iniconfig in /root/miniconda3/envs/stock/lib/python3.12/site-packages (from pytest) (2.3.0)
+Requirement already satisfied: packaging in /root/miniconda3/envs/stock/lib/python3.12/site-packages (from pytest) (25.0)
+Requirement already satisfied: pluggy<2.0,>=0.12 in /root/miniconda3/envs/stock/lib/python3.12/site-packages (from pytest) (1.6.0)

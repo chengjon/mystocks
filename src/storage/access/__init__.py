@@ -31,41 +31,42 @@ __all__ = [
     # 基础类和函数
     "IDataAccessLayer",
     "get_database_name_from_classification",
-    "normalize_dataframe", 
+    "normalize_dataframe",
     "validate_data_for_classification",
     "validate_time_series_data",
-    
     # 数据访问器
     "TDengineDataAccess",
-    "PostgreSQLDataAccess", 
+    "PostgreSQLDataAccess",
     "AkshareDataAccess",
 ]
+
 
 # 为了向后兼容性，提供单例的数据库管理器
 class _DataAccessManager:
     """数据访问管理器 - 提供统一的数据访问入口"""
-    
+
     def __init__(self):
         """初始化数据访问管理器"""
         self._monitordb = None
         self._tdengine_access = None
         self._postgresql_access = None
         self._akshare_access = None
-    
+
     def initialize(self, monitoring_db):
         """初始化数据访问管理器"""
         self._monitordb = monitoring_db
         self._tdengine_access = TDengineDataAccess(monitoring_db)
         self._postgresql_access = PostgreSQLDataAccess(monitoring_db)
         self._akshare_access = AkshareDataAccess(monitoring_db)
-    
+
     def get_data_access(self, database_type):
         """获取特定数据库类型的数据访问器"""
         if self._monitordb is None:
             from src.monitoring.monitoring_database import MonitoringDatabase
+
             self._monitordb = MonitoringDatabase()
             self.initialize(self._monitordb)
-        
+
         if database_type == "TDengine" or database_type == "TDENGINE":
             return self._tdengine_access
         elif database_type == "PostgreSQL" or database_type == "POSTGRESQL":
@@ -75,17 +76,21 @@ class _DataAccessManager:
         else:
             raise ValueError(f"未知的数据库类型: {database_type}")
 
+
 # 创建全局数据访问管理器实例
 _data_access_manager = _DataAccessManager()
+
 
 def get_data_access(database_type):
     """获取数据访问器"""
     return _data_access_manager.get_data_access(database_type)
 
+
 # 为了向后兼容性，提供全局函数
 def get_database_name_from_classification_global(classification):
     """获取数据库名称 - 全局函数"""
     return get_database_name_from_classification(classification)
+
 
 def normalize_dataframe_global(data):
     """标准化DataFrame - 全局函数"""

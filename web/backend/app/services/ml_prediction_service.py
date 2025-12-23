@@ -3,11 +3,10 @@
 使用 LightGBM 进行股票价格预测
 """
 
-import os
 import pickle
 import json
 from pathlib import Path
-from typing import Dict, Tuple, Optional, List
+from typing import Dict, List
 from datetime import datetime
 
 import numpy as np
@@ -59,7 +58,7 @@ class MLPredictionService:
         learning_rate: float = 0.2,
         n_estimators: int = 70,
         max_depth: int = 15,
-        **kwargs
+        **kwargs,
     ) -> LGBMRegressor:
         """
         创建 LightGBM 模型

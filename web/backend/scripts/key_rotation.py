@@ -27,7 +27,6 @@ import argparse
 import os
 import sys
 from typing import Optional
-import json
 from datetime import datetime
 
 # Add parent directory to path for imports
@@ -82,7 +81,7 @@ class KeyRotationCLI:
             if metadata["rotated_at"]:
                 print(f"    Rotated:  {metadata['rotated_at']}")
             else:
-                print(f"    Status:   Active")
+                print("    Status:   Active")
 
         print("\n" + "=" * 70 + "\n")
 
@@ -159,7 +158,7 @@ class KeyRotationCLI:
 
         if success:
             print(f"✅ Successfully rotated to version {new_version}")
-            print(f"\n⚠️  Note: Existing secrets are still encrypted with old versions.")
+            print("\n⚠️  Note: Existing secrets are still encrypted with old versions.")
             print(
                 f"   Run 'migrate --target-version {new_version}' to re-encrypt them."
             )
@@ -213,7 +212,7 @@ class KeyRotationCLI:
                 return False
 
         # Perform migration
-        print(f"\n🔄 Migrating secrets...")
+        print("\n🔄 Migrating secrets...")
         migration_report = self.secret_mgr.migrate_to_key_version(target_version)
 
         # Display results

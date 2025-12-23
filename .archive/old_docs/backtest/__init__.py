@@ -15,4 +15,4 @@ from .exchange import Exchange
 from .account import Account
 from .engine import BacktestEngine
 
-__all__ = ['Exchange', 'Account', 'BacktestEngine']
+__all__ = ["Exchange", "Account", "BacktestEngine"]

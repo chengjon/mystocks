@@ -15,7 +15,6 @@ Test Coverage:
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime
-from unittest.mock import patch, MagicMock
 
 from app.api.cache import router
 from app.core.cache_manager import reset_cache_manager, get_cache_manager

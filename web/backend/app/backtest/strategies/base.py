@@ -3,25 +3,27 @@ Strategy Base Class
 
 策略基类定义
 """
+
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional
 from decimal import Decimal
-from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
 
 
 class SignalType(str, Enum):
     """信号类型"""
-    LONG = "LONG"       # 做多
-    SHORT = "SHORT"     # 做空
-    EXIT = "EXIT"       # 平仓
-    HOLD = "HOLD"       # 持有
+
+    LONG = "LONG"  # 做多
+    SHORT = "SHORT"  # 做空
+    EXIT = "EXIT"  # 平仓
+    HOLD = "HOLD"  # 持有
 
 
 @dataclass
 class StrategySignal:
     """策略信号"""
+
     symbol: str
     signal_type: SignalType
     strength: float = 1.0  # 信号强度 0-1
@@ -68,7 +70,7 @@ class BaseStrategy(ABC):
         self,
         symbol: str,
         current_data: Dict[str, Any],
-        position: Optional[Dict[str, Any]] = None
+        position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """
         生成交易信号
@@ -97,20 +99,20 @@ class BaseStrategy(ABC):
         self.price_history[symbol].append(data)
 
         # 限制历史数据长度
-        max_history = self.parameters.get('max_history', 500)
+        max_history = self.parameters.get("max_history", 500)
         if len(self.price_history[symbol]) > max_history:
             self.price_history[symbol] = self.price_history[symbol][-max_history:]
 
     def get_closes(self, symbol: str, n: int = None) -> List[float]:
         """获取收盘价序列"""
         history = self.price_history.get(symbol, [])
-        closes = [float(h.get('close', 0)) for h in history]
+        closes = [float(h.get("close", 0)) for h in history]
         return closes[-n:] if n else closes
 
     def get_volumes(self, symbol: str, n: int = None) -> List[int]:
         """获取成交量序列"""
         history = self.price_history.get(symbol, [])
-        volumes = [int(h.get('volume', 0)) for h in history]
+        volumes = [int(h.get("volume", 0)) for h in history]
         return volumes[-n:] if n else volumes
 
     # 技术指标计算方法
@@ -167,6 +169,7 @@ class BaseStrategy(ABC):
             return None
 
         import numpy as np
+
         recent = prices[-period:]
         middle = np.mean(recent)
         std = np.std(recent)
@@ -183,15 +186,11 @@ class BaseStrategy(ABC):
 
         true_ranges = []
         for i in range(1, len(history)):
-            high = float(history[i]['high'])
-            low = float(history[i]['low'])
-            prev_close = float(history[i - 1]['close'])
+            high = float(history[i]["high"])
+            low = float(history[i]["low"])
+            prev_close = float(history[i - 1]["close"])
 
-            tr = max(
-                high - low,
-                abs(high - prev_close),
-                abs(low - prev_close)
-            )
+            tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
             true_ranges.append(tr)
 
         return sum(true_ranges[-period:]) / period
@@ -209,10 +208,10 @@ class BaseStrategy(ABC):
     def get_info(self) -> Dict[str, Any]:
         """获取策略信息"""
         return {
-            'name': self.name,
-            'description': self.description,
-            'version': self.version,
-            'parameters': self.parameters,
-            'default_parameters': self.get_default_parameters(),
-            'parameter_schema': self.get_parameter_schema()
+            "name": self.name,
+            "description": self.description,
+            "version": self.version,
+            "parameters": self.parameters,
+            "default_parameters": self.get_default_parameters(),
+            "parameter_schema": self.get_parameter_schema(),
         }

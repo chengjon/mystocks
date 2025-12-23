@@ -9,19 +9,15 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
 from decimal import Decimal
-from datetime import datetime
 
 from app.services.data_aggregation_service import (
     OHLCV,
     Timeframe,
-    get_aggregation_engine,
     reset_aggregation_engine,
 )
 from app.services.realtime_streaming_service import (
-    get_streaming_service,
     reset_streaming_service,
 )
 from app.services.aggregation_streaming_bridge import (

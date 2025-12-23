@@ -11,8 +11,7 @@ Test Suite for Sync Processor
 
 import pytest
 from datetime import datetime, timedelta
-from unittest.mock import Mock, MagicMock, patch
-import time
+from unittest.mock import Mock
 
 from app.models.sync_message import (
     SyncMessage,

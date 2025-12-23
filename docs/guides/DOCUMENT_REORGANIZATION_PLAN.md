@@ -1,7 +1,7 @@
 # 根目录文档批量整理计划
 
-**创建时间**: 2025-11-13  
-**状态**: 待执行  
+**创建时间**: 2025-11-13
+**状态**: 待执行
 **目的**: 按照 `docs/standards/FILE_ORGANIZATION_RULES.md` 的规则，清理根目录的.md文件
 
 ## 📋 整理清单
@@ -9,7 +9,7 @@
 ### 核心原则
 根据文件组织规则，根目录只允许5个核心文件：
 - README.md ✅
-- CLAUDE.md ✅ 
+- CLAUDE.md ✅
 - CHANGELOG.md ✅
 - requirements.txt ✅
 - .mcp.json ✅

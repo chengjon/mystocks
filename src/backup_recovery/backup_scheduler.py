@@ -7,8 +7,7 @@
 """
 
 import logging
-from datetime import datetime, time
-from typing import Optional, Callable
+from datetime import datetime
 
 try:
     from apscheduler.schedulers.background import BackgroundScheduler
@@ -166,7 +165,7 @@ class BackupScheduler:
                 logger.info(
                     f"TDengine full backup succeeded: "
                     f"id={metadata.backup_id}, "
-                    f"size={metadata.backup_size_bytes/1024/1024:.2f}MB, "
+                    f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
                     f"ratio={metadata.compression_ratio:.2f}x"
                 )
             else:
@@ -221,7 +220,7 @@ class BackupScheduler:
                 logger.info(
                     f"PostgreSQL full backup succeeded: "
                     f"id={metadata.backup_id}, "
-                    f"size={metadata.backup_size_bytes/1024/1024:.2f}MB, "
+                    f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
                     f"ratio={metadata.compression_ratio:.2f}x"
                 )
             else:

@@ -6,7 +6,7 @@
 import logging
 import time
 from functools import wraps
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Callable
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -20,8 +20,9 @@ class UnifiedErrorHandler:
     """
 
     @staticmethod
-    def log_error(error: Exception, context: str = "",
-                  level: int = logging.ERROR) -> None:
+    def log_error(
+        error: Exception, context: str = "", level: int = logging.ERROR
+    ) -> None:
         """
         统一日志记录
 
@@ -31,7 +32,9 @@ class UnifiedErrorHandler:
             level: 日志级别
         """
         logger.log(
-            level, f"错误发生 - 上下文: {context}, 错误: {str(error)}, 类型: {type(error).__name__}")
+            level,
+            f"错误发生 - 上下文: {context}, 错误: {str(error)}, 类型: {type(error).__name__}",
+        )
 
     @staticmethod
     def safe_execute(
@@ -39,7 +42,7 @@ class UnifiedErrorHandler:
         context: str = "",
         default_return: Any = None,
         log_error: bool = True,
-        reraise: bool = False
+        reraise: bool = False,
     ) -> Any:
         """
         安全执行函数
@@ -71,7 +74,7 @@ class UnifiedErrorHandler:
         delay: float = 1.0,
         backoff: float = 2.0,
         exceptions: tuple = (Exception,),
-        context: str = ""
+        context: str = "",
     ):
         """
         重试装饰器
@@ -83,6 +86,7 @@ class UnifiedErrorHandler:
             exceptions: 需要重试的异常类型
             context: 执行上下文
         """
+
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             def wrapper(*args, **kwargs) -> Any:
@@ -95,8 +99,7 @@ class UnifiedErrorHandler:
                     except exceptions as e:
                         last_exception = e
                         UnifiedErrorHandler.log_error(
-                            e,
-                            f"{context} - 第{attempt}次尝试失败"
+                            e, f"{context} - 第{attempt}次尝试失败"
                         )
 
                         if attempt < max_retries:
@@ -104,22 +107,19 @@ class UnifiedErrorHandler:
                             current_delay *= backoff
                         else:
                             UnifiedErrorHandler.log_error(
-                                e,
-                                f"{context} - 所有重试均已失败"
+                                e, f"{context} - 所有重试均已失败"
                             )
 
                 # 所有重试都失败，重新抛出最后一个异常
                 raise last_exception
 
             return wrapper
+
         return decorator
 
 
 # 便捷函数
-def safe_execute(
-        func: Callable,
-        context: str = "",
-        default_return: Any = None):
+def safe_execute(func: Callable, context: str = "", default_return: Any = None):
     """安全执行函数的便捷函数"""
     return UnifiedErrorHandler.safe_execute(func, context, default_return)
 
@@ -129,29 +129,34 @@ def retry_on_failure(
     delay: float = 1.0,
     backoff: float = 2.0,
     exceptions: tuple = (Exception,),
-    context: str = ""
+    context: str = "",
 ):
     """重试装饰器的便捷函数"""
     return UnifiedErrorHandler.retry_on_failure(
-        max_retries, delay, backoff, exceptions, context)
+        max_retries, delay, backoff, exceptions, context
+    )
 
 
 # 统一错误类型
 class DataError(Exception):
     """数据相关错误"""
+
     pass
 
 
 class ConnectionError(Exception):
     """连接相关错误"""
+
     pass
 
 
 class ValidationError(Exception):
     """验证相关错误"""
+
     pass
 
 
 class ProcessingError(Exception):
     """处理相关错误"""
+
     pass

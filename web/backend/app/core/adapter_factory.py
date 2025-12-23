@@ -27,8 +27,7 @@ eastmoney = AdapterFactory.get_adapter("eastmoney")
 Estimated Duplication Reduced: 100+ lines
 """
 
-from typing import Dict, Type, TypeVar, Optional, Any
-from abc import ABC, abstractmethod
+from typing import Dict, Type, TypeVar, Any
 import structlog
 
 logger = structlog.get_logger()

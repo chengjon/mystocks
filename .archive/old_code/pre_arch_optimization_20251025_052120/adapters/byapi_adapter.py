@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：Byapi (biyingapi.com) 数据源适配器，提供A股实时行情、K线和财务数据
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2024-08-29
@@ -10,7 +10,7 @@
 #   - 支持A股市场，实时行情+历史K线+财务报表+涨跌停股池
 #   - 辅助文件位于adapters/byapi/目录 (API文档和映射表)
 # 版权：MyStocks Project © 2025
-'''
+"""
 
 import time
 import requests
@@ -22,6 +22,7 @@ from datetime import datetime
 
 class DataSourceError(Exception):
     """数据源异常"""
+
     pass
 
 
@@ -42,11 +43,7 @@ class IDataSource(ABC):
 
     @abstractmethod
     def get_kline_data(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        frequency: str = "daily"
+        self, symbol: str, start_date: str, end_date: str, frequency: str = "daily"
     ) -> pd.DataFrame:
         """获取K线数据"""
         pass
@@ -58,10 +55,7 @@ class IDataSource(ABC):
 
     @abstractmethod
     def get_fundamental_data(
-        self,
-        symbol: str,
-        report_period: str,
-        data_type: str = "income"
+        self, symbol: str, report_period: str, data_type: str = "income"
     ) -> pd.DataFrame:
         """获取财务数据"""
         pass
@@ -92,7 +86,7 @@ class ByapiAdapter(IDataSource):
         self,
         licence: str = "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8",
         base_url: str = "http://api.biyingapi.com",
-        min_interval: float = 0.2
+        min_interval: float = 0.2,
     ):
         self.licence = licence
         self.base_url = base_url
@@ -101,7 +95,7 @@ class ByapiAdapter(IDataSource):
 
         # 频率映射: IDataSource标准 -> byapi参数
         self.frequency_map = {
-            "1min": "5",      # byapi最小5分钟
+            "1min": "5",  # byapi最小5分钟
             "5min": "5",
             "15min": "15",
             "30min": "30",
@@ -109,15 +103,15 @@ class ByapiAdapter(IDataSource):
             "daily": "d",
             "weekly": "w",
             "monthly": "m",
-            "yearly": "y"
+            "yearly": "y",
         }
 
         # 财务数据类型映射
         self.fundamental_type_map = {
-            "income": "income",         # 利润表
-            "balance": "balance",       # 资产负债表
-            "cashflow": "cashflow",     # 现金流量表
-            "metrics": "pershareindex"  # 财务指标
+            "income": "income",  # 利润表
+            "balance": "balance",  # 资产负债表
+            "cashflow": "cashflow",  # 现金流量表
+            "metrics": "pershareindex",  # 财务指标
         }
 
     @property
@@ -138,13 +132,13 @@ class ByapiAdapter(IDataSource):
         Returns:
             byapi格式代码 (如 '600000.SH')
         """
-        if '.' in symbol:
+        if "." in symbol:
             return symbol
 
         # 根据代码前缀判断交易所
-        if symbol.startswith('6'):
+        if symbol.startswith("6"):
             return f"{symbol}.SH"
-        elif symbol.startswith(('0', '3')):
+        elif symbol.startswith(("0", "3")):
             return f"{symbol}.SZ"
         else:
             raise ValueError(f"无法识别的股票代码: {symbol}")
@@ -210,34 +204,29 @@ class ByapiAdapter(IDataSource):
 
             # 列名映射: byapi -> 标准
             column_map = {
-                'dm': 'symbol',  # byapi已经返回标准格式如 '000001.SZ'
-                'mc': 'name',
-                'jys': 'exchange_code'
+                "dm": "symbol",  # byapi已经返回标准格式如 '000001.SZ'
+                "mc": "name",
+                "jys": "exchange_code",
             }
 
             df = df.rename(columns=column_map)
 
             # 标准化交易所名称 (jys字段: 'SH' 或 'SZ')
-            df['exchange'] = df['exchange_code'].map({
-                'SH': 'SSE',
-                'SZ': 'SZSE'
-            }).fillna('UNKNOWN')
+            df["exchange"] = (
+                df["exchange_code"].map({"SH": "SSE", "SZ": "SZSE"}).fillna("UNKNOWN")
+            )
 
             # byapi不提供上市日期,设置为None
-            df['list_date'] = pd.NaT
-            df['status'] = 'ACTIVE'
+            df["list_date"] = pd.NaT
+            df["status"] = "ACTIVE"
 
-            return df[['symbol', 'name', 'exchange', 'list_date', 'status']]
+            return df[["symbol", "name", "exchange", "list_date", "status"]]
 
         except Exception as e:
             raise DataSourceError(f"获取股票列表失败: {e}")
 
     def get_kline_data(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        frequency: str = "daily"
+        self, symbol: str, start_date: str, end_date: str, frequency: str = "daily"
     ) -> pd.DataFrame:
         """
         获取K线数据
@@ -259,7 +248,9 @@ class ByapiAdapter(IDataSource):
         # 获取byapi频率参数
         level = self.frequency_map.get(frequency)
         if not level:
-            raise ValueError(f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}")
+            raise ValueError(
+                f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}"
+            )
 
         # 构建API URL (使用https)
         url = (
@@ -271,34 +262,67 @@ class ByapiAdapter(IDataSource):
             data = self._request(url)
 
             if not isinstance(data, list) or len(data) == 0:
-                return pd.DataFrame(columns=['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount'])
+                return pd.DataFrame(
+                    columns=[
+                        "symbol",
+                        "date",
+                        "open",
+                        "high",
+                        "low",
+                        "close",
+                        "volume",
+                        "amount",
+                    ]
+                )
 
             df = pd.DataFrame(data)
 
             # 列名映射: byapi -> 标准
             column_map = {
-                't': 'timestamp',
-                'o': 'open',
-                'h': 'high',
-                'l': 'low',
-                'c': 'close',
-                'v': 'volume',
-                'a': 'amount'
+                "t": "timestamp",
+                "o": "open",
+                "h": "high",
+                "l": "low",
+                "c": "close",
+                "v": "volume",
+                "a": "amount",
             }
 
             df = df.rename(columns=column_map)
 
             # 添加symbol列
-            df['symbol'] = std_symbol
+            df["symbol"] = std_symbol
 
             # 时间戳转换为UTC datetime
             if frequency == "daily":
-                df['date'] = pd.to_datetime(df['timestamp'], utc=True)
-                df = df.drop('timestamp', axis=1)
-                return df[['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount']]
+                df["date"] = pd.to_datetime(df["timestamp"], utc=True)
+                df = df.drop("timestamp", axis=1)
+                return df[
+                    [
+                        "symbol",
+                        "date",
+                        "open",
+                        "high",
+                        "low",
+                        "close",
+                        "volume",
+                        "amount",
+                    ]
+                ]
             else:
-                df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
-                return df[['symbol', 'timestamp', 'open', 'high', 'low', 'close', 'volume', 'amount']]
+                df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+                return df[
+                    [
+                        "symbol",
+                        "timestamp",
+                        "open",
+                        "high",
+                        "low",
+                        "close",
+                        "volume",
+                        "amount",
+                    ]
+                ]
 
         except Exception as e:
             raise DataSourceError(f"获取K线数据失败 [{symbol}]: {e}")
@@ -324,7 +348,7 @@ class ByapiAdapter(IDataSource):
 
         for symbol in symbols:
             std_symbol = self._standardize_symbol(symbol)
-            code = std_symbol.split('.')[0]  # 提取纯代码
+            code = std_symbol.split(".")[0]  # 提取纯代码
 
             # 优先使用旧接口
             url = f"{self.base_url}/hsrl/ssjy/{code}/{self.licence}"
@@ -340,21 +364,23 @@ class ByapiAdapter(IDataSource):
 
                 # 构建标准格式
                 quote = {
-                    'symbol': std_symbol,
-                    'name': '',  # byapi实时接口不提供股票名称
-                    'current_price': record.get('p', 0.0),
-                    'open': record.get('o', 0.0),
-                    'high': record.get('h', 0.0),
-                    'low': record.get('l', 0.0),
-                    'pre_close': record.get('yc', 0.0),
-                    'volume': int(record.get('v', 0)),
-                    'amount': record.get('cje', 0.0),
-                    'change': record.get('ud', 0.0),
-                    'change_pct': record.get('pc', 0.0),
-                    'bid_price_1': 0.0,  # byapi需单独调用五档盘口接口
-                    'ask_price_1': 0.0,
-                    'timestamp': pd.to_datetime(record.get('t', datetime.now().isoformat()), utc=True),
-                    'turnover_rate': record.get('hs', 0.0)
+                    "symbol": std_symbol,
+                    "name": "",  # byapi实时接口不提供股票名称
+                    "current_price": record.get("p", 0.0),
+                    "open": record.get("o", 0.0),
+                    "high": record.get("h", 0.0),
+                    "low": record.get("l", 0.0),
+                    "pre_close": record.get("yc", 0.0),
+                    "volume": int(record.get("v", 0)),
+                    "amount": record.get("cje", 0.0),
+                    "change": record.get("ud", 0.0),
+                    "change_pct": record.get("pc", 0.0),
+                    "bid_price_1": 0.0,  # byapi需单独调用五档盘口接口
+                    "ask_price_1": 0.0,
+                    "timestamp": pd.to_datetime(
+                        record.get("t", datetime.now().isoformat()), utc=True
+                    ),
+                    "turnover_rate": record.get("hs", 0.0),
                 }
 
                 result_list.append(quote)
@@ -364,15 +390,12 @@ class ByapiAdapter(IDataSource):
                 continue
 
         if not result_list:
-            raise DataSourceError(f"获取实时行情失败: 所有股票均无数据")
+            raise DataSourceError("获取实时行情失败: 所有股票均无数据")
 
         return pd.DataFrame(result_list)
 
     def get_fundamental_data(
-        self,
-        symbol: str,
-        report_period: str,
-        data_type: str = "income"
+        self, symbol: str, report_period: str, data_type: str = "income"
     ) -> pd.DataFrame:
         """
         获取财务数据
@@ -396,7 +419,9 @@ class ByapiAdapter(IDataSource):
         # 获取byapi财务类型
         api_type = self.fundamental_type_map.get(data_type)
         if not api_type:
-            raise ValueError(f"不支持的财务数据类型: {data_type}. 支持: {list(self.fundamental_type_map.keys())}")
+            raise ValueError(
+                f"不支持的财务数据类型: {data_type}. 支持: {list(self.fundamental_type_map.keys())}"
+            )
 
         # 构建URL
         if report_period == "latest":
@@ -404,7 +429,7 @@ class ByapiAdapter(IDataSource):
             url = f"http://api.biyingapi.com/hsstock/financial/{api_type}/{std_symbol}/{self.licence}?lt=1"
         else:
             # 获取指定日期前后的数据
-            period_date = report_period.replace('-', '')
+            period_date = report_period.replace("-", "")
             url = (
                 f"http://api.biyingapi.com/hsstock/financial/{api_type}/{std_symbol}/{self.licence}"
                 f"?st={period_date}&et={period_date}"
@@ -419,11 +444,11 @@ class ByapiAdapter(IDataSource):
             df = pd.DataFrame(data)
 
             # 添加symbol列
-            df['symbol'] = std_symbol
+            df["symbol"] = std_symbol
 
             # 标准化日期列名
-            if 'jzrq' in df.columns:
-                df['report_period'] = pd.to_datetime(df['jzrq'])
+            if "jzrq" in df.columns:
+                df["report_period"] = pd.to_datetime(df["jzrq"])
 
             return df
 
@@ -451,7 +476,7 @@ class ByapiAdapter(IDataSource):
                 return pd.DataFrame()
 
             df = pd.DataFrame(data)
-            df['trade_date'] = trade_date
+            df["trade_date"] = trade_date
 
             return df
 
@@ -479,7 +504,7 @@ class ByapiAdapter(IDataSource):
                 return pd.DataFrame()
 
             df = pd.DataFrame(data)
-            df['trade_date'] = trade_date
+            df["trade_date"] = trade_date
 
             return df
 
@@ -493,7 +518,7 @@ class ByapiAdapter(IDataSource):
         frequency: str = "daily",
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> pd.DataFrame:
         """
         获取技术指标 (byapi特有功能)
@@ -512,7 +537,7 @@ class ByapiAdapter(IDataSource):
             DataFrame包含技术指标数据
         """
         std_symbol = self._standardize_symbol(symbol)
-        level = self.frequency_map.get(frequency, 'd')
+        level = self.frequency_map.get(frequency, "d")
 
         params = []
         if start_date:
@@ -535,10 +560,10 @@ class ByapiAdapter(IDataSource):
                 return pd.DataFrame()
 
             df = pd.DataFrame(data)
-            df['symbol'] = std_symbol
+            df["symbol"] = std_symbol
 
-            if 't' in df.columns:
-                df['timestamp'] = pd.to_datetime(df['t'], utc=True)
+            if "t" in df.columns:
+                df["timestamp"] = pd.to_datetime(df["t"], utc=True)
 
             return df
 
@@ -558,7 +583,7 @@ if __name__ == "__main__":
 
     print(f"数据源: {adapter.source_name}")
     print(f"支持市场: {adapter.supported_markets}")
-    print("\n" + "="*60 + "\n")
+    print("\n" + "=" * 60 + "\n")
 
     # 1. 获取股票列表
     print("【测试1】获取股票列表 (前10条):")
@@ -573,10 +598,10 @@ if __name__ == "__main__":
     print("【测试2】获取日线数据 (平安银行 000001.SZ):")
     try:
         kline = adapter.get_kline_data(
-            symbol='000001.SZ',
-            start_date='2025-10-01',
-            end_date='2025-10-11',
-            frequency='daily'
+            symbol="000001.SZ",
+            start_date="2025-10-01",
+            end_date="2025-10-11",
+            frequency="daily",
         )
         print(kline)
         print()
@@ -586,8 +611,8 @@ if __name__ == "__main__":
     # 3. 获取实时行情
     print("【测试3】获取实时行情 (平安银行、浦发银行):")
     try:
-        quotes = adapter.get_realtime_quotes(['000001.SZ', '600000.SH'])
-        print(quotes[['symbol', 'current_price', 'change_pct', 'volume', 'amount']])
+        quotes = adapter.get_realtime_quotes(["000001.SZ", "600000.SH"])
+        print(quotes[["symbol", "current_price", "change_pct", "volume", "amount"]])
         print()
     except DataSourceError as e:
         print(f"错误: {e}\n")
@@ -596,9 +621,7 @@ if __name__ == "__main__":
     print("【测试4】获取最新利润表 (平安银行):")
     try:
         financial = adapter.get_fundamental_data(
-            symbol='000001.SZ',
-            report_period='latest',
-            data_type='income'
+            symbol="000001.SZ", report_period="latest", data_type="income"
         )
         if not financial.empty:
             print(f"报告期: {financial.iloc[0].get('jzrq', 'N/A')}")
@@ -613,7 +636,7 @@ if __name__ == "__main__":
     # 5. 获取涨停股池
     print("【测试5】获取涨停股池 (2025-10-10):")
     try:
-        limit_up = adapter.get_limit_up_stocks('2025-10-10')
+        limit_up = adapter.get_limit_up_stocks("2025-10-10")
         print(f"涨停股票数: {len(limit_up)}")
         if not limit_up.empty:
             print(limit_up.head())
@@ -621,5 +644,5 @@ if __name__ == "__main__":
     except DataSourceError as e:
         print(f"错误: {e}\n")
 
-    print("="*60)
+    print("=" * 60)
     print("所有测试完成!")

@@ -6,12 +6,10 @@ Integrated Real-time Data Processing Service
 import logging
 import time
 import threading
-import queue
-from typing import Dict, List, Optional, Any, Iterator
+from typing import Dict, List, Any, Iterator
 from datetime import datetime, timedelta
 from collections import deque
 import json
-import numpy as np
 import pandas as pd
 
 from src.utils.gpu_utils import GPUResourceManager
@@ -19,14 +17,11 @@ from src.utils.redis_utils import RedisQueue
 from src.utils.monitoring import MetricsCollector
 from src.utils.cache_optimization import CacheManager
 from src.utils.gpu_acceleration_engine import GPUAccelerationEngine
-from services.realtime_service import RealTimeService
 from api_proto.realtime_pb2 import (
     StreamDataRequest,
     StreamDataResponse,
     FeatureRequest,
     FeatureResponse,
-    MarketData,
-    TechnicalIndicators,
 )
 from api_proto.realtime_pb2_grpc import RealTimeServiceServicer
 import grpc
@@ -243,9 +238,9 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     # 更新流活动时间
                     with self.stream_lock:
                         if stream_id in self.active_streams:
-                            self.active_streams[stream_id][
-                                "last_activity"
-                            ] = datetime.now().isoformat()
+                            self.active_streams[stream_id]["last_activity"] = (
+                                datetime.now().isoformat()
+                            )
                             self.active_streams[stream_id]["data_count"] += 1
 
                     # 添加到批量缓冲区
@@ -359,7 +354,6 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
         """GPU批量处理数据"""
         try:
             import cudf
-            import cupy as cp
 
             # 转换为cuDF DataFrame
             df = cudf.DataFrame(
@@ -521,7 +515,6 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
         """GPU计算技术特征"""
         try:
             import cudf
-            import cupy as cp
 
             # 转换为DataFrame
             df = pd.DataFrame(historical_data)
@@ -601,8 +594,6 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
     def _calculate_rsi_gpu(self, prices) -> float:
         """GPU计算RSI"""
         try:
-            import cupy as cp
-
             # 计算价格变化
             delta = prices.diff()
 

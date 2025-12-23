@@ -124,26 +124,26 @@ move_file() {
     local source="$1"
     local target_dir="$2"
     local filename=$(basename "$source")
-    
+
     if [[ ! -f "$source" ]]; then
         log_warning "文件不存在: $source"
         return 1
     fi
-    
+
     create_directory "$target_dir"
     local target="$target_dir/$filename"
-    
+
     # 处理文件名冲突
     local counter=1
     local base_name="${filename%.*}"
     local extension="${filename##*.}"
-    
+
     if [[ "$base_name" == "$extension" ]]; then
         # 没有扩展名
         base_name="$filename"
         extension=""
     fi
-    
+
     while [[ -e "$target" ]]; do
         if [[ -n "$extension" ]]; then
             target="$target_dir/${base_name}_${counter}.${extension}"
@@ -152,7 +152,7 @@ move_file() {
         fi
         counter=$((counter + 1))
     done
-    
+
     if [[ $DRY_RUN_MODE == true ]]; then
         log_dry_run "移动文件: $source -> $target"
     else
@@ -164,34 +164,34 @@ move_file() {
 # 文件类型分类规则
 classify_file() {
     local filename="$1"
-    
+
     # 获取文件扩展名
     local ext="${filename##*.}"
-    
+
     # 临时文件
     if [[ "$filename" =~ \.(tmp|temp|cache|bak|backup)$ ]] || [[ "$filename" =~ ~$ ]]; then
         echo "temp"
         return 0
     fi
-    
+
     # 日志文件
     if [[ "$filename" =~ \.log$ ]]; then
         echo "logs"
         return 0
     fi
-    
+
     # 报告和分析文件
     if [[ "$filename" =~ (report|analysis|assessment|metrics)$ ]] && [[ "$filename" =~ \.(json|xml|html)$ ]]; then
         echo "reports"
         return 0
     fi
-    
+
     # 测试覆盖率文件
     if [[ "$filename" =~ \.(coverage|htmlcov)$ ]]; then
         echo "reports/coverage"
         return 0
     fi
-    
+
     # 文档文件（保留根目录特定文件）
     if [[ "$ext" =~ ^(md|rst|txt)$ ]]; then
         # 检查是否是根目录需要保留的文件
@@ -204,13 +204,13 @@ classify_file() {
         echo "docs"
         return 0
     fi
-    
+
     # 脚本文件
     if [[ "$ext" =~ ^(sh|ps1|bat)$ ]]; then
         echo "scripts"
         return 0
     fi
-    
+
     # Python相关文件
     if [[ "$ext" == "py" ]]; then
         # 检查是否是配置文件
@@ -224,7 +224,7 @@ classify_file() {
         echo "keep_root"
         return 0
     fi
-    
+
     # 配置文件
     if [[ "$ext" =~ ^(json|yaml|yml|ini|cfg|conf)$ ]]; then
         case "$filename" in
@@ -238,13 +238,13 @@ classify_file() {
                 ;;
         esac
     fi
-    
+
     # 依赖文件
     if [[ "$filename" =~ ^(requirements.*\.txt|Pipfile.*|package-lock\.json|yarn\.lock)$ ]]; then
         echo "keep_root"
         return 0
     fi
-    
+
     # 其他文件保留在根目录
     echo "keep_root"
 }
@@ -252,7 +252,7 @@ classify_file() {
 # 执行整理操作
 organize_files() {
     log_info "开始整理项目文件..."
-    
+
     # 创建基本目录结构
     local dirs=(
         "temp/cache"
@@ -268,26 +268,26 @@ organize_files() {
         "data/processed"
         "config"
     )
-    
+
     for dir in "${dirs[@]}"; do
         create_directory "$dir"
     done
-    
+
     # 统计信息
     local total_files=0
     local moved_files=0
     local kept_files=0
-    
+
     # 处理根目录文件
     while IFS= read -r -d '' file; do
         local filename
         filename=$(basename "$file")
         total_files=$((total_files + 1))
-        
+
         # 获取文件分类
         local category
         category=$(classify_file "$filename")
-        
+
         case "$category" in
             "keep_root")
                 kept_files=$((kept_files + 1))
@@ -300,28 +300,28 @@ organize_files() {
                 moved_files=$((moved_files + 1))
                 ;;
         esac
-        
+
     done < <(find . -maxdepth 1 -type f -print0)
-    
+
     # 特殊处理：移动深层的临时文件
     find . -mindepth 2 -maxdepth 2 -name "*.tmp" -o -name "*.temp" -o -name "*.cache" | while read -r file; do
         move_file "$file" "temp/cache"
         moved_files=$((moved_files + 1))
     done
-    
+
     # 移动深层的日志文件
     find . -mindepth 2 -maxdepth 3 -name "*.log" | while read -r file; do
         move_file "$file" "logs/app"
         moved_files=$((moved_files + 1))
     done
-    
+
     # 输出统计信息
     echo ""
     log_info "整理完成统计:"
     log_info "  总文件数: $total_files"
     log_info "  移动文件数: $moved_files"
     log_info "  保留文件数: $kept_files"
-    
+
     if [[ $DRY_RUN_MODE == true ]]; then
         log_warning "这是试运行模式，没有实际移动文件"
     fi
@@ -330,7 +330,7 @@ organize_files() {
 # 清理空目录
 clean_empty_dirs() {
     log_info "清理空目录..."
-    
+
     # 查找并删除空目录（排除隐藏目录）
     find . -mindepth 1 -type d -empty -not -path './.*' | while read -r dir; do
         if [[ $DRY_RUN_MODE == true ]]; then
@@ -352,11 +352,11 @@ generate_organization_report() {
         echo "项目路径: $PROJECT_ROOT"
         echo "模式: $([[ $DRY_RUN_MODE == true ]] && echo "试运行" || echo "实际执行")"
         echo ""
-        
+
         echo "目录结构:"
         tree -L 3 -I '__pycache__|*.pyc|node_modules|.git' . || find . -type d | head -20
         echo ""
-        
+
         echo "文件分类统计:"
         find . -type f -exec sh -c '
             ext="${1##*.}"
@@ -367,9 +367,9 @@ generate_organization_report() {
             fi
             echo "$dir|$ext"
         ' _ {} \; | sort | uniq -c | sort -nr | head -20
-        
+
     } > "$report_file"
-    
+
     log_success "整理报告已生成: $report_file"
 }
 
@@ -377,16 +377,16 @@ generate_organization_report() {
 main() {
     log_info "开始项目文件整理..."
     log_info "项目根目录: $PROJECT_ROOT"
-    
+
     if [[ $DRY_RUN_MODE == true ]]; then
         log_warning "试运行模式：只显示操作，不实际执行"
     fi
-    
+
     # 执行整理
     organize_files
     clean_empty_dirs
     generate_organization_report
-    
+
     # 输出建议
     echo ""
     if [[ $DRY_RUN_MODE == false ]]; then

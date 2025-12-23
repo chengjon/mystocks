@@ -3,10 +3,8 @@
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
-import json
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import psycopg2
@@ -98,7 +96,10 @@ async def get_adapters_health():
     try:
         from datetime import datetime
 
-        from app.core.adapter_loader import check_all_adapters, get_adapter_health_status
+        from app.core.adapter_loader import (
+            check_all_adapters,
+            get_adapter_health_status,
+        )
 
         # 执行健康检查
         health_results = check_all_adapters()
@@ -231,7 +232,9 @@ async def test_database_connection(request: ConnectionTestRequest):
                 version = cursor.fetchone()[0].split(",")[0]
 
                 # 检查是否存在 mystocks 相关数据库
-                cursor.execute("SELECT datname FROM pg_database WHERE datname LIKE 'mystocks%'")
+                cursor.execute(
+                    "SELECT datname FROM pg_database WHERE datname LIKE 'mystocks%'"
+                )
                 databases = cursor.fetchall()
                 db_list = [db[0] for db in databases] if databases else []
 
@@ -245,7 +248,7 @@ async def test_database_connection(request: ConnectionTestRequest):
                         success=True,
                         message=f"PostgreSQL 连接成功 ({version})，但未发现 mystocks 相关数据库",
                     )
-            except psycopg2.Error as e:
+            except psycopg2.Error:
                 raise
             finally:
                 # 确保连接被关闭，防止连接泄漏
@@ -282,7 +285,11 @@ async def test_database_connection(request: ConnectionTestRequest):
                 # 检查是否存在 mystocks 相关数据库
                 cursor.execute("SHOW DATABASES")
                 databases = cursor.fetchall()
-                db_list = [db[0] for db in databases if db and "mystocks" in db[0].lower()] if databases else []
+                db_list = (
+                    [db[0] for db in databases if db and "mystocks" in db[0].lower()]
+                    if databases
+                    else []
+                )
 
                 if db_list:
                     return ConnectionTestResponse(
@@ -297,7 +304,10 @@ async def test_database_connection(request: ConnectionTestRequest):
             except Exception as e:
                 # TDengine 可能需要特殊处理
                 error_msg = str(e)
-                if "Unable to establish connection" in error_msg or "Connection refused" in error_msg:
+                if (
+                    "Unable to establish connection" in error_msg
+                    or "Connection refused" in error_msg
+                ):
                     return ConnectionTestResponse(
                         success=False,
                         error=f"无法连接到 TDengine 服务器 ({host}:{port})，请检查服务是否运行",
@@ -318,7 +328,8 @@ async def test_database_connection(request: ConnectionTestRequest):
 
         else:
             return ConnectionTestResponse(
-                success=False, error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine"
+                success=False,
+                error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine",
             )
 
     except psycopg2.OperationalError as e:
@@ -329,9 +340,13 @@ async def test_database_connection(request: ConnectionTestRequest):
                 error=f"无法连接到 PostgreSQL 服务器 ({host}:{port})，请检查地址和端口是否正确",
             )
         elif "password authentication failed" in error_msg:
-            return ConnectionTestResponse(success=False, error="PostgreSQL 认证失败，用户名或密码错误")
+            return ConnectionTestResponse(
+                success=False, error="PostgreSQL 认证失败，用户名或密码错误"
+            )
         else:
-            return ConnectionTestResponse(success=False, error=f"PostgreSQL 连接错误: {error_msg}")
+            return ConnectionTestResponse(
+                success=False, error=f"PostgreSQL 连接错误: {error_msg}"
+            )
 
     except Exception as e:
         return ConnectionTestResponse(success=False, error=f"连接测试失败: {str(e)}")
@@ -480,7 +495,9 @@ def get_system_logs_from_db(
                 pass
 
 
-def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[SystemLog]:
+def get_mock_system_logs(
+    filter_errors: bool = False, limit: int = 100
+) -> List[SystemLog]:
     """
     生成模拟的系统日志（用于演示和数据库不可用时的备用）
     """
@@ -598,8 +615,12 @@ async def get_system_logs(
     filter_errors: bool = Query(False, description="是否只显示有问题的日志"),
     limit: int = Query(100, ge=1, le=1000, description="返回条数限制"),
     offset: int = Query(0, ge=0, description="偏移量"),
-    level: Optional[str] = Query(None, description="日志级别筛选 (INFO/WARNING/ERROR/CRITICAL)"),
-    category: Optional[str] = Query(None, description="日志分类筛选 (database/api/adapter/system)"),
+    level: Optional[str] = Query(
+        None, description="日志级别筛选 (INFO/WARNING/ERROR/CRITICAL)"
+    ),
+    category: Optional[str] = Query(
+        None, description="日志分类筛选 (database/api/adapter/system)"
+    ),
 ):
     """
     获取系统运行日志

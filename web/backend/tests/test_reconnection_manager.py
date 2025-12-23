@@ -9,10 +9,6 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import pytest
-import time
-from datetime import datetime
-
 from app.core.reconnection_manager import (
     ReconnectionManager,
     ReconnectionState,

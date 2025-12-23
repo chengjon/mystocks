@@ -11,7 +11,6 @@
 
 import pandas as pd
 from typing import Dict, List
-import baostock as bs
 import datetime
 import sys
 import os
@@ -29,8 +28,10 @@ except ImportError:
     class IDataSource:
         def get_stock_daily(self, symbol, start_date, end_date):
             raise NotImplementedError
+
         def get_stock_basic(self, date=None):
             raise NotImplementedError
+
 
 try:
     from src.utils.column_mapper import ColumnMapper
@@ -41,6 +42,7 @@ except ImportError:
         def map_columns(df, source_format, target_format):
             return df
 
+
 try:
     from src.utils.date_utils import normalize_date
 except ImportError:
@@ -48,12 +50,17 @@ except ImportError:
     def normalize_date(date_str):
         return str(date_str)
 
+
 try:
-    from src.utils.symbol_utils import format_stock_code_for_source, format_index_code_for_source
+    from src.utils.symbol_utils import (
+        format_stock_code_for_source,
+        format_index_code_for_source,
+    )
 except ImportError:
     # 如果无法导入，创建简单的格式化器
     def format_stock_code_for_source(code, source):
         return code
+
     def format_index_code_for_source(code, source):
         return code
 

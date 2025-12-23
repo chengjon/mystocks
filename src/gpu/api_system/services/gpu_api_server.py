@@ -4,12 +4,10 @@ MyStocks GPU API系统 - 主服务
 MyStocks GPU API System - Main Service
 """
 
-import asyncio
 import logging
 import signal
 import sys
 import time
-from typing import Dict, List, Optional
 
 import grpc
 import prometheus_client
@@ -17,8 +15,8 @@ from concurrent import futures
 from prometheus_client import Counter, Histogram, Gauge
 
 # 导入gRPC服务
-from api_proto import realtime_pb2, realtime_pb2_grpc
-from api_proto import backtest_pb2, backtest_pb2_grpc
+from api_proto import realtime_pb2_grpc
+from api_proto import backtest_pb2_grpc
 
 # 导入自定义模块
 from src.utils.gpu_utils import GPUResourceManager

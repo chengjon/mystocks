@@ -10,27 +10,25 @@ import psutil
 import numpy as np
 import pandas as pd
 import logging
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List
 from dataclasses import dataclass
 import tracemalloc
 from contextlib import contextmanager
-import matplotlib.pyplot as plt
 import json
 
 # 导入GPU组件
-from .gpu_manager import GPUUnifiedManager, GPUConfig, GPUProcessingResult
+from .gpu_manager import GPUUnifiedManager
 from .cpu_fallback import (
     ComponentSelector,
     PricePredictorCPU,
     DataProcessorCPU,
     FeatureGeneratorCPU,
 )
-from .price_predictor_gpu import GPUPricePredictor, PredictionResult
+from .price_predictor_gpu import GPUPricePredictor
 from .feature_generator_gpu import GPUFeatureGenerator
 from .data_processor_gpu import GPUDataProcessor
 
 # 导入原版组件
-from ..data_adapters.financial_adapter import FinancialDataSource
 from ..unified_manager import MyStocksUnifiedManager
 
 
@@ -418,7 +416,7 @@ class GPUPerformanceBenchmark:
 
             # 价格预测基准测试
             if self.config.enable_prediction_benchmark:
-                print(f"\n📈 价格预测性能测试:")
+                print("\n📈 价格预测性能测试:")
                 for model_type in self.config.model_types:
                     print(f"  模型类型: {model_type}")
                     result = self._benchmark_price_prediction(test_data, model_type)
@@ -510,8 +508,8 @@ class GPUPerformanceBenchmark:
         cpu_success = self.stats["successful_cpu_tests"]
 
         print(f"总测试项目: {total}")
-        print(f"GPU胜出项目: {gpu_success} ({gpu_success/total*100:.1f}%)")
-        print(f"CPU胜出项目: {cpu_success} ({cpu_success/total*100:.1f}%)")
+        print(f"GPU胜出项目: {gpu_success} ({gpu_success / total * 100:.1f}%)")
+        print(f"CPU胜出项目: {cpu_success} ({cpu_success / total * 100:.1f}%)")
 
         if total > 0:
             self.stats["average_speedup"] = self.stats["average_speedup"] / total
@@ -593,15 +591,15 @@ class GPUPerformanceBenchmark:
 MyStocks GPU加速性能报告
 ========================
 
-测试时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}
+测试时间: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))}
 
 📊 测试统计:
-  总测试项目: {self.stats['total_tests']}
-  GPU胜出项目: {self.stats['successful_gpu_tests']}
-  CPU胜出项目: {self.stats['successful_cpu_tests']}
-  平均加速比: {self.stats['average_speedup']:.2f}x
-  最大加速比: {self.stats['max_speedup']:.2f}x
-  最小加速比: {self.stats['min_speedup']:.2f}x
+  总测试项目: {self.stats["total_tests"]}
+  GPU胜出项目: {self.stats["successful_gpu_tests"]}
+  CPU胜出项目: {self.stats["successful_cpu_tests"]}
+  平均加速比: {self.stats["average_speedup"]:.2f}x
+  最大加速比: {self.stats["max_speedup"]:.2f}x
+  最小加速比: {self.stats["min_speedup"]:.2f}x
 
 🎯 详细结果:
 """

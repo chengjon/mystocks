@@ -96,7 +96,4 @@ class BaseModel(ABC):
 
     def get_model_info(self) -> Dict[str, Any]:
         """Get model information"""
-        return {
-            'model_name': self.model_name,
-            'is_trained': self.is_trained
-        }
+        return {"model_name": self.model_name, "is_trained": self.is_trained}

@@ -5,9 +5,7 @@ ByAPI适配器基础测试
 
 import os
 import sys
-from unittest.mock import MagicMock, Mock, patch
 
-import pandas as pd
 import pytest
 
 # 添加源码路径
@@ -40,7 +38,9 @@ class TestByapiAdapterBasic:
 
     def test_initialization_with_params(self):
         """测试带参数的初始化"""
-        adapter = ByapiAdapter(licence="TEST_LICENCE", base_url="https://test.api.com", min_interval=1.0)
+        adapter = ByapiAdapter(
+            licence="TEST_LICENCE", base_url="https://test.api.com", min_interval=1.0
+        )
 
         # 验证参数设置
         assert adapter.licence == "TEST_LICENCE"
@@ -52,7 +52,16 @@ class TestByapiAdapterBasic:
         adapter = ByapiAdapter()
 
         # 验证频率映射存在
-        expected_frequencies = ["1min", "5min", "15min", "30min", "60min", "daily", "weekly", "monthly"]
+        expected_frequencies = [
+            "1min",
+            "5min",
+            "15min",
+            "30min",
+            "60min",
+            "daily",
+            "weekly",
+            "monthly",
+        ]
         for freq in expected_frequencies:
             assert freq in adapter.frequency_map, f"缺少频率映射: {freq}"
 
@@ -99,7 +108,12 @@ class TestByapiAdapterBasic:
         adapter = ByapiAdapter()
 
         # 验证必须的抽象方法存在
-        required_methods = ["get_kline_data", "get_realtime_quotes", "get_fundamental_data", "get_stock_list"]
+        required_methods = [
+            "get_kline_data",
+            "get_realtime_quotes",
+            "get_fundamental_data",
+            "get_stock_list",
+        ]
 
         for method in required_methods:
             assert hasattr(adapter, method), f"缺少方法: {method}"
@@ -121,7 +135,9 @@ class TestByapiAdapterBasic:
 
         for freq, expected_code in key_mappings.items():
             if freq in adapter.frequency_map:
-                assert adapter.frequency_map[freq] == expected_code, f"频率映射错误: {freq}"
+                assert (
+                    adapter.frequency_map[freq] == expected_code
+                ), f"频率映射错误: {freq}"
 
     def test_configuration_validation(self):
         """测试配置验证"""
@@ -170,7 +186,12 @@ class TestByapiAdapterBasic:
         adapter = ByapiAdapter()
 
         # 验证方法不会抛出签名异常（虽然可能会因为需要连接而失败）
-        methods_to_check = ["get_kline_data", "get_realtime_quotes", "get_fundamental_data", "get_stock_list"]
+        methods_to_check = [
+            "get_kline_data",
+            "get_realtime_quotes",
+            "get_fundamental_data",
+            "get_stock_list",
+        ]
 
         for method_name in methods_to_check:
             try:

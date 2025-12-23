@@ -13,7 +13,7 @@
 """
 
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any
 from datetime import datetime, timedelta
 
 from celery import shared_task
@@ -206,7 +206,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
         清理统计结果
     """
     logger.info(
-        f"[Celery Task] Starting cleanup old data, " f"days={days}, dry_run={dry_run}"
+        f"[Celery Task] Starting cleanup old data, days={days}, dry_run={dry_run}"
     )
 
     results = {
@@ -337,9 +337,9 @@ def get_wencai_stats() -> Dict[str, Any]:
                     # 检查表是否存在
                     check_query = text(
                         "SELECT COUNT(*) as cnt "
-                        f"FROM information_schema.tables "
-                        f"WHERE table_schema = DATABASE() "
-                        f"AND table_name = :table_name"
+                        "FROM information_schema.tables "
+                        "WHERE table_schema = DATABASE() "
+                        "AND table_name = :table_name"
                     )
                     exists = (
                         conn.execute(check_query, {"table_name": table_name}).scalar()
@@ -375,7 +375,7 @@ def get_wencai_stats() -> Dict[str, Any]:
         engine.dispose()
 
         logger.info(
-            f"[Celery Task] Stats completed: " f"{stats['total_records']} total records"
+            f"[Celery Task] Stats completed: {stats['total_records']} total records"
         )
 
         return stats

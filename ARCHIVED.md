@@ -7,7 +7,7 @@
 #### 备份信息
 - **备份日期**: 2025-11-25 14:43:19
 - **备份位置**: /external-storage/mystocks-archive-20251125
-- **备份内容**: 
+- **备份内容**:
   - `.archive/` 目录（包含 old_code/, old_docs/, ARCHIVE_INDEX.md, sensitive-backups/）
   - `temp/` 目录（包含临时测试文件和freqtrade相关文件）
   - `tmp/` 目录（临时文件）

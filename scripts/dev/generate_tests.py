@@ -7,10 +7,9 @@ TDD测试生成脚本
 """
 
 import ast
-import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Tuple
 import argparse
 
 
@@ -35,15 +34,23 @@ class TestGenerator:
         # src/adapters/xxx.py -> tests/unit/adapters/test_xxx.py
         parts = self.source_file.parts
         if parts[0] == "src":
-            test_parts = ["tests", "unit"] + list(parts[1:-1]) + [f"test_{self.source_file.stem}.py"]
+            test_parts = (
+                ["tests", "unit"]
+                + list(parts[1:-1])
+                + [f"test_{self.source_file.stem}.py"]
+            )
         else:
-            test_parts = ["tests", "unit"] + list(parts[:-1]) + [f"test_{self.source_file.stem}.py"]
+            test_parts = (
+                ["tests", "unit"]
+                + list(parts[:-1])
+                + [f"test_{self.source_file.stem}.py"]
+            )
 
         return Path(*test_parts)
 
     def parse_source_code(self) -> ast.Module:
         """解析源代码"""
-        with open(self.source_file, 'r', encoding='utf-8') as f:
+        with open(self.source_file, "r", encoding="utf-8") as f:
             return ast.parse(f.read())
 
     def extract_classes_and_functions(self) -> List[Tuple[str, str, List[str]]]:
@@ -81,7 +88,9 @@ class TestGenerator:
         if defaults > 0:
             for i, default in enumerate(node.args.defaults):
                 idx = len(node.args.args) - defaults + i
-                args[-1] += f"={ast.unparse(default) if hasattr(ast, 'unparse') else '...'}"
+                args[-1] += (
+                    f"={ast.unparse(default) if hasattr(ast, 'unparse') else '...'}"
+                )
 
         # *args
         if node.args.vararg:
@@ -93,7 +102,9 @@ class TestGenerator:
 
         signature = f"{node.name}({', '.join(args)})"
         if node.returns:
-            signature += f" -> {ast.unparse(node.returns) if hasattr(ast, 'unparse') else '...'}"
+            signature += (
+                f" -> {ast.unparse(node.returns) if hasattr(ast, 'unparse') else '...'}"
+            )
 
         return signature
 
@@ -157,18 +168,18 @@ class Test{self._get_class_name()}:
             else:
                 content += self._generate_function_tests(name, signatures[0])
 
-        content += '''
+        content += """
 if __name__ == "__main__":
     # 运行测试
     unittest.main()
-'''
+"""
 
         return content
 
     def _get_class_name(self) -> str:
         """获取测试类名"""
-        parts = self.module_name.split('.')
-        return ''.join(p.title() for p in parts)
+        parts = self.module_name.split(".")
+        return "".join(p.title() for p in parts)
 
     def _generate_class_tests(self, class_name: str, methods: List[str]) -> str:
         """为类生成测试"""
@@ -185,8 +196,8 @@ if __name__ == "__main__":
 '''
 
         for method in methods:
-            method_name = method.split('(')[0].strip()
-            if method_name.startswith('_'):
+            method_name = method.split("(")[0].strip()
+            if method_name.startswith("_"):
                 continue  # 跳过私有方法
 
             content += f'''
@@ -241,6 +252,7 @@ if __name__ == "__main__":
     def _get_current_time(self) -> str:
         """获取当前时间"""
         from datetime import datetime
+
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def save_test_file(self, overwrite: bool = False):
@@ -256,7 +268,7 @@ if __name__ == "__main__":
 
         # 生成并保存内容
         content = self.generate_test_file()
-        with open(self.test_file, 'w', encoding='utf-8') as f:
+        with open(self.test_file, "w", encoding="utf-8") as f:
             f.write(content)
 
         print(f"✅ 测试文件已生成: {self.test_file}")
@@ -269,23 +281,16 @@ def main():
         description="TDD测试生成器 - 为源代码生成单元测试模板"
     )
     parser.add_argument(
-        "source_file",
-        help="源代码文件路径 (如: src/adapters/akshare_adapter.py)"
+        "source_file", help="源代码文件路径 (如: src/adapters/akshare_adapter.py)"
     )
     parser.add_argument(
-        "--overwrite", "-o",
-        action="store_true",
-        help="覆盖已存在的测试文件"
+        "--overwrite", "-o", action="store_true", help="覆盖已存在的测试文件"
     )
     parser.add_argument(
-        "--dry-run", "-n",
-        action="store_true",
-        help="只显示将要生成的内容，不保存文件"
+        "--dry-run", "-n", action="store_true", help="只显示将要生成的内容，不保存文件"
     )
     parser.add_argument(
-        "--list", "-l",
-        action="store_true",
-        help="列出文件中的类和函数"
+        "--list", "-l", action="store_true", help="列出文件中的类和函数"
     )
 
     args = parser.parse_args()
@@ -322,9 +327,9 @@ def main():
 
         if success:
             # 生成运行命令
-            print(f"\n🚀 运行测试:")
+            print("\n🚀 运行测试:")
             print(f"  pytest {generator.test_file}")
-            print(f"\n📊 生成覆盖率报告:")
+            print("\n📊 生成覆盖率报告:")
             print(f"  pytest --cov=src --cov-report=html {generator.test_file}")
 
         return 0 if success else 1
@@ -332,6 +337,7 @@ def main():
     except Exception as e:
         print(f"❌ 生成测试时出错: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

@@ -7,7 +7,7 @@ PostgreSQL 索引优化器
 import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
@@ -307,7 +307,10 @@ class PostgreSQLIndexOptimizer:
         brin = self.design_brin_indexes()
 
         total_indexes = (
-            single_col["total_indexes"] + composite["total_indexes"] + partial["total_indexes"] + brin["total_indexes"]
+            single_col["total_indexes"]
+            + composite["total_indexes"]
+            + partial["total_indexes"]
+            + brin["total_indexes"]
         )
 
         return {

@@ -19,21 +19,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 import time
-from datetime import datetime, timedelta
-from unittest.mock import Mock, MagicMock, patch
 
 from src.ml_strategy.automation import (
     TaskScheduler,
     TaskConfig,
-    TaskStatus,
     TaskPriority,
-    TaskExecution,
     JobLock,
     NotificationManager,
     NotificationConfig,
     NotificationChannel,
     NotificationLevel,
-    Notification,
 )
 
 from src.ml_strategy.automation.predefined_tasks import (
@@ -146,7 +141,8 @@ class TestNotificationManager:
     def test_rate_limiting(self):
         """测试频率限制"""
         config = NotificationConfig(
-            channels=[NotificationChannel.LOG], rate_limit=5  # 5秒限制
+            channels=[NotificationChannel.LOG],
+            rate_limit=5,  # 5秒限制
         )
         manager = NotificationManager(config)
 

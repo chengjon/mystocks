@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 import logging
 
 # 导入重构后的核心模块
-from src.core import DataClassification, DatabaseTarget, DataManager
+from src.core import DataClassification, DataManager
 from unified_manager import MyStocksUnifiedManager
 from src.monitoring.alert_manager import AlertLevel
 
@@ -347,7 +347,7 @@ class MyStocksV2Demo:
         # 1. 操作统计
         print("\n📊 查看操作统计...")
         stats = self.manager.monitoring_db.get_operation_statistics(24)
-        print(f"   24小时内操作统计:")
+        print("   24小时内操作统计:")
         print(f"   - 总操作数: {stats.get('total_operations', 0)}")
         print(f"   - 成功操作: {stats.get('successful_operations', 0)}")
         print(f"   - 失败操作: {stats.get('failed_operations', 0)}")
@@ -437,32 +437,32 @@ class MyStocksV2Demo:
 
         # 监控状态
         monitoring = status.get("monitoring", {})
-        print(f"   🔍 监控系统:")
+        print("   🔍 监控系统:")
         op_stats = monitoring.get("operation_statistics", {})
         print(f"   - 总操作数: {op_stats.get('total_operations', 0)}")
         print(f"   - 成功操作: {op_stats.get('successful_operations', 0)}")
 
         # 性能状态
         performance = status.get("performance", {})
-        print(f"   ⚡ 性能指标:")
+        print("   ⚡ 性能指标:")
         perf_summary = performance.get("summary", {})
         print(f"   - 平均响应时间: {perf_summary.get('avg_duration', 0):.3f}秒")
         print(f"   - 慢操作数: {len(performance.get('slow_operations', []))}")
 
         # 数据质量
         quality = status.get("data_quality", {})
-        print(f"   📈 数据质量:")
+        print("   📈 数据质量:")
         print(f"   - 整体评分: {quality.get('overall_score', 0):.2f}")
 
         # 告警状态
         alerts = status.get("alerts", {})
-        print(f"   🚨 告警状态:")
+        print("   🚨 告警状态:")
         print(f"   - 活跃告警: {alerts.get('active_alerts', 0)}")
         print(f"   - 严重告警: {alerts.get('critical_alerts', 0)}")
 
         # 维护状态
         maintenance = status.get("maintenance", {})
-        print(f"   🔧 维护状态:")
+        print("   🔧 维护状态:")
         print(f"   - 运行状态: {'正常' if maintenance.get('is_running') else '停止'}")
 
     def _show_summary(self):
@@ -476,32 +476,32 @@ class MyStocksV2Demo:
             success_count = sum(1 for success in table_results.values() if success)
             total_count = len(table_results)
 
-            print(f"✅ 系统初始化完成")
-            print(f"   - 配置加载: 成功")
+            print("✅ 系统初始化完成")
+            print("   - 配置加载: 成功")
             print(f"   - 表创建: {success_count}/{total_count}")
-            print(f"   - 监控系统: 已启动")
-            print(f"   - 自动化维护: 已启动")
+            print("   - 监控系统: 已启动")
+            print("   - 自动化维护: 已启动")
 
-        print(f"✅ 数据分类演示完成")
-        print(f"   - 5大数据分类体系")
-        print(f"   - 自动数据库路由")
-        print(f"   - TDengine高频数据核心")
+        print("✅ 数据分类演示完成")
+        print("   - 5大数据分类体系")
+        print("   - 自动数据库路由")
+        print("   - TDengine高频数据核心")
 
-        print(f"✅ 数据操作演示完成")
-        print(f"   - 配置驱动的表创建")
-        print(f"   - 自动化数据存储")
-        print(f"   - 智能数据查询")
+        print("✅ 数据操作演示完成")
+        print("   - 配置驱动的表创建")
+        print("   - 自动化数据存储")
+        print("   - 智能数据查询")
 
-        print(f"✅ 监控系统演示完成")
-        print(f"   - 完整操作监控")
-        print(f"   - 性能指标统计")
-        print(f"   - 数据质量检查")
-        print(f"   - 告警机制")
+        print("✅ 监控系统演示完成")
+        print("   - 完整操作监控")
+        print("   - 性能指标统计")
+        print("   - 数据质量检查")
+        print("   - 告警机制")
 
-        print(f"✅ 自动化维护演示完成")
-        print(f"   - 定时维护任务")
-        print(f"   - 健康状态检查")
-        print(f"   - 自动告警机制")
+        print("✅ 自动化维护演示完成")
+        print("   - 定时维护任务")
+        print("   - 健康状态检查")
+        print("   - 自动告警机制")
 
         print("\n💡 核心特性验证:")
         print("   ✅ 配置驱动 - 一个YAML文件管理所有表结构")

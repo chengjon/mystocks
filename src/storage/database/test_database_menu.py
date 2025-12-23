@@ -6,9 +6,8 @@
 """
 
 import os
-import sys
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from dotenv import load_dotenv
 
 
@@ -54,7 +53,7 @@ class DatabaseTestTool:
         for i, path in enumerate(search_paths, 1):
             print(f"{i}. 检查路径: {path}")
             if os.path.exists(path):
-                print(f"   ✅ 找到文件!")
+                print("   ✅ 找到文件!")
                 self.env_file_path = path
 
                 # 加载环境变量
@@ -82,7 +81,7 @@ class DatabaseTestTool:
                 print(f"\n📊 找到 {found_vars}/{len(test_vars)} 个配置变量")
                 return True
             else:
-                print(f"   ❌ 文件不存在")
+                print("   ❌ 文件不存在")
 
         print("\n❌ 未找到 .env 文件")
         return False
@@ -158,7 +157,7 @@ class DatabaseTestTool:
                     self.test_results[db_name] = True
                     config_complete += 1
                 else:
-                    print(f"  ❌ 缺少配置: MONITOR_DB_URL")
+                    print("  ❌ 缺少配置: MONITOR_DB_URL")
                     self.test_results[db_name] = False
             else:
                 # 其他数据库使用host/port格式
@@ -219,11 +218,11 @@ class DatabaseTestTool:
                         else:
                             self.db_libs[driver_name] = None
                             print(f"  ❌ {description}: 未安装")
-                            print(f"      提示: 请安装以下任意一种 TDengine 驱动:")
-                            print(f"      - WebSocket(推荐): pip install taos-ws-py")
-                            print(f"      - REST连接: pip install taospy")
+                            print("      提示: 请安装以下任意一种 TDengine 驱动:")
+                            print("      - WebSocket(推荐): pip install taos-ws-py")
+                            print("      - REST连接: pip install taospy")
                             print(
-                                f"      - 原生连接: pip install taospy + 安装TDengine客户端"
+                                "      - 原生连接: pip install taospy + 安装TDengine客户端"
                             )
                     except Exception as e:
                         print(f"  ❌ {description}: 检查时出错 ({str(e)})")
@@ -444,10 +443,10 @@ class DatabaseTestTool:
                             print(
                                 f"  ⚠️ 检测到TDengine包 ({', '.join(tdengine_lib_status)})，但无法导入模块"
                             )
-                            print(f"  提示: 可能缺少TDengine客户端或环境配置问题")
+                            print("  提示: 可能缺少TDengine客户端或环境配置问题")
                             success = False
                         else:
-                            print(f"  ⚠️ 跳过连接测试: 未安装 TDengine 驱动")
+                            print("  ⚠️ 跳过连接测试: 未安装 TDengine 驱动")
                             success = False
                     else:
                         # 对于没有安装驱动的数据库，只显示配置信息
@@ -591,7 +590,7 @@ class DatabaseTestTool:
             )
             return True
         else:
-            print(f"  ❌ 所有 TDengine 连接方式都失败")
+            print("  ❌ 所有 TDengine 连接方式都失败")
             return False
 
     def _test_tdengine_websocket(self, config: Dict[str, Any], taosws) -> bool:
@@ -674,7 +673,7 @@ class DatabaseTestTool:
         print(f"总数据库数量: {total}")
         print(f"配置完整: {successful}")
         print(f"配置缺失: {total - successful}")
-        print(f"完整率: {(successful/total*100):.1f}%")
+        print(f"完整率: {(successful / total * 100):.1f}%")
 
         print("\n详细结果:")
         print("-" * 50)

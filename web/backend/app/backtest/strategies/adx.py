@@ -4,8 +4,8 @@ ADX Strategy
 ADX平均趋向指标策略 - 判断趋势强度和方向
 Average Directional Index
 """
+
 from typing import Dict, Any, Optional, List
-from decimal import Decimal
 
 from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
 
@@ -56,50 +56,71 @@ class ADXStrategy(BaseStrategy):
     def get_default_parameters(cls) -> Dict[str, Any]:
         return {
             # ADX参数
-            'adx_period': 14,          # ADX周期 (默认14)
-            'smoothing_period': 14,    # 平滑周期
-
+            "adx_period": 14,  # ADX周期 (默认14)
+            "smoothing_period": 14,  # 平滑周期
             # 趋势强度阈值
-            'strong_trend': 25,        # 强趋势阈值
-            'weak_trend': 20,          # 弱趋势阈值
-            'very_strong_trend': 40,   # 极强趋势阈值
-
+            "strong_trend": 25,  # 强趋势阈值
+            "weak_trend": 20,  # 弱趋势阈值
+            "very_strong_trend": 40,  # 极强趋势阈值
             # 交易规则
-            'require_strong_adx': True,     # 要求强ADX
-            'require_adx_rising': True,     # 要求ADX上升
-            'use_di_crossover': True,       # 使用DI交叉
-
+            "require_strong_adx": True,  # 要求强ADX
+            "require_adx_rising": True,  # 要求ADX上升
+            "use_di_crossover": True,  # 使用DI交叉
             # 过滤参数
-            'min_adx_for_entry': 20,        # 入场最小ADX
-            'max_adx_for_entry': 50,        # 入场最大ADX (避免追高)
-            'di_gap_threshold': 5,          # DI差距阈值
-
+            "min_adx_for_entry": 20,  # 入场最小ADX
+            "max_adx_for_entry": 50,  # 入场最大ADX (避免追高)
+            "di_gap_threshold": 5,  # DI差距阈值
             # 退出规则
-            'exit_on_adx_decline': True,    # ADX下降时退出
-            'exit_on_di_crossover': True,   # DI交叉时退出
-
+            "exit_on_adx_decline": True,  # ADX下降时退出
+            "exit_on_di_crossover": True,  # DI交叉时退出
             # 止损
-            'use_atr_stop': True,           # ATR止损
-            'atr_multiplier': 2.0,          # ATR倍数
+            "use_atr_stop": True,  # ATR止损
+            "atr_multiplier": 2.0,  # ATR倍数
         }
 
     @classmethod
     def get_parameter_schema(cls) -> List[Dict[str, Any]]:
         return [
-            {'name': 'adx_period', 'type': 'int', 'min': 7, 'max': 21, 'label': 'ADX周期'},
-            {'name': 'strong_trend', 'type': 'int', 'min': 20, 'max': 30, 'label': '强趋势阈值'},
-            {'name': 'weak_trend', 'type': 'int', 'min': 15, 'max': 25, 'label': '弱趋势阈值'},
-            {'name': 'min_adx_for_entry', 'type': 'int', 'min': 15, 'max': 30, 'label': '入场最小ADX'},
+            {
+                "name": "adx_period",
+                "type": "int",
+                "min": 7,
+                "max": 21,
+                "label": "ADX周期",
+            },
+            {
+                "name": "strong_trend",
+                "type": "int",
+                "min": 20,
+                "max": 30,
+                "label": "强趋势阈值",
+            },
+            {
+                "name": "weak_trend",
+                "type": "int",
+                "min": 15,
+                "max": 25,
+                "label": "弱趋势阈值",
+            },
+            {
+                "name": "min_adx_for_entry",
+                "type": "int",
+                "min": 15,
+                "max": 30,
+                "label": "入场最小ADX",
+            },
         ]
 
-    def _calculate_adx(self, history: List[Dict[str, Any]], symbol: str) -> tuple[Optional[float], Optional[float], Optional[float]]:
+    def _calculate_adx(
+        self, history: List[Dict[str, Any]], symbol: str
+    ) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """
         计算ADX指标
 
         Returns:
             (ADX, +DI, -DI)
         """
-        period = self.parameters['adx_period']
+        period = self.parameters["adx_period"]
 
         if len(history) < period + 1:
             return None, None, None
@@ -117,15 +138,15 @@ class ADXStrategy(BaseStrategy):
 
                 # True Range
                 tr = max(
-                    curr['high'] - curr['low'],
-                    abs(curr['high'] - prev['close']),
-                    abs(curr['low'] - prev['close'])
+                    curr["high"] - curr["low"],
+                    abs(curr["high"] - prev["close"]),
+                    abs(curr["low"] - prev["close"]),
                 )
                 tr_list.append(tr)
 
                 # +DM and -DM
-                up_move = curr['high'] - prev['high']
-                down_move = prev['low'] - curr['low']
+                up_move = curr["high"] - prev["high"]
+                down_move = prev["low"] - curr["low"]
 
                 plus_dm = up_move if (up_move > down_move and up_move > 0) else 0
                 minus_dm = down_move if (down_move > up_move and down_move > 0) else 0
@@ -143,9 +164,21 @@ class ADXStrategy(BaseStrategy):
 
             # 继续平滑后续值
             for i in range(period, len(tr_list)):
-                self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr_list[i]
-                self.smoothed_plus_dm[symbol] = self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm_list[i]
-                self.smoothed_minus_dm[symbol] = self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm_list[i]
+                self.smoothed_tr[symbol] = (
+                    self.smoothed_tr[symbol]
+                    - (self.smoothed_tr[symbol] / period)
+                    + tr_list[i]
+                )
+                self.smoothed_plus_dm[symbol] = (
+                    self.smoothed_plus_dm[symbol]
+                    - (self.smoothed_plus_dm[symbol] / period)
+                    + plus_dm_list[i]
+                )
+                self.smoothed_minus_dm[symbol] = (
+                    self.smoothed_minus_dm[symbol]
+                    - (self.smoothed_minus_dm[symbol] / period)
+                    + minus_dm_list[i]
+                )
 
             # 计算DI
             atr = self.smoothed_tr[symbol] / period
@@ -175,22 +208,32 @@ class ADXStrategy(BaseStrategy):
 
             # True Range
             tr = max(
-                curr['high'] - curr['low'],
-                abs(curr['high'] - prev['close']),
-                abs(curr['low'] - prev['close'])
+                curr["high"] - curr["low"],
+                abs(curr["high"] - prev["close"]),
+                abs(curr["low"] - prev["close"]),
             )
 
             # +DM and -DM
-            up_move = curr['high'] - prev['high']
-            down_move = prev['low'] - curr['low']
+            up_move = curr["high"] - prev["high"]
+            down_move = prev["low"] - curr["low"]
 
             plus_dm = up_move if (up_move > down_move and up_move > 0) else 0
             minus_dm = down_move if (down_move > up_move and down_move > 0) else 0
 
             # 更新平滑值
-            self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
-            self.smoothed_plus_dm[symbol] = self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm
-            self.smoothed_minus_dm[symbol] = self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm
+            self.smoothed_tr[symbol] = (
+                self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
+            )
+            self.smoothed_plus_dm[symbol] = (
+                self.smoothed_plus_dm[symbol]
+                - (self.smoothed_plus_dm[symbol] / period)
+                + plus_dm
+            )
+            self.smoothed_minus_dm[symbol] = (
+                self.smoothed_minus_dm[symbol]
+                - (self.smoothed_minus_dm[symbol] / period)
+                + minus_dm
+            )
 
             # 计算DI
             if self.smoothed_tr[symbol] == 0:
@@ -217,14 +260,14 @@ class ADXStrategy(BaseStrategy):
         self,
         symbol: str,
         current_data: Dict[str, Any],
-        position: Optional[Dict[str, Any]] = None
+        position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
 
         self.update_history(symbol, current_data)
 
         history = self.price_history.get(symbol, [])
-        period = self.parameters['adx_period']
+        period = self.parameters["adx_period"]
 
         if len(history) < period + 2:
             return None
@@ -248,7 +291,9 @@ class ADXStrategy(BaseStrategy):
         self.smoothed_minus_dm.pop(symbol, None)
         self.adx_values.pop(symbol, None)
 
-        prev_adx, prev_plus_di, prev_minus_di = self._calculate_adx(history[:-1], symbol)
+        prev_adx, prev_plus_di, prev_minus_di = self._calculate_adx(
+            history[:-1], symbol
+        )
 
         # 恢复缓存
         if temp_tr is not None:
@@ -260,12 +305,12 @@ class ADXStrategy(BaseStrategy):
         if prev_adx is None:
             return None
 
-        current_price = float(current_data['close'])
-        has_position = position and position.get('quantity', 0) > 0
+        current_price = float(current_data["close"])
+        has_position = position and position.get("quantity", 0) > 0
 
-        strong_trend = self.parameters['strong_trend']
-        min_adx = self.parameters['min_adx_for_entry']
-        max_adx = self.parameters['max_adx_for_entry']
+        strong_trend = self.parameters["strong_trend"]
+        min_adx = self.parameters["min_adx_for_entry"]
+        max_adx = self.parameters["max_adx_for_entry"]
 
         # ADX趋势判断
         adx_rising = adx > prev_adx
@@ -280,12 +325,12 @@ class ADXStrategy(BaseStrategy):
         # === 买入信号 ===
         if not has_position:
             # DI金叉 + ADX确认
-            if self.parameters.get('use_di_crossover') and di_golden_cross:
+            if self.parameters.get("use_di_crossover") and di_golden_cross:
                 # 检查ADX条件
                 adx_ok = True
-                if self.parameters.get('require_strong_adx'):
+                if self.parameters.get("require_strong_adx"):
                     adx_ok = is_tradeable
-                if self.parameters.get('require_adx_rising'):
+                if self.parameters.get("require_adx_rising"):
                     adx_ok = adx_ok and adx_rising
 
                 if adx_ok:
@@ -299,61 +344,63 @@ class ADXStrategy(BaseStrategy):
                         strength=strength,
                         reason=f"DI金叉: +DI({plus_di:.2f})上穿-DI({minus_di:.2f}), ADX={adx:.2f}",
                         metadata={
-                            'adx': adx,
-                            'plus_di': plus_di,
-                            'minus_di': minus_di,
-                            'adx_rising': adx_rising,
-                            'trend_strength': 'strong' if is_strong_trend else 'moderate'
-                        }
+                            "adx": adx,
+                            "plus_di": plus_di,
+                            "minus_di": minus_di,
+                            "adx_rising": adx_rising,
+                            "trend_strength": "strong"
+                            if is_strong_trend
+                            else "moderate",
+                        },
                     )
 
             # 强趋势持续 (ADX高位，+DI领先)
             if plus_di > minus_di and is_strong_trend and adx_rising:
-                if di_gap >= self.parameters['di_gap_threshold']:
+                if di_gap >= self.parameters["di_gap_threshold"]:
                     return StrategySignal(
                         symbol=symbol,
                         signal_type=SignalType.LONG,
                         strength=0.5,  # 中等强度，因为不是交叉信号
                         reason=f"强趋势持续: ADX={adx:.2f}, +DI={plus_di:.2f} > -DI={minus_di:.2f}",
                         metadata={
-                            'adx': adx,
-                            'plus_di': plus_di,
-                            'minus_di': minus_di,
-                            'trend_strength': 'strong'
-                        }
+                            "adx": adx,
+                            "plus_di": plus_di,
+                            "minus_di": minus_di,
+                            "trend_strength": "strong",
+                        },
                     )
 
         # === 卖出信号 ===
         if has_position:
             # DI死叉
-            if self.parameters.get('exit_on_di_crossover') and di_death_cross:
+            if self.parameters.get("exit_on_di_crossover") and di_death_cross:
                 return StrategySignal(
                     symbol=symbol,
                     signal_type=SignalType.EXIT,
                     strength=1.0,
                     reason=f"DI死叉: +DI({plus_di:.2f})下穿-DI({minus_di:.2f})",
-                    metadata={'adx': adx, 'plus_di': plus_di, 'minus_di': minus_di}
+                    metadata={"adx": adx, "plus_di": plus_di, "minus_di": minus_di},
                 )
 
             # ADX下降 (趋势减弱)
-            if self.parameters.get('exit_on_adx_decline'):
+            if self.parameters.get("exit_on_adx_decline"):
                 if not adx_rising and adx < strong_trend:
                     return StrategySignal(
                         symbol=symbol,
                         signal_type=SignalType.EXIT,
                         strength=0.5,  # 部分退出
                         reason=f"趋势减弱: ADX({adx:.2f})下降且<{strong_trend}",
-                        metadata={'adx': adx, 'prev_adx': prev_adx}
+                        metadata={"adx": adx, "prev_adx": prev_adx},
                     )
 
             # -DI领先且差距扩大
-            if minus_di > plus_di and di_gap > self.parameters['di_gap_threshold']:
+            if minus_di > plus_di and di_gap > self.parameters["di_gap_threshold"]:
                 return StrategySignal(
                     symbol=symbol,
                     signal_type=SignalType.EXIT,
                     strength=0.7,
                     reason=f"空头趋势明确: -DI({minus_di:.2f}) > +DI({plus_di:.2f})",
-                    metadata={'adx': adx, 'plus_di': plus_di, 'minus_di': minus_di}
+                    metadata={"adx": adx, "plus_di": plus_di, "minus_di": minus_di},
                 )
 
         return None

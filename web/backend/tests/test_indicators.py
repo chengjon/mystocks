@@ -10,9 +10,7 @@ from fastapi.testclient import TestClient
 from app.services.indicator_calculator import (
     get_indicator_calculator,
     InsufficientDataError,
-    IndicatorCalculationError,
 )
-from app.services.indicator_registry import get_indicator_registry, IndicatorCategory
 from app.main import app
 
 # Test client

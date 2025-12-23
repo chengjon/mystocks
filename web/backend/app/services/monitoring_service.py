@@ -12,7 +12,7 @@ import asyncio
 
 import akshare as ak
 import pandas as pd
-from sqlalchemy import create_engine, and_, or_, desc
+from sqlalchemy import create_engine, and_, desc
 from sqlalchemy.orm import sessionmaker, Session
 
 from app.models.monitoring import (
@@ -20,8 +20,6 @@ from app.models.monitoring import (
     AlertRecord,
     RealtimeMonitoring,
     DragonTigerList,
-    MonitoringStatistics,
-    Base,
 )
 
 # 配置日志

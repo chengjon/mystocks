@@ -41,15 +41,15 @@ class PerformanceMetrics:
         self.risk_free_rate = risk_free_rate
 
         # Calculate daily returns if not present
-        if 'returns' not in self.daily_results.columns:
-            self.daily_results['returns'] = (
-                self.daily_results['portfolio_value'].pct_change()
-            )
+        if "returns" not in self.daily_results.columns:
+            self.daily_results["returns"] = self.daily_results[
+                "portfolio_value"
+            ].pct_change()
 
     def total_return(self) -> float:
         """Calculate total return"""
-        initial_value = self.daily_results['portfolio_value'].iloc[0]
-        final_value = self.daily_results['portfolio_value'].iloc[-1]
+        initial_value = self.daily_results["portfolio_value"].iloc[0]
+        final_value = self.daily_results["portfolio_value"].iloc[-1]
         return (final_value - initial_value) / initial_value
 
     def annualized_return(self, trading_days_per_year: int = 252) -> float:
@@ -61,7 +61,7 @@ class PerformanceMetrics:
 
     def volatility(self, trading_days_per_year: int = 252) -> float:
         """Calculate annualized volatility (standard deviation of returns)"""
-        daily_vol = self.daily_results['returns'].std()
+        daily_vol = self.daily_results["returns"].std()
         return daily_vol * np.sqrt(trading_days_per_year)
 
     def sharpe_ratio(self, trading_days_per_year: int = 252) -> float:
@@ -88,12 +88,12 @@ class PerformanceMetrics:
         ann_return = self.annualized_return(trading_days_per_year)
 
         # Calculate downside deviation
-        negative_returns = self.daily_results['returns'][
-            self.daily_results['returns'] < 0
+        negative_returns = self.daily_results["returns"][
+            self.daily_results["returns"] < 0
         ]
 
         if len(negative_returns) == 0:
-            return float('inf')
+            return float("inf")
 
         downside_std = negative_returns.std()
         downside_vol = downside_std * np.sqrt(trading_days_per_year)
@@ -109,7 +109,7 @@ class PerformanceMetrics:
 
         Max Drawdown = max((Peak - Trough) / Peak)
         """
-        portfolio_values = self.daily_results['portfolio_value']
+        portfolio_values = self.daily_results["portfolio_value"]
 
         # Calculate running maximum
         running_max = portfolio_values.expanding().max()
@@ -129,7 +129,7 @@ class PerformanceMetrics:
         max_dd = self.max_drawdown()
 
         if max_dd == 0:
-            return float('inf')
+            return float("inf")
 
         return ann_return / max_dd
 
@@ -148,12 +148,13 @@ class PerformanceMetrics:
         # Simplified: count sell trades with profit
         # Assumes trades list contains profit information
         winning_trades = sum(
-            1 for trade in trades
-            if trade.get('direction') == 'sell' and
-               trade.get('total_revenue', 0) > trade.get('stock_value', 0)
+            1
+            for trade in trades
+            if trade.get("direction") == "sell"
+            and trade.get("total_revenue", 0) > trade.get("stock_value", 0)
         )
 
-        total_trades = len([t for t in trades if t.get('direction') == 'sell'])
+        total_trades = len([t for t in trades if t.get("direction") == "sell"])
 
         return winning_trades / total_trades if total_trades > 0 else 0.0
 
@@ -170,25 +171,29 @@ class PerformanceMetrics:
             return 0.0
 
         gross_profit = sum(
-            trade.get('total_revenue', 0) - trade.get('stock_value', 0)
+            trade.get("total_revenue", 0) - trade.get("stock_value", 0)
             for trade in trades
-            if trade.get('direction') == 'sell' and
-               trade.get('total_revenue', 0) > trade.get('stock_value', 0)
+            if trade.get("direction") == "sell"
+            and trade.get("total_revenue", 0) > trade.get("stock_value", 0)
         )
 
-        gross_loss = abs(sum(
-            trade.get('total_revenue', 0) - trade.get('stock_value', 0)
-            for trade in trades
-            if trade.get('direction') == 'sell' and
-               trade.get('total_revenue', 0) < trade.get('stock_value', 0)
-        ))
+        gross_loss = abs(
+            sum(
+                trade.get("total_revenue", 0) - trade.get("stock_value", 0)
+                for trade in trades
+                if trade.get("direction") == "sell"
+                and trade.get("total_revenue", 0) < trade.get("stock_value", 0)
+            )
+        )
 
         if gross_loss == 0:
-            return float('inf') if gross_profit > 0 else 0.0
+            return float("inf") if gross_profit > 0 else 0.0
 
         return gross_profit / gross_loss
 
-    def calculate_all(self, trades: list = None, trading_days_per_year: int = 252) -> Dict[str, Any]:
+    def calculate_all(
+        self, trades: list = None, trading_days_per_year: int = 252
+    ) -> Dict[str, Any]:
         """
         Calculate all metrics
 
@@ -200,18 +205,18 @@ class PerformanceMetrics:
             Dict of all metrics
         """
         metrics = {
-            'total_return': self.total_return(),
-            'annualized_return': self.annualized_return(trading_days_per_year),
-            'volatility': self.volatility(trading_days_per_year),
-            'sharpe_ratio': self.sharpe_ratio(trading_days_per_year),
-            'sortino_ratio': self.sortino_ratio(trading_days_per_year),
-            'max_drawdown': self.max_drawdown(),
-            'calmar_ratio': self.calmar_ratio(trading_days_per_year),
+            "total_return": self.total_return(),
+            "annualized_return": self.annualized_return(trading_days_per_year),
+            "volatility": self.volatility(trading_days_per_year),
+            "sharpe_ratio": self.sharpe_ratio(trading_days_per_year),
+            "sortino_ratio": self.sortino_ratio(trading_days_per_year),
+            "max_drawdown": self.max_drawdown(),
+            "calmar_ratio": self.calmar_ratio(trading_days_per_year),
         }
 
         # Add trade-based metrics if trades provided
         if trades:
-            metrics['win_rate'] = self.win_rate(trades)
-            metrics['profit_factor'] = self.profit_factor(trades)
+            metrics["win_rate"] = self.win_rate(trades)
+            metrics["profit_factor"] = self.profit_factor(trades)
 
         return metrics

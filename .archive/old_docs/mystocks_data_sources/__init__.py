@@ -9,4 +9,4 @@ Version: 1.0.0
 
 from .sec_fetcher import SECFetcher
 
-__all__ = ['SECFetcher']
+__all__ = ["SECFetcher"]

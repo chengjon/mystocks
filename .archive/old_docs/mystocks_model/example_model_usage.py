@@ -9,6 +9,7 @@ Version: 3.1.0 (Simplified MVP)
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
@@ -23,19 +24,18 @@ def generate_test_data(n_samples: int = 1000, n_features: int = 10):
     # Create random features
     X = pd.DataFrame(
         np.random.randn(n_samples, n_features),
-        columns=[f'feature_{i}' for i in range(n_features)]
+        columns=[f"feature_{i}" for i in range(n_features)],
     )
 
     # Classification target (binary)
     y_class = pd.Series(
-        (X.iloc[:, :3].sum(axis=1) > 0).astype(int),
-        name='target_class'
+        (X.iloc[:, :3].sum(axis=1) > 0).astype(int), name="target_class"
     )
 
     # Regression target (continuous)
     y_reg = pd.Series(
         X.iloc[:, :5].sum(axis=1) * 100 + np.random.randn(n_samples) * 10 + 3000,
-        name='target_price'
+        name="target_price",
     )
 
     return X, y_class, y_reg
@@ -43,9 +43,9 @@ def generate_test_data(n_samples: int = 1000, n_features: int = 10):
 
 def test_random_forest():
     """Test Random Forest model"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Test 1: Random Forest Model (Classification)")
-    print("="*70)
+    print("=" * 70)
 
     # Generate data
     X, y_class, _ = generate_test_data(1000, 10)
@@ -60,7 +60,7 @@ def test_random_forest():
     print("\n2. Training model...")
     metrics = model.fit(X, y_class, test_size=0.2)
 
-    print(f"   ✅ Training complete")
+    print("   ✅ Training complete")
     print(f"   Accuracy: {metrics['accuracy']:.4f}")
     print(f"   Precision: {metrics['precision']:.4f}")
     print(f"   Recall: {metrics['recall']:.4f}")
@@ -79,7 +79,7 @@ def test_random_forest():
 
     # Save model
     print("\n4. Saving model...")
-    model_path = 'models/random_forest_test.pkl'
+    model_path = "models/random_forest_test.pkl"
     model.save_model(model_path)
     print(f"   ✅ Model saved: {model_path}")
 
@@ -88,7 +88,7 @@ def test_random_forest():
     model2 = RandomForestModel()
     model2.load_model(model_path)
     predictions2 = model2.predict(X_test)
-    print(f"   ✅ Model loaded")
+    print("   ✅ Model loaded")
     print(f"   Predictions match: {np.array_equal(predictions, predictions2)}")
 
     print("\n✅ Random Forest test complete!")
@@ -96,9 +96,9 @@ def test_random_forest():
 
 def test_lightgbm():
     """Test LightGBM model"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Test 2: LightGBM Model (Regression)")
-    print("="*70)
+    print("=" * 70)
 
     # Generate data
     X, _, y_reg = generate_test_data(1000, 15)
@@ -113,7 +113,7 @@ def test_lightgbm():
     print("\n2. Training model...")
     metrics = model.fit(X, y_reg, test_size=0.2)
 
-    print(f"   ✅ Training complete")
+    print("   ✅ Training complete")
     print(f"   RMSE: {metrics['rmse']:.2f}")
     print(f"   MAE: {metrics['mae']:.2f}")
     print(f"   R² Score: {metrics['r2_score']:.4f}")
@@ -132,7 +132,7 @@ def test_lightgbm():
 
     # Save model
     print("\n4. Saving model...")
-    model_path = 'models/lightgbm_test.pkl'
+    model_path = "models/lightgbm_test.pkl"
     model.save_model(model_path)
     print(f"   ✅ Model saved: {model_path}")
 
@@ -141,7 +141,7 @@ def test_lightgbm():
     model2 = LightGBMModel()
     model2.load_model(model_path)
     predictions2 = model2.predict(X_test)
-    print(f"   ✅ Model loaded")
+    print("   ✅ Model loaded")
     print(f"   Predictions match: {np.allclose(predictions, predictions2)}")
 
     print("\n✅ LightGBM test complete!")
@@ -149,16 +149,16 @@ def test_lightgbm():
 
 def test_unified_interface():
     """Test unified interface - both models work the same way"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Test 3: Unified Interface Demonstration")
-    print("="*70)
+    print("=" * 70)
 
     X, y_class, y_reg = generate_test_data(500, 10)
 
     # List of models to test
     models = [
         ("RandomForest", RandomForestModel(n_estimators=30), X, y_class),
-        ("LightGBM", LightGBMModel(), X, y_reg)
+        ("LightGBM", LightGBMModel(), X, y_reg),
     ]
 
     print("\nTesting unified interface for multiple models:\n")
@@ -176,7 +176,7 @@ def test_unified_interface():
         print(f"  - Predictions shape: {predictions.shape}")
 
         # Save/Load
-        path = f'models/{name.lower()}_unified_test.pkl'
+        path = f"models/{name.lower()}_unified_test.pkl"
         model.save_model(path)
         print(f"  - Saved to: {path}")
 
@@ -188,10 +188,10 @@ def test_unified_interface():
     print("✅ All models conform to unified interface!")
 
 
-if __name__ == '__main__':
-    print("="*70)
+if __name__ == "__main__":
+    print("=" * 70)
     print("MyStocks Model Layer - Unified Interface Examples")
-    print("="*70)
+    print("=" * 70)
 
     # Run tests
     try:
@@ -209,6 +209,6 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\n❌ Unified interface test failed: {e}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ All tests complete!")
-    print("="*70)
+    print("=" * 70)

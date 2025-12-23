@@ -11,8 +11,7 @@ import pytest
 import sys
 import time
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-from typing import Dict, Any
+from unittest.mock import Mock, patch
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -564,6 +563,7 @@ class TestEdgeCases:
         assert result.total_records == 1000
         assert result.successful_records == 1000
 
+
 class TestRetryStrategyExceptions:
     """测试 RETRY 策略的异常处理"""
 
@@ -589,7 +589,10 @@ class TestRetryStrategyExceptions:
         assert result.retry_count == 2
         # 验证错误消息包含异常信息
         assert len(result.error_messages) > 0
-        assert any("Database connection failed" in str(msg) for msg in result.error_messages.values())
+        assert any(
+            "Database connection failed" in str(msg)
+            for msg in result.error_messages.values()
+        )
 
     @patch("time.sleep")
     def test_retry_with_partial_exceptions(self, mock_sleep):

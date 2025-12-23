@@ -8,14 +8,12 @@
 """
 
 import yaml
-import os
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 import logging
 
 # 数据库连接
 from src.storage.database.connection_manager import DatabaseConnectionManager
-from src.core.data_classification import DataClassification
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,9 @@ logger = logging.getLogger(__name__)
 class ConfigDrivenTableManager:
     """配置驱动的表管理器"""
 
-    def __init__(self, config_path: str = "config/table_config.yaml", safe_mode: bool = True) -> None:
+    def __init__(
+        self, config_path: str = "config/table_config.yaml", safe_mode: bool = True
+    ) -> None:
         """
         初始化表管理器
 
@@ -40,8 +40,10 @@ class ConfigDrivenTableManager:
 
         # 加载配置
         self.config = self.load_config()
-        
-        logger.info(f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})")
+
+        logger.info(
+            f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})"
+        )
 
     def load_config(self) -> Dict[str, Any]:
         """加载配置文件"""
@@ -70,7 +72,9 @@ class ConfigDrivenTableManager:
                 created = self._create_table(table_def)
                 if created:
                     result["tables_created"] += 1
-                    logger.info(f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
+                    logger.info(
+                        f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})"
+                    )
                 else:
                     result["tables_skipped"] += 1
                     logger.info(f"⏭️ 跳过表: {table_def['table_name']} (已存在)")
@@ -128,9 +132,10 @@ class ConfigDrivenTableManager:
                 cursor = conn.cursor()
                 # 验证表名只包含字母、数字和下划线，防止SQL注入
                 import re
-                if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table_name):
+
+                if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", table_name):
                     raise ValueError(f"Invalid table name: {table_name}")
-                
+
                 query = f"SHOW STABLES LIKE '{table_name}'"
                 cursor.execute(query)
                 result = cursor.fetchall()
@@ -192,7 +197,8 @@ class ConfigDrivenTableManager:
 
             # 验证表名防止SQL注入
             import re
-            if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table_name):
+
+            if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", table_name):
                 raise ValueError(f"Invalid table name: {table_name}")
 
             # 构建列定义
@@ -215,9 +221,9 @@ class ConfigDrivenTableManager:
             # 构建CREATE语句
             create_sql = f"""
                 CREATE STABLE IF NOT EXISTS {table_name} (
-                    {', '.join(col_defs)}
+                    {", ".join(col_defs)}
                 ) TAGS (
-                    {', '.join(tag_defs)}
+                    {", ".join(tag_defs)}
                 )
             """
 
@@ -280,9 +286,7 @@ class ConfigDrivenTableManager:
                         col_type = "SERIAL"
                     nullable = ""  # SERIAL is NOT NULL by default
 
-                col_defs.append(
-                    f"{col['name']} {col_type}{nullable}{default}{unique}"
-                )
+                col_defs.append(f"{col['name']} {col_type}{nullable}{default}{unique}")
 
                 if col.get("primary_key"):
                     primary_keys.append(col["name"])
@@ -294,7 +298,7 @@ class ConfigDrivenTableManager:
             # 构建CREATE语句
             create_sql = f"""
                 CREATE TABLE IF NOT EXISTS {table_name} (
-                    {', '.join(col_defs)}
+                    {", ".join(col_defs)}
                 )
             """
 
@@ -360,7 +364,7 @@ class ConfigDrivenTableManager:
                     col_type = f"NUMERIC({col['precision']},{col['scale']})"
 
                 nullable = "" if col.get("nullable", True) else " NOT NULL"
-                
+
                 # 处理默认值
                 default = ""
                 if "default" in col:
@@ -386,7 +390,7 @@ class ConfigDrivenTableManager:
             # 构建CREATE语句
             create_sql = f"""
                 CREATE TABLE IF NOT EXISTS {table_name} (
-                    {', '.join(col_defs)}
+                    {", ".join(col_defs)}
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             """
 
@@ -427,7 +431,9 @@ class ConfigDrivenTableManager:
 
         try:
             # 检查表是否存在
-            if not self._table_exists(db_type, table_name, table_def.get("database_name")):
+            if not self._table_exists(
+                db_type, table_name, table_def.get("database_name")
+            ):
                 logger.warning(f"表不存在: {table_name} ({db_type})")
                 return False
 
@@ -450,7 +456,9 @@ class ConfigDrivenTableManager:
             # 检查多余的列
             extra_columns = set(actual_columns.keys()) - set(expected_columns.keys())
             if extra_columns:
-                logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
+                logger.info(
+                    f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}"
+                )
 
             # 检查列类型
             for col_name, expected_col in expected_columns.items():
@@ -458,7 +466,7 @@ class ConfigDrivenTableManager:
                     actual_col = actual_columns[col_name]
                     expected_type = expected_col["type"]
                     actual_type = actual_col["type"]
-                    
+
                     # 简单类型匹配检查
                     if expected_type.lower() not in actual_type.lower():
                         logger.warning(
@@ -474,7 +482,9 @@ class ConfigDrivenTableManager:
             logger.error(f"表结构验证失败 {table_name}: {e}")
             return False
 
-    def _get_table_structure(self, db_type: str, table_name: str) -> Optional[List[Dict]]:
+    def _get_table_structure(
+        self, db_type: str, table_name: str
+    ) -> Optional[List[Dict]]:
         """获取表结构信息"""
         try:
             if db_type == "PostgreSQL":
@@ -492,7 +502,7 @@ class ConfigDrivenTableManager:
                 result = cursor.fetchall()
                 cursor.close()
                 self.conn_manager._return_postgresql_connection(conn)
-                
+
                 return [{"name": row[0], "type": row[1]} for row in result]
 
             elif db_type == "TDengine":
@@ -501,7 +511,7 @@ class ConfigDrivenTableManager:
                 cursor.execute(f"DESCRIBE {table_name}")
                 result = cursor.fetchall()
                 cursor.close()
-                
+
                 return [{"name": row[0], "type": row[1]} for row in result]
 
             elif db_type == "MySQL":
@@ -511,7 +521,7 @@ class ConfigDrivenTableManager:
                 result = cursor.fetchall()
                 cursor.close()
                 conn.close()
-                
+
                 return [{"name": row[0], "type": row[1]} for row in result]
 
             else:
@@ -528,17 +538,17 @@ def main():
     try:
         manager = ConfigDrivenTableManager()
         result = manager.initialize_tables()
-        
+
         print("\n表创建结果:")
         print(f"  创建: {result['tables_created']}个表")
         print(f"  跳过: {result['tables_skipped']}个表")
         print(f"  错误: {len(result['errors'])}个")
-        
+
         if result["errors"]:
             print("\n错误详情:")
             for error in result["errors"]:
                 print(f"  - {error}")
-                
+
     except Exception as e:
         print(f"❌ 初始化失败: {e}")
 

@@ -7,8 +7,7 @@ Track A T2: BUGer 外部服务上报测试
 import json
 import os
 import sys
-from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 import requests
 from dotenv import load_dotenv
@@ -66,7 +65,9 @@ class BUGerReportingTest:
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ BUGer 服务运行在端口: {data.get('server', {}).get('port', 'unknown')}")
+                print(
+                    f"✅ BUGer 服务运行在端口: {data.get('server', {}).get('port', 'unknown')}"
+                )
                 print(f"   Status: {data.get('status')}")
                 print()
                 return True
@@ -101,12 +102,14 @@ class BUGerReportingTest:
 
             headers = {"Content-Type": "application/json", "X-API-Key": self.api_key}
 
-            response = requests.post(f"{self.api_url}/bugs", json=bug_data, headers=headers, timeout=10)
+            response = requests.post(
+                f"{self.api_url}/bugs", json=bug_data, headers=headers, timeout=10
+            )
 
             if response.status_code in [200, 201]:
                 result = response.json()
                 bug_id = result.get("data", {}).get("bugId")
-                print(f"✅ BUG 上报成功")
+                print("✅ BUG 上报成功")
                 print(f"   Bug ID: {bug_id}")
                 print(f"   Status: {result.get('data', {}).get('status')}")
                 print()
@@ -152,11 +155,20 @@ class BUGerReportingTest:
 
             headers = {"Content-Type": "application/json", "X-API-Key": self.api_key}
 
-            response = requests.post(f"{self.api_url}/bugs/batch", json={"bugs": bugs}, headers=headers, timeout=30)
+            response = requests.post(
+                f"{self.api_url}/bugs/batch",
+                json={"bugs": bugs},
+                headers=headers,
+                timeout=30,
+            )
 
-            if response.status_code in [200, 201, 207]:  # 207 = Multi-Status (partial success)
+            if response.status_code in [
+                200,
+                201,
+                207,
+            ]:  # 207 = Multi-Status (partial success)
                 result = response.json()
-                print(f"✅ 批量上报成功")
+                print("✅ 批量上报成功")
                 summary = result.get("data", {}).get("summary")
                 if summary:
                     print(f"   Summary: {summary}")
@@ -179,13 +191,16 @@ class BUGerReportingTest:
             headers = {"X-API-Key": self.api_key}
 
             response = requests.get(
-                f"{self.api_url}/bugs/search", params={"q": "TEST_TRACK_A_001"}, headers=headers, timeout=10
+                f"{self.api_url}/bugs/search",
+                params={"q": "TEST_TRACK_A_001"},
+                headers=headers,
+                timeout=10,
             )
 
             if response.status_code == 200:
                 result = response.json()
                 bugs = result.get("data", {}).get("bugs", [])
-                print(f"✅ 搜索成功")
+                print("✅ 搜索成功")
                 print(f"   找到 {len(bugs)} 个结果")
                 if bugs:
                     print(f"   第一条: {bugs[0].get('title')}")
@@ -206,14 +221,18 @@ class BUGerReportingTest:
         try:
             headers = {"X-API-Key": self.api_key}
 
-            response = requests.get(f"{self.api_url}/bugs/stats", headers=headers, timeout=10)
+            response = requests.get(
+                f"{self.api_url}/bugs/stats", headers=headers, timeout=10
+            )
 
             if response.status_code == 200:
                 result = response.json()
                 data = result.get("data", {})
-                print(f"✅ 统计信息获取成功")
+                print("✅ 统计信息获取成功")
                 print(f"   总数: {data.get('total')}")
-                print(f"   按严重级别: {json.dumps(data.get('bySeverity', {}), ensure_ascii=False)}")
+                print(
+                    f"   按严重级别: {json.dumps(data.get('bySeverity', {}), ensure_ascii=False)}"
+                )
                 print()
                 return True
             else:
@@ -283,7 +302,7 @@ class BUGerReportingTest:
                     failed += 1
 
         print()
-        print(f"总计: {passed} 通过, {failed} 失败 ({passed}/{passed+failed})")
+        print(f"总计: {passed} 通过, {failed} 失败 ({passed}/{passed + failed})")
         print()
 
         if failed == 0:

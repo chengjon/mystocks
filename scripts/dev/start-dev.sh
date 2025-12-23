@@ -29,27 +29,27 @@ error() {
 # 检查依赖
 check_dependencies() {
     info "检查依赖..."
-    
+
     if ! command -v tmux &> /dev/null; then
         error "tmux 未安装，请先安装: sudo apt-get install tmux"
         exit 1
     fi
-    
+
     if ! command -v python3 &> /dev/null; then
         error "Python3 未安装"
         exit 1
     fi
-    
+
     if ! command -v node &> /dev/null; then
         error "Node.js 未安装"
         exit 1
     fi
-    
+
     if ! command -v npm &> /dev/null; then
         error "npm 未安装"
         exit 1
     fi
-    
+
     info "所有依赖检查通过"
 }
 
@@ -64,87 +64,87 @@ create_directories() {
 # 创建tmux会话
 create_tmux_session() {
     local session_name="mystocks-dev"
-    
+
     info "创建 tmux 会话: $session_name"
-    
+
     # 如果会话已存在，删除它
     tmux kill-session -t "$session_name" 2>/dev/null || true
-    
+
     # 创建新会话并设置基础设置
     tmux new-session -d -s "$session_name" -x 300 -y 50
-    
+
     # 启用鼠标支持
     tmux set-option -t "$session_name" mouse on
-    
+
     # 设置默认终端
     tmux set-environment -t "$session_name" TERM xterm-256color
-    
+
     info "创建窗格布局..."
-    
+
     # 创建4个窗格的布局（2x2）
     tmux split-window -t "$session_name" -h  # 水平分割，创建右侧窗格
     tmux split-window -t "$session_name" -v  # 垂直分割，创建下方窗格
     tmux select-pane -t "$session_name":0.3  # 选择第三个窗格
     tmux split-window -t "$session_name" -v  # 垂直分割，创建第四个窗格
-    
+
     # 调整窗格大小（2x2网格）
     tmux resize-pane -t "$session_name":0.0 -x 120 -y 25  # 后端窗格 (左上)
     tmux resize-pane -t "$session_name":0.1 -x 180 -y 25  # 前端窗格 (右上)
     tmux resize-pane -t "$session_name":0.2 -x 120 -y 25  # 数据库窗格 (左下)
     tmux resize-pane -t "$session_name":0.3 -x 180 -y 25  # 日志窗格 (右下)
-    
+
     # 设置窗格标题
     tmux select-pane -t "$session_name":0.0
     tmux send-keys "printf '\033]0;MyStocks Backend\033\\'" C-m
-    
+
     tmux select-pane -t "$session_name":0.1
     tmux send-keys "printf '\033]0;MyStocks Frontend\033\\'" C-m
-    
+
     tmux select-pane -t "$session_name":0.2
     tmux send-keys "printf '\033]0;MyStocks Database\033\\'" C-m
-    
+
     tmux select-pane -t "$session_name":0.3
     tmux send-keys "printf '\033]0;MyStocks Logs\033\\'" C-m
-    
+
     # 重新选择第一个窗格
     tmux select-pane -t "$session_name":0.0
-    
+
     info "tmux 会话创建完成"
 }
 
 # 启动服务
 start_services() {
     local session_name="mystocks-dev"
-    
+
     info "启动服务..."
-    
+
     # 启动后端服务 (窗格 0)
     tmux send-keys -t "$session_name" "cd /opt/claude/mystocks_spec" C-m
     tmux send-keys -t "$session_name" "source .env 2>/dev/null || echo '警告: .env 文件不存在，使用默认配置'" C-m
     tmux send-keys -t "$session_name" "echo '启动 FastAPI 后端服务...'" C-m
     tmux send-keys -t "$session_name" "cd web/backend" C-m
     tmux send-keys -t "$session_name" "uvicorn app.main:app --host 0.0.0.0 --port \$(python -c 'from app.core.config import settings; print(settings.port)') --reload --log-level info" C-m
-    
+
     # 等待后端启动
     sleep 3
-    
+
     # 启动前端服务 (窗格 1)
     tmux send-keys -t "$session_name:0.1" "cd /opt/claude/mystocks_spec" C-m
     tmux send-keys -t "$session_name:0.1" "echo '启动 Vue.js 前端服务...'" C-m
     tmux send-keys -t "$session_name:0.1" "cd web/frontend" C-m
     tmux send-keys -t "$session_name:0.1" "if [ -f package-lock.json ]; then npm install; fi" C-m
     tmux send-keys -t "$session_name:0.1" "npm run dev -- --host 0.0.0.0 --port 5173" C-m
-    
+
     # 等待前端启动
     sleep 5
-    
+
     # 连接数据库 (窗格 2)
     tmux send-keys -t "$session_name:0.2" "echo '数据库连接信息:'" C-m
     tmux send-keys -t "$session_name:0.2" "echo 'PostgreSQL: postgres://postgres:***@localhost:5432/mystocks'" C-m
     tmux send-keys -t "$session_name:0.2" "echo 'TDengine: taos://root:***@localhost:6030/market_data'" C-m
     tmux send-keys -t "$session_name:0.2" "echo '等待连接...' && sleep 2" C-m
     tmux send-keys -t "$session_name:0.2" "psql -h localhost -U postgres -d mystocks" C-m
-    
+
     # 显示日志 (窗格 3)
     tmux send-keys -t "$session_name:0.3" "cd /opt/claude/mystocks_spec" C-m
     tmux send-keys -t "$session_name:0.3" "echo 'MyStocks 开发日志监控'" C-m
@@ -154,7 +154,7 @@ start_services() {
     tmux send-keys -t "$session_name:0.3" "else" C-m
     tmux send-keys -t "$session_name:0.3" "  echo 'lnav 未安装，使用 tail -f 监控...' && tail -f logs/backend.log" C-m
     tmux send-keys -t "$session_name:0.3" "fi" C-m
-    
+
     info "服务启动完成"
 }
 
@@ -198,7 +198,7 @@ debug_mode() {
 main() {
     local check_only=false
     local debug=false
-    
+
     # 解析命令行参数
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -221,35 +221,35 @@ main() {
                 ;;
         esac
     done
-    
+
     # 显示标题
     echo -e "${BLUE}========================================${NC}"
     echo -e "${BLUE}    MyStocks 开发环境启动器${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo ""
-    
+
     # 检查依赖
     check_dependencies
-    
+
     if [ "$check_only" = true ]; then
         info "依赖检查完成，退出"
         exit 0
     fi
-    
+
     # 启用调试模式
     if [ "$debug" = true ]; then
         debug_mode
     fi
-    
+
     # 创建目录
     create_directories
-    
+
     # 创建tmux会话
     create_tmux_session
-    
+
     # 启动服务
     start_services
-    
+
     # 显示完成信息
     echo ""
     echo -e "${GREEN}========================================${NC}"
@@ -272,7 +272,7 @@ main() {
     echo -e "  Ctrl+b ↑↓←→ 切换窗格"
     echo -e "  Ctrl+b z     切换全屏"
     echo ""
-    
+
     # 连接到tmux会话
     info "连接 tmux 会话..."
     tmux attach-session -t "mystocks-dev"

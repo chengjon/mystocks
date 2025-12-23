@@ -56,7 +56,7 @@ def initialize_wsl2_gpu():
         df = cudf.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
         result = df["a"].sum()
 
-        print(f"   ✓ cuDF工作正常")
+        print("   ✓ cuDF工作正常")
         print(f"   ✓ 测试计算: sum([1,2,3]) = {result}")
 
     except Exception as e:
@@ -66,9 +66,6 @@ def initialize_wsl2_gpu():
     # 4. 测试cuML
     print("\n4. 测试cuML...")
     try:
-        import cuml
-        import numpy as np
-
         # 简单的KMeans测试
         from cuml.cluster import KMeans
 
@@ -79,8 +76,8 @@ def initialize_wsl2_gpu():
         kmeans = KMeans(n_clusters=2, random_state=0)
         kmeans.fit(X)
 
-        print(f"   ✓ cuML工作正常")
-        print(f"   ✓ KMeans聚类完成")
+        print("   ✓ cuML工作正常")
+        print("   ✓ KMeans聚类完成")
 
     except Exception as e:
         print(f"   ✗ cuML测试失败: {e}")

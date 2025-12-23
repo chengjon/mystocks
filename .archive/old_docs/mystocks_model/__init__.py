@@ -11,4 +11,4 @@ from .base_model import BaseModel
 from .random_forest_model import RandomForestModel
 from .lightgbm_model import LightGBMModel
 
-__all__ = ['BaseModel', 'RandomForestModel', 'LightGBMModel']
+__all__ = ["BaseModel", "RandomForestModel", "LightGBMModel"]

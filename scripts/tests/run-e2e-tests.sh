@@ -1,7 +1,7 @@
 #!/bin/bash
 # E2E测试运行脚本
 # 提供统一的端到端测试执行入口
-# 
+#
 # 使用方法:
 #   ./scripts/tests/run-e2e-tests.sh [选项]
 #
@@ -88,7 +88,7 @@ E2E测试运行脚本
       --project PROJECT    指定测试项目 [可选]
       --grep PATTERN       只运行匹配的测试 [可选]
       --env ENV           测试环境 (dev|staging|prod) [默认: dev]
-    
+
     执行模式:
       --headless          无头模式运行 [默认: false]
       --headed            有头模式运行
@@ -96,14 +96,14 @@ E2E测试运行脚本
       --parallel          并行执行测试 [默认: true]
       --workers WORKERS   并行工作进程数 [默认: CPU核心数]
       --timeout TIMEOUT   测试超时时间(秒) [默认: 30]
-    
+
     报告和调试:
       --report            生成HTML报告 [默认: true]
       --no-report         不生成HTML报告
       --trace LEVEL       trace收集级别 (off|on-first-retry|retain-on-failure) [默认: on-first-retry]
       --video MODE        视频录制模式 (off|on|first-retry|retain-on-failure) [默认: retain-on-failure]
       --screenshot MODE   截图模式 (off|on|only-on-failure) [默认: only-on-failure]
-    
+
     输出控制:
       --verbose           详细输出
       --ci               CI模式 (优化输出和性能)
@@ -112,16 +112,16 @@ E2E测试运行脚本
 示例:
     # 运行所有测试
     $0
-    
+
     # 只运行登录测试
     $0 --grep "登录"
-    
+
     # 运行Firefox测试并启用调试
     $0 --browser firefox --debug --headed
-    
+
     # CI环境运行 (无头模式，详细日志)
     $0 --headless --ci --verbose --trace retain-on-failure
-    
+
     # 并行运行多浏览器测试
     $0 --parallel --workers 4
 
@@ -136,24 +136,24 @@ EOF
 # 检查依赖
 check_dependencies() {
     local missing_deps=()
-    
+
     if ! command -v node &> /dev/null; then
         missing_deps+=("node")
     fi
-    
+
     if ! command -v npm &> /dev/null; then
         missing_deps+=("npm")
     fi
-    
+
     if ! command -v python3 &> /dev/null; then
         missing_deps+=("python3")
     fi
-    
+
     if [ ${#missing_deps[@]} -gt 0 ]; then
         log_error "缺少必要的依赖: ${missing_deps[*]}"
         exit 1
     fi
-    
+
     # 检查Playwright是否安装
     if [ ! -d "$FRONTEND_DIR/node_modules/@playwright/test" ]; then
         log_warning "Playwright未安装，正在安装..."
@@ -161,7 +161,7 @@ check_dependencies() {
         npm install @playwright/test@1.48.1
         npx playwright install --with-deps
     fi
-    
+
     log_success "依赖检查通过"
 }
 
@@ -169,21 +169,21 @@ check_dependencies() {
 check_services() {
     local base_url="${PLAYWRIGHT_BASE_URL:-http://localhost:5173}"
     local api_url="${PLAYWRIGHT_API_URL:-http://localhost:8000}"
-    
+
     # 检查前端服务
     if ! curl -f "$base_url" &> /dev/null; then
         log_error "前端服务未运行: $base_url"
         log_info "请启动前端服务或运行: ./scripts/tests/manage-test-env.sh start"
         exit 1
     fi
-    
+
     # 检查后端API
     if ! curl -f "$api_url/health" &> /dev/null; then
         log_error "后端API未运行: $api_url"
         log_info "请启动后端服务或运行: ./scripts/tests/manage-test-env.sh start"
         exit 1
     fi
-    
+
     log_success "服务状态检查通过"
 }
 
@@ -283,7 +283,7 @@ parse_args() {
                 ;;
         esac
     done
-    
+
     # 验证参数
     case $BROWSER in
         chromium|firefox|webkit|edge)
@@ -294,7 +294,7 @@ parse_args() {
             exit 1
             ;;
     esac
-    
+
     case $ENV in
         dev|staging|prod)
             ;;
@@ -314,7 +314,7 @@ setup_environment() {
     export PLAYWRIGHT_TIMEOUT="${PLAYWRIGHT_TIMEOUT:-$((TIMEOUT * 1000))}"
     export NODE_ENV="test"
     export USE_MOCK_DATA="true"
-    
+
     # 根据环境设置特定变量
     case $ENV in
         dev)
@@ -335,65 +335,65 @@ setup_environment() {
 # 构建Playwright命令
 build_playwright_command() {
     local cmd="npx playwright test"
-    
+
     # 浏览器配置
     if [ -n "$PROJECT" ]; then
         cmd="$cmd --project=$PROJECT"
     else
         cmd="$cmd --project=$BROWSER"
     fi
-    
+
     # 分片配置
     if [ -n "$SHARD" ]; then
         cmd="$cmd --shard=$SHARD"
     fi
-    
+
     # 测试过滤
     if [ -n "$GREP" ]; then
         cmd="$cmd --grep=\"$GREP\""
     fi
-    
+
     # 报告配置
     if [ "$REPORT" = true ]; then
         cmd="$cmd --reporter=html,json,junit"
     else
         cmd="$cmd --reporter=dot"
     fi
-    
+
     # Trace配置
     cmd="$cmd --trace=$TRACE"
-    
+
     # 视频配置
     cmd="$cmd --video=$VIDEO"
-    
+
     # 截图配置
     cmd="$cmd --screenshot=$SCREENSHOT"
-    
+
     # 并行配置
     if [ "$PARALLEL" = true ]; then
         local workers="${WORKERS:-$(nproc)}"
         cmd="$cmd --workers=$workers"
     fi
-    
+
     # 调试配置
     if [ "$DEBUG" = true ]; then
         cmd="$cmd --debug"
         HEADLESS_DEFAULT=false
     fi
-    
+
     # 超时配置
     cmd="$cmd --timeout=$((TIMEOUT * 1000))"
-    
+
     # 输出目录
     cmd="$cmd --output=test-results/"
-    
+
     echo "$cmd"
 }
 
 # 运行测试
 run_tests() {
     cd "$FRONTEND_DIR"
-    
+
     log_info "开始运行E2E测试..."
     log_info "配置信息:"
     log_info "  浏览器: $BROWSER"
@@ -403,44 +403,44 @@ run_tests() {
     log_info "  超时: ${TIMEOUT}秒"
     log_info "  并行: $PARALLEL"
     log_info "  无头模式: $HEADLESS_DEFAULT"
-    
+
     if [ -n "$SHARD" ]; then
         log_info "  分片: $SHARD"
     fi
-    
+
     if [ -n "$GREP" ]; then
         log_info "  测试过滤: $GREP"
     fi
-    
+
     # 构建命令
     local playwright_cmd=$(build_playwright_command)
-    
+
     if [ "$VERBOSE" = true ]; then
         log_info "执行命令: $playwright_cmd"
     fi
-    
+
     # 设置无头模式
     export HEADLESS="$HEADLESS_DEFAULT"
-    
+
     # 执行测试
     if [ "$VERBOSE" = true ]; then
         eval "$playwright_cmd"
     else
         eval "$playwright_cmd" 2>&1 | tee /tmp/playwright-output.log
     fi
-    
+
     local exit_code=$?
-    
+
     # 生成报告
     if [ "$REPORT" = true ] && [ -f "playwright-report/index.html" ]; then
         log_success "HTML报告已生成: playwright-report/index.html"
-        
+
         if [ "$CI" = true ]; then
             # CI环境中上传报告的逻辑
             log_info "在CI环境中，报告应该通过artifacts上传"
         fi
     fi
-    
+
     # 显示结果摘要
     if [ -f "test-results/results.json" ]; then
         log_info "测试结果摘要:"
@@ -449,7 +449,7 @@ run_tests() {
             local passed=$(jq '.stats.expected' test-results/results.json 2>/dev/null || echo "N/A")
             local failed=$(jq '.stats.unexpected' test-results/results.json 2>/dev/null || echo "N/A")
             local duration=$(jq '.stats.duration' test-results/results.json 2>/dev/null || echo "N/A")
-            
+
             log_info "  总计: $total"
             log_info "  通过: $passed"
             log_info "  失败: $failed"
@@ -458,7 +458,7 @@ run_tests() {
             log_info "请安装jq以查看详细结果: sudo apt-get install jq"
         fi
     fi
-    
+
     return $exit_code
 }
 
@@ -466,18 +466,18 @@ run_tests() {
 main() {
     # 解析参数
     parse_args "$@"
-    
+
     # 设置环境
     setup_environment
-    
+
     # 检查环境
     check_dependencies
-    
+
     # 检查服务（仅在非CI模式下）
     if [ "$CI" != true ]; then
         check_services
     fi
-    
+
     # 运行测试
     if run_tests; then
         log_success "所有测试通过!"

@@ -3,9 +3,9 @@ Execution Handler
 
 订单执行处理器，模拟真实市场的订单执行、滑点和手续费
 """
+
 from typing import Optional
 from decimal import Decimal
-from datetime import datetime
 
 from app.backtest.events import OrderEvent, FillEvent
 
@@ -19,9 +19,9 @@ class ExecutionHandler:
 
     def __init__(
         self,
-        commission_rate: Decimal = Decimal('0.0003'),  # 手续费率（默认0.03%）
-        slippage_rate: Decimal = Decimal('0.001'),  # 滑点率（默认0.1%）
-        min_commission: Decimal = Decimal('5.0')  # 最小手续费（A股规则）
+        commission_rate: Decimal = Decimal("0.0003"),  # 手续费率（默认0.03%）
+        slippage_rate: Decimal = Decimal("0.001"),  # 滑点率（默认0.1%）
+        min_commission: Decimal = Decimal("5.0"),  # 最小手续费（A股规则）
     ):
         """
         初始化执行处理器
@@ -39,7 +39,7 @@ class ExecutionHandler:
         self,
         order: OrderEvent,
         current_price: Decimal,
-        current_volume: int = 1000000  # 当前成交量（用于判断是否能成交）
+        current_volume: int = 1000000,  # 当前成交量（用于判断是否能成交）
     ) -> Optional[FillEvent]:
         """
         执行订单并生成成交事件
@@ -80,12 +80,14 @@ class ExecutionHandler:
             fill_price=fill_price,
             commission=commission,
             slippage=slippage_cost,
-            strategy_id=order.strategy_id
+            strategy_id=order.strategy_id,
         )
 
         return fill_event
 
-    def _calculate_fill_price(self, order: OrderEvent, current_price: Decimal) -> Decimal:
+    def _calculate_fill_price(
+        self, order: OrderEvent, current_price: Decimal
+    ) -> Decimal:
         """
         计算成交价格（考虑滑点）
 
@@ -96,43 +98,43 @@ class ExecutionHandler:
         Returns:
             成交价格
         """
-        if order.order_type == 'MARKET':
+        if order.order_type == "MARKET":
             # 市价单：应用滑点
-            if order.action == 'BUY':
+            if order.action == "BUY":
                 # 买入时价格上滑
-                fill_price = current_price * (Decimal('1') + self.slippage_rate)
+                fill_price = current_price * (Decimal("1") + self.slippage_rate)
             else:  # SELL
                 # 卖出时价格下滑
-                fill_price = current_price * (Decimal('1') - self.slippage_rate)
+                fill_price = current_price * (Decimal("1") - self.slippage_rate)
 
             # 价格精度（保留2位小数）
-            fill_price = fill_price.quantize(Decimal('0.01'))
+            fill_price = fill_price.quantize(Decimal("0.01"))
 
-        elif order.order_type == 'LIMIT':
+        elif order.order_type == "LIMIT":
             # 限价单：按指定价格成交（如果可能）
             if order.price is None:
                 # 如果没有指定限价，使用当前价
                 fill_price = current_price
             else:
                 # 检查是否能成交
-                if order.action == 'BUY' and order.price >= current_price:
+                if order.action == "BUY" and order.price >= current_price:
                     fill_price = order.price
-                elif order.action == 'SELL' and order.price <= current_price:
+                elif order.action == "SELL" and order.price <= current_price:
                     fill_price = order.price
                 else:
                     # 限价单无法成交
                     return None
 
-        elif order.order_type == 'STOP':
+        elif order.order_type == "STOP":
             # 止损单：触发后按市价成交
             if order.price is None:
                 fill_price = current_price
             else:
                 # 检查是否触发止损
-                if order.action == 'BUY' and current_price >= order.price:
-                    fill_price = current_price * (Decimal('1') + self.slippage_rate)
-                elif order.action == 'SELL' and current_price <= order.price:
-                    fill_price = current_price * (Decimal('1') - self.slippage_rate)
+                if order.action == "BUY" and current_price >= order.price:
+                    fill_price = current_price * (Decimal("1") + self.slippage_rate)
+                elif order.action == "SELL" and current_price <= order.price:
+                    fill_price = current_price * (Decimal("1") - self.slippage_rate)
                 else:
                     # 止损未触发
                     return None
@@ -164,7 +166,7 @@ class ExecutionHandler:
         commission = max(commission, self.min_commission)
 
         # 精度（保留2位小数）
-        commission = commission.quantize(Decimal('0.01'))
+        commission = commission.quantize(Decimal("0.01"))
 
         return commission
 
@@ -179,10 +181,10 @@ class ExecutionHandler:
         Returns:
             估算的成交价格
         """
-        if action == 'BUY':
-            return current_price * (Decimal('1') + self.slippage_rate)
+        if action == "BUY":
+            return current_price * (Decimal("1") + self.slippage_rate)
         else:  # SELL
-            return current_price * (Decimal('1') - self.slippage_rate)
+            return current_price * (Decimal("1") - self.slippage_rate)
 
     def estimate_commission(self, quantity: int, price: Decimal) -> Decimal:
         """
@@ -205,7 +207,7 @@ class ExecutionHandler:
             执行器配置信息
         """
         return {
-            'commission_rate': float(self.commission_rate),
-            'slippage_rate': float(self.slippage_rate),
-            'min_commission': float(self.min_commission)
+            "commission_rate": float(self.commission_rate),
+            "slippage_rate": float(self.slippage_rate),
+            "min_commission": float(self.min_commission),
         }

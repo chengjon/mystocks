@@ -6,12 +6,12 @@ TDengine数据访问层真实类单元测试
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+from datetime import datetime
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))
 
 
 class TestTDengineDataAccessReal:
@@ -27,9 +27,12 @@ class TestTDengineDataAccessReal:
         self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
 
-        with patch('src.data_access.tdengine_access.get_connection_manager') as mock_get_cm:
+        with patch(
+            "src.data_access.tdengine_access.get_connection_manager"
+        ) as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.tdengine_access import TDengineDataAccess
+
             self.db = TDengineDataAccess()
             yield
 
@@ -39,17 +42,10 @@ class TestTDengineDataAccessReal:
 
     def test_create_stable(self):
         """测试创建超级表"""
-        schema = {
-            'ts': 'TIMESTAMP',
-            'price': 'FLOAT',
-            'volume': 'INT'
-        }
-        tags = {
-            'symbol': 'BINARY(20)',
-            'exchange': 'BINARY(10)'
-        }
+        schema = {"ts": "TIMESTAMP", "price": "FLOAT", "volume": "INT"}
+        tags = {"symbol": "BINARY(20)", "exchange": "BINARY(10)"}
 
-        self.db.create_stable('tick_data', schema, tags)
+        self.db.create_stable("tick_data", schema, tags)
 
         self.mock_cursor.execute.assert_called()
 
@@ -57,35 +53,35 @@ class TestTDengineDataAccessReal:
         """测试创建子表"""
         # create_table signature: (table_name, stable_name, tag_values)
         self.db.create_table(
-            'tick_600519',
-            'tick_data',
-            {'symbol': '600519', 'exchange': 'SH'}
+            "tick_600519", "tick_data", {"symbol": "600519", "exchange": "SH"}
         )
 
         self.mock_cursor.execute.assert_called()
 
     def test_insert_dataframe(self):
         """测试插入DataFrame"""
-        df = pd.DataFrame({
-            'ts': pd.date_range('2024-01-01 09:30:00', periods=10, freq='1min'),
-            'price': [1750.0 + i * 0.1 for i in range(10)],
-            'volume': [1000 + i * 10 for i in range(10)]
-        })
+        df = pd.DataFrame(
+            {
+                "ts": pd.date_range("2024-01-01 09:30:00", periods=10, freq="1min"),
+                "price": [1750.0 + i * 0.1 for i in range(10)],
+                "volume": [1000 + i * 10 for i in range(10)],
+            }
+        )
 
-        self.db.insert_dataframe('tick_600519', df)
+        self.db.insert_dataframe("tick_600519", df)
 
         assert self.mock_cursor.execute.called
 
     def test_query_by_time_range(self):
         """测试时间范围查询"""
         self.mock_cursor.fetchall.return_value = []
-        self.mock_cursor.description = [('ts',), ('price',), ('volume',)]
+        self.mock_cursor.description = [("ts",), ("price",), ("volume",)]
 
         start = datetime(2024, 1, 1, 9, 30, 0)
         end = datetime(2024, 1, 1, 11, 30, 0)
 
         # query_by_time_range signature: (table_name, start_time, end_time, columns=None, limit=None)
-        result = self.db.query_by_time_range('tick_data', start, end)
+        result = self.db.query_by_time_range("tick_data", start, end)
 
         self.mock_cursor.execute.assert_called()
 
@@ -94,26 +90,38 @@ class TestTDengineDataAccessReal:
         self.mock_cursor.fetchall.return_value = [
             (datetime(2024, 1, 1, 15, 0, 0), 1755.00, 5000),
         ]
-        self.mock_cursor.description = [('ts',), ('price',), ('volume',)]
+        self.mock_cursor.description = [("ts",), ("price",), ("volume",)]
 
-        result = self.db.query_latest('tick_600519', limit=1)
+        result = self.db.query_latest("tick_600519", limit=1)
 
         self.mock_cursor.execute.assert_called()
 
     def test_aggregate_to_kline(self):
         """测试聚合K线"""
         self.mock_cursor.fetchall.return_value = [
-            (datetime(2024, 1, 1, 9, 30, 0), 1750.00, 1755.00, 1748.00, 1752.00, 100000),
+            (
+                datetime(2024, 1, 1, 9, 30, 0),
+                1750.00,
+                1755.00,
+                1748.00,
+                1752.00,
+                100000,
+            ),
         ]
         self.mock_cursor.description = [
-            ('ts',), ('open',), ('high',), ('low',), ('close',), ('volume',)
+            ("ts",),
+            ("open",),
+            ("high",),
+            ("low",),
+            ("close",),
+            ("volume",),
         ]
 
         result = self.db.aggregate_to_kline(
-            'tick_600519',
-            interval='1m',
+            "tick_600519",
+            interval="1m",
             start_time=datetime(2024, 1, 1),
-            end_time=datetime(2024, 1, 2)
+            end_time=datetime(2024, 1, 2),
         )
 
         self.mock_cursor.execute.assert_called()
@@ -123,9 +131,9 @@ class TestTDengineDataAccessReal:
         self.mock_cursor.rowcount = 100
 
         self.db.delete_by_time_range(
-            'tick_600519',
+            "tick_600519",
             start_time=datetime(2024, 1, 1),
-            end_time=datetime(2024, 1, 2)
+            end_time=datetime(2024, 1, 2),
         )
 
         self.mock_cursor.execute.assert_called()
@@ -133,25 +141,23 @@ class TestTDengineDataAccessReal:
     def test_get_table_info(self):
         """测试获取表信息"""
         self.mock_cursor.fetchall.return_value = [
-            ('ts', 'TIMESTAMP'),
-            ('price', 'FLOAT'),
-            ('volume', 'INT'),
+            ("ts", "TIMESTAMP"),
+            ("price", "FLOAT"),
+            ("volume", "INT"),
         ]
 
-        result = self.db.get_table_info('tick_600519')
+        result = self.db.get_table_info("tick_600519")
 
         self.mock_cursor.execute.assert_called()
 
     def test_save_data(self):
         """测试save_data方法"""
-        df = pd.DataFrame({
-            'ts': [datetime.now()],
-            'price': [1750.50],
-            'volume': [1000]
-        })
+        df = pd.DataFrame(
+            {"ts": [datetime.now()], "price": [1750.50], "volume": [1000]}
+        )
 
         # save_data signature: (data, classification, table_name, **kwargs)
-        self.db.save_data(df, None, 'tick_600519')
+        self.db.save_data(df, None, "tick_600519")
 
         self.mock_cursor.execute.assert_called()
 
@@ -160,9 +166,9 @@ class TestTDengineDataAccessReal:
         self.mock_cursor.fetchall.return_value = [
             (datetime(2024, 1, 1, 9, 30, 0), 1750.50, 1000)
         ]
-        self.mock_cursor.description = [('ts',), ('price',), ('volume',)]
+        self.mock_cursor.description = [("ts",), ("price",), ("volume",)]
 
-        result = self.db.load_data('tick_600519')
+        result = self.db.load_data("tick_600519")
 
         assert isinstance(result, pd.DataFrame)
 
@@ -184,9 +190,12 @@ class TestTDengineDataAccessEdgeCases:
         self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
 
-        with patch('src.data_access.tdengine_access.get_connection_manager') as mock_get_cm:
+        with patch(
+            "src.data_access.tdengine_access.get_connection_manager"
+        ) as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.tdengine_access import TDengineDataAccess
+
             self.db = TDengineDataAccess()
             yield
 
@@ -194,17 +203,19 @@ class TestTDengineDataAccessEdgeCases:
         """测试空DataFrame"""
         df = pd.DataFrame()
 
-        result = self.db.insert_dataframe('tick_600519', df)
+        result = self.db.insert_dataframe("tick_600519", df)
 
         assert result is None or result == 0
 
     def test_connection_error(self):
         """测试连接错误"""
-        self.mock_conn_manager.get_tdengine_connection.side_effect = Exception("Connection failed")
+        self.mock_conn_manager.get_tdengine_connection.side_effect = Exception(
+            "Connection failed"
+        )
 
         with pytest.raises(Exception):
             self.db._get_connection()
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

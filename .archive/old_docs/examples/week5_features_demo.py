@@ -9,6 +9,7 @@ Usage: python examples/week5_features_demo.py
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
@@ -27,7 +28,7 @@ def demo_sec_fetcher():
 
         # Get latest 10-K for Apple
         print("\n1. Latest 10-K for AAPL:")
-        filing = fetcher.get_latest_filing('AAPL', '10-K')
+        filing = fetcher.get_latest_filing("AAPL", "10-K")
 
         if filing:
             print(f"  Form: {filing['form_type']}")
@@ -37,7 +38,7 @@ def demo_sec_fetcher():
 
         # Get filing history
         print("\n2. Recent 10-Q filings for TSLA:")
-        history = fetcher.get_filing_history('TSLA', '10-Q', 3)
+        history = fetcher.get_filing_history("TSLA", "10-Q", 3)
 
         for i, filing in enumerate(history, 1):
             print(f"  {i}. {filing['filing_date']}: {filing['form_type']}")
@@ -86,7 +87,7 @@ def demo_notifications():
         email_to=None,  # Set to your email to test
         use_webhook=False,
         pnl=0.032,
-        date="2025-10-24"
+        date="2025-10-24",
     )
 
     print(f"  Email sent: {results['email']}")
@@ -102,7 +103,7 @@ def demo_integrated_workflow():
     print("\n1. Checking SEC filings...")
     try:
         sec_fetcher = SECFetcher()
-        filing = sec_fetcher.get_latest_filing('AAPL', '10-K')
+        filing = sec_fetcher.get_latest_filing("AAPL", "10-K")
 
         if filing:
             filing_info = f"Latest 10-K filed: {filing['filing_date']}"
@@ -122,7 +123,7 @@ def demo_integrated_workflow():
 
     # 3. Check for risk alerts
     print("\n3. Checking risk alerts...")
-    if risk_metrics['var_95_hist'] < -0.05:
+    if risk_metrics["var_95_hist"] < -0.05:
         alert_message = (
             f"Risk Alert: Portfolio VaR exceeds 5%\n"
             f"Current VaR: {risk_metrics['var_95_hist']:.2%}\n"
@@ -136,14 +137,14 @@ def demo_integrated_workflow():
         notifier.notify(
             message=alert_message,
             subject="Portfolio Risk Alert",
-            var=risk_metrics['var_95_hist'],
-            cvar=risk_metrics['cvar_95']
+            var=risk_metrics["var_95_hist"],
+            cvar=risk_metrics["cvar_95"],
         )
     else:
         print("  No risk alerts - portfolio within acceptable limits")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("MyStocks Week 5 Features Demonstration")
     print("=" * 50)
 

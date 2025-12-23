@@ -6,8 +6,8 @@ TDengine 索引优化器
 
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

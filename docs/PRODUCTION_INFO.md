@@ -31,10 +31,10 @@
   ```bash
   # 查看数据库状态
   docker ps --filter "name=postgres"
-  
+
   # 连接数据库
   docker exec -it mystocks_postgres psql -U postgres
-  
+
   # 查看数据库日志
   docker logs mystocks_postgres
   ```
@@ -162,7 +162,7 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
    # 查找占用进程
    lsof -Pi :8888 -sTCP:LISTEN
    lsof -Pi :3001 -sTCP:LISTEN
-   
+
    # 清理冲突进程
    pkill -f "uvicorn.*8888"
    pkill -f "serve.*300"
@@ -173,7 +173,7 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
    # 检查数据库状态
    docker ps --filter "name=postgres"
    docker logs mystocks_postgres
-   
+
    # 重启数据库
    docker restart mystocks_postgres
    ```
@@ -182,10 +182,10 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
    ```bash
    # 检查前端服务
    curl -I http://localhost:3001/
-   
+
    # 检查前端日志
    tail -f /opt/claude/mystocks_spec/logs/frontend.log
-   
+
    # 重启前端服务
    pkill -f "npm.*preview"
    cd /opt/claude/mystocks_spec/web/frontend && npm run preview -- --port 3001 --host 0.0.0.0 &
@@ -195,10 +195,10 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
    ```bash
    # 检查后端日志
    tail -f /opt/claude/mystocks_spec/logs/backend.log
-   
+
    # 检查进程状态
    ps aux | grep uvicorn
-   
+
    # 重启后端服务
    pkill -f "uvicorn.*8888"
    cd /opt/claude/mystocks_spec/web/backend && python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8888 &

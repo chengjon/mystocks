@@ -48,8 +48,9 @@ class LoginPage(BasePage):
 
     def is_login_form_visible(self) -> bool:
         """检查登录表单是否可见"""
-        return self.is_element_visible(self.USERNAME_INPUT) and \
-               self.is_element_visible(self.PASSWORD_INPUT)
+        return self.is_element_visible(self.USERNAME_INPUT) and self.is_element_visible(
+            self.PASSWORD_INPUT
+        )
 
     def get_error_message(self) -> str:
         """获取错误消息"""

@@ -16,9 +16,8 @@ Architecture:
 - PrewarmingScheduler: 定期预热调度
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Any, Optional, Callable
-from collections import defaultdict
 import structlog
 import time
 

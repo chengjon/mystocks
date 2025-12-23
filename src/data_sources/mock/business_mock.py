@@ -12,7 +12,6 @@ Mock业务数据源实现
 import random
 from typing import List, Dict, Optional, Any
 from datetime import date, datetime, timedelta
-import pandas as pd
 from faker import Faker
 
 from src.interfaces.business_data_source import IBusinessDataSource
@@ -27,7 +26,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         self,
         timeseries_source: Optional[ITimeSeriesDataSource] = None,
         relational_source: Optional[IRelationalDataSource] = None,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
     ):
         """
         初始化Mock业务数据源
@@ -37,7 +36,7 @@ class MockBusinessDataSource(IBusinessDataSource):
             relational_source: 关系数据源实例
             seed: 随机种子
         """
-        self.fake = Faker('zh_CN')
+        self.fake = Faker("zh_CN")
         if seed is not None:
             Faker.seed(seed)
             random.seed(seed)
@@ -45,10 +44,12 @@ class MockBusinessDataSource(IBusinessDataSource):
         # 如果未提供数据源，创建Mock实例
         if timeseries_source is None:
             from src.data_sources.mock.timeseries_mock import MockTimeSeriesDataSource
+
             timeseries_source = MockTimeSeriesDataSource(seed=seed)
 
         if relational_source is None:
             from src.data_sources.mock.relational_mock import MockRelationalDataSource
+
             relational_source = MockRelationalDataSource(seed=seed)
 
         self.ts = timeseries_source
@@ -58,9 +59,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         self._backtest_results: Dict[str, Dict] = {}
 
     def get_dashboard_summary(
-        self,
-        user_id: int,
-        include_sections: Optional[List[str]] = None
+        self, user_id: int, include_sections: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """获取仪表盘汇总数据"""
         # 获取市场概览
@@ -75,12 +74,14 @@ class MockBusinessDataSource(IBusinessDataSource):
             symbols = [item["symbol"] for item in watchlist[:10]]
             quotes = self.ts.get_realtime_quotes(symbols=symbols)
             for quote in quotes:
-                watchlist_performance.append({
-                    "symbol": quote["symbol"],
-                    "name": quote["name"],
-                    "price": quote["price"],
-                    "change_percent": quote["change_percent"]
-                })
+                watchlist_performance.append(
+                    {
+                        "symbol": quote["symbol"],
+                        "name": quote["name"],
+                        "price": quote["price"],
+                        "change_percent": quote["change_percent"],
+                    }
+                )
 
         # 获取资金流向排名
         top_fund_flow = self.ts.get_top_fund_flow_stocks(limit=10)
@@ -89,7 +90,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         data_status = {
             "last_update": datetime.now().isoformat(),
             "market_status": "trading" if datetime.now().hour < 15 else "closed",
-            "data_freshness": "real-time"
+            "data_freshness": "real-time",
         }
 
         return {
@@ -100,15 +101,15 @@ class MockBusinessDataSource(IBusinessDataSource):
             "user_stats": {
                 "watchlist_count": len(watchlist),
                 "strategy_count": len(self.rel.get_strategy_configs(user_id)),
-                "alert_count": len(self.rel.get_risk_alerts(user_id))
-            }
+                "alert_count": len(self.rel.get_risk_alerts(user_id)),
+            },
         }
 
     def get_sector_performance(
         self,
         sector_type: str = "industry",
         trade_date: Optional[date] = None,
-        limit: int = 20
+        limit: int = 20,
     ) -> Dict[str, Any]:
         """获取板块表现"""
         if trade_date is None:
@@ -130,17 +131,19 @@ class MockBusinessDataSource(IBusinessDataSource):
 
             # 生成板块统计
             avg_change = round(random.uniform(-5.0, 5.0), 2)
-            sector_performance.append({
-                "sector_code": sector["code"],
-                "sector_name": sector["name"],
-                "avg_change_percent": avg_change,
-                "up_stocks": random.randint(0, len(stocks)),
-                "down_stocks": random.randint(0, len(stocks)),
-                "total_stocks": len(stocks),
-                "top_stocks": stocks[:3],
-                "leader_symbol": stocks[0]["symbol"] if stocks else None,
-                "total_amount": round(random.uniform(1000000000, 50000000000), 2)
-            })
+            sector_performance.append(
+                {
+                    "sector_code": sector["code"],
+                    "sector_name": sector["name"],
+                    "avg_change_percent": avg_change,
+                    "up_stocks": random.randint(0, len(stocks)),
+                    "down_stocks": random.randint(0, len(stocks)),
+                    "total_stocks": len(stocks),
+                    "top_stocks": stocks[:3],
+                    "leader_symbol": stocks[0]["symbol"] if stocks else None,
+                    "total_amount": round(random.uniform(1000000000, 50000000000), 2),
+                }
+            )
 
         # 排序
         sector_performance.sort(key=lambda x: x["avg_change_percent"], reverse=True)
@@ -150,9 +153,13 @@ class MockBusinessDataSource(IBusinessDataSource):
             "sector_type": sector_type,
             "sectors": sector_performance,
             "summary": {
-                "up_sectors": sum(1 for s in sector_performance if s["avg_change_percent"] > 0),
-                "down_sectors": sum(1 for s in sector_performance if s["avg_change_percent"] < 0)
-            }
+                "up_sectors": sum(
+                    1 for s in sector_performance if s["avg_change_percent"] > 0
+                ),
+                "down_sectors": sum(
+                    1 for s in sector_performance if s["avg_change_percent"] < 0
+                ),
+            },
         }
 
     def execute_backtest(
@@ -162,11 +169,13 @@ class MockBusinessDataSource(IBusinessDataSource):
         symbols: List[str],
         start_date: date,
         end_date: date,
-        initial_capital: float = 1000000.0
+        initial_capital: float = 1000000.0,
     ) -> Dict[str, Any]:
         """执行策略回测"""
         # 生成回测ID
-        backtest_id = f"BT_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}"
+        backtest_id = (
+            f"BT_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}"
+        )
 
         # 简化的回测模拟
         days = (end_date - start_date).days
@@ -177,27 +186,31 @@ class MockBusinessDataSource(IBusinessDataSource):
         for i in range(num_trades):
             trade_date = start_date + timedelta(days=random.randint(0, days))
             symbol = random.choice(symbols)
-            trades.append({
-                "trade_id": i + 1,
-                "symbol": symbol,
-                "action": random.choice(["buy", "sell"]),
-                "price": round(random.uniform(10.0, 100.0), 2),
-                "quantity": random.randint(100, 10000),
-                "trade_date": trade_date.isoformat(),
-                "commission": round(random.uniform(5.0, 50.0), 2)
-            })
+            trades.append(
+                {
+                    "trade_id": i + 1,
+                    "symbol": symbol,
+                    "action": random.choice(["buy", "sell"]),
+                    "price": round(random.uniform(10.0, 100.0), 2),
+                    "quantity": random.randint(100, 10000),
+                    "trade_date": trade_date.isoformat(),
+                    "commission": round(random.uniform(5.0, 50.0), 2),
+                }
+            )
 
         # 生成持仓记录
         positions = []
         for symbol in symbols[:5]:
-            positions.append({
-                "symbol": symbol,
-                "quantity": random.randint(100, 5000),
-                "avg_cost": round(random.uniform(10.0, 50.0), 2),
-                "current_price": round(random.uniform(10.0, 50.0), 2),
-                "profit_loss": round(random.uniform(-10000, 50000), 2),
-                "profit_loss_percent": round(random.uniform(-20.0, 50.0), 2)
-            })
+            positions.append(
+                {
+                    "symbol": symbol,
+                    "quantity": random.randint(100, 5000),
+                    "avg_cost": round(random.uniform(10.0, 50.0), 2),
+                    "current_price": round(random.uniform(10.0, 50.0), 2),
+                    "profit_loss": round(random.uniform(-10000, 50000), 2),
+                    "profit_loss_percent": round(random.uniform(-20.0, 50.0), 2),
+                }
+            )
 
         # 生成权益曲线
         equity_curve = []
@@ -205,12 +218,16 @@ class MockBusinessDataSource(IBusinessDataSource):
         for i in range(0, days, 7):  # 每周一个数据点
             date_point = start_date + timedelta(days=i)
             change = random.uniform(-0.02, 0.03)  # ±2-3%波动
-            current_equity *= (1 + change)
-            equity_curve.append({
-                "date": date_point.isoformat(),
-                "equity": round(current_equity, 2),
-                "cumulative_return": round(((current_equity / initial_capital) - 1) * 100, 2)
-            })
+            current_equity *= 1 + change
+            equity_curve.append(
+                {
+                    "date": date_point.isoformat(),
+                    "equity": round(current_equity, 2),
+                    "cumulative_return": round(
+                        ((current_equity / initial_capital) - 1) * 100, 2
+                    ),
+                }
+            )
 
         # 生成回测结果
         final_equity = equity_curve[-1]["equity"] if equity_curve else initial_capital
@@ -234,7 +251,7 @@ class MockBusinessDataSource(IBusinessDataSource):
             "trades": trades,
             "positions": positions,
             "equity_curve": equity_curve,
-            "create_time": datetime.now().isoformat()
+            "create_time": datetime.now().isoformat(),
         }
 
         # 保存回测结果
@@ -243,10 +260,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         return result
 
     def get_backtest_results(
-        self,
-        user_id: int,
-        backtest_id: Optional[str] = None,
-        limit: int = 10
+        self, user_id: int, backtest_id: Optional[str] = None, limit: int = 10
     ) -> List[Dict[str, Any]]:
         """获取回测结果"""
         if backtest_id:
@@ -255,8 +269,7 @@ class MockBusinessDataSource(IBusinessDataSource):
 
         # 返回用户的所有回测结果
         user_results = [
-            r for r in self._backtest_results.values()
-            if r["user_id"] == user_id
+            r for r in self._backtest_results.values() if r["user_id"] == user_id
         ]
 
         # 按创建时间排序
@@ -268,7 +281,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         self,
         user_id: int,
         portfolio: List[Dict[str, Any]],
-        confidence_level: float = 0.95
+        confidence_level: float = 0.95,
     ) -> Dict[str, Any]:
         """计算风险指标"""
         # 简化的风险计算
@@ -284,28 +297,26 @@ class MockBusinessDataSource(IBusinessDataSource):
             "concentration_risk": {
                 "top1_weight": round(random.uniform(0.15, 0.30), 2),
                 "top3_weight": round(random.uniform(0.35, 0.60), 2),
-                "top5_weight": round(random.uniform(0.50, 0.80), 2)
+                "top5_weight": round(random.uniform(0.50, 0.80), 2),
             },
             "industry_exposure": {
                 "银行": round(random.uniform(0.0, 0.20), 2),
                 "证券": round(random.uniform(0.0, 0.15), 2),
                 "医药": round(random.uniform(0.0, 0.10), 2),
                 "电子": round(random.uniform(0.0, 0.15), 2),
-                "其他": round(random.uniform(0.40, 0.60), 2)
+                "其他": round(random.uniform(0.40, 0.60), 2),
             },
             "stress_test": {
                 "market_crash_10pct": round(-total_value * 0.10, 2),
                 "market_crash_20pct": round(-total_value * 0.20, 2),
-                "sector_rotation": round(random.uniform(-0.05, 0.05) * total_value, 2)
-            }
+                "sector_rotation": round(random.uniform(-0.05, 0.05) * total_value, 2),
+            },
         }
 
         return risk_metrics
 
     def check_risk_alerts(
-        self,
-        user_id: int,
-        portfolio: List[Dict[str, Any]]
+        self, user_id: int, portfolio: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """检查风险预警"""
         # 获取用户配置的预警
@@ -317,16 +328,18 @@ class MockBusinessDataSource(IBusinessDataSource):
             is_triggered = random.choice([True, False, False])  # 33%触发概率
 
             if is_triggered:
-                triggered_alerts.append({
-                    "alert_id": alert["id"],
-                    "alert_name": alert["alert_name"],
-                    "alert_type": alert["alert_type"],
-                    "trigger_value": round(random.uniform(0.0, 100.0), 2),
-                    "threshold": alert["condition"].get("threshold", 0),
-                    "message": f"{alert['alert_name']} 触发预警",
-                    "severity": random.choice(["low", "medium", "high"]),
-                    "trigger_time": datetime.now().isoformat()
-                })
+                triggered_alerts.append(
+                    {
+                        "alert_id": alert["id"],
+                        "alert_name": alert["alert_name"],
+                        "alert_type": alert["alert_type"],
+                        "trigger_value": round(random.uniform(0.0, 100.0), 2),
+                        "threshold": alert["condition"].get("threshold", 0),
+                        "message": f"{alert['alert_name']} 触发预警",
+                        "severity": random.choice(["low", "medium", "high"]),
+                        "trigger_time": datetime.now().isoformat(),
+                    }
+                )
 
         return triggered_alerts
 
@@ -335,7 +348,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         user_id: int,
         strategy_ids: List[str],
         symbols: Optional[List[str]] = None,
-        trade_date: Optional[date] = None
+        trade_date: Optional[date] = None,
     ) -> List[Dict[str, Any]]:
         """分析交易信号"""
         if trade_date is None:
@@ -351,29 +364,32 @@ class MockBusinessDataSource(IBusinessDataSource):
             # 为每个策略生成几个信号
             num_signals = random.randint(0, 5)
             for _ in range(num_signals):
-                symbol = random.choice(symbols) if symbols else f"60{random.randint(0, 9999):04d}"
-                signals.append({
-                    "signal_id": f"SIG_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}",
-                    "strategy_id": strategy["id"],
-                    "strategy_name": strategy["strategy_name"],
-                    "symbol": symbol,
-                    "signal_type": random.choice(["buy", "sell", "hold"]),
-                    "signal_strength": round(random.uniform(0.5, 1.0), 2),
-                    "target_price": round(random.uniform(10.0, 100.0), 2),
-                    "stop_loss": round(random.uniform(8.0, 15.0), 2),
-                    "take_profit": round(random.uniform(12.0, 120.0), 2),
-                    "reason": self.fake.sentence(),
-                    "confidence": round(random.uniform(0.6, 0.95), 2),
-                    "generate_time": datetime.now().isoformat()
-                })
+                symbol = (
+                    random.choice(symbols)
+                    if symbols
+                    else f"60{random.randint(0, 9999):04d}"
+                )
+                signals.append(
+                    {
+                        "signal_id": f"SIG_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}",
+                        "strategy_id": strategy["id"],
+                        "strategy_name": strategy["strategy_name"],
+                        "symbol": symbol,
+                        "signal_type": random.choice(["buy", "sell", "hold"]),
+                        "signal_strength": round(random.uniform(0.5, 1.0), 2),
+                        "target_price": round(random.uniform(10.0, 100.0), 2),
+                        "stop_loss": round(random.uniform(8.0, 15.0), 2),
+                        "take_profit": round(random.uniform(12.0, 120.0), 2),
+                        "reason": self.fake.sentence(),
+                        "confidence": round(random.uniform(0.6, 0.95), 2),
+                        "generate_time": datetime.now().isoformat(),
+                    }
+                )
 
         return signals
 
     def get_portfolio_analysis(
-        self,
-        user_id: int,
-        portfolio: List[Dict[str, Any]],
-        benchmark: str = "sh000001"
+        self, user_id: int, portfolio: List[Dict[str, Any]], benchmark: str = "sh000001"
     ) -> Dict[str, Any]:
         """获取组合分析"""
         # 计算组合总值
@@ -387,14 +403,20 @@ class MockBusinessDataSource(IBusinessDataSource):
         for p in portfolio:
             value = p["quantity"] * p["price"]
             cost = p["quantity"] * p["avg_cost"]
-            holdings.append({
-                **p,
-                "value": round(value, 2),
-                "cost": round(cost, 2),
-                "weight": round((value / total_value) * 100, 2) if total_value > 0 else 0,
-                "profit_loss": round(value - cost, 2),
-                "profit_loss_percent": round(((value / cost) - 1) * 100, 2) if cost > 0 else 0
-            })
+            holdings.append(
+                {
+                    **p,
+                    "value": round(value, 2),
+                    "cost": round(cost, 2),
+                    "weight": round((value / total_value) * 100, 2)
+                    if total_value > 0
+                    else 0,
+                    "profit_loss": round(value - cost, 2),
+                    "profit_loss_percent": round(((value / cost) - 1) * 100, 2)
+                    if cost > 0
+                    else 0,
+                }
+            )
 
         # 排序
         holdings.sort(key=lambda x: x["value"], reverse=True)
@@ -409,15 +431,15 @@ class MockBusinessDataSource(IBusinessDataSource):
                 "1day_return": round(random.uniform(-3.0, 3.0), 2),
                 "1week_return": round(random.uniform(-5.0, 5.0), 2),
                 "1month_return": round(random.uniform(-10.0, 10.0), 2),
-                "ytd_return": round(random.uniform(-15.0, 25.0), 2)
+                "ytd_return": round(random.uniform(-15.0, 25.0), 2),
             },
             "benchmark_comparison": {
                 "benchmark_code": benchmark,
                 "portfolio_return": round(total_return, 2),
                 "benchmark_return": round(random.uniform(-5.0, 15.0), 2),
                 "alpha": round(random.uniform(-2.0, 5.0), 2),
-                "tracking_error": round(random.uniform(2.0, 8.0), 2)
-            }
+                "tracking_error": round(random.uniform(2.0, 8.0), 2),
+            },
         }
 
     def perform_attribution_analysis(
@@ -425,7 +447,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         user_id: int,
         portfolio: List[Dict[str, Any]],
         start_date: date,
-        end_date: date
+        end_date: date,
     ) -> Dict[str, Any]:
         """执行归因分析"""
         # 简化的归因分析
@@ -438,30 +460,29 @@ class MockBusinessDataSource(IBusinessDataSource):
                 "证券": round(random.uniform(-1.0, 4.0), 2),
                 "医药": round(random.uniform(-1.5, 2.5), 2),
                 "电子": round(random.uniform(-2.0, 5.0), 2),
-                "其他": round(random.uniform(-3.0, 3.0), 2)
+                "其他": round(random.uniform(-3.0, 3.0), 2),
             },
             "stock_attribution": [],
             "allocation_effect": round(random.uniform(-2.0, 2.0), 2),
             "selection_effect": round(random.uniform(-3.0, 5.0), 2),
-            "interaction_effect": round(random.uniform(-1.0, 1.0), 2)
+            "interaction_effect": round(random.uniform(-1.0, 1.0), 2),
         }
 
         # 为每只股票生成归因
         for p in portfolio[:10]:
-            attribution["stock_attribution"].append({
-                "symbol": p["symbol"],
-                "contribution": round(random.uniform(-2.0, 5.0), 2),
-                "weight_effect": round(random.uniform(-1.0, 1.0), 2),
-                "return_effect": round(random.uniform(-2.0, 4.0), 2)
-            })
+            attribution["stock_attribution"].append(
+                {
+                    "symbol": p["symbol"],
+                    "contribution": round(random.uniform(-2.0, 5.0), 2),
+                    "weight_effect": round(random.uniform(-1.0, 1.0), 2),
+                    "return_effect": round(random.uniform(-2.0, 4.0), 2),
+                }
+            )
 
         return attribution
 
     def execute_stock_screener(
-        self,
-        criteria: Dict[str, Any],
-        sort_by: str = "market_cap",
-        limit: int = 100
+        self, criteria: Dict[str, Any], sort_by: str = "market_cap", limit: int = 100
     ) -> List[Dict[str, Any]]:
         """执行股票筛选"""
         # 获取所有股票
@@ -477,18 +498,20 @@ class MockBusinessDataSource(IBusinessDataSource):
         # 为每只股票添加评分和指标
         results = []
         for stock in filtered_stocks:
-            results.append({
-                "symbol": stock["symbol"],
-                "name": stock["name"],
-                "industry": stock["industry"],
-                "market_cap": round(random.uniform(1000000000, 500000000000), 2),
-                "pe_ratio": round(random.uniform(5.0, 50.0), 2),
-                "pb_ratio": round(random.uniform(0.5, 10.0), 2),
-                "roe": round(random.uniform(0.05, 0.30), 2),
-                "revenue_growth": round(random.uniform(-0.10, 0.50), 2),
-                "profit_margin": round(random.uniform(0.02, 0.30), 2),
-                "score": round(random.uniform(60.0, 95.0), 2)
-            })
+            results.append(
+                {
+                    "symbol": stock["symbol"],
+                    "name": stock["name"],
+                    "industry": stock["industry"],
+                    "market_cap": round(random.uniform(1000000000, 500000000000), 2),
+                    "pe_ratio": round(random.uniform(5.0, 50.0), 2),
+                    "pb_ratio": round(random.uniform(0.5, 10.0), 2),
+                    "roe": round(random.uniform(0.05, 0.30), 2),
+                    "revenue_growth": round(random.uniform(-0.10, 0.50), 2),
+                    "profit_margin": round(random.uniform(0.02, 0.30), 2),
+                    "score": round(random.uniform(60.0, 95.0), 2),
+                }
+            )
 
         # 排序
         if sort_by == "market_cap":
@@ -504,13 +527,10 @@ class MockBusinessDataSource(IBusinessDataSource):
         rel_health = self.rel.health_check()
 
         return {
-            "status": "healthy" if ts_health["status"] == "healthy" and rel_health["status"] == "healthy" else "degraded",
+            "status": "healthy"
+            if ts_health["status"] == "healthy" and rel_health["status"] == "healthy"
+            else "degraded",
             "data_source_type": "mock_composite",
-            "components": {
-                "timeseries": ts_health,
-                "relational": rel_health
-            },
-            "business_metrics": {
-                "total_backtests": len(self._backtest_results)
-            }
+            "components": {"timeseries": ts_health, "relational": rel_health},
+            "business_metrics": {"total_backtests": len(self._backtest_results)},
         }

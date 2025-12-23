@@ -23,10 +23,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
 import logging
 import pickle
 
@@ -251,7 +250,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
 
         self.logger.info(f"  特征数量: {len(self.feature_columns)}")
         self.logger.info(f"  样本数量: {len(X)}")
-        self.logger.info(f"  正样本比例: {y.mean()*100:.2f}%")
+        self.logger.info(f"  正样本比例: {y.mean() * 100:.2f}%")
 
         # 4. 数据标准化
         self.logger.info("\n2. 数据标准化")
@@ -305,7 +304,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
 
             for i, idx in enumerate(indices):
                 self.logger.info(
-                    f"  {i+1}. {self.feature_columns[idx]}: {importances[idx]:.4f}"
+                    f"  {i + 1}. {self.feature_columns[idx]}: {importances[idx]:.4f}"
                 )
 
         self.is_trained = True

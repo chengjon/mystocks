@@ -4,18 +4,16 @@
 """
 
 import asyncio
-import json
 import logging
 import statistics
 import time
 from abc import ABC, abstractmethod
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Dict, List, Optional
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +156,9 @@ class DataSourceQualityMetrics:
                 description=desc,
             )
 
-    def update_metric(self, metric_name: str, value: float) -> Optional[DataQualityAlert]:
+    def update_metric(
+        self, metric_name: str, value: float
+    ) -> Optional[DataQualityAlert]:
         """更新指标并生成告警"""
         if metric_name not in self.metrics:
             logger.warning(f"Unknown metric: {metric_name}")
@@ -216,7 +216,9 @@ class DataSourceQualityMetrics:
 
                 # 对于响应时间和延迟等指标，值越小越好
                 if metric_name in ["response_time", "data_freshness", "error_rate"]:
-                    normalized_score = max(0, 100 - (metric.value / metric.threshold_critical) * 100)
+                    normalized_score = max(
+                        0, 100 - (metric.value / metric.threshold_critical) * 100
+                    )
                 else:
                     normalized_score = min(100, metric.value)
 
@@ -276,7 +278,12 @@ class SchemaValidationRule(IDataQualityRule):
     async def evaluate(self, data: Any, source: str) -> Dict[str, Any]:
         """验证数据schema"""
         if not isinstance(data, dict):
-            return {"passed": False, "score": 0.0, "issues": ["Data is not a dictionary"], "details": {}}
+            return {
+                "passed": False,
+                "score": 0.0,
+                "issues": ["Data is not a dictionary"],
+                "details": {},
+            }
 
         issues = []
         passed_fields = 0
@@ -353,7 +360,13 @@ class DataFreshnessRule(IDataQualityRule):
                 score = 0.0
 
             passed = age_seconds <= self.max_age_seconds
-            issues = [] if passed else [f"Data is {age_seconds:.1f}s old, exceeds threshold of {self.max_age_seconds}s"]
+            issues = (
+                []
+                if passed
+                else [
+                    f"Data is {age_seconds:.1f}s old, exceeds threshold of {self.max_age_seconds}s"
+                ]
+            )
 
             return {
                 "passed": passed,
@@ -367,7 +380,12 @@ class DataFreshnessRule(IDataQualityRule):
             }
 
         except Exception as e:
-            return {"passed": False, "score": 0.0, "issues": [f"Failed to parse timestamp: {str(e)}"], "details": {}}
+            return {
+                "passed": False,
+                "score": 0.0,
+                "issues": [f"Failed to parse timestamp: {str(e)}"],
+                "details": {},
+            }
 
     def get_name(self) -> str:
         return "data_freshness"
@@ -385,7 +403,12 @@ class DataConsistencyRule(IDataQualityRule):
     async def evaluate(self, data: Any, source: str) -> Dict[str, Any]:
         """检查数据一致性"""
         if not isinstance(data, dict):
-            return {"passed": False, "score": 0.0, "issues": ["Data is not a dictionary"], "details": {}}
+            return {
+                "passed": False,
+                "score": 0.0,
+                "issues": ["Data is not a dictionary"],
+                "details": {},
+            }
 
         issues = []
         passed_checks = 0
@@ -395,9 +418,9 @@ class DataConsistencyRule(IDataQualityRule):
                 if check_func(data):
                     passed_checks += 1
                 else:
-                    issues.append(f"Consistency check {i+1} failed")
+                    issues.append(f"Consistency check {i + 1} failed")
             except Exception as e:
-                issues.append(f"Consistency check {i+1} error: {str(e)}")
+                issues.append(f"Consistency check {i + 1} error: {str(e)}")
 
         total_checks = len(self.consistency_checks)
         score = (passed_checks / total_checks * 100) if total_checks > 0 else 0
@@ -422,7 +445,9 @@ class DataQualityMonitor:
     def __init__(self):
         self.source_metrics: Dict[str, DataSourceQualityMetrics] = {}
         self.rules: List[IDataQualityRule] = []
-        self.evaluation_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.evaluation_history: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=100)
+        )
         self.alert_callbacks: List[Callable[[DataQualityAlert], None]] = []
         self.monitoring_enabled = True
 
@@ -433,27 +458,39 @@ class DataQualityMonitor:
         """初始化默认数据质量规则"""
         # Schema验证规则
         self.rules.append(
-            SchemaValidationRule(required_fields=["timestamp", "status"], field_types={"timestamp": str, "status": str})
+            SchemaValidationRule(
+                required_fields=["timestamp", "status"],
+                field_types={"timestamp": str, "status": str},
+            )
         )
 
         # 数据新鲜度规则
-        self.rules.append(DataFreshnessRule(timestamp_field="timestamp", max_age_seconds=300))
+        self.rules.append(
+            DataFreshnessRule(timestamp_field="timestamp", max_age_seconds=300)
+        )
 
         # 数据一致性规则
         consistency_checks = [
-            lambda data: "status" in data and data["status"] in ["success", "ok", "healthy"],
+            lambda data: "status" in data
+            and data["status"] in ["success", "ok", "healthy"],
             lambda data: "timestamp" in data and len(data["timestamp"]) > 0,
         ]
         self.rules.append(DataConsistencyRule(consistency_checks))
 
-    def get_or_create_source_metrics(self, source_name: str) -> DataSourceQualityMetrics:
+    def get_or_create_source_metrics(
+        self, source_name: str
+    ) -> DataSourceQualityMetrics:
         """获取或创建数据源指标"""
         if source_name not in self.source_metrics:
             self.source_metrics[source_name] = DataSourceQualityMetrics(source_name)
         return self.source_metrics[source_name]
 
     async def evaluate_data_quality(
-        self, data: Any, source: str, response_time: Optional[float] = None, success: bool = True
+        self,
+        data: Any,
+        source: str,
+        response_time: Optional[float] = None,
+        success: bool = True,
     ) -> Dict[str, Any]:
         """评估数据质量"""
         if not self.monitoring_enabled:
@@ -469,7 +506,13 @@ class DataQualityMonitor:
         for rule in self.rules:
             try:
                 result = await rule.evaluate(data, source)
-                rule_results.append({"rule": rule.get_name(), "description": rule.get_description(), **result})
+                rule_results.append(
+                    {
+                        "rule": rule.get_name(),
+                        "description": rule.get_description(),
+                        **result,
+                    }
+                )
 
                 total_score += result["score"]
                 total_rules += 1
@@ -600,7 +643,10 @@ class DataQualityMonitor:
 
         # 按严重程度和时间排序
         severity_order = {"critical": 4, "error": 3, "warning": 2, "info": 1}
-        all_alerts.sort(key=lambda a: (severity_order.get(a.severity.value, 0), a.timestamp), reverse=True)
+        all_alerts.sort(
+            key=lambda a: (severity_order.get(a.severity.value, 0), a.timestamp),
+            reverse=True,
+        )
 
         return all_alerts
 
@@ -622,19 +668,27 @@ class DataQualityMonitor:
 
             active_alerts = metrics.get_active_alerts()
             total_alerts += len(active_alerts)
-            critical_alerts += sum(1 for a in active_alerts if a.severity == AlertSeverity.CRITICAL)
+            critical_alerts += sum(
+                1 for a in active_alerts if a.severity == AlertSeverity.CRITICAL
+            )
 
         avg_quality_score = statistics.mean(quality_scores) if quality_scores else 0.0
 
         return {
             "total_sources": total_sources,
             "healthy_sources": healthy_sources,
-            "health_percentage": (healthy_sources / total_sources * 100) if total_sources > 0 else 0,
+            "health_percentage": (healthy_sources / total_sources * 100)
+            if total_sources > 0
+            else 0,
             "average_quality_score": avg_quality_score,
             "total_active_alerts": total_alerts,
             "critical_alerts": critical_alerts,
             "overall_health": (
-                "healthy" if avg_quality_score >= 90 else "degraded" if avg_quality_score >= 70 else "unhealthy"
+                "healthy"
+                if avg_quality_score >= 90
+                else "degraded"
+                if avg_quality_score >= 70
+                else "unhealthy"
             ),
         }
 

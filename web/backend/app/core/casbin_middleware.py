@@ -15,8 +15,8 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Optional, Callable
-from fastapi import Depends, HTTPException, status
+from typing import Callable
+from fastapi import HTTPException, status
 import structlog
 
 from app.core.casbin_manager import get_casbin_manager, CasbinManager

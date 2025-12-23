@@ -6,7 +6,6 @@
 
 import pytest
 import sys
-from typing import Dict, Any
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -41,12 +40,10 @@ from src.core.exceptions import (
     AuthorizationError,
     DataAccessError,
     # 处理相关异常
-    ProcessingException,
     BatchProcessingError,
     DataFormatError,
     ValidationException,
     # 业务逻辑异常
-    BusinessLogicException,
     TradingRuleViolation,
     RiskControlException,
     UnsupportedOperation,
@@ -79,7 +76,9 @@ class TestMyStocksException:
 
     def test_exception_str_representation(self):
         """测试异常字符串表示"""
-        exc = MyStocksException("Test error", error_code="TEST001", details={"info": "test"})
+        exc = MyStocksException(
+            "Test error", error_code="TEST001", details={"info": "test"}
+        )
         str_repr = str(exc)
         assert "TEST001" in str_repr
         assert "Test error" in str_repr
@@ -98,7 +97,9 @@ class TestDataExceptions:
 
     def test_data_not_found_exception(self):
         """测试数据未找到异常"""
-        exc = DataNotFoundException("Stock not found", symbol="000001", data_type="daily_kline")
+        exc = DataNotFoundException(
+            "Stock not found", symbol="000001", data_type="daily_kline"
+        )
         assert exc.error_code == "MSE1001"
         assert exc.details["symbol"] == "000001"
         assert exc.details["data_type"] == "daily_kline"
@@ -108,13 +109,17 @@ class TestDataExceptions:
     def test_data_validation_error(self):
         """测试数据验证异常"""
         validation_errors = ["price < 0", "volume missing"]
-        exc = DataValidationError("Validation failed", validation_errors=validation_errors)
+        exc = DataValidationError(
+            "Validation failed", validation_errors=validation_errors
+        )
         assert exc.error_code == "MSE1002"
         assert exc.details["validation_errors"] == validation_errors
 
     def test_data_integrity_exception(self):
         """测试数据完整性异常"""
-        exc = DataIntegrityException("Duplicate record", table_name="stock_daily", record_id="123")
+        exc = DataIntegrityException(
+            "Duplicate record", table_name="stock_daily", record_id="123"
+        )
         assert exc.error_code == "MSE1003"
         assert exc.details["table_name"] == "stock_daily"
         assert exc.details["record_id"] == "123"
@@ -133,7 +138,9 @@ class TestDatabaseExceptions:
     def test_database_connection_error(self):
         """测试数据库连接异常"""
         conn_info = {"host": "localhost", "port": 5432}
-        exc = DatabaseConnectionError("Connection failed", db_type="PostgreSQL", connection_info=conn_info)
+        exc = DatabaseConnectionError(
+            "Connection failed", db_type="PostgreSQL", connection_info=conn_info
+        )
         assert exc.error_code == "MSE2001"
         assert exc.details["db_type"] == "PostgreSQL"
         assert exc.details["connection_info"] == conn_info
@@ -149,7 +156,9 @@ class TestDatabaseExceptions:
 
     def test_database_integrity_error(self):
         """测试数据库完整性异常"""
-        exc = DatabaseIntegrityError("Foreign key violation", constraint="fk_stock_symbol", table="orders")
+        exc = DatabaseIntegrityError(
+            "Foreign key violation", constraint="fk_stock_symbol", table="orders"
+        )
         assert exc.error_code == "MSE2003"
         assert exc.details["constraint"] == "fk_stock_symbol"
         assert exc.details["table"] == "orders"
@@ -186,21 +195,30 @@ class TestNetworkExceptions:
 
     def test_network_connection_error(self):
         """测试网络连接异常"""
-        exc = NetworkConnectionError("Failed to connect", url="http://example.com", timeout=30.0)
+        exc = NetworkConnectionError(
+            "Failed to connect", url="http://example.com", timeout=30.0
+        )
         assert exc.error_code == "MSE4001"
         assert exc.details["url"] == "http://example.com"
         assert exc.details["timeout"] == 30.0
 
     def test_network_timeout_error(self):
         """测试网络超时异常"""
-        exc = NetworkTimeoutError("Request timeout", timeout=10.0, url="http://api.example.com")
+        exc = NetworkTimeoutError(
+            "Request timeout", timeout=10.0, url="http://api.example.com"
+        )
         assert exc.error_code == "MSE4002"
         assert exc.details["timeout"] == 10.0
         assert exc.details["url"] == "http://api.example.com"
 
     def test_http_error(self):
         """测试HTTP错误异常"""
-        exc = HTTPError(404, "Not Found", url="http://example.com/api/data", response="Page not found")
+        exc = HTTPError(
+            404,
+            "Not Found",
+            url="http://example.com/api/data",
+            response="Page not found",
+        )
         assert exc.error_code == "MSE4003"
         assert "404" in exc.message
         assert exc.details["status_code"] == 404
@@ -218,14 +236,18 @@ class TestSecurityExceptions:
 
     def test_authorization_error(self):
         """测试授权错误异常"""
-        exc = AuthorizationError("Access denied", user_id="user123", resource="/admin/settings")
+        exc = AuthorizationError(
+            "Access denied", user_id="user123", resource="/admin/settings"
+        )
         assert exc.error_code == "MSE5002"
         assert exc.details["user_id"] == "user123"
         assert exc.details["resource"] == "/admin/settings"
 
     def test_data_access_error(self):
         """测试数据访问错误异常"""
-        exc = DataAccessError("Permission denied", user_id="user123", table_name="sensitive_data")
+        exc = DataAccessError(
+            "Permission denied", user_id="user123", table_name="sensitive_data"
+        )
         assert exc.error_code == "MSE5003"
         assert exc.details["user_id"] == "user123"
         assert exc.details["table_name"] == "sensitive_data"
@@ -237,21 +259,27 @@ class TestProcessingExceptions:
     def test_batch_processing_error(self):
         """测试批量处理错误异常"""
         failed_records = [{"id": 1}, {"id": 2}]
-        exc = BatchProcessingError("Batch failed", failed_records=failed_records, total_records=100)
+        exc = BatchProcessingError(
+            "Batch failed", failed_records=failed_records, total_records=100
+        )
         assert exc.error_code == "MSE6001"
         assert exc.details["failed_records"] == failed_records
         assert exc.details["total_records"] == 100
 
     def test_data_format_error(self):
         """测试数据格式错误异常"""
-        exc = DataFormatError("Invalid format", expected_format="JSON", actual_format="XML")
+        exc = DataFormatError(
+            "Invalid format", expected_format="JSON", actual_format="XML"
+        )
         assert exc.error_code == "MSE6002"
         assert exc.details["expected_format"] == "JSON"
         assert exc.details["actual_format"] == "XML"
 
     def test_validation_exception(self):
         """测试验证错误异常"""
-        exc = ValidationException("Invalid value", field="price", value=-10, validation_rule="price >= 0")
+        exc = ValidationException(
+            "Invalid value", field="price", value=-10, validation_rule="price >= 0"
+        )
         assert exc.error_code == "MSE6003"
         assert exc.details["field"] == "price"
         assert exc.details["value"] == -10
@@ -264,7 +292,9 @@ class TestBusinessLogicExceptions:
     def test_trading_rule_violation(self):
         """测试交易规则违反异常"""
         context = {"order_size": 10000, "max_allowed": 5000}
-        exc = TradingRuleViolation("Order too large", rule="max_order_size", context=context)
+        exc = TradingRuleViolation(
+            "Order too large", rule="max_order_size", context=context
+        )
         assert exc.error_code == "MSE7001"
         assert exc.details["rule"] == "max_order_size"
         assert exc.details["context"] == context
@@ -272,7 +302,9 @@ class TestBusinessLogicExceptions:
     def test_risk_control_exception(self):
         """测试风控相关异常"""
         risk_factors = ["high_volatility", "large_position"]
-        exc = RiskControlException("Risk limit exceeded", risk_level="HIGH", risk_factors=risk_factors)
+        exc = RiskControlException(
+            "Risk limit exceeded", risk_level="HIGH", risk_factors=risk_factors
+        )
         assert exc.error_code == "MSE7002"
         assert exc.details["risk_level"] == "HIGH"
         assert exc.details["risk_factors"] == risk_factors
@@ -331,6 +363,7 @@ class TestExceptionDecorator:
 
     def test_handle_exceptions_with_default_return(self):
         """测试装饰器默认返回值"""
+
         @handle_exceptions(default_return="default_value")
         def failing_function():
             raise ValueError("Test error")
@@ -340,6 +373,7 @@ class TestExceptionDecorator:
 
     def test_handle_exceptions_with_reraise(self):
         """测试装饰器重新抛出异常"""
+
         @handle_exceptions(reraise=True)
         def failing_function():
             raise ValueError("Test error")
@@ -349,6 +383,7 @@ class TestExceptionDecorator:
 
     def test_handle_exceptions_with_custom_exception(self):
         """测试装饰器处理自定义异常"""
+
         @handle_exceptions(default_return=None)
         def failing_with_custom_exception():
             raise MyStocksException("Custom error")
@@ -359,6 +394,7 @@ class TestExceptionDecorator:
 
     def test_handle_exceptions_success(self):
         """测试装饰器在成功情况下"""
+
         @handle_exceptions(default_return="default")
         def successful_function():
             return "success"

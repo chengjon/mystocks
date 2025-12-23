@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：故障恢复队列，数据库不可用时缓存操作并自动重试
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,23 +7,21 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import sqlite3
 import json
-from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 
 class FailureRecoveryQueue:
     """
     故障恢复队列
-    
+
     当目标数据库不可用时,将数据持久化到本地SQLite队列,
     待数据库恢复后自动重试。
     """
-    
+
     def __init__(self, db_path: str = "/tmp/mystocks_recovery_queue.db"):
         """
         初始化队列
@@ -32,16 +30,17 @@ class FailureRecoveryQueue:
             db_path: SQLite数据库文件路径
         """
         import os
+
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self.db_path = db_path
         self._init_db()
-    
+
     def _init_db(self):
         """初始化SQLite数据库表"""
-        conn = sqlite3.connect(self.db_path, timeout=10.0, isolation_level='IMMEDIATE')
+        conn = sqlite3.connect(self.db_path, timeout=10.0, isolation_level="IMMEDIATE")
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS outbox_queue (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 classification TEXT NOT NULL,
@@ -51,15 +50,15 @@ class FailureRecoveryQueue:
                 retry_count INTEGER DEFAULT 0,
                 status TEXT DEFAULT 'pending'
             )
-        ''')
+        """)
 
         conn.commit()
         conn.close()
-    
+
     def enqueue(self, classification: str, target_database: str, data: Dict[str, Any]):
         """
         将失败的数据操作加入队列
-        
+
         Args:
             classification: 数据分类
             target_database: 目标数据库
@@ -67,39 +66,45 @@ class FailureRecoveryQueue:
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             INSERT INTO outbox_queue (classification, target_database, data_json)
             VALUES (?, ?, ?)
-        ''', (classification, target_database, json.dumps(data)))
-        
+        """,
+            (classification, target_database, json.dumps(data)),
+        )
+
         conn.commit()
         conn.close()
-    
+
     def get_pending_items(self, limit: int = 100):
         """
         获取待重试的队列项
-        
+
         Args:
             limit: 最大返回数量
-            
+
         Returns:
             待处理的队列项列表
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             SELECT id, classification, target_database, data_json
             FROM outbox_queue
             WHERE status = 'pending'
             ORDER BY created_at ASC
             LIMIT ?
-        ''', (limit,))
-        
+        """,
+            (limit,),
+        )
+
         items = cursor.fetchall()
         conn.close()
-        
+
         return items
 
     def mark_item_processed(self, item_id: int):
@@ -112,11 +117,14 @@ class FailureRecoveryQueue:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute(
+            """
             UPDATE outbox_queue
             SET status = 'processed', processed_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        ''', (item_id,))
+        """,
+            (item_id,),
+        )
 
         conn.commit()
         conn.close()
@@ -132,14 +140,17 @@ class FailureRecoveryQueue:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute(
+            """
             UPDATE outbox_queue
             SET status = 'failed',
                 retry_count = retry_count + 1,
                 last_error = ?,
                 last_attempt_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        ''', (error_message, item_id))
+        """,
+            (error_message, item_id),
+        )
 
         conn.commit()
         conn.close()
@@ -157,11 +168,14 @@ class FailureRecoveryQueue:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute(
+            """
             UPDATE outbox_queue
             SET status = 'pending'
             WHERE status = 'failed' AND retry_count < ?
-        ''', (max_retries,))
+        """,
+            (max_retries,),
+        )
 
         count = cursor.rowcount
         conn.commit()
@@ -182,11 +196,13 @@ class FailureRecoveryQueue:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute(
+            """
             DELETE FROM outbox_queue
             WHERE status = 'processed'
             AND processed_at < datetime('now', '-{} days')
-        '''.format(days_old))
+        """.format(days_old)
+        )
 
         count = cursor.rowcount
         conn.commit()
@@ -205,31 +221,31 @@ class FailureRecoveryQueue:
         cursor = conn.cursor()
 
         # 获取各状态的计数
-        cursor.execute('''
+        cursor.execute("""
             SELECT status, COUNT(*) as count
             FROM outbox_queue
             GROUP BY status
-        ''')
+        """)
 
         status_counts = {row[0]: row[1] for row in cursor.fetchall()}
 
         # 获取最老的未处理项时间
-        cursor.execute('''
+        cursor.execute("""
             SELECT MIN(created_at) as oldest_pending
             FROM outbox_queue
             WHERE status = 'pending'
-        ''')
+        """)
 
         oldest_pending = cursor.fetchone()[0]
 
         conn.close()
 
         return {
-            'total_items': sum(status_counts.values()),
-            'pending_items': status_counts.get('pending', 0),
-            'failed_items': status_counts.get('failed', 0),
-            'processed_items': status_counts.get('processed', 0),
-            'oldest_pending_item': oldest_pending
+            "total_items": sum(status_counts.values()),
+            "pending_items": status_counts.get("pending", 0),
+            "failed_items": status_counts.get("failed", 0),
+            "processed_items": status_counts.get("processed", 0),
+            "oldest_pending_item": oldest_pending,
         }
 
     def get_failed_items_with_high_retry_count(self, min_retries: int = 5) -> list:
@@ -245,24 +261,27 @@ class FailureRecoveryQueue:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute(
+            """
             SELECT id, classification, target_database, retry_count, last_error, created_at
             FROM outbox_queue
             WHERE status = 'failed' AND retry_count >= ?
             ORDER BY retry_count DESC, created_at ASC
-        ''', (min_retries,))
+        """,
+            (min_retries,),
+        )
 
         items = cursor.fetchall()
         conn.close()
 
         return [
             {
-                'id': item[0],
-                'classification': item[1],
-                'target_database': item[2],
-                'retry_count': item[3],
-                'last_error': item[4],
-                'created_at': item[5]
+                "id": item[0],
+                "classification": item[1],
+                "target_database": item[2],
+                "retry_count": item[3],
+                "last_error": item[4],
+                "created_at": item[5],
             }
             for item in items
         ]

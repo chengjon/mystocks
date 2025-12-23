@@ -15,8 +15,7 @@
 
 import os
 import re
-from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Tuple
 
 # Python头注释模板
 PYTHON_HEADER_TEMPLATE = """'''

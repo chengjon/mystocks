@@ -23,13 +23,13 @@ from .unified_mock_data import (
 
 # 便利导出
 __all__ = [
-    'UnifiedMockDataManager',
-    'get_mock_data_manager',
-    'get_dashboard_data',
-    'get_stocks_data',
-    'get_technical_data',
-    'get_wencai_data',
-    'get_strategy_data',
-    'get_monitoring_data',
-    'data_source_toggle',
+    "UnifiedMockDataManager",
+    "get_mock_data_manager",
+    "get_dashboard_data",
+    "get_stocks_data",
+    "get_technical_data",
+    "get_wencai_data",
+    "get_strategy_data",
+    "get_monitoring_data",
+    "data_source_toggle",
 ]

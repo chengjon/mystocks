@@ -16,12 +16,13 @@
 版本: 1.0.0
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Union, Tuple
-from datetime import date, datetime
-import logging
 import json
+import logging
+from datetime import date, datetime
+from typing import Dict, Optional, Tuple
+
+import numpy as np
+import pandas as pd
 
 
 class SignalManager:
@@ -103,7 +104,9 @@ class SignalManager:
                 "execution_time": 0,
             }
 
-        self.logger.info(f"开始保存信号: 策略ID={strategy_id}, 信号数量={len(signals)}")
+        self.logger.info(
+            "开始保存信号: 策略ID=%d, 信号数量=%d", strategy_id, len(signals)
+        )
         start_time = datetime.now()
 
         # 验证必需列
@@ -117,7 +120,7 @@ class SignalManager:
         for idx, row in signals.iterrows():
             # 验证信号类型
             if row["signal"] not in ["buy", "sell"]:
-                self.logger.warning(f"无效的信号类型: {row['signal']}, 跳过")
+                self.logger.warning("无效的信号类型: %s, 跳过", row["signal"])
                 continue
 
             # 构建记录
@@ -165,11 +168,13 @@ class SignalManager:
                         self._save_to_database(batch_df)
                         saved_count += len(batch)
                         self.logger.debug(
-                            f"批次 {i//self.batch_size + 1} 保存成功: {len(batch)} 条记录"
+                            "批次 %d 保存成功: %d 条记录",
+                            i // self.batch_size + 1,
+                            len(batch),
                         )
-                    except Exception as e:
+                    except Exception as e:  # pylint: disable=broad-exception-caught
                         self.logger.error(
-                            f"批次 {i//self.batch_size + 1} 保存失败: {e}"
+                            "批次 %d 保存失败: %s", i // self.batch_size + 1, e
                         )
                         failed_count += len(batch)
             else:
@@ -178,8 +183,8 @@ class SignalManager:
                 self._save_to_database(signals_df)
                 saved_count = len(signal_records)
 
-        except Exception as e:
-            self.logger.error(f"保存信号时出错: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            self.logger.error("保存信号时出错: %s", e)
             failed_count = len(signal_records)
 
         # 更新统计
@@ -195,8 +200,10 @@ class SignalManager:
         }
 
         self.logger.info(
-            f"信号保存完成: 成功={saved_count}, 失败={failed_count}, "
-            f"耗时={execution_time:.2f}秒"
+            "信号保存完成: 成功=%d, 失败=%d, 耗时=%.2f秒",
+            saved_count,
+            failed_count,
+            execution_time,
         )
 
         return result
@@ -230,6 +237,7 @@ class SignalManager:
         limit: int = 1000,
         offset: int = 0,
     ) -> pd.DataFrame:
+        # pylint: disable=too-many-positional-arguments
         """
         查询策略信号
 
@@ -255,8 +263,12 @@ class SignalManager:
             ... )
         """
         self.logger.info(
-            f"查询信号: strategy_id={strategy_id}, symbol={symbol}, "
-            f"日期范围={start_date} 至 {end_date}, signal_type={signal_type}"
+            "查询信号: strategy_id=%s, symbol=%s, 日期范围=%s 至 %s, signal_type=%s",
+            strategy_id,
+            symbol,
+            start_date,
+            end_date,
+            signal_type,
         )
 
         if self.unified_manager is None:
@@ -293,7 +305,7 @@ class SignalManager:
         self.stats["total_queried"] += len(signals)
         self.stats["last_query_time"] = datetime.now()
 
-        self.logger.info(f"查询到 {len(signals)} 条信号记录")
+        self.logger.info("查询到 %d 条信号记录", len(signals))
 
         return signals
 
@@ -326,8 +338,10 @@ class SignalManager:
             ... )
         """
         self.logger.warning(
-            f"删除信号: strategy_id={strategy_id}, "
-            f"日期范围={start_date} 至 {end_date}"
+            "删除信号: strategy_id=%s, 日期范围=%s 至 %s",
+            strategy_id,
+            start_date,
+            end_date,
         )
 
         if self.unified_manager is None:
@@ -352,7 +366,7 @@ class SignalManager:
         # 更新统计
         self.stats["total_deleted"] += deleted_count
 
-        self.logger.info(f"删除了 {deleted_count} 条信号记录")
+        self.logger.info("删除了 %d 条信号记录", deleted_count)
 
         return deleted_count
 
@@ -451,7 +465,7 @@ class SignalManager:
         # 验证信号强度
         if "strength" in signal:
             strength = signal["strength"]
-            if not isinstance(strength, (int, float)) or not (0 <= strength <= 1):
+            if not isinstance(strength, (int, float)) or not 0 <= strength <= 1:
                 return False, f"信号强度必须在0-1之间: {strength}"
 
         return True, None

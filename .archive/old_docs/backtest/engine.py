@@ -37,15 +37,17 @@ class BacktestEngine:
         >>> print(results['metrics'])
     """
 
-    def __init__(self,
-                 strategy,
-                 data_provider,
-                 start_date: str,
-                 end_date: str,
-                 init_cash: float = 1000000,
-                 commission_rate: float = 0.0003,
-                 stamp_tax_rate: float = 0.001,
-                 slippage_rate: float = 0.001):
+    def __init__(
+        self,
+        strategy,
+        data_provider,
+        start_date: str,
+        end_date: str,
+        init_cash: float = 1000000,
+        commission_rate: float = 0.0003,
+        stamp_tax_rate: float = 0.001,
+        slippage_rate: float = 0.001,
+    ):
         """
         初始化回测引擎
 
@@ -89,9 +91,7 @@ class BacktestEngine:
         print(f"{'='*60}\n")
 
         # 获取交易日历
-        trade_dates = self.data_provider.get_calendar(
-            self.start_date, self.end_date
-        )
+        trade_dates = self.data_provider.get_calendar(self.start_date, self.end_date)
 
         # 逐日回测
         for i, date in enumerate(trade_dates):
@@ -101,12 +101,10 @@ class BacktestEngine:
                 continue
 
             # 2. 策略生成决策
-            decision = self.strategy.generate_decision(
-                market_data, self.account
-            )
+            decision = self.strategy.generate_decision(market_data, self.account)
 
             # 3. 执行订单
-            if decision and hasattr(decision, 'orders'):
+            if decision and hasattr(decision, "orders"):
                 for order in decision.orders:
                     try:
                         # 撮合订单
@@ -115,46 +113,49 @@ class BacktestEngine:
                             continue
 
                         # 执行交易
-                        if filled['direction'] == 'buy':
+                        if filled["direction"] == "buy":
                             self.account.buy(
-                                filled['symbol'],
-                                filled['amount'],
-                                filled['price'],
-                                date
+                                filled["symbol"],
+                                filled["amount"],
+                                filled["price"],
+                                date,
                             )
                         else:  # sell
                             self.account.sell(
-                                filled['symbol'],
-                                filled['amount'],
-                                filled['price'],
-                                date
+                                filled["symbol"],
+                                filled["amount"],
+                                filled["price"],
+                                date,
                             )
                     except ValueError as e:
                         print(f"⚠️ 交易失败: {e}")
 
             # 4. 计算当日组合价值
             current_prices = {
-                symbol: market_data[symbol]['close']
-                for symbol in market_data
+                symbol: market_data[symbol]["close"] for symbol in market_data
             }
             portfolio_value = self.account.get_portfolio_value(current_prices)
             returns = self.account.get_returns(current_prices)
 
             # 5. 记录每日状态
-            self.daily_results.append({
-                'date': date,
-                'cash': self.account.cash,
-                'portfolio_value': portfolio_value,
-                'returns': returns,
-                'positions': self.account.positions.copy()
-            })
+            self.daily_results.append(
+                {
+                    "date": date,
+                    "cash": self.account.cash,
+                    "portfolio_value": portfolio_value,
+                    "returns": returns,
+                    "positions": self.account.positions.copy(),
+                }
+            )
 
             # 进度显示
             if (i + 1) % 50 == 0 or (i + 1) == len(trade_dates):
-                print(f"📊 进度: {i+1}/{len(trade_dates)} "
-                      f"({(i+1)/len(trade_dates)*100:.1f}%) "
-                      f"| 组合价值: {portfolio_value:,.0f}元 "
-                      f"| 收益率: {returns*100:.2f}%")
+                print(
+                    f"📊 进度: {i+1}/{len(trade_dates)} "
+                    f"({(i+1)/len(trade_dates)*100:.1f}%) "
+                    f"| 组合价值: {portfolio_value:,.0f}元 "
+                    f"| 收益率: {returns*100:.2f}%"
+                )
 
         # 生成回测报告
         return self._generate_report()
@@ -167,7 +168,7 @@ class BacktestEngine:
         cost_summary = self.account.get_cost_summary()
 
         print(f"\n{'='*60}")
-        print(f"📈 回测完成")
+        print("📈 回测完成")
         print(f"{'='*60}")
         print(f"💵 最终资金: {self.account.cash:,.0f}元")
         print(f"📦 持仓品种: {len(self.account.positions)}个")
@@ -179,13 +180,13 @@ class BacktestEngine:
         print(f"{'='*60}\n")
 
         return {
-            'daily_results': df,
-            'trades': self.account.history,
-            'metrics': {
-                'total_return': df['returns'].iloc[-1],
-                'final_value': df['portfolio_value'].iloc[-1],
-                'total_cost': cost_summary['total_cost'],
-                'trade_count': cost_summary['trade_count']
+            "daily_results": df,
+            "trades": self.account.history,
+            "metrics": {
+                "total_return": df["returns"].iloc[-1],
+                "final_value": df["portfolio_value"].iloc[-1],
+                "total_cost": cost_summary["total_cost"],
+                "trade_count": cost_summary["trade_count"],
             },
-            'cost_summary': cost_summary
+            "cost_summary": cost_summary,
         }

@@ -16,17 +16,15 @@ Mock数据文件: Wencai
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional, Any
-import pandas as pd
+from typing import List, Dict
 import datetime
 import random
 import time
-from decimal import Decimal
 
 
 def get_wencai_queries() -> Dict:
     """获取预定义查询列表（对应/api/market/wencai/queries）
-    
+
     Returns:
         Dict: 包含queries字段的字典，queries是查询列表数组
     """
@@ -39,16 +37,16 @@ def get_wencai_queries() -> Dict:
             "description": "获取今日涨停股票列表",
             "category": "市场表现",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 2,
-            "query_name": "qs_2", 
+            "query_name": "qs_2",
             "query_text": "涨幅超过5%的股票",
             "description": "获取涨幅超过5%的股票",
             "category": "市场表现",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 3,
@@ -57,7 +55,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取成交量放大的股票",
             "category": "成交量",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 4,
@@ -66,7 +64,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取技术指标金叉的股票",
             "category": "技术分析",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 5,
@@ -75,7 +73,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取机构重仓的股票",
             "category": "机构动向",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 6,
@@ -84,7 +82,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取业绩预增的股票",
             "category": "基本面",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 7,
@@ -93,7 +91,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取概念板块龙头股票",
             "category": "概念题材",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 8,
@@ -102,7 +100,7 @@ def get_wencai_queries() -> Dict:
             "description": "获取低估值股票",
             "category": "估值分析",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
+            "is_active": True,
         },
         {
             "id": 9,
@@ -111,91 +109,91 @@ def get_wencai_queries() -> Dict:
             "description": "获取创新高股票",
             "category": "市场表现",
             "created_at": "2024-01-01 00:00:00",
-            "is_active": True
-        }
+            "is_active": True,
+        },
     ]
-    
+
     return {
         "queries": predefined_queries,
         "total": len(predefined_queries),
-        "status": "success"
+        "status": "success",
     }
 
 
 def execute_query(request: Dict) -> Dict:
     """执行预定义查询（对应/api/market/wencai/query）
-    
+
     Args:
         request: Dict - 请求参数：
                 query_name: str - 查询名称
                 pages: int - 页数
-        
+
     Returns:
         Dict: 执行结果，包含total_records等字段
     """
-    query_name = request.get('query_name', 'qs_1')
-    pages = request.get('pages', 1)
-    
+    query_name = request.get("query_name", "qs_1")
+    pages = request.get("pages", 1)
+
     # 模拟查询处理时间
     time.sleep(random.uniform(0.5, 2.0))
-    
+
     # 生成查询结果数量（基于查询类型）
     query_result_counts = {
         "qs_1": random.randint(50, 150),  # 涨停股票
-        "qs_2": random.randint(100, 300), # 涨幅超过5%
-        "qs_3": random.randint(200, 500), # 成交量放大
+        "qs_2": random.randint(100, 300),  # 涨幅超过5%
+        "qs_3": random.randint(200, 500),  # 成交量放大
         "qs_4": random.randint(80, 200),  # 技术指标金叉
-        "qs_5": random.randint(150, 400), # 机构重仓
+        "qs_5": random.randint(150, 400),  # 机构重仓
         "qs_6": random.randint(60, 180),  # 业绩预增
         "qs_7": random.randint(30, 100),  # 概念龙头
-        "qs_8": random.randint(300, 800), # 低估值
-        "qs_9": random.randint(80, 250)   # 创新高
+        "qs_8": random.randint(300, 800),  # 低估值
+        "qs_9": random.randint(80, 250),  # 创新高
     }
-    
+
     total_records = query_result_counts.get(query_name, random.randint(100, 500))
-    
+
     return {
         "success": True,
         "query_name": query_name,
         "pages": pages,
         "total_records": total_records,
         "message": f"查询执行成功，共找到 {total_records} 条记录",
-        "execution_time": round(random.uniform(1.0, 3.0), 2)
+        "execution_time": round(random.uniform(1.0, 3.0), 2),
     }
 
 
 def execute_custom_query(request: Dict) -> Dict:
     """执行自定义查询（对应/api/market/wencai/custom-query）
-    
+
     Args:
         request: Dict - 请求参数：
                 query_text: str - 自定义查询文本
                 pages: int - 页数
-        
+
     Returns:
         Dict: 自定义查询结果
     """
-    query_text = request.get('query_text', '')
-    pages = request.get('pages', 1)
-    
+    query_text = request.get("query_text", "")
+    pages = request.get("pages", 1)
+
     # 模拟查询处理时间
     time.sleep(random.uniform(1.0, 3.0))
-    
+
     # 根据查询文本内容估算结果数量
     base_count = random.randint(50, 200)
-    
-    if any(keyword in query_text.lower() for keyword in ['涨停', '封板', '板']):
+
+    if any(keyword in query_text.lower() for keyword in ["涨停", "封板", "板"]):
         base_count = random.randint(30, 120)
-    elif any(keyword in query_text.lower() for keyword in ['涨幅', '上涨', '涨']):
+    elif any(keyword in query_text.lower() for keyword in ["涨幅", "上涨", "涨"]):
         base_count = random.randint(100, 400)
-    elif any(keyword in query_text.lower() for keyword in ['放量', '成交', '量']):
+    elif any(keyword in query_text.lower() for keyword in ["放量", "成交", "量"]):
         base_count = random.randint(200, 600)
-    elif any(keyword in query_text.lower() for keyword in ['低估', '价值', '便宜']):
+    elif any(keyword in query_text.lower() for keyword in ["低估", "价值", "便宜"]):
         base_count = random.randint(300, 800)
-    
+
     # 生成结果数据
     results = generate_wencai_results(base_count)
-    
+
     return {
         "success": True,
         "query_text": query_text,
@@ -203,36 +201,43 @@ def execute_custom_query(request: Dict) -> Dict:
         "total_records": base_count,
         "results": results,
         "message": f"自定义查询执行成功，共找到 {base_count} 条记录",
-        "execution_time": round(random.uniform(1.5, 4.0), 2)
+        "execution_time": round(random.uniform(1.5, 4.0), 2),
     }
 
 
 def get_query_results(query_name: str, limit: int = 20, offset: int = 0) -> Dict:
     """获取查询结果（对应/api/market/wencai/results/{queryName}）
-    
+
     Args:
         query_name: str - 查询名称
         limit: int - 每页数量，默认20
         offset: int - 偏移量，默认0
-        
+
     Returns:
         Dict: 查询结果数据
     """
     # 根据查询名称确定结果数量
     query_result_counts = {
-        "qs_1": 120, "qs_2": 250, "qs_3": 380, "qs_4": 160, 
-        "qs_5": 320, "qs_6": 140, "qs_7": 75, "qs_8": 650, "qs_9": 180
+        "qs_1": 120,
+        "qs_2": 250,
+        "qs_3": 380,
+        "qs_4": 160,
+        "qs_5": 320,
+        "qs_6": 140,
+        "qs_7": 75,
+        "qs_8": 650,
+        "qs_9": 180,
     }
-    
+
     total_records = query_result_counts.get(query_name, 200)
-    
+
     # 生成分页数据
     page_data = generate_wencai_results(min(limit, total_records - offset))
-    
+
     # 添加分页信息
     for i, item in enumerate(page_data):
-        item['序号'] = offset + i + 1
-    
+        item["序号"] = offset + i + 1
+
     return {
         "query_name": query_name,
         "results": page_data,
@@ -241,16 +246,16 @@ def get_query_results(query_name: str, limit: int = 20, offset: int = 0) -> Dict
         "offset": offset,
         "has_more": offset + limit < total_records,
         "current_page": (offset // limit) + 1,
-        "total_pages": (total_records + limit - 1) // limit
+        "total_pages": (total_records + limit - 1) // limit,
     }
 
 
 def generate_wencai_results(count: int) -> List[Dict]:
     """生成问财筛选结果数据
-    
+
     Args:
         count: int - 要生成的结果数量
-        
+
     Returns:
         List[Dict]: 问财结果数据列表
     """
@@ -275,20 +280,20 @@ def generate_wencai_results(count: int) -> List[Dict]:
         {"code": "002415", "name": "海康威视", "industry": "电子"},
         {"code": "000166", "name": "申万宏源", "industry": "非银金融"},
         {"code": "600009", "name": "上海机场", "industry": "交通运输"},
-        {"code": "002304", "name": "洋河股份", "industry": "白酒"}
+        {"code": "002304", "name": "洋河股份", "industry": "白酒"},
     ]
-    
+
     # 如果需要更多股票，循环使用
     if count > len(stock_pool):
         stock_pool.extend(stock_pool * (count // len(stock_pool) + 1))
-    
+
     # 生成结果
     results = []
     query_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    
+
     for i in range(count):
         stock = stock_pool[i % len(stock_pool)]
-        
+
         # 根据行业生成合理的价格和涨跌幅
         if stock["industry"] in ["白酒", "银行", "保险"]:
             base_price = random.uniform(20, 200)
@@ -302,32 +307,36 @@ def generate_wencai_results(count: int) -> List[Dict]:
         else:
             base_price = random.uniform(10, 100)
             price_change = random.uniform(-7, 9)
-        
+
         current_price = round(base_price, 2)
         change_pct = round(price_change, 2)
-        
-        results.append({
-            "股票代码": stock["code"],
-            "股票简称": stock["name"],
-            "最新价": current_price,
-            "涨跌幅": f"{change_pct:+.2f}%",
-            "涨停次数": random.randint(0, 5),
-            "量比": round(random.uniform(0.5, 5.0), 2),
-            "换手率": f"{random.uniform(1, 15):.2f}%",
-            "振幅": f"{random.uniform(2, 12):.2f}%",
-            "查询日期": query_date
-        })
-    
+
+        results.append(
+            {
+                "股票代码": stock["code"],
+                "股票简称": stock["name"],
+                "最新价": current_price,
+                "涨跌幅": f"{change_pct:+.2f}%",
+                "涨停次数": random.randint(0, 5),
+                "量比": round(random.uniform(0.5, 5.0), 2),
+                "换手率": f"{random.uniform(1, 15):.2f}%",
+                "振幅": f"{random.uniform(2, 12):.2f}%",
+                "查询日期": query_date,
+            }
+        )
+
     return results
 
 
-def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
+def generate_realistic_price(
+    base_price: float = 100.0, volatility: float = 0.02
+) -> float:
     """生成真实感的价格数据
-    
+
     Args:
         base_price: 基准价格
         volatility: 波动率
-        
+
     Returns:
         float: 生成的价格（保留2位小数）
     """
@@ -338,7 +347,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
 def generate_realistic_volume() -> int:
     """生成真实感的成交量数据
-    
+
     Returns:
         int: 成交量（股）
     """
@@ -349,14 +358,14 @@ if __name__ == "__main__":
     # 测试函数
     print("Mock文件模板测试")
     print("=" * 50)
-    print(f"get_wencai_queries() 调用测试:")
+    print("get_wencai_queries() 调用测试:")
     result1 = get_wencai_queries()
     print(f"返回数据: {result1}")
-    
-    print(f"\nget_query_results() 调用测试:")
+
+    print("\nget_query_results() 调用测试:")
     result2 = get_query_results("qs_1")
     print(f"返回数据: {result2}")
-    
-    print(f"\nexecute_custom_query() 调用测试:")
+
+    print("\nexecute_custom_query() 调用测试:")
     result3 = execute_custom_query({"query_text": "涨幅超过5%的股票", "pages": 1})
     print(f"返回数据: {result3}")

@@ -18,7 +18,7 @@
 
 ### 2. **基本面数据 (Fundamental Data)** → PostgreSQL
 ```sql
--- 存储位置: PostgreSQL (192.168.123.104:5433)  
+-- 存储位置: PostgreSQL (192.168.123.104:5433)
 -- 数据库: fundamental_db
 ├── financial_statements -- 财务报表
 ├── financial_indicators -- 财务指标 (PE/PB/ROE等)
@@ -61,7 +61,7 @@
 ├── fundamental_factors  -- 基本面因子
 └── alternative_factors  -- 另类因子
 
--- 策略数据: MySQL strategy_db  
+-- 策略数据: MySQL strategy_db
 ├── backtest_results     -- 回测结果
 ├── portfolio_holdings   -- 持仓记录
 └── strategy_performance -- 策略表现
@@ -121,12 +121,12 @@ cached_result = manager.get_cached_analysis_result('factor_analysis_20250921')
 # PostgreSQL - 复杂分析查询
 pg_access = PostgreSQLDataAccess()
 fundamental_data = pg_access.load_data(
-    table_name="financial_indicators", 
+    table_name="financial_indicators",
     filters={'industry': '银行', 'roe': '>0.1'},
     database_name="fundamental_db"
 )
 
-# MySQL - 快速业务查询  
+# MySQL - 快速业务查询
 mysql_access = MySQLDataAccess()
 market_data = mysql_access.load_data(
     table_name="stock_daily",
@@ -158,7 +158,7 @@ hf_data = td_access.load_timeseries_data(
 symbols = ['600000', '000001', '000002']  # 核心股票池
 collect_daily_data(symbols, '2023-01-01', '2024-09-21')
 
-# 2. 实时行情数据 → Redis  
+# 2. 实时行情数据 → Redis
 setup_realtime_data_collection(symbols, interval=60)  # 每分钟更新
 ```
 
@@ -176,7 +176,7 @@ calculate_technical_factors(symbols)
 # 5. 分钟级数据 → TDengine
 collect_minute_data(symbols, days=30)
 
-# 6. 资金流向数据 → TDengine  
+# 6. 资金流向数据 → TDengine
 collect_money_flow_data(symbols)
 ```
 
@@ -210,7 +210,7 @@ CREATE TABLE financial_statements (
 # 热点数据缓存
 CACHE_CONFIG = {
     'realtime_quotes': 60,      # 实时行情缓存60秒
-    'daily_data': 3600,         # 日线数据缓存1小时  
+    'daily_data': 3600,         # 日线数据缓存1小时
     'analysis_results': 7200,   # 分析结果缓存2小时
     'factor_values': 1800       # 因子值缓存30分钟
 }
@@ -269,7 +269,7 @@ MONITORING_METRICS = {
 
 **2. MySQL连接**
 ```
-名称: MyStocks-MySQL-Market  
+名称: MyStocks-MySQL-Market
 主机: 192.168.123.104
 端口: 3306
 用户: root
@@ -280,7 +280,7 @@ MONITORING_METRICS = {
 **3. MariaDB连接（备用）**
 ```
 名称: MyStocks-MariaDB-Backup
-主机: 192.168.123.104  
+主机: 192.168.123.104
 端口: 3307
 用户: root
 密码: c790414J
@@ -290,24 +290,24 @@ MONITORING_METRICS = {
 
 **1. 数据库分组管理**
 - 📊 量化分析组: PostgreSQL连接
-- 💹 市场数据组: MySQL连接  
+- 💹 市场数据组: MySQL连接
 - ⚡ 实时数据组: Redis连接
 - 📈 备份数据组: MariaDB连接
 
 **2. 常用查询收藏**
 ```sql
 -- 查询股票池表现
-SELECT symbol, 
+SELECT symbol,
        AVG(close) as avg_price,
        STDDEV(close) as volatility,
        COUNT(*) as trading_days
-FROM market_db.stock_daily 
+FROM market_db.stock_daily
 WHERE date >= '2024-01-01'
 GROUP BY symbol;
 
 -- 查询财务指标排名
 SELECT symbol, company_name, roe, pe_ratio
-FROM fundamental_db.financial_indicators 
+FROM fundamental_db.financial_indicators
 WHERE report_date = (SELECT MAX(report_date) FROM fundamental_db.financial_indicators)
 ORDER BY roe DESC LIMIT 50;
 ```
@@ -366,7 +366,7 @@ manager.save_data_by_category(analysis_result, DataCategory.STRATEGY_PORTFOLIO, 
 这套方案为您提供了：
 
 1. **🎯 明确的数据分类**: 6大类数据，各有专属存储策略
-2. **🗄️ 合理的数据库分配**: 基于数据特性选择最适合的存储方案  
+2. **🗄️ 合理的数据库分配**: 基于数据特性选择最适合的存储方案
 3. **🔧 统一的访问接口**: 适配器+工厂模式，屏蔽底层差异
 4. **⚡ 高效的查询模式**: 缓存+分区+索引优化
 5. **📱 便捷的管理工具**: 与Navicat无缝集成

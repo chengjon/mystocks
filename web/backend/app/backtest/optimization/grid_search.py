@@ -3,6 +3,7 @@ Grid Search Optimizer
 
 网格搜索优化器 - 穷举所有参数组合
 """
+
 from typing import Dict, Any, List, Optional
 from itertools import product
 import logging
@@ -11,7 +12,7 @@ import time
 from app.backtest.optimization.base import (
     BaseOptimizer,
     OptimizationResult,
-    ParameterSpace
+    ParameterSpace,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,10 +33,10 @@ class GridSearchOptimizer(BaseOptimizer):
         self,
         strategy_type: str,
         parameter_spaces: List[ParameterSpace],
-        objective: str = 'sharpe_ratio',
+        objective: str = "sharpe_ratio",
         maximize: bool = True,
         parallel: bool = False,
-        n_jobs: int = 1
+        n_jobs: int = 1,
     ):
         """
         初始化网格搜索优化器
@@ -94,7 +95,7 @@ class GridSearchOptimizer(BaseOptimizer):
         progress_callback: Optional[callable] = None,
         early_stop: bool = False,
         early_stop_threshold: float = None,
-        **kwargs
+        **kwargs,
     ) -> List[OptimizationResult]:
         """
         执行网格搜索优化
@@ -108,7 +109,9 @@ class GridSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info(f"开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}")
+        logger.info(
+            f"开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}"
+        )
 
         start_time = time.time()
 
@@ -141,7 +144,11 @@ class GridSearchOptimizer(BaseOptimizer):
             # 日志记录
             if (idx + 1) % 10 == 0 or idx == 0:
                 score = result.get_score(self.objective)
-                best_score = self.best_result.get_score(self.objective) if self.best_result else 0
+                best_score = (
+                    self.best_result.get_score(self.objective)
+                    if self.best_result
+                    else 0
+                )
                 logger.info(
                     f"网格搜索进度: {idx + 1}/{total} "
                     f"当前{self.objective}={score:.4f} "
@@ -153,10 +160,14 @@ class GridSearchOptimizer(BaseOptimizer):
                 if self.best_result:
                     best_score = self.best_result.get_score(self.objective)
                     if self.maximize and best_score >= early_stop_threshold:
-                        logger.info(f"早停触发: 已达到目标 {best_score:.4f} >= {early_stop_threshold}")
+                        logger.info(
+                            f"早停触发: 已达到目标 {best_score:.4f} >= {early_stop_threshold}"
+                        )
                         break
                     elif not self.maximize and best_score <= early_stop_threshold:
-                        logger.info(f"早停触发: 已达到目标 {best_score:.4f} <= {early_stop_threshold}")
+                        logger.info(
+                            f"早停触发: 已达到目标 {best_score:.4f} <= {early_stop_threshold}"
+                        )
                         break
 
         total_time = time.time() - start_time
@@ -205,11 +216,7 @@ class GridSearchOptimizer(BaseOptimizer):
 
         return sensitivity
 
-    def get_heatmap_data(
-        self,
-        param1: str,
-        param2: str
-    ) -> Dict[str, Any]:
+    def get_heatmap_data(self, param1: str, param2: str) -> Dict[str, Any]:
         """
         获取两个参数的热力图数据
 
@@ -250,12 +257,12 @@ class GridSearchOptimizer(BaseOptimizer):
             z_values.append(row)
 
         return {
-            'x_values': x_values,
-            'y_values': y_values,
-            'z_values': z_values,
-            'param1': param1,
-            'param2': param2,
-            'objective': self.objective
+            "x_values": x_values,
+            "y_values": y_values,
+            "z_values": z_values,
+            "param1": param1,
+            "param2": param2,
+            "objective": self.objective,
         }
 
     def get_top_parameter_values(self, top_n: int = 5) -> Dict[str, List[Any]]:

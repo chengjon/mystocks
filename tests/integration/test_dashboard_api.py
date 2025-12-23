@@ -14,10 +14,11 @@ import sys
 import os
 import pytest
 from fastapi.testclient import TestClient
-from datetime import date
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 
@@ -56,7 +57,7 @@ class TestDashboardAPI:
         assert "service" in data, "响应应包含service字段"
         assert data["service"] == "dashboard", "服务名称应为dashboard"
 
-        print(f"\n✅ 健康检查测试通过")
+        print("\n✅ 健康检查测试通过")
         print(f"   状态: {data['status']}")
 
     def test_get_dashboard_summary_basic(self, client):
@@ -75,7 +76,7 @@ class TestDashboardAPI:
 
         assert data["user_id"] == 1001, "user_id应该匹配"
 
-        print(f"\n✅ 基本仪表盘汇总测试通过")
+        print("\n✅ 基本仪表盘汇总测试通过")
         print(f"   用户ID: {data['user_id']}")
         print(f"   交易日期: {data['trade_date']}")
         print(f"   数据源: {data['data_source']}")
@@ -92,7 +93,7 @@ class TestDashboardAPI:
         data = response.json()
         assert data["trade_date"] == trade_date, "交易日期应该匹配"
 
-        print(f"\n✅ 指定日期仪表盘汇总测试通过")
+        print("\n✅ 指定日期仪表盘汇总测试通过")
         print(f"   交易日期: {data['trade_date']}")
 
     def test_get_dashboard_summary_selective_modules(self, client):
@@ -113,10 +114,10 @@ class TestDashboardAPI:
 
         # 验证包含的模块
         if "market_overview" in data and data["market_overview"]:
-            print(f"\n✅ 市场概览模块已加载")
+            print("\n✅ 市场概览模块已加载")
 
         if "watchlist" in data and data["watchlist"]:
-            print(f"   自选股模块已加载")
+            print("   自选股模块已加载")
 
         # portfolio和alerts应该为null或不存在
         print(f"   持仓模块: {'已加载' if data.get('portfolio') else '未加载'}")
@@ -130,7 +131,7 @@ class TestDashboardAPI:
         # 应该返回422（参数验证失败）
         assert response.status_code == 422, "无效用户ID应该返回422"
 
-        print(f"\n✅ 无效用户ID测试通过 (返回422)")
+        print("\n✅ 无效用户ID测试通过 (返回422)")
 
     def test_get_dashboard_summary_missing_user_id(self, client):
         """测试缺少用户ID"""
@@ -139,7 +140,7 @@ class TestDashboardAPI:
         # 应该返回422（缺少必需参数）
         assert response.status_code == 422, "缺少用户ID应该返回422"
 
-        print(f"\n✅ 缺少用户ID测试通过 (返回422)")
+        print("\n✅ 缺少用户ID测试通过 (返回422)")
 
     def test_get_market_overview(self, client):
         """测试获取市场概览"""
@@ -154,7 +155,7 @@ class TestDashboardAPI:
             assert "up_count" in data or True, "响应应包含up_count字段"
             assert "down_count" in data or True, "响应应包含down_count字段"
 
-            print(f"\n✅ 市场概览测试通过")
+            print("\n✅ 市场概览测试通过")
             print(f"   上涨家数: {data.get('up_count', 0)}")
             print(f"   下跌家数: {data.get('down_count', 0)}")
         else:
@@ -171,7 +172,7 @@ class TestDashboardAPI:
             if "top_gainers" in data:
                 assert len(data["top_gainers"]) <= 5, "涨幅榜数量不应超过limit"
 
-            print(f"\n✅ 榜单数量限制测试通过")
+            print("\n✅ 榜单数量限制测试通过")
         else:
             print(f"\n⚠️  市场概览返回{response.status_code}")
 
@@ -189,7 +190,7 @@ class TestDashboardAPI:
             "trade_date",
             "generated_at",
             "data_source",
-            "cache_hit"
+            "cache_hit",
         ]
 
         for field in expected_fields:
@@ -208,8 +209,8 @@ class TestDashboardAPI:
         if data.get("risk_alerts"):
             assert isinstance(data["risk_alerts"], dict), "risk_alerts应为字典"
 
-        print(f"\n✅ 响应数据结构验证通过")
-        print(f"   所有必需字段存在")
+        print("\n✅ 响应数据结构验证通过")
+        print("   所有必需字段存在")
 
     def test_concurrent_requests(self, client):
         """测试并发请求"""
@@ -228,7 +229,7 @@ class TestDashboardAPI:
 
         assert success_count == 5, f"5个并发请求应该都成功, 实际成功{success_count}个"
 
-        print(f"\n✅ 并发请求测试通过")
+        print("\n✅ 并发请求测试通过")
         print(f"   成功: {success_count}/5")
 
 

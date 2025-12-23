@@ -6,7 +6,6 @@ MyStocks API 自动导入到 Apifox
 
 import json
 import sys
-import os
 from pathlib import Path
 import requests
 
@@ -88,7 +87,7 @@ class ApifoxImporter:
             data = response.json()
             project_id = data["data"]["id"]
 
-            print(f"✅ 项目创建成功!")
+            print("✅ 项目创建成功!")
             print(f"   项目名称: {name}")
             print(f"   项目ID: {project_id}")
 
@@ -139,10 +138,10 @@ class ApifoxImporter:
 
         payload = {"input": openapi_content, "options": default_options}
 
-        print(f"\n🚀 开始导入 OpenAPI 文档到 Apifox...")
+        print("\n🚀 开始导入 OpenAPI 文档到 Apifox...")
         print(f"   项目ID: {self.project_id}")
         print(f"   文件: {openapi_file}")
-        print(f"   导入策略: 智能合并")
+        print("   导入策略: 智能合并")
         print()
 
         try:
@@ -155,23 +154,23 @@ class ApifoxImporter:
             print("✅ 导入完成!")
             print("\n📊 导入统计:")
             print("-" * 80)
-            print(f"   接口:")
+            print("   接口:")
             print(f"      新增: {counters['endpointCreated']}")
             print(f"      更新: {counters['endpointUpdated']}")
             print(f"      失败: {counters['endpointFailed']}")
             print(f"      忽略: {counters['endpointIgnored']}")
             print()
-            print(f"   数据模型:")
+            print("   数据模型:")
             print(f"      新增: {counters['schemaCreated']}")
             print(f"      更新: {counters['schemaUpdated']}")
             print(f"      失败: {counters['schemaFailed']}")
             print(f"      忽略: {counters['schemaIgnored']}")
             print()
-            print(f"   接口目录:")
+            print("   接口目录:")
             print(f"      新增: {counters['endpointFolderCreated']}")
             print(f"      更新: {counters['endpointFolderUpdated']}")
             print()
-            print(f"   模型目录:")
+            print("   模型目录:")
             print(f"      新增: {counters['schemaFolderCreated']}")
             print(f"      更新: {counters['schemaFolderUpdated']}")
             print("-" * 80)
@@ -222,10 +221,10 @@ class ApifoxImporter:
 
         payload = {"input": {"url": openapi_url}, "options": default_options}
 
-        print(f"\n🚀 开始从 URL 导入 OpenAPI 文档到 Apifox...")
+        print("\n🚀 开始从 URL 导入 OpenAPI 文档到 Apifox...")
         print(f"   项目ID: {self.project_id}")
         print(f"   URL: {openapi_url}")
-        print(f"   导入策略: 智能合并")
+        print("   导入策略: 智能合并")
         print()
 
         try:
@@ -293,7 +292,7 @@ def main():
     print("步骤 1/3: 配置 Apifox 项目")
     print(f"   项目ID: {PROJECT_ID}")
     print(f"   Access Token: {ACCESS_TOKEN[:20]}...")
-    print(f"   ✅ 配置完成")
+    print("   ✅ 配置完成")
 
     # 步骤2: 导入 OpenAPI 文档
     print("\n步骤 2/3: 导入 OpenAPI 文档")
@@ -318,7 +317,7 @@ def main():
     print("=" * 80)
     print("✅ MyStocks API 已成功导入到 Apifox!")
     print()
-    print(f"🔗 访问您的 Apifox 项目:")
+    print("🔗 访问您的 Apifox 项目:")
     print(f"   https://app.apifox.com/project/{importer.project_id}")
     print()
     print("📚 下一步操作:")

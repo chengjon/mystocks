@@ -11,12 +11,12 @@ unified_manager 模块单元测试
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock, call
-from datetime import datetime
+from unittest.mock import Mock, patch
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../'))
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))
 
 from src.core.data_classification import DataClassification, DatabaseTarget
 
@@ -57,7 +57,9 @@ class TestUnifiedManagerInitialization:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_initialization_with_monitoring_disabled(self, mock_pg, mock_td, mock_queue):
+    def test_initialization_with_monitoring_disabled(
+        self, mock_pg, mock_td, mock_queue
+    ):
         """测试禁用监控的初始化"""
         from src.core.unified_manager import MyStocksUnifiedManager
 
@@ -227,7 +229,9 @@ class TestUnifiedManagerSaveData:
 
         # Mock数据库保存失败
         mock_td_instance = mock_td.return_value
-        mock_td_instance.insert_dataframe = Mock(side_effect=Exception("数据库连接失败"))
+        mock_td_instance.insert_dataframe = Mock(
+            side_effect=Exception("数据库连接失败")
+        )
 
         # Mock恢复队列
         mock_queue_instance = mock_queue.return_value
@@ -464,7 +468,7 @@ class TestUnifiedManagerEdgeCases:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         # 创建10万行数据
-        large_df = pd.DataFrame({"symbol": [f"60000{i%10}" for i in range(100000)]})
+        large_df = pd.DataFrame({"symbol": [f"60000{i % 10}" for i in range(100000)]})
         result = manager.save_data_by_classification(
             DataClassification.TICK_DATA, large_df, "tick_table"
         )

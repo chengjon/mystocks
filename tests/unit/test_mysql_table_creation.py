@@ -97,7 +97,7 @@ class TestMySQLTableCreation:
         for table in mysql_tables[:5]:  # 只显示前5个
             print(f"    - {table['table_name']} ({table.get('classification', 'N/A')})")
 
-        print(f"  ✅ MySQL表定义验证通过")
+        print("  ✅ MySQL表定义验证通过")
 
     def test_03_mysql_table_structure(self):
         """测试3: 验证MySQL表结构定义"""
@@ -128,7 +128,7 @@ class TestMySQLTableCreation:
         assert "updated_at" in col_names, "缺少updated_at列"
 
         print(f"  列数量: {len(columns)}")
-        print(f"  必需列验证: ✓")
+        print("  必需列验证: ✓")
 
         # 验证主键
         primary_keys = [col["name"] for col in columns if col.get("primary_key")]
@@ -145,7 +145,7 @@ class TestMySQLTableCreation:
         for idx in indexes[:3]:
             print(f"    - {idx['name']} ({idx['type']}): {idx['columns']}")
 
-        print(f"  ✅ MySQL表结构验证通过")
+        print("  ✅ MySQL表结构验证通过")
 
     def test_04_create_mysql_tables(self):
         """测试4: 创建MySQL表"""
@@ -179,7 +179,7 @@ class TestMySQLTableCreation:
             print(
                 f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
             )
-            print(f"  ✅ MySQL表创建测试完成")
+            print("  ✅ MySQL表创建测试完成")
 
         except Exception as e:
             print(f"  ⚠️  测试失败: {e}")
@@ -207,7 +207,7 @@ class TestMySQLTableCreation:
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
 
-            print(f"  ✅ 表存在性验证完成")
+            print("  ✅ 表存在性验证完成")
 
         except Exception as e:
             print(f"  ⚠️  验证失败: {e}")
@@ -232,7 +232,7 @@ class TestMySQLTableCreation:
 
             print(f"  数据库字符集: {charset[1] if charset else 'unknown'}")
             print(f"  排序规则: {collation[1] if collation else 'unknown'}")
-            print(f"  ✅ 字符集验证通过")
+            print("  ✅ 字符集验证通过")
 
         except Exception as e:
             print(f"  ⚠️  验证失败: {e}")
@@ -258,7 +258,7 @@ class TestMySQLTableCreation:
             print(f"    - {table_name}")
 
         assert len(tables_with_auto_inc) > 0, "应该有表使用自增主键"
-        print(f"  ✅ 自增主键验证通过")
+        print("  ✅ 自增主键验证通过")
 
 
 def run_tests():

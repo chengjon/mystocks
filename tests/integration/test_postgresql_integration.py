@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
 from src.data_access.postgresql_access import PostgreSQLDataAccess
 from src.core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager
@@ -106,7 +105,7 @@ try:
     )
 
     print(f"  测试数据: {len(test_data)}条")
-    print(f"  可用策略: ROLLBACK, CONTINUE, RETRY")
+    print("  可用策略: ROLLBACK, CONTINUE, RETRY")
 
     # 测试策略枚举
     strategies = [
@@ -126,8 +125,6 @@ except Exception as e:
 # 测试6: 大批量数据性能测试
 print("📍 测试6: 大批量数据准备测试 (50000条)")
 try:
-    import time
-
     # 生成50000条测试数据
     large_data = pd.DataFrame(
         {

@@ -9,10 +9,10 @@
               {{ stockDetail.market === 'SH' ? '上海' : '深圳' }}
             </el-tag>
             <el-tag type="info" size="small">{{ stockDetail.industry }}</el-tag>
-            <el-tag 
-              v-for="concept in stockDetail.concepts" 
+            <el-tag
+              v-for="concept in stockDetail.concepts"
               :key="concept"
-              type="warning" 
+              type="warning"
               size="small"
               style="margin-right: 4px"
             >
@@ -262,7 +262,7 @@ const initChart = async () => {
   }
 
   chart = echarts.init(chartRef.value)
-  
+
   try {
     if (chartType.value === 'kline') {
       await loadKlineData()
@@ -297,7 +297,7 @@ const loadKlineData = async () => {
 
     if (response.success && response.data && response.data.length > 0) {
       const klineData = response.data
-      
+
       const option = {
         tooltip: {
           trigger: 'axis',
@@ -359,7 +359,7 @@ const loadKlineData = async () => {
           }
         ]
       }
-      
+
       chart.setOption(option)
     } else {
       // 使用模拟数据
@@ -382,7 +382,7 @@ const loadIntradayData = async () => {
 
     if (response.success && response.data && response.data.length > 0) {
       const intradayData = response.data
-      
+
       const option = {
         tooltip: {
           trigger: 'axis',
@@ -430,7 +430,7 @@ const loadIntradayData = async () => {
           }
         ]
       }
-      
+
       chart.setOption(option)
     } else {
       // 使用模拟数据
@@ -447,17 +447,17 @@ const loadMockKlineData = async () => {
   const mockData = []
   const baseDate = new Date()
   let baseValue = parseFloat(stockDetail.value.price) || 100
-  
+
   for (let i = 30; i >= 0; i--) {
     const date = new Date(baseDate)
     date.setDate(date.getDate() - i)
-    
+
     const open = baseValue
     const change = (Math.random() - 0.5) * 10
     const close = open + change
     const high = Math.max(open, close) + Math.random() * 5
     const low = Math.min(open, close) - Math.random() * 5
-    
+
     mockData.push({
       date: date.toISOString().split('T')[0],
       open: parseFloat(open.toFixed(2)),
@@ -465,10 +465,10 @@ const loadMockKlineData = async () => {
       high: parseFloat(high.toFixed(2)),
       low: parseFloat(low.toFixed(2))
     })
-    
+
     baseValue = close
   }
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -516,7 +516,7 @@ const loadMockKlineData = async () => {
       }
     ]
   }
-  
+
   chart.setOption(option)
 }
 
@@ -524,23 +524,23 @@ const loadMockKlineData = async () => {
 const loadMockIntradayData = async () => {
   const mockData = []
   const basePrice = parseFloat(stockDetail.value.price) || 100
-  
+
   for (let i = 0; i < 78; i++) { // 78个5分钟数据点
     const minuteCount = i * 5
     const hour = 9 + Math.floor(minuteCount / 60)
     const minute = (minuteCount % 60) + 30
-    
+
     if (hour > 16 || (hour === 16 && minute > 0)) break
     if (hour === 12) continue // 跳过午休
-    
+
     const price = basePrice + (Math.random() - 0.5) * basePrice * 0.02
-    
+
     mockData.push({
       time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
       price: parseFloat(price.toFixed(2))
     })
   }
-  
+
   const option = {
     tooltip: {
       trigger: 'axis'
@@ -585,7 +585,7 @@ const loadMockIntradayData = async () => {
       }
     ]
   }
-  
+
   chart.setOption(option)
 }
 
@@ -593,18 +593,18 @@ const loadMockIntradayData = async () => {
 const loadStockDetail = async () => {
   try {
     const symbol = route.params.symbol || route.query.symbol
-    
+
     if (!symbol) {
       ElMessage.error('未指定股票代码')
       return
     }
-    
+
     try {
       // 尝试获取真实数据
       const response = await dataApi.getStockDetail(symbol)
       if (response.success && response.data) {
         stockDetail.value = response.data
-        
+
         // 模拟技术指标
         technicalIndicators.value = {
           ma5: (parseFloat(stockDetail.value.price) + Math.random() * 2 - 1).toFixed(2),
@@ -631,7 +631,7 @@ const loadStockDetail = async () => {
         market: symbol.startsWith('6') ? 'SH' : 'SZ',
         area: '上海'
       }
-      
+
       // 模拟技术指标
       technicalIndicators.value = {
         ma5: (parseFloat(stockDetail.value.price) + Math.random() * 2 - 1).toFixed(2),
@@ -653,7 +653,7 @@ const loadTradingSummary = async () => {
   try {
     const symbol = stockDetail.value.symbol
     if (!symbol) return
-    
+
     try {
       const response = await dataApi.getTradingSummary(symbol, summaryPeriod.value)
       if (response.success && response.data) {
@@ -740,10 +740,10 @@ const handleTrade = () => {
     ElMessage.error('请输入交易数量')
     return
   }
-  
+
   const action = tradeForm.value.type === 'buy' ? '买入' : '卖出'
   ElMessage.success(`${action}请求已提交：${tradeForm.value.quantity}股`)
-  
+
   // 清空表单
   tradeForm.value.price = ''
   tradeForm.value.quantity = ''
@@ -753,7 +753,7 @@ onMounted(async () => {
   await loadStockInfo()
   await nextTick()
   await initKlineChart()
-  
+
   // 监听窗口大小变化
   window.addEventListener('resize', () => {
     chart?.resize()
@@ -765,35 +765,35 @@ onMounted(async () => {
 .stock-detail {
   .stock-header {
     margin-bottom: 20px;
-    
+
     .stock-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       h2 {
         margin: 0;
       }
-      
+
       .stock-price {
         text-align: right;
-        
+
         .price {
           display: block;
           font-size: 24px;
           font-weight: bold;
           color: #303133;
         }
-        
+
         .change {
           display: block;
           font-size: 16px;
           font-weight: bold;
-          
+
           &.up {
             color: #67c23a;
           }
-          
+
           &.down {
             color: #f56c6c;
           }
@@ -801,11 +801,11 @@ onMounted(async () => {
       }
     }
   }
-  
+
   .content-row {
     margin-bottom: 20px;
   }
-  
+
   .chart-card, .info-card, .analysis-card, .trading-card {
     .flex-between {
       display: flex;
@@ -813,28 +813,28 @@ onMounted(async () => {
       align-items: center;
     }
   }
-  
+
   .analysis-content {
     .indicator-item {
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
       border-bottom: 1px solid #eee;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .indicator-name {
         font-weight: bold;
       }
-      
+
       .indicator-value {
         color: #606266;
       }
     }
   }
-  
+
   .trading-content {
     .el-form {
       display: flex;

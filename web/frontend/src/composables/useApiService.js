@@ -21,7 +21,7 @@ export function useApiService() {
 
       // 调用系统健康检查API
       const response = await monitoringApi.getSystemHealth()
-      
+
       // 将API响应转换为前端需要的格式
       const healthData = {
         timestamp: new Date(response.timestamp).getTime(),
@@ -34,12 +34,12 @@ export function useApiService() {
         system: response.services.system?.status === 'normal' ? '正常' : '异常',
         overallStatus: response.overall_status
       }
-      
+
       return healthData
     } catch (err) {
       console.error('获取健康检查数据失败:', err)
       error.value = err
-      
+
       // 返回默认状态
       return {
         timestamp: Date.now(),
@@ -114,11 +114,11 @@ export function useApiService() {
     // 状态
     loading,
     error,
-    
+
     // 健康检查方法
     getHealthData,
     getDetailedHealthData,
-    
+
     // 通用请求方法
     getData,
     postData

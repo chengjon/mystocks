@@ -51,9 +51,7 @@ def analyze_python_files(root_dir: str = "/opt/claude/mystocks_spec"):
                             FileInfo(
                                 path=file_path,
                                 lines=lines,
-                                relative_path=os.path.relpath(
-                                    file_path, root_dir
-                                ),
+                                relative_path=os.path.relpath(file_path, root_dir),
                             )
                         )
                 except Exception as e:
@@ -62,9 +60,7 @@ def analyze_python_files(root_dir: str = "/opt/claude/mystocks_spec"):
     # 按行数排序
     large_files.sort(key=lambda x: x["lines"], reverse=True)
 
-    print(
-        f"总Python文件数: {len(list(Path(root_dir).rglob('*.py')))}"
-    )
+    print(f"总Python文件数: {len(list(Path(root_dir).rglob('*.py')))}")
     print(f"总代码行数: {total_lines:,}")
     print(f"超过2000行的文件: {len(large_files)}个")
     print()

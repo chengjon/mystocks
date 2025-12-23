@@ -12,9 +12,12 @@ TDX (Tongdaxin) 兼容技术指标函数库
 版本: 1.0.0
 """
 
+from typing import Union
+
 import numpy as np
 import pandas as pd
-from typing import Union, Optional
+
+# pylint: disable=invalid-name
 
 
 def MA(data: Union[np.ndarray, pd.Series], period: int) -> np.ndarray:
@@ -259,8 +262,8 @@ def BARSLAST(condition: Union[np.ndarray, pd.Series]) -> np.ndarray:
     result = np.full(len(condition), np.nan)
     last_true_index = -1
 
-    for i in range(len(condition)):
-        if condition[i]:
+    for i, cond_val in enumerate(condition):
+        if cond_val:
             last_true_index = i
             result[i] = 0
         elif last_true_index >= 0:
@@ -457,8 +460,12 @@ def KDJ(
     m1: int = 3,
     m2: int = 3,
 ) -> tuple:
+    # pylint: disable=too-many-positional-arguments
+
     """
-    KDJ指标 (随机指标)
+
+
+    KDJ 指标 (随机指标)
 
     参数:
         high: 最高价序列
@@ -567,36 +574,36 @@ if __name__ == "__main__":
 
     # 生成测试数据
     np.random.seed(42)
-    close = np.cumsum(np.random.randn(100)) + 100
-    high = close + np.random.rand(100)
-    low = close - np.random.rand(100)
+    test_close = np.cumsum(np.random.randn(100)) + 100
+    test_high = test_close + np.random.rand(100)
+    test_low = test_close - np.random.rand(100)
 
     # 测试MA
-    ma5 = MA(close, 5)
-    ma20 = MA(close, 20)
-    print(f"MA5最后5个值: {ma5[-5:]}")
-    print(f"MA20最后5个值: {ma20[-5:]}")
+    test_ma5 = MA(test_close, 5)
+    test_ma20 = MA(test_close, 20)
+    print(f"MA5最后5个值: {test_ma5[-5:]}")
+    print(f"MA20最后5个值: {test_ma20[-5:]}")
 
     # 测试CROSS
-    cross_signal = CROSS(ma5, ma20)
-    print(f"金叉信号数量: {np.sum(cross_signal)}")
+    test_cross_signal = CROSS(test_ma5, test_ma20)
+    print(f"金叉信号数量: {np.sum(test_cross_signal)}")
 
     # 测试MACD
-    dif, dea, macd = MACD(close)
-    print(f"MACD最后5个值: {macd[-5:]}")
+    test_dif, test_dea, test_macd = MACD(test_close)
+    print(f"MACD最后5个值: {test_macd[-5:]}")
 
     # 测试KDJ
-    k, d, j = KDJ(high, low, close)
-    print(f"KDJ最后值: K={k[-1]:.2f}, D={d[-1]:.2f}, J={j[-1]:.2f}")
+    test_k, test_d, test_j = KDJ(test_high, test_low, test_close)
+    print(f"KDJ最后值: K={test_k[-1]:.2f}, D={test_d[-1]:.2f}, J={test_j[-1]:.2f}")
 
     # 测试RSI
-    rsi14 = RSI(close, 14)
-    print(f"RSI14最后5个值: {rsi14[-5:]}")
+    test_rsi14 = RSI(test_close, 14)
+    print(f"RSI14最后5个值: {test_rsi14[-5:]}")
 
     # 测试BOLL
-    upper, middle, lower = BOLL(close, 20, 2)
+    test_upper, test_middle, test_lower = BOLL(test_close, 20, 2)
     print(
-        f"BOLL最后值: 上轨={upper[-1]:.2f}, 中轨={middle[-1]:.2f}, 下轨={lower[-1]:.2f}"
+        f"BOLL最后值: 上轨={test_upper[-1]:.2f}, 中轨={test_middle[-1]:.2f}, 下轨={test_lower[-1]:.2f}"
     )
 
     print("\n所有测试通过！")

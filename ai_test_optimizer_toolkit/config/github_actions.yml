@@ -1,0 +1,45 @@
+# CI/CD集成配置
+name: "AI Test Optimizer CI"
+on: [push, pull_request]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-cov bandit safety
+
+    - name: Run AI Quality Check
+      run: |
+        python ai_test_optimizer_toolkit/bin/ai_test_optimizer_simple.py auto
+
+    - name: Security Scan
+      run: bandit -r src/ -f json -o bandit-report.json
+
+    - name: Coverage Analysis
+      run: |
+        pytest --cov=src --cov-report=xml --cov-report=html
+        python ai_test_optimizer_toolkit/plugins/quality/check_coverage.py --threshold 80
+
+    - name: Performance Tests
+      run: |
+        python ai_test_optimizer_toolkit/plugins/performance/regression_test.py
+
+    - name: Upload Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: quality-reports
+        path: |
+          smart_analysis_reports/
+          coverage.xml
+          htmlcov/
+          bandit-report.json

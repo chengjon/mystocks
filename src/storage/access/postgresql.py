@@ -12,17 +12,17 @@ MyStocks 量化交易数据管理系统 - PostgreSQL数据访问器
 
 import os
 import pandas as pd
-from datetime import datetime
-from typing import Dict, List, Optional, Union, Tuple, Any
+from typing import Dict, List
 import logging
-import warnings
+from datetime import datetime
+import uuid
 
 # 导入基础模块
 from src.storage.access.base import (
-    IDataAccessLayer, 
+    IDataAccessLayer,
     get_database_name_from_classification,
     normalize_dataframe,
-    DataClassification
+    DataClassification,
 )
 from src.monitoring.monitoring_database import MonitoringDatabase
 
@@ -36,13 +36,9 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     """PostgreSQL数据访问器 - 历史数据仓库和分析"""
 
     def __init__(self, monitoring_db: MonitoringDatabase):
-        """
-        初始化PostgreSQL数据访问器
-        
-        Args:
-            monitoring_db: 监控数据库实例
-        """
         super().__init__(monitoring_db)
+        self.db_manager = DatabaseTableManager()
+        self.db_type = DatabaseType.POSTGRESQL
         self.db_manager = DatabaseTableManager()
         self.db_type = DatabaseType.POSTGRESQL
 
@@ -55,28 +51,22 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         保存数据到PostgreSQL
-        
+
         Args:
             data: 数据DataFrame
             classification: 数据分类
             table_name: 表名（可选）
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 保存是否成功
         """
-        # 记录操作开始
+        operation_id = str(uuid.uuid4())
+        start_time = datetime.now()
         actual_table_name = table_name or self._get_default_table_name(classification)
-        operation_id = self.monitoring_db.log_operation_start(
-            actual_table_name,
-            self.db_type.value,
-            get_database_name_from_classification(classification),
-            "INSERT",
-        )
+        database_name = get_database_name_from_classification(classification)
 
         try:
-            database_name = get_database_name_from_classification(classification)
-
             # 数据预处理
             processed_data = self._preprocess_analytical_data(data, classification)
 
@@ -108,8 +98,18 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     method="multi",
                 )
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
+
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="SAVE",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=len(processed_data),
+                operation_status="SUCCESS",
+                execution_time_ms=execution_time_ms,
             )
             logger.info(
                 f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录"
@@ -118,8 +118,20 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
             error_msg = f"PostgreSQL保存失败: {e}"
-            self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="SAVE",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=0,
+                operation_status="FAILED",
+                error_message=error_msg,
+                execution_time_ms=execution_time_ms,
+            )
             logger.error(error_msg)
             return False
 
@@ -132,28 +144,22 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     ) -> pd.DataFrame:
         """
         从PostgreSQL加载数据
-        
+
         Args:
             classification: 数据分类
             table_name: 表名（可选）
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             pd.DataFrame: 加载的数据
         """
-        # 记录操作开始
+        operation_id = str(uuid.uuid4())
+        start_time = datetime.now()
         actual_table_name = table_name or self._get_default_table_name(classification)
-        operation_id = self.monitoring_db.log_operation_start(
-            actual_table_name,
-            self.db_type.value,
-            get_database_name_from_classification(classification),
-            "SELECT",
-        )
+        database_name = get_database_name_from_classification(classification)
 
         try:
-            database_name = get_database_name_from_classification(classification)
-
             # 构建查询语句 - SECURITY FIX: Now returns (sql, params)
             query, params = self._build_analytical_query(
                 classification, actual_table_name, filters, **kwargs
@@ -166,8 +172,18 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_analytical_data(data, classification)
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
+
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="LOAD",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=len(processed_data),
+                operation_status="SUCCESS",
+                execution_time_ms=execution_time_ms,
             )
             logger.info(
                 f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录"
@@ -176,11 +192,22 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return processed_data
 
         except Exception as e:
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
             error_msg = f"PostgreSQL加载失败: {e}"
-            self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="LOAD",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=0,
+                operation_status="FAILED",
+                error_message=error_msg,
+                execution_time_ms=execution_time_ms,
+            )
             logger.error(error_msg)
-            return pd.DataFrame()
-
+            return pd.DataFrame() # Return empty DataFrame on failure
     def update_data(
         self,
         data: pd.DataFrame,
@@ -191,28 +218,23 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         更新PostgreSQL数据
-        
+
         Args:
             data: 数据DataFrame
             classification: 数据分类
             table_name: 表名（可选）
             key_columns: 主键列
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 更新是否成功
         """
-        # 记录操作开始
+        operation_id = str(uuid.uuid4())
+        start_time = datetime.now()
         actual_table_name = table_name or self._get_default_table_name(classification)
-        operation_id = self.monitoring_db.log_operation_start(
-            actual_table_name,
-            self.db_type.value,
-            get_database_name_from_classification(classification),
-            "UPDATE",
-        )
+        database_name = get_database_name_from_classification(classification)
 
         try:
-            database_name = get_database_name_from_classification(classification)
             key_columns = key_columns or self._get_default_key_columns(classification)
 
             # 获取连接
@@ -224,24 +246,56 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
             if success:
                 conn.commit()
-                self.monitoring_db.log_operation_result(operation_id, True, len(data))
+                end_time = datetime.now()
+                execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
+                self.monitoring_db.log_operation(
+                    operation_id=operation_id,
+                    operation_type="UPDATE",
+                    classification=classification.value,
+                    target_database=self.db_type.value,
+                    table_name=actual_table_name,
+                    record_count=len(data),
+                    operation_status="SUCCESS",
+                    execution_time_ms=execution_time_ms,
+                )
                 logger.info(
                     f"PostgreSQL更新成功: {actual_table_name}, {len(data)}条记录"
                 )
             else:
                 conn.rollback()
-                self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, "更新失败"
+                end_time = datetime.now()
+                execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
+                self.monitoring_db.log_operation(
+                    operation_id=operation_id,
+                    operation_type="UPDATE",
+                    classification=classification.value,
+                    target_database=self.db_type.value,
+                    table_name=actual_table_name,
+                    record_count=0,
+                    operation_status="FAILED",
+                    error_message="更新失败，无记录受影响",
+                    execution_time_ms=execution_time_ms,
                 )
 
             return success
 
         except Exception as e:
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
             error_msg = f"PostgreSQL更新失败: {e}"
-            self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="UPDATE",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=0,
+                operation_status="FAILED",
+                error_message=error_msg,
+                execution_time_ms=execution_time_ms,
+            )
             logger.error(error_msg)
             return False
-
     def delete_data(
         self,
         classification: DataClassification,
@@ -251,31 +305,37 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         删除PostgreSQL数据
-        
+
         Args:
             classification: 数据分类
             table_name: 表名（可选）
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 删除是否成功
         """
-        # 记录操作开始
+        operation_id = str(uuid.uuid4())
+        start_time = datetime.now()
         actual_table_name = table_name or self._get_default_table_name(classification)
-        operation_id = self.monitoring_db.log_operation_start(
-            actual_table_name,
-            self.db_type.value,
-            get_database_name_from_classification(classification),
-            "DELETE",
-        )
+        database_name = get_database_name_from_classification(classification)
 
         try:
             if not filters:
-                logger.error("删除操作必须指定过滤条件")
+                error_msg = "删除操作必须指定过滤条件"
+                logger.error(error_msg)
+                self.monitoring_db.log_operation(
+                    operation_id=operation_id,
+                    operation_type="DELETE",
+                    classification=classification.value,
+                    target_database=self.db_type.value,
+                    table_name=actual_table_name,
+                    record_count=0,
+                    operation_status="FAILED",
+                    error_message=error_msg,
+                    execution_time_ms=int((datetime.now() - start_time).total_seconds() * 1000),
+                )
                 return False
-
-            database_name = get_database_name_from_classification(classification)
 
             # 获取连接
             conn = self.db_manager.get_connection(self.db_type, database_name)
@@ -289,7 +349,18 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             affected_rows = cursor.rowcount
             conn.commit()
 
-            self.monitoring_db.log_operation_result(operation_id, True, affected_rows)
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="DELETE",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=affected_rows,
+                operation_status="SUCCESS",
+                execution_time_ms=execution_time_ms,
+            )
             logger.info(
                 f"PostgreSQL删除成功: {actual_table_name}, {affected_rows}条记录"
             )
@@ -297,11 +368,22 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
             error_msg = f"PostgreSQL删除失败: {e}"
-            self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
+            self.monitoring_db.log_operation(
+                operation_id=operation_id,
+                operation_type="DELETE",
+                classification=classification.value,
+                target_database=self.db_type.value,
+                table_name=actual_table_name,
+                record_count=0,
+                operation_status="FAILED",
+                error_message=error_msg,
+                execution_time_ms=execution_time_ms,
+            )
             logger.error(error_msg)
             return False
-
     def _get_default_table_name(self, classification: DataClassification) -> str:
         """根据数据分类获取默认表名"""
         table_mapping = {
@@ -538,9 +620,9 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
                 # 组装SQL
                 update_sql = f"""
-                    UPDATE {table_name} 
-                    SET {', '.join(set_clauses)} 
-                    WHERE {' AND '.join(where_clauses)}
+                    UPDATE {table_name}
+                    SET {", ".join(set_clauses)}
+                    WHERE {" AND ".join(where_clauses)}
                 """
 
                 # 执行更新
@@ -561,7 +643,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     ) -> tuple:
         """
         构建分析数据查询语句 - 使用参数化查询防止SQL注入
-        
+
         返回值: (sql_string, bind_parameters)
         """
         # SECURITY FIX: Whitelist table names to prevent injection through table_name
@@ -623,12 +705,119 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         if conditions:
             base_query += " WHERE " + " AND ".join(conditions)
 
-        # 添加排序 - SECURITY: order_by should also be whitelisted, but for now document the risk
+        # 添加排序 - SECURITY: 添加ORDER BY列白名单防止SQL注入
         if "order_by" in kwargs:
-            # WARNING: order_by is still a potential risk if user-controlled
-            # TODO: Add whitelist for order_by columns
             order_by = kwargs["order_by"]
-            base_query += f" ORDER BY {order_by}"
+
+            # 根据数据分类定义允许的ORDER BY列白名单
+            ALLOWED_ORDER_BY_COLUMNS = {
+                DataClassification.DAILY_KLINE: [
+                    "trade_date",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "adjust_flag",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.MINUTE_KLINE: [
+                    "datetime",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "created_at",
+                ],
+                DataClassification.TICK_DATA: [
+                    "datetime",
+                    "price",
+                    "volume",
+                    "amount",
+                    "direction",
+                ],
+                DataClassification.TECHNICAL_INDICATORS: [
+                    "calc_date",
+                    "symbol",
+                    "indicator_name",
+                    "indicator_value",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.QUANTITATIVE_FACTORS: [
+                    "calc_date",
+                    "symbol",
+                    "factor_name",
+                    "factor_value",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.STOCK_INFO: [
+                    "symbol",
+                    "name",
+                    "market",
+                    "industry",
+                    "list_date",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.FINANCIAL_REPORTS: [
+                    "report_date",
+                    "symbol",
+                    "report_type",
+                    "revenue",
+                    "net_profit",
+                    "created_at",
+                    "updated_at",
+                ],
+            }
+
+            # 获取当前分类允许的列
+            allowed_columns = ALLOWED_ORDER_BY_COLUMNS.get(classification, [])
+
+            # 验证和清理order_by参数
+            if isinstance(order_by, str):
+                # 支持多列排序，如 "trade_date DESC, symbol ASC"
+                order_columns = []
+                for column_spec in order_by.split(","):
+                    column_spec = column_spec.strip()
+                    parts = column_spec.split()
+
+                    if len(parts) == 1:
+                        column_name = parts[0]
+                        direction = ""
+                    elif len(parts) == 2:
+                        column_name, direction = parts
+                        if direction.upper() not in ["ASC", "DESC"]:
+                            direction = "ASC"  # 默认升序
+                    else:
+                        continue  # 跳过无效格式
+
+                    # 验证列名是否在白名单中
+                    if column_name in allowed_columns:
+                        order_columns.append(f"{column_name} {direction}".strip())
+
+                if order_columns:
+                    validated_order_by = ", ".join(order_columns)
+                    base_query += f" ORDER BY {validated_order_by}"
+                else:
+                    # 如果没有有效的排序列，使用默认排序
+                    self.logger.warning(
+                        f"Invalid order_by columns: {order_by}, using default sort"
+                    )
+                    if classification == DataClassification.DAILY_KLINE:
+                        base_query += " ORDER BY trade_date DESC"
+                    elif classification in [
+                        DataClassification.TECHNICAL_INDICATORS,
+                        DataClassification.QUANTITATIVE_FACTORS,
+                    ]:
+                        base_query += " ORDER BY calc_date DESC"
+                    else:
+                        base_query += " ORDER BY created_at DESC"
         else:
             # 默认排序
             if classification == DataClassification.DAILY_KLINE:
@@ -664,7 +853,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
     def _build_delete_query(self, table_name: str, filters: Dict) -> tuple:
         """
         构建删除查询语句 - 使用参数化查询防止SQL注入
-        
+
         返回值: (sql_string, bind_parameters)
         """
         # SECURITY FIX: Whitelist table names to prevent injection through table_name

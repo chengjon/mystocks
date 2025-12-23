@@ -1,0 +1,30 @@
+# 开发者配置
+# IDE集成和开发工具配置
+
+ide_integration:
+  vscode:
+    extensions:
+      - "ms-python.python"
+      - "ms-python.flake8"
+      - "ms-python.pylint"
+      - "bradlc.vscode-tailwindcss"
+    settings:
+      "python.linting.enabled": true
+      "python.linting.pylintEnabled": true
+      "python.testing.pytestEnabled": true
+      "python.testing.unittestEnabled": true
+
+  pycharm:
+    inspections:
+      "PyPep8Inspection": true
+      "PyUnusedLocalInspection": true
+      "PyClassHasNoInitInspection": true
+      "PyMethodMayBeStaticInspection": true
+
+pre_commit:
+  hooks:
+    - id: ai-quality-check
+      entry: python ai_test_optimizer_toolkit/bin/smart_ai_analyzer.py
+      language: system
+      files: ".*\.py$"
+      pass_filenames: true

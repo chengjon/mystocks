@@ -10,11 +10,9 @@ data_manager 模块单元测试
 - 健康检查和统计
 """
 
-import pytest
 import sys
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-from typing import Dict, Any
+from unittest.mock import Mock, patch
 from datetime import datetime
 
 # 确保能导入src模块
@@ -313,7 +311,9 @@ class TestDataManagerRouting:
 
         for classification in tdengine_classifications:
             target = dm.get_target_database(classification)
-            assert target == DatabaseTarget.TDENGINE, f"{classification} should route to TDengine"
+            assert (
+                target == DatabaseTarget.TDENGINE
+            ), f"{classification} should route to TDengine"
 
 
 class TestDataManagerSaveData:
@@ -331,9 +331,7 @@ class TestDataManagerSaveData:
         dm = DataManager()
         test_df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
 
-        result = dm.save_data(
-            DataClassification.TICK_DATA, test_df, "tick_table"
-        )
+        result = dm.save_data(DataClassification.TICK_DATA, test_df, "tick_table")
 
         assert result is True
         mock_td_instance.save_data.assert_called_once()
@@ -369,9 +367,7 @@ class TestDataManagerSaveData:
         dm = DataManager()
         test_df = pd.DataFrame({"col": [1]})
 
-        result = dm.save_data(
-            DataClassification.TICK_DATA, test_df, "table"
-        )
+        result = dm.save_data(DataClassification.TICK_DATA, test_df, "table")
 
         assert result is False
 
@@ -387,9 +383,7 @@ class TestDataManagerSaveData:
         dm = DataManager()
         test_df = pd.DataFrame({"col": [1]})
 
-        result = dm.save_data(
-            DataClassification.TICK_DATA, test_df, "table"
-        )
+        result = dm.save_data(DataClassification.TICK_DATA, test_df, "table")
 
         assert result is False
 
@@ -448,9 +442,7 @@ class TestDataManagerLoadData:
 
         dm = DataManager()
 
-        result = dm.load_data(
-            DataClassification.TICK_DATA, "nonexistent_table"
-        )
+        result = dm.load_data(DataClassification.TICK_DATA, "nonexistent_table")
 
         assert result is None
 
@@ -517,7 +509,9 @@ class TestDataManagerStatistics:
         stats = dm.get_routing_stats()
 
         # 验证TDengine和PostgreSQL的数量加起来等于总数
-        assert (stats["tdengine_count"] + stats["postgresql_count"]) == stats["total_classifications"]
+        assert (stats["tdengine_count"] + stats["postgresql_count"]) == stats[
+            "total_classifications"
+        ]
 
 
 class TestDataManagerValidation:
@@ -628,7 +622,6 @@ class TestDataManagerHealthCheck:
         assert health["tdengine"] == "healthy"
         assert health["postgresql"] == "healthy"
 
-
     @patch("src.data_access.TDengineDataAccess")
     @patch("src.data_access.PostgreSQLDataAccess")
     def test_health_check_postgresql_exception(self, mock_pg, mock_td):
@@ -692,7 +685,9 @@ class TestDataManagerMonitoringIntegration:
         from src.core.data_manager import DataManager, _NullMonitoring
 
         # Mock监控组件导入失败
-        mock_get_monitoring_db.side_effect = ImportError("No module named 'src.monitoring'")
+        mock_get_monitoring_db.side_effect = ImportError(
+            "No module named 'src.monitoring'"
+        )
 
         # 初始化DataManager，启用监控
         dm = DataManager(enable_monitoring=True)
@@ -726,17 +721,13 @@ class TestDataManagerMonitoringIntegration:
         dm = DataManager(enable_monitoring=True)
 
         # 准备测试数据
-        test_data = pd.DataFrame({
-            "timestamp": [datetime.now()],
-            "symbol": ["000001"],
-            "price": [10.5]
-        })
+        test_data = pd.DataFrame(
+            {"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]}
+        )
 
         # 保存数据
         result = dm.save_data(
-            DataClassification.TICK_DATA,
-            test_data,
-            table_name="tick_data_test"
+            DataClassification.TICK_DATA, test_data, table_name="tick_data_test"
         )
 
         # 验证保存成功
@@ -771,11 +762,9 @@ class TestDataManagerMonitoringIntegration:
 
         # Mock数据库访问返回数据 - TDengine的load_data方法
         mock_td_instance = mock_td.return_value
-        expected_data = pd.DataFrame({
-            "timestamp": [datetime.now()],
-            "symbol": ["000001"],
-            "price": [10.5]
-        })
+        expected_data = pd.DataFrame(
+            {"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]}
+        )
         mock_td_instance.load_data = Mock(return_value=expected_data)
 
         # 初始化DataManager，启用监控
@@ -783,9 +772,7 @@ class TestDataManagerMonitoringIntegration:
 
         # 加载数据
         result = dm.load_data(
-            DataClassification.TICK_DATA,
-            table_name="tick_data_test",
-            limit=100
+            DataClassification.TICK_DATA, table_name="tick_data_test", limit=100
         )
 
         # 验证加载成功

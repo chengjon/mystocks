@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
 import time
-from datetime import datetime, timedelta
 
 from automation import (
     TaskScheduler,
@@ -76,11 +75,11 @@ def example_1_basic_scheduling():
 
     print("\n✓ 任务已添加")
     print(f"  任务名称: {task_config.name}")
-    print(f"  触发器: 每5秒执行一次")
+    print("  触发器: 每5秒执行一次")
 
     # 查看任务列表
     tasks = scheduler.list_tasks()
-    print(f"\n当前任务列表:")
+    print("\n当前任务列表:")
     for task in tasks:
         print(f"  - {task['name']}: {task['status']}")
 
@@ -162,7 +161,7 @@ def example_3_predefined_tasks():
     # 每日数据更新任务（16:00执行）
     daily_update = create_daily_update_task(market="sh", hour=16, minute=0)
     print(f"  ✓ 每日数据更新任务: {daily_update.name}")
-    print(f"      触发时间: 每天16:00")
+    print("      触发时间: 每天16:00")
     print(f"      优先级: {daily_update.priority.name}")
 
     # 策略执行任务（9:30执行）
@@ -170,13 +169,13 @@ def example_3_predefined_tasks():
         strategy_name="momentum", hour=9, minute=30
     )
     print(f"  ✓ 策略执行任务: {strategy_exec.name}")
-    print(f"      触发时间: 每天9:30（工作日）")
+    print("      触发时间: 每天9:30（工作日）")
     print(f"      依赖任务: {strategy_exec.depends_on}")
 
     # 健康检查任务（每30分钟）
     health_check = create_health_check_task(interval_minutes=30)
     print(f"  ✓ 健康检查任务: {health_check.name}")
-    print(f"      触发频率: 每30分钟")
+    print("      触发频率: 每30分钟")
 
     return [daily_update, strategy_exec, health_check]
 

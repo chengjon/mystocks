@@ -12,11 +12,11 @@
 版本: 1.0.0
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional
-from datetime import date, datetime
 import logging
+from typing import Dict, Optional
+
+import numpy as np
+import pandas as pd
 
 # 导入本地模块
 try:
@@ -183,7 +183,7 @@ class BacktestEngine:
         with open(f"{filepath}_report.txt", "w", encoding="utf-8") as f:
             f.write(self.last_result["report"])
 
-        self.logger.info(f"回测结果已保存到 {filepath}")
+        self.logger.info("回测结果已保存到 %s", filepath)
 
 
 if __name__ == "__main__":
@@ -193,35 +193,35 @@ if __name__ == "__main__":
 
     # 生成测试数据
     np.random.seed(42)
-    n = 252
-    dates = pd.date_range("2024-01-01", periods=n, freq="D")
+    test_n = 100
+    test_dates = pd.date_range("2024-01-01", periods=test_n, freq="D")
 
     # 价格数据
-    close_prices = 100 + np.cumsum(np.random.randn(n) * 0.5 + 0.02)
-    price_data = pd.DataFrame(
+    test_close_prices = 100 + np.cumsum(np.random.randn(test_n) * 0.5 + 0.02)
+    test_price_data = pd.DataFrame(
         {
-            "open": close_prices + np.random.randn(n) * 0.5,
-            "high": close_prices + np.abs(np.random.randn(n)),
-            "low": close_prices - np.abs(np.random.randn(n)),
-            "close": close_prices,
-            "volume": np.random.uniform(1000000, 10000000, n),
+            "open": test_close_prices + np.random.randn(test_n) * 0.5,
+            "high": test_close_prices + np.abs(np.random.randn(test_n)),
+            "low": test_close_prices - np.abs(np.random.randn(test_n)),
+            "close": test_close_prices,
+            "volume": np.random.uniform(1000000, 10000000, test_n),
         },
-        index=dates,
+        index=test_dates,
     )
 
     # 信号数据（简单策略：每20天买入，10天后卖出）
-    signals = pd.DataFrame(index=dates)
-    signals["signal"] = None
-    signals["strength"] = 0.0
+    test_signals = pd.DataFrame(index=test_dates)
+    test_signals["signal"] = None
+    test_signals["strength"] = 0.0
 
-    for i in range(0, n, 20):
-        if i < n:
-            signals.iloc[i] = ["buy", 0.8]
-        if i + 10 < n:
-            signals.iloc[i + 10] = ["sell", 0.8]
+    for i in range(0, test_n, 20):
+        if i < test_n:
+            test_signals.iloc[i] = ["buy", 0.8]
+        if i + 10 < test_n:
+            test_signals.iloc[i + 10] = ["sell", 0.8]
 
     # 创建回测配置
-    config = BacktestConfig(
+    test_config = BacktestConfig(
         initial_capital=100000,
         commission_rate=0.0003,
         slippage_rate=0.0001,
@@ -229,18 +229,18 @@ if __name__ == "__main__":
     )
 
     # 运行回测
-    engine = BacktestEngine(config=config, risk_free_rate=0.03)
-    result = engine.run(price_data, signals)
+    test_engine = BacktestEngine(config=test_config, risk_free_rate=0.03)
+    test_result = test_engine.run(test_price_data, test_signals)
 
     # 打印报告
-    print(result["report"])
+    print(test_result["report"])
 
     # 显示一些关键指标
     print("\n关键指标摘要:")
-    print(f"  总收益率: {result['metrics']['total_return']:.2%}")
-    print(f"  年化收益率: {result['metrics']['annualized_return']:.2%}")
-    print(f"  夏普比率: {result['metrics']['sharpe_ratio']:.3f}")
-    print(f"  最大回撤: {result['metrics']['max_drawdown']:.2%}")
-    print(f"  胜率: {result['metrics']['win_rate']:.2%}")
+    print(f"  总收益率: {test_result['metrics']['total_return']:.2%}")
+    print(f"  年化收益率: {test_result['metrics']['annualized_return']:.2%}")
+    print(f"  夏普比率: {test_result['metrics']['sharpe_ratio']:.3f}")
+    print(f"  最大回撤: {test_result['metrics']['max_drawdown']:.2%}")
+    print(f"  胜率: {test_result['metrics']['win_rate']:.2%}")
 
     print("\n测试通过！")

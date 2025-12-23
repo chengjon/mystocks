@@ -1,9 +1,9 @@
 # MyStocks 项目技术负债分析报告
 
-**项目名称**: MyStocks 量化交易数据管理系统  
-**分析日期**: 2025年11月15日  
-**分析师**: Claude Code  
-**项目版本**: v3.0.0  
+**项目名称**: MyStocks 量化交易数据管理系统
+**分析日期**: 2025年11月15日
+**分析师**: Claude Code
+**项目版本**: v3.0.0
 
 ---
 
@@ -60,7 +60,7 @@ MyStocks 是一个企业级量化交易数据管理系统，拥有现代化的�
 
 #### 1.1 类型注解覆盖率
 ```
-当前状态: 
+当前状态:
 ✅ 已有类型注解文件: 约40个文件
 ❌ 缺少类型注解文件: 约1,896个文件
 类型注解覆盖率: ~2%
@@ -297,13 +297,13 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-      
+
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
       - id: black
         language_version: python3.12
-        
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
@@ -491,6 +491,6 @@ METRICS = {
 
 ---
 
-*报告生成时间: 2025年11月15日*  
-*下次评估建议时间: 2025年12月15日*  
+*报告生成时间: 2025年11月15日*
+*下次评估建议时间: 2025年12月15日*
 *分析师: Claude Code*

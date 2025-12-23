@@ -9,7 +9,6 @@ Version: 2.1.0 (Full Monitoring Integration)
 Date: 2025-10-24
 """
 
-import asyncio
 import os
 import sys
 from datetime import datetime
@@ -103,12 +102,14 @@ def get_monitoring_db():
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
         except Exception as e:
-            logger.warning(f"MonitoringDatabase initialization failed, using fallback: {e}")
+            logger.warning(
+                f"MonitoringDatabase initialization failed, using fallback: {e}"
+            )
 
             # 创建一个简单的fallback对象
             class MonitoringFallback:
                 def log_operation(self, *args, **kwargs):
-                    logger.debug(f"Monitoring fallback: operation logged")
+                    logger.debug("Monitoring fallback: operation logged")
                     return True
 
             monitoring_db = MonitoringFallback()
@@ -119,7 +120,9 @@ def get_monitoring_db():
 
 
 @router.get("/strategies")
-async def list_strategies(status: Optional[str] = None, page: int = 1, page_size: int = 20) -> Dict[str, Any]:
+async def list_strategies(
+    status: Optional[str] = None, page: int = 1, page_size: int = 20
+) -> Dict[str, Any]:
     """
     获取策略列表
 
@@ -161,7 +164,12 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
             end = start + page_size
             items = strategies[start:end]
 
-            return {"items": items, "total": total, "page": page, "page_size": page_size}
+            return {
+                "items": items,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+            }
         else:
             # 使用真实数据库
             manager = MyStocksUnifiedManager()
@@ -182,7 +190,11 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
             total = len(strategies) if strategies is not None else 0
             start = (page - 1) * page_size
             end = start + page_size
-            items = strategies.iloc[start:end].to_dict("records") if strategies is not None else []
+            items = (
+                strategies.iloc[start:end].to_dict("records")
+                if strategies is not None
+                else []
+            )
 
             # 记录操作到监控数据库
             operation_time = (datetime.now() - operation_start).total_seconds() * 1000
@@ -196,7 +208,12 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
                 details=f"status={status}, page={page}, page_size={page_size}",
             )
 
-            return {"items": items, "total": total, "page": page, "page_size": page_size}
+            return {
+                "items": items,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+            }
 
     except Exception as e:
         # 如果使用Mock数据模式失败，降级到真实数据库
@@ -327,7 +344,9 @@ async def get_strategy(strategy_id: int) -> Dict[str, Any]:
 
 
 @router.put("/strategies/{strategy_id}")
-async def update_strategy(strategy_id: int, strategy_update: Dict[str, Any]) -> Dict[str, Any]:
+async def update_strategy(
+    strategy_id: int, strategy_update: Dict[str, Any]
+) -> Dict[str, Any]:
     """更新策略"""
     try:
         manager = MyStocksUnifiedManager()
@@ -378,7 +397,9 @@ async def delete_strategy(strategy_id: int) -> Dict[str, str]:
         # 而不是真正删除数据
         import pandas as pd
 
-        delete_data = pd.DataFrame([{"id": strategy_id, "status": "archived", "updated_at": datetime.now()}])
+        delete_data = pd.DataFrame(
+            [{"id": strategy_id, "status": "archived", "updated_at": datetime.now()}]
+        )
 
         result = manager.save_data_by_classification(
             data=delete_data,
@@ -400,7 +421,9 @@ async def delete_strategy(strategy_id: int) -> Dict[str, str]:
 
 
 @router.post("/models/train")
-async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, Any]:
+async def train_model(
+    config: Dict[str, Any], background_tasks: BackgroundTasks
+) -> Dict[str, Any]:
     """
     启动模型训练任务
 
@@ -442,7 +465,9 @@ async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks)
             table_name="models",
             filters={"name": config.get("name")},
         )
-        model_id = models.iloc[-1]["id"] if models is not None and len(models) > 0 else 1
+        model_id = (
+            models.iloc[-1]["id"] if models is not None and len(models) > 0 else 1
+        )
 
         # 后台任务训练模型
         task_id = f"train_{model_id}_{int(datetime.now().timestamp())}"
@@ -497,7 +522,7 @@ async def train_model_task(model_id: int, config: Dict[str, Any]):
             upsert=True,
         )
 
-    except Exception as e:
+    except Exception:
         # 训练失败
         manager = MyStocksUnifiedManager()
         import pandas as pd
@@ -560,7 +585,9 @@ async def get_training_status(task_id: str) -> Dict[str, Any]:
 
 
 @router.get("/models")
-async def list_models(model_type: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
+async def list_models(
+    model_type: Optional[str] = None, status: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """获取模型列表"""
     try:
         manager = MyStocksUnifiedManager()
@@ -587,7 +614,9 @@ async def list_models(model_type: Optional[str] = None, status: Optional[str] = 
 
 
 @router.post("/backtest/run")
-async def run_backtest(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, int]:
+async def run_backtest(
+    config: Dict[str, Any], background_tasks: BackgroundTasks
+) -> Dict[str, int]:
     """
     执行回测
 
@@ -632,10 +661,16 @@ async def run_backtest(config: Dict[str, Any], background_tasks: BackgroundTasks
             table_name="backtests",
             filters={"name": config.get("name")},
         )
-        backtest_id = backtests.iloc[-1]["id"] if backtests is not None and len(backtests) > 0 else 1
+        backtest_id = (
+            backtests.iloc[-1]["id"]
+            if backtests is not None and len(backtests) > 0
+            else 1
+        )
 
         # 后台任务执行回测
-        background_tasks.add_task(run_backtest_task, backtest_id=backtest_id, config=config)
+        background_tasks.add_task(
+            run_backtest_task, backtest_id=backtest_id, config=config
+        )
 
         return {"backtest_id": backtest_id}
 
@@ -651,7 +686,9 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
         # 更新状态为运行中
         import pandas as pd
 
-        running_data = pd.DataFrame([{"id": backtest_id, "status": "running", "started_at": datetime.now()}])
+        running_data = pd.DataFrame(
+            [{"id": backtest_id, "status": "running", "started_at": datetime.now()}]
+        )
         manager.save_data_by_classification(
             data=running_data,
             classification=DataClassification.MODEL_OUTPUT,
@@ -688,7 +725,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
             upsert=True,
         )
 
-    except Exception as e:
+    except Exception:
         manager = MyStocksUnifiedManager()
         import pandas as pd
 
@@ -723,7 +760,11 @@ async def list_backtest_results(
         total = len(backtests) if backtests is not None else 0
         start = (page - 1) * page_size
         end = start + page_size
-        items = backtests.iloc[start:end].to_dict("records") if backtests is not None else []
+        items = (
+            backtests.iloc[start:end].to_dict("records")
+            if backtests is not None
+            else []
+        )
 
         return {"items": items, "total": total, "page": page, "page_size": page_size}
 

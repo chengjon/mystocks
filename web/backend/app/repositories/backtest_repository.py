@@ -3,13 +3,24 @@ Backtest Repository Layer
 
 提供回测数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
+
 import logging
-from datetime import datetime, date
-from typing import List, Optional, Dict, Any
-from decimal import Decimal
+from datetime import datetime
+from typing import List, Optional
 from sqlalchemy import (
-    Column, Integer, String, Text, Numeric, Date, TIMESTAMP, ARRAY,
-    CheckConstraint, ForeignKey, Index, JSON, UniqueConstraint
+    Column,
+    Integer,
+    String,
+    Text,
+    Numeric,
+    Date,
+    TIMESTAMP,
+    ARRAY,
+    CheckConstraint,
+    ForeignKey,
+    Index,
+    JSON,
+    UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship
@@ -21,7 +32,7 @@ from app.models.strategy_schemas import (
     BacktestStatus,
     PerformanceMetrics,
     EquityCurvePoint,
-    TradeRecord
+    TradeRecord,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,9 +43,11 @@ Base = declarative_base()
 # SQLAlchemy ORM Models
 # ============================================================
 
+
 class BacktestResultModel(Base):
     """回测结果表ORM模型"""
-    __tablename__ = 'backtest_results'
+
+    __tablename__ = "backtest_results"
 
     backtest_id = Column(Integer, primary_key=True, autoincrement=True)
     strategy_id = Column(Integer, nullable=False, index=True)
@@ -54,38 +67,46 @@ class BacktestResultModel(Base):
     performance_metrics = Column(JSON, nullable=True)
 
     # 回测状态
-    status = Column(String(20), nullable=False, default='pending')
+    status = Column(String(20), nullable=False, default="pending")
     error_message = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
     started_at = Column(TIMESTAMP, nullable=True)
     completed_at = Column(TIMESTAMP, nullable=True)
 
     # 关系
-    equity_curves = relationship("BacktestEquityCurveModel", back_populates="backtest", cascade="all, delete-orphan")
-    trades = relationship("BacktestTradeModel", back_populates="backtest", cascade="all, delete-orphan")
+    equity_curves = relationship(
+        "BacktestEquityCurveModel",
+        back_populates="backtest",
+        cascade="all, delete-orphan",
+    )
+    trades = relationship(
+        "BacktestTradeModel", back_populates="backtest", cascade="all, delete-orphan"
+    )
 
     __table_args__ = (
         CheckConstraint(
             "status IN ('pending', 'running', 'completed', 'failed')",
-            name='chk_backtest_status'
+            name="chk_backtest_status",
         ),
-        CheckConstraint(
-            "end_date >= start_date",
-            name='chk_date_range'
-        ),
-        Index('idx_backtest_results_strategy_id', 'strategy_id'),
-        Index('idx_backtest_results_user_id', 'user_id'),
-        Index('idx_backtest_results_status', 'status'),
-        Index('idx_backtest_results_created_at', 'created_at'),
+        CheckConstraint("end_date >= start_date", name="chk_date_range"),
+        Index("idx_backtest_results_strategy_id", "strategy_id"),
+        Index("idx_backtest_results_user_id", "user_id"),
+        Index("idx_backtest_results_status", "status"),
+        Index("idx_backtest_results_created_at", "created_at"),
     )
 
 
 class BacktestEquityCurveModel(Base):
     """权益曲线表ORM模型"""
-    __tablename__ = 'backtest_equity_curves'
+
+    __tablename__ = "backtest_equity_curves"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    backtest_id = Column(Integer, ForeignKey('backtest_results.backtest_id', ondelete='CASCADE'), nullable=False)
+    backtest_id = Column(
+        Integer,
+        ForeignKey("backtest_results.backtest_id", ondelete="CASCADE"),
+        nullable=False,
+    )
     trade_date = Column(Date, nullable=False)
     equity = Column(Numeric(15, 2), nullable=False)
     drawdown = Column(Numeric(5, 2), nullable=False)
@@ -95,18 +116,23 @@ class BacktestEquityCurveModel(Base):
     backtest = relationship("BacktestResultModel", back_populates="equity_curves")
 
     __table_args__ = (
-        UniqueConstraint('backtest_id', 'trade_date', name='uq_backtest_trade_date'),
-        Index('idx_equity_curves_backtest_id', 'backtest_id'),
-        Index('idx_equity_curves_trade_date', 'trade_date'),
+        UniqueConstraint("backtest_id", "trade_date", name="uq_backtest_trade_date"),
+        Index("idx_equity_curves_backtest_id", "backtest_id"),
+        Index("idx_equity_curves_trade_date", "trade_date"),
     )
 
 
 class BacktestTradeModel(Base):
     """交易记录表ORM模型"""
-    __tablename__ = 'backtest_trades'
+
+    __tablename__ = "backtest_trades"
 
     trade_id = Column(Integer, primary_key=True, autoincrement=True)
-    backtest_id = Column(Integer, ForeignKey('backtest_results.backtest_id', ondelete='CASCADE'), nullable=False)
+    backtest_id = Column(
+        Integer,
+        ForeignKey("backtest_results.backtest_id", ondelete="CASCADE"),
+        nullable=False,
+    )
     symbol = Column(String(20), nullable=False)
     trade_date = Column(Date, nullable=False)
     action = Column(String(10), nullable=False)
@@ -120,19 +146,17 @@ class BacktestTradeModel(Base):
     backtest = relationship("BacktestResultModel", back_populates="trades")
 
     __table_args__ = (
-        CheckConstraint(
-            "action IN ('buy', 'sell')",
-            name='chk_action'
-        ),
-        Index('idx_backtest_trades_backtest_id', 'backtest_id'),
-        Index('idx_backtest_trades_symbol', 'symbol'),
-        Index('idx_backtest_trades_date', 'trade_date'),
+        CheckConstraint("action IN ('buy', 'sell')", name="chk_action"),
+        Index("idx_backtest_trades_backtest_id", "backtest_id"),
+        Index("idx_backtest_trades_symbol", "symbol"),
+        Index("idx_backtest_trades_date", "trade_date"),
     )
 
 
 # ============================================================
 # Repository Class
 # ============================================================
+
 
 class BacktestRepository:
     """回测数据仓库
@@ -171,14 +195,16 @@ class BacktestRepository:
                 commission_rate=request.commission_rate,
                 slippage_rate=request.slippage_rate,
                 benchmark=request.benchmark,
-                status='pending'
+                status="pending",
             )
 
             self.db.add(backtest_orm)
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info(f"创建回测任务成功: backtest_id={backtest_orm.backtest_id}, strategy_id={request.strategy_id}")
+            logger.info(
+                f"创建回测任务成功: backtest_id={backtest_orm.backtest_id}, strategy_id={request.strategy_id}"
+            )
 
             return self._orm_to_pydantic(backtest_orm)
 
@@ -197,9 +223,11 @@ class BacktestRepository:
             回测结果对象，不存在时返回None
         """
         try:
-            backtest_orm = self.db.query(BacktestResultModel).filter(
-                BacktestResultModel.backtest_id == backtest_id
-            ).first()
+            backtest_orm = (
+                self.db.query(BacktestResultModel)
+                .filter(BacktestResultModel.backtest_id == backtest_id)
+                .first()
+            )
 
             if backtest_orm is None:
                 logger.warning(f"回测不存在: backtest_id={backtest_id}")
@@ -217,7 +245,7 @@ class BacktestRepository:
         strategy_id: Optional[int] = None,
         status: Optional[BacktestStatus] = None,
         page: int = 1,
-        page_size: int = 20
+        page_size: int = 20,
     ) -> tuple[List[BacktestResult], int]:
         """获取回测列表
 
@@ -245,13 +273,18 @@ class BacktestRepository:
             total_count = query.count()
 
             offset = (page - 1) * page_size
-            backtests_orm = query.order_by(
-                BacktestResultModel.created_at.desc()
-            ).offset(offset).limit(page_size).all()
+            backtests_orm = (
+                query.order_by(BacktestResultModel.created_at.desc())
+                .offset(offset)
+                .limit(page_size)
+                .all()
+            )
 
             backtests = [self._orm_to_pydantic(b) for b in backtests_orm]
 
-            logger.info(f"查询回测列表: user_id={user_id}, total={total_count}, page={page}")
+            logger.info(
+                f"查询回测列表: user_id={user_id}, total={total_count}, page={page}"
+            )
 
             return backtests, total_count
 
@@ -263,7 +296,7 @@ class BacktestRepository:
         self,
         backtest_id: int,
         status: BacktestStatus,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ) -> Optional[BacktestResult]:
         """更新回测状态
 
@@ -276,9 +309,11 @@ class BacktestRepository:
             更新后的回测结果，回测不存在时返回None
         """
         try:
-            backtest_orm = self.db.query(BacktestResultModel).filter(
-                BacktestResultModel.backtest_id == backtest_id
-            ).first()
+            backtest_orm = (
+                self.db.query(BacktestResultModel)
+                .filter(BacktestResultModel.backtest_id == backtest_id)
+                .first()
+            )
 
             if backtest_orm is None:
                 logger.warning(f"回测不存在: backtest_id={backtest_id}")
@@ -296,7 +331,9 @@ class BacktestRepository:
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info(f"更新回测状态: backtest_id={backtest_id}, status={status.value}")
+            logger.info(
+                f"更新回测状态: backtest_id={backtest_id}, status={status.value}"
+            )
 
             return self._orm_to_pydantic(backtest_orm)
 
@@ -309,7 +346,7 @@ class BacktestRepository:
         self,
         backtest_id: int,
         final_capital: float,
-        performance_metrics: PerformanceMetrics
+        performance_metrics: PerformanceMetrics,
     ) -> Optional[BacktestResult]:
         """保存回测结果
 
@@ -322,9 +359,11 @@ class BacktestRepository:
             更新后的回测结果
         """
         try:
-            backtest_orm = self.db.query(BacktestResultModel).filter(
-                BacktestResultModel.backtest_id == backtest_id
-            ).first()
+            backtest_orm = (
+                self.db.query(BacktestResultModel)
+                .filter(BacktestResultModel.backtest_id == backtest_id)
+                .first()
+            )
 
             if backtest_orm is None:
                 logger.warning(f"回测不存在: backtest_id={backtest_id}")
@@ -332,7 +371,7 @@ class BacktestRepository:
 
             backtest_orm.final_capital = final_capital
             backtest_orm.performance_metrics = performance_metrics.dict()
-            backtest_orm.status = 'completed'
+            backtest_orm.status = "completed"
             backtest_orm.completed_at = datetime.utcnow()
 
             self.db.commit()
@@ -348,9 +387,7 @@ class BacktestRepository:
             raise
 
     def save_equity_curve(
-        self,
-        backtest_id: int,
-        equity_curve: List[EquityCurvePoint]
+        self, backtest_id: int, equity_curve: List[EquityCurvePoint]
     ) -> bool:
         """保存权益曲线数据
 
@@ -369,7 +406,7 @@ class BacktestRepository:
                     trade_date=point.date,
                     equity=point.equity,
                     drawdown=point.drawdown,
-                    benchmark_equity=point.benchmark_equity
+                    benchmark_equity=point.benchmark_equity,
                 )
                 for point in equity_curve
             ]
@@ -377,7 +414,9 @@ class BacktestRepository:
             self.db.bulk_save_objects(equity_models)
             self.db.commit()
 
-            logger.info(f"保存权益曲线成功: backtest_id={backtest_id}, points={len(equity_curve)}")
+            logger.info(
+                f"保存权益曲线成功: backtest_id={backtest_id}, points={len(equity_curve)}"
+            )
 
             return True
 
@@ -396,16 +435,21 @@ class BacktestRepository:
             权益曲线数据点列表
         """
         try:
-            curves_orm = self.db.query(BacktestEquityCurveModel).filter(
-                BacktestEquityCurveModel.backtest_id == backtest_id
-            ).order_by(BacktestEquityCurveModel.trade_date).all()
+            curves_orm = (
+                self.db.query(BacktestEquityCurveModel)
+                .filter(BacktestEquityCurveModel.backtest_id == backtest_id)
+                .order_by(BacktestEquityCurveModel.trade_date)
+                .all()
+            )
 
             return [
                 EquityCurvePoint(
                     date=curve.trade_date,
                     equity=float(curve.equity),
                     drawdown=float(curve.drawdown),
-                    benchmark_equity=float(curve.benchmark_equity) if curve.benchmark_equity else None
+                    benchmark_equity=float(curve.benchmark_equity)
+                    if curve.benchmark_equity
+                    else None,
                 )
                 for curve in curves_orm
             ]
@@ -414,11 +458,7 @@ class BacktestRepository:
             logger.error(f"获取权益曲线失败: backtest_id={backtest_id}, error={str(e)}")
             raise
 
-    def save_trades(
-        self,
-        backtest_id: int,
-        trades: List[TradeRecord]
-    ) -> bool:
+    def save_trades(self, backtest_id: int, trades: List[TradeRecord]) -> bool:
         """保存交易记录
 
         Args:
@@ -439,7 +479,7 @@ class BacktestRepository:
                     quantity=trade.quantity,
                     amount=trade.amount,
                     commission=trade.commission,
-                    profit_loss=trade.profit_loss
+                    profit_loss=trade.profit_loss,
                 )
                 for trade in trades
             ]
@@ -447,7 +487,9 @@ class BacktestRepository:
             self.db.bulk_save_objects(trade_models)
             self.db.commit()
 
-            logger.info(f"保存交易记录成功: backtest_id={backtest_id}, trades={len(trades)}")
+            logger.info(
+                f"保存交易记录成功: backtest_id={backtest_id}, trades={len(trades)}"
+            )
 
             return True
 
@@ -466,9 +508,12 @@ class BacktestRepository:
             交易记录列表
         """
         try:
-            trades_orm = self.db.query(BacktestTradeModel).filter(
-                BacktestTradeModel.backtest_id == backtest_id
-            ).order_by(BacktestTradeModel.trade_date).all()
+            trades_orm = (
+                self.db.query(BacktestTradeModel)
+                .filter(BacktestTradeModel.backtest_id == backtest_id)
+                .order_by(BacktestTradeModel.trade_date)
+                .all()
+            )
 
             return [
                 TradeRecord(
@@ -479,7 +524,7 @@ class BacktestRepository:
                     quantity=trade.quantity,
                     amount=float(trade.amount),
                     commission=float(trade.commission),
-                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None
+                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None,
                 )
                 for trade in trades_orm
             ]
@@ -498,9 +543,11 @@ class BacktestRepository:
             True表示删除成功，False表示回测不存在
         """
         try:
-            result = self.db.query(BacktestResultModel).filter(
-                BacktestResultModel.backtest_id == backtest_id
-            ).delete()
+            result = (
+                self.db.query(BacktestResultModel)
+                .filter(BacktestResultModel.backtest_id == backtest_id)
+                .delete()
+            )
 
             self.db.commit()
 
@@ -542,7 +589,9 @@ class BacktestRepository:
                     date=curve.trade_date,
                     equity=float(curve.equity),
                     drawdown=float(curve.drawdown),
-                    benchmark_equity=float(curve.benchmark_equity) if curve.benchmark_equity else None
+                    benchmark_equity=float(curve.benchmark_equity)
+                    if curve.benchmark_equity
+                    else None,
                 )
                 for curve in backtest_orm.equity_curves
             ]
@@ -558,7 +607,7 @@ class BacktestRepository:
                     quantity=trade.quantity,
                     amount=float(trade.amount),
                     commission=float(trade.commission),
-                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None
+                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None,
                 )
                 for trade in backtest_orm.trades
             ]
@@ -574,7 +623,9 @@ class BacktestRepository:
             commission_rate=float(backtest_orm.commission_rate),
             slippage_rate=float(backtest_orm.slippage_rate),
             benchmark=backtest_orm.benchmark,
-            final_capital=float(backtest_orm.final_capital) if backtest_orm.final_capital else None,
+            final_capital=float(backtest_orm.final_capital)
+            if backtest_orm.final_capital
+            else None,
             performance_metrics=performance_metrics,
             equity_curve=equity_curve,
             trades=trades,
@@ -582,5 +633,5 @@ class BacktestRepository:
             error_message=backtest_orm.error_message,
             created_at=backtest_orm.created_at,
             started_at=backtest_orm.started_at,
-            completed_at=backtest_orm.completed_at
+            completed_at=backtest_orm.completed_at,
         )

@@ -27,7 +27,7 @@ The system uses a classification-driven routing strategy to automatically select
 
 **Data Classes Stored**:
 - `tick_data`: Stock tick-level execution data (price, volume, bid/ask)
-- `minute_kline`: Minute-level OHLCV data 
+- `minute_kline`: Minute-level OHLCV data
 - `depth_data`: Order book depth snapshots
 
 **Database Configuration**:
@@ -141,8 +141,8 @@ SELECT
     ti.indicator_name,
     ti.indicator_value
 FROM daily_kline dk
-LEFT JOIN technical_indicators ti 
-    ON dk.symbol = ti.symbol 
+LEFT JOIN technical_indicators ti
+    ON dk.symbol = ti.symbol
     AND dk.trade_date = ti.calc_date
 WHERE dk.symbol = '600000.SH'
   AND dk.trade_date >= '2025-01-01'
@@ -298,8 +298,8 @@ SELECT
     ti.indicator_value
 FROM daily_kline dk
 JOIN symbols s ON dk.symbol = s.symbol
-JOIN technical_indicators ti 
-    ON dk.symbol = ti.symbol 
+JOIN technical_indicators ti
+    ON dk.symbol = ti.symbol
     AND dk.trade_date = ti.calc_date
 WHERE s.sector = 'Finance'
 ```
@@ -374,13 +374,13 @@ class TDengineDataAccess:
     # SuperTable Management
     def create_stable(stable_name, schema, tags)
     def create_table(table_name, stable_name, tag_values)
-    
+
     # Data Operations
     def insert_dataframe(table_name, df, timestamp_col)
     def query_by_time_range(table_name, start_time, end_time, ...)
     def query_latest(table_name, limit)
     def aggregate_to_kline(table_name, start_time, end_time, interval)
-    
+
     # Management
     def delete_by_time_range(table_name, start_time, end_time)
     def get_table_info(table_name)
@@ -401,17 +401,17 @@ class PostgreSQLDataAccess:
     # Table Management
     def create_table(table_name, schema, primary_key)
     def create_hypertable(table_name, time_column, chunk_interval)
-    
+
     # Data Operations
     def insert_dataframe(table_name, df)
     def upsert_dataframe(table_name, df, conflict_columns, update_columns)
     def query(table_name, columns, where, order_by, limit)
     def query_by_time_range(table_name, time_column, start_time, end_time, ...)
-    
+
     # Advanced Queries
     def execute_sql(sql, params)  # Custom SQL with parameters
     def get_table_stats(table_name)
-    
+
     # Data Management
     def delete(table_name, where)
     def close_all()
@@ -446,7 +446,7 @@ class MonitoringDatabase:
         client_ip,
         additional_info
     )
-    
+
     def log_query_performance(
         operation_id,
         query_sql,
@@ -454,7 +454,7 @@ class MonitoringDatabase:
         rows_affected,
         status
     )
-    
+
     def log_data_quality(
         table_name,
         classification,
@@ -478,7 +478,7 @@ Real-time performance tracking:
 class PerformanceMonitor:
     SLOW_QUERY_THRESHOLD_MS = 5000  # 5 seconds
     WARNING_THRESHOLD_MS = 2000      # 2 seconds
-    
+
     @contextmanager
     def track_operation(
         operation_name,
@@ -506,14 +506,14 @@ class DataQualityMonitor:
         classification,
         threshold=0.95
     )
-    
+
     # Freshness Checks
     def check_freshness(
         table_name,
         classification,
         max_age_hours=24
     )
-    
+
     # Accuracy Checks
     def check_accuracy(
         table_name,

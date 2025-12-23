@@ -5,8 +5,8 @@ TDengine访问层基础测试
 
 import os
 import sys
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, Mock, patch
+from datetime import datetime
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -125,7 +125,11 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            tag_values = {"symbol": "600000.SH", "exchange": 1, "active": True}  # 数值标签  # 布尔标签
+            tag_values = {
+                "symbol": "600000.SH",
+                "exchange": 1,
+                "active": True,
+            }  # 数值标签  # 布尔标签
 
             data_access.create_table("test_table", "test_stable", tag_values)
 
@@ -221,7 +225,11 @@ class TestTDengineDataAccessBasic:
     def test_insert_dataframe_string_timestamp_conversion(self):
         """测试插入DataFrame字符串时间戳转换"""
         test_df = pd.DataFrame(
-            {"ts": ["2025-01-01 09:30:00", "2025-01-01 09:30:01"], "price": [10.5, 10.6], "volume": [1000, 1500]}
+            {
+                "ts": ["2025-01-01 09:30:00", "2025-01-01 09:30:01"],
+                "price": [10.5, 10.6],
+                "volume": [1000, 1500],
+            }
         )
 
         with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
@@ -244,7 +252,10 @@ class TestTDengineDataAccessBasic:
         with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
             mock_conn = Mock()
             mock_cursor = Mock()
-            test_data = [(datetime(2025, 1, 1, 9, 30), 10.5, 1000), (datetime(2025, 1, 1, 9, 31), 10.6, 1500)]
+            test_data = [
+                (datetime(2025, 1, 1, 9, 30), 10.5, 1000),
+                (datetime(2025, 1, 1, 9, 31), 10.6, 1500),
+            ]
             mock_cursor.fetchall.return_value = test_data
             mock_cursor.description = [("ts",), ("price",), ("volume",)]
             mock_conn.cursor.return_value = mock_cursor
@@ -280,7 +291,9 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            data_access.query_by_time_range("test_table", start_time, end_time, columns=["ts", "price"])
+            data_access.query_by_time_range(
+                "test_table", start_time, end_time, columns=["ts", "price"]
+            )
 
             # 验证SQL语句包含指定列
             sql_call = mock_cursor.execute.call_args[0][0]
@@ -301,7 +314,9 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            data_access.query_by_time_range("test_table", start_time, end_time, limit=1000)
+            data_access.query_by_time_range(
+                "test_table", start_time, end_time, limit=1000
+            )
 
             # 验证SQL语句包含LIMIT
             sql_call = mock_cursor.execute.call_args[0][0]
@@ -312,7 +327,10 @@ class TestTDengineDataAccessBasic:
         with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
             mock_conn = Mock()
             mock_cursor = Mock()
-            test_data = [(datetime(2025, 1, 1, 15, 0), 10.8, 2000), (datetime(2025, 1, 1, 14, 59), 10.7, 1800)]
+            test_data = [
+                (datetime(2025, 1, 1, 15, 0), 10.8, 2000),
+                (datetime(2025, 1, 1, 14, 59), 10.7, 1800),
+            ]
             mock_cursor.fetchall.return_value = test_data
             mock_cursor.description = [("ts",), ("price",), ("volume",)]
             mock_conn.cursor.return_value = mock_cursor
@@ -362,7 +380,14 @@ class TestTDengineDataAccessBasic:
                 (datetime(2025, 1, 1, 9, 31), 10.7, 10.9, 10.6, 10.8, 12000),
             ]
             mock_cursor.fetchall.return_value = test_data
-            mock_cursor.description = [("ts",), ("open",), ("high",), ("low",), ("close",), ("volume",)]
+            mock_cursor.description = [
+                ("ts",),
+                ("open",),
+                ("high",),
+                ("low",),
+                ("close",),
+                ("volume",),
+            ]
             mock_conn.cursor.return_value = mock_cursor
             mock_get_conn.return_value = mock_conn
 
@@ -371,7 +396,14 @@ class TestTDengineDataAccessBasic:
             result = data_access.aggregate_to_kline("test_table", start_time, end_time)
 
             assert len(result) == 2
-            assert list(result.columns) == ["ts", "open", "high", "low", "close", "volume"]
+            assert list(result.columns) == [
+                "ts",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
 
             # 验证SQL语句
             sql_call = mock_cursor.execute.call_args[0][0]
@@ -398,7 +430,12 @@ class TestTDengineDataAccessBasic:
             data_access = TDengineDataAccess()
 
             data_access.aggregate_to_kline(
-                "test_table", start_time, end_time, interval="5m", price_col="bid_price", volume_col="bid_volume"
+                "test_table",
+                start_time,
+                end_time,
+                interval="5m",
+                price_col="bid_price",
+                volume_col="bid_volume",
             )
 
             # 验证SQL语句包含自定义参数
@@ -424,7 +461,9 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.delete_by_time_range("test_table", start_time, end_time)
+            result = data_access.delete_by_time_range(
+                "test_table", start_time, end_time
+            )
 
             assert result == 1500
 
@@ -448,7 +487,9 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.delete_by_time_range("test_table", start_time, end_time)
+            result = data_access.delete_by_time_range(
+                "test_table", start_time, end_time
+            )
 
             assert result == 0
 
@@ -457,7 +498,11 @@ class TestTDengineDataAccessBasic:
         with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
             mock_conn = Mock()
             mock_cursor = Mock()
-            mock_cursor.fetchone.return_value = (10000, datetime(2025, 1, 1), datetime(2025, 1, 2))
+            mock_cursor.fetchone.return_value = (
+                10000,
+                datetime(2025, 1, 1),
+                datetime(2025, 1, 2),
+            )
             mock_conn.cursor.return_value = mock_cursor
             mock_get_conn.return_value = mock_conn
 
@@ -508,10 +553,14 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.save_data(test_df, "test_classification", "test_table", timestamp_col="ts")
+            result = data_access.save_data(
+                test_df, "test_classification", "test_table", timestamp_col="ts"
+            )
 
             assert result == True
-            mock_insert.assert_called_once_with("test_table", test_df, timestamp_col="ts")
+            mock_insert.assert_called_once_with(
+                "test_table", test_df, timestamp_col="ts"
+            )
 
     def test_save_data_method_failure(self):
         """测试保存数据方法（失败情况）"""
@@ -537,12 +586,17 @@ class TestTDengineDataAccessBasic:
             data_access = TDengineDataAccess()
 
             result = data_access.load_data(
-                "test_table", start_time=start_time, end_time=end_time, columns=["ts", "price"]
+                "test_table",
+                start_time=start_time,
+                end_time=end_time,
+                columns=["ts", "price"],
             )
 
             assert result is not None
             assert len(result) == 2
-            mock_query.assert_called_once_with("test_table", start_time, end_time, columns=["ts", "price"])
+            mock_query.assert_called_once_with(
+                "test_table", start_time, end_time, columns=["ts", "price"]
+            )
 
     def test_load_data_method_without_time_range(self):
         """测试加载数据方法（无时间范围）"""
@@ -637,8 +691,12 @@ class TestTDengineDataAccessBasic:
 
         # 测试不同的DataFrame格式
         test_dfs = [
-            pd.DataFrame({"ts": pd.date_range("2025-01-01", periods=2), "price": [10.0, 20.0]}),
-            pd.DataFrame({"timestamp": pd.date_range("2025-01-01", periods=2), "bid": [0.5, 0.8]}),
+            pd.DataFrame(
+                {"ts": pd.date_range("2025-01-01", periods=2), "price": [10.0, 20.0]}
+            ),
+            pd.DataFrame(
+                {"timestamp": pd.date_range("2025-01-01", periods=2), "bid": [0.5, 0.8]}
+            ),
             pd.DataFrame({"ts": ["2025-01-01", "2025-01-02"], "value": [1, 2]}),
         ]
 
@@ -682,7 +740,11 @@ class TestTDengineDataAccessBasic:
     def test_timestamp_formatting_in_insert(self):
         """测试插入时时间戳格式化"""
         test_df = pd.DataFrame(
-            {"ts": [datetime(2025, 1, 1, 9, 30, 0, 500000)], "price": [10.5], "volume": [1000]}  # 包含微秒
+            {
+                "ts": [datetime(2025, 1, 1, 9, 30, 0, 500000)],
+                "price": [10.5],
+                "volume": [1000],
+            }  # 包含微秒
         )
 
         with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:

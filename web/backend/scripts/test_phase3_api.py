@@ -305,7 +305,7 @@ def test_announcement_list():
         print(f"每页数量: {data.get('page_size')}")
 
         if data.get("data"):
-            print(f"\n本页公告:")
+            print("\n本页公告:")
             for ann in data["data"]:
                 print(f"  - {ann['stock_code']}: {ann['title'][:50]}...")
 

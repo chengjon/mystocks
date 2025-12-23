@@ -15,10 +15,11 @@ TA-Lib 技术指标包装器
 版本: 1.0.0
 """
 
+from typing import Dict, Tuple, Union
+
 import numpy as np
 import pandas as pd
 import talib
-from typing import Union, Optional, Dict, Tuple
 
 
 class TALibIndicators:
@@ -181,6 +182,7 @@ class TALibIndicators:
         slowk_period: int = 3,
         slowd_period: int = 3,
     ) -> Tuple[np.ndarray, np.ndarray]:
+        # pylint: disable=too-many-positional-arguments
         """
         随机指标 (Stochastic Oscillator)
 
@@ -268,11 +270,13 @@ class TALibIndicators:
         cls,
         close: Union[np.ndarray, pd.Series],
         period: int = 20,
-        nbdevup: float = 2.0,
-        nbdevdn: float = 2.0,
+        nbdevup: float = 2,
+        nbdevdn: float = 2,
+        matype: int = 0,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        # pylint: disable=too-many-positional-arguments
         """
-        布林带 (Bollinger Bands)
+        计算布林带 (Bollinger Bands)
 
         参数:
             close: 收盘价序列
@@ -528,41 +532,43 @@ if __name__ == "__main__":
 
     # 生成测试数据
     np.random.seed(42)
-    n = 100
-    df = pd.DataFrame(
+    test_n = 100
+    test_df = pd.DataFrame(
         {
-            "open": np.cumsum(np.random.randn(n)) + 100,
-            "high": np.cumsum(np.random.randn(n)) + 105,
-            "low": np.cumsum(np.random.randn(n)) + 95,
-            "close": np.cumsum(np.random.randn(n)) + 100,
-            "volume": np.random.uniform(1000000, 10000000, n),  # 使用float类型
+            "open": np.cumsum(np.random.randn(test_n)) + 100,
+            "high": np.cumsum(np.random.randn(test_n)) + 105,
+            "low": np.cumsum(np.random.randn(test_n)) + 95,
+            "close": np.cumsum(np.random.randn(test_n)) + 100,
+            "volume": np.random.uniform(1000000, 10000000, test_n),  # 使用float类型
         }
     )
 
     # 测试单个指标
     print("1. 测试SMA")
-    sma20 = TALibIndicators.calculate_sma(df["close"], 20)
-    print(f"   最后5个值: {sma20[-5:]}")
+    test_sma20 = TALibIndicators.calculate_sma(test_df["close"], 20)
+    print(f"   最后5个值: {test_sma20[-5:]}")
 
     print("\n2. 测试RSI")
-    rsi14 = TALibIndicators.calculate_rsi(df["close"], 14)
-    print(f"   最后5个值: {rsi14[-5:]}")
+    test_rsi14 = TALibIndicators.calculate_rsi(test_df["close"], 14)
+    print(f"   最后5个值: {test_rsi14[-5:]}")
 
     print("\n3. 测试MACD")
-    macd, signal, hist = TALibIndicators.calculate_macd(df["close"])
-    print(f"   MACD最后值: {macd[-1]:.4f}")
-    print(f"   信号线最后值: {signal[-1]:.4f}")
-    print(f"   柱状图最后值: {hist[-1]:.4f}")
+    test_macd, test_signal, test_hist = TALibIndicators.calculate_macd(test_df["close"])
+    print(f"   MACD最后值: {test_macd[-1]:.4f}")
+    print(f"   信号线最后值: {test_signal[-1]:.4f}")
+    print(f"   柱状图最后值: {test_hist[-1]:.4f}")
 
     print("\n4. 测试布林带")
-    upper, middle, lower = TALibIndicators.calculate_bbands(df["close"], 20, 2, 2)
-    print(f"   上轨最后值: {upper[-1]:.2f}")
-    print(f"   中轨最后值: {middle[-1]:.2f}")
-    print(f"   下轨最后值: {lower[-1]:.2f}")
+    test_upper, test_middle, test_lower = TALibIndicators.calculate_bbands(
+        test_df["close"], 20, 2, 2
+    )
+    print(f"   上轨最后值: {test_upper[-1]:.2f}")
+    print(f"   中轨最后值: {test_middle[-1]:.2f}")
+    print(f"   下轨最后值: {test_lower[-1]:.2f}")
 
     print("\n5. 测试批量计算")
-    all_indicators = TALibIndicators.calculate_all_indicators(df)
-    print(f"   计算了 {len(all_indicators)} 个指标")
-    print(f"   指标列表: {list(all_indicators.keys())}")
+    test_all_indicators = TALibIndicators.calculate_all_indicators(test_df)
+    print(f"   计算了 {len(test_all_indicators)} 个指标")
+    print(f"   指标列表: {list(test_all_indicators.keys())}")
 
     print("\n所有测试通过！")

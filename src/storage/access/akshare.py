@@ -10,19 +10,18 @@ MyStocks 量化交易数据管理系统 - Akshare数据访问器
 日期: 2025-11-25
 """
 
-import os
 import pandas as pd
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Tuple, Any
+from typing import Dict, List
 import logging
 import time
 
 # 导入基础模块
 from src.storage.access.base import (
-    IDataAccessLayer, 
+    IDataAccessLayer,
     get_database_name_from_classification,
     normalize_dataframe,
-    DataClassification
+    DataClassification,
 )
 from src.monitoring.monitoring_database import MonitoringDatabase
 
@@ -35,7 +34,7 @@ class AkshareDataAccess(IDataAccessLayer):
     def __init__(self, monitoring_db: MonitoringDatabase):
         """
         初始化Akshare数据访问器
-        
+
         Args:
             monitoring_db: 监控数据库实例
         """
@@ -52,13 +51,13 @@ class AkshareDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         保存从akshare获取的数据到数据库
-        
+
         Args:
             data: 从akshare获取的数据DataFrame
             classification: 数据分类
             table_name: 表名（可选）
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 保存是否成功
         """
@@ -83,18 +82,30 @@ class AkshareDataAccess(IDataAccessLayer):
 
             if target_db == "TDengine":
                 from src.storage.access.tdengine import TDengineDataAccess
+
                 tdengine_access = TDengineDataAccess(self.monitoring_db)
-                success = tdengine_access.save_data(normalized_data, classification, actual_table_name, **kwargs)
+                success = tdengine_access.save_data(
+                    normalized_data, classification, actual_table_name, **kwargs
+                )
             else:  # PostgreSQL
                 from src.storage.access.postgresql import PostgreSQLDataAccess
+
                 postgresql_access = PostgreSQLDataAccess(self.monitoring_db)
-                success = postgresql_access.save_data(normalized_data, classification, actual_table_name, **kwargs)
+                success = postgresql_access.save_data(
+                    normalized_data, classification, actual_table_name, **kwargs
+                )
 
             if success:
-                self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-                logger.info(f"保存akshare数据成功: {actual_table_name}, {len(processed_data)}条记录")
+                self.monitoring_db.log_operation_result(
+                    operation_id, True, len(processed_data)
+                )
+                logger.info(
+                    f"保存akshare数据成功: {actual_table_name}, {len(processed_data)}条记录"
+                )
             else:
-                self.monitoring_db.log_operation_result(operation_id, False, 0, "保存失败")
+                self.monitoring_db.log_operation_result(
+                    operation_id, False, 0, "保存失败"
+                )
 
             return success
 
@@ -113,13 +124,13 @@ class AkshareDataAccess(IDataAccessLayer):
     ) -> pd.DataFrame:
         """
         从akshare获取数据
-        
+
         Args:
             classification: 数据分类
             table_name: 表名（可选）
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             pd.DataFrame: 从akshare获取的数据
         """
@@ -154,8 +165,12 @@ class AkshareDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_akshare_data(data, classification)
 
-            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"从akshare获取数据成功: {actual_table_name}, {len(processed_data)}条记录")
+            self.monitoring_db.log_operation_result(
+                operation_id, True, len(processed_data)
+            )
+            logger.info(
+                f"从akshare获取数据成功: {actual_table_name}, {len(processed_data)}条记录"
+            )
 
             return processed_data
 
@@ -175,14 +190,14 @@ class AkshareDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         更新数据
-        
+
         Args:
             data: 数据DataFrame
             classification: 数据分类
             table_name: 表名（可选）
             key_columns: 主键列
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 更新是否成功
         """
@@ -198,29 +213,49 @@ class AkshareDataAccess(IDataAccessLayer):
         try:
             # 实际上akshare是数据源，我们通常不从它更新数据
             # 这里实现的是更新数据库中与akshare数据相关的记录
-            
+
             # 确定目标数据库
             target_db = self._get_target_database(classification)
-            
+
             # 数据预处理
             processed_data = self._preprocess_akshare_data(data, classification)
             normalized_data = normalize_dataframe(processed_data)
-            
+
             # 根据数据库类型使用相应的访问器
             if target_db == "TDengine":
                 from src.storage.access.tdengine import TDengineDataAccess
+
                 tdengine_access = TDengineDataAccess(self.monitoring_db)
-                success = tdengine_access.update_data(normalized_data, classification, actual_table_name, key_columns, **kwargs)
+                success = tdengine_access.update_data(
+                    normalized_data,
+                    classification,
+                    actual_table_name,
+                    key_columns,
+                    **kwargs,
+                )
             else:  # PostgreSQL
                 from src.storage.access.postgresql import PostgreSQLDataAccess
+
                 postgresql_access = PostgreSQLDataAccess(self.monitoring_db)
-                success = postgresql_access.update_data(normalized_data, classification, actual_table_name, key_columns, **kwargs)
+                success = postgresql_access.update_data(
+                    normalized_data,
+                    classification,
+                    actual_table_name,
+                    key_columns,
+                    **kwargs,
+                )
 
             if success:
-                self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-                logger.info(f"更新数据成功: {actual_table_name}, {len(processed_data)}条记录")
+                self.monitoring_db.log_operation_result(
+                    operation_id, True, len(processed_data)
+                )
+                logger.info(
+                    f"更新数据成功: {actual_table_name}, {len(processed_data)}条记录"
+                )
             else:
-                self.monitoring_db.log_operation_result(operation_id, False, 0, "更新失败")
+                self.monitoring_db.log_operation_result(
+                    operation_id, False, 0, "更新失败"
+                )
 
             return success
 
@@ -239,13 +274,13 @@ class AkshareDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         删除数据
-        
+
         Args:
             classification: 数据分类
             table_name: 表名（可选）
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             bool: 删除是否成功
         """
@@ -261,24 +296,32 @@ class AkshareDataAccess(IDataAccessLayer):
         try:
             # akshare是数据源，我们通常不从中删除数据
             # 这里实现的是删除数据库中与akshare数据相关的记录
-            
+
             # 实际删除操作应该委托给相应的数据库访问器
             target_db = self._get_target_database(classification)
-            
+
             if target_db == "TDengine":
                 from src.storage.access.tdengine import TDengineDataAccess
+
                 tdengine_access = TDengineDataAccess(self.monitoring_db)
-                success = tdengine_access.delete_data(classification, actual_table_name, filters, **kwargs)
+                success = tdengine_access.delete_data(
+                    classification, actual_table_name, filters, **kwargs
+                )
             else:  # PostgreSQL
                 from src.storage.access.postgresql import PostgreSQLDataAccess
+
                 postgresql_access = PostgreSQLDataAccess(self.monitoring_db)
-                success = postgresql_access.delete_data(classification, actual_table_name, filters, **kwargs)
+                success = postgresql_access.delete_data(
+                    classification, actual_table_name, filters, **kwargs
+                )
 
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, 0)
                 logger.info(f"删除数据成功: {actual_table_name}")
             else:
-                self.monitoring_db.log_operation_result(operation_id, False, 0, "删除失败")
+                self.monitoring_db.log_operation_result(
+                    operation_id, False, 0, "删除失败"
+                )
 
             return success
 
@@ -309,10 +352,10 @@ class AkshareDataAccess(IDataAccessLayer):
     def _get_target_database(self, classification: DataClassification) -> str:
         """
         根据数据分类确定目标数据库
-        
+
         Args:
             classification: 数据分类
-            
+
         Returns:
             数据库名称: "TDengine" 或 "PostgreSQL"
         """
@@ -320,7 +363,7 @@ class AkshareDataAccess(IDataAccessLayer):
         if classification in [
             DataClassification.TICK_DATA,
             DataClassification.MINUTE_KLINE,
-            DataClassification.REALTIME_QUOTES
+            DataClassification.REALTIME_QUOTES,
         ]:
             return "TDengine"
         else:
@@ -330,27 +373,27 @@ class AkshareDataAccess(IDataAccessLayer):
         """应用请求频率限制"""
         current_time = time.time()
         time_since_last_request = current_time - self.last_request_time
-        
+
         if time_since_last_request < self.rate_limit:
             sleep_time = self.rate_limit - time_since_last_request
             logger.info(f"应用请求频率限制，休眠 {sleep_time:.2f} 秒")
             time.sleep(sleep_time)
-        
+
         self.last_request_time = time.time()
 
     def _fetch_stock_basic_info(self) -> pd.DataFrame:
         """获取股票基本信息"""
         try:
             import akshare as ak
-            
+
             # 获取股票基本信息
             stock_info = ak.stock_info_a_code_name()
-            
+
             # 处理数据格式
             stock_info = self._process_stock_basic_info(stock_info)
-            
+
             return stock_info
-            
+
         except Exception as e:
             logger.error(f"获取股票基本信息失败: {e}")
             return pd.DataFrame()
@@ -359,7 +402,7 @@ class AkshareDataAccess(IDataAccessLayer):
         """处理股票基本信息数据"""
         if stock_info.empty:
             return stock_info
-        
+
         # 重命名列
         column_mapping = {
             "代码": "symbol",
@@ -381,47 +424,54 @@ class AkshareDataAccess(IDataAccessLayer):
             "静态市盈率": "pe_ttm",
             "量比": "volume_ratio",
         }
-        
+
         stock_info = stock_info.rename(columns=column_mapping)
-        
+
         # 添加时间戳
         stock_info["fetch_timestamp"] = datetime.now()
-        
+
         return stock_info
 
-    def _fetch_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def _fetch_daily_kline(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """获取日K线数据"""
         try:
             import akshare as ak
-            
+
             # 确保symbol格式正确（如果是6位数字，不需要修改）
             if len(symbol) == 6 and symbol.isdigit():
                 # 添加市场前缀
-                if symbol.startswith(('6',)):
+                if symbol.startswith(("6",)):
                     symbol = f"sh{symbol}"
                 else:
                     symbol = f"sz{symbol}"
-            
+
             # 获取日K线数据
-            kline_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", 
-                                            start_date=start_date.replace('-', ''), 
-                                            end_date=end_date.replace('-', ''), 
-                                            adjust="qfq")  # 前复权
-            
+            kline_data = ak.stock_zh_a_hist(
+                symbol=symbol,
+                period="daily",
+                start_date=start_date.replace("-", ""),
+                end_date=end_date.replace("-", ""),
+                adjust="qfq",
+            )  # 前复权
+
             # 处理数据格式
             kline_data = self._process_daily_kline_data(kline_data, symbol)
-            
+
             return kline_data
-            
+
         except Exception as e:
             logger.error(f"获取日K线数据失败: {e}")
             return pd.DataFrame()
 
-    def _process_daily_kline_data(self, kline_data: pd.DataFrame, symbol: str) -> pd.DataFrame:
+    def _process_daily_kline_data(
+        self, kline_data: pd.DataFrame, symbol: str
+    ) -> pd.DataFrame:
         """处理日K线数据"""
         if kline_data.empty:
             return kline_data
-        
+
         # 重命名列
         column_mapping = {
             "日期": "trade_date",
@@ -436,26 +486,26 @@ class AkshareDataAccess(IDataAccessLayer):
             "涨跌额": "change",
             "换手率": "turnover",
         }
-        
+
         kline_data = kline_data.rename(columns=column_mapping)
-        
+
         # 确保symbol列存在
         if "symbol" not in kline_data.columns:
             kline_data["symbol"] = symbol
-        
+
         # 添加时间戳
         kline_data["fetch_timestamp"] = datetime.now()
-        
+
         return kline_data
 
     def _fetch_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
         """获取实时行情数据"""
         try:
             import akshare as ak
-            
+
             # 获取实时行情数据
             quote_data = ak.stock_zh_a_spot_em()
-            
+
             # 过滤出指定股票
             if symbols:
                 if symbols[0].isdigit():  # 如果是数字代码
@@ -463,22 +513,22 @@ class AkshareDataAccess(IDataAccessLayer):
                     formatted_symbols = []
                     for symbol in symbols:
                         if len(symbol) == 6:
-                            if symbol.startswith('6'):
+                            if symbol.startswith("6"):
                                 formatted_symbols.append(f"sh{symbol}")
                             else:
                                 formatted_symbols.append(f"sz{symbol}")
                         else:
                             formatted_symbols.append(symbol)
-                    
+
                     symbols = formatted_symbols
-                
-                quote_data = quote_data[quote_data['代码'].isin(symbols)]
-            
+
+                quote_data = quote_data[quote_data["代码"].isin(symbols)]
+
             # 处理数据格式
             quote_data = self._process_realtime_quote_data(quote_data)
-            
+
             return quote_data
-            
+
         except Exception as e:
             logger.error(f"获取实时行情数据失败: {e}")
             return pd.DataFrame()
@@ -487,7 +537,7 @@ class AkshareDataAccess(IDataAccessLayer):
         """处理实时行情数据"""
         if quote_data.empty:
             return quote_data
-        
+
         # 重命名列
         column_mapping = {
             "代码": "symbol",
@@ -505,23 +555,25 @@ class AkshareDataAccess(IDataAccessLayer):
             "涨跌幅": "change_pct",  # 注意这个字段可能有重复
             "涨跌额": "change",
         }
-        
+
         quote_data = quote_data.rename(columns=column_mapping)
-        
+
         # 添加时间戳
         quote_data["fetch_timestamp"] = datetime.now()
-        
+
         return quote_data
 
-    def _fetch_generic_data(self, classification: DataClassification, filters: Dict = None, **kwargs) -> pd.DataFrame:
+    def _fetch_generic_data(
+        self, classification: DataClassification, filters: Dict = None, **kwargs
+    ) -> pd.DataFrame:
         """
         获取通用数据
-        
+
         Args:
             classification: 数据分类
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             pd.DataFrame: 数据
         """
@@ -529,131 +581,162 @@ class AkshareDataAccess(IDataAccessLayer):
             # 根据不同的分类实现不同的数据获取逻辑
             if classification == DataClassification.TECHNICAL_INDICATORS:
                 # 技术指标数据
-                return self._fetch_technical_indicators(kwargs.get("symbol", "000001"), kwargs.get("start_date"), kwargs.get("end_date"))
+                return self._fetch_technical_indicators(
+                    kwargs.get("symbol", "000001"),
+                    kwargs.get("start_date"),
+                    kwargs.get("end_date"),
+                )
             elif classification == DataClassification.QUANTITATIVE_FACTORS:
                 # 量化因子数据
-                return self._fetch_quantitative_factors(kwargs.get("symbol", "000001"), kwargs.get("start_date"), kwargs.get("end_date"))
+                return self._fetch_quantitative_factors(
+                    kwargs.get("symbol", "000001"),
+                    kwargs.get("start_date"),
+                    kwargs.get("end_date"),
+                )
             else:
                 # 默认返回空数据
                 logger.warning(f"未实现的通用数据获取: {classification}")
                 return pd.DataFrame()
-                
+
         except Exception as e:
             logger.error(f"获取通用数据失败: {e}")
             return pd.DataFrame()
 
-    def _fetch_technical_indicators(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def _fetch_technical_indicators(
+        self, symbol: str, start_date: str = None, end_date: str = None
+    ) -> pd.DataFrame:
         """获取技术指标数据"""
         try:
             import akshare as ak
-            
+
             # 确保symbol格式正确
             if len(symbol) == 6 and symbol.isdigit():
-                if symbol.startswith('6'):
+                if symbol.startswith("6"):
                     symbol = f"sh{symbol}"
                 else:
                     symbol = f"sz{symbol}"
-            
+
             # 获取K线数据，然后计算技术指标
-            kline_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", 
-                                            start_date=(start_date or "20240101").replace('-', ''), 
-                                            end_date=(end_date or datetime.now().strftime('%Y%m%d')), 
-                                            adjust="qfq")
-            
+            kline_data = ak.stock_zh_a_hist(
+                symbol=symbol,
+                period="daily",
+                start_date=(start_date or "20240101").replace("-", ""),
+                end_date=(end_date or datetime.now().strftime("%Y%m%d")),
+                adjust="qfq",
+            )
+
             # 计算技术指标
             if not kline_data.empty:
                 kline_data["ma5"] = kline_data["收盘"].rolling(window=5).mean()
                 kline_data["ma10"] = kline_data["收盘"].rolling(window=10).mean()
                 kline_data["ma20"] = kline_data["收盘"].rolling(window=20).mean()
-                
+
                 # 计算RSI
                 delta = kline_data["收盘"].diff()
                 gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
                 loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
                 rs = gain / loss
                 kline_data["rsi"] = 100 - (100 / (1 + rs))
-                
+
                 # 添加symbol列
                 if len(symbol) >= 3:
                     symbol_code = symbol[2:]  # 去掉市场前缀
                     kline_data["symbol"] = symbol_code
-            
+
             return kline_data
-            
+
         except Exception as e:
             logger.error(f"获取技术指标数据失败: {e}")
             return pd.DataFrame()
 
-    def _fetch_quantitative_factors(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def _fetch_quantitative_factors(
+        self, symbol: str, start_date: str = None, end_date: str = None
+    ) -> pd.DataFrame:
         """获取量化因子数据"""
         try:
             import akshare as ak
-            
+
             # 确保symbol格式正确
             if len(symbol) == 6 and symbol.isdigit():
-                if symbol.startswith('6'):
+                if symbol.startswith("6"):
                     symbol = f"sh{symbol}"
                 else:
                     symbol = f"sz{symbol}"
-            
+
             # 获取K线数据
-            kline_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", 
-                                            start_date=(start_date or "20240101").replace('-', ''), 
-                                            end_date=(end_date or datetime.now().strftime('%Y%m%d')), 
-                                            adjust="qfq")
-            
+            kline_data = ak.stock_zh_a_hist(
+                symbol=symbol,
+                period="daily",
+                start_date=(start_date or "20240101").replace("-", ""),
+                end_date=(end_date or datetime.now().strftime("%Y%m%d")),
+                adjust="qfq",
+            )
+
             # 计算量化因子
             if not kline_data.empty:
                 # 计算价格动量因子
-                kline_data["momentum_5"] = kline_data["收盘"] / kline_data["收盘"].shift(5) - 1
-                kline_data["momentum_10"] = kline_data["收盘"] / kline_data["收盘"].shift(10) - 1
-                
+                kline_data["momentum_5"] = (
+                    kline_data["收盘"] / kline_data["收盘"].shift(5) - 1
+                )
+                kline_data["momentum_10"] = (
+                    kline_data["收盘"] / kline_data["收盘"].shift(10) - 1
+                )
+
                 # 计算波动率因子
-                kline_data["volatility_10"] = kline_data["收盘"].pct_change().rolling(window=10).std()
-                
+                kline_data["volatility_10"] = (
+                    kline_data["收盘"].pct_change().rolling(window=10).std()
+                )
+
                 # 计算成交量因子
                 kline_data["volume_ma5"] = kline_data["成交量"].rolling(window=5).mean()
-                kline_data["volume_ratio"] = kline_data["成交量"] / kline_data["volume_ma5"]
-                
+                kline_data["volume_ratio"] = (
+                    kline_data["成交量"] / kline_data["volume_ma5"]
+                )
+
                 # 添加symbol列
                 if len(symbol) >= 3:
                     symbol_code = symbol[2:]  # 去掉市场前缀
                     kline_data["symbol"] = symbol_code
-            
+
             return kline_data
-            
+
         except Exception as e:
             logger.error(f"获取量化因子数据失败: {e}")
             return pd.DataFrame()
 
-    def _preprocess_akshare_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
+    def _preprocess_akshare_data(
+        self, data: pd.DataFrame, classification: DataClassification
+    ) -> pd.DataFrame:
         """预处理akshare数据"""
         processed_data = data.copy()
-        
+
         # 根据数据分类进行特定预处理
         if classification == DataClassification.STOCK_BASIC_INFO:
             # 确保symbol列格式统一
             if "symbol" in processed_data.columns:
                 # 去除市场前缀，统一格式
-                processed_data["symbol"] = processed_data["symbol"].str.replace(r"^(sh|sz)", "", regex=True)
-        
+                processed_data["symbol"] = processed_data["symbol"].str.replace(
+                    r"^(sh|sz)", "", regex=True
+                )
+
         return processed_data
 
-    def _postprocess_akshare_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
+    def _postprocess_akshare_data(
+        self, data: pd.DataFrame, classification: DataClassification
+    ) -> pd.DataFrame:
         """后处理akshare数据"""
         if data.empty:
             return data
-        
+
         # 确保时间戳列存在
         timestamp_columns = ["fetch_timestamp", "ts", "timestamp", "trade_date", "date"]
         has_timestamp = any(col in data.columns for col in timestamp_columns)
-        
+
         if not has_timestamp:
             # 添加当前时间戳
             data["fetch_timestamp"] = datetime.now()
-        
+
         # 标准化数据格式
         processed_data = normalize_dataframe(data)
-        
-        return processed_data
 
+        return processed_data

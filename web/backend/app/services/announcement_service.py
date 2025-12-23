@@ -9,11 +9,10 @@ Multi-data Source Support
 - 公告分析和评分
 """
 
-import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import List, Optional, Dict, Any
 import pandas as pd
-from sqlalchemy import create_engine, and_, or_, desc, func
+from sqlalchemy import create_engine, and_, desc
 from sqlalchemy.orm import sessionmaker, Session
 import logging
 
@@ -21,8 +20,6 @@ from app.models.announcement import (
     Announcement,
     AnnouncementMonitorRule,
     AnnouncementMonitorRecord,
-    AnnouncementCreate,
-    AnnouncementResponse,
 )
 from app.services.multi_source_manager import get_multi_source_manager
 from app.adapters.base import DataSourceType

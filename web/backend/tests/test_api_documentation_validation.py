@@ -13,10 +13,9 @@ Date: 2025-12-03
 """
 
 import json
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List
 
 import pytest
-import requests
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
@@ -48,7 +47,9 @@ class APIDocumentationValidator:
             if response.status_code == 200:
                 self.openapi_schema = response.json()
             else:
-                raise Exception(f"Could not fetch OpenAPI schema: {response.status_code}")
+                raise Exception(
+                    f"Could not fetch OpenAPI schema: {response.status_code}"
+                )
         return self.openapi_schema
 
     def validate_openapi_completeness(self) -> Dict[str, Any]:
@@ -74,14 +75,18 @@ class APIDocumentationValidator:
 
                 # Check description length
                 if "description" in info and len(info["description"]) < 50:
-                    issues.append("API description is too brief (should be at least 50 characters)")
+                    issues.append(
+                        "API description is too brief (should be at least 50 characters)"
+                    )
 
             # Check for servers section
             if "servers" not in schema or not schema["servers"]:
                 issues.append("Missing servers section in OpenAPI schema")
 
             # Check for components/schemas
-            if "components" not in schema or "schemas" not in schema.get("components", {}):
+            if "components" not in schema or "schemas" not in schema.get(
+                "components", {}
+            ):
                 issues.append("Missing components/schemas section")
 
         except Exception as e:
@@ -101,7 +106,9 @@ class APIDocumentationValidator:
 
         return endpoint_results
 
-    def _validate_single_endpoint(self, route: APIRoute, schema: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate_single_endpoint(
+        self, route: APIRoute, schema: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Validate documentation for a single endpoint"""
         endpoint_result = {
             "path": route.path,
@@ -130,14 +137,18 @@ class APIDocumentationValidator:
                 if method.lower() in ["get", "post", "put", "delete", "patch"]:
                     method_spec = path_item.get(method.lower(), {})
                     if method_spec:
-                        self._validate_method_documentation(method_spec, endpoint_result, method)
+                        self._validate_method_documentation(
+                            method_spec, endpoint_result, method
+                        )
 
         except Exception as e:
             endpoint_result["issues"].append(f"Error validating endpoint: {str(e)}")
 
         return endpoint_result
 
-    def _validate_method_documentation(self, method_spec: Dict[str, Any], endpoint_result: Dict[str, Any], method: str):
+    def _validate_method_documentation(
+        self, method_spec: Dict[str, Any], endpoint_result: Dict[str, Any], method: str
+    ):
         """Validate documentation for a specific HTTP method"""
         # Check summary
         if "summary" in method_spec and method_spec["summary"]:
@@ -150,9 +161,13 @@ class APIDocumentationValidator:
             endpoint_result["documentation"]["has_description"] = True
             # Check description quality
             if len(method_spec["description"]) < 20:
-                endpoint_result["issues"].append(f"Description too brief for {method.upper()}")
+                endpoint_result["issues"].append(
+                    f"Description too brief for {method.upper()}"
+                )
         else:
-            endpoint_result["issues"].append(f"Missing description for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Missing description for {method.upper()}"
+            )
 
         # Check tags
         if "tags" in method_spec and method_spec["tags"]:
@@ -163,25 +178,36 @@ class APIDocumentationValidator:
         # Check parameters
         if "parameters" in method_spec and method_spec["parameters"]:
             endpoint_result["documentation"]["has_parameters"] = True
-            self._validate_parameters(method_spec["parameters"], endpoint_result, method)
+            self._validate_parameters(
+                method_spec["parameters"], endpoint_result, method
+            )
 
         # Check request body
         if "requestBody" in method_spec and method_spec["requestBody"]:
             endpoint_result["documentation"]["has_request_body"] = True
-            self._validate_request_body(method_spec["requestBody"], endpoint_result, method)
+            self._validate_request_body(
+                method_spec["requestBody"], endpoint_result, method
+            )
 
         # Check responses
         if "responses" in method_spec and method_spec["responses"]:
             endpoint_result["documentation"]["has_responses"] = True
             self._validate_responses(method_spec["responses"], endpoint_result, method)
 
-    def _validate_parameters(self, parameters: List[Dict[str, Any]], endpoint_result: Dict[str, Any], method: str):
+    def _validate_parameters(
+        self,
+        parameters: List[Dict[str, Any]],
+        endpoint_result: Dict[str, Any],
+        method: str,
+    ):
         """Validate parameter documentation"""
         for param in parameters:
             required_param_fields = ["name", "in", "schema"]
             for field in required_param_fields:
                 if field not in param:
-                    endpoint_result["issues"].append(f"Parameter missing {field} for {method.upper()}")
+                    endpoint_result["issues"].append(
+                        f"Parameter missing {field} for {method.upper()}"
+                    )
 
             # Check parameter description
             if "description" not in param or not param["description"]:
@@ -189,28 +215,40 @@ class APIDocumentationValidator:
                     f"Parameter {param.get('name', 'unknown')} missing description for {method.upper()}"
                 )
 
-    def _validate_request_body(self, request_body: Dict[str, Any], endpoint_result: Dict[str, Any], method: str):
+    def _validate_request_body(
+        self, request_body: Dict[str, Any], endpoint_result: Dict[str, Any], method: str
+    ):
         """Validate request body documentation"""
         if "content" not in request_body:
-            endpoint_result["issues"].append(f"Request body missing content specification for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Request body missing content specification for {method.upper()}"
+            )
             return
 
         content = request_body["content"]
         if "application/json" not in content:
-            endpoint_result["issues"].append(f"Request body missing JSON content for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Request body missing JSON content for {method.upper()}"
+            )
             return
 
         json_content = content["application/json"]
         if "schema" not in json_content:
-            endpoint_result["issues"].append(f"Request body missing schema for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Request body missing schema for {method.upper()}"
+            )
 
         # Check for examples
         if "example" in json_content or "examples" in json_content:
             endpoint_result["documentation"]["has_examples"] = True
         else:
-            endpoint_result["issues"].append(f"Request body missing example for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Request body missing example for {method.upper()}"
+            )
 
-    def _validate_responses(self, responses: Dict[str, Any], endpoint_result: Dict[str, Any], method: str):
+    def _validate_responses(
+        self, responses: Dict[str, Any], endpoint_result: Dict[str, Any], method: str
+    ):
         """Validate response documentation"""
         has_success_response = False
         has_error_response = False
@@ -220,7 +258,10 @@ class APIDocumentationValidator:
             # Check success responses
             if status_code.startswith("2"):
                 has_success_response = True
-                if "description" not in response_spec or not response_spec["description"]:
+                if (
+                    "description" not in response_spec
+                    or not response_spec["description"]
+                ):
                     endpoint_result["issues"].append(
                         f"Success response {status_code} missing description for {method.upper()}"
                     )
@@ -236,18 +277,25 @@ class APIDocumentationValidator:
             # Check error responses
             elif status_code.startswith("4") or status_code.startswith("5"):
                 has_error_response = True
-                if "description" not in response_spec or not response_spec["description"]:
+                if (
+                    "description" not in response_spec
+                    or not response_spec["description"]
+                ):
                     endpoint_result["issues"].append(
                         f"Error response {status_code} missing description for {method.upper()}"
                     )
 
         if not has_success_response:
-            endpoint_result["issues"].append(f"Missing success response for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Missing success response for {method.upper()}"
+            )
 
         if has_error_response:
             endpoint_result["documentation"]["has_error_responses"] = True
         else:
-            endpoint_result["issues"].append(f"Missing error response documentation for {method.upper()}")
+            endpoint_result["issues"].append(
+                f"Missing error response documentation for {method.upper()}"
+            )
 
         if has_response_examples:
             endpoint_result["documentation"]["has_examples"] = True
@@ -260,7 +308,9 @@ class APIDocumentationValidator:
             schema = self.get_openapi_schema()
 
             # Check for security schemes
-            if "components" not in schema or "securitySchemes" not in schema.get("components", {}):
+            if "components" not in schema or "securitySchemes" not in schema.get(
+                "components", {}
+            ):
                 issues.append("Missing security schemes documentation")
                 return issues
 
@@ -296,7 +346,9 @@ class APIDocumentationValidator:
         try:
             schema = self.get_openapi_schema()
 
-            if "components" not in schema or "schemas" not in schema.get("components", {}):
+            if "components" not in schema or "schemas" not in schema.get(
+                "components", {}
+            ):
                 issues.append("Missing schema definitions")
                 return issues
 
@@ -319,9 +371,16 @@ class APIDocumentationValidator:
                         properties = schema_def["properties"]
                         for prop_name, prop_def in properties.items():
                             if "type" not in prop_def:
-                                issues.append(f"Property {prop_name} in {schema_name} missing type")
-                            if "description" not in prop_def or not prop_def["description"]:
-                                issues.append(f"Property {prop_name} in {schema_name} missing description")
+                                issues.append(
+                                    f"Property {prop_name} in {schema_name} missing type"
+                                )
+                            if (
+                                "description" not in prop_def
+                                or not prop_def["description"]
+                            ):
+                                issues.append(
+                                    f"Property {prop_name} in {schema_name} missing description"
+                                )
 
         except Exception as e:
             issues.append(f"Error validating schema definitions: {str(e)}")
@@ -349,7 +408,9 @@ class APIDocumentationValidator:
         # Calculate summary statistics
         self.validation_results["summary"]["total_endpoints"] = len(endpoint_results)
         self.validation_results["summary"]["documented_endpoints"] = sum(
-            1 for ep in endpoint_results if any(ep["documentation"].values()) and len(ep["issues"]) == 0
+            1
+            for ep in endpoint_results
+            if any(ep["documentation"].values()) and len(ep["issues"]) == 0
         )
         self.validation_results["summary"]["endpoints_with_examples"] = sum(
             1 for ep in endpoint_results if ep["documentation"]["has_examples"]
@@ -357,9 +418,9 @@ class APIDocumentationValidator:
         self.validation_results["summary"]["endpoints_with_errors"] = sum(
             1 for ep in endpoint_results if ep["documentation"]["has_error_responses"]
         )
-        self.validation_results["summary"]["total_issues"] = len(self.validation_results["global_issues"]) + sum(
-            len(ep["issues"]) for ep in endpoint_results
-        )
+        self.validation_results["summary"]["total_issues"] = len(
+            self.validation_results["global_issues"]
+        ) + sum(len(ep["issues"]) for ep in endpoint_results)
 
         return self.validation_results
 
@@ -402,7 +463,9 @@ class APIDocumentationValidator:
                     report.append("  Documentation Status:")
                     for key, value in doc_status.items():
                         status_icon = "✅" if value else "❌"
-                        report.append(f"    {status_icon} {key.replace('_', ' ').title()}")
+                        report.append(
+                            f"    {status_icon} {key.replace('_', ' ').title()}"
+                        )
 
                 report.append("")
 
@@ -435,7 +498,8 @@ class TestAPIDocumentationValidation:
                 [
                     m
                     for m in ep["methods"]
-                    if ep["documentation"]["has_summary"] and ep["documentation"]["has_description"]
+                    if ep["documentation"]["has_summary"]
+                    and ep["documentation"]["has_description"]
                 ]
             )
             for ep in results
@@ -451,18 +515,24 @@ class TestAPIDocumentationValidation:
         """Test that endpoints have request/response examples"""
         results = documentation_validator.validate_endpoint_documentation()
 
-        endpoints_with_examples = sum(1 for ep in results if ep["documentation"]["has_examples"])
+        endpoints_with_examples = sum(
+            1 for ep in results if ep["documentation"]["has_examples"]
+        )
 
         total_endpoints = len(results)
         if total_endpoints > 0:
             example_coverage = endpoints_with_examples / total_endpoints
-            assert example_coverage >= 0.3, f"Example coverage {example_coverage:.2%} is below required 30%"
+            assert (
+                example_coverage >= 0.3
+            ), f"Example coverage {example_coverage:.2%} is below required 30%"
 
     def test_error_response_documentation(self, documentation_validator):
         """Test that endpoints document error responses"""
         results = documentation_validator.validate_endpoint_documentation()
 
-        endpoints_with_errors = sum(1 for ep in results if ep["documentation"]["has_error_responses"])
+        endpoints_with_errors = sum(
+            1 for ep in results if ep["documentation"]["has_error_responses"]
+        )
 
         total_endpoints = len(results)
         if total_endpoints > 0:
@@ -504,9 +574,15 @@ class TestAPIDocumentationValidation:
         max_total_issues = total_endpoints * 5  # 5 issues per endpoint average
 
         # Calculate percentages
-        documented_percentage = results["summary"]["documented_endpoints"] / total_endpoints
-        example_percentage = results["summary"]["endpoints_with_examples"] / total_endpoints
-        error_doc_percentage = results["summary"]["endpoints_with_errors"] / total_endpoints
+        documented_percentage = (
+            results["summary"]["documented_endpoints"] / total_endpoints
+        )
+        example_percentage = (
+            results["summary"]["endpoints_with_examples"] / total_endpoints
+        )
+        error_doc_percentage = (
+            results["summary"]["endpoints_with_errors"] / total_endpoints
+        )
 
         # Assert quality standards
         assert (

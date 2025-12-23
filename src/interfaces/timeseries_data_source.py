@@ -13,7 +13,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Union, Any
+from typing import List, Dict, Optional, Any
 from datetime import datetime, date
 import pandas as pd
 
@@ -38,9 +38,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def get_realtime_quotes(
-        self,
-        symbols: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None
+        self, symbols: Optional[List[str]] = None, fields: Optional[List[str]] = None
     ) -> List[Dict[str, Any]]:
         """
         获取实时行情数据
@@ -90,7 +88,7 @@ class ITimeSeriesDataSource(ABC):
         symbol: str,
         start_time: datetime,
         end_time: datetime,
-        interval: str = "1d"
+        interval: str = "1d",
     ) -> pd.DataFrame:
         """
         获取K线数据
@@ -133,9 +131,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def get_intraday_chart(
-        self,
-        symbol: str,
-        trade_date: Optional[date] = None
+        self, symbol: str, trade_date: Optional[date] = None
     ) -> pd.DataFrame:
         """
         获取分时图数据
@@ -169,11 +165,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def get_fund_flow(
-        self,
-        symbol: str,
-        start_date: date,
-        end_date: date,
-        flow_type: str = "main"
+        self, symbol: str, start_date: date, end_date: date, flow_type: str = "main"
     ) -> pd.DataFrame:
         """
         获取资金流向数据
@@ -222,7 +214,7 @@ class ITimeSeriesDataSource(ABC):
         trade_date: Optional[date] = None,
         flow_type: str = "main",
         direction: str = "inflow",
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         获取资金流向排名
@@ -262,10 +254,7 @@ class ITimeSeriesDataSource(ABC):
     # ==================== 市场概览相关 ====================
 
     @abstractmethod
-    def get_market_overview(
-        self,
-        trade_date: Optional[date] = None
-    ) -> Dict[str, Any]:
+    def get_market_overview(self, trade_date: Optional[date] = None) -> Dict[str, Any]:
         """
         获取市场概览数据
 
@@ -302,8 +291,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def get_index_realtime(
-        self,
-        index_codes: Optional[List[str]] = None
+        self, index_codes: Optional[List[str]] = None
     ) -> List[Dict[str, Any]]:
         """
         获取指数实时数据
@@ -345,11 +333,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def calculate_technical_indicators(
-        self,
-        symbol: str,
-        start_date: date,
-        end_date: date,
-        indicators: List[str]
+        self, symbol: str, start_date: date, end_date: date, indicators: List[str]
     ) -> pd.DataFrame:
         """
         计算技术指标
@@ -389,7 +373,7 @@ class ITimeSeriesDataSource(ABC):
         trade_date: Optional[date] = None,
         auction_type: str = "open",
         min_amount: Optional[float] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         获取竞价抢筹数据
@@ -431,10 +415,7 @@ class ITimeSeriesDataSource(ABC):
 
     @abstractmethod
     def check_data_quality(
-        self,
-        symbol: str,
-        start_date: date,
-        end_date: date
+        self, symbol: str, start_date: date, end_date: date
     ) -> Dict[str, Any]:
         """
         检查时序数据质量

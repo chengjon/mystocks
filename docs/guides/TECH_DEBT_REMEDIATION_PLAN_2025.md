@@ -1,11 +1,11 @@
 # MyStocks 技术负债修复实施计划
 
-**项目**: MyStocks 量化交易数据管理系统  
-**计划制定日期**: 2025年11月15日  
-**预计完成日期**: 2026年1月8日  
-**总工期**: 7周 (AI代理加速)  
-**执行团队**: 8个AI代理 + 2名实际人员  
-**负责人**: architect-reviewer (AI) + 项目经理 (实际)  
+**项目**: MyStocks 量化交易数据管理系统
+**计划制定日期**: 2025年11月15日
+**预计完成日期**: 2026年1月8日
+**总工期**: 7周 (AI代理加速)
+**执行团队**: 8个AI代理 + 2名实际人员
+**负责人**: architect-reviewer (AI) + 项目经理 (实际)
 
 ---
 
@@ -13,7 +13,7 @@
 
 ```
 Week 1-2: 紧急修复阶段 (Critical Fixes)
-Week 3-4: 质量提升阶段 (Quality Improvement) 
+Week 3-4: 质量提升阶段 (Quality Improvement)
 Week 5-6: 测试强化阶段 (Test Enhancement)
 Week 7: 架构优化阶段 (Architecture Optimization)
 ```
@@ -25,13 +25,13 @@ Week 7: 架构优化阶段 (Architecture Optimization)
 ### 📋 Week 1: 立即修复项目
 
 #### Day 1 (周一) - 语法错误清理
-**负责人**: code-reviewer + search-specialist  
+**负责人**: code-reviewer + search-specialist
 **AI代理支持**: architect-reviewer (技术审查)
 
 ```bash
 # 修复清单
 ✅ src/gpu/api_system/services/realtime_service.py
-✅ src/gpu/api_system/services/resource_scheduler.py  
+✅ src/gpu/api_system/services/resource_scheduler.py
 ✅ src/mock/mock_Analysis.py
 ✅ src/mock/mock_BacktestAnalysis.py
 ✅ src/mock/mock_Login.py
@@ -55,7 +55,7 @@ claude --agent search-specialist --task "batch_syntax_check" --pattern "*.py"
 ```
 
 #### Day 2-3 (周二-三) - Import语句优化
-**负责人**: 初级开发工程师  
+**负责人**: 初级开发工程师
 **任务**: 清理3个import *语句
 
 **具体文件** (需要扫描确认):
@@ -68,7 +68,7 @@ from module import function_a, function_b, ClassA
 ```
 
 #### Day 4-5 (周四-五) - MyPy配置修复
-**负责人**: 技术负责人  
+**负责人**: 技术负责人
 **任务**: 解决模块重复定义问题
 
 ```ini
@@ -83,13 +83,13 @@ explicit_package_bases = True
 ```
 
 #### Day 6-10 (下周一周) - 安全扫描集成
-**负责人**: DevOps工程师  
+**负责人**: DevOps工程师
 **任务**: 集成安全扫描工具
 
 ### 📋 Week 2: 质量工具配置
 
 #### Day 11-12 (周一-二) - Pre-commit配置
-**负责人**: DevOps工程师  
+**负责人**: DevOps工程师
 **任务**: 建立代码质量门禁
 
 ```yaml
@@ -105,24 +105,24 @@ repos:
       - id: check-json
       - id: pretty-format-json
         args: ['--autofix']
-      
+
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
       - id: black
         language_version: python3.12
-        
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
         args: [--max-line-length=88]
-        
+
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        
+
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.5
     hooks:
@@ -131,7 +131,7 @@ repos:
 ```
 
 #### Day 13-14 (周三-四) - Bandit安全配置
-**负责人**: DevOps工程师 + 安全专员  
+**负责人**: DevOps工程师 + 安全专员
 **任务**: 配置安全扫描规则
 
 ```toml
@@ -142,7 +142,7 @@ skips = ["B101"]  # 跳过assert语句检查
 ```
 
 #### Day 15 (周五) - CI/CD基础流水线
-**负责人**: DevOps工程师  
+**负责人**: DevOps工程师
 **任务**: 建立基础CI/CD流程
 
 ---
@@ -152,7 +152,7 @@ skips = ["B101"]  # 跳过assert语句检查
 ### 📋 Week 3: 类型注解补全
 
 #### 优先级1: 核心接口 (Day 16-18)
-**负责人**: 高级开发工程师  
+**负责人**: 高级开发工程师
 **目标**: 完成核心模块类型注解
 
 ```
@@ -183,13 +183,13 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
 ```
 
 #### 优先级2: 适配器层 (Day 19-20)
-**负责人**: 中级开发工程师  
+**负责人**: 中级开发工程师
 **目标**: 完成7个适配器的类型注解
 
 ```
 适配器列表:
 1. src/adapters/akshare_adapter.py
-2. src/adapters/tdx_adapter.py  
+2. src/adapters/tdx_adapter.py
 3. src/adapters/financial_adapter.py
 4. src/adapters/byapi_adapter.py
 5. src/adapters/baostock_adapter.py
@@ -200,7 +200,7 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
 ### 📋 Week 4: 数据访问层优化
 
 #### Day 21-23 (周一-三) - 数据库接口标准化
-**负责人**: 高级开发工程师  
+**负责人**: 高级开发工程师
 **任务**: 标准化数据库访问接口
 
 ```python
@@ -210,12 +210,12 @@ class DatabaseInterface(ABC):
     def connect(self) -> Connection:
         """建立数据库连接"""
         pass
-    
-    @abstractmethod  
+
+    @abstractmethod
     def execute_query(self, query: str, params: Optional[Dict] = None) -> pd.DataFrame:
         """执行查询"""
         pass
-    
+
     @abstractmethod
     def execute_insert(self, table: str, data: pd.DataFrame) -> int:
         """插入数据"""
@@ -223,7 +223,7 @@ class DatabaseInterface(ABC):
 ```
 
 #### Day 24-25 (周四-五) - 异常处理统一
-**负责人**: 中级开发工程师  
+**负责人**: 中级开发工程师
 **任务**: 建立统一异常体系
 
 ```python
@@ -255,7 +255,7 @@ class ConfigurationError(MyStocksException):
 ### 📋 Week 5: 核心测试开发
 
 #### Day 26-28 (周一-三) - 适配器测试
-**负责人**: 测试开发工程师  
+**负责人**: 测试开发工程师
 **目标**: 为7个适配器开发完整测试
 
 ```python
@@ -292,32 +292,32 @@ class TestAkshareAdapter:
         """测试适配器初始化"""
         adapter = AkshareDataSource()
         assert adapter.client is not None
-    
+
     @patch('src.adapters.akshare_adapter.AkshareDataSource._get_client')
     def test_get_stock_daily_success(self, mock_client, sample_stock_data):
         """测试获取日线数据成功"""
         # Arrange
         adapter = AkshareDataSource()
         mock_client.return_value = sample_stock_data
-        
+
         # Act
         result = adapter.get_stock_daily('600000', '2025-01-01', '2025-12-31')
-        
+
         # Assert
         assert len(result) == 3
         assert 'symbol' in result.columns
         assert 'close' in result.columns
-    
+
     def test_get_stock_daily_invalid_params(self):
         """测试参数验证"""
         adapter = AkshareDataSource()
-        
+
         with pytest.raises(ValueError):
             adapter.get_stock_daily('', '2025-01-01', '2025-12-31')
 ```
 
 #### Day 29-30 (周四-五) - 数据库测试
-**负责人**: 测试开发工程师  
+**负责人**: 测试开发工程师
 **目标**: 开发数据库操作测试
 
 ```python
@@ -332,15 +332,15 @@ class TestTDengineDataAccess:
         """测试连接成功"""
         # Arrange
         mock_engine.return_value = Mock()
-        
+
         # Act
         access = TDengineDataAccess()
         connection = access.connect()
-        
+
         # Assert
         assert connection is not None
         mock_engine.assert_called_once()
-    
+
     def test_save_tick_data(self, sample_tick_data):
         """测试保存Tick数据"""
         # 详细测试逻辑
@@ -350,7 +350,7 @@ class TestTDengineDataAccess:
 ### 📋 Week 6: 集成测试开发
 
 #### Day 31-33 (周一-三) - 统一管理器测试
-**负责人**: 高级测试工程师  
+**负责人**: 高级测试工程师
 **目标**: 测试核心业务逻辑
 
 ```python
@@ -364,19 +364,19 @@ class TestMyStocksUnifiedManager:
     def setup_method(self):
         """每个测试方法前的设置"""
         self.manager = MyStocksUnifiedManager()
-    
+
     def test_save_data_by_classification_tick(self, sample_tick_data):
         """测试保存Tick数据到TDengine"""
         # 测试逻辑
         pass
-    
+
     def test_load_data_by_classification_daily(self):
         """测试从PostgreSQL加载日线数据"""
         # 测试逻辑
         pass
-    
+
     @patch('src.core.unified_manager.TDengineDataAccess')
-    @patch('src.core.unified_manager.PostgreSQLDataAccess') 
+    @patch('src.core.unified_manager.PostgreSQLDataAccess')
     def test_data_routing_strategy(self, mock_pg, mock_td):
         """测试数据路由策略"""
         # 测试逻辑
@@ -384,7 +384,7 @@ class TestMyStocksUnifiedManager:
 ```
 
 #### Day 34-35 (周四-五) - API测试
-**负责人**: 后端开发工程师  
+**负责人**: 后端开发工程师
 **目标**: 开发API接口测试
 
 ```python
@@ -402,7 +402,7 @@ class TestMonitoringAPI:
         assert response.status_code == 200
         data = response.json()
         assert "data" in data
-    
+
     def test_post_alert_rule_success(self):
         """测试创建告警规则成功"""
         alert_rule = {
@@ -412,7 +412,7 @@ class TestMonitoringAPI:
         }
         response = client.post("/api/monitoring/alert-rules", json=alert_rule)
         assert response.status_code == 201
-    
+
     def test_get_dragon_tiger_list(self):
         """测试获取龙虎榜数据"""
         response = client.get("/api/monitoring/dragon-tiger")
@@ -426,7 +426,7 @@ class TestMonitoringAPI:
 ### 📋 Week 7: 接口重构
 
 #### Day 36-38 (周一-三) - IDataSource接口简化
-**负责人**: 架构师  
+**负责人**: 架构师
 **任务**: 重构数据源接口
 
 ```python
@@ -440,17 +440,17 @@ class SimplifiedDataSourceInterface(ABC):
     def get_data(self, data_type: str, symbol: str, **kwargs) -> pd.DataFrame:
         """统一数据获取接口"""
         pass
-    
-    @abstractmethod  
+
+    @abstractmethod
     def get_stock_list(self) -> List[str]:
         """获取股票列表"""
         pass
-    
+
     @abstractmethod
     def get_realtime_quote(self, symbol: str) -> Dict:
         """获取实时行情"""
         pass
-    
+
     @abstractmethod
     def is_available(self) -> bool:
         """检查数据源是否可用"""
@@ -458,7 +458,7 @@ class SimplifiedDataSourceInterface(ABC):
 ```
 
 #### Day 39-40 (周四-五) - 监控逻辑解耦
-**负责人**: 高级开发工程师  
+**负责人**: 高级开发工程师
 **任务**: AOP方式处理监控
 
 ```python
@@ -474,7 +474,7 @@ def monitor_operation(operation_name: str):
         def wrapper(*args, **kwargs) -> Any:
             start_time = time.time()
             logger = logging.getLogger(__name__)
-            
+
             try:
                 result = func(*args, **kwargs)
                 duration = time.time() - start_time
@@ -498,7 +498,7 @@ class MonitoredDataSource(SimplifiedDataSourceInterface):
 ### 📋 Week 8: 性能测试与文档
 
 #### Day 41-42 (周一-二) - 性能测试建立
-**负责人**: 性能测试工程师  
+**负责人**: 性能测试工程师
 **任务**: 建立性能基准测试
 
 ```python
@@ -512,35 +512,35 @@ class TestDataAccessPerformance:
     def test_tdengine_insert_performance(self, sample_data):
         """测试TDengine插入性能"""
         access = TDengineDataAccess()
-        
+
         start_time = time.time()
         records_inserted = access.batch_insert(sample_data)
         duration = time.time() - start_time
-        
+
         # 性能断言：每秒至少插入1000条记录
         assert duration < len(sample_data) / 1000
         assert records_inserted == len(sample_data)
-    
+
     @pytest.mark.parametrize("thread_count", [1, 5, 10, 20])
     def test_concurrent_access_performance(self, thread_count):
         """测试并发访问性能"""
         def fetch_data():
             access = TDengineDataAccess()
             return access.query("SELECT * FROM tick_data LIMIT 100")
-        
+
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=thread_count) as executor:
             futures = [executor.submit(fetch_data) for _ in range(thread_count)]
             results = [future.result() for future in futures]
         duration = time.time() - start_time
-        
+
         # 性能断言：并发不应显著降低性能
         assert duration < 5.0  # 5秒内完成
         assert len(results) == thread_count
 ```
 
 #### Day 43 (周三) - 性能基准建立
-**负责人**: 性能测试工程师  
+**负责人**: 性能测试工程师
 **任务**: 建立性能监控
 
 ```python
@@ -559,22 +559,22 @@ class PerformanceMetrics:
     memory_usage: float
     cpu_usage: float
     timestamp: float
-    
+
 class PerformanceMonitor:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.metrics_history: list[PerformanceMetrics] = []
-    
+
     def record_operation(self, operation_name: str, start_time: float) -> PerformanceMetrics:
         """记录操作性能指标"""
         end_time = time.time()
         duration = end_time - start_time
-        
+
         # 获取系统资源使用情况
         process = psutil.Process()
         memory_usage = process.memory_info().rss / 1024 / 1024  # MB
         cpu_usage = process.cpu_percent()
-        
+
         metrics = PerformanceMetrics(
             operation_name=operation_name,
             duration=duration,
@@ -582,13 +582,13 @@ class PerformanceMonitor:
             cpu_usage=cpu_usage,
             timestamp=end_time
         )
-        
+
         self.metrics_history.append(metrics)
         return metrics
 ```
 
 #### Day 44 (周四) - API文档完善
-**负责人**: 技术文档工程师  
+**负责人**: 技术文档工程师
 **任务**: 完善API文档
 
 ```python
@@ -624,19 +624,19 @@ async def create_alert_rule(
 ):
     """
     创建新的告警规则
-    
+
     ## 功能说明
     根据指定的条件创建股票价格监控告警规则。
-    
+
     ## 参数说明
     - **symbol**: 股票代码，如 '600000'
     - **condition**: 告警条件，如 'price_change > 5%'
     - **threshold**: 阈值数值
     - **description**: 告警规则描述（可选）
-    
+
     ## 返回结果
     返回创建的告警规则详情，包括生成的规则ID。
-    
+
     ## 示例
     ```json
     {
@@ -658,12 +658,12 @@ async def get_alert_rules(
 ):
     """
     获取告警规则列表
-    
+
     ## 查询参数
     - **symbol**: 过滤特定股票代码
     - **is_active**: 过滤激活/停用状态
     - **limit**: 返回记录数量限制
-    
+
     ## 返回结果
     返回匹配的告警规则列表。
     """
@@ -672,7 +672,7 @@ async def get_alert_rules(
 ```
 
 #### Day 45 (周五) - 总结验收
-**负责人**: 技术负责人 + QA  
+**负责人**: 技术负责人 + QA
 **任务**: 项目验收和总结
 
 ```python
@@ -696,7 +696,7 @@ TECHNICAL_DEBT_METRICS = {
         "measurement": "pytest --cov"
     },
     "type_annotation": {
-        "before": "2%", 
+        "before": "2%",
         "target": "60%",
         "measurement": "mypy --any-exprs-report"
     },
@@ -760,8 +760,8 @@ TECHNICAL_DEBT_METRICS = {
 ### 每周进度检查
 
 #### 每周五检查会议
-**参与者**: 所有核心团队成员  
-**时长**: 1小时  
+**参与者**: 所有核心团队成员
+**时长**: 1小时
 **内容**:
 1. 本周任务完成情况
 2. 遇到的问题和解决方案
@@ -838,7 +838,7 @@ Daily Build Checklist:
 - [x] **MyPy配置**: 模块重复问题100%解决
 - [x] **基础工具**: Pre-commit, bandit, CI/CD基础配置完成
 
-#### Week 4 验收标准  
+#### Week 4 验收标准
 - [x] **类型注解**: 核心接口类型注解完成度 ≥ 60%
 - [x] **代码质量**: 核心模块代码质量评分 ≥ B级
 - [x] **异常处理**: 统一异常体系建立完成
@@ -922,7 +922,7 @@ Daily Build Checklist:
 #### 投资总成本
 ```
 人力成本: ¥129,400 (人员+AI代理)
-工具成本: ¥47,900  
+工具成本: ¥47,900
 其他成本: ¥15,000
 --------------------
 总投资: ¥192,300
@@ -950,7 +950,7 @@ payback period: 4个月
 ```
 每月第一周进行技术债务审查:
 - 新增技术债务识别
-- 债务累积趋势分析  
+- 债务累积趋势分析
 - 修复优先级调整
 - 工具链优化评估
 ```
@@ -1124,7 +1124,7 @@ AI_OUTPUT_VALIDATION = {
 AI_AGENT_METRICS = {
     "任务完成率": ">= 95%",
     "代码质量评分": ">= B+",
-    "测试通过率": ">= 90%", 
+    "测试通过率": ">= 90%",
     "文档完整度": ">= 80%",
     "审查通过率": ">= 85%"
 }
@@ -1171,7 +1171,7 @@ AI_AGENT_METRICS = {
 #### 问题升级路径
 ```
 Level 1: 模块负责人 (响应时间: 2小时)
-Level 2: 技术负责人 (响应时间: 4小时)  
+Level 2: 技术负责人 (响应时间: 4小时)
 Level 3: 项目经理 (响应时间: 8小时)
 Level 4: 技术总监 (响应时间: 24小时)
 ```
@@ -1186,14 +1186,14 @@ Week 8检查点: 最终验收标准确认
 
 ---
 
-**📋 计划状态**: ✅ 已完成制定  
-**🎯 下一步行动**: 确认团队成员和资源分配，启动Week 1紧急修复任务  
-**⏰ 计划审核**: 每周五进行进度审查和计划调整  
+**📋 计划状态**: ✅ 已完成制定
+**🎯 下一步行动**: 确认团队成员和资源分配，启动Week 1紧急修复任务
+**⏰ 计划审核**: 每周五进行进度审查和计划调整
 **📈 成功保障**: 严格的质量门禁和风险管控机制
 
 ---
 
-*计划制定完成时间: 2025年11月15日*  
-*计划有效期: 2025年11月16日 - 2026年1月15日*  
-*下次更新: 2025年11月22日*  
+*计划制定完成时间: 2025年11月15日*
+*计划有效期: 2025年11月16日 - 2026年1月15日*
+*下次更新: 2025年11月22日*
 *制定者: Claude Code*

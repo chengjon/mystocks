@@ -211,9 +211,9 @@ class GPUAPIServer:
 
         # 服务状态
         logger.info("集成服务:")
-        logger.info(f"  - 回测服务: 已启动")
-        logger.info(f"  - 实时数据处理服务: 已启动")
-        logger.info(f"  - ML训练服务: 已启动")
+        logger.info("  - 回测服务: 已启动")
+        logger.info("  - 实时数据处理服务: 已启动")
+        logger.info("  - ML训练服务: 已启动")
 
         # 服务器配置
         logger.info("服务器配置:")

@@ -16,29 +16,18 @@ MyStocks 量化交易数据管理系统 - 统一数据访问层
 日期: 2025-09-21
 """
 
-import os
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Union, Tuple, Any
-from abc import ABC, abstractmethod
 import logging
-import uuid
+import os
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Dict, List, Optional
+
+import pandas as pd
 
 # 导入核心模块
-from src.core import (
-    DataClassification,
-    DatabaseTarget,
-    ConfigDrivenTableManager,
-)
+from src.core import DataClassification, DatabaseTarget
 from src.core.data_manager import DataManager
-from src.monitoring import (
-    MonitoringDatabase,
-    DataQualityMonitor,
-    PerformanceMonitor,
-    AlertManager,
-    AlertLevel,
-    OperationMetrics,
-)
+from src.monitoring import MonitoringDatabase
 
 # 导入现有数据库管理器
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
@@ -80,7 +69,6 @@ class IDataAccessLayer(ABC):
         **kwargs,
     ) -> bool:
         """保存数据"""
-        pass
 
     @abstractmethod
     def load_data(
@@ -91,7 +79,6 @@ class IDataAccessLayer(ABC):
         **kwargs,
     ) -> pd.DataFrame:
         """加载数据"""
-        pass
 
     @abstractmethod
     def update_data(
@@ -103,7 +90,6 @@ class IDataAccessLayer(ABC):
         **kwargs,
     ) -> bool:
         """更新数据"""
-        pass
 
     @abstractmethod
     def delete_data(
@@ -114,7 +100,6 @@ class IDataAccessLayer(ABC):
         **kwargs,
     ) -> bool:
         """删除数据"""
-        pass
 
 
 class TDengineDataAccess(IDataAccessLayer):
@@ -180,7 +165,7 @@ class TDengineDataAccess(IDataAccessLayer):
             )
 
             if final_data is None or final_data.empty:
-                logger.info(f"TDengine去重后无数据需要保存: {actual_table_name}")
+                logger.info("TDengine去重后无数据需要保存: %s", actual_table_name)
                 self.monitoring_db.log_operation_result(operation_id, True, 0)
                 return True
 
@@ -205,7 +190,10 @@ class TDengineDataAccess(IDataAccessLayer):
                     operation_id, True, len(final_data)
                 )
                 logger.info(
-                    f"TDengine保存成功: {actual_table_name}, {len(final_data)}条记录，去重策略: {dedup_strategy.value}"
+                    "TDengine保存成功: %s, %d条记录，去重策略: %s",
+                    actual_table_name,
+                    len(final_data),
+                    dedup_strategy.value,
                 )
             else:
                 self.monitoring_db.log_operation_result(
@@ -214,7 +202,7 @@ class TDengineDataAccess(IDataAccessLayer):
 
             return success
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"TDengine保存失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -267,12 +255,12 @@ class TDengineDataAccess(IDataAccessLayer):
                 operation_id, True, len(processed_data)
             )
             logger.info(
-                f"TDengine加载成功: {actual_table_name}, {len(processed_data)}条记录"
+                "TDengine加载成功: %s, %d条记录", actual_table_name, len(processed_data)
             )
 
             return processed_data
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"TDengine加载失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -336,20 +324,20 @@ class TDengineDataAccess(IDataAccessLayer):
                 return self._handle_tdengine_latest_wins(
                     data, table_name, classification
                 )
-            elif strategy == DeduplicationStrategy.FIRST_WINS:
+            if strategy == DeduplicationStrategy.FIRST_WINS:
                 return self._handle_tdengine_first_wins(
                     data, table_name, classification
                 )
-            elif strategy == DeduplicationStrategy.MERGE:
+            if strategy == DeduplicationStrategy.MERGE:
                 return self._handle_tdengine_merge(data, table_name, classification)
-            elif strategy == DeduplicationStrategy.REJECT:
+            if strategy == DeduplicationStrategy.REJECT:
                 return self._handle_tdengine_reject(data, table_name, classification)
-            else:
-                logger.warning(f"未知TDengine去重策略: {strategy}, 使用原始数据")
-                return data
 
-        except Exception as e:
-            logger.error(f"TDengine去重策略处理失败: {strategy}, 错误: {e}")
+            logger.warning("未知TDengine去重策略: %s, 使用原始数据", strategy)
+            return data
+
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("TDengine去重策略处理失败: %s, 错误: %s", strategy, e)
             return data
 
     def _handle_tdengine_latest_wins(
@@ -379,13 +367,13 @@ class TDengineDataAccess(IDataAccessLayer):
             removed_count = len(data) - len(deduped_data)
             if removed_count > 0:
                 logger.info(
-                    f"TDengine LATEST_WINS去重：移除 {removed_count} 条重复记录"
+                    "TDengine LATEST_WINS去重：移除 %d 条重复记录", removed_count
                 )
 
             return deduped_data
 
-        except Exception as e:
-            logger.error(f"TDengine LATEST_WINS处理失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("TDengine LATEST_WINS处理失败: %s", e)
             return data
 
     def _handle_tdengine_first_wins(
@@ -443,13 +431,13 @@ class TDengineDataAccess(IDataAccessLayer):
             removed_count = len(data) - len(new_data)
             if removed_count > 0:
                 logger.info(
-                    f"TDengine FIRST_WINS去重：过滤 {removed_count} 条已存在记录"
+                    "TDengine FIRST_WINS去重：过滤 %d 条已存在记录", removed_count
                 )
 
             return new_data
 
-        except Exception as e:
-            logger.error(f"TDengine FIRST_WINS处理失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("TDengine FIRST_WINS处理失败: %s", e)
             return data
 
     def _handle_tdengine_merge(
@@ -478,15 +466,15 @@ class TDengineDataAccess(IDataAccessLayer):
             if duplicates.any():
                 dup_count = duplicates.sum()
                 logger.warning(
-                    f"TDengine REJECT策略：发现 {dup_count} 条内部重复记录，拒绝保存"
+                    "TDengine REJECT策略：发现 %d 条内部重复记录，拒绝保存", dup_count
                 )
                 return pd.DataFrame()  # 返回空DataFrame，拒绝所有数据
 
             # 简化实现：如果没有内部重复，允许保存
             return data
 
-        except Exception as e:
-            logger.error(f"TDengine REJECT处理失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("TDengine REJECT处理失败: %s", e)
             return data
 
     def _preprocess_timeseries_data(
@@ -526,7 +514,7 @@ class TDengineDataAccess(IDataAccessLayer):
             col for col in required_columns if col not in processed_data.columns
         ]
         if missing_columns:
-            logger.warning(f"缺少必要列: {missing_columns}")
+            logger.warning("缺少必要列: %s", missing_columns)
 
         return processed_data
 
@@ -571,8 +559,8 @@ class TDengineDataAccess(IDataAccessLayer):
             cursor.executemany(insert_sql, records)
             return True
 
-        except Exception as e:
-            logger.error(f"插入Tick数据失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("插入Tick数据失败: %s", e)
             return False
 
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -605,8 +593,8 @@ class TDengineDataAccess(IDataAccessLayer):
             cursor.executemany(insert_sql, records)
             return True
 
-        except Exception as e:
-            logger.error(f"插入分钟K线数据失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("插入分钟K线数据失败: %s", e)
             return False
 
     def _insert_generic_timeseries(
@@ -626,8 +614,8 @@ class TDengineDataAccess(IDataAccessLayer):
             cursor.executemany(insert_sql, records)
             return True
 
-        except Exception as e:
-            logger.error(f"插入通用时序数据失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("插入通用时序数据失败: %s", e)
             return False
 
     def _build_timeseries_query(
@@ -763,12 +751,14 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_id, True, len(processed_data)
             )
             logger.info(
-                f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录"
+                "PostgreSQL保存成功: %s, %d条记录",
+                actual_table_name,
+                len(processed_data),
             )
 
             return True
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"PostgreSQL保存失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -821,12 +811,14 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_id, True, len(processed_data)
             )
             logger.info(
-                f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录"
+                "PostgreSQL加载成功: %s, %d条记录",
+                actual_table_name,
+                len(processed_data),
             )
 
             return processed_data
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"PostgreSQL加载失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -877,7 +869,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 conn.commit()
                 self.monitoring_db.log_operation_result(operation_id, True, len(data))
                 logger.info(
-                    f"PostgreSQL更新成功: {actual_table_name}, {len(data)}条记录"
+                    "PostgreSQL更新成功: %s, %d条记录", actual_table_name, len(data)
                 )
             else:
                 conn.rollback()
@@ -887,7 +879,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
             return success
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"PostgreSQL更新失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -942,12 +934,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
             self.monitoring_db.log_operation_result(operation_id, True, affected_rows)
             logger.info(
-                f"PostgreSQL删除成功: {actual_table_name}, {affected_rows}条记录"
+                "PostgreSQL删除成功: %s, %d条记录", actual_table_name, affected_rows
             )
 
             return True
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             error_msg = f"PostgreSQL删除失败: {e}"
             self.monitoring_db.log_operation_result(operation_id, False, 0, error_msg)
             logger.error(error_msg)
@@ -1021,7 +1013,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             ]
             for col in required_columns:
                 if col not in processed_data.columns:
-                    logger.warning(f"日线数据缺少必要字段: {col}")
+                    logger.warning("日线数据缺少必要字段: %s", col)
 
         elif classification == DataClassification.TECHNICAL_INDICATORS:
             # 确保技术指标必要字段
@@ -1033,7 +1025,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             ]
             for col in required_columns:
                 if col not in processed_data.columns:
-                    logger.warning(f"技术指标数据缺少必要字段: {col}")
+                    logger.warning("技术指标数据缺少必要字段: %s", col)
 
         return processed_data
 
@@ -1071,23 +1063,22 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 affected_rows = self._upsert_data(
                     data, table_name, raw_conn, classification
                 )
-                logger.info(f"UPSERT完成: {table_name}, 影响行数: {affected_rows}")
+                logger.info("UPSERT完成: %s, 影响行数: %d", table_name, affected_rows)
 
-        except Exception as e:
-            logger.error(f"UPSERT操作失败，回退到简单插入模式: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("UPSERT操作失败，回退到简单插入模式: %s", e)
             # 回退到简单插入模式
             try:
                 data.to_sql(
                     table_name, engine, if_exists="append", index=False, method="multi"
                 )
-            except Exception as fallback_error:
+            except Exception as fallback_error:  # pylint: disable=broad-exception-caught
                 if (
                     "duplicate key" in str(fallback_error).lower()
                     or "unique constraint" in str(fallback_error).lower()
                 ):
-                    logger.warning(f"检测到重复数据，跳过插入: {fallback_error}")
+                    logger.warning("检测到重复数据，跳过插入: %s", fallback_error)
                     # 对于重复数据，我们已经有了UPSERT逻辑处理，这里可以忽略
-                    pass
                 else:
                     raise fallback_error
 
@@ -1162,12 +1153,14 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             conn.commit()
 
             logger.info(
-                f"PostgreSQL UPSERT操作完成: {table_name}, 处理记录数: {len(records_to_insert)}"
+                "PostgreSQL UPSERT操作完成: %s, 处理记录数: %d",
+                table_name,
+                len(records_to_insert),
             )
             return len(records_to_insert)
 
-        except Exception as e:
-            logger.error(f"PostgreSQL UPSERT操作失败: {table_name}, 错误: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("PostgreSQL UPSERT操作失败: %s, 错误: %s", table_name, e)
             conn.rollback()
             raise
 
@@ -1194,9 +1187,9 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
                 # 组装SQL
                 update_sql = f"""
-                    UPDATE {table_name} 
-                    SET {', '.join(set_clauses)} 
-                    WHERE {' AND '.join(where_clauses)}
+                    UPDATE {table_name}
+                    SET {", ".join(set_clauses)}
+                    WHERE {" AND ".join(where_clauses)}
                 """
 
                 # 执行更新
@@ -1204,8 +1197,8 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
             return True
 
-        except Exception as e:
-            logger.error(f"执行更新操作失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("执行更新操作失败: %s", e)
             return False
 
     def _build_analytical_query(
@@ -1220,6 +1213,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
         返回值: (sql_string, bind_parameters)
         """
+        # pylint: disable=too-many-branches
         # SECURITY FIX: Whitelist table names to prevent injection through table_name
         ALLOWED_TABLES = {
             "daily_kline",
@@ -1279,12 +1273,116 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         if conditions:
             base_query += " WHERE " + " AND ".join(conditions)
 
-        # 添加排序 - SECURITY: order_by should also be whitelisted, but for now document the risk
+        # 添加排序 - SECURITY: 添加ORDER BY列白名单防止SQL注入
         if "order_by" in kwargs:
-            # WARNING: order_by is still a potential risk if user-controlled
-            # TODO: Add whitelist for order_by columns
             order_by = kwargs["order_by"]
-            base_query += f" ORDER BY {order_by}"
+
+            # 根据数据分类定义允许的ORDER BY列白名单
+            ALLOWED_ORDER_BY_COLUMNS = {
+                DataClassification.DAILY_KLINE: [
+                    "trade_date",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "adjust_flag",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.MINUTE_KLINE: [
+                    "datetime",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "amount",
+                    "created_at",
+                ],
+                DataClassification.TICK_DATA: [
+                    "datetime",
+                    "price",
+                    "volume",
+                    "amount",
+                    "direction",
+                ],
+                DataClassification.TECHNICAL_INDICATORS: [
+                    "calc_date",
+                    "symbol",
+                    "indicator_name",
+                    "indicator_value",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.QUANTITATIVE_FACTORS: [
+                    "calc_date",
+                    "symbol",
+                    "factor_name",
+                    "factor_value",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.STOCK_INFO: [
+                    "symbol",
+                    "name",
+                    "market",
+                    "industry",
+                    "list_date",
+                    "created_at",
+                    "updated_at",
+                ],
+                DataClassification.FINANCIAL_REPORTS: [
+                    "report_date",
+                    "symbol",
+                    "report_type",
+                    "revenue",
+                    "net_profit",
+                    "created_at",
+                    "updated_at",
+                ],
+            }
+
+            # 获取当前分类允许的列
+            allowed_columns = ALLOWED_ORDER_BY_COLUMNS.get(classification, [])
+
+            # 验证和清理order_by参数
+            if isinstance(order_by, str):
+                # 支持多列排序，如 "trade_date DESC, symbol ASC"
+                order_columns = []
+                for column_spec in order_by.split(","):
+                    column_spec = column_spec.strip()
+                    parts = column_spec.split()
+
+                    if len(parts) == 1:
+                        column_name = parts[0]
+                        direction = ""
+                    elif len(parts) == 2:
+                        column_name, direction = parts
+                        if direction.upper() not in ["ASC", "DESC"]:
+                            direction = "ASC"  # 默认升序
+                    else:
+                        continue  # 跳过无效格式
+
+                    # 验证列名是否在白名单中
+                    if column_name in allowed_columns:
+                        order_columns.append(f"{column_name} {direction}".strip())
+
+                if order_columns:
+                    validated_order_by = ", ".join(order_columns)
+                    base_query += f" ORDER BY {validated_order_by}"
+                else:
+                    # 如果没有有效的排序列，使用默认排序
+                    if classification == DataClassification.DAILY_KLINE:
+                        base_query += " ORDER BY trade_date DESC"
+                    elif classification in [
+                        DataClassification.TECHNICAL_INDICATORS,
+                        DataClassification.QUANTITATIVE_FACTORS,
+                    ]:
+                        base_query += " ORDER BY calc_date DESC"
+                    else:
+                        base_query += " ORDER BY created_at DESC"
         else:
             # 默认排序
             if classification == DataClassification.DAILY_KLINE:

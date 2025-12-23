@@ -12,15 +12,13 @@ MyStocks 量化交易数据管理系统 - PostgreSQL数据访问器
 
 import pandas as pd
 import logging
-from datetime import datetime
-from typing import Dict, List, Optional, Union, Tuple, Any
+from typing import Dict, List
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 
 from src.storage.access.modules.base import (
     IDataAccessLayer,
     normalize_dataframe,
-    get_database_name_from_classification,
 )
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 from src.core import DataClassification, DataManager
@@ -210,15 +208,12 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
                 # 构造并执行SQL
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
                 with engine.connect() as conn:
-                    conn.execute(
-                        update_sql, 
-                        list(update_values) + list(key_values)
-                    )
+                    conn.execute(update_sql, list(update_values) + list(key_values))
 
             return True
 
@@ -286,10 +281,10 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         """获取PostgreSQL引擎"""
         # 获取数据库连接信息
         conn_info = self.db_manager.get_connection_info(self.db_type, database_name)
-        
+
         # 构造SQLAlchemy连接字符串
         connection_string = f"postgresql://{conn_info['username']}:{conn_info['password']}@{conn_info['host']}:{conn_info['port']}/{conn_info['database']}"
-        
+
         # 创建引擎
         return create_engine(connection_string)
 
@@ -302,7 +297,9 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         # 确保日期时间列是正确的数据类型
         for col in processed_data.columns:
             if "date" in col.lower() or "time" in col.lower():
-                processed_data[col] = pd.to_datetime(processed_data[col], errors="coerce")
+                processed_data[col] = pd.to_datetime(
+                    processed_data[col], errors="coerce"
+                )
 
         return processed_data
 
@@ -453,7 +450,11 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             DataClassification.DAILY_KLINE: ["symbol", "date"],
             DataClassification.STOCK_BASIC: ["symbol"],
             DataClassification.FUNDAMENTAL_DATA: ["symbol", "date"],
-            DataClassification.TECHNICAL_INDICATORS: ["symbol", "date", "indicator_name"],
+            DataClassification.TECHNICAL_INDICATORS: [
+                "symbol",
+                "date",
+                "indicator_name",
+            ],
             DataClassification.REFERENCE_DATA: ["key"],
             DataClassification.TRANSACTION_DATA: ["transaction_id"],
             DataClassification.META_DATA: ["key"],
@@ -466,7 +467,11 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             DataClassification.DAILY_KLINE: ["symbol", "date"],
             DataClassification.STOCK_BASIC: ["symbol"],
             DataClassification.FUNDAMENTAL_DATA: ["symbol", "date"],
-            DataClassification.TECHNICAL_INDICATORS: ["symbol", "date", "indicator_name"],
+            DataClassification.TECHNICAL_INDICATORS: [
+                "symbol",
+                "date",
+                "indicator_name",
+            ],
             DataClassification.REFERENCE_DATA: ["key"],
             DataClassification.TRANSACTION_DATA: ["transaction_id"],
             DataClassification.META_DATA: ["key"],

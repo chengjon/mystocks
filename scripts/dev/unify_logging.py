@@ -6,11 +6,10 @@
 建立统一的日志标准和配置
 """
 
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional
 import argparse
 
 
@@ -21,11 +20,11 @@ class LoggingUnifier:
         self.project_root = Path(project_root)
         self.src_dir = self.project_root / "src"
         self.stats = {
-            'files_processed': 0,
-            'print_statements_found': 0,
-            'print_statements_replaced': 0,
-            'files_with_logging': 0,
-            'issues_found': 0
+            "files_processed": 0,
+            "print_statements_found": 0,
+            "print_statements_replaced": 0,
+            "files_with_logging": 0,
+            "issues_found": 0,
         }
 
     def analyze_print_usage(self) -> Dict[str, any]:
@@ -33,30 +32,32 @@ class LoggingUnifier:
         print("🔍 分析项目中的print语句使用情况...")
 
         print_patterns = [
-            r'print\([^)]*\)',  # 基本print语句
+            r"print\([^)]*\)",  # 基本print语句
             r'print\s*\([^)]*f[\'"][^\'"]*[\'"]',  # f-string print
         ]
 
         analysis = {
-            'total_prints': 0,
-            'by_file': {},
-            'by_directory': {},
-            'common_patterns': {},
-            'problematic_cases': []
+            "total_prints": 0,
+            "by_file": {},
+            "by_directory": {},
+            "common_patterns": {},
+            "problematic_cases": [],
         }
 
         # 遍历所有Python文件
         for py_file in self.src_dir.rglob("*.py"):
-            if py_file.is_file() and not any(skip in str(py_file) for skip in ['__pycache__', '.pytest_cache']):
+            if py_file.is_file() and not any(
+                skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]
+            ):
                 try:
-                    with open(py_file, 'r', encoding='utf-8') as f:
+                    with open(py_file, "r", encoding="utf-8") as f:
                         content = f.read()
 
                     file_prints = 0
                     file_issues = []
 
                     # 查找所有print语句
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     for i, line in enumerate(lines, 1):
                         for pattern in print_patterns:
                             matches = re.finditer(pattern, line)
@@ -64,32 +65,44 @@ class LoggingUnifier:
                                 file_prints += 1
 
                                 # 分析问题
-                                self._analyze_print_statement(line, i, py_file, file_issues)
+                                self._analyze_print_statement(
+                                    line, i, py_file, file_issues
+                                )
 
                     if file_prints > 0:
-                        analysis['by_file'][str(py_file)] = file_prints
-                        analysis['total_prints'] += file_prints
+                        analysis["by_file"][str(py_file)] = file_prints
+                        analysis["total_prints"] += file_prints
 
                         # 按目录统计
                         parent_dir = py_file.parent.name
-                        analysis['by_directory'][parent_dir] = analysis['by_directory'].get(parent_dir, 0) + file_prints
+                        analysis["by_directory"][parent_dir] = (
+                            analysis["by_directory"].get(parent_dir, 0) + file_prints
+                        )
 
                         if file_issues:
-                            analysis['problematic_cases'].extend(file_issues)
+                            analysis["problematic_cases"].extend(file_issues)
 
                 except Exception as e:
                     print(f"⚠️  处理文件失败 {py_file}: {e}")
 
         return analysis
 
-    def _analyze_print_statement(self, line: str, line_num: int, file_path: Path, issues: List[str]):
+    def _analyze_print_statement(
+        self, line: str, line_num: int, file_path: Path, issues: List[str]
+    ):
         """分析单个print语句的问题"""
         # 检查调试相关print
-        if any(debug_word in line.lower() for debug_word in ['debug', '测试', 'test', '暂时', 'temp']):
+        if any(
+            debug_word in line.lower()
+            for debug_word in ["debug", "测试", "test", "暂时", "temp"]
+        ):
             issues.append(f"{file_path}:{line_num} - 调试print语句")
 
         # 检查敏感信息
-        if any(sensitive_word in line.lower() for sensitive_word in ['password', 'secret', 'key', 'token']):
+        if any(
+            sensitive_word in line.lower()
+            for sensitive_word in ["password", "secret", "key", "token"]
+        ):
             issues.append(f"{file_path}:{line_num} - 可能包含敏感信息的print")
 
         # 检查重复的print模式
@@ -98,7 +111,7 @@ class LoggingUnifier:
 
     def generate_logging_import(self) -> str:
         """生成logging导入语句"""
-        return '''# 统一日志配置
+        return """# 统一日志配置
 import logging
 from typing import Optional
 
@@ -114,40 +127,42 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
-'''
+"""
 
-    def replace_print_with_logging(self, file_path: Path, dry_run: bool = False) -> bool:
+    def replace_print_with_logging(
+        self, file_path: Path, dry_run: bool = False
+    ) -> bool:
         """将print语句替换为logging调用"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
             modified = False
 
             # 检查是否已有logging导入
-            has_logging_import = 'import logging' in content
+            has_logging_import = "import logging" in content
 
             # 添加logging导入（如果需要）
-            if not has_logging_import and 'print(' in content:
+            if not has_logging_import and "print(" in content:
                 # 在文件开头添加logging导入
-                lines = content.split('\n')
+                lines = content.split("\n")
                 import_index = 0
 
                 # 找到合适的位置插入import
                 for i, line in enumerate(lines):
-                    if line.startswith('import ') or line.startswith('from '):
+                    if line.startswith("import ") or line.startswith("from "):
                         import_index = i + 1
-                    elif line.startswith('#') and i == 0:
+                    elif line.startswith("#") and i == 0:
                         import_index = 1
                         break
 
                 lines.insert(import_index, self.generate_logging_import())
-                content = '\n'.join(lines)
+                content = "\n".join(lines)
                 modified = True
                 has_logging_import = True
 
-            if not 'print(' in content:
+            if "print(" not in content:
                 return False
 
             # 替换print语句
@@ -155,13 +170,11 @@ if not logger.handlers:
                 # 替换简单的print语句
                 (r'print\("([^"]+)"\)', r'logger.info(r"\1")'),
                 (r"print\('([^']+)'\)", r'logger.info(r"\1")'),
-
                 # 替换f-string print
                 (r'print\(f"([^"]+)"\)', r'logger.info(f"\1")'),
                 (r"print\(f'([^']+)'\)", r'logger.info(f"\1")'),
-
                 # 替换带参数的print
-                (r'print\(([^f][^)]+)\)', r'logger.info(str(\1))'),
+                (r"print\(([^f][^)]+)\)", r"logger.info(str(\1))"),
             ]
 
             for pattern, replacement in patterns_replacements:
@@ -174,15 +187,17 @@ if not logger.handlers:
             content = self._adjust_log_levels(content)
 
             if modified and not dry_run:
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
 
                 print(f"✅ 更新文件: {file_path}")
 
-            self.stats['files_processed'] += 1
+            self.stats["files_processed"] += 1
             if modified:
-                self.stats['print_statements_replaced'] += original_content.count('print(')
-                self.stats['files_with_logging'] += 1
+                self.stats["print_statements_replaced"] += original_content.count(
+                    "print("
+                )
+                self.stats["files_with_logging"] += 1
 
             return modified
 
@@ -195,15 +210,21 @@ if not logger.handlers:
         # 根据内容调整日志级别
         level_adjustments = [
             # 错误信息
-            (r'logger\.info\((.*(?:error|错误|失败|异常|exception|错误).*?)\)', r'logger.error(\1)'),
-            (r'logger\.info\((.*(?:warning|警告|warn).*?)\)', r'logger.warning(\1)'),
-
+            (
+                r"logger\.info\((.*(?:error|错误|失败|异常|exception|错误).*?)\)",
+                r"logger.error(\1)",
+            ),
+            (r"logger\.info\((.*(?:warning|警告|warn).*?)\)", r"logger.warning(\1)"),
             # 调试信息
-            (r'logger\.info\((.*(?:debug|调试|测试|test|debug).*?)\)', r'logger.debug(\1)'),
-
+            (
+                r"logger\.info\((.*(?:debug|调试|测试|test|debug).*?)\)",
+                r"logger.debug(\1)",
+            ),
             # 成功信息
-            (r'logger\.info\((.*(?:✓|✅|success|成功|完成|complete).*?)\)', r'logger.info(\1)'),
-
+            (
+                r"logger\.info\((.*(?:✓|✅|success|成功|完成|complete).*?)\)",
+                r"logger.info(\1)",
+            ),
             # 进度信息保持info
         ]
 
@@ -359,7 +380,7 @@ def log_debug(message: str, logger_name: Optional[str] = None):
 '''
 
         config_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(config_file, 'w', encoding='utf-8') as f:
+        with open(config_file, "w", encoding="utf-8") as f:
             f.write(config_content)
 
         print(f"✅ 创建日志配置文件: {config_file}")
@@ -383,12 +404,14 @@ def log_debug(message: str, logger_name: Optional[str] = None):
             print("📁 处理所有Python文件...")
 
             for py_file in self.src_dir.rglob("*.py"):
-                if py_file.is_file() and not any(skip in str(py_file) for skip in ['__pycache__', '.pytest_cache']):
+                if py_file.is_file() and not any(
+                    skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]
+                ):
                     try:
                         self.replace_print_with_logging(py_file, dry_run)
                     except Exception as e:
                         print(f"⚠️  处理文件失败 {py_file}: {e}")
-                        self.stats['issues_found'] += 1
+                        self.stats["issues_found"] += 1
 
         # 输出统计信息
         self._print_stats(dry_run)
@@ -403,37 +426,24 @@ def log_debug(message: str, logger_name: Optional[str] = None):
         print(f"  发现问题数: {self.stats['issues_found']}")
 
         if not dry_run:
-            print(f"\n✅ 日志统一化完成!")
-            print(f"\n📋 后续建议:")
-            print(f"1. 检查替换后的日志级别是否合适")
-            print(f"2. 运行测试确保功能正常")
-            print(f"3. 提交更改前运行代码质量检查")
+            print("\n✅ 日志统一化完成!")
+            print("\n📋 后续建议:")
+            print("1. 检查替换后的日志级别是否合适")
+            print("2. 运行测试确保功能正常")
+            print("3. 提交更改前运行代码质量检查")
 
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(
-        description="MyStocks 日志系统统一化工具"
+    parser = argparse.ArgumentParser(description="MyStocks 日志系统统一化工具")
+    parser.add_argument(
+        "--project-root", default=".", help="项目根目录路径 (默认: 当前目录)"
     )
     parser.add_argument(
-        "--project-root",
-        default=".",
-        help="项目根目录路径 (默认: 当前目录)"
+        "--dry-run", "-n", action="store_true", help="模拟运行，不修改文件"
     )
-    parser.add_argument(
-        "--dry-run", "-n",
-        action="store_true",
-        help="模拟运行，不修改文件"
-    )
-    parser.add_argument(
-        "--file", "-f",
-        help="只处理指定文件"
-    )
-    parser.add_argument(
-        "--analyze", "-a",
-        action="store_true",
-        help="只分析，不修改"
-    )
+    parser.add_argument("--file", "-f", help="只处理指定文件")
+    parser.add_argument("--analyze", "-a", action="store_true", help="只分析，不修改")
 
     args = parser.parse_args()
 
@@ -443,17 +453,19 @@ def main():
         if args.analyze:
             # 只分析
             analysis = unifier.analyze_print_usage()
-            print(f"\n📊 分析结果:")
+            print("\n📊 分析结果:")
             print(f"  总print语句: {analysis['total_prints']}")
             print(f"  涉及文件数: {len(analysis['by_file'])}")
 
-            print(f"\n📁 按目录分布:")
-            for dir_name, count in sorted(analysis['by_directory'].items(), key=lambda x: x[1], reverse=True):
+            print("\n📁 按目录分布:")
+            for dir_name, count in sorted(
+                analysis["by_directory"].items(), key=lambda x: x[1], reverse=True
+            ):
                 print(f"  {dir_name}: {count}")
 
-            if analysis['problematic_cases']:
-                print(f"\n⚠️  发现的问题:")
-                for issue in analysis['problematic_cases'][:10]:  # 只显示前10个
+            if analysis["problematic_cases"]:
+                print("\n⚠️  发现的问题:")
+                for issue in analysis["problematic_cases"][:10]:  # 只显示前10个
                     print(f"  {issue}")
         else:
             # 执行统一化
@@ -464,6 +476,7 @@ def main():
     except Exception as e:
         print(f"❌ 执行失败: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

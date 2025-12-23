@@ -11,7 +11,6 @@ YAML配置加载器
 import os
 import yaml
 from typing import Dict, Any
-from pydantic import BaseModel
 
 
 class ConfigLoader:

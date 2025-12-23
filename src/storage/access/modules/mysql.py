@@ -13,15 +13,11 @@ MyStocks 量化交易数据管理系统 - MySQL数据访问器
 import pandas as pd
 import logging
 import uuid
-from datetime import datetime
-from typing import Dict, List, Optional, Union, Tuple, Any
-import sqlalchemy as sa
-from sqlalchemy import create_engine
+from typing import Dict, List
 
 from src.storage.access.modules.base import (
     IDataAccessLayer,
     normalize_dataframe,
-    get_database_name_from_classification,
 )
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 from src.core import DataClassification, DataManager
@@ -190,15 +186,12 @@ class MySQLDataAccess(IDataAccessLayer):
 
                 # 构造并执行SQL
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
                 with conn.cursor() as cursor:
-                    cursor.execute(
-                        update_sql, 
-                        list(update_values) + list(key_values)
-                    )
+                    cursor.execute(update_sql, list(update_values) + list(key_values))
 
             return True
 
@@ -352,7 +345,7 @@ class MySQLDataAccess(IDataAccessLayer):
 
         try:
             # 准备数据
-            data_list = data.to_dict('records')
+            data_list = data.to_dict("records")
 
             # 构造SQL语句
             columns = list(data.columns)
@@ -363,7 +356,7 @@ class MySQLDataAccess(IDataAccessLayer):
 
             # 构造并执行INSERT ... ON DUPLICATE KEY UPDATE语句
             sql = f"""
-            INSERT INTO {table_name} ({', '.join(columns)})
+            INSERT INTO {table_name} ({", ".join(columns)})
             VALUES ({placeholders})
             ON DUPLICATE KEY UPDATE {set_clause}
             """

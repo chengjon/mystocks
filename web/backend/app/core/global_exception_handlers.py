@@ -57,12 +57,13 @@ logger = logging.getLogger(__name__)
 
 # ==================== 异常响应格式化 ====================
 
+
 def format_exception_response(
     error_code: str,
     message: str,
     details: Optional[Dict[str, Any]] = None,
     path: Optional[str] = None,
-    timestamp: Optional[str] = None
+    timestamp: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     格式化异常响应
@@ -94,16 +95,16 @@ def format_exception_response(
             "message": message,
             "details": details or {},
             "timestamp": timestamp or datetime.utcnow().isoformat(),
-            "path": path
+            "path": path,
         }
     }
 
 
 # ==================== MyStocks自定义异常处理器 ====================
 
+
 async def mystocks_exception_handler(
-    request: Request,
-    exc: MyStocksException
+    request: Request, exc: MyStocksException
 ) -> JSONResponse:
     """
     处理所有MyStocks自定义异常
@@ -133,8 +134,16 @@ async def mystocks_exception_handler(
         status_code = status.HTTP_502_BAD_GATEWAY
     elif isinstance(exc, (DataSourceConfigError, DatabaseException, ConfigException)):
         status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    elif isinstance(exc, (DataSourceQueryError, DataSourceDataFormatError,
-                          DataException, ProcessingException, BusinessLogicException)):
+    elif isinstance(
+        exc,
+        (
+            DataSourceQueryError,
+            DataSourceDataFormatError,
+            DataException,
+            ProcessingException,
+            BusinessLogicException,
+        ),
+    ):
         status_code = status.HTTP_400_BAD_REQUEST
     elif isinstance(exc, DataSourceException):
         # 通用数据源异常，默认500
@@ -153,9 +162,9 @@ async def mystocks_exception_handler(
             "path": request.url.path,
             "method": request.method,
             "details": exc.details,
-            "status_code": status_code
+            "status_code": status_code,
         },
-        exc_info=(status_code >= 500)  # 500错误记录完整堆栈
+        exc_info=(status_code >= 500),  # 500错误记录完整堆栈
     )
 
     # 返回格式化响应
@@ -164,20 +173,17 @@ async def mystocks_exception_handler(
         message=exc.message,
         details=exc.details,
         path=request.url.path,
-        timestamp=exc.timestamp
+        timestamp=exc.timestamp,
     )
 
-    return JSONResponse(
-        status_code=status_code,
-        content=response_data
-    )
+    return JSONResponse(status_code=status_code, content=response_data)
 
 
 # ==================== FastAPI内置异常处理器 ====================
 
+
 async def request_validation_error_handler(
-    request: Request,
-    exc: RequestValidationError
+    request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     """
     处理请求参数验证错误
@@ -189,26 +195,24 @@ async def request_validation_error_handler(
         extra={
             "path": request.url.path,
             "method": request.method,
-            "errors": exc.errors()
-        }
+            "errors": exc.errors(),
+        },
     )
 
     response_data = format_exception_response(
         error_code="VALIDATION_ERROR",
         message="Request validation failed",
         details={"validation_errors": exc.errors()},
-        path=request.url.path
+        path=request.url.path,
     )
 
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=response_data
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=response_data
     )
 
 
 async def http_exception_handler(
-    request: Request,
-    exc: StarletteHTTPException
+    request: Request, exc: StarletteHTTPException
 ) -> JSONResponse:
     """
     处理HTTP异常
@@ -220,28 +224,21 @@ async def http_exception_handler(
         extra={
             "status_code": exc.status_code,
             "path": request.url.path,
-            "method": request.method
-        }
+            "method": request.method,
+        },
     )
 
     response_data = format_exception_response(
-        error_code=f"HTTP_{exc.status_code}",
-        message=exc.detail,
-        path=request.url.path
+        error_code=f"HTTP_{exc.status_code}", message=exc.detail, path=request.url.path
     )
 
-    return JSONResponse(
-        status_code=exc.status_code,
-        content=response_data
-    )
+    return JSONResponse(status_code=exc.status_code, content=response_data)
 
 
 # ==================== 通用异常处理器 ====================
 
-async def general_exception_handler(
-    request: Request,
-    exc: Exception
-) -> JSONResponse:
+
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """
     处理所有未被捕获的异常
 
@@ -253,25 +250,25 @@ async def general_exception_handler(
         extra={
             "path": request.url.path,
             "method": request.method,
-            "exception_type": type(exc).__name__
+            "exception_type": type(exc).__name__,
         },
-        exc_info=True  # 记录完整堆栈
+        exc_info=True,  # 记录完整堆栈
     )
 
     response_data = format_exception_response(
         error_code="INTERNAL_SERVER_ERROR",
         message="An unexpected error occurred. Please try again later.",
         details={"exception_type": type(exc).__name__},
-        path=request.url.path
+        path=request.url.path,
     )
 
     return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=response_data
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=response_data
     )
 
 
 # ==================== 异常处理器注册 ====================
+
 
 def register_global_exception_handlers(app: FastAPI) -> None:
     """

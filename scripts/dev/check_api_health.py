@@ -7,7 +7,6 @@ Web API健康检查脚本
 
 import sys
 import requests
-import time
 from typing import Dict, Tuple, Optional
 
 BASE_URL = "http://localhost:8000"
@@ -22,7 +21,7 @@ API_ENDPOINTS = [
         "data": {"username": "admin", "password": "admin123"},
         "auth_required": False,
         "priority": "P1",
-        "page": "登录页面"
+        "page": "登录页面",
     },
     {
         "name": "TDX实时行情",
@@ -31,7 +30,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P1",
-        "page": "TDX行情页面"
+        "page": "TDX行情页面",
     },
     {
         "name": "TDX K线数据",
@@ -40,7 +39,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P1",
-        "page": "TDX K线页面"
+        "page": "TDX K线页面",
     },
     {
         "name": "市场行情",
@@ -49,7 +48,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P1",
-        "page": "市场行情页面"
+        "page": "市场行情页面",
     },
     {
         "name": "股票列表",
@@ -58,7 +57,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P2",
-        "page": "股票列表页面"
+        "page": "股票列表页面",
     },
     {
         "name": "历史K线",
@@ -67,7 +66,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P2",
-        "page": "历史K线查询页面"
+        "page": "历史K线查询页面",
     },
     {
         "name": "财务数据",
@@ -76,7 +75,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P2",
-        "page": "财务数据查询页面"
+        "page": "财务数据查询页面",
     },
     {
         "name": "技术指标",
@@ -85,7 +84,7 @@ API_ENDPOINTS = [
         "data": {"symbol": "600519", "indicators": ["MA"]},
         "auth_required": True,
         "priority": "P2",
-        "page": "技术指标计算页面"
+        "page": "技术指标计算页面",
     },
     {
         "name": "数据源管理",
@@ -94,7 +93,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": True,
         "priority": "P3",
-        "page": "数据源管理页面"
+        "page": "数据源管理页面",
     },
     {
         "name": "系统健康检查",
@@ -103,7 +102,7 @@ API_ENDPOINTS = [
         "data": None,
         "auth_required": False,
         "priority": "P2",
-        "page": "系统监控页面"
+        "page": "系统监控页面",
     },
 ]
 
@@ -123,7 +122,7 @@ def get_auth_token() -> Optional[str]:
         resp = requests.post(
             f"{BASE_URL}/api/auth/login",
             data={"username": "admin", "password": "admin123"},
-            timeout=TIMEOUT
+            timeout=TIMEOUT,
         )
         if resp.status_code == 200:
             return resp.json().get("access_token")
@@ -132,7 +131,9 @@ def get_auth_token() -> Optional[str]:
     return None
 
 
-def test_api_endpoint(endpoint: Dict, token: Optional[str]) -> Tuple[bool, str, Optional[int]]:
+def test_api_endpoint(
+    endpoint: Dict, token: Optional[str]
+) -> Tuple[bool, str, Optional[int]]:
     """
     测试单个API端点
 
@@ -143,16 +144,18 @@ def test_api_endpoint(endpoint: Dict, token: Optional[str]) -> Tuple[bool, str, 
     headers = {}
 
     # 添加认证头
-    if endpoint['auth_required'] and token:
+    if endpoint["auth_required"] and token:
         headers["Authorization"] = f"Bearer {token}"
 
     try:
         # 发送请求
-        if endpoint['method'] == "GET":
+        if endpoint["method"] == "GET":
             resp = requests.get(url, headers=headers, timeout=TIMEOUT)
-        elif endpoint['method'] == "POST":
+        elif endpoint["method"] == "POST":
             headers["Content-Type"] = "application/json"
-            resp = requests.post(url, json=endpoint['data'], headers=headers, timeout=TIMEOUT)
+            resp = requests.post(
+                url, json=endpoint["data"], headers=headers, timeout=TIMEOUT
+            )
         else:
             return False, f"不支持的方法: {endpoint['method']}", None
 
@@ -180,38 +183,38 @@ def test_api_endpoint(endpoint: Dict, token: Optional[str]) -> Tuple[bool, str, 
 
 def main():
     """主函数"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("MyStocks Web API 健康检查")
-    print("="*80)
+    print("=" * 80)
 
     # Step 1: 检查Backend服务
     print("\n【Step 1】检查Backend服务状态...")
     backend_running = check_backend_running()
 
     if not backend_running:
-        print(f"❌ Backend服务未运行")
-        print(f"\n启动方法:")
-        print(f"  cd web/backend")
-        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
-        print(f"\n或检查是否运行在其他端口:")
-        print(f"  lsof -i :8000")
-        print(f"  ps aux | grep uvicorn")
+        print("❌ Backend服务未运行")
+        print("\n启动方法:")
+        print("  cd web/backend")
+        print("  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
+        print("\n或检查是否运行在其他端口:")
+        print("  lsof -i :8000")
+        print("  ps aux | grep uvicorn")
         return 1
 
     print(f"✅ Backend服务正在运行: {BASE_URL}")
 
     # Step 2: 获取认证Token
-    print(f"\n【Step 2】获取认证Token...")
+    print("\n【Step 2】获取认证Token...")
     token = get_auth_token()
 
     if token:
         print(f"✅ Token获取成功: {token[:20]}...")
     else:
-        print(f"⚠️  Token获取失败 (将跳过需要认证的API)")
+        print("⚠️  Token获取失败 (将跳过需要认证的API)")
 
     # Step 3: 测试所有API
-    print(f"\n【Step 3】测试10个关键API端点...")
-    print(f"\n" + "-"*80)
+    print("\n【Step 3】测试10个关键API端点...")
+    print("\n" + "-" * 80)
 
     results = {
         "P1": {"total": 0, "passed": 0, "failed": []},
@@ -220,8 +223,8 @@ def main():
     }
 
     for i, endpoint in enumerate(API_ENDPOINTS, 1):
-        priority = endpoint['priority']
-        results[priority]['total'] += 1
+        priority = endpoint["priority"]
+        results[priority]["total"] += 1
 
         # 测试API
         success, message, status_code = test_api_endpoint(endpoint, token)
@@ -230,29 +233,33 @@ def main():
         icon = "✅" if success else "❌"
         status_str = f"({status_code})" if status_code else ""
 
-        print(f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}")
+        print(
+            f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}"
+        )
         print(f"    页面: {endpoint['page']}")
         print(f"    URL: {endpoint['method']} {endpoint['url']}")
 
         if success:
-            results[priority]['passed'] += 1
+            results[priority]["passed"] += 1
         else:
-            results[priority]['failed'].append({
-                "name": endpoint['name'],
-                "page": endpoint['page'],
-                "url": endpoint['url'],
-                "error": message
-            })
+            results[priority]["failed"].append(
+                {
+                    "name": endpoint["name"],
+                    "page": endpoint["page"],
+                    "url": endpoint["url"],
+                    "error": message,
+                }
+            )
 
         print()
 
     # Step 4: 统计结果
-    print("="*80)
+    print("=" * 80)
     print("测试结果汇总")
-    print("="*80)
+    print("=" * 80)
 
-    total_all = sum(r['total'] for r in results.values())
-    passed_all = sum(r['passed'] for r in results.values())
+    total_all = sum(r["total"] for r in results.values())
+    passed_all = sum(r["passed"] for r in results.values())
     pass_rate = passed_all / total_all * 100 if total_all > 0 else 0
 
     print(f"\n总计: {passed_all}/{total_all} 通过")
@@ -260,17 +267,21 @@ def main():
 
     for priority in ["P1", "P2", "P3"]:
         r = results[priority]
-        if r['total'] > 0:
-            priority_rate = r['passed'] / r['total'] * 100
-            icon = "✅" if r['passed'] == r['total'] else "⚠️" if r['passed'] > 0 else "❌"
-            print(f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)")
+        if r["total"] > 0:
+            priority_rate = r["passed"] / r["total"] * 100
+            icon = (
+                "✅" if r["passed"] == r["total"] else "⚠️" if r["passed"] > 0 else "❌"
+            )
+            print(
+                f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)"
+            )
 
     # Step 5: 失败项详情
-    failed_all = [item for r in results.values() for item in r['failed']]
+    failed_all = [item for r in results.values() for item in r["failed"]]
     if failed_all:
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("失败项详情")
-        print("="*80)
+        print("=" * 80)
 
         for i, failed in enumerate(failed_all, 1):
             print(f"\n{i}. {failed['name']}")
@@ -280,34 +291,34 @@ def main():
 
     # Step 6: 修复建议
     if failed_all:
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("修复建议")
-        print("="*80)
+        print("=" * 80)
 
         # 按错误类型分组建议
         error_types = {}
         for failed in failed_all:
-            error = failed['error']
+            error = failed["error"]
             if error not in error_types:
                 error_types[error] = []
-            error_types[error].append(failed['name'])
+            error_types[error].append(failed["name"])
 
         for error, apis in error_types.items():
             print(f"\n【{error}】")
             print(f"   影响API: {', '.join(apis)}")
 
             if "连接被拒绝" in error:
-                print(f"   修复: 启动Backend服务")
+                print("   修复: 启动Backend服务")
             elif "端点不存在" in error:
-                print(f"   修复: 检查路由注册，确认API端点已实现")
+                print("   修复: 检查路由注册，确认API端点已实现")
             elif "认证失败" in error:
-                print(f"   修复: 检查JWT配置，重新获取Token")
+                print("   修复: 检查JWT配置，重新获取Token")
             elif "服务器内部错误" in error:
-                print(f"   修复: 查看Backend日志，检查代码异常")
+                print("   修复: 查看Backend日志，检查代码异常")
             elif "服务不可用" in error:
-                print(f"   修复: 检查数据库连接 (运行 python utils/check_db_health.py)")
+                print("   修复: 检查数据库连接 (运行 python utils/check_db_health.py)")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
 
     # 返回退出码
     # SC-010-NEW: 10个关键API中至少8个(≥80%)返回200

@@ -9,7 +9,6 @@
 """
 
 import os
-import sys
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -63,7 +62,7 @@ class QueryPatternAnalyzer:
                 for table in into_matches:
                     self.table_access[table] += 1
 
-        except Exception as e:
+        except Exception:
             pass  # 忽略无法读取的文件
 
     def scan_project(self, exclude_dirs=None):
@@ -207,7 +206,9 @@ class QueryPatternAnalyzer:
 
         if read_count + write_count > 0:
             read_ratio = read_count / (read_count + write_count) * 100
-            suggestion = f"  • 读写比: {read_ratio:.1f}% 读 / {100-read_ratio:.1f}% 写"
+            suggestion = (
+                f"  • 读写比: {read_ratio:.1f}% 读 / {100 - read_ratio:.1f}% 写"
+            )
             print(suggestion)
             suggestions.append(suggestion)
 

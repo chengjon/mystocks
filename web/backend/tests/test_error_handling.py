@@ -7,9 +7,13 @@ P0改进 Task 4: 错误处理单元测试
 
 from datetime import datetime
 
-import pytest
 
-from app.core.responses import APIResponse, ErrorResponse, create_error_response, create_success_response
+from app.core.responses import (
+    APIResponse,
+    ErrorResponse,
+    create_error_response,
+    create_success_response,
+)
 
 
 class TestSuccessResponse:
@@ -90,7 +94,9 @@ class TestErrorResponse:
     def test_create_error_response_with_details(self):
         """测试带详情的错误响应"""
         error_details = {"field": "symbol", "reason": "Invalid symbol"}
-        response = create_error_response(error_code="VALIDATION_ERROR", message="验证失败", details=error_details)
+        response = create_error_response(
+            error_code="VALIDATION_ERROR", message="验证失败", details=error_details
+        )
         assert isinstance(response, ErrorResponse)
         assert response.error["details"] == error_details
 
@@ -100,7 +106,9 @@ class TestErrorResponse:
         message = "数据库连接失败"
         details = {"connection": "timeout", "retry": 3}
 
-        response = create_error_response(error_code=error_code, message=message, details=details)
+        response = create_error_response(
+            error_code=error_code, message=message, details=details
+        )
 
         assert isinstance(response, ErrorResponse)
         assert response.error["code"] == error_code
@@ -115,13 +123,17 @@ class TestErrorResponse:
 
     def test_create_error_response_with_none_details(self):
         """测试None详情的错误响应"""
-        response = create_error_response(error_code="TEST", message="Test", details=None)
+        response = create_error_response(
+            error_code="TEST", message="Test", details=None
+        )
         assert isinstance(response, ErrorResponse)
         assert "details" not in response.error
 
     def test_error_response_serialization(self):
         """测试错误响应序列化"""
-        response = create_error_response(error_code="ERROR", message="Error message", details={"key": "value"})
+        response = create_error_response(
+            error_code="ERROR", message="Error message", details={"key": "value"}
+        )
 
         # 转换为字典
         response_dict = response.model_dump()
@@ -146,7 +158,9 @@ class TestResponseStructure:
 
     def test_error_response_structure(self):
         """测试错误响应结构"""
-        response = create_error_response(error_code="TEST_ERROR", message="Error message", details={"key": "value"})
+        response = create_error_response(
+            error_code="TEST_ERROR", message="Error message", details={"key": "value"}
+        )
 
         # 验证响应是ErrorResponse对象
         assert isinstance(response, ErrorResponse)
@@ -163,7 +177,9 @@ class TestResponseStructure:
 
     def test_error_response_json_serialization(self):
         """测试ErrorResponse JSON序列化"""
-        response = create_error_response(error_code="ERROR", message="Test", details={"field": "test"})
+        response = create_error_response(
+            error_code="ERROR", message="Test", details={"field": "test"}
+        )
         json_str = response.model_dump_json()
         assert isinstance(json_str, str)
         assert "error" in json_str
@@ -197,7 +213,9 @@ class TestResponseEdgeCases:
     def test_error_response_with_special_characters(self):
         """测试包含特殊字符的错误响应"""
         message_with_special_chars = "错误: 参数验证失败 @#$%"
-        response = create_error_response(error_code="ERROR", message=message_with_special_chars)
+        response = create_error_response(
+            error_code="ERROR", message=message_with_special_chars
+        )
 
         assert isinstance(response, ErrorResponse)
         assert response.message == message_with_special_chars
@@ -213,7 +231,9 @@ class TestResponseEdgeCases:
 
     def test_error_response_with_unicode(self):
         """测试包含Unicode的错误响应"""
-        response = create_error_response(error_code="ERROR", message="错误: 数据验证失败")
+        response = create_error_response(
+            error_code="ERROR", message="错误: 数据验证失败"
+        )
 
         assert isinstance(response, ErrorResponse)
         assert "错误" in response.message
@@ -237,7 +257,9 @@ class TestResponseDataTypes:
     def test_error_response_with_dict_details(self):
         """测试字典详情"""
         details = {"field": "symbol", "error": "Invalid"}
-        response = create_error_response(error_code="VALIDATION", message="Validation failed", details=details)
+        response = create_error_response(
+            error_code="VALIDATION", message="Validation failed", details=details
+        )
         assert isinstance(response.error["details"], dict)
         assert response.error["details"]["field"] == "symbol"
 
@@ -250,7 +272,11 @@ class TestResponseDataTypes:
             ],
             "context": {"request_id": "123"},
         }
-        response = create_error_response(error_code="VALIDATION", message="Multiple validation errors", details=details)
+        response = create_error_response(
+            error_code="VALIDATION",
+            message="Multiple validation errors",
+            details=details,
+        )
         assert len(response.error["details"]["errors"]) == 2
 
 
@@ -278,7 +304,9 @@ class TestResponseIntegration:
             {"field": "date", "message": "Invalid date"},
         ]
         response = create_error_response(
-            error_code="VALIDATION_ERROR", message="Validation failed", details={"errors": validation_errors}
+            error_code="VALIDATION_ERROR",
+            message="Validation failed",
+            details={"errors": validation_errors},
         )
 
         assert isinstance(response, ErrorResponse)
@@ -297,14 +325,18 @@ class TestResponseIntegration:
     def test_response_api_create_endpoint(self):
         """测试创建API端点响应"""
         created_data = {"id": 123, "name": "new_item"}
-        response = create_success_response(data=created_data, message="Created successfully")
+        response = create_success_response(
+            data=created_data, message="Created successfully"
+        )
         assert isinstance(response, APIResponse)
         assert response.data["id"] == 123
 
     def test_response_api_error_endpoint(self):
         """测试错误API端点响应"""
         error = create_error_response(
-            error_code="NOT_FOUND", message="Resource not found", details={"resource_id": "123"}
+            error_code="NOT_FOUND",
+            message="Resource not found",
+            details={"resource_id": "123"},
         )
         assert isinstance(error, ErrorResponse)
         assert error.error["code"] == "NOT_FOUND"
@@ -315,7 +347,9 @@ class TestResponseErrorCodes:
 
     def test_validation_error_response(self):
         """测试验证错误响应"""
-        response = create_error_response(error_code="VALIDATION_ERROR", message="验证失败")
+        response = create_error_response(
+            error_code="VALIDATION_ERROR", message="验证失败"
+        )
         assert response.error["code"] == "VALIDATION_ERROR"
 
     def test_not_found_error_response(self):
@@ -325,7 +359,9 @@ class TestResponseErrorCodes:
 
     def test_database_error_response(self):
         """测试数据库错误"""
-        response = create_error_response(error_code="DATABASE_ERROR", message="数据库操作失败")
+        response = create_error_response(
+            error_code="DATABASE_ERROR", message="数据库操作失败"
+        )
         assert response.error["code"] == "DATABASE_ERROR"
 
     def test_unauthorized_error_response(self):
@@ -354,7 +390,6 @@ class TestResponseTimestamps:
 
     def test_response_timestamps_are_recent(self):
         """测试响应时间戳是最近的"""
-        import time
 
         before = datetime.utcnow()
         response = create_success_response()

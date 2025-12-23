@@ -25,15 +25,15 @@
 class DatabaseFactory:
     _engines = {}
     _sessions = {}
-    
+
     @classmethod
     def get_postgresql_engine(cls):
         """Singleton pattern for PostgreSQL engine"""
-        
+
     @classmethod
     def get_postgresql_session(cls):
         """Get or create session"""
-        
+
     @classmethod
     def build_connection_url(cls, **override_params):
         """Build connection string with env vars"""
@@ -66,7 +66,7 @@ class DatabaseFactory:
 # Generic factory
 class ServiceFactory:
     _instances = {}
-    
+
     @classmethod
     def get_service(cls, service_class: Type[T]) -> T:
         """Generic singleton getter"""
@@ -74,7 +74,7 @@ class ServiceFactory:
         if key not in cls._instances:
             cls._instances[key] = service_class()
         return cls._instances[key]
-    
+
     @classmethod
     def reset_service(cls, service_class: Type[T]):
         """Reset singleton for testing"""
@@ -124,7 +124,7 @@ class Settings(BaseSettings):
     smtp_username: str = ""
     smtp_password: str = ""
     smtp_use_tls: bool = True
-    
+
     # TQLEX Configuration
     tqlex_token: Optional[str] = None
 ```
@@ -166,7 +166,7 @@ class MarketDataService:
     def __init__(self, adapter_name: str = 'eastmoney'):
         self.adapter = self._load_adapter(adapter_name)
         self.db = DatabaseFactory.get_postgresql_session()
-    
+
     def _load_adapter(self, name: str):
         if name == 'akshare':
             return get_akshare_extension()
@@ -174,7 +174,7 @@ class MarketDataService:
             return get_eastmoney_adapter()
         else:
             raise ValueError(f"Unknown adapter: {name}")
-    
+
     def fetch_and_save_fund_flow(self, symbol=None, timeframe="今日"):
         # Unified implementation
         data = self.adapter.get_stock_fund_flow(symbol, timeframe)
@@ -222,7 +222,7 @@ class EmailService:
         # Use config.py or provided config
         self.config = config or EmailConfig.from_settings(settings)
         self.smtp_client = self._create_smtp_client()
-    
+
     def send(self, to: str, subject: str, body: str) -> bool:
         """Unified send implementation"""
 ```
@@ -378,11 +378,11 @@ def get_adapter() -> AdapterClass:
 # Central adapter factory
 class AdapterFactory:
     _adapters = {}
-    
+
     @classmethod
     def register_adapter(cls, name: str, adapter_class: Type):
         cls._adapters[name] = adapter_class
-    
+
     @classmethod
     def get_adapter(cls, name: str, **config):
         try:
@@ -393,7 +393,7 @@ class AdapterFactory:
         except Exception as e:
             logger.error(f"Failed to initialize adapter {name}", error=str(e))
             raise
-    
+
     @classmethod
     def get_all_adapters(cls):
         return {name: cls.get_adapter(name) for name in cls._adapters}
@@ -511,7 +511,7 @@ class StockValidator:
             raise ValidationError("股票代码不能为空")
         # Additional validation
         return symbol
-    
+
     @staticmethod
     def validate_date_range(start_date, end_date, default_days=90):
         if not end_date:
@@ -532,7 +532,7 @@ class StockValidator:
 
 ### Week 1-2 (Phase 1)
 - Day 1-2: Implement database factory
-- Day 3-4: Implement service factory  
+- Day 3-4: Implement service factory
 - Day 5-7: Extend config.py with env vars
 - Day 8-10: Testing and validation
 
@@ -605,4 +605,3 @@ class StockValidator:
 - Database connection pool efficiency: +20%
 - Service initialization time: -15%
 - No regression in API response times
-

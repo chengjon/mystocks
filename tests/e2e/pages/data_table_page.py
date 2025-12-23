@@ -181,17 +181,13 @@ class DataTablePage(BasePage):
 
     def show_column(self, column_name: str) -> None:
         """显示列"""
-        checkbox = self.page.locator(
-            f"input[value='{column_name}']"
-        )
+        checkbox = self.page.locator(f"input[value='{column_name}']")
         if not checkbox.is_checked():
             self.check_checkbox(f"input[value='{column_name}']")
 
     def hide_column(self, column_name: str) -> None:
         """隐藏列"""
-        checkbox = self.page.locator(
-            f"input[value='{column_name}']"
-        )
+        checkbox = self.page.locator(f"input[value='{column_name}']")
         if checkbox.is_checked():
             self.uncheck_checkbox(f"input[value='{column_name}']")
 

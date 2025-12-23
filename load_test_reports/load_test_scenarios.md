@@ -271,4 +271,3 @@ Push system to its limits with 2000 concurrent users
 - No deadlocks or hangs
 - Database connection pool limits respected
 - Graceful degradation observed
-

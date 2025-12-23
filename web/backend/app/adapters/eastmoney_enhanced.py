@@ -11,7 +11,6 @@ This adapter enhances the existing EastMoneyAdapter with BaseDataSourceAdapter f
 
 import time
 from typing import List, Optional
-from datetime import date, datetime
 import pandas as pd
 import logging
 

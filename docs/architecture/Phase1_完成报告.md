@@ -53,7 +53,7 @@ import pandas as pd
 
 class ITimeSeriesDataSource(ABC):
     """时序数据源抽象接口"""
-    
+
     @abstractmethod
     def get_realtime_quotes(
         self,
@@ -62,7 +62,7 @@ class ITimeSeriesDataSource(ABC):
     ) -> List[Dict[str, Any]]:
         """获取实时行情数据 (性能: <100ms)"""
         pass
-    
+
     @abstractmethod
     def get_kline_data(
         self,
@@ -73,7 +73,7 @@ class ITimeSeriesDataSource(ABC):
     ) -> pd.DataFrame:
         """获取K线数据 (性能: <500ms)"""
         pass
-    
+
     # ... 8个其他方法
 ```
 
@@ -367,13 +367,13 @@ class CompositeBusinessDataSource(IBusinessDataSource):
     ):
         self.ts = timeseries_source
         self.rel = relational_source
-    
+
     def get_dashboard_summary(self, user_id: int):
         # 组合多个数据源
         market_overview = self.ts.get_market_overview()
         watchlist = self.rel.get_watchlist(user_id)
         top_fund_flow = self.ts.get_top_fund_flow_stocks(limit=10)
-        
+
         return {
             "market_overview": market_overview,
             "watchlist_performance": self._calculate_watchlist_performance(watchlist),
@@ -390,7 +390,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 def singleton(cls):
     instances = {}
     lock = Lock()
-    
+
     @wraps(cls)
     def get_instance(*args, **kwargs):
         if cls not in instances:
@@ -399,7 +399,7 @@ def singleton(cls):
                 if cls not in instances:
                     instances[cls] = cls(*args, **kwargs)
         return instances[cls]
-    
+
     return get_instance
 
 @singleton
@@ -468,7 +468,7 @@ def get_realtime_quotes(
 def get_realtime_quotes(...):
     """
     获取实时行情数据
-    
+
     性能要求:
         - 单股票查询: < 50ms
         - 批量查询(10个): < 100ms

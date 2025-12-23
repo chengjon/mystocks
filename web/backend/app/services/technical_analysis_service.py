@@ -7,15 +7,12 @@ Enhanced Technical Analysis
 """
 
 import logging
-from datetime import datetime, date, timedelta
-from typing import Dict, List, Optional, Tuple
+from datetime import datetime, timedelta
+from typing import Dict, Optional
 import pandas as pd
-import numpy as np
 import talib
 import akshare as ak
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

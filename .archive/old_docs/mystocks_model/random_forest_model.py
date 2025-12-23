@@ -18,6 +18,7 @@ try:
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
     SKLEARN_AVAILABLE = True
 except ImportError:
     SKLEARN_AVAILABLE = False
@@ -54,13 +55,12 @@ class RandomForestModel(BaseModel):
         self.kwargs = kwargs
 
         self.model = RandomForestClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            random_state=42,
-            **kwargs
+            n_estimators=n_estimators, max_depth=max_depth, random_state=42, **kwargs
         )
 
-    def fit(self, X: pd.DataFrame, y: pd.Series, test_size: float = 0.2, **kwargs) -> Dict[str, Any]:
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, test_size: float = 0.2, **kwargs
+    ) -> Dict[str, Any]:
         """
         Train Random Forest model
 
@@ -85,12 +85,12 @@ class RandomForestModel(BaseModel):
         y_pred = self.model.predict(X_test)
 
         metrics = {
-            'accuracy': accuracy_score(y_test, y_pred),
-            'precision': precision_score(y_test, y_pred, zero_division=0),
-            'recall': recall_score(y_test, y_pred, zero_division=0),
-            'f1_score': f1_score(y_test, y_pred, zero_division=0),
-            'train_samples': len(X_train),
-            'test_samples': len(X_test)
+            "accuracy": accuracy_score(y_test, y_pred),
+            "precision": precision_score(y_test, y_pred, zero_division=0),
+            "recall": recall_score(y_test, y_pred, zero_division=0),
+            "f1_score": f1_score(y_test, y_pred, zero_division=0),
+            "train_samples": len(X_train),
+            "test_samples": len(X_test),
         }
 
         return metrics
@@ -133,22 +133,22 @@ class RandomForestModel(BaseModel):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         model_data = {
-            'model': self.model,
-            'n_estimators': self.n_estimators,
-            'max_depth': self.max_depth,
-            'kwargs': self.kwargs
+            "model": self.model,
+            "n_estimators": self.n_estimators,
+            "max_depth": self.max_depth,
+            "kwargs": self.kwargs,
         }
 
-        with open(file_path, 'wb') as f:
+        with open(file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def load_model(self, file_path: str) -> None:
         """Load model from file"""
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             model_data = pickle.load(f)
 
-        self.model = model_data['model']
-        self.n_estimators = model_data['n_estimators']
-        self.max_depth = model_data['max_depth']
-        self.kwargs = model_data.get('kwargs', {})
+        self.model = model_data["model"]
+        self.n_estimators = model_data["n_estimators"]
+        self.max_depth = model_data["max_depth"]
+        self.kwargs = model_data.get("kwargs", {})
         self.is_trained = True

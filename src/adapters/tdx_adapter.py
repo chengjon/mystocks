@@ -15,7 +15,7 @@ import sys
 import time
 from datetime import datetime
 from functools import wraps
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import pandas as pd
 
@@ -89,14 +89,18 @@ class TdxDataSource(IDataSource):
             try:
                 self.server_config = TdxServerConfig(config_file)
                 self.tdx_host, self.tdx_port = self.server_config.get_primary_server()
-                self.logger.info(f"TDX适配器初始化: 使用connect.cfg配置")
+                self.logger.info("TDX适配器初始化: 使用connect.cfg配置")
                 self.logger.info(f"主服务器: {self.tdx_host}:{self.tdx_port}")
-                self.logger.info(f"可用服务器总数: {self.server_config.get_server_count()}")
+                self.logger.info(
+                    f"可用服务器总数: {self.server_config.get_server_count()}"
+                )
             except Exception as e:
                 self.logger.warning(f"加载connect.cfg失败: {e}, 使用环境变量配置")
                 self.use_server_config = False
                 self.server_config = None
-                self.tdx_host = tdx_host or os.getenv("TDX_SERVER_HOST", "101.227.73.20")
+                self.tdx_host = tdx_host or os.getenv(
+                    "TDX_SERVER_HOST", "101.227.73.20"
+                )
                 self.tdx_port = int(tdx_port or os.getenv("TDX_SERVER_PORT", "7709"))
         else:
             self.server_config = None
@@ -104,7 +108,9 @@ class TdxDataSource(IDataSource):
             self.tdx_port = int(tdx_port or os.getenv("TDX_SERVER_PORT", "7709"))
             self.logger.info(f"TDX适配器初始化: {self.tdx_host}:{self.tdx_port}")
 
-        self.logger.info(f"重试配置: max_retries={self.max_retries}, retry_delay={self.retry_delay}s")
+        self.logger.info(
+            f"重试配置: max_retries={self.max_retries}, retry_delay={self.retry_delay}s"
+        )
 
     # ==================== T006: 连接管理辅助方法 ====================
 
@@ -198,20 +204,27 @@ class TdxDataSource(IDataSource):
                     return func(*args, **kwargs)
                 except Exception as e:
                     if attempt < self.max_retries:
-                        delay = self.retry_delay * (2 ** (attempt - 1))  # 指数退避: 1s, 2s, 4s...
+                        delay = self.retry_delay * (
+                            2 ** (attempt - 1)
+                        )  # 指数退避: 1s, 2s, 4s...
 
                         # 如果启用服务器配置,尝试切换到备用服务器
                         if self.use_server_config and self.server_config:
                             try:
                                 old_server = f"{self.tdx_host}:{self.tdx_port}"
-                                self.tdx_host, self.tdx_port = self.server_config.get_random_server()
+                                self.tdx_host, self.tdx_port = (
+                                    self.server_config.get_random_server()
+                                )
                                 new_server = f"{self.tdx_host}:{self.tdx_port}"
-                                self.logger.info(f"切换服务器: {old_server} → {new_server}")
+                                self.logger.info(
+                                    f"切换服务器: {old_server} → {new_server}"
+                                )
                             except Exception as switch_error:
                                 self.logger.warning(f"切换服务器失败: {switch_error}")
 
                         self.logger.warning(
-                            f"API调用失败 (尝试 {attempt}/{self.max_retries}): {str(e)}, " f"{delay}秒后重试..."
+                            f"API调用失败 (尝试 {attempt}/{self.max_retries}): {str(e)}, "
+                            f"{delay}秒后重试..."
                         )
                         time.sleep(delay)
                     else:
@@ -266,14 +279,18 @@ class TdxDataSource(IDataSource):
         # 4. OHLC逻辑检查(仅警告,不修改数据)
         invalid_rows = df[df["high"] < df[["open", "close", "low"]].max(axis=1)]
         if not invalid_rows.empty:
-            self.logger.warning(f"发现{len(invalid_rows)}行OHLC逻辑异常(high < max(open, close, low))")
+            self.logger.warning(
+                f"发现{len(invalid_rows)}行OHLC逻辑异常(high < max(open, close, low))"
+            )
 
         return df
 
     # ==================== T011: 所有IDataSource方法的stub实现 ====================
     # 这些将在后续Phase中逐个实现
 
-    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def get_stock_daily(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -327,17 +344,23 @@ class TdxDataSource(IDataSource):
             batch_size = 800
             max_batches = 20  # 最多获取20批(16000条,约40年)
 
-            self.logger.info(f"开始获取股票日线: {symbol}, 日期范围: {start_date} ~ {end_date}")
+            self.logger.info(
+                f"开始获取股票日线: {symbol}, 日期范围: {start_date} ~ {end_date}"
+            )
 
             @self._retry_api_call
             def fetch_kline_batch(start_position):
                 """获取单批K线数据"""
                 with self._get_tdx_connection() as api:
                     if not api.connect(self.tdx_host, self.tdx_port):
-                        raise ConnectionError(f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}")
+                        raise ConnectionError(
+                            f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}"
+                        )
 
                     # category=9表示日K线
-                    result = api.get_security_bars(9, market, symbol, start_position, batch_size)
+                    result = api.get_security_bars(
+                        9, market, symbol, start_position, batch_size
+                    )
                     return result
 
             # 分批获取数据
@@ -346,7 +369,11 @@ class TdxDataSource(IDataSource):
                     result_batch = fetch_kline_batch(start_pos)
 
                     # pytdx返回list of OrderedDict,需要转换为DataFrame
-                    if result_batch is None or not isinstance(result_batch, list) or len(result_batch) == 0:
+                    if (
+                        result_batch is None
+                        or not isinstance(result_batch, list)
+                        or len(result_batch) == 0
+                    ):
                         self.logger.info(f"第{batch_num + 1}批数据为空,已获取所有数据")
                         break
 
@@ -358,7 +385,9 @@ class TdxDataSource(IDataSource):
 
                     # 日期格式化(pytdx返回的datetime格式)
                     if "datetime" in df_batch.columns:
-                        df_batch["date"] = pd.to_datetime(df_batch["datetime"]).dt.strftime("%Y-%m-%d")
+                        df_batch["date"] = pd.to_datetime(
+                            df_batch["datetime"]
+                        ).dt.strftime("%Y-%m-%d")
                         df_batch = df_batch.drop(columns=["datetime"])
 
                     all_data.append(df_batch)
@@ -373,7 +402,9 @@ class TdxDataSource(IDataSource):
 
                     # 如果返回数据少于batch_size,说明已到最早数据
                     if len(df_batch) < batch_size:
-                        self.logger.info(f"返回数据量({len(df_batch)}) < batch_size({batch_size}), 已到最早数据")
+                        self.logger.info(
+                            f"返回数据量({len(df_batch)}) < batch_size({batch_size}), 已到最早数据"
+                        )
                         break
 
                     start_pos += batch_size
@@ -391,7 +422,9 @@ class TdxDataSource(IDataSource):
             df_result = pd.concat(all_data, ignore_index=True)
 
             # 按日期过滤
-            df_result = df_result[(df_result["date"] >= start_date) & (df_result["date"] <= end_date)]
+            df_result = df_result[
+                (df_result["date"] >= start_date) & (df_result["date"] <= end_date)
+            ]
 
             # 按日期升序排列
             df_result = df_result.sort_values("date").reset_index(drop=True)
@@ -422,7 +455,9 @@ class TdxDataSource(IDataSource):
             self.logger.error(error_msg, exc_info=True)
             return pd.DataFrame()
 
-    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def get_index_daily(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """
         获取指数日线数据
 
@@ -478,18 +513,24 @@ class TdxDataSource(IDataSource):
             batch_size = 800
             max_batches = 20
 
-            self.logger.info(f"开始获取指数日线: {symbol}, 日期范围: {start_date} ~ {end_date}")
+            self.logger.info(
+                f"开始获取指数日线: {symbol}, 日期范围: {start_date} ~ {end_date}"
+            )
 
             @self._retry_api_call
             def fetch_index_batch(start_position):
                 """获取单批指数K线数据"""
                 with self._get_tdx_connection() as api:
                     if not api.connect(self.tdx_host, self.tdx_port):
-                        raise ConnectionError(f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}")
+                        raise ConnectionError(
+                            f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}"
+                        )
 
                     # 使用get_index_bars获取指数K线
                     # category=9表示日K线
-                    result = api.get_index_bars(9, market, symbol, start_position, batch_size)
+                    result = api.get_index_bars(
+                        9, market, symbol, start_position, batch_size
+                    )
                     return result
 
             # 分批获取数据
@@ -498,7 +539,11 @@ class TdxDataSource(IDataSource):
                     result_batch = fetch_index_batch(start_pos)
 
                     # pytdx返回list of OrderedDict,需要转换为DataFrame
-                    if result_batch is None or not isinstance(result_batch, list) or len(result_batch) == 0:
+                    if (
+                        result_batch is None
+                        or not isinstance(result_batch, list)
+                        or len(result_batch) == 0
+                    ):
                         self.logger.info(f"第{batch_num + 1}批数据为空,已获取所有数据")
                         break
 
@@ -510,7 +555,9 @@ class TdxDataSource(IDataSource):
 
                     # 日期格式化
                     if "datetime" in df_batch.columns:
-                        df_batch["date"] = pd.to_datetime(df_batch["datetime"]).dt.strftime("%Y-%m-%d")
+                        df_batch["date"] = pd.to_datetime(
+                            df_batch["datetime"]
+                        ).dt.strftime("%Y-%m-%d")
                         df_batch = df_batch.drop(columns=["datetime"])
 
                     all_data.append(df_batch)
@@ -525,7 +572,9 @@ class TdxDataSource(IDataSource):
 
                     # 如果返回数据少于batch_size,说明已到最早数据
                     if len(df_batch) < batch_size:
-                        self.logger.info(f"返回数据量({len(df_batch)}) < batch_size({batch_size}), 已到最早数据")
+                        self.logger.info(
+                            f"返回数据量({len(df_batch)}) < batch_size({batch_size}), 已到最早数据"
+                        )
                         break
 
                     start_pos += batch_size
@@ -543,7 +592,9 @@ class TdxDataSource(IDataSource):
             df_result = pd.concat(all_data, ignore_index=True)
 
             # 按日期过滤
-            df_result = df_result[(df_result["date"] >= start_date) & (df_result["date"] <= end_date)]
+            df_result = df_result[
+                (df_result["date"] >= start_date) & (df_result["date"] <= end_date)
+            ]
 
             # 按日期升序排列
             df_result = df_result.sort_values("date").reset_index(drop=True)
@@ -578,7 +629,11 @@ class TdxDataSource(IDataSource):
         """获取股票基本信息 - Phase 6实现(有限支持)"""
         try:
             # 通过查询日线数据获取基本信息
-            df = self.get_stock_daily(symbol, datetime.now().strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d"))
+            df = self.get_stock_daily(
+                symbol,
+                datetime.now().strftime("%Y-%m-%d"),
+                datetime.now().strftime("%Y-%m-%d"),
+            )
 
             if not df.empty:
                 # 提取基本信息
@@ -587,7 +642,9 @@ class TdxDataSource(IDataSource):
                 # 构建股票基本信息
                 basic_info = {
                     "symbol": symbol,
-                    "name": latest_record.get("name", f"股票{symbol}"),  # 实际上可能需要单独的接口获取名称
+                    "name": latest_record.get(
+                        "name", f"股票{symbol}"
+                    ),  # 实际上可能需要单独的接口获取名称
                     "market": "SH" if symbol.startswith("6") else "SZ",
                     "category": "stock",  # 类别可以是stock, index, fund等
                     "status": "trading",  # 交易状态
@@ -685,7 +742,9 @@ class TdxDataSource(IDataSource):
             def fetch_quote():
                 with self._get_tdx_connection() as api:
                     if not api.connect(self.tdx_host, self.tdx_port):
-                        raise ConnectionError(f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}")
+                        raise ConnectionError(
+                            f"无法连接到TDX服务器: {self.tdx_host}:{self.tdx_port}"
+                        )
 
                     # 调用get_security_quotes获取实时行情
                     # 参数: [(market, code), ...]  市场代码和股票代码的元组列表
@@ -756,7 +815,9 @@ class TdxDataSource(IDataSource):
 
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
         """获取交易日历 - Phase 8 stub实现(TDX不支持)"""
-        self.logger.warning("get_market_calendar不被TDX适配器支持,请使用akshare等其他数据源")
+        self.logger.warning(
+            "get_market_calendar不被TDX适配器支持,请使用akshare等其他数据源"
+        )
         return pd.DataFrame()
 
     def get_financial_data(self, symbol: str, period: str = "quarter") -> pd.DataFrame:
@@ -797,7 +858,9 @@ class TdxDataSource(IDataSource):
 
     # ==================== 扩展功能: 多周期K线 ====================
 
-    def get_stock_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> pd.DataFrame:
+    def get_stock_kline(
+        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
+    ) -> pd.DataFrame:
         """
         获取股票K线数据(支持多种周期)
 
@@ -832,7 +895,9 @@ class TdxDataSource(IDataSource):
         }
 
         if period not in period_map:
-            self.logger.error(f"不支持的K线周期: {period}, 支持的周期: {list(period_map.keys())}")
+            self.logger.error(
+                f"不支持的K线周期: {period}, 支持的周期: {list(period_map.keys())}"
+            )
             return pd.DataFrame()
 
         category = period_map[period]
@@ -856,15 +921,19 @@ class TdxDataSource(IDataSource):
             batch_size = 800
             max_batches = 50  # 分钟线数据量大,增加批次上限
 
-            self.logger.info(f"开始获取股票{period}K线: {symbol}, 日期范围: {start_date} ~ {end_date}")
+            self.logger.info(
+                f"开始获取股票{period}K线: {symbol}, 日期范围: {start_date} ~ {end_date}"
+            )
 
             @self._retry_api_call
             def fetch_kline_batch(start_position):
                 with self._get_tdx_connection() as api:
                     if not api.connect(self.tdx_host, self.tdx_port):
-                        raise ConnectionError(f"无法连接到TDX服务器")
+                        raise ConnectionError("无法连接到TDX服务器")
 
-                    result = api.get_security_bars(category, market, symbol, start_position, batch_size)
+                    result = api.get_security_bars(
+                        category, market, symbol, start_position, batch_size
+                    )
                     return result
 
             # 分批获取
@@ -872,7 +941,11 @@ class TdxDataSource(IDataSource):
                 try:
                     result_batch = fetch_kline_batch(start_pos)
 
-                    if result_batch is None or not isinstance(result_batch, list) or len(result_batch) == 0:
+                    if (
+                        result_batch is None
+                        or not isinstance(result_batch, list)
+                        or len(result_batch) == 0
+                    ):
                         self.logger.info(f"第{batch_num + 1}批数据为空")
                         break
 
@@ -882,7 +955,9 @@ class TdxDataSource(IDataSource):
                     # 日期格式化
                     if "datetime" in df_batch.columns:
                         df_batch["datetime"] = pd.to_datetime(df_batch["datetime"])
-                        df_batch["date"] = df_batch["datetime"].dt.strftime("%Y-%m-%d %H:%M:%S")
+                        df_batch["date"] = df_batch["datetime"].dt.strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        )
 
                     all_data.append(df_batch)
                     self.logger.debug(f"获取第{batch_num + 1}批: {len(df_batch)}条")
@@ -912,8 +987,13 @@ class TdxDataSource(IDataSource):
 
             # 过滤日期范围
             if "date" in df_result.columns:
-                df_result["date_only"] = pd.to_datetime(df_result["date"]).dt.strftime("%Y-%m-%d")
-                df_result = df_result[(df_result["date_only"] >= start_date) & (df_result["date_only"] <= end_date)]
+                df_result["date_only"] = pd.to_datetime(df_result["date"]).dt.strftime(
+                    "%Y-%m-%d"
+                )
+                df_result = df_result[
+                    (df_result["date_only"] >= start_date)
+                    & (df_result["date_only"] <= end_date)
+                ]
                 df_result = df_result.drop(columns=["date_only"])
 
             # 按时间升序排列
@@ -927,7 +1007,9 @@ class TdxDataSource(IDataSource):
             self.logger.error(f"获取{period}K线失败: {e}", exc_info=True)
             return pd.DataFrame()
 
-    def get_index_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> pd.DataFrame:
+    def get_index_kline(
+        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
+    ) -> pd.DataFrame:
         """
         获取指数K线数据(支持多种周期)
 
@@ -981,14 +1063,20 @@ class TdxDataSource(IDataSource):
                     if not api.connect(self.tdx_host, self.tdx_port):
                         raise ConnectionError("无法连接到TDX服务器")
 
-                    result = api.get_index_bars(category, market, symbol, start_position, batch_size)
+                    result = api.get_index_bars(
+                        category, market, symbol, start_position, batch_size
+                    )
                     return result
 
             for batch_num in range(max_batches):
                 try:
                     result_batch = fetch_index_batch(start_pos)
 
-                    if result_batch is None or not isinstance(result_batch, list) or len(result_batch) == 0:
+                    if (
+                        result_batch is None
+                        or not isinstance(result_batch, list)
+                        or len(result_batch) == 0
+                    ):
                         break
 
                     df_batch = pd.DataFrame(result_batch)
@@ -996,7 +1084,9 @@ class TdxDataSource(IDataSource):
 
                     if "datetime" in df_batch.columns:
                         df_batch["datetime"] = pd.to_datetime(df_batch["datetime"])
-                        df_batch["date"] = df_batch["datetime"].dt.strftime("%Y-%m-%d %H:%M:%S")
+                        df_batch["date"] = df_batch["datetime"].dt.strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        )
 
                     all_data.append(df_batch)
 
@@ -1016,8 +1106,13 @@ class TdxDataSource(IDataSource):
 
             # 过滤日期
             if "date" in df_result.columns:
-                df_result["date_only"] = pd.to_datetime(df_result["date"]).dt.strftime("%Y-%m-%d")
-                df_result = df_result[(df_result["date_only"] >= start_date) & (df_result["date_only"] <= end_date)]
+                df_result["date_only"] = pd.to_datetime(df_result["date"]).dt.strftime(
+                    "%Y-%m-%d"
+                )
+                df_result = df_result[
+                    (df_result["date_only"] >= start_date)
+                    & (df_result["date_only"] <= end_date)
+                ]
                 df_result = df_result.drop(columns=["date_only"])
 
             df_result = df_result.sort_values("date").reset_index(drop=True)
@@ -1084,7 +1179,9 @@ class TdxDataSource(IDataSource):
 
                 # 验证文件大小
                 if size % row_size != 0:
-                    raise ValueError(f"文件大小({size}字节)不是{row_size}的倍数,可能损坏")
+                    raise ValueError(
+                        f"文件大小({size}字节)不是{row_size}的倍数,可能损坏"
+                    )
 
                 # 逐条解析记录
                 for i in range(0, size, row_size):
@@ -1107,7 +1204,7 @@ class TdxDataSource(IDataSource):
                         data_set.append(row)
 
                     except struct.error as e:
-                        self.logger.warning(f"解析第{i//row_size}条记录失败: {e}")
+                        self.logger.warning(f"解析第{i // row_size}条记录失败: {e}")
                         continue
 
         except Exception as e:
@@ -1146,7 +1243,9 @@ class TdxDataSource(IDataSource):
 
         return df
 
-    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def get_minute_kline(
+        self, symbol: str, period: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """
         获取分钟K线数据
 
@@ -1191,5 +1290,7 @@ class TdxDataSource(IDataSource):
         Returns:
             Dict: 个股行业和概念信息
         """
-        self.logger.info(f"[TDX] 注意：TDX不直接提供个股 {symbol} 的行业和概念信息，建议使用AkShare适配器")
+        self.logger.info(
+            f"[TDX] 注意：TDX不直接提供个股 {symbol} 的行业和概念信息，建议使用AkShare适配器"
+        )
         return {"symbol": symbol, "industries": [], "concepts": []}

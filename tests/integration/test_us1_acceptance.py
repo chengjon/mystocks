@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 import pandas as pd
 import numpy as np
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from unified_manager import MyStocksUnifiedManager
 from src.core.data_classification import DataClassification
 from src.core.batch_failure_strategy import BatchFailureStrategy
@@ -54,8 +54,8 @@ try:
         DataClassification.TICK_DATA, tick_data, "test_tick_600000"
     )
     # 第3行: (可选) 检查结果
-    print(f"  代码行数: 3行 ✓")
-    print(f"  操作简洁性: 通过 ✓")
+    print("  代码行数: 3行 ✓")
+    print("  操作简洁性: 通过 ✓")
     print("✅ 验收场景1通过\n")
 
 except Exception as e:
@@ -129,7 +129,7 @@ try:
     print(f"  数据准备时间: {preparation_time:.3f}秒")
 
     if preparation_time < 2.0:
-        print(f"  性能: 通过 (< 2秒) ✓")
+        print("  性能: 通过 (< 2秒) ✓")
         print("✅ 验收场景3通过 (数据准备阶段)\n")
     else:
         print(f"❌ 验收场景3失败: 数据准备时间{preparation_time:.3f}秒 > 2秒\n")
@@ -174,7 +174,7 @@ try:
     manager.redis.delete(*[f"test:position:{i}" for i in range(10)])
 
     if avg_read_time < 10.0:
-        print(f"  响应时间: 通过 (< 10ms) ✓")
+        print("  响应时间: 通过 (< 10ms) ✓")
         print("✅ 验收场景4通过\n")
     else:
         print(f"❌ 验收场景4失败: 平均读取时间{avg_read_time:.3f}ms > 10ms\n")
@@ -205,7 +205,7 @@ try:
     print(f"  查询时间: {query_time:.3f}ms")
 
     if query_time < 100.0:
-        print(f"  响应时间: 通过 (< 100ms) ✓")
+        print("  响应时间: 通过 (< 100ms) ✓")
         print("✅ 验收场景5通过 (内存查询阶段)\n")
     else:
         print(f"❌ 验收场景5失败: 查询时间{query_time:.3f}ms > 100ms\n")
@@ -240,9 +240,9 @@ try:
     # 验证队列
     pending = queue.get_pending_items(limit=10)
 
-    print(f"  故障恢复队列: 已启用 ✓")
-    print(f"  队列持久化: SQLite ✓")
-    print(f"  数据安全性: 保证不丢失 ✓")
+    print("  故障恢复队列: 已启用 ✓")
+    print("  队列持久化: SQLite ✓")
+    print("  数据安全性: 保证不丢失 ✓")
     print("✅ 验收场景6通过\n")
 
 except Exception as e:

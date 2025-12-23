@@ -14,7 +14,6 @@ import logging
 from typing import Dict, Any, Optional, Callable, List
 from functools import wraps
 from contextlib import contextmanager
-from datetime import datetime
 
 from src.monitoring.monitoring_database import (
     MonitoringDatabase,
@@ -285,21 +284,22 @@ class PerformanceMonitor:
         # 从监控数据库查询统计信息
         try:
             from src.monitoring.monitoring_database import get_monitoring_database
+
             monitoring_db = get_monitoring_database()
-            
+
             if monitoring_db:
                 # 查询慢查询数量
                 slow_query_count = monitoring_db.get_slow_query_count(hours)
-                
+
                 # 查询平均查询时间
                 avg_query_time = monitoring_db.get_average_query_time(hours)
-                
+
                 # 查询最大查询时间
                 max_query_time = monitoring_db.get_max_query_time(hours)
-                
+
                 # 查询总查询数
                 total_queries = monitoring_db.get_total_query_count(hours)
-                
+
                 return {
                     "period_hours": hours,
                     "slow_query_count": slow_query_count,
@@ -333,7 +333,7 @@ class PerformanceMonitor:
         classification: str,
         duration_ms: float,
         success: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """
         记录操作性能 (兼容旧接口)
@@ -349,8 +349,8 @@ class PerformanceMonitor:
         with self.track_operation(
             operation_name=operation,
             classification=classification,
-            database_type=kwargs.get('database_type'),
-            table_name=kwargs.get('table_name'),
+            database_type=kwargs.get("database_type"),
+            table_name=kwargs.get("table_name"),
         ):
             # 由于这是一个兼容性方法，我们直接记录指标而不实际执行操作
             self._record_metric(
@@ -358,8 +358,8 @@ class PerformanceMonitor:
                 metric_value=duration_ms,
                 metric_type="OPERATION_TIME",
                 classification=classification,
-                database_type=kwargs.get('database_type'),
-                table_name=kwargs.get('table_name'),
+                database_type=kwargs.get("database_type"),
+                table_name=kwargs.get("table_name"),
                 error_occurred=not success,
             )
 

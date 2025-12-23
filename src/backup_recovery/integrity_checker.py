@@ -11,14 +11,12 @@ import os
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, Tuple, Optional
-from pathlib import Path
+from typing import Dict, Any, Tuple
 
 # 数据库和存储访问
 from src.storage.database.connection_manager import DatabaseConnectionManager
 from src.data_access.tdengine_access import TDengineDataAccess
 from src.data_access.postgresql_access import PostgreSQLDataAccess
-from src.backup_recovery.backup_manager import BackupManager  # 用于获取备份元数据
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +75,10 @@ class IntegrityChecker:
                     # 查询表行数 - 使用参数化查询防止SQL注入
                     # 验证表名只包含字母、数字和下划线
                     import re
-                    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table):
+
+                    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", table):
                         raise ValueError(f"Invalid table name: {table}")
-                    
+
                     query = f"SELECT COUNT(*) FROM {table}"
                     cursor = self.conn_manager.get_postgresql_connection().cursor()
                     cursor.execute(query)
@@ -108,13 +107,13 @@ class IntegrityChecker:
 
                 if diff_percent <= tolerance_percent:
                     details["row_count_match"] = True
-                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.info(msg)
                 else:
                     details["errors"].append(
-                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     )
-                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.warning(msg)
 
             is_valid = (
@@ -199,13 +198,13 @@ class IntegrityChecker:
 
                 if diff_percent <= tolerance_percent:
                     details["row_count_match"] = True
-                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.info(msg)
                 else:
                     details["errors"].append(
-                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     )
-                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent*100:.2f}%)"
+                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.warning(msg)
 
             is_valid = (

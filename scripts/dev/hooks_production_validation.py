@@ -15,11 +15,10 @@ Date: 2025-11-13
 
 import json
 import time
-import subprocess
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 
 
 class HooksProductionValidator:
@@ -71,17 +70,17 @@ class HooksProductionValidator:
                 "test": "Installation Check",
                 "success": False,
                 "duration": time.time() - start_time,
-                "error": "Hooks目录不存在"
+                "error": "Hooks目录不存在",
             }
 
         # 检查必要Hooks文件
         expected_hooks = [
             "stop-python-quality-gate.sh",
-            "session-start-task-master-injector.sh", 
+            "session-start-task-master-injector.sh",
             "post-tool-use-database-schema-validator.sh",
             "user-prompt-submit-skill-activation.sh",
             "post-tool-use-file-edit-tracker.sh",
-            "session-end-cleanup.sh"
+            "session-end-cleanup.sh",
         ]
 
         found_hooks = []
@@ -116,18 +115,14 @@ class HooksProductionValidator:
                 pass
 
         # 检查支持文件
-        support_files = [
-            "parse_edit_log.py",
-            "README.md",
-            "HOOKS_IMPROVEMENT_PLAN.md"
-        ]
+        support_files = ["parse_edit_log.py", "README.md", "HOOKS_IMPROVEMENT_PLAN.md"]
 
         found_support = sum(1 for f in support_files if (self.hooks_dir / f).exists())
 
         installation_score = (
-            len(executable_hooks) * 20 +  # 每个可执行Hook 20分
-            found_support * 5 +           # 每个支持文件 5分
-            (20 if settings_configured else 0)  # 配置20分
+            len(executable_hooks) * 20  # 每个可执行Hook 20分
+            + found_support * 5  # 每个支持文件 5分
+            + (20 if settings_configured else 0)  # 配置20分
         )
 
         max_score = len(expected_hooks) * 20 + len(support_files) * 5 + 20
@@ -145,7 +140,7 @@ class HooksProductionValidator:
             "non_executable_hooks": non_executable_hooks,
             "settings_configured": settings_configured,
             "support_files": f"{found_support}/{len(support_files)}",
-            "coverage": f"{len(executable_hooks)}/{len(expected_hooks)} hooks installed"
+            "coverage": f"{len(executable_hooks)}/{len(expected_hooks)} hooks installed",
         }
 
     def _validate_functionality(self) -> Dict[str, Any]:
@@ -157,46 +152,63 @@ class HooksProductionValidator:
             "Stop Hook (Python Quality Gate)": {
                 "test": "Syntax validation, import checks, error threshold",
                 "status": "✅",
-                "features": ["关键模块导入验证", "语法检查", "错误阈值控制", "零错误容忍策略"]
+                "features": [
+                    "关键模块导入验证",
+                    "语法检查",
+                    "错误阈值控制",
+                    "零错误容忍策略",
+                ],
             },
             "SessionStart Hook (Task Master)": {
                 "test": "Task context injection, task detection, stdout injection",
-                "status": "✅", 
-                "features": ["Task Master集成", "上下文注入", "任务状态检测", "跨会话连续性"]
+                "status": "✅",
+                "features": [
+                    "Task Master集成",
+                    "上下文注入",
+                    "任务状态检测",
+                    "跨会话连续性",
+                ],
             },
             "PostToolUse Hook (Database Validator)": {
                 "test": "Architecture validation, dangerous pattern detection",
                 "status": "✅",
-                "features": ["双数据库架构验证", "危险模式检测", "架构违规警告", "非阻塞验证"]
+                "features": [
+                    "双数据库架构验证",
+                    "危险模式检测",
+                    "架构违规警告",
+                    "非阻塞验证",
+                ],
             },
             "UserPromptSubmit Hook (Skill Activation)": {
                 "test": "Skill rule matching, context activation",
                 "status": "✅",
-                "features": ["技能规则匹配", "上下文激活", "多语言支持", "智能路由"]
+                "features": ["技能规则匹配", "上下文激活", "多语言支持", "智能路由"],
             },
             "SessionEnd Hook (Cleanup)": {
                 "test": "Log cleanup, session management",
                 "status": "✅",
-                "features": ["会话日志清理", "容量管理", "优雅退出", "资源清理"]
+                "features": ["会话日志清理", "容量管理", "优雅退出", "资源清理"],
             },
             "PostToolUse Hook (File Tracker)": {
                 "test": "Edit tracking, change monitoring",
                 "status": "✅",
-                "features": ["文件编辑追踪", "变更监控", "会话记录", "历史分析"]
-            }
+                "features": ["文件编辑追踪", "变更监控", "会话记录", "历史分析"],
+            },
         }
 
         # 统计功能覆盖
-        total_features = sum(len(test["features"]) for test in functionality_tests.values())
+        total_features = sum(
+            len(test["features"]) for test in functionality_tests.values()
+        )
         working_features = total_features  # 假设所有功能都正常
 
         # 统计高级功能
         advanced_features = [
             "零错误容忍策略",
-            "跨会话连续性", 
+            "跨会话连续性",
             "双数据库架构验证",
             "智能路由",
-            "会话日志清理"
+            "会话日志清理",
         ]
 
         return {
@@ -215,8 +227,8 @@ class HooksProductionValidator:
                 "任务管理": "Task Master集成，跨会话上下文",
                 "架构验证": "双数据库架构合规性检查",
                 "自动化运维": "会话生命周期管理，自动清理",
-                "智能增强": "技能激活，模式识别"
-            }
+                "智能增强": "技能激活，模式识别",
+            },
         }
 
     def _validate_claude_compliance(self) -> Dict[str, Any]:
@@ -227,33 +239,45 @@ class HooksProductionValidator:
             "退出码规范": {
                 "requirement": "使用标准退出码 (0=成功, 1=警告, 2=阻止)",
                 "status": "✅",
-                "details": ["Stop Hook: 0=通过, 2=阻止", "SessionStart: 0=成功", "PostToolUse: 0=非阻塞警告"]
+                "details": [
+                    "Stop Hook: 0=通过, 2=阻止",
+                    "SessionStart: 0=成功",
+                    "PostToolUse: 0=非阻塞警告",
+                ],
             },
             "JSON输出格式": {
                 "requirement": "使用 hookSpecificOutput 标准格式",
                 "status": "✅",
-                "details": ["hookEventName 字段", "decision/reason 结构", "additionalContext 支持"]
+                "details": [
+                    "hookEventName 字段",
+                    "decision/reason 结构",
+                    "additionalContext 支持",
+                ],
             },
             "超时设置": {
                 "requirement": "合理的超时时间设置 (3-120秒)",
                 "status": "✅",
-                "details": ["Stop Hook: 120秒", "SessionStart: 5秒", "PostToolUse: 5秒"]
+                "details": [
+                    "Stop Hook: 120秒",
+                    "SessionStart: 5秒",
+                    "PostToolUse: 5秒",
+                ],
             },
             "错误处理": {
                 "requirement": "优雅的错误处理，避免中断Claude",
                 "status": "✅",
-                "details": ["try-catch 包装", "默认允许策略", "详细错误日志"]
+                "details": ["try-catch 包装", "默认允许策略", "详细错误日志"],
             },
             "性能要求": {
                 "requirement": "快速执行，不影响用户体验",
                 "status": "✅",
-                "details": ["非阻塞设计", "缓存机制", "异步处理"]
+                "details": ["非阻塞设计", "缓存机制", "异步处理"],
             },
             "安全要求": {
                 "requirement": "安全的文件访问和命令执行",
                 "status": "✅",
-                "details": ["路径验证", "参数清理", "权限检查"]
-            }
+                "details": ["路径验证", "参数清理", "权限检查"],
+            },
         }
 
         # 检查配置文件合规性
@@ -267,7 +291,9 @@ class HooksProductionValidator:
                 pass
 
         # 统计合规性
-        compliant_checks = sum(1 for check in compliance_checks.values() if check["status"] == "✅")
+        compliant_checks = sum(
+            1 for check in compliance_checks.values() if check["status"] == "✅"
+        )
         compliance_score = (compliant_checks / len(compliance_checks)) * 100
 
         return {
@@ -282,8 +308,8 @@ class HooksProductionValidator:
             "recommendations": [
                 "定期更新规范合规性检查",
                 "持续监控Hook执行性能",
-                "保持与Claude最新规范的同步"
-            ]
+                "保持与Claude最新规范的同步",
+            ],
         }
 
     def _validate_performance_security(self) -> Dict[str, Any]:
@@ -292,26 +318,10 @@ class HooksProductionValidator:
 
         # 性能指标
         performance_metrics = {
-            "启动时间": {
-                "target": "< 1秒",
-                "current": "~0.5秒",
-                "status": "✅"
-            },
-            "内存使用": {
-                "target": "< 50MB",
-                "current": "~20MB",
-                "status": "✅"
-            },
-            "CPU占用": {
-                "target": "< 5%",
-                "current": "~2%",
-                "status": "✅"
-            },
-            "文件系统访问": {
-                "target": "最小化",
-                "current": "优化",
-                "status": "✅"
-            }
+            "启动时间": {"target": "< 1秒", "current": "~0.5秒", "status": "✅"},
+            "内存使用": {"target": "< 50MB", "current": "~20MB", "status": "✅"},
+            "CPU占用": {"target": "< 5%", "current": "~2%", "status": "✅"},
+            "文件系统访问": {"target": "最小化", "current": "优化", "status": "✅"},
         }
 
         # 安全检查
@@ -321,14 +331,22 @@ class HooksProductionValidator:
             "命令注入防护": "✅ 使用参数化命令和转义",
             "权限最小化": "✅ 只访问必要的文件和目录",
             "日志安全": "✅ 不记录敏感信息",
-            "临时文件": "✅ 正确清理临时文件"
+            "临时文件": "✅ 正确清理临时文件",
         }
 
         # 安全分数
-        security_score = len([s for s in security_checks.values() if s.startswith("✅")]) / len(security_checks) * 100
+        security_score = (
+            len([s for s in security_checks.values() if s.startswith("✅")])
+            / len(security_checks)
+            * 100
+        )
 
         # 性能评分
-        performance_score = len([p for p in performance_metrics.values() if p["status"] == "✅"]) / len(performance_metrics) * 100
+        performance_score = (
+            len([p for p in performance_metrics.values() if p["status"] == "✅"])
+            / len(performance_metrics)
+            * 100
+        )
 
         return {
             "test": "Performance & Security Validation",
@@ -342,8 +360,8 @@ class HooksProductionValidator:
                 "内存优化": "使用LRU缓存减少重复计算",
                 "I/O优化": "批量操作和异步处理",
                 "安全加固": "输入验证和权限控制",
-                "监控告警": "性能指标和错误追踪"
-            }
+                "监控告警": "性能指标和错误追踪",
+            },
         }
 
     def _print_result(self, result: Dict[str, Any]):
@@ -351,13 +369,18 @@ class HooksProductionValidator:
         status_icon = "✅" if result.get("success", False) else "❌"
         test_name = result.get("test", "Unknown")
         duration = result.get("duration", 0)
-        
+
         print(f"   {status_icon} {test_name}: {duration:.2f}s")
-        
+
         if result.get("success"):
             # 显示关键指标
-            key_metrics = ["installation_score", "feature_coverage", "compliance_score", 
-                          "performance_score", "security_score"]
+            key_metrics = [
+                "installation_score",
+                "feature_coverage",
+                "compliance_score",
+                "performance_score",
+                "security_score",
+            ]
             for key in key_metrics:
                 if key in result:
                     print(f"      📊 {key}: {result[key]}")
@@ -368,8 +391,14 @@ class HooksProductionValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
-        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
+        successful_validations = sum(
+            1 for r in self.validation_results if r.get("success", False)
+        )
+        success_rate = (
+            (successful_validations / total_validations * 100)
+            if total_validations > 0
+            else 0
+        )
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -378,16 +407,16 @@ class HooksProductionValidator:
             "Hooks安装": "✅ 完成 - 所有核心Hooks已安装",
             "功能验证": "✅ 完成 - 100%功能覆盖",
             "规范合规": "✅ 完成 - 符合Claude官方规范",
-            "性能安全": "✅ 完成 - 高性能安全运行"
+            "性能安全": "✅ 完成 - 高性能安全运行",
         }
 
         # 验证成果汇总
         validation_achievements = {
             "自动化质量门禁": "零错误容忍策略确保代码质量",
-            "任务连续性": "Task Master集成跨会话任务管理", 
+            "任务连续性": "Task Master集成跨会话任务管理",
             "架构守护": "双数据库架构实时验证和警告",
             "智能运维": "全生命周期自动化管理",
-            "生产就绪": "高可靠性高性能Hooks系统"
+            "生产就绪": "高可靠性高性能Hooks系统",
         }
 
         summary = {
@@ -398,19 +427,21 @@ class HooksProductionValidator:
                 "successful_validations": successful_validations,
                 "success_rate": success_rate,
                 "total_duration": total_duration,
-                "production_ready": success_rate >= 90
+                "production_ready": success_rate >= 90,
             },
             "production_readiness": production_readiness,
             "validation_achievements": validation_achievements,
             "detailed_results": self.validation_results,
-            "next_recommendations": self._generate_production_recommendations()
+            "next_recommendations": self._generate_production_recommendations(),
         }
 
         # 打印摘要
         print("\n" + "=" * 60)
         print("📊 Hooks系统生产验证报告 (Phase 7-3)")
         print("=" * 60)
-        print(f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)")
+        print(
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+        )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
         print(f"🚀 生产就绪: {'是' if success_rate >= 90 else '否'}")
 
@@ -437,7 +468,7 @@ class HooksProductionValidator:
             "配置Hook日志聚合和分析",
             "建立Hook故障应急响应机制",
             "定期进行Hook安全审计和性能优化",
-            "更新项目文档包含Hooks使用指南"
+            "更新项目文档包含Hooks使用指南",
         ]
 
 

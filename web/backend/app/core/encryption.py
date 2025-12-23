@@ -18,7 +18,7 @@ Phase 3 Enhancements:
 import os
 import base64
 import json
-from typing import Union, Dict, Any, Optional, List
+from typing import Union, Dict, Any, Optional
 from datetime import datetime
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives import hashes
@@ -66,9 +66,7 @@ class EncryptionManager:
 
         # Phase 3: Support multiple key versions for rotation
         self._cipher_keys = {}  # {version: key_bytes}
-        self._key_metadata = (
-            {}
-        )  # {version: {"created_at": datetime, "rotated_at": datetime}}
+        self._key_metadata = {}  # {version: {"created_at": datetime, "rotated_at": datetime}}
 
         self._setup_key()
 
@@ -154,9 +152,9 @@ class EncryptionManager:
             return False
 
         # Mark current key as rotated
-        self._key_metadata[self.current_key_version][
-            "rotated_at"
-        ] = datetime.utcnow().isoformat()
+        self._key_metadata[self.current_key_version]["rotated_at"] = (
+            datetime.utcnow().isoformat()
+        )
 
         # Derive new key
         self._derive_key_for_version(new_version)
@@ -553,7 +551,7 @@ class SecretManager:
         migration_report["end_time"] = datetime.utcnow().isoformat()
 
         logger.info(
-            f"✅ Migration complete",
+            "✅ Migration complete",
             migrated=migration_report["migrated"],
             failed=migration_report["failed"],
             already_current=migration_report["already_current"],
@@ -595,7 +593,7 @@ class SecretManager:
         }
 
         logger.info(
-            f"📊 Version report generated",
+            "📊 Version report generated",
             total=report["total_secrets"],
             needs_migration=report["needs_migration"],
         )

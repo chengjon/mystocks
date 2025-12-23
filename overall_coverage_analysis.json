@@ -1,0 +1,211 @@
+{
+  "total_modules": 218,
+  "categories": {
+    "high_coverage": 12,
+    "medium_coverage": 0,
+    "low_coverage": 3,
+    "minimal_coverage": 0,
+    "no_coverage": 203
+  },
+  "priority_modules": [
+    {
+      "name": "src/adapters/financial_adapter.py",
+      "statements": 569,
+      "missing": 569,
+      "coverage": 0
+    },
+    {
+      "name": "src/data_access.py",
+      "statements": 500,
+      "missing": 500,
+      "coverage": 0
+    },
+    {
+      "name": "src/adapters/tdx_adapter.py",
+      "statements": 473,
+      "missing": 473,
+      "coverage": 0
+    },
+    {
+      "name": "src/monitoring/intelligent_threshold_manager.py",
+      "statements": 472,
+      "missing": 472,
+      "coverage": 0
+    },
+    {
+      "name": "src/data_sources/real/postgresql_relational.py",
+      "statements": 454,
+      "missing": 454,
+      "coverage": 0
+    },
+    {
+      "name": "src/monitoring/gpu_performance_optimizer.py",
+      "statements": 445,
+      "missing": 445,
+      "coverage": 0
+    },
+    {
+      "name": "src/monitoring/multi_channel_alert_manager.py",
+      "statements": 425,
+      "missing": 425,
+      "coverage": 0
+    },
+    {
+      "name": "src/monitoring/monitoring_service.py",
+      "statements": 418,
+      "missing": 418,
+      "coverage": 0
+    },
+    {
+      "name": "src/storage/database/database_manager.py",
+      "statements": 466,
+      "missing": 366,
+      "coverage": 21
+    },
+    {
+      "name": "src/monitoring/ai_alert_manager.py",
+      "statements": 340,
+      "missing": 340,
+      "coverage": 0
+    }
+  ],
+  "high_value_targets": [
+    {
+      "name": "src/data_access/postgresql_access.py",
+      "statements": 222,
+      "missing": 198,
+      "coverage": 11
+    },
+    {
+      "name": "src/storage/database/connection_manager.py",
+      "statements": 103,
+      "missing": 87,
+      "coverage": 16
+    },
+    {
+      "name": "src/storage/database/database_manager.py",
+      "statements": 466,
+      "missing": 366,
+      "coverage": 21
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "title": "优先改进模块 (低覆盖率)",
+      "modules": [
+        {
+          "name": "src/adapters/financial_adapter.py",
+          "statements": 569,
+          "missing": 569,
+          "coverage": 0
+        },
+        {
+          "name": "src/data_access.py",
+          "statements": 500,
+          "missing": 500,
+          "coverage": 0
+        },
+        {
+          "name": "src/adapters/tdx_adapter.py",
+          "statements": 473,
+          "missing": 473,
+          "coverage": 0
+        },
+        {
+          "name": "src/monitoring/intelligent_threshold_manager.py",
+          "statements": 472,
+          "missing": 472,
+          "coverage": 0
+        },
+        {
+          "name": "src/data_sources/real/postgresql_relational.py",
+          "statements": 454,
+          "missing": 454,
+          "coverage": 0
+        }
+      ],
+      "action": "立即添加单元测试，目标覆盖率80%"
+    },
+    {
+      "priority": 3,
+      "title": "零覆盖率模块基础测试",
+      "modules": [
+        {
+          "name": "src/adapters/akshare_adapter.py",
+          "statements": 336,
+          "missing": 336,
+          "coverage": 0
+        },
+        {
+          "name": "src/adapters/akshare_proxy_adapter.py",
+          "statements": 172,
+          "missing": 172,
+          "coverage": 0
+        },
+        {
+          "name": "src/adapters/baostock_adapter.py",
+          "statements": 172,
+          "missing": 172,
+          "coverage": 0
+        },
+        {
+          "name": "src/adapters/base_adapter.py",
+          "statements": 100,
+          "missing": 100,
+          "coverage": 0
+        },
+        {
+          "name": "src/adapters/byapi_adapter.py",
+          "statements": 167,
+          "missing": 167,
+          "coverage": 0
+        }
+      ],
+      "action": "创建基础单元测试框架，目标覆盖率60%"
+    }
+  ],
+  "todo_count": 85,
+  "todo_files": [
+    {
+      "file": "src/ml_strategy/automation/predefined_tasks.py",
+      "count": 11
+    },
+    {
+      "file": "src/mock/mock_TaskManagement.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_TradeManagement.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_strategy_StatsAnalysis.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_Analysis.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_strategy_StrategyList.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_RiskMonitor.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_TdxMarket.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_strategy_SingleRun.py",
+      "count": 4
+    },
+    {
+      "file": "src/mock/mock_system_DatabaseMonitor.py",
+      "count": 4
+    }
+  ]
+}

@@ -10,14 +10,11 @@ import numpy as np
 import pandas as pd
 import cupy as cp
 import cudf
-from cuml.feature_extraction import FeatureHasher
 from cuml.preprocessing import StandardScaler, MinMaxScaler
-from typing import Dict, List, Tuple, Optional, Union, Any
+from typing import Dict, List
 from dataclasses import dataclass
 import logging
-from datetime import datetime, timedelta
-import multiprocessing as mp
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 
 @dataclass
@@ -671,13 +668,15 @@ def benchmark_feature_generation(data: pd.DataFrame, gpu_enabled: bool = True):
     cpu_time = time.time() - cpu_start
 
     # 对比结果
-    print(f"\n📊 特征生成性能对比:")
+    print("\n📊 特征生成性能对比:")
     print(f"GPU处理时间: {gpu_time:.2f}秒")
     print(f"CPU处理时间: {cpu_time:.2f}秒")
-    print(f"加速比: {cpu_time/gpu_time:.2f}x")
+    print(f"加速比: {cpu_time / gpu_time:.2f}x")
     print(f"GPU生成特征数: {len(gpu_result.feature_names)}")
     print(f"CPU生成特征数: {len(cpu_result.feature_names)}")
-    print(f"GPU内存使用: {gpu_result.memory_usage['total_memory']/1024/1024:.2f} MB")
+    print(
+        f"GPU内存使用: {gpu_result.memory_usage['total_memory'] / 1024 / 1024:.2f} MB"
+    )
 
     return {
         "gpu_time": gpu_time,
@@ -706,7 +705,7 @@ if __name__ == "__main__":
     # 批量生成特征
     batch_result = generator.batch_feature_generation(list(stock_data.values()))
 
-    print(f"批量处理完成:")
+    print("批量处理完成:")
     print(f"总处理时间: {batch_result.total_time:.2f}秒")
     print(f"平均特征数: {batch_result.avg_features_per_stock:.0f}")
     print(f"GPU内存利用率: {batch_result.gpu_memory_utilization:.2f}")

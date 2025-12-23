@@ -8,7 +8,7 @@ GPU环境配置验证脚本
 import sys
 import time
 import traceback
-from typing import Dict, List, Tuple
+from typing import Dict
 
 
 class GPUEnvironmentTester:
@@ -82,7 +82,6 @@ class GPUEnvironmentTester:
         print("🔍 测试cuDF DataFrame...")
         try:
             import cudf
-            import numpy as np
 
             # 创建GPU DataFrame
             data = {
@@ -129,7 +128,6 @@ class GPUEnvironmentTester:
         try:
             import cuml
             import cupy as cp
-            import numpy as np
 
             # 测试线性回归
             from cuml.linear_model import LinearRegression
@@ -279,7 +277,6 @@ class GPUEnvironmentTester:
         print("🔍 测试GPU内存管理...")
         try:
             import cupy as cp
-            import psutil
             import gc
 
             # 获取初始内存
@@ -363,7 +360,7 @@ class GPUEnvironmentTester:
         print(f"总测试项目: {total}")
         print(f"通过项目: {passed}")
         print(f"失败项目: {total - passed}")
-        print(f"通过率: {(passed/total)*100:.1f}%")
+        print(f"通过率: {(passed / total) * 100:.1f}%")
 
         # 显示详细结果
         for test_name, result in self.test_results.items():
@@ -372,7 +369,7 @@ class GPUEnvironmentTester:
 
         # 显示GPU信息
         if self.gpu_info:
-            print(f"\n🖥️  GPU硬件信息:")
+            print("\n🖥️  GPU硬件信息:")
             for key, value in self.gpu_info.items():
                 print(f"  {key}: {value}")
 
@@ -494,7 +491,7 @@ def main():
 
     # 生成测试代码
     if results["passed"] >= results["total"] - 1:
-        print(f"\n📝 生成的测试代码已保存到: gpu_test_examples.py")
+        print("\n📝 生成的测试代码已保存到: gpu_test_examples.py")
         with open("gpu_test_examples.py", "w", encoding="utf-8") as f:
             f.write(tester.generate_test_code())
 

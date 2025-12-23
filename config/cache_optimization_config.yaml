@@ -10,11 +10,11 @@ memory_cache:
   max_entries: 10000              # 最大缓存条目数
   default_ttl: 300                # 默认TTL (秒)
   eviction_policy: "LRU"          # 淘汰策略: LRU, LFU, FIFO
-  
+
   # 分层TTL策略 (按数据重要性设置不同过期时间)
   tiered_ttl:
     tick_data: 30                 # Tick数据: 30秒
-    realtime_quote: 60            # 实时行情: 1分钟  
+    realtime_quote: 60            # 实时行情: 1分钟
     minute_kline: 300             # 分钟K线: 5分钟
     fund_flow: 600                # 资金流向: 10分钟
     etf: 1800                     # ETF数据: 30分钟
@@ -27,7 +27,7 @@ cache_tiers:
   level_1_memory:
     enabled: true
     capacity_percentage: 60       # 占用60%的内存缓存容量
-    
+
   # 二级缓存: TDengine缓存 (持久化存储)
   level_2_tdengine:
     enabled: true
@@ -42,13 +42,13 @@ performance_optimization:
     enabled: true
     max_batch_size: 100           # 最大批处理大小
     concurrent_threshold: 10      # 并发查询阈值
-    
+
   # 异步写入
   async_writes:
     enabled: true
     max_concurrent: 5             # 最大并发写操作
     write_queue_size: 1000        # 写入队列大小
-    
+
   # 预热策略
   prewarming:
     enabled: true
@@ -63,12 +63,12 @@ monitoring:
     hit_rate_critical: 30         # 命中率严重阈值 (%)
     response_time_warning: 1000   # 响应时间警告阈值 (毫秒)
     response_time_critical: 2000  # 响应时间严重阈值 (毫秒)
-    
+
   # 内存使用监控
   memory_thresholds:
     usage_warning: 80             # 内存使用警告阈值 (%)
     usage_critical: 95            # 内存使用严重阈值 (%)
-    
+
   # 自动优化触发条件
   auto_optimization:
     enabled: true
@@ -80,7 +80,7 @@ consistency:
   # 写入策略
   write_strategy: "write_back"    # write_back, write_through
   consistency_level: "eventual"   # strong, eventual
-  
+
   # 缓存失效策略
   invalidation:
     time_based: true              # 基于时间的失效
@@ -94,7 +94,7 @@ application_integration:
     enabled: true
     cache_key_format: "{symbol}:{data_type}:{timeframe}"
     include_metadata: true        # 包含缓存元数据
-    
+
   # 装饰器配置
   decorators:
     enabled: true
@@ -108,13 +108,13 @@ optimized_parameters:
     concurrent_memory_read: true  # 并发内存读取
     prefetch_hot_data: true       # 预取热点数据
     cache_prediction: true        # 缓存预测
-    
+
   # 写入优化
   write_optimization:
     batch_write_threshold: 10     # 批写阈值
     async_write_threshold: 100    # 异步写阈值
     write_combining: true         # 写合并
-    
+
   # 内存管理优化
   memory_management:
     gc_frequency: 300             # 垃圾回收频率 (秒)
@@ -128,17 +128,17 @@ adapter_priority:
       cache_priority: "high"
       memory_cache_weight: 0.8
       tdengine_cache_weight: 0.2
-      
+
     - name: "realtime_quote"
       cache_priority: "high"
       memory_cache_weight: 0.9
       tdengine_cache_weight: 0.1
-      
+
     - name: "etf"
       cache_priority: "medium"
       memory_cache_weight: 0.6
       tdengine_cache_weight: 0.4
-      
+
     - name: "daily_kline"
       cache_priority: "low"
       memory_cache_weight: 0.3

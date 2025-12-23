@@ -11,7 +11,6 @@ import requests
 import json
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
-import os
 from functools import lru_cache
 
 try:

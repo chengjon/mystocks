@@ -19,10 +19,9 @@ Date: 2025-11-12
 import asyncio
 from typing import Dict, List, Optional, Any, Callable, Coroutine
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 import structlog
-import time
 from collections import defaultdict
 
 logger = structlog.get_logger()
@@ -190,9 +189,9 @@ class WebSocketMessageBatcher:
         if buffer.is_full(self.max_batch_bytes, self.batch_size):
             await self._flush_buffer(message.sid)
         # 否则，安排批处理任务
-        elif message.sid not in self.batch_tasks or self.batch_tasks[
-            message.sid
-        ].done():
+        elif (
+            message.sid not in self.batch_tasks or self.batch_tasks[message.sid].done()
+        ):
             self.batch_tasks[message.sid] = asyncio.create_task(
                 self._batch_timeout_handler(message.sid)
             )
@@ -330,8 +329,7 @@ class WebSocketMessageBatcher:
                     self.total_messages_sent / max(1, self.total_batches_sent)
                 ),
                 "compression_ratio": (
-                    self.total_messages_buffered
-                    / max(1, self.total_batches_sent)
+                    self.total_messages_buffered / max(1, self.total_batches_sent)
                     if self.total_batches_sent > 0
                     else 0
                 ),

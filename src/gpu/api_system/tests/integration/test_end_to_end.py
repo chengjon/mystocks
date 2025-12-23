@@ -7,7 +7,6 @@ import pytest
 import grpc
 import time
 import json
-import pandas as pd
 from unittest.mock import Mock, patch
 
 

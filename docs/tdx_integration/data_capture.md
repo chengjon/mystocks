@@ -48,7 +48,7 @@ def day2csv(source_dir, file_name, target_dir):
     source_file.close()
     source_size = os.path.getsize(source_path)  # 获取源文件大小
     source_row_number = int(source_size / 32)
-    
+
     # 转换数据并保存为CSV格式
     # ... 数据处理逻辑 ...
 ```

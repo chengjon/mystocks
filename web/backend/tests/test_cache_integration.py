@@ -13,14 +13,10 @@ Test Coverage:
 """
 
 import pytest
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
-from unittest.mock import Mock, patch, MagicMock
-import json
+from typing import Dict, Any
 
-from app.core.cache_manager import CacheManager, get_cache_manager, reset_cache_manager
+from app.core.cache_manager import get_cache_manager, reset_cache_manager
 from app.core.cache_integration import (
-    CacheIntegration,
     get_cache_integration,
     reset_cache_integration,
     cache_read_wrapper,

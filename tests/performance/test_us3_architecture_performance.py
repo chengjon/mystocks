@@ -17,7 +17,6 @@ US3架构性能测试
 """
 
 import sys
-import os
 import time
 import json
 import pandas as pd
@@ -29,6 +28,7 @@ sys.path.append("/opt/claude/mystocks_spec")
 
 from src.core.data_manager import DataManager
 from src.core.data_classification import DataClassification
+
 
 class US3PerformanceTest:
     """US3架构性能测试"""
@@ -61,9 +61,9 @@ class US3PerformanceTest:
 
     def test_routing_performance(self) -> Dict[str, Any]:
         """测试路由决策性能 (<5ms目标)"""
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("路由决策性能测试")
-        print("="*50)
+        print("=" * 50)
 
         classifications = [
             DataClassification.TICK_DATA,
@@ -92,7 +92,7 @@ class US3PerformanceTest:
             "最大时间_ms": round(max_time, 3),
             "最小时间_ms": round(min_time, 3),
             "目标": "<5ms",
-            "达成": avg_time < 5.0
+            "达成": avg_time < 5.0,
         }
 
         print(f"平均路由时间: {avg_time:.3f}ms")
@@ -104,9 +104,9 @@ class US3PerformanceTest:
 
     def test_data_save_performance(self) -> Dict[str, Any]:
         """测试数据保存性能 (≤80ms目标 for 1000记录)"""
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("数据保存性能测试 (1000条记录)")
-        print("="*50)
+        print("=" * 50)
 
         # 测试不同数据分类
         test_cases = [
@@ -132,7 +132,9 @@ class US3PerformanceTest:
 
                 # 模拟保存操作的核心逻辑
                 for _ in range(10):  # 模拟10次小型保存
-                    target_db_check = self.data_manager.get_target_database(classification)
+                    target_db_check = self.data_manager.get_target_database(
+                        classification
+                    )
 
                 end_time = time.perf_counter()
                 duration_ms = (end_time - start_time) * 100  # 放大10倍模拟完整操作
@@ -143,27 +145,27 @@ class US3PerformanceTest:
                     "记录数": 1000,
                     "耗时_ms": round(duration_ms, 2),
                     "目标": "≤80ms",
-                    "达成": duration_ms <= 80.0
+                    "达成": duration_ms <= 80.0,
                 }
 
-                print(f"  耗时: {duration_ms:.2f}ms ({'✅' if result['达成'] else '❌'})")
+                print(
+                    f"  耗时: {duration_ms:.2f}ms ({'✅' if result['达成'] else '❌'})"
+                )
                 save_results.append(result)
 
             except Exception as e:
                 print(f"  测试失败: {e}")
-                save_results.append({
-                    "数据分类": classification.value,
-                    "错误": str(e),
-                    "达成": False
-                })
+                save_results.append(
+                    {"数据分类": classification.value, "错误": str(e), "达成": False}
+                )
 
         return save_results
 
     def test_adapter_registration(self) -> Dict[str, Any]:
         """测试适配器注册性能"""
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("适配器注册性能测试")
-        print("="*50)
+        print("=" * 50)
 
         # 模拟适配器
         class MockAdapter:
@@ -186,7 +188,7 @@ class US3PerformanceTest:
             "平均注册时间_ms": round(avg_time, 3),
             "已注册适配器数": len(self.data_manager.list_adapters()),
             "目标": "<1ms",
-            "达成": avg_time < 1.0
+            "达成": avg_time < 1.0,
         }
 
         print(f"平均注册时间: {avg_time:.3f}ms")
@@ -219,9 +221,9 @@ class US3PerformanceTest:
 
     def evaluate_results(self):
         """评估测试结果"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("US3架构性能评估结果")
-        print("="*60)
+        print("=" * 60)
 
         # 路由性能评估
         routing_ok = self.results["测试项目"]["路由决策"]["达成"]
@@ -233,17 +235,22 @@ class US3PerformanceTest:
 
         # 总体评估
         overall_success = routing_ok and adapter_ok
-        print(f"\n总体评估: {'🎉 US3架构性能测试通过' if overall_success else '⚠️ 部分指标未达标'}")
+        print(
+            f"\n总体评估: {'🎉 US3架构性能测试通过' if overall_success else '⚠️ 部分指标未达标'}"
+        )
 
         print("\n架构简化效果:")
         print("- 层次减少: 7层 → 3层 (减少57%)")
         print("- 路由决策: <5ms (符合目标)")
         print("- 代码维护性: 显著提升")
 
-    def save_results(self, filename: str = "/opt/claude/mystocks_spec/metrics/us3_performance_test.json"):
+    def save_results(
+        self,
+        filename: str = "/opt/claude/mystocks_spec/metrics/us3_performance_test.json",
+    ):
         """保存测试结果"""
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(filename, "w", encoding="utf-8") as f:
                 json.dump(self.results, f, ensure_ascii=False, indent=2)
             print(f"\n📊 测试结果已保存到: {filename}")
         except Exception as e:
@@ -262,14 +269,21 @@ def main():
         # 保存结果
         test.save_results()
 
-        return 0 if all([
-            results["测试项目"]["路由决策"]["达成"],
-            results["测试项目"]["适配器注册"]["达成"]
-        ]) else 1
+        return (
+            0
+            if all(
+                [
+                    results["测试项目"]["路由决策"]["达成"],
+                    results["测试项目"]["适配器注册"]["达成"],
+                ]
+            )
+            else 1
+        )
 
     except Exception as e:
         print(f"\n❌ 测试执行失败: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

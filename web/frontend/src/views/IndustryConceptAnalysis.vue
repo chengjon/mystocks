@@ -73,8 +73,8 @@
             <el-card class="stat-card">
               <div class="stat-item">
                 <div class="stat-label">涨跌幅</div>
-                <div 
-                  class="stat-value" 
+                <div
+                  class="stat-value"
                   :class="{
                     'positive': currentCategory.change_percent > 0,
                     'negative': currentCategory.change_percent < 0
@@ -170,7 +170,7 @@
             </el-table-column>
             <el-table-column prop="change_percent" label="涨跌幅" width="100" align="right">
               <template #default="{ row }">
-                <span 
+                <span
                   :class="{
                     'positive': row.change_percent > 0,
                     'negative': row.change_percent < 0
@@ -256,12 +256,12 @@ const filteredStocks = computed(() => {
   let result = stocks.value
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    result = result.filter(stock => 
+    result = result.filter(stock =>
       stock.symbol.toLowerCase().includes(keyword) ||
       (stock.name && stock.name.toLowerCase().includes(keyword))
     )
   }
-  
+
   // 分页
   const start = (currentPage.value - 1) * pageSize.value
   const end = start + pageSize.value
@@ -350,7 +350,7 @@ const loadIndustryStocks = async (industryCode) => {
     const response = await getIndustryStocks(industryCode)
     if (response.success) {
       stocks.value = response.data.stocks || []
-      
+
       // 获取行业表现数据
       const perfResponse = await getIndustryPerformance(industryCode)
       if (perfResponse.success) {
@@ -377,7 +377,7 @@ const loadConceptStocks = async (conceptCode) => {
     const response = await getConceptStocks(conceptCode)
     if (response.success) {
       stocks.value = response.data.stocks || []
-      
+
       // 概念数据简化处理
       const concept = conceptList.value.find(c => c.concept_code === conceptCode)
       if (concept) {
@@ -456,7 +456,7 @@ const updateCharts = (performanceData) => {
     if (!pieChart) {
       pieChart = echarts.init(pieChartRef.value)
     }
-    
+
     const option = {
       title: {
         text: '涨跌分布',
@@ -489,16 +489,16 @@ const updateCharts = (performanceData) => {
         }
       ]
     }
-    
+
     pieChart.setOption(option, true)
   }
-  
+
   // 更新柱状图
   if (barChartRef.value) {
     if (!barChart) {
       barChart = echarts.init(barChartRef.value)
     }
-    
+
     const option = {
       title: {
         text: '行业表现对比',
@@ -525,7 +525,7 @@ const updateCharts = (performanceData) => {
         }
       ]
     }
-    
+
     barChart.setOption(option, true)
   }
 }

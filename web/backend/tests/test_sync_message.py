@@ -12,13 +12,9 @@ Test Suite for Sync Message Table and Database Manager
 
 import pytest
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from app.models.sync_message import (
     SyncMessage,
-    SyncStatistics,
     MessageStatus,
     SyncDirection,
     OperationType,

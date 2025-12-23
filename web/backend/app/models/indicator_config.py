@@ -5,7 +5,6 @@ SQLAlchemy Model for Indicator Configurations
 
 from sqlalchemy import Column, Integer, String, JSON, TIMESTAMP, Index, text
 from sqlalchemy.orm import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 

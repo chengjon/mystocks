@@ -18,9 +18,9 @@ test_dirs = [
 
 def test_from_directory(test_dir):
     """从指定目录测试初始化"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"🧪 测试目录: {test_dir}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     try:
         # 切换工作目录
@@ -67,9 +67,9 @@ def main():
             print(f"⚠️ 测试目录不存在，跳过: {test_dir}")
             total_count -= 1
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"🎯 测试结果汇总: {success_count}/{total_count} 成功")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     if success_count == total_count:
         print("🎉 所有测试通过! 智能路径检测功能正常工作")

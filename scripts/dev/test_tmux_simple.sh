@@ -18,7 +18,7 @@ tmux split-window -t "$SESSION_NAME" -h
 echo "第一次分割完成"
 
 # 垂直分割 (左侧)
-tmux select-pane -t "$SESSION_NAME" 
+tmux select-pane -t "$SESSION_NAME"
 tmux split-window -t "$SESSION_NAME" -v
 echo "第二次分割完成"
 
@@ -34,14 +34,14 @@ echo "第四次分割完成"
 
 echo "调整窗格大小..."
 tmux resize-pane -t "$SESSION_NAME" -t 0 -x 120 -y 15
-tmux resize-pane -t "$SESSION_NAME" -t 1 -x 120 -y 15  
+tmux resize-pane -t "$SESSION_NAME" -t 1 -x 120 -y 15
 tmux resize-pane -t "$SESSION_NAME" -t 2 -x 120 -y 15
 tmux resize-pane -t "$SESSION_NAME" -t 3 -x 120 -y 15
 tmux resize-pane -t "$SESSION_NAME" -t 4 -x 240 -y 30
 
 echo "发送测试命令..."
 tmux send-keys -t "$SESSION_NAME" -t 0 "echo 'Pane 0: Backend'"
-tmux send-keys -t "$SESSION_NAME" -t 1 "echo 'Pane 1: Frontend'" 
+tmux send-keys -t "$SESSION_NAME" -t 1 "echo 'Pane 1: Frontend'"
 tmux send-keys -t "$SESSION_NAME" -t 2 "echo 'Pane 2: Monitoring'"
 tmux send-keys -t "$SESSION_NAME" -t 3 "echo 'Pane 3: Database'"
 tmux send-keys -t "$SESSION_NAME" -t 4 "echo 'Pane 4: Logs'"

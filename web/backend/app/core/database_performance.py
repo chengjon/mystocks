@@ -13,7 +13,6 @@ Author: Claude Code
 Date: 2025-11-12
 """
 
-import asyncio
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
@@ -21,15 +20,12 @@ import structlog
 
 from app.core.database_connection_pool import (
     get_pool_optimizer,
-    DatabaseConnectionPoolOptimizer,
 )
 from app.core.database_query_batch import (
     get_query_batcher,
-    DatabaseQueryBatcher,
 )
 from app.core.database_performance_monitor import (
     get_performance_monitor,
-    DatabasePerformanceMonitor,
 )
 
 logger = structlog.get_logger()
@@ -128,7 +124,9 @@ class DatabasePerformanceManager:
         try:
             await self.pool_optimizer.start_monitoring()
             await self.performance_monitor.start_monitoring()
-            logger.info("✅ Database Performance Manager initialized and monitoring started")
+            logger.info(
+                "✅ Database Performance Manager initialized and monitoring started"
+            )
         except Exception as e:
             logger.error("❌ Error initializing performance manager", error=str(e))
             raise
@@ -271,9 +269,7 @@ class DatabasePerformanceManager:
         avg_slow_queries = sum(m.slow_queries for m in recent_metrics) / len(
             recent_metrics
         )
-        avg_error_rate = sum(m.error_rate for m in recent_metrics) / len(
-            recent_metrics
-        )
+        avg_error_rate = sum(m.error_rate for m in recent_metrics) / len(recent_metrics)
 
         return {
             "period": "last_60_measurements",
@@ -282,9 +278,9 @@ class DatabasePerformanceManager:
             "average_slow_queries": round(avg_slow_queries, 2),
             "average_error_rate": round(avg_error_rate, 2),
             "peak_in_use_connections": max(m.pool_size_in_use for m in recent_metrics),
-            "connection_reuse_rate": self.pool_optimizer.get_pool_stats()["performance"][
-                "connection_reuse_rate"
-            ],
+            "connection_reuse_rate": self.pool_optimizer.get_pool_stats()[
+                "performance"
+            ]["connection_reuse_rate"],
             "timestamp": datetime.utcnow().isoformat(),
         }
 

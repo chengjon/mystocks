@@ -17,10 +17,7 @@ Author: Claude Code
 Date: 2025-11-13
 """
 
-import os
-import re
 import json
-import inspect
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
@@ -116,7 +113,9 @@ class APIDocumentationAnalyzer:
 
         return endpoints
 
-    def _analyze_function(self, node: ast.AST, file_path: Path, content: str) -> Optional[APIEndpoint]:
+    def _analyze_function(
+        self, node: ast.AST, file_path: Path, content: str
+    ) -> Optional[APIEndpoint]:
         """分析函数，提取API信息"""
         # 检查是否是API路由函数
         if not self._is_api_function(node):
@@ -166,7 +165,9 @@ class APIDocumentationAnalyzer:
                         return True
         return False
 
-    def _extract_route_info(self, node: ast.FunctionDef, content: str) -> Tuple[Optional[str], Optional[str]]:
+    def _extract_route_info(
+        self, node: ast.FunctionDef, content: str
+    ) -> Tuple[Optional[str], Optional[str]]:
         """提取路由信息"""
         http_method = None
         path = None
@@ -191,18 +192,22 @@ class APIDocumentationAnalyzer:
 
     def _analyze_docstring(self, node: ast.FunctionDef) -> Dict[str, Any]:
         """分析文档字符串"""
-        if not node.body or not isinstance(node.body[0], ast.Expr) or not isinstance(node.body[0].value, ast.Constant):
+        if (
+            not node.body
+            or not isinstance(node.body[0], ast.Expr)
+            or not isinstance(node.body[0].value, ast.Constant)
+        ):
             return {
                 "has_docstring": False,
                 "summary": None,
                 "description": None,
-                "quality": "missing"
+                "quality": "missing",
             }
 
         docstring = node.body[0].value.value
 
         # 简单分析文档字符串质量
-        lines = docstring.split('\n')
+        lines = docstring.split("\n")
         summary = lines[0].strip() if lines else None
 
         # 判断质量
@@ -221,7 +226,7 @@ class APIDocumentationAnalyzer:
             "has_docstring": bool(docstring.strip()),
             "summary": summary,
             "description": docstring,
-            "quality": quality
+            "quality": quality,
         }
 
     def _extract_parameters(self, node: ast.FunctionDef) -> List[Dict[str, Any]]:
@@ -236,11 +241,11 @@ class APIDocumentationAnalyzer:
                 "name": arg.arg,
                 "type": "unknown",
                 "required": True,
-                "description": None
+                "description": None,
             }
 
             # 简单的类型推断
-            if hasattr(node, 'returns') and node.returns:
+            if hasattr(node, "returns") and node.returns:
                 if isinstance(node.returns, ast.Name):
                     param_info["type"] = node.returns.id
 
@@ -263,15 +268,19 @@ class APIDocumentationAnalyzer:
             undocumented=0,
             coverage_percentage=0.0,
             missing_endpoints=[],
-            quality_distribution={}
+            quality_distribution={},
         )
-        
+
         if not self.endpoints:
             self.coverage_stats = default_coverage
             return default_coverage
 
         documented = sum(1 for e in self.endpoints if e.has_docstring)
-        partially = sum(1 for e in self.endpoints if e.has_docstring and e.docstring_quality in ["poor", "fair"])
+        partially = sum(
+            1
+            for e in self.endpoints
+            if e.has_docstring and e.docstring_quality in ["poor", "fair"]
+        )
         undocumented = len(self.endpoints) - documented
         coverage_percentage = (documented / len(self.endpoints)) * 100
 
@@ -284,7 +293,8 @@ class APIDocumentationAnalyzer:
         # 缺失文档的端点
         missing_endpoints = [
             f"{e.http_method} {e.path} ({e.function_name})"
-            for e in self.endpoints if not e.has_docstring
+            for e in self.endpoints
+            if not e.has_docstring
         ]
 
         self.coverage_stats = DocumentationCoverage(
@@ -294,7 +304,7 @@ class APIDocumentationAnalyzer:
             undocumented=undocumented,
             coverage_percentage=coverage_percentage,
             missing_endpoints=missing_endpoints,
-            quality_distribution=quality_dist
+            quality_distribution=quality_dist,
         )
 
         return self.coverage_stats
@@ -309,7 +319,7 @@ class APIDocumentationAnalyzer:
         report = f"""
 # API文档覆盖率报告
 
-**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**生成时间**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## 📊 总体统计
 
@@ -329,13 +339,15 @@ class APIDocumentationAnalyzer:
                 "good": "🟡",
                 "fair": "🟠",
                 "poor": "🔴",
-                "missing": "⚫"
+                "missing": "⚫",
             }.get(quality, "⚪")
 
-            report += f"- {status_icon} **{quality.title()}**: {count} ({percentage:.1f}%)\n"
+            report += (
+                f"- {status_icon} **{quality.title()}**: {count} ({percentage:.1f}%)\n"
+            )
 
         if stats.missing_endpoints:
-            report += f"\n## ❌ 缺失文档的端点\n\n"
+            report += "\n## ❌ 缺失文档的端点\n\n"
             for endpoint in stats.missing_endpoints[:10]:  # 只显示前10个
                 report += f"- `{endpoint}`\n"
 
@@ -351,21 +363,29 @@ class APIDocumentationAnalyzer:
             "poor_quality": [],
             "incomplete_parameters": [],
             "missing_responses": [],
-            "inconsistent_style": []
+            "inconsistent_style": [],
         }
 
         for endpoint in self.endpoints:
             # 缺失文档字符串
             if not endpoint.has_docstring:
-                gaps["missing_docstrings"].append(f"{endpoint.http_method} {endpoint.path}")
+                gaps["missing_docstrings"].append(
+                    f"{endpoint.http_method} {endpoint.path}"
+                )
 
             # 文档质量差
             elif endpoint.docstring_quality in ["poor", "missing"]:
-                gaps["poor_quality"].append(f"{endpoint.http_method} {endpoint.path} (质量: {endpoint.docstring_quality})")
+                gaps["poor_quality"].append(
+                    f"{endpoint.http_method} {endpoint.path} (质量: {endpoint.docstring_quality})"
+                )
 
             # 参数信息不完整
-            if endpoint.parameters and not all(p.get("description") for p in endpoint.parameters):
-                gaps["incomplete_parameters"].append(f"{endpoint.http_method} {endpoint.path}")
+            if endpoint.parameters and not all(
+                p.get("description") for p in endpoint.parameters
+            ):
+                gaps["incomplete_parameters"].append(
+                    f"{endpoint.http_method} {endpoint.path}"
+                )
 
         return gaps
 
@@ -386,12 +406,14 @@ class APIDocumentationAnalyzer:
                 for endpoint_path in gaps["missing_docstrings"]:
                     f.write(f"## {endpoint_path}\n\n")
                     f.write("```python\n")
-                    f.write(f"@router.{endpoint_path.split()[0].lower()}(\"{endpoint_path.split()[1]}\")\n")
-                    f.write(f"async def some_function():\n")
+                    f.write(
+                        f'@router.{endpoint_path.split()[0].lower()}("{endpoint_path.split()[1]}")\n'
+                    )
+                    f.write("async def some_function():\n")
                     f.write('    """\n')
-                    f.write('    TODO: 添加函数文档字符串\n\n')
-                    f.write('    Returns:\n')
-                    f.write('        TODO: 描述返回值\n')
+                    f.write("    TODO: 添加函数文档字符串\n\n")
+                    f.write("    Returns:\n")
+                    f.write("        TODO: 描述返回值\n")
                     f.write('    """\n')
                     f.write("    pass\n")
                     f.write("```\n\n")
@@ -438,7 +460,7 @@ def main():
             "total_endpoints": coverage.total_endpoints,
             "documented_endpoints": coverage.documented_endpoints,
             "coverage_percentage": coverage.coverage_percentage,
-            "quality_distribution": coverage.quality_distribution
+            "quality_distribution": coverage.quality_distribution,
         },
         "endpoints": [
             {
@@ -447,11 +469,11 @@ def main():
                 "method": e.http_method,
                 "path": e.path,
                 "has_docstring": e.has_docstring,
-                "quality": e.docstring_quality
+                "quality": e.docstring_quality,
             }
             for e in endpoints
         ],
-        "gaps": gaps
+        "gaps": gaps,
     }
 
     results_file = f"/opt/claude/mystocks_spec/logs/api_docs_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

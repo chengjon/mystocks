@@ -14,7 +14,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, List, Set, Optional, Any, Callable
+from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum

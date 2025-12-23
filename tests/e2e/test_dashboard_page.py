@@ -5,7 +5,7 @@ Dashboard 页面完整测试
 """
 
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
 
@@ -233,5 +233,5 @@ class TestDashboardPortfolioAndMarket:
         assert dashboard.is_watch_list_visible()
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

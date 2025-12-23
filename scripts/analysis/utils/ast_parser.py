@@ -10,7 +10,7 @@ AST 解析器 - 提取 Python 代码的结构化元数据
 import ast
 import os
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from datetime import datetime
 
 import sys
@@ -22,7 +22,6 @@ from models import (
     ClassMetadata,
     FunctionMetadata,
     ParameterMetadata,
-    CategoryEnum,
     estimate_complexity,
     categorize_module_by_path,
 )

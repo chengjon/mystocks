@@ -18,11 +18,7 @@ Mock数据文件: TechnicalAnalysis
 
 import datetime
 import random
-import time
-from decimal import Decimal
-from typing import Dict, List, Optional, Union
-
-import pandas as pd
+from typing import Dict
 
 
 def get_technical_indicators(stock_code: str) -> Dict:
@@ -249,7 +245,7 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
     # 生成K线历史数据
     start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d")
     end_dt = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    
+
     dates = []
     current_dt = start_dt
     while current_dt <= end_dt:
@@ -263,13 +259,15 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
         high_price = round(98 + (hash(stock_code + str(i)) % 6), 2)
         low_price = round(94 + (hash(stock_code + str(i)) % 6), 2)
         volume = int(1000000 + (hash(stock_code + str(i)) % 9000000))
-        data.append({
-            "open": open_price,
-            "close": close_price,
-            "high": high_price,
-            "low": low_price,
-            "volume": volume,
-        })
+        data.append(
+            {
+                "open": open_price,
+                "close": close_price,
+                "high": high_price,
+                "low": low_price,
+                "volume": volume,
+            }
+        )
 
     result = {
         "symbol": stock_code,
@@ -283,6 +281,7 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
     }
 
     return result
+
 
 def calculate_indicators(request: Dict) -> Dict:
     """计算技术指标（对应/indicators/calculate API）
@@ -310,17 +309,28 @@ def calculate_indicators(request: Dict) -> Dict:
         if indicator in ["ma5", "ma10", "ma20"]:
             # 模拟均线
             calculated_indicators[indicator] = [
-                round(random.uniform(90, 110), 2) for _ in range(len(kline_data["dates"]))
+                round(random.uniform(90, 110), 2)
+                for _ in range(len(kline_data["dates"]))
             ]
         elif indicator == "macd":
             calculated_indicators["macd"] = {
-                "macd": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
-                "signal": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
-                "hist": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+                "macd": [
+                    round(random.uniform(-5, 5), 3)
+                    for _ in range(len(kline_data["dates"]))
+                ],
+                "signal": [
+                    round(random.uniform(-5, 5), 3)
+                    for _ in range(len(kline_data["dates"]))
+                ],
+                "hist": [
+                    round(random.uniform(-5, 5), 3)
+                    for _ in range(len(kline_data["dates"]))
+                ],
             }
         elif indicator == "rsi":
             calculated_indicators["rsi"] = [
-                round(random.uniform(30, 70), 2) for _ in range(len(kline_data["dates"]))
+                round(random.uniform(30, 70), 2)
+                for _ in range(len(kline_data["dates"]))
             ]
         # 可以添加更多指标的模拟计算
 
@@ -337,6 +347,7 @@ def calculate_indicators(request: Dict) -> Dict:
         },
         "indicators": calculated_indicators,
     }
+
 
 def get_pattern_recognition(stock_code: str) -> Dict:
     """获取形态识别结果
@@ -381,7 +392,6 @@ def get_pattern_recognition(stock_code: str) -> Dict:
     return result
 
 
-
 def generate_realistic_price(
     base_price: float = 100.0, volatility: float = 0.02
 ) -> float:
@@ -412,14 +422,14 @@ if __name__ == "__main__":
     # 测试函数
     print("Mock文件模板测试")
     print("=" * 50)
-    print(f"get_all_indicators() 调用测试:")
+    print("get_all_indicators() 调用测试:")
     result1 = get_all_indicators("600000")
     print(f"返回数据: {result1}")
 
-    print(f"\nget_trend_indicators() 调用测试:")
+    print("\nget_trend_indicators() 调用测试:")
     result2 = get_trend_indicators("600000")
     print(f"返回数据: {result2}")
 
-    print(f"\nget_momentum_indicators() 调用测试:")
+    print("\nget_momentum_indicators() 调用测试:")
     result3 = get_momentum_indicators("600000")
     print(f"返回数据: {result3}")

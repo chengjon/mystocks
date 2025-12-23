@@ -46,19 +46,40 @@ class CircuitBreakerManager:
         # 参数: 名称, 失败阈值, 恢复超时(秒), 成功阈值
         self._circuit_breakers = {
             # 市场数据API - 高频调用，失败阈值5次，60秒恢复超时
-            "market_data": CircuitBreaker("market_data", failure_threshold=5, recovery_timeout=60, success_threshold=2),
+            "market_data": CircuitBreaker(
+                "market_data",
+                failure_threshold=5,
+                recovery_timeout=60,
+                success_threshold=2,
+            ),
             # 技术分析API - 计算密集，失败阈值10次，90秒恢复超时
             "technical_analysis": CircuitBreaker(
-                "technical_analysis", failure_threshold=10, recovery_timeout=90, success_threshold=2
+                "technical_analysis",
+                failure_threshold=10,
+                recovery_timeout=90,
+                success_threshold=2,
             ),
             # 股票搜索API - 索引查询，失败阈值8次，45秒恢复超时
-            "stock_search": CircuitBreaker("stock_search", failure_threshold=8, recovery_timeout=45, success_threshold=2),
+            "stock_search": CircuitBreaker(
+                "stock_search",
+                failure_threshold=8,
+                recovery_timeout=45,
+                success_threshold=2,
+            ),
             # 数据源工厂 - 数据适配器，失败阈值7次，60秒恢复超时
             "data_source_factory": CircuitBreaker(
-                "data_source_factory", failure_threshold=7, recovery_timeout=60, success_threshold=2
+                "data_source_factory",
+                failure_threshold=7,
+                recovery_timeout=60,
+                success_threshold=2,
             ),
             # 备用外部API - 通用熔断器
-            "external_api": CircuitBreaker("external_api", failure_threshold=5, recovery_timeout=120, success_threshold=2),
+            "external_api": CircuitBreaker(
+                "external_api",
+                failure_threshold=5,
+                recovery_timeout=120,
+                success_threshold=2,
+            ),
         }
 
         self._initialized = True
@@ -83,7 +104,9 @@ class CircuitBreakerManager:
             ValueError: 如果服务名称不存在
         """
         if service_name not in self._circuit_breakers:
-            logger.warning(f"⚠️ Circuit breaker for '{service_name}' not found, using external_api")
+            logger.warning(
+                f"⚠️ Circuit breaker for '{service_name}' not found, using external_api"
+            )
             return self._circuit_breakers["external_api"]
 
         return self._circuit_breakers[service_name]

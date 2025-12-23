@@ -7,7 +7,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import platform
 import os
 import sys
@@ -22,7 +22,6 @@ if "microsoft" in platform.uname().release.lower():
 
 # 初始化后再导入cuDF/cuML
 import cudf
-import cuml
 
 
 class TestRealGPUAcceleration:
@@ -56,7 +55,7 @@ class TestRealGPUAcceleration:
 
         # 验证加速比
         speedup = cpu_time / gpu_time if gpu_time > 0 else 0
-        print(f"\n真实GPU DataFrame操作测试结果:")
+        print("\n真实GPU DataFrame操作测试结果:")
         print(f"  数据量: {n_rows:,} 行")
         print(f"  CPU时间: {cpu_time:.4f}秒")
         print(f"  GPU时间: {gpu_time:.4f}秒")
@@ -95,7 +94,7 @@ class TestRealGPUAcceleration:
 
         # 验证加速比
         speedup = cpu_time / gpu_time
-        print(f"\n真实GPU ML训练测试结果:")
+        print("\n真实GPU ML训练测试结果:")
         print(f"  样本数: {n_samples:,}")
         print(f"  特征数: {n_features}")
         print(f"  CPU训练时间: {cpu_time:.4f}秒")
@@ -127,7 +126,7 @@ class TestRealGPUAcceleration:
         # 验证计算结果
         expected_memory = n_elements * 4  # float32 = 4 bytes
 
-        print(f"\n真实GPU内存测试结果:")
+        print("\n真实GPU内存测试结果:")
         print(f"  数组元素: {n_elements:,}")
         print(f"  预期内存: {expected_memory / 1024**2:.2f} MB")
         print(f"  计算结果: {result}")
@@ -201,7 +200,7 @@ class TestRealGPUAcceleration:
 
         # 验证加速比
         speedup = cpu_time / gpu_time if gpu_time > 0 else 0
-        print(f"\n真实GPU回测测试结果:")
+        print("\n真实GPU回测测试结果:")
         print(f"  数据规模: {n_days}天 × {n_stocks}股票 = {len(data):,}条记录")
         print(f"  CPU回测时间: {cpu_time:.4f}秒")
         print(f"  GPU回测时间: {gpu_time:.4f}秒")

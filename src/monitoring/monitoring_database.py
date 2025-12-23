@@ -10,7 +10,6 @@
 """
 
 import uuid
-import time
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
@@ -461,22 +460,25 @@ class MonitoringDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 cutoff_time = datetime.now() - timedelta(hours=hours)
-                
+
                 # 查询性能指标表中的慢查询（假设执行时间超过阈值的查询为慢查询）
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                cursor.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_value > 1000  -- 假设超过1秒的查询为慢查询
                     AND created_at > %s
-                """, (cutoff_time,))
-                
+                """,
+                    (cutoff_time,),
+                )
+
                 result = cursor.fetchone()
                 count = result[0] if result else 0
                 cursor.close()
-                
+
                 return count
         except Exception as e:
             logger.warning(f"查询慢查询数量失败: {e}")
@@ -495,22 +497,25 @@ class MonitoringDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 cutoff_time = datetime.now() - timedelta(hours=hours)
-                
+
                 # 查询性能指标表中的平均查询时间
-                cursor.execute("""
-                    SELECT AVG(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                cursor.execute(
+                    """
+                    SELECT AVG(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
-                """, (cutoff_time,))
-                
+                """,
+                    (cutoff_time,),
+                )
+
                 result = cursor.fetchone()
                 avg_time = result[0] if result and result[0] else 0.0
                 cursor.close()
-                
+
                 return float(avg_time)
         except Exception as e:
             logger.warning(f"查询平均查询时间失败: {e}")
@@ -529,22 +534,25 @@ class MonitoringDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 cutoff_time = datetime.now() - timedelta(hours=hours)
-                
+
                 # 查询性能指标表中的最大查询时间
-                cursor.execute("""
-                    SELECT MAX(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                cursor.execute(
+                    """
+                    SELECT MAX(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
-                """, (cutoff_time,))
-                
+                """,
+                    (cutoff_time,),
+                )
+
                 result = cursor.fetchone()
                 max_time = result[0] if result and result[0] else 0.0
                 cursor.close()
-                
+
                 return float(max_time)
         except Exception as e:
             logger.warning(f"查询最大查询时间失败: {e}")
@@ -563,22 +571,25 @@ class MonitoringDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 cutoff_time = datetime.now() - timedelta(hours=hours)
-                
+
                 # 查询性能指标表中的查询总数
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                cursor.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
-                """, (cutoff_time,))
-                
+                """,
+                    (cutoff_time,),
+                )
+
                 result = cursor.fetchone()
                 count = result[0] if result else 0
                 cursor.close()
-                
+
                 return count
         except Exception as e:
             logger.warning(f"查询总查询数量失败: {e}")

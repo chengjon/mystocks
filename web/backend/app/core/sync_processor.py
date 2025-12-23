@@ -17,12 +17,10 @@ Architecture:
 - SyncScheduler: APScheduler定时任务调度
 """
 
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
+from datetime import datetime
 import time
-import asyncio
 import structlog
-from contextlib import contextmanager
 
 from app.models.sync_message import (
     SyncMessage,

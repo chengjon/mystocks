@@ -6,9 +6,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
 import time
-from datetime import datetime
 
 from app.gateway import (
     RateLimiter,

@@ -13,7 +13,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import DECIMAL, TIMESTAMP, BigInteger, Column, Date, Index, String
+from sqlalchemy import DECIMAL, TIMESTAMP, Column, Date, Index, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -34,7 +34,9 @@ class StockInfo(Base):
     market_cap = Column(DECIMAL(25, 2), comment="总市值")
     circulating_market_cap = Column(DECIMAL(25, 2), comment="流通市值")
     created_at = Column(TIMESTAMP, default=datetime.utcnow, comment="创建时间")
-    updated_at = Column(TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间")
+    updated_at = Column(
+        TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间"
+    )
 
     __table_args__ = (
         Index("idx_stock_info_name", "name"),
@@ -54,7 +56,11 @@ class StockInfo(Base):
             "status": self.status,
             "listing_board": self.listing_board,
             "market_cap": float(self.market_cap) if self.market_cap else None,
-            "circulating_market_cap": (float(self.circulating_market_cap) if self.circulating_market_cap else None),
+            "circulating_market_cap": (
+                float(self.circulating_market_cap)
+                if self.circulating_market_cap
+                else None
+            ),
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

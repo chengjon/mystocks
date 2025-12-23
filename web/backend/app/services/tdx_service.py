@@ -6,9 +6,8 @@ TDX数据服务
 import sys
 import os
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime, timedelta
-import pandas as pd
+from typing import Dict
+from datetime import datetime
 
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))

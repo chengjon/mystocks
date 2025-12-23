@@ -269,7 +269,7 @@ View → Show Components
       └─ show-change: true
 
 3. Metrics (指标网格)
-   ├─ 涨跌额: 
+   ├─ 涨跌额:
    ├─ 成交量: "123.45万"
    └─ 换手率: "1.23%"
 

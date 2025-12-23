@@ -9,9 +9,6 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
-from typing import Dict, List
-
 from app.core.casbin_manager import (
     CasbinManager,
     RoleDefinition,

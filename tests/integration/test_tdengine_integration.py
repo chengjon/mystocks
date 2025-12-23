@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 import pytest
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
 from src.data_access.tdengine_access import TDengineDataAccess
 from src.core.data_classification import DataClassification
 from unified_manager import MyStocksUnifiedManager

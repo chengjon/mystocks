@@ -13,13 +13,12 @@ TDX数据API路由
 
 from fastapi import APIRouter, HTTPException, Query, Depends, status
 from typing import Optional
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from app.schemas.tdx_schemas import (
     RealTimeQuoteResponse,
     KlineResponse,
     IndexQuoteResponse,
-    ErrorResponse,
     TdxHealthResponse,
 )
 from app.services.tdx_service import get_tdx_service, TdxService

@@ -5,7 +5,6 @@ TradingView Widget 集成服务模块
 """
 
 from typing import Dict, Any, List
-import json
 
 
 class TradingViewWidgetService:

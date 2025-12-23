@@ -22,7 +22,6 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
-import numpy as np
 from typing import Dict, List, Optional
 from datetime import date, datetime, timedelta
 from dataclasses import dataclass
@@ -302,7 +301,7 @@ if __name__ == "__main__":
 
     if progress["latest_dates"]:
         sample = list(progress["latest_dates"].items())[:5]
-        print(f"  ✓ 示例最新日期:")
+        print("  ✓ 示例最新日期:")
         for symbol, latest_date in sample:
             print(f"      {symbol}: {latest_date}")
 
@@ -318,7 +317,7 @@ if __name__ == "__main__":
         batch_size=5,
     )
 
-    print(f"\n  ✓ 测试完成:")
+    print("\n  ✓ 测试完成:")
     print(f"      成功: {result['success_count']}/{result['total_symbols']}")
     print(f"      记录数: {result['total_records']:,}")
 

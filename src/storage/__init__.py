@@ -7,9 +7,6 @@ Storage模块 - 数据存储和访问层
 - 数据访问层
 """
 
-from .database.connection_manager import DatabaseConnectionManager, test_database_connections
+from .database.connection_manager import DatabaseConnectionManager
 
-__all__ = [
-    'DatabaseConnectionManager',
-    'test_database_connections'
-]
+__all__ = ["DatabaseConnectionManager"]

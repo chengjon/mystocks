@@ -15,7 +15,6 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import uuid
 from typing import Dict, List, Optional, Callable, Any, Set
 from datetime import datetime
 import structlog
@@ -28,13 +27,8 @@ except ImportError:
     )
 
 from app.models.websocket_message import (
-    WebSocketMessageType,
     WebSocketRequestMessage,
-    WebSocketResponseMessage,
-    WebSocketErrorMessage,
     WebSocketErrorCode,
-    WebSocketSubscribeMessage,
-    WebSocketHeartbeatMessage,
     create_response_message,
     create_error_message,
     create_pong_message,
@@ -42,7 +36,6 @@ from app.models.websocket_message import (
 from app.core.reconnection_manager import get_reconnection_manager
 from app.services.realtime_streaming_service import (
     get_streaming_service,
-    StreamEventType,
 )
 
 logger = structlog.get_logger()

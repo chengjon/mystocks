@@ -8,7 +8,6 @@
 import os
 import sys
 import json
-import time
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
@@ -18,12 +17,8 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from load_test_user_behaviors import (
-    UserBehaviorFactory,
     TrafficModelGenerator,
-    RequestSequenceGenerator,
-    UserBehaviorScenarios,
     LoadTestMetrics,
-    UserProfile,
 )
 import structlog
 
@@ -275,7 +270,7 @@ class LoadTestOrchestrator:
     def list_scenarios(self) -> List[str]:
         """列出所有场景"""
         return [
-            f"{i+1}. {s.name}: {s.description}" for i, s in enumerate(self.scenarios)
+            f"{i + 1}. {s.name}: {s.description}" for i, s in enumerate(self.scenarios)
         ]
 
     def get_scenario(self, index: int) -> LoadTestScenario:
@@ -307,7 +302,7 @@ class LoadTestOrchestrator:
             }
         )
 
-        config_file = self.output_dir / f"scenario_{scenario_index+1}_config.json"
+        config_file = self.output_dir / f"scenario_{scenario_index + 1}_config.json"
         with open(config_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
 
@@ -338,16 +333,16 @@ class LoadTestOrchestrator:
         scenario = self.get_scenario(scenario_index)
         config = scenario.get_config()
 
-        print(f'\n{"="*60}')
+        print(f"\n{'=' * 60}")
         print(f"Scenario {scenario_index + 1}: {scenario.name}")
-        print(f'{"="*60}')
+        print(f"{'=' * 60}")
         print(f"Description: {scenario.description}")
         print(f"Duration: {scenario.duration}s")
         print(f"Target Users: {scenario.target_users}")
         print()
         print("Configuration:")
         print(json.dumps(config, indent=2, ensure_ascii=False))
-        print(f'{"="*60}\n')
+        print(f"{'=' * 60}\n")
 
     def export_scenarios_as_markdown(self) -> str:
         """导出所有场景为Markdown"""

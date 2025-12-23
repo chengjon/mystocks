@@ -5,7 +5,6 @@ Enhanced Technical Analysis Test
 
 import requests
 import json
-from datetime import date
 
 # API base URL
 BASE_URL = "http://localhost:8000"
@@ -52,12 +51,12 @@ def test_get_all_indicators():
         print(f"成交量指标数量: {len(data['volume'])}")
 
         # 显示部分指标
-        print(f"\n部分趋势指标:")
+        print("\n部分趋势指标:")
         for key in ["ma5", "ma10", "ma20", "ema12", "ema26"]:
             if key in data["trend"]:
                 print(f"  {key}: {data['trend'][key]:.2f}")
 
-        print(f"\n部分动量指标:")
+        print("\n部分动量指标:")
         for key in ["rsi6", "rsi12", "kdj_k", "kdj_d"]:
             if key in data["momentum"]:
                 print(f"  {key}: {data['momentum'][key]:.2f}")
@@ -95,12 +94,12 @@ def test_get_momentum_indicators():
         print(f"指标数量: {data['count']}")
 
         indicators = data["indicators"]
-        print(f"\nRSI指标:")
+        print("\nRSI指标:")
         print(f"  RSI(6):  {indicators.get('rsi6', 'N/A')}")
         print(f"  RSI(12): {indicators.get('rsi12', 'N/A')}")
         print(f"  RSI(24): {indicators.get('rsi24', 'N/A')}")
 
-        print(f"\nKDJ指标:")
+        print("\nKDJ指标:")
         print(f"  K: {indicators.get('kdj_k', 'N/A')}")
         print(f"  D: {indicators.get('kdj_d', 'N/A')}")
         print(f"  J: {indicators.get('kdj_j', 'N/A')}")
@@ -121,13 +120,13 @@ def test_get_volatility_indicators():
         print(f"指标数量: {data['count']}")
 
         indicators = data["indicators"]
-        print(f"\nBollinger Bands:")
+        print("\nBollinger Bands:")
         print(f"  上轨: {indicators.get('bb_upper', 'N/A')}")
         print(f"  中轨: {indicators.get('bb_middle', 'N/A')}")
         print(f"  下轨: {indicators.get('bb_lower', 'N/A')}")
         print(f"  带宽: {indicators.get('bb_width', 'N/A')}%")
 
-        print(f"\nATR:")
+        print("\nATR:")
         print(f"  ATR: {indicators.get('atr', 'N/A')}")
         print(f"  ATR%: {indicators.get('atr_percent', 'N/A')}%")
 
@@ -169,13 +168,13 @@ def test_get_trading_signals():
         )
 
         if data["signals"]:
-            print(f"\n具体信号:")
+            print("\n具体信号:")
             for sig in data["signals"]:
                 print(
                     f"  - [{sig['signal'].upper()}] {sig['type']}: 强度 {sig['strength']:.2f}"
                 )
         else:
-            print(f"\n当前无明显交易信号")
+            print("\n当前无明显交易信号")
 
 
 def test_get_history():
@@ -196,11 +195,11 @@ def test_get_history():
         print(f"周期: {data['period']}")
         print(f"数据点: {data['count']}")
 
-        print(f"\n最近3天数据:")
+        print("\n最近3天数据:")
         for i in range(min(3, len(data["dates"]))):
             ohlcv = data["data"][-(i + 1)]
             print(
-                f"  {data['dates'][-(i+1)]}: "
+                f"  {data['dates'][-(i + 1)]}: "
                 f"开={ohlcv['open']:.2f}, "
                 f"高={ohlcv['high']:.2f}, "
                 f"低={ohlcv['low']:.2f}, "

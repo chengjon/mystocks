@@ -19,11 +19,8 @@ import os
 import sys
 import time
 import unittest
-import pandas as pd
-from unittest.mock import patch, MagicMock
 from pathlib import Path
 import datetime
-import random
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -99,7 +96,7 @@ class TestMockDataValidation(unittest.TestCase):
             self.assertIn("price", quote, "应该包含price字段")
             self.assertIn("change_pct", quote, "应该包含change_pct字段")
 
-        print(f"✅ 数据结构一致性验证通过，进行了5次调用")
+        print("✅ 数据结构一致性验证通过，进行了5次调用")
 
     def test_wencai_query_validation(self):
         """测试问财查询数据验证"""
@@ -303,7 +300,7 @@ class TestMockDataValidation(unittest.TestCase):
             # 应该返回默认数据而不是抛出异常
             self.assertIsInstance(indicators, dict, "应该返回有效的数据结构")
             print("✅ 缺少参数处理正常")
-        except Exception as e:
+        except Exception:
             # 这里允许抛出异常，因为缺少必要参数
             pass
 
@@ -340,8 +337,8 @@ class TestMockDataValidation(unittest.TestCase):
 
             for date_str in dates[:5]:  # 检查前5个日期
                 date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
-                self.assertGreaterEqual(date, start_date, f"日期不应该早于开始日期")
-                self.assertLessEqual(date, end_date, f"日期不应该晚于结束日期")
+                self.assertGreaterEqual(date, start_date, "日期不应该早于开始日期")
+                self.assertLessEqual(date, end_date, "日期不应该晚于结束日期")
 
             print(f"✅ 日期范围一致性验证通过，共{len(dates)}个数据点")
 
@@ -354,7 +351,7 @@ class TestMockDataValidation(unittest.TestCase):
 
         for size in test_sizes:
             stock_list = get_stock_list({"limit": size})
-            self.assertLessEqual(len(stock_list), size, f"返回数据量不应该超过请求量")
+            self.assertLessEqual(len(stock_list), size, "返回数据量不应该超过请求量")
             print(f"✅ 数据量{size}测试通过，实际返回: {len(stock_list)}")
 
         # 测试问财查询结果量

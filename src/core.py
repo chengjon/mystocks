@@ -16,14 +16,14 @@ MyStocks 量化交易数据管理系统 - 重构版
 日期: 2025-09-21
 """
 
-import os
-import yaml
 import logging
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Union, Tuple, Any
-from enum import Enum
+import os
 import traceback
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # 导入现有的数据库管理模块
 from src.storage.database.database_manager import (
@@ -95,7 +95,6 @@ class DeduplicationStrategy(Enum):
     MERGE = "merge"  # 智能合并数据（适用于多源头、字段不完整的数据）
     REJECT = "reject"  # 拒绝重复数据，记录警告（适用于严格去重场景）
 
-
     """配置驱动的表管理器 - 核心自动化管理组件"""
 
     def __init__(self, config_file: str = "table_config.yaml"):
@@ -110,25 +109,25 @@ class DeduplicationStrategy(Enum):
         self.config_data = None
         self.load_configuration()
 
-        logger.info(f"配置驱动表管理器初始化完成，配置文件: {config_file}")
+        logger.info("配置驱动表管理器初始化完成，配置文件: %s", config_file)
 
     def load_configuration(self) -> Dict:
         """加载YAML配置文件"""
         try:
             if not os.path.exists(self.config_file):
-                logger.warning(f"配置文件不存在: {self.config_file}，将创建默认配置")
+                logger.warning("配置文件不存在: %s，将创建默认配置", self.config_file)
                 self.create_default_config()
 
             with open(self.config_file, "r", encoding="utf-8") as f:
                 self.config_data = yaml.safe_load(f)
 
             logger.info(
-                f"成功加载配置文件: {len(self.config_data.get('tables', []))} 个表配置"
+                "成功加载配置文件: %d 个表配置", len(self.config_data.get("tables", []))
             )
             return self.config_data
 
-        except Exception as e:
-            logger.error(f"加载配置文件失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("加载配置文件失败: %s", e)
             raise
 
     def create_default_config(self):
@@ -144,7 +143,7 @@ class DeduplicationStrategy(Enum):
                 sort_keys=False,
             )
 
-        logger.info(f"创建默认配置文件: {self.config_file}")
+        logger.info("创建默认配置文件: %s", self.config_file)
 
     def _generate_default_config(self) -> Dict:
         """生成默认配置结构"""
@@ -587,23 +586,25 @@ class DeduplicationStrategy(Enum):
             try:
                 table_key = f"{table_config['database_type']}.{table_config['database_name']}.{table_config['table_name']}"
 
-                logger.info(f"正在创建表: {table_key}")
+                logger.info("正在创建表: %s", table_key)
                 success = self._create_table_from_config(table_config)
 
                 results[table_key] = success
                 if success:
                     success_count += 1
-                    logger.info(f"✅ 表创建成功: {table_key}")
+                    logger.info("✅ 表创建成功: %s", table_key)
                 else:
-                    logger.error(f"❌ 表创建失败: {table_key}")
+                    logger.error("❌ 表创建失败: %s", table_key)
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error(
-                    f"创建表时出现异常: {table_config.get('table_name', 'Unknown')}, 错误: {e}"
+                    "创建表时出现异常: %s, 错误: %s",
+                    table_config.get("table_name", "Unknown"),
+                    e,
                 )
                 results[table_key] = False
 
-        logger.info(f"表创建完成: {success_count}/{total_count} 成功")
+        logger.info("表创建完成: %d/%d 成功", success_count, total_count)
         return results
 
     def _create_table_from_config(self, table_config: Dict) -> bool:
@@ -625,13 +626,14 @@ class DeduplicationStrategy(Enum):
                 db_type = DatabaseType.POSTGRESQL
             elif db_type_str in ["MySQL", "MariaDB", "Redis"]:
                 logger.error(
-                    f"数据库类型 '{db_type_str}' 已在Week 3架构简化中移除，请使用PostgreSQL"
+                    "数据库类型 '%s' 已在Week 3架构简化中移除，请使用PostgreSQL",
+                    db_type_str,
                 )
-                logger.error(f"MySQL数据已迁移至PostgreSQL，Redis已由应用层缓存替代")
+                logger.error("MySQL数据已迁移至PostgreSQL，Redis已由应用层缓存替代")
                 return False
             else:
                 logger.error(
-                    f"不支持的数据库类型: {db_type_str}，仅支持TDengine和PostgreSQL"
+                    "不支持的数据库类型: %s，仅支持TDengine和PostgreSQL", db_type_str
                 )
                 return False
 
@@ -661,8 +663,8 @@ class DeduplicationStrategy(Enum):
 
             return success
 
-        except Exception as e:
-            logger.error(f"创建表失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("创建表失败: %s", e)
             logger.error(traceback.format_exc())
             return False
 
@@ -717,10 +719,10 @@ class DeduplicationStrategy(Enum):
         try:
             for index_config in table_config.get("indexes", []):
                 # 这里可以扩展索引创建逻辑
-                logger.info(f"创建索引: {index_config['name']}")
+                logger.info("创建索引: %s", index_config["name"])
 
-        except Exception as e:
-            logger.warning(f"创建索引失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.warning("创建索引失败: %s", e)
 
     def validate_all_table_structures(self) -> Dict[str, Any]:
         """
@@ -763,13 +765,17 @@ class DeduplicationStrategy(Enum):
                     }
                 )
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error(
-                    f"验证表结构时出现异常: {table_config.get('table_name', 'Unknown')}, 错误: {e}"
+                    "验证表结构时出现异常: %s, 错误: %s",
+                    table_config.get("table_name", "Unknown"),
+                    e,
                 )
 
         logger.info(
-            f"表结构验证完成: {validation_results['valid_tables']}/{validation_results['total_tables']} 有效"
+            "表结构验证完成: %d/%d 有效",
+            validation_results["valid_tables"],
+            validation_results["total_tables"],
         )
         return validation_results
 
@@ -796,7 +802,7 @@ class DeduplicationStrategy(Enum):
             ]
             for field in required_fields:
                 if field not in table_config:
-                    logger.error(f"表配置缺少必要字段: {field}")
+                    logger.error("表配置缺少必要字段: %s", field)
                     return False
 
             # 检查列配置
@@ -809,8 +815,8 @@ class DeduplicationStrategy(Enum):
 
             return True
 
-        except Exception as e:
-            logger.error(f"验证表结构失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("验证表结构失败: %s", e)
             return False
 
     def get_table_config_by_classification(
@@ -840,8 +846,8 @@ class DeduplicationStrategy(Enum):
             if hasattr(self.original_manager, "close_all_connections"):
                 self.original_manager.close_all_connections()
             logger.info("配置驱动表管理器资源清理完成")
-        except Exception as e:
-            logger.error(f"资源清理失败: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("资源清理失败: %s", e)
 
 
 # 继续在下一个文件中实现其他组件...

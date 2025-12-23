@@ -3,18 +3,18 @@
 测试股票策略系统API端点
 测试10个股票策略的各项功能
 """
+
 import requests
 import json
-from datetime import datetime
 
 BASE_URL = "http://localhost:8000"
 
 
 def print_response(response, title="响应"):
     """打印响应结果"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"{title}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Status: {response.status_code}")
     try:
         data = response.json()
@@ -172,9 +172,9 @@ def test_multiple_strategies():
                     }
                 )
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("多策略测试结果汇总")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     for r in results:
         status = "✅ 匹配" if r["matched"] else "❌ 不匹配"
         print(f"{status} - {r['strategy']} on {r['symbol']}")

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Debug script to test strategy list endpoint"""
+
 import os
 import sys
 
@@ -39,8 +40,8 @@ try:
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
-        print(f'Success! Got {len(data.get("items", []))} items')
-        print(f'Total: {data.get("total")}')
+        print(f"Success! Got {len(data.get('items', []))} items")
+        print(f"Total: {data.get('total')}")
     else:
         print(f"Error Response: {response.text[:500]}")
 except Exception as e:

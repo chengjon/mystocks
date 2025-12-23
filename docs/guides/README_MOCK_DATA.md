@@ -74,7 +74,7 @@
    import { getDashboardStats } from '@/mock/mockDashboard'
    console.log(getDashboardStats())
    ```
-   
+
    ```python
    # 测试Dashboard Python Mock函数 (后端)
    from src.mock.mock_Dashboard import get_dashboard_stats

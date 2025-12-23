@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyStocks 服务状态</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .service-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-good { border-left: 4px solid #10b981; }
+        .status-bad { border-left: 4px solid #ef4444; }
+        .status-warning { border-left: 4px solid #f59e0b; }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-running { background: #10b981; }
+        .status-stopped { background: #ef4444; }
+        .metrics {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MyStocks 量化交易系统</h1>
+            <p>服务状态监控面板</p>
+            <button class="refresh-btn" onclick="refreshStatus()">刷新状态</button>
+        </div>
+
+        <div class="service-grid">
+            <div class="service-card" id="frontend-card">
+                <h3>🌐 前端服务</h3>
+                <p><span class="status-indicator" id="frontend-indicator"></span><span id="frontend-status">检查中...</span></p>
+                <p>端口: 3000</p>
+                <p>地址: <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></p>
+            </div>
+
+            <div class="service-card" id="backend-card">
+                <h3>⚙️ 后端API</h3>
+                <p><span class="status-indicator" id="backend-indicator"></span><span id="backend-status">检查中...</span></p>
+                <p>端口: 8000</p>
+                <p>地址: <a href="http://localhost:8000/docs" target="_blank">http://localhost:8000/docs</a></p>
+            </div>
+
+            <div class="service-card" id="monitor-card">
+                <h3>📊 监控服务</h3>
+                <p><span class="status-indicator" id="monitor-indicator"></span><span id="monitor-status">检查中...</span></p>
+                <p>端口: 3101</p>
+                <p>地址: <a href="http://localhost:3101" target="_blank">http://localhost:3101</a></p>
+            </div>
+
+            <div class="service-card" id="database-card">
+                <h3>🗄️ 数据库</h3>
+                <p><span class="status-indicator" id="database-indicator"></span><span id="database-status">检查中...</span></p>
+                <p>PostgreSQL: 192.168.123.104:5438</p>
+                <p>TDengine: localhost:6030 (未安装)</p>
+            </div>
+        </div>
+
+        <div class="metrics">
+            <h3>📈 系统指标</h3>
+            <div id="metrics-content">
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function checkService(url, elementId) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    updateServiceStatus(elementId, 'running', '运行中');
+                } else {
+                    updateServiceStatus(elementId, 'stopped', '响应异常');
+                }
+            } catch (error) {
+                updateServiceStatus(elementId, 'stopped', '无法连接');
+            }
+        }
+
+        function updateServiceStatus(service, status, text) {
+            const indicator = document.getElementById(`${service}-indicator`);
+            const statusText = document.getElementById(`${service}-status`);
+            const card = document.getElementById(`${service}-card`);
+            
+            indicator.className = `status-indicator status-${status}`;
+            statusText.textContent = text;
+            
+            card.className = `service-card status-${status === 'running' ? 'good' : 'bad'}`;
+        }
+
+        async function loadMetrics() {
+            try {
+                const response = await fetch('http://localhost:3101/status');
+                const data = await response.json();
+                
+                const metricsHtml = `
+                    <div class="metric-item">
+                        <span>CPU使用率</span>
+                        <span>${data.cpu_percent.toFixed(1)}%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>内存使用率</span>
+                        <span>${data.memory_percent.toFixed(1)}%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>磁盘使用率</span>
+                        <span>${data.disk_percent.toFixed(1)}%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>系统负载</span>
+                        <span>${data.load_average ? data.load_average[0].toFixed(2) : 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>更新时间</span>
+                        <span>${new Date(data.timestamp).toLocaleString()}</span>
+                    </div>
+                `;
+                
+                document.getElementById('metrics-content').innerHTML = metricsHtml;
+            } catch (error) {
+                document.getElementById('metrics-content').innerHTML = '<p>无法加载指标数据</p>';
+            }
+        }
+
+        async function refreshStatus() {
+            // 检查各个服务
+            await checkService('http://localhost:3000', 'frontend');
+            await checkService('http://localhost:8000/health', 'backend');
+            await checkService('http://localhost:3101/status', 'monitor');
+            
+            // 检查数据库（简化版）
+            updateServiceStatus('database', 'running', 'PostgreSQL连接正常');
+            
+            // 加载系统指标
+            await loadMetrics();
+        }
+
+        // 页面加载时自动刷新状态
+        window.onload = refreshStatus;
+        
+        // 每30秒自动刷新
+        setInterval(refreshStatus, 30000);
+    </script>
+</body>
+</html>

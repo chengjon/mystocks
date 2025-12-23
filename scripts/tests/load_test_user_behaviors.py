@@ -8,7 +8,7 @@
 import random
 from enum import Enum
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 import structlog
 
 logger = structlog.get_logger()

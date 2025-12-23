@@ -40,13 +40,13 @@ show_usage() {
 # 函数：执行健康检查
 run_health_check() {
     log "开始执行健康检查..."
-    
+
     # 确保健康检查脚本存在且可执行
     if [[ ! -x "$HEALTH_SCRIPT" ]]; then
         log "健康检查脚本不存在或不可执行: $HEALTH_SCRIPT"
         return 1
     fi
-    
+
     # 执行健康检查脚本
     if bash "$HEALTH_SCRIPT" > /dev/null 2>&1; then
         log "健康检查完成: 正常"
@@ -61,9 +61,9 @@ run_health_check() {
 monitor_loop() {
     local interval=$1
     local times=$2
-    
+
     log "开始监控模式: 间隔=${interval}秒, 次数=${times}"
-    
+
     local count=0
     while [[ $times -eq -1 || $count -lt $times ]]; do
         # 执行健康检查
@@ -73,7 +73,7 @@ monitor_loop() {
             log "系统状态: 异常"
             # 在这里可以添加告警通知逻辑
         fi
-        
+
         # 计算下次执行时间
         count=$((count + 1))
         if [[ $times -eq -1 || $count -lt $times ]]; then
@@ -81,7 +81,7 @@ monitor_loop() {
             sleep "$interval"
         fi
     done
-    
+
     log "监控任务完成"
 }
 
@@ -131,7 +131,7 @@ else
     nohup bash "$0" -n -i "$CHECK_INTERVAL" -t "$CHECK_TIMES" > "$MONITOR_LOG" 2>&1 &
     MONITOR_PID=$!
     log "监控任务已启动，PID: $MONITOR_PID"
-    
+
     # 记录PID到文件，便于管理
     echo "$MONITOR_PID" > "${LOG_DIR}/monitor.pid"
     log "PID已保存到: ${LOG_DIR}/monitor.pid"

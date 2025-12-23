@@ -6,8 +6,8 @@ FastAPI路由文件: Strategy
 生成时间: 2025-11-13
 """
 
-from fastapi import APIRouter, Depends, Query
-from typing import Dict, List, Optional, Any
+from fastapi import APIRouter
+from typing import Dict
 import os
 import logging
 from datetime import datetime
@@ -22,16 +22,16 @@ router = APIRouter(prefix="/api/strategy", tags=["Strategy"])
 
 def check_use_mock_data() -> bool:
     """检查是否使用Mock数据
-    
+
     Returns:
         bool: 是否使用Mock数据
     """
-    return os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+    return os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 
 def get_strategy_mock_data():
     """获取策略管理Mock数据模块
-    
+
     Returns:
         module: Mock数据模块
     """
@@ -41,21 +41,22 @@ def get_strategy_mock_data():
         run_strategy_batch,
         get_strategy_results,
         get_matched_stocks,
-        get_strategy_stats
+        get_strategy_stats,
     )
+
     return {
-        'get_strategy_definitions': get_strategy_definitions,
-        'run_strategy_single': run_strategy_single,
-        'run_strategy_batch': run_strategy_batch,
-        'get_strategy_results': get_strategy_results,
-        'get_matched_stocks': get_matched_stocks,
-        'get_strategy_stats': get_strategy_stats
+        "get_strategy_definitions": get_strategy_definitions,
+        "run_strategy_single": run_strategy_single,
+        "run_strategy_batch": run_strategy_batch,
+        "get_strategy_results": get_strategy_results,
+        "get_matched_stocks": get_matched_stocks,
+        "get_strategy_stats": get_strategy_stats,
     }
 
 
 def get_database_service():
     """获取数据库服务（真实数据源）
-    
+
     Returns:
         object: 数据库服务实例
     """
@@ -67,23 +68,23 @@ def get_database_service():
 @router.get("/definitions")
 async def get_strategy_definitions():
     """获取策略定义列表
-    
+
     Returns:
         Dict: 策略定义列表
     """
     try:
         logger.info("获取策略定义列表")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略定义列表")
             mock_data = get_strategy_mock_data()
-            result = mock_data['get_strategy_definitions']()
+            result = mock_data["get_strategy_definitions"]()
             logger.info(f"Mock数据响应: 共{result.get('total', 0)}个策略")
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 获取策略定义列表")
@@ -93,23 +94,24 @@ async def get_strategy_definitions():
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_strategy_definitions()
-                
-                logger.info(f"真实数据库查询成功: 策略定义列表")
-                
+
+                logger.info("真实数据库查询成功: 策略定义列表")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -117,45 +119,45 @@ async def get_strategy_definitions():
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"获取策略定义列表失败: {str(e)}")
         return {
             "success": False,
             "message": f"获取策略定义列表失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.post("/run/single")
 async def run_single_strategy(request: Dict):
     """运行单策略
-    
+
     Args:
         request: Dict - 请求参数：
                 strategy_code: str - 策略代码
                 parameters: Dict - 策略参数
                 date_range: Dict - 日期范围
-        
+
     Returns:
         Dict: 策略运行结果
     """
     try:
-        strategy_code = request.get('strategy_code', 'STR001')
+        strategy_code = request.get("strategy_code", "STR001")
         logger.info(f"运行单策略: {strategy_code}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 运行单策略")
             mock_data = get_strategy_mock_data()
-            result = mock_data['run_strategy_single'](request)
+            result = mock_data["run_strategy_single"](request)
             logger.info(f"Mock数据响应: 匹配{result.get('total_stocks', 0)}只股票")
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 运行单策略")
@@ -165,23 +167,26 @@ async def run_single_strategy(request: Dict):
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_strategy_results({'strategy_id': request.get('strategy_id')})
-                
-                logger.info(f"真实数据库查询成功: 单个策略执行")
-                
+                result = db_service.get_strategy_results(
+                    {"strategy_id": request.get("strategy_id")}
+                )
+
+                logger.info("真实数据库查询成功: 单个策略执行")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -189,45 +194,47 @@ async def run_single_strategy(request: Dict):
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"运行单策略失败: {str(e)}")
         return {
             "success": False,
             "message": f"运行单策略失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.post("/run/batch")
 async def run_batch_strategies(request: Dict):
     """批量运行策略
-    
+
     Args:
         request: Dict - 请求参数：
                 strategy_codes: List[str] - 策略代码列表
                 parameters: Dict - 策略参数
                 date_range: Dict - 日期范围
-        
+
     Returns:
         Dict: 批量策略运行结果
     """
     try:
-        strategy_codes = request.get('strategy_codes', ['STR001', 'STR002'])
+        strategy_codes = request.get("strategy_codes", ["STR001", "STR002"])
         logger.info(f"批量运行策略: {strategy_codes}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 批量运行策略")
             mock_data = get_strategy_mock_data()
-            result = mock_data['run_strategy_batch'](request)
-            logger.info(f"Mock数据响应: 处理{result.get('total_strategies', 0)}个策略，匹配{result.get('total_stocks', 0)}只股票")
+            result = mock_data["run_strategy_batch"](request)
+            logger.info(
+                f"Mock数据响应: 处理{result.get('total_strategies', 0)}个策略，匹配{result.get('total_stocks', 0)}只股票"
+            )
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 批量运行策略")
@@ -237,23 +244,26 @@ async def run_batch_strategies(request: Dict):
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_strategy_results({'strategy_id': request.get('strategy_id')})
-                
-                logger.info(f"真实数据库查询成功: 批量策略执行")
-                
+                result = db_service.get_strategy_results(
+                    {"strategy_id": request.get("strategy_id")}
+                )
+
+                logger.info("真实数据库查询成功: 批量策略执行")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -261,48 +271,48 @@ async def run_batch_strategies(request: Dict):
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"批量运行策略失败: {str(e)}")
         return {
             "success": False,
             "message": f"批量运行策略失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.post("/results")
 async def get_strategy_results(request: Dict):
     """获取策略结果
-    
+
     Args:
         request: Dict - 请求参数：
                 strategy_code: str - 策略代码
                 limit: int - 限制数量
                 offset: int - 偏移量
-        
+
     Returns:
         Dict: 策略结果数据
     """
     try:
-        strategy_code = request.get('strategy_code', 'STR001')
-        limit = request.get('limit', 20)
-        offset = request.get('offset', 0)
-        
+        strategy_code = request.get("strategy_code", "STR001")
+        limit = request.get("limit", 20)
+        offset = request.get("offset", 0)
+
         logger.info(f"获取策略结果: {strategy_code}, limit: {limit}, offset: {offset}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略结果")
             mock_data = get_strategy_mock_data()
-            result = mock_data['get_strategy_results'](request)
+            result = mock_data["get_strategy_results"](request)
             logger.info(f"Mock数据响应: 共{result.get('total', 0)}条结果")
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 获取策略结果")
@@ -312,23 +322,24 @@ async def get_strategy_results(request: Dict):
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_strategy_results(request)
-                
-                logger.info(f"真实数据库查询成功: 策略执行结果")
-                
+
+                logger.info("真实数据库查询成功: 策略执行结果")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -336,46 +347,46 @@ async def get_strategy_results(request: Dict):
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"获取策略结果失败: {str(e)}")
         return {
             "success": False,
             "message": f"获取策略结果失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.post("/matched-stocks")
 async def get_matched_stocks(request: Dict):
     """获取匹配股票
-    
+
     Args:
         request: Dict - 请求参数：
                 strategy_code: str - 策略代码
                 filters: Dict - 筛选条件
-        
+
     Returns:
         Dict: 匹配股票数据
     """
     try:
-        strategy_code = request.get('strategy_code', 'STR001')
-        filters = request.get('filters', {})
-        
+        strategy_code = request.get("strategy_code", "STR001")
+        filters = request.get("filters", {})
+
         logger.info(f"获取匹配股票: {strategy_code}, filters: {filters}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取匹配股票")
             mock_data = get_strategy_mock_data()
-            result = mock_data['get_matched_stocks'](request)
+            result = mock_data["get_matched_stocks"](request)
             logger.info(f"Mock数据响应: 共{result.get('total', 0)}只股票")
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 获取匹配股票")
@@ -385,23 +396,24 @@ async def get_matched_stocks(request: Dict):
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_strategy_results(request)
-                
-                logger.info(f"真实数据库查询成功: 匹配股票")
-                
+
+                logger.info("真实数据库查询成功: 匹配股票")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -409,38 +421,38 @@ async def get_matched_stocks(request: Dict):
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"获取匹配股票失败: {str(e)}")
         return {
             "success": False,
             "message": f"获取匹配股票失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.get("/stats/summary")
 async def get_strategy_stats():
     """获取策略统计摘要
-    
+
     Returns:
         Dict: 策略统计数据
     """
     try:
         logger.info("获取策略统计摘要")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略统计")
             mock_data = get_strategy_mock_data()
-            result = mock_data['get_strategy_stats']()
-            logger.info(f"Mock数据响应: 统计成功")
+            result = mock_data["get_strategy_stats"]()
+            logger.info("Mock数据响应: 统计成功")
             return {
                 "success": True,
                 "data": result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 获取策略统计")
@@ -450,23 +462,24 @@ async def get_strategy_stats():
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_strategy_performance()
-                
-                logger.info(f"真实数据库查询成功: 策略统计")
-                
+
+                logger.info("真实数据库查询成功: 策略统计")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -474,31 +487,31 @@ async def get_strategy_stats():
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"获取策略统计失败: {str(e)}")
         return {
             "success": False,
             "message": f"获取策略统计失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.get("/{strategy_code}/performance")
 async def get_strategy_performance(strategy_code: str):
     """获取单个策略性能统计
-    
+
     Args:
         strategy_code: str - 策略代码
-        
+
     Returns:
         Dict: 策略性能数据
     """
     try:
         logger.info(f"获取策略性能: {strategy_code}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略性能")
             # 模拟策略性能数据
@@ -509,22 +522,26 @@ async def get_strategy_performance(strategy_code: str):
                 "success_rate": 0.87,
                 "total_matches": 256,
                 "avg_matches_per_run": 5.7,
-                "performance_history": []
+                "performance_history": [],
             }
-            
+
             # 生成性能历史数据
             for i in range(30):
-                performance_data["performance_history"].append({
-                    "date": (datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d"),
-                    "matches": 5 + i,
-                    "success": True if i % 7 != 0 else False
-                })
-            
+                performance_data["performance_history"].append(
+                    {
+                        "date": (datetime.now() - datetime.timedelta(days=i)).strftime(
+                            "%Y-%m-%d"
+                        ),
+                        "matches": 5 + i,
+                        "success": True if i % 7 != 0 else False,
+                    }
+                )
+
             return {
                 "success": True,
                 "data": performance_data,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 获取策略性能")
@@ -534,23 +551,24 @@ async def get_strategy_performance(strategy_code: str):
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_strategy_performance()
-                
-                logger.info(f"真实数据库查询成功: 策略性能")
-                
+
+                logger.info("真实数据库查询成功: 策略性能")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -558,59 +576,56 @@ async def get_strategy_performance(strategy_code: str):
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"获取策略性能失败: {str(e)}")
         return {
             "success": False,
             "message": f"获取策略性能失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.post("/{strategy_code}/optimize")
-async def optimize_strategy_parameters(
-    strategy_code: str,
-    request: Dict
-):
+async def optimize_strategy_parameters(strategy_code: str, request: Dict):
     """优化策略参数
-    
+
     Args:
         strategy_code: str - 策略代码
         request: Dict - 优化参数
-        
+
     Returns:
         Dict: 参数优化结果
     """
     try:
         logger.info(f"优化策略参数: {strategy_code}")
-        
+
         if check_use_mock_data():
             logger.info("使用Mock数据源: 优化策略参数")
             # 模拟参数优化结果
             optimization_result = {
                 "strategy_code": strategy_code,
-                "original_params": request.get('parameters', {}),
+                "original_params": request.get("parameters", {}),
                 "optimized_params": {
                     "ma_period": "25",
                     "volume_multiplier": "1.8",
-                    "breakthrough_threshold": "0.035"
+                    "breakthrough_threshold": "0.035",
                 },
                 "improvement": {
                     "accuracy": 0.12,
                     "total_matches": 18.5,
-                    "execution_time": -0.8
+                    "execution_time": -0.8,
                 },
-                "optimization_time": 45.6
+                "optimization_time": 45.6,
             }
-            
+
             return {
                 "success": True,
                 "data": optimization_result,
                 "timestamp": datetime.now().isoformat(),
-                "source": "mock"
+                "source": "mock",
             }
         else:
             logger.info("使用真实数据库: 优化策略参数")
@@ -620,24 +635,25 @@ async def optimize_strategy_parameters(
                     "success": False,
                     "message": "数据库服务暂未实现，请使用Mock数据源",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
             # 实现真实数据库查询
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 调用真实数据服务，参数与Mock接口一致
                 # 这里可能需要策略参数优化的特定方法
                 result = db_service.get_strategy_performance()
-                
-                logger.info(f"真实数据库查询成功: 优化策略参数")
-                
+
+                logger.info("真实数据库查询成功: 优化策略参数")
+
                 return {
                     "success": True,
                     "data": result,
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
             except Exception as e:
                 logger.error(f"真实数据库查询失败: {str(e)}")
@@ -645,22 +661,22 @@ async def optimize_strategy_parameters(
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
                     "timestamp": datetime.now().isoformat(),
-                    "source": "database"
+                    "source": "database",
                 }
-            
+
     except Exception as e:
         logger.error(f"优化策略参数失败: {str(e)}")
         return {
             "success": False,
             "message": f"优化策略参数失败: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
 @router.get("/health")
 async def check_strategy_health():
     """检查策略服务健康状态
-    
+
     Returns:
         Dict: 健康状态信息
     """
@@ -672,7 +688,7 @@ async def check_strategy_health():
                 "service": "Strategy",
                 "source": "mock",
                 "timestamp": datetime.now().isoformat(),
-                "version": "1.0.0"
+                "version": "1.0.0",
             }
         else:
             logger.info("检查真实数据库健康状态")
@@ -683,22 +699,23 @@ async def check_strategy_health():
                     "service": "Strategy",
                     "source": "database",
                     "message": "数据库服务暂未实现",
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
-            
+
             # 实现真实数据库健康检查
             try:
                 # 导入真实数据库服务
                 from src.database.database_service import db_service
+
                 # 实现健康检查逻辑
                 logger.info("真实数据库健康检查: 策略服务")
-                
+
                 return {
                     "status": "healthy",
                     "service": "Strategy",
                     "source": "database",
                     "timestamp": datetime.now().isoformat(),
-                    "version": "1.0.0"
+                    "version": "1.0.0",
                 }
             except Exception as e:
                 logger.error(f"真实数据库健康检查失败: {str(e)}")
@@ -707,14 +724,14 @@ async def check_strategy_health():
                     "service": "Strategy",
                     "source": "database",
                     "error": str(e),
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
-            
+
     except Exception as e:
         logger.error(f"检查策略服务健康状态失败: {str(e)}")
         return {
             "status": "unhealthy",
             "service": "Strategy",
             "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }

@@ -4,7 +4,6 @@
 生成综合测试报告包括覆盖率、性能和质量指标
 """
 
-import os
 import json
 import xml.etree.ElementTree as ET
 from datetime import datetime

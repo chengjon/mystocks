@@ -11,8 +11,7 @@
 
 import abc
 import pandas as pd
-from typing import Dict, List, Union, Optional, Any, Protocol
-from datetime import datetime
+from typing import Dict, List, Optional, Any
 
 
 class IDataSource(abc.ABC):
@@ -96,9 +95,7 @@ class IDataSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_market_calendar(
-        self, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取交易日历
 
@@ -113,9 +110,7 @@ class IDataSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_financial_data(
-        self, symbol: str, period: str = "annual"
-    ) -> pd.DataFrame:
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
         """
         获取财务数据
 

@@ -41,7 +41,7 @@ def test_customer_data_source():
         realtime_data = customer_source.get_real_time_data("hs")  # hs表示沪深市场
         if isinstance(realtime_data, pd.DataFrame) and not realtime_data.empty:
             print(f"   ✓ 成功获取到沪深市场A股最新状况，共{len(realtime_data)}条记录")
-            print(f"   前5行数据预览:")
+            print("   前5行数据预览:")
             print(realtime_data.head())
         elif isinstance(realtime_data, dict) and realtime_data:
             print(f"   ✓ 成功获取到沪深市场A股最新状况: {realtime_data}")
@@ -57,7 +57,7 @@ def test_customer_data_source():
         stock_data = customer_source.get_real_time_data("000001")
         if isinstance(stock_data, pd.DataFrame) and not stock_data.empty:
             print(f"   ✓ 成功获取到股票000001的实时数据，共{len(stock_data)}条记录")
-            print(f"   数据预览:")
+            print("   数据预览:")
             print(stock_data.head())
         elif isinstance(stock_data, dict) and stock_data:
             print(f"   ✓ 成功获取到股票000001的实时数据: {stock_data}")
@@ -79,7 +79,7 @@ def test_customer_data_source():
         daily_data = customer_source.get_stock_daily("000001", start_date, end_date)
         if isinstance(daily_data, pd.DataFrame) and not daily_data.empty:
             print(f"   ✓ 成功获取到股票000001的日线数据，共{len(daily_data)}条记录")
-            print(f"   数据预览:")
+            print("   数据预览:")
             print(daily_data.head())
         else:
             print("   ! 未能获取到股票000001的日线数据")
@@ -103,7 +103,7 @@ def test_customer_data_source():
         financial_data = customer_source.get_financial_data("000001")
         if isinstance(financial_data, pd.DataFrame) and not financial_data.empty:
             print(f"   ✓ 成功获取到股票000001的财务数据，共{len(financial_data)}条记录")
-            print(f"   数据预览:")
+            print("   数据预览:")
             print(financial_data.head())
         else:
             print("   ! 未能获取到股票000001的财务数据")

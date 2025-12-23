@@ -121,7 +121,7 @@ class StressTestResults:
         print(f"QPS (请求/秒): {summary['requests_per_second']}")
 
         if "min_response_time_ms" in summary:
-            print(f"\n响应时间统计 (毫秒):")
+            print("\n响应时间统计 (毫秒):")
             print(f"  最小: {summary['min_response_time_ms']}")
             print(f"  平均: {summary['avg_response_time_ms']}")
             print(f"  中位数: {summary['median_response_time_ms']}")
@@ -132,7 +132,7 @@ class StressTestResults:
                 print(f"  P99: {summary['p99_response_time_ms']}")
 
         if "top_errors" in summary and summary["top_errors"]:
-            print(f"\n错误统计 (前10个):")
+            print("\n错误统计 (前10个):")
             for error, count in summary["top_errors"].items():
                 print(f"  {error}: {count} 次")
 
@@ -204,7 +204,7 @@ def run_concurrent_test(
             completed += 1
             if completed % 100 == 0:
                 print(
-                    f"  进度: {completed}/{num_requests} ({completed/num_requests*100:.1f}%)"
+                    f"  进度: {completed}/{num_requests} ({completed / num_requests * 100:.1f}%)"
                 )
 
             try:
@@ -311,7 +311,7 @@ def main():
         # PostgreSQL统计
         pg_engine = get_postgresql_engine()
         pool = pg_engine.pool
-        print(f"\nPostgreSQL连接池:")
+        print("\nPostgreSQL连接池:")
         print(f"  Pool Size: {pool.size()}")
         print(f"  Active Connections: {pool.checkedout()}")
         print(f"  Idle Connections: {pool.checkedin()}")
@@ -324,7 +324,7 @@ def main():
         tdengine_mgr = get_tdengine_manager()
         td_stats = tdengine_mgr.get_pool_stats()
         if td_stats:
-            print(f"\nTDengine连接池:")
+            print("\nTDengine连接池:")
             print(f"  Pool Size: {td_stats.get('pool_size', 0)}")
             print(f"  Active Connections: {td_stats.get('active_connections', 0)}")
             print(f"  Idle Connections: {td_stats.get('idle_connections', 0)}")

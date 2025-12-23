@@ -11,13 +11,9 @@ python run_realtime_market_saver.py [--interval 60] [--count 1]
 日期: 2025-09-24
 """
 
-import os
-import sys
 import time
 import argparse
 import logging
-import pandas as pd
-from datetime import datetime
 
 # 导入MyStocks核心模块
 from src.core import DataClassification, DataManager
@@ -79,7 +75,7 @@ def save_to_auto_routing(data, manager):
         classification = DataClassification.INDEX_QUOTES  # 使用指数行情分类
 
         target_db = DataManager().get_target_database(classification)
-        logger.info(f"🎯 使用自动路由保存数据")
+        logger.info("🎯 使用自动路由保存数据")
         logger.info(f"📊 数据分类: {classification.value}")
         logger.info(f"📍 目标数据库: {target_db.value}")
 
@@ -168,7 +164,7 @@ def main():
     # 设置日志
     logger = setup_logging()
 
-    print(f"📋 配置参数:")
+    print("📋 配置参数:")
     print(f"  - 获取间隔: {args.interval}秒")
     print(f"  - 运行次数: {'持续运行' if args.count == -1 else f'{args.count}次'}")
     print(f"  - 测试模式: {'是' if args.test_adapter else '否'}")
@@ -221,7 +217,7 @@ def main():
         print(f"  - 成功次数: {success_count}")
         print(f"  - 失败次数: {run_count - success_count}")
         print(
-            f"  - 成功率: {success_count/run_count*100:.1f}%"
+            f"  - 成功率: {success_count / run_count * 100:.1f}%"
             if run_count > 0
             else "  - 成功率: N/A"
         )

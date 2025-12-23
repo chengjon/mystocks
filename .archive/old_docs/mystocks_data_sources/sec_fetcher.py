@@ -18,6 +18,7 @@ Usage:
 
 try:
     from edgar import Company, set_identity
+
     EDGAR_AVAILABLE = True
 except ImportError:
     EDGAR_AVAILABLE = False
@@ -61,7 +62,7 @@ class SECFetcher:
                 "Note: This is optional for the MVP demo. Risk metrics and notifications work without it."
             )
 
-        email = email or os.getenv('SEC_EMAIL')
+        email = email or os.getenv("SEC_EMAIL")
         if not email:
             raise ValueError(
                 "SEC_EMAIL environment variable must be set. "
@@ -72,11 +73,7 @@ class SECFetcher:
             set_identity(email)
         logger.info(f"SEC fetcher initialized with identity: {email}")
 
-    def get_latest_filing(
-        self,
-        ticker: str,
-        form_type: str = "10-K"
-    ) -> Optional[Dict]:
+    def get_latest_filing(self, ticker: str, form_type: str = "10-K") -> Optional[Dict]:
         """
         Get the latest SEC filing for a ticker
 
@@ -104,12 +101,12 @@ class SECFetcher:
             filing = filings.latest()
 
             return {
-                'ticker': ticker.upper(),
-                'form_type': filing.form,
-                'filing_date': str(filing.filing_date),
-                'accession_number': filing.accession_number,
-                'filing_url': filing.filing_url,
-                'text_preview': filing.text()[:10000]  # First 10k characters
+                "ticker": ticker.upper(),
+                "form_type": filing.form,
+                "filing_date": str(filing.filing_date),
+                "accession_number": filing.accession_number,
+                "filing_url": filing.filing_url,
+                "text_preview": filing.text()[:10000],  # First 10k characters
             }
 
         except Exception as e:
@@ -117,10 +114,7 @@ class SECFetcher:
             return None
 
     def get_filing_history(
-        self,
-        ticker: str,
-        form_type: str = "10-K",
-        limit: int = 5
+        self, ticker: str, form_type: str = "10-K", limit: int = 5
     ) -> List[Dict]:
         """
         Get multiple recent filings
@@ -143,13 +137,16 @@ class SECFetcher:
             company = Company(ticker)
             filings = company.get_filings(form=form_type).head(limit)
 
-            return [{
-                'ticker': ticker.upper(),
-                'form_type': f.form,
-                'filing_date': str(f.filing_date),
-                'accession_number': f.accession_number,
-                'filing_url': f.filing_url
-            } for f in filings]
+            return [
+                {
+                    "ticker": ticker.upper(),
+                    "form_type": f.form,
+                    "filing_date": str(f.filing_date),
+                    "accession_number": f.accession_number,
+                    "filing_url": f.filing_url,
+                }
+                for f in filings
+            ]
 
         except Exception as e:
             logger.error(f"Error fetching filing history for {ticker}: {e}")
@@ -168,9 +165,9 @@ class SECFetcher:
         try:
             company = Company(ticker)
             return {
-                'ticker': ticker.upper(),
-                'cik': company.cik,
-                'name': company.name if hasattr(company, 'name') else None
+                "ticker": ticker.upper(),
+                "cik": company.cik,
+                "name": company.name if hasattr(company, "name") else None,
             }
         except Exception as e:
             logger.error(f"Error fetching company info for {ticker}: {e}")

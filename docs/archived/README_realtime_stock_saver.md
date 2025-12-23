@@ -220,16 +220,16 @@ DataFrame → 数据类型分析 → 表结构生成 → DDL语句生成
 
 ```sql
 -- 查看最近的操作记录
-SELECT * FROM table_operation_log 
-ORDER BY operation_time DESC 
+SELECT * FROM table_operation_log
+ORDER BY operation_time DESC
 LIMIT 10;
 
 -- 查看数据保存统计
-SELECT 
+SELECT
     DATE(operation_time) as date,
     COUNT(*) as operations,
     SUM(CASE WHEN operation_status = 'success' THEN 1 ELSE 0 END) as success_count
-FROM table_operation_log 
+FROM table_operation_log
 WHERE operation_type = 'INSERT'
 GROUP BY DATE(operation_time)
 ORDER BY date DESC;
@@ -362,7 +362,7 @@ manager = MyStocksUnifiedManager()
 
 # 获取数据后自动路由保存
 manager.save_data_by_classification(
-    stock_data, 
+    stock_data,
     DataClassification.REALTIME_POSITIONS
 )
 ```

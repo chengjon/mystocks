@@ -24,17 +24,14 @@ import hashlib
 import json
 import pickle
 import zlib
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
-from collections import defaultdict, deque, OrderedDict
+from typing import List, Optional, Any, Tuple
+from datetime import datetime
+from collections import defaultdict, deque
 import concurrent.futures
 import numpy as np
 
 from src.utils.cache_optimization import (
     MultiLevelCache,
-    CacheLayer,
-    CacheMetrics,
-    CacheEntry,
 )
 
 logger = logging.getLogger(__name__)

@@ -18,7 +18,7 @@ Date: 2025-11-12
 
 import asyncio
 import structlog
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -264,9 +264,7 @@ class DatabaseQueryBatcher:
             logger.error("❌ Error queuing delete batch", error=str(e))
             raise
 
-    async def _batch_timeout_handler(
-        self, table_name: str, operation: str
-    ) -> None:
+    async def _batch_timeout_handler(self, table_name: str, operation: str) -> None:
         """批处理超时处理器"""
         try:
             await asyncio.sleep(self.batch_timeout_ms / 1000)
@@ -304,7 +302,9 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing insert buffer for {table_name}", error=str(e))
+            logger.error(
+                f"❌ Error flushing insert buffer for {table_name}", error=str(e)
+            )
 
     async def _flush_update_buffer(self, table_name: str) -> None:
         """刷新UPDATE缓冲"""
@@ -324,7 +324,9 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing update buffer for {table_name}", error=str(e))
+            logger.error(
+                f"❌ Error flushing update buffer for {table_name}", error=str(e)
+            )
 
     async def _flush_delete_buffer(self, table_name: str) -> None:
         """刷新DELETE缓冲"""
@@ -344,7 +346,9 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing delete buffer for {table_name}", error=str(e))
+            logger.error(
+                f"❌ Error flushing delete buffer for {table_name}", error=str(e)
+            )
 
     async def _execute_batch(self, batch_query: BatchQuery) -> None:
         """执行批处理查询"""

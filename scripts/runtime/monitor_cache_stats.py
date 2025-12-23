@@ -17,7 +17,6 @@ import sys
 import time
 from datetime import datetime
 from typing import Dict, Any, Optional
-import json
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -121,7 +120,7 @@ class CacheMonitor:
         print(f"{'=' * 70}")
 
         if stats:
-            print(f"\n  📊 Cache Overview:")
+            print("\n  📊 Cache Overview:")
             print(f"    Total Records:   {stats.get('total_records', 'N/A')}")
             print(f"    Unique Symbols:  {stats.get('unique_symbols', 'N/A')}")
             print(f"    Timestamp:       {stats.get('timestamp', 'N/A')}")
@@ -136,12 +135,12 @@ class CacheMonitor:
                 status = "✅" if hit_rate >= 0.8 else "⚠️"
                 print(f"\n  {status} Cache Hit Rate:   {hit_rate:.1%}")
             else:
-                print(f"\n  ⚠️ Cache Hit Rate:   Not available yet")
+                print("\n  ⚠️ Cache Hit Rate:   Not available yet")
 
             # Show hot symbols
             hot_symbols = self.get_hot_symbols()
             if hot_symbols:
-                print(f"\n  🔥 Hot Symbols (Top 10):")
+                print("\n  🔥 Hot Symbols (Top 10):")
                 for i, symbol in enumerate(hot_symbols[:10], 1):
                     print(
                         f"    {i:2}. {symbol['symbol']} - "
@@ -149,7 +148,7 @@ class CacheMonitor:
                         f"Last: {symbol['last_access']}"
                     )
             else:
-                print(f"\n  ℹ️ No hot symbols data available yet")
+                print("\n  ℹ️ No hot symbols data available yet")
 
         print(f"\n{'=' * 70}\n")
 
@@ -160,7 +159,7 @@ class CacheMonitor:
         print("=" * 70)
         print(f"  Started: {self.start_time.isoformat()}")
         print(f"  Update Interval: {self.interval} seconds")
-        print(f"  Press Ctrl+C to stop monitoring")
+        print("  Press Ctrl+C to stop monitoring")
         print("=" * 70 + "\n")
 
     def run_once(self) -> bool:
@@ -183,7 +182,7 @@ class CacheMonitor:
     def print_summary(self):
         """Print monitoring summary"""
         print(f"\n{'=' * 70}")
-        print(f"  Monitoring Summary")
+        print("  Monitoring Summary")
         print(f"{'=' * 70}")
 
         uptime = datetime.now() - self.start_time
@@ -194,7 +193,7 @@ class CacheMonitor:
             first = self.stats_history[0]
             last = self.stats_history[-1]
 
-            print(f"\n  📈 Growth:")
+            print("\n  📈 Growth:")
             total_records = last.get("total_records", 0)
             print(f"    Total Records:   {total_records}")
             print(f"    Unique Symbols:  {last.get('unique_symbols', 0)}")
@@ -204,11 +203,11 @@ class CacheMonitor:
                 total_size_mb = (total_records * avg_record_size) / (1024 * 1024)
                 print(f"    Estimated Size:  {total_size_mb:.2f} MB")
 
-        print(f"\n  ℹ️ Recommendations:")
-        print(f"    1. Monitor cache hit rate target: ≥80%")
-        print(f"    2. Review hot symbols for optimization")
-        print(f"    3. Check database performance metrics")
-        print(f"    4. Monitor disk space usage")
+        print("\n  ℹ️ Recommendations:")
+        print("    1. Monitor cache hit rate target: ≥80%")
+        print("    2. Review hot symbols for optimization")
+        print("    3. Check database performance metrics")
+        print("    4. Monitor disk space usage")
 
         print(f"\n{'=' * 70}\n")
 

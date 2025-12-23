@@ -9,8 +9,7 @@ logging 模块单元测试
 
 import pytest
 import sys
-from unittest.mock import Mock, patch, MagicMock, call
-from contextlib import contextmanager
+from unittest.mock import Mock, patch, MagicMock
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -250,7 +249,9 @@ class TestUnifiedLoggerCatchContext:
 class TestUnifiedLoggerPerformanceDecorator:
     """测试UnifiedLogger的log_performance装饰器"""
 
-    @pytest.mark.skip(reason="log_performance uses complex loguru.catch() internals that are difficult to mock")
+    @pytest.mark.skip(
+        reason="log_performance uses complex loguru.catch() internals that are difficult to mock"
+    )
     @patch("src.core.logging.loguru_logger")
     @patch("time.time")
     def test_log_performance_success(self, mock_time, mock_logger):
@@ -271,6 +272,7 @@ class TestUnifiedLoggerPerformanceDecorator:
         def mock_catch_wrapper():
             def wrapper(func):
                 return func
+
             return wrapper
 
         mock_logger.catch = Mock(return_value=mock_catch_wrapper)
@@ -287,7 +289,9 @@ class TestUnifiedLoggerPerformanceDecorator:
         # 验证info方法被调用来记录性能
         assert mock_opt.info.called
 
-    @pytest.mark.skip(reason="log_performance uses complex loguru.catch() internals that are difficult to mock")
+    @pytest.mark.skip(
+        reason="log_performance uses complex loguru.catch() internals that are difficult to mock"
+    )
     @patch("src.core.logging.loguru_logger")
     @patch("time.time")
     def test_log_performance_failure(self, mock_time, mock_logger):
@@ -307,6 +311,7 @@ class TestUnifiedLoggerPerformanceDecorator:
         def mock_catch_wrapper():
             def wrapper(func):
                 return func
+
             return wrapper
 
         mock_logger.catch = Mock(return_value=mock_catch_wrapper)
@@ -491,11 +496,7 @@ class TestCatchExceptionsExclude:
         logger = UnifiedLogger()
 
         with pytest.raises(ValueError):
-            with logger.catch(
-                "Error occurred",
-                exclude=(ValueError,),
-                reraise=True
-            ):
+            with logger.catch("Error occurred", exclude=(ValueError,), reraise=True):
                 raise ValueError("Expected error")
 
     @patch("src.core.logging.loguru_logger")
@@ -508,11 +509,7 @@ class TestCatchExceptionsExclude:
         logger = UnifiedLogger()
 
         # 应该静默返回，不抛出异常
-        with logger.catch(
-            "Error occurred",
-            exclude=(ValueError,),
-            reraise=False
-        ):
+        with logger.catch("Error occurred", exclude=(ValueError,), reraise=False):
             raise ValueError("Excluded error")
 
         # 验证没有调用日志记录（因为异常被排除）
@@ -525,7 +522,6 @@ class TestDbSink:
     def test_db_sink_warning_level(self, mock_connect):
         """测试db_sink记录WARNING级别日志"""
         from src.core.logging import db_sink
-        from unittest.mock import MagicMock
 
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
@@ -558,7 +554,6 @@ class TestDbSink:
     def test_db_sink_below_warning_skip(self, mock_connect):
         """测试db_sink跳过低于WARNING的日志"""
         from src.core.logging import db_sink
-        from unittest.mock import MagicMock
 
         # 创建INFO级别日志消息
         message = MagicMock()
@@ -575,7 +570,6 @@ class TestDbSink:
     def test_db_sink_exception_silent(self, mock_connect):
         """测试db_sink异常静默处理"""
         from src.core.logging import db_sink
-        from unittest.mock import MagicMock
 
         mock_connect.side_effect = Exception("Database connection failed")
 

@@ -134,7 +134,7 @@ from src.storage.access import TDengineDataAccess
 
 **问题**: 两个模块互相导入导致循环依赖。
 
-**解决方案**: 
+**解决方案**:
 1. 检查是否有共同依赖可以提取到单独模块
 2. 在函数内部使用延迟导入
 3. 使用相对导入，如 `from .module_name import ClassName`
@@ -143,7 +143,7 @@ from src.storage.access import TDengineDataAccess
 
 **问题**: 模块化代码缺乏充分的测试覆盖。
 
-**解决方案**: 
+**解决方案**:
 1. 为每个模块编写单元测试
 2. 编写集成测试验证模块间交互
 3. 使用模拟（Mock）对象替代依赖，进行隔离测试

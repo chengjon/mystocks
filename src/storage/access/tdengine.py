@@ -10,20 +10,17 @@ MyStocks 量化交易数据管理系统 - TDengine数据访问器
 日期: 2025-11-25
 """
 
-import os
 import pandas as pd
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Tuple, Any
+from typing import Dict, List, Optional
 import logging
-import uuid
 
 # 导入基础模块
 from src.storage.access.base import (
-    IDataAccessLayer, 
+    IDataAccessLayer,
     get_database_name_from_classification,
     normalize_dataframe,
-    validate_time_series_data,
-    DataClassification
+    DataClassification,
 )
 from src.monitoring.monitoring_database import MonitoringDatabase
 
@@ -39,7 +36,7 @@ class TDengineDataAccess(IDataAccessLayer):
     def __init__(self, monitoring_db: MonitoringDatabase):
         """
         初始化TDengine数据访问器
-        
+
         Args:
             monitoring_db: 监控数据库实例
         """
@@ -56,13 +53,13 @@ class TDengineDataAccess(IDataAccessLayer):
     ) -> bool:
         """
         保存时序数据到TDengine，支持去重策略
-        
+
         Args:
             data: 数据DataFrame
             classification: 数据分类
             table_name: 表名（可选，默认根据分类确定）
             **kwargs: 其他参数，支持 dedup_strategy 参数
-            
+
         Returns:
             bool: 保存是否成功
         """
@@ -145,13 +142,13 @@ class TDengineDataAccess(IDataAccessLayer):
     ) -> pd.DataFrame:
         """
         从TDengine加载时序数据
-        
+
         Args:
             classification: 数据分类
             table_name: 表名（可选）
             filters: 过滤条件
             **kwargs: 其他参数
-            
+
         Returns:
             pd.DataFrame: 加载的数据
         """
@@ -235,13 +232,13 @@ class TDengineDataAccess(IDataAccessLayer):
     ) -> Optional[pd.DataFrame]:
         """
         应用TDengine特定的去重策略
-        
+
         Args:
             data: 原始数据
             table_name: 表名
             strategy: 去重策略
             classification: 数据分类
-            
+
         Returns:
             处理后的数据
         """

@@ -5,7 +5,7 @@ Pydantic Request Schemas for Indicator API
 
 from pydantic import BaseModel, Field, validator
 from typing import List, Dict, Any, Optional
-from datetime import date, datetime
+from datetime import date
 import re
 
 
@@ -77,8 +77,7 @@ class IndicatorCalculateRequest(BaseModel):
         pattern = r"^\d{6}\.(SH|SZ)$"
         if not re.match(pattern, v):
             raise ValueError(
-                f"股票代码格式无效: {v}. "
-                "正确格式: 6位数字 + .SH 或 .SZ (如 600519.SH)"
+                f"股票代码格式无效: {v}. 正确格式: 6位数字 + .SH 或 .SZ (如 600519.SH)"
             )
         return v
 

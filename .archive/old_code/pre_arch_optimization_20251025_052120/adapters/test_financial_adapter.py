@@ -18,13 +18,15 @@ import pandas as pd
 def test_financial_adapter():
     """测试Financial适配器"""
     print("=== Financial适配器测试 ===")
-    
+
     # 创建Financial数据源实例
     financial_ds = FinancialDataSource()
-    
+
     # 检查数据源是否初始化成功
-    print(f"Financial数据源初始化状态: efinance可用={financial_ds.efinance_available}, easyquotation可用={financial_ds.easyquotation_available}")
-    
+    print(
+        f"Financial数据源初始化状态: efinance可用={financial_ds.efinance_available}, easyquotation可用={financial_ds.easyquotation_available}"
+    )
+
     # 测试获取股票日线数据（以平安银行为例）
     print("\n--- 测试获取股票日线数据 ---")
     symbol = "000001"
@@ -37,7 +39,7 @@ def test_financial_adapter():
         print(daily_data.head())
     else:
         print("未获取到日线数据")
-    
+
     # 测试获取股票基本信息
     print("\n--- 测试获取股票基本信息 ---")
     basic_info = financial_ds.get_stock_basic(symbol)
@@ -47,7 +49,7 @@ def test_financial_adapter():
         print(basic_info.head())
     else:
         print("未获取到基本信息")
-    
+
     # 测试获取实时数据（特定股票）
     print("\n--- 测试获取特定股票实时数据 ---")
     real_time_data = financial_ds.get_real_time_data(symbol)
@@ -57,7 +59,7 @@ def test_financial_adapter():
         print(real_time_data.head())
     else:
         print("未获取到特定股票实时数据")
-    
+
     # 测试获取市场快照
     print("\n--- 测试获取市场快照 ---")
     market_snapshot = financial_ds.get_real_time_data(market="CN")

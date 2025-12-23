@@ -4,7 +4,7 @@
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")

@@ -17,8 +17,10 @@ from enum import Enum
 # 枚举类型
 # ============================================================================
 
+
 class StrategyStatus(str, Enum):
     """策略状态"""
+
     DRAFT = "draft"  # 草稿
     ACTIVE = "active"  # 激活
     PAUSED = "paused"  # 暂停
@@ -27,6 +29,7 @@ class StrategyStatus(str, Enum):
 
 class StrategyType(str, Enum):
     """策略类型"""
+
     MOMENTUM = "momentum"  # 动量策略
     MEAN_REVERSION = "mean_reversion"  # 均值回归
     BREAKOUT = "breakout"  # 突破策略
@@ -36,6 +39,7 @@ class StrategyType(str, Enum):
 
 class BacktestStatus(str, Enum):
     """回测状态"""
+
     PENDING = "pending"  # 等待中
     RUNNING = "running"  # 运行中
     COMPLETED = "completed"  # 完成
@@ -46,8 +50,10 @@ class BacktestStatus(str, Enum):
 # 策略配置模型
 # ============================================================================
 
+
 class StrategyParameter(BaseModel):
     """策略参数"""
+
     name: str = Field(..., description="参数名称")
     value: Any = Field(..., description="参数值")
     description: Optional[str] = Field(None, description="参数说明")
@@ -56,21 +62,25 @@ class StrategyParameter(BaseModel):
 
 class StrategyConfig(BaseModel):
     """策略配置"""
+
     strategy_id: Optional[int] = Field(None, description="策略ID (创建时为None)")
     user_id: int = Field(..., description="用户ID", ge=1)
-    strategy_name: str = Field(..., description="策略名称", min_length=1, max_length=100)
+    strategy_name: str = Field(
+        ..., description="策略名称", min_length=1, max_length=100
+    )
     strategy_type: StrategyType = Field(..., description="策略类型")
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
 
     # 策略参数
     parameters: List[StrategyParameter] = Field(
-        default_factory=list,
-        description="策略参数列表"
+        default_factory=list, description="策略参数列表"
     )
 
     # 风险控制
     max_position_size: float = Field(0.1, description="最大仓位比例 (0-1)", ge=0, le=1)
-    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
+    stop_loss_percent: Optional[float] = Field(
+        None, description="止损百分比", ge=0, le=100
+    )
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
 
     # 状态和元数据
@@ -91,44 +101,58 @@ class StrategyConfig(BaseModel):
                         "name": "short_period",
                         "value": 5,
                         "description": "短期均线周期",
-                        "data_type": "int"
+                        "data_type": "int",
                     },
                     {
                         "name": "long_period",
                         "value": 20,
                         "description": "长期均线周期",
-                        "data_type": "int"
-                    }
+                        "data_type": "int",
+                    },
                 ],
                 "max_position_size": 0.2,
                 "stop_loss_percent": 5.0,
                 "take_profit_percent": 10.0,
                 "status": "active",
-                "tags": ["均线", "趋势跟踪"]
+                "tags": ["均线", "趋势跟踪"],
             }
         }
 
 
 class StrategyCreateRequest(BaseModel):
     """创建策略请求"""
+
     user_id: int = Field(..., description="用户ID", ge=1)
-    strategy_name: str = Field(..., description="策略名称", min_length=1, max_length=100)
+    strategy_name: str = Field(
+        ..., description="策略名称", min_length=1, max_length=100
+    )
     strategy_type: StrategyType = Field(..., description="策略类型")
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
-    parameters: List[StrategyParameter] = Field(default_factory=list, description="策略参数")
+    parameters: List[StrategyParameter] = Field(
+        default_factory=list, description="策略参数"
+    )
     max_position_size: float = Field(0.1, description="最大仓位比例", ge=0, le=1)
-    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
+    stop_loss_percent: Optional[float] = Field(
+        None, description="止损百分比", ge=0, le=100
+    )
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
     tags: List[str] = Field(default_factory=list, description="标签列表")
 
 
 class StrategyUpdateRequest(BaseModel):
     """更新策略请求"""
-    strategy_name: Optional[str] = Field(None, description="策略名称", min_length=1, max_length=100)
+
+    strategy_name: Optional[str] = Field(
+        None, description="策略名称", min_length=1, max_length=100
+    )
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
     parameters: Optional[List[StrategyParameter]] = Field(None, description="策略参数")
-    max_position_size: Optional[float] = Field(None, description="最大仓位比例", ge=0, le=1)
-    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
+    max_position_size: Optional[float] = Field(
+        None, description="最大仓位比例", ge=0, le=1
+    )
+    stop_loss_percent: Optional[float] = Field(
+        None, description="止损百分比", ge=0, le=100
+    )
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
     status: Optional[StrategyStatus] = Field(None, description="策略状态")
     tags: Optional[List[str]] = Field(None, description="标签列表")
@@ -136,6 +160,7 @@ class StrategyUpdateRequest(BaseModel):
 
 class StrategyListResponse(BaseModel):
     """策略列表响应"""
+
     total_count: int = Field(..., description="总数量")
     strategies: List[StrategyConfig] = Field(..., description="策略列表")
     page: int = Field(1, description="当前页码", ge=1)
@@ -146,8 +171,10 @@ class StrategyListResponse(BaseModel):
 # 回测请求模型
 # ============================================================================
 
+
 class BacktestRequest(BaseModel):
     """回测请求"""
+
     strategy_id: int = Field(..., description="策略ID", ge=1)
     user_id: int = Field(..., description="用户ID", ge=1)
 
@@ -165,10 +192,10 @@ class BacktestRequest(BaseModel):
     benchmark: Optional[str] = Field(None, description="基准指数代码")
     include_analysis: bool = Field(True, description="是否包含详细分析")
 
-    @validator('end_date')
+    @validator("end_date")
     def validate_date_range(cls, v, values):
         """验证日期范围"""
-        if 'start_date' in values and v < values['start_date']:
+        if "start_date" in values and v < values["start_date"]:
             raise ValueError("结束日期必须晚于开始日期")
         return v
 
@@ -184,13 +211,14 @@ class BacktestRequest(BaseModel):
                 "commission_rate": 0.0003,
                 "slippage_rate": 0.001,
                 "benchmark": "000300.SH",
-                "include_analysis": True
+                "include_analysis": True,
             }
         }
 
 
 class BacktestExecuteRequest(BaseModel):
     """回测执行请求"""
+
     strategy_id: int = Field(..., description="策略ID", ge=1)
     user_id: int = Field(..., description="用户ID", ge=1)
 
@@ -212,8 +240,10 @@ class BacktestExecuteRequest(BaseModel):
 # 回测结果模型
 # ============================================================================
 
+
 class TradeRecord(BaseModel):
     """交易记录"""
+
     trade_id: int = Field(..., description="交易ID")
     symbol: str = Field(..., description="股票代码")
     trade_date: date = Field(..., description="交易日期")
@@ -227,6 +257,7 @@ class TradeRecord(BaseModel):
 
 class PerformanceMetrics(BaseModel):
     """绩效指标"""
+
     # 收益指标
     total_return: float = Field(..., description="总收益率 (%)")
     annual_return: float = Field(..., description="年化收益率 (%)")
@@ -251,6 +282,7 @@ class PerformanceMetrics(BaseModel):
 
 class EquityCurvePoint(BaseModel):
     """权益曲线点"""
+
     date_field: date = Field(..., description="日期")
     equity: float = Field(..., description="权益", ge=0)
     drawdown: float = Field(..., description="回撤 (%)", le=0)
@@ -259,6 +291,7 @@ class EquityCurvePoint(BaseModel):
 
 class BacktestResult(BaseModel):
     """回测结果"""
+
     backtest_id: int = Field(..., description="回测ID")
     strategy_id: int = Field(..., description="策略ID")
     user_id: int = Field(..., description="用户ID")
@@ -273,8 +306,7 @@ class BacktestResult(BaseModel):
     final_capital: float = Field(..., description="最终资金", ge=0)
     performance: PerformanceMetrics = Field(..., description="绩效指标")
     equity_curve: List[EquityCurvePoint] = Field(
-        default_factory=list,
-        description="权益曲线"
+        default_factory=list, description="权益曲线"
     )
     trades: List[TradeRecord] = Field(default_factory=list, description="交易记录")
 
@@ -308,19 +340,20 @@ class BacktestResult(BaseModel):
                     "win_rate": 62.2,
                     "profit_factor": 1.85,
                     "calmar_ratio": 1.76,
-                    "sortino_ratio": 2.1
+                    "sortino_ratio": 2.1,
                 },
                 "equity_curve": [],
                 "trades": [],
                 "status": "completed",
                 "created_at": "2024-12-01T10:00:00",
-                "completed_at": "2024-12-01T10:05:00"
+                "completed_at": "2024-12-01T10:05:00",
             }
         }
 
 
 class BacktestResultSummary(BaseModel):
     """回测结果汇总"""
+
     backtest_id: int = Field(..., description="回测ID")
     strategy_id: int = Field(..., description="策略ID")
     strategy_name: str = Field(..., description="策略名称")
@@ -335,6 +368,7 @@ class BacktestResultSummary(BaseModel):
 
 class BacktestListResponse(BaseModel):
     """回测列表响应"""
+
     total_count: int = Field(..., description="总数量")
     backtests: List[BacktestResultSummary] = Field(..., description="回测列表")
     page: int = Field(1, description="当前页码", ge=1)
@@ -345,8 +379,10 @@ class BacktestListResponse(BaseModel):
 # 错误响应模型
 # ============================================================================
 
+
 class StrategyErrorResponse(BaseModel):
     """策略管理错误响应"""
+
     error_code: str = Field(..., description="错误代码")
     error_message: str = Field(..., description="错误消息")
     details: Optional[Dict[str, Any]] = Field(None, description="错误详情")
@@ -358,6 +394,6 @@ class StrategyErrorResponse(BaseModel):
                 "error_code": "STRATEGY_NOT_FOUND",
                 "error_message": "策略不存在",
                 "details": {"strategy_id": 123},
-                "timestamp": "2025-11-21T10:30:00"
+                "timestamp": "2025-11-21T10:30:00",
             }
         }

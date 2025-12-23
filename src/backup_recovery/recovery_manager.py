@@ -7,23 +7,18 @@
 版本: 1.0.0
 """
 
-import os
 import json
 import tarfile
 import shutil
 import logging
-import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Tuple, List
-from threading import Thread
-from queue import Queue
 
 # 数据库和存储访问
 from src.storage.database.connection_manager import DatabaseConnectionManager
 from src.data_access.tdengine_access import TDengineDataAccess
 from src.data_access.postgresql_access import PostgreSQLDataAccess
-from src.backup_recovery.backup_manager import BackupManager  # 用于备份元数据
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +37,9 @@ class RecoveryManager:
         self.tdengine_backup_dir.mkdir(parents=True, exist_ok=True)
         self.postgresql_backup_dir.mkdir(parents=True, exist_ok=True)
 
-    def restore_backup(self, backup_file: Path, recovery_id: str = None) -> Tuple[bool, str]:
+    def restore_backup(
+        self, backup_file: Path, recovery_id: str = None
+    ) -> Tuple[bool, str]:
         """
         恢复备份
 
@@ -80,20 +77,23 @@ class RecoveryManager:
                     def is_safe_path(path, base_path):
                         """检查tar文件中的路径是否安全，防止路径遍历"""
                         import os
+
                         # 规范化路径
                         normalized_path = os.path.normpath(path)
                         # 检查是否包含"../"或"..\"
-                        if ".." in normalized_path.split(os.sep) or ".." in normalized_path.split("/"):
+                        if ".." in normalized_path.split(
+                            os.sep
+                        ) or ".." in normalized_path.split("/"):
                             return False
                         # 检查规范化后的路径是否以基础路径开头
                         full_path = os.path.join(base_path, normalized_path)
                         return os.path.commonpath([base_path, full_path]) == base_path
-                    
+
                     # 验证所有成员路径
                     for member in tar.getmembers():
                         if not is_safe_path(member.name, str(backup_dir)):
                             raise ValueError(f"Unsafe path in tar file: {member.name}")
-                    
+
                     tar.extractall(backup_dir)
             else:
                 # 已是解压目录
@@ -117,12 +117,16 @@ class RecoveryManager:
                         # 恢复到PostgreSQL
                         success = self._restore_to_postgresql(parquet_file, table_name)
                     else:
-                        self._log_recovery(log_file, f"Unsupported database type: {db_type}")
+                        self._log_recovery(
+                            log_file, f"Unsupported database type: {db_type}"
+                        )
                         continue
 
                     if success:
                         restored_count += 1
-                        self._log_recovery(log_file, f"Successfully restored: {table_name}")
+                        self._log_recovery(
+                            log_file, f"Successfully restored: {table_name}"
+                        )
                     else:
                         self._log_recovery(log_file, f"Failed to restore: {table_name}")
 
@@ -173,6 +177,7 @@ class RecoveryManager:
         try:
             # 读取parquet文件
             import pandas as pd
+
             df = pd.read_parquet(parquet_file)
 
             # 插入到TDengine
@@ -189,6 +194,7 @@ class RecoveryManager:
         try:
             # 读取parquet文件
             import pandas as pd
+
             df = pd.read_parquet(parquet_file)
 
             # 插入到PostgreSQL

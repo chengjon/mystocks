@@ -5,17 +5,13 @@
 from datetime import date, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Query
 
 try:
     from app.models.announcement import (
         Announcement,
         AnnouncementMonitorRecord,
         AnnouncementMonitorRule,
-        AnnouncementMonitorRuleCreate,
-        AnnouncementMonitorRuleResponse,
-        AnnouncementMonitorRuleUpdate,
     )
     from app.services.announcement_service import get_announcement_service
 
@@ -76,11 +72,16 @@ if HAS_ANNOUNCEMENT_SERVICE:
                 start_date = end_date - timedelta(days=7)
 
             result = service.fetch_and_save_announcements(
-                symbol=symbol, start_date=start_date, end_date=end_date, category=category
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                category=category,
             )
 
             if not result["success"]:
-                raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch"))
+                raise HTTPException(
+                    status_code=400, detail=result.get("error", "Failed to fetch")
+                )
 
             return result
 
@@ -95,7 +96,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
         start_date: Optional[date] = Query(None, description="开始日期"),
         end_date: Optional[date] = Query(None, description="结束日期"),
         announcement_type: Optional[str] = Query(None, description="公告类型"),
-        min_importance: Optional[int] = Query(None, ge=0, le=5, description="最小重要性级别"),
+        min_importance: Optional[int] = Query(
+            None, ge=0, le=5, description="最小重要性级别"
+        ),
         page: int = Query(1, ge=1, description="页码"),
         page_size: int = Query(20, ge=1, le=100, description="每页数量"),
     ):
@@ -128,7 +131,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             )
 
             if not result["success"]:
-                raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+                raise HTTPException(
+                    status_code=400, detail=result.get("error", "Query failed")
+                )
 
             return result
 
@@ -139,7 +144,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
 
     @router.get("/today")
     async def get_today_announcements(
-        min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")
+        min_importance: Optional[int] = Query(
+            0, ge=0, le=5, description="最小重要性级别"
+        ),
     ):
         """
         获取今日公告
@@ -164,7 +171,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             )
 
             if not result["success"]:
-                raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+                raise HTTPException(
+                    status_code=400, detail=result.get("error", "Query failed")
+                )
 
             return {
                 "success": True,
@@ -208,7 +217,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             )
 
             if not result["success"]:
-                raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+                raise HTTPException(
+                    status_code=400, detail=result.get("error", "Query failed")
+                )
 
             return {
                 "success": True,
@@ -279,7 +290,11 @@ if HAS_ANNOUNCEMENT_SERVICE:
             session = service.SessionLocal()
 
             try:
-                rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
+                rules = (
+                    session.query(AnnouncementMonitorRule)
+                    .filter(AnnouncementMonitorRule.is_active == True)
+                    .all()
+                )
 
                 return [
                     {
@@ -317,7 +332,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
                 # 检查规则名称是否已存在
                 existing_rule = (
                     session.query(AnnouncementMonitorRule)
-                    .filter(AnnouncementMonitorRule.rule_name == rule_data.get("rule_name"))
+                    .filter(
+                        AnnouncementMonitorRule.rule_name == rule_data.get("rule_name")
+                    )
                     .first()
                 )
 
@@ -374,7 +391,11 @@ if HAS_ANNOUNCEMENT_SERVICE:
             session = service.SessionLocal()
 
             try:
-                rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
+                rule = (
+                    session.query(AnnouncementMonitorRule)
+                    .filter(AnnouncementMonitorRule.id == rule_id)
+                    .first()
+                )
 
                 if not rule:
                     raise HTTPException(status_code=404, detail="规则不存在")
@@ -422,7 +443,11 @@ if HAS_ANNOUNCEMENT_SERVICE:
             session = service.SessionLocal()
 
             try:
-                rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
+                rule = (
+                    session.query(AnnouncementMonitorRule)
+                    .filter(AnnouncementMonitorRule.id == rule_id)
+                    .first()
+                )
 
                 if not rule:
                     raise HTTPException(status_code=404, detail="规则不存在")
@@ -462,7 +487,11 @@ if HAS_ANNOUNCEMENT_SERVICE:
             session = service.SessionLocal()
 
             try:
-                query = session.query(AnnouncementMonitorRecord).join(AnnouncementMonitorRule).join(Announcement)
+                query = (
+                    session.query(AnnouncementMonitorRecord)
+                    .join(AnnouncementMonitorRule)
+                    .join(Announcement)
+                )
 
                 # 应用过滤条件
                 if rule_id:
@@ -490,13 +519,21 @@ if HAS_ANNOUNCEMENT_SERVICE:
                             "rule_id": record.rule_id,
                             "announcement_id": record.announcement_id,
                             "matched_keywords": record.matched_keywords or [],
-                            "triggered_at": record.triggered_at.isoformat() if record.triggered_at else None,
+                            "triggered_at": record.triggered_at.isoformat()
+                            if record.triggered_at
+                            else None,
                             "notified": record.notified,
-                            "notified_at": record.notified_at.isoformat() if record.notified_at else None,
+                            "notified_at": record.notified_at.isoformat()
+                            if record.notified_at
+                            else None,
                             "notification_result": record.notification_result,
                             "rule_name": record.rule.rule_name if record.rule else "",
-                            "announcement_title": record.announcement.announcement_title if record.announcement else "",
-                            "stock_code": record.announcement.stock_code if record.announcement else "",
+                            "announcement_title": record.announcement.announcement_title
+                            if record.announcement
+                            else "",
+                            "stock_code": record.announcement.stock_code
+                            if record.announcement
+                            else "",
                         }
                     )
 
@@ -529,7 +566,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             result = service.evaluate_monitor_rules()
 
             if not result["success"]:
-                raise HTTPException(status_code=400, detail=result.get("error", "Evaluation failed"))
+                raise HTTPException(
+                    status_code=400, detail=result.get("error", "Evaluation failed")
+                )
 
             return result
 

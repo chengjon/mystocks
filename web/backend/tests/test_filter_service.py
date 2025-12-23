@@ -9,9 +9,6 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
-from unittest.mock import MagicMock
-from decimal import Decimal
 from datetime import datetime
 
 from app.services.filter_service import (

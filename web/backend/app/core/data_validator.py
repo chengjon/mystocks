@@ -4,7 +4,6 @@
 """
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 import pandas as pd
@@ -46,7 +45,11 @@ class StockDataValidator:
 
         if df.empty:
             return ValidationResult(
-                is_valid=False, errors=["数据为空"], warnings=[], data_quality_score=0.0, record_count=0
+                is_valid=False,
+                errors=["数据为空"],
+                warnings=[],
+                data_quality_score=0.0,
+                record_count=0,
             )
 
         # 检查必需字段
@@ -71,12 +74,16 @@ class StockDataValidator:
 
         # 验证symbol格式（应该包含市场标识）
         if "symbol" in df.columns:
-            invalid_symbols = df[~df["symbol"].str.match(r"^[0-9]{6}\.[SH|SZ]$", na=False)]
+            invalid_symbols = df[
+                ~df["symbol"].str.match(r"^[0-9]{6}\.[SH|SZ]$", na=False)
+            ]
             if not invalid_symbols.empty:
                 warnings.append(f"发现 {len(invalid_symbols)} 条格式不标准的股票代码")
 
         # 计算数据质量评分
-        quality_score = cls._calculate_quality_score(len(errors), len(warnings), null_counts.sum())
+        quality_score = cls._calculate_quality_score(
+            len(errors), len(warnings), null_counts.sum()
+        )
 
         is_valid = len(errors) == 0
 
@@ -97,7 +104,11 @@ class StockDataValidator:
 
         if df.empty:
             return ValidationResult(
-                is_valid=False, errors=["K线数据为空"], warnings=[], data_quality_score=0.0, record_count=0
+                is_valid=False,
+                errors=["K线数据为空"],
+                warnings=[],
+                data_quality_score=0.0,
+                record_count=0,
             )
 
         # 检查必需字段
@@ -113,7 +124,9 @@ class StockDataValidator:
                 # 检查是否有很大的日期间隔（>5个工作日）
                 large_gaps = date_diff[date_diff > pd.Timedelta(days=5)]
                 if not large_gaps.empty:
-                    warnings.append(f"发现 {len(large_gaps)} 个日期断裂（大于5个工作日）")
+                    warnings.append(
+                        f"发现 {len(large_gaps)} 个日期断裂（大于5个工作日）"
+                    )
             except Exception as e:
                 errors.append(f"日期格式错误: {str(e)}")
 
@@ -132,13 +145,21 @@ class StockDataValidator:
         # 检查价格范围
         for price_col in ["open", "high", "low", "close"]:
             if price_col in df.columns:
-                out_of_range = df[(df[price_col] < cls.PRICE_RANGE[0]) | (df[price_col] > cls.PRICE_RANGE[1])]
+                out_of_range = df[
+                    (df[price_col] < cls.PRICE_RANGE[0])
+                    | (df[price_col] > cls.PRICE_RANGE[1])
+                ]
                 if not out_of_range.empty:
-                    warnings.append(f"字段 {price_col} 有 {len(out_of_range)} 条超出合理范围的值")
+                    warnings.append(
+                        f"字段 {price_col} 有 {len(out_of_range)} 条超出合理范围的值"
+                    )
 
         # 检查成交量范围
         if "volume" in df.columns:
-            out_of_range = df[(df["volume"] < cls.VOLUME_RANGE[0]) | (df["volume"] > cls.VOLUME_RANGE[1])]
+            out_of_range = df[
+                (df["volume"] < cls.VOLUME_RANGE[0])
+                | (df["volume"] > cls.VOLUME_RANGE[1])
+            ]
             if not out_of_range.empty:
                 warnings.append(f"成交量有 {len(out_of_range)} 条超出合理范围的值")
 
@@ -151,7 +172,9 @@ class StockDataValidator:
                     errors.append(f"字段 {col} 有 {count} 个空值")
 
         # 计算数据质量评分
-        quality_score = cls._calculate_quality_score(len(errors), len(warnings), null_counts.sum())
+        quality_score = cls._calculate_quality_score(
+            len(errors), len(warnings), null_counts.sum()
+        )
 
         is_valid = len(errors) == 0
 
@@ -190,7 +213,9 @@ class StockDataValidator:
         return len(errors) == 0, errors
 
     @staticmethod
-    def _calculate_quality_score(error_count: int, warning_count: int, null_count: int) -> float:
+    def _calculate_quality_score(
+        error_count: int, warning_count: int, null_count: int
+    ) -> float:
         """计算数据质量评分 (0-100)"""
         # 基础分100分，每个错误减20分，每个警告减5分，每个空值减0.1分
         score = 100.0
@@ -212,12 +237,22 @@ class DataConsistencyValidator:
         warnings = []
 
         if basic_stocks.empty and search_results.empty:
-            return ValidationResult(is_valid=True, errors=[], warnings=[], data_quality_score=100.0, record_count=0)
+            return ValidationResult(
+                is_valid=True,
+                errors=[],
+                warnings=[],
+                data_quality_score=100.0,
+                record_count=0,
+            )
 
         if search_results.empty:
             warnings.append("搜索结果为空")
             return ValidationResult(
-                is_valid=True, errors=[], warnings=warnings, data_quality_score=80.0, record_count=0
+                is_valid=True,
+                errors=[],
+                warnings=warnings,
+                data_quality_score=80.0,
+                record_count=0,
             )
 
         # 检查搜索结果中的所有stock是否都在基本数据中
@@ -238,11 +273,14 @@ class DataConsistencyValidator:
                 if field in search_row.index and field in basic_row.index:
                     if str(search_row[field]) != str(basic_row[field]):
                         errors.append(
-                            f"股票 {symbol} 的 {field} 不一致: " f"搜索={search_row[field]}, 基本={basic_row[field]}"
+                            f"股票 {symbol} 的 {field} 不一致: "
+                            f"搜索={search_row[field]}, 基本={basic_row[field]}"
                         )
 
         is_valid = len(errors) == 0
-        score = StockDataValidator._calculate_quality_score(len(errors), len(warnings), 0)
+        score = StockDataValidator._calculate_quality_score(
+            len(errors), len(warnings), 0
+        )
 
         return ValidationResult(
             is_valid=is_valid,
@@ -262,7 +300,11 @@ class DataConsistencyValidator:
 
         if kline_data.empty:
             return ValidationResult(
-                is_valid=False, errors=["K线数据为空"], warnings=[], data_quality_score=0.0, record_count=0
+                is_valid=False,
+                errors=["K线数据为空"],
+                warnings=[],
+                data_quality_score=0.0,
+                record_count=0,
             )
 
         # 使用StockDataValidator进行基本验证
@@ -282,8 +324,14 @@ class DataConsistencyValidator:
                 warnings.append(f"发现 {len(extreme_returns)} 个极端收益率（>10%）")
 
         is_valid = len(errors) == 0
-        score = StockDataValidator._calculate_quality_score(len(errors), len(warnings), 0)
+        score = StockDataValidator._calculate_quality_score(
+            len(errors), len(warnings), 0
+        )
 
         return ValidationResult(
-            is_valid=is_valid, errors=errors, warnings=warnings, data_quality_score=score, record_count=len(kline_data)
+            is_valid=is_valid,
+            errors=errors,
+            warnings=warnings,
+            data_quality_score=score,
+            record_count=len(kline_data),
         )

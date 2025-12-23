@@ -1,73 +1,140 @@
 # Pre-commit configuration for MyStocks project
 # Install: pip install pre-commit && pre-commit install
 # Run manually: pre-commit run --all-files
+#
+# 优化策略：Ruff 优先 + Black 兜底 + 安全检查
+# 执行顺序：Ruff (fix) → Black (format) → Ruff (check) → MyPy → Bandit → Safety
 
 repos:
-  # Ruff for linting and formatting (replaces black, isort, pylint)
+  # ============================================================================
+  # 第一步：Ruff 快速修复（优先处理错误型问题）
+  # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.4
+    rev: v0.9.10
     hooks:
-      # Run the linter
       - id: ruff
+        name: Ruff (Lint & Fix)
         args: [--fix]
-      # Run the formatter
-      - id: ruff-format
+        files: ^(src/|tests/)
+        # 仅处理源码和测试目录，提高速度
 
-  # Type checking
+  # ============================================================================
+  # 第二步：Black 兜底（统一风格，仅需1-2秒）
+  # ============================================================================
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        name: Black (Formatter)
+        files: ^(src/|tests/)
+        # 与 Ruff 统一行长度，避免冲突
+        args: [--line-length=120]
+
+  # ============================================================================
+  # 第三步：Ruff 二次校验（确保 Black 格式化后无新问题）
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        name: Ruff (Check only)
+        args: [check, --no-fix]
+        files: ^(src/|tests/)
+
+  # ============================================================================
+  # 第四步：类型检查
+  # ============================================================================
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+    rev: v1.11.2
     hooks:
       - id: mypy
+        name: MyPy (Type Check)
         args: ['--ignore-missing-imports', '--no-error-summary']
-        exclude: ^(temp/|.archive/|node_modules/|tests/)
+        files: ^(src/|tests/)
         additional_dependencies:
           - types-requests
           - types-PyYAML
 
-  # Security scanning
+  # ============================================================================
+  # 第五步：安全扫描
+  # ============================================================================
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.8
     hooks:
       - id: bandit
+        name: Bandit (Security Scan)
         args: ['-c', 'config/.security.yml', '-ll']
-        exclude: ^(temp/|.archive/|tests/)
+        files: ^src/
+        exclude: ^(tests/|test_|.*_test\.py)
 
-  # General file checks
+  # ============================================================================
+  # 第六步：依赖安全检查
+  # ============================================================================
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.3
+    hooks:
+      - id: python-safety-dependencies-check
+        name: Safety (Dependency Check)
+        files: ^(requirements\.txt|pyproject\.toml|Pipfile)$
+
+  # ============================================================================
+  # 第七步：通用文件检查
+  # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        name: Trailing Whitespace
         exclude: ^(temp/|.archive/)
       - id: end-of-file-fixer
+        name: End of File Fixer
         exclude: ^(temp/|.archive/)
       - id: check-yaml
+        name: Check YAML
         exclude: ^(temp/|.archive/)
       - id: check-json
+        name: Check JSON
         exclude: ^(temp/|.archive/)
       - id: check-added-large-files
+        name: Check Large Files
         args: ['--maxkb=1000']
       - id: detect-private-key
+        name: Detect Private Key
         exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|scripts/)
       - id: check-merge-conflict
+        name: Check Merge Conflict
 
-  # Custom secret detection (detects common credential patterns)
+  # ============================================================================
+  # 第八步：密钥检测
+  # ============================================================================
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-        args: []
+        name: Detect Secrets
         exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|\.archive/)
 
-  # Python syntax check
+  # ============================================================================
+  # 第九步：Python 语法检查
+  # ============================================================================
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
       - id: python-check-blanket-noqa
+        name: Check Blanket NOQA
       - id: python-check-blanket-type-ignore
+        name: Check Blanket Type Ignore
       - id: python-no-eval
+        name: No Eval
       - id: python-no-log-warn
+        name: No Log Warn
 
-# CI configuration
+# ============================================================================
+# CI 配置
+# ============================================================================
 ci:
-  autofix_prs: false
-  autoupdate_schedule: monthly
+  autofix_prs: false          # 不自动创建 PR 修复问题
+  autoupdate_schedule: monthly  # 每月自动更新 hooks
+  skip:
+    # CI 环境中可以跳过的 hooks（可选）
+    - python-safety-dependencies-check  # 依赖检查可以只在本地运行

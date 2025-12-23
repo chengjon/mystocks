@@ -4,9 +4,9 @@
 
 本文档为mystocks_nice分支提供完整的AI自动化开发环境实施指南，涵盖从环境搭建到生产部署的全流程。
 
-**当前分支**: mystocks_spec (主分支)  
-**目标分支**: mystocks_nice (NiceGUI前端)  
-**生成日期**: 2025-11-16  
+**当前分支**: mystocks_spec (主分支)
+**目标分支**: mystocks_nice (NiceGUI前端)
+**生成日期**: 2025-11-16
 **版本**: v1.0
 
 ---
@@ -28,7 +28,7 @@
 ```
 GPU加速系统 (RAPIDS)
     ├── cuDF (数据处理)
-    ├── cuML (机器学习)  
+    ├── cuML (机器学习)
     ├── GPU API服务
     └── 三级缓存系统
 
@@ -150,7 +150,7 @@ class AITradingStrategy:
 class MomentumStrategy(AITradingStrategy):
     def __init__(self, lookback_period=20)
 
-# 均值回归策略  
+# 均值回归策略
 class MeanReversionStrategy(AITradingStrategy):
     def __init__(self, bollinger_period=20, std_dev_threshold=2.0)
 
@@ -246,7 +246,7 @@ class AIAlertManager:
 
 ### 1. 前端框架替换
 
-**当前**: Vue.js + Element Plus  
+**当前**: Vue.js + Element Plus
 **目标**: NiceGUI + FastAPI
 
 #### NiceGUI集成示例
@@ -260,17 +260,17 @@ app = FastAPI()
 @ui.page('/dashboard')
 async def dashboard():
     ui.label('AI策略监控面板')
-    
+
     # AI策略状态卡片
     with ui.card().classes('w-full'):
         ui.label('🧠 AI策略状态')
-        
+
         # 实时指标
         with ui.row():
             ui.number('总收益', value=1.78)
             ui.number('夏普比率', value=0.79)
             ui.number('最大回撤', value=2.42)
-        
+
         # 策略列表
         with ui.table().classes('w-full'):
             ui.table.from_dict({
@@ -317,13 +317,13 @@ async def monitoring_page():
             {'type': 'line', 'name': 'Mean Reversion', 'data': []}
         ]
     })
-    
+
     # 实时数据更新
     async def update_chart():
         data = await get_ai_performance_data()
         chart.options['series'][0]['data'] = data['ml_based']
         ui.update()
-    
+
     # 每秒更新一次
     ui.timer(1.0, update_chart)
 ```
@@ -403,6 +403,6 @@ python main.py --host 0.0.0.0 --port 8080
 
 ---
 
-**最后更新**: 2025-11-16  
-**维护者**: MyStocks开发团队  
+**最后更新**: 2025-11-16
+**维护者**: MyStocks开发团队
 **适用版本**: MyStocks v1.0+

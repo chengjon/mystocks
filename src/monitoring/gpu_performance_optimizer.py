@@ -16,8 +16,8 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional, Tuple, Callable
+from datetime import datetime
+from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, asdict
 from pathlib import Path
 import numpy as np
@@ -27,6 +27,7 @@ import pandas as pd
 try:
     import cupy as cp
     import cudf
+
     GPU_AVAILABLE = True
 except ImportError:
     GPU_AVAILABLE = False
@@ -35,15 +36,11 @@ except ImportError:
 # 导入MyStocks组件
 from src.monitoring.ai_alert_manager import (
     AIAlertManager,
-    Alert,
-    AlertSeverity,
-    AlertType,
     get_ai_alert_manager,
 )
 
 from src.monitoring.ai_realtime_monitor import (
     AIRealtimeMonitor,
-    MonitoringConfig,
     get_ai_realtime_monitor,
 )
 
@@ -51,6 +48,7 @@ from src.monitoring.ai_realtime_monitor import (
 @dataclass
 class GPUOptimizationConfig:
     """GPU优化配置"""
+
     # 自动优化设置
     auto_optimize: bool = True
     optimization_interval: int = 300  # 5分钟优化一次
@@ -85,6 +83,7 @@ class GPUOptimizationConfig:
 @dataclass
 class GPUMetrics:
     """GPU性能指标"""
+
     timestamp: datetime
     gpu_utilization: float
     gpu_memory_used: float
@@ -103,6 +102,7 @@ class GPUMetrics:
 @dataclass
 class OptimizationResult:
     """优化结果"""
+
     timestamp: datetime
     optimization_type: str
     before_metrics: GPUMetrics
@@ -198,7 +198,9 @@ class GPUPerformanceOptimizer:
             baseline_metrics = await self._run_performance_benchmark(test_data)
             self.performance_baseline = baseline_metrics
 
-            self.logger.info(f"性能基准建立完成 - 效率评分: {baseline_metrics.efficiency_score:.3f}")
+            self.logger.info(
+                f"性能基准建立完成 - 效率评分: {baseline_metrics.efficiency_score:.3f}"
+            )
 
         except Exception as e:
             self.logger.error(f"基准测试失败: {e}")
@@ -209,9 +211,7 @@ class GPUPerformanceOptimizer:
         n_samples = 10000
         n_features = 100
 
-        data = {
-            f"feature_{i}": np.random.randn(n_samples) for i in range(n_features)
-        }
+        data = {f"feature_{i}": np.random.randn(n_samples) for i in range(n_features)}
         data["target"] = np.random.randn(n_samples)
         data["timestamp"] = pd.date_range("2024-01-01", periods=n_samples, freq="1min")
 
@@ -239,7 +239,11 @@ class GPUPerformanceOptimizer:
             # 获取GPU指标
             metrics = await self._collect_gpu_metrics()
             metrics.processing_time = time.time() - start_time
-            metrics.throughput = len(data) / metrics.processing_time if metrics.processing_time > 0 else 0
+            metrics.throughput = (
+                len(data) / metrics.processing_time
+                if metrics.processing_time > 0
+                else 0
+            )
 
             return metrics
 
@@ -285,21 +289,23 @@ class GPUPerformanceOptimizer:
         try:
             # 实际GPU指标收集
             device = cp.cuda.Device(0)
-            
+
             # GPU利用率 (模拟)
             gpu_util = 50.0 + np.random.normal(0, 15)
-            
+
             # GPU内存信息
             memory_info = cp.cuda.mem_get_info()
             memory_used = memory_info[1] - memory_info[0]
             memory_total = memory_info[1]
-            memory_utilization = (memory_used / memory_total) * 100 if memory_total > 0 else 0
-            
+            memory_utilization = (
+                (memory_used / memory_total) * 100 if memory_total > 0 else 0
+            )
+
             # CUDA内存池信息
             pool = cp.cuda.get_default_memory_pool()
             pool_used = pool.used_bytes()
             pool_total = pool.total_bytes()
-            
+
             # 效率评分计算
             efficiency = self._calculate_efficiency_score(
                 gpu_util, memory_utilization, pool_used, pool_total
@@ -349,7 +355,9 @@ class GPUPerformanceOptimizer:
             utilization_score = min(gpu_util / 100, 1.0) * 0.4
 
             # 内存使用评分 (30%)
-            memory_score = (1 - abs(memory_util - 70) / 100) * 0.3  # 70%为最优内存使用率
+            memory_score = (
+                1 - abs(memory_util - 70) / 100
+            ) * 0.3  # 70%为最优内存使用率
 
             # 内存池效率评分 (30%)
             pool_util = (pool_used / pool_total) if pool_total > 0 else 0
@@ -390,12 +398,16 @@ class GPUPerformanceOptimizer:
 
             # 收集优化后指标
             after_metrics = await self._collect_gpu_metrics()
-            
+
             # 计算改进评分
-            improvement_score = self._calculate_improvement_score(before_metrics, after_metrics)
+            improvement_score = self._calculate_improvement_score(
+                before_metrics, after_metrics
+            )
 
             # 生成建议
-            recommendation = self._generate_optimization_recommendation(before_metrics, after_metrics, applied_actions)
+            recommendation = self._generate_optimization_recommendation(
+                before_metrics, after_metrics, applied_actions
+            )
 
             # 创建优化结果
             result = OptimizationResult(
@@ -414,16 +426,22 @@ class GPUPerformanceOptimizer:
             self.optimization_stats["total_optimizations"] += 1
             if improvement_score > 0:
                 self.optimization_stats["successful_optimizations"] += 1
-                self.optimization_stats["performance_improvements"].append(improvement_score)
+                self.optimization_stats["performance_improvements"].append(
+                    improvement_score
+                )
 
             # 更新自适应参数
             self.adaptive_params["last_optimization_time"] = datetime.now()
 
             # 发送告警通知
             if improvement_score < -0.1:  # 性能下降超过10%
-                await self._send_performance_alert(before_metrics, after_metrics, improvement_score)
+                await self._send_performance_alert(
+                    before_metrics, after_metrics, improvement_score
+                )
 
-            self.logger.info(f"性能优化完成 - 改进评分: {improvement_score:.3f}, 操作: {len(applied_actions)}个")
+            self.logger.info(
+                f"性能优化完成 - 改进评分: {improvement_score:.3f}, 操作: {len(applied_actions)}个"
+            )
 
             return result
 
@@ -444,17 +462,17 @@ class GPUPerformanceOptimizer:
         """内存优化"""
         try:
             metrics = await self._collect_gpu_metrics()
-            
+
             if metrics.gpu_memory_utilization > self.config.memory_gc_threshold * 100:
                 # 触发GPU内存清理
                 if self.gpu_available:
                     # 清理CUDA内存池
                     pool = cp.cuda.get_default_memory_pool()
                     pool.free_all_blocks()
-                    
+
                     # 强制同步
                     cp.cuda.runtime.deviceSynchronize()
-                    
+
                     self.optimization_stats["memory_recoveries"] += 1
                     return f"GPU内存清理 - 释放 {metrics.gpu_memory_utilization:.1f}% 内存使用"
                 else:
@@ -471,17 +489,17 @@ class GPUPerformanceOptimizer:
         try:
             # 基于GPU利用率调整批次大小
             current_batch = self.adaptive_params["current_batch_size"]
-            
+
             if metrics.gpu_utilization < 50:  # GPU利用率低，增加批次大小
                 new_batch = min(current_batch * 1.2, self.config.max_batch_size)
                 self.adaptive_params["current_batch_size"] = int(new_batch)
                 return f"批次大小优化: {current_batch} → {int(new_batch)} (增加)"
-            
+
             elif metrics.gpu_utilization > 90:  # GPU利用率过高，减少批次大小
                 new_batch = max(current_batch * 0.8, self.config.min_batch_size)
                 self.adaptive_params["current_batch_size"] = int(new_batch)
                 return f"批次大小优化: {current_batch} → {int(new_batch)} (减少)"
-            
+
             return None
 
         except Exception as e:
@@ -494,23 +512,26 @@ class GPUPerformanceOptimizer:
             # 获取系统负载信息
             cpu_usage = await self._get_cpu_usage()
             gpu_metrics = await self._collect_gpu_metrics()
-            
+
             balance_factor = self.adaptive_params["cpu_gpu_balance_factor"]
-            
+
             # 如果CPU使用率高，卸载更多任务到GPU
-            if cpu_usage > self.config.cpu_threshold * 100 and gpu_metrics.gpu_utilization < 80:
+            if (
+                cpu_usage > self.config.cpu_threshold * 100
+                and gpu_metrics.gpu_utilization < 80
+            ):
                 new_factor = min(balance_factor * 1.1, 2.0)
                 self.adaptive_params["cpu_gpu_balance_factor"] = new_factor
                 self.optimization_stats["task_redistributions"] += 1
                 return f"负载均衡优化: CPU ({cpu_usage:.1f}%) → GPU卸载因子 {balance_factor:.2f} → {new_factor:.2f}"
-            
+
             # 如果GPU使用率高，卸载任务到CPU
             elif gpu_metrics.gpu_utilization > self.config.gpu_threshold * 100:
                 new_factor = max(balance_factor * 0.9, 0.5)
                 self.adaptive_params["cpu_gpu_balance_factor"] = new_factor
                 self.optimization_stats["task_redistributions"] += 1
                 return f"负载均衡优化: GPU ({gpu_metrics.gpu_utilization:.1f}%) → CPU卸载因子 {balance_factor:.2f} → {new_factor:.2f}"
-            
+
             return None
 
         except Exception as e:
@@ -521,27 +542,38 @@ class GPUPerformanceOptimizer:
         """获取CPU使用率"""
         try:
             import psutil
+
             return psutil.cpu_percent(interval=1)
         except ImportError:
             # 模拟CPU使用率
             return 50.0 + np.random.normal(0, 10)
 
-    def _calculate_improvement_score(self, before: GPUMetrics, after: GPUMetrics) -> float:
+    def _calculate_improvement_score(
+        self, before: GPUMetrics, after: GPUMetrics
+    ) -> float:
         """计算改进评分"""
         try:
             # 效率评分改进 (50%)
-            efficiency_improvement = (after.efficiency_score - before.efficiency_score)
+            efficiency_improvement = after.efficiency_score - before.efficiency_score
 
             # 处理速度改进 (30%)
             speed_improvement = 0
             if before.processing_time > 0:
-                speed_improvement = (before.processing_time - after.processing_time) / before.processing_time
+                speed_improvement = (
+                    before.processing_time - after.processing_time
+                ) / before.processing_time
 
             # 内存使用改进 (20%)
-            memory_improvement = (before.gpu_memory_utilization - after.gpu_memory_utilization) / 100
+            memory_improvement = (
+                before.gpu_memory_utilization - after.gpu_memory_utilization
+            ) / 100
 
             # 综合评分
-            total_score = efficiency_improvement * 0.5 + speed_improvement * 0.3 + memory_improvement * 0.2
+            total_score = (
+                efficiency_improvement * 0.5
+                + speed_improvement * 0.3
+                + memory_improvement * 0.2
+            )
 
             return max(-1.0, min(1.0, total_score))  # 限制在 -1 到 1 之间
 
@@ -555,7 +587,7 @@ class GPUPerformanceOptimizer:
         """生成优化建议"""
         try:
             improvement = self._calculate_improvement_score(before, after)
-            
+
             if improvement > 0.2:
                 return f"✅ 性能显著提升 (+{improvement:.1%}) - 建议保持当前配置"
             elif improvement > 0.05:
@@ -571,7 +603,9 @@ class GPUPerformanceOptimizer:
             self.logger.error(f"建议生成失败: {e}")
             return "优化建议生成失败"
 
-    async def _send_performance_alert(self, before: GPUMetrics, after: GPUMetrics, improvement: float):
+    async def _send_performance_alert(
+        self, before: GPUMetrics, after: GPUMetrics, improvement: float
+    ):
         """发送性能告警"""
         try:
             if not self.config.enable_performance_alerts:
@@ -582,7 +616,9 @@ class GPUPerformanceOptimizer:
                 "improvement_score": improvement,
                 "before_metrics": asdict(before),
                 "after_metrics": asdict(after),
-                "recommendation": self._generate_optimization_recommendation(before, after, []),
+                "recommendation": self._generate_optimization_recommendation(
+                    before, after, []
+                ),
             }
 
             # 这里可以调用告警管理器发送具体的告警
@@ -595,7 +631,7 @@ class GPUPerformanceOptimizer:
         """生成性能报告"""
         try:
             current_metrics = await self._collect_gpu_metrics()
-            
+
             # 计算统计信息
             if self.metrics_history:
                 utilization_trend = self._calculate_utilization_trend()
@@ -605,15 +641,25 @@ class GPUPerformanceOptimizer:
                 memory_trend = 0.0
 
             # 计算平均性能
-            avg_efficiency = np.mean([m.efficiency_score for m in self.metrics_history[-10:]]) if self.metrics_history else 0.0
-            avg_throughput = np.mean([m.throughput for m in self.metrics_history[-10:]]) if self.metrics_history else 0.0
+            avg_efficiency = (
+                np.mean([m.efficiency_score for m in self.metrics_history[-10:]])
+                if self.metrics_history
+                else 0.0
+            )
+            avg_throughput = (
+                np.mean([m.throughput for m in self.metrics_history[-10:]])
+                if self.metrics_history
+                else 0.0
+            )
 
             return {
                 "timestamp": datetime.now().isoformat(),
                 "gpu_available": self.gpu_available,
                 "gpu_initialized": self.gpu_initialized,
                 "current_metrics": asdict(current_metrics),
-                "performance_baseline": asdict(self.performance_baseline) if self.performance_baseline else None,
+                "performance_baseline": asdict(self.performance_baseline)
+                if self.performance_baseline
+                else None,
                 "optimization_stats": self.optimization_stats,
                 "adaptive_params": self.adaptive_params,
                 "performance_trends": {
@@ -622,7 +668,9 @@ class GPUPerformanceOptimizer:
                     "avg_efficiency_10": avg_efficiency,
                     "avg_throughput_10": avg_throughput,
                 },
-                "recommendations": await self._generate_performance_recommendations(current_metrics),
+                "recommendations": await self._generate_performance_recommendations(
+                    current_metrics
+                ),
             }
 
         except Exception as e:
@@ -633,7 +681,7 @@ class GPUPerformanceOptimizer:
         """计算利用率趋势"""
         if len(self.metrics_history) < 2:
             return 0.0
-        
+
         recent_utilizations = [m.gpu_utilization for m in self.metrics_history[-10:]]
         if len(recent_utilizations) < 2:
             return 0.0
@@ -641,18 +689,18 @@ class GPUPerformanceOptimizer:
         # 简单线性回归
         x = np.arange(len(recent_utilizations))
         y = np.array(recent_utilizations)
-        
+
         if len(x) > 1:
             slope = np.polyfit(x, y, 1)[0]
             return slope  # 正值表示上升趋势，负值表示下降趋势
-        
+
         return 0.0
 
     def _calculate_memory_trend(self) -> float:
         """计算内存使用趋势"""
         if len(self.metrics_history) < 2:
             return 0.0
-        
+
         recent_memory = [m.gpu_memory_utilization for m in self.metrics_history[-10:]]
         if len(recent_memory) < 2:
             return 0.0
@@ -660,27 +708,33 @@ class GPUPerformanceOptimizer:
         # 简单线性回归
         x = np.arange(len(recent_memory))
         y = np.array(recent_memory)
-        
+
         if len(x) > 1:
             slope = np.polyfit(x, y, 1)[0]
             return slope
-        
+
         return 0.0
 
-    async def _generate_performance_recommendations(self, metrics: GPUMetrics) -> List[str]:
+    async def _generate_performance_recommendations(
+        self, metrics: GPUMetrics
+    ) -> List[str]:
         """生成性能建议"""
         recommendations = []
 
         try:
             # GPU利用率建议
             if metrics.gpu_utilization < 30:
-                recommendations.append("💡 GPU利用率较低，建议增加并发任务或扩大批次大小")
+                recommendations.append(
+                    "💡 GPU利用率较低，建议增加并发任务或扩大批次大小"
+                )
             elif metrics.gpu_utilization > 95:
                 recommendations.append("⚠️ GPU接近满载，建议减少批次大小或优化算法")
 
             # 内存使用建议
             if metrics.gpu_memory_utilization > 90:
-                recommendations.append("🧠 GPU内存使用过高，建议触发内存清理或减少数据集大小")
+                recommendations.append(
+                    "🧠 GPU内存使用过高，建议触发内存清理或减少数据集大小"
+                )
             elif metrics.gpu_memory_utilization < 20:
                 recommendations.append("💾 GPU内存利用率较低，可以考虑处理更大的数据集")
 
@@ -709,7 +763,7 @@ class GPUPerformanceOptimizer:
         self.logger.info(f"启动连续GPU性能优化 - 持续时间: {duration_minutes}分钟")
 
         end_time = time.time() + (duration_minutes * 60)
-        
+
         try:
             while time.time() < end_time:
                 # 收集当前指标
@@ -722,13 +776,15 @@ class GPUPerformanceOptimizer:
 
                 # 检查是否需要优化
                 should_optimize = False
-                
+
                 # 检查优化间隔
                 last_optimization = self.adaptive_params.get("last_optimization_time")
                 if last_optimization is None:
                     should_optimize = True
                 else:
-                    time_since_last = (datetime.now() - last_optimization).total_seconds()
+                    time_since_last = (
+                        datetime.now() - last_optimization
+                    ).total_seconds()
                     if time_since_last > self.config.optimization_interval:
                         should_optimize = True
 
@@ -755,12 +811,18 @@ class GPUPerformanceOptimizer:
                 "config": asdict(self.config),
                 "optimization_stats": self.optimization_stats,
                 "adaptive_params": self.adaptive_params,
-                "metrics_history": [asdict(m) for m in self.metrics_history[-100:]],  # 只保存最近100条
-                "optimization_history": [asdict(o) for o in self.optimization_history[-50:]],  # 只保存最近50条
-                "performance_baseline": asdict(self.performance_baseline) if self.performance_baseline else None,
+                "metrics_history": [
+                    asdict(m) for m in self.metrics_history[-100:]
+                ],  # 只保存最近100条
+                "optimization_history": [
+                    asdict(o) for o in self.optimization_history[-50:]
+                ],  # 只保存最近50条
+                "performance_baseline": asdict(self.performance_baseline)
+                if self.performance_baseline
+                else None,
             }
 
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=2, ensure_ascii=False, default=str)
 
             self.logger.info(f"优化状态已保存到: {filepath}")
@@ -775,7 +837,7 @@ class GPUPerformanceOptimizer:
                 self.logger.warning(f"优化状态文件不存在: {filepath}")
                 return
 
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 state = json.load(f)
 
             # 恢复配置
@@ -792,10 +854,14 @@ class GPUPerformanceOptimizer:
 
             # 恢复历史数据
             if "metrics_history" in state:
-                self.metrics_history = [GPUMetrics(**m) for m in state["metrics_history"]]
+                self.metrics_history = [
+                    GPUMetrics(**m) for m in state["metrics_history"]
+                ]
 
             if "optimization_history" in state:
-                self.optimization_history = [OptimizationResult(**o) for o in state["optimization_history"]]
+                self.optimization_history = [
+                    OptimizationResult(**o) for o in state["optimization_history"]
+                ]
 
             # 恢复性能基准
             if "performance_baseline" in state and state["performance_baseline"]:
@@ -819,16 +885,18 @@ def get_gpu_performance_optimizer() -> GPUPerformanceOptimizer:
     return _gpu_optimizer_instance
 
 
-async def initialize_gpu_optimizer(config: Optional[GPUOptimizationConfig] = None) -> GPUPerformanceOptimizer:
+async def initialize_gpu_optimizer(
+    config: Optional[GPUOptimizationConfig] = None,
+) -> GPUPerformanceOptimizer:
     """初始化GPU优化管理器"""
     optimizer = get_gpu_performance_optimizer()
     if config:
         optimizer.config = config
-    
+
     success = await optimizer.initialize()
     if not success:
         logging.warning("GPU优化管理器初始化失败，将使用模拟模式")
-    
+
     return optimizer
 
 
@@ -877,11 +945,11 @@ async def main():
     optimization_task = asyncio.create_task(
         optimizer.start_continuous_optimization(duration_minutes=1)
     )
-    
+
     # 等待一段时间
     await asyncio.sleep(30)
     optimization_task.cancel()
-    
+
     try:
         await optimization_task
     except asyncio.CancelledError:

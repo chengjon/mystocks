@@ -6,18 +6,19 @@
 - 原有4个: Momentum, MeanReversion, Breakout, Grid
 - 新增4个: DualMA, Turtle, MACD, BollingerBreakout
 """
+
 import sys
 import os
 from datetime import datetime, timedelta
-from decimal import Decimal
 
 # 添加项目路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'web', 'backend'))
+sys.path.insert(0, os.path.join(project_root, "web", "backend"))
 
 from app.backtest.strategies.factory import StrategyFactory
-from app.backtest.strategies.base import SignalType
 
 
 def print_header(title):
@@ -38,6 +39,7 @@ def print_strategy_info(strategy):
 def generate_market_data(base_price, days, volatility=0.02):
     """生成模拟市场数据"""
     import random
+
     random.seed(42)
 
     data = []
@@ -47,18 +49,20 @@ def generate_market_data(base_price, days, volatility=0.02):
         change = random.uniform(-volatility, volatility)
         price = price * (1 + change)
 
-        high = price * (1 + abs(random.uniform(0, volatility/2)))
-        low = price * (1 - abs(random.uniform(0, volatility/2)))
+        high = price * (1 + abs(random.uniform(0, volatility / 2)))
+        low = price * (1 - abs(random.uniform(0, volatility / 2)))
         volume = 1000000 + random.randint(-200000, 200000)
 
-        data.append({
-            'date': datetime.now() - timedelta(days=days-i-1),
-            'open': price,
-            'high': high,
-            'low': low,
-            'close': price,
-            'volume': volume
-        })
+        data.append(
+            {
+                "date": datetime.now() - timedelta(days=days - i - 1),
+                "open": price,
+                "high": high,
+                "low": low,
+                "close": price,
+                "volume": volume,
+            }
+        )
 
     return data
 
@@ -82,16 +86,19 @@ def demo_dual_ma():
     """演示双均线策略"""
     print_header("📈 双均线策略 (Dual Moving Average)")
 
-    strategy = StrategyFactory.create_strategy('dual_ma', {
-        'short_period': 10,
-        'long_period': 30,
-        'ma_type': 'sma',
-        'volume_filter': True
-    })
+    strategy = StrategyFactory.create_strategy(
+        "dual_ma",
+        {
+            "short_period": 10,
+            "long_period": 30,
+            "ma_type": "sma",
+            "volume_filter": True,
+        },
+    )
 
     print_strategy_info(strategy)
 
-    symbol = 'TEST001'
+    symbol = "TEST001"
     data_list = generate_market_data(10.0, 35, 0.03)
 
     # 构建历史
@@ -100,18 +107,18 @@ def demo_dual_ma():
 
     # 模拟金叉
     current_data = {
-        'date': datetime.now(),
-        'open': 10.8,
-        'high': 11.0,
-        'low': 10.7,
-        'close': 10.9,  # 价格上涨，可能触发金叉
-        'volume': 1500000
+        "date": datetime.now(),
+        "open": 10.8,
+        "high": 11.0,
+        "low": 10.7,
+        "close": 10.9,  # 价格上涨，可能触发金叉
+        "volume": 1500000,
     }
 
     signal = strategy.generate_signal(symbol, current_data)
 
     if signal:
-        print(f"\n✅ 生成信号:")
+        print("\n✅ 生成信号:")
         print(f"   类型: {signal.signal_type.value}")
         print(f"   强度: {signal.strength:.2f}")
         print(f"   原因: {signal.reason}")
@@ -123,34 +130,40 @@ def demo_turtle():
     """演示海龟策略"""
     print_header("🐢 海龟策略 (Turtle Trading)")
 
-    strategy = StrategyFactory.create_strategy('turtle', {
-        'system': 1,  # System 1 (快速)
-        'entry_period_s1': 20,
-        'exit_period_s1': 10,
-        'atr_period': 20,
-        'max_units': 4
-    })
+    strategy = StrategyFactory.create_strategy(
+        "turtle",
+        {
+            "system": 1,  # System 1 (快速)
+            "entry_period_s1": 20,
+            "exit_period_s1": 10,
+            "atr_period": 20,
+            "max_units": 4,
+        },
+    )
 
     print_strategy_info(strategy)
 
-    symbol = 'TEST002'
+    symbol = "TEST002"
 
     # 生成盘整后突破的数据
     data_list = []
     import random
+
     random.seed(100)
 
     # 前20天盘整
     for i in range(20):
         price = 100 + random.uniform(-3, 3)
-        data_list.append({
-            'date': datetime.now() - timedelta(days=20-i),
-            'open': price,
-            'high': price * 1.02,
-            'low': price * 0.98,
-            'close': price,
-            'volume': 1000000
-        })
+        data_list.append(
+            {
+                "date": datetime.now() - timedelta(days=20 - i),
+                "open": price,
+                "high": price * 1.02,
+                "low": price * 0.98,
+                "close": price,
+                "volume": 1000000,
+            }
+        )
 
     # 构建历史
     for data in data_list:
@@ -158,18 +171,18 @@ def demo_turtle():
 
     # 突破20日高点
     breakout_data = {
-        'date': datetime.now(),
-        'open': 105,
-        'high': 108,
-        'low': 104,
-        'close': 107,  # 突破前期高点
-        'volume': 2000000
+        "date": datetime.now(),
+        "open": 105,
+        "high": 108,
+        "low": 104,
+        "close": 107,  # 突破前期高点
+        "volume": 2000000,
     }
 
     signal = strategy.generate_signal(symbol, breakout_data)
 
     if signal:
-        print(f"\n✅ 生成海龟入场信号:")
+        print("\n✅ 生成海龟入场信号:")
         print(f"   类型: {signal.signal_type.value}")
         print(f"   强度: {signal.strength:.2f}")
         print(f"   原因: {signal.reason}")
@@ -185,16 +198,19 @@ def demo_macd():
     """演示MACD策略"""
     print_header("📊 MACD策略 (Moving Average Convergence Divergence)")
 
-    strategy = StrategyFactory.create_strategy('macd', {
-        'fast_period': 12,
-        'slow_period': 26,
-        'signal_period': 9,
-        'zero_line_filter': True
-    })
+    strategy = StrategyFactory.create_strategy(
+        "macd",
+        {
+            "fast_period": 12,
+            "slow_period": 26,
+            "signal_period": 9,
+            "zero_line_filter": True,
+        },
+    )
 
     print_strategy_info(strategy)
 
-    symbol = 'TEST003'
+    symbol = "TEST003"
     data_list = generate_market_data(50.0, 30, 0.02)
 
     for data in data_list:
@@ -202,18 +218,18 @@ def demo_macd():
 
     # 模拟金叉数据
     current_data = {
-        'date': datetime.now(),
-        'open': 52.0,
-        'high': 53.0,
-        'low': 51.8,
-        'close': 52.5,
-        'volume': 1500000
+        "date": datetime.now(),
+        "open": 52.0,
+        "high": 53.0,
+        "low": 51.8,
+        "close": 52.5,
+        "volume": 1500000,
     }
 
     signal = strategy.generate_signal(symbol, current_data)
 
     if signal:
-        print(f"\n✅ 生成MACD信号:")
+        print("\n✅ 生成MACD信号:")
         print(f"   类型: {signal.signal_type.value}")
         print(f"   强度: {signal.strength:.2f}")
         print(f"   原因: {signal.reason}")
@@ -229,16 +245,19 @@ def demo_bollinger_breakout():
     """演示布林带突破策略"""
     print_header("🎯 布林带突破策略 (Bollinger Bands Breakout)")
 
-    strategy = StrategyFactory.create_strategy('bollinger_breakout', {
-        'bb_period': 20,
-        'bb_std': 2.0,
-        'strategy_mode': 'mixed',  # 混合模式
-        'use_bandwidth_filter': True
-    })
+    strategy = StrategyFactory.create_strategy(
+        "bollinger_breakout",
+        {
+            "bb_period": 20,
+            "bb_std": 2.0,
+            "strategy_mode": "mixed",  # 混合模式
+            "use_bandwidth_filter": True,
+        },
+    )
 
     print_strategy_info(strategy)
 
-    symbol = 'TEST004'
+    symbol = "TEST004"
     data_list = generate_market_data(100.0, 25, 0.015)
 
     for data in data_list:
@@ -246,18 +265,18 @@ def demo_bollinger_breakout():
 
     # 模拟突破上轨
     breakout_data = {
-        'date': datetime.now(),
-        'open': 105,
-        'high': 107,
-        'low': 104,
-        'close': 106,  # 可能突破上轨
-        'volume': 2000000
+        "date": datetime.now(),
+        "open": 105,
+        "high": 107,
+        "low": 104,
+        "close": 106,  # 可能突破上轨
+        "volume": 2000000,
     }
 
     signal = strategy.generate_signal(symbol, breakout_data)
 
     if signal:
-        print(f"\n✅ 生成布林带信号:")
+        print("\n✅ 生成布林带信号:")
         print(f"   类型: {signal.signal_type.value}")
         print(f"   强度: {signal.strength:.2f}")
         print(f"   原因: {signal.reason}")
@@ -277,68 +296,68 @@ def demo_strategy_comparison():
 
     strategies_info = [
         {
-            'type': 'dual_ma',
-            'name': '双均线',
-            'category': '趋势跟踪',
-            '适用': '单边趋势行情',
-            '优势': '简单经典，信号明确',
-            '风险': '震荡市频繁交易'
+            "type": "dual_ma",
+            "name": "双均线",
+            "category": "趋势跟踪",
+            "适用": "单边趋势行情",
+            "优势": "简单经典，信号明确",
+            "风险": "震荡市频繁交易",
         },
         {
-            'type': 'turtle',
-            'name': '海龟',
-            'category': '趋势跟踪',
-            '适用': '中长期趋势',
-            '优势': '严格风控，金字塔加仓',
-            '风险': '需要大资金，回撤较大'
+            "type": "turtle",
+            "name": "海龟",
+            "category": "趋势跟踪",
+            "适用": "中长期趋势",
+            "优势": "严格风控，金字塔加仓",
+            "风险": "需要大资金，回撤较大",
         },
         {
-            'type': 'macd',
-            'name': 'MACD',
-            'category': '趋势+动量',
-            '适用': '趋势转折点',
-            '优势': '双重确认，滞后较小',
-            '风险': '假突破风险'
+            "type": "macd",
+            "name": "MACD",
+            "category": "趋势+动量",
+            "适用": "趋势转折点",
+            "优势": "双重确认，滞后较小",
+            "风险": "假突破风险",
         },
         {
-            'type': 'bollinger_breakout',
-            'name': '布林带突破',
-            'category': '波动率突破',
-            '适用': '盘整后突破',
-            '优势': '自适应波动率',
-            '风险': '假突破频繁'
+            "type": "bollinger_breakout",
+            "name": "布林带突破",
+            "category": "波动率突破",
+            "适用": "盘整后突破",
+            "优势": "自适应波动率",
+            "风险": "假突破频繁",
         },
         {
-            'type': 'momentum',
-            'name': '动量',
-            'category': '趋势跟踪',
-            '适用': '强势股追涨',
-            '优势': '捕捉强势行情',
-            '风险': '追高风险'
+            "type": "momentum",
+            "name": "动量",
+            "category": "趋势跟踪",
+            "适用": "强势股追涨",
+            "优势": "捕捉强势行情",
+            "风险": "追高风险",
         },
         {
-            'type': 'mean_reversion',
-            'name': '均值回归',
-            'category': '反向交易',
-            '适用': '震荡整理',
-            '优势': '低买高卖',
-            '风险': '趋势市亏损'
+            "type": "mean_reversion",
+            "name": "均值回归",
+            "category": "反向交易",
+            "适用": "震荡整理",
+            "优势": "低买高卖",
+            "风险": "趋势市亏损",
         },
         {
-            'type': 'breakout',
-            'name': '突破',
-            'category': '突破跟随',
-            '适用': '盘整后突破',
-            '优势': 'ATR止损止盈',
-            '风险': '假突破损失'
+            "type": "breakout",
+            "name": "突破",
+            "category": "突破跟随",
+            "适用": "盘整后突破",
+            "优势": "ATR止损止盈",
+            "风险": "假突破损失",
         },
         {
-            'type': 'grid',
-            'name': '网格',
-            'category': '区间套利',
-            '适用': '箱体震荡',
-            '优势': '多次交易获利',
-            '风险': '单边市套牢'
+            "type": "grid",
+            "name": "网格",
+            "category": "区间套利",
+            "适用": "箱体震荡",
+            "优势": "多次交易获利",
+            "风险": "单边市套牢",
         },
     ]
 
@@ -347,7 +366,9 @@ def demo_strategy_comparison():
     print("-" * 70)
 
     for info in strategies_info:
-        print(f"{info['name']:<15} {info['category']:<12} {info['适用']:<15} {info['优势']:<20}")
+        print(
+            f"{info['name']:<15} {info['category']:<12} {info['适用']:<15} {info['优势']:<20}"
+        )
 
     print("\n\n策略组合建议:\n")
     print("1. 趋势市场: Turtle + DualMA + MACD")
@@ -368,25 +389,21 @@ def demo_parameter_validation():
     print_header("✅ 参数验证功能")
 
     # 有效参数
-    valid_params = {
-        'system': 1,
-        'entry_period_s1': 20,
-        'max_units': 4
-    }
+    valid_params = {"system": 1, "entry_period_s1": 20, "max_units": 4}
 
-    is_valid, error = StrategyFactory.validate_parameters('turtle', valid_params)
-    print(f"\n1. 海龟策略参数验证:")
+    is_valid, error = StrategyFactory.validate_parameters("turtle", valid_params)
+    print("\n1. 海龟策略参数验证:")
     print(f"   参数: {valid_params}")
     print(f"   结果: {'✅ 通过' if is_valid else '❌ 失败'}")
 
     # 无效参数
     invalid_params = {
-        'fast_period': 100,  # 超过最大值20
-        'slow_period': 26
+        "fast_period": 100,  # 超过最大值20
+        "slow_period": 26,
     }
 
-    is_valid, error = StrategyFactory.validate_parameters('macd', invalid_params)
-    print(f"\n2. MACD策略参数验证:")
+    is_valid, error = StrategyFactory.validate_parameters("macd", invalid_params)
+    print("\n2. MACD策略参数验证:")
     print(f"   参数: {invalid_params}")
     print(f"   结果: {'✅ 通过' if is_valid else '❌ 失败'}")
     if not is_valid:
@@ -399,10 +416,10 @@ def demo_all_strategies_summary():
 
     strategies = StrategyFactory.get_available_strategies()
 
-    print(f"\n✅ 策略模板系统完成:")
+    print("\n✅ 策略模板系统完成:")
     print(f"   - 总策略数: {len(strategies)}")
-    print(f"   - 原有策略: 4 (Momentum, MeanReversion, Breakout, Grid)")
-    print(f"   - 新增策略: 4 (DualMA, Turtle, MACD, BollingerBreakout)")
+    print("   - 原有策略: 4 (Momentum, MeanReversion, Breakout, Grid)")
+    print("   - 新增策略: 4 (DualMA, Turtle, MACD, BollingerBreakout)")
     print()
     print("✅ 核心功能:")
     print("   - 策略工厂: 统一创建和管理")
@@ -453,5 +470,5 @@ def main():
     print("=" * 70 + "\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

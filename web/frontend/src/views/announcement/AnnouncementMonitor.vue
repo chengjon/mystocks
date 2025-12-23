@@ -511,7 +511,7 @@ const fetchAnnouncements = async () => {
     }
 
     const response = await axios.get(`${API_BASE_URL}/api/announcement/list`, { params })
-    
+
     if (response.data.success) {
       announcements.value = response.data.data
       pagination.total = response.data.total
@@ -531,7 +531,7 @@ const fetchTodayAnnouncements = async () => {
   loading.announcements = true
   try {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/today`)
-    
+
     if (response.data.success) {
       announcements.value = response.data.announcements
       pagination.total = response.data.count
@@ -552,7 +552,7 @@ const fetchImportantAnnouncements = async () => {
   loading.announcements = true
   try {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/important`)
-    
+
     if (response.data.success) {
       announcements.value = response.data.announcements
       pagination.total = response.data.count
@@ -587,7 +587,7 @@ const fetchTriggeredRecords = async () => {
   loading.records = true
   try {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/triggered-records`)
-    
+
     if (response.data.success) {
       triggeredRecords.value = response.data.data
     } else {
@@ -606,7 +606,7 @@ const evaluateRules = async () => {
   loading.evaluation = true
   try {
     const response = await axios.post(`${API_BASE_URL}/api/announcement/monitor/evaluate`)
-    
+
     if (response.data.success) {
       ElMessage.success(`评估完成，触发 ${response.data.triggered_count} 条规则`)
       fetchTriggeredRecords() // 重新获取触发记录
@@ -641,7 +641,7 @@ const deleteRule = async (id) => {
     })
 
     const response = await axios.delete(`${API_BASE_URL}/api/announcement/monitor-rules/${id}`)
-    
+
     if (response.data.success) {
       ElMessage.success('删除成功')
       fetchMonitorRules() // 重新获取规则列表

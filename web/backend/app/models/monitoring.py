@@ -4,7 +4,7 @@ Real-time Monitoring System
 """
 
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from sqlalchemy import (
     Boolean,
     Column,
@@ -18,7 +18,6 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     UniqueConstraint,
-    TIMESTAMP,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship

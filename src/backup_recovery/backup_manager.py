@@ -13,7 +13,7 @@ import shutil
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 from dataclasses import dataclass, asdict
 
 from src.storage.database import DatabaseConnectionManager
@@ -164,7 +164,7 @@ class BackupManager:
 
             logger.info(
                 f"TDengine full backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size/1024/1024:.2f}MB, "
+                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
                 f"ratio={compression_ratio:.2f}x"
             )
 
@@ -287,7 +287,7 @@ class BackupManager:
 
             logger.info(
                 f"TDengine incremental backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size/1024/1024:.2f}MB"
+                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB"
             )
 
             return metadata
@@ -398,7 +398,7 @@ class BackupManager:
 
             logger.info(
                 f"PostgreSQL full backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size/1024/1024:.2f}MB, "
+                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
                 f"ratio={compression_ratio:.2f}x"
             )
 

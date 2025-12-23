@@ -2248,7 +2248,7 @@ tables:
 maintenance:
   auto_create_tables: true
   safe_mode: true  # 安全模式: 添加列自动,删除/修改需确认
-  
+
   daily_tasks:
     - name: 'data_quality_check'
       time: '01:00'
@@ -2266,7 +2266,7 @@ maintenance:
       time: '04:00'
       enabled: true
       description: '日志清理'
-      
+
   weekly_tasks:
     - name: 'table_structure_validation'
       day: 'sunday'

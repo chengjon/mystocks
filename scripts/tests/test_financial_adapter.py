@@ -38,7 +38,7 @@ def test_financial_adapter():
         financial_data = adapter.get_financial_data("000001")
         if isinstance(financial_data, pd.DataFrame) and not financial_data.empty:
             print(f"   ✓ 成功获取到股票000001的财务数据，共{len(financial_data)}条记录")
-            print(f"   数据预览:")
+            print("   数据预览:")
             print(financial_data.head())
         else:
             print("   ! 未能获取到股票000001的财务数据")
@@ -51,7 +51,7 @@ def test_financial_adapter():
         calendar_data = adapter.get_market_calendar()
         if isinstance(calendar_data, pd.DataFrame) and not calendar_data.empty:
             print(f"   ✓ 成功获取到交易日历，共{len(calendar_data)}条记录")
-            print(f"   数据预览:")
+            print("   数据预览:")
             print(calendar_data.head())
         else:
             print("   ! 未能获取到交易日历")
