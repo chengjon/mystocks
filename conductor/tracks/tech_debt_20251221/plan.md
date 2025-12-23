@@ -29,7 +29,7 @@ This plan outlines the phases and tasks required to address the identified techn
     - [x] Implement Feature: Implement comprehensive unit tests for `TDengine Access`.
 - [x] Task: Conductor - User Manual Verification 'Test Coverage Enhancement - Data Access Layers' (Protocol in workflow.md)
 
-## Phase 3: General Test Coverage Improvement & Refactoring
+## Phase 3: General Test Coverage Improvement & Refactoring [checkpoint: 18a76ae]
 
 ### Goal: Broaden test coverage and refactor high-complexity methods.
 
