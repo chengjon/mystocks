@@ -2,7 +2,7 @@
 
 This plan outlines the phases and tasks required to address the identified technical debt, improve code quality, and increase test coverage within the MyStocks project. Each task will follow the defined workflow, including Test-Driven Development (TDD) principles.
 
-## Phase 1: Code Quality Remediation
+## Phase 1: Code Quality Remediation [checkpoint: 0d92e26]
 
 ### Goal: Reduce Pylint errors and enforce coding standards.
 
