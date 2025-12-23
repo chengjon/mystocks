@@ -1,11 +1,15 @@
 """
 公告监控API路由
+
+Phase 2.4.4: 更新健康检查为统一响应格式
 """
 
 from datetime import date, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+
+from app.core.responses import create_health_response, create_success_response
 
 try:
     from app.models.announcement import (
@@ -24,14 +28,31 @@ router = APIRouter(prefix="/announcement")
 
 @router.get("/health")
 async def health_check():
-    """健康检查"""
-    return {"status": "ok", "service": "announcement"}
+    """
+    健康检查 (Phase 2.4.4: 更新为统一响应格式)
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="announcement",
+        status="healthy" if HAS_ANNOUNCEMENT_SERVICE else "degraded",
+        details={"service_available": HAS_ANNOUNCEMENT_SERVICE},
+    )
 
 
 @router.get("/status")
 async def get_status():
-    """获取服务状态"""
-    return {"status": "active", "endpoint": "announcement"}
+    """
+    获取服务状态 (Phase 2.4.4: 更新为统一响应格式)
+
+    Returns:
+        统一格式的状态响应
+    """
+    return create_success_response(
+        data={"status": "active", "endpoint": "announcement"},
+        message="公告监控服务运行中",
+    )
 
 
 @router.post("/analyze")

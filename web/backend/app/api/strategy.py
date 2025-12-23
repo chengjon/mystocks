@@ -237,7 +237,7 @@ async def get_strategy_definitions():
                 status_code=500,
                 detail=create_error_response(
                     ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(),
+                ).model_dump(mode='json'),
             )
 
         definitions_data = result.get("data", [])
@@ -309,7 +309,7 @@ async def run_strategy_single(
                 status_code=500,
                 detail=create_error_response(
                     ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(),
+                ).model_dump(mode='json'),
             )
 
         return create_success_response(
@@ -330,7 +330,7 @@ async def run_strategy_single(
             status_code=500,
             detail=create_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}"
-            ).model_dump(),
+            ).model_dump(mode='json'),
         )
 
 
@@ -389,7 +389,7 @@ async def run_strategy_batch(
                 status_code=500,
                 detail=create_error_response(
                     ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(),
+                ).model_dump(mode='json'),
             )
 
         return create_success_response(
@@ -411,7 +411,7 @@ async def run_strategy_batch(
             status_code=500,
             detail=create_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}"
-            ).model_dump(),
+            ).model_dump(mode='json'),
         )
 
 
@@ -492,7 +492,7 @@ async def query_strategy_results(
             status_code=500,
             detail=create_error_response(
                 ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}"
-            ).model_dump(),
+            ).model_dump(mode='json'),
         )
 
 
@@ -533,16 +533,24 @@ async def get_matched_stocks(
             strategy_code=strategy_code, check_date=check_date_obj, limit=limit
         )
 
-        return {
-            "success": True,
-            "data": stocks,
-            "total": len(stocks),
-            "message": f"找到{len(stocks)}只匹配股票",
-        }
+        return create_success_response(
+            data={
+                "matched_stocks": stocks,
+                "strategy_code": strategy_code,
+                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
+                "total": len(stocks),
+            },
+            message=f"找到{len(stocks)}只匹配股票",
+        )
 
     except Exception as e:
         logger.error(f"获取匹配股票失败: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=create_error_response(
+                ErrorCodes.INTERNAL_SERVER_ERROR, f"获取匹配股票失败: {str(e)}"
+            ).model_dump(mode='json'),
+        )
 
 
 # ==================== 统计分析相关 ====================
@@ -613,5 +621,5 @@ async def get_strategy_summary(
             status_code=500,
             detail=create_error_response(
                 ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}"
-            ).model_dump(),
+            ).model_dump(mode='json'),
         )

@@ -252,6 +252,258 @@ class TradingSignalsResponse(BaseModel):
 # ============================================================================
 
 
+@router.get("/indicators", summary="获取技术指标注册表", tags=["technical-analysis"])
+async def get_indicators_registry():
+    """
+    获取所有可用的技术指标列表
+
+    返回系统支持的所有技术指标，包括指标代码、名称、分类和描述。
+
+    **返回**:
+    - indicators: 指标列表，包含代码、名称、分类和描述
+    - categories: 指标分类列表
+    - total: 指标总数
+
+    **示例**:
+    - GET /api/technical/indicators
+
+    **响应格式** (统一响应格式):
+    ```json
+    {
+      "success": true,
+      "message": "获取技术指标注册表成功",
+      "data": {
+        "indicators": [...],
+        "categories": [...],
+        "total": 25
+      }
+    }
+    ```
+    """
+    # 技术指标注册表
+    indicators_registry = [
+        # 趋势指标 (Trend)
+        {
+            "code": "MA",
+            "name": "移动平均线",
+            "name_en": "Moving Average",
+            "category": "trend",
+            "description": "简单移动平均线，常用周期有5、10、20、30、60、120、250日",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 20, "range": [1, 500]}
+            ],
+        },
+        {
+            "code": "EMA",
+            "name": "指数移动平均线",
+            "name_en": "Exponential Moving Average",
+            "category": "trend",
+            "description": "指数加权移动平均线，对近期价格赋予更高权重",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 12, "range": [1, 500]}
+            ],
+        },
+        {
+            "code": "MACD",
+            "name": "指数平滑异同移动平均线",
+            "name_en": "Moving Average Convergence Divergence",
+            "category": "trend",
+            "description": "由快慢均线差值构成的趋势跟踪指标",
+            "parameters": [
+                {"name": "fast_period", "description": "快线周期", "default": 12},
+                {"name": "slow_period", "description": "慢线周期", "default": 26},
+                {"name": "signal_period", "description": "信号线周期", "default": 9},
+            ],
+        },
+        {
+            "code": "ADX",
+            "name": "平均趋向指数",
+            "name_en": "Average Directional Index",
+            "category": "trend",
+            "description": "衡量趋势强度的指标，数值越大趋势越强",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 14, "range": [1, 100]}
+            ],
+        },
+        {
+            "code": "SAR",
+            "name": "抛物线转向",
+            "name_en": "Parabolic SAR",
+            "category": "trend",
+            "description": "用于识别趋势反转点的指标",
+            "parameters": [
+                {"name": "acceleration", "description": "加速因子", "default": 0.02},
+                {"name": "maximum", "description": "最大值", "default": 0.2},
+            ],
+        },
+        # 动量指标 (Momentum)
+        {
+            "code": "RSI",
+            "name": "相对强弱指数",
+            "name_en": "Relative Strength Index",
+            "category": "momentum",
+            "description": "衡量超买超卖状态的震荡指标，取值范围0-100",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 14, "range": [1, 100]}
+            ],
+        },
+        {
+            "code": "KDJ",
+            "name": "随机指标",
+            "name_en": "Stochastic Oscillator",
+            "category": "momentum",
+            "description": "比较收盘价与价格范围的动量振荡指标",
+            "parameters": [
+                {"name": "k_period", "description": "K值周期", "default": 9},
+                {"name": "d_period", "description": "D值周期", "default": 3},
+                {"name": "j_period", "description": "J值周期", "default": 3},
+            ],
+        },
+        {
+            "code": "CCI",
+            "name": "顺势指标",
+            "name_en": "Commodity Channel Index",
+            "category": "momentum",
+            "description": "衡量价格偏离统计平均值的程度",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 20, "range": [1, 100]}
+            ],
+        },
+        {
+            "code": "ROC",
+            "name": "变动率指标",
+            "name_en": "Rate of Change",
+            "category": "momentum",
+            "description": "衡量当前价格与N日前价格的变化率",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 12, "range": [1, 500]}
+            ],
+        },
+        {
+            "code": "WR",
+            "name": "威廉指标",
+            "name_en": "Williams %R",
+            "category": "momentum",
+            "description": "衡量超买超卖的动量振荡指标",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 14, "range": [1, 100]}
+            ],
+        },
+        # 波动率指标 (Volatility)
+        {
+            "code": "BOLL",
+            "name": "布林带",
+            "name_en": "Bollinger Bands",
+            "category": "volatility",
+            "description": "基于标准差的波动率指标，包含上轨、中轨、下轨",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 20, "range": [1, 500]},
+                {"name": "std_dev", "description": "标准差倍数", "default": 2.0, "range": [0.5, 4.0]},
+            ],
+        },
+        {
+            "code": "ATR",
+            "name": "平均真实波幅",
+            "name_en": "Average True Range",
+            "category": "volatility",
+            "description": "衡量市场波动性的指标",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 14, "range": [1, 100]}
+            ],
+        },
+        {
+            "code": "STDDEV",
+            "name": "标准差",
+            "name_en": "Standard Deviation",
+            "category": "volatility",
+            "description": "衡量价格波动的统计指标",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 20, "range": [1, 500]}
+            ],
+        },
+        # 成交量指标 (Volume)
+        {
+            "code": "VOL",
+            "name": "成交量",
+            "name_en": "Volume",
+            "category": "volume",
+            "description": "一定时期内的成交总量",
+            "parameters": [
+                {"name": "period", "description": "统计周期", "default": 5, "range": [1, 500]}
+            ],
+        },
+        {
+            "code": "VMA",
+            "name": "成交量移动平均",
+            "name_en": "Volume Moving Average",
+            "category": "volume",
+            "description": "成交量的移动平均线",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 5, "range": [1, 500]}
+            ],
+        },
+        {
+            "code": "OBV",
+            "name": "能量潮",
+            "name_en": "On Balance Volume",
+            "category": "volume",
+            "description": "累积成交量指标，用于预测价格趋势",
+            "parameters": [],
+        },
+        {
+            "code": "VR",
+            "name": "成交量变异率",
+            "name_en": "Volume Ratio",
+            "category": "volume",
+            "description": "衡量上涨日成交量与下跌日成交量的比率",
+            "parameters": [
+                {"name": "period", "description": "计算周期", "default": 26, "range": [1, 500]}
+            ],
+        },
+    ]
+
+    # 指标分类
+    categories = [
+        {
+            "code": "trend",
+            "name": "趋势指标",
+            "name_en": "Trend Indicators",
+            "description": "用于识别和确认市场趋势的指标",
+            "indicators": ["MA", "EMA", "MACD", "ADX", "SAR"],
+        },
+        {
+            "code": "momentum",
+            "name": "动量指标",
+            "name_en": "Momentum Indicators",
+            "description": "衡量价格变化速度和力度的指标",
+            "indicators": ["RSI", "KDJ", "CCI", "ROC", "WR"],
+        },
+        {
+            "code": "volatility",
+            "name": "波动率指标",
+            "name_en": "Volatility Indicators",
+            "description": "衡量市场波动性和风险水平的指标",
+            "indicators": ["BOLL", "ATR", "STDDEV"],
+        },
+        {
+            "code": "volume",
+            "name": "成交量指标",
+            "name_en": "Volume Indicators",
+            "description": "基于成交量的分析指标",
+            "indicators": ["VOL", "VMA", "OBV", "VR"],
+        },
+    ]
+
+    return create_success_response(
+        data={
+            "indicators": indicators_registry,
+            "categories": categories,
+            "total": len(indicators_registry),
+        },
+        message=f"获取技术指标注册表成功，共{len(indicators_registry)}个指标",
+    )
+
+
 @router.get("/{symbol}/indicators", response_model=AllIndicatorsResponse)
 async def get_all_indicators(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20),

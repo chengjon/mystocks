@@ -62,6 +62,10 @@ class CSRFTokenManager:
 
         token_info = self.tokens[token]
 
+        # 检查是否已使用（防止重放攻击）
+        if token_info.get("used", False):
+            return False
+
         # 检查是否过期
         if time.time() - token_info["created_at"] > self.token_timeout:
             del self.tokens[token]

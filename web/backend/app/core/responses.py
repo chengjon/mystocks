@@ -53,6 +53,23 @@ class PaginatedResponse(APIResponse):
         request_id: Optional[str] = None,
     ):
         """创建分页响应"""
+        # 计算总记录数：优先使用提供的total，否则根据data类型处理
+        if total is not None:
+            calculated_total = total
+        elif isinstance(data, list):
+            calculated_total = len(data)
+        elif isinstance(data, dict) and "items" in data and isinstance(data["items"], list):
+            # 对于包装的列表数据（如 {"items": [...]}），使用items长度
+            calculated_total = len(data["items"])
+        else:
+            calculated_total = 0
+
+        # 计算总页数
+        if calculated_total > 0:
+            calculated_pages = (calculated_total + size - 1) // size
+        else:
+            calculated_pages = 0
+
         return cls(
             success=True,
             data=data,
@@ -61,8 +78,8 @@ class PaginatedResponse(APIResponse):
             pagination={
                 "page": page,
                 "size": size,
-                "total": total or len(data) if isinstance(data, list) else 0,
-                "pages": (total or 0 + size - 1) // size if total else 1,
+                "total": calculated_total,
+                "pages": calculated_pages,
             },
         )
 

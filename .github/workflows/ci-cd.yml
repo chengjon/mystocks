@@ -7,7 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
+  # Type Generation Job - Generates TypeScript types from Pydantic models
+  generate-types:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Generate TypeScript types
+      run: |
+        python scripts/generate_frontend_types.py
+
+    - name: Upload generated types
+      uses: actions/upload-artifact@v4
+      with:
+        name: typescript-types
+        path: web/frontend/src/api/types/generated-types.ts
+
   test:
+    needs: generate-types
     runs-on: ubuntu-latest
     strategy:
       matrix:
