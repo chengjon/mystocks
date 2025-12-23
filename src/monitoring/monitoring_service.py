@@ -175,9 +175,10 @@ class MonitoringDatabase:
             logger.error(f"检查监控表结构失败: {e}")
 
         if not self.monitor_db_url:
-            logger.warning("未配置监控数据库URL，使用默认配置")
-            self.monitor_db_url = (
-                "mysql+pymysql://root:c790414J@192.168.123.104:3306/db_monitor"
+            logger.error("未配置监控数据库URL，无法启动监控服务")
+            raise ValueError(
+                "MONITOR_DB_URL 环境变量必须设置。"
+                "请在 .env 文件中配置: MONITOR_DB_URL=postgresql://user:password@host:port/database"
             )
 
         self._init_monitoring_tables()
