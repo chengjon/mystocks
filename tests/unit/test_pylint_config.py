@@ -20,9 +20,9 @@ class TestPylintConfig:
     def setup_class(cls):
         """测试类初始化：读取并解析.pylintrc文件"""
         cls.pylintrc_path = ".pylintrc"
-        assert os.path.exists(cls.pylintrc_path), (
-            f"Pylint配置文件不存在: {cls.pylintrc_path}"
-        )
+        assert os.path.exists(
+            cls.pylintrc_path
+        ), f"Pylint配置文件不存在: {cls.pylintrc_path}"
 
         cls.config = configparser.ConfigParser()
         cls.config.read(cls.pylintrc_path)
@@ -46,12 +46,12 @@ class TestPylintConfig:
         """测试2: 验证MASTER节中的关键选项"""
         print("\n📍 测试2: 验证MASTER节中的关键选项")
         master_section = self.config["MASTER"]
-        assert "extension-pkg-whitelist" in master_section, (
-            "MASTER节缺少'extension-pkg-whitelist'选项"
-        )
-        assert master_section["extension-pkg-whitelist"].strip() != "", (
-            "'extension-pkg-whitelist'选项不应为空"
-        )
+        assert (
+            "extension-pkg-whitelist" in master_section
+        ), "MASTER节缺少'extension-pkg-whitelist'选项"
+        assert (
+            master_section["extension-pkg-whitelist"].strip() != ""
+        ), "'extension-pkg-whitelist'选项不应为空"
         assert "ignore" in master_section, "MASTER节缺少'ignore'选项"
         assert master_section["ignore"].strip() != "", "'ignore'选项不应为空"
         print("  ✅ MASTER节中的关键选项验证通过")
@@ -60,9 +60,9 @@ class TestPylintConfig:
         """测试3: 验证MESSAGES CONTROL节中的禁用消息"""
         print("\n📍 测试3: 验证MESSAGES CONTROL节中的禁用消息")
         messages_control_section = self.config["MESSAGES CONTROL"]
-        assert "disable" in messages_control_section, (
-            "MESSAGES CONTROL节缺少'disable'选项"
-        )
+        assert (
+            "disable" in messages_control_section
+        ), "MESSAGES CONTROL节缺少'disable'选项"
         raw_disable_string = messages_control_section["disable"]
         disabled_messages = []
         for line in raw_disable_string.splitlines():
@@ -88,9 +88,9 @@ class TestPylintConfig:
         ]
 
         for msg_code in expected_disabled_messages:
-            assert msg_code in disabled_messages, (
-                f"'disable'选项中缺少预期的禁用消息: {msg_code}"
-            )
+            assert (
+                msg_code in disabled_messages
+            ), f"'disable'选项中缺少预期的禁用消息: {msg_code}"
         print("  ✅ MESSAGES CONTROL节中的禁用消息验证通过")
 
     def test_04_format_max_line_length(self):
@@ -101,9 +101,9 @@ class TestPylintConfig:
 
         try:
             max_line_length = int(format_section["max-line-length"])
-            assert max_line_length == 120, (
-                f"max-line-length的值不正确，预期为120，实际为{max_line_length}"
-            )
+            assert (
+                max_line_length == 120
+            ), f"max-line-length的值不正确，预期为120，实际为{max_line_length}"
         except ValueError:
             pytest.fail("max-line-length的值不是一个有效的整数")
         print("  ✅ FORMAT节中的max-line-length验证通过")
