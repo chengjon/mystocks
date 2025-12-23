@@ -663,3 +663,286 @@ async def get_monitoring_status():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# SSE 实时推送端点 (Phase 2.4.2 - 新增)
+# ============================================================================
+
+
+@router.get("/alerts/stream")
+async def sse_alerts_stream():
+    """
+    SSE endpoint for real-time alert notifications (Phase 2.4.2 - 新增)
+
+    提供实时的告警推送服务，使用Server-Sent Events (SSE)协议。
+
+    **Event Types:**
+    - `connected`: 初始连接确认
+    - `alert`: 新告警通知
+    - `alert_updated`: 告警状态更新
+    - `ping`: 心跳保活 (每30秒)
+
+    **Alert Event Data Structure:**
+    ```json
+    {
+        "event": "alert",
+        "data": {
+            "alert_id": 123,
+            "alert_type": "limit_up",
+            "severity": "high",
+            "symbol": "600519",
+            "stock_name": "贵州茅台",
+            "message": "贵州茅台涨停",
+            "created_at": "2025-12-24T10:30:00",
+            "is_read": false
+        },
+        "timestamp": "2025-12-24T10:30:00"
+    }
+    ```
+
+    **Severity Levels:**
+    - `info`: 信息提示
+    - `warning`: 警告
+    - `high`: 高重要级
+    - `critical`: 严重告警
+
+    **Example (JavaScript):**
+    ```javascript
+    const eventSource = new EventSource('/api/monitoring/alerts/stream');
+
+    eventSource.addEventListener('connected', (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Connected:', data.client_id);
+    });
+
+    eventSource.addEventListener('alert', (event) => {
+        const alert = JSON.parse(event.data);
+        showNotification(alert);
+    });
+
+    eventSource.addEventListener('error', () => {
+        console.error('SSE connection error');
+        eventSource.close();
+    });
+    ```
+
+    **Reconnection:**
+    - 浏览器会自动重连
+    - 使用 `Last-Event-ID` 头部恢复断开前的消息
+    """
+    from fastapi import Request
+    from sse_starlette.sse import EventSourceResponse
+    from app.core.sse_manager import sse_event_generator
+
+    # 使用现有的 SSE 基础设施，channel 为 "monitoring_alerts"
+    # 这样可以与现有的 alerts channel 区分开来
+    async def monitoring_alerts_generator(request: Request):
+        """监控告警SSE生成器"""
+        from app.core.sse_manager import get_sse_manager
+        import asyncio
+
+        manager = get_sse_manager()
+        client_id, queue = await manager.connect("monitoring_alerts")
+
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=30.0)
+                    yield {
+                        "event": event.event,
+                        "data": event.data,
+                        "id": event.id,
+                        "timestamp": event.data.get("timestamp") or asyncio.get_event_loop().time(),
+                    }
+                except asyncio.TimeoutError:
+                    # 发送心跳保活
+                    yield {
+                        "event": "ping",
+                        "data": {
+                            "channel": "monitoring_alerts",
+                            "timestamp": datetime.now().isoformat(),
+                        },
+                    }
+
+        finally:
+            await manager.disconnect("monitoring_alerts", client_id)
+
+    return EventSourceResponse(
+        monitoring_alerts_generator,
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  # 禁用nginx缓冲
+        },
+    )
+
+
+@router.get("/alerts/summary/stream")
+async def sse_alerts_summary_stream():
+    """
+    SSE endpoint for alert summary updates (Phase 2.4.2 - 新增)
+
+    推送告警摘要的实时更新，包括未读告警数量、各级别告警统计等。
+
+    **Event Types:**
+    - `connected`: 初始连接确认
+    - `summary_updated`: 告警摘要更新
+    - `ping`: 心跳保活 (每30秒)
+
+    **Summary Event Data Structure:**
+    ```json
+    {
+        "event": "summary_updated",
+        "data": {
+            "total_alerts": 150,
+            "unread_count": 12,
+            "critical_count": 2,
+            "high_count": 5,
+            "warning_count": 8,
+            "info_count": 135,
+            "last_update": "2025-12-24T10:30:00"
+        },
+        "timestamp": "2025-12-24T10:30:00"
+    }
+    ```
+
+    **Example (JavaScript):**
+    ```javascript
+    const eventSource = new EventSource('/api/monitoring/alerts/summary/stream');
+
+    eventSource.addEventListener('summary_updated', (event) => {
+        const summary = JSON.parse(event.data);
+        updateAlertBadge(summary.unread_count);
+        updateAlertChart(summary);
+    });
+    ```
+    """
+    from fastapi import Request
+    from sse_starlette.sse import EventSourceResponse
+
+    async def alert_summary_generator(request: Request):
+        """告警摘要SSE生成器"""
+        from app.core.sse_manager import get_sse_manager
+        import asyncio
+
+        manager = get_sse_manager()
+        client_id, queue = await manager.connect("alert_summary")
+
+        try:
+            # 发送初始摘要
+            from app.services.monitoring_service import monitoring_service
+
+            initial_alerts, _ = monitoring_service.get_alert_records(
+                limit=1000, is_read=False
+            )
+            critical_count = sum(1 for a in initial_alerts if a.alert_level == "critical")
+            high_count = sum(1 for a in initial_alerts if a.alert_level == "high")
+
+            yield {
+                "event": "summary_updated",
+                "data": {
+                    "total_alerts": len(initial_alerts),
+                    "unread_count": len(initial_alerts),
+                    "critical_count": critical_count,
+                    "high_count": high_count,
+                    "warning_count": len(initial_alerts) - critical_count - high_count,
+                    "last_update": datetime.now().isoformat(),
+                },
+            }
+
+            try:
+                while True:
+                    if await request.is_disconnected():
+                        break
+
+                    try:
+                        event = await asyncio.wait_for(queue.get(), timeout=30.0)
+                        yield {
+                            "event": event.event,
+                            "data": event.data,
+                            "id": event.id,
+                        }
+                    except asyncio.TimeoutError:
+                        # 定期发送摘要更新
+                        alerts, _ = monitoring_service.get_alert_records(
+                            limit=1000, is_read=False
+                        )
+                        yield {
+                            "event": "summary_updated",
+                            "data": {
+                                "total_alerts": len(alerts),
+                                "unread_count": len(alerts),
+                                "last_update": datetime.now().isoformat(),
+                            },
+                        }
+
+        finally:
+            await manager.disconnect("alert_summary", client_id)
+
+    return EventSourceResponse(
+        alert_summary_generator,
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+# 用于外部调用的告警广播函数
+async def broadcast_monitoring_alert(
+    alert_id: int,
+    alert_type: str,
+    severity: str,
+    symbol: str,
+    stock_name: str,
+    message: str,
+):
+    """
+    广播监控告警到所有连接的SSE客户端
+
+    Args:
+        alert_id: 告警ID
+        alert_type: 告警类型 (limit_up, limit_down, etc.)
+        severity: 严重级别 (info, warning, high, critical)
+        symbol: 股票代码
+        stock_name: 股票名称
+        message: 告警消息
+    """
+    from app.core.sse_manager import get_sse_broadcaster
+
+    broadcaster = get_sse_broadcaster()
+    await broadcaster.manager.broadcast(
+        "monitoring_alerts",
+        {
+            "event": "alert",
+            "data": {
+                "alert_id": alert_id,
+                "alert_type": alert_type,
+                "severity": severity,
+                "symbol": symbol,
+                "stock_name": stock_name,
+                "message": message,
+                "created_at": datetime.now().isoformat(),
+                "is_read": False,
+            },
+            "id": str(alert_id),
+        },
+    )
+
+    # 同时更新摘要
+    await broadcaster.manager.broadcast(
+        "alert_summary",
+        {
+            "event": "summary_updated",
+            "data": {"timestamp": datetime.now().isoformat()},
+        },
+    )
+
+
+__all__ = [
+    "router",
+    "broadcast_monitoring_alert",
+]

@@ -28,6 +28,12 @@ from app.models.strategy_schemas import (
 )
 from app.repositories import StrategyRepository, BacktestRepository
 from app.core.database import get_db
+from app.core.responses import (
+    ErrorCodes,
+    create_error_response,
+    create_success_response,
+    create_health_response,
+)
 from src.data_sources import get_business_source
 from app.tasks.backtest_tasks import run_backtest_task
 
@@ -118,7 +124,6 @@ async def create_strategy(
 
 @router.get(
     "/strategies",
-    response_model=StrategyListResponse,
     summary="获取策略列表",
     description="获取用户的策略列表，支持分页和状态筛选",
 )
@@ -139,7 +144,7 @@ async def list_strategies(
     - page_size: 每页数量 (默认20)
 
     **返回**:
-    - 策略列表和分页信息
+    - 策略列表和分页信息 (使用统一响应格式)
     """
     try:
         # 使用仓库查询策略列表
@@ -149,16 +154,25 @@ async def list_strategies(
 
         logger.info(f"获取策略列表成功: user_id={user_id}, count={total_count}")
 
-        return StrategyListResponse(
-            total_count=total_count,
-            strategies=strategies,
-            page=page,
-            page_size=page_size,
+        # 使用统一响应格式
+        return create_success_response(
+            data={
+                "strategies": strategies,
+                "total_count": total_count,
+                "page": page,
+                "page_size": page_size,
+            },
+            message=f"获取策略列表成功，共{total_count}条记录",
         )
 
     except Exception as e:
         logger.error(f"获取策略列表失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=create_error_response(
+                ErrorCodes.INTERNAL_SERVER_ERROR, f"获取策略列表失败: {str(e)}"
+            ).model_dump(mode='json'),
+        )
 
 
 @router.get(
@@ -515,24 +529,26 @@ async def health_check(
         strategies_count = db.query(UserStrategyModel).count()
         backtests_count = db.query(BacktestResultModel).count()
 
-        return {
-            "status": "healthy",
-            "service": "strategy-mgmt",
-            "database": "connected",
-            "data_source": health,
-            "strategies_count": strategies_count,
-            "backtests_count": backtests_count,
-            "timestamp": datetime.now(),
-        }
+        return create_health_response(
+            service="strategy-mgmt",
+            status="healthy",
+            details={
+                "database": "connected",
+                "data_source": health,
+                "strategies_count": strategies_count,
+                "backtests_count": backtests_count,
+            },
+        )
     except Exception as e:
         logger.error(f"健康检查失败: {str(e)}")
-        return {
-            "status": "unhealthy",
-            "service": "strategy-mgmt",
-            "database": "error",
-            "error": str(e),
-            "timestamp": datetime.now(),
-        }
+        return create_health_response(
+            service="strategy-mgmt",
+            status="error",
+            details={
+                "database": "error",
+                "error": str(e),
+            },
+        )
 
 
 @router.get(
@@ -559,24 +575,41 @@ async def get_backtest_status(
 
         if backtest is None:
             raise HTTPException(
-                status_code=404, detail=f"回测不存在: backtest_id={backtest_id}"
+                status_code=404,
+                detail=create_error_response(
+                    ErrorCodes.NOT_FOUND, f"回测不存在: backtest_id={backtest_id}"
+                ).model_dump(mode='json'),
             )
 
-        # 返回状态信息
-        return {
-            "backtest_id": backtest_id,
-            "status": backtest.status.value
-            if hasattr(backtest.status, "value")
-            else backtest.status,
-            "created_at": backtest.created_at,
-            "started_at": backtest.started_at,
-            "completed_at": backtest.completed_at,
-            "error_message": backtest.error_message,
-            "has_results": backtest.performance_metrics is not None,
-        }
+        # 返回状态信息 (使用统一响应格式)
+        return create_success_response(
+            data={
+                "backtest_id": backtest_id,
+                "status": backtest.status.value
+                if hasattr(backtest.status, "value")
+                else backtest.status,
+                "created_at": backtest.created_at.isoformat()
+                if backtest.created_at
+                else None,
+                "started_at": backtest.started_at.isoformat()
+                if backtest.started_at
+                else None,
+                "completed_at": backtest.completed_at.isoformat()
+                if backtest.completed_at
+                else None,
+                "error_message": backtest.error_message,
+                "has_results": backtest.performance_metrics is not None,
+            },
+            message="获取回测状态成功",
+        )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"获取回测状态失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取回测状态失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=create_error_response(
+                ErrorCodes.INTERNAL_SERVER_ERROR, f"获取回测状态失败: {str(e)}"
+            ).model_dump(mode='json'),
+        )

@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "MyStocks Web Management Frontend",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npm run generate-types && vite",
+    "dev:no-types": "vite",
+    "build": "npm run generate-types && vite build",
     "preview": "vite preview",
+    "generate-types": "python ../../scripts/generate_frontend_types.py",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {

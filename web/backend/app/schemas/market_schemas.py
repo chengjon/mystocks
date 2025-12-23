@@ -6,6 +6,7 @@
 - ETFData: ETF基金数据
 - ChipRace: 竞价抢筹数据
 - LongHuBang: 龙虎榜数据
+- MarketOverview: 市场概览数据
 """
 
 from pydantic import BaseModel, Field, field_validator
@@ -17,7 +18,7 @@ from datetime import date, datetime
 
 
 class FundFlowRequest(BaseModel):
-    """资金流向查询请求"""
+    """资金流向查询请求 (用于POST请求)"""
 
     symbol: str = Field(
         ..., description="股票代码 (如: 600519.SH)", min_length=6, max_length=20
@@ -34,8 +35,29 @@ class FundFlowRequest(BaseModel):
         return v
 
 
+class FundFlowItem(BaseModel):
+    """资金流向单项数据"""
+
+    trade_date: str = Field(description="交易日期 YYYY-MM-DD")
+    main_net_inflow: float = Field(description="主力净流入额(元)")
+    main_net_inflow_rate: float = Field(default=0, description="主力净流入占比(%)")
+    super_large_net_inflow: float = Field(description="超大单净流入(元)")
+    large_net_inflow: float = Field(description="大单净流入(元)")
+    medium_net_inflow: float = Field(description="中单净流入(元)")
+    small_net_inflow: float = Field(description="小单净流入(元)")
+
+
+class FundFlowDataResponse(BaseModel):
+    """资金流向数据响应"""
+
+    fund_flow: List[FundFlowItem] = Field(description="资金流向数据列表")
+    total: int = Field(description="总记录数")
+    symbol: Optional[str] = Field(None, description="股票代码")
+    timeframe: Optional[str] = Field(None, description="时间维度")
+
+
 class FundFlowResponse(BaseModel):
-    """资金流向响应"""
+    """资金流向响应 (数据库模型)"""
 
     id: int
     symbol: str
@@ -191,3 +213,114 @@ class MessageResponse(BaseModel):
     success: bool
     message: str
     data: Optional[dict] = None
+
+
+# ==================== 市场概览 (Market Overview) ====================
+
+
+class MarketOverviewStats(BaseModel):
+    """市场统计数据"""
+
+    total_stocks: int = Field(description="总股票数")
+    rising_stocks: int = Field(description="上涨股票数")
+    falling_stocks: int = Field(description="下跌股票数")
+    avg_change_percent: float = Field(description="平均涨跌幅(%)")
+
+
+class TopETFItem(BaseModel):
+    """热门ETF概览项"""
+
+    symbol: str = Field(description="ETF代码")
+    name: str = Field(description="ETF名称")
+    latest_price: float = Field(description="最新价")
+    change_percent: float = Field(description="涨跌幅(%)")
+    volume: int = Field(description="成交量")
+
+
+class ChipRaceItem(BaseModel):
+    """竞价抢筹概览项"""
+
+    symbol: str = Field(description="股票代码")
+    name: str = Field(description="股票名称")
+    race_amount: float = Field(description="抢筹金额(元)")
+    change_percent: float = Field(description="涨跌幅(%)")
+
+
+class LongHuBangItem(BaseModel):
+    """龙虎榜概览项"""
+
+    symbol: str = Field(description="股票代码")
+    name: str = Field(description="股票名称")
+    net_amount: float = Field(description="净买入额(元)")
+    reason: Optional[str] = Field(None, description="上榜原因")
+
+
+class MarketOverviewResponse(BaseModel):
+    """市场概览响应"""
+
+    market_stats: MarketOverviewStats = Field(description="市场统计")
+    top_etfs: List[TopETFItem] = Field(default_factory=list, description="热门ETF列表")
+    chip_races: List[ChipRaceItem] = Field(default_factory=list, description="竞价抢筹列表")
+    long_hu_bang: List[LongHuBangItem] = Field(default_factory=list, description="龙虎榜列表")
+    timestamp: str = Field(description="数据时间戳(ISO格式)")
+
+
+# ==================== K线数据 (Kline) ====================
+
+
+class KlineCandle(BaseModel):
+    """K线蜡烛图数据"""
+
+    datetime: str = Field(description="时间")
+    open: float = Field(description="开盘价")
+    high: float = Field(description="最高价")
+    low: float = Field(description="最低价")
+    close: float = Field(description="收盘价")
+    volume: float = Field(description="成交量")
+    amount: Optional[float] = Field(None, description="成交额")
+
+
+class KlineRequest(BaseModel):
+    """K线查询请求"""
+
+    symbol: str = Field(..., description="股票代码(6位数字)")
+    start_date: Optional[str] = Field(None, description="开始日期 YYYY-MM-DD")
+    end_date: Optional[str] = Field(None, description="结束日期 YYYY-MM-DD")
+    period: str = Field(default="1d", description="K线周期: 1m/5m/15m/30m/1h/1d")
+
+    @field_validator("period")
+    @classmethod
+    def validate_period(cls, v):
+        valid_periods = ["1m", "5m", "15m", "30m", "1h", "1d"]
+        if v not in valid_periods:
+            raise ValueError(f"period必须为: {', '.join(valid_periods)}")
+        return v
+
+
+class KlineResponse(BaseModel):
+    """K线数据响应"""
+
+    symbol: str = Field(description="股票代码")
+    period: str = Field(description="K线周期")
+    data: List[KlineCandle] = Field(description="K线数据列表")
+    count: int = Field(description="数据条数")
+
+
+# ==================== 热力图数据 (Heatmap) ====================
+
+
+class HeatmapStock(BaseModel):
+    """热力图股票数据"""
+
+    symbol: str = Field(description="股票代码")
+    name: str = Field(description="股票名称")
+    change_percent: float = Field(description="涨跌幅(%)")
+    market_cap: Optional[float] = Field(None, description="市值(元)")
+
+
+class HeatmapResponse(BaseModel):
+    """热力图响应"""
+
+    sector: str = Field(description="板块名称")
+    stocks: List[HeatmapStock] = Field(description="股票列表")
+    avg_change: float = Field(description="板块平均涨跌幅(%)")
