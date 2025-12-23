@@ -19,7 +19,7 @@ class TestDashboardPageLoadAndDisplay:
         login_page = LoginPage(page)
         page.goto("http://localhost:3000/login")
         login_page.login_as_admin()
-        yield page
+        return page
 
     def test_dashboard_page_loads(self, authenticated_page: Page) -> None:
         """测试 Dashboard 页面加载"""

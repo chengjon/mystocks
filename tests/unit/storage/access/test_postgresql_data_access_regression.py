@@ -5,7 +5,6 @@ PostgreSQLDataAccess._build_analytical_query 方法的回归测试
 特别是其在处理各种过滤、排序和分页参数时生成SQL语句的逻辑。
 """
 
-import inspect
 import os
 import sys
 from unittest.mock import Mock, patch
@@ -45,7 +44,7 @@ class TestPostgreSQLDataAccessRegression:
     def data_access_instance(self):
         """为测试提供PostgreSQLDataAccess实例，并模拟MonitoringDatabase"""
         mock_monitoring_db = Mock(spec=MonitoringDatabase)
-        
+
         # Mock DatabaseTableManager which is called in PostgreSQLDataAccess __init__
         with patch('src.storage.database.database_manager.DatabaseTableManager') as mock_db_manager_class:
             mock_db_manager_instance = Mock()

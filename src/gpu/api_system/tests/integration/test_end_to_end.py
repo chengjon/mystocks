@@ -23,7 +23,7 @@ class TestBacktestEndToEnd:
 
         # 对于单元测试，使用mock
         channel = Mock()
-        yield channel
+        return channel
 
     @pytest.fixture
     def backtest_stub(self, grpc_channel):
@@ -35,7 +35,7 @@ class TestBacktestEndToEnd:
 
         # 对于单元测试，使用mock
         stub = Mock()
-        yield stub
+        return stub
 
     def test_complete_backtest_workflow(self, backtest_stub):
         """测试完整的回测工作流"""
@@ -127,7 +127,7 @@ class TestRealTimeStreamEndToEnd:
     def realtime_stub(self):
         """创建实时处理服务stub"""
         stub = Mock()
-        yield stub
+        return stub
 
     def test_streaming_data_processing(self, realtime_stub):
         """测试流式数据处理"""
@@ -191,7 +191,7 @@ class TestMLTrainingEndToEnd:
     def ml_stub(self):
         """创建ML服务stub"""
         stub = Mock()
-        yield stub
+        return stub
 
     def test_complete_ml_workflow(self, ml_stub, sample_ml_training_data):
         """测试完整的ML工作流"""

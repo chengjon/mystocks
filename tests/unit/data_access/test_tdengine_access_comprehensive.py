@@ -5,9 +5,8 @@ TDengine Access 综合测试 - 增强版
 
 import pytest
 import pandas as pd
-import numpy as np
-from unittest.mock import Mock, MagicMock, patch
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
+from datetime import datetime
 import sys
 import os
 
