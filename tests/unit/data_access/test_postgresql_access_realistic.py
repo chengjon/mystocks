@@ -6,8 +6,8 @@ PostgreSQL Access 现实测试
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, MagicMock, patch
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
+from datetime import datetime
 import sys
 import os
 

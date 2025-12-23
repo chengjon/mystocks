@@ -4,8 +4,6 @@ Regression tests for APIHealthChecker.generate_report
 
 import sys
 import os
-from unittest.mock import patch, MagicMock
-import pytest
 import io
 
 # Add source path

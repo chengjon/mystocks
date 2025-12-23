@@ -38,7 +38,7 @@ class TestThreeLayerIntegration:
 
         importlib.reload(src.data_sources)
 
-        yield
+        return
 
     def test_layer1_tdengine_basic_query(self):
         """测试Layer 1: TDengine时序数据查询"""
