@@ -39,7 +39,7 @@ This plan outlines the phases and tasks required to address the identified techn
 - [x] Task: Address high-priority TODO comments across the codebase.
     - [x] Write Tests: (If applicable) Add tests for features related to `TODO` comments.
     - [x] Implement Feature: Implement/resolve `TODO` comments.
-- [ ] Task: Identify top 10 high-complexity methods for refactoring.
+- [x] Task: Identify top 10 high-complexity methods for refactoring. [a6c232c]
     - [ ] Write Tests: Write regression tests for high-complexity methods before refactoring.
     - [ ] Implement Feature: Refactor identified high-complexity methods.
 - [ ] Task: Conductor - User Manual Verification 'General Test Coverage Improvement & Refactoring' (Protocol in workflow.md)
