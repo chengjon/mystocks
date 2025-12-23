@@ -113,7 +113,7 @@ class MonitoringDatabase:
 
         # 监控数据库连接参数
         self.monitor_db_config = {
-            "host": os.getenv("MONITOR_DB_HOST", "192.168.123.104"),
+            "host": os.getenv("MONITOR_DB_HOST"),
             "port": int(os.getenv("MONITOR_DB_PORT", "3306")),
             "user": os.getenv("MONITOR_DB_USER", "root"),
             "password": os.getenv("MONITOR_DB_PASSWORD", ""),

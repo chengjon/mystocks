@@ -120,7 +120,7 @@ class DatabaseConnectionManager:
                 connection_pool = pool.SimpleConnectionPool(
                     minconn=1,
                     maxconn=20,
-                    host=os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
+                    host=os.getenv("POSTGRESQL_HOST"),
                     port=int(os.getenv("POSTGRESQL_PORT", "5438")),
                     user=os.getenv("POSTGRESQL_USER", "postgres"),
                     password=os.getenv("POSTGRESQL_PASSWORD", ""),
@@ -166,7 +166,7 @@ class DatabaseConnectionManager:
 
             if "mysql" not in self._connections:
                 conn = pymysql.connect(
-                    host=os.getenv("MYSQL_HOST", "192.168.123.104"),
+                    host=os.getenv("MYSQL_HOST"),
                     port=int(os.getenv("MYSQL_PORT", "3306")),
                     user=os.getenv("MYSQL_USER", "root"),
                     password=os.getenv("MYSQL_PASSWORD", ""),
@@ -205,7 +205,7 @@ class DatabaseConnectionManager:
                 redis_db = int(os.getenv("REDIS_DB", "1"))
 
                 conn = redis.Redis(
-                    host=os.getenv("REDIS_HOST", "192.168.123.104"),
+                    host=os.getenv("REDIS_HOST"),
                     port=int(os.getenv("REDIS_PORT", "6379")),
                     db=redis_db,
                     password=os.getenv("REDIS_PASSWORD") or None,
