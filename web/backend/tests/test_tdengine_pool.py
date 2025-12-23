@@ -6,8 +6,7 @@ TDengine连接池单元测试 - Phase 3 Task 19
 import pytest
 import time
 import threading
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
 
 from app.core.tdengine_pool import TDengineConnectionPool, ConnectionContext
 

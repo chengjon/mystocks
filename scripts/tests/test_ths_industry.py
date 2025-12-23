@@ -112,7 +112,7 @@ def test_ths_industry_stocks(industry_name: str = "银行"):
         if not stocks_data.empty:
             print(f"✅ 成功获取行业'{industry_name}'成分股数据: {len(stocks_data)}行")
             print(f"📊 数据列名: {stocks_data.columns.tolist()}")
-            print(f"\n📈 前10行数据预览:")
+            print("\n📈 前10行数据预览:")
             print(stocks_data.head(10))
             print(f"\n💾 数据形状: {stocks_data.shape}")
 

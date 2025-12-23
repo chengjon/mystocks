@@ -43,7 +43,7 @@ from src.data_sources.real.composite_business import CompositeBusinessDataSource
 __all__ = [
     "TDengineTimeSeriesDataSource",
     "PostgreSQLRelationalDataSource",
-    "CompositeBusinessDataSource"
+    "CompositeBusinessDataSource",
 ]
 
 __version__ = "2.0.0"

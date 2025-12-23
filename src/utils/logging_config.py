@@ -9,7 +9,6 @@ import os
 import sys
 from pathlib import Path
 from typing import Optional
-from datetime import datetime
 
 
 class ColoredFormatter(logging.Formatter):
@@ -17,27 +16,25 @@ class ColoredFormatter(logging.Formatter):
 
     # 颜色代码
     COLORS = {
-        'DEBUG': '\033[36m',    # 青色
-        'INFO': '\033[32m',     # 绿色
-        'WARNING': '\033[33m',  # 黄色
-        'ERROR': '\033[31m',    # 红色
-        'CRITICAL': '\033[35m', # 紫色
-        'RESET': '\033[0m'      # 重置
+        "DEBUG": "\033[36m",  # 青色
+        "INFO": "\033[32m",  # 绿色
+        "WARNING": "\033[33m",  # 黄色
+        "ERROR": "\033[31m",  # 红色
+        "CRITICAL": "\033[35m",  # 紫色
+        "RESET": "\033[0m",  # 重置
     }
 
     def format(self, record):
         # 添加颜色
-        if hasattr(record, 'levelname'):
-            color = self.COLORS.get(record.levelname, self.COLORS['RESET'])
+        if hasattr(record, "levelname"):
+            color = self.COLORS.get(record.levelname, self.COLORS["RESET"])
             record.levelname = f"{color}{record.levelname}{self.COLORS['RESET']}"
 
         return super().format(record)
 
 
 def setup_logging(
-    level: str = "INFO",
-    log_file: Optional[str] = None,
-    use_colors: bool = True
+    level: str = "INFO", log_file: Optional[str] = None, use_colors: bool = True
 ) -> None:
     """
     设置项目日志配置
@@ -49,7 +46,7 @@ def setup_logging(
     """
 
     # 根环境变量
-    log_level = os.getenv('LOG_LEVEL', level)
+    log_level = os.getenv("LOG_LEVEL", level)
 
     # 创建根logger
     root_logger = logging.getLogger()
@@ -65,11 +62,11 @@ def setup_logging(
     # 格式化器
     if use_colors and sys.stdout.isatty():
         formatter = ColoredFormatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
     else:
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
 
     console_handler.setFormatter(formatter)
@@ -82,9 +79,9 @@ def setup_logging(
         log_path = Path(log_file)
         log_path.parent.mkdir(parents=True, exist_ok=True)
 
-        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
         file_formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
         )
         file_handler.setFormatter(file_formatter)
         root_logger.addHandler(file_handler)
@@ -106,6 +103,7 @@ def get_logger(name: str) -> logging.Logger:
 # 默认配置
 if not logging.getLogger().handlers:
     setup_logging()
+
 
 # 导出的便捷函数
 def log_info(message: str, logger_name: Optional[str] = None):

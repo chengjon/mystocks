@@ -7,13 +7,16 @@
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
-from app.core.responses import create_success_response, create_error_response, ErrorCodes, ResponseMessages
+from app.core.responses import (
+    create_error_response,
+    ErrorCodes,
+)
 from app.core.security import User, get_current_user
 
 logger = __import__("logging").getLogger(__name__)
@@ -24,7 +27,10 @@ import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../src"))
-from utils.data_format_converter import normalize_api_response_format, normalize_stock_data_format
+from utils.data_format_converter import (
+    normalize_api_response_format,
+    normalize_stock_data_format,
+)
 
 router = APIRouter()
 
@@ -38,7 +44,8 @@ async def get_stocks_basic(
     concept: Optional[str] = Query(None, description="概念筛选"),
     market: Optional[str] = Query(None, description="市场筛选: SH/SZ"),
     sort_field: Optional[str] = Query(
-        None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume"
+        None,
+        description="排序字段: symbol,name,industry,price,change_pct,turnover,volume",
     ),
     sort_order: Optional[str] = Query(None, description="排序方向: asc,desc"),
     current_user: User = Depends(get_current_user),
@@ -89,7 +96,9 @@ async def get_stocks_basic(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取股票基本信息失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "获取股票基本信息失败")
+            )
 
     except HTTPException:
         raise
@@ -131,7 +140,8 @@ async def get_stocks_industries(
 
         # 构建响应数据
         industry_list = [
-            {"industry_name": industry, "industry_code": f"IND_{i+1:03d}"} for i, industry in enumerate(industries)
+            {"industry_name": industry, "industry_code": f"IND_{i + 1:03d}"}
+            for i, industry in enumerate(industries)
         ]
 
         result = {
@@ -148,10 +158,10 @@ async def get_stocks_industries(
 
     except Exception as e:
         import logging
+
         logging.error(f"获取行业列表失败: {str(e)}", exc_info=True)
         return create_error_response(
-            ErrorCodes.DATABASE_ERROR,
-            f"获取行业列表失败: {str(e)}"
+            ErrorCodes.DATABASE_ERROR, f"获取行业列表失败: {str(e)}"
         ).model_dump()
 
 
@@ -197,7 +207,8 @@ async def get_stocks_concepts(
 
         # 构建响应数据
         concept_list = [
-            {"concept_name": concept, "concept_code": f"CON_{i+1:03d}"} for i, concept in enumerate(concepts)
+            {"concept_name": concept, "concept_code": f"CON_{i + 1:03d}"}
+            for i, concept in enumerate(concepts)
         ]
 
         result = {
@@ -214,10 +225,10 @@ async def get_stocks_concepts(
 
     except Exception as e:
         import logging
+
         logging.error(f"获取概念列表失败: {str(e)}", exc_info=True)
         return create_error_response(
-            ErrorCodes.DATABASE_ERROR,
-            f"获取概念列表失败: {str(e)}"
+            ErrorCodes.DATABASE_ERROR, f"获取概念列表失败: {str(e)}"
         ).model_dump()
 
 
@@ -251,7 +262,12 @@ async def get_daily_kline(
         factory = await get_data_source_factory()
 
         # 构建请求参数
-        params = {"symbol": symbol, "start_date": start_date, "end_date": end_date, "limit": limit}
+        params = {
+            "symbol": symbol,
+            "start_date": start_date,
+            "end_date": end_date,
+            "limit": limit,
+        }
 
         # 调用数据源工厂获取stocks/daily数据
         result = await factory.get_data("data", "stocks/daily", params)
@@ -271,7 +287,9 @@ async def get_daily_kline(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取日线数据失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "获取日线数据失败")
+            )
 
     except HTTPException:
         raise
@@ -311,7 +329,9 @@ async def get_market_overview(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取市场概览失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "获取市场概览失败")
+            )
 
     except HTTPException:
         raise
@@ -356,7 +376,9 @@ async def search_stocks(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "股票搜索失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "股票搜索失败")
+            )
 
     except HTTPException:
         raise
@@ -398,18 +420,16 @@ async def get_kline_data(
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "股票代码不能为空"
-                ).model_dump()
+                    ErrorCodes.VALIDATION_ERROR, "股票代码不能为空"
+                ).model_dump(),
             )
 
         if not start_date or not end_date:
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "开始日期和结束日期不能为空"
-                ).model_dump()
+                    ErrorCodes.VALIDATION_ERROR, "开始日期和结束日期不能为空"
+                ).model_dump(),
             )
 
         # 验证日期格式
@@ -420,9 +440,8 @@ async def get_kline_data(
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "日期格式错误，请使用YYYY-MM-DD格式"
-                ).model_dump()
+                    ErrorCodes.VALIDATION_ERROR, "日期格式错误，请使用YYYY-MM-DD格式"
+                ).model_dump(),
             )
 
         # 验证周期参数
@@ -445,7 +464,9 @@ async def get_kline_data(
         # 查询数据库
         df = db_service.query_daily_kline(symbol, start_date, end_date)
 
-        print(f"查询到 {len(df)} 条数据, symbol={symbol}, start_date={start_date}, end_date={end_date}")  # 调试信息
+        print(
+            f"查询到 {len(df)} 条数据, symbol={symbol}, start_date={start_date}, end_date={end_date}"
+        )  # 调试信息
         if not df.empty:
             print(f"数据预览: {df.head()}")
 
@@ -545,7 +566,9 @@ async def get_kline_data(
 @router.get("/financial")
 async def get_financial_data(
     symbol: str = Query(..., description="股票代码，如: 000001"),
-    report_type: str = Query("balance", description="报表类型: balance/income/cashflow"),
+    report_type: str = Query(
+        "balance", description="报表类型: balance/income/cashflow"
+    ),
     period: str = Query("all", description="报告期: quarterly/annual/all"),
     limit: int = Query(20, ge=1, le=100, description="返回记录数限制"),
     current_user: User = Depends(get_current_user),
@@ -567,7 +590,12 @@ async def get_financial_data(
         factory = await get_data_source_factory()
 
         # 构建请求参数
-        params = {"symbol": symbol, "report_type": report_type, "period": period, "limit": limit}
+        params = {
+            "symbol": symbol,
+            "report_type": report_type,
+            "period": period,
+            "limit": limit,
+        }
 
         # 调用数据源工厂获取financial数据
         result = await factory.get_data("data", "financial", params)
@@ -587,7 +615,9 @@ async def get_financial_data(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取财务数据失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "获取财务数据失败")
+            )
 
     except HTTPException:
         raise
@@ -698,7 +728,9 @@ async def get_hot_industries(
         try:
             # 使用统一数据服务查询
             unified_service = UnifiedDataService()
-            df = unified_service.postgresql_access.query_dataframe(query, {"limit": limit})
+            df = unified_service.postgresql_access.query_dataframe(
+                query, {"limit": limit}
+            )
         except Exception:
             # 如果统一数据服务不可用，使用模拟数据
             import random
@@ -862,7 +894,9 @@ async def get_hot_concepts(
 @router.get("/stocks/intraday")
 async def get_intraday_data(
     symbol: str = Query(..., description="股票代码，如: 000001.SZ"),
-    date: Optional[str] = Query(None, description="交易日期，格式: YYYY-MM-DD，默认今天"),
+    date: Optional[str] = Query(
+        None, description="交易日期，格式: YYYY-MM-DD，默认今天"
+    ),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
@@ -883,7 +917,9 @@ async def get_intraday_data(
         try:
             datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
-            raise HTTPException(status_code=400, detail="日期格式错误，请使用YYYY-MM-DD格式")
+            raise HTTPException(
+                status_code=400, detail="日期格式错误，请使用YYYY-MM-DD格式"
+            )
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -909,7 +945,9 @@ async def get_intraday_data(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取分时数据失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("message", "获取分时数据失败")
+            )
 
     except HTTPException:
         raise
@@ -955,7 +993,17 @@ async def get_stock_detail(
         market = "SH" if symbol.startswith("6") else "SZ"
 
         # 模拟行业和概念
-        industries = ["银行", "证券", "保险", "房地产", "食品饮料", "医药生物", "电子", "计算机", "通信设备"]
+        industries = [
+            "银行",
+            "证券",
+            "保险",
+            "房地产",
+            "食品饮料",
+            "医药生物",
+            "电子",
+            "计算机",
+            "通信设备",
+        ]
         concepts = [
             "人工智能",
             "芯片概念",
@@ -979,7 +1027,9 @@ async def get_stock_detail(
             "industry": selected_industry,
             "industry_code": f"IND_{hash(selected_industry) % 100:03d}",
             "concepts": selected_concepts,
-            "concept_codes": [f"CON_{hash(concept) % 100:03d}" for concept in selected_concepts],
+            "concept_codes": [
+                f"CON_{hash(concept) % 100:03d}" for concept in selected_concepts
+            ],
             "area": "上海" if market == "SH" else "深圳",
             "list_date": f"20{random.randint(00, 23):02d}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
             "total_shares": round(random.uniform(1000000, 100000000), 0),
@@ -1024,7 +1074,9 @@ async def get_stock_detail(
 @router.get("/stocks/{symbol}/trading-summary")
 async def get_trading_summary(
     symbol: str,
-    period: str = Query("1m", description="统计周期: 1w(1周), 1m(1月), 3m(3月), 6m(6月), 1y(1年)"),
+    period: str = Query(
+        "1m", description="统计周期: 1w(1周), 1m(1月), 3m(3月), 6m(6月), 1y(1年)"
+    ),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
@@ -1077,8 +1129,12 @@ async def get_trading_summary(
             "period_days": days,
             "start_price": round(base_price - price_change, 2),
             "end_price": base_price,
-            "highest_price": round(base_price + random.uniform(0, abs(price_change) * 0.5), 2),
-            "lowest_price": round(base_price - abs(price_change) * random.uniform(0.3, 0.7), 2),
+            "highest_price": round(
+                base_price + random.uniform(0, abs(price_change) * 0.5), 2
+            ),
+            "lowest_price": round(
+                base_price - abs(price_change) * random.uniform(0.3, 0.7), 2
+            ),
             "price_change": price_change,
             "price_change_pct": price_change_pct,
             "avg_volume": random.randint(500000, 5000000),
@@ -1131,7 +1187,7 @@ async def get_trading_summary(
 
 @router.get("/test/factory")
 async def test_data_source_factory(
-    limit: int = Query(10, ge=1, le=100, description="测试数据返回数量限制")
+    limit: int = Query(10, ge=1, le=100, description="测试数据返回数量限制"),
 ) -> Dict[str, Any]:
     """
     测试数据源工厂集成 (无需认证)

@@ -63,7 +63,7 @@ GET /api/market/lhb-detail
 
 **Mock数据类型**: `market_*`
 - `market_heatmap`: 市场热力图数据
-- `real_time_quotes`: 实时行情数据  
+- `real_time_quotes`: 实时行情数据
 - `stock_list`: 股票列表数据
 - `fund_flow`: 资金流向数据
 - `etf_list`: ETF列表数据
@@ -308,8 +308,8 @@ heatmap_data = manager.get_data('market_heatmap', market='cn', limit=50)
 search_results = manager.get_data('stock_search', keyword='平安', limit=10)
 
 # 获取TradingView图表配置
-chart_config = manager.get_data('tradingview_chart', 
-                               symbol='000001', 
+chart_config = manager.get_data('tradingview_chart',
+                               symbol='000001',
                                market='CN',
                                theme='dark',
                                locale='zh_CN')
@@ -327,7 +327,7 @@ async def get_market_heatmap(
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
@@ -343,7 +343,7 @@ async def get_market_heatmap(
         else:
             # 使用真实数据
             # ... 现有真实数据获取逻辑 ...
-            
+
     except Exception as e:
         # 错误处理和降级逻辑
         logger.error(f"获取市场热力图失败: {str(e)}", exc_info=True)
@@ -484,11 +484,11 @@ elif data_type == "new_data_type":
 
 def get_new_data(param1: str = "", param2: int = 10) -> list:
     """获取新类型的数据
-    
+
     Args:
         param1: 参数1
         param2: 参数2
-    
+
     Returns:
         数据列表
     """
@@ -510,13 +510,13 @@ def generate_realistic_stock_data(count: int = 100) -> list:
     """生成更真实的股票数据"""
     import random
     import numpy as np
-    
+
     stocks = []
     for i in range(count):
         # 生成更真实的价格分布
         base_price = random.uniform(10, 100)
         volatility = random.uniform(0.01, 0.1)
-        
+
         stock = {
             "symbol": f"{i:06d}",
             "name": f"股票{i:03d}",
@@ -530,7 +530,7 @@ def generate_realistic_stock_data(count: int = 100) -> list:
             "timestamp": datetime.now().isoformat()
         }
         stocks.append(stock)
-    
+
     return stocks
 ```
 
@@ -551,7 +551,7 @@ manager = get_mock_data_manager()
 # 测试所有数据类型
 test_types = [
     'market_heatmap',
-    'stock_search', 
+    'stock_search',
     'tradingview_chart',
     'dashboard',
     'technical'
@@ -585,7 +585,7 @@ async function testMockIntegration() {
         '/api/stock/search?q=平安',
         '/api/tradingview/chart/config'
     ];
-    
+
     for (const endpoint of endpoints) {
         try {
             const response = await fetch(endpoint);
@@ -602,13 +602,13 @@ async function testMockIntegration() {
 
 MyStocks的Mock数据系统现在已经**完全覆盖**了所有主要前端页面的数据需求：
 
-✅ **仪表板模块** - 完全支持  
-✅ **市场数据模块** - 完全支持  
-✅ **股票搜索模块** - 完全支持  
-✅ **TradingView图表模块** - 完全支持  
-✅ **技术分析模块** - 已有支持  
-✅ **问财模块** - 已有支持  
-✅ **实时监控模块** - 已有支持  
+✅ **仪表板模块** - 完全支持
+✅ **市场数据模块** - 完全支持
+✅ **股票搜索模块** - 完全支持
+✅ **TradingView图表模块** - 完全支持
+✅ **技术分析模块** - 已有支持
+✅ **问财模块** - 已有支持
+✅ **实时监控模块** - 已有支持
 
 **系统优势**:
 - 统一的数据源管理

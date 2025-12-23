@@ -80,7 +80,7 @@ def example_2_parse_local_data():
     if not data.empty:
         print(f"  ✓ 总记录数: {len(data)}")
         print(f"  ✓ 日期范围: {data['date'].min()} 至 {data['date'].max()}")
-        print(f"\n  最近数据:")
+        print("\n  最近数据:")
         print(data[["date", "close", "volume"]].tail())
 
     # 2.2 读取多只股票
@@ -134,7 +134,7 @@ def example_3_import_without_database():
         batch_size=10,
     )
 
-    print(f"\n导入结果:")
+    print("\n导入结果:")
     print(f"  成功: {result['success_count']}/{result['total_symbols']}")
     print(f"  失败: {result['fail_count']}")
     print(f"  总记录数: {result['total_records']:,}")
@@ -210,7 +210,7 @@ def example_5_incremental_import():
     print("模拟增量导入（最近7天，前10只股票）:")
     result = importer.import_incremental(market="sh", lookback_days=7)
 
-    print(f"\n增量导入完成:")
+    print("\n增量导入完成:")
     print(f"  时间范围: {date.today() - timedelta(days=7)} 至 {date.today()}")
     print(f"  处理股票: {result['total_symbols']}")
     print(f"  成功导入: {result['success_count']}")

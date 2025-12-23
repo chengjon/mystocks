@@ -45,7 +45,9 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
                     # 将HTTPException转换为统一错误响应
                     return self._create_error_response(
                         status_code=response.status_code,
-                        detail=getattr(response, "detail", ResponseMessages.INTERNAL_ERROR),
+                        detail=getattr(
+                            response, "detail", ResponseMessages.INTERNAL_ERROR
+                        ),
                         request_id=request_id,
                     )
                 elif response.status_code == 200:
@@ -57,7 +59,9 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
                             body_data = json.loads(response.body.decode())
                             if isinstance(body_data, dict):
                                 body_data["request_id"] = request_id
-                                return JSONResponse(content=body_data, status_code=response.status_code)
+                                return JSONResponse(
+                                    content=body_data, status_code=response.status_code
+                                )
                         except (json.JSONDecodeError, UnicodeDecodeError):
                             pass
 
@@ -75,16 +79,25 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
                 details={"exception": str(e)},
                 request_id=request_id,
             )
-            return JSONResponse(content=error_response.model_dump(exclude_unset=True), status_code=500)
+            return JSONResponse(
+                content=error_response.model_dump(exclude_unset=True), status_code=500
+            )
 
-    def _create_error_response(self, status_code: int, detail: str, request_id: str) -> JSONResponse:
+    def _create_error_response(
+        self, status_code: int, detail: str, request_id: str
+    ) -> JSONResponse:
         """创建统一的错误响应"""
         # 根据状态码确定错误类型
         error_code = self._get_error_code(status_code)
 
-        error_response = create_error_response(error_code=error_code, message=detail, request_id=request_id)
+        error_response = create_error_response(
+            error_code=error_code, message=detail, request_id=request_id
+        )
 
-        return JSONResponse(content=error_response.model_dump(exclude_unset=True), status_code=status_code)
+        return JSONResponse(
+            content=error_response.model_dump(exclude_unset=True),
+            status_code=status_code,
+        )
 
     def _get_error_code(self, status_code: int) -> str:
         """根据HTTP状态码获取错误代码"""
@@ -120,6 +133,8 @@ class ProcessTimeMiddleware(BaseHTTPMiddleware):
         # 将处理时间添加到响应头
         if hasattr(response, "headers"):
             response.headers["X-Process-Time"] = f"{process_time:.3f}"
-            response.headers["X-Request-ID"] = getattr(request.state, "request_id", "unknown")
+            response.headers["X-Request-ID"] = getattr(
+                request.state, "request_id", "unknown"
+            )
 
         return response

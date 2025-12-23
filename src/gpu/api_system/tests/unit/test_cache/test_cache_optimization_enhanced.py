@@ -8,7 +8,6 @@ Test Enhanced Cache Optimization
 import unittest
 import time
 import random
-from datetime import datetime
 import sys
 import os
 
@@ -27,7 +26,6 @@ from src.utils.cache_optimization_enhanced import (
     NegativeCache,
     AdaptiveTTLManager,
     SmartCompressor,
-    PredictivePrefetcher,
 )
 
 
@@ -423,7 +421,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
         total = hits + misses
         hit_rate = hits / total * 100 if total > 0 else 0
 
-        print(f"\n缓存性能:")
+        print("\n缓存性能:")
         print(f"  总访问: {total}")
         print(f"  命中: {hits}")
         print(f"  未命中: {misses}")
@@ -431,7 +429,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
 
         # 获取综合统计
         stats = self.cache_manager.get_comprehensive_stats()
-        print(f"\n优化统计:")
+        print("\n优化统计:")
         print(f"  访问模式学习: {stats['pattern_learning']['tracked_keys']} 个键")
         print(f"  压缩成功率: {stats['compression']['success_rate']:.2f}%")
         print(f"  预加载成功率: {stats['prefetching']['success_rate']:.2f}%")

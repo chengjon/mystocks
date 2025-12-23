@@ -14,7 +14,7 @@
 import sys
 import json
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import Dict
 from collections import defaultdict
 
 # 添加项目根目录到路径
@@ -23,14 +23,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from models import (
-    DuplicationCase,
     DuplicationIndex,
     SeverityEnum,
-    CodeBlock,
     ModuleInventory,
 )
 from src.utils.similarity import SimilarityDetector
-from src.utils.ast_parser import extract_code_block, tokenize_code
+from src.utils.ast_parser import extract_code_block
 from generate_docs import load_inventory
 
 
@@ -195,7 +193,7 @@ def detect_pattern_duplicates(inventory: ModuleInventory, dup_index: Duplication
         if len(matching_functions) >= 3:
             print(f"  模式 '{pattern_name}': {len(matching_functions)} 个匹配函数")
 
-    print(f"  ✓ 模式分析完成")
+    print("  ✓ 模式分析完成")
 
 
 def analyze_duplicate_clusters(dup_index: DuplicationIndex) -> Dict:

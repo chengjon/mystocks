@@ -27,7 +27,7 @@ from src.data_sources.mock.business_mock import MockBusinessDataSource
 __all__ = [
     "MockTimeSeriesDataSource",
     "MockRelationalDataSource",
-    "MockBusinessDataSource"
+    "MockBusinessDataSource",
 ]
 
 __version__ = "1.0.0"

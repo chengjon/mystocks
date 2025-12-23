@@ -9,7 +9,6 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import pytest
 from app.core.room_manager import (
     RoomManager,
     Room,

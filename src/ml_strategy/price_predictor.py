@@ -16,21 +16,16 @@
 版本: 1.0.0
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from typing import Dict, Any, Optional, Tuple
-import pandas as pd
-import numpy as np
 import logging
+import os
 from datetime import datetime
+from typing import Any, Dict, Optional, Tuple
 
-# Scikit-learn
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import joblib
+import numpy as np
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import GridSearchCV, train_test_split
 
 # LightGBM
 try:
@@ -97,120 +92,87 @@ class PricePredictorStrategy:
 
     def train(
         self,
-        X: pd.DataFrame,
-        y: pd.Series,
+        features: pd.DataFrame,
+        target: pd.Series,
         test_size: float = 0.2,
-        random_state: int = 42,
-        validation_split: bool = True,
+        eval_set: Optional[Tuple[pd.DataFrame, pd.Series]] = None,
+        feature_names: Optional[list] = None,
     ) -> Dict[str, float]:
+        # pylint: disable=too-many-positional-arguments
         """
         训练模型
 
         Args:
-            X: 特征矩阵
-            y: 目标变量
-            test_size: 测试集比例（默认 0.2）
-            random_state: 随机种子（默认 42）
-            validation_split: 是否分割验证集（默认 True）
+            features: 特征矩阵 (X)
+            target: 目标向量 (y)
+            test_size: 验证集比例
+            eval_set: 显式指定验证集 (X_val, y_val)
+            feature_names: 特征名称列表
 
         Returns:
-            评估指标字典
-                - rmse: 均方根误差
-                - mae: 平均绝对误差
-                - r2_score: 决定系数
-                - mape: 平均绝对百分比误差
-
-        Raises:
-            ValueError: 输入数据无效
+            Dict: 评估指标
         """
-        # 验证输入
-        if X.empty or y.empty:
-            raise ValueError("输入数据不能为空")
-
-        if len(X) != len(y):
-            raise ValueError(f"X 和 y 长度不匹配: {len(X)} vs {len(y)}")
-
-        self.logger.info(f"开始训练模型: X={X.shape}, y={y.shape}")
-
-        # 数据分割
-        if validation_split:
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=test_size, random_state=random_state
-            )
-            self.logger.info(f"数据分割: 训练集={len(X_train)}, 测试集={len(X_test)}")
-        else:
-            X_train, y_train = X, y
-            X_test, y_test = X, y
-            self.logger.info(f"未分割数据，使用全部数据训练: {len(X_train)} 条")
-
-        # 创建并训练模型
+        self.logger.info("开始训练模型...")
         start_time = datetime.now()
+
+        # 数据切分
+        if eval_set:
+            X_train, y_train = features, target
+            X_val, y_val = eval_set
+        else:
+            X_train, X_val, y_train, y_val = train_test_split(
+                features, target, test_size=test_size, shuffle=False
+            )
+
+        # 初始化模型
         self.model = LGBMRegressor(**self.config)
 
+        # 训练
         self.model.fit(
             X_train,
             y_train,
-            eval_set=[(X_test, y_test)] if validation_split else None,
+            eval_set=[(X_val, y_val)],
             eval_metric="rmse",
+            # early_stopping_rounds=10, # 在新版 lightgbm 中可能需要通过 callbacks 实现
         )
 
-        training_time = (datetime.now() - start_time).total_seconds()
         self.is_trained = True
+        train_time = (datetime.now() - start_time).total_seconds()
+        self.logger.info("模型训练完成，耗时: %.2f秒", train_time)
 
-        # 预测
-        y_pred = self.model.predict(X_test)
+        # 评估
+        metrics = self.evaluate(X_val, y_val)
+        self.logger.info("验证集评估结果: %s", metrics)
 
-        # 计算评估指标
-        metrics = self._calculate_metrics(y_test, y_pred)
-        metrics["training_time"] = training_time
-        metrics["train_samples"] = len(X_train)
-        metrics["test_samples"] = len(X_test)
+        # 记录特征重要性
+        if feature_names is None and hasattr(features, "columns"):
+            feature_names = features.columns.tolist()
 
-        # 保存训练历史
-        self.training_history = {
-            "timestamp": datetime.now().isoformat(),
-            "metrics": metrics,
-            "config": self.config,
-            "feature_count": X.shape[1],
-            "feature_names": list(X.columns),
-        }
-
-        self.logger.info(
-            f"训练完成: RMSE={metrics['rmse']:.2f}, "
-            f"R²={metrics['r2_score']:.4f}, "
-            f"耗时={training_time:.2f}秒"
-        )
+        if feature_names:
+            importance = self.get_feature_importance(feature_names)
+            self.logger.info("主要特征: %s", list(importance.keys())[:5])
 
         return metrics
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
+    def predict(self, features: pd.DataFrame) -> np.ndarray:
         """
         预测价格
 
         Args:
-            X: 特征矩阵
+            features: 特征矩阵 (X)
 
         Returns:
-            预测结果数组
-
-        Raises:
-            ValueError: 模型未训练
+            np.ndarray: 预测结果
         """
-        if not self.is_trained:
-            raise ValueError("模型未训练，请先调用 train() 方法")
+        if not self.is_trained or self.model is None:
+            raise ValueError("模型尚未训练")
 
-        if X.empty:
-            raise ValueError("输入数据不能为空")
+        start_time = datetime.now()
+        pred_result = self.model.predict(features)
+        pred_time = (datetime.now() - start_time).total_seconds()
 
-        self.logger.info(f"开始预测: {len(X)} 条记录")
-
-        predictions = self.model.predict(X)
-
-        self.logger.info(
-            f"预测完成: 预测范围=[{predictions.min():.2f}, {predictions.max():.2f}]"
-        )
-
-        return predictions
+        self.logger.debug("预测完成: %d 条样本, 耗时: %.4f秒", len(features), pred_time)
+        return pred_result
 
     def predict_with_confidence(
         self, X: pd.DataFrame, confidence_level: float = 0.95
@@ -242,107 +204,81 @@ class PricePredictorStrategy:
 
     def hyperparameter_tuning(
         self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        param_grid: Optional[Dict[str, list]] = None,
-        cv: int = 5,
-        scoring: str = "neg_mean_squared_error",
+        features: pd.DataFrame,
+        target: pd.Series,
+        param_grid: Dict[str, list],
+        cv: int = 3,
+        scoring: str = "neg_root_mean_squared_error",
     ) -> Dict[str, Any]:
+        # pylint: disable=too-many-positional-arguments
         """
-        超参数调优（网格搜索）
+        超参数调优 (GridSearchCV)
 
         Args:
-            X: 特征矩阵
-            y: 目标变量
-            param_grid: 参数网格（可选）
-            cv: 交叉验证折数（默认 5）
-            scoring: 评分指标（默认 neg_mean_squared_error）
+            features: 特征矩阵
+            target: 目标向量
+            param_grid: 参数网格
+            cv: 交叉验证折数
+            scoring: 评分指标
 
         Returns:
-            调优结果字典
-                - best_params: 最佳参数
-                - best_score: 最佳得分
-                - cv_results: 交叉验证结果
-
-        Example:
-            >>> param_grid = {
-            ...     'num_leaves': [15, 25, 35],
-            ...     'n_estimators': [50, 70, 100],
-            ...     'learning_rate': [0.1, 0.2, 0.3]
-            ... }
-            >>> results = predictor.hyperparameter_tuning(X, y, param_grid)
+            Dict: 最佳参数
         """
-        if param_grid is None:
-            # 默认参数网格
-            param_grid = {
-                "num_leaves": [15, 25, 35],
-                "n_estimators": [50, 70, 100],
-                "learning_rate": [0.1, 0.2, 0.3],
-            }
+        if not LIGHTGBM_AVAILABLE:
+            raise ImportError("LightGBM not available")
 
-        self.logger.info(
-            f"开始超参数调优: CV={cv}, 参数组合={np.prod([len(v) for v in param_grid.values()])}"
-        )
-
+        self.logger.info("开始超参数调优...")
         start_time = datetime.now()
 
-        # 创建基础模型
-        base_model = LGBMRegressor(**self.config)
+        estimator = LGBMRegressor(objective="regression", metric="rmse", verbose=-1)
 
-        # 网格搜索
         grid_search = GridSearchCV(
-            base_model,
+            estimator=estimator,
             param_grid=param_grid,
             cv=cv,
             scoring=scoring,
             n_jobs=-1,
-            verbose=0,
+            verbose=1,
         )
 
-        grid_search.fit(X, y)
+        grid_search.fit(features, target)
 
-        tuning_time = (datetime.now() - start_time).total_seconds()
+        best_params = grid_search.best_params_
+        search_time = (datetime.now() - start_time).total_seconds()
 
-        # 更新配置为最佳参数
-        self.config.update(grid_search.best_params_)
+        self.logger.info("超参数调优完成，耗时: %.2f秒", search_time)
+        self.logger.info("最佳参数: %s", best_params)
+        self.logger.info("最佳得分: %.4f", grid_search.best_score_)
 
-        results = {
-            "best_params": grid_search.best_params_,
-            "best_score": -grid_search.best_score_,  # 转为正数（RMSE）
-            "cv_results": grid_search.cv_results_,
-            "tuning_time": tuning_time,
-        }
+        # 更新配置
+        self.config.update(best_params)
 
-        self.logger.info(
-            f"调优完成: 最佳 RMSE={results['best_score']:.2f}, "
-            f"耗时={tuning_time:.2f}秒"
-        )
-        self.logger.info(f"最佳参数: {results['best_params']}")
+        return best_params
 
-        return results
-
-    def evaluate(self, X: pd.DataFrame, y: pd.Series) -> Dict[str, float]:
+    def evaluate(self, features: pd.DataFrame, target: pd.Series) -> Dict[str, float]:
         """
         评估模型性能
 
         Args:
-            X: 特征矩阵
-            y: 真实值
+            features: 特征矩阵 (X)
+            target: 真实值 (y)
 
         Returns:
-            评估指标字典
+            Dict: 评估指标
         """
-        if not self.is_trained:
-            raise ValueError("模型未训练")
+        if not self.is_trained or self.model is None:
+            raise ValueError("模型尚未训练")
 
-        y_pred = self.predict(X)
-        metrics = self._calculate_metrics(y, y_pred)
+        pred_result = self.model.predict(features)
 
-        self.logger.info(
-            f"评估结果: RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}"
-        )
+        eval_metrics = {
+            "mse": mean_squared_error(target, pred_result),
+            "rmse": np.sqrt(mean_squared_error(target, pred_result)),
+            "mae": mean_absolute_error(target, pred_result),
+            "r2": r2_score(target, pred_result),
+        }
 
-        return metrics
+        return eval_metrics
 
     @staticmethod
     def _calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
@@ -406,7 +342,7 @@ class PricePredictorStrategy:
 
         joblib.dump(model_data, file_path)
 
-        self.logger.info(f"模型已保存: {file_path}")
+        self.logger.info("模型已保存: %s", file_path)
 
     def load_model(self, file_path: str) -> None:
         """
@@ -419,7 +355,7 @@ class PricePredictorStrategy:
             FileNotFoundError: 文件不存在
         """
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"模型文件不存在: {file_path}")
+            raise FileNotFoundError("模型文件不存在: %s" % file_path)
 
         model_data = joblib.load(file_path)
 
@@ -428,9 +364,9 @@ class PricePredictorStrategy:
         self.training_history = model_data.get("training_history", {})
         self.is_trained = True
 
-        self.logger.info(f"模型已加载: {file_path}")
-        self.logger.info(f"模型版本: {model_data.get('version', 'unknown')}")
-        self.logger.info(f"保存时间: {model_data.get('saved_at', 'unknown')}")
+        self.logger.info("模型已加载: %s", file_path)
+        self.logger.info("模型版本: %s", model_data.get("version", "unknown"))
+        self.logger.info("保存时间: %s", model_data.get("saved_at", "unknown"))
 
     def get_feature_importance(
         self, feature_names: Optional[list] = None, top_k: int = 10
@@ -520,71 +456,62 @@ if __name__ == "__main__":
 
     # 1. 创建模拟数据
     print("1. 创建测试数据...")
-    n_samples = 1000
-    n_features = 15
+    test_n_samples = 1000
+    test_n_features = 15
 
-    X = pd.DataFrame(
-        np.random.randn(n_samples, n_features),
-        columns=[f"feature_{i}" for i in range(n_features)],
+    test_X = pd.DataFrame(
+        np.random.randn(test_n_samples, test_n_features),
+        columns=[f"feature_{i}" for i in range(test_n_features)],
     )
     # 目标变量：基于特征的线性组合 + 噪声
-    y = pd.Series(
-        X.iloc[:, :5].sum(axis=1) * 100 + np.random.randn(n_samples) * 10 + 3000,
+    test_y = pd.Series(
+        test_X.iloc[:, :5].sum(axis=1) * 100
+        + np.random.randn(test_n_samples) * 10
+        + 3000,
         name="price",
     )
 
-    print(f"   X.shape: {X.shape}")
-    print(f"   y.shape: {y.shape}")
-    print(f"   价格范围: [{y.min():.2f}, {y.max():.2f}]")
+    print("   X.shape: %s" % str(test_X.shape))
+    print("   y.shape: %s" % str(test_y.shape))
+    print("   价格范围: [%.2f, %.2f]" % (test_y.min(), test_y.max()))
 
     # 2. 训练模型
     print("\n2. 训练模型...")
-    predictor = PricePredictorStrategy()
-    metrics = predictor.train(X, y, test_size=0.2)
+    test_predictor = PricePredictorStrategy()
+    test_metrics = test_predictor.train(test_X, test_y, test_size=0.2)
 
-    print(f"   ✅ RMSE: {metrics['rmse']:.2f}")
-    print(f"   ✅ MAE: {metrics['mae']:.2f}")
-    print(f"   ✅ R² Score: {metrics['r2_score']:.4f}")
-    print(f"   ✅ MAPE: {metrics['mape']:.2f}%")
-    print(f"   ✅ 训练时间: {metrics['training_time']:.2f}秒")
+    print("   ✅ RMSE: %.2f" % test_metrics["rmse"])
+    print("   ✅ MAE: %.2f" % test_metrics["mae"])
+    print("   ✅ R² Score: %.4f" % test_metrics["r2_score"])
+    print("   ✅ MAPE: %.2f%%" % test_metrics["mape"])
+    print("   ✅ 训练时间: %.2f秒" % test_metrics["training_time"])
 
     # 3. 预测
     print("\n3. 预测测试...")
-    X_test = X.iloc[:10]
-    y_test = y.iloc[:10]
+    test_X_eval = test_X.iloc[:10]
+    test_y_eval = test_y.iloc[:10]
 
-    predictions = predictor.predict(X_test)
-    print(f"   前5个预测值: {predictions[:5]}")
-    print(f"   前5个真实值: {y_test.values[:5]}")
+    test_predictions = test_predictor.predict(test_X_eval)
+    print("   前5个预测值: %s" % str(test_predictions[:5]))
+    print("   前5个真实值: %s" % str(test_y_eval.values[:5]))
 
     # 4. 特征重要性
     print("\n4. 特征重要性...")
-    importance = predictor.get_feature_importance(top_k=5)
-    print(importance)
+    test_importance = test_predictor.get_feature_importance(test_X.columns.tolist())
+    print(test_importance)
 
     # 5. 模型保存/加载
     print("\n5. 模型持久化测试...")
-    model_path = "models/test_predictor.pkl"
-    predictor.save_model(model_path)
-    print(f"   ✅ 模型已保存: {model_path}")
+    test_model_path = "models/test_predictor.pkl"
+    test_predictor.save_model(test_model_path)
+    print("   ✅ 模型已保存: %s" % test_model_path)
 
     # 加载模型
-    predictor2 = PricePredictorStrategy()
-    predictor2.load_model(model_path)
-    predictions2 = predictor2.predict(X_test)
+    test_predictor2 = PricePredictorStrategy()
+    test_predictor2.load_model(test_model_path)
+    test_predictions2 = test_predictor2.predict(test_X_eval)
 
-    print(f"   ✅ 模型已加载")
-    print(f"   预测一致性: {np.allclose(predictions, predictions2)}")
-
-    # 6. 超参数调优（可选，耗时较长）
-    print("\n6. 超参数调优测试（跳过，可手动启用）...")
-    # 取消注释以下代码来运行调优
-    # param_grid = {
-    #     'num_leaves': [20, 25],
-    #     'n_estimators': [60, 70]
-    # }
-    # tuning_results = predictor.hyperparameter_tuning(X, y, param_grid, cv=3)
-    # print(f"   最佳参数: {tuning_results['best_params']}")
-    # print(f"   最佳得分: {tuning_results['best_score']:.2f}")
+    print("   ✅ 模型已加载")
+    print("   预测一致性: %s" % str(np.allclose(test_predictions, test_predictions2)))
 
     print("\n✅ 价格预测模块测试完成！")

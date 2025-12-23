@@ -38,7 +38,7 @@
               <h4>涨跌分布</h4>
               <div ref="priceDistributionChartRef" class="mini-chart"></div>
             </div>
-            
+
             <!-- 热门行业TOP5 -->
             <div class="overview-item">
               <h4>热门行业 TOP5</h4>
@@ -89,13 +89,13 @@
               </div>
             </div>
           </template>
-          
+
           <!-- 个人关注股票列表 -->
           <div class="watchlist-content">
-            <el-table 
-              :data="watchlistStocks" 
-              stripe 
-              v-loading="loading.watchlist" 
+            <el-table
+              :data="watchlistStocks"
+              stripe
+              v-loading="loading.watchlist"
               max-height="400"
               empty-text="暂无关注股票，点击添加按钮开始关注"
             >
@@ -122,9 +122,9 @@
               </el-table-column>
               <el-table-column label="操作" width="100" align="center">
                 <template #default="{ row }">
-                  <el-button 
-                    type="danger" 
-                    size="small" 
+                  <el-button
+                    type="danger"
+                    size="small"
                     @click="removeFromWatchlist(row.symbol)"
                     :loading="loading.removeWatchlist"
                   >
@@ -380,14 +380,14 @@ const loadMarketOverview = async () => {
       async () => dashboardApi.getMarketOverview(),
       'marketOverview'
     )
-    
+
     if (data.success && data.data) {
       const marketData = data.data
-      
+
       // 更新统计卡片数据
       stats.value[0].value = marketData.total_stocks?.toString() || '0'
       stats.value[1].value = marketData.total_stocks?.toString() || '0'
-      
+
       if (marketData.by_market) {
         const marketEntries = Object.entries(marketData.by_market)
         if (marketEntries.length > 0) {
@@ -395,7 +395,7 @@ const loadMarketOverview = async () => {
           stats.value[2].value = `${market}: ${count}`
         }
       }
-      
+
       if (marketData.by_industry) {
         const industryEntries = Object.entries(marketData.by_industry)
         if (industryEntries.length > 0) {
@@ -404,16 +404,16 @@ const loadMarketOverview = async () => {
         }
       }
     }
-    
+
     // 加载涨跌分布
     await loadPriceDistribution()
-    
+
     // 加载热门行业和概念
     await Promise.all([
       loadHotIndustries(),
       loadHotConcepts()
     ])
-    
+
   } catch (error) {
     console.error('加载市场概览失败:', error)
     ElMessage.error('加载市场概览失败')
@@ -430,7 +430,7 @@ const loadPriceDistribution = async () => {
       {},
       1800000 // 30分钟缓存
     )
-    
+
     if (data.success && data.data) {
       updatePriceDistributionChart(data.data)
     }
@@ -447,7 +447,7 @@ const loadHotIndustries = async () => {
       {},
       1800000 // 30分钟缓存
     )
-    
+
     if (data.success && data.data) {
       hotIndustries.value = data.data
     }
@@ -464,7 +464,7 @@ const loadHotConcepts = async () => {
       {},
       1800000 // 30分钟缓存
     )
-    
+
     if (data.success && data.data) {
       hotConcepts.value = data.data
     }
@@ -568,14 +568,14 @@ const confirmAddToWatchlist = async () => {
     ElMessage.warning('请输入股票代码')
     return
   }
-  
+
   loading.addWatchlist.value = true
   try {
     await dashboardApi.addToWatchlist({
       symbol: addForm.value.symbol.toUpperCase(),
       display_name: addForm.value.display_name
     })
-    
+
     ElMessage.success('添加自选股成功')
     showAddDialog.value = false
     await loadWatchlist()
@@ -604,15 +604,15 @@ const removeFromWatchlist = async (symbol) => {
 // 图表初始化函数
 const updatePriceDistributionChart = (distributionData) => {
   if (!priceDistributionChartRef.value) return
-  
+
   if (priceDistributionChart) {
     priceDistributionChart.dispose()
   }
-  
+
   priceDistributionChart = echarts.init(priceDistributionChartRef.value)
-  
+
   const data = Object.entries(distributionData).map(([name, value]) => ({ name, value }))
-  
+
   const option = {
     tooltip: {
       trigger: 'item',
@@ -649,7 +649,7 @@ const updatePriceDistributionChart = (distributionData) => {
       }
     ]
   }
-  
+
   priceDistributionChart.setOption(option)
 }
 
@@ -657,7 +657,7 @@ const initMarketHeatChart = async () => {
   if (!marketHeatChartRef.value) return
 
   marketHeatChart = echarts.init(marketHeatChartRef.value)
-  
+
   try {
     const heatData = [
       { name: '上证指数', value: 95 },
@@ -669,7 +669,7 @@ const initMarketHeatChart = async () => {
       { name: '科创板', value: 85 },
       { name: '新三板', value: 65 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -719,7 +719,7 @@ const initLeadingSectorChart = async () => {
   if (!leadingSectorChartRef.value) return
 
   leadingSectorChart = echarts.init(leadingSectorChartRef.value)
-  
+
   try {
     const sectorData = [
       { name: '半导体', change: 5.2 },
@@ -731,7 +731,7 @@ const initLeadingSectorChart = async () => {
       { name: '保险', change: 2.5 },
       { name: '证券', change: 2.1 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -780,7 +780,7 @@ const initCapitalFlowChart = async () => {
   if (!capitalFlowChartRef.value) return
 
   capitalFlowChart = echarts.init(capitalFlowChartRef.value)
-  
+
   try {
     const flowData = [
       { name: '主力资金', value: 120 },
@@ -790,7 +790,7 @@ const initCapitalFlowChart = async () => {
       { name: '南向资金', value: -30 },
       { name: '融资融券', value: 40 }
     ]
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -843,13 +843,13 @@ const initIndustryChart = async () => {
   if (!industryChartRef.value) return
 
   industryChart = echarts.init(industryChartRef.value)
-  
+
   try {
     const mockData = {
       categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
       values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
     }
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',

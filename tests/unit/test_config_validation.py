@@ -14,7 +14,6 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pytest
-import yaml
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 from src.core.data_classification import DataClassification
 
@@ -45,7 +44,7 @@ class TestConfigValidation:
 
         print(f"  配置版本: {self.config['version']}")
         print(f"  项目名称: {self.config['metadata']['project']}")
-        print(f"  ✅ 配置结构验证通过")
+        print("  ✅ 配置结构验证通过")
 
     def test_02_database_config(self):
         """测试2: 验证数据库配置"""
@@ -62,7 +61,7 @@ class TestConfigValidation:
             assert "port" in db_config, f"{db}缺少port配置"
             print(f"  ✓ {db}: {db_config['host']}:{db_config['port']}")
 
-        print(f"  ✅ 数据库配置验证通过")
+        print("  ✅ 数据库配置验证通过")
 
     @pytest.mark.skip(reason="get_table_count_by_database方法未实现")
     def test_03_table_count(self):
@@ -84,7 +83,7 @@ class TestConfigValidation:
         assert stats.get("TDengine", 0) >= 5, "TDengine表数量不足"
         assert stats.get("PostgreSQL", 0) >= 10, "PostgreSQL表数量不足"
 
-        print(f"  ✅ 表数量验证通过")
+        print("  ✅ 表数量验证通过")
 
     @pytest.mark.skip(reason="配置文件中未定义classification字段")
     def test_04_classification_coverage(self):
@@ -118,7 +117,7 @@ class TestConfigValidation:
 
         # 验证覆盖率至少达到70%
         assert coverage >= 70, f"数据分类覆盖率过低: {coverage:.1f}%"
-        print(f"  ✅ 数据分类覆盖验证通过")
+        print("  ✅ 数据分类覆盖验证通过")
 
     def test_05_table_name_uniqueness(self):
         """测试5: 验证表名唯一性"""
@@ -137,7 +136,7 @@ class TestConfigValidation:
             print(f"  ❌ 发现重复表名: {duplicates}")
             assert False, f"存在重复表名: {duplicates}"
 
-        print(f"  ✅ 表名唯一性验证通过")
+        print("  ✅ 表名唯一性验证通过")
 
     def test_06_required_columns(self):
         """测试6: 验证必需列"""
@@ -159,9 +158,9 @@ class TestConfigValidation:
             for msg in missing_columns[:5]:
                 print(f"    - {msg}")
         else:
-            print(f"  ✅ 所有表都包含必需列")
+            print("  ✅ 所有表都包含必需列")
 
-        print(f"  ✅ 必需列验证通过")
+        print("  ✅ 必需列验证通过")
 
     def test_07_index_definition(self):
         """测试7: 验证索引定义"""
@@ -189,12 +188,12 @@ class TestConfigValidation:
                     invalid_indexes.append(f"{table['table_name']}: 索引缺少columns")
 
         if invalid_indexes:
-            print(f"  ⚠️  发现无效索引定义:")
+            print("  ⚠️  发现无效索引定义:")
             for msg in invalid_indexes:
                 print(f"    - {msg}")
             assert False, "存在无效索引定义"
 
-        print(f"  ✅ 索引定义验证通过")
+        print("  ✅ 索引定义验证通过")
 
     @pytest.mark.skip(reason="配置文件中未定义compression字段")
     def test_08_compression_config(self):
@@ -224,7 +223,7 @@ class TestConfigValidation:
             )
 
         assert len(tables_with_compression) > 0, "应该有表配置压缩策略"
-        print(f"  ✅ 压缩配置验证通过")
+        print("  ✅ 压缩配置验证通过")
 
     def test_09_retention_policy(self):
         """测试9: 验证保留策略"""
@@ -254,7 +253,7 @@ class TestConfigValidation:
         print(f"    中期(1-3年): {len(mid_term)}")
         print(f"    长期(>3年): {len(long_term)}")
 
-        print(f"  ✅ 保留策略验证通过")
+        print("  ✅ 保留策略验证通过")
 
     @pytest.mark.skip(reason="缺少auto_create_tables等维护配置字段")
     def test_10_maintenance_config(self):
@@ -281,7 +280,7 @@ class TestConfigValidation:
             assert "time" in task, "任务缺少time"
             print(f"    - {task['name']}: {task['time']}")
 
-        print(f"  ✅ 维护配置验证通过")
+        print("  ✅ 维护配置验证通过")
 
 
 def run_tests():

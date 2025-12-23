@@ -128,7 +128,9 @@ class DataManager:
         DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
     }
 
-    def __init__(self, enable_monitoring: bool = False, db_manager: DatabaseTableManager = None):
+    def __init__(
+        self, enable_monitoring: bool = False, db_manager: DatabaseTableManager = None
+    ):
         """
         初始化DataManager
 

@@ -3,7 +3,7 @@
 提供股票代码格式化和转换功能
 """
 
-from typing import Optional, Tuple, Union
+from typing import Union
 
 
 def normalize_stock_code(code: Union[str, int, float]) -> str:
@@ -321,9 +321,7 @@ def normalize_index_code(code: Union[str, int, float]) -> str:
 - 基本格式: '000001', '399001'
 - 后缀格式: '000001.SH', '399001.SZ'
 - 前缀格式: 'sh000001', 'SZ399001'
-- 点分隔格式: 'sh.000001', 'sz.399001'""".format(
-        code_str
-    )
+- 点分隔格式: 'sh.000001', 'sz.399001'""".format(code_str)
     raise ValueError(error_msg)
 
 

@@ -8,10 +8,8 @@ Reference: docs/api/API_SPECIFICATION.md
 """
 
 from typing import Optional, List, Any, Dict
-from datetime import datetime, date
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator, constr
-from enum import Enum
 
 try:
     from app.core.data_formats import (
@@ -45,7 +43,6 @@ except (ImportError, ModuleNotFoundError):
         validate_currency,
         StockSymbolFormat,
         DateFormat,
-        TimestampFormat,
     )
 
 

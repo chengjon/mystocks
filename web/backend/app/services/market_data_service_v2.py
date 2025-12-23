@@ -10,8 +10,8 @@
 """
 
 from sqlalchemy import create_engine, and_, or_
-from sqlalchemy.orm import sessionmaker, Session
-from datetime import date, datetime, timedelta
+from sqlalchemy.orm import sessionmaker
+from datetime import date, datetime
 from typing import List, Optional, Dict, Any
 import pandas as pd
 import logging
@@ -20,7 +20,6 @@ import os
 from app.models.market_data import (
     FundFlow,
     ETFData,
-    ChipRaceData,
     LongHuBangData,
     SectorFundFlow,
     StockDividend,

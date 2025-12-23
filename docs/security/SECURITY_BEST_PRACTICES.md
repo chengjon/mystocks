@@ -127,7 +127,7 @@ class StockQuery(BaseModel):
     symbol: str
     start_date: Optional[str] = None
     end_date: Optional[str] = None
-    
+
     @validator('symbol')
     def validate_symbol(cls, v):
         if not re.match(r'^[A-Z0-9]{6}$', v):
@@ -245,10 +245,10 @@ class SensitiveDataFilter(logging.Filter):
         if hasattr(record, 'message'):
             record.message = self.mask_sensitive_data(record.message)
         return True
-    
+
     def mask_sensitive_data(self, text):
         # 脱敏API密钥
-        text = re.sub(r'api[_-]?key["\']?\s*[:=]\s*["\']([^"\']+)["\']', 
+        text = re.sub(r'api[_-]?key["\']?\s*[:=]\s*["\']([^"\']+)["\']',
                      r'api_key: "***MASKED***"', text, flags=re.IGNORECASE)
         return text
 
@@ -353,17 +353,17 @@ async def upload_file(file: UploadFile):
     file_extension = Path(file.filename).suffix.lower()
     if file_extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="File type not allowed")
-    
+
     # 检查文件大小
     contents = await file.read()
     if len(contents) > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="File too large")
-    
+
     # 安全保存文件
     file_path = Path(f"uploads/{uuid.uuid4()}{file_extension}")
     async with aiofiles.open(file_path, 'wb') as f:
         await f.write(contents)
-    
+
     return {"filename": file.filename, "saved_as": str(file_path)}
 ```
 
@@ -402,11 +402,11 @@ import time
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
-    
+
     response = await call_next(request)
-    
+
     process_time = time.time() - start_time
-    
+
     logger.info(
         "request_completed",
         method=request.method,
@@ -415,7 +415,7 @@ async def log_requests(request: Request, call_next):
         process_time=round(process_time, 4),
         client_ip=request.client.host
     )
-    
+
     return response
 ```
 
@@ -442,17 +442,17 @@ RUN pip install --no-cache-dir --upgrade pip && \
 server {
     listen 443 ssl http2;
     server_name mystocks.com;
-    
+
     # SSL配置
     ssl_certificate /etc/ssl/certs/mystocks.crt;
     ssl_certificate_key /etc/ssl/private/mystocks.key;
-    
+
     # 安全头部
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    
+
     # 隐藏Nginx版本
     server_tokens off;
 }
@@ -530,7 +530,7 @@ server {
 
 ---
 
-**文档版本**: v1.0  
-**更新日期**: 2025-11-14  
-**维护者**: MyStocks开发团队  
+**文档版本**: v1.0
+**更新日期**: 2025-11-14
+**维护者**: MyStocks开发团队
 **审核状态**: 已审核

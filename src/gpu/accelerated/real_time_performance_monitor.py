@@ -13,14 +13,9 @@ from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
 from collections import deque
 import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
 
 # 导入GPU组件
-from .gpu_manager import GPUUnifiedManager
 from .cpu_fallback import ComponentSelector
-from .price_predictor_gpu import GPUPricePredictor
-from .data_processor_gpu import GPUDataProcessor
 
 
 @dataclass
@@ -430,17 +425,17 @@ class RealTimePerformanceMonitor:
 MyStocks 实时性能监控报告
 ========================
 
-监控时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}
+监控时间: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))}
 
 📊 当前性能状态:
-  GPU使用率: {summary.get('gpu_utilization_avg', 0):.1f}% (最高: {summary.get('gpu_utilization_max', 0):.1f}%)
-  CPU使用率: {summary.get('cpu_utilization_avg', 0):.1f}% (最高: {summary.get('cpu_utilization_max', 0):.1f}%)
-  GPU内存: {summary.get('gpu_memory_avg', 0):.1f}MB (最高: {summary.get('gpu_memory_max', 0):.1f}MB)
-  平均处理时间: {summary.get('processing_time_avg', 0):.3f}秒
-  总操作次数: {summary.get('total_operations', 0)}
-  GPU操作次数: {summary.get('gpu_operations', 0)}
-  CPU操作次数: {summary.get('cpu_operations', 0)}
-  错误率: {summary.get('error_rate', 0):.2%}
+  GPU使用率: {summary.get("gpu_utilization_avg", 0):.1f}% (最高: {summary.get("gpu_utilization_max", 0):.1f}%)
+  CPU使用率: {summary.get("cpu_utilization_avg", 0):.1f}% (最高: {summary.get("cpu_utilization_max", 0):.1f}%)
+  GPU内存: {summary.get("gpu_memory_avg", 0):.1f}MB (最高: {summary.get("gpu_memory_max", 0):.1f}MB)
+  平均处理时间: {summary.get("processing_time_avg", 0):.3f}秒
+  总操作次数: {summary.get("total_operations", 0)}
+  GPU操作次数: {summary.get("gpu_operations", 0)}
+  CPU操作次数: {summary.get("cpu_operations", 0)}
+  错误率: {summary.get("error_rate", 0):.2%}
 
 💡 优化建议:
 """
@@ -476,7 +471,7 @@ def main():
     try:
         # 模拟一些工作负载
         for i in range(30):
-            print(f"监控第 {i+1} 秒...")
+            print(f"监控第 {i + 1} 秒...")
             time.sleep(1)
 
             if i % 10 == 0:

@@ -4,7 +4,6 @@ TDX数据API的Pydantic模型定义
 
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime
 
 
 class RealTimeQuoteResponse(BaseModel):

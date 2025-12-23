@@ -11,19 +11,13 @@ Date: 2025-11-06
 
 import pytest
 import asyncio
-from typing import Dict, Any
 
 from app.core.socketio_manager import (
     ConnectionManager,
-    MySocketIOManager,
-    MySocketIONamespace,
     get_socketio_manager,
     reset_socketio_manager,
 )
 from app.models.websocket_message import (
-    WebSocketRequestMessage,
-    WebSocketResponseMessage,
-    WebSocketErrorMessage,
     create_request_message,
     create_response_message,
     create_error_message,

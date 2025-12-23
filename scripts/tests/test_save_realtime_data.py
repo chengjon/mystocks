@@ -8,7 +8,6 @@
 import sys
 import os
 import pandas as pd
-from datetime import datetime
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(
@@ -225,7 +224,7 @@ def run_comprehensive_test():
                 print(f"❌ {test_name}: 失败")
 
     print(f"\n测试统计: {passed_tests}/{total_tests} 通过")
-    print(f"通过率: {passed_tests/total_tests*100:.1f}%")
+    print(f"通过率: {passed_tests / total_tests * 100:.1f}%")
 
     if passed_tests == total_tests:
         print("🎉 所有测试通过!")

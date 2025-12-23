@@ -54,17 +54,16 @@ class NotificationManager:
         - WEBHOOK_URL: Webhook endpoint URL
         """
         self.email_config = {
-            'host': os.getenv('SMTP_HOST', 'smtp.gmail.com'),
-            'port': int(os.getenv('SMTP_PORT', '587')),
-            'username': os.getenv('SMTP_USERNAME'),
-            'password': os.getenv('SMTP_PASSWORD')
+            "host": os.getenv("SMTP_HOST", "smtp.gmail.com"),
+            "port": int(os.getenv("SMTP_PORT", "587")),
+            "username": os.getenv("SMTP_USERNAME"),
+            "password": os.getenv("SMTP_PASSWORD"),
         }
-        self.webhook_url = os.getenv('WEBHOOK_URL')
+        self.webhook_url = os.getenv("WEBHOOK_URL")
 
         # Check if email is configured
         self.email_enabled = bool(
-            self.email_config['username'] and
-            self.email_config['password']
+            self.email_config["username"] and self.email_config["password"]
         )
 
         # Check if webhook is configured
@@ -76,12 +75,7 @@ class NotificationManager:
             f"webhook={'enabled' if self.webhook_enabled else 'disabled'}"
         )
 
-    def send_email(
-        self,
-        to_addrs: List[str],
-        subject: str,
-        message: str
-    ) -> bool:
+    def send_email(self, to_addrs: List[str], subject: str, message: str) -> bool:
         """
         Send email notification
 
@@ -107,19 +101,17 @@ class NotificationManager:
 
         try:
             msg = MIMEMultipart()
-            msg['Subject'] = subject
-            msg['From'] = self.email_config['username']
-            msg['To'] = ', '.join(to_addrs)
-            msg.attach(MIMEText(message, 'plain'))
+            msg["Subject"] = subject
+            msg["From"] = self.email_config["username"]
+            msg["To"] = ", ".join(to_addrs)
+            msg.attach(MIMEText(message, "plain"))
 
             with smtplib.SMTP(
-                self.email_config['host'],
-                self.email_config['port']
+                self.email_config["host"], self.email_config["port"]
             ) as server:
                 server.starttls()
                 server.login(
-                    self.email_config['username'],
-                    self.email_config['password']
+                    self.email_config["username"], self.email_config["password"]
                 )
                 server.send_message(msg)
 
@@ -130,11 +122,7 @@ class NotificationManager:
             logger.error(f"Failed to send email: {e}")
             return False
 
-    def send_webhook(
-        self,
-        message: str,
-        **kwargs
-    ) -> bool:
+    def send_webhook(self, message: str, **kwargs) -> bool:
         """
         Send webhook notification
 
@@ -159,24 +147,18 @@ class NotificationManager:
 
         try:
             payload = {
-                'message': message,
-                'timestamp': pd.Timestamp.now().isoformat(),
-                **kwargs
+                "message": message,
+                "timestamp": pd.Timestamp.now().isoformat(),
+                **kwargs,
             }
 
-            response = requests.post(
-                self.webhook_url,
-                json=payload,
-                timeout=5
-            )
+            response = requests.post(self.webhook_url, json=payload, timeout=5)
 
             if response.status_code == 200:
                 logger.info(f"Webhook sent: {message}")
                 return True
             else:
-                logger.warning(
-                    f"Webhook returned status {response.status_code}"
-                )
+                logger.warning(f"Webhook returned status {response.status_code}")
                 return False
 
         except Exception as e:
@@ -189,7 +171,7 @@ class NotificationManager:
         subject: Optional[str] = None,
         email_to: Optional[List[str]] = None,
         use_webhook: bool = True,
-        **webhook_data
+        **webhook_data,
     ) -> Dict[str, bool]:
         """
         Send notification through all configured channels
@@ -215,16 +197,16 @@ class NotificationManager:
             ... )
             >>> print(f"Email sent: {results['email']}")
         """
-        results = {'email': False, 'webhook': False}
+        results = {"email": False, "webhook": False}
 
         # Send email if recipients provided
         if email_to:
             subject = subject or "MyStocks Notification"
-            results['email'] = self.send_email(email_to, subject, message)
+            results["email"] = self.send_email(email_to, subject, message)
 
         # Send webhook if enabled
         if use_webhook:
-            results['webhook'] = self.send_webhook(message, **webhook_data)
+            results["webhook"] = self.send_webhook(message, **webhook_data)
 
         return results
 

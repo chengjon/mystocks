@@ -10,16 +10,13 @@ import numpy as np
 import pandas as pd
 import cupy as cp
 import cudf
-from cuml.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
-from cuml.feature_selection import SelectKBest, mutual_info_regression
-from cuml.decomposition import PCA, IncrementalPCA
-from cuml.cluster import KMeans, DBSCAN
-from typing import Dict, List, Tuple, Optional, Union, Any, Callable
+from cuml.preprocessing import StandardScaler
+from cuml.feature_selection import SelectKBest
+from cuml.decomposition import PCA
+from typing import Dict, List, Tuple, Callable
 from dataclasses import dataclass
 import logging
-from datetime import datetime, timedelta
-import multiprocessing as mp
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import dask.dataframe as dd
 from dask.distributed import Client
 
@@ -435,7 +432,7 @@ class GPUDataProcessor:
             selected_indices = selector.get_support(indices=True)
             selected_features = [feature_columns[i] for i in selected_indices]
         else:
-            from sklearn.feature_selection import SelectKBest, mutual_info_regression
+            from sklearn.feature_selection import SelectKBest
 
             selector = SelectKBest(k=k)
             X_selected = selector.fit_transform(X, y)
@@ -680,7 +677,7 @@ class BatchDataProcessor:
         processed_chunks = []
 
         for i, chunk in enumerate(reader):
-            print(f"处理第 {i+1} 块数据...")
+            print(f"处理第 {i + 1} 块数据...")
             result = self.base_processor.load_and_preprocess(chunk)
             processed_chunks.append(result.processed_data)
 
@@ -760,10 +757,10 @@ def benchmark_data_processing(data: pd.DataFrame, gpu_enabled: bool = True):
     cpu_time = time.time() - cpu_start
 
     # 对比结果
-    print(f"\n📊 数据处理性能对比:")
+    print("\n📊 数据处理性能对比:")
     print(f"GPU处理时间: {gpu_time:.2f}秒")
     print(f"CPU处理时间: {cpu_time:.2f}秒")
-    print(f"加速比: {cpu_time/gpu_time:.2f}x")
+    print(f"加速比: {cpu_time / gpu_time:.2f}x")
     print(f"GPU压缩比: {gpu_result.memory_usage['compression_ratio']:.2f}x")
     print(f"CPU压缩比: {cpu_result.memory_usage['compression_ratio']:.2f}x")
     print(f"GPU处理记录数: {gpu_result.data_shape[0]}")
@@ -791,7 +788,7 @@ if __name__ == "__main__":
     # 数据处理
     result = processor.load_and_preprocess(data)
 
-    print(f"数据处理完成:")
+    print("数据处理完成:")
     print(f"处理时间: {result.processing_time:.2f}秒")
     print(f"数据形状: {result.data_shape}")
     print(f"内存压缩比: {result.memory_usage['compression_ratio']:.2f}x")

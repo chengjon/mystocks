@@ -4,18 +4,15 @@ Handles all user-related database operations with proper error handling
 Uses custom exception types for specific error scenarios
 """
 
-from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy import text
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.security import UserInDB
 from src.core.exceptions import (
     DatabaseConnectionError,
-    DatabaseIntegrityError,
-    DatabaseNotFoundError,
     DatabaseOperationError,
     DataValidationError,
 )

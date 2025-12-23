@@ -10,14 +10,11 @@ Date: 2025-11-07
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch, call
-from datetime import datetime
+from unittest.mock import AsyncMock, patch
 
 from app.core.socketio_manager import (
-    MySocketIONamespace,
     MySocketIOManager,
     ConnectionManager,
-    get_socketio_manager,
     reset_socketio_manager,
 )
 from app.services.realtime_streaming_service import (

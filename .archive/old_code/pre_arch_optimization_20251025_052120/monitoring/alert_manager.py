@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：告警管理模块，支持多渠道告警和告警升级策略
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,11 +7,9 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import logging
-import json
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from enum import Enum
@@ -23,20 +21,22 @@ logger = logging.getLogger(__name__)
 
 class AlertLevel(str, Enum):
     """告警级别"""
+
     CRITICAL = "CRITICAL"  # 严重: 需要立即处理
-    WARNING = "WARNING"    # 警告: 需要关注
-    INFO = "INFO"          # 信息: 仅通知
+    WARNING = "WARNING"  # 警告: 需要关注
+    INFO = "INFO"  # 信息: 仅通知
 
 
 class AlertType(str, Enum):
     """告警类型"""
-    SLOW_QUERY = "SLOW_QUERY"              # 慢查询
-    DATA_QUALITY = "DATA_QUALITY"          # 数据质量问题
-    SYSTEM_ERROR = "SYSTEM_ERROR"          # 系统错误
+
+    SLOW_QUERY = "SLOW_QUERY"  # 慢查询
+    DATA_QUALITY = "DATA_QUALITY"  # 数据质量问题
+    SYSTEM_ERROR = "SYSTEM_ERROR"  # 系统错误
     CONNECTION_FAILURE = "CONNECTION_FAILURE"  # 连接失败
-    DISK_SPACE = "DISK_SPACE"              # 磁盘空间
-    MEMORY_USAGE = "MEMORY_USAGE"          # 内存使用
-    CUSTOM = "CUSTOM"                      # 自定义告警
+    DISK_SPACE = "DISK_SPACE"  # 磁盘空间
+    MEMORY_USAGE = "MEMORY_USAGE"  # 内存使用
+    CUSTOM = "CUSTOM"  # 自定义告警
 
 
 class AlertManager:
@@ -47,9 +47,11 @@ class AlertManager:
     并记录到监控数据库。
     """
 
-    def __init__(self,
-                 monitoring_db: Optional[MonitoringDatabase] = None,
-                 enabled_channels: Optional[List[str]] = None):
+    def __init__(
+        self,
+        monitoring_db: Optional[MonitoringDatabase] = None,
+        enabled_channels: Optional[List[str]] = None,
+    ):
         """
         初始化告警管理器
 
@@ -60,7 +62,7 @@ class AlertManager:
         self.monitoring_db = monitoring_db or get_monitoring_database()
 
         # 默认只启用日志渠道 (email和webhook需要额外配置)
-        self.enabled_channels = enabled_channels or ['log']
+        self.enabled_channels = enabled_channels or ["log"]
 
         # 告警发送统计
         self._total_alerts = 0
@@ -73,17 +75,19 @@ class AlertManager:
 
         logger.info(f"✅ AlertManager initialized (channels={self.enabled_channels})")
 
-    def send_alert(self,
-                   alert_level: str,
-                   alert_type: str,
-                   alert_title: str,
-                   alert_message: str,
-                   source: Optional[str] = None,
-                   classification: Optional[str] = None,
-                   database_type: Optional[str] = None,
-                   table_name: Optional[str] = None,
-                   additional_data: Optional[Dict] = None,
-                   channels: Optional[List[str]] = None) -> Optional[str]:
+    def send_alert(
+        self,
+        alert_level: str,
+        alert_type: str,
+        alert_title: str,
+        alert_message: str,
+        source: Optional[str] = None,
+        classification: Optional[str] = None,
+        database_type: Optional[str] = None,
+        table_name: Optional[str] = None,
+        additional_data: Optional[Dict] = None,
+        channels: Optional[List[str]] = None,
+    ) -> Optional[str]:
         """
         发送告警
 
@@ -111,7 +115,9 @@ class AlertManager:
             return None
 
         # 使用指定渠道或默认渠道
-        notification_channels = channels if channels is not None else self.enabled_channels
+        notification_channels = (
+            channels if channels is not None else self.enabled_channels
+        )
 
         # 创建告警记录
         alert_id = self.monitoring_db.create_alert(
@@ -124,7 +130,7 @@ class AlertManager:
             database_type=database_type,
             table_name=table_name,
             additional_data=additional_data,
-            notification_channels=notification_channels
+            notification_channels=notification_channels,
         )
 
         if not alert_id:
@@ -134,7 +140,9 @@ class AlertManager:
         # 发送告警到各个渠道
         success = False
         for channel in notification_channels:
-            if self._send_to_channel(channel, alert_level, alert_title, alert_message, additional_data):
+            if self._send_to_channel(
+                channel, alert_level, alert_title, alert_message, additional_data
+            ):
                 success = True
 
         if success:
@@ -155,12 +163,14 @@ class AlertManager:
 
         return elapsed < self._cooldown_seconds
 
-    def _send_to_channel(self,
-                         channel: str,
-                         alert_level: str,
-                         alert_title: str,
-                         alert_message: str,
-                         additional_data: Optional[Dict] = None) -> bool:
+    def _send_to_channel(
+        self,
+        channel: str,
+        alert_level: str,
+        alert_title: str,
+        alert_message: str,
+        additional_data: Optional[Dict] = None,
+    ) -> bool:
         """
         发送告警到指定渠道
 
@@ -175,12 +185,16 @@ class AlertManager:
             bool: 发送是否成功
         """
         try:
-            if channel == 'log':
+            if channel == "log":
                 return self._send_to_log(alert_level, alert_title, alert_message)
-            elif channel == 'email':
-                return self._send_to_email(alert_level, alert_title, alert_message, additional_data)
-            elif channel == 'webhook':
-                return self._send_to_webhook(alert_level, alert_title, alert_message, additional_data)
+            elif channel == "email":
+                return self._send_to_email(
+                    alert_level, alert_title, alert_message, additional_data
+                )
+            elif channel == "webhook":
+                return self._send_to_webhook(
+                    alert_level, alert_title, alert_message, additional_data
+                )
             else:
                 logger.warning(f"未知告警渠道: {channel}")
                 return False
@@ -189,26 +203,27 @@ class AlertManager:
             logger.error(f"发送告警失败 (渠道={channel}): {e}")
             return False
 
-    def _send_to_log(self,
-                     alert_level: str,
-                     alert_title: str,
-                     alert_message: str) -> bool:
+    def _send_to_log(
+        self, alert_level: str, alert_title: str, alert_message: str
+    ) -> bool:
         """发送告警到日志"""
         # 根据告警级别使用不同的日志级别
-        if alert_level == 'CRITICAL':
+        if alert_level == "CRITICAL":
             logger.critical(f"🚨 [ALERT] {alert_title}\n{alert_message}")
-        elif alert_level == 'WARNING':
+        elif alert_level == "WARNING":
             logger.warning(f"⚠️  [ALERT] {alert_title}\n{alert_message}")
         else:
             logger.info(f"ℹ️  [ALERT] {alert_title}\n{alert_message}")
 
         return True
 
-    def _send_to_email(self,
-                       alert_level: str,
-                       alert_title: str,
-                       alert_message: str,
-                       additional_data: Optional[Dict] = None) -> bool:
+    def _send_to_email(
+        self,
+        alert_level: str,
+        alert_title: str,
+        alert_message: str,
+        additional_data: Optional[Dict] = None,
+    ) -> bool:
         """
         发送告警邮件
 
@@ -227,11 +242,13 @@ class AlertManager:
             logger.error(f"发送邮件告警失败: {e}")
             return False
 
-    def _send_to_webhook(self,
-                         alert_level: str,
-                         alert_title: str,
-                         alert_message: str,
-                         additional_data: Optional[Dict] = None) -> bool:
+    def _send_to_webhook(
+        self,
+        alert_level: str,
+        alert_title: str,
+        alert_message: str,
+        additional_data: Optional[Dict] = None,
+    ) -> bool:
         """
         发送告警到Webhook
 
@@ -268,9 +285,7 @@ class AlertManager:
             bool: 确认是否成功
         """
         success = self.monitoring_db.update_alert_status(
-            alert_id=alert_id,
-            alert_status='ACKNOWLEDGED',
-            operator=operator
+            alert_id=alert_id, alert_status="ACKNOWLEDGED", operator=operator
         )
 
         if success:
@@ -278,10 +293,9 @@ class AlertManager:
 
         return success
 
-    def resolve_alert(self,
-                      alert_id: str,
-                      operator: str,
-                      resolution_notes: Optional[str] = None) -> bool:
+    def resolve_alert(
+        self, alert_id: str, operator: str, resolution_notes: Optional[str] = None
+    ) -> bool:
         """
         解决告警
 
@@ -295,9 +309,9 @@ class AlertManager:
         """
         success = self.monitoring_db.update_alert_status(
             alert_id=alert_id,
-            alert_status='RESOLVED',
+            alert_status="RESOLVED",
             operator=operator,
-            resolution_notes=resolution_notes
+            resolution_notes=resolution_notes,
         )
 
         if success:
@@ -313,14 +327,14 @@ class AlertManager:
             dict: 统计信息
         """
         stats = {
-            'total_alerts': self._total_alerts,
-            'sent_alerts': self._sent_alerts,
-            'failed_alerts': self._failed_alerts,
-            'success_rate': 0.0
+            "total_alerts": self._total_alerts,
+            "sent_alerts": self._sent_alerts,
+            "failed_alerts": self._failed_alerts,
+            "success_rate": 0.0,
         }
 
         if self._total_alerts > 0:
-            stats['success_rate'] = (self._sent_alerts / self._total_alerts * 100)
+            stats["success_rate"] = self._sent_alerts / self._total_alerts * 100
 
         return stats
 
@@ -334,13 +348,15 @@ class AlertManager:
         self._cooldown_seconds = seconds
         logger.info(f"✓ 告警冷却期设置为: {seconds}秒")
 
-    def configure_email(self,
-                        smtp_host: str,
-                        smtp_port: int,
-                        smtp_user: str,
-                        smtp_password: str,
-                        from_addr: str,
-                        to_addrs: List[str]):
+    def configure_email(
+        self,
+        smtp_host: str,
+        smtp_port: int,
+        smtp_user: str,
+        smtp_password: str,
+        from_addr: str,
+        to_addrs: List[str],
+    ):
         """
         配置邮件告警
 
@@ -379,52 +395,55 @@ def get_alert_manager() -> AlertManager:
     return _alert_manager
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """测试告警管理器"""
     import sys
-    sys.path.insert(0, '.')
 
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    sys.path.insert(0, ".")
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
 
     print("\n测试AlertManager...\n")
 
     # 创建告警管理器
-    alert_mgr = AlertManager(enabled_channels=['log'])
+    alert_mgr = AlertManager(enabled_channels=["log"])
 
     # 测试1: INFO级别告警
     print("1. 测试INFO级别告警...")
     alert_id = alert_mgr.send_alert(
-        alert_level='INFO',
-        alert_type='CUSTOM',
-        alert_title='系统启动通知',
-        alert_message='MyStocks系统已成功启动',
-        source='System'
+        alert_level="INFO",
+        alert_type="CUSTOM",
+        alert_title="系统启动通知",
+        alert_message="MyStocks系统已成功启动",
+        source="System",
     )
     print(f"   告警ID: {alert_id}\n")
 
     # 测试2: WARNING级别告警
     print("2. 测试WARNING级别告警...")
     alert_id = alert_mgr.send_alert(
-        alert_level='WARNING',
-        alert_type='DATA_QUALITY',
-        alert_title='数据缺失率偏高',
-        alert_message='daily_kline表数据缺失率达到6%',
-        source='DataQualityMonitor',
-        classification='DAILY_KLINE',
-        database_type='PostgreSQL',
-        table_name='daily_kline'
+        alert_level="WARNING",
+        alert_type="DATA_QUALITY",
+        alert_title="数据缺失率偏高",
+        alert_message="daily_kline表数据缺失率达到6%",
+        source="DataQualityMonitor",
+        classification="DAILY_KLINE",
+        database_type="PostgreSQL",
+        table_name="daily_kline",
     )
     print(f"   告警ID: {alert_id}\n")
 
     # 测试3: CRITICAL级别告警
     print("3. 测试CRITICAL级别告警...")
     alert_id = alert_mgr.send_alert(
-        alert_level='CRITICAL',
-        alert_type='CONNECTION_FAILURE',
-        alert_title='数据库连接失败',
-        alert_message='无法连接到TDengine数据库',
-        source='ConnectionManager',
-        database_type='TDengine'
+        alert_level="CRITICAL",
+        alert_type="CONNECTION_FAILURE",
+        alert_title="数据库连接失败",
+        alert_message="无法连接到TDengine数据库",
+        source="ConnectionManager",
+        database_type="TDengine",
     )
     print(f"   告警ID: {alert_id}\n")
 
@@ -433,31 +452,34 @@ if __name__ == '__main__':
     alert_mgr.set_cooldown(10)  # 设置10秒冷却期
 
     alert_id1 = alert_mgr.send_alert(
-        alert_level='WARNING',
-        alert_type='SLOW_QUERY',
-        alert_title='慢查询检测',
-        alert_message='查询耗时8秒',
-        table_name='daily_kline'
+        alert_level="WARNING",
+        alert_type="SLOW_QUERY",
+        alert_title="慢查询检测",
+        alert_message="查询耗时8秒",
+        table_name="daily_kline",
     )
     print(f"   第1次告警ID: {alert_id1}")
 
     import time
+
     time.sleep(1)  # 等待1秒
 
     alert_id2 = alert_mgr.send_alert(
-        alert_level='WARNING',
-        alert_type='SLOW_QUERY',
-        alert_title='慢查询检测',
-        alert_message='查询耗时9秒',
-        table_name='daily_kline'
+        alert_level="WARNING",
+        alert_type="SLOW_QUERY",
+        alert_title="慢查询检测",
+        alert_message="查询耗时9秒",
+        table_name="daily_kline",
     )
     print(f"   第2次告警ID: {alert_id2} (应该被抑制=None)\n")
 
     # 测试5: 确认和解决告警
     if alert_id:
         print("5. 测试确认和解决告警...")
-        alert_mgr.acknowledge_alert(alert_id, operator='admin')
-        alert_mgr.resolve_alert(alert_id, operator='admin', resolution_notes='问题已修复')
+        alert_mgr.acknowledge_alert(alert_id, operator="admin")
+        alert_mgr.resolve_alert(
+            alert_id, operator="admin", resolution_notes="问题已修复"
+        )
         print("   ✓ 告警已确认并解决\n")
 
     # 测试6: 显示统计信息

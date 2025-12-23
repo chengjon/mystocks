@@ -5,9 +5,8 @@
 
 import struct
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Optional
 import pandas as pd
-from datetime import datetime, timedelta
 
 
 class TdxDayFileParser:
@@ -40,7 +39,7 @@ class TdxDayFileParser:
             month = int(date_str[4:6])
             day = int(date_str[6:8])
             return f"{year:04d}-{month:02d}-{day:02d}"
-        except Exception as e:
+        except Exception:
             return str(date_int)
 
     @staticmethod

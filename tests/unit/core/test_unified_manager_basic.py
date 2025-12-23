@@ -6,7 +6,7 @@ Unified Manager基础测试
 import os
 import sys
 from datetime import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -51,17 +51,29 @@ class TestMyStocksUnifiedManagerBasic:
         """测试带监控的初始化"""
         with patch("src.core.unified_manager.MONITORING_AVAILABLE", True):
             with patch("src.core.unified_manager.DataManager") as mock_dm:
-                with patch("src.core.unified_manager.get_monitoring_database") as mock_mon:
-                    with patch("src.core.unified_manager.get_performance_monitor") as mock_perf:
-                        with patch("src.core.unified_manager.get_quality_monitor") as mock_qual:
-                            with patch("src.core.unified_manager.get_alert_manager") as mock_alert:
-                                with patch("src.core.unified_manager.FailureRecoveryQueue") as mock_queue:
+                with patch(
+                    "src.core.unified_manager.get_monitoring_database"
+                ) as mock_mon:
+                    with patch(
+                        "src.core.unified_manager.get_performance_monitor"
+                    ) as mock_perf:
+                        with patch(
+                            "src.core.unified_manager.get_quality_monitor"
+                        ) as mock_qual:
+                            with patch(
+                                "src.core.unified_manager.get_alert_manager"
+                            ) as mock_alert:
+                                with patch(
+                                    "src.core.unified_manager.FailureRecoveryQueue"
+                                ) as mock_queue:
                                     mock_dm_instance = Mock()
                                     mock_dm.return_value = mock_dm_instance
                                     mock_queue_instance = Mock()
                                     mock_queue.return_value = mock_queue_instance
 
-                                    manager = MyStocksUnifiedManager(enable_monitoring=True)
+                                    manager = MyStocksUnifiedManager(
+                                        enable_monitoring=True
+                                    )
 
                                     assert manager.monitoring_db is not None
                                     assert manager.performance_monitor is not None
@@ -71,7 +83,11 @@ class TestMyStocksUnifiedManagerBasic:
     def test_save_data_by_classification_method(self):
         """测试按分类保存数据方法"""
         test_df = pd.DataFrame(
-            {"ts": pd.date_range("2025-01-01", periods=2), "price": [10.5, 10.6], "volume": [1000, 1500]}
+            {
+                "ts": pd.date_range("2025-01-01", periods=2),
+                "price": [10.5, 10.6],
+                "volume": [1000, 1500],
+            }
         )
 
         with patch("src.core.unified_manager.DataManager") as mock_dm:
@@ -82,7 +98,9 @@ class TestMyStocksUnifiedManagerBasic:
             manager = MyStocksUnifiedManager()
 
             result = manager.save_data_by_classification(
-                data=test_df, classification="market_data.tick_data", table_name="test_table"
+                data=test_df,
+                classification="market_data.tick_data",
+                table_name="test_table",
             )
 
             assert result == True
@@ -135,7 +153,9 @@ class TestMyStocksUnifiedManagerBasic:
             manager = MyStocksUnifiedManager()
 
             result = manager.save_data_batch_with_strategy(
-                data_list=data_list, classification="market_data.tick_data", table_name="test_table"
+                data_list=data_list,
+                classification="market_data.tick_data",
+                table_name="test_table",
             )
 
             assert result == True
@@ -155,7 +175,9 @@ class TestMyStocksUnifiedManagerBasic:
                 manager = MyStocksUnifiedManager()
 
                 result = manager.save_data_batch_with_strategy(
-                    data_list=data_list, classification="market_data.tick_data", table_name="test_table"
+                    data_list=data_list,
+                    classification="market_data.tick_data",
+                    table_name="test_table",
                 )
 
                 assert result == False
@@ -164,7 +186,10 @@ class TestMyStocksUnifiedManagerBasic:
 
     def test_get_routing_info_method(self):
         """测试获取路由信息方法"""
-        expected_routing = {"market_data.tick_data": "tdengine", "financial.ratio": "postgresql"}
+        expected_routing = {
+            "market_data.tick_data": "tdengine",
+            "financial.ratio": "postgresql",
+        }
 
         with patch("src.core.unified_manager.DataManager") as mock_dm:
             mock_dm_instance = Mock()
@@ -186,7 +211,9 @@ class TestMyStocksUnifiedManagerBasic:
         with patch.object(manager, "quality_monitor") as mock_quality:
             mock_quality.check_data_quality.return_value = quality_report
 
-            result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
+            result = manager.check_data_quality(
+                classification="market_data.tick_data", table_name="test_table"
+            )
 
             assert result == quality_report
             mock_quality.check_data_quality.assert_called_once()
@@ -195,13 +222,19 @@ class TestMyStocksUnifiedManagerBasic:
         """测试数据质量检查方法（无监控）"""
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
-        result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
+        result = manager.check_data_quality(
+            classification="market_data.tick_data", table_name="test_table"
+        )
 
         assert result is None
 
     def test_get_monitoring_statistics_method(self):
         """测试获取监控统计方法"""
-        expected_stats = {"total_queries": 1000, "avg_response_time": 0.05, "error_rate": 0.01}
+        expected_stats = {
+            "total_queries": 1000,
+            "avg_response_time": 0.05,
+            "error_rate": 0.01,
+        }
 
         manager = MyStocksUnifiedManager()
 
@@ -281,7 +314,9 @@ class TestMyStocksUnifiedManagerBasic:
             # 应该抛出异常
             with pytest.raises(Exception, match="Database error"):
                 manager.save_data_by_classification(
-                    data=test_df, classification="market_data.tick_data", table_name="test_table"
+                    data=test_df,
+                    classification="market_data.tick_data",
+                    table_name="test_table",
                 )
 
     def test_error_handling_in_load_data(self):
@@ -295,7 +330,9 @@ class TestMyStocksUnifiedManagerBasic:
 
             # 应该抛出异常
             with pytest.raises(Exception, match="Connection failed"):
-                manager.load_data_by_classification(classification="market_data.tick_data", table_name="test_table")
+                manager.load_data_by_classification(
+                    classification="market_data.tick_data", table_name="test_table"
+                )
 
     def test_method_parameter_validation(self):
         """测试方法参数验证"""
@@ -349,7 +386,9 @@ class TestMyStocksUnifiedManagerBasic:
             manager = MyStocksUnifiedManager()
 
             result = manager.save_data_batch_with_strategy(
-                data_list=[], classification="market_data.tick_data", table_name="test_table"
+                data_list=[],
+                classification="market_data.tick_data",
+                table_name="test_table",
             )
 
             assert result == True
@@ -381,7 +420,12 @@ class TestMyStocksUnifiedManagerBasic:
         manager = MyStocksUnifiedManager()
 
         # 检查关键属性是否存在
-        attributes_to_check = ["tdengine", "postgresql", "recovery_queue", "alert_manager"]
+        attributes_to_check = [
+            "tdengine",
+            "postgresql",
+            "recovery_queue",
+            "alert_manager",
+        ]
 
         for attr_name in attributes_to_check:
             assert hasattr(manager, attr_name), f"缺少属性: {attr_name}"
@@ -391,7 +435,11 @@ class TestMyStocksUnifiedManagerBasic:
         manager = MyStocksUnifiedManager(enable_monitoring=True)
 
         # 检查监控相关属性
-        monitoring_attributes = ["monitoring_db", "performance_monitor", "quality_monitor"]
+        monitoring_attributes = [
+            "monitoring_db",
+            "performance_monitor",
+            "quality_monitor",
+        ]
 
         for attr_name in monitoring_attributes:
             assert hasattr(manager, attr_name), f"缺少监控属性: {attr_name}"
@@ -411,7 +459,9 @@ class TestMyStocksUnifiedManagerBasic:
             mock_dm.return_value = mock_dm_instance
 
             result = manager.save_data_by_classification(
-                data=pd.DataFrame({"price": [10.5]}), classification=classification, table_name="test_table"
+                data=pd.DataFrame({"price": [10.5]}),
+                classification=classification,
+                table_name="test_table",
             )
 
             assert result == True
@@ -421,10 +471,14 @@ class TestMyStocksUnifiedManagerBasic:
         manager = MyStocksUnifiedManager(enable_monitoring=True)
 
         # 模拟监控组件错误
-        with patch.object(manager.quality_monitor, "check_data_quality") as mock_quality:
+        with patch.object(
+            manager.quality_monitor, "check_data_quality"
+        ) as mock_quality:
             mock_quality.side_effect = Exception("Monitoring error")
 
-            result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
+            result = manager.check_data_quality(
+                classification="market_data.tick_data", table_name="test_table"
+            )
 
             # 应该返回None而不是抛出异常
             assert result is None

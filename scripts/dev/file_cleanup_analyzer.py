@@ -10,26 +10,28 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+
 def get_git_untracked_files():
     """获取未纳入版本控制的文件"""
     try:
         result = subprocess.run(
-            ['git', 'ls-files', '--others', '--exclude-standard'],
-            cwd='/opt/claude/mystocks_spec',
+            ["git", "ls-files", "--others", "--exclude-standard"],
+            cwd="/opt/claude/mystocks_spec",
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
-        return [f.strip() for f in result.stdout.split('\n') if f.strip()]
+        return [f.strip() for f in result.stdout.split("\n") if f.strip()]
     except subprocess.CalledProcessError:
         return []
+
 
 def get_long_unused_files(days=90):
     """获取指定天数未访问的文件"""
     cutoff_time = time.time() - (days * 24 * 60 * 60)
     unused_files = []
-    
-    for root, _, files in os.walk('/opt/claude/mystocks_spec'):
+
+    for root, _, files in os.walk("/opt/claude/mystocks_spec"):
         for file in files:
             file_path = os.path.join(root, file)
             # 检查文件最后修改时间
@@ -37,45 +39,50 @@ def get_long_unused_files(days=90):
                 mtime = os.path.getmtime(file_path)
                 if mtime < cutoff_time:
                     unused_files.append(file_path)
-    
+
     return unused_files
+
 
 def get_backup_files():
     """获取备份文件"""
-    backup_patterns = ['*.bak', '*.backup', '*.orig', '*~']
+    backup_patterns = ["*.bak", "*.backup", "*.orig", "*~"]
     backup_files = []
-    
+
     for pattern in backup_patterns:
         try:
             result = subprocess.run(
-                ['find', '/opt/claude/mystocks_spec', '-name', pattern, '-type', 'f'],
+                ["find", "/opt/claude/mystocks_spec", "-name", pattern, "-type", "f"],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
-            backup_files.extend([f.strip() for f in result.stdout.split('\n') if f.strip()])
+            backup_files.extend(
+                [f.strip() for f in result.stdout.split("\n") if f.strip()]
+            )
         except subprocess.CalledProcessError:
             pass
-    
+
     return backup_files
+
 
 def analyze_temp_directory():
     """分析temp目录"""
     temp_dirs = []
-    temp_path = Path('/opt/claude/mystocks_spec')
-    
+    temp_path = Path("/opt/claude/mystocks_spec")
+
     for item in temp_path.iterdir():
-        if item.name.lower() in ['temp', 'tmp', 'test', 'unused', 'old', 'archive']:
+        if item.name.lower() in ["temp", "tmp", "test", "unused", "old", "archive"]:
             temp_dirs.append(item)
-    
+
     return temp_dirs
+
 
 def generate_cleanup_report():
     """生成清理报告"""
     print("=== MyStocks 文件清理分析报告 ===")
     print(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
-    
+
     # 1. 分析未纳入版本控制的文件
     print("1. 未纳入版本控制的文件:")
     untracked = get_git_untracked_files()
@@ -88,7 +95,7 @@ def generate_cleanup_report():
     else:
         print("   ✅ 无未跟踪文件")
     print()
-    
+
     # 2. 分析长期未访问文件
     print("2. 长期未访问文件 (超过90天):")
     unused = get_long_unused_files()
@@ -101,7 +108,7 @@ def generate_cleanup_report():
     else:
         print("   ✅ 无长期未访问文件")
     print()
-    
+
     # 3. 分析备份文件
     print("3. 备份文件:")
     backups = get_backup_files()
@@ -112,19 +119,19 @@ def generate_cleanup_report():
     else:
         print("   ✅ 无备份文件")
     print()
-    
+
     # 4. 分析临时目录
     print("4. 临时目录:")
     temp_dirs = analyze_temp_directory()
     if temp_dirs:
         for temp_dir in temp_dirs:
             if temp_dir.is_dir():
-                file_count = len(list(temp_dir.rglob('*')))
+                file_count = len(list(temp_dir.rglob("*")))
                 print(f"   - {temp_dir.name}/: {file_count} 个项目")
     else:
         print("   ✅ 无需要清理的临时目录")
     print()
-    
+
     # 5. 建议
     print("5. 清理建议:")
     if untracked or unused or backups or temp_dirs:
@@ -140,13 +147,14 @@ def generate_cleanup_report():
     else:
         print("   ✅ 当前项目文件状况良好")
     print()
-    
+
     return {
-        'untracked': untracked,
-        'unused': unused,
-        'backups': backups,
-        'temp_dirs': [str(d) for d in temp_dirs]
+        "untracked": untracked,
+        "unused": unused,
+        "backups": backups,
+        "temp_dirs": [str(d) for d in temp_dirs],
     }
+
 
 if __name__ == "__main__":
     report = generate_cleanup_report()

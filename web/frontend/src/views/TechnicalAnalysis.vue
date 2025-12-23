@@ -293,7 +293,7 @@ const fetchKlineData = async () => {
         selectedIndicators.value
       );
       const endTime = performance.now();
-      
+
       // 将计算结果转换为图表组件需要的格式
       const indicatorsResult = Object.keys(calculatedIndicators).map(key => {
         const values = calculatedIndicators[key];

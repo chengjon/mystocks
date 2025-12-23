@@ -63,14 +63,14 @@ def migrate_wencai_table(mysql_table, pg_table, column_map=None):
     pg_conn = psycopg2.connect(**POSTGRES_CONFIG)
     pg_cursor = pg_conn.cursor()
 
-    insert_sql = f'INSERT INTO {pg_table} ({",".join(pg_columns)}) VALUES %s'
+    insert_sql = f"INSERT INTO {pg_table} ({','.join(pg_columns)}) VALUES %s"
     execute_values(pg_cursor, insert_sql, rows)
 
     pg_conn.commit()
     pg_cursor.close()
     pg_conn.close()
 
-    print(f"  ✓ 完成")
+    print("  ✓ 完成")
 
 
 if __name__ == "__main__":

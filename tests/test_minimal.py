@@ -3,7 +3,6 @@ MyStocks项目测试配置文件
 提供测试夹具、mock数据和通用测试设置
 """
 
-import pytest
 # import pandas as pd
 # import numpy as np
 # from datetime import datetime, timedelta
@@ -27,7 +26,7 @@ import pytest
 # def sample_stock_data():
 #     """示例股票数据夹具"""
 #     dates = pd.date_range(start='2024-01-01', end='2024-01-31', freq='D')
-    
+
 #     data = []
 #     for i, date in enumerate(dates):
 #         data.append({
@@ -41,7 +40,7 @@ import pytest
 #             'pct_chg': (i * 0.1),
 #             'symbol': '000001'
 #         })
-    
+
 #     return pd.DataFrame(data)
 
 

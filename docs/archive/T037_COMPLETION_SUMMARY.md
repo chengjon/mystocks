@@ -20,7 +20,7 @@
 
 **修改的文件**:
 - `core/data_classification.py`: DatabaseTarget枚举移除MYSQL和REDIS
-- `core/data_storage_strategy.py`: 
+- `core/data_storage_strategy.py`:
   - 更新路由映射表，所有数据路由到TDengine或PostgreSQL
   - 移除RETENTION_POLICY中的MySQL和Redis配置
   - 移除get_redis_ttl方法
@@ -52,13 +52,13 @@
 
 1. **DatabaseTarget枚举验证**: 仅包含tdengine和postgresql
 2. **数据路由映射验证**: 23项数据分类全部正确路由
-3. **数据访问类导入验证**: 
+3. **数据访问类导入验证**:
    - TDengineDataAccess ✅
    - PostgreSQLDataAccess ✅
    - MySQLDataAccess已移除 ✅
    - RedisDataAccess已移除 ✅
 4. **已删除文件验证**: mysql_access.py和redis_access.py不存在
-5. **requirements.txt验证**: 
+5. **requirements.txt验证**:
    - 包含taospy ✅
    - 包含psycopg2-binary ✅
    - 不包含pymysql ✅

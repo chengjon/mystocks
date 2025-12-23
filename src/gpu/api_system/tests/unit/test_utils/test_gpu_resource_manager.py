@@ -4,7 +4,7 @@ GPU资源管理器单元测试
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
 import time
 
 

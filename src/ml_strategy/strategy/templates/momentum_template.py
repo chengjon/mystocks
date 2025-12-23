@@ -20,7 +20,6 @@
 
 import pandas as pd
 import numpy as np
-from datetime import date
 import sys
 import os
 
@@ -164,13 +163,13 @@ class MomentumStrategy(BaseStrategy):
             pos = data.index.get_loc(idx)
             if signals.loc[idx, "signal"] is not None:
                 signals.at[idx, "indicators"] = {
-                    f'ma{self.parameters["ma_short"]}': (
+                    f"ma{self.parameters['ma_short']}": (
                         float(ma_short[pos]) if not np.isnan(ma_short[pos]) else None
                     ),
-                    f'ma{self.parameters["ma_long"]}': (
+                    f"ma{self.parameters['ma_long']}": (
                         float(ma_long[pos]) if not np.isnan(ma_long[pos]) else None
                     ),
-                    f'rsi{self.parameters["rsi_period"]}': (
+                    f"rsi{self.parameters['rsi_period']}": (
                         float(rsi[pos]) if not np.isnan(rsi[pos]) else None
                     ),
                 }
@@ -211,7 +210,7 @@ if __name__ == "__main__":
     print(f"策略名称: {strategy.name}")
     print(f"策略版本: {strategy.version}")
     print(f"策略描述: {strategy.description}")
-    print(f"\n策略参数:")
+    print("\n策略参数:")
     for key, value in strategy.parameters.items():
         print(f"  {key}: {value}")
 
@@ -219,13 +218,13 @@ if __name__ == "__main__":
     signals = strategy.generate_signals(test_data)
     valid_signals = signals[signals["signal"].notna()]
 
-    print(f"\n信号统计:")
+    print("\n信号统计:")
     print(f"  总信号数: {len(valid_signals)}")
     print(f"  买入信号: {len(valid_signals[valid_signals['signal'] == 'buy'])}")
     print(f"  卖出信号: {len(valid_signals[valid_signals['signal'] == 'sell'])}")
 
     if len(valid_signals) > 0:
-        print(f"\n最近3个信号:")
+        print("\n最近3个信号:")
         print(valid_signals[["signal", "strength", "entry_price"]].tail(3))
 
     print("\n测试通过！")

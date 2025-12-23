@@ -10,8 +10,7 @@
 """
 
 import os
-import sys
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from datetime import datetime
 import psycopg2
 import pandas as pd

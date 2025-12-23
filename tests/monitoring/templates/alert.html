@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试告警通知</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #{{ alert.severity.value == 'critical' and 'dc3545' or alert.severity.value == 'high' and 'fd7e14' or alert.severity.value == 'medium' and 'ffc107' or '6c757d' }};
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .alert-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #{{ alert.severity.value == 'critical' and 'dc3545' or alert.severity.value == 'high' and 'fd7e14' or alert.severity.value == 'medium' and 'ffc107' or '6c757d' }};
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            font-size: 14px;
+            color: #212529;
+        }
+        .message-box {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .message-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+        .message-content {
+            color: #495057;
+            white-space: pre-wrap;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>测试告警通知</h1>
+            <span class="severity-badge">{{ alert.severity.value }}</span>
+        </div>
+
+        <div class="content">
+            <div class="alert-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">告警ID</span>
+                        <span class="info-value">{{ alert.id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">规则名称</span>
+                        <span class="info-value">{{ alert.rule_name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">触发时间</span>
+                        <span class="info-value">{{ alert.timestamp }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">当前值</span>
+                        <span class="info-value">{{ alert.value }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="message-box">
+                <div class="message-title">告警消息</div>
+                <div class="message-content">{{ alert.message }}</div>
+            </div>
+
+            {% if alert.metadata %}
+            <div class="message-box">
+                <div class="message-title">详细信息</div>
+                <div class="message-content">
+                    {% for key, value in alert.metadata.items() %}
+                    <strong>{{ key }}:</strong> {{ value }}<br>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="actions">
+                <a href="{{ dashboard_url }}" class="btn btn-primary">查看仪表板</a>
+                <a href="{{ acknowledge_url }}" class="btn btn-secondary">确认告警</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>此邮件由 MyStocks 测试监控系统自动发送</p>
+            <p>发送时间：{{ timestamp }}</p>
+        </div>
+    </div>
+</body>
+</html>

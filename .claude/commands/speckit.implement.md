@@ -31,14 +31,14 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Calculate overall status:
      * **PASS**: All checklists have 0 incomplete items
      * **FAIL**: One or more checklists have incomplete items
-   
+
    - **If any checklist is incomplete**:
      * Display the table with incomplete item counts
      * **STOP** and ask: "Some checklists are incomplete. Do you want to proceed with implementation anyway? (yes/no)"
      * Wait for user response before continuing
      * If user says "no" or "wait" or "stop", halt execution
      * If user says "yes" or "proceed" or "continue", proceed to step 3
-   
+
    - **If all checklists are complete**:
      * Display the table showing all checklists passed
      * Automatically proceed to step 3
@@ -59,7 +59,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 5. Execute implementation following the task plan:
    - **Phase-by-phase execution**: Complete each phase before moving to the next
-   - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together  
+   - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together
    - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding

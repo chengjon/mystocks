@@ -11,8 +11,7 @@ Manages encrypted storage and retrieval of:
 
 import os
 import json
-from typing import Optional, Dict, Any
-from pathlib import Path
+from typing import Dict, Any
 import structlog
 
 from .encryption import EncryptionManager, SecretManager
@@ -251,7 +250,7 @@ class SecureConfig:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Failed to save encrypted config", error=str(e))
+            logger.error("❌ Failed to save encrypted config", error=str(e))
             return False
 
     def load_from_file(self, filepath: str) -> bool:
@@ -275,7 +274,7 @@ class SecureConfig:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Failed to load encrypted config", error=str(e))
+            logger.error("❌ Failed to load encrypted config", error=str(e))
             return False
 
     def to_dict(self, include_encrypted: bool = False) -> Dict[str, Any]:
@@ -327,7 +326,7 @@ class SecureConfig:
                     logger.error(f"❌ Verification failed for {key}", error=str(e))
 
         logger.info(
-            f"✅ Configuration verification complete",
+            "✅ Configuration verification complete",
             valid=sum(verification_results.values()),
             total=len(verification_results),
         )

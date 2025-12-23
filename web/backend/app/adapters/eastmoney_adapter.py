@@ -5,12 +5,10 @@
 """
 
 import math
-import json
 import time
 import pandas as pd
 import requests
-from typing import Dict, Optional, List, Any
-from datetime import datetime, date
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)

@@ -53,11 +53,15 @@ class MyStocksException(Exception):
             "severity": self.severity,
             "context": self.context,
             "timestamp": self.timestamp.isoformat(),
-            "original_exception": str(self.original_exception) if self.original_exception else None,
+            "original_exception": str(self.original_exception)
+            if self.original_exception
+            else None,
         }
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(code={self.code!r}, severity={self.severity!r})"
+        return (
+            f"{self.__class__.__name__}(code={self.code!r}, severity={self.severity!r})"
+        )
 
 
 # Data Source Exceptions
@@ -397,4 +401,8 @@ def get_exception_class(exception_name: str) -> Optional[type]:
     return EXCEPTION_REGISTRY.get(exception_name)
 
 
-__all__ = list(EXCEPTION_REGISTRY.keys()) + ["MyStocksException", "EXCEPTION_REGISTRY", "get_exception_class"]
+__all__ = list(EXCEPTION_REGISTRY.keys()) + [
+    "MyStocksException",
+    "EXCEPTION_REGISTRY",
+    "get_exception_class",
+]

@@ -80,7 +80,8 @@ class SearchPage(BasePage):
         count_text = self.get_result_count()
         # 提取数字，例如从 "找到 123 个结果" 中提取 123
         import re
-        match = re.search(r'\d+', count_text)
+
+        match = re.search(r"\d+", count_text)
         return int(match.group()) if match else 0
 
     def get_results_list(self) -> List:
@@ -101,18 +102,14 @@ class SearchPage(BasePage):
         """获取搜索结果标题"""
         results = self.get_results_list()
         if index < len(results):
-            return self.get_text_element(
-                results[index].locator(".result-title")
-            )
+            return self.get_text_element(results[index].locator(".result-title"))
         return ""
 
     def get_result_description(self, index: int) -> str:
         """获取搜索结果描述"""
         results = self.get_results_list()
         if index < len(results):
-            return self.get_text_element(
-                results[index].locator(".result-description")
-            )
+            return self.get_text_element(results[index].locator(".result-description"))
         return ""
 
     # ============ 高级搜索 ============
@@ -133,9 +130,7 @@ class SearchPage(BasePage):
 
     def apply_filter(self, filter_name: str) -> None:
         """应用筛选"""
-        checkbox = self.page.locator(
-            f"input[value='{filter_name}']"
-        )
+        checkbox = self.page.locator(f"input[value='{filter_name}']")
         self.check_checkbox(f"input[value='{filter_name}']")
         self.wait_for_search_complete()
 
@@ -149,10 +144,7 @@ class SearchPage(BasePage):
         checkboxes = self.get_elements(
             f"{self.FILTER_SIDEBAR} input[type='checkbox']:checked"
         )
-        return [
-            self.get_attribute(checkbox, "value")
-            for checkbox in checkboxes
-        ]
+        return [self.get_attribute(checkbox, "value") for checkbox in checkboxes]
 
     # ============ 排序操作 ============
 

@@ -52,7 +52,7 @@ tmux split-window -t "$SESSION_NAME" -h
 tmux select-pane -t "$SESSION_NAME"
 tmux split-window -t "$SESSION_NAME" -v
 
-# 在右侧垂直分割  
+# 在右侧垂直分割
 tmux select-pane -t "$SESSION_NAME" -t 1
 tmux split-window -t "$SESSION_NAME" -v
 
@@ -67,7 +67,7 @@ print_colored "$YELLOW" "调整窗格大小..."
 
 # 设置标题和基本信息
 tmux send-keys -t "$SESSION_NAME" "echo 'MyStocks Backend (PM2) - Pane 0'" C-m
-tmux send-keys -t "$SESSION_NAME" -t 1 "echo 'MyStocks Frontend - Pane 1'" C-m  
+tmux send-keys -t "$SESSION_NAME" -t 1 "echo 'MyStocks Frontend - Pane 1'" C-m
 tmux send-keys -t "$SESSION_NAME" -t 2 "echo 'MyStocks Monitoring - Pane 2'" C-m
 tmux send-keys -t "$SESSION_NAME" -t 3 "echo 'MyStocks Database - Pane 3'" C-m
 tmux send-keys -t "$SESSION_NAME" -t 4 "echo 'MyStocks Logs - Pane 4'" C-m

@@ -6,25 +6,20 @@ Integrated Backtest Service
 import logging
 import time
 import threading
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 import json
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
-import pandas as pd
-import numpy as np
 
 from src.utils.gpu_utils import GPUResourceManager
 from src.utils.redis_utils import RedisQueue
 from src.utils.monitoring import MetricsCollector
 from src.utils.cache_optimization import CacheManager
 from src.utils.gpu_acceleration_engine import GPUAccelerationEngine
-from services.backtest_service import BacktestService
 from api_proto.backtest_pb2 import (
     BacktestRequest,
     BacktestResponse,
     BacktestStatus,
-    StrategyConfig,
     BacktestResult,
     PerformanceMetrics,
 )
@@ -506,9 +501,9 @@ class IntegratedBacktestService(BacktestServiceServicer):
             with self.backtest_lock:
                 self.running_backtests[backtest_id]["result"] = result
                 self.running_backtests[backtest_id]["status"] = "completed"
-                self.running_backtests[backtest_id][
-                    "completed_at"
-                ] = datetime.now().isoformat()
+                self.running_backtests[backtest_id]["completed_at"] = (
+                    datetime.now().isoformat()
+                )
                 self.running_backtests[backtest_id]["from_cache"] = from_cache
 
             # 记录完成指标
@@ -528,9 +523,9 @@ class IntegratedBacktestService(BacktestServiceServicer):
                 if backtest_id in self.running_backtests:
                     self.running_backtests[backtest_id]["status"] = status
                     self.running_backtests[backtest_id]["message"] = message
-                    self.running_backtests[backtest_id][
-                        "updated_at"
-                    ] = datetime.now().isoformat()
+                    self.running_backtests[backtest_id]["updated_at"] = (
+                        datetime.now().isoformat()
+                    )
 
             logger.info(f"回测状态更新: {backtest_id} -> {status}")
 

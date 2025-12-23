@@ -1,0 +1,311 @@
+"""
+# 功能：TDX实时数据服务
+# 作者：MyStocks Project
+# 创建日期：2025-12-20
+# 版本：1.0.0
+# 说明：专门处理TDX实时行情数据的服务
+"""
+
+import pandas as pd
+from typing import Dict, Optional, List
+from datetime import datetime
+from loguru import logger
+
+from .base_tdx_adapter import BaseTdxAdapter
+
+
+class RealtimeService(BaseTdxAdapter):
+    """
+    TDX实时数据服务
+
+    专门处理实时行情、板块分类等实时数据
+    """
+
+    def __init__(self):
+        super().__init__()
+        logger.info("TDX实时数据服务初始化完成")
+
+    def get_real_time_data(self, symbol: str) -> Optional[Dict]:
+        """获取实时行情数据
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 实时行情数据
+        """
+        try:
+            if not symbol:
+                raise ValueError("股票代码不能为空")
+
+            # 标准化股票代码
+            symbol = self._normalize_symbol(symbol)
+
+            # 获取TDX连接
+            tdx_api = self._get_tdx_connection()
+
+            # 获取市场代码
+            market_code = self._get_market_code(symbol)
+
+            # 获取实时行情
+            logger.info(f"获取实时行情数据: {symbol}")
+            data = tdx_api.get_security_quotes([symbol], [market_code])
+
+            if not data or len(data) == 0:
+                logger.warning(f"未找到股票 {symbol} 的实时数据")
+                return None
+
+            # 提取第一个数据
+            quote_data = data[0]
+
+            # 构建标准化的实时行情格式
+            result = {
+                "symbol": symbol,
+                "name": quote_data.get("name", ""),
+                "price": quote_data.get("price", 0),
+                "open": quote_data.get("open", 0),
+                "high": quote_data.get("high", 0),
+                "low": quote_data.get("low", 0),
+                "pre_close": quote_data.get("pre_close", 0),
+                "change": quote_data.get("change", 0),
+                "change_pct": quote_data.get("change_pct", 0),
+                "volume": quote_data.get("volume", 0),
+                "amount": quote_data.get("amount", 0),
+                "turnover": quote_data.get("turnover", 0),
+                "pe": quote_data.get("pe", 0),
+                "pb": quote_data.get("pb", 0),
+                "market": "上交所" if market_code == 1 else "深交所",
+                "timestamp": datetime.now().isoformat(),
+                "source": "tdx",
+            }
+
+            return result
+
+        except Exception as e:
+            logger.error(f"获取实时行情数据失败: {e}")
+            return None
+
+    def get_stock_basic(self, symbol: str) -> Dict:
+        """获取股票基本信息
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 股票基本信息
+        """
+        try:
+            if not symbol:
+                raise ValueError("股票代码不能为空")
+
+            # 标准化股票代码
+            symbol = self._normalize_symbol(symbol)
+
+            # 获取TDX连接
+            tdx_api = self._get_tdx_connection()
+
+            # 获取市场代码
+            market_code = self._get_market_code(symbol)
+
+            # 获取股票基本信息
+            logger.info(f"获取股票基本信息: {symbol}")
+            data = tdx_api.get_security_list(market_code, 1)
+
+            if not data:
+                logger.warning(f"未找到股票 {symbol} 的基本信息")
+                return {}
+
+            # 查找匹配的股票
+            stock_info = None
+            for stock in data:
+                if stock.get("code") == symbol:
+                    stock_info = stock
+                    break
+
+            if not stock_info:
+                return {}
+
+            # 构建股票基本信息
+            result = {
+                "symbol": stock_info.get("code", ""),
+                "name": stock_info.get("name", ""),
+                "market": stock_info.get("market", ""),
+                "industry": stock_info.get("industry", ""),
+                "area": stock_info.get("area", ""),
+                "pe": stock_info.get("pe", 0),
+                "outstanding": stock_info.get("total_shares", 0),
+                "total_shares": stock_info.get("total_shares", 0),
+                "float_shares": stock_info.get("float_shares", 0),
+                "asset_per_share": stock_info.get("asset_per_share", 0),
+                "bv_per_share": stock_info.get("bv_per_share", 0),
+                "pb": stock.get("pb", 0),
+                "time_to_market": stock_info.get("time_to_market", ""),
+                "listing_date": stock_info.get("listing_date", ""),
+                "is_st": stock_info.get("is_st", False),
+                "timestamp": datetime.now().isoformat(),
+                "source": "tdx",
+            }
+
+            return result
+
+        except Exception as e:
+            logger.error(f"获取股票基本信息失败: {e}")
+            return {}
+
+    def get_industry_classify(self) -> pd.DataFrame:
+        """获取行业分类数据
+
+        Returns:
+            pd.DataFrame: 行业分类数据
+        """
+        try:
+            # 获取TDX连接
+            tdx_api = self._get_tdx_connection()
+
+            # 获取行业分类
+            logger.info("获取行业分类数据")
+            data = tdx_api.get_industry_classification()
+
+            if not data:
+                return pd.DataFrame()
+
+            # 转换为DataFrame
+            df = pd.DataFrame(data)
+
+            logger.info(f"成功获取行业分类数据: {len(df)} 条记录")
+            return df
+
+        except Exception as e:
+            logger.error(f"获取行业分类数据失败: {e}")
+            return pd.DataFrame()
+
+    def get_concept_classify(self) -> pd.DataFrame:
+        """获取概念分类数据
+
+        Returns:
+            pd.DataFrame: 概念分类数据
+        """
+        try:
+            # 获取TDX连接
+            tdx_api = self._get_tdx_connection()
+
+            # 获取概念分类
+            logger.info("获取概念分类数据")
+            data = tdx_api.get_concept_classification()
+
+            if not data:
+                return pd.DataFrame()
+
+            # 转换为DataFrame
+            df = pd.DataFrame(data)
+
+            logger.info(f"成功获取概念分类数据: {len(df)} 条记录")
+            return df
+
+        except Exception as e:
+            logger.error(f"获取概念分类数据失败: {e}")
+            return pd.DataFrame()
+
+    def get_stock_industry_concept(self, symbol: str) -> Dict:
+        """获取股票的行业和概念信息
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 股票的行业和概念信息
+        """
+        try:
+            if not symbol:
+                raise ValueError("股票代码不能为空")
+
+            result = {
+                "symbol": symbol,
+                "industry": {},
+                "concepts": {},
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            # 获取股票基本信息，从中提取行业信息
+            stock_basic = self.get_stock_basic(symbol)
+            if stock_basic and "industry" in stock_basic:
+                result["industry"] = {
+                    "name": stock_basic["industry"],
+                    "code": stock_basic.get("industry_code", ""),
+                }
+
+            # TODO: 可以添加更详细的行业和概念查询逻辑
+            # 这里可以根据需要进一步扩展
+
+            return result
+
+        except Exception as e:
+            logger.error(f"获取股票行业概念信息失败: {e}")
+            return {
+                "symbol": symbol,
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
+
+    def get_batch_real_time_data(self, symbols: List[str]) -> List[Dict]:
+        """批量获取实时行情数据
+
+        Args:
+            symbols: 股票代码列表
+
+        Returns:
+            List[Dict]: 实时行情数据列表
+        """
+        try:
+            if not symbols:
+                return []
+
+            # 限制批量查询数量
+            symbols = symbols[:50]  # 最多一次查询50只股票
+
+            # 标准化股票代码
+            normalized_symbols = [self._normalize_symbol(sym) for sym in symbols]
+
+            # 获取市场代码
+            market_codes = []
+            for sym in normalized_symbols:
+                market_codes.append(self._get_market_code(sym))
+
+            # 获取TDX连接
+            tdx_api = self._get_tdx_connection()
+
+            # 批量获取实时行情
+            logger.info(f"批量获取实时行情数据: {len(symbols)} 只股票")
+            data = tdx_api.get_security_quotes(normalized_symbols, market_codes)
+
+            results = []
+            if data:
+                for i, quote_data in enumerate(data):
+                    if i < len(symbols):
+                        symbol = symbols[i]
+                        market = "上交所" if i < len(market_codes) else "深交所"
+
+                        result = {
+                            "symbol": symbol,
+                            "name": quote_data.get("name", ""),
+                            "price": quote_data.get("price", 0),
+                            "open": quote_data.get("open", 0),
+                            "high": quote_data.get("high", 0),
+                            "low": quote_data.get("low", 0),
+                            "pre_close": quote_data.get("pre_close", 0),
+                            "change": quote_data.get("change", 0),
+                            "change_pct": quote_data.get("change_pct", 0),
+                            "volume": quote_data.get("volume", 0),
+                            "amount": quote_data.get("amount", 0),
+                            "market": market,
+                            "timestamp": datetime.now().isoformat(),
+                            "source": "tdx",
+                        }
+                        results.append(result)
+
+            logger.info(f"成功获取批量实时行情数据: {len(results)} 条记录")
+            return results
+
+        except Exception as e:
+            logger.error(f"批量获取实时行情数据失败: {e}")
+            return []

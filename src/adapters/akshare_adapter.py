@@ -15,7 +15,6 @@ import akshare as ak
 import sys
 import os
 import datetime
-import time
 from functools import wraps
 
 # 常量定义
@@ -26,17 +25,17 @@ REQUEST_TIMEOUT = 10
 # 将当前目录的父目录的父目录添加到模块搜索路径中
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.utils.error_handler import retry_on_failure
-from src.interfaces.data_source import IDataSource
-from src.utils.date_utils import normalize_date
-from src.utils.symbol_utils import (
+from src.utils.error_handler import retry_on_failure  # noqa: E402
+from src.interfaces.data_source import IDataSource  # noqa: E402
+from src.utils.date_utils import normalize_date  # noqa: E402
+from src.utils.symbol_utils import (  # noqa: E402
     format_stock_code_for_source,
     format_index_code_for_source,
 )
-from src.utils.column_mapper import ColumnMapper
+from src.utils.column_mapper import ColumnMapper  # noqa: E402
+
 # 统一日志配置
 import logging
-from typing import Optional
 
 # 获取或创建logger
 logger = logging.getLogger(__name__)
@@ -45,12 +44,11 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     handler = logging.StreamHandler()
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
-
 
 
 class AkshareDataSource(IDataSource):
@@ -72,12 +70,13 @@ class AkshareDataSource(IDataSource):
         """
         self.api_timeout = api_timeout
         self.max_retries = max_retries
-        logger.info(f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)")
+        logger.info(
+            f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)"
+        )
 
     def _retry_api_call(self, func):
         """API调用重试装饰器 - 使用统一错误处理"""
-        from functools import wraps
-        
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             # 使用统一错误处理的重试机制
@@ -86,7 +85,7 @@ class AkshareDataSource(IDataSource):
                 delay=RETRY_DELAY,
                 backoff=1.0,
                 exceptions=(Exception,),
-                context=f"Akshare API调用: {func.__name__}"
+                context=f"Akshare API调用: {func.__name__}",
             )
             return retry_decorator(func)(*args, **kwargs)
 
@@ -104,9 +103,11 @@ class AkshareDataSource(IDataSource):
             start_date = normalize_date(start_date)
             end_date = normalize_date(end_date)
 
-            logger.info(str(
-                f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={start_date}, 结束日期={end_date}"
-            ))
+            logger.info(
+                str(
+                    f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={start_date}, 结束日期={end_date}"
+                )
+            )
 
             # 尝试多种API获取股票数据
             df = None
@@ -125,9 +126,11 @@ class AkshareDataSource(IDataSource):
                     adjust="qfq",  # 前复权
                     timeout=self.api_timeout,
                 )
-                logger.info(str(
-                    f"主要API调用成功，参数: symbol={stock_code}, start_date={start_date_fmt}, end_date={end_date_fmt}"
-                ))
+                logger.info(
+                    str(
+                        f"主要API调用成功，参数: symbol={stock_code}, start_date={start_date_fmt}, end_date={end_date_fmt}"
+                    )
+                )
             except Exception as e:
                 logger.error(f"主要API调用失败: {e}")
                 df = None
@@ -160,7 +163,9 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"Akshare返回的数据为空")
                 return pd.DataFrame()
 
-            logger.info(f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}")
+            logger.info(
+                f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}"
+            )
 
             # 使用统一列名映射器标准化列名
             df = ColumnMapper.to_english(df)
@@ -376,7 +381,9 @@ class AkshareDataSource(IDataSource):
             logger.error(f"Akshare获取财务数据失败: {e}")
             return pd.DataFrame()
 
-    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_news_data(
+        self, symbol: Optional[str] = None, limit: int = 10
+    ) -> List[Dict[str, Any]]:
         """获取新闻数据-Akshare实现"""
         try:
             # 如果提供了股票代码，获取个股新闻；否则获取市场新闻
@@ -439,7 +446,9 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"[Akshare] 未能获取到同花顺行业一览表数据")
                 return pd.DataFrame()
 
-            logger.info(f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}")
+            logger.info(
+                f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}"
+            )
 
             # 使用统一列名映射器标准化列名(如果需要)
             # 注意：这里保留原始中文列名，因为这是行业数据的特殊格式
@@ -500,7 +509,9 @@ class AkshareDataSource(IDataSource):
                 logger.info(f"[Akshare] 未能获取到行业'{industry_name}'的成分股数据")
                 return pd.DataFrame()
 
-            logger.info(f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}")
+            logger.info(
+                f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}"
+            )
 
             # 添加行业信息和数据获取时间戳
             df["所属行业"] = industry_name
@@ -545,7 +556,9 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"[Akshare] 未能获取到同花顺行业名称列表")
                 return pd.DataFrame()
 
-            logger.info(f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}")
+            logger.info(
+                f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}"
+            )
 
             # 添加数据获取时间戳
             df["数据获取时间"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -559,28 +572,30 @@ class AkshareDataSource(IDataSource):
             traceback.print_exc()
             return pd.DataFrame()
 
-    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def get_minute_kline(
+        self, symbol: str, period: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """
         获取分钟K线数据（通过TDX适配器获取，AkShare本身不直接支持分钟K线）
-        
+
         Args:
             symbol: str - 股票代码
             period: str - 周期 (1m/5m/15m/30m/60m)
             start_date: str - 开始日期
             end_date: str - 结束日期
-            
+
         Returns:
             pd.DataFrame: 分钟K线数据
         """
         # AkShare本身不直接支持分钟K线，需要通过TDX适配器获取
         # 这里返回空DataFrame，实际通过统一数据源调用TDX适配器
-        logger.info(f"[Akshare] 注意：AkShare不直接支持分钟K线数据，建议使用TDX适配器")
+        logger.info("[Akshare] 注意：AkShare不直接支持分钟K线数据，建议使用TDX适配器")
         return pd.DataFrame()
 
     def get_industry_classify(self) -> pd.DataFrame:
         """
         获取行业分类数据
-        
+
         Returns:
             pd.DataFrame: 行业分类数据
                 - index: 行业代码
@@ -606,39 +621,42 @@ class AkshareDataSource(IDataSource):
                 return pd.DataFrame()
 
             logger.info(f"[Akshare] 成功获取行业分类数据，共 {len(df)} 条记录")
-            
+
             # 标准化列名
-            df = df.rename(columns={
-                '板块代码': 'index',
-                '板块名称': 'name',
-                '最新价': 'latest_price',
-                '涨跌幅': 'change_percent',
-                '涨跌额': 'change_amount',
-                '成交量': 'volume',
-                '成交额': 'amount',
-                '总市值': 'total_market_value',
-                '换手率': 'turnover_rate',
-                '上涨家数': 'up_count',
-                '下跌家数': 'down_count',
-                '领涨股': 'leader_stock'
-            })
-            
+            df = df.rename(
+                columns={
+                    "板块代码": "index",
+                    "板块名称": "name",
+                    "最新价": "latest_price",
+                    "涨跌幅": "change_percent",
+                    "涨跌额": "change_amount",
+                    "成交量": "volume",
+                    "成交额": "amount",
+                    "总市值": "total_market_value",
+                    "换手率": "turnover_rate",
+                    "上涨家数": "up_count",
+                    "下跌家数": "down_count",
+                    "领涨股": "leader_stock",
+                }
+            )
+
             # 添加股票数量列（如果不存在）
-            if 'up_count' in df.columns and 'down_count' in df.columns:
-                df['stock_count'] = df['up_count'] + df['down_count']
-            
+            if "up_count" in df.columns and "down_count" in df.columns:
+                df["stock_count"] = df["up_count"] + df["down_count"]
+
             return df
 
         except Exception as e:
             logger.error(f"[Akshare] 获取行业分类数据失败: {e}")
             import traceback
+
             traceback.print_exc()
             return pd.DataFrame()
 
     def get_concept_classify(self) -> pd.DataFrame:
         """
         获取概念分类数据
-        
+
         Returns:
             pd.DataFrame: 概念分类数据
                 - index: 概念代码
@@ -664,42 +682,45 @@ class AkshareDataSource(IDataSource):
                 return pd.DataFrame()
 
             logger.info(f"[Akshare] 成功获取概念分类数据，共 {len(df)} 条记录")
-            
+
             # 标准化列名
-            df = df.rename(columns={
-                '板块代码': 'index',
-                '板块名称': 'name',
-                '最新价': 'latest_price',
-                '涨跌幅': 'change_percent',
-                '涨跌额': 'change_amount',
-                '成交量': 'volume',
-                '成交额': 'amount',
-                '总市值': 'total_market_value',
-                '换手率': 'turnover_rate',
-                '上涨家数': 'up_count',
-                '下跌家数': 'down_count',
-                '领涨股': 'leader_stock'
-            })
-            
+            df = df.rename(
+                columns={
+                    "板块代码": "index",
+                    "板块名称": "name",
+                    "最新价": "latest_price",
+                    "涨跌幅": "change_percent",
+                    "涨跌额": "change_amount",
+                    "成交量": "volume",
+                    "成交额": "amount",
+                    "总市值": "total_market_value",
+                    "换手率": "turnover_rate",
+                    "上涨家数": "up_count",
+                    "下跌家数": "down_count",
+                    "领涨股": "leader_stock",
+                }
+            )
+
             # 添加股票数量列（如果不存在）
-            if 'up_count' in df.columns and 'down_count' in df.columns:
-                df['stock_count'] = df['up_count'] + df['down_count']
-            
+            if "up_count" in df.columns and "down_count" in df.columns:
+                df["stock_count"] = df["up_count"] + df["down_count"]
+
             return df
 
         except Exception as e:
             logger.error(f"[Akshare] 获取概念分类数据失败: {e}")
             import traceback
+
             traceback.print_exc()
             return pd.DataFrame()
 
     def get_stock_industry_concept(self, symbol: str) -> Dict:
         """
         获取个股的行业和概念分类信息
-        
+
         Args:
             symbol: str - 股票代码
-            
+
         Returns:
             Dict: 个股行业和概念信息
                 - symbol: 股票代码
@@ -722,32 +743,37 @@ class AkshareDataSource(IDataSource):
                 return {"symbol": symbol, "industries": [], "concepts": []}
 
             logger.info(f"[Akshare] 成功获取个股 {symbol} 的信息")
-            
+
             # 提取行业和概念信息
             industries = []
             concepts = []
-            
+
             # 查找行业和概念相关的行
             for _, row in df.iterrows():
-                if '行业' in str(row.get('item', '')) or '所属行业' in str(row.get('item', '')):
-                    industry = row.get('value', '')
-                    if industry and industry != '--':
+                if "行业" in str(row.get("item", "")) or "所属行业" in str(
+                    row.get("item", "")
+                ):
+                    industry = row.get("value", "")
+                    if industry and industry != "--":
                         industries.append(industry)
-                elif '概念' in str(row.get('item', '')):
-                    concept = row.get('value', '')
-                    if concept and concept != '--':
+                elif "概念" in str(row.get("item", "")):
+                    concept = row.get("value", "")
+                    if concept and concept != "--":
                         # 概念可能包含多个，用逗号分隔
-                        concept_list = [c.strip() for c in str(concept).split(',') if c.strip()]
+                        concept_list = [
+                            c.strip() for c in str(concept).split(",") if c.strip()
+                        ]
                         concepts.extend(concept_list)
-            
+
             return {
                 "symbol": symbol,
                 "industries": industries,
-                "concepts": list(set(concepts))  # 去重
+                "concepts": list(set(concepts)),  # 去重
             }
 
         except Exception as e:
             logger.error(f"[Akshare] 获取个股 {symbol} 的行业和概念信息失败: {e}")
             import traceback
+
             traceback.print_exc()
             return {"symbol": symbol, "industries": [], "concepts": []}

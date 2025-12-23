@@ -71,7 +71,7 @@ class TestUS3Monitoring(unittest.TestCase):
         # Given: 准备Tick数据
         tick_data = pd.DataFrame(
             {
-                "symbol": [f"60000{i%10}.SH" for i in range(1000)],
+                "symbol": [f"60000{i % 10}.SH" for i in range(1000)],
                 "price": [10.0 + i * 0.01 for i in range(1000)],
                 "volume": [1000 + i * 10 for i in range(1000)],
                 "ts": [datetime.now() for _ in range(1000)],

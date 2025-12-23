@@ -28,7 +28,7 @@ import logging
 import argparse
 import pandas as pd
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict
 from dotenv import load_dotenv
 
 # 添加项目根目录到Python路径

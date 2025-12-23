@@ -17,7 +17,6 @@ from sqlalchemy import (
     Date,
     DECIMAL,
     BigInteger,
-    Integer,
     TIMESTAMP,
     Index,
 )

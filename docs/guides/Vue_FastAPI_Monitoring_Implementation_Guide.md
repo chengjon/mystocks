@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的监控系统实施指导，结合mystocks_spec项目中已有的AI监控和告警系统实现，针对Vue.js前端和FastAPI后端的架构特点进行专门优化。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支), share/MONITORING_GUIDE.md  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支), share/MONITORING_GUIDE.md
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -74,31 +74,31 @@ from app.schemas.monitoring import (
 
 class MonitoringService:
     """监控服务类"""
-    
+
     def __init__(self, db: Session):
         self.db = db
         self.is_monitoring = False
         self.monitored_symbols = set()
         self.alert_rules = []
         self.logger = logging.getLogger(__name__)
-    
+
     def get_monitoring_summary(self) -> Dict[str, Any]:
         """获取监控摘要"""
         # 实现监控摘要逻辑
         # 包括股票总数、涨跌停数量、大涨幅跌幅数量等
         pass
-    
+
     def get_alert_rules(self, rule_type: Optional[str] = None, is_active: Optional[bool] = None) -> List[AlertRule]:
         """获取告警规则"""
         query = self.db.query(AlertRule)
-        
+
         if rule_type:
             query = query.filter(AlertRule.rule_type == rule_type)
         if is_active is not None:
             query = query.filter(AlertRule.is_active == is_active)
-        
+
         return query.all()
-    
+
     def create_alert_rule(self, rule_data: Dict[str, Any]) -> AlertRule:
         """创建告警规则"""
         rule = AlertRule(**rule_data)
@@ -106,35 +106,35 @@ class MonitoringService:
         self.db.commit()
         self.db.refresh(rule)
         return rule
-    
+
     def update_alert_rule(self, rule_id: int, update_data: Dict[str, Any]) -> AlertRule:
         """更新告警规则"""
         rule = self.db.query(AlertRule).filter(AlertRule.id == rule_id).first()
         if not rule:
             raise ValueError("告警规则不存在")
-        
+
         for key, value in update_data.items():
             setattr(rule, key, value)
-        
+
         self.db.commit()
         self.db.refresh(rule)
         return rule
-    
+
     def delete_alert_rule(self, rule_id: int) -> bool:
         """删除告警规则"""
         rule = self.db.query(AlertRule).filter(AlertRule.id == rule_id).first()
         if not rule:
             return False
-        
+
         self.db.delete(rule)
         self.db.commit()
         return True
-    
+
     def get_alert_records(
-        self, 
-        symbol: Optional[str] = None, 
-        alert_type: Optional[str] = None, 
-        alert_level: Optional[str] = None, 
+        self,
+        symbol: Optional[str] = None,
+        alert_type: Optional[str] = None,
+        alert_level: Optional[str] = None,
         is_read: Optional[bool] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
@@ -143,7 +143,7 @@ class MonitoringService:
     ) -> tuple[List[AlertRecord], int]:
         """获取告警记录"""
         query = self.db.query(AlertRecord)
-        
+
         if symbol:
             query = query.filter(AlertRecord.symbol == symbol)
         if alert_type:
@@ -156,33 +156,33 @@ class MonitoringService:
             query = query.filter(AlertRecord.timestamp >= start_date)
         if end_date:
             query = query.filter(AlertRecord.timestamp <= end_date)
-        
+
         total = query.count()
         records = query.offset(offset).limit(limit).all()
-        
+
         return records, total
-    
+
     def mark_alert_read(self, alert_id: int) -> bool:
         """标记告警为已读"""
         alert = self.db.query(AlertRecord).filter(AlertRecord.id == alert_id).first()
         if not alert:
             return False
-        
+
         alert.is_read = True
         self.db.commit()
         return True
-    
+
     def fetch_realtime_data(self, symbols: Optional[List[str]] = None) -> 'pd.DataFrame':
         """获取实时数据"""
         # 实现从数据源获取实时数据的逻辑
         # 可以使用akshare、tdx等数据源
         pass
-    
+
     def save_realtime_data(self, df: 'pd.DataFrame') -> int:
         """保存实时数据到数据库"""
         # 实现保存实时数据的逻辑
         pass
-    
+
     def evaluate_alert_rules(self, df: 'pd.DataFrame') -> List[Dict[str, Any]]:
         """评估告警规则并触发告警"""
         # 实现告警规则评估逻辑
@@ -206,15 +206,15 @@ class MonitoringService:
                     self.db.add(alert_record)
                     self.db.commit()
                     alerts_triggered.append(alert_data)
-        
+
         return alerts_triggered
-    
+
     def _check_rule_condition(self, rule: AlertRule, data_row: 'pd.Series') -> bool:
         """检查告警规则条件"""
         # 根据规则类型和参数检查是否触发
         rule_type = rule.rule_type
         parameters = rule.parameters
-        
+
         if rule_type == 'limit_up':
             # 涨停规则检查
             return data_row.get('pct_change', 0) >= 9.8  # 涨停阈值
@@ -228,7 +228,7 @@ class MonitoringService:
             threshold = parameters.get('threshold', 2.0)
             return current_volume > avg_volume * threshold
         # 添加其他规则类型检查
-        
+
         return False
 
 # 全局监控服务实例
@@ -287,13 +287,13 @@ async def websocket_endpoint(websocket: WebSocket):
             # 发送实时监控数据
             monitoring_service = get_monitoring_service()
             summary = monitoring_service.get_monitoring_summary()
-            
+
             message = {
                 "type": "realtime_update",
                 "data": summary,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             await manager.broadcast(message)
             await asyncio.sleep(5)  # 每5秒推送一次
     except:
@@ -314,7 +314,7 @@ async def ai_monitoring_health_check():
     try:
         # 导入AI监控组件进行健康检查
         from ai_monitoring_optimizer import AIRealtimeMonitor, AIAlertManager
-        
+
         # 这里可以实现具体的健康检查逻辑
         health_status = {
             "status": "healthy",
@@ -336,7 +336,7 @@ async def get_ai_performance_metrics():
     try:
         # 从AI监控系统获取性能指标
         from ai_monitoring_optimizer import AIRealtimeMonitor
-        
+
         # 模拟获取AI性能指标
         performance_metrics = {
             "ai_strategies_count": 3,
@@ -380,7 +380,7 @@ async def get_ai_performance_metrics():
         实时监控系统
       </h1>
       <div class="header-controls">
-        <el-button 
+        <el-button
           :type="isMonitoringActive ? 'danger' : 'primary'"
           :icon="isMonitoringActive ? VideoPause : VideoPlay"
           @click="toggleMonitoring"
@@ -433,7 +433,7 @@ async def get_ai_performance_metrics():
               </div>
             </div>
           </template>
-          
+
           <div class="chart-container">
             <SystemMetricsChart :metrics="realtimeMetrics" />
           </div>
@@ -444,7 +444,7 @@ async def get_ai_performance_metrics():
           <template #header>
             <h3>AI策略性能监控</h3>
           </template>
-          
+
           <AIPerformanceChart :performance-data="aiPerformanceData" />
         </el-card>
       </el-col>
@@ -457,8 +457,8 @@ async def get_ai_performance_metrics():
               <h3>实时告警</h3>
               <div class="alert-controls">
                 <el-badge :value="activeAlertsCount" class="alert-badge">
-                  <el-button 
-                    size="small" 
+                  <el-button
+                    size="small"
                     @click="showAllAlerts = true"
                     :type="activeAlertsCount > 0 ? 'danger' : 'default'"
                   >
@@ -468,10 +468,10 @@ async def get_ai_performance_metrics():
               </div>
             </div>
           </template>
-          
+
           <div class="alerts-list">
-            <div 
-              v-for="alert in recentAlerts" 
+            <div
+              v-for="alert in recentAlerts"
               :key="alert.id"
               class="alert-item"
               :class="alert.level"
@@ -485,8 +485,8 @@ async def get_ai_performance_metrics():
                 <div class="alert-time">{{ formatDate(alert.timestamp) }}</div>
               </div>
               <div class="alert-actions">
-                <el-button 
-                  size="small" 
+                <el-button
+                  size="small"
                   type="primary"
                   @click="acknowledgeAlert(alert.id)"
                 >
@@ -502,7 +502,7 @@ async def get_ai_performance_metrics():
           <template #header>
             <h3>告警规则</h3>
           </template>
-          
+
           <AlertRuleManager />
         </el-card>
       </el-col>
@@ -523,8 +523,8 @@ async def get_ai_performance_metrics():
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
-import { 
-  Refresh, VideoPlay, VideoPause, Setting, Monitor, Warning, CircleCheck 
+import {
+  Refresh, VideoPlay, VideoPause, Setting, Monitor, Warning, CircleCheck
 } from '@element-plus/icons-vue'
 import { useMonitoringStore } from '@/stores/monitoring'
 import SystemMetricsChart from '@/components/Monitoring/SystemMetricsChart.vue'
@@ -659,14 +659,14 @@ const updateRealtimeData = (data: any) => {
     disk: data.disk_usage || 0,
     network: data.network_io ? data.network_io.bytes_sent || 0 : 0
   }
-  
+
   // 更新AI性能数据
   aiPerformanceData.value = {
     strategies: data.ai_strategy_metrics?.strategy_performance || {},
     winRates: [data.ai_strategy_metrics?.win_rate || 0],
     sharpeRatios: [data.ai_strategy_metrics?.sharpe_ratio || 0]
   }
-  
+
   // 更新告警
   if (data.active_alerts && data.active_alerts.length > 0) {
     recentAlerts.value = [...data.active_alerts]
@@ -911,7 +911,7 @@ export const useMonitoringStore = defineStore('monitoring', {
         this.dataQualityScore = response.data.data_quality_score || 0
         this.aiStrategyCount = response.data.ai_strategies_count || 0
         this.lastUpdate = new Date().toISOString()
-        
+
         return response.data
       } catch (error) {
         console.error('获取监控数据失败:', error)
@@ -1017,25 +1017,25 @@ from ai_strategy_analyzer import AIStrategyAnalyzer
 
 class AIReportingService:
     """AI报告和监控服务"""
-    
+
     def __init__(self):
         self.ai_monitor = AIRealtimeMonitor()
         self.ai_alert_manager = AIAlertManager()
         self.ai_strategy_analyzer = AIStrategyAnalyzer()
         self.logger = logging.getLogger(__name__)
-    
+
     async def get_ai_monitoring_summary(self) -> Dict[str, Any]:
         """获取AI监控摘要"""
         try:
             # 获取AI实时监控指标
             ai_metrics = self.ai_monitor.get_latest_metrics()
-            
+
             # 获取AI策略分析结果
             strategy_metrics = await self._get_strategy_metrics()
-            
+
             # 获取告警统计
             alert_summary = self._get_alert_summary()
-            
+
             summary = {
                 "ai_monitoring_status": ai_metrics,
                 "strategy_performance": strategy_metrics,
@@ -1043,12 +1043,12 @@ class AIReportingService:
                 "system_health_score": self._calculate_health_score(ai_metrics, strategy_metrics, alert_summary),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             return summary
         except Exception as e:
             self.logger.error(f"获取AI监控摘要失败: {e}")
             raise
-    
+
     async def _get_strategy_metrics(self) -> Dict[str, Any]:
         """获取策略指标"""
         # 这里可以调用AI策略分析器获取实时策略性能
@@ -1067,7 +1067,7 @@ class AIReportingService:
                 "Mean_Reversion": {"return": 0.42, "sharpe": 0.50, "drawdown": 1.40}
             }
         }
-    
+
     def _get_alert_summary(self) -> Dict[str, int]:
         """获取告警摘要"""
         return {
@@ -1077,34 +1077,34 @@ class AIReportingService:
             "info_alerts": self._count_alerts_by_severity("info"),
             "total_alerts_today": 15
         }
-    
+
     def _count_alerts_by_severity(self, severity: str) -> int:
         """按严重性统计告警数量"""
         # 实现具体的统计逻辑
         return 0
-    
+
     def _calculate_health_score(self, ai_metrics: Dict, strategy_metrics: Dict, alert_summary: Dict) -> float:
         """计算系统健康评分"""
         score = 100.0
-        
+
         # 降低AI策略胜率低的评分
         if strategy_metrics.get("win_rate", 1) < 0.5:
             score -= 20
-        
+
         # 降低活跃告警多的评分
         if alert_summary.get("active_alerts", 0) > 5:
             score -= 10
         elif alert_summary.get("active_alerts", 0) > 0:
             score -= 5
-        
+
         # 降低CPU/GPU使用率高的评分
         if ai_metrics.get("cpu_usage", 0) > 80:
             score -= 10
         if ai_metrics.get("gpu_utilization", 0) > 85:
             score -= 10
-        
+
         return max(0, min(100, score))
-    
+
     async def generate_ai_performance_report(self, start_date: str, end_date: str) -> Dict[str, Any]:
         """生成AI性能报告"""
         try:
@@ -1134,7 +1134,7 @@ class AIReportingService:
                 },
                 "generated_at": datetime.now().isoformat()
             }
-            
+
             return report
         except Exception as e:
             self.logger.error(f"生成AI性能报告失败: {e}")
@@ -1156,10 +1156,10 @@ async def generate_ai_performance_report(request: Dict[str, str]):
     try:
         start_date = request.get("start_date")
         end_date = request.get("end_date")
-        
+
         ai_service = get_ai_reporting_service()
         report = await ai_service.generate_ai_performance_report(start_date, end_date)
-        
+
         return {"success": True, "data": report}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成AI性能报告失败: {str(e)}")
@@ -1191,7 +1191,7 @@ let chartInstance: echarts.ECharts | null = null
 const initChart = () => {
   if (chartRef.value) {
     chartInstance = echarts.init(chartRef.value)
-    
+
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -1249,7 +1249,7 @@ const initChart = () => {
         }
       ]
     }
-    
+
     chartInstance.setOption(option)
   }
 }
@@ -1433,7 +1433,7 @@ class OptimizedConnectionManager:
     async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
         self.active_connections[user_id] = websocket
-        
+
         # 存储用户会话信息
         self.user_sessions[user_id] = {
             'connected_at': datetime.now(),
@@ -1451,13 +1451,13 @@ class OptimizedConnectionManager:
     async def batch_broadcast(self, message: Dict):
         """批量广播到所有用户"""
         disconnected_users = []
-        
+
         for user_id, websocket in self.active_connections.items():
             try:
                 await websocket.send_text(json.dumps(message))
             except:
                 disconnected_users.append(user_id)
-        
+
         # 清理断开连接的用户
         for user_id in disconnected_users:
             await self.disconnect_user(user_id)
@@ -1502,6 +1502,6 @@ class OptimizedConnectionManager:
 - 前端界面: http://localhost:3000/monitoring
 - 技术支持: 查看系统监控面板
 
-**版本**: v1.0  
-**最后更新**: 2025-11-16  
+**版本**: v1.0
+**最后更新**: 2025-11-16
 **维护者**: MyStocks AI开发团队

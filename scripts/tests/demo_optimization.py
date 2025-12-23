@@ -8,17 +8,22 @@
 
 重要: 本脚本使用mock数据源，遵循项目mock数据使用规则
 """
+
 import sys
 import os
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, Any, List
 
 # 添加项目路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "web", "backend")
+)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -52,6 +57,7 @@ class SimplifiedBacktestEngine:
 
         try:
             from src.data_sources.factory import get_timeseries_source
+
             self.data_source = get_timeseries_source(source_type="mock")
             logger.info("成功获取mock数据源")
         except ImportError as e:
@@ -66,7 +72,7 @@ class SimplifiedBacktestEngine:
         symbol: str,
         start_date: datetime,
         end_date: datetime,
-        interval: str = "1d"
+        interval: str = "1d",
     ) -> List[Dict[str, Any]]:
         """
         加载市场数据
@@ -92,7 +98,7 @@ class SimplifiedBacktestEngine:
                 symbol=symbol,
                 start_time=start_date,
                 end_time=end_date,
-                interval=interval
+                interval=interval,
             )
 
             if df is None or df.empty:
@@ -102,14 +108,18 @@ class SimplifiedBacktestEngine:
             # 转换为字典列表
             data = []
             for idx, row in df.iterrows():
-                data.append({
-                    'date': idx if isinstance(idx, datetime) else datetime.strptime(str(idx), '%Y-%m-%d'),
-                    'open': float(row.get('open', 0)),
-                    'high': float(row.get('high', 0)),
-                    'low': float(row.get('low', 0)),
-                    'close': float(row.get('close', 0)),
-                    'volume': int(row.get('volume', 0))
-                })
+                data.append(
+                    {
+                        "date": idx
+                        if isinstance(idx, datetime)
+                        else datetime.strptime(str(idx), "%Y-%m-%d"),
+                        "open": float(row.get("open", 0)),
+                        "high": float(row.get("high", 0)),
+                        "low": float(row.get("low", 0)),
+                        "close": float(row.get("close", 0)),
+                        "volume": int(row.get("volume", 0)),
+                    }
+                )
 
             self._market_data_cache[cache_key] = data
             return data
@@ -122,7 +132,7 @@ class SimplifiedBacktestEngine:
         self,
         strategy_type: str,
         parameters: Dict[str, Any],
-        market_data: Dict[str, Any]
+        market_data: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
         执行回测
@@ -162,18 +172,18 @@ class SimplifiedBacktestEngine:
 
                 # 准备当前数据
                 current_data = {
-                    'open': bar['open'],
-                    'high': bar['high'],
-                    'low': bar['low'],
-                    'close': bar['close'],
-                    'volume': bar['volume']
+                    "open": bar["open"],
+                    "high": bar["high"],
+                    "low": bar["low"],
+                    "close": bar["close"],
+                    "volume": bar["volume"],
                 }
 
                 # 生成信号
-                position_info = {'quantity': position} if position > 0 else None
+                position_info = {"quantity": position} if position > 0 else None
                 signal = strategy.generate_signal(symbol, current_data, position_info)
 
-                current_price = bar['close']
+                current_price = bar["close"]
 
                 if signal:
                     from app.backtest.strategies.base import SignalType
@@ -183,34 +193,38 @@ class SimplifiedBacktestEngine:
                         position = int(capital * 0.95 / current_price)
                         entry_price = current_price
                         capital -= position * current_price
-                        trades.append({
-                            'action': 'BUY',
-                            'price': current_price,
-                            'quantity': position
-                        })
+                        trades.append(
+                            {
+                                "action": "BUY",
+                                "price": current_price,
+                                "quantity": position,
+                            }
+                        )
 
                     elif signal.signal_type == SignalType.EXIT and position > 0:
                         # 卖出
                         capital += position * current_price
                         profit = (current_price - entry_price) * position
-                        trades.append({
-                            'action': 'SELL',
-                            'price': current_price,
-                            'quantity': position,
-                            'profit': profit
-                        })
+                        trades.append(
+                            {
+                                "action": "SELL",
+                                "price": current_price,
+                                "quantity": position,
+                                "profit": profit,
+                            }
+                        )
                         position = 0
 
         # 计算最终价值
         if position > 0 and data_list:
-            final_price = data_list[-1]['close']
+            final_price = data_list[-1]["close"]
             capital += position * final_price
 
         # 计算指标
         total_return = (capital - initial_capital) / initial_capital
-        winning_trades = sum(1 for t in trades if t.get('profit', 0) > 0)
-        losing_trades = sum(1 for t in trades if t.get('profit', 0) < 0)
-        total_trades = len([t for t in trades if t['action'] == 'SELL'])
+        winning_trades = sum(1 for t in trades if t.get("profit", 0) > 0)
+        losing_trades = sum(1 for t in trades if t.get("profit", 0) < 0)
+        total_trades = len([t for t in trades if t["action"] == "SELL"])
 
         # 计算最大回撤 (简化)
         max_drawdown = abs(min(0, total_return))
@@ -222,33 +236,33 @@ class SimplifiedBacktestEngine:
             sharpe_ratio = 0
 
         return {
-            'total_return': total_return,
-            'annual_return': total_return * 2.5,  # 假设测试期约5个月
-            'sharpe_ratio': sharpe_ratio,
-            'max_drawdown': max_drawdown,
-            'win_rate': winning_trades / total_trades if total_trades > 0 else 0,
-            'profit_factor': 1.5 if winning_trades > losing_trades else 0.8,
-            'total_trades': total_trades,
-            'winning_trades': winning_trades,
-            'losing_trades': losing_trades,
-            'calmar_ratio': total_return / max_drawdown if max_drawdown > 0 else 0,
-            'sortino_ratio': sharpe_ratio * 0.9
+            "total_return": total_return,
+            "annual_return": total_return * 2.5,  # 假设测试期约5个月
+            "sharpe_ratio": sharpe_ratio,
+            "max_drawdown": max_drawdown,
+            "win_rate": winning_trades / total_trades if total_trades > 0 else 0,
+            "profit_factor": 1.5 if winning_trades > losing_trades else 0.8,
+            "total_trades": total_trades,
+            "winning_trades": winning_trades,
+            "losing_trades": losing_trades,
+            "calmar_ratio": total_return / max_drawdown if max_drawdown > 0 else 0,
+            "sortino_ratio": sharpe_ratio * 0.9,
         }
 
     def _empty_result(self):
         """返回空结果"""
         return {
-            'total_return': 0,
-            'annual_return': 0,
-            'sharpe_ratio': 0,
-            'max_drawdown': 0,
-            'win_rate': 0,
-            'profit_factor': 0,
-            'total_trades': 0,
-            'winning_trades': 0,
-            'losing_trades': 0,
-            'calmar_ratio': 0,
-            'sortino_ratio': 0
+            "total_return": 0,
+            "annual_return": 0,
+            "sharpe_ratio": 0,
+            "max_drawdown": 0,
+            "win_rate": 0,
+            "profit_factor": 0,
+            "total_trades": 0,
+            "winning_trades": 0,
+            "losing_trades": 0,
+            "calmar_ratio": 0,
+            "sortino_ratio": 0,
         }
 
 
@@ -261,6 +275,7 @@ class MockDataSourceFallback:
 
     def __init__(self, random_seed: int = 42):
         import random
+
         self.rng = random.Random(random_seed)
 
     def get_kline_data(
@@ -268,13 +283,13 @@ class MockDataSourceFallback:
         symbol: str,
         start_time: datetime,
         end_time: datetime,
-        interval: str = "1d"
+        interval: str = "1d",
     ):
         """生成模拟K线数据"""
         import pandas as pd
 
         # 生成日期序列
-        dates = pd.date_range(start=start_time, end=end_time, freq='D')
+        dates = pd.date_range(start=start_time, end=end_time, freq="D")
         dates = [d for d in dates if d.weekday() < 5]  # 排除周末
 
         # 生成价格数据
@@ -284,7 +299,7 @@ class MockDataSourceFallback:
         for i, date in enumerate(dates):
             # 随机波动
             change = (self.rng.random() - 0.48) * 0.03  # 略有上涨偏向
-            base_price *= (1 + change)
+            base_price *= 1 + change
 
             high = base_price * (1 + self.rng.random() * 0.02)
             low = base_price * (1 - self.rng.random() * 0.02)
@@ -292,13 +307,15 @@ class MockDataSourceFallback:
             close = low + self.rng.random() * (high - low)
             volume = int(1000000 + self.rng.random() * 5000000)
 
-            data.append({
-                'open': round(open_price, 2),
-                'high': round(high, 2),
-                'low': round(low, 2),
-                'close': round(close, 2),
-                'volume': volume
-            })
+            data.append(
+                {
+                    "open": round(open_price, 2),
+                    "high": round(high, 2),
+                    "low": round(low, 2),
+                    "close": round(close, 2),
+                    "volume": volume,
+                }
+            )
 
         return pd.DataFrame(data, index=dates)
 
@@ -315,27 +332,27 @@ def demo_grid_search():
     # 定义参数空间 (简化版，减少组合数)
     parameter_spaces = [
         ParameterSpace(
-            name='short_period',
-            param_type='int',
+            name="short_period",
+            param_type="int",
             min_value=5,
             max_value=15,
-            step=5  # 5, 10, 15
+            step=5,  # 5, 10, 15
         ),
         ParameterSpace(
-            name='long_period',
-            param_type='int',
+            name="long_period",
+            param_type="int",
             min_value=20,
             max_value=30,
-            step=5  # 20, 25, 30
+            step=5,  # 20, 25, 30
         ),
     ]
 
     # 创建优化器
     optimizer = GridSearchOptimizer(
-        strategy_type='dual_ma',
+        strategy_type="dual_ma",
         parameter_spaces=parameter_spaces,
-        objective='sharpe_ratio',
-        maximize=True
+        objective="sharpe_ratio",
+        maximize=True,
     )
 
     # 创建回测引擎
@@ -347,7 +364,7 @@ def demo_grid_search():
     end_date = datetime(2025, 10, 31)
 
     market_data = {}
-    for symbol in ['600000', '600519']:
+    for symbol in ["600000", "600519"]:
         data = engine.load_data(symbol, start_date, end_date)
         if data:
             market_data[symbol] = data
@@ -355,7 +372,7 @@ def demo_grid_search():
     if not market_data:
         print("警告: 无法加载市场数据，使用备用数据源")
         engine.data_source = MockDataSourceFallback(random_seed=42)
-        for symbol in ['600000', '600519']:
+        for symbol in ["600000", "600519"]:
             data = engine.load_data(symbol, start_date, end_date)
             if data:
                 market_data[symbol] = data
@@ -390,33 +407,24 @@ def demo_random_search():
     # 定义参数空间
     parameter_spaces = [
         ParameterSpace(
-            name='short_period',
-            param_type='int',
-            min_value=5,
-            max_value=20
+            name="short_period", param_type="int", min_value=5, max_value=20
         ),
         ParameterSpace(
-            name='long_period',
-            param_type='int',
-            min_value=20,
-            max_value=60
+            name="long_period", param_type="int", min_value=20, max_value=60
         ),
         ParameterSpace(
-            name='stop_loss_pct',
-            param_type='float',
-            min_value=0.03,
-            max_value=0.10
+            name="stop_loss_pct", param_type="float", min_value=0.03, max_value=0.10
         ),
     ]
 
     # 创建优化器
     optimizer = RandomSearchOptimizer(
-        strategy_type='dual_ma',
+        strategy_type="dual_ma",
         parameter_spaces=parameter_spaces,
-        objective='sharpe_ratio',
+        objective="sharpe_ratio",
         maximize=True,
         n_iterations=20,
-        random_seed=42  # 可复现
+        random_seed=42,  # 可复现
     )
 
     # 创建回测引擎
@@ -429,7 +437,7 @@ def demo_random_search():
     end_date = datetime(2025, 10, 31)
 
     market_data = {}
-    for symbol in ['600000', '600519']:
+    for symbol in ["600000", "600519"]:
         data = engine.load_data(symbol, start_date, end_date)
         if data:
             market_data[symbol] = data
@@ -467,36 +475,27 @@ def demo_genetic_algorithm():
     # 定义参数空间
     parameter_spaces = [
         ParameterSpace(
-            name='short_period',
-            param_type='int',
-            min_value=5,
-            max_value=20
+            name="short_period", param_type="int", min_value=5, max_value=20
         ),
         ParameterSpace(
-            name='long_period',
-            param_type='int',
-            min_value=20,
-            max_value=60
+            name="long_period", param_type="int", min_value=20, max_value=60
         ),
         ParameterSpace(
-            name='signal_threshold',
-            param_type='float',
-            min_value=0.01,
-            max_value=0.05
+            name="signal_threshold", param_type="float", min_value=0.01, max_value=0.05
         ),
     ]
 
     # 创建优化器
     optimizer = GeneticOptimizer(
-        strategy_type='dual_ma',
+        strategy_type="dual_ma",
         parameter_spaces=parameter_spaces,
-        objective='sharpe_ratio',
+        objective="sharpe_ratio",
         maximize=True,
         population_size=10,
         n_generations=5,
         crossover_rate=0.8,
         mutation_rate=0.1,
-        random_seed=42
+        random_seed=42,
     )
 
     # 创建回测引擎
@@ -509,7 +508,7 @@ def demo_genetic_algorithm():
     end_date = datetime(2025, 10, 31)
 
     market_data = {}
-    for symbol in ['600000', '600519']:
+    for symbol in ["600000", "600519"]:
         data = engine.load_data(symbol, start_date, end_date)
         if data:
             market_data[symbol] = data
@@ -526,8 +525,10 @@ def demo_genetic_algorithm():
 
     # 进化曲线
     evolution = optimizer.get_evolution_curve()
-    print(f"\n进化曲线:")
-    for gen, best, avg in zip(evolution['generations'], evolution['best'], evolution['avg']):
+    print("\n进化曲线:")
+    for gen, best, avg in zip(
+        evolution["generations"], evolution["best"], evolution["avg"]
+    ):
         print(f"  第{gen}代: 最佳={best:.4f}, 平均={avg:.4f}")
 
     return optimizer
@@ -544,38 +545,38 @@ def compare_optimizers():
     # 网格搜索
     try:
         grid_opt = demo_grid_search()
-        results['grid_search'] = {
-            'best_score': grid_opt.best_result.get_score('sharpe_ratio'),
-            'iterations': len(grid_opt.results),
-            'best_params': grid_opt.best_result.parameters
+        results["grid_search"] = {
+            "best_score": grid_opt.best_result.get_score("sharpe_ratio"),
+            "iterations": len(grid_opt.results),
+            "best_params": grid_opt.best_result.parameters,
         }
     except Exception as e:
         print(f"网格搜索失败: {e}")
-        results['grid_search'] = {'error': str(e)}
+        results["grid_search"] = {"error": str(e)}
 
     # 随机搜索
     try:
         random_opt = demo_random_search()
-        results['random_search'] = {
-            'best_score': random_opt.best_result.get_score('sharpe_ratio'),
-            'iterations': len(random_opt.results),
-            'best_params': random_opt.best_result.parameters
+        results["random_search"] = {
+            "best_score": random_opt.best_result.get_score("sharpe_ratio"),
+            "iterations": len(random_opt.results),
+            "best_params": random_opt.best_result.parameters,
         }
     except Exception as e:
         print(f"随机搜索失败: {e}")
-        results['random_search'] = {'error': str(e)}
+        results["random_search"] = {"error": str(e)}
 
     # 遗传算法
     try:
         genetic_opt = demo_genetic_algorithm()
-        results['genetic'] = {
-            'best_score': genetic_opt.best_result.get_score('sharpe_ratio'),
-            'iterations': len(genetic_opt.results),
-            'best_params': genetic_opt.best_result.parameters
+        results["genetic"] = {
+            "best_score": genetic_opt.best_result.get_score("sharpe_ratio"),
+            "iterations": len(genetic_opt.results),
+            "best_params": genetic_opt.best_result.parameters,
         }
     except Exception as e:
         print(f"遗传算法失败: {e}")
-        results['genetic'] = {'error': str(e)}
+        results["genetic"] = {"error": str(e)}
 
     # 输出比较结果
     print("\n" + "=" * 60)
@@ -584,7 +585,7 @@ def compare_optimizers():
 
     for method, data in results.items():
         print(f"\n{method}:")
-        if 'error' in data:
+        if "error" in data:
             print(f"  错误: {data['error']}")
         else:
             print(f"  最佳得分: {data['best_score']:.4f}")
@@ -592,20 +593,24 @@ def compare_optimizers():
             print(f"  最佳参数: {data['best_params']}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='策略参数优化演示')
-    parser.add_argument('--method', choices=['grid', 'random', 'genetic', 'all'],
-                        default='all', help='优化方法')
+    parser = argparse.ArgumentParser(description="策略参数优化演示")
+    parser.add_argument(
+        "--method",
+        choices=["grid", "random", "genetic", "all"],
+        default="all",
+        help="优化方法",
+    )
 
     args = parser.parse_args()
 
-    if args.method == 'grid':
+    if args.method == "grid":
         demo_grid_search()
-    elif args.method == 'random':
+    elif args.method == "random":
         demo_random_search()
-    elif args.method == 'genetic':
+    elif args.method == "genetic":
         demo_genetic_algorithm()
     else:
         compare_optimizers()

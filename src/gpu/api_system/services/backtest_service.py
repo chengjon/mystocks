@@ -5,13 +5,11 @@ Backtest Service
 
 import logging
 import time
-import threading
 import json
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
-import asyncio
+from typing import Dict, List, Any
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import queue
 
@@ -20,18 +18,14 @@ from src.utils.redis_utils import RedisQueue
 from src.utils.monitoring import MetricsCollector
 from api_proto.backtest_pb2 import (
     BacktestRequest,
-    BacktestResponse,
     TaskResponse,
     QueryRequest,
     QueryResponse,
     HistoryResponse,
     BatchRequest,
     BatchResponse,
-    BacktestStatistics,
     PerformanceMetrics,
-    RiskMetrics,
     ParameterOptimizationRequest,
-    ParameterOptimizationResponse,
     OptimizationResult,
 )
 from api_proto.backtest_pb2_grpc import BacktestServiceServicer

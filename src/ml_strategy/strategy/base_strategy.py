@@ -18,7 +18,7 @@ import numpy as np
 import hashlib
 import json
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List
 from datetime import date, datetime
 import logging
 
@@ -30,18 +30,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from indicators.tdx_functions import (
     MA,
-    EMA,
-    SMA,
     CROSS,
-    HHV,
-    LLV,
-    REF,
-    MACD,
-    KDJ,
     RSI,
-    BOLL,
 )
-from indicators.talib_wrapper import TALibIndicators
 
 
 class BaseStrategy(ABC):
@@ -257,7 +248,7 @@ class BaseStrategy(ABC):
 
         for i, symbol in enumerate(symbols):
             try:
-                self.logger.debug(f"处理股票 [{i+1}/{len(symbols)}]: {symbol}")
+                self.logger.debug(f"处理股票 [{i + 1}/{len(symbols)}]: {symbol}")
 
                 # 获取市场数据
                 data = self.get_market_data(symbol, start_date, end_date)

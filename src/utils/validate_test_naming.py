@@ -13,10 +13,8 @@
 # 版权：MyStocks Project © 2025
 """
 
-import os
-import re
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import List, Dict
 
 
 class TestNamingValidator:
@@ -139,7 +137,7 @@ class TestNamingValidator:
         report.append("=" * 80 + "\n")
 
         # 统计信息
-        report.append(f"📊 统计信息:")
+        report.append("📊 统计信息:")
         report.append(f"  - 总测试文件数: {stats['total']}")
         report.append(f"  - ✅ 符合规范: {stats['compliant']} 个")
         report.append(f"  - ❌ 不符合规范: {stats['non_compliant']} 个")
@@ -147,7 +145,7 @@ class TestNamingValidator:
 
         # 符合规范的文件（仅显示前10个）
         if self.compliant_files:
-            report.append(f"✅ 符合规范的文件 (前10个):")
+            report.append("✅ 符合规范的文件 (前10个):")
             for i, file_path in enumerate(self.compliant_files[:10], 1):
                 report.append(f"  {i}. {file_path.relative_to(self.root_dir)}")
             if len(self.compliant_files) > 10:
@@ -156,7 +154,7 @@ class TestNamingValidator:
 
         # 不符合规范的文件及修复建议
         if self.non_compliant_files:
-            report.append(f"❌ 不符合规范的文件及修复建议:")
+            report.append("❌ 不符合规范的文件及修复建议:")
             for i, file_path in enumerate(self.non_compliant_files, 1):
                 suggested_name = self.suggest_rename(file_path)
                 rel_path = file_path.relative_to(self.root_dir)

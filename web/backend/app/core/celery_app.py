@@ -3,6 +3,7 @@ Celery Application Configuration
 
 配置 Celery 异步任务系统
 """
+
 from celery import Celery
 from app.core.config import settings
 
@@ -11,7 +12,7 @@ celery_app = Celery(
     "mystocks",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
-    include=['app.tasks.backtest_tasks']  # 导入任务模块
+    include=["app.tasks.backtest_tasks"],  # 导入任务模块
 )
 
 # Celery 配置
@@ -20,21 +21,17 @@ celery_app.conf.update(
     task_time_limit=settings.celery_task_time_limit,
     enable_utc=settings.celery_enable_utc,
     timezone=settings.celery_timezone,
-
     # 任务结果配置
     result_expires=3600,  # 结果保留1小时
     result_persistent=True,
-
     # 序列化配置
-    task_serializer='json',
-    result_serializer='json',
-    accept_content=['json'],
-
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
     # 任务路由配置
     task_routes={
-        'app.tasks.backtest_tasks.*': {'queue': 'backtest'},
+        "app.tasks.backtest_tasks.*": {"queue": "backtest"},
     },
-
     # Worker 配置
     worker_prefetch_multiplier=1,  # 每次只取一个任务（适合长时间任务）
     worker_max_tasks_per_child=10,  # 每个worker执行10个任务后重启（防止内存泄漏）

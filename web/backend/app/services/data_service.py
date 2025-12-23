@@ -8,16 +8,18 @@ Includes automatic data fetching via Akshare adapter when data is missing
 
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-from typing import Dict, Optional, Tuple, List
+from datetime import datetime
+from typing import Dict, Optional, Tuple
 import logging
 import sys
 import os
 
 # Add project root to path to import unified_manager
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+)
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'src'))
+sys.path.insert(0, os.path.join(project_root, "src"))
 
 from src.core.data_classification import DataClassification
 from src.unified_manager import MyStocksUnifiedManager

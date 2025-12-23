@@ -3,6 +3,7 @@
 用于验证pytest配置是否正确
 """
 
+
 def test_basic_pytest_function():
     """基础测试函数，验证pytest配置是否正常工作"""
     assert 1 + 1 == 2

@@ -4,8 +4,8 @@
 
 本文档详细说明MyStocks AI系统在生产环境的部署、运维和扩展方法，为mystocks_nice分支提供完整的部署参考。
 
-**目标读者**: DevOps工程师、运维团队、系统架构师、生产环境管理员  
-**实施难度**: 高级  
+**目标读者**: DevOps工程师、运维团队、系统架构师、生产环境管理员
+**实施难度**: 高级
 **前置要求**: Docker、Kubernetes、CI/CD、监控运维经验
 
 ---
@@ -167,21 +167,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install -r requirements-test.txt
-      
+
       - name: Run tests
         run: |
           pytest tests/ --cov=src/ --cov-report=xml
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
 
@@ -192,20 +192,20 @@ jobs:
     outputs:
       image-tag: ${{ steps.meta.outputs.tags }}
       image-digest: ${{ steps.build.outputs.digest }}
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -216,7 +216,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-      
+
       - name: Build and push
         id: build
         uses: docker/build-push-action@v5
@@ -233,14 +233,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ needs.build.outputs.image-tag }}
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -251,15 +251,15 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: staging
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to staging
         run: |
           echo "Deploying to staging environment..."
           # kubectl apply -f k8s/staging/
-      
+
       - name: Run integration tests
         run: |
           echo "Running integration tests..."
@@ -270,20 +270,20 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     environment: production
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to production
         run: |
           echo "Deploying to production environment..."
           # kubectl apply -f k8s/production/
-      
+
       - name: Verify deployment
         run: |
           echo "Verifying production deployment..."
           # kubectl rollout status deployment/ai-strategy-engine
-      
+
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
         with:
@@ -295,10 +295,10 @@ jobs:
     needs: deploy-production
     runs-on: ubuntu-latest
     if: failure()
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Rollback deployment
         run: |
           echo "Rolling back deployment..."
@@ -977,12 +977,12 @@ import rmm
 
 class GPUOptimizationManager:
     """GPU性能优化管理器"""
-    
+
     def __init__(self):
         self.gpu_id = 0
         self.setup_memory_pool()
         self.setup_kernel_cache()
-    
+
     def setup_memory_pool(self):
         """设置GPU内存池"""
         # 初始化RMM内存池
@@ -993,12 +993,12 @@ class GPUOptimizationManager:
             max_pool_size=8e9,      # 8GB最大池大小
             devices=[0]
         )
-        
+
         # 配置CuPy内存池
         cp.cuda.runtime.setDevice(self.gpu_id)
         mempool = cp.get_default_memory_pool()
         mempool.set_limit(fraction=0.8)  # 使用80% GPU内存
-    
+
     def setup_kernel_cache(self):
         """设置内核缓存"""
         # 预编译常用内核
@@ -1008,37 +1008,37 @@ class GPUOptimizationManager:
             cumsum = cp.cumsum(data, dtype=cp.float32)
             cumsum[window:] = cumsum[window:] - cumsum[:-window]
             return cumsum[window - 1:] / window
-        
+
         # 编译并缓存
         self.ma_kernel = fast_ma
         print("✅ GPU内核缓存预编译完成")
-    
+
     def optimize_strategies(self, strategy_data):
         """优化策略计算"""
         # 使用CuDF进行GPU加速数据处理
         gpu_df = cudf.from_pandas(strategy_data)
-        
+
         # GPU加速技术指标计算
         gpu_df['ma_20'] = gpu_df['close'].rolling(20).mean()
         gpu_df['ma_50'] = gpu_df['close'].rolling(50).mean()
         gpu_df['rsi'] = self.calculate_gpu_rsi(gpu_df['close'])
-        
+
         return gpu_df.to_pandas()
-    
+
     def calculate_gpu_rsi(self, prices, period=14):
         """GPU加速RSI计算"""
         prices_gpu = cp.asarray(prices.values)
         deltas = cp.diff(prices_gpu)
-        
+
         gains = cp.where(deltas > 0, deltas, 0)
         losses = cp.where(deltas < 0, -deltas, 0)
-        
+
         avg_gains = cp.convolve(gains, cp.ones(period), 'valid') / period
         avg_losses = cp.convolve(losses, cp.ones(period), 'valid') / period
-        
+
         rs = avg_gains / (avg_losses + 1e-10)
         rsi = 100 - (100 / (1 + rs))
-        
+
         return cp.asnumpy(rsi)
 ```
 
@@ -1055,12 +1055,12 @@ from contextlib import asynccontextmanager
 
 class DatabaseConnectionPool:
     """数据库连接池管理器"""
-    
+
     def __init__(self):
         self.postgres_pool = None
         self.redis_pool = None
         self.tdengine_pool = None
-    
+
     async def initialize_pools(self):
         """初始化连接池"""
         # PostgreSQL连接池
@@ -1074,16 +1074,16 @@ class DatabaseConnectionPool:
             max_size=20,
             command_timeout=60
         )
-        
+
         # Redis连接池
         self.redis_pool = redis.ConnectionPool.from_url(
             'redis://redis-service:6379',
             max_connections=20,
             retry_on_timeout=True
         )
-        
+
         print("✅ 数据库连接池初始化完成")
-    
+
     @asynccontextmanager
     async def get_postgres_connection(self):
         """获取PostgreSQL连接"""
@@ -1093,7 +1093,7 @@ class DatabaseConnectionPool:
             except Exception as e:
                 print(f"PostgreSQL连接错误: {e}")
                 raise
-    
+
     @asynccontextmanager
     async def get_redis_connection(self):
         """获取Redis连接"""
@@ -1108,12 +1108,12 @@ class DatabaseConnectionPool:
 async def example_usage():
     db_pool = DatabaseConnectionPool()
     await db_pool.initialize_pools()
-    
+
     # 使用PostgreSQL
     async with db_pool.get_postgres_connection() as conn:
         result = await conn.fetch("SELECT * FROM ai_strategies WHERE active = true")
         print(f"策略数量: {len(result)}")
-    
+
     # 使用Redis缓存
     async with db_pool.get_redis_connection() as redis_client:
         await redis_client.set("key", "value", ex=3600)
@@ -1198,18 +1198,18 @@ from datetime import datetime
 
 class AutoScalingManager:
     """自动扩缩容管理器"""
-    
+
     def __init__(self):
         self.namespace = "mystocks-prod"
         self.deployment_name = "ai-strategy-engine"
         self.min_replicas = 3
         self.max_replicas = 15
-        
+
     async def initialize(self):
         """初始化Kubernetes客户端"""
         k8s.config.load_incluster_config()
         self.api = k8s.client.AppsV1Api()
-        
+
     async def get_current_metrics(self):
         """获取当前系统指标"""
         try:
@@ -1220,7 +1220,7 @@ class AutoScalingManager:
                 params={'query': cpu_query}
             )
             cpu_usage = float(cpu_response.json()['data']['result'][0]['value'][1])
-            
+
             # 获取GPU使用率
             gpu_query = 'avg(nvidia_gpu_utilization)'
             gpu_response = requests.get(
@@ -1228,7 +1228,7 @@ class AutoScalingManager:
                 params={'query': gpu_query}
             )
             gpu_usage = float(gpu_response.json()['data']['result'][0]['value'][1])
-            
+
             # 获取内存使用率
             memory_query = 'avg(container_memory_working_set_bytes{namespace="mystocks-prod"}) / avg(container_spec_memory_limit_bytes{namespace="mystocks-prod"}) * 100'
             memory_response = requests.get(
@@ -1236,7 +1236,7 @@ class AutoScalingManager:
                 params={'query': memory_query}
             )
             memory_usage = float(memory_response.json()['data']['result'][0]['value'][1])
-            
+
             return {
                 'cpu_usage': cpu_usage,
                 'gpu_usage': gpu_usage,
@@ -1245,16 +1245,16 @@ class AutoScalingManager:
         except Exception as e:
             logging.error(f"获取指标失败: {e}")
             return None
-    
+
     async def calculate_target_replicas(self, metrics):
         """计算目标副本数"""
         if not metrics:
             return None
-        
+
         cpu_usage = metrics['cpu_usage']
         gpu_usage = metrics['gpu_usage']
         memory_usage = metrics['memory_usage']
-        
+
         # 基于资源使用率的扩缩容策略
         if cpu_usage > 80 or gpu_usage > 90 or memory_usage > 85:
             # 高负载 - 增加副本
@@ -1265,9 +1265,9 @@ class AutoScalingManager:
         else:
             # 中等负载 - 保持现状
             return None
-        
+
         return max(self.min_replicas, min(self.max_replicas, target_replicas))
-    
+
     async def scale_deployment(self, replicas):
         """执行扩缩容"""
         try:
@@ -1276,56 +1276,56 @@ class AutoScalingManager:
                 name=self.deployment_name,
                 namespace=self.namespace
             )
-            
+
             current_replicas = deployment.spec.replicas
-            
+
             if current_replicas == replicas:
                 logging.info(f"副本数无需调整，当前: {current_replicas}, 目标: {replicas}")
                 return False
-            
+
             # 更新副本数
             deployment.spec.replicas = replicas
-            
+
             await self.api.patch_namespaced_deployment(
                 name=self.deployment_name,
                 namespace=self.namespace,
                 body=deployment
             )
-            
+
             logging.info(f"扩缩容完成: {current_replicas} -> {replicas}")
             return True
-            
+
         except Exception as e:
             logging.error(f"扩缩容失败: {e}")
             return False
-    
+
     async def run_scaling_loop(self):
         """运行扩缩容循环"""
         await self.initialize()
-        
+
         while True:
             try:
                 # 获取当前指标
                 metrics = await self.get_current_metrics()
-                
+
                 if metrics:
                     # 计算目标副本数
                     target_replicas = await self.calculate_target_replicas(metrics)
-                    
+
                     if target_replicas:
                         # 执行扩缩容
                         await self.scale_deployment(target_replicas)
-                
+
                 # 等待60秒后重新检查
                 await asyncio.sleep(60)
-                
+
             except Exception as e:
                 logging.error(f"扩缩容循环异常: {e}")
                 await asyncio.sleep(60)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    
+
     manager = AutoScalingManager()
     asyncio.run(manager.run_scaling_loop())
 ```
@@ -1424,6 +1424,6 @@ echo "=== 故障排查完成 ==="
 
 ---
 
-**文档版本**: v1.0  
-**更新时间**: 2025-11-16  
+**文档版本**: v1.0
+**更新时间**: 2025-11-16
 **维护者**: MyStocks开发团队

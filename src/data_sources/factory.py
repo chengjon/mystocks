@@ -16,7 +16,7 @@
 """
 
 import os
-from typing import Optional, Dict, Type, Any
+from typing import Optional, Dict, Type
 from threading import Lock
 from functools import wraps
 
@@ -44,6 +44,7 @@ SUPPORTED_BUSINESS_TYPES = ["mock", "composite"]
 
 
 # ==================== 异常定义 ====================
+
 
 class DataSourceFactoryException(Exception):
     """数据源工厂异常基类"""
@@ -78,6 +79,7 @@ class DataSourceNotRegistered(DataSourceFactoryException):
 
 # ==================== 单例装饰器 ====================
 
+
 def singleton(cls):
     """
     单例模式装饰器
@@ -101,6 +103,7 @@ def singleton(cls):
 
 
 # ==================== 数据源工厂 ====================
+
 
 @singleton
 class DataSourceFactory:
@@ -148,9 +151,7 @@ class DataSourceFactory:
     # ==================== 数据源注册 ====================
 
     def register_timeseries_source(
-        self,
-        source_type: str,
-        source_class: Type[ITimeSeriesDataSource]
+        self, source_type: str, source_class: Type[ITimeSeriesDataSource]
     ) -> None:
         """
         注册时序数据源实现
@@ -171,9 +172,7 @@ class DataSourceFactory:
             self._timeseries_registry[source_type.lower()] = source_class
 
     def register_relational_source(
-        self,
-        source_type: str,
-        source_class: Type[IRelationalDataSource]
+        self, source_type: str, source_class: Type[IRelationalDataSource]
     ) -> None:
         """
         注册关系数据源实现
@@ -194,9 +193,7 @@ class DataSourceFactory:
             self._relational_registry[source_type.lower()] = source_class
 
     def register_business_source(
-        self,
-        source_type: str,
-        source_class: Type[IBusinessDataSource]
+        self, source_type: str, source_class: Type[IBusinessDataSource]
     ) -> None:
         """
         注册业务数据源实现
@@ -219,9 +216,7 @@ class DataSourceFactory:
     # ==================== 数据源获取 ====================
 
     def get_timeseries_source(
-        self,
-        source_type: Optional[str] = None,
-        **kwargs
+        self, source_type: Optional[str] = None, **kwargs
     ) -> ITimeSeriesDataSource:
         """
         获取时序数据源实例
@@ -255,8 +250,7 @@ class DataSourceFactory:
         # 确定数据源类型
         if source_type is None:
             source_type = os.getenv(
-                ENV_TIMESERIES_SOURCE,
-                DEFAULT_TIMESERIES_SOURCE
+                ENV_TIMESERIES_SOURCE, DEFAULT_TIMESERIES_SOURCE
             ).lower()
         else:
             source_type = source_type.lower()
@@ -282,9 +276,7 @@ class DataSourceFactory:
             return instance
 
     def get_relational_source(
-        self,
-        source_type: Optional[str] = None,
-        **kwargs
+        self, source_type: Optional[str] = None, **kwargs
     ) -> IRelationalDataSource:
         """
         获取关系数据源实例
@@ -311,8 +303,7 @@ class DataSourceFactory:
         # 确定数据源类型
         if source_type is None:
             source_type = os.getenv(
-                ENV_RELATIONAL_SOURCE,
-                DEFAULT_RELATIONAL_SOURCE
+                ENV_RELATIONAL_SOURCE, DEFAULT_RELATIONAL_SOURCE
             ).lower()
         else:
             source_type = source_type.lower()
@@ -338,9 +329,7 @@ class DataSourceFactory:
             return instance
 
     def get_business_source(
-        self,
-        source_type: Optional[str] = None,
-        **kwargs
+        self, source_type: Optional[str] = None, **kwargs
     ) -> IBusinessDataSource:
         """
         获取业务数据源实例
@@ -367,8 +356,7 @@ class DataSourceFactory:
         # 确定数据源类型
         if source_type is None:
             source_type = os.getenv(
-                ENV_BUSINESS_SOURCE,
-                DEFAULT_BUSINESS_SOURCE
+                ENV_BUSINESS_SOURCE, DEFAULT_BUSINESS_SOURCE
             ).lower()
         else:
             source_type = source_type.lower()
@@ -412,7 +400,7 @@ class DataSourceFactory:
         return {
             "timeseries": list(self._timeseries_registry.keys()),
             "relational": list(self._relational_registry.keys()),
-            "business": list(self._business_registry.keys())
+            "business": list(self._business_registry.keys()),
         }
 
     def get_current_config(self) -> Dict[str, str]:
@@ -430,18 +418,9 @@ class DataSourceFactory:
             }
         """
         return {
-            "timeseries": os.getenv(
-                ENV_TIMESERIES_SOURCE,
-                DEFAULT_TIMESERIES_SOURCE
-            ),
-            "relational": os.getenv(
-                ENV_RELATIONAL_SOURCE,
-                DEFAULT_RELATIONAL_SOURCE
-            ),
-            "business": os.getenv(
-                ENV_BUSINESS_SOURCE,
-                DEFAULT_BUSINESS_SOURCE
-            )
+            "timeseries": os.getenv(ENV_TIMESERIES_SOURCE, DEFAULT_TIMESERIES_SOURCE),
+            "relational": os.getenv(ENV_RELATIONAL_SOURCE, DEFAULT_RELATIONAL_SOURCE),
+            "business": os.getenv(ENV_BUSINESS_SOURCE, DEFAULT_BUSINESS_SOURCE),
         }
 
     # ==================== 缓存管理 ====================
@@ -485,43 +464,58 @@ class DataSourceFactory:
         # Phase 2 - 注册Mock数据源
         try:
             from src.data_sources.mock.timeseries_mock import MockTimeSeriesDataSource
+
             self.register_timeseries_source("mock", MockTimeSeriesDataSource)
         except ImportError:
             pass
 
         try:
             from src.data_sources.mock.relational_mock import MockRelationalDataSource
+
             self.register_relational_source("mock", MockRelationalDataSource)
         except ImportError:
             pass
 
         try:
             from src.data_sources.mock.business_mock import MockBusinessDataSource
+
             self.register_business_source("mock", MockBusinessDataSource)
         except ImportError:
             pass
 
         # Phase 3 - 注册真实数据源
         try:
-            from src.data_sources.real.tdengine_timeseries import TDengineTimeSeriesDataSource
+            from src.data_sources.real.tdengine_timeseries import (
+                TDengineTimeSeriesDataSource,
+            )
+
             self.register_timeseries_source("tdengine", TDengineTimeSeriesDataSource)
         except ImportError:
             pass
 
         try:
-            from src.data_sources.real.postgresql_relational import PostgreSQLRelationalDataSource
-            self.register_relational_source("postgresql", PostgreSQLRelationalDataSource)
+            from src.data_sources.real.postgresql_relational import (
+                PostgreSQLRelationalDataSource,
+            )
+
+            self.register_relational_source(
+                "postgresql", PostgreSQLRelationalDataSource
+            )
         except ImportError:
             pass
 
         try:
-            from src.data_sources.real.composite_business import CompositeBusinessDataSource
+            from src.data_sources.real.composite_business import (
+                CompositeBusinessDataSource,
+            )
+
             self.register_business_source("composite", CompositeBusinessDataSource)
         except ImportError:
             pass
 
 
 # ==================== 便捷函数 ====================
+
 
 def get_timeseries_source(**kwargs) -> ITimeSeriesDataSource:
     """

@@ -114,7 +114,7 @@ def create_postgresql_table(table_name, columns, dry_run=False):
 
     create_sql = f"""
     CREATE TABLE IF NOT EXISTS {table_name} (
-        {','.join(column_defs)}
+        {",".join(column_defs)}
     );
     """
 

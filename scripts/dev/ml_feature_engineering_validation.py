@@ -20,11 +20,8 @@ import time
 import pandas as pd
 import numpy as np
 import requests
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
-from pathlib import Path
-import asyncio
-import aiohttp
+from datetime import datetime
+from typing import Dict, List, Any
 
 
 class MLFeatureEngineeringValidator:
@@ -83,34 +80,42 @@ class MLFeatureEngineeringValidator:
 
         # 模拟技术指标特征提取
         np.random.seed(42)
-        dates = pd.date_range(start='2024-01-01', periods=100, freq='D')
-        
+        dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
+
         # 模拟股价数据
         price_data = 100 + np.cumsum(np.random.randn(100) * 0.5)
         volume_data = np.random.randint(1000000, 10000000, 100)
-        
+
         # 生成技术指标特征
         features = {}
-        
+
         # 趋势指标特征
-        features['sma_5'] = pd.Series(price_data).rolling(5).mean().fillna(0).tolist()
-        features['sma_20'] = pd.Series(price_data).rolling(20).mean().fillna(0).tolist()
-        features['ema_12'] = pd.Series(price_data).ewm(span=12).mean().fillna(0).tolist()
-        features['ema_26'] = pd.Series(price_data).ewm(span=26).mean().fillna(0).tolist()
-        
+        features["sma_5"] = pd.Series(price_data).rolling(5).mean().fillna(0).tolist()
+        features["sma_20"] = pd.Series(price_data).rolling(20).mean().fillna(0).tolist()
+        features["ema_12"] = (
+            pd.Series(price_data).ewm(span=12).mean().fillna(0).tolist()
+        )
+        features["ema_26"] = (
+            pd.Series(price_data).ewm(span=26).mean().fillna(0).tolist()
+        )
+
         # 动量指标特征
-        features['rsi'] = self._calculate_rsi(price_data).tolist()
-        features['stoch_k'] = self._calculate_stochastic(price_data).tolist()
-        features['macd'] = (features['ema_12'][-1] - features['ema_26'][-1])
-        
+        features["rsi"] = self._calculate_rsi(price_data).tolist()
+        features["stoch_k"] = self._calculate_stochastic(price_data).tolist()
+        features["macd"] = features["ema_12"][-1] - features["ema_26"][-1]
+
         # 成交量指标特征
-        features['volume_sma'] = pd.Series(volume_data).rolling(10).mean().fillna(0).tolist()
-        features['volume_ratio'] = (volume_data / features['volume_sma'][-1]).tolist()
-        
+        features["volume_sma"] = (
+            pd.Series(volume_data).rolling(10).mean().fillna(0).tolist()
+        )
+        features["volume_ratio"] = (volume_data / features["volume_sma"][-1]).tolist()
+
         # 波动性指标特征
         returns = pd.Series(price_data).pct_change().fillna(0)
-        features['volatility'] = returns.rolling(20).std().fillna(0).tolist()
-        features['atr'] = self._calculate_atr(price_data, price_data * 1.01, price_data * 0.99).tolist()
+        features["volatility"] = returns.rolling(20).std().fillna(0).tolist()
+        features["atr"] = self._calculate_atr(
+            price_data, price_data * 1.01, price_data * 0.99
+        ).tolist()
 
         # 特征统计
         feature_stats = {
@@ -120,7 +125,7 @@ class MLFeatureEngineeringValidator:
             "成交量指标": 2,  # volume_sma, volume_ratio
             "波动性指标": 2,  # volatility, atr
             "数据点": len(dates),
-            "数据完整性": "100%"
+            "数据完整性": "100%",
         }
 
         return {
@@ -129,7 +134,7 @@ class MLFeatureEngineeringValidator:
             "duration": time.time() - start_time,
             "features_generated": feature_stats,
             "feature_types": ["趋势指标", "动量指标", "成交量指标", "波动性指标"],
-            "extraction_quality": "高质量 - 11个核心特征完整生成"
+            "extraction_quality": "高质量 - 11个核心特征完整生成",
         }
 
     def _validate_technical_indicators(self) -> Dict[str, Any]:
@@ -143,33 +148,33 @@ class MLFeatureEngineeringValidator:
                 "ema": {"periods": [12, 26, 50], "status": "✅"},
                 "wma": {"periods": [10, 20], "status": "✅"},
                 "dema": {"periods": [20], "status": "✅"},
-                "tema": {"periods": [20], "status": "✅"}
+                "tema": {"periods": [20], "status": "✅"},
             },
             "动量指标": {
                 "rsi": {"periods": [14, 21], "status": "✅"},
                 "stoch": {"periods": [14], "status": "✅"},
                 "macd": {"fast": 12, "slow": 26, "signal": 9, "status": "✅"},
                 "cci": {"periods": [20], "status": "✅"},
-                "williams_r": {"periods": [14], "status": "✅"}
+                "williams_r": {"periods": [14], "status": "✅"},
             },
             "成交量指标": {
                 "obv": {"status": "✅"},
                 "volume_sma": {"periods": [10, 20, 50], "status": "✅"},
                 "volume_ratio": {"status": "✅"},
                 "vwap": {"status": "✅"},
-                "pvt": {"status": "✅"}
+                "pvt": {"status": "✅"},
             },
             "波动性指标": {
                 "atr": {"periods": [14, 21], "status": "✅"},
                 "bollinger": {"periods": [20], "status": "✅"},
                 "keltner": {"periods": [20], "status": "✅"},
-                "historical_vol": {"periods": [20, 60], "status": "✅"}
+                "historical_vol": {"periods": [20, 60], "status": "✅"},
             },
             "支撑阻力指标": {
                 "pivot_points": {"status": "✅"},
                 "fibonacci_ret": {"status": "✅"},
-                "support_resistance": {"status": "✅"}
-            }
+                "support_resistance": {"status": "✅"},
+            },
         }
 
         # 计算指标统计
@@ -184,7 +189,7 @@ class MLFeatureEngineeringValidator:
             "内存使用": "50MB/千特征",
             "准确性": "99.9%",
             "实时计算": "支持",
-            "批量处理": "支持"
+            "批量处理": "支持",
         }
 
         return {
@@ -195,7 +200,7 @@ class MLFeatureEngineeringValidator:
             "total_indicators": total_indicators,
             "indicators_available": technical_indicators,
             "performance_metrics": performance_metrics,
-            "quality_score": "99.9%"
+            "quality_score": "99.9%",
         }
 
     def _validate_feature_importance_analysis(self) -> Dict[str, Any]:
@@ -205,12 +210,51 @@ class MLFeatureEngineeringValidator:
         # 模拟特征重要性分析
         feature_importance = {
             "特征名称": [
-                "rsi_14", "macd_line", "sma_20", "volume_ratio", "atr_14",
-                "bollinger_upper", "cci_20", "stoch_k", "sma_50", "volatility_20",
-                "vwap", "williams_r", "ema_12", "volume_sma", "obv"
+                "rsi_14",
+                "macd_line",
+                "sma_20",
+                "volume_ratio",
+                "atr_14",
+                "bollinger_upper",
+                "cci_20",
+                "stoch_k",
+                "sma_50",
+                "volatility_20",
+                "vwap",
+                "williams_r",
+                "ema_12",
+                "volume_sma",
+                "obv",
             ],
-            "重要性得分": [0.245, 0.198, 0.156, 0.134, 0.089, 0.067, 0.045, 0.032, 0.021, 0.013],
-            "特征类别": ["动量", "趋势", "趋势", "成交量", "波动性", "波动性", "动量", "动量", "趋势", "波动性", "成交量", "动量", "趋势", "成交量", "成交量"]
+            "重要性得分": [
+                0.245,
+                0.198,
+                0.156,
+                0.134,
+                0.089,
+                0.067,
+                0.045,
+                0.032,
+                0.021,
+                0.013,
+            ],
+            "特征类别": [
+                "动量",
+                "趋势",
+                "趋势",
+                "成交量",
+                "波动性",
+                "波动性",
+                "动量",
+                "动量",
+                "趋势",
+                "波动性",
+                "成交量",
+                "动量",
+                "趋势",
+                "成交量",
+                "成交量",
+            ],
         }
 
         # 计算重要性统计
@@ -225,7 +269,7 @@ class MLFeatureEngineeringValidator:
             "L1正则化": {"enabled": True, "feature_reduction": "40%"},
             "互信息": {"enabled": True, "correlation_threshold": 0.8},
             "树模型特征重要性": {"enabled": True, "top_features": 10},
-            "SHAP值分析": {"enabled": True, "explainability": "高"}
+            "SHAP值分析": {"enabled": True, "explainability": "高"},
         }
 
         return {
@@ -235,7 +279,7 @@ class MLFeatureEngineeringValidator:
             "top_features": top_features,
             "feature_categories_distribution": feature_categories,
             "selection_methods": feature_selection_methods,
-            "analysis_quality": "深度分析 - 15个特征的重要性评估完成"
+            "analysis_quality": "深度分析 - 15个特征的重要性评估完成",
         }
 
     def _validate_model_training_pipeline(self) -> Dict[str, Any]:
@@ -248,26 +292,26 @@ class MLFeatureEngineeringValidator:
                 "缺失值处理": "✅ 插值 + 前后填充",
                 "异常值检测": "✅ IQR + Z-Score双重检测",
                 "特征标准化": "✅ MinMax + StandardScaler",
-                "特征编码": "✅ One-Hot + Label编码"
+                "特征编码": "✅ One-Hot + Label编码",
             },
             "特征工程": {
                 "特征选择": "✅ 递归消除 + 重要性排序",
                 "特征组合": "✅ 多项式 + 交互特征",
                 "降维处理": "✅ PCA + t-SNE",
-                "时间序列": "✅ 滞后特征 + 滚动统计"
+                "时间序列": "✅ 滞后特征 + 滚动统计",
             },
             "模型训练": {
                 "集成学习": "✅ Random Forest + Gradient Boosting",
                 "深度学习": "✅ LSTM + Transformer",
                 "超参优化": "✅ Optuna + 贝叶斯优化",
-                "交叉验证": "✅ K-Fold + 时间序列CV"
+                "交叉验证": "✅ K-Fold + 时间序列CV",
             },
             "模型评估": {
                 "性能指标": "✅ Accuracy + Precision + Recall + F1",
                 "金融指标": "✅ Sharpe + Max Drawdown + Win Rate",
                 "模型可解释": "✅ SHAP + LIME",
-                "稳定性测试": "✅ 蒙特卡洛 + 自助法"
-            }
+                "稳定性测试": "✅ 蒙特卡洛 + 自助法",
+            },
         }
 
         # 计算流水线统计
@@ -281,7 +325,7 @@ class MLFeatureEngineeringValidator:
             "模型数量": "15个",
             "训练时间": "5-15分钟",
             "准确率": "85-92%",
-            "F1得分": "0.83-0.89"
+            "F1得分": "0.83-0.89",
         }
 
         return {
@@ -292,7 +336,7 @@ class MLFeatureEngineeringValidator:
             "total_components": total_components,
             "pipeline_details": ml_pipeline,
             "training_performance": training_performance,
-            "pipeline_status": "生产就绪 - 完整ML流水线配置"
+            "pipeline_status": "生产就绪 - 完整ML流水线配置",
         }
 
     def _validate_feature_engineering_automation(self) -> Dict[str, Any]:
@@ -305,26 +349,26 @@ class MLFeatureEngineeringValidator:
                 "技术指标": "26个指标自动计算",
                 "技术形态": "15种K线形态识别",
                 "基本面特征": "20个财务指标",
-                "衍生特征": "组合指标 + 交叉特征"
+                "衍生特征": "组合指标 + 交叉特征",
             },
             "智能特征选择": {
                 "特征重要性": "实时重要性排序",
                 "相关性分析": "自动去重相关特征",
                 "稳定性检查": "时间稳定性验证",
-                "性能影响": "对模型性能的贡献评估"
+                "性能影响": "对模型性能的贡献评估",
             },
             "自适应调整": {
                 "市场环境": "牛市/熊市/震荡市识别",
                 "参数优化": "指标参数自适应调整",
                 "特征权重": "动态权重分配",
-                "模型选择": "最优模型自动选择"
+                "模型选择": "最优模型自动选择",
             },
             "工作流管理": {
                 "批量处理": "批量股票特征提取",
                 "增量更新": "实时数据增量更新",
                 "缓存优化": "智能缓存策略",
-                "任务调度": "定时任务 + 事件触发"
-            }
+                "任务调度": "定时任务 + 事件触发",
+            },
         }
 
         # 自动化效果统计
@@ -333,7 +377,7 @@ class MLFeatureEngineeringValidator:
             "特征生成效率": "10倍提升",
             "准确性提升": "15%",
             "维护成本": "减少70%",
-            "开发周期": "缩短60%"
+            "开发周期": "缩短60%",
         }
 
         return {
@@ -343,7 +387,7 @@ class MLFeatureEngineeringValidator:
             "automation_areas": len(automation_config),
             "automation_details": automation_config,
             "automation_effects": automation_effects,
-            "automation_level": "高度自动化 - 4大自动化模块"
+            "automation_level": "高度自动化 - 4大自动化模块",
         }
 
     def _validate_production_ml_service(self) -> Dict[str, Any]:
@@ -353,15 +397,21 @@ class MLFeatureEngineeringValidator:
         # 测试ML API可用性
         try:
             # 测试特征提取API
-            response = requests.get(f"{self.base_url}/api/ml/features/600000", timeout=5)
+            response = requests.get(
+                f"{self.base_url}/api/ml/features/600000", timeout=5
+            )
             features_api_ok = response.status_code == 200
 
             # 测试模型预测API
-            response = requests.get(f"{self.base_url}/api/ml/prediction/sample", timeout=5)
+            response = requests.get(
+                f"{self.base_url}/api/ml/prediction/sample", timeout=5
+            )
             prediction_api_ok = response.status_code == 200
 
             # 测试特征重要性API
-            response = requests.get(f"{self.base_url}/api/ml/feature-importance", timeout=5)
+            response = requests.get(
+                f"{self.base_url}/api/ml/feature-importance", timeout=5
+            )
             importance_api_ok = response.status_code == 200
 
             # 测试模型状态API
@@ -369,7 +419,14 @@ class MLFeatureEngineeringValidator:
             model_status_api_ok = response.status_code == 200
 
             apis_tested = 4
-            apis_working = sum([features_api_ok, prediction_api_ok, importance_api_ok, model_status_api_ok])
+            apis_working = sum(
+                [
+                    features_api_ok,
+                    prediction_api_ok,
+                    importance_api_ok,
+                    model_status_api_ok,
+                ]
+            )
             success_rate = (apis_working / apis_tested * 100) if apis_tested > 0 else 0
 
             # ML服务配置
@@ -379,15 +436,15 @@ class MLFeatureEngineeringValidator:
                 "模型管理": "✅ 版本控制 + A/B测试",
                 "监控告警": "✅ 模型性能监控",
                 "扩展性": "✅ 水平扩展支持",
-                "缓存优化": "✅ Redis特征缓存"
+                "缓存优化": "✅ Redis特征缓存",
             }
 
             # API功能状态
             api_status = {
                 "特征提取API": "✅" if features_api_ok else "❌",
-                "预测服务API": "✅" if prediction_api_ok else "❌", 
+                "预测服务API": "✅" if prediction_api_ok else "❌",
                 "特征重要性API": "✅" if importance_api_ok else "❌",
-                "模型状态API": "✅" if model_status_api_ok else "❌"
+                "模型状态API": "✅" if model_status_api_ok else "❌",
             }
 
             return {
@@ -400,15 +457,15 @@ class MLFeatureEngineeringValidator:
                 "api_status": api_status,
                 "ml_service_config": ml_service_config,
                 "integration_score": f"{apis_working}/{apis_tested}",
-                "note": "生产ML特征服务集成测试"
+                "note": "生产ML特征服务集成测试",
             }
 
         except Exception as e:
             return {
-                "test": "Production ML Service", 
+                "test": "Production ML Service",
                 "success": False,
                 "duration": time.time() - start_time,
-                "error": str(e)
+                "error": str(e),
             }
 
     def _calculate_rsi(self, prices: np.ndarray, period: int = 14) -> np.ndarray:
@@ -416,34 +473,36 @@ class MLFeatureEngineeringValidator:
         deltas = np.diff(prices)
         gains = np.where(deltas > 0, deltas, 0)
         losses = np.where(deltas < 0, -deltas, 0)
-        
+
         avg_gains = pd.Series(gains).rolling(window=period).mean().fillna(0)
         avg_losses = pd.Series(losses).rolling(window=period).mean().fillna(0)
-        
+
         rs = avg_gains / (avg_losses + 1e-10)
         rsi = 100 - (100 / (1 + rs))
-        
+
         return rsi.values
 
     def _calculate_stochastic(self, prices: np.ndarray, period: int = 14) -> np.ndarray:
         """计算随机指标"""
         lows = pd.Series(prices).rolling(window=period).min()
         highs = pd.Series(prices).rolling(window=period).max()
-        
+
         k_percent = 100 * ((prices - lows) / (highs - lows + 1e-10))
         k_percent = k_percent.rolling(window=3).mean().fillna(50)  # %K的3日移动平均
-        
+
         return k_percent.values
 
-    def _calculate_atr(self, highs: np.ndarray, lows: np.ndarray, closes: np.ndarray, period: int = 14) -> np.ndarray:
+    def _calculate_atr(
+        self, highs: np.ndarray, lows: np.ndarray, closes: np.ndarray, period: int = 14
+    ) -> np.ndarray:
         """计算ATR指标"""
         high_low = highs - lows
         high_close = np.abs(highs - np.roll(closes, 1))
         low_close = np.abs(lows - np.roll(closes, 1))
-        
+
         true_range = np.maximum(high_low, np.maximum(high_close, low_close))
         atr = pd.Series(true_range).rolling(window=period).mean().fillna(0)
-        
+
         return atr.values
 
     def _print_result(self, result: Dict[str, Any]):
@@ -451,13 +510,19 @@ class MLFeatureEngineeringValidator:
         status_icon = "✅" if result.get("success", False) else "❌"
         test_name = result.get("test", "Unknown")
         duration = result.get("duration", 0)
-        
+
         print(f"   {status_icon} {test_name}: {duration:.2f}s")
-        
+
         if result.get("success"):
             # 显示关键指标
-            for key in ["features_generated", "total_indicators", "top_features", 
-                        "total_components", "automation_areas", "integration_score"]:
+            for key in [
+                "features_generated",
+                "total_indicators",
+                "top_features",
+                "total_components",
+                "automation_areas",
+                "integration_score",
+            ]:
                 if key in result:
                     print(f"      📊 {key}: {result[key]}")
         else:
@@ -467,8 +532,14 @@ class MLFeatureEngineeringValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
-        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
+        successful_validations = sum(
+            1 for r in self.validation_results if r.get("success", False)
+        )
+        success_rate = (
+            (successful_validations / total_validations * 100)
+            if total_validations > 0
+            else 0
+        )
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -479,7 +550,7 @@ class MLFeatureEngineeringValidator:
             "特征重要性分析": "✅ 完成 - 15个特征重要性评估",
             "模型训练流水线": "✅ 完成 - 完整ML流水线配置",
             "特征工程自动化": "✅ 完成 - 4大自动化模块",
-            "生产ML服务": "✅ 完成 - API集成测试"
+            "生产ML服务": "✅ 完成 - API集成测试",
         }
 
         summary = {
@@ -489,18 +560,20 @@ class MLFeatureEngineeringValidator:
                 "total_validations": total_validations,
                 "successful_validations": successful_validations,
                 "success_rate": success_rate,
-                "total_duration": total_duration
+                "total_duration": total_duration,
             },
             "validation_achievements": validation_achievements,
             "detailed_results": self.validation_results,
-            "next_recommendations": self._generate_next_recommendations()
+            "next_recommendations": self._generate_next_recommendations(),
         }
 
         # 打印摘要
         print("\n" + "=" * 60)
         print("🤖 机器学习特征工程验证报告 (Phase 8-2)")
         print("=" * 60)
-        print(f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)")
+        print(
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+        )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
 
         print("\n🎯 验证成果:")
@@ -525,7 +598,7 @@ class MLFeatureEngineeringValidator:
             "建立模型性能评估和持续优化机制",
             "集成更多高级技术指标和特征",
             "实施A/B测试和模型对比机制",
-            "建立ML模型文档和知识库"
+            "建立ML模型文档和知识库",
         ]
 
 

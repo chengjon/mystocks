@@ -9,7 +9,6 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
 from app.services.room_permission_service import (
     RoomRole,
     RoomPermission,

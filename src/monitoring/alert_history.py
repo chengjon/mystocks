@@ -4,12 +4,10 @@ Provides comprehensive alert tracking, analytics, and reporting capabilities
 """
 
 import sqlite3
-import json
 from datetime import datetime, timedelta
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Optional, Tuple, Any
+from dataclasses import dataclass
+from typing import List, Dict, Optional, Any
 from enum import Enum
-import statistics
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AlertStatus(str, Enum):
     """Alert lifecycle status"""
+
     FIRING = "firing"
     RESOLVED = "resolved"
     ACKNOWLEDGED = "acknowledged"
@@ -27,6 +26,7 @@ class AlertStatus(str, Enum):
 @dataclass
 class AlertHistoryRecord:
     """Individual alert history record"""
+
     id: Optional[int] = None
     alert_name: str = ""
     severity: str = ""
@@ -199,7 +199,8 @@ class AlertHistoryDatabase:
         """Save alert history record, return record ID"""
         cursor = self.connection.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO alert_history (
                 alert_name, severity, service, category, instance,
                 status, summary, description, start_time, end_time,
@@ -208,16 +209,30 @@ class AlertHistoryDatabase:
                 notification_channels, notification_count,
                 labels, annotations, root_cause, related_alerts
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            record.alert_name, record.severity, record.service,
-            record.category, record.instance, record.status.value,
-            record.summary, record.description, record.start_time,
-            record.end_time, record.duration_seconds,
-            record.resolution_time_seconds, record.acknowledgment_time_seconds,
-            record.escalation_level, record.notification_channels,
-            record.notification_count, record.labels, record.annotations,
-            record.root_cause, record.related_alerts
-        ))
+        """,
+            (
+                record.alert_name,
+                record.severity,
+                record.service,
+                record.category,
+                record.instance,
+                record.status.value,
+                record.summary,
+                record.description,
+                record.start_time,
+                record.end_time,
+                record.duration_seconds,
+                record.resolution_time_seconds,
+                record.acknowledgment_time_seconds,
+                record.escalation_level,
+                record.notification_channels,
+                record.notification_count,
+                record.labels,
+                record.annotations,
+                record.root_cause,
+                record.related_alerts,
+            ),
+        )
 
         self.connection.commit()
         return cursor.lastrowid
@@ -229,19 +244,20 @@ class AlertHistoryDatabase:
         set_clause = ", ".join([f"{k} = ?" for k in updates.keys()])
         set_clause += ", updated_at = CURRENT_TIMESTAMP"
 
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
             UPDATE alert_history
             SET {set_clause}
             WHERE id = ?
-        """, (*updates.values(), alert_id))
+        """,
+            (*updates.values(), alert_id),
+        )
 
         self.connection.commit()
         return cursor.rowcount > 0
 
     def resolve_alert(
-        self,
-        alert_id: int,
-        resolution_time_seconds: float = None
+        self, alert_id: int, resolution_time_seconds: float = None
     ) -> bool:
         """Mark alert as resolved"""
         end_time = datetime.now()
@@ -249,14 +265,11 @@ class AlertHistoryDatabase:
             alert_id,
             status=AlertStatus.RESOLVED.value,
             end_time=end_time,
-            resolution_time_seconds=resolution_time_seconds
+            resolution_time_seconds=resolution_time_seconds,
         )
 
     def acknowledge_alert(
-        self,
-        alert_id: int,
-        acknowledged_by: str,
-        comment: str = None
+        self, alert_id: int, acknowledged_by: str, comment: str = None
     ) -> int:
         """Record alert acknowledgment"""
         cursor = self.connection.cursor()
@@ -265,11 +278,14 @@ class AlertHistoryDatabase:
         self.update_alert(alert_id, status=AlertStatus.ACKNOWLEDGED.value)
 
         # Record acknowledgment
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO acknowledgments (
                 alert_id, acknowledged_by, acknowledgment_comment
             ) VALUES (?, ?, ?)
-        """, (alert_id, acknowledged_by, comment))
+        """,
+            (alert_id, acknowledged_by, comment),
+        )
 
         self.connection.commit()
         return cursor.lastrowid
@@ -279,31 +295,31 @@ class AlertHistoryDatabase:
         alert_id: int,
         to_level: int,
         reason: str = None,
-        escalated_by: str = "system"
+        escalated_by: str = "system",
     ) -> int:
         """Record alert escalation"""
         cursor = self.connection.cursor()
 
         # Get current level
         current = cursor.execute(
-            "SELECT escalation_level FROM alert_history WHERE id = ?",
-            (alert_id,)
+            "SELECT escalation_level FROM alert_history WHERE id = ?", (alert_id,)
         ).fetchone()
 
-        from_level = current['escalation_level'] if current else 1
+        from_level = current["escalation_level"] if current else 1
 
         # Record escalation
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO escalation_history (
                 alert_id, from_level, to_level, reason, escalated_by
             ) VALUES (?, ?, ?, ?, ?)
-        """, (alert_id, from_level, to_level, reason, escalated_by))
+        """,
+            (alert_id, from_level, to_level, reason, escalated_by),
+        )
 
         # Update alert
         self.update_alert(
-            alert_id,
-            escalation_level=to_level,
-            status=AlertStatus.ESCALATED.value
+            alert_id, escalation_level=to_level, status=AlertStatus.ESCALATED.value
         )
 
         self.connection.commit()
@@ -313,8 +329,7 @@ class AlertHistoryDatabase:
         """Get alert history record by ID"""
         cursor = self.connection.cursor()
         row = cursor.execute(
-            "SELECT * FROM alert_history WHERE id = ?",
-            (alert_id,)
+            "SELECT * FROM alert_history WHERE id = ?", (alert_id,)
         ).fetchone()
 
         return dict(row) if row else None
@@ -328,7 +343,7 @@ class AlertHistoryDatabase:
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
         limit: int = 1000,
-        offset: int = 0
+        offset: int = 0,
     ) -> List[Dict]:
         """Query alerts with filters"""
         query = "SELECT * FROM alert_history WHERE 1=1"
@@ -366,9 +381,7 @@ class AlertHistoryDatabase:
         return [dict(row) for row in rows]
 
     def get_alert_statistics(
-        self,
-        alert_name: Optional[str] = None,
-        days: int = 7
+        self, alert_name: Optional[str] = None, days: int = 7
     ) -> Dict[str, Any]:
         """Get alert statistics for time period"""
         start_time = datetime.now() - timedelta(days=days)
@@ -390,7 +403,7 @@ class AlertHistoryDatabase:
 
         severity_stats = {}
         for row in cursor.execute(query, params).fetchall():
-            severity_stats[row['severity']] = row['count']
+            severity_stats[row["severity"]] = row["count"]
 
         # Resolution time statistics
         query = """
@@ -440,23 +453,23 @@ class AlertHistoryDatabase:
 
         service_stats = {}
         for row in cursor.execute(query, params).fetchall():
-            service_stats[row['service']] = row['count']
+            service_stats[row["service"]] = row["count"]
 
         return {
             "time_period_days": days,
             "severity_distribution": severity_stats,
-            "average_resolution_time_seconds": resolution_row['avg_resolution'],
-            "min_resolution_time_seconds": resolution_row['min_resolution'],
-            "max_resolution_time_seconds": resolution_row['max_resolution'],
-            "average_escalation_level": escalation_row['avg_escalation'],
-            "top_services_by_alert_count": service_stats
+            "average_resolution_time_seconds": resolution_row["avg_resolution"],
+            "min_resolution_time_seconds": resolution_row["min_resolution"],
+            "max_resolution_time_seconds": resolution_row["max_resolution"],
+            "average_escalation_level": escalation_row["avg_escalation"],
+            "top_services_by_alert_count": service_stats,
         }
 
     def get_top_alerts(
         self,
         limit: int = 10,
         days: int = 7,
-        order_by: str = "count"  # count, resolution_time, escalation_level
+        order_by: str = "count",  # count, resolution_time, escalation_level
     ) -> List[Dict]:
         """Get most impactful alerts"""
         start_time = datetime.now() - timedelta(days=days)
@@ -509,7 +522,7 @@ class AlertHistoryDatabase:
         self,
         alert_name: Optional[str] = None,
         days: int = 30,
-        granularity: str = "day"  # day, hour
+        granularity: str = "day",  # day, hour
     ) -> List[Dict]:
         """Get alert trend data for charting"""
         start_time = datetime.now() - timedelta(days=days)
@@ -541,9 +554,7 @@ class AlertHistoryDatabase:
         return [dict(row) for row in rows]
 
     def get_related_alerts(
-        self,
-        alert_id: int,
-        min_correlation: float = 0.5
+        self, alert_id: int, min_correlation: float = 0.5
     ) -> List[Dict]:
         """Get alerts correlated with given alert"""
         cursor = self.connection.cursor()
@@ -571,25 +582,24 @@ class AlertHistoryDatabase:
         alert1_id: int,
         alert2_id: int,
         correlation_score: float,
-        correlation_type: str = "temporal"
+        correlation_type: str = "temporal",
     ) -> int:
         """Record correlation between two alerts"""
         cursor = self.connection.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO alert_correlations (
                 alert1_id, alert2_id, correlation_score, correlation_type
             ) VALUES (?, ?, ?, ?)
-        """, (alert1_id, alert2_id, correlation_score, correlation_type))
+        """,
+            (alert1_id, alert2_id, correlation_score, correlation_type),
+        )
 
         self.connection.commit()
         return cursor.lastrowid
 
-    def get_service_health(
-        self,
-        service: str,
-        days: int = 7
-    ) -> Dict[str, Any]:
+    def get_service_health(self, service: str, days: int = 7) -> Dict[str, Any]:
         """Get health metrics for a service"""
         start_time = datetime.now() - timedelta(days=days)
         cursor = self.connection.cursor()
@@ -608,7 +618,7 @@ class AlertHistoryDatabase:
 
         row = cursor.execute(query, (service, start_time)).fetchone()
 
-        if not row or row['total_alerts'] == 0:
+        if not row or row["total_alerts"] == 0:
             return {
                 "service": service,
                 "days": days,
@@ -616,13 +626,17 @@ class AlertHistoryDatabase:
                 "health_score": 100.0,
                 "critical_count": 0,
                 "warning_count": 0,
-                "info_count": 0
+                "info_count": 0,
             }
 
         # Calculate health score (0-100)
         # Based on: resolved rate, resolution time, severity distribution
-        resolved_rate = (row['resolved_count'] / row['total_alerts']) * 100
-        critical_weight = (row['critical_count'] / row['total_alerts']) * 100 if row['total_alerts'] > 0 else 0
+        resolved_rate = (row["resolved_count"] / row["total_alerts"]) * 100
+        critical_weight = (
+            (row["critical_count"] / row["total_alerts"]) * 100
+            if row["total_alerts"] > 0
+            else 0
+        )
 
         health_score = (resolved_rate * 0.5) - (critical_weight * 0.3)
         health_score = max(0, min(100, health_score))
@@ -630,14 +644,14 @@ class AlertHistoryDatabase:
         return {
             "service": service,
             "days": days,
-            "total_alerts": row['total_alerts'],
-            "resolved_count": row['resolved_count'],
+            "total_alerts": row["total_alerts"],
+            "resolved_count": row["resolved_count"],
             "resolved_rate_percent": resolved_rate,
-            "critical_count": row['critical_count'],
-            "warning_count": row['warning_count'],
-            "info_count": row['info_count'],
-            "average_resolution_time_seconds": row['avg_resolution_time'],
-            "health_score": health_score
+            "critical_count": row["critical_count"],
+            "warning_count": row["warning_count"],
+            "info_count": row["info_count"],
+            "average_resolution_time_seconds": row["avg_resolution_time"],
+            "health_score": health_score,
         }
 
     def cleanup_old_records(self, days: int = 90) -> int:
@@ -645,10 +659,7 @@ class AlertHistoryDatabase:
         cutoff_time = datetime.now() - timedelta(days=days)
         cursor = self.connection.cursor()
 
-        cursor.execute(
-            "DELETE FROM alert_history WHERE start_time < ?",
-            (cutoff_time,)
-        )
+        cursor.execute("DELETE FROM alert_history WHERE start_time < ?", (cutoff_time,))
 
         self.connection.commit()
         deleted_count = cursor.rowcount

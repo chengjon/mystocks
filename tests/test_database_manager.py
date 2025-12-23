@@ -3,7 +3,7 @@
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock, mock_open
 import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -16,7 +16,7 @@ class TestDatabaseManager:
 
     def setup_method(self):
         """测试前准备"""
-        with patch("db_manager.database_manager.load_dotenv"):
+        with patch("src.storage.database.database_manager.load_dotenv"):
             self.manager = DatabaseTableManager()
 
     def test_manager_initialization(self):
@@ -25,7 +25,7 @@ class TestDatabaseManager:
         assert hasattr(self.manager, "get_mysql_connection")
         assert hasattr(self.manager, "get_postgresql_connection")
 
-    @patch("db_manager.database_manager.pymysql.connect")
+    @patch("src.storage.database.database_manager.pymysql.connect")
     def test_get_mysql_connection_success(self, mock_connect):
         """测试获取MySQL连接成功"""
         # Mock连接
@@ -48,7 +48,7 @@ class TestDatabaseManager:
             assert result is not None
             mock_connect.assert_called_once()
 
-    @patch("db_manager.database_manager.pymysql.connect")
+    @patch("src.storage.database.database_manager.pymysql.connect")
     def test_get_mysql_connection_failure(self, mock_connect):
         """测试MySQL连接失败"""
         # Mock连接失败
@@ -58,7 +58,7 @@ class TestDatabaseManager:
         with pytest.raises(Exception):
             self.manager.get_mysql_connection()
 
-    @patch("db_manager.database_manager.psycopg2.connect")
+    @patch("src.storage.database.database_manager.psycopg2.connect")
     def test_get_postgresql_connection_success(self, mock_connect):
         """测试获取PostgreSQL连接成功"""
         # Mock连接
@@ -81,7 +81,7 @@ class TestDatabaseManager:
             if result is not None:
                 mock_connect.assert_called_once()
 
-    @patch("db_manager.database_manager.taos.connect")
+    @patch("src.storage.database.database_manager.taos.connect")
     def test_get_tdengine_connection_success(self, mock_connect):
         """测试获取TDengine连接成功"""
         # Mock连接
@@ -103,7 +103,7 @@ class TestDatabaseManager:
             if result is not None:
                 mock_connect.assert_called_once()
 
-    @patch("db_manager.database_manager.redis.Redis")
+    @patch("src.storage.database.database_manager.redis.Redis")
     def test_get_redis_connection_success(self, mock_redis):
         """测试获取Redis连接成功"""
         # Mock连接
@@ -123,7 +123,7 @@ class TestDatabaseManager:
     @patch(
         "builtins.open", new_callable=mock_open, read_data="version: 2.0\ntables: []"
     )
-    @patch("db_manager.database_manager.yaml.safe_load")
+    @patch("src.storage.database.database_manager.yaml.safe_load")
     def test_load_table_config(self, mock_yaml, mock_file):
         """测试加载表配置"""
         # Mock YAML配置
@@ -183,7 +183,7 @@ class TestDatabaseManager:
 class TestDatabaseOperations:
     """数据库操作测试"""
 
-    @patch("db_manager.database_manager.pymysql.connect")
+    @patch("src.storage.database.database_manager.pymysql.connect")
     def test_execute_query(self, mock_connect):
         """测试执行查询"""
         # Mock连接和cursor
@@ -209,7 +209,7 @@ class TestDatabaseOperations:
             # 方法可能不存在
             pass
 
-    @patch("db_manager.database_manager.pymysql.connect")
+    @patch("src.storage.database.database_manager.pymysql.connect")
     def test_transaction_management(self, mock_connect):
         """测试事务管理"""
         # Mock连接

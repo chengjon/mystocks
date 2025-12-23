@@ -105,7 +105,7 @@ const queryData = async () => {
 
 const refreshData = async () => {
   const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
-  
+
   refreshing.value = true
   try {
     await axios.post(`${API_BASE}/api/market/lhb/refresh`, null, {

@@ -1,7 +1,7 @@
 # 测试覆盖率报告 (Test Coverage Report)
 
-**生成日期**: 2025-11-13  
-**测试框架**: pytest 7.4.4 + pytest-cov 5.0.0  
+**生成日期**: 2025-11-13
+**测试框架**: pytest 7.4.4 + pytest-cov 5.0.0
 **项目**: MyStocks v2.1
 
 ---
@@ -35,24 +35,24 @@
 ```
 ModuleNotFoundError: No module named 'mystocks'
 ```
-**位置**: `src/adapters/financial_adapter.py:46`  
-**原因**: 使用了旧的 `mystocks.interfaces.data_source` 导入路径  
+**位置**: `src/adapters/financial_adapter.py:46`
+**原因**: 使用了旧的 `mystocks.interfaces.data_source` 导入路径
 **修复**: 需要更新为 `from src.interfaces import IDataSource`
 
 ### 2. `test_save_realtime_data.py`
 ```
 ModuleNotFoundError: No module named 'src.db_manager.df2sql'
 ```
-**位置**: `scripts/runtime/save_realtime_data.py:25`  
-**原因**: `df2sql` 模块不存在或路径错误  
+**位置**: `scripts/runtime/save_realtime_data.py:25`
+**原因**: `df2sql` 模块不存在或路径错误
 **修复**: 检查模块是否存在，或移除过时的导入
 
 ### 3. `test_tdx_path_validation.py`
 ```
 ModuleNotFoundError: No module named 'src.adapters.tdx.tdx_read'
 ```
-**位置**: `src/adapters/tdx/tdx_read.py`  
-**原因**: TDX模块路径错误或文件不存在  
+**位置**: `src/adapters/tdx/tdx_read.py`
+**原因**: TDX模块路径错误或文件不存在
 **修复**: 确认TDX适配器的正确路径
 
 ---
@@ -233,5 +233,5 @@ pytest scripts/tests/ --cov=src --cov=web/backend/app \
 
 ---
 
-**生成工具**: pytest-cov 5.0.0  
+**生成工具**: pytest-cov 5.0.0
 **报告生成时间**: 2025-11-13 03:21 UTC+8

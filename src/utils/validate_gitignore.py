@@ -13,11 +13,10 @@
 # 版权：MyStocks Project © 2025
 """
 
-import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List
 
 
 class GitIgnoreValidator:
@@ -63,7 +62,7 @@ class GitIgnoreValidator:
                 check=True,
             )
             return result.stdout
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             return ""
 
     def get_untracked_files(self) -> List[str]:
@@ -118,7 +117,7 @@ class GitIgnoreValidator:
                     {
                         "type": "WRONGLY_IGNORED",
                         "file": file_path,
-                        "message": f"应该可见但被忽略",
+                        "message": "应该可见但被忽略",
                     }
                 )
             else:
@@ -134,7 +133,9 @@ class GitIgnoreValidator:
         all_exist = True
         for gitignore_path in gitignore_files:
             if gitignore_path.exists():
-                self.successes.append(f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在")
+                self.successes.append(
+                    f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在"
+                )
             else:
                 self.issues.append(
                     {
@@ -157,14 +158,20 @@ class GitIgnoreValidator:
 
                 if pattern == "__pycache__":
                     commands.append("# 清理Python缓存")
-                    commands.append("find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null")
+                    commands.append(
+                        "find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null"
+                    )
                     commands.append("find . -type f -name '*.pyc' -delete")
                 elif pattern == "*.log":
                     commands.append("# 清理日志文件")
                     commands.append("find . -type f -name '*.log' -delete")
                 elif pattern == "node_modules":
-                    commands.append("# 清理Node.js依赖（谨慎使用，可能需要重新npm install）")
-                    commands.append("# find . -type d -name 'node_modules' -exec rm -rf {} +")
+                    commands.append(
+                        "# 清理Node.js依赖（谨慎使用，可能需要重新npm install）"
+                    )
+                    commands.append(
+                        "# find . -type d -name 'node_modules' -exec rm -rf {} +"
+                    )
 
         return commands
 
@@ -185,7 +192,7 @@ class GitIgnoreValidator:
         self.check_exception_files()
 
         # 统计
-        report.append(f"📊 验证统计:")
+        report.append("📊 验证统计:")
         report.append(f"  - ✅ 通过检查: {len(self.successes)} 项")
         report.append(f"  - ❌ 发现问题: {len(self.issues)} 项")
         report.append(f"  - ⚠️  警告: {len(self.warnings)} 项\n")
@@ -237,19 +244,31 @@ class GitIgnoreValidator:
         checks = [
             (
                 "git status不显示__pycache__目录",
-                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__" for i in self.issues),
+                not any(
+                    i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__"
+                    for i in self.issues
+                ),
             ),
             (
                 "git status不显示*.pyc文件",
-                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc" for i in self.issues),
+                not any(
+                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc"
+                    for i in self.issues
+                ),
             ),
             (
                 "git status不显示*.log文件",
-                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log" for i in self.issues),
+                not any(
+                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log"
+                    for i in self.issues
+                ),
             ),
             (
                 "git status不显示.env文件",
-                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == ".env" for i in self.issues),
+                not any(
+                    i["type"] == "NOT_IGNORED" and i["pattern"] == ".env"
+                    for i in self.issues
+                ),
             ),
             (
                 ".gitignore文件存在",

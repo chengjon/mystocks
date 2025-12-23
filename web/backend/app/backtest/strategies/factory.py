@@ -3,6 +3,7 @@ Strategy Factory
 
 策略工厂 - 统一创建和管理策略实例
 """
+
 from typing import Dict, Any, Type, List, Optional
 import logging
 
@@ -46,7 +47,9 @@ class StrategyFactory:
         logger.info(f"策略已注册: {name} -> {strategy_class.__name__}")
 
     @classmethod
-    def create_strategy(cls, strategy_type: str, parameters: Dict[str, Any] = None) -> BaseStrategy:
+    def create_strategy(
+        cls, strategy_type: str, parameters: Dict[str, Any] = None
+    ) -> BaseStrategy:
         """
         创建策略实例
 
@@ -69,7 +72,9 @@ class StrategyFactory:
         strategy_class = cls._strategies[strategy_type]
         strategy = strategy_class(parameters=parameters)
 
-        logger.info(f"策略实例已创建: {strategy_type} with {len(parameters or {})} parameters")
+        logger.info(
+            f"策略实例已创建: {strategy_type} with {len(parameters or {})} parameters"
+        )
         return strategy
 
     @classmethod
@@ -85,7 +90,7 @@ class StrategyFactory:
             # 创建临时实例以获取信息
             temp_instance = strategy_class()
             info = temp_instance.get_info()
-            info['type'] = name
+            info["type"] = name
 
             strategies.append(info)
 
@@ -108,7 +113,7 @@ class StrategyFactory:
         strategy_class = cls._strategies[strategy_type]
         temp_instance = strategy_class()
         info = temp_instance.get_info()
-        info['type'] = strategy_type
+        info["type"] = strategy_type
 
         return info
 
@@ -130,7 +135,9 @@ class StrategyFactory:
         return strategy_class.get_default_parameters()
 
     @classmethod
-    def validate_parameters(cls, strategy_type: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_parameters(
+        cls, strategy_type: str, parameters: Dict[str, Any]
+    ) -> tuple[bool, Optional[str]]:
         """
         验证策略参数
 
@@ -150,24 +157,24 @@ class StrategyFactory:
 
         # 检查必需参数
         for param_def in schema:
-            param_name = param_def['name']
+            param_name = param_def["name"]
             if param_name not in parameters and param_name not in defaults:
                 return False, f"缺少必需参数: {param_name}"
 
             # 类型和范围检查
             if param_name in parameters:
                 value = parameters[param_name]
-                param_type = param_def.get('type')
+                param_type = param_def.get("type")
 
-                if param_type == 'int' and not isinstance(value, int):
+                if param_type == "int" and not isinstance(value, int):
                     return False, f"参数 {param_name} 应该是整数"
-                elif param_type == 'float' and not isinstance(value, (int, float)):
+                elif param_type == "float" and not isinstance(value, (int, float)):
                     return False, f"参数 {param_name} 应该是浮点数"
 
                 # 范围检查
-                if 'min' in param_def and value < param_def['min']:
+                if "min" in param_def and value < param_def["min"]:
                     return False, f"参数 {param_name} 不能小于 {param_def['min']}"
-                if 'max' in param_def and value > param_def['max']:
+                if "max" in param_def and value > param_def["max"]:
                     return False, f"参数 {param_name} 不能大于 {param_def['max']}"
 
         return True, None
@@ -176,21 +183,21 @@ class StrategyFactory:
 # 自动注册所有预置策略
 
 # 原有4个策略
-StrategyFactory.register_strategy('momentum', MomentumStrategy)
-StrategyFactory.register_strategy('mean_reversion', MeanReversionStrategy)
-StrategyFactory.register_strategy('breakout', BreakoutStrategy)
-StrategyFactory.register_strategy('grid', GridStrategy)
+StrategyFactory.register_strategy("momentum", MomentumStrategy)
+StrategyFactory.register_strategy("mean_reversion", MeanReversionStrategy)
+StrategyFactory.register_strategy("breakout", BreakoutStrategy)
+StrategyFactory.register_strategy("grid", GridStrategy)
 
 # 第一批新增策略 (4个)
-StrategyFactory.register_strategy('dual_ma', DualMAStrategy)
-StrategyFactory.register_strategy('turtle', TurtleStrategy)
-StrategyFactory.register_strategy('macd', MACDStrategy)
-StrategyFactory.register_strategy('bollinger_breakout', BollingerBreakoutStrategy)
+StrategyFactory.register_strategy("dual_ma", DualMAStrategy)
+StrategyFactory.register_strategy("turtle", TurtleStrategy)
+StrategyFactory.register_strategy("macd", MACDStrategy)
+StrategyFactory.register_strategy("bollinger_breakout", BollingerBreakoutStrategy)
 
 # 第二批新增策略 (4个技术指标策略)
-StrategyFactory.register_strategy('kdj', KDJStrategy)
-StrategyFactory.register_strategy('cci', CCIStrategy)
-StrategyFactory.register_strategy('adx', ADXStrategy)
-StrategyFactory.register_strategy('sar', SARStrategy)
+StrategyFactory.register_strategy("kdj", KDJStrategy)
+StrategyFactory.register_strategy("cci", CCIStrategy)
+StrategyFactory.register_strategy("adx", ADXStrategy)
+StrategyFactory.register_strategy("sar", SARStrategy)
 
 logger.info(f"策略工厂初始化完成，已注册 {len(StrategyFactory._strategies)} 个策略")

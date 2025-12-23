@@ -6,7 +6,7 @@ GPU加速引擎单元测试
 import pytest
 import pandas as pd
 import numpy as np
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 
 class TestBacktestEngineGPU:

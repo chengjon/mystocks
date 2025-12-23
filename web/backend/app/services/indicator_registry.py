@@ -3,8 +3,7 @@ Indicator Registry Service
 管理所有161个TA-Lib技术指标的元数据注册表
 """
 
-import talib
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 from enum import Enum
 
 

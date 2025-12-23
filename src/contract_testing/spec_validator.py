@@ -8,7 +8,7 @@ import json
 import yaml
 import logging
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class HTTPMethod(str, Enum):
     """HTTP methods supported by API"""
+
     GET = "get"
     POST = "post"
     PUT = "put"
@@ -29,6 +30,7 @@ class HTTPMethod(str, Enum):
 @dataclass
 class Parameter:
     """API Parameter definition"""
+
     name: str
     in_: str  # path, query, header, body
     required: bool = False
@@ -51,6 +53,7 @@ class Parameter:
 @dataclass
 class APIEndpoint:
     """API Endpoint definition from OpenAPI spec"""
+
     path: str
     method: HTTPMethod
     summary: str = ""
@@ -120,11 +123,11 @@ class SpecificationValidator:
             raise FileNotFoundError(f"Specification file not found: {spec_path}")
 
         try:
-            if spec_path.endswith('.json'):
-                with open(spec_path, 'r', encoding='utf-8') as f:
+            if spec_path.endswith(".json"):
+                with open(spec_path, "r", encoding="utf-8") as f:
                     self.spec = json.load(f)
-            elif spec_path.endswith(('.yaml', '.yml')):
-                with open(spec_path, 'r', encoding='utf-8') as f:
+            elif spec_path.endswith((".yaml", ".yml")):
+                with open(spec_path, "r", encoding="utf-8") as f:
                     self.spec = yaml.safe_load(f)
             else:
                 raise ValueError("Specification must be .json or .yaml file")
@@ -151,12 +154,12 @@ class SpecificationValidator:
             raise ValueError("Specification is empty")
 
         # Check OpenAPI version
-        openapi_version = self.spec.get('openapi') or self.spec.get('swagger')
+        openapi_version = self.spec.get("openapi") or self.spec.get("swagger")
         if not openapi_version:
             raise ValueError("Missing 'openapi' or 'swagger' field")
 
         # Check required fields
-        required_fields = ['info', 'paths']
+        required_fields = ["info", "paths"]
         for field in required_fields:
             if field not in self.spec:
                 raise ValueError(f"Missing required field: {field}")
@@ -166,26 +169,30 @@ class SpecificationValidator:
 
     def _extract_metadata(self) -> None:
         """Extract metadata from specification"""
-        info = self.spec.get('info', {})
-        self.title = info.get('title', 'Unknown API')
-        self.version = info.get('version', 'unknown')
+        info = self.spec.get("info", {})
+        self.title = info.get("title", "Unknown API")
+        self.version = info.get("version", "unknown")
 
         # Extract base URL
-        servers = self.spec.get('servers', [])
+        servers = self.spec.get("servers", [])
         if servers and isinstance(servers, list) and len(servers) > 0:
-            self.base_url = servers[0].get('url', '')
+            self.base_url = servers[0].get("url", "")
 
         # Extract security schemes
-        self.security_schemes = self.spec.get('components', {}).get('securitySchemes', {})
+        self.security_schemes = self.spec.get("components", {}).get(
+            "securitySchemes", {}
+        )
 
         logger.info(f"📋 API Title: {self.title} v{self.version}")
         logger.info(f"🔗 Base URL: {self.base_url or 'Not specified'}")
-        logger.info(f"🔐 Security Schemes: {list(self.security_schemes.keys()) or 'None'}")
+        logger.info(
+            f"🔐 Security Schemes: {list(self.security_schemes.keys()) or 'None'}"
+        )
 
     def _parse_endpoints(self) -> None:
         """Parse endpoints from specification"""
         self.endpoints = []
-        paths = self.spec.get('paths', {})
+        paths = self.spec.get("paths", {})
 
         for path, methods_spec in paths.items():
             for method_name, method_spec in methods_spec.items():
@@ -196,7 +203,9 @@ class SpecificationValidator:
                     endpoint = self._parse_endpoint(path, method_name, method_spec)
                     self.endpoints.append(endpoint)
                 except Exception as e:
-                    logger.warning(f"⚠️  Failed to parse {method_name.upper()} {path}: {e}")
+                    logger.warning(
+                        f"⚠️  Failed to parse {method_name.upper()} {path}: {e}"
+                    )
 
         logger.info(f"✅ Parsed {len(self.endpoints)} endpoints from specification")
 
@@ -214,36 +223,36 @@ class SpecificationValidator:
         """
         # Parse parameters
         parameters = []
-        for param_spec in spec.get('parameters', []):
+        for param_spec in spec.get("parameters", []):
             param = Parameter(
-                name=param_spec.get('name', ''),
-                in_=param_spec.get('in', 'query'),
-                required=param_spec.get('required', False),
-                description=param_spec.get('description', ''),
-                type=param_spec.get('schema', {}).get('type', 'string'),
-                schema=param_spec.get('schema', {}),
+                name=param_spec.get("name", ""),
+                in_=param_spec.get("in", "query"),
+                required=param_spec.get("required", False),
+                description=param_spec.get("description", ""),
+                type=param_spec.get("schema", {}).get("type", "string"),
+                schema=param_spec.get("schema", {}),
             )
             parameters.append(param)
 
         # Parse request body
         request_body = None
-        if 'requestBody' in spec:
-            request_body = spec['requestBody']
+        if "requestBody" in spec:
+            request_body = spec["requestBody"]
 
         # Parse responses
-        responses = spec.get('responses', {})
+        responses = spec.get("responses", {})
 
         # Create endpoint
         endpoint = APIEndpoint(
             path=path,
             method=HTTPMethod[method.upper()],
-            summary=spec.get('summary', ''),
-            description=spec.get('description', ''),
+            summary=spec.get("summary", ""),
+            description=spec.get("description", ""),
             parameters=parameters,
             request_body=request_body,
             responses={int(k): v for k, v in responses.items() if k.isdigit()},
-            tags=spec.get('tags', []),
-            security=spec.get('security', []),
+            tags=spec.get("tags", []),
+            security=spec.get("security", []),
         )
 
         return endpoint
@@ -304,6 +313,6 @@ class SpecificationValidator:
     def export_endpoints_json(self, output_path: str) -> None:
         """Export parsed endpoints to JSON"""
         endpoints_data = [ep.to_dict() for ep in self.endpoints]
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(endpoints_data, f, ensure_ascii=False, indent=2)
         logger.info(f"✅ Exported {len(endpoints_data)} endpoints to {output_path}")

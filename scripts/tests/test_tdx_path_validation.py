@@ -7,7 +7,6 @@ TDX路径验证和功能测试脚本
 
 import os
 import sys
-import pandas as pd
 from datetime import datetime
 
 # 添加项目路径
@@ -37,7 +36,7 @@ def test_path_validation():
             if files:
                 print("前5个文件/目录:")
                 for i, file in enumerate(files[:5]):
-                    print(f"  {i+1}. {file}")
+                    print(f"  {i + 1}. {file}")
         except Exception as e:
             print(f"✗ 目录访问失败: {e}")
     else:
@@ -66,7 +65,7 @@ def test_basic_operations():
         if all_files:
             print("前5个板块文件:")
             for i, file in enumerate(all_files[:5]):
-                print(f"  {i+1}. {file}")
+                print(f"  {i + 1}. {file}")
         else:
             print("  当前没有板块文件")
     except Exception as e:
@@ -143,14 +142,14 @@ def test_block_operations():
         if not df_internal.empty:
             print("股票列表 (内部格式):")
             for idx, row in df_internal.iterrows():
-                print(f"  {idx+1}. {row['证券代码']}")
+                print(f"  {idx + 1}. {row['证券代码']}")
 
         df_standard = tdx_api.read_tdx_stock_1(test_block_name)
         print(f"✓ 标准格式读取成功，共 {len(df_standard)} 只股票")
         if not df_standard.empty:
             print("股票列表 (标准格式):")
             for idx, row in df_standard.iterrows():
-                print(f"  {idx+1}. {row['证券代码']}")
+                print(f"  {idx + 1}. {row['证券代码']}")
     except Exception as e:
         print(f"✗ 读取板块失败: {e}")
 

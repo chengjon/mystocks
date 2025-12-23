@@ -10,7 +10,6 @@
 """
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import (
     Column,
@@ -18,11 +17,10 @@ from sqlalchemy import (
     String,
     Text,
     Boolean,
-    DateTime,
     TIMESTAMP,
     Index,
 )
-from sqlalchemy.orm import declarative_base, declared_attr
+from sqlalchemy.orm import declared_attr
 
 from app.core.database import Base
 

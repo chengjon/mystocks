@@ -10,7 +10,6 @@ TDengine + PostgreSQL双数据库架构验证测试
 5. requirements.txt不包含pymysql和redis依赖
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -30,7 +29,7 @@ def test_database_target_enum():
     assert "mysql" not in targets, "❌ 不应包含mysql"
     assert "redis" not in targets, "❌ 不应包含redis"
 
-    print(f"✅ DatabaseTarget枚举正确 (仅TDengine和PostgreSQL)")
+    print("✅ DatabaseTarget枚举正确 (仅TDengine和PostgreSQL)")
     return True
 
 
@@ -39,7 +38,6 @@ def test_data_routing():
     print("\n=== 测试2: 数据路由验证 ===")
 
     from src.core.data_classification import DataClassification, DatabaseTarget
-    
 
     all_classifications = list(DataClassification)
     print(f"总数据分类数: {len(all_classifications)}")
@@ -156,9 +154,6 @@ def test_requirements():
 def test_routing_statistics():
     """打印路由统计信息"""
     print("\n=== 路由统计摘要 ===")
-
-    from src.core.data_classification import DatabaseTarget
-    
 
     stats = DataManager().get_routing_statistics()
 

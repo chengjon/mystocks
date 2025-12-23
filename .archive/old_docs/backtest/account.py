@@ -12,7 +12,6 @@
 """
 
 from typing import Dict, List
-from datetime import datetime
 
 
 class Account:
@@ -31,10 +30,12 @@ class Account:
         >>> print(account.get_portfolio_value({'600000': 10.90}))
     """
 
-    def __init__(self,
-                 init_cash: float = 1000000,
-                 commission_rate: float = 0.0003,
-                 stamp_tax_rate: float = 0.001):
+    def __init__(
+        self,
+        init_cash: float = 1000000,
+        commission_rate: float = 0.0003,
+        stamp_tax_rate: float = 0.001,
+    ):
         """
         初始化账户
 
@@ -82,8 +83,7 @@ class Account:
         # 检查资金
         if total_cost > self.cash:
             raise ValueError(
-                f"❌ 资金不足: 需要{total_cost:.2f}元, "
-                f"可用{self.cash:.2f}元"
+                f"❌ 资金不足: 需要{total_cost:.2f}元, " f"可用{self.cash:.2f}元"
             )
 
         # 执行买入
@@ -95,21 +95,25 @@ class Account:
         self.trade_count += 1
 
         # 记录历史
-        self.history.append({
-            'timestamp': timestamp,
-            'symbol': symbol,
-            'direction': 'buy',
-            'amount': amount,
-            'price': price,
-            'stock_value': stock_value,
-            'commission': commission,
-            'stamp_tax': 0.0,
-            'total_cost': total_cost,
-            'cash_after': self.cash
-        })
+        self.history.append(
+            {
+                "timestamp": timestamp,
+                "symbol": symbol,
+                "direction": "buy",
+                "amount": amount,
+                "price": price,
+                "stock_value": stock_value,
+                "commission": commission,
+                "stamp_tax": 0.0,
+                "total_cost": total_cost,
+                "cash_after": self.cash,
+            }
+        )
 
-        print(f"✅ 买入 {symbol} {amount}股 @{price:.2f}元 "
-              f"成本{total_cost:.2f}元（含佣金{commission:.2f}元）")
+        print(
+            f"✅ 买入 {symbol} {amount}股 @{price:.2f}元 "
+            f"成本{total_cost:.2f}元（含佣金{commission:.2f}元）"
+        )
 
     def sell(self, symbol: str, amount: int, price: float, timestamp: str):
         """
@@ -128,8 +132,7 @@ class Account:
         if symbol not in self.positions or self.positions[symbol] < amount:
             current = self.positions.get(symbol, 0)
             raise ValueError(
-                f"❌ 持仓不足: {symbol} 需要{amount}股, "
-                f"持有{current}股"
+                f"❌ 持仓不足: {symbol} 需要{amount}股, " f"持有{current}股"
             )
 
         # 计算收入
@@ -153,21 +156,25 @@ class Account:
         self.trade_count += 1
 
         # 记录历史
-        self.history.append({
-            'timestamp': timestamp,
-            'symbol': symbol,
-            'direction': 'sell',
-            'amount': amount,
-            'price': price,
-            'stock_value': stock_value,
-            'commission': commission,
-            'stamp_tax': stamp_tax,
-            'total_revenue': total_revenue,
-            'cash_after': self.cash
-        })
+        self.history.append(
+            {
+                "timestamp": timestamp,
+                "symbol": symbol,
+                "direction": "sell",
+                "amount": amount,
+                "price": price,
+                "stock_value": stock_value,
+                "commission": commission,
+                "stamp_tax": stamp_tax,
+                "total_revenue": total_revenue,
+                "cash_after": self.cash,
+            }
+        )
 
-        print(f"✅ 卖出 {symbol} {amount}股 @{price:.2f}元 "
-              f"收入{total_revenue:.2f}元（扣佣金{commission:.2f}元+印花税{stamp_tax:.2f}元）")
+        print(
+            f"✅ 卖出 {symbol} {amount}股 @{price:.2f}元 "
+            f"收入{total_revenue:.2f}元（扣佣金{commission:.2f}元+印花税{stamp_tax:.2f}元）"
+        )
 
     def get_portfolio_value(self, current_prices: Dict[str, float]) -> float:
         """
@@ -203,17 +210,18 @@ class Account:
     def get_position_info(self) -> Dict:
         """获取当前持仓信息"""
         return {
-            'cash': self.cash,
-            'positions': self.positions.copy(),
-            'position_count': len(self.positions)
+            "cash": self.cash,
+            "positions": self.positions.copy(),
+            "position_count": len(self.positions),
         }
 
     def get_cost_summary(self) -> Dict:
         """获取交易成本汇总"""
         return {
-            'total_commission': self.total_commission,
-            'total_stamp_tax': self.total_stamp_tax,
-            'total_cost': self.total_commission + self.total_stamp_tax,
-            'trade_count': self.trade_count,
-            'avg_cost_per_trade': (self.total_commission + self.total_stamp_tax) / max(self.trade_count, 1)
+            "total_commission": self.total_commission,
+            "total_stamp_tax": self.total_stamp_tax,
+            "total_cost": self.total_commission + self.total_stamp_tax,
+            "trade_count": self.trade_count,
+            "avg_cost_per_trade": (self.total_commission + self.total_stamp_tax)
+            / max(self.trade_count, 1),
         }

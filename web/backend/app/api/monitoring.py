@@ -4,7 +4,7 @@ Real-time Monitoring System
 """
 
 import os
-from datetime import date, datetime
+from datetime import date
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -37,7 +37,7 @@ router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 async def get_alert_rules(
     rule_type: Optional[AlertRuleType] = None,
     is_active: Optional[bool] = None,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     获取告警规则列表
@@ -57,8 +57,7 @@ async def get_alert_rules(
 
 @router.post("/alert-rules", response_model=AlertRuleResponse)
 async def create_alert_rule(
-    rule: AlertRuleCreate,
-    current_user: User = Depends(get_current_user)
+    rule: AlertRuleCreate, current_user: User = Depends(get_current_user)
 ):
     """
     创建告警规则
@@ -89,7 +88,7 @@ async def create_alert_rule(
 async def update_alert_rule(
     rule_id: int,
     updates: AlertRuleUpdate,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     更新告警规则
@@ -110,8 +109,7 @@ async def update_alert_rule(
 
 @router.delete("/alert-rules/{rule_id}")
 async def delete_alert_rule(
-    rule_id: int,
-    current_user: User = Depends(get_current_user)
+    rule_id: int, current_user: User = Depends(get_current_user)
 ):
     """
     删除告警规则
@@ -153,7 +151,7 @@ async def get_alert_records(
     end_date: Optional[date] = None,
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     查询告警记录
@@ -197,8 +195,7 @@ async def get_alert_records(
 
 @router.post("/alerts/{alert_id}/mark-read")
 async def mark_alert_read(
-    alert_id: int,
-    current_user: User = Depends(get_current_user)
+    alert_id: int, current_user: User = Depends(get_current_user)
 ):
     """
     标记告警为已读
@@ -218,9 +215,7 @@ async def mark_alert_read(
 
 
 @router.post("/alerts/mark-all-read")
-async def mark_all_alerts_read(
-    current_user: User = Depends(get_current_user)
-):
+async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
     """批量标记所有未读告警为已读"""
     try:
         # TODO: 实现批量标记功能
@@ -236,8 +231,7 @@ async def mark_all_alerts_read(
 
 @router.get("/realtime/{symbol}", response_model=RealtimeMonitoringResponse)
 async def get_realtime_monitoring(
-    symbol: str,
-    current_user: User = Depends(get_current_user)
+    symbol: str, current_user: User = Depends(get_current_user)
 ):
     """
     获取单只股票的最新实时监控数据
@@ -278,7 +272,7 @@ async def get_realtime_monitoring_list(
     limit: int = Query(100, ge=1, le=1000),
     is_limit_up: Optional[bool] = None,
     is_limit_down: Optional[bool] = None,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     获取实时监控数据列表
@@ -297,11 +291,11 @@ async def get_realtime_monitoring_list(
     try:
         session = monitoring_service.get_session()
         try:
-            from sqlalchemy import and_
-
             from app.models.monitoring import RealtimeMonitoring
 
-            query = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == date.today())
+            query = session.query(RealtimeMonitoring).filter(
+                RealtimeMonitoring.trade_date == date.today()
+            )
 
             # 筛选指定股票
             if symbols:
@@ -316,7 +310,9 @@ async def get_realtime_monitoring_list(
 
             # 对于每只股票，只取最新的记录
             # 这里简化处理，实际应该用子查询
-            records = query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
+            records = (
+                query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
+            )
 
             return [RealtimeMonitoringResponse.from_orm(r) for r in records]
         finally:
@@ -327,8 +323,7 @@ async def get_realtime_monitoring_list(
 
 @router.post("/realtime/fetch")
 async def fetch_realtime_data(
-    symbols: Optional[List[str]] = None,
-    current_user: User = Depends(get_current_user)
+    symbols: Optional[List[str]] = None, current_user: User = Depends(get_current_user)
 ):
     """
     手动触发获取实时数据
@@ -378,7 +373,7 @@ async def get_dragon_tiger_list(
     symbol: Optional[str] = None,
     min_net_amount: Optional[float] = None,
     limit: int = Query(100, ge=1, le=500),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     获取龙虎榜数据
@@ -402,14 +397,18 @@ async def get_dragon_tiger_list(
             if trade_date is None:
                 trade_date = date.today()
 
-            query = session.query(DragonTigerList).filter(DragonTigerList.trade_date == trade_date)
+            query = session.query(DragonTigerList).filter(
+                DragonTigerList.trade_date == trade_date
+            )
 
             if symbol:
                 query = query.filter(DragonTigerList.symbol == symbol)
             if min_net_amount is not None:
                 query = query.filter(DragonTigerList.net_amount >= min_net_amount)
 
-            records = query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
+            records = (
+                query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
+            )
 
             return [DragonTigerListResponse.from_orm(r) for r in records]
         finally:
@@ -420,8 +419,7 @@ async def get_dragon_tiger_list(
 
 @router.post("/dragon-tiger/fetch")
 async def fetch_dragon_tiger_data(
-    trade_date: Optional[date] = None,
-    current_user: User = Depends(get_current_user)
+    trade_date: Optional[date] = None, current_user: User = Depends(get_current_user)
 ):
     """
     手动触发获取龙虎榜数据
@@ -454,9 +452,7 @@ async def fetch_dragon_tiger_data(
 
 
 @router.get("/summary", response_model=MonitoringSummaryResponse)
-async def get_monitoring_summary(
-    current_user: User = Depends(get_current_user)
-):
+async def get_monitoring_summary(current_user: User = Depends(get_current_user)):
     """
     获取监控系统摘要
 
@@ -500,9 +496,7 @@ async def get_monitoring_summary(
 
 
 @router.get("/stats/today")
-async def get_today_statistics(
-    current_user: User = Depends(get_current_user)
-):
+async def get_today_statistics(current_user: User = Depends(get_current_user)):
     """获取今日统计数据"""
     try:
         session = monitoring_service.get_session()
@@ -511,20 +505,28 @@ async def get_today_statistics(
             from sqlalchemy import text
 
             # 今日告警摘要
-            alerts_summary = session.execute(text("SELECT * FROM v_today_alerts_summary")).fetchall()
+            alerts_summary = session.execute(
+                text("SELECT * FROM v_today_alerts_summary")
+            ).fetchall()
 
             # 活跃规则
-            active_rules = session.execute(text("SELECT * FROM v_active_alert_rules LIMIT 10")).fetchall()
+            active_rules = session.execute(
+                text("SELECT * FROM v_active_alert_rules LIMIT 10")
+            ).fetchall()
 
             # 实时监控摘要
-            realtime_summary = session.execute(text("SELECT * FROM v_realtime_summary")).fetchone()
+            realtime_summary = session.execute(
+                text("SELECT * FROM v_realtime_summary")
+            ).fetchone()
 
             return {
                 "success": True,
                 "data": {
                     "alerts_summary": [dict(row._mapping) for row in alerts_summary],
                     "active_rules": [dict(row._mapping) for row in active_rules],
-                    "realtime_summary": (dict(realtime_summary._mapping) if realtime_summary else {}),
+                    "realtime_summary": (
+                        dict(realtime_summary._mapping) if realtime_summary else {}
+                    ),
                 },
             }
         finally:
@@ -547,8 +549,7 @@ class MonitoringControlRequest(BaseModel):
 
 @router.post("/control/start")
 async def start_monitoring(
-    request: MonitoringControlRequest,
-    current_user: User = Depends(get_current_user)
+    request: MonitoringControlRequest, current_user: User = Depends(get_current_user)
 ):
     """
     启动监控
@@ -570,9 +571,7 @@ async def start_monitoring(
 
 
 @router.post("/control/stop")
-async def stop_monitoring(
-    current_user: User = Depends(get_current_user)
-):
+async def stop_monitoring(current_user: User = Depends(get_current_user)):
     """停止监控"""
     try:
         monitoring_service.stop_monitoring()

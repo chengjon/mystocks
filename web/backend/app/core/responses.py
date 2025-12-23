@@ -8,7 +8,7 @@
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
@@ -19,7 +19,9 @@ class APIResponse(BaseModel):
     success: bool = Field(True, description="操作是否成功")
     data: Optional[Dict[str, Any]] = Field(None, description="响应数据")
     message: Optional[str] = Field("操作成功", description="响应消息")
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="响应时间戳")
+    timestamp: datetime = Field(
+        default_factory=datetime.utcnow, description="响应时间戳"
+    )
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
 
 
@@ -29,7 +31,9 @@ class ErrorResponse(BaseModel):
     success: bool = Field(False, description="操作是否成功")
     error: Dict[str, Any] = Field(..., description="错误详情")
     message: str = Field(..., description="错误消息")
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="响应时间戳")
+    timestamp: datetime = Field(
+        default_factory=datetime.utcnow, description="响应时间戳"
+    )
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
 
 
@@ -64,14 +68,19 @@ class PaginatedResponse(APIResponse):
 
 
 def create_success_response(
-    data: Optional[Dict[str, Any]] = None, message: str = "操作成功", request_id: Optional[str] = None
+    data: Optional[Dict[str, Any]] = None,
+    message: str = "操作成功",
+    request_id: Optional[str] = None,
 ) -> APIResponse:
     """创建成功响应"""
     return APIResponse(success=True, data=data, message=message, request_id=request_id)
 
 
 def create_error_response(
-    error_code: str, message: str, details: Optional[Dict[str, Any]] = None, request_id: Optional[str] = None
+    error_code: str,
+    message: str,
+    details: Optional[Dict[str, Any]] = None,
+    request_id: Optional[str] = None,
 ) -> ErrorResponse:
     """创建错误响应"""
     error_info = {"code": error_code, "message": message}
@@ -83,15 +92,24 @@ def create_error_response(
 
 
 def create_health_response(
-    service: str, status: str = "healthy", details: Optional[Dict[str, Any]] = None, request_id: Optional[str] = None
+    service: str,
+    status: str = "healthy",
+    details: Optional[Dict[str, Any]] = None,
+    request_id: Optional[str] = None,
 ) -> APIResponse:
     """创建健康检查响应"""
-    health_data = {"status": status, "service": service, "timestamp": datetime.utcnow().isoformat()}
+    health_data = {
+        "status": status,
+        "service": service,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
 
     if details:
         health_data.update(details)
 
-    return create_success_response(data=health_data, message=f"服务{service}状态检查", request_id=request_id)
+    return create_success_response(
+        data=health_data, message=f"服务{service}状态检查", request_id=request_id
+    )
 
 
 # 标准错误代码

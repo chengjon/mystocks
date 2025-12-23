@@ -4,7 +4,6 @@
 将旧的直接导入改为从src目录导入
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -106,7 +105,7 @@ def main():
     project_root = Path(__file__).parent
 
     print(f"📁 项目根目录: {project_root}")
-    print(f"🔍 查找Python文件...")
+    print("🔍 查找Python文件...")
 
     # 查找所有Python文件
     python_files = find_python_files(project_root)
@@ -139,7 +138,7 @@ def main():
     print("=" * 60)
     print(" 更新完成")
     print("=" * 60)
-    print(f"📊 统计:")
+    print("📊 统计:")
     print(f"  - 更新文件数: {len(updated_files)}")
     print(f"  - 总更改数: {total_changes}")
     print()

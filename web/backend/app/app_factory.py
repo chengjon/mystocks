@@ -2,7 +2,6 @@ import os
 import secrets
 import time
 from contextlib import asynccontextmanager
-from typing import List, Dict, Any
 
 import structlog
 from fastapi import FastAPI, Request
@@ -15,18 +14,31 @@ from sqlalchemy import text
 
 # 导入缓存淘汰调度器
 from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
+
 # 导入配置
 from .core.config import settings
+
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
+
 # 导入Socket.IO服务器管理器
 from .core.socketio_manager import get_socketio_manager
+
 # 导入统一响应格式中间件
 from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
+
 # 导入响应模型，用于全局异常处理
-from .core.responses import ErrorCodes, ResponseMessages, create_error_response, create_health_response, create_success_response
+from .core.responses import (
+    ErrorCodes,
+    ResponseMessages,
+    create_error_response,
+    create_health_response,
+    create_success_response,
+)
+
 # 导入输入验证中间件
 from .core.validation import request_middleware
 
@@ -144,7 +156,9 @@ def create_app() -> FastAPI:
         docs_url=None,  # 禁用默认 Swagger UI（将手动配置本地版本）
         redoc_url="/api/redoc",
         swagger_ui_parameters=openapi_config.get("swagger_ui_parameters"),
-        swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
+        swagger_ui_oauth2_redirect_url=openapi_config.get(
+            "swagger_ui_oauth2_redirect_url"
+        ),
         lifespan=lifespan,  # 添加生命周期管理
     )
 
@@ -185,7 +199,6 @@ def create_app() -> FastAPI:
 
     logger.info("✅ Socket.IO服务器已挂载")
 
-
     # SECURITY FIX 1.2: CSRF验证中间件
     @app.middleware("http")
     async def csrf_protection_middleware(request: Request, call_next):
@@ -225,7 +238,7 @@ def create_app() -> FastAPI:
                         content=create_error_response(
                             error_code=ErrorCodes.FORBIDDEN,
                             message="CSRF token is required for this request",
-                            request_id=getattr(request.state, "request_id", None)
+                            request_id=getattr(request.state, "request_id", None),
                         ).dict(exclude_unset=True),
                     )
 
@@ -239,13 +252,12 @@ def create_app() -> FastAPI:
                         content=create_error_response(
                             error_code=ErrorCodes.FORBIDDEN,
                             message="CSRF token is invalid or expired",
-                            request_id=getattr(request.state, "request_id", None)
+                            request_id=getattr(request.state, "request_id", None),
                         ).dict(exclude_unset=True),
                     )
 
         response = await call_next(request)
         return response
-
 
     # 请求日志中间件
     @app.middleware("http")
@@ -274,7 +286,6 @@ def create_app() -> FastAPI:
 
         return response
 
-
     # 全局异常处理 - 使用统一响应格式
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
@@ -292,7 +303,6 @@ def create_app() -> FastAPI:
                 request_id=request_id,
             ).dict(exclude_unset=True),
         )
-
 
     # 健康检查端点 - 使用统一响应格式
     @app.get("/health")
@@ -312,7 +322,6 @@ def create_app() -> FastAPI:
             request_id=request_id,
         )
 
-
     # Socket.IO健康检查端点
     @app.get("/api/socketio-status")
     async def socketio_status():
@@ -324,7 +333,6 @@ def create_app() -> FastAPI:
             "statistics": stats,
             "timestamp": time.time(),
         }
-
 
     # SECURITY FIX 1.2: CSRF Token 端点
     @app.get("/api/csrf-token")
@@ -344,7 +352,6 @@ def create_app() -> FastAPI:
             "token_type": "Bearer",
             "expires_in": csrf_manager.token_timeout,
         }
-
 
     # 根路径重定向到文档 - 使用统一响应格式
     @app.get("/")
@@ -366,7 +373,6 @@ def create_app() -> FastAPI:
             request_id=request_id,
         )
 
-
     # 自定义 Swagger UI 端点（使用本地静态文件）
     @app.get("/api/docs", include_in_schema=False)
     async def custom_swagger_ui_html():
@@ -382,7 +388,6 @@ def create_app() -> FastAPI:
             swagger_favicon_url="/swagger-ui-static/favicon-32x32.png",
         )
 
-
     # 添加 /docs 重定向到 /api/docs
     @app.get("/docs", include_in_schema=False)
     async def docs_redirect():
@@ -392,6 +397,7 @@ def create_app() -> FastAPI:
     # TODO: Register routers here
     # 导入 API 路由 - 优化结构: 先导入，后统一挂载
     from .api.register_routers import register_all_routers
+
     register_all_routers(app)
     logger.info("✅ All API routers registered successfully")
 

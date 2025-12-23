@@ -12,7 +12,7 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 # ==================== API 元数据 ====================
 

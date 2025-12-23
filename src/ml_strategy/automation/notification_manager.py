@@ -28,7 +28,6 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
-import json
 
 # Email支持（可选）
 try:
@@ -285,7 +284,7 @@ class NotificationManager:
         message += f"价格: {price:.2f}"
 
         if context:
-            message += f"\n\n附加信息:\n"
+            message += "\n\n附加信息:\n"
             for key, value in context.items():
                 message += f"  {key}: {value}\n"
 
@@ -413,11 +412,11 @@ class NotificationManager:
                   {notification.title}
                 </h2>
                 <div style="line-height: 1.6;">
-                  {notification.message.replace(chr(10), '<br>')}
+                  {notification.message.replace(chr(10), "<br>")}
                 </div>
                 <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
                 <div style="font-size: 12px; color: #757575;">
-                  <p>通知时间: {notification.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
+                  <p>通知时间: {notification.timestamp.strftime("%Y-%m-%d %H:%M:%S")}</p>
                   <p>通知级别: {notification.level.value.upper()}</p>
                 </div>
               </div>
@@ -531,7 +530,7 @@ if __name__ == "__main__":
         success = manager.send_notification(
             title="重复通知", message="测试频率限制", level=NotificationLevel.INFO
         )
-        print(f"  第{i+1}次发送: {'成功' if success else '被限制'}")
+        print(f"  第{i + 1}次发送: {'成功' if success else '被限制'}")
 
     # 获取统计
     print("\n测试6: 通知统计")

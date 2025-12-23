@@ -6,12 +6,12 @@ PostgreSQL数据访问层真实类单元测试
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+from datetime import datetime
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))
 
 
 class TestPostgreSQLDataAccessReal:
@@ -30,12 +30,15 @@ class TestPostgreSQLDataAccessReal:
         self.mock_conn.cursor.return_value = self.mock_cursor
         # Add encoding attribute required by psycopg2.extras.execute_values
         # execute_values accesses cursor.connection.encoding
-        self.mock_conn.encoding = 'UTF8'
+        self.mock_conn.encoding = "UTF8"
         self.mock_cursor.connection = self.mock_conn
 
-        with patch('src.data_access.postgresql_access.get_connection_manager') as mock_get_cm:
+        with patch(
+            "src.data_access.postgresql_access.get_connection_manager"
+        ) as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.postgresql_access import PostgreSQLDataAccess
+
             self.db = PostgreSQLDataAccess()
             yield
 
@@ -58,53 +61,51 @@ class TestPostgreSQLDataAccessReal:
 
     def test_create_table(self):
         """测试创建表"""
-        schema = {
-            'symbol': 'VARCHAR(20)',
-            'date': 'DATE',
-            'close': 'DECIMAL(10,2)'
-        }
+        schema = {"symbol": "VARCHAR(20)", "date": "DATE", "close": "DECIMAL(10,2)"}
 
-        self.db.create_table('test_table', schema, primary_key='symbol, date')
+        self.db.create_table("test_table", schema, primary_key="symbol, date")
 
         self.mock_cursor.execute.assert_called()
         call_args = self.mock_cursor.execute.call_args[0][0]
-        assert 'CREATE TABLE' in call_args
-        assert 'test_table' in call_args
+        assert "CREATE TABLE" in call_args
+        assert "test_table" in call_args
 
     def test_create_hypertable(self):
         """测试创建时序表"""
-        self.db.create_hypertable('kline_data', 'timestamp', '7 days')
+        self.db.create_hypertable("kline_data", "timestamp", "7 days")
 
         self.mock_cursor.execute.assert_called()
 
     def test_insert_dataframe(self):
         """测试插入DataFrame"""
-        df = pd.DataFrame({
-            'symbol': ['600519', '000001'],
-            'price': [1750.50, 12.35],
-            'date': ['2024-01-01', '2024-01-01']
-        })
+        df = pd.DataFrame(
+            {
+                "symbol": ["600519", "000001"],
+                "price": [1750.50, 12.35],
+                "date": ["2024-01-01", "2024-01-01"],
+            }
+        )
 
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
-            result = self.db.insert_dataframe('stocks', df)
+        with patch(
+            "src.data_access.postgresql_access.execute_values"
+        ) as mock_execute_values:
+            result = self.db.insert_dataframe("stocks", df)
 
             mock_execute_values.assert_called_once()
             # Verify the SQL pattern
             call_args = mock_execute_values.call_args
-            assert 'INSERT INTO stocks' in call_args[0][1]
+            assert "INSERT INTO stocks" in call_args[0][1]
 
     def test_query(self):
         """测试查询"""
         self.mock_cursor.fetchall.return_value = [
-            ('600519', 1750.50, '2024-01-01'),
-            ('000001', 12.35, '2024-01-01')
+            ("600519", 1750.50, "2024-01-01"),
+            ("000001", 12.35, "2024-01-01"),
         ]
-        self.mock_cursor.description = [
-            ('symbol',), ('price',), ('date',)
-        ]
+        self.mock_cursor.description = [("symbol",), ("price",), ("date",)]
 
-        result = self.db.query('stocks')
+        result = self.db.query("stocks")
 
         assert isinstance(result, pd.DataFrame)
         self.mock_cursor.execute.assert_called()
@@ -112,12 +113,12 @@ class TestPostgreSQLDataAccessReal:
     def test_query_by_time_range(self):
         """测试时间范围查询"""
         self.mock_cursor.fetchall.return_value = []
-        self.mock_cursor.description = [('time',), ('value',)]
+        self.mock_cursor.description = [("time",), ("value",)]
 
         start = datetime(2024, 1, 1)
         end = datetime(2024, 1, 31)
 
-        result = self.db.query_by_time_range('kline', 'date', start, end)
+        result = self.db.query_by_time_range("kline", "date", start, end)
 
         self.mock_cursor.execute.assert_called()
 
@@ -126,36 +127,36 @@ class TestPostgreSQLDataAccessReal:
         self.mock_cursor.rowcount = 5
 
         # delete() expects (table_name: str, where: str) - where is a SQL string condition
-        self.db.delete('stocks', "symbol = '600519'")
+        self.db.delete("stocks", "symbol = '600519'")
 
         self.mock_cursor.execute.assert_called()
         call_args = self.mock_cursor.execute.call_args[0][0]
-        assert 'DELETE' in call_args
+        assert "DELETE" in call_args
 
     def test_upsert_dataframe(self):
         """测试upsert操作"""
-        df = pd.DataFrame({
-            'symbol': ['600519'],
-            'price': [1800.00],
-            'date': ['2024-01-01']
-        })
+        df = pd.DataFrame(
+            {"symbol": ["600519"], "price": [1800.00], "date": ["2024-01-01"]}
+        )
 
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
-            self.db.upsert_dataframe('stocks', df, conflict_columns=['symbol', 'date'])
+        with patch(
+            "src.data_access.postgresql_access.execute_values"
+        ) as mock_execute_values:
+            self.db.upsert_dataframe("stocks", df, conflict_columns=["symbol", "date"])
 
             mock_execute_values.assert_called_once()
             # Verify the SQL pattern includes ON CONFLICT
             call_args = mock_execute_values.call_args
-            assert 'INSERT INTO stocks' in call_args[0][1]
-            assert 'ON CONFLICT' in call_args[0][1]
+            assert "INSERT INTO stocks" in call_args[0][1]
+            assert "ON CONFLICT" in call_args[0][1]
 
     def test_execute_sql(self):
         """测试执行原始SQL"""
         self.mock_cursor.fetchall.return_value = [(1,)]
-        self.mock_cursor.description = [('count',)]
+        self.mock_cursor.description = [("count",)]
 
-        result = self.db.execute_sql('SELECT COUNT(*) FROM stocks')
+        result = self.db.execute_sql("SELECT COUNT(*) FROM stocks")
 
         self.mock_cursor.execute.assert_called()
 
@@ -163,31 +164,30 @@ class TestPostgreSQLDataAccessReal:
         """测试获取表统计"""
         self.mock_cursor.fetchone.return_value = (1000,)
 
-        result = self.db.get_table_stats('stocks')
+        result = self.db.get_table_stats("stocks")
 
         self.mock_cursor.execute.assert_called()
 
     def test_save_data(self):
         """测试save_data方法"""
-        df = pd.DataFrame({
-            'symbol': ['600519'],
-            'price': [1750.50]
-        })
+        df = pd.DataFrame({"symbol": ["600519"], "price": [1750.50]})
 
         # save_data signature: (data, classification, table_name, **kwargs)
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch('src.data_access.postgresql_access.execute_values') as mock_execute_values:
-            result = self.db.save_data(df, None, 'stocks')
+        with patch(
+            "src.data_access.postgresql_access.execute_values"
+        ) as mock_execute_values:
+            result = self.db.save_data(df, None, "stocks")
 
             mock_execute_values.assert_called_once()
             assert result is True
 
     def test_load_data(self):
         """测试load_data方法"""
-        self.mock_cursor.fetchall.return_value = [('600519', 1750.50)]
-        self.mock_cursor.description = [('symbol',), ('price',)]
+        self.mock_cursor.fetchall.return_value = [("600519", 1750.50)]
+        self.mock_cursor.description = [("symbol",), ("price",)]
 
-        result = self.db.load_data('stocks')
+        result = self.db.load_data("stocks")
 
         assert isinstance(result, pd.DataFrame)
 
@@ -220,12 +220,15 @@ class TestPostgreSQLDataAccessEdgeCases:
         self.mock_conn.cursor.return_value = self.mock_cursor
         # Add encoding attribute required by psycopg2.extras.execute_values
         # execute_values accesses cursor.connection.encoding
-        self.mock_conn.encoding = 'UTF8'
+        self.mock_conn.encoding = "UTF8"
         self.mock_cursor.connection = self.mock_conn
 
-        with patch('src.data_access.postgresql_access.get_connection_manager') as mock_get_cm:
+        with patch(
+            "src.data_access.postgresql_access.get_connection_manager"
+        ) as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.postgresql_access import PostgreSQLDataAccess
+
             self.db = PostgreSQLDataAccess()
             yield
 
@@ -233,7 +236,7 @@ class TestPostgreSQLDataAccessEdgeCases:
         """测试插入空DataFrame"""
         df = pd.DataFrame()
 
-        result = self.db.insert_dataframe('stocks', df)
+        result = self.db.insert_dataframe("stocks", df)
 
         # 空DataFrame应该安全处理
         assert result is None or result == 0
@@ -241,9 +244,9 @@ class TestPostgreSQLDataAccessEdgeCases:
     def test_query_empty_result(self):
         """测试空查询结果"""
         self.mock_cursor.fetchall.return_value = []
-        self.mock_cursor.description = [('symbol',), ('price',)]
+        self.mock_cursor.description = [("symbol",), ("price",)]
 
-        result = self.db.query('empty_table')
+        result = self.db.query("empty_table")
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0
@@ -256,5 +259,5 @@ class TestPostgreSQLDataAccessEdgeCases:
             self.db._get_connection()
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

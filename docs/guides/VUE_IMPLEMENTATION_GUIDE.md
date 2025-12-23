@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的AI自动化开发环境实施指导，结合mystocks_spec项目的成熟经验，针对Vue.js前端和FastAPI后端的架构特点进行专门优化。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支)  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支)
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -115,7 +115,7 @@ from .core.exceptions import setup_exception_handlers
 import sys
 sys.path.append('../mystocks_spec')
 from ai_strategy_analyzer import AIStrategyAnalyzer
-from gpu_ai_integration import GPUAIIntegrationManager  
+from gpu_ai_integration import GPUAIIntegrationManager
 from ai_monitoring_optimizer import AIRealtimeMonitor, AIAlertManager
 
 # 全局实例
@@ -129,26 +129,26 @@ async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时初始化
     global strategy_analyzer, gpu_manager, monitor, alert_manager
-    
+
     logging.info("🚀 初始化MyStocks AI后端...")
-    
+
     # 初始化AI策略分析器
     strategy_analyzer = AIStrategyAnalyzer()
     await strategy_analyzer.initialize()
-    
+
     # 初始化GPU管理器
     gpu_manager = GPUAIIntegrationManager()
     await gpu_manager.initialize()
-    
+
     # 初始化监控系统
     monitor = AIRealtimeMonitor()
     alert_manager = AIAlertManager()
     await monitor.initialize()
-    
+
     logging.info("✅ MyStocks AI后端初始化完成")
-    
+
     yield
-    
+
     # 关闭时清理
     logging.info("👋 MyStocks AI后端关闭中...")
     await strategy_analyzer.cleanup()
@@ -218,7 +218,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         'data': metrics,
                         'timestamp': datetime.now().isoformat()
                     })
-            
+
             await asyncio.sleep(5)  # 5秒推送一次
     except WebSocketDisconnect:
         manager.disconnect(websocket)
@@ -260,7 +260,7 @@ async def get_strategies():
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         strategies = await strategy_analyzer.get_available_strategies()
         return {
             "strategies": strategies,
@@ -278,10 +278,10 @@ async def run_strategy(strategy_name: str, background_tasks: BackgroundTasks):
         valid_strategies = ["momentum", "mean_reversion", "ml_based"]
         if strategy_name not in valid_strategies:
             raise HTTPException(status_code=400, detail=f"无效策略: {strategy_name}")
-        
+
         # 后台执行策略
         background_tasks.add_task(execute_strategy, strategy_name)
-        
+
         return {
             "message": f"策略 {strategy_name} 已在后台开始执行",
             "strategy": strategy_name,
@@ -297,7 +297,7 @@ async def get_strategy_performance(strategy_name: str):
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         performance = await strategy_analyzer.get_strategy_performance(strategy_name)
         return {
             "strategy": strategy_name,
@@ -314,7 +314,7 @@ async def get_performance_summary():
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         summary = await strategy_analyzer.get_performance_summary()
         return {
             "summary": summary,
@@ -334,7 +334,7 @@ async def execute_strategy(strategy_name: str):
         logging.error(f"策略 {strategy_name} 执行失败: {e}")
 ```
 
-### Phase 2: Vue.js前端搭建 (Week 3-4)  
+### Phase 2: Vue.js前端搭建 (Week 3-4)
 **目标**: 构建现代化Vue.js前端界面
 
 #### 2.1 Vue项目初始化
@@ -362,17 +362,17 @@ npm install -D @types/node
         MyStocks AI策略面板
       </h1>
       <div class="header-actions">
-        <el-button 
-          type="primary" 
-          :icon="Refresh" 
+        <el-button
+          type="primary"
+          :icon="Refresh"
           @click="refreshData"
           :loading="loading"
         >
           刷新数据
         </el-button>
-        <el-button 
-          type="success" 
-          :icon="Plus" 
+        <el-button
+          type="success"
+          :icon="Plus"
           @click="showCreateDialog = true"
         >
           新建策略
@@ -412,8 +412,8 @@ npm install -D @types/node
               style="width: 200px; margin-right: 10px;"
             />
             <el-button-group>
-              <el-button 
-                v-for="status in strategyStatuses" 
+              <el-button
+                v-for="status in strategyStatuses"
                 :key="status.value"
                 :type="selectedStatus === status.value ? 'primary' : 'default'"
                 @click="selectedStatus = status.value"
@@ -426,8 +426,8 @@ npm install -D @types/node
         </div>
       </template>
 
-      <el-table 
-        :data="filteredStrategies" 
+      <el-table
+        :data="filteredStrategies"
         style="width: 100%"
         v-loading="loading"
         @sort-change="handleSortChange"
@@ -436,9 +436,9 @@ npm install -D @types/node
           <template #default="{ row }">
             <div class="strategy-name">
               <strong>{{ row.name }}</strong>
-              <el-tag 
-                v-if="row.isRecommended" 
-                type="success" 
+              <el-tag
+                v-if="row.isRecommended"
+                type="success"
                 size="small"
                 effect="dark"
               >
@@ -447,7 +447,7 @@ npm install -D @types/node
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="type" label="类型" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStrategyTypeColor(row.type)">
@@ -455,7 +455,7 @@ npm install -D @types/node
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="status" label="状态" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
@@ -463,7 +463,7 @@ npm install -D @types/node
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="return" label="收益率" sortable="custom" min-width="100">
           <template #default="{ row }">
             <span :class="getReturnClass(row.return)">
@@ -471,57 +471,57 @@ npm install -D @types/node
             </span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="sharpe" label="夏普比率" sortable="custom" min-width="100">
           <template #default="{ row }">
             {{ row.sharpe }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="maxDrawdown" label="最大回撤" min-width="100">
           <template #default="{ row }">
             <span class="text-danger">{{ row.maxDrawdown }}</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="lastUpdated" label="更新时间" min-width="150">
           <template #default="{ row }">
             {{ formatDate(row.lastUpdated) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="{ row }">
             <el-button-group>
-              <el-button 
-                size="small" 
-                :icon="View" 
+              <el-button
+                size="small"
+                :icon="View"
                 @click="viewStrategyDetails(row)"
               >
                 查看
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'inactive'"
-                size="small" 
+                size="small"
                 type="success"
-                :icon="VideoPlay" 
+                :icon="VideoPlay"
                 @click="activateStrategy(row)"
               >
                 启用
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'active'"
-                size="small" 
+                size="small"
                 type="warning"
-                :icon="VideoPause" 
+                :icon="VideoPause"
                 @click="pauseStrategy(row)"
               >
                 暂停
               </el-button>
-              <el-button 
-                size="small" 
+              <el-button
+                size="small"
                 type="danger"
-                :icon="Delete" 
+                :icon="Delete"
                 @click="deleteStrategy(row)"
               >
                 删除
@@ -571,11 +571,11 @@ npm install -D @types/node
           </el-select>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input 
-            v-model="createForm.description" 
-            type="textarea" 
+          <el-input
+            v-model="createForm.description"
+            type="textarea"
             :rows="3"
-            placeholder="请输入策略描述" 
+            placeholder="请输入策略描述"
           />
         </el-form-item>
       </el-form>
@@ -601,8 +601,8 @@ npm install -D @types/node
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete 
+import {
+  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete
 } from '@element-plus/icons-vue'
 import { useStrategyStore } from '@/stores/strategy'
 import StrategyPerformanceChart from './charts/StrategyPerformanceChart.vue'
@@ -672,24 +672,24 @@ const overviewMetrics = computed(() => [
 // 过滤后的策略列表
 const filteredStrategies = computed(() => {
   let strategies = strategyStore.strategies
-  
+
   // 状态过滤
   if (selectedStatus.value) {
     strategies = strategies.filter(s => s.status === selectedStatus.value)
   }
-  
+
   // 搜索过滤
   if (searchQuery.value) {
-    strategies = strategies.filter(s => 
+    strategies = strategies.filter(s =>
       s.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
-  
+
   return strategies
 })
 
 // 选中的策略（用于图表）
-const selectedStrategies = computed(() => 
+const selectedStrategies = computed(() =>
   filteredStrategies.value.filter(s => s.status === 'active')
 )
 
@@ -740,7 +740,7 @@ const deleteStrategy = async (strategy: any) => {
         type: 'warning'
       }
     )
-    
+
     await strategyStore.deleteStrategy(strategy.id)
     ElMessage.success(`策略 ${strategy.name} 已删除`)
   } catch (error) {
@@ -755,7 +755,7 @@ const createStrategy = async () => {
     ElMessage.warning('请填写必要信息')
     return
   }
-  
+
   creating.value = true
   try {
     await strategyStore.createStrategy(createForm.value)
@@ -981,8 +981,8 @@ onMounted(() => {
           实时监控系统
         </h1>
         <div class="status-indicators">
-          <el-tag 
-            :type="systemStatus.type" 
+          <el-tag
+            :type="systemStatus.type"
             :icon="systemStatus.icon"
             size="large"
           >
@@ -994,22 +994,22 @@ onMounted(() => {
         </div>
       </div>
       <div class="header-controls">
-        <el-button 
+        <el-button
           :type="monitoring.active ? 'warning' : 'primary'"
           :icon="monitoring.active ? VideoPause : VideoPlay"
           @click="toggleMonitoring"
         >
           {{ monitoring.active ? '停止监控' : '开始监控' }}
         </el-button>
-        <el-button 
-          :icon="Refresh" 
+        <el-button
+          :icon="Refresh"
           @click="refreshMetrics"
           :loading="loading"
         >
           刷新
         </el-button>
-        <el-button 
-          :icon="Setting" 
+        <el-button
+          :icon="Setting"
           @click="showSettings = true"
         >
           设置
@@ -1033,21 +1033,21 @@ onMounted(() => {
               <i :class="getStatusIcon(metric.status)"></i>
             </div>
           </div>
-          
+
           <div class="metric-value">
             <span class="value">{{ metric.value }}</span>
             <span class="unit">{{ metric.unit }}</span>
           </div>
-          
+
           <div class="metric-progress">
-            <el-progress 
+            <el-progress
               :percentage="metric.percentage"
               :color="getProgressColor(metric.status)"
               :show-text="false"
               :stroke-width="8"
             />
           </div>
-          
+
           <div class="metric-trend">
             <span :class="['trend-value', metric.trend]">
               {{ getTrendText(metric.trend) }}
@@ -1075,24 +1075,24 @@ onMounted(() => {
               </div>
             </div>
           </template>
-          
-          <RealtimeStrategyChart 
+
+          <RealtimeStrategyChart
             :strategies="monitoring.strategies"
             :time-range="selectedTimeRange"
             :loading="chartLoading"
           />
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card class="strategies-list-card">
           <template #header>
             <h3>策略状态</h3>
           </template>
-          
+
           <div class="strategies-list">
-            <div 
-              v-for="strategy in monitoring.strategies" 
+            <div
+              v-for="strategy in monitoring.strategies"
               :key="strategy.id"
               class="strategy-item"
               :class="strategy.status"
@@ -1114,7 +1114,7 @@ onMounted(() => {
                 </div>
               </div>
               <div class="strategy-status">
-                <el-tag 
+                <el-tag
                   :type="getStatusTagType(strategy.status)"
                   size="small"
                 >
@@ -1141,10 +1141,10 @@ onMounted(() => {
               </el-badge>
             </div>
           </template>
-          
+
           <div class="alerts-list">
-            <div 
-              v-for="alert in activeAlerts.slice(0, 5)" 
+            <div
+              v-for="alert in activeAlerts.slice(0, 5)"
               :key="alert.id"
               class="alert-item"
               :class="alert.severity"
@@ -1158,16 +1158,16 @@ onMounted(() => {
                 <div class="alert-time">{{ formatRelativeTime(alert.timestamp) }}</div>
               </div>
               <div class="alert-actions">
-                <el-button 
-                  size="small" 
-                  type="primary" 
+                <el-button
+                  size="small"
+                  type="primary"
                   @click="acknowledgeAlert(alert.id)"
                 >
                   确认
                 </el-button>
-                <el-button 
-                  size="small" 
-                  type="danger" 
+                <el-button
+                  size="small"
+                  type="danger"
                   @click="resolveAlert(alert.id)"
                 >
                   解决
@@ -1175,20 +1175,20 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          
+
           <div v-if="activeAlerts.length === 0" class="no-alerts">
             <i class="el-icon-check-circle" style="font-size: 48px; color: #67C23A;"></i>
             <p>暂无活跃告警</p>
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="12">
         <el-card class="gpu-status-card">
           <template #header>
             <h3>GPU状态监控</h3>
           </template>
-          
+
           <GPUStatusPanel :gpu-data="gpuData" />
         </el-card>
       </el-col>
@@ -1209,7 +1209,7 @@ onMounted(() => {
             <el-option label="30秒" :value="30" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="告警阈值">
           <el-form-item label="CPU使用率" label-width="80">
             <el-slider v-model="settingsForm.cpuThreshold" :min="50" :max="100" />
@@ -1221,14 +1221,14 @@ onMounted(() => {
             <el-slider v-model="settingsForm.gpuThreshold" :min="50" :max="100" />
           </el-form-item>
         </el-form-item>
-        
+
         <el-form-item label="通知设置">
           <el-checkbox v-model="settingsForm.emailEnabled">邮件通知</el-checkbox>
           <el-checkbox v-model="settingsForm.browserEnabled">浏览器通知</el-checkbox>
           <el-checkbox v-model="settingsForm.soundEnabled">声音提醒</el-checkbox>
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <el-button @click="showSettings = false">取消</el-button>
         <el-button type="primary" @click="saveSettings">保存设置</el-button>
@@ -1249,8 +1249,8 @@ onMounted(() => {
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Refresh, VideoPlay, VideoPause, Setting 
+import {
+  Refresh, VideoPlay, VideoPause, Setting
 } from '@element-plus/icons-vue'
 import { useMonitoringStore } from '@/stores/monitoring'
 import { useWebSocket } from '@/composables/useWebSocket'
@@ -1296,7 +1296,7 @@ const systemStatus = computed(() => {
       text: '监控已停止'
     }
   }
-  
+
   // 根据告警数量判断系统状态
   const alertCount = activeAlerts.value.length
   if (alertCount > 0) {
@@ -1306,7 +1306,7 @@ const systemStatus = computed(() => {
       text: `${alertCount}个活跃告警`
     }
   }
-  
+
   return {
     type: 'success',
     icon: 'el-icon-check-circle',

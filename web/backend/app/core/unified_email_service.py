@@ -37,7 +37,6 @@ from email import encoders
 from typing import List, Dict, Optional, Union, Any
 from datetime import datetime
 import os
-import logging
 import structlog
 
 logger = structlog.get_logger()

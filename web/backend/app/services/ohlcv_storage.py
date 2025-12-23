@@ -15,9 +15,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import asyncio
 from typing import Dict, Optional, List, Any
-from datetime import datetime, timedelta
 import structlog
 from decimal import Decimal
 import psycopg2

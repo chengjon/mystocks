@@ -14,7 +14,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { 
+      use: {
         launchOptions: {
           headless: true,
         }

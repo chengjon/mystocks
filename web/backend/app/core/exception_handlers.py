@@ -33,7 +33,7 @@ Estimated Duplication Reduced: 200+ lines
 
 import functools
 import inspect
-from typing import Callable, Any, Dict, Optional
+from typing import Callable, Any, Dict
 from fastapi import HTTPException
 import structlog
 

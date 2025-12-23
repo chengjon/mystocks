@@ -13,9 +13,8 @@
 """
 
 import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Set, Callable
-from datetime import date, datetime
+from typing import List, Optional, Set, Callable
+from datetime import date
 import logging
 from dataclasses import dataclass
 
@@ -484,10 +483,10 @@ class StockScreener:
                 excluded = symbols - set(kept_symbols)
                 excluded_total |= excluded
 
-                self.logger.info(f"自定义过滤{i+1}: 排除{len(excluded)}只")
+                self.logger.info(f"自定义过滤{i + 1}: 排除{len(excluded)}只")
 
             except Exception as e:
-                self.logger.error(f"自定义过滤{i+1}执行失败: {e}")
+                self.logger.error(f"自定义过滤{i + 1}执行失败: {e}")
 
         self.stats["excluded_custom"] = len(excluded_total)
 
@@ -508,7 +507,7 @@ class StockScreener:
         self.logger.info(f"  - 自定义过滤: {self.stats['excluded_custom']}")
         self.logger.info(f"输出股票数: {self.stats['total_output']}")
         self.logger.info(
-            f"筛选通过率: {self.stats['total_output']/self.stats['total_input']*100:.1f}%"
+            f"筛选通过率: {self.stats['total_output'] / self.stats['total_input'] * 100:.1f}%"
         )
         self.logger.info("=" * 60)
 

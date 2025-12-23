@@ -17,7 +17,6 @@ Risk Level: CRITICAL - Allows arbitrary SQL injection through user-controlled va
 import pytest
 import sys
 import os
-from unittest.mock import Mock, patch, MagicMock
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -273,12 +272,10 @@ class TestSecurityFixApproaches:
         """
         FIXED approach: Use SQLAlchemy with text() and bind parameters
         """
-        from sqlalchemy import text, create_engine
+        from sqlalchemy import text
 
         # Safe pattern using SQLAlchemy
         def safe_build_query_sqlalchemy(table_name, filters):
-            from sqlalchemy import text
-
             # Start with safe table name (should be validated against whitelist)
             base_query = f"SELECT * FROM {table_name}"
 

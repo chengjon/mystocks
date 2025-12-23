@@ -14,29 +14,24 @@ GPU性能优化集成模块
 
 import asyncio
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 # 导入GPU优化管理器
 from src.monitoring.gpu_performance_optimizer import (
     GPUPerformanceOptimizer,
     GPUOptimizationConfig,
-    get_gpu_performance_optimizer,
     initialize_gpu_optimizer,
 )
 
 # 导入监控系统
 from src.monitoring.ai_alert_manager import (
     AIAlertManager,
-    Alert,
-    AlertSeverity,
-    AlertType,
     get_ai_alert_manager,
 )
 
 from src.monitoring.ai_realtime_monitor import (
     AIRealtimeMonitor,
-    MonitoringConfig,
     get_ai_realtime_monitor,
 )
 
@@ -129,7 +124,9 @@ class GPUIntegratedMonitoring:
             original_save = self.unified_manager.save_data_by_classification
             original_load = self.unified_manager.load_data_by_classification
 
-            async def gpu_enhanced_save_data(data, data_classification, *args, **kwargs):
+            async def gpu_enhanced_save_data(
+                data, data_classification, *args, **kwargs
+            ):
                 """GPU增强的数据保存"""
                 # 首先进行GPU预处理
                 if self.gpu_optimizer and self.gpu_optimizer.gpu_available:
@@ -163,9 +160,15 @@ class GPUIntegratedMonitoring:
             self.unified_manager.load_data_by_classification = gpu_enhanced_load_data
 
             # 添加GPU特定方法
-            self.unified_manager.get_gpu_optimization_status = self.get_integration_status
-            self.unified_manager.run_gpu_performance_optimization = self.run_manual_optimization
-            self.unified_manager.get_gpu_performance_report = self.get_performance_report
+            self.unified_manager.get_gpu_optimization_status = (
+                self.get_integration_status
+            )
+            self.unified_manager.run_gpu_performance_optimization = (
+                self.run_manual_optimization
+            )
+            self.unified_manager.get_gpu_performance_report = (
+                self.get_performance_report
+            )
 
             self.integration_status["unified_manager_enhanced"] = True
             self.logger.info("✅ 统一管理器GPU增强完成")
@@ -198,12 +201,14 @@ class GPUIntegratedMonitoring:
             if self.gpu_optimizer:
                 # 启动GPU连续优化监控
                 monitoring_task = asyncio.create_task(
-                    self.gpu_optimizer.start_continuous_optimization(duration_minutes=60)
+                    self.gpu_optimizer.start_continuous_optimization(
+                        duration_minutes=60
+                    )
                 )
-                
+
                 # 存储任务引用以便后续管理
                 self._monitoring_task = monitoring_task
-                
+
                 self.logger.info("✅ GPU连续监控已启动")
             else:
                 self.logger.warning("⚠️ GPU优化器未初始化，跳过连续监控")
@@ -218,7 +223,7 @@ class GPUIntegratedMonitoring:
                 return {"error": "GPU优化器未初始化"}
 
             result = await self.gpu_optimizer.optimize_performance()
-            
+
             self.integration_status["last_optimization"] = datetime.now().isoformat()
             self.integration_status["total_optimizations"] += 1
 
@@ -242,7 +247,7 @@ class GPUIntegratedMonitoring:
                 return {"error": "GPU优化器未初始化"}
 
             report = await self.gpu_optimizer.get_performance_report()
-            
+
             # 添加集成状态信息
             report["integration_status"] = self.integration_status
             report["gpu_usage_stats"] = self.gpu_usage_stats
@@ -257,8 +262,12 @@ class GPUIntegratedMonitoring:
         """获取集成状态"""
         return {
             "integration_timestamp": datetime.now().isoformat(),
-            "gpu_optimizer_initialized": self.integration_status["gpu_optimizer_initialized"],
-            "unified_manager_enhanced": self.integration_status["unified_manager_enhanced"],
+            "gpu_optimizer_initialized": self.integration_status[
+                "gpu_optimizer_initialized"
+            ],
+            "unified_manager_enhanced": self.integration_status[
+                "unified_manager_enhanced"
+            ],
             "monitoring_integrated": self.integration_status["monitoring_integrated"],
             "last_optimization": self.integration_status["last_optimization"],
             "total_optimizations": self.integration_status["total_optimizations"],
@@ -272,7 +281,7 @@ class GPUIntegratedMonitoring:
                 return {"error": "GPU优化器未初始化"}
 
             action = await self.gpu_optimizer._optimize_memory()
-            
+
             if action:
                 self.gpu_usage_stats["memory_recoveries"] += 1
                 return {"success": True, "action": action}
@@ -330,7 +339,9 @@ class GPUIntegratedMonitoring:
                     "temperature": metrics.gpu_temperature,
                     "efficiency_score": metrics.efficiency_score,
                 },
-                "recommendations": await self.gpu_optimizer._generate_performance_recommendations(metrics),
+                "recommendations": await self.gpu_optimizer._generate_performance_recommendations(
+                    metrics
+                ),
             }
 
         except Exception as e:
@@ -352,7 +363,9 @@ class GPUIntegratedMonitoring:
 
             # 保存优化状态
             if self.gpu_optimizer:
-                self.gpu_optimizer.save_optimization_state("gpu_optimization_state.json")
+                self.gpu_optimizer.save_optimization_state(
+                    "gpu_optimization_state.json"
+                )
 
             # 重置状态
             self.integration_status = {
@@ -387,7 +400,7 @@ async def initialize_gpu_integration(
 ) -> GPUIntegratedMonitoring:
     """初始化GPU集成"""
     integrated_monitoring = get_gpu_integrated_monitoring()
-    
+
     # 设置参数
     if unified_manager:
         integrated_monitoring.unified_manager = unified_manager
@@ -396,7 +409,7 @@ async def initialize_gpu_integration(
 
     # 执行集成
     success = await integrated_monitoring.initialize_integration()
-    
+
     if success:
         logging.info("🎉 GPU集成初始化成功")
     else:
@@ -469,7 +482,7 @@ async def main():
     print(f"GPU可用: {'✅' if health.get('available') else '❌'}")
     print(f"健康状态: {'✅' if health.get('healthy') else '❌'}")
     print(f"健康评分: {health.get('health_score', 0):.2f}")
-    
+
     if health.get("issues"):
         print("问题列表:")
         for issue in health["issues"]:
@@ -489,7 +502,7 @@ async def main():
         print(f"GPU利用率: {current_metrics.get('gpu_utilization', 0):.1f}%")
         print(f"内存使用率: {current_metrics.get('gpu_memory_utilization', 0):.1f}%")
         print(f"效率评分: {current_metrics.get('efficiency_score', 0):.3f}")
-        
+
         recommendations = report.get("recommendations", [])
         if recommendations:
             print("\n💡 性能建议:")

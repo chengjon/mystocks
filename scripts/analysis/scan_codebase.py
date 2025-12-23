@@ -242,7 +242,7 @@ def print_summary(inventory: ModuleInventory):
 
     metadata = inventory.metadata
 
-    print(f"\n总体统计:")
+    print("\n总体统计:")
     print(f"  模块数量: {metadata.total_modules}")
     print(f"  类数量: {metadata.total_classes}")
     print(f"  函数数量: {metadata.total_functions}")
@@ -250,7 +250,7 @@ def print_summary(inventory: ModuleInventory):
     print(f"  平均函数复杂度: {metadata.avg_function_complexity:.2f}")
     print(f"  最大函数复杂度: {metadata.max_function_complexity}")
 
-    print(f"\n分类统计:")
+    print("\n分类统计:")
     category_names = {
         "core": "核心功能",
         "auxiliary": "辅助功能",

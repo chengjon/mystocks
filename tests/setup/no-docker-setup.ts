@@ -1,13 +1,13 @@
 /**
  * 无Docker测试环境全局设置
  * 为Vue 3 + FastAPI架构优化的端到端测试配置
- * 
+ *
  * 功能:
  * 1. 环境检测和准备
  * 2. 依赖验证
  * 3. Mock数据配置
  * 4. 服务启动管理（非Docker）
- * 
+ *
  * 作者: Claude Code
  * 生成时间: 2025-11-14
  */
@@ -40,7 +40,7 @@ interface TestEnvironment {
  */
 async function detectEnvironment(): Promise<TestEnvironment> {
   console.log('🔍 Detecting test environment...');
-  
+
   const env: TestEnvironment = {
     nodeVersion: '',
     pythonVersion: '',
@@ -52,7 +52,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
       backend: 8000
     }
   };
-  
+
   try {
     // 检测Node.js版本
     try {
@@ -62,7 +62,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
     } catch {
       console.log('❌ Node.js not found');
     }
-    
+
     // 检测Python版本
     try {
       const pythonResult = await exec('python3', ['--version']);
@@ -71,7 +71,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
     } catch {
       console.log('❌ Python3 not found');
     }
-    
+
     // 检测前端项目
     const frontendPath = path.join(process.cwd(), 'web', 'frontend');
     const packageJsonPath = path.join(frontendPath, 'package.json');
@@ -81,7 +81,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
     } else {
       console.log('❌ Frontend project not found');
     }
-    
+
     // 检测后端项目
     const backendPath = path.join(process.cwd(), 'web', 'backend');
     const requirementsPath = path.join(backendPath, 'requirements.txt');
@@ -91,7 +91,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
     } else {
       console.log('❌ Backend project not found');
     }
-    
+
     // 检测依赖
     if (env.hasFrontend) {
       const nodeModulesPath = path.join(frontendPath, 'node_modules');
@@ -102,7 +102,7 @@ async function detectEnvironment(): Promise<TestEnvironment> {
         console.log('❌ Frontend dependencies missing');
       }
     }
-    
+
     if (env.hasBackend) {
       try {
         await exec('python3', ['-c', 'import fastapi, pytest, playwright']);
@@ -112,11 +112,11 @@ async function detectEnvironment(): Promise<TestEnvironment> {
         console.log('❌ Backend dependencies missing');
       }
     }
-    
+
   } catch (error) {
     console.log(`⚠️ Environment detection failed: ${error}`);
   }
-  
+
   return env;
 }
 
@@ -195,15 +195,15 @@ async function startFrontendServer(): Promise<ChildProcess | null> {
         env: { ...process.env, NODE_ENV: 'test' },
         stdio: 'pipe'
       });
-      
+
       server.stdout?.on('data', (data) => {
         console.log(`Frontend: ${data.toString().trim()}`);
       });
-      
+
       server.stderr?.on('data', (data) => {
         console.error(`Frontend Error: ${data.toString().trim()}`);
       });
-      
+
       console.log('✅ Frontend server started');
       return server;
     } catch (error) {
@@ -229,15 +229,15 @@ async function startBackendServer(): Promise<ChildProcess | null> {
         env: { ...process.env, TESTING: '1', USE_MOCK_DATA: '1' },
         stdio: 'pipe'
       });
-      
+
       server.stdout?.on('data', (data) => {
         console.log(`Backend: ${data.toString().trim()}`);
       });
-      
+
       server.stderr?.on('data', (data) => {
         console.error(`Backend Error: ${data.toString().trim()}`);
       });
-      
+
       console.log('✅ Backend server started');
       return server;
     } catch (error) {
@@ -257,7 +257,7 @@ async function waitForService(url: string, timeout: number = 60000): Promise<boo
   console.log(`⏳ Waiting for service at ${url}...`);
   const startTime = Date.now();
   const checkInterval = 2000;
-  
+
   while (Date.now() - startTime < timeout) {
     try {
       const response = await fetch(url);
@@ -268,10 +268,10 @@ async function waitForService(url: string, timeout: number = 60000): Promise<boo
     } catch (error) {
       // 服务未就绪，继续等待
     }
-    
+
     await new Promise(resolve => setTimeout(resolve, checkInterval));
   }
-  
+
   console.log(`❌ Service timeout at ${url}`);
   return false;
 }
@@ -281,7 +281,7 @@ async function waitForService(url: string, timeout: number = 60000): Promise<boo
  */
 async function createTestDirectories(): Promise<void> {
   console.log('📁 Creating test result directories...');
-  
+
   const testDirs = [
     'test-results',
     'test-results/screenshots',
@@ -290,7 +290,7 @@ async function createTestDirectories(): Promise<void> {
     'test-results/reports',
     'test-results/logs'
   ];
-  
+
   for (const dir of testDirs) {
     const fullPath = path.join(process.cwd(), dir);
     if (!fs.existsSync(fullPath)) {
@@ -305,22 +305,22 @@ async function createTestDirectories(): Promise<void> {
  */
 async function configureMockData(): Promise<void> {
   console.log('📊 Configuring mock data environment...');
-  
+
   // 设置测试环境变量
   process.env.NODE_ENV = 'test';
   process.env.USE_MOCK_DATA = 'true';
   process.env.DATA_SOURCE = 'mock';
   process.env.TESTING = '1';
-  
+
   // 设置默认URLs
   process.env.PLAYWRIGHT_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
   process.env.PLAYWRIGHT_API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
-  
+
   // 验证Mock数据系统
   const mockPath = path.join(process.cwd(), 'src', 'mock');
   if (fs.existsSync(mockPath)) {
     console.log('✅ Mock data system found');
-    
+
     // 检查主要Mock文件
     const mockFiles = [
       'mock_Dashboard.py',
@@ -329,7 +329,7 @@ async function configureMockData(): Promise<void> {
       'mock_Wencai.py',
       'mock_StrategyManagement.py'
     ];
-    
+
     for (const file of mockFiles) {
       const filePath = path.join(mockPath, file);
       if (fs.existsSync(filePath)) {
@@ -341,7 +341,7 @@ async function configureMockData(): Promise<void> {
   } else {
     console.log('⚠️ Mock data directory not found, will use simple mock data');
   }
-  
+
   console.log('✅ Mock data environment configured');
 }
 
@@ -351,25 +351,25 @@ async function configureMockData(): Promise<void> {
 async function globalSetup(config: FullConfig) {
   console.log('🚀 Starting No-Docker E2E Test Global Setup');
   console.log('=' .repeat(60));
-  
+
   let frontendServer: ChildProcess | null = null;
   let backendServer: ChildProcess | null = null;
-  
+
   try {
     // 设置测试环境变量
     process.env.NODE_ENV = 'test';
     process.env.TESTING = '1';
-    
+
     console.log(`📋 Test Configuration:`);
     console.log(`   Node.js: ${process.version}`);
     console.log(`   Base URL: ${process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173'}`);
     console.log(`   API URL: ${process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000'}`);
     console.log(`   Mock Data: ${process.env.USE_MOCK_DATA || 'true'}`);
     console.log('');
-    
+
     // 1. 检测环境
     const env = await detectEnvironment();
-    
+
     // 2. 安装依赖（如果需要）
     if (!env.hasDependencies) {
       console.log('\n📦 Installing missing dependencies...');
@@ -377,34 +377,34 @@ async function globalSetup(config: FullConfig) {
       await installBackendDependencies();
       await installPlaywrightBrowsers();
     }
-    
+
     // 3. 创建测试目录
     console.log('\n📁 Setting up test directories...');
     await createTestDirectories();
-    
+
     // 4. 配置Mock数据
     console.log('\n📊 Configuring mock data...');
     await configureMockData();
-    
+
     // 5. 启动服务
     console.log('\n🚀 Starting services...');
     frontendServer = await startFrontendServer();
     backendServer = await startBackendServer();
-    
+
     // 6. 等待服务就绪
     console.log('\n⏳ Waiting for services to be ready...');
-    
+
     const services = [
-      { 
-        name: 'Frontend', 
-        url: process.env.PLAYWRIGHT_BASE_URL + (process.env.PLAYWRIGHT_BASE_URL?.includes(':') ? '' : '/') + 'health' 
+      {
+        name: 'Frontend',
+        url: process.env.PLAYWRIGHT_BASE_URL + (process.env.PLAYWRIGHT_BASE_URL?.includes(':') ? '' : '/') + 'health'
       },
-      { 
-        name: 'Backend API', 
-        url: process.env.PLAYWRIGHT_API_URL + (process.env.PLAYWRIGHT_API_URL?.includes(':') ? '' : '/') + 'health' 
+      {
+        name: 'Backend API',
+        url: process.env.PLAYWRIGHT_API_URL + (process.env.PLAYWRIGHT_API_URL?.includes(':') ? '' : '/') + 'health'
       }
     ];
-    
+
     for (const service of services) {
       try {
         await waitForService(service.url, 60000);
@@ -412,15 +412,15 @@ async function globalSetup(config: FullConfig) {
         console.log(`⚠️ ${service.name} health check failed, continuing anyway`);
       }
     }
-    
+
     console.log('\n✅ No-Docker E2E Test Global Setup Completed Successfully');
     console.log('=' .repeat(60));
-    
+
     return { frontendServer, backendServer };
-    
+
   } catch (error) {
     console.error('❌ Global setup failed:', error);
-    
+
     // 清理已启动的服务
     if (frontendServer) {
       frontendServer.kill();
@@ -428,7 +428,7 @@ async function globalSetup(config: FullConfig) {
     if (backendServer) {
       backendServer.kill();
     }
-    
+
     throw error;
   }
 }
@@ -438,17 +438,17 @@ async function globalSetup(config: FullConfig) {
  */
 async function globalTeardown(config: FullConfig, setupData: any) {
   console.log('🧹 Starting global teardown...');
-  
+
   if (setupData && setupData.frontendServer) {
     console.log('🌐 Stopping frontend server...');
     setupData.frontendServer.kill();
   }
-  
+
   if (setupData && setupData.backendServer) {
     console.log('🚀 Stopping backend server...');
     setupData.backendServer.kill();
   }
-  
+
   console.log('✅ Global teardown completed');
 }
 

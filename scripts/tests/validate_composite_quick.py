@@ -8,18 +8,21 @@ import sys
 import os
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print(" Composite业务数据源快速验证")
-print("="*80)
+print("=" * 80)
 
 # 测试1: 验证导入
 print("\n测试 1: 验证导入...")
 try:
     from src.data_sources.real.composite_business import CompositeBusinessDataSource
     from src.interfaces.business_data_source import IBusinessDataSource
+
     print("  ✅ 导入成功")
 except ImportError as e:
     print(f"  ❌ 导入失败: {e}")
@@ -37,13 +40,14 @@ else:
 print("\n测试 3: 验证工厂注册...")
 try:
     from src.data_sources.factory import DataSourceFactory
+
     factory = DataSourceFactory()
     registered = factory.list_registered_sources()
 
     if "composite" in registered.get("business", []):
         print("  ✅ Composite数据源已注册到工厂")
     else:
-        print(f"  ❌ Composite数据源未注册")
+        print("  ❌ Composite数据源未注册")
         print(f"     已注册业务数据源: {registered.get('business', [])}")
         sys.exit(1)
 except Exception as e:
@@ -53,17 +57,17 @@ except Exception as e:
 # 测试4: 验证方法数量
 print("\n测试 4: 验证接口方法...")
 required_methods = [
-    'get_dashboard_summary',
-    'get_sector_performance',
-    'execute_backtest',
-    'get_backtest_results',
-    'calculate_risk_metrics',
-    'check_risk_alerts',
-    'analyze_trading_signals',
-    'get_portfolio_analysis',
-    'perform_attribution_analysis',
-    'execute_stock_screener',
-    'health_check'
+    "get_dashboard_summary",
+    "get_sector_performance",
+    "execute_backtest",
+    "get_backtest_results",
+    "calculate_risk_metrics",
+    "check_risk_alerts",
+    "analyze_trading_signals",
+    "get_portfolio_analysis",
+    "perform_attribution_analysis",
+    "execute_stock_screener",
+    "health_check",
 ]
 
 missing_methods = []
@@ -81,14 +85,15 @@ else:
 print("\n测试 5: 验证模块导出...")
 try:
     from src.data_sources.real import CompositeBusinessDataSource as CompositeBiz
+
     print("  ✅ CompositeBusinessDataSource 已从 src.data_sources.real 导出")
 except ImportError as e:
     print(f"  ❌ 导出验证失败: {e}")
     sys.exit(1)
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print(" 验证总结")
-print("="*80)
+print("=" * 80)
 print("✅ 所有验证通过 (5/5)")
 print("\n方法列表:")
 for i, method in enumerate(required_methods, 1):

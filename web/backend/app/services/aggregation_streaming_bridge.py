@@ -14,7 +14,6 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import asyncio
 from typing import List, Optional, Dict, Any, Callable
 from datetime import datetime
 import structlog
@@ -23,7 +22,6 @@ from enum import Enum
 from app.services.data_aggregation_service import (
     AggregationEngine,
     OHLCV,
-    Timeframe,
     get_aggregation_engine,
 )
 from app.services.realtime_streaming_service import (

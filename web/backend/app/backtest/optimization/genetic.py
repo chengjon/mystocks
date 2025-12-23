@@ -3,6 +3,7 @@ Genetic Algorithm Optimizer
 
 遗传算法优化器 - 模拟生物进化的优化方法
 """
+
 from typing import Dict, Any, List, Optional, Tuple
 import random
 import copy
@@ -12,7 +13,7 @@ import time
 from app.backtest.optimization.base import (
     BaseOptimizer,
     OptimizationResult,
-    ParameterSpace
+    ParameterSpace,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ class GeneticOptimizer(BaseOptimizer):
         self,
         strategy_type: str,
         parameter_spaces: List[ParameterSpace],
-        objective: str = 'sharpe_ratio',
+        objective: str = "sharpe_ratio",
         maximize: bool = True,
         population_size: int = 50,
         n_generations: int = 20,
@@ -66,7 +67,7 @@ class GeneticOptimizer(BaseOptimizer):
         mutation_rate: float = 0.1,
         elite_size: int = 2,
         tournament_size: int = 3,
-        random_seed: Optional[int] = None
+        random_seed: Optional[int] = None,
     ):
         """
         初始化遗传算法优化器
@@ -122,9 +123,7 @@ class GeneticOptimizer(BaseOptimizer):
         return population
 
     def _evaluate_individual(
-        self,
-        individual: Individual,
-        market_data: Dict[str, Any]
+        self, individual: Individual, market_data: Dict[str, Any]
     ) -> float:
         """
         评估个体适应度
@@ -145,9 +144,7 @@ class GeneticOptimizer(BaseOptimizer):
         return fitness
 
     def _evaluate_population(
-        self,
-        population: List[Individual],
-        market_data: Dict[str, Any]
+        self, population: List[Individual], market_data: Dict[str, Any]
     ):
         """评估整个种群"""
         for individual in population:
@@ -164,7 +161,9 @@ class GeneticOptimizer(BaseOptimizer):
         Returns:
             获胜个体
         """
-        tournament = self.rng.sample(population, min(self.tournament_size, len(population)))
+        tournament = self.rng.sample(
+            population, min(self.tournament_size, len(population))
+        )
 
         if self.maximize:
             winner = max(tournament, key=lambda ind: ind.fitness)
@@ -200,9 +199,7 @@ class GeneticOptimizer(BaseOptimizer):
         return population[-1]
 
     def _crossover(
-        self,
-        parent1: Individual,
-        parent2: Individual
+        self, parent1: Individual, parent2: Individual
     ) -> Tuple[Individual, Individual]:
         """
         交叉操作 (均匀交叉)
@@ -218,7 +215,7 @@ class GeneticOptimizer(BaseOptimizer):
             # 不交叉，直接复制
             return (
                 Individual(copy.deepcopy(parent1.genes)),
-                Individual(copy.deepcopy(parent2.genes))
+                Individual(copy.deepcopy(parent2.genes)),
             )
 
         child1_genes = {}
@@ -238,10 +235,7 @@ class GeneticOptimizer(BaseOptimizer):
         return Individual(child1_genes), Individual(child2_genes)
 
     def _blend_crossover(
-        self,
-        parent1: Individual,
-        parent2: Individual,
-        alpha: float = 0.5
+        self, parent1: Individual, parent2: Individual, alpha: float = 0.5
     ) -> Tuple[Individual, Individual]:
         """
         混合交叉 (BLX-α)
@@ -258,7 +252,7 @@ class GeneticOptimizer(BaseOptimizer):
         if self.rng.random() > self.crossover_rate:
             return (
                 Individual(copy.deepcopy(parent1.genes)),
-                Individual(copy.deepcopy(parent2.genes))
+                Individual(copy.deepcopy(parent2.genes)),
             )
 
         child1_genes = {}
@@ -269,7 +263,7 @@ class GeneticOptimizer(BaseOptimizer):
             v1 = parent1.genes[param_name]
             v2 = parent2.genes[param_name]
 
-            if space.param_type == 'choice':
+            if space.param_type == "choice":
                 # 离散参数: 随机选择
                 child1_genes[param_name] = self.rng.choice([v1, v2])
                 child2_genes[param_name] = self.rng.choice([v1, v2])
@@ -292,7 +286,7 @@ class GeneticOptimizer(BaseOptimizer):
                 new_v1 = self.rng.uniform(low, high)
                 new_v2 = self.rng.uniform(low, high)
 
-                if space.param_type == 'int':
+                if space.param_type == "int":
                     new_v1 = int(round(new_v1))
                     new_v2 = int(round(new_v2))
 
@@ -325,7 +319,7 @@ class GeneticOptimizer(BaseOptimizer):
             if self.rng.random() < self.mutation_rate:
                 current = individual.genes[space.name]
 
-                if space.param_type == 'choice':
+                if space.param_type == "choice":
                     # 离散参数: 随机选择
                     individual.genes[space.name] = space.get_random_value(self.rng)
                 else:
@@ -336,9 +330,11 @@ class GeneticOptimizer(BaseOptimizer):
                         new_value = current + noise
 
                         # 限制范围
-                        new_value = max(space.min_value, min(space.max_value, new_value))
+                        new_value = max(
+                            space.min_value, min(space.max_value, new_value)
+                        )
 
-                        if space.param_type == 'int':
+                        if space.param_type == "int":
                             new_value = int(round(new_value))
 
                         individual.genes[space.name] = new_value
@@ -354,11 +350,12 @@ class GeneticOptimizer(BaseOptimizer):
             精英个体列表
         """
         sorted_pop = sorted(
-            population,
-            key=lambda ind: ind.fitness,
-            reverse=self.maximize
+            population, key=lambda ind: ind.fitness, reverse=self.maximize
         )
-        return [Individual(copy.deepcopy(ind.genes)) for ind in sorted_pop[:self.elite_size]]
+        return [
+            Individual(copy.deepcopy(ind.genes))
+            for ind in sorted_pop[: self.elite_size]
+        ]
 
     def optimize(
         self,
@@ -368,7 +365,7 @@ class GeneticOptimizer(BaseOptimizer):
         use_gaussian_mutation: bool = True,
         early_stop: bool = True,
         patience: int = 5,
-        **kwargs
+        **kwargs,
     ) -> List[OptimizationResult]:
         """
         执行遗传算法优化
@@ -414,15 +411,21 @@ class GeneticOptimizer(BaseOptimizer):
                 self._update_best_result(ind.result)
 
         # 记录第0代
-        best_ind = max(population, key=lambda i: i.fitness) if self.maximize else min(population, key=lambda i: i.fitness)
+        best_ind = (
+            max(population, key=lambda i: i.fitness)
+            if self.maximize
+            else min(population, key=lambda i: i.fitness)
+        )
         avg_fitness = sum(ind.fitness for ind in population) / len(population)
 
-        self.generation_history.append({
-            'generation': 0,
-            'best_fitness': best_ind.fitness,
-            'avg_fitness': avg_fitness,
-            'best_genes': copy.deepcopy(best_ind.genes)
-        })
+        self.generation_history.append(
+            {
+                "generation": 0,
+                "best_fitness": best_ind.fitness,
+                "avg_fitness": avg_fitness,
+                "best_genes": copy.deepcopy(best_ind.genes),
+            }
+        )
 
         logger.info(f"第0代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}")
 
@@ -460,7 +463,7 @@ class GeneticOptimizer(BaseOptimizer):
                 new_population.extend([child1, child2])
 
             # 截取到种群大小
-            population = new_population[:self.population_size]
+            population = new_population[: self.population_size]
 
             # 评估新种群 (精英不需要重新评估)
             self._evaluate_population(population, data)
@@ -472,15 +475,21 @@ class GeneticOptimizer(BaseOptimizer):
                     self._update_best_result(ind.result)
 
             # 统计
-            best_ind = max(population, key=lambda i: i.fitness) if self.maximize else min(population, key=lambda i: i.fitness)
+            best_ind = (
+                max(population, key=lambda i: i.fitness)
+                if self.maximize
+                else min(population, key=lambda i: i.fitness)
+            )
             avg_fitness = sum(ind.fitness for ind in population) / len(population)
 
-            self.generation_history.append({
-                'generation': generation,
-                'best_fitness': best_ind.fitness,
-                'avg_fitness': avg_fitness,
-                'best_genes': copy.deepcopy(best_ind.genes)
-            })
+            self.generation_history.append(
+                {
+                    "generation": generation,
+                    "best_fitness": best_ind.fitness,
+                    "avg_fitness": avg_fitness,
+                    "best_genes": copy.deepcopy(best_ind.genes),
+                }
+            )
 
             # 进度回调
             if progress_callback:
@@ -488,9 +497,7 @@ class GeneticOptimizer(BaseOptimizer):
 
             # 日志
             logger.info(
-                f"第{generation}代: "
-                f"最佳={best_ind.fitness:.4f}, "
-                f"平均={avg_fitness:.4f}"
+                f"第{generation}代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}"
             )
 
             # 早停检查
@@ -526,9 +533,9 @@ class GeneticOptimizer(BaseOptimizer):
             {'generations': [...], 'best': [...], 'avg': [...]}
         """
         return {
-            'generations': [h['generation'] for h in self.generation_history],
-            'best': [h['best_fitness'] for h in self.generation_history],
-            'avg': [h['avg_fitness'] for h in self.generation_history]
+            "generations": [h["generation"] for h in self.generation_history],
+            "best": [h["best_fitness"] for h in self.generation_history],
+            "avg": [h["avg_fitness"] for h in self.generation_history],
         }
 
     def get_diversity_metrics(self, population: List[Individual]) -> Dict[str, float]:
@@ -550,7 +557,7 @@ class GeneticOptimizer(BaseOptimizer):
             param_name = space.name
             values = [ind.genes[param_name] for ind in population]
 
-            if space.param_type == 'choice':
+            if space.param_type == "choice":
                 # 离散参数: 计算不同值的数量
                 unique_ratio = len(set(values)) / len(values)
                 diversity_scores.append(unique_ratio)
@@ -565,6 +572,10 @@ class GeneticOptimizer(BaseOptimizer):
                 diversity_scores.append(min(1.0, normalized_std))
 
         return {
-            'avg_diversity': sum(diversity_scores) / len(diversity_scores) if diversity_scores else 0,
-            'per_parameter': dict(zip([s.name for s in self.parameter_spaces], diversity_scores))
+            "avg_diversity": sum(diversity_scores) / len(diversity_scores)
+            if diversity_scores
+            else 0,
+            "per_parameter": dict(
+                zip([s.name for s in self.parameter_spaces], diversity_scores)
+            ),
         }

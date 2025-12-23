@@ -11,11 +11,12 @@
 版本: 1.0.0
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Tuple, Optional
-from scipy import stats
 import logging
+from typing import Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
+from scipy import stats
 
 
 class RiskMetrics:
@@ -314,11 +315,12 @@ class RiskMetrics:
         self,
         equity_curve: pd.DataFrame,
         returns: pd.Series,
-        trades: List,
+        trades: List[Dict],
         total_return: float,
         max_drawdown: float,
-        risk_free_rate: float = 0.03,
+        risk_free_rate: float = 0.0,
     ) -> Dict:
+        # pylint: disable=too-many-positional-arguments
         """
         计算所有风险指标
 
@@ -421,35 +423,35 @@ if __name__ == "__main__":
 
     # 生成测试数据
     np.random.seed(42)
-    n = 252
-    dates = pd.date_range("2024-01-01", periods=n, freq="D")
+    test_n = 252
+    test_dates = pd.date_range("2024-01-01", periods=test_n, freq="D")
 
     # 模拟收益率（带有负偏）
-    returns = np.random.randn(n) * 0.015 + 0.0003
-    equity = 100000 * (1 + returns).cumprod()
+    test_returns = np.random.randn(test_n) * 0.015 + 0.0003
+    test_equity = 100000 * (1 + test_returns).cumprod()
 
-    equity_curve = pd.DataFrame({"equity": equity}, index=dates)
+    test_equity_curve = pd.DataFrame({"equity": test_equity}, index=test_dates)
 
-    returns_series = pd.Series(returns, index=dates)
+    test_returns_series = pd.Series(test_returns, index=test_dates)
 
     # 创建风险指标计算器
-    risk_calc = RiskMetrics()
+    test_risk_calc = RiskMetrics()
 
     # 计算所有风险指标
-    total_return = (equity[-1] - 100000) / 100000
-    cummax = equity_curve["equity"].cummax()
-    max_dd = abs(((equity_curve["equity"] - cummax) / cummax).min())
+    test_total_return = (test_equity[-1] - 100000) / 100000
+    test_cummax = test_equity_curve["equity"].cummax()
+    test_max_dd = abs(((test_equity_curve["equity"] - test_cummax) / test_cummax).min())
 
-    risk_metrics = risk_calc.calculate_all_risk_metrics(
-        equity_curve=equity_curve,
-        returns=returns_series,
+    test_risk_metrics = test_risk_calc.calculate_all_risk_metrics(
+        equity_curve=test_equity_curve,
+        returns=test_returns_series,
         trades=[],
-        total_return=total_return,
-        max_drawdown=max_dd,
+        total_return=test_total_return,
+        max_drawdown=test_max_dd,
     )
 
     # 生成报告
-    report = risk_calc.generate_risk_report(risk_metrics)
-    print(report)
+    test_report = test_risk_calc.generate_risk_report(test_risk_metrics)
+    print(test_report)
 
     print("\n测试通过！")

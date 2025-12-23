@@ -55,7 +55,7 @@ def markareadata(df_stock):
 # 使用PyECharts绘制K线图
 def draw_kline(stock_code, df_stock):
     kline = Kline(init_opts=opts.InitOpts(width="100%", height="600px", theme=ThemeType.ESSOS, page_title=stock_code, ))
-    
+
     # 做横轴的处理
     datetime = df_stock['date'].astype(str).tolist()
     oclh = []
@@ -63,7 +63,7 @@ def draw_kline(stock_code, df_stock):
         oclh.append(df_stock.loc[i, ['open', 'close', 'low', 'high']].to_list())
 
     vol = df_stock['vol'].tolist()
-    
+
     kline.add_xaxis(datetime)
     kline.add_yaxis(stock_code, oclh, itemstyle_opts=opts.ItemStyleOpts(
         color="#ef232a",

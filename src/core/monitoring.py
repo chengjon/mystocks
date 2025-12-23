@@ -6,8 +6,6 @@ API端点监控和警报系统
 版本: 1.0.0
 """
 
-import asyncio
-import json
 import logging
 import statistics
 import threading
@@ -16,9 +14,8 @@ from collections import defaultdict, deque
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-import pandas as pd
 import psutil
 
 logger = logging.getLogger(__name__)
@@ -85,29 +82,39 @@ class MetricsCollector:
         self.max_history = max_history
         self.counters: Dict[str, float] = defaultdict(float)
         self.gauges: Dict[str, float] = defaultdict(float)
-        self.histograms: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_history))
+        self.histograms: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=max_history)
+        )
         self.timers: Dict[str, List[float]] = defaultdict(list)
         self.lock = threading.RLock()
 
-    def increment(self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
+    def increment(
+        self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None
+    ) -> None:
         """增加计数器"""
         key = self._make_key(name, labels)
         with self.lock:
             self.counters[key] += value
 
-    def set_gauge(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+    def set_gauge(
+        self, name: str, value: float, labels: Optional[Dict[str, str]] = None
+    ) -> None:
         """设置仪表值"""
         key = self._make_key(name, labels)
         with self.lock:
             self.gauges[key] = value
 
-    def record_histogram(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+    def record_histogram(
+        self, name: str, value: float, labels: Optional[Dict[str, str]] = None
+    ) -> None:
         """记录直方图"""
         key = self._make_key(name, labels)
         with self.lock:
             self.histograms[key].append(value)
 
-    def record_timer(self, name: str, duration: float, labels: Optional[Dict[str, str]] = None) -> None:
+    def record_timer(
+        self, name: str, duration: float, labels: Optional[Dict[str, str]] = None
+    ) -> None:
         """记录计时器"""
         key = self._make_key(name, labels)
         with self.lock:
@@ -192,7 +199,11 @@ class AlertManager:
             if name in self.rules:
                 del self.rules[name]
             # 清理相关警报
-            alerts_to_remove = [alert_id for alert_id, alert in self.active_alerts.items() if alert.rule_name == name]
+            alerts_to_remove = [
+                alert_id
+                for alert_id, alert in self.active_alerts.items()
+                if alert.rule_name == name
+            ]
             for alert_id in alerts_to_remove:
                 del self.active_alerts[alert_id]
 
@@ -210,7 +221,9 @@ class AlertManager:
                 matching_metrics = [m for m in metrics.values() if m.name == rule_name]
 
                 for metric in matching_metrics:
-                    if self._evaluate_condition(metric.value, rule.condition, rule.threshold):
+                    if self._evaluate_condition(
+                        metric.value, rule.condition, rule.threshold
+                    ):
                         alert_id = f"{rule_name}_{metric.timestamp.timestamp()}"
 
                         if alert_id not in self.active_alerts:
@@ -236,7 +249,9 @@ class AlertManager:
 
         return new_alerts
 
-    def _evaluate_condition(self, value: float, condition: str, threshold: float) -> bool:
+    def _evaluate_condition(
+        self, value: float, condition: str, threshold: float
+    ) -> bool:
         """评估条件"""
         if condition == ">":
             return value > threshold
@@ -315,17 +330,25 @@ class SystemMonitor:
         # 内存使用率
         memory = psutil.virtual_memory()
         self.metrics_collector.set_gauge("system_memory_percent", memory.percent)
-        self.metrics_collector.set_gauge("system_memory_used_mb", memory.used / 1024 / 1024)
+        self.metrics_collector.set_gauge(
+            "system_memory_used_mb", memory.used / 1024 / 1024
+        )
 
         # 磁盘使用率
         disk = psutil.disk_usage("/")
         self.metrics_collector.set_gauge("system_disk_percent", disk.percent)
-        self.metrics_collector.set_gauge("system_disk_used_gb", disk.used / 1024 / 1024 / 1024)
+        self.metrics_collector.set_gauge(
+            "system_disk_used_gb", disk.used / 1024 / 1024 / 1024
+        )
 
         # 网络IO
         network = psutil.net_io_counters()
-        self.metrics_collector.increment("system_network_bytes_sent", network.bytes_sent)
-        self.metrics_collector.increment("system_network_bytes_recv", network.bytes_recv)
+        self.metrics_collector.increment(
+            "system_network_bytes_sent", network.bytes_sent
+        )
+        self.metrics_collector.increment(
+            "system_network_bytes_recv", network.bytes_recv
+        )
 
 
 class APIMonitor:
@@ -337,27 +360,40 @@ class APIMonitor:
         self.response_times: Dict[str, List[float]] = defaultdict(list)
         self.error_counts: Dict[str, int] = defaultdict(int)
 
-    def record_request(self, endpoint: str, method: str, status_code: int, response_time: float) -> None:
+    def record_request(
+        self, endpoint: str, method: str, status_code: int, response_time: float
+    ) -> None:
         """记录API请求"""
         endpoint_key = f"{method} {endpoint}"
 
         # 记录请求计数
-        self.metrics_collector.increment("api_requests_total", labels={"endpoint": endpoint, "method": method})
+        self.metrics_collector.increment(
+            "api_requests_total", labels={"endpoint": endpoint, "method": method}
+        )
         self.request_counts[endpoint_key] += 1
 
         # 记录响应时间
         self.metrics_collector.record_timer(
-            "api_response_time", response_time, labels={"endpoint": endpoint, "method": method}
+            "api_response_time",
+            response_time,
+            labels={"endpoint": endpoint, "method": method},
         )
         self.response_times[endpoint_key].append(response_time)
 
         # 记录状态码
-        self.metrics_collector.increment(f"api_status_{status_code}", labels={"endpoint": endpoint, "method": method})
+        self.metrics_collector.increment(
+            f"api_status_{status_code}", labels={"endpoint": endpoint, "method": method}
+        )
 
         # 记录错误
         if status_code >= 400:
             self.metrics_collector.increment(
-                "api_errors_total", labels={"endpoint": endpoint, "method": method, "status": str(status_code)}
+                "api_errors_total",
+                labels={
+                    "endpoint": endpoint,
+                    "method": method,
+                    "status": str(status_code),
+                },
             )
             self.error_counts[endpoint_key] += 1
 
@@ -375,7 +411,9 @@ class APIMonitor:
 
             response_times = self.response_times.get(endpoint, [])
             avg_response_time = statistics.mean(response_times) if response_times else 0
-            p95_response_time = self._percentile(response_times, 95) if response_times else 0
+            p95_response_time = (
+                self._percentile(response_times, 95) if response_times else 0
+            )
 
             summary["endpoints"][endpoint] = {
                 "request_count": count,
@@ -441,19 +479,39 @@ def setup_default_alert_rules() -> None:
 
     # 系统警报规则
     alert_manager.add_rule(
-        AlertRule(name="system_cpu_percent", condition=">", threshold=80.0, severity=AlertSeverity.WARNING)
+        AlertRule(
+            name="system_cpu_percent",
+            condition=">",
+            threshold=80.0,
+            severity=AlertSeverity.WARNING,
+        )
     )
 
     alert_manager.add_rule(
-        AlertRule(name="system_memory_percent", condition=">", threshold=85.0, severity=AlertSeverity.WARNING)
+        AlertRule(
+            name="system_memory_percent",
+            condition=">",
+            threshold=85.0,
+            severity=AlertSeverity.WARNING,
+        )
     )
 
     alert_manager.add_rule(
-        AlertRule(name="api_response_time", condition=">", threshold=2.0, severity=AlertSeverity.ERROR)  # 2秒
+        AlertRule(
+            name="api_response_time",
+            condition=">",
+            threshold=2.0,
+            severity=AlertSeverity.ERROR,
+        )  # 2秒
     )
 
     alert_manager.add_rule(
-        AlertRule(name="api_errors_total", condition=">", threshold=10.0, severity=AlertSeverity.CRITICAL)  # 10个错误
+        AlertRule(
+            name="api_errors_total",
+            condition=">",
+            threshold=10.0,
+            severity=AlertSeverity.CRITICAL,
+        )  # 10个错误
     )
 
 
@@ -506,7 +564,7 @@ if __name__ == "__main__":
     # 获取监控数据
     dashboard = get_monitoring_dashboard()
 
-    print(f"\nMonitoring Dashboard:")
+    print("\nMonitoring Dashboard:")
     print(f"Total API Requests: {dashboard['api']['total_requests']}")
     print(f"Total API Errors: {dashboard['api']['total_errors']}")
     print(f"Active Alerts: {dashboard['alerts']['active_count']}")

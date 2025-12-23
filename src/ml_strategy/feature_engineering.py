@@ -9,16 +9,12 @@
 版本: 1.0.0
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from typing import Tuple, List, Dict, Any, Optional
-import pandas as pd
-import numpy as np
 import logging
 from queue import Queue
+from typing import Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
 
 
 class RollingFeatureGenerator:
@@ -83,7 +79,9 @@ class RollingFeatureGenerator:
         df_features = pd.DataFrame(features)
 
         self.logger.info(
-            f"生成特征成功: {len(df_features)}条记录, {len(df_features.columns)}个特征"
+            "生成特征成功: %d条记录, %d个特征",
+            len(df_features),
+            len(df_features.columns),
         )
 
         return df_features
@@ -146,10 +144,10 @@ class RollingFeatureGenerator:
 
         # 6. 趋势特征
         if len(window) >= 2:
-            x = np.arange(len(window))
-            y = window["close"].values
-            if len(x) > 0 and len(y) > 0:
-                slope = np.polyfit(x, y, 1)[0]
+            x_trend = np.arange(len(window))
+            y_trend = window["close"].values
+            if len(x_trend) > 0 and len(y_trend) > 0:
+                slope = np.polyfit(x_trend, y_trend, 1)[0]
                 features["price_trend"] = slope
             else:
                 features["price_trend"] = 0
@@ -218,7 +216,7 @@ class RollingFeatureGenerator:
         df_features = pd.DataFrame(feature_list, columns=column_names)
 
         self.logger.info(
-            f"生成滚动原始特征: {len(df_features)}条, {len(column_names)}列"
+            "生成滚动原始特征: %d条, %d列", len(df_features), len(column_names)
         )
 
         return df_features
@@ -252,13 +250,13 @@ class RollingFeatureGenerator:
 
         # 生成特征
         if feature_type == "aggregate":
-            X = self.generate_features(df)
+            features_df = self.generate_features(df)
         elif feature_type == "raw":
-            X = self.generate_rolling_raw_features(df)
+            features_df = self.generate_rolling_raw_features(df)
         else:
             raise ValueError(f"不支持的特征类型: {feature_type}")
 
-        if X.empty:
+        if features_df.empty:
             raise ValueError("特征生成失败")
 
         # 生成目标变量 (未来 forecast_horizon 天的价格)
@@ -275,22 +273,28 @@ class RollingFeatureGenerator:
         end_idx = len(df) - forecast_horizon
 
         # 切片对齐
-        y = pd.Series(y_values[start_idx:end_idx], name=target_col)
-        X = X.iloc[: len(y)].reset_index(drop=True)
-        y = y.reset_index(drop=True)
+        target_series = pd.Series(y_values[start_idx:end_idx], name=target_col)
+        features_df = features_df.iloc[: len(target_series)].reset_index(drop=True)
+        target_series = target_series.reset_index(drop=True)
 
         # 验证
-        if len(X) != len(y):
-            raise ValueError(f"X 和 y 长度不匹配: {len(X)} vs {len(y)}")
+        if len(features_df) != len(target_series):
+            raise ValueError(
+                f"X 和 y 长度不匹配: {len(features_df)} vs {len(target_series)}"
+            )
 
         # 移除缺失值
-        mask = ~y.isna()
-        X = X[mask].reset_index(drop=True)
-        y = y[mask].reset_index(drop=True)
+        mask = ~target_series.isna()
+        features_df = features_df[mask].reset_index(drop=True)
+        target_series = target_series[mask].reset_index(drop=True)
 
-        self.logger.info(f"准备 ML 数据完成: X={X.shape}, y={y.shape}")
+        self.logger.info(
+            "准备 ML 数据完成: X=%s, y=%s",
+            str(features_df.shape),
+            str(target_series.shape),
+        )
 
-        return X, y
+        return features_df, target_series
 
     def add_technical_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -330,7 +334,7 @@ class RollingFeatureGenerator:
         df["bb_lower"] = df["bb_middle"] - 2 * bb_std
         df["bb_width"] = (df["bb_upper"] - df["bb_lower"]) / df["bb_middle"]
 
-        self.logger.info(f"添加技术指标: 新增 {len(df.columns) - len(df.columns)} 列")
+        self.logger.info("添加技术指标: 新增 %d 列", len(df.columns) - len(df.columns))
 
         return df
 

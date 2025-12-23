@@ -10,10 +10,10 @@ MyStocks统一数据管理器 - 简化版本 (US3 Architecture Simplification)
 
 import pandas as pd
 import logging
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, Union
 from datetime import datetime
 
-from src.core.data_classification import DataClassification, DatabaseTarget
+from src.core.data_classification import DataClassification
 from src.core.data_manager import DataManager
 from src.core.batch_failure_strategy import (
     BatchFailureStrategy,
@@ -268,10 +268,10 @@ class MyStocksUnifiedManager:
         return stats
 
     def check_data_quality(
-        self, 
-        classification: DataClassification, 
-        table_name: str, 
-        **filters: Union[str, int, float]
+        self,
+        classification: DataClassification,
+        table_name: str,
+        **filters: Union[str, int, float],
     ) -> Dict[str, Any]:
         """
         检查数据质量

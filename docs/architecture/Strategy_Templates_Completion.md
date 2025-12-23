@@ -65,7 +65,7 @@ web/backend/app/backtest/strategies/
 class BaseStrategy(ABC):
     @abstractmethod
     def generate_signal(self, symbol, current_data, position) -> StrategySignal
-    
+
     # 工具方法
     def update_history(symbol, data)
     def get_closes(symbol, n)

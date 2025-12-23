@@ -16,11 +16,10 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 import pandas as pd
-import numpy as np
 import talib as tl
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class BaseStrategy(ABC):

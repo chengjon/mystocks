@@ -250,7 +250,6 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
         CategoryEnum.MONITORING,
         CategoryEnum.UTILITY,
     ]:
-
         modules = inventory.get_modules_by_category(category)
 
         if not modules and category != CategoryEnum.CORE:
@@ -483,7 +482,7 @@ def update_readme_stats(inventory: ModuleInventory):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-    print(f"  ✓ README 统计表已更新")
+    print("  ✓ README 统计表已更新")
 
 
 if __name__ == "__main__":

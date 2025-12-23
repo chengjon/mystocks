@@ -4,7 +4,7 @@
       <template #header>
         <div class="header-section">
           <h2>股票列表</h2>
-          
+
           <!-- 筛选条件区域 -->
           <div class="filter-section">
             <el-row :gutter="20">
@@ -20,11 +20,11 @@
                   </template>
                 </el-input>
               </el-col>
-              
+
               <el-col :span="4">
-                <el-select 
-                  v-model="filters.industry" 
-                  placeholder="选择行业" 
+                <el-select
+                  v-model="filters.industry"
+                  placeholder="选择行业"
                   clearable
                   @change="handleFilterChange"
                 >
@@ -36,11 +36,11 @@
                   />
                 </el-select>
               </el-col>
-              
+
               <el-col :span="4">
-                <el-select 
-                  v-model="filters.concept" 
-                  placeholder="选择概念" 
+                <el-select
+                  v-model="filters.concept"
+                  placeholder="选择概念"
                   clearable
                   @change="handleFilterChange"
                 >
@@ -52,11 +52,11 @@
                   />
                 </el-select>
               </el-col>
-              
+
               <el-col :span="4">
-                <el-select 
-                  v-model="filters.market" 
-                  placeholder="选择市场" 
+                <el-select
+                  v-model="filters.market"
+                  placeholder="选择市场"
                   clearable
                   @change="handleFilterChange"
                 >
@@ -64,7 +64,7 @@
                   <el-option label="深圳" value="SZ" />
                 </el-select>
               </el-col>
-              
+
               <el-col :span="6">
                 <div class="filter-actions">
                   <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -80,9 +80,9 @@
       <!-- 排序和显示选项 -->
       <div class="table-options">
         <div class="left-options">
-          <el-select 
-            v-model="sortConfig.field" 
-            placeholder="排序字段" 
+          <el-select
+            v-model="sortConfig.field"
+            placeholder="排序字段"
             style="width: 120px; margin-right: 10px"
             @change="handleSortChange"
           >
@@ -94,10 +94,10 @@
             <el-option label="换手率" value="turnover" />
             <el-option label="成交量" value="volume" />
           </el-select>
-          
-          <el-select 
-            v-model="sortConfig.order" 
-            placeholder="排序方式" 
+
+          <el-select
+            v-model="sortConfig.order"
+            placeholder="排序方式"
             style="width: 100px"
             @change="handleSortChange"
           >
@@ -105,17 +105,17 @@
             <el-option label="降序" value="desc" />
           </el-select>
         </div>
-        
+
         <div class="right-options">
           <span class="total-info">共找到 {{ total }} 只股票</span>
         </div>
       </div>
 
       <!-- 股票列表表格 -->
-      <el-table 
-        :data="stocks" 
-        stripe 
-        v-loading="loading" 
+      <el-table
+        :data="stocks"
+        stripe
+        v-loading="loading"
         @row-click="handleRowClick"
         highlight-current-row
         class="stocks-table"
@@ -226,11 +226,11 @@ const loadFilterOptions = async () => {
       dataApi.getStocksIndustries(),
       dataApi.getStocksConcepts()
     ])
-    
+
     if (industriesRes.success) {
       industries.value = industriesRes.data
     }
-    
+
     if (conceptsRes.success) {
       concepts.value = conceptsRes.data
     }
@@ -248,7 +248,7 @@ const loadData = async () => {
       limit: pagination.pageSize,
       offset: (pagination.currentPage - 1) * pagination.pageSize
     }
-    
+
     // 添加筛选参数
     if (filters.search) {
       params.search = filters.search
@@ -262,13 +262,13 @@ const loadData = async () => {
     if (filters.market) {
       params.market = filters.market
     }
-    
+
     // 添加排序参数
     if (sortConfig.field && sortConfig.order) {
       params.sort_field = sortConfig.field
       params.sort_order = sortConfig.order
     }
-    
+
     const response = await dataApi.getStocksBasic(params)
     if (response.success && response.data) {
       stocks.value = response.data
@@ -386,7 +386,7 @@ onMounted(async () => {
     padding: 16px;
     background-color: #f5f7fa;
     border-radius: 6px;
-    
+
     .filter-actions {
       display: flex;
       gap: 8px;
@@ -400,12 +400,12 @@ onMounted(async () => {
     align-items: center;
     margin-bottom: 16px;
     padding: 0 4px;
-    
+
     .left-options {
       display: flex;
       align-items: center;
     }
-    
+
     .right-options {
       .total-info {
         color: #606266;
@@ -419,12 +419,12 @@ onMounted(async () => {
       color: #f56c6c;
       font-weight: 500;
     }
-    
+
     .text-green {
       color: #67c23a;
       font-weight: 500;
     }
-    
+
     .price {
       font-weight: 600;
       color: #303133;
@@ -435,12 +435,12 @@ onMounted(async () => {
   :deep(.el-table) {
     .el-table__row {
       cursor: pointer;
-      
+
       &:hover {
         background-color: #f5f7fa;
       }
     }
-    
+
     .el-table__header {
       th {
         background-color: #fafafa;

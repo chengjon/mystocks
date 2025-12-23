@@ -8,7 +8,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from typing import List, Dict, Optional
+from typing import List, Dict
 from datetime import datetime
 import os
 
@@ -185,13 +185,13 @@ class EmailNotificationService:
             news_content += f"""
             <div style="margin-bottom: 20px; padding: 15px; background-color: white; border-left: 4px solid #2563eb;">
                 <h3 style="margin: 0 0 10px 0;">
-                    <a href="{news.get('url', '#')}" style="color: #1f2937; text-decoration: none;">
-                        {news.get('headline', '无标题')}
+                    <a href="{news.get("url", "#")}" style="color: #1f2937; text-decoration: none;">
+                        {news.get("headline", "无标题")}
                     </a>
                 </h3>
-                <p style="margin: 0 0 10px 0; color: #4b5563;">{news.get('summary', '无摘要')}</p>
+                <p style="margin: 0 0 10px 0; color: #4b5563;">{news.get("summary", "无摘要")}</p>
                 <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                    来源: {news.get('source', '未知')} | 时间: {news_time}
+                    来源: {news.get("source", "未知")} | 时间: {news_time}
                 </p>
             </div>
             """
@@ -222,7 +222,7 @@ class EmailNotificationService:
 
                     <div class="watchlist">
                         <h3>您的自选股：</h3>
-                        <p style="color: #2563eb; font-weight: bold;">{', '.join(watchlist_symbols) if watchlist_symbols else '暂无自选股'}</p>
+                        <p style="color: #2563eb; font-weight: bold;">{", ".join(watchlist_symbols) if watchlist_symbols else "暂无自选股"}</p>
                     </div>
 
                     <h3>📰 最新新闻</h3>
@@ -286,11 +286,11 @@ class EmailNotificationService:
                     <h1>⚠️ 告警通知</h1>
                 </div>
                 <div class="content">
-                    <h2>{alert_types.get(alert_type, '系统通知')}</h2>
+                    <h2>{alert_types.get(alert_type, "系统通知")}</h2>
                     <div class="alert-box">
                         <p>{alert_message}</p>
                     </div>
-                    <p><strong>时间:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    <p><strong>时间:</strong> {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
                 </div>
                 <div class="footer">
                     <p>MyStocks 量化交易平台 &copy; 2025</p>

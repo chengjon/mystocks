@@ -9,11 +9,11 @@ import time
 import logging
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split as sklearn_train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from datetime import datetime, timedelta

@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from typing import Tuple, Optional
+from typing import Tuple
 from queue import Queue
 
 

@@ -4,12 +4,12 @@
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 import sys
 import os
 
 # 添加源码路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../web/backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../web/backend"))
 
 
 class MockStrategyData:
@@ -29,10 +29,10 @@ class MockStrategyData:
                     "parameters": {
                         "fast_period": 12,
                         "slow_period": 26,
-                        "signal_period": 9
+                        "signal_period": 9,
                     },
                     "is_active": True,
-                    "created_at": "2024-01-01T00:00:00"
+                    "created_at": "2024-01-01T00:00:00",
                 },
                 {
                     "strategy_code": "RSI_OVERSOLD",
@@ -42,13 +42,13 @@ class MockStrategyData:
                     "parameters": {
                         "period": 14,
                         "oversold_threshold": 30,
-                        "overbought_threshold": 70
+                        "overbought_threshold": 70,
                     },
                     "is_active": True,
-                    "created_at": "2024-01-01T00:00:00"
-                }
+                    "created_at": "2024-01-01T00:00:00",
+                },
             ],
-            "total": 2
+            "total": 2,
         }
 
     @staticmethod
@@ -67,15 +67,11 @@ class MockStrategyData:
                         "type": "buy",
                         "strength": "strong",
                         "price": 10.50,
-                        "reason": "MACD金叉"
+                        "reason": "MACD金叉",
                     }
                 ],
-                "indicators": {
-                    "macd": 0.25,
-                    "signal": 0.15,
-                    "histogram": 0.10
-                }
-            }
+                "indicators": {"macd": 0.25, "signal": 0.15, "histogram": 0.10},
+            },
         }
 
     @staticmethod
@@ -91,23 +87,11 @@ class MockStrategyData:
                 "match_rate": 0.15,
                 "execution_time": 5.23,
                 "results": [
-                    {
-                        "symbol": "600519",
-                        "match_result": True,
-                        "match_score": 90.5
-                    },
-                    {
-                        "symbol": "000001",
-                        "match_result": True,
-                        "match_score": 75.2
-                    },
-                    {
-                        "symbol": "300750",
-                        "match_result": False,
-                        "match_score": 45.0
-                    }
-                ]
-            }
+                    {"symbol": "600519", "match_result": True, "match_score": 90.5},
+                    {"symbol": "000001", "match_result": True, "match_score": 75.2},
+                    {"symbol": "300750", "match_result": False, "match_score": 45.0},
+                ],
+            },
         }
 
     @staticmethod
@@ -126,7 +110,7 @@ class MockStrategyData:
                     "match_score": 90.5,
                     "latest_price": 1750.50,
                     "change_percent": 1.25,
-                    "created_at": "2024-01-15T15:30:00"
+                    "created_at": "2024-01-15T15:30:00",
                 },
                 {
                     "id": 2,
@@ -138,10 +122,10 @@ class MockStrategyData:
                     "match_score": 75.2,
                     "latest_price": 12.35,
                     "change_percent": 0.85,
-                    "created_at": "2024-01-15T15:30:00"
-                }
+                    "created_at": "2024-01-15T15:30:00",
+                },
             ],
-            "total": 2
+            "total": 2,
         }
 
     @staticmethod
@@ -157,7 +141,7 @@ class MockStrategyData:
                     "matched_count": 15,
                     "total_count": 100,
                     "match_rate": 0.15,
-                    "avg_score": 78.5
+                    "avg_score": 78.5,
                 },
                 {
                     "strategy_code": "RSI_OVERSOLD",
@@ -166,9 +150,9 @@ class MockStrategyData:
                     "matched_count": 8,
                     "total_count": 100,
                     "match_rate": 0.08,
-                    "avg_score": 72.3
-                }
-            ]
+                    "avg_score": 72.3,
+                },
+            ],
         }
 
 
@@ -191,8 +175,12 @@ class TestStrategyAPI:
         # 验证策略定义结构
         strategy = response["data"][0]
         required_fields = [
-            "strategy_code", "strategy_name_cn", "strategy_name_en",
-            "description", "parameters", "is_active"
+            "strategy_code",
+            "strategy_name_cn",
+            "strategy_name_en",
+            "description",
+            "parameters",
+            "is_active",
         ]
         for field in required_fields:
             assert field in strategy, f"Missing required field: {field}"
@@ -226,8 +214,11 @@ class TestStrategyAPI:
 
         data = response["data"]
         required_fields = [
-            "strategy_code", "symbol", "check_date",
-            "match_result", "match_score"
+            "strategy_code",
+            "symbol",
+            "check_date",
+            "match_result",
+            "match_score",
         ]
         for field in required_fields:
             assert field in data, f"Missing required field: {field}"
@@ -258,8 +249,13 @@ class TestStrategyAPI:
 
         data = response["data"]
         required_fields = [
-            "strategy_code", "total", "matched", "failed",
-            "match_rate", "execution_time", "results"
+            "strategy_code",
+            "total",
+            "matched",
+            "failed",
+            "match_rate",
+            "execution_time",
+            "results",
         ]
         for field in required_fields:
             assert field in data, f"Missing required field: {field}"
@@ -293,8 +289,13 @@ class TestStrategyAPI:
         if len(response["data"]) > 0:
             result = response["data"][0]
             required_fields = [
-                "strategy_code", "symbol", "stock_name", "check_date",
-                "match_result", "match_score", "latest_price"
+                "strategy_code",
+                "symbol",
+                "stock_name",
+                "check_date",
+                "match_result",
+                "match_score",
+                "latest_price",
             ]
             for field in required_fields:
                 assert field in result, f"Missing required field: {field}"
@@ -324,8 +325,12 @@ class TestStrategyAPI:
         if len(response["data"]) > 0:
             stats = response["data"][0]
             required_fields = [
-                "strategy_code", "strategy_name_cn", "matched_count",
-                "total_count", "match_rate", "avg_score"
+                "strategy_code",
+                "strategy_name_cn",
+                "matched_count",
+                "total_count",
+                "match_rate",
+                "avg_score",
             ]
             for field in required_fields:
                 assert field in stats, f"Missing required field: {field}"
@@ -337,8 +342,9 @@ class TestStrategyAPI:
 
         for stats in stats_list:
             # 验证匹配数量不大于总数
-            assert stats["matched_count"] <= stats["total_count"], \
-                "匹配数量应小于等于总数"
+            assert (
+                stats["matched_count"] <= stats["total_count"]
+            ), "匹配数量应小于等于总数"
 
             # 验证匹配率在0-1之间
             assert 0 <= stats["match_rate"] <= 1, "匹配率应在0-1之间"
@@ -347,9 +353,12 @@ class TestStrategyAPI:
             assert 0 <= stats["avg_score"] <= 100, "平均分数应在0-100之间"
 
             # 验证匹配率计算正确
-            expected_rate = stats["matched_count"] / stats["total_count"] if stats["total_count"] > 0 else 0
-            assert abs(stats["match_rate"] - expected_rate) < 0.01, \
-                "匹配率计算应该准确"
+            expected_rate = (
+                stats["matched_count"] / stats["total_count"]
+                if stats["total_count"] > 0
+                else 0
+            )
+            assert abs(stats["match_rate"] - expected_rate) < 0.01, "匹配率计算应该准确"
 
     def test_strategy_code_validation(self):
         """测试策略代码验证"""
@@ -387,6 +396,7 @@ class TestStrategyAPI:
     def test_performance_batch_execution(self):
         """测试批量执行性能"""
         import time
+
         start_time = time.time()
         response = self.mock_data.run_strategy_batch("MACD_CROSS", limit=100)
         elapsed_time = time.time() - start_time
@@ -405,5 +415,5 @@ class TestStrategyAPI:
         assert len(response1["data"]) == len(response2["data"])
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

@@ -15,12 +15,10 @@ from sqlalchemy import (
     Text,
     DECIMAL,
     ForeignKey,
-    Index,
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel, Field
 
 # 使用与monitoring.py相同的Base

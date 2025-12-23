@@ -15,13 +15,16 @@
 import pytest
 import pandas as pd
 import numpy as np
-from datetime import date, timedelta
-from unittest.mock import Mock, patch
+from datetime import date
 import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-from src.ml_strategy.backtest.vectorized_backtester import VectorizedBacktester, BacktestConfig, Trade
+from src.ml_strategy.backtest.vectorized_backtester import (
+    VectorizedBacktester,
+    BacktestConfig,
+    Trade,
+)
 from src.ml_strategy.backtest.performance_metrics import PerformanceMetrics
 from src.ml_strategy.backtest.risk_metrics import RiskMetrics
 from src.ml_strategy.backtest.backtest_engine import BacktestEngine

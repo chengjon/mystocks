@@ -20,10 +20,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, Any
-from datetime import date, datetime, timedelta
+from typing import Dict, List, Optional
+from datetime import date, datetime
 import logging
-import pandas as pd
 
 
 logger = logging.getLogger(__name__)
@@ -51,9 +50,9 @@ class PredefinedTasks:
         返回:
             Dict: 更新结果
         """
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info(f"开始每日数据更新: {market.upper()}")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         try:
             # 动态导入（避免循环依赖）
@@ -67,7 +66,7 @@ class PredefinedTasks:
                 market=market, lookback_days=lookback_days
             )
 
-            logger.info(f"✓ 数据更新完成")
+            logger.info("✓ 数据更新完成")
             logger.info(f"  成功: {result['success_count']} 只股票")
             logger.info(f"  记录数: {result['total_records']:,}")
 
@@ -102,10 +101,10 @@ class PredefinedTasks:
         返回:
             Dict: 执行结果
         """
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info(f"执行策略: {strategy_name}")
         logger.info(f"股票池大小: {len(universe)}")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         try:
             if strategy_executor is None:
@@ -121,7 +120,7 @@ class PredefinedTasks:
             buy_signals = [s for s in signals if s["signal"] == "buy"]
             sell_signals = [s for s in signals if s["signal"] == "sell"]
 
-            logger.info(f"✓ 策略执行完成")
+            logger.info("✓ 策略执行完成")
             logger.info(f"  买入信号: {len(buy_signals)}")
             logger.info(f"  卖出信号: {len(sell_signals)}")
 
@@ -165,9 +164,9 @@ class PredefinedTasks:
         返回:
             Dict: 筛选结果
         """
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info("执行股票筛选")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         try:
             # 动态导入
@@ -183,7 +182,7 @@ class PredefinedTasks:
 
             filtered = screener.screen(universe)
 
-            logger.info(f"✓ 筛选完成")
+            logger.info("✓ 筛选完成")
             logger.info(f"  候选股票: {len(universe)}")
             logger.info(f"  通过筛选: {len(filtered)}")
 
@@ -209,9 +208,9 @@ class PredefinedTasks:
         返回:
             Dict: 维护结果
         """
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info("执行数据库维护")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         try:
             results = {}
@@ -231,7 +230,7 @@ class PredefinedTasks:
             # TODO: 实现过期数据清理
             results["cleanup"] = "completed"
 
-            logger.info(f"✓ 数据库维护完成")
+            logger.info("✓ 数据库维护完成")
 
             return {"status": "success", **results}
 
@@ -256,9 +255,9 @@ class PredefinedTasks:
         """
         report_date = date or datetime.now().date()
 
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info(f"生成每日报告: {report_date}")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         try:
             # 收集统计数据
@@ -293,7 +292,7 @@ class PredefinedTasks:
 ---------
   TODO: 添加数据质量指标
 
-报告生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+报告生成时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
 
             # 发送通知
@@ -308,7 +307,7 @@ class PredefinedTasks:
                     ),
                 )
 
-            logger.info(f"✓ 报告生成完成")
+            logger.info("✓ 报告生成完成")
 
             return {
                 "status": "success",
@@ -331,9 +330,9 @@ class PredefinedTasks:
         返回:
             Dict: 健康状态
         """
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
         logger.info("系统健康检查")
-        logger.info(f"=" * 70)
+        logger.info("=" * 70)
 
         services = services or ["database", "data_source", "strategy"]
 
@@ -425,7 +424,7 @@ def create_strategy_execution_task(
         priority=TaskPriority.NORMAL,
         max_retries=2,
         notify_on_failure=True,
-        depends_on=[f"daily_data_update_sh"],  # 依赖数据更新
+        depends_on=["daily_data_update_sh"],  # 依赖数据更新
     )
 
 

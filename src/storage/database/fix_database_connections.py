@@ -10,7 +10,6 @@ import sys
 import logging
 import psycopg2
 import pymysql
-import importlib
 
 # 添加项目路径到模块搜索路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

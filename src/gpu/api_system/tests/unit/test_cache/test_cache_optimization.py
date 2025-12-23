@@ -5,8 +5,7 @@
 
 import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
-import json
+from unittest.mock import patch
 
 
 class TestCacheManager:

@@ -34,7 +34,7 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 ```
 /opt/claude/mystocks_spec/
 ├── README.md                          # 项目主文档
-├── CLAUDE.md                          # Claude Code集成指南  
+├── CLAUDE.md                          # Claude Code集成指南
 ├── CHANGELOG.md                       # 版本变更日志
 ├── LICENSE                            # MIT许可证
 ├── requirements.txt                   # Python依赖清单
@@ -228,7 +228,7 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 - **TDengine专用**: Tick数据、分钟K线、深度数据
 - **PostgreSQL**: 日线数据、实时行情快照
 
-#### 第2类：参考数据 (Reference Data) 
+#### 第2类：参考数据 (Reference Data)
 - **PostgreSQL**: 股票信息、成分股信息、交易日历
 
 #### 第3类：衍生数据 (Derived Data)
@@ -266,7 +266,7 @@ manager.save_data_by_classification(
 
 # 加载数据 - 统一语法，自动优化
 data = manager.load_data_by_classification(
-    DataClassification.DAILY_KLINE, 'daily_kline', 
+    DataClassification.DAILY_KLINE, 'daily_kline',
     filters={'symbol': '600000'}
 )
 ```
@@ -276,7 +276,7 @@ data = manager.load_data_by_classification(
 每个数据源都有专门的适配器实现统一接口：
 
 - **tdx_adapter.py**: 通达信直连，无限流，多周期K线 (1058行)
-- **financial_adapter.py**: 双数据源(efinance+easyquotation)，财务数据全能 (1078行) 
+- **financial_adapter.py**: 双数据源(efinance+easyquotation)，财务数据全能 (1078行)
 - **akshare_adapter.py**: 养生全面，历史数据研究首选 (510行)
 - **byapi_adapter.py**: REST API，涨跌停股池，技术指标 (625行)
 - **customer_adapter.py**: 实时行情专用 (378行)
@@ -293,17 +293,17 @@ class DataSourceInterface(ABC):
     def get_stock_list(self, params: Optional[Dict] = None) -> List[Dict]:
         """获取股票列表"""
         pass
-    
+
     @abstractmethod
     def get_real_time_quote(self, stock_code: str) -> Dict:
         """获取实时行情"""
         pass
-    
+
     @abstractmethod
     def get_technical_indicators(self, stock_code: str, start_date: str, end_date: str) -> List[Dict]:
         """获取技术指标"""
         pass
-    
+
     # ... 其他方法
 ```
 
@@ -320,12 +320,12 @@ class DataSourceFactory:
         根据环境变量USE_MOCK_DATA决定使用Mock数据还是真实数据
         """
         use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+
         if use_mock:
             self._data_source = MockDataSource()
         else:
             self._data_source = RealDataSource()
-    
+
     def get_data_source(self) -> DataSourceInterface:
         """
         获取数据源实例
@@ -445,7 +445,7 @@ cd web/backend
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8888 --reload
 
 # 启动前端(新终端)
-cd web/frontend  
+cd web/frontend
 npm run dev
 
 # 访问
@@ -603,8 +603,8 @@ headers = {
     'x-csrf-token': csrf_token,
     'Content-Type': 'application/json'
 }
-response = requests.post('http://localhost:8888/api/monitoring/alert-rules', 
-                        json={'rule_name': 'My Rule', 'rule_type': 'limit_up'}, 
+response = requests.post('http://localhost:8888/api/monitoring/alert-rules',
+                        json={'rule_name': 'My Rule', 'rule_type': 'limit_up'},
                         headers=headers)
 ```
 

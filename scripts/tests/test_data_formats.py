@@ -7,9 +7,8 @@ Reference: docs/api/API_SPECIFICATION.md
 
 import sys
 import os
-from pathlib import Path
 from decimal import Decimal
-from datetime import datetime, date
+from datetime import date
 
 # Calculate project root (3 levels up from script location)
 project_root = os.path.dirname(
@@ -35,7 +34,6 @@ from web.backend.app.core.data_formats import (
 )
 
 from web.backend.app.schemas.base_schemas import (
-    StandardResponse,
     SuccessResponse,
     ErrorResponse,
     PaginationInfo,
@@ -53,7 +51,6 @@ from web.backend.app.schemas.base_schemas import (
     DateField,
     TimestampField,
     PaginationRequest,
-    AuthTokenResponse,
 )
 
 
@@ -79,18 +76,18 @@ class TestResults:
 
     def print_summary(self):
         print(f"\n{'=' * 70}")
-        print(f"TEST SUMMARY")
+        print("TEST SUMMARY")
         print(f"{'=' * 70}")
         print(f"Passed:  {self.passed}")
         print(f"Failed:  {self.failed}")
         print(f"Total:   {self.passed + self.failed}")
 
         if self.failed > 0:
-            print(f"\n❌ FAILED TESTS:")
+            print("\n❌ FAILED TESTS:")
             for test_name, reason in self.errors:
                 print(f"  - {test_name}: {reason}")
         else:
-            print(f"\n✅ ALL TESTS PASSED!")
+            print("\n✅ ALL TESTS PASSED!")
 
 
 results = TestResults()

@@ -8,7 +8,7 @@ import time
 import threading
 import pickle
 import json
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, Any, Tuple
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
@@ -390,9 +390,9 @@ class IntegratedMLService(MLServiceServicer):
                 self.training_tasks[task_id]["status"] = "completed"
                 self.training_tasks[task_id]["model_id"] = model_id
                 self.training_tasks[task_id]["metrics"] = metrics
-                self.training_tasks[task_id][
-                    "completed_at"
-                ] = datetime.now().isoformat()
+                self.training_tasks[task_id]["completed_at"] = (
+                    datetime.now().isoformat()
+                )
 
             self.stats["total_models_trained"] += 1
 
@@ -418,7 +418,6 @@ class IntegratedMLService(MLServiceServicer):
         """GPU训练模型"""
         try:
             import cudf
-            import cuml
 
             # 转换为GPU数据
             X_gpu = cudf.DataFrame.from_pandas(X)
@@ -501,7 +500,7 @@ class IntegratedMLService(MLServiceServicer):
                 Lasso,
                 LogisticRegression,
             )
-            from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+            from sklearn.ensemble import RandomForestRegressor
             from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 
             # 选择模型

@@ -10,9 +10,8 @@ update: 2025-09-12
 修改日期：2025-09-12
 修改内容：增加了对大整数的支持，自动选择INT或BIGINT类型
 """
+
 import pandas as pd
-from sqlalchemy import create_engine
-import pymysql as py
 
 
 def create_sql_cmd(df, table_name, primary_key=None):

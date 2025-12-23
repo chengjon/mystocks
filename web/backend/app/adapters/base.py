@@ -439,8 +439,6 @@ class DataSourceFactory:
         adapter = None
 
         if source_type == DataSourceType.EASTMONEY:
-            from app.adapters.eastmoney_adapter import EastMoneyAdapter
-
             # 注意：需要将现有的EastMoneyAdapter重构为继承BaseDataSourceAdapter
             # 暂时使用wrapper
             adapter = _create_eastmoney_wrapper(config)

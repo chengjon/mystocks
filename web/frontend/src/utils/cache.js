@@ -1,7 +1,7 @@
 /**
  * 前端缓存管理工具 (优化版)
  * 用于优化Dashboard页面图表加载速度和用户体验
- * 
+ *
  * 特性:
  * - 多级缓存策略 (内存 + localStorage + sessionStorage)
  * - LRU淘汰策略
@@ -15,7 +15,7 @@ class CacheManager {
   constructor() {
     this.memoryCache = new Map()
     this.defaultTTL = 5 * 60 * 1000 // 5分钟默认缓存时间
-    
+
     // 缓存统计
     this.stats = {
       hits: 0,
@@ -25,7 +25,7 @@ class CacheManager {
       totalResponseTime: 0,
       responseTimeSamples: []
     }
-    
+
     // 配置参数
     this.config = {
       maxMemoryEntries: 1000,           // 内存缓存最大条目
@@ -35,7 +35,7 @@ class CacheManager {
       hitRateWarning: 60,               // 命中率警告阈值
       memoryWarning: 80                 // 内存使用警告阈值
     }
-    
+
     // 存储优先级配置
     this.storagePriority = {
       'realtime': 'memory',              // 实时数据优先内存
@@ -44,14 +44,14 @@ class CacheManager {
       'temporary': 'sessionStorage',     // 临时数据使用sessionStorage
       'default': 'memory'                // 默认使用内存
     }
-    
+
     // LRU淘汰机制
     this.accessOrder = []
     this.maxAccessHistory = 200
-    
+
     this.init()
   }
-  
+
   init() {
     // 自动清理过期缓存
     this.cleanupIntervalId = setInterval(() => {
@@ -68,7 +68,7 @@ class CacheManager {
     const normalizedParams = this.normalizeParams(params)
     return `${category}:${funcName}:${JSON.stringify(normalizedParams)}`
   }
-  
+
   /**
    * 参数标准化
    */
@@ -76,13 +76,13 @@ class CacheManager {
     if (typeof params !== 'object' || params === null) {
       return {}
     }
-    
+
     // 排序键以确保一致性
     const sorted = {}
     Object.keys(params).sort().forEach(key => {
       sorted[key] = params[key]
     })
-    
+
     return sorted
   }
 
@@ -100,16 +100,16 @@ class CacheManager {
   get(funcName, params = {}) {
     const key = this.generateKey(funcName, params)
     const cacheItem = this.memoryCache.get(key)
-    
+
     if (this.isValid(cacheItem)) {
       return cacheItem.data
     }
-    
+
     // 缓存过期，删除缓存项
     if (cacheItem) {
       this.memoryCache.delete(key)
     }
-    
+
     return null
   }
 
@@ -185,7 +185,7 @@ class CacheManager {
     if (cached !== null) {
       return Promise.resolve(cached)
     }
-    
+
     return apiFunction(params).then(result => {
       this.set(funcName, result, params, ttl)
       return result

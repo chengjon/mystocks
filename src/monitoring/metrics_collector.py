@@ -14,12 +14,10 @@ Prometheus指标定义和收集
 
 import logging
 from typing import Dict, List, Optional, Any
-from datetime import datetime
 from prometheus_client import (
     Counter,
     Gauge,
     Histogram,
-    Summary,
     CollectorRegistry,
 )
 
@@ -561,7 +559,9 @@ def record_db_query(
     duration_seconds: float,
 ):
     """便捷函数：记录数据库查询"""
-    get_metrics_collector().record_db_query(database, query_type, table, duration_seconds)
+    get_metrics_collector().record_db_query(
+        database, query_type, table, duration_seconds
+    )
 
 
 if __name__ == "__main__":
@@ -575,6 +575,6 @@ if __name__ == "__main__":
     collector = get_metrics_collector()
     print("\n✅ MetricsCollector initialized")
     print(f"Total metrics: {len(collector.get_metric_names())}")
-    print(f"\nMetrics list:\n")
+    print("\nMetrics list:\n")
     for name in sorted(collector.get_metric_names()):
         print(f"  • {name}")

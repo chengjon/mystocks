@@ -10,7 +10,7 @@ import sys
 import os
 
 # 添加源码路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 测试目标模块
 try:
@@ -25,7 +25,7 @@ class TestTDXDataSourceBasic:
     @pytest.fixture
     def mock_tdx_lib(self):
         """模拟TDX库"""
-        with patch('src.adapters.tdx_adapter.tdx') as mock_tdx:
+        with patch("src.adapters.tdx_adapter.tdx") as mock_tdx:
             # 模拟TDX连接
             mock_api = MagicMock()
             mock_api.connected = True
@@ -38,37 +38,33 @@ class TestTDXDataSourceBasic:
 
     def test_initialization_with_config(self):
         """测试带配置的初始化"""
-        config = {
-            'host': 'localhost',
-            'port': 7709,
-            'auto_connect': True
-        }
+        config = {"host": "localhost", "port": 7709, "auto_connect": True}
 
         adapter = TDXDataSource(config)
 
         # 验证基本属性
-        assert hasattr(adapter, 'config')
+        assert hasattr(adapter, "config")
         assert adapter.config == config
-        assert hasattr(adapter, '_connection')
+        assert hasattr(adapter, "_connection")
 
     def test_initialization_without_config(self):
         """测试无配置的初始化"""
         adapter = TDXDataSource()
 
         # 验证基本属性存在
-        assert hasattr(adapter, 'config')
-        assert hasattr(adapter, '_connection')
+        assert hasattr(adapter, "config")
+        assert hasattr(adapter, "_connection")
 
     def test_market_code_method(self):
         """测试市场代码获取方法"""
         adapter = TDXDataSource()
 
         # 测试深圳市场代码
-        market_code = adapter._get_market_code('000001')
+        market_code = adapter._get_market_code("000001")
         assert market_code == 1  # 深圳市场
 
         # 测试上海市场代码
-        market_code = adapter._get_market_code('600000')
+        market_code = adapter._get_market_code("600000")
         assert market_code == 0  # 上海市场
 
     def test_retry_decorator(self):
@@ -76,10 +72,10 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 验证重试装饰器存在
-        assert hasattr(adapter, '_retry_api_call')
-        assert callable(getattr(adapter, '_retry_api_call'))
+        assert hasattr(adapter, "_retry_api_call")
+        assert callable(getattr(adapter, "_retry_api_call"))
 
-    @patch('src.adapters.tdx_adapter.tdx')
+    @patch("src.adapters.tdx_adapter.tdx")
     def test_retry_api_call_success(self, mock_tdx):
         """测试重试API调用成功情况"""
         # 设置成功的模拟函数
@@ -99,14 +95,16 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 创建测试DataFrame
-        test_df = pd.DataFrame({
-            'datetime': ['2024-01-01', '2024-01-02'],
-            'open': [10.0, 10.5],
-            'high': [10.5, 11.0],
-            'low': [9.8, 10.3],
-            'close': [10.2, 10.8],
-            'volume': [1000000, 1200000]
-        })
+        test_df = pd.DataFrame(
+            {
+                "datetime": ["2024-01-01", "2024-01-02"],
+                "open": [10.0, 10.5],
+                "high": [10.5, 11.0],
+                "low": [9.8, 10.3],
+                "close": [10.2, 10.8],
+                "volume": [1000000, 1200000],
+            }
+        )
 
         # 验证数据验证方法
         result = adapter._validate_kline_data(test_df)
@@ -130,11 +128,11 @@ class TestTDXDataSourceBasic:
 
         # 验证核心方法存在
         core_methods = [
-            'get_stock_daily',
-            'get_index_daily',
-            '_get_market_code',
-            '_retry_api_call',
-            '_validate_kline_data'
+            "get_stock_daily",
+            "get_index_daily",
+            "_get_market_code",
+            "_retry_api_call",
+            "_validate_kline_data",
         ]
 
         for method in core_methods:
@@ -146,23 +144,19 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 验证连接相关方法存在
-        assert hasattr(adapter, '_get_tdx_connection')
-        assert callable(getattr(adapter, '_get_tdx_connection'))
+        assert hasattr(adapter, "_get_tdx_connection")
+        assert callable(getattr(adapter, "_get_tdx_connection"))
 
     def test_config_handling(self):
         """测试配置处理"""
-        test_config = {
-            'host': 'test_host',
-            'port': 9999,
-            'timeout': 30
-        }
+        test_config = {"host": "test_host", "port": 9999, "timeout": 30}
 
         adapter = TDXDataSource(test_config)
 
         # 验证配置被正确设置
-        assert adapter.config['host'] == 'test_host'
-        assert adapter.config['port'] == 9999
-        assert adapter.config['timeout'] == 30
+        assert adapter.config["host"] == "test_host"
+        assert adapter.config["port"] == 9999
+        assert adapter.config["timeout"] == 30
 
     def test_symbol_market_mapping(self):
         """测试股票代码市场映射"""
@@ -170,10 +164,10 @@ class TestTDXDataSourceBasic:
 
         # 测试各种股票代码的市场识别
         test_cases = [
-            ('000001', 1),  # 深圳
-            ('000002', 1),  # 深圳
-            ('600000', 0),  # 上海
-            ('688001', 0),  # 上海科创板
+            ("000001", 1),  # 深圳
+            ("000002", 1),  # 深圳
+            ("600000", 0),  # 上海
+            ("688001", 0),  # 上海科创板
         ]
 
         for symbol, expected_market in test_cases:
@@ -187,13 +181,13 @@ class TestTDXDataSourceBasic:
         # 验证方法签名不会抛出异常（使用默认参数）
         try:
             # 这些方法可能会抛出异常因为需要连接，但至少应该存在
-            method = getattr(adapter, 'get_stock_daily')
+            method = getattr(adapter, "get_stock_daily")
             assert callable(method)
 
-            method = getattr(adapter, 'get_index_daily')
+            method = getattr(adapter, "get_index_daily")
             assert callable(method)
 
-        except Exception as e:
+        except Exception:
             # 方法存在但调用可能失败（这是预期的）
             pass
 
@@ -201,6 +195,7 @@ class TestTDXDataSourceBasic:
         """测试类导入兼容性"""
         try:
             from src.adapters.tdx_adapter import TDXDataSource
+
             adapter = TDXDataSource()
             assert adapter is not None
             assert isinstance(adapter, TDXDataSource)
@@ -212,11 +207,7 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 验证关键属性存在
-        expected_attrs = [
-            'config',
-            '_connection',
-            '_connected'
-        ]
+        expected_attrs = ["config", "_connection", "_connected"]
 
         for attr in expected_attrs:
             assert hasattr(adapter, attr), f"缺少属性: {attr}"
@@ -237,11 +228,13 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 创建有效数据
-        valid_data = pd.DataFrame({
-            'datetime': pd.date_range('2024-01-01', periods=3),
-            'open': [10.0, 10.5, 11.0],
-            'close': [10.2, 10.8, 11.2]
-        })
+        valid_data = pd.DataFrame(
+            {
+                "datetime": pd.date_range("2024-01-01", periods=3),
+                "open": [10.0, 10.5, 11.0],
+                "close": [10.2, 10.8, 11.2],
+            }
+        )
 
         # 验证数据结构
         result = adapter._validate_kline_data(valid_data)
@@ -253,8 +246,8 @@ class TestTDXDataSourceBasic:
         adapter = TDXDataSource()
 
         # 验证错误处理相关的方法存在
-        assert hasattr(adapter, '_retry_api_call')
-        assert callable(getattr(adapter, '_retry_api_call'))
+        assert hasattr(adapter, "_retry_api_call")
+        assert callable(getattr(adapter, "_retry_api_call"))
 
 
 if __name__ == "__main__":

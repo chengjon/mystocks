@@ -22,7 +22,6 @@ from typing import Dict, Optional, List, Any
 from datetime import datetime
 from enum import Enum
 import structlog
-import time
 
 logger = structlog.get_logger()
 

@@ -6,9 +6,8 @@ Tushare适配器基础测试
 import inspect
 import os
 import sys
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
-import pandas as pd
 import pytest
 
 # 添加源码路径
@@ -106,11 +105,20 @@ class TestTushareDataSourceBasic:
         # 验证类继承了正确的接口（如果存在）
         try:
             # 由于需要外部依赖，只验证方法存在
-            required_methods = ["get_stock_daily", "get_index_daily", "get_stock_basic", "get_index_components"]
+            required_methods = [
+                "get_stock_daily",
+                "get_index_daily",
+                "get_stock_basic",
+                "get_index_components",
+            ]
 
             for method_name in required_methods:
-                assert hasattr(TushareDataSource, method_name), f"缺少接口方法: {method_name}"
-                assert callable(getattr(TushareDataSource, method_name)), f"方法不可调用: {method_name}"
+                assert hasattr(
+                    TushareDataSource, method_name
+                ), f"缺少接口方法: {method_name}"
+                assert callable(
+                    getattr(TushareDataSource, method_name)
+                ), f"方法不可调用: {method_name}"
 
         except Exception as e:
             pytest.fail(f"接口兼容性测试失败: {e}")
@@ -228,7 +236,12 @@ class TestTushareDataSourceBasic:
         import src.adapters.tushare_adapter as tushare_module
 
         # 验证关键模块被导入
-        expected_imports = ["pandas", "typing", "sys", "os"]  # pd  # Dict, List, Union, Optional  # sys  # os
+        expected_imports = [
+            "pandas",
+            "typing",
+            "sys",
+            "os",
+        ]  # pd  # Dict, List, Union, Optional  # sys  # os
 
         # 检查源码中是否有这些导入
         with open(tushare_module.__file__, "r") as f:

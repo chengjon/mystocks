@@ -14,11 +14,9 @@
 """
 
 import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Union, Callable
+from typing import Dict, List, Optional
 from datetime import date, datetime, timedelta
 import logging
-import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import time
 from dataclasses import dataclass
@@ -167,8 +165,8 @@ class StrategyExecutor:
         self.is_running = True
         start_time = time.time()
 
-        self.logger.info(f"=" * 60)
-        self.logger.info(f"策略执行开始")
+        self.logger.info("=" * 60)
+        self.logger.info("策略执行开始")
         self.logger.info(f"执行ID: {self.execution_id}")
         self.logger.info(f"策略: {self.strategy.name} v{self.strategy.version}")
         self.logger.info(f"执行模式: {mode.value}")
@@ -176,7 +174,7 @@ class StrategyExecutor:
         self.logger.info(f"并行执行: {self.config.parallel}")
         if self.config.parallel:
             self.logger.info(f"工作进程数: {self.config.max_workers}")
-        self.logger.info(f"=" * 60)
+        self.logger.info("=" * 60)
 
         # 验证参数
         if mode == ExecutionMode.FULL:
@@ -299,8 +297,8 @@ class StrategyExecutor:
         }
 
         # 日志总结
-        self.logger.info(f"=" * 60)
-        self.logger.info(f"策略执行完成")
+        self.logger.info("=" * 60)
+        self.logger.info("策略执行完成")
         self.logger.info(f"状态: {status}")
         self.logger.info(
             f"处理股票: {self.progress.processed_symbols}/{self.progress.total_symbols}"
@@ -311,7 +309,7 @@ class StrategyExecutor:
         self.logger.info(
             f"处理速度: {result['statistics']['stocks_per_second']:.2f} 股票/秒"
         )
-        self.logger.info(f"=" * 60)
+        self.logger.info("=" * 60)
 
         return result
 

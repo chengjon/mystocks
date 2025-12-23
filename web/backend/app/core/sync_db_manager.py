@@ -19,7 +19,6 @@ from app.core.config import get_postgresql_connection_string
 from app.models.sync_message import (
     Base,
     SyncMessage,
-    SyncStatistics,
     MessageStatus,
     SyncDirection,
     OperationType,

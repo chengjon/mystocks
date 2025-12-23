@@ -80,7 +80,7 @@ Redis: 6.x+ (可选)
 - WebPageTest.org
 - Google PageSpeed Insights
 
-# API性能测试  
+# API性能测试
 - Apache Bench (ab)
 - wrk (现代HTTP基准测试工具)
 - curl (简单延迟测试)
@@ -144,7 +144,7 @@ python3 scripts/automation/performance_test.py --test-type database
 # 系统资源监控
 {
     "cpu_usage": "当前CPU使用率 (%)",
-    "memory_usage": "当前内存使用率 (%)", 
+    "memory_usage": "当前内存使用率 (%)",
     "disk_usage": "当前磁盘使用率 (%)",
     "network_io": "网络IO流量 (MB/s)"
 }
@@ -157,7 +157,7 @@ python3 scripts/automation/performance_test.py --test-type database
     "concurrent_users": "并发用户数"
 }
 
-# 数据库性能监控  
+# 数据库性能监控
 {
     "db_connections": "数据库连接数",
     "db_query_time": "数据库查询平均时间 (ms)",
@@ -241,7 +241,7 @@ const lazyComponent = React.lazy(() => import('./Component'))
 // 3. 缓存策略
 const cacheConfig = {
   stocksBasic: 300000,    // 5分钟
-  industries: 3600000,    // 1小时  
+  industries: 3600000,    // 1小时
   markets: 60000,         // 1分钟
   klineData: 300000       // 5分钟
 }
@@ -332,7 +332,7 @@ CREATE INDEX CONCURRENTLY idx_stocks_industry ON stocks_basic(industry);
 | 仪表盘 | ≤1.5s | 1.2s | ✅ 通过 | 优秀 |
 | 股票列表 | ≤2.0s | 1.8s | ✅ 通过 | 良好 |
 
-### API响应性能  
+### API响应性能
 | API | 标准值 | 实际值 | 状态 | 备注 |
 |-----|--------|--------|------|------|
 | 健康检查 | ≤100ms | 45ms | ✅ 通过 | 优秀 |
@@ -393,7 +393,7 @@ echo "$(date): CPU: ${cpu_usage}%, Memory: ${memory_usage}%"
 # 每日性能基准测试
 0 2 * * * /opt/claude/mystocks_spec/scripts/automation/regression_test.sh --performance-only
 
-# 每周完整回归测试  
+# 每周完整回归测试
 0 1 * * 0 /opt/claude/mystocks_spec/scripts/automation/regression_test.sh
 
 # 性能阈值告警
@@ -402,7 +402,7 @@ echo "$(date): CPU: ${cpu_usage}%, Memory: ${memory_usage}%"
 
 ---
 
-**文档版本**: PERFORMANCE_BASELINE.md v1.0  
-**创建时间**: 2025-11-17  
-**最后更新**: 2025-11-17  
+**文档版本**: PERFORMANCE_BASELINE.md v1.0
+**创建时间**: 2025-11-17
+**最后更新**: 2025-11-17
 **负责人**: MyStocks开发团队

@@ -4,10 +4,10 @@
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from fastapi import APIRouter, Depends, HTTPException, Path
+from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.services.data_source_factory import DataSourceFactory
@@ -22,20 +22,37 @@ class WatchlistItem(BaseModel):
     symbol: str = Field(..., description="股票代码", min_length=1, max_length=20)
     display_name: Optional[str] = Field(None, description="显示名称", max_length=100)
     exchange: Optional[str] = Field(None, description="交易所", max_length=20)
-    added_at: str = Field(..., description="添加时间", pattern=r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
+    added_at: str = Field(
+        ..., description="添加时间", pattern=r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
+    )
     notes: Optional[str] = Field(None, description="备注", max_length=500)
 
 
 class AddWatchlistRequest(BaseModel):
     """添加自选股请求"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    symbol: str = Field(
+        ...,
+        description="股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
+    )
     display_name: Optional[str] = Field(None, description="显示名称", max_length=100)
-    exchange: Optional[str] = Field(None, description="交易所", max_length=20, pattern=r"^[A-Z]+$")
-    market: Optional[str] = Field(None, description="市场（CN/HK/US）", max_length=5, pattern=r"^(CN|HK|US)$")
+    exchange: Optional[str] = Field(
+        None, description="交易所", max_length=20, pattern=r"^[A-Z]+$"
+    )
+    market: Optional[str] = Field(
+        None, description="市场（CN/HK/US）", max_length=5, pattern=r"^(CN|HK|US)$"
+    )
     notes: Optional[str] = Field(None, description="备注", max_length=500)
     group_id: Optional[int] = Field(None, description="分组ID", ge=1)
-    group_name: Optional[str] = Field(None, description="分组名称（如果不存在则自动创建）", min_length=1, max_length=50)
+    group_name: Optional[str] = Field(
+        None,
+        description="分组名称（如果不存在则自动创建）",
+        min_length=1,
+        max_length=50,
+    )
 
     @field_validator("symbol")
     @classmethod
@@ -53,9 +70,20 @@ class AddWatchlistRequest(BaseModel):
         """验证交易所代码"""
         if v is None:
             return v
-        valid_exchanges = ["NYSE", "NASDAQ", "AMEX", "SSE", "SZSE", "HKEX", "NSE", "BSE"]
+        valid_exchanges = [
+            "NYSE",
+            "NASDAQ",
+            "AMEX",
+            "SSE",
+            "SZSE",
+            "HKEX",
+            "NSE",
+            "BSE",
+        ]
         if v.upper() not in valid_exchanges:
-            raise ValueError(f'交易所代码无效，支持的交易所: {", ".join(valid_exchanges)}')
+            raise ValueError(
+                f"交易所代码无效，支持的交易所: {', '.join(valid_exchanges)}"
+            )
         return v.upper()
 
     @field_validator("group_name")
@@ -90,7 +118,13 @@ class UpdateWatchlistNotesRequest(BaseModel):
 class CreateGroupRequest(BaseModel):
     """创建分组请求"""
 
-    group_name: str = Field(..., description="分组名称", min_length=1, max_length=50, pattern=r'^[^\s<>"\'/\\]+$')
+    group_name: str = Field(
+        ...,
+        description="分组名称",
+        min_length=1,
+        max_length=50,
+        pattern=r'^[^\s<>"\'/\\]+$',
+    )
 
     @field_validator("group_name")
     @classmethod
@@ -110,7 +144,13 @@ class CreateGroupRequest(BaseModel):
 class UpdateGroupRequest(BaseModel):
     """更新分组请求"""
 
-    group_name: str = Field(..., description="新的分组名称", min_length=1, max_length=50, pattern=r'^[^\s<>"\'/\\]+$')
+    group_name: str = Field(
+        ...,
+        description="新的分组名称",
+        min_length=1,
+        max_length=50,
+        pattern=r'^[^\s<>"\'/\\]+$',
+    )
 
     @field_validator("group_name")
     @classmethod
@@ -127,7 +167,13 @@ class UpdateGroupRequest(BaseModel):
 class MoveStockRequest(BaseModel):
     """移动股票请求"""
 
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    symbol: str = Field(
+        ...,
+        description="股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
+    )
     from_group_id: int = Field(..., description="原分组ID", ge=1)
     to_group_id: int = Field(..., description="目标分组ID", ge=1)
 
@@ -167,7 +213,9 @@ async def get_my_watchlist(
         result = await watchlist_adapter.get_data("list", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股列表失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "获取自选股列表失败")
+            )
 
         return result.get("data", [])
 
@@ -194,7 +242,9 @@ async def get_my_watchlist_symbols(
         result = await watchlist_adapter.get_data("symbols", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股代码列表失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "获取自选股代码列表失败")
+            )
 
         return result.get("data", [])
 
@@ -205,7 +255,9 @@ async def get_my_watchlist_symbols(
 
 
 @router.post("/add")
-async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = Depends(get_current_user)) -> Dict:
+async def add_to_watchlist(
+    request: AddWatchlistRequest, current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     添加股票到自选股列表
     支持通过 group_id 或 group_name 指定分组
@@ -231,7 +283,9 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
         result = await watchlist_adapter.get_data("add", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "添加自选股失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "添加自选股失败")
+            )
 
         return {
             "success": True,
@@ -248,7 +302,13 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
 
 @router.delete("/remove/{symbol}")
 async def remove_from_watchlist(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    symbol: str = Path(
+        ...,
+        description="股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
+    ),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -264,7 +324,9 @@ async def remove_from_watchlist(
         result = await watchlist_adapter.get_data("remove", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=404, detail=result.get("error", "自选股不存在或删除失败"))
+            raise HTTPException(
+                status_code=404, detail=result.get("error", "自选股不存在或删除失败")
+            )
 
         return {"success": True, "message": "已从自选股移除", "symbol": symbol}
     except HTTPException:
@@ -275,7 +337,13 @@ async def remove_from_watchlist(
 
 @router.get("/check/{symbol}")
 async def check_in_watchlist(
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    symbol: str = Path(
+        ...,
+        description="股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
+    ),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -291,9 +359,14 @@ async def check_in_watchlist(
         result = await watchlist_adapter.get_data("check", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "检查自选股失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "检查自选股失败")
+            )
 
-        return {"symbol": symbol, "is_in_watchlist": result.get("data", {}).get("is_in_watchlist", False)}
+        return {
+            "symbol": symbol,
+            "is_in_watchlist": result.get("data", {}).get("is_in_watchlist", False),
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -303,7 +376,13 @@ async def check_in_watchlist(
 @router.put("/notes/{symbol}")
 async def update_watchlist_notes(
     request: UpdateWatchlistNotesRequest,
-    symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    symbol: str = Path(
+        ...,
+        description="股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
+    ),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -314,12 +393,19 @@ async def update_watchlist_notes(
         data_source_factory = DataSourceFactory()
         watchlist_adapter = await data_source_factory.get_data_source("watchlist")
 
-        params = {"user_id": current_user.id, "symbol": symbol, "notes": request.notes, "action": "update_notes"}
+        params = {
+            "user_id": current_user.id,
+            "symbol": symbol,
+            "notes": request.notes,
+            "action": "update_notes",
+        }
 
         result = await watchlist_adapter.get_data("update_notes", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=404, detail=result.get("error", "自选股不存在或更新失败"))
+            raise HTTPException(
+                status_code=404, detail=result.get("error", "自选股不存在或更新失败")
+            )
 
         return {"success": True, "message": "备注已更新", "symbol": symbol}
     except HTTPException:
@@ -343,7 +429,9 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
         result = await watchlist_adapter.get_data("count", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股数量失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "获取自选股数量失败")
+            )
 
         return {"count": result.get("data", {}).get("count", 0)}
     except HTTPException:
@@ -367,7 +455,9 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
         result = await watchlist_adapter.get_data("clear", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "清空自选股失败"))
+            raise HTTPException(
+                status_code=500, detail=result.get("error", "清空自选股失败")
+            )
 
         return {"success": True, "message": "自选股列表已清空"}
     except HTTPException:
@@ -393,7 +483,9 @@ async def get_user_groups(current_user: User = Depends(get_current_user)) -> Lis
 
 
 @router.post("/groups")
-async def create_group(request: CreateGroupRequest, current_user: User = Depends(get_current_user)) -> Dict:
+async def create_group(
+    request: CreateGroupRequest, current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     创建新的自选股分组
     """
@@ -447,7 +539,8 @@ async def update_group(
 
 @router.delete("/groups/{group_id}")
 async def delete_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     删除分组（会同时删除该分组下的所有自选股）
@@ -457,7 +550,9 @@ async def delete_group(
         success = service.delete_group(current_user.id, group_id)
 
         if not success:
-            raise HTTPException(status_code=404, detail="分组不存在或无法删除（默认分组不能删除）")
+            raise HTTPException(
+                status_code=404, detail="分组不存在或无法删除（默认分组不能删除）"
+            )
 
         return {"success": True, "message": "分组已删除", "group_id": group_id}
     except HTTPException:
@@ -468,7 +563,8 @@ async def delete_group(
 
 @router.get("/group/{group_id}")
 async def get_watchlist_by_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
     获取指定分组的自选股列表
@@ -482,7 +578,9 @@ async def get_watchlist_by_group(
 
 
 @router.put("/move")
-async def move_stock_to_group(request: MoveStockRequest, current_user: User = Depends(get_current_user)) -> Dict:
+async def move_stock_to_group(
+    request: MoveStockRequest, current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     将股票从一个分组移动到另一个分组
     """

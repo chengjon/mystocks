@@ -1,0 +1,29 @@
+项目目录结构检查报告
+=========================
+生成时间: 2025年 11月 17日 星期一 17:19:17 CST
+项目路径: /opt/claude/mystocks_spec
+
+根目录文件统计:
+81
+
+根目录目录统计:
+40
+
+按文件类型统计:
+     26 md
+     15 py
+     14 json
+      8 sh
+      5 txt
+      2 ts
+      2 log
+      2 ini
+      1 yml
+      1 LICENSE
+      1 js
+      1 gitignore
+      1 env
+      1 csv
+      1 coverage
+
+大文件列表 (>1MB):

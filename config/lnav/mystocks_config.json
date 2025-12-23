@@ -38,7 +38,7 @@ mystocks_standard = {
     "level-field": "level",
     "level": {
         "error": "ERROR",
-        "warning": "WARNING", 
+        "warning": "WARNING",
         "info": "INFO",
         "debug": "DEBUG",
         "trace": "TRACE"

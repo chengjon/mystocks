@@ -40,7 +40,7 @@ Estimated Duplication Reduced: 300+ lines
 """
 
 from sqlalchemy import create_engine, and_
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from datetime import date, datetime, timedelta
 from typing import List, Optional, Dict, Any, Union
 import pandas as pd

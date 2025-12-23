@@ -32,13 +32,13 @@ def example_1_basic_quote():
         print(f"最新价: ¥{quote['price']:.2f}")
         print(
             f"涨跌: {quote['price'] - quote['pre_close']:+.2f} "
-            f"({(quote['price']/quote['pre_close']-1)*100:+.2f}%)"
+            f"({(quote['price'] / quote['pre_close'] - 1) * 100:+.2f}%)"
         )
         print(f"今开: ¥{quote['open']:.2f}")
         print(f"最高: ¥{quote['high']:.2f}")
         print(f"最低: ¥{quote['low']:.2f}")
         print(f"成交量: {quote['volume']:,}手")
-        print(f"成交额: ¥{quote['amount']/1e8:.2f}亿")
+        print(f"成交额: ¥{quote['amount'] / 1e8:.2f}亿")
         print(f"时间: {quote['timestamp']}")
     else:
         print(f"获取失败: {quote}")
@@ -98,16 +98,18 @@ def example_3_daily_kline():
         print(f"日期范围: {df['date'].min()} ~ {df['date'].max()}")
 
         # 计算简单统计指标
-        print(f"\n价格统计:")
+        print("\n价格统计:")
         print(f"  最高价: ¥{df['high'].max():.2f}")
         print(f"  最低价: ¥{df['low'].min():.2f}")
         print(f"  平均价: ¥{df['close'].mean():.2f}")
-        print(f"  涨跌幅: {(df['close'].iloc[-1]/df['close'].iloc[0]-1)*100:+.2f}%")
+        print(
+            f"  涨跌幅: {(df['close'].iloc[-1] / df['close'].iloc[0] - 1) * 100:+.2f}%"
+        )
 
-        print(f"\n成交量统计:")
+        print("\n成交量统计:")
         print(f"  最大成交量: {df['volume'].max():,.0f}手")
         print(f"  平均成交量: {df['volume'].mean():,.0f}手")
-        print(f"  总成交额: ¥{df['amount'].sum()/1e8:.2f}亿")
+        print(f"  总成交额: ¥{df['amount'].sum() / 1e8:.2f}亿")
 
 
 def example_4_intraday_kline():
@@ -127,7 +129,7 @@ def example_4_intraday_kline():
         print(f"\n获取5分钟K线: {len(df)}条")
 
         # 显示最近10根K线
-        print(f"\n最近10根K线:")
+        print("\n最近10根K线:")
         print(
             df[["date", "open", "high", "low", "close", "volume"]]
             .tail(10)

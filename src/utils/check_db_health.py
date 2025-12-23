@@ -34,7 +34,7 @@ def check_mysql_connection():
         cursor = conn.cursor()
         cursor.execute("SELECT VERSION()")
         version = cursor.fetchone()
-        print(f"✅ MySQL连接成功")
+        print("✅ MySQL连接成功")
         print(f"   版本: {version[0]}")
         print(f"   数据库: {settings.mysql_database}")
 
@@ -50,7 +50,7 @@ def check_mysql_connection():
         return True, None
 
     except Exception as e:
-        print(f"❌ MySQL连接失败")
+        print("❌ MySQL连接失败")
         print(f"   错误: {str(e)}")
         return False, str(e)
 
@@ -78,7 +78,7 @@ def check_postgresql_connection():
         cursor = conn.cursor()
         cursor.execute("SELECT version()")
         version = cursor.fetchone()
-        print(f"✅ PostgreSQL连接成功 (mystocks)")
+        print("✅ PostgreSQL连接成功 (mystocks)")
         print(f"   版本: {version[0][:50]}...")
         print(f"   数据库: {settings.postgresql_database}")
 
@@ -117,8 +117,8 @@ def check_postgresql_connection():
             """
             )
             monitor_tables = [table[0] for table in cursor_monitor.fetchall()]
-            print(f"✅ PostgreSQL监控数据库连接成功")
-            print(f"   数据库: mystocks_monitoring")
+            print("✅ PostgreSQL监控数据库连接成功")
+            print("   数据库: mystocks_monitoring")
             print(f"   表数量: {len(monitor_tables)}")
             cursor_monitor.close()
             conn_monitor.close()
@@ -128,7 +128,7 @@ def check_postgresql_connection():
         return True, None
 
     except Exception as e:
-        print(f"❌ PostgreSQL连接失败")
+        print("❌ PostgreSQL连接失败")
         print(f"   错误: {str(e)}")
         return False, str(e)
 
@@ -163,7 +163,7 @@ def check_tdengine_connection():
             cursor.execute("SHOW VARIABLES")
             version = "Connected"
 
-        print(f"✅ TDengine连接成功")
+        print("✅ TDengine连接成功")
         print(f"   版本: {version}")
         print(f"   主机: {settings.tdengine_host}:{settings.tdengine_port}")
 
@@ -178,7 +178,7 @@ def check_tdengine_connection():
             print(f"   超级表数量: {len(stables)}")
             if stables:
                 print(f"   示例超级表: {', '.join([s[0] for s in stables[:5]])}")
-        except Exception as db_e:
+        except Exception:
             print(f"   数据库: {settings.tdengine_database} ❌ (不存在或无权限)")
             print(f"   建议: 创建数据库 - CREATE DATABASE {settings.tdengine_database}")
 
@@ -187,12 +187,12 @@ def check_tdengine_connection():
         return True, None
 
     except Exception as e:
-        print(f"❌ TDengine连接失败")
+        print("❌ TDengine连接失败")
         print(f"   错误: {str(e)}")
-        print(f"   检查项:")
-        print(f"   1. TDengine服务是否启动: systemctl status taosd")
+        print("   检查项:")
+        print("   1. TDengine服务是否启动: systemctl status taosd")
         print(f"   2. 端口是否正确: {settings.tdengine_port}")
-        print(f"   3. 防火墙是否开放")
+        print("   3. 防火墙是否开放")
         return False, str(e)
 
 
@@ -217,7 +217,7 @@ def check_redis_connection():
         # 测试连接
         r.ping()
         info = r.info()
-        print(f"✅ Redis连接成功")
+        print("✅ Redis连接成功")
         print(f"   版本: {info.get('redis_version', 'Unknown')}")
         print(f"   数据库: DB{settings.redis_db}")
         print(f"   内存使用: {info.get('used_memory_human', 'Unknown')}")
@@ -226,7 +226,7 @@ def check_redis_connection():
         return True, None
 
     except Exception as e:
-        print(f"❌ Redis连接失败")
+        print("❌ Redis连接失败")
         print(f"   错误: {str(e)}")
         return False, str(e)
 
@@ -254,7 +254,7 @@ def main():
     passed = sum(results.values())
 
     print(f"\n总计: {passed}/{total} 个数据库连接成功")
-    print(f"通过率: {passed/total*100:.1f}%\n")
+    print(f"通过率: {passed / total * 100:.1f}%\n")
 
     for db, status in results.items():
         icon = "✅" if status else "❌"

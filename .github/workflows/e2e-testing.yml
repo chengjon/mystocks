@@ -184,7 +184,7 @@ jobs:
           export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/mystocks_test
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
           echo "Backend server started on port 8000"
-          
+
           # 等待后端服务启动
           timeout 30 bash -c 'until curl -f http://localhost:8000/health; do sleep 1; done'
 
@@ -273,7 +273,7 @@ jobs:
           npm ci
           npm install @playwright/test@1.48.1
           npx playwright install ${{ matrix.browser }} --with-deps
-          
+
           cd ../../web/backend
           pip install -r requirements.txt
           pip install pytest-playwright==0.5.1
@@ -285,14 +285,14 @@ jobs:
           export USE_MOCK_DATA=true
           export DATA_SOURCE=mock
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          
+
           # 启动前端开发服务器
           cd ../../web/frontend
           export VITE_API_BASE_URL=http://localhost:8000
           npm run dev &
-          
+
           echo "Services started - Backend:8000, Frontend:5173"
-          
+
           # 等待服务启动
           timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:5173; do sleep 2; done'
@@ -300,11 +300,11 @@ jobs:
       - name: Run E2E Tests
         run: |
           cd web/frontend
-          
+
           # 设置环境变量
           export PLAYWRIGHT_BASE_URL=http://localhost:5173
           export PLAYWRIGHT_API_URL=http://localhost:8000
-          
+
           # 运行指定分片的E2E测试
           npx playwright test \
             --project=${{ matrix.browser }} \
@@ -359,27 +359,27 @@ jobs:
       - name: Collect Test Results
         run: |
           echo "📊 Collecting E2E Test Results..."
-          
+
           # 安装jq用于JSON处理
           sudo apt-get update && sudo apt-get install -y jq
-          
+
           # 统计测试结果
           total_tests=0
           passed_tests=0
           failed_tests=0
-          
+
           for result_dir in test-results/*/; do
             if [ -f "${result_dir}results.json" ]; then
               local_tests=$(jq '.suites[].tests | length' "${result_dir}results.json" 2>/dev/null || echo "0")
               local_passed=$(jq '[.suites[].tests[] | select(.status == "passed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
               local_failed=$(jq '[.suites[].tests[] | select(.status == "failed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
-              
+
               total_tests=$((total_tests + local_tests))
               passed_tests=$((passed_tests + local_passed))
               failed_tests=$((failed_tests + local_failed))
             fi
           done
-          
+
           echo "📈 E2E Test Summary:"
           echo "   Total Tests: $total_tests"
           echo "   Passed: $passed_tests"
@@ -388,7 +388,7 @@ jobs:
             success_rate=$(echo "scale=2; $passed_tests * 100 / $total_tests" | bc)
             echo "   Success Rate: ${success_rate}%"
           fi
-          
+
           # 保存摘要到文件
           cat > test-summary.json << EOF
 {
@@ -403,7 +403,7 @@ jobs:
   "run_id": "${{ github.run_id }}"
 }
 EOF
-          
+
           echo "✅ Test summary saved to test-summary.json"
 
       - name: Generate Test Report
@@ -411,9 +411,9 @@ EOF
           cat > test-report.md << 'EOF'
 # E2E Test Report
 
-**Run ID:** ${{ github.run_id }}  
-**Commit:** ${{ github.sha }}  
-**Branch:** ${{ github.ref_name }}  
+**Run ID:** ${{ github.run_id }}
+**Commit:** ${{ github.sha }}
+**Branch:** ${{ github.ref_name }}
 **Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 ## Test Summary
@@ -436,7 +436,7 @@ done)
 - Check console logs for any runtime errors
 - Monitor test flakiness across runs
 EOF
-          
+
           echo "📋 Test report generated"
 
       - name: Upload Test Summary
@@ -453,21 +453,21 @@ EOF
         with:
           script: |
             const fs = require('fs');
-            
+
             let summary = 'E2E Tests completed. Check the workflow run for detailed results.';
-            
+
             if (fs.existsSync('test-summary.json')) {
               const data = JSON.parse(fs.readFileSync('test-summary.json', 'utf8'));
               summary = `📊 E2E Test Results Summary:
-              
+
               - **Total Tests:** ${data.total_tests}
               - **Passed:** ${data.passed_tests}
               - **Failed:** ${data.failed_tests}
               - **Success Rate:** ${data.success_rate}%
-              
+
               📋 [View Detailed Report](${context.payload.repository.html_url}/actions/runs/${context.runId})`;
             }
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -507,7 +507,7 @@ EOF
           npm ci
           npm install @playwright/test@1.48.1 lighthouse @lhci/cli
           npx playwright install chromium --with-deps
-          
+
           cd ../../web/backend
           pip install -r requirements.txt
 
@@ -517,12 +517,12 @@ EOF
           cd web/backend
           export USE_MOCK_DATA=true
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          
+
           # 启动前端服务
           cd ../../web/frontend
           export VITE_API_BASE_URL=http://localhost:8000
           npm run preview &
-          
+
           echo "Services started for performance testing"
           timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
           timeout 60 bash -c 'until curl -f http://localhost:4173; do sleep 2; done'
@@ -530,7 +530,7 @@ EOF
       - name: Run Lighthouse Performance Tests
         run: |
           cd web/frontend
-          
+
           # 运行Lighthouse性能测试
           npx lhci autorun \
             --config=.lighthouserc.json \
@@ -540,7 +540,7 @@ EOF
       - name: Run Playwright Performance Tests
         run: |
           cd web/frontend
-          
+
           # 运行性能基准测试
           npx playwright test --project=chromium --grep="performance" --reporter=dot
 

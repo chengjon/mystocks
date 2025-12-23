@@ -14,7 +14,7 @@
 import sys
 import json
 from pathlib import Path
-from typing import List, Dict, Set
+from typing import List
 from collections import defaultdict
 
 # 添加项目根目录到路径
@@ -274,7 +274,7 @@ def analyze_duplicate_based_merges(
     for files, dups in file_groups.items():
         if len(dups) >= 3:  # 至少 3 个重复案例
             rec = MergeRecommendation(
-                id=f"MERGE-DUP-{len(recommendations)+1:03d}",
+                id=f"MERGE-DUP-{len(recommendations) + 1:03d}",
                 title=f"基于重复合并 {len(files)} 个模块",
                 modules_to_merge=list(files),
                 common_functionality=f"这些模块之间存在 {len(dups)} 个高严重性代码重复。"
@@ -483,7 +483,7 @@ def main():
     print("合并指南生成完成")
     print("=" * 60)
     print(f"\n总合并建议: {len(guide.recommendations)}")
-    print(f"\n按风险级别:")
+    print("\n按风险级别:")
     print(f"  低风险: {len(guide.get_by_risk_level('low'))}")
     print(f"  中风险: {len(guide.get_by_risk_level('medium'))}")
     print(f"  高风险: {len(guide.get_by_risk_level('high'))}")

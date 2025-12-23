@@ -40,7 +40,7 @@ def create_simple_mysql_example():
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"""
 
-        print(f"生成的MySQL DDL语句:")
+        print("生成的MySQL DDL语句:")
         print(ddl)
         print("✓ DDL生成成功（无需数据库连接）")
 

@@ -5,9 +5,7 @@
 """
 
 import requests
-import json
 from datetime import datetime
-from typing import Dict, Any
 
 # Backend API基础URL
 BASE_URL = "http://localhost:8000"
@@ -34,8 +32,8 @@ def test_get_all_logs():
             print(f"✅ 成功: {data.get('success')}")
             print(f"✅ 总日志数: {data.get('total')}")
             print(f"✅ 返回日志数: {data.get('filtered')}")
-            print(f"\n前3条日志:")
-            for log in data.get('data', [])[:3]:
+            print("\n前3条日志:")
+            for log in data.get("data", [])[:3]:
                 print(f"  - [{log['level']}] {log['timestamp']}: {log['message']}")
             return True
         else:
@@ -45,7 +43,7 @@ def test_get_all_logs():
 
     except requests.exceptions.ConnectionError:
         print(f"❌ 连接失败: 无法连接到 {BASE_URL}")
-        print(f"   请确保Backend服务正在运行")
+        print("   请确保Backend服务正在运行")
         return False
     except Exception as e:
         print(f"❌ 异常: {str(e)}")
@@ -70,15 +68,17 @@ def test_filter_errors_only():
             print(f"✅ 问题日志数: {data.get('filtered')}")
 
             # 验证所有日志都是WARNING/ERROR/CRITICAL级别
-            error_logs = data.get('data', [])
-            all_errors = all(log['level'] in ['WARNING', 'ERROR', 'CRITICAL'] for log in error_logs)
+            error_logs = data.get("data", [])
+            all_errors = all(
+                log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs
+            )
 
             if all_errors:
-                print(f"✅ 验证通过: 所有日志都是问题日志")
+                print("✅ 验证通过: 所有日志都是问题日志")
             else:
-                print(f"⚠️  警告: 存在非问题日志")
+                print("⚠️  警告: 存在非问题日志")
 
-            print(f"\n问题日志详情:")
+            print("\n问题日志详情:")
             for log in error_logs[:5]:
                 print(f"  - [{log['level']}] {log['category']}: {log['message']}")
 
@@ -107,13 +107,13 @@ def test_filter_by_level():
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ ERROR级别日志数: {data.get('filtered')}")
 
-            error_logs = data.get('data', [])
-            all_error_level = all(log['level'] == 'ERROR' for log in error_logs)
+            error_logs = data.get("data", [])
+            all_error_level = all(log["level"] == "ERROR" for log in error_logs)
 
             if all_error_level:
-                print(f"✅ 验证通过: 所有日志都是ERROR级别")
+                print("✅ 验证通过: 所有日志都是ERROR级别")
             else:
-                print(f"⚠️  警告: 存在其他级别日志")
+                print("⚠️  警告: 存在其他级别日志")
 
             for log in error_logs[:3]:
                 print(f"  - [{log['level']}] {log['message']}")
@@ -143,13 +143,13 @@ def test_filter_by_category():
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ database分类日志数: {data.get('filtered')}")
 
-            db_logs = data.get('data', [])
-            all_database = all(log['category'] == 'database' for log in db_logs)
+            db_logs = data.get("data", [])
+            all_database = all(log["category"] == "database" for log in db_logs)
 
             if all_database:
-                print(f"✅ 验证通过: 所有日志都是database分类")
+                print("✅ 验证通过: 所有日志都是database分类")
             else:
-                print(f"⚠️  警告: 存在其他分类日志")
+                print("⚠️  警告: 存在其他分类日志")
 
             for log in db_logs[:3]:
                 print(f"  - [{log['category']}] {log['message']}")
@@ -180,11 +180,11 @@ def test_pagination():
             print(f"✅ 总数: {data.get('total')}")
             print(f"✅ 返回数: {data.get('filtered')}")
 
-            logs = data.get('data', [])
+            logs = data.get("data", [])
             if len(logs) <= 5:
-                print(f"✅ 验证通过: 返回日志数 <= limit (5)")
+                print("✅ 验证通过: 返回日志数 <= limit (5)")
             else:
-                print(f"❌ 验证失败: 返回日志数 > limit")
+                print("❌ 验证失败: 返回日志数 > limit")
 
             return len(logs) <= 5
         else:
@@ -208,19 +208,19 @@ def test_logs_summary():
 
         if response.status_code == 200:
             result = response.json()
-            data = result.get('data', {})
+            data = result.get("data", {})
 
             print(f"✅ 状态码: {response.status_code}")
             print(f"✅ 成功: {result.get('success')}")
-            print(f"\n日志统计:")
+            print("\n日志统计:")
             print(f"  - 总日志数: {data.get('total_logs')}")
             print(f"  - 最近错误数: {data.get('recent_errors_1h')}")
-            print(f"\n各级别统计:")
-            level_counts = data.get('level_counts', {})
+            print("\n各级别统计:")
+            level_counts = data.get("level_counts", {})
             for level, count in level_counts.items():
                 print(f"  - {level}: {count}")
-            print(f"\n各分类统计:")
-            category_counts = data.get('category_counts', {})
+            print("\n各分类统计:")
+            category_counts = data.get("category_counts", {})
             for category, count in category_counts.items():
                 print(f"  - {category}: {count}")
 
@@ -273,7 +273,7 @@ def main():
         print(f"{status} - {test_name}")
 
     print("-" * 80)
-    print(f"总计: {passed}/{total} 通过 ({passed/total*100:.1f}%)")
+    print(f"总计: {passed}/{total} 通过 ({passed / total * 100:.1f}%)")
     print("=" * 80)
 
     # API使用示例

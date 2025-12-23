@@ -8,9 +8,7 @@ Tests comprehensive XSS and CSRF protection mechanisms
 """
 
 import pytest
-import json
 import time
-import secrets
 import sys
 import os
 from pathlib import Path

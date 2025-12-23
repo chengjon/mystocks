@@ -10,8 +10,8 @@ import os
 import pandas as pd
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import Optional, Dict, List
+from datetime import datetime
+from typing import Dict, List
 from dotenv import load_dotenv
 
 # 将项目根目录添加到模块搜索路径中
@@ -22,7 +22,6 @@ sys.path.insert(0, project_root)
 
 from src.adapters.customer_adapter import CustomerDataSource
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
-from src.db_manager.df2sql import create_sql_cmd
 
 # 加载环境变量
 load_dotenv()

@@ -69,17 +69,23 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
-def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    data: Dict[str, Any], expires_delta: Optional[timedelta] = None
+) -> str:
     """创建 JWT 访问令牌"""
     to_encode = data.copy()
 
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = datetime.utcnow() + timedelta(
+            minutes=settings.access_token_expire_minutes
+        )
 
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.secret_key, algorithm=settings.algorithm
+    )
 
     return encoded_jwt
 
@@ -91,7 +97,9 @@ def verify_token(token: str) -> Optional[TokenData]:
         return TokenData(username="dev_user", user_id=1, role="admin")
 
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+        payload = jwt.decode(
+            token, settings.secret_key, algorithms=[settings.algorithm]
+        )
         username: str = payload.get("sub")
         user_id: int = payload.get("user_id")
         role: str = payload.get("role")
@@ -132,7 +140,11 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         4. 返回验证成功的用户或None
     """
     from app.core.config import settings
-    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError, DataValidationError
+    from src.core.exceptions import (
+        DatabaseConnectionError,
+        DatabaseOperationError,
+        DataValidationError,
+    )
 
     # 首先尝试从数据库查询用户
     try:
@@ -153,7 +165,9 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         )
     except Exception as e:
         # 捕获其他意外异常
-        print(f"Unexpected error during database authentication, using fallback: {str(e)}")
+        print(
+            f"Unexpected error during database authentication, using fallback: {str(e)}"
+        )
 
     # 回退到模拟用户数据 - 使用环境变量配置的密码
     # 获取管理员初始密码
@@ -206,7 +220,11 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
         2. 如果数据库查询失败，回退到模拟用户数据
         3. 返回用户信息或None
     """
-    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError, DataValidationError
+    from src.core.exceptions import (
+        DatabaseConnectionError,
+        DatabaseOperationError,
+        DataValidationError,
+    )
 
     try:
         # 从数据库查询用户
@@ -379,9 +397,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
         # 检查用户是否活跃
         if not user.is_active:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+            )
 
-        return User(id=user.id, username=user.username, email=user.email, role=user.role, is_active=user.is_active)
+        return User(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            role=user.role,
+            is_active=user.is_active,
+        )
 
     except jwt.PyJWTError:
         raise credentials_exception
@@ -406,5 +432,7 @@ async def get_current_active_user(
         HTTPException: 用户未激活时返回400错误
     """
     if not current_user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+        )
     return current_user

@@ -11,10 +11,6 @@ Tests SSE endpoints for:
 
 import pytest
 import asyncio
-import httpx
-from fastapi.testclient import TestClient
-from datetime import datetime
-from typing import List, Dict, Any
 import json
 
 # Mark all tests in this module

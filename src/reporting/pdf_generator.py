@@ -19,9 +19,8 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, Any
-from datetime import datetime, date
-import io
+from typing import Dict, List, Optional
+from datetime import datetime
 import logging
 
 # 尝试导入ReportLab
@@ -237,9 +236,9 @@ class PDFReportGenerator:
         metrics = result.get("performance", {})
         preview_data = [
             ["Metric", "Value"],
-            ["Total Return", f"{metrics.get('total_return', 0)*100:.2f}%"],
+            ["Total Return", f"{metrics.get('total_return', 0) * 100:.2f}%"],
             ["Sharpe Ratio", f"{metrics.get('sharpe_ratio', 0):.2f}"],
-            ["Max Drawdown", f"{metrics.get('max_drawdown', 0)*100:.2f}%"],
+            ["Max Drawdown", f"{metrics.get('max_drawdown', 0) * 100:.2f}%"],
         ]
 
         preview_table = Table(preview_data, colWidths=[3 * inch, 2 * inch])
@@ -272,14 +271,14 @@ class PDFReportGenerator:
         risk = result.get("risk", {})
 
         summary_text = f"""
-        The strategy achieved a total return of {metrics.get('total_return', 0)*100:.2f}%
-        with a Sharpe ratio of {metrics.get('sharpe_ratio', 0):.2f}.
-        The maximum drawdown was {metrics.get('max_drawdown', 0)*100:.2f}%,
-        indicating {self._assess_risk(metrics.get('max_drawdown', 0))} risk level.
+        The strategy achieved a total return of {metrics.get("total_return", 0) * 100:.2f}%
+        with a Sharpe ratio of {metrics.get("sharpe_ratio", 0):.2f}.
+        The maximum drawdown was {metrics.get("max_drawdown", 0) * 100:.2f}%,
+        indicating {self._assess_risk(metrics.get("max_drawdown", 0))} risk level.
 
-        Annual volatility: {metrics.get('annual_volatility', 0)*100:.2f}%<br/>
-        Win rate: {metrics.get('win_rate', 0)*100:.2f}%<br/>
-        Profit factor: {metrics.get('profit_factor', 0):.2f}
+        Annual volatility: {metrics.get("annual_volatility", 0) * 100:.2f}%<br/>
+        Win rate: {metrics.get("win_rate", 0) * 100:.2f}%<br/>
+        Profit factor: {metrics.get("profit_factor", 0):.2f}
         """
 
         elements.append(Paragraph(summary_text, self.styles["CustomBody"]))
@@ -296,13 +295,13 @@ class PDFReportGenerator:
 
         perf_data = [
             ["Metric", "Value"],
-            ["Total Return", f"{metrics.get('total_return', 0)*100:.2f}%"],
-            ["Annual Return", f"{metrics.get('annual_return', 0)*100:.2f}%"],
+            ["Total Return", f"{metrics.get('total_return', 0) * 100:.2f}%"],
+            ["Annual Return", f"{metrics.get('annual_return', 0) * 100:.2f}%"],
             ["Sharpe Ratio", f"{metrics.get('sharpe_ratio', 0):.2f}"],
             ["Sortino Ratio", f"{metrics.get('sortino_ratio', 0):.2f}"],
             ["Calmar Ratio", f"{metrics.get('calmar_ratio', 0):.2f}"],
             ["Omega Ratio", f"{metrics.get('omega_ratio', 0):.2f}"],
-            ["Annual Volatility", f"{metrics.get('annual_volatility', 0)*100:.2f}%"],
+            ["Annual Volatility", f"{metrics.get('annual_volatility', 0) * 100:.2f}%"],
         ]
 
         perf_table = Table(perf_data, colWidths=[3 * inch, 2 * inch])
@@ -322,11 +321,11 @@ class PDFReportGenerator:
 
         risk_data = [
             ["Metric", "Value"],
-            ["Max Drawdown", f"{risk.get('max_drawdown', 0)*100:.2f}%"],
+            ["Max Drawdown", f"{risk.get('max_drawdown', 0) * 100:.2f}%"],
             ["Max Drawdown Duration", f"{risk.get('max_drawdown_duration', 0)} days"],
-            ["Value at Risk (95%)", f"{risk.get('var_95', 0)*100:.2f}%"],
-            ["Conditional VaR (95%)", f"{risk.get('cvar_95', 0)*100:.2f}%"],
-            ["Downside Deviation", f"{risk.get('downside_deviation', 0)*100:.2f}%"],
+            ["Value at Risk (95%)", f"{risk.get('var_95', 0) * 100:.2f}%"],
+            ["Conditional VaR (95%)", f"{risk.get('cvar_95', 0) * 100:.2f}%"],
+            ["Downside Deviation", f"{risk.get('downside_deviation', 0) * 100:.2f}%"],
         ]
 
         risk_table = Table(risk_data, colWidths=[3 * inch, 2 * inch])
@@ -347,12 +346,12 @@ class PDFReportGenerator:
         trading_data = [
             ["Metric", "Value"],
             ["Total Trades", str(backtest.get("total_trades", 0))],
-            ["Win Rate", f"{backtest.get('win_rate', 0)*100:.2f}%"],
+            ["Win Rate", f"{backtest.get('win_rate', 0) * 100:.2f}%"],
             ["Profit Factor", f"{backtest.get('profit_factor', 0):.2f}"],
-            ["Average Win", f"{backtest.get('avg_win', 0)*100:.2f}%"],
-            ["Average Loss", f"{backtest.get('avg_loss', 0)*100:.2f}%"],
-            ["Largest Win", f"{backtest.get('largest_win', 0)*100:.2f}%"],
-            ["Largest Loss", f"{backtest.get('largest_loss', 0)*100:.2f}%"],
+            ["Average Win", f"{backtest.get('avg_win', 0) * 100:.2f}%"],
+            ["Average Loss", f"{backtest.get('avg_loss', 0) * 100:.2f}%"],
+            ["Largest Win", f"{backtest.get('largest_win', 0) * 100:.2f}%"],
+            ["Largest Loss", f"{backtest.get('largest_loss', 0) * 100:.2f}%"],
         ]
 
         trading_table = Table(trading_data, colWidths=[3 * inch, 2 * inch])
@@ -396,7 +395,7 @@ class PDFReportGenerator:
         footer_text = f"""
         <para align=center>
         This report was generated by MyStocks Quantitative Trading System<br/>
-        Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br/>
+        Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}<br/>
         <br/>
         Disclaimer: Past performance does not guarantee future results.
         </para>
@@ -461,10 +460,10 @@ class PDFReportGenerator:
 
         # 月度摘要
         summary_text = f"""
-        Month: {data.get('month', 'N/A')}<br/>
-        Total Return: {data.get('return', 0)*100:.2f}%<br/>
-        Total Trades: {data.get('trades', 0)}<br/>
-        Win Rate: {data.get('win_rate', 0)*100:.2f}%
+        Month: {data.get("month", "N/A")}<br/>
+        Total Return: {data.get("return", 0) * 100:.2f}%<br/>
+        Total Trades: {data.get("trades", 0)}<br/>
+        Win Rate: {data.get("win_rate", 0) * 100:.2f}%
         """
         story.append(Paragraph(summary_text, self.styles["CustomBody"]))
 

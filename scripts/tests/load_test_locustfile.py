@@ -7,12 +7,8 @@ Locust Load Testing Suite for MyStocks API
 
 import os
 import sys
-import time
 import random
-import json
 from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Optional
 
 # 计算项目根目录
 project_root = Path(__file__).parent.parent.parent
@@ -181,7 +177,7 @@ class StockBehaviors(TaskSet):
             industry_code = random.choice(LoadTestConfig.INDUSTRIES_SW_L1)
 
         self.client.get(
-            f"/api/market/v3/fund-flow",
+            "/api/market/v3/fund-flow",
             params={
                 "industry_type": industry_type,
                 "industry_code": industry_code,

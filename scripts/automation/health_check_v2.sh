@@ -48,30 +48,30 @@ error() {
 # PM2服务检查
 check_pm2_services() {
     log "检查PM2服务状态..."
-    
+
     # 检查PM2是否安装
     if ! command -v pm2 >/dev/null 2>&1; then
         error "PM2 未安装"
         return 1
     fi
-    
+
     # 获取PM2进程信息并解析
     # 使用简单方法检查服务状态
     PM2_STATUS=$(pm2 list 2>&1)
     echo "PM2状态信息: $PM2_STATUS" >> "$HEALTH_LOG"
-    
+
     if [[ -z "$PM2_STATUS" ]]; then
         error "PM2服务信息获取失败"
         return 1
     fi
-    
+
     # 使用grep简单检查在线服务
     if echo "$PM2_STATUS" | grep -q "online"; then
         success "PM2 服务正在运行"
-        
+
         # 显示服务详情
         pm2 list --no-color 2>&1 | grep -E "(data-sync|mystocks-backend)" | tee -a "$HEALTH_LOG" || true
-        
+
         return 0
     else
         error "PM2 服务未正常运行"
@@ -83,7 +83,7 @@ check_pm2_services() {
 # API服务检查
 check_api_service() {
     log "检查API服务健康状态..."
-    
+
     # 尝试不同的健康检查端点
     local api_endpoints=(
         "${API_BASE_URL}/api/health"
@@ -91,29 +91,29 @@ check_api_service() {
         "${API_BASE_URL}/api/monitoring/health"
         "${API_BASE_URL}/api/docs"
     )
-    
+
     local status_code
     for api_url in "${api_endpoints[@]}"; do
         log "尝试访问: $api_url"
-        
+
         # 检查HTTP状态码
         status_code=$(curl -s -o /dev/null -w "%{http_code}" "$api_url" 2>&1 || echo "000")
-        
+
         if [[ "$status_code" == "200" ]]; then
             success "API服务响应正常 (HTTP $status_code) - $api_url"
-            
+
             # 获取详细健康信息
             if [[ "$api_url" == *"/api/monitoring/health"* ]]; then
                 local response=$(curl -s "$api_url" 2>&1 || echo '{"status":"unknown"}')
                 echo "健康检查详情: $response" | tee -a "$HEALTH_LOG"
             fi
-            
+
             return 0
         else
             log "API端点返回状态码: $status_code"
         fi
     done
-    
+
     error "API服务响应异常 - 所有尝试的端点都返回错误"
     return 1
 }
@@ -121,13 +121,13 @@ check_api_service() {
 # 前端服务检查
 check_frontend_service() {
     log "检查前端服务状态..."
-    
+
     local response
     local status_code
-    
+
     # 检查HTTP状态码
     status_code=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" 2>&1 || echo "000")
-    
+
     if [[ "$status_code" == "200" ]]; then
         success "前端服务响应正常 (HTTP $status_code)"
         return 0
@@ -140,9 +140,9 @@ check_frontend_service() {
 # 数据库连接检查
 check_database_connections() {
     log "检查数据库连接状态..."
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # 检查PostgreSQL连接
     if pg_isready -h "$PG_HOST" -p "$PG_PORT" >/dev/null 2>&1; then
         success "PostgreSQL 数据库连接正常"
@@ -150,7 +150,7 @@ check_database_connections() {
         error "PostgreSQL 数据库连接失败"
         return 1
     fi
-    
+
     # 检查TDengine连接（如果服务正在运行）
     if nc -z localhost 6030 >/dev/null 2>&1; then
         success "TDengine 数据库连接正常"
@@ -164,14 +164,14 @@ check_database_connections() {
         fi
         return 1
     fi
-    
+
     return 0
 }
 
 # 系统资源检查
 check_system_resources() {
     log "检查系统资源使用情况..."
-    
+
     # CPU使用率
     CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)
     if (( $(echo "$CPU_USAGE < 80" | bc -l) )); then
@@ -179,19 +179,19 @@ check_system_resources() {
     else
         warning "CPU使用率较高: ${CPU_USAGE}%"
     fi
-    
+
     # 内存使用率
     MEMORY_INFO=$(free | grep Mem)
     TOTAL_MEMORY=$(echo $MEMORY_INFO | awk '{print $2}')
     USED_MEMORY=$(echo $MEMORY_INFO | awk '{print $3}')
     MEMORY_USAGE=$(echo "scale=2; $USED_MEMORY * 100 / $TOTAL_MEMORY" | bc)
-    
+
     if (( $(echo "$MEMORY_USAGE < 85" | bc -l) )); then
         success "内存使用率正常: ${MEMORY_USAGE}%"
     else
         warning "内存使用率较高: ${MEMORY_USAGE}%"
     fi
-    
+
     # 磁盘使用率
     DISK_USAGE=$(df / | tail -1 | awk '{print $5}' | cut -d'%' -f1)
     if [[ "$DISK_USAGE" < "90" ]]; then
@@ -199,17 +199,17 @@ check_system_resources() {
     else
         warning "磁盘使用率较高: ${DISK_USAGE}%"
     fi
-    
+
     return 0
 }
 
 # 网络连接检查
 check_network_connectivity() {
     log "检查网络连接状态..."
-    
+
     # 检查本地端口监听
     log "检查关键端口监听状态..."
-    
+
     # 基础端口列表（避免强制检查所有）
     PORTS=(3000 8000 5432 6030)
     for port in "${PORTS[@]}"; do
@@ -219,14 +219,14 @@ check_network_connectivity() {
             warning "端口 $port 未监听"
         fi
     done
-    
+
     return 0
 }
 
 # 错误日志检查
 check_error_logs() {
     log "检查最近的错误日志..."
-    
+
     # 检查PM2错误日志
     if [[ -d "${LOG_DIR}" ]]; then
         # 查找最近的错误 (最近1小时)
@@ -235,7 +235,7 @@ check_error_logs() {
             success "最近1小时无错误日志"
         else
             warning "最近1小时发现 $ERROR_COUNT 个包含错误的日志文件"
-            
+
             # 显示最新的错误日志
             echo "最新的错误日志:" | tee -a "$HEALTH_LOG"
             find "${LOG_DIR}" -name "*.log" -type f -mmin -60 -exec tail -10 {} \; 2>/dev/null | grep -E "error|ERROR|Error" | tail -5 | tee -a "$HEALTH_LOG"
@@ -243,14 +243,14 @@ check_error_logs() {
     else
         warning "日志目录不存在: ${LOG_DIR}"
     fi
-    
+
     return 0
 }
 
 # API端点测试
 test_api_endpoints() {
     log "测试关键API端点..."
-    
+
     # 定义要测试的API端点
     local endpoints=(
         "${API_BASE_URL}/api/health"
@@ -258,9 +258,9 @@ test_api_endpoints() {
         "${API_BASE_URL}/api/monitoring/health"
         "${API_BASE_URL}/api/docs"
     )
-    
+
     local failed_endpoints=0
-    
+
     for endpoint in "${endpoints[@]}"; do
         if curl -s -f -m 10 "$endpoint" >/dev/null 2>&1; then
             success "API端点正常: $(basename "$endpoint")"
@@ -269,7 +269,7 @@ test_api_endpoints() {
             ((failed_endpoints++))
         fi
     done
-    
+
     if [[ "$failed_endpoints" -eq 0 ]]; then
         success "所有API端点测试通过"
         return 0
@@ -282,52 +282,52 @@ test_api_endpoints() {
 # 生成健康报告
 generate_health_report() {
     log "生成健康检查报告..."
-    
+
     local report_file="${LOG_DIR}/health_report_$(date +%Y%m%d_%H%M%S).txt"
-    
+
     {
         echo "MyStocks 系统健康检查报告"
         echo "检查时间: $(date)"
         echo "=========================================="
         echo ""
-        
+
         echo "1. PM2 服务状态:"
         pm2 list --no-color 2>&1 || echo "PM2 服务异常"
         echo ""
-        
+
         echo "2. 系统资源使用:"
         echo "CPU: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
         echo "内存: $(free | grep Mem | awk '{printf "%.2f%%", $3/$2 * 100.0}')"
         echo "磁盘: $(df / | tail -1 | awk '{print $5}')"
         echo ""
-        
+
         echo "3. 数据库连接:"
         echo "PostgreSQL: $(pg_isready -h localhost -p $PG_PORT 2>/dev/null || echo '连接失败')"
         echo "TDengine: $(nc -z localhost 6030 2>/dev/null && echo '连接正常' || echo '连接失败')"
         echo ""
-        
+
         echo "4. 网络端口监听:"
         for port in 3000 8000 5432 6030; do
             echo "端口 $port: $(nc -z localhost $port 2>/dev/null && echo '监听中' || echo '未监听')"
         done
         echo ""
-        
+
         echo "5. 最近的错误日志摘要:"
         find "${LOG_DIR}" -name "*.log" -type f -mmin -60 -exec tail -5 {} \; 2>/dev/null | grep -E "error|ERROR|Error" | tail -10 || echo "无最近错误"
-        
+
     } > "$report_file"
-    
+
     success "健康检查报告已生成: $report_file"
 }
 
 # 发送告警通知（仅显示告警，不实际发送）
 send_alert_notification() {
     log "准备告警通知..."
-    
+
     # 在实际环境中，这里会发送邮件或短信通知
     # 为了示例目的，我们仅记录到日志
     local alert_file="${LOG_DIR}/alert_$(date +%Y%m%d_%H%M%S).txt"
-    
+
     {
         echo "MyStocks 系统告警"
         echo "时间: $(date)"
@@ -337,7 +337,7 @@ send_alert_notification() {
         echo ""
         echo "详情请查看健康检查报告"
     } > "$alert_file"
-    
+
     success "告警通知已准备: $alert_file"
 }
 
@@ -345,11 +345,11 @@ send_alert_notification() {
 main() {
     # 创建日志目录
     mkdir -p "$LOG_DIR"
-    
+
     log "开始MyStocks系统健康检查..."
-    
+
     local exit_code=0
-    
+
     # 执行各项检查
     check_pm2_services || ((exit_code++))
     check_api_service || ((exit_code++))
@@ -359,15 +359,15 @@ main() {
     check_network_connectivity || ((exit_code++))
     check_error_logs || ((exit_code++))
     test_api_endpoints || ((exit_code++))
-    
+
     # 生成健康报告
     generate_health_report
-    
+
     # 如果有错误，发送告警通知
     if [[ "$exit_code" -gt 0 ]]; then
         send_alert_notification
     fi
-    
+
     # 显示检查结果
     echo ""
     if [[ "$exit_code" -eq 0 ]]; then
@@ -379,7 +379,7 @@ main() {
         error "发现 $exit_code 个健康问题，请及时处理"
         error "=========================================="
     fi
-    
+
     log "健康检查完成"
     exit $exit_code
 }

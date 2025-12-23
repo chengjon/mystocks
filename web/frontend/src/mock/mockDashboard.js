@@ -1,7 +1,7 @@
 /**
  * Mock数据文件: Dashboard
  * JavaScript版本 - 为Vue组件提供Mock数据
- * 
+ *
  * 提供接口:
  * 1. getDashboardStats() -> Array - 获取Dashboard统计数据数组格式
  * 2. getMarketHeatData() -> Array - 获取市场热度数据（图表）
@@ -31,7 +31,7 @@ const formatPercent = () => randomFloat(-5, 8, 2)
  */
 export function getDashboardStats() {
   const currentTime = new Date().toLocaleString('zh-CN')
-  
+
   return [
     {
       title: "总股票数",
@@ -42,7 +42,7 @@ export function getDashboardStats() {
       color: "#409eff"
     },
     {
-      title: "活跃股票", 
+      title: "活跃股票",
       value: "3,891",
       trend: "较昨日 +8",
       trendClass: "up",
@@ -53,7 +53,7 @@ export function getDashboardStats() {
       title: "数据更新",
       value: "刚刚",
       trend: "今日更新",
-      trendClass: "neutral", 
+      trendClass: "neutral",
       icon: "Refresh",
       color: "#e6a23c"
     },
@@ -62,7 +62,7 @@ export function getDashboardStats() {
       value: "正常",
       trend: "所有服务运行中",
       trendClass: "up",
-      icon: "CircleCheck", 
+      icon: "CircleCheck",
       color: "#67c23a"
     }
   ]
@@ -73,7 +73,7 @@ export function getDashboardStats() {
  */
 export function getMarketHeatData() {
   const sectors = ["人工智能", "新能源车", "芯片半导体", "医药生物", "5G通信", "军工", "白酒", "光伏"]
-  
+
   return sectors.map(sector => ({
     name: sector,
     value: randomInt(60, 95)
@@ -85,7 +85,7 @@ export function getMarketHeatData() {
  */
 export function getLeadingSectors() {
   const sectors = ["人工智能", "芯片", "新能源", "医疗", "5G", "军工", "消费", "金融"]
-  
+
   return sectors.map(sector => ({
     name: sector,
     change: randomFloat(2.0, 8.5)
@@ -149,7 +149,7 @@ export function getFavoriteStocks() {
     { symbol: "601012", name: "隆基绿能", industry: "光伏" },
     { symbol: "002594", name: "比亚迪", industry: "新能源车" }
   ]
-  
+
   return stocks.map(stock => ({
     symbol: stock.symbol,
     name: stock.name,
@@ -172,7 +172,7 @@ export function getStrategyStocks() {
     { symbol: "600036", name: "招商银行", strategy: "价值投资", score: 78 },
     { symbol: "000001", name: "平安银行", strategy: "价值投资", score: 65 }
   ]
-  
+
   return strategies.map(stock => ({
     symbol: stock.symbol,
     name: stock.name,
@@ -195,7 +195,7 @@ export function getIndustryStocks() {
     { symbol: "002304", name: "洋河股份", industry: "白酒", rank: 4, marketCap: 1516 },
     { symbol: "600809", name: "山西汾酒", industry: "白酒", rank: 5, marketCap: 2268 }
   ]
-  
+
   return industries.map(stock => ({
     symbol: stock.symbol,
     name: stock.name,
@@ -218,7 +218,7 @@ export function getConceptStocks() {
     { symbol: "300122", name: "智飞生物", concepts: ["疫苗", "医药", "生物制品"], heat: 92 },
     { symbol: "002230", name: "科大讯飞", concepts: ["AI", "人工智能", "语音识别"], heat: 96 }
   ]
-  
+
   return concepts.map(stock => ({
     symbol: stock.symbol,
     name: stock.name,

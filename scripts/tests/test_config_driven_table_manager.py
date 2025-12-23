@@ -88,7 +88,7 @@ def test_classification_mapping(manager):
         # 显示前10个分类
         logger.info("\n前10个数据分类:")
         for i, (classification, table_name) in enumerate(list(mapping.items())[:10]):
-            logger.info(f"   {i+1}. {classification:30s} → {table_name}")
+            logger.info(f"   {i + 1}. {classification:30s} → {table_name}")
 
         if len(mapping) > 10:
             logger.info(f"   ... 还有 {len(mapping) - 10} 个分类")
@@ -111,7 +111,7 @@ def test_classification_mapping(manager):
         if missing:
             logger.warning(f"⚠️ 缺少关键分类: {missing}")
         else:
-            logger.info(f"✅ 所有关键分类都已定义")
+            logger.info("✅ 所有关键分类都已定义")
 
         return len(mapping) > 0
 
@@ -164,7 +164,7 @@ def test_config_validation(manager):
 
         # 检查维护任务配置
         maintenance = manager.config.get("maintenance", {})
-        logger.info(f"\n✅ 维护配置:")
+        logger.info("\n✅ 维护配置:")
         logger.info(f"   - auto_create_tables: {maintenance.get('auto_create_tables')}")
         logger.info(f"   - safe_mode: {maintenance.get('safe_mode')}")
 

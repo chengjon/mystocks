@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的实施指导，整合AI策略、监控系统、GPU加速等核心功能，构建现代化的量化交易数据管理系统。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支)  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支)
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -124,19 +124,19 @@ alert_manager = None
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     global strategy_analyzer, gpu_manager, monitor, alert_manager
-    
+
     logging.info("🚀 初始化MyStocks AI后端...")
-    
+
     # 初始化所有组件
     strategy_analyzer = AIStrategyAnalyzer()
     gpu_manager = GPUAIIntegrationManager()
     monitor = AIRealtimeMonitor()
     alert_manager = AIAlertManager()
-    
+
     logging.info("✅ MyStocks AI后端初始化完成")
-    
+
     yield
-    
+
     # 清理资源
     if strategy_analyzer:
         await strategy_analyzer.cleanup()
@@ -251,7 +251,7 @@ async def get_strategies():
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         strategies = await strategy_analyzer.get_available_strategies()
         return {
             "strategies": strategies,
@@ -269,10 +269,10 @@ async def run_strategy(strategy_name: str, request: StrategyRunRequest, backgrou
         valid_strategies = ["momentum", "mean_reversion", "ml_based"]
         if strategy_name not in valid_strategies:
             raise HTTPException(status_code=400, detail=f"无效策略: {strategy_name}")
-        
+
         # 后台执行策略
         background_tasks.add_task(execute_strategy, strategy_name, request.symbols, request.parameters)
-        
+
         return {
             "message": f"策略 {strategy_name} 已在后台开始执行",
             "strategy": strategy_name,
@@ -381,17 +381,17 @@ export default pinia
         MyStocks AI策略面板
       </h1>
       <div class="header-actions">
-        <el-button 
-          type="primary" 
-          :icon="Refresh" 
+        <el-button
+          type="primary"
+          :icon="Refresh"
           @click="refreshData"
           :loading="loading"
         >
           刷新数据
         </el-button>
-        <el-button 
-          type="success" 
-          :icon="Plus" 
+        <el-button
+          type="success"
+          :icon="Plus"
           @click="showCreateDialog = true"
         >
           新建策略
@@ -431,8 +431,8 @@ export default pinia
               style="width: 200px; margin-right: 10px;"
             />
             <el-button-group>
-              <el-button 
-                v-for="status in strategyStatuses" 
+              <el-button
+                v-for="status in strategyStatuses"
                 :key="status.value"
                 :type="selectedStatus === status.value ? 'primary' : 'default'"
                 @click="selectedStatus = status.value"
@@ -445,8 +445,8 @@ export default pinia
         </div>
       </template>
 
-      <el-table 
-        :data="filteredStrategies" 
+      <el-table
+        :data="filteredStrategies"
         style="width: 100%"
         v-loading="loading"
         @sort-change="handleSortChange"
@@ -455,9 +455,9 @@ export default pinia
           <template #default="{ row }">
             <div class="strategy-name">
               <strong>{{ row.name }}</strong>
-              <el-tag 
-                v-if="row.isRecommended" 
-                type="success" 
+              <el-tag
+                v-if="row.isRecommended"
+                type="success"
                 size="small"
                 effect="dark"
               >
@@ -466,7 +466,7 @@ export default pinia
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="type" label="类型" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStrategyTypeColor(row.type)">
@@ -474,7 +474,7 @@ export default pinia
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="status" label="状态" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
@@ -482,7 +482,7 @@ export default pinia
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="return" label="收益率" sortable="custom" min-width="100">
           <template #default="{ row }">
             <span :class="getReturnClass(row.return)">
@@ -490,57 +490,57 @@ export default pinia
             </span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="sharpe" label="夏普比率" sortable="custom" min-width="100">
           <template #default="{ row }">
             {{ row.sharpe }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="maxDrawdown" label="最大回撤" min-width="100">
           <template #default="{ row }">
             <span class="text-danger">{{ row.maxDrawdown }}</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="lastUpdated" label="更新时间" min-width="150">
           <template #default="{ row }">
             {{ formatDate(row.lastUpdated) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="{ row }">
             <el-button-group>
-              <el-button 
-                size="small" 
-                :icon="View" 
+              <el-button
+                size="small"
+                :icon="View"
                 @click="viewStrategyDetails(row)"
               >
                 查看
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'inactive'"
-                size="small" 
+                size="small"
                 type="success"
-                :icon="VideoPlay" 
+                :icon="VideoPlay"
                 @click="activateStrategy(row)"
               >
                 启用
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'active'"
-                size="small" 
+                size="small"
                 type="warning"
-                :icon="VideoPause" 
+                :icon="VideoPause"
                 @click="pauseStrategy(row)"
               >
                 暂停
               </el-button>
-              <el-button 
-                size="small" 
+              <el-button
+                size="small"
                 type="danger"
-                :icon="Delete" 
+                :icon="Delete"
                 @click="deleteStrategy(row)"
               >
                 删除
@@ -590,11 +590,11 @@ export default pinia
           </el-select>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input 
-            v-model="createForm.description" 
-            type="textarea" 
+          <el-input
+            v-model="createForm.description"
+            type="textarea"
             :rows="3"
-            placeholder="请输入策略描述" 
+            placeholder="请输入策略描述"
           />
         </el-form-item>
       </el-form>
@@ -620,8 +620,8 @@ export default pinia
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete 
+import {
+  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete
 } from '@element-plus/icons-vue'
 import { useStrategyStore } from '@/stores/strategy'
 import StrategyPerformanceChart from './charts/StrategyPerformanceChart.vue'
@@ -691,24 +691,24 @@ const overviewMetrics = computed(() => [
 // 过滤后的策略列表
 const filteredStrategies = computed(() => {
   let strategies = strategyStore.strategies
-  
+
   // 状态过滤
   if (selectedStatus.value) {
     strategies = strategies.filter(s => s.status === selectedStatus.value)
   }
-  
+
   // 搜索过滤
   if (searchQuery.value) {
-    strategies = strategies.filter(s => 
+    strategies = strategies.filter(s =>
       s.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
-  
+
   return strategies
 })
 
 // 选中的策略（用于图表）
-const selectedStrategies = computed(() => 
+const selectedStrategies = computed(() =>
   filteredStrategies.value.filter(s => s.status === 'active')
 )
 
@@ -759,7 +759,7 @@ const deleteStrategy = async (strategy: any) => {
         type: 'warning'
       }
     )
-    
+
     await strategyStore.deleteStrategy(strategy.id)
     ElMessage.success(`策略 ${strategy.name} 已删除`)
   } catch (error) {
@@ -774,7 +774,7 @@ const createStrategy = async () => {
     ElMessage.warning('请填写必要信息')
     return
   }
-  
+
   creating.value = true
   try {
     await strategyStore.createStrategy(createForm.value)
@@ -996,33 +996,33 @@ import logging
 
 class MonitoringService:
     """监控服务类"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.system_metrics = {}
         self.alert_rules = []
         self.alert_history = []
-    
+
     def get_monitoring_summary(self) -> Dict[str, Any]:
         """获取监控摘要"""
         try:
             # 从AI监控系统获取数据
             from ai_monitoring_optimizer import AIRealtimeMonitor
             monitor = AIRealtimeMonitor()
-            
+
             # 获取AI性能指标
             ai_metrics = monitor.get_latest_metrics()
-            
+
             # 获取策略性能
             from ai_strategy_analyzer import AIStrategyAnalyzer
             analyzer = AIStrategyAnalyzer()
             strategy_metrics = analyzer.get_strategy_performance_summary()
-            
+
             # 获取GPU状态
             from gpu_ai_integration import GPUAIIntegrationManager
             gpu_manager = GPUAIIntegrationManager()
             gpu_status = gpu_manager.get_gpu_status()
-            
+
             summary = {
                 "system_health": "healthy",
                 "timestamp": datetime.now().isoformat(),
@@ -1032,7 +1032,7 @@ class MonitoringService:
                 "data_quality_score": 0.95,
                 "active_alerts": len([a for a in self.alert_history if not a.get('resolved', False)])
             }
-            
+
             return summary
         except Exception as e:
             self.logger.error(f"获取监控摘要失败: {e}")
@@ -1063,12 +1063,12 @@ import logging
 
 class GPUService:
     """GPU服务类"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.gpu_manager = None
         self.initialize_gpu_manager()
-    
+
     def initialize_gpu_manager(self):
         """初始化GPU管理器"""
         try:
@@ -1077,24 +1077,24 @@ class GPUService:
         except ImportError as e:
             self.logger.warning(f"GPU管理器初始化失败: {e}")
             self.gpu_manager = None
-    
+
     async def get_gpu_status(self) -> Dict[str, Any]:
         """获取GPU状态"""
         if not self.gpu_manager:
             return {"error": "GPU加速未启用"}
-        
+
         try:
             status = self.gpu_manager.get_gpu_status()
             return status
         except Exception as e:
             self.logger.error(f"获取GPU状态失败: {e}")
             return {"error": str(e)}
-    
+
     async def accelerate_strategy(self, strategy_name: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """加速策略执行"""
         if not self.gpu_manager:
             return {"error": "GPU加速未启用"}
-        
+
         try:
             result = await self.gpu_manager.accelerate_strategy_execution(strategy_name, data)
             return result
@@ -1262,17 +1262,17 @@ import { ref, computed } from 'vue'
 export function useVirtualScroll(items: any[], itemHeight: number) {
   const containerHeight = ref(400)
   const scrollTop = ref(0)
-  
+
   const visibleStart = computed(() => Math.floor(scrollTop.value / itemHeight))
   const visibleEnd = computed(() => Math.min(
     visibleStart.value + Math.ceil(containerHeight.value / itemHeight) + 1,
     items.length
   ))
-  
-  const visibleItems = computed(() => 
+
+  const visibleItems = computed(() =>
     items.slice(visibleStart.value, visibleEnd.value)
   )
-  
+
   return {
     visibleItems,
     visibleStart,
@@ -1294,7 +1294,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 # 自定义指标
 strategy_execution_counter = Counter(
-    "strategy_executions_total", 
+    "strategy_executions_total",
     "Total number of strategy executions",
     ["strategy_name", "status"]
 )
@@ -1382,11 +1382,11 @@ logger = structlog.get_logger()
 - API文档: http://localhost:8000/api/docs (端口可能为8000-8010范围内的可用端口)
 - 前端界面: http://localhost:3000 (端口可能为3000-3010范围内的可用端口)
 - 技术支持: 查看系统监控面板
-- 端口配置: 
+- 端口配置:
   - 后端服务: 8000-8010 (自动选择可用端口)
   - 前端服务: 3000-3010 (自动选择可用端口)
   系统会在指定范围内自动查找并使用可用端口，避免端口冲突问题。
 
-**版本**: v1.0  
-**最后更新**: 2025-11-16  
+**版本**: v1.0
+**最后更新**: 2025-11-16
 **维护者**: MyStocks AI开发团队

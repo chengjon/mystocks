@@ -11,7 +11,6 @@ Test Coverage:
 
 import pytest
 import asyncio
-from typing import Generator, Optional
 from datetime import datetime
 import logging
 

@@ -22,8 +22,6 @@ import structlog
 from app.services.room_management import (
     get_room_manager,
     RoomManager,
-    RoomType,
-    RoomStatus,
 )
 from app.services.room_permission_service import (
     get_permission_manager,
@@ -31,7 +29,6 @@ from app.services.room_permission_service import (
     RoomPermissionManager,
     RoomAccessControl,
     RoomRole,
-    RoomPermission,
 )
 from app.services.room_broadcast_service import (
     get_broadcaster,
@@ -93,9 +90,9 @@ class RoomSocketIOAdapter:
 
         # Socket.IO特定的映射
         self.sid_to_connection: Dict[str, RoomConnection] = {}
-        self.user_room_subscriptions: Dict[str, Set[str]] = (
-            {}
-        )  # user_id -> set of room_ids
+        self.user_room_subscriptions: Dict[
+            str, Set[str]
+        ] = {}  # user_id -> set of room_ids
         self.socketio_callbacks: List[Callable[[str, str, Dict[str, Any]], Any]] = []
 
         # 统计

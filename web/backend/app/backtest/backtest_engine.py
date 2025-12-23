@@ -3,14 +3,19 @@ Backtest Engine
 
 事件驱动的回测引擎核心实现
 """
+
 import logging
-from typing import List, Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable
 from decimal import Decimal
 from datetime import datetime, timedelta
 from collections import deque
 
 from app.backtest.events import (
-    Event, MarketEvent, SignalEvent, OrderEvent, FillEvent, ProgressEvent
+    MarketEvent,
+    SignalEvent,
+    OrderEvent,
+    FillEvent,
+    ProgressEvent,
 )
 from app.backtest.portfolio_manager import PortfolioManager
 from app.backtest.risk_manager import RiskManager
@@ -36,7 +41,7 @@ class BacktestEngine:
         strategy_config: Dict[str, Any],
         backtest_config: Dict[str, Any],
         data_source: Any,  # 数据源（Composite/Mock/Real）
-        progress_callback: Optional[Callable[[ProgressEvent], None]] = None
+        progress_callback: Optional[Callable[[ProgressEvent], None]] = None,
     ):
         """
         初始化回测引擎
@@ -53,36 +58,37 @@ class BacktestEngine:
         self.progress_callback = progress_callback
 
         # 提取配置
-        self.symbols = backtest_config['symbols']
-        self.start_date = backtest_config['start_date']
-        self.end_date = backtest_config['end_date']
-        self.initial_capital = Decimal(str(backtest_config['initial_capital']))
-        self.commission_rate = Decimal(str(backtest_config.get('commission_rate', 0.0003)))
-        self.slippage_rate = Decimal(str(backtest_config.get('slippage_rate', 0.001)))
-        self.benchmark = backtest_config.get('benchmark', 'sh000001')  # 默认上证指数
+        self.symbols = backtest_config["symbols"]
+        self.start_date = backtest_config["start_date"]
+        self.end_date = backtest_config["end_date"]
+        self.initial_capital = Decimal(str(backtest_config["initial_capital"]))
+        self.commission_rate = Decimal(
+            str(backtest_config.get("commission_rate", 0.0003))
+        )
+        self.slippage_rate = Decimal(str(backtest_config.get("slippage_rate", 0.001)))
+        self.benchmark = backtest_config.get("benchmark", "sh000001")  # 默认上证指数
 
         # 策略参数
-        self.strategy_type = strategy_config.get('strategy_type', 'custom')
-        self.max_position_size = strategy_config.get('max_position_size', 0.1)
-        self.stop_loss_pct = strategy_config.get('stop_loss_percent')
-        self.take_profit_pct = strategy_config.get('take_profit_percent')
+        self.strategy_type = strategy_config.get("strategy_type", "custom")
+        self.max_position_size = strategy_config.get("max_position_size", 0.1)
+        self.stop_loss_pct = strategy_config.get("stop_loss_percent")
+        self.take_profit_pct = strategy_config.get("take_profit_percent")
 
         # 初始化组件
         self.portfolio = PortfolioManager(
             initial_capital=self.initial_capital,
             commission_rate=self.commission_rate,
-            slippage_rate=self.slippage_rate
+            slippage_rate=self.slippage_rate,
         )
 
         self.risk_manager = RiskManager(
             max_position_size=self.max_position_size,
             stop_loss_pct=self.stop_loss_pct,
-            take_profit_pct=self.take_profit_pct
+            take_profit_pct=self.take_profit_pct,
         )
 
         self.execution = ExecutionHandler(
-            commission_rate=self.commission_rate,
-            slippage_rate=self.slippage_rate
+            commission_rate=self.commission_rate, slippage_rate=self.slippage_rate
         )
 
         self.performance = PerformanceMetrics()
@@ -99,7 +105,9 @@ class BacktestEngine:
         self.total_days = 0
         self.current_day_index = 0
 
-        logger.info(f"回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}")
+        logger.info(
+            f"回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}"
+        )
 
     def run(self) -> Dict[str, Any]:
         """
@@ -128,7 +136,9 @@ class BacktestEngine:
 
         except Exception as e:
             logger.error(f"回测过程中发生错误: {str(e)}", exc_info=True)
-            self._send_progress(0.0, self.current_date or self.start_date, f"回测失败: {str(e)}")
+            self._send_progress(
+                0.0, self.current_date or self.start_date, f"回测失败: {str(e)}"
+            )
             raise
 
         finally:
@@ -142,9 +152,7 @@ class BacktestEngine:
             try:
                 # 从数据源获取历史数据
                 df = self.data_source.get_stock_history(
-                    symbol=symbol,
-                    start_date=self.start_date,
-                    end_date=self.end_date
+                    symbol=symbol, start_date=self.start_date, end_date=self.end_date
                 )
 
                 if df is None or df.empty:
@@ -154,23 +162,27 @@ class BacktestEngine:
                 # 转换为MarketEvent并缓存
                 self.market_data[symbol] = {}
                 for idx, row in df.iterrows():
-                    trade_date = row.get('trade_date') or idx
+                    trade_date = row.get("trade_date") or idx
                     if not isinstance(trade_date, datetime):
-                        trade_date = datetime.strptime(str(trade_date), '%Y-%m-%d')
+                        trade_date = datetime.strptime(str(trade_date), "%Y-%m-%d")
 
                     market_event = MarketEvent(
                         symbol=symbol,
                         trade_date=trade_date,
-                        open_price=Decimal(str(row.get('open', 0))),
-                        high_price=Decimal(str(row.get('high', 0))),
-                        low_price=Decimal(str(row.get('low', 0))),
-                        close_price=Decimal(str(row.get('close', 0))),
-                        volume=int(row.get('volume', 0)),
-                        adj_close=Decimal(str(row.get('adj_close', row.get('close', 0))))
+                        open_price=Decimal(str(row.get("open", 0))),
+                        high_price=Decimal(str(row.get("high", 0))),
+                        low_price=Decimal(str(row.get("low", 0))),
+                        close_price=Decimal(str(row.get("close", 0))),
+                        volume=int(row.get("volume", 0)),
+                        adj_close=Decimal(
+                            str(row.get("adj_close", row.get("close", 0)))
+                        ),
                     )
                     self.market_data[symbol][trade_date] = market_event
 
-                logger.info(f"加载 {symbol} 数据: {len(self.market_data[symbol])} 条记录")
+                logger.info(
+                    f"加载 {symbol} 数据: {len(self.market_data[symbol])} 条记录"
+                )
 
             except Exception as e:
                 logger.error(f"加载 {symbol} 数据失败: {str(e)}")
@@ -185,7 +197,9 @@ class BacktestEngine:
             all_dates.update(symbol_data.keys())
         self.total_days = len(sorted(all_dates))
 
-        logger.info(f"市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日")
+        logger.info(
+            f"市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日"
+        )
 
     def _run_backtest_loop(self):
         """执行回测主循环"""
@@ -203,7 +217,9 @@ class BacktestEngine:
 
             # 发送进度更新
             progress = (day_index / len(trading_dates)) * 100
-            self._send_progress(progress, trade_date, f"处理第 {day_index + 1}/{len(trading_dates)} 天")
+            self._send_progress(
+                progress, trade_date, f"处理第 {day_index + 1}/{len(trading_dates)} 天"
+            )
 
             # 1. 生成市场数据事件
             self._generate_market_events(trade_date)
@@ -303,18 +319,18 @@ class BacktestEngine:
             return SignalEvent(
                 symbol=symbol,
                 trade_date=current_date,
-                signal_type='LONG',
+                signal_type="LONG",
                 strength=0.8,
-                reason=f"价格突破MA20: {current_price:.2f} > {ma20:.2f}"
+                reason=f"价格突破MA20: {current_price:.2f} > {ma20:.2f}",
             )
         elif current_price < ma20 * 0.98 and has_position:
             # 价格跌破均线2%，卖出信号
             return SignalEvent(
                 symbol=symbol,
                 trade_date=current_date,
-                signal_type='EXIT',
+                signal_type="EXIT",
                 strength=1.0,
-                reason=f"价格跌破MA20: {current_price:.2f} < {ma20:.2f}"
+                reason=f"价格跌破MA20: {current_price:.2f} < {ma20:.2f}",
             )
 
         return None
@@ -334,36 +350,36 @@ class BacktestEngine:
             return
 
         # 计算仓位大小
-        if event.signal_type == 'LONG':
+        if event.signal_type == "LONG":
             quantity = self.portfolio.calculate_position_size(
                 symbol=symbol,
                 signal_strength=event.strength,
                 max_position_size=self.max_position_size,
-                current_price=current_price
+                current_price=current_price,
             )
 
             if quantity > 0:
                 order = OrderEvent(
                     symbol=symbol,
                     trade_date=event.trade_date,
-                    order_type='MARKET',
-                    action='BUY',
+                    order_type="MARKET",
+                    action="BUY",
                     quantity=quantity,
-                    strategy_id=self.strategy_config.get('strategy_id')
+                    strategy_id=self.strategy_config.get("strategy_id"),
                 )
                 self.event_queue.append(order)
 
-        elif event.signal_type in ['SHORT', 'EXIT']:
+        elif event.signal_type in ["SHORT", "EXIT"]:
             # 平仓
             position = self.portfolio.get_position(symbol)
             if position and position.quantity > 0:
                 order = OrderEvent(
                     symbol=symbol,
                     trade_date=event.trade_date,
-                    order_type='MARKET',
-                    action='SELL',
+                    order_type="MARKET",
+                    action="SELL",
                     quantity=position.quantity,
-                    strategy_id=self.strategy_config.get('strategy_id')
+                    strategy_id=self.strategy_config.get("strategy_id"),
                 )
                 self.event_queue.append(order)
 
@@ -388,7 +404,9 @@ class BacktestEngine:
         )
 
         if not is_valid:
-            logger.info(f"订单被拒绝: {symbol} {event.action} {event.quantity} - {reject_reason}")
+            logger.info(
+                f"订单被拒绝: {symbol} {event.action} {event.quantity} - {reject_reason}"
+            )
             return
 
         # 执行订单
@@ -405,7 +423,9 @@ class BacktestEngine:
         """
         success = self.portfolio.process_fill(event)
         if success:
-            logger.info(f"成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}")
+            logger.info(
+                f"成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}"
+            )
         else:
             logger.warning(f"成交失败: {event}")
 
@@ -431,10 +451,10 @@ class BacktestEngine:
                 order = OrderEvent(
                     symbol=symbol,
                     trade_date=trade_date,
-                    order_type='MARKET',
-                    action='SELL',
+                    order_type="MARKET",
+                    action="SELL",
                     quantity=abs(position.quantity),
-                    strategy_id=self.strategy_config.get('strategy_id')
+                    strategy_id=self.strategy_config.get("strategy_id"),
                 )
                 self.event_queue.append(order)
 
@@ -450,7 +470,7 @@ class BacktestEngine:
         performance_metrics = self.performance.calculate_all_metrics(
             equity_curve=equity_curve,
             trades=trades,
-            initial_capital=self.initial_capital
+            initial_capital=self.initial_capital,
         )
 
         # 组合摘要
@@ -461,37 +481,37 @@ class BacktestEngine:
 
         # 返回完整结果
         return {
-            'backtest_id': self.backtest_config.get('backtest_id'),
-            'strategy_id': self.strategy_config.get('strategy_id'),
-            'start_date': self.start_date.isoformat(),
-            'end_date': self.end_date.isoformat(),
-            'symbols': self.symbols,
-            'initial_capital': float(self.initial_capital),
-            'final_capital': float(self.portfolio.equity),
-            'performance_metrics': performance_metrics,
-            'portfolio_summary': portfolio_summary,
-            'risk_summary': risk_summary,
-            'equity_curve': [
+            "backtest_id": self.backtest_config.get("backtest_id"),
+            "strategy_id": self.strategy_config.get("strategy_id"),
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
+            "symbols": self.symbols,
+            "initial_capital": float(self.initial_capital),
+            "final_capital": float(self.portfolio.equity),
+            "performance_metrics": performance_metrics,
+            "portfolio_summary": portfolio_summary,
+            "risk_summary": risk_summary,
+            "equity_curve": [
                 {
-                    'trade_date': point['trade_date'].isoformat(),
-                    'equity': float(point['equity']),
-                    'drawdown': float(point['drawdown'])
+                    "trade_date": point["trade_date"].isoformat(),
+                    "equity": float(point["equity"]),
+                    "drawdown": float(point["drawdown"]),
                 }
                 for point in equity_curve
             ],
-            'trades': trades,
-            'total_trades': len(trades),
-            'status': 'completed'
+            "trades": trades,
+            "total_trades": len(trades),
+            "status": "completed",
         }
 
     def _send_progress(self, progress: float, current_date: datetime, message: str):
         """发送进度更新"""
         if self.progress_callback:
             progress_event = ProgressEvent(
-                backtest_id=self.backtest_config.get('backtest_id', 0),
+                backtest_id=self.backtest_config.get("backtest_id", 0),
                 progress=progress,
                 current_date=current_date,
-                message=message
+                message=message,
             )
             try:
                 self.progress_callback(progress_event)

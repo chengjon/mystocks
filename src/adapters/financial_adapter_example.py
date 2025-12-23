@@ -11,7 +11,7 @@ import os
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.adapters.financial_adapter import FinancialDataSource
+from src.adapters.financial_adapter import FinancialDataSource  # noqa: E402
 import pandas as pd
 
 
@@ -23,7 +23,7 @@ def main():
     financial_ds = FinancialDataSource()
 
     # 检查数据源是否初始化成功
-    print(f"数据源初始化状态:")
+    print("数据源初始化状态:")
     print(f"  - efinance可用: {financial_ds.efinance_available}")
     print(f"  - easyquotation可用: {financial_ds.easyquotation_available}")
 

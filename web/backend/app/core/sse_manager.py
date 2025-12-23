@@ -19,16 +19,14 @@ Architecture:
 """
 
 import asyncio
-import json
 import logging
 from datetime import datetime
 from typing import Dict, Set, Optional, Any, AsyncGenerator
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 import uuid
 
 from fastapi import Request
-from sse_starlette.sse import EventSourceResponse
 
 logger = logging.getLogger(__name__)
 

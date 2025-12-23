@@ -2,14 +2,14 @@
 
 # 无Docker E2E测试启动脚本
 # 为Vue 3 + FastAPI架构优化的端到端测试执行器
-# 
+#
 # 功能:
 # 1. 环境检查和准备
 # 2. 依赖安装验证
 # 3. 测试服务启动管理
 # 4. E2E测试执行
 # 5. 结果报告生成
-# 
+#
 # 作者: Claude Code
 # 生成时间: 2025-11-14
 
@@ -202,40 +202,40 @@ parse_args() {
 # 检查系统要求
 check_system_requirements() {
     log_info "检查系统要求..."
-    
+
     # 检查Node.js
     if ! command -v node &> /dev/null; then
         log_error "Node.js 未安装"
         return 1
     fi
-    
+
     NODE_VERSION=$(node --version)
     log_success "Node.js: $NODE_VERSION"
-    
+
     # 检查npm
     if ! command -v npm &> /dev/null; then
         log_error "npm 未安装"
         return 1
     fi
-    
+
     NPM_VERSION=$(npm --version)
     log_success "npm: $NPM_VERSION"
-    
+
     # 检查Python3
     if ! command -v python3 &> /dev/null; then
         log_error "Python3 未安装"
         return 1
     fi
-    
+
     PYTHON_VERSION=$(python3 --version)
     log_success "$PYTHON_VERSION"
-    
+
     # 检查pip
     if ! command -v pip3 &> /dev/null; then
         log_error "pip3 未安装"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -243,7 +243,7 @@ check_system_requirements() {
 check_port_available() {
     local port=$1
     local service_name=$2
-    
+
     if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
         log_warning "$service_name 端口 $port 已被占用"
         return 1
@@ -259,30 +259,30 @@ install_frontend_dependencies() {
         log_info "跳过前端依赖安装"
         return 0
     fi
-    
+
     log_info "安装前端依赖..."
-    
+
     local frontend_dir="$PROJECT_ROOT/web/frontend"
-    
+
     if [[ ! -d "$frontend_dir" ]]; then
         log_error "前端目录不存在: $frontend_dir"
         return 1
     fi
-    
+
     cd "$frontend_dir"
-    
+
     if [[ ! -f "package.json" ]]; then
         log_error "package.json 文件不存在"
         return 1
     fi
-    
+
     # 安装依赖
     log_info "执行 npm install..."
     if ! npm install --silent; then
         log_error "前端依赖安装失败"
         return 1
     fi
-    
+
     log_success "前端依赖安装完成"
     return 0
 }
@@ -293,30 +293,30 @@ install_backend_dependencies() {
         log_info "跳过后端依赖安装"
         return 0
     fi
-    
+
     log_info "安装后端依赖..."
-    
+
     local backend_dir="$PROJECT_ROOT/web/backend"
-    
+
     if [[ ! -d "$backend_dir" ]]; then
         log_error "后端目录不存在: $backend_dir"
         return 1
     fi
-    
+
     cd "$backend_dir"
-    
+
     if [[ ! -f "requirements.txt" ]]; then
         log_error "requirements.txt 文件不存在"
         return 1
     fi
-    
+
     # 安装依赖
     log_info "执行 pip3 install -r requirements.txt..."
     if ! pip3 install -r requirements.txt --quiet; then
         log_error "后端依赖安装失败"
         return 1
     fi
-    
+
     log_success "后端依赖安装完成"
     return 0
 }
@@ -327,18 +327,18 @@ install_playwright_browsers() {
         log_info "跳过Playwright浏览器安装"
         return 0
     fi
-    
+
     log_info "安装Playwright浏览器..."
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # 安装Playwright浏览器
     log_info "安装Playwright浏览器: $BROWSERS"
     if ! npx playwright install $BROWSERS --with-deps; then
         log_error "Playwright浏览器安装失败"
         return 1
     fi
-    
+
     log_success "Playwright浏览器安装完成"
     return 0
 }
@@ -349,33 +349,33 @@ start_frontend_server() {
         log_info "跳过前端服务器启动"
         return 0
     fi
-    
+
     log_info "启动前端开发服务器..."
-    
+
     local frontend_dir="$PROJECT_ROOT/web/frontend"
-    
+
     if [[ ! -d "$frontend_dir" ]]; then
         log_error "前端目录不存在"
         return 1
     fi
-    
+
     # 检查端口
     if ! check_port_available 5173 "前端"; then
         log_error "前端端口 5173 被占用，无法启动前端服务器"
         return 1
     fi
-    
+
     cd "$frontend_dir"
-    
+
     # 启动开发服务器（后台进程）
     export NODE_ENV=test
     export PLAYWRIGHT_BASE_URL=http://localhost:5173
-    
+
     nohup npm run dev > "$LOG_DIR/frontend_$TIMESTAMP.log" 2>&1 &
     FRONTEND_PID=$!
-    
+
     echo $FRONTEND_PID > "$PROJECT_ROOT/.test_frontend_pid"
-    
+
     # 等待服务器启动
     log_info "等待前端服务器启动..."
     for i in {1..30}; do
@@ -385,7 +385,7 @@ start_frontend_server() {
         fi
         sleep 2
     done
-    
+
     log_error "前端服务器启动超时"
     return 1
 }
@@ -396,34 +396,34 @@ start_backend_server() {
         log_info "跳过后端服务器启动"
         return 0
     fi
-    
+
     log_info "启动后端API服务器..."
-    
+
     local backend_dir="$PROJECT_ROOT/web/backend"
-    
+
     if [[ ! -d "$backend_dir" ]]; then
         log_error "后端目录不存在"
         return 1
     fi
-    
+
     # 检查端口
     if ! check_port_available 8000 "后端"; then
         log_error "后端端口 8000 被占用，无法启动后端服务器"
         return 1
     fi
-    
+
     cd "$backend_dir"
-    
+
     # 启动API服务器（后台进程）
     export TESTING=1
     export USE_MOCK_DATA=1
     export PLAYWRIGHT_API_URL=http://localhost:8000
-    
+
     nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/backend_$TIMESTAMP.log" 2>&1 &
     BACKEND_PID=$!
-    
+
     echo $BACKEND_PID > "$PROJECT_ROOT/.test_backend_pid"
-    
+
     # 等待服务器启动
     log_info "等待后端服务器启动..."
     for i in {1..30}; do
@@ -433,7 +433,7 @@ start_backend_server() {
         fi
         sleep 2
     done
-    
+
     log_error "后端服务器启动超时"
     return 1
 }
@@ -444,9 +444,9 @@ stop_test_servers() {
         log_info "跳过服务器清理"
         return 0
     fi
-    
+
     log_info "停止测试服务器..."
-    
+
     # 停止前端服务器
     if [[ -f "$PROJECT_ROOT/.test_frontend_pid" ]]; then
         local frontend_pid=$(cat "$PROJECT_ROOT/.test_frontend_pid")
@@ -456,7 +456,7 @@ stop_test_servers() {
         fi
         rm -f "$PROJECT_ROOT/.test_frontend_pid"
     fi
-    
+
     # 停止后端服务器
     if [[ -f "$PROJECT_ROOT/.test_backend_pid" ]]; then
         local backend_pid=$(cat "$PROJECT_ROOT/.test_backend_pid")
@@ -466,7 +466,7 @@ stop_test_servers() {
         fi
         rm -f "$PROJECT_ROOT/.test_backend_pid"
     fi
-    
+
     # 强制清理任何残留进程
     pkill -f "npm run dev" 2>/dev/null || true
     pkill -f "uvicorn app.main:app" 2>/dev/null || true
@@ -475,48 +475,48 @@ stop_test_servers() {
 # 运行E2E测试
 run_e2e_tests() {
     log_info "开始运行E2E测试..."
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # 创建测试结果目录
     mkdir -p test-results/{screenshots,videos,traces,reports}
-    
+
     # 设置环境变量
     export PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL:-http://localhost:5173}
     export PLAYWRIGHT_API_URL=${PLAYWRIGHT_API_URL:-http://localhost:8000}
     export PLAYWRIGHT_TIMEOUT=${PLAYWRIGHT_TIMEOUT:-30000}
-    
+
     # 构建测试命令
     local test_cmd="npx playwright test"
-    
+
     # 添加测试模式
     if [[ -n "$TEST_PATTERN" ]]; then
         test_cmd="$test_cmd $TEST_PATTERN"
     else
         test_cmd="$test_cmd tests/e2e/specs/"
     fi
-    
+
     # 添加并行度
     test_cmd="$test_cmd --workers=$PARALLEL_WORKERS"
-    
+
     # 添加浏览器
     test_cmd="$test_cmd --project=$BROWSERS"
-    
+
     # 添加输出选项
     test_cmd="$test_cmd --output=test-results"
     test_cmd="$test_cmd --reporter=html,json,junit"
-    
+
     # 添加其他选项
     if [[ "$HEADLESS" == "false" ]]; then
         test_cmd="$test_cmd --headed"
     fi
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         test_cmd="$test_cmd --verbose"
     fi
-    
+
     log_info "执行测试命令: $test_cmd"
-    
+
     # 执行测试
     if eval $test_cmd; then
         log_success "E2E测试执行成功"
@@ -533,14 +533,14 @@ generate_test_report() {
         log_info "跳过测试报告生成"
         return 0
     fi
-    
+
     log_info "生成测试报告..."
-    
+
     local report_dir="$PROJECT_ROOT/test-results/reports"
     local report_file="$report_dir/test_execution_report_$TIMESTAMP.md"
-    
+
     mkdir -p "$report_dir"
-    
+
     # 创建Markdown报告
     cat > "$report_file" << EOF
 # E2E测试执行报告
@@ -577,9 +577,9 @@ generate_test_report() {
 详细执行日志请查看: $LOG_FILE
 
 EOF
-    
+
     log_success "测试报告已生成: $report_file"
-    
+
     # 如果安装了HTML报告查看器，显示结果
     if [[ -f "$PROJECT_ROOT/test-results/index.html" ]]; then
         log_info "HTML测试报告: $PROJECT_ROOT/test-results/index.html"
@@ -590,11 +590,11 @@ EOF
 cleanup() {
     log_info "执行清理..."
     stop_test_servers
-    
+
     # 清理临时文件
     rm -f "$PROJECT_ROOT/.test_frontend_pid"
     rm -f "$PROJECT_ROOT/.test_backend_pid"
-    
+
     log_success "清理完成"
 }
 
@@ -604,15 +604,15 @@ trap cleanup EXIT INT TERM
 # 主函数
 main() {
     local start_time=$(date +%s)
-    
+
     log_info "MyStocks 无Docker E2E测试启动"
     log_info "项目根目录: $PROJECT_ROOT"
     log_info "日志文件: $LOG_FILE"
     echo
-    
+
     # 解析参数
     parse_args "$@"
-    
+
     # 环境检查
     if [[ "$SKIP_ENV_CHECK" != "true" ]]; then
         log_info "=== 步骤 1: 环境检查 ==="
@@ -622,7 +622,7 @@ main() {
         fi
         echo
     fi
-    
+
     # 依赖检查和安装
     if [[ "$SKIP_DEPENDENCIES" != "true" ]]; then
         log_info "=== 步骤 2: 依赖安装 ==="
@@ -630,37 +630,37 @@ main() {
             log_error "前端依赖安装失败"
             exit 1
         fi
-        
+
         if ! install_backend_dependencies; then
             log_error "后端依赖安装失败"
             exit 1
         fi
-        
+
         if ! install_playwright_browsers; then
             log_error "Playwright浏览器安装失败"
             exit 1
         fi
         echo
     fi
-    
+
     # 启动服务
     log_info "=== 步骤 3: 启动测试服务 ==="
     if ! start_frontend_server; then
         log_error "前端服务器启动失败"
         exit 1
     fi
-    
+
     if ! start_backend_server; then
         log_error "后端服务器启动失败"
         exit 1
     fi
     echo
-    
+
     # 等待服务稳定
     log_info "=== 步骤 4: 等待服务稳定 ==="
     sleep 5
     echo
-    
+
     # 运行测试
     log_info "=== 步骤 5: 运行E2E测试 ==="
     local test_success=true
@@ -668,21 +668,21 @@ main() {
         test_success=false
     fi
     echo
-    
+
     # 生成报告
     log_info "=== 步骤 6: 生成测试报告 ==="
     generate_test_report
     echo
-    
+
     # 计算执行时间
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))
     local minutes=$((duration / 60))
     local seconds=$((duration % 60))
-    
+
     log_info "=== 执行完成 ==="
     log_info "总执行时间: ${minutes}分${seconds}秒"
-    
+
     # 返回适当的退出码
     if [[ "$test_success" == "true" ]]; then
         log_success "测试执行成功"

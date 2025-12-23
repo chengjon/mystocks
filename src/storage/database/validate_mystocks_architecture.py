@@ -49,14 +49,10 @@ def test_data_classification_strategy():
         DataClassification.REALTIME_POSITIONS
     )
     tick_target = DataManager().get_target_database(DataClassification.TICK_DATA)
-    daily_target = DataManager().get_target_database(
-        DataClassification.DAILY_KLINE
-    )
-    symbols_target = DataManager().get_target_database(
-        DataClassification.SYMBOLS_INFO
-    )
+    daily_target = DataManager().get_target_database(DataClassification.DAILY_KLINE)
+    symbols_target = DataManager().get_target_database(DataClassification.SYMBOLS_INFO)
 
-    logger.info(f"📊 数据分类路由验证:")
+    logger.info("📊 数据分类路由验证:")
     logger.info(f"   REALTIME_POSITIONS → {realtime_target.value}")
     logger.info(f"   TICK_DATA → {tick_target.value}")
     logger.info(f"   DAILY_KLINE → {daily_target.value}")

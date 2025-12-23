@@ -74,7 +74,7 @@ def test_config_validation():
             tests_failed.append("tables字段缺失")
 
         if "maintenance" in manager.config:
-            logger.info(f"   ✅ maintenance字段存在")
+            logger.info("   ✅ maintenance字段存在")
             tests_passed.append("maintenance字段验证")
         else:
             logger.error("   ❌ 缺少maintenance字段")

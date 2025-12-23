@@ -17,7 +17,7 @@ Features:
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 import enum
 from sqlalchemy import (
     Column,
@@ -25,7 +25,6 @@ from sqlalchemy import (
     String,
     Text,
     DateTime,
-    Boolean,
     DECIMAL,
     Index,
     CheckConstraint,

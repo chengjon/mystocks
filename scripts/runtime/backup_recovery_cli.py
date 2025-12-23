@@ -14,10 +14,7 @@
 import sys
 import os
 import argparse
-import json
-from pathlib import Path
 from datetime import datetime
-from typing import Optional
 
 # 添加项目根目录到 Python 路径
 project_root = os.path.dirname(
@@ -220,7 +217,7 @@ def cmd_verify(args):
     print(f"   Rows: {details['total_rows_actual']} / {details['total_rows_expected']}")
 
     if details["errors"]:
-        print(f"\n   Errors:")
+        print("\n   Errors:")
         for error in details["errors"]:
             print(f"   - {error}")
 

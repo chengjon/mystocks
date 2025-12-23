@@ -8,10 +8,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from typing import List, Dict, Optional
+from typing import List, Dict
 from datetime import datetime
 import os
-from pathlib import Path
 
 
 class EmailService:
@@ -186,13 +185,13 @@ class EmailService:
                 news_content += f"""
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
                     <h3 style="margin: 0 0 10px 0;">
-                        <a href="{news.get('url', '#')}" style="color: #409eff; text-decoration: none;">
-                            {news.get('headline', '无标题')}
+                        <a href="{news.get("url", "#")}" style="color: #409eff; text-decoration: none;">
+                            {news.get("headline", "无标题")}
                         </a>
                     </h3>
-                    <p style="margin: 5px 0; color: #666;">{news.get('summary', '暂无摘要')}</p>
+                    <p style="margin: 5px 0; color: #666;">{news.get("summary", "暂无摘要")}</p>
                     <p style="margin: 5px 0; font-size: 12px; color: #999;">
-                        来源: {news.get('source', '未知')} | 时间: {news_time}
+                        来源: {news.get("source", "未知")} | 时间: {news_time}
                     </p>
                 </div>
                 """
@@ -304,7 +303,7 @@ class EmailService:
 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
                     <p style="color: #909399; font-size: 12px;">
-                        提醒时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                        提醒时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
                     </p>
                 </div>
             </div>

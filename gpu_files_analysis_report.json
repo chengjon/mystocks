@@ -1,0 +1,635 @@
+{
+  "summary": {
+    "total_files": 55,
+    "total_size_bytes": 861455,
+    "files_with_direct_gpu": 9,
+    "gpu_usage_percentage": 16.363636363636363
+  },
+  "statistics": {
+    "priority_distribution": {
+      "HIGH": 4,
+      "MEDIUM": 39,
+      "LOW": 12
+    },
+    "complexity_distribution": {
+      "HIGH": 50,
+      "MEDIUM": 1,
+      "LOW": 4
+    },
+    "hal_layer_distribution": {
+      "AcceleratedEngine": 2,
+      "GPUResourceManager": 5,
+      "General": 46,
+      "APIServer": 2
+    },
+    "gpu_library_distribution": {
+      "CuPy": 16,
+      "CUDA Direct": 11,
+      "PyTorch CUDA": 1,
+      "PyTorch": 1
+    }
+  },
+  "files": [
+    {
+      "path": "src/gpu/api_system/utils/gpu_acceleration_engine.py",
+      "name": "gpu_acceleration_engine.py",
+      "size": 40687,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy"
+      ],
+      "complexity": "HIGH",
+      "priority": "HIGH",
+      "recommended_action": "High priority - replace GPU calls with HAL API"
+    },
+    {
+      "path": "src/gpu/api_system/services/resource_scheduler.py",
+      "name": "resource_scheduler.py",
+      "size": 35767,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/monitoring/gpu_performance_optimizer.py",
+      "name": "gpu_performance_optimizer.py",
+      "size": 31568,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/api_system/services/backtest_service.py",
+      "name": "backtest_service.py",
+      "size": 33240,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/services/integrated_backtest_service.py",
+      "name": "integrated_backtest_service.py",
+      "size": 28223,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/services/integrated_ml_service.py",
+      "name": "integrated_ml_service.py",
+      "size": 25523,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/cpu_fallback.py",
+      "name": "cpu_fallback.py",
+      "size": 25172,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/core/kernels/inference_kernels.py",
+      "name": "inference_kernels.py",
+      "size": 25036,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "PyTorch CUDA",
+        "PyTorch",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/accelerated/feature_generator_gpu.py",
+      "name": "feature_generator_gpu.py",
+      "size": 23522,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Review for HAL integration opportunities"
+    },
+    {
+      "path": "src/gpu/core/kernels/kernel_executor.py",
+      "name": "kernel_executor.py",
+      "size": 23023,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/utils/cache_optimization_enhanced.py",
+      "name": "cache_optimization_enhanced.py",
+      "size": 22560,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/performance_benchmark.py",
+      "name": "performance_benchmark.py",
+      "size": 22120,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Review for HAL integration opportunities"
+    },
+    {
+      "path": "src/gpu/core/kernels/kernel_registry.py",
+      "name": "kernel_registry.py",
+      "size": 21448,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/kernels/transform_kernels.py",
+      "name": "transform_kernels.py",
+      "size": 21498,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/api_system/services/realtime_service.py",
+      "name": "realtime_service.py",
+      "size": 20656,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/utils/cache_optimization.py",
+      "name": "cache_optimization.py",
+      "size": 19900,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/gpu_manager.py",
+      "name": "gpu_manager.py",
+      "size": 19746,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "HIGH",
+      "recommended_action": "High priority - migrate to GPUResourceManager"
+    },
+    {
+      "path": "src/gpu/accelerated/integration_interface.py",
+      "name": "integration_interface.py",
+      "size": 18610,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/price_predictor_gpu.py",
+      "name": "price_predictor_gpu.py",
+      "size": 18948,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/api_system/services/integrated_realtime_service.py",
+      "name": "integrated_realtime_service.py",
+      "size": 19020,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/data_processor_gpu_fixed.py",
+      "name": "data_processor_gpu_fixed.py",
+      "size": 19332,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/gpu/core/kernels/matrix_kernels.py",
+      "name": "matrix_kernels.py",
+      "size": 18510,
+      "has_direct_gpu": true,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Medium priority - replace direct GPU calls with HAL layer"
+    },
+    {
+      "path": "src/monitoring/gpu_integration_manager.py",
+      "name": "gpu_integration_manager.py",
+      "size": 17404,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "HIGH",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/health_monitor.py",
+      "name": "health_monitor.py",
+      "size": 17827,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/realtime_path.py",
+      "name": "realtime_path.py",
+      "size": 16477,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/resource_manager.py",
+      "name": "resource_manager.py",
+      "size": 16622,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/real_time_performance_monitor.py",
+      "name": "real_time_performance_monitor.py",
+      "size": 15531,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/memory_pool.py",
+      "name": "memory_pool.py",
+      "size": 16019,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/unit/test_cache/test_cache_optimization_enhanced.py",
+      "name": "test_cache_optimization_enhanced.py",
+      "size": 14600,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/data_processor_gpu.py",
+      "name": "data_processor_gpu.py",
+      "size": 15018,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "Review for HAL integration opportunities"
+    },
+    {
+      "path": "src/gpu/api_system/utils/monitoring.py",
+      "name": "monitoring.py",
+      "size": 14635,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/utils/redis_utils.py",
+      "name": "redis_utils.py",
+      "size": 13949,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/unit/test_services/test_integrated_services.py",
+      "name": "test_integrated_services.py",
+      "size": 13927,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/performance/test_performance.py",
+      "name": "test_performance.py",
+      "size": 13798,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/utils/gpu_utils.py",
+      "name": "gpu_utils.py",
+      "size": 12966,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "High priority - replace GPU calls with HAL API"
+    },
+    {
+      "path": "src/gpu/api_system/tests/unit/test_utils/test_gpu_resource_manager.py",
+      "name": "test_gpu_resource_manager.py",
+      "size": 11919,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/strategy_context.py",
+      "name": "strategy_context.py",
+      "size": 11398,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/unit/test_cache/test_cache_optimization.py",
+      "name": "test_cache_optimization.py",
+      "size": 10762,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/integration/test_end_to_end.py",
+      "name": "test_end_to_end.py",
+      "size": 10580,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/memory_management_fix.py",
+      "name": "memory_management_fix.py",
+      "size": 10297,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/accelerated/cpu_data_processor.py",
+      "name": "cpu_data_processor.py",
+      "size": 9582,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/kernels/standardized_interface.py",
+      "name": "standardized_interface.py",
+      "size": 8750,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/generate_test_report.py",
+      "name": "generate_test_report.py",
+      "size": 8647,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/unit/test_gpu/test_acceleration_engine.py",
+      "name": "test_acceleration_engine.py",
+      "size": 8573,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/main_server.py",
+      "name": "main_server.py",
+      "size": 7946,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/test_real_gpu.py",
+      "name": "test_real_gpu.py",
+      "size": 6631,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "High priority - replace GPU calls with HAL API"
+    },
+    {
+      "path": "src/gpu/api_system/services/gpu_api_server.py",
+      "name": "gpu_api_server.py",
+      "size": 6750,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "HIGH",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/interfaces.py",
+      "name": "interfaces.py",
+      "size": 4535,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/wsl2_gpu_init.py",
+      "name": "wsl2_gpu_init.py",
+      "size": 3685,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy",
+        "CUDA Direct"
+      ],
+      "complexity": "HIGH",
+      "priority": "MEDIUM",
+      "recommended_action": "High priority - replace GPU calls with HAL API"
+    },
+    {
+      "path": "src/gpu/api_system/tests/conftest.py",
+      "name": "conftest.py",
+      "size": 3942,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "HIGH",
+      "priority": "LOW",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/data_processor_factory.py",
+      "name": "data_processor_factory.py",
+      "size": 1904,
+      "has_direct_gpu": false,
+      "gpu_libraries": [
+        "CuPy"
+      ],
+      "complexity": "MEDIUM",
+      "priority": "MEDIUM",
+      "recommended_action": "Review for HAL integration opportunities"
+    },
+    {
+      "path": "src/gpu/data_processing_interfaces.py",
+      "name": "data_processing_interfaces.py",
+      "size": 1000,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "LOW",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/hardware_abstraction/__init__.py",
+      "name": "__init__.py",
+      "size": 795,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "LOW",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/core/kernels/__init__.py",
+      "name": "__init__.py",
+      "size": 811,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "LOW",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    },
+    {
+      "path": "src/gpu/api_system/tests/__init__.py",
+      "name": "__init__.py",
+      "size": 66,
+      "has_direct_gpu": false,
+      "gpu_libraries": [],
+      "complexity": "LOW",
+      "priority": "MEDIUM",
+      "recommended_action": "No GPU usage - no migration needed"
+    }
+  ],
+  "migration_plan": {
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Key Infrastructure Files",
+        "files": [
+          

@@ -105,7 +105,7 @@ class TestMLIntegration:
         print("步骤 6: 特征重要性分析...")
         importance = predictor.get_feature_importance(top_k=5)
         assert len(importance) <= 5, "特征重要性数量错误"
-        print(f"   ✅ Top 5 特征:")
+        print("   ✅ Top 5 特征:")
         print(importance.to_string(index=False))
 
         print("\n✅ 端到端测试通过（真实数据）")
@@ -147,7 +147,7 @@ class TestMLIntegration:
         pred2 = predictor2.predict(X_test)
 
         assert np.allclose(pred1, pred2), "加载后预测结果不一致"
-        print(f"   ✅ 模型保存/加载成功")
+        print("   ✅ 模型保存/加载成功")
 
         print("\n✅ 端到端测试通过（模拟数据）")
 

@@ -66,7 +66,7 @@ STOCKS_RESPONSE=$(curl -s -X GET "http://localhost:8000/api/data/stocks/basic?li
 
 if echo "$STOCKS_RESPONSE" | grep -q '"success":true'; then
     echo -e "✅ 股票基本信息API: ${GREEN}返回成功${NC}"
-    
+
     # 检查数据是否存在且非空
     DATA_COUNT=$(echo "$STOCKS_RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); print(len(data.get('data', [])))")
     if [ "$DATA_COUNT" -ge 1 ]; then
@@ -87,7 +87,7 @@ OVERVIEW_RESPONSE=$(curl -s -X GET "http://localhost:8000/api/data/markets/overv
 
 if echo "$OVERVIEW_RESPONSE" | grep -q '"success":true'; then
     echo -e "✅ 市场概览API: ${GREEN}返回成功${NC}"
-    
+
     # 检查数据是否存在
     TOTAL_STOCKS=$(echo "$OVERVIEW_RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('data', {}).get('total_stocks', 0))")
     if [ "$TOTAL_STOCKS" -ge 1 ]; then
@@ -107,7 +107,7 @@ FRONTEND_PROXY_RESPONSE=$(curl -s -X GET "http://localhost:3001/api/data/stocks/
 
 if echo "$FRONTEND_PROXY_RESPONSE" | grep -q '"success":true'; then
     echo -e "✅ 前端代理API: ${GREEN}正常转发${NC}"
-    
+
     # 检查数据是否存在且非空
     PROXY_DATA_COUNT=$(echo "$FRONTEND_PROXY_RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); print(len(data.get('data', [])))")
     if [ "$PROXY_DATA_COUNT" -ge 1 ]; then

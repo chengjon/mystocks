@@ -9,7 +9,6 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
 from decimal import Decimal
 from datetime import datetime

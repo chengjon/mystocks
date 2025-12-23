@@ -7,7 +7,6 @@
 import os
 import sys
 import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -166,7 +165,7 @@ def test_database_operations():
         print_check("✅", f"切换到数据库 {TDENGINE_DATABASE}")
 
         # 创建超表 (缓存表) - 使用 TDengine 3.x 的 STABLE 语法
-        create_super_table = f"""
+        create_super_table = """
         CREATE STABLE IF NOT EXISTS cache_data (
             ts TIMESTAMP,
             cache_data VARCHAR(1024)
@@ -231,7 +230,6 @@ def test_write_read_operations():
 
     try:
         from taos import connect
-        import json
         from datetime import datetime, timedelta
 
         conn = connect(

@@ -49,48 +49,48 @@ check_project_dir() {
 # 创建开发会话
 create_dev_session() {
     log_info "创建MyStocks开发会话..."
-    
+
     # 检查会话是否已存在
     if tmux has-session -t $SESSION_NAME 2>/dev/null; then
         log_warn "会话 $SESSION_NAME 已存在"
         return 1
     fi
-    
+
     # 创建新会话 - 数据库监控窗口
     tmux new-session -d -s $SESSION_NAME -n databases -c $PROJECT_ROOT
-    
+
     # 面板1: TDengine监控
     tmux send-keys -t $SESSION_NAME:databases.0 "echo 'TDengine监控面板'; echo '执行: docker stats mystocks-tdengine'" C-m
-    
+
     # 分割面板 - PostgreSQL监控
     tmux split-window -h -t $SESSION_NAME:databases -c $PROJECT_ROOT
     tmux send-keys -t $SESSION_NAME:databases.1 "echo 'PostgreSQL监控面板'; echo '执行: docker stats mystocks-postgresql'" C-m
-    
+
     # 创建服务窗口
     tmux new-window -t $SESSION_NAME -n services -c $PROJECT_ROOT
-    
+
     # 面板1: 后端服务
     tmux send-keys -t $SESSION_NAME:services.0 "echo 'MyStocks后端服务'; echo '执行: cd web/backend && python -m uvicorn app.main:app --reload'" C-m
-    
+
     # 分割面板 - 前端服务
     tmux split-window -v -t $SESSION_NAME:services -c $PROJECT_ROOT
     tmux send-keys -t $SESSION_NAME:services.1 "echo 'MyStocks前端服务'; echo '执行: cd web/frontend && npm run dev'" C-m
-    
+
     # 分割面板 - GPU服务（如果存在）
     tmux split-window -h -t $SESSION_NAME:services.1 -c $PROJECT_ROOT
     tmux send-keys -t $SESSION_NAME:services.2 "echo 'GPU加速服务'; echo '执行: cd src/gpu/api_system && python main_server.py'" C-m
-    
+
     # 创建日志监控窗口
     tmux new-window -t $SESSION_NAME -n logs -c $PROJECT_ROOT
     tmux send-keys -t $SESSION_NAME:logs.0 "echo '日志监控面板'; echo '执行: lnav $LOG_DIR'" C-m
-    
+
     # 创建开发窗口
     tmux new-window -t $SESSION_NAME -n dev -c $PROJECT_ROOT
     tmux send-keys -t $SESSION_NAME:dev.0 "echo '开发面板'; echo '当前目录: $(pwd)'" C-m
-    
+
     # 选择第一个窗口
     tmux select-window -t $SESSION_NAME:databases
-    
+
     log_info "MyStocks开发会话创建完成"
     return 0
 }
@@ -142,7 +142,7 @@ show_help() {
 main() {
     check_tmux
     check_project_dir
-    
+
     case "$1" in
         start)
             create_dev_session

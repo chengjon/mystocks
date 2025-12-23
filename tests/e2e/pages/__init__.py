@@ -11,9 +11,9 @@ from .data_table_page import DataTablePage
 from .search_page import SearchPage
 
 __all__ = [
-    'BasePage',
-    'LoginPage',
-    'DashboardPage',
-    'DataTablePage',
-    'SearchPage',
+    "BasePage",
+    "LoginPage",
+    "DashboardPage",
+    "DataTablePage",
+    "SearchPage",
 ]

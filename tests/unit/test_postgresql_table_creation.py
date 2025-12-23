@@ -43,7 +43,7 @@ class TestPostgreSQLTableCreation:
             cursor.close()
             self.conn_manager._return_postgresql_connection(conn)
 
-            print(f"  ✅ PostgreSQL连接成功")
+            print("  ✅ PostgreSQL连接成功")
             print(f"  版本信息: {version[0][:50]}...")
             assert conn is not None
         except Exception as e:
@@ -74,8 +74,8 @@ class TestPostgreSQLTableCreation:
             if result:
                 print(f"  ✅ TimescaleDB已安装: version {result[1]}")
             else:
-                print(f"  ⚠️  TimescaleDB未安装 (部分测试将跳过)")
-                print(f"  ℹ️  尝试创建扩展: CREATE EXTENSION IF NOT EXISTS timescaledb")
+                print("  ⚠️  TimescaleDB未安装 (部分测试将跳过)")
+                print("  ℹ️  尝试创建扩展: CREATE EXTENSION IF NOT EXISTS timescaledb")
 
         except Exception as e:
             print(f"  ⚠️  检查失败: {e}")
@@ -104,7 +104,7 @@ class TestPostgreSQLTableCreation:
             )
             print(f"    - {table['table_name']} ({is_hyper})")
 
-        print(f"  ✅ PostgreSQL表定义验证通过")
+        print("  ✅ PostgreSQL表定义验证通过")
 
     def test_04_hypertable_structure(self):
         """测试4: 验证Hypertable结构定义"""
@@ -146,7 +146,7 @@ class TestPostgreSQLTableCreation:
         if retention_days:
             print(f"  保留策略: {retention_days}天")
 
-        print(f"  ✅ Hypertable结构验证通过")
+        print("  ✅ Hypertable结构验证通过")
 
     def test_05_create_postgresql_tables(self):
         """测试5: 创建PostgreSQL表"""
@@ -185,7 +185,7 @@ class TestPostgreSQLTableCreation:
             print(
                 f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
             )
-            print(f"  ✅ PostgreSQL表创建测试完成")
+            print("  ✅ PostgreSQL表创建测试完成")
 
         except Exception as e:
             print(f"  ⚠️  测试失败: {e}")
@@ -209,7 +209,7 @@ class TestPostgreSQLTableCreation:
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
 
-            print(f"  ✅ 表存在性验证完成")
+            print("  ✅ 表存在性验证完成")
 
         except Exception as e:
             print(f"  ⚠️  验证失败: {e}")
@@ -236,7 +236,7 @@ class TestPostgreSQLTableCreation:
             comp = table["compression"]
             print(f"    - {table['table_name']}: {comp.get('after_days')}天后压缩")
 
-        print(f"  ✅ 压缩策略验证通过")
+        print("  ✅ 压缩策略验证通过")
 
 
 def run_tests():

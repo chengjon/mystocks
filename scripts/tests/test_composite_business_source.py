@@ -13,10 +13,12 @@
 
 import sys
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 from src.data_sources import get_business_source
@@ -25,31 +27,31 @@ from src.data_sources.factory import DataSourceFactory
 
 def test_factory_registration():
     """测试工厂注册"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("测试 1: 工厂注册验证")
-    print("="*80)
+    print("=" * 80)
 
     factory = DataSourceFactory()
 
     # 列出所有注册的数据源
     registered = factory.list_registered_sources()
 
-    print(f"\n已注册的业务数据源:")
+    print("\n已注册的业务数据源:")
     for name in registered.get("business", []):
         print(f"  - {name}")
 
     assert "mock" in registered["business"], "Mock数据源应该已注册"
     assert "composite" in registered["business"], "Composite数据源应该已注册"
 
-    print(f"\n✅ 工厂注册验证通过")
+    print("\n✅ 工厂注册验证通过")
     return True
 
 
 def test_health_check():
     """测试健康检查"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("测试 2: 健康检查")
-    print("="*80)
+    print("=" * 80)
 
     # 使用Composite数据源
     os.environ["BUSINESS_DATA_SOURCE"] = "composite"
@@ -59,35 +61,36 @@ def test_health_check():
 
         health = source.health_check()
 
-        print(f"\n健康状态:")
+        print("\n健康状态:")
         print(f"  - 状态: {health['status']}")
         print(f"  - 数据源类型: {health.get('data_source_type', 'unknown')}")
 
-        if 'dependencies' in health:
-            print(f"\n  依赖数据源:")
-            for dep_name, dep_info in health['dependencies'].items():
+        if "dependencies" in health:
+            print("\n  依赖数据源:")
+            for dep_name, dep_info in health["dependencies"].items():
                 print(f"    - {dep_name}: {dep_info.get('status', 'unknown')}")
 
-        if health['status'] in ["healthy", "degraded"]:
-            print(f"\n✅ 健康检查通过 - Composite数据源工作正常")
+        if health["status"] in ["healthy", "degraded"]:
+            print("\n✅ 健康检查通过 - Composite数据源工作正常")
             return True
         else:
             print(f"  - 错误: {health.get('error', 'Unknown error')}")
-            print(f"\n⚠️  健康检查失败 - Composite数据源异常")
+            print("\n⚠️  健康检查失败 - Composite数据源异常")
             return False
 
     except Exception as e:
         print(f"\n⚠️  健康检查失败: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_basic_operations():
     """测试基本业务操作"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("测试 3: 基本业务操作验证")
-    print("="*80)
+    print("=" * 80)
 
     # 使用Composite数据源
     os.environ["BUSINESS_DATA_SOURCE"] = "composite"
@@ -153,63 +156,62 @@ def test_basic_operations():
         print("\n  测试股票筛选...")
         try:
             screener = source.execute_stock_screener(
-                user_id=1001,
-                criteria={"price_range": [10.0, 50.0]},
-                limit=10
+                user_id=1001, criteria={"price_range": [10.0, 50.0]}, limit=10
             )
             print(f"    ✅ execute_stock_screener: 返回{len(screener)}只股票")
         except Exception as e:
             print(f"    ⚠️  execute_stock_screener: {str(e)}")
 
-        print(f"\n✅ 基本业务操作验证通过")
+        print("\n✅ 基本业务操作验证通过")
         return True
 
     except Exception as e:
         print(f"❌ 基本操作测试失败: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_class_structure():
     """测试Composite类结构"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("测试 4: Composite类结构验证")
-    print("="*80)
+    print("=" * 80)
 
     from src.data_sources.real.composite_business import CompositeBusinessDataSource
     from src.interfaces.business_data_source import IBusinessDataSource
 
     # 验证继承关系
-    assert issubclass(CompositeBusinessDataSource, IBusinessDataSource), \
-        "CompositeBusinessDataSource应继承IBusinessDataSource"
+    assert issubclass(
+        CompositeBusinessDataSource, IBusinessDataSource
+    ), "CompositeBusinessDataSource应继承IBusinessDataSource"
 
     # 验证所有接口方法都已实现
     required_methods = [
         # 仪表盘相关 (2个)
-        'get_dashboard_summary',
-        'get_sector_performance',
+        "get_dashboard_summary",
+        "get_sector_performance",
         # 策略回测相关 (2个)
-        'execute_backtest',
-        'get_backtest_results',
+        "execute_backtest",
+        "get_backtest_results",
         # 风险管理相关 (2个)
-        'calculate_risk_metrics',
-        'check_risk_alerts',
+        "calculate_risk_metrics",
+        "check_risk_alerts",
         # 交易管理相关 (3个)
-        'analyze_trading_signals',
-        'get_portfolio_analysis',
-        'perform_attribution_analysis',
+        "analyze_trading_signals",
+        "get_portfolio_analysis",
+        "perform_attribution_analysis",
         # 数据分析相关 (1个)
-        'execute_stock_screener',
+        "execute_stock_screener",
         # 健康检查 (1个)
-        'health_check'
+        "health_check",
     ]
 
     for method in required_methods:
-        assert hasattr(CompositeBusinessDataSource, method), \
-            f"缺少方法: {method}"
+        assert hasattr(CompositeBusinessDataSource, method), f"缺少方法: {method}"
 
-    print(f"\n已实现的接口方法:")
+    print("\n已实现的接口方法:")
 
     # 分类显示
     categories = [
@@ -218,7 +220,7 @@ def test_class_structure():
         ("风险管理相关", required_methods[4:6]),
         ("交易管理相关", required_methods[6:9]),
         ("数据分析相关", required_methods[9:10]),
-        ("健康检查", required_methods[10:11])
+        ("健康检查", required_methods[10:11]),
     ]
 
     for category_name, methods in categories:
@@ -227,21 +229,21 @@ def test_class_structure():
             print(f"    ✅ {method}")
 
     print(f"\n✅ 类结构验证通过 - 所有{len(required_methods)}个方法已实现")
-    print(f"   - 仪表盘相关: 2个方法")
-    print(f"   - 策略回测相关: 2个方法")
-    print(f"   - 风险管理相关: 2个方法")
-    print(f"   - 交易管理相关: 3个方法")
-    print(f"   - 数据分析相关: 1个方法")
-    print(f"   - 健康检查: 1个方法")
+    print("   - 仪表盘相关: 2个方法")
+    print("   - 策略回测相关: 2个方法")
+    print("   - 风险管理相关: 2个方法")
+    print("   - 交易管理相关: 3个方法")
+    print("   - 数据分析相关: 1个方法")
+    print("   - 健康检查: 1个方法")
 
     return True
 
 
 def run_all_tests():
     """运行所有测试"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(" 复合业务数据源测试")
-    print("="*80)
+    print("=" * 80)
     print(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     tests = [
@@ -265,13 +267,14 @@ def run_all_tests():
         except Exception as e:
             print(f"❌ {name}测试失败: {str(e)}")
             import traceback
+
             traceback.print_exc()
             failed += 1
 
     # 总结
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(" 测试总结")
-    print("="*80)
+    print("=" * 80)
     print(f"✅ 通过: {passed}/{len(tests)}")
     if warnings > 0:
         print(f"⚠️  警告: {warnings}/{len(tests)}")

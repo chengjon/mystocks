@@ -14,7 +14,6 @@ Author: Claude Code
 Date: 2025-11-12
 """
 
-import asyncio
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
@@ -22,17 +21,14 @@ import structlog
 
 from app.core.socketio_connection_pool import (
     get_connection_pool,
-    WebSocketConnectionPool,
 )
 from app.core.socketio_message_batch import (
     get_message_batcher,
-    WebSocketMessageBatcher,
     BatchMessage,
     BatchMessageType,
 )
 from app.core.socketio_memory_optimizer import (
     get_memory_optimizer,
-    WebSocketMemoryOptimizer,
     MemoryPressureLevel,
 )
 
@@ -256,9 +252,7 @@ class WebSocketPerformanceManager:
         avg_active = sum(m.active_connections for m in recent_metrics) / len(
             recent_metrics
         )
-        avg_memory = sum(m.memory_percent for m in recent_metrics) / len(
-            recent_metrics
-        )
+        avg_memory = sum(m.memory_percent for m in recent_metrics) / len(recent_metrics)
         avg_batch_size = sum(m.avg_batch_size for m in recent_metrics) / len(
             recent_metrics
         )
@@ -268,7 +262,9 @@ class WebSocketPerformanceManager:
             "average_active_connections": round(avg_active, 2),
             "average_memory_percent": round(avg_memory, 2),
             "average_batch_size": round(avg_batch_size, 2),
-            "peak_active_connections": max(m.active_connections for m in recent_metrics),
+            "peak_active_connections": max(
+                m.active_connections for m in recent_metrics
+            ),
             "peak_memory_percent": max(m.memory_percent for m in recent_metrics),
             "connection_reuse_rate": (
                 sum(m.connection_reuse_rate for m in recent_metrics)

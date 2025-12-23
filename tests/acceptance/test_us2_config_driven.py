@@ -21,7 +21,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 import yaml
 import tempfile
 import shutil
-from pathlib import Path
 import pytest
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 from src.storage.database.connection_manager import DatabaseConnectionManager
@@ -188,7 +187,7 @@ class TestUS2ConfigDriven:
             cursor.execute("DROP TABLE IF EXISTS test_new_table_us2")
             cursor.close()
             conn.close()
-            print(f"  ✓ 已清理旧测试表")
+            print("  ✓ 已清理旧测试表")
         except:
             pass
 
@@ -216,11 +215,11 @@ class TestUS2ConfigDriven:
             conn.close()
             exists = len(table_result) > 0
             assert exists, f"新表应该已经创建，查询结果: {table_result}"
-            print(f"  ✓ 表存在性验证: 表已创建")
+            print("  ✓ 表存在性验证: 表已创建")
         except Exception as e:
             print(f"  ⚠️  表验证出错: {e}")
 
-        print(f"  ✅ 场景1验证通过: 新表已自动创建")
+        print("  ✅ 场景1验证通过: 新表已自动创建")
 
     def test_scenario_2_add_new_column_auto_add(self):
         """
@@ -237,11 +236,11 @@ class TestUS2ConfigDriven:
         if not self.test_db_available["mysql"]:
             pytest.skip("MySQL数据库不可用")
 
-        print(f"  ℹ️  当前safe_mode=True，应该自动添加新列")
+        print("  ℹ️  当前safe_mode=True，应该自动添加新列")
         print(
-            f"  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法"
+            "  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法"
         )
-        print(f"  ✅ 场景2验证通过: 配置支持自动添加列（实现待完善）")
+        print("  ✅ 场景2验证通过: 配置支持自动添加列（实现待完善）")
 
     def test_scenario_3_delete_column_needs_confirmation(self):
         """
@@ -261,17 +260,17 @@ class TestUS2ConfigDriven:
         print(f"  ℹ️  Safe Mode状态: {manager.safe_mode}")
 
         if manager.safe_mode:
-            print(f"  ✓ Safe Mode已启用，危险操作将被拒绝或要求确认")
+            print("  ✓ Safe Mode已启用，危险操作将被拒绝或要求确认")
 
             # 模拟测试confirm_dangerous_operation方法
             if hasattr(manager, "confirm_dangerous_operation"):
-                print(f"  ✓ 危险操作确认方法已实现")
+                print("  ✓ 危险操作确认方法已实现")
             else:
-                print(f"  ⚠️  危险操作确认方法待实现")
+                print("  ⚠️  危险操作确认方法待实现")
         else:
-            print(f"  ⚠️  Safe Mode未启用，危险操作不受限制")
+            print("  ⚠️  Safe Mode未启用，危险操作不受限制")
 
-        print(f"  ✅ 场景3验证通过: Safe Mode保护机制已配置")
+        print("  ✅ 场景3验证通过: Safe Mode保护机制已配置")
 
     def test_scenario_4_config_syntax_error_clear_message(self):
         """
@@ -307,9 +306,9 @@ tables:
 
         try:
             manager = ConfigDrivenTableManager(config_path=test_config_path)
-            print(f"  ⚠️  配置加载成功（可能缺少验证）")
+            print("  ⚠️  配置加载成功（可能缺少验证）")
         except Exception as e:
-            print(f"  ✓ 配置加载失败（预期行为）")
+            print("  ✓ 配置加载失败（预期行为）")
             print(f"    错误信息: {str(e)[:100]}")
 
         # 测试2: 缺少必需字段
@@ -332,11 +331,11 @@ tables:
             manager = ConfigDrivenTableManager(config_path=test_config_path2)
             # 尝试创建表会失败
             result = manager.initialize_all_tables()
-            print(f"  ⚠️  不完整配置可能未被完全验证")
+            print("  ⚠️  不完整配置可能未被完全验证")
         except Exception as e:
             print(f"  ✓ 不完整配置被拒绝: {str(e)[:100]}")
 
-        print(f"  ✅ 场景4验证通过: 配置错误能被检测")
+        print("  ✅ 场景4验证通过: 配置错误能被检测")
 
     def test_scenario_5_unsupported_database_type_error(self):
         """
@@ -378,7 +377,7 @@ tables:
         with open(test_config_path, "w", encoding="utf-8") as f:
             yaml.dump(invalid_db_config, f, allow_unicode=True)
 
-        print(f"  测试不支持的数据库类型: ClickHouse")
+        print("  测试不支持的数据库类型: ClickHouse")
 
         try:
             manager = ConfigDrivenTableManager(config_path=test_config_path)
@@ -386,21 +385,21 @@ tables:
 
             # 检查是否有错误
             if result.get("errors") and len(result["errors"]) > 0:
-                print(f"  ✓ 不支持的数据库类型被检测到")
+                print("  ✓ 不支持的数据库类型被检测到")
                 print(f"    错误数量: {len(result['errors'])}")
                 # 检查错误信息中是否包含"不支持"
                 error_msg = str(result["errors"][0])
                 if "不支持" in error_msg or "unsupported" in error_msg.lower():
                     print(f"    ✓ 错误信息明确: {error_msg[:80]}")
             else:
-                print(f"  ⚠️  不支持的数据库类型未被明确拒绝")
+                print("  ⚠️  不支持的数据库类型未被明确拒绝")
 
         except Exception as e:
-            print(f"  ✓ 不支持的数据库类型导致错误（预期行为）")
+            print("  ✓ 不支持的数据库类型导致错误（预期行为）")
             print(f"    错误信息: {str(e)[:100]}")
 
-        print(f"  ℹ️  支持的数据库类型: TDengine, PostgreSQL, MySQL, Redis")
-        print(f"  ✅ 场景5验证通过: 不支持的数据库类型会产生错误")
+        print("  ℹ️  支持的数据库类型: TDengine, PostgreSQL, MySQL, Redis")
+        print("  ✅ 场景5验证通过: 不支持的数据库类型会产生错误")
 
     def test_scenario_6_table_name_conflict_error(self):
         """
@@ -442,7 +441,7 @@ tables:
         with open(test_config_path, "w", encoding="utf-8") as f:
             yaml.dump(conflict_config, f, allow_unicode=True)
 
-        print(f"  测试重复表名: duplicate_table")
+        print("  测试重复表名: duplicate_table")
 
         # 检查配置中的重复表名
         with open(test_config_path, "r", encoding="utf-8") as f:
@@ -454,25 +453,25 @@ tables:
 
         if duplicates:
             print(f"  ✓ 检测到重复表名: {duplicates}")
-            print(f"  ✓ 配置验证应该拒绝此配置")
+            print("  ✓ 配置验证应该拒绝此配置")
         else:
-            print(f"  ⚠️  未检测到重复表名（测试配置错误）")
+            print("  ⚠️  未检测到重复表名（测试配置错误）")
 
         # 尝试加载配置
         try:
             manager = ConfigDrivenTableManager(config_path=test_config_path)
-            print(f"  ℹ️  配置加载成功（可能需要添加重复表名检查）")
+            print("  ℹ️  配置加载成功（可能需要添加重复表名检查）")
 
             # 检查是否有验证方法
             if hasattr(manager, "validate_config"):
-                print(f"  ✓ 配置验证方法存在")
+                print("  ✓ 配置验证方法存在")
             else:
-                print(f"  ⚠️  建议添加validate_config方法检查重复表名")
+                print("  ⚠️  建议添加validate_config方法检查重复表名")
 
         except Exception as e:
             print(f"  ✓ 配置加载失败（预期行为）: {str(e)[:100]}")
 
-        print(f"  ✅ 场景6验证通过: 表名冲突检测机制已测试")
+        print("  ✅ 场景6验证通过: 表名冲突检测机制已测试")
 
     def test_integration_summary(self):
         """
@@ -482,20 +481,20 @@ tables:
         """
         print("\n📍 US2验收测试总结")
 
-        print(f"\n  US2核心功能验证:")
-        print(f"    ✅ 场景1: 添加新表 → 自动创建")
-        print(f"    ✅ 场景2: 添加新列 → 自动添加（配置支持）")
-        print(f"    ✅ 场景3: 删除/修改列 → Safe Mode保护")
-        print(f"    ✅ 场景4: 配置错误 → 错误检测")
-        print(f"    ✅ 场景5: 不支持数据库 → 错误提示")
-        print(f"    ✅ 场景6: 表名冲突 → 冲突检测")
+        print("\n  US2核心功能验证:")
+        print("    ✅ 场景1: 添加新表 → 自动创建")
+        print("    ✅ 场景2: 添加新列 → 自动添加（配置支持）")
+        print("    ✅ 场景3: 删除/修改列 → Safe Mode保护")
+        print("    ✅ 场景4: 配置错误 → 错误检测")
+        print("    ✅ 场景5: 不支持数据库 → 错误提示")
+        print("    ✅ 场景6: 表名冲突 → 冲突检测")
 
-        print(f"\n  数据库支持情况:")
+        print("\n  数据库支持情况:")
         for db_type, available in self.test_db_available.items():
             status = "✅ 可用" if available else "❌ 不可用"
             print(f"    {db_type}: {status}")
 
-        print(f"\n  配置文件状态:")
+        print("\n  配置文件状态:")
         config_path = "config/table_config.yaml"
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
@@ -506,17 +505,17 @@ tables:
         else:
             print(f"    ❌ 配置文件不存在: {config_path}")
 
-        print(f"\n  核心类实现:")
+        print("\n  核心类实现:")
         try:
             manager = ConfigDrivenTableManager()
-            print(f"    ✅ ConfigDrivenTableManager: 已实现")
+            print("    ✅ ConfigDrivenTableManager: 已实现")
             print(f"    Safe Mode: {manager.safe_mode}")
             print(f"    配置路径: {manager.config_path}")
         except Exception as e:
-            print(f"    ❌ ConfigDrivenTableManager: 初始化失败")
+            print("    ❌ ConfigDrivenTableManager: 初始化失败")
             print(f"       {str(e)[:100]}")
 
-        print(f"\n  ✅ US2配置驱动表结构管理验收测试完成")
+        print("\n  ✅ US2配置驱动表结构管理验收测试完成")
 
 
 def run_tests():

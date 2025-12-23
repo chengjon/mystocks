@@ -16,11 +16,11 @@
         </button>
       </div>
     </div>
-    
+
     <div v-if="error" class="error-message">
       {{ error }}
     </div>
-    
+
     <!-- 监控摘要 -->
     <div class="monitor-summary">
       <div class="summary-card" :class="{ 'status-normal': isSystemHealthy, 'status-warning': !isSystemHealthy }">
@@ -30,7 +30,7 @@
           <div class="summary-description">{{ systemStatusMessage }}</div>
         </div>
       </div>
-      
+
       <div class="summary-details">
         <div class="detail-card">
           <div class="detail-label">前端服务</div>
@@ -58,7 +58,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 服务详情 -->
     <div class="services-section">
       <h2>服务详情</h2>
@@ -91,7 +91,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="service-card">
           <div class="service-header">
             <h3>API服务</h3>
@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="service-card">
           <div class="service-header">
             <h3>PostgreSQL</h3>
@@ -148,7 +148,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="service-card">
           <div class="service-header">
             <h3>TDengine</h3>
@@ -178,7 +178,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 历史记录 -->
     <div class="history-section">
       <h2>监控历史</h2>
@@ -218,13 +218,13 @@ export default {
   name: 'SystemMonitor',
   setup() {
     const { getHealthData, getDetailedHealthData } = useApiService()
-    
+
     // 监控状态
     const autoRefresh = ref(false)
     const refreshInterval = ref(60000) // 60秒
     const isLoading = ref(false)
     const error = ref(null)
-    
+
     // 服务状态
     const services = ref({
       frontend: 'normal',
@@ -232,7 +232,7 @@ export default {
       postgresql: 'normal',
       tdengine: 'warning' // TDengine默认警告状态，因为已知存在问题
     })
-    
+
     // 服务数据
     const servicesData = ref({
       frontend: null,
@@ -240,19 +240,19 @@ export default {
       postgresql: null,
       tdengine: null
     })
-    
+
     // 历史数据
     const historyData = ref([])
-    
+
     // 常量
     const FRONTEND_URL = 'http://localhost:3000'
     const API_BASE_URL = 'http://localhost:8000'
-    
+
     // 计算属性
     const isSystemHealthy = computed(() => {
       return Object.values(services.value).every(status => status === 'normal')
     })
-    
+
     const systemStatusMessage = computed(() => {
       if (isSystemHealthy.value) {
         return '所有服务运行正常，没有检测到问题'
@@ -269,33 +269,33 @@ export default {
             }
           })
           .join('、')
-        
+
         return `检测到问题: ${issues}`
       }
     })
-    
+
     // 方法
     const formatDateTime = (timestamp) => {
       const date = new Date(timestamp)
       return date.toLocaleString()
     }
-    
+
     const getStatusText = (status) => {
       return status === 'normal' ? '✓' : '⚠'
     }
-    
+
     const getServiceStatusText = (status) => {
       return status === 'normal' ? '正常' : '警告'
     }
-    
+
     const checkService = async (serviceName) => {
       try {
         isLoading.value = true
         error.value = null
-        
+
         // 调用健康检查API
         const healthData = await getHealthData()
-        
+
         if (serviceName === 'frontend') {
           services.value.frontend = healthData.frontend === 200 ? 'normal' : 'warning'
           servicesData.value.frontend = {
@@ -317,7 +317,7 @@ export default {
             status: healthData.tdengine
           }
         }
-        
+
         // 添加到历史记录
         addToHistory(healthData)
       } catch (error) {
@@ -327,21 +327,21 @@ export default {
         isLoading.value = false
       }
     }
-    
+
     const refreshData = async () => {
       try {
         isLoading.value = true
         error.value = null
-        
+
         // 调用健康检查API
         const healthData = await getHealthData()
-        
+
         // 更新服务状态
         services.value.frontend = healthData.frontend === 200 ? 'normal' : 'warning'
         services.value.api = healthData.api === 200 ? 'normal' : 'warning'
         services.value.postgresql = healthData.postgresql === '正常' ? 'normal' : 'warning'
         services.value.tdengine = healthData.tdengine === '可访问' ? 'normal' : 'warning'
-        
+
         // 更新服务数据
         servicesData.value.frontend = {
           responseTime: healthData.frontendResponseTime
@@ -355,7 +355,7 @@ export default {
         servicesData.value.tdengine = {
           status: healthData.tdengine
         }
-        
+
         // 添加到历史记录
         addToHistory(healthData)
       } catch (error) {
@@ -365,7 +365,7 @@ export default {
         isLoading.value = false
       }
     }
-    
+
     const addToHistory = (healthData) => {
       // 添加到历史记录的开头
       historyData.value.unshift({
@@ -376,44 +376,44 @@ export default {
         tdengine: healthData.tdengine,
         overallStatus: healthData.overallStatus
       })
-      
+
       // 限制历史记录数量
       if (historyData.value.length > 10) {
         historyData.value.pop()
       }
     }
-    
+
     const toggleAutoRefresh = () => {
       autoRefresh.value = !autoRefresh.value
-      
+
       if (autoRefresh.value) {
         startAutoRefresh()
       } else {
         stopAutoRefresh()
       }
     }
-    
+
     let refreshTimer = null
-    
+
     const startAutoRefresh = () => {
       stopAutoRefresh()
       refreshTimer = setInterval(() => {
         refreshData()
       }, refreshInterval.value)
     }
-    
+
     const stopAutoRefresh = () => {
       if (refreshTimer) {
         clearInterval(refreshTimer)
         refreshTimer = null
       }
     }
-    
+
     // 生命周期钩子
     onMounted(() => {
       // 初始加载数据
       refreshData()
-      
+
       // 添加一些示例历史数据
       for (let i = 1; i <= 3; i++) {
         const timestamp = Date.now() - (i * 3600000) // 每次间隔1小时
@@ -427,12 +427,12 @@ export default {
         addToHistory(healthData)
       }
     })
-    
+
     onUnmounted(() => {
       // 清理定时器
       stopAutoRefresh()
     })
-    
+
     return {
       // 状态
       autoRefresh,
@@ -441,15 +441,15 @@ export default {
       historyData,
       isLoading,
       error,
-      
+
       // 常量
       FRONTEND_URL,
       API_BASE_URL,
-      
+
       // 计算属性
       isSystemHealthy,
       systemStatusMessage,
-      
+
       // 方法
       formatDateTime,
       getStatusText,

@@ -19,7 +19,6 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 import structlog
 from taos import connect, TaosConnection
-from taos.error import Error as TaosError
 
 logger = structlog.get_logger()
 

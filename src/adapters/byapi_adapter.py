@@ -390,7 +390,7 @@ class ByapiAdapter(IDataSource):
                 continue
 
         if not result_list:
-            raise DataSourceError(f"获取实时行情失败: 所有股票均无数据")
+            raise DataSourceError("获取实时行情失败: 所有股票均无数据")
 
         return pd.DataFrame(result_list)
 

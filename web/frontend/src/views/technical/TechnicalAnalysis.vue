@@ -501,10 +501,10 @@ const renderChart = () => {
     const date = new Date()
     date.setDate(date.getDate() - i)
     dates.push(date.toISOString().split('T')[0])
-    
+
     const price = 100 + Math.random() * 20 - 10
     prices.push(price.toFixed(2))
-    
+
     ma5.push((price + Math.random() * 5).toFixed(2))
     ma10.push((price + Math.random() * 8).toFixed(2))
     rsi.push(Math.floor(Math.random() * 100))
@@ -597,7 +597,7 @@ const resetSearch = () => {
   selectedStock.value = null
   indicatorsData.value = []
   indicatorStats.value = { trend: 0, momentum: 0, signals: 0 }
-  
+
   // 清空图表
   if (chartInstance.value) {
     chartInstance.value.dispose()

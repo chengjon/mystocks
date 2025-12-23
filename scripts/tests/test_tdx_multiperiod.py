@@ -32,7 +32,7 @@ def test_multiperiod_klines():
     start_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
 
     print(f"\n测试日期范围: {start_date} ~ {end_date}")
-    print(f"测试股票: 600519 (贵州茅台)\n")
+    print("测试股票: 600519 (贵州茅台)\n")
 
     # 测试各种周期
     test_periods = [
@@ -46,7 +46,7 @@ def test_multiperiod_klines():
     results = {}
 
     for period, desc in test_periods:
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"测试 {desc} K线 (period={period})")
         print("=" * 70)
 
@@ -60,19 +60,19 @@ def test_multiperiod_klines():
 
                 # 显示最近5条数据
                 if len(df) >= 5:
-                    print(f"\n  最近5条数据:")
+                    print("\n  最近5条数据:")
                     display_cols = ["date", "open", "high", "low", "close", "volume"]
                     available_cols = [col for col in display_cols if col in df.columns]
                     print(df[available_cols].tail(5).to_string(index=False))
                 else:
-                    print(f"\n  所有数据:")
+                    print("\n  所有数据:")
                     display_cols = ["date", "open", "high", "low", "close", "volume"]
                     available_cols = [col for col in display_cols if col in df.columns]
                     print(df[available_cols].to_string(index=False))
 
                 results[period] = "PASS"
             else:
-                print(f"✗ 未获取到数据")
+                print("✗ 未获取到数据")
                 results[period] = "FAIL"
 
         except Exception as e:
@@ -113,8 +113,8 @@ def test_index_multiperiod():
     end_date = datetime.now().strftime("%Y-%m-%d")
     start_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
 
-    print(f"\n测试指数: 000001 (上证指数)")
-    print(f"测试周期: 1小时K线\n")
+    print("\n测试指数: 000001 (上证指数)")
+    print("测试周期: 1小时K线\n")
 
     df = tdx.get_index_kline("000001", start_date, end_date, period="1h")
 
@@ -123,7 +123,7 @@ def test_index_multiperiod():
         print(f"  时间范围: {df['date'].min()} ~ {df['date'].max()}")
 
         if len(df) > 0:
-            print(f"\n  最近3条数据:")
+            print("\n  最近3条数据:")
             display_cols = ["date", "open", "high", "low", "close", "volume"]
             available_cols = [col for col in display_cols if col in df.columns]
             print(df[available_cols].tail(3).to_string(index=False))

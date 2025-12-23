@@ -7,7 +7,6 @@ Web API健康检查脚本
 
 import sys
 import requests
-import time
 from typing import Dict, Tuple, Optional
 
 BASE_URL = "http://localhost:8000"
@@ -193,29 +192,29 @@ def main():
     backend_running = check_backend_running()
 
     if not backend_running:
-        print(f"❌ Backend服务未运行")
-        print(f"\n启动方法:")
-        print(f"  cd web/backend")
-        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
-        print(f"\n或检查是否运行在其他端口:")
-        print(f"  lsof -i :8000")
-        print(f"  ps aux | grep uvicorn")
+        print("❌ Backend服务未运行")
+        print("\n启动方法:")
+        print("  cd web/backend")
+        print("  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
+        print("\n或检查是否运行在其他端口:")
+        print("  lsof -i :8000")
+        print("  ps aux | grep uvicorn")
         return 1
 
     print(f"✅ Backend服务正在运行: {BASE_URL}")
 
     # Step 2: 获取认证Token
-    print(f"\n【Step 2】获取认证Token...")
+    print("\n【Step 2】获取认证Token...")
     token = get_auth_token()
 
     if token:
         print(f"✅ Token获取成功: {token[:20]}...")
     else:
-        print(f"⚠️  Token获取失败 (将跳过需要认证的API)")
+        print("⚠️  Token获取失败 (将跳过需要认证的API)")
 
     # Step 3: 测试所有API
-    print(f"\n【Step 3】测试10个关键API端点...")
-    print(f"\n" + "-" * 80)
+    print("\n【Step 3】测试10个关键API端点...")
+    print("\n" + "-" * 80)
 
     results = {
         "P1": {"total": 0, "passed": 0, "failed": []},
@@ -309,15 +308,15 @@ def main():
             print(f"   影响API: {', '.join(apis)}")
 
             if "连接被拒绝" in error:
-                print(f"   修复: 启动Backend服务")
+                print("   修复: 启动Backend服务")
             elif "端点不存在" in error:
-                print(f"   修复: 检查路由注册，确认API端点已实现")
+                print("   修复: 检查路由注册，确认API端点已实现")
             elif "认证失败" in error:
-                print(f"   修复: 检查JWT配置，重新获取Token")
+                print("   修复: 检查JWT配置，重新获取Token")
             elif "服务器内部错误" in error:
-                print(f"   修复: 查看Backend日志，检查代码异常")
+                print("   修复: 查看Backend日志，检查代码异常")
             elif "服务不可用" in error:
-                print(f"   修复: 检查数据库连接 (运行 python utils/check_db_health.py)")
+                print("   修复: 检查数据库连接 (运行 python utils/check_db_health.py)")
 
     print("\n" + "=" * 80)
 

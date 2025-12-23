@@ -20,14 +20,14 @@ MyStocks技术负债分析器
 import ast
 import json
 import logging
-import os
 import re
-import subprocess
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -152,12 +152,16 @@ class TechnicalDebtAnalyzer:
             def visit_FunctionDef(self, node):
                 # 计算函数行数（包括注释和空行）
                 func_start = node.lineno - 1
-                func_end = node.end_lineno if hasattr(node, "end_lineno") else len(self.lines)
+                func_end = (
+                    node.end_lineno if hasattr(node, "end_lineno") else len(self.lines)
+                )
                 func_lines = func_end - func_start
 
                 # 警告阈值：50行以上的函数
                 if func_lines > 50:
-                    self.file_path.parent.parent.parent.parent.issues["long_functions"].append(
+                    self.file_path.parent.parent.parent.parent.issues[
+                        "long_functions"
+                    ].append(
                         {
                             "file": str(self.file_path),
                             "function": node.name,
@@ -187,14 +191,18 @@ class TechnicalDebtAnalyzer:
 
                 # 计算条件语句复杂度
                 for child in ast.walk(node):
-                    if isinstance(child, (ast.If, ast.While, ast.For, ast.Try, ast.With)):
+                    if isinstance(
+                        child, (ast.If, ast.While, ast.For, ast.Try, ast.With)
+                    ):
                         complexity += 1
                     elif isinstance(child, ast.BoolOp):
                         complexity += len(child.values) - 1
 
                 # 复杂度超过10被认为复杂
                 if complexity > 10:
-                    self.file_path.parent.parent.parent.parent.issues["complex_functions"].append(
+                    self.file_path.parent.parent.parent.parent.issues[
+                        "complex_functions"
+                    ].append(
                         {
                             "file": str(self.file_path),
                             "function": node.name,
@@ -243,7 +251,9 @@ class TechnicalDebtAnalyzer:
                     name = alias.asname or alias.name
                     # 检查是否使用
                     if name not in self.used_names and f"{name}" not in self.used_names:
-                        self.file_path.parent.parent.parent.parent.issues["dead_imports"].append(
+                        self.file_path.parent.parent.parent.parent.issues[
+                            "dead_imports"
+                        ].append(
                             {
                                 "file": str(self.file_path),
                                 "import": alias.name,
@@ -258,7 +268,9 @@ class TechnicalDebtAnalyzer:
                 for alias in node.names:
                     name = alias.asname or alias.name
                     if name not in self.used_names:
-                        self.file_path.parent.parent.parent.parent.issues["dead_imports"].append(
+                        self.file_path.parent.parent.parent.parent.issues[
+                            "dead_imports"
+                        ].append(
                             {
                                 "file": str(self.file_path),
                                 "import": f"{module}.{alias.name}",
@@ -271,13 +283,17 @@ class TechnicalDebtAnalyzer:
         analyzer = ImportAnalyzer(file_path, content)
         analyzer.visit(tree)
 
-    def _analyze_code_duplication(self, file_path: Path, content: str, lines: List[str]):
+    def _analyze_code_duplication(
+        self, file_path: Path, content: str, lines: List[str]
+    ):
         """分析代码重复"""
         # 简单的重复代码检测：查找重复的行
         line_counts = Counter()
         for line in lines:
             stripped = line.strip()
-            if len(stripped) > 10 and not stripped.startswith("#"):  # 忽略太短的行和注释
+            if len(stripped) > 10 and not stripped.startswith(
+                "#"
+            ):  # 忽略太短的行和注释
                 line_counts[stripped] += 1
 
         for line, count in line_counts.items():
@@ -302,7 +318,9 @@ class TechnicalDebtAnalyzer:
             def visit_FunctionDef(self, node):
                 # 检查函数命名是否符合规范
                 if not re.match(r"^[a-z_][a-z0-9_]*$", node.name):
-                    self.file_path.parent.parent.parent.parent.issues["naming_issues"].append(
+                    self.file_path.parent.parent.parent.parent.issues[
+                        "naming_issues"
+                    ].append(
                         {
                             "file": str(self.file_path),
                             "type": "function",
@@ -316,7 +334,9 @@ class TechnicalDebtAnalyzer:
             def visit_ClassDef(self, node):
                 # 检查类命名是否符合规范
                 if not re.match(r"^[A-Z][A-Za-z0-9]*$", node.name):
-                    self.file_path.parent.parent.parent.parent.issues["naming_issues"].append(
+                    self.file_path.parent.parent.parent.parent.issues[
+                        "naming_issues"
+                    ].append(
                         {
                             "file": str(self.file_path),
                             "type": "class",
@@ -365,7 +385,12 @@ class TechnicalDebtAnalyzer:
 
             if actual_lines > 500:
                 self.issues["large_files"].append(
-                    {"file": str(file_path), "line_count": actual_lines, "category": "code_quality", "severity": "high"}
+                    {
+                        "file": str(file_path),
+                        "line_count": actual_lines,
+                        "category": "code_quality",
+                        "severity": "high",
+                    }
                 )
         except:
             pass
@@ -439,7 +464,11 @@ class TechnicalDebtAnalyzer:
     def _analyze_circular_dependencies(self):
         """分析循环依赖"""
         # 简化的循环依赖检测
-        python_files = [f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f)]
+        python_files = [
+            f
+            for f in list(self.project_root.rglob("*.py"))
+            if not self._should_skip_file(f)
+        ]
 
         # 构建依赖图
         dependencies = defaultdict(set)
@@ -638,7 +667,12 @@ class TechnicalDebtAnalyzer:
         for pattern in sql_patterns:
             if re.search(pattern, content, re.IGNORECASE):
                 self.issues["security_issues"].append(
-                    {"file": str(file_path), "issue": "sql_injection_risk", "category": "security", "severity": "high"}
+                    {
+                        "file": str(file_path),
+                        "issue": "sql_injection_risk",
+                        "category": "security",
+                        "severity": "high",
+                    }
                 )
                 break
 
@@ -668,7 +702,12 @@ class TechnicalDebtAnalyzer:
         """检查不安全的eval使用"""
         if "eval(" in content:
             self.issues["security_issues"].append(
-                {"file": str(file_path), "issue": "unsafe_eval", "category": "security", "severity": "high"}
+                {
+                    "file": str(file_path),
+                    "issue": "unsafe_eval",
+                    "category": "security",
+                    "severity": "high",
+                }
             )
 
     def analyze_dependency_issues(self):
@@ -768,7 +807,9 @@ class TechnicalDebtAnalyzer:
 
         # 查找源代码文件
         source_files = [
-            f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f) and "test" not in str(f)
+            f
+            for f in list(self.project_root.rglob("*.py"))
+            if not self._should_skip_file(f) and "test" not in str(f)
         ]
 
         test_to_source_ratio = len(test_files) / max(len(source_files), 1)
@@ -789,14 +830,22 @@ class TechnicalDebtAnalyzer:
         e2e_files = list(self.project_root.rglob("e2e/**/*.py"))
         if not e2e_files:
             self.issues["test_issues"].append(
-                {"issue": "missing_e2e_tests", "category": "testing", "severity": "medium"}
+                {
+                    "issue": "missing_e2e_tests",
+                    "category": "testing",
+                    "severity": "medium",
+                }
             )
 
         # 检查测试配置
         pytest_ini = self.project_root / "pytest.ini"
         if not pytest_ini.exists():
             self.issues["test_issues"].append(
-                {"issue": "missing_pytest_config", "category": "testing", "severity": "low"}
+                {
+                    "issue": "missing_pytest_config",
+                    "category": "testing",
+                    "severity": "low",
+                }
             )
 
     def analyze_documentation_issues(self):
@@ -816,17 +865,29 @@ class TechnicalDebtAnalyzer:
         readme_files = list(self.project_root.rglob("README*"))
         if not readme_files:
             self.issues["documentation_issues"].append(
-                {"issue": "missing_readme", "category": "documentation", "severity": "high"}
+                {
+                    "issue": "missing_readme",
+                    "category": "documentation",
+                    "severity": "high",
+                }
             )
 
         # 检查API文档
         if "docs/api" not in [str(d) for d in self.project_root.rglob("docs/api")]:
             self.issues["documentation_issues"].append(
-                {"issue": "missing_api_docs", "category": "documentation", "severity": "medium"}
+                {
+                    "issue": "missing_api_docs",
+                    "category": "documentation",
+                    "severity": "medium",
+                }
             )
 
         # 检查docstrings覆盖率
-        python_files = [f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f)]
+        python_files = [
+            f
+            for f in list(self.project_root.rglob("*.py"))
+            if not self._should_skip_file(f)
+        ]
 
         files_without_docstrings = 0
         for py_file in python_files:
@@ -850,7 +911,9 @@ class TechnicalDebtAnalyzer:
             except:
                 continue
 
-        if files_without_docstrings > len(python_files) * 0.7:  # 超过70%的文件没有docstring
+        if (
+            files_without_docstrings > len(python_files) * 0.7
+        ):  # 超过70%的文件没有docstring
             self.issues["documentation_issues"].append(
                 {
                     "issue": "low_docstring_coverage",
@@ -888,7 +951,10 @@ class TechnicalDebtAnalyzer:
                     )
                     break
 
-                if re.search(r'=\s*["\'][^"\']*(?:localhost|127\.0\.0\.1|3306|5432)["\']', content):
+                if re.search(
+                    r'=\s*["\'][^"\']*(?:localhost|127\.0\.0\.1|3306|5432)["\']',
+                    content,
+                ):
                     self.issues["configuration_issues"].append(
                         {
                             "file": str(py_file),
@@ -918,7 +984,11 @@ class TechnicalDebtAnalyzer:
 
         if not env_vars_used:
             self.issues["configuration_issues"].append(
-                {"issue": "no_environment_variables", "category": "configuration", "severity": "medium"}
+                {
+                    "issue": "no_environment_variables",
+                    "category": "configuration",
+                    "severity": "medium",
+                }
             )
 
     def generate_summary(self) -> Dict[str, Any]:
@@ -952,8 +1022,12 @@ class TechnicalDebtAnalyzer:
                     "priority": "high",
                     "category": "code_quality",
                     "title": "重构长函数",
-                    "description": f'发现{len(self.issues["long_functions"])}个过长函数，建议进行重构',
-                    "actions": ["将长函数拆分为多个小函数", "提取公共逻辑到独立函数", "使用装饰器简化横切关注点"],
+                    "description": f"发现{len(self.issues['long_functions'])}个过长函数，建议进行重构",
+                    "actions": [
+                        "将长函数拆分为多个小函数",
+                        "提取公共逻辑到独立函数",
+                        "使用装饰器简化横切关注点",
+                    ],
                 }
             )
 
@@ -963,8 +1037,12 @@ class TechnicalDebtAnalyzer:
                     "priority": "critical",
                     "category": "security",
                     "title": "修复安全漏洞",
-                    "description": f'发现{len(self.issues["security_issues"])}个安全问题，需要立即处理',
-                    "actions": ["移除硬编码的密钥和密码", "使用环境变量管理敏感配置", "实施输入验证和SQL注入防护"],
+                    "description": f"发现{len(self.issues['security_issues'])}个安全问题，需要立即处理",
+                    "actions": [
+                        "移除硬编码的密钥和密码",
+                        "使用环境变量管理敏感配置",
+                        "实施输入验证和SQL注入防护",
+                    ],
                 }
             )
 
@@ -975,7 +1053,11 @@ class TechnicalDebtAnalyzer:
                     "category": "testing",
                     "title": "提高测试覆盖率",
                     "description": "测试覆盖率不足，建议增加单元测试和集成测试",
-                    "actions": ["为关键业务逻辑编写单元测试", "实施自动化测试", "增加端到端测试"],
+                    "actions": [
+                        "为关键业务逻辑编写单元测试",
+                        "实施自动化测试",
+                        "增加端到端测试",
+                    ],
                 }
             )
 
@@ -1015,7 +1097,9 @@ class TechnicalDebtAnalyzer:
                 all_issues.append({**issue, "category": category})
 
         all_issues.sort(
-            key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(x.get("severity", "low"), 1),
+            key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(
+                x.get("severity", "low"), 1
+            ),
             reverse=True,
         )
 
@@ -1063,7 +1147,9 @@ def main():
                 severity = issue.get("severity", "unknown")
                 if severity not in [s[0] for s in severity_info]:
                     severity_count = sum(
-                        1 for i in results["detailed_issues"][category] if i.get("severity") == severity
+                        1
+                        for i in results["detailed_issues"][category]
+                        if i.get("severity") == severity
                     )
                     severity_info.append((severity, severity_count))
 
@@ -1076,7 +1162,9 @@ def main():
         # 优先行动
         f.write("## 🚨 优先处理行动\n\n")
         for i, action in enumerate(results["priority_actions"][:5], 1):
-            f.write(f"{i}. **{action['priority'].upper()}** - {action['description']}\n")
+            f.write(
+                f"{i}. **{action['priority'].upper()}** - {action['description']}\n"
+            )
             f.write(f"   - 文件: `{action['file']}`\n")
             f.write(f"   - 类别: {action['category']}\n\n")
 
@@ -1097,7 +1185,9 @@ def main():
                 f.write(f"### {category.replace('_', ' ').title()}\n\n")
                 for issue in issues[:20]:  # 只显示前20个问题
                     f.write(f"- **文件**: `{issue.get('file', 'N/A')}`\n")
-                    f.write(f"  - **问题**: {issue.get('issue', issue.get('category', 'unknown'))}\n")
+                    f.write(
+                        f"  - **问题**: {issue.get('issue', issue.get('category', 'unknown'))}\n"
+                    )
                     f.write(f"  - **严重程度**: {issue.get('severity', 'unknown')}\n\n")
 
                 if len(issues) > 20:
@@ -1109,16 +1199,20 @@ def main():
     logger.info(f"技术负债评估报告已生成: {report_file}")
 
     # 输出到控制台
-    print(f"\n{'='*60}")
-    print(f"🔍 MyStocks 技术负债评估报告")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print("🔍 MyStocks 技术负债评估报告")
+    print(f"{'=' * 60}")
     print(f"📊 技术负债评分: {results['technical_debt_score']}/100")
     print(f"📋 问题总数: {results['analysis_summary']['total_issues']}")
-    print(f"🐍 Python文件: {results['analysis_summary']['project_stats']['python_files']}")
-    print(f"📄 总代码行: {results['analysis_summary']['project_stats']['total_lines']:,}")
-    print(f"{'='*60}")
+    print(
+        f"🐍 Python文件: {results['analysis_summary']['project_stats']['python_files']}"
+    )
+    print(
+        f"📄 总代码行: {results['analysis_summary']['project_stats']['total_lines']:,}"
+    )
+    print(f"{'=' * 60}")
     print(f"📝 详细报告: {report_file}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return results
 

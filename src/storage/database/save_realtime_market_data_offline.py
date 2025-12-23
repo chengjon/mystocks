@@ -29,7 +29,7 @@ import argparse
 import pandas as pd
 import json
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional
 
 
 class OfflineRealtimeDataSaver:
@@ -169,7 +169,7 @@ class OfflineRealtimeDataSaver:
                 self.logger.warning(f"⚠️ 缺少关键列: {missing_columns}")
 
             # 统计信息
-            self.logger.info(f"📊 数据统计:")
+            self.logger.info("📊 数据统计:")
             self.logger.info(f"   总记录数: {len(data)}")
             self.logger.info(f"   列数: {len(data.columns)}")
 
@@ -287,7 +287,7 @@ class OfflineRealtimeDataSaver:
                 f.write("=" * 60 + "\n")
                 f.write(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
                 f.write(f"市场代码: {self.config['market_symbol']}\n")
-                f.write(f"数据来源: efinance\n")
+                f.write("数据来源: efinance\n")
                 f.write("\n")
 
                 f.write("数据统计:\n")

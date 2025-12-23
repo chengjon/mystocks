@@ -1,14 +1,14 @@
 @echo off
 :: MyStocks 无Docker E2E测试启动脚本 (Windows版本)
 :: 为Vue 3 + FastAPI架构优化的端到端测试执行器
-:: 
+::
 :: 功能:
 :: 1. 环境检查和准备
 :: 2. 依赖安装验证
 :: 3. 测试服务启动管理
 :: 4. E2E测试执行
 :: 5. 结果报告生成
-:: 
+::
 :: 作者: Claude Code
 :: 生成时间: 2025-11-14
 
@@ -631,10 +631,10 @@ if "%SKIP_DEPENDENCIES%"=="true" (
 ) else (
     call :install_frontend_dependencies
     if errorlevel 1 exit /b 1
-    
+
     call :install_backend_dependencies
     if errorlevel 1 exit /b 1
-    
+
     call :install_playwright_browsers
     if errorlevel 1 exit /b 1
 )

@@ -107,15 +107,15 @@ cd "$PROJECT_ROOT"
 check_root_files() {
     local file_count
     file_count=$(find . -maxdepth 1 -type f | wc -l)
-    
+
     if [[ $file_count -gt $MAX_ROOT_FILES ]]; then
         log_warning "根目录文件数量过多: $file_count 个文件 (建议不超过 $MAX_ROOT_FILES 个)"
-        
+
         if [[ $VERBOSE == true ]]; then
             log_info "根目录文件列表:"
             find . -maxdepth 1 -type f -exec basename {} \; | sort
         fi
-        
+
         return 1
     else
         log_success "根目录文件数量正常: $file_count 个文件"
@@ -127,15 +127,15 @@ check_root_files() {
 check_root_dirs() {
     local dir_count
     dir_count=$(find . -maxdepth 1 -type d | wc -l)
-    
+
     if [[ $dir_count -gt $MAX_ROOT_DIRS ]]; then
         log_warning "根目录目录数量过多: $dir_count 个目录 (建议不超过 $MAX_ROOT_DIRS 个)"
-        
+
         if [[ $VERBOSE == true ]]; then
             log_info "根目录目录列表:"
             find . -maxdepth 1 -type d -exec basename {} \; | sort
         fi
-        
+
         return 1
     else
         log_success "根目录目录数量正常: $dir_count 个目录"
@@ -147,13 +147,13 @@ check_root_dirs() {
 check_required_files() {
     local required_files=("README.md" ".gitignore")
     local missing_files=()
-    
+
     for file in "${required_files[@]}"; do
         if [[ ! -f "$file" ]]; then
             missing_files+=("$file")
         fi
     done
-    
+
     if [[ ${#missing_files[@]} -gt 0 ]]; then
         log_warning "缺少必需文件: ${missing_files[*]}"
         return 1
@@ -167,13 +167,13 @@ check_required_files() {
 check_standard_dirs() {
     local standard_dirs=("src" "docs" "tests" "scripts")
     local missing_dirs=()
-    
+
     for dir in "${standard_dirs[@]}"; do
         if [[ ! -d "$dir" ]]; then
             missing_dirs+=("$dir")
         fi
     done
-    
+
     if [[ ${#missing_dirs[@]} -gt 0 ]]; then
         log_warning "缺少标准目录: ${missing_dirs[*]}"
         return 1
@@ -186,31 +186,31 @@ check_standard_dirs() {
 # 检查文件分类
 check_file_classification() {
     local issues=0
-    
+
     # 检查文档文件是否在正确位置
     while IFS= read -r -d '' file; do
         local basename_file
         basename_file=$(basename "$file")
-        
+
         # 跳过根目录的必需文档文件
         if [[ "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md)$ ]]; then
             continue
         fi
-        
+
         # 其他.md文件应该在docs目录
         if [[ "$basename_file" =~ \.md$ ]] && [[ "$file" != *"/docs/"* ]]; then
             log_warning "文档文件位置不当: $file (建议移到docs目录)"
             issues=$((issues + 1))
         fi
-        
+
         # 日志文件应该在logs目录
         if [[ "$basename_file" =~ \.log$ ]] && [[ "$file" != *"/logs/"* ]]; then
             log_warning "日志文件位置不当: $file (建议移到logs目录)"
             issues=$((issues + 1))
         fi
-        
+
     done < <(find . -maxdepth 1 -type f -print0)
-    
+
     if [[ $issues -gt 0 ]]; then
         log_warning "发现 $issues 个文件分类问题"
         return 1
@@ -223,7 +223,7 @@ check_file_classification() {
 # 自动修复问题
 auto_fix_issues() {
     log_info "开始自动修复目录结构问题..."
-    
+
     # 创建必要的目录
     local dirs_to_create=("temp" "logs" "reports" "data")
     for dir in "${dirs_to_create[@]}"; do
@@ -232,7 +232,7 @@ auto_fix_issues() {
             log_success "创建目录: $dir"
         fi
     done
-    
+
     # 移动临时文件
     local temp_patterns=("*.tmp" "*.temp" "*.cache")
     for pattern in "${temp_patterns[@]}"; do
@@ -243,7 +243,7 @@ auto_fix_issues() {
             fi
         done < <(find . -maxdepth 1 -name "$pattern" -print0)
     done
-    
+
     # 移动日志文件
     while IFS= read -r -d '' file; do
         if [[ -f "$file" && "$file" != *"/logs/"* ]]; then
@@ -251,7 +251,7 @@ auto_fix_issues() {
             log_info "移动日志文件: $file -> logs/"
         fi
     done < <(find . -maxdepth 1 -name "*.log" -print0)
-    
+
     # 移动报告文件
     local report_patterns=("*report*.json" "*analysis*.json" "*.coverage")
     for pattern in "${report_patterns[@]}"; do
@@ -262,31 +262,31 @@ auto_fix_issues() {
             fi
         done < <(find . -maxdepth 1 -name "$pattern" -print0)
     done
-    
+
     # 移动文档文件（保留根目录的必需文件）
     while IFS= read -r -d '' file; do
         local basename_file
         basename_file=$(basename "$file")
-        
+
         if [[ ! "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md)$ ]]; then
             mkdir -p "docs"
             mv "$file" "docs/" 2>/dev/null || true
             log_info "移动文档文件: $file -> docs/"
         fi
     done < <(find . -maxdepth 1 -name "*.md" -print0)
-    
+
     # 移动脚本文件
     while IFS= read -r -d '' file; do
         local basename_file
         basename_file=$(basename "$file")
-        
+
         if [[ "$basename_file" =~ \.(sh|ps1|bat)$ ]] && [[ "$file" != *"/scripts/"* ]]; then
             mkdir -p "scripts"
             mv "$file" "scripts/" 2>/dev/null || true
             log_info "移动脚本文件: $file -> scripts/"
         fi
     done < <(find . -maxdepth 1 -name "*.sh" -print0)
-    
+
     log_success "自动修复完成"
 }
 
@@ -299,24 +299,24 @@ generate_report() {
         echo "生成时间: $(date)"
         echo "项目路径: $PROJECT_ROOT"
         echo ""
-        
+
         echo "根目录文件统计:"
         find . -maxdepth 1 -type f | wc -l
         echo ""
-        
+
         echo "根目录目录统计:"
         find . -maxdepth 1 -type d | wc -l
         echo ""
-        
+
         echo "按文件类型统计:"
         find . -maxdepth 1 -type f -exec basename {} \; | sed 's/.*\.//' | sort | uniq -c | sort -nr
         echo ""
-        
+
         echo "大文件列表 (>1MB):"
         find . -maxdepth 1 -type f -size +1M -exec ls -lh {} \; | awk '{print $5, $9}'
-        
+
     } > "$report_file"
-    
+
     log_success "报告已生成: $report_file"
 }
 
@@ -324,24 +324,24 @@ generate_report() {
 main() {
     log_info "开始检查项目目录结构..."
     log_info "项目根目录: $PROJECT_ROOT"
-    
+
     local exit_code=0
-    
+
     # 执行各项检查
     check_required_files || exit_code=1
     check_root_files || exit_code=1
     check_root_dirs || exit_code=1
     check_standard_dirs || exit_code=1
     check_file_classification || exit_code=1
-    
+
     # 生成报告
     generate_report
-    
+
     # 自动修复（如果启用）
     if [[ $AUTO_FIX == true ]]; then
         auto_fix_issues
     fi
-    
+
     # 输出总结
     echo ""
     if [[ $exit_code -eq 0 ]]; then
@@ -350,11 +350,11 @@ main() {
         log_warning "发现一些目录结构问题"
         log_info "可以使用 -f 选项自动修复，或参考 PROJECT_DIRECTORY_STANDARD.md 手动修复"
     fi
-    
+
     if [[ $QUIET == false ]]; then
         log_info "详细报告请查看: directory-structure-report.txt"
     fi
-    
+
     return $exit_code
 }
 

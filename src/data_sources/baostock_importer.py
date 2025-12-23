@@ -2,7 +2,6 @@ import baostock as bs
 import pandas as pd
 import logging
 from datetime import datetime, timedelta
-import sys
 import os
 from functools import wraps
 import contextlib

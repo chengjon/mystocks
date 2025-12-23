@@ -27,7 +27,6 @@ Usage:
     ```
 """
 
-import json
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 import structlog
@@ -381,7 +380,7 @@ class CacheIntegration:
                     )
 
                     logger.debug(
-                        f"✅ 批量缓存写入",
+                        "✅ 批量缓存写入",
                         total=saved_count,
                         cached=cache_count,
                     )

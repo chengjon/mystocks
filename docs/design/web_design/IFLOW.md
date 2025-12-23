@@ -132,7 +132,7 @@ class AKShareAdapter(BaseAdapter):
     def get_daily(self, code: str, start: date, end: date) -> pd.DataFrame:
         # 实现akshare数据获取逻辑
         pass
-    
+
     def get_realtime(self, codes: List[str]) -> pd.DataFrame:
         # 实现实时行情获取
         pass
@@ -213,7 +213,7 @@ services:
     depends_on:
       - postgres
       - tdengine
-  
+
   postgres:
     image: postgres:17
     environment:
@@ -222,7 +222,7 @@ services:
       POSTGRES_PASSWORD: pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+
   tdengine:
     image: tdengine/tdengine:3.3.0
     environment:
@@ -332,9 +332,9 @@ python scripts/simulate_realtime_data.py
 
 ---
 
-**项目维护者**: MyStocks开发团队  
-**最后更新**: 2025-11-12  
-**版本**: v1.0.0  
+**项目维护者**: MyStocks开发团队
+**最后更新**: 2025-11-12
+**版本**: v1.0.0
 **许可证**: MIT License
 
 *本文档为A股量化交易分析与管理系统的Web设计项目IFLOW指导文档，为开发团队提供全面的项目背景、技术规范和开发指南。*

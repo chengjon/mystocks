@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "total_files": 3,
+    "successful_files": 3,
+    "failed_files": 0,
+    "success_rate": 100.0,
+    "total_changes": 4
+  },
+  "files": [
+    {
+      "file_path": "src/gpu/api_system/utils/gpu_acceleration_engine.py",
+      "file_name": "gpu_acceleration_engine.py",
+      "success": true,
+      "changes": [
+        "Added kernel import: from src.gpu.core.kernels import get_kernel_executor"
+      ],
+      "backup_path": "gpu_simple_backups_20251218_171406/src/gpu/api_system/utils/gpu_acceleration_engine.py",
+      "original_lines": 1220,
+      "modified_lines": 1221
+    },
+    {
+      "file_path": "src/gpu/api_system/services/realtime_service.py",
+      "file_name": "realtime_service.py",
+      "success": true,
+      "changes": [
+        "Added HAL import: from src.gpu.core.hardware_abstraction import get_gpu_resource_manager",
+        "Added kernel import: from src.gpu.core.kernels import get_kernel_executor"
+      ],
+      "backup_path": "gpu_simple_backups_20251218_171406/src/gpu/api_system/services/realtime_service.py",
+      "original_lines": 624,
+      "modified_lines": 626
+    },
+    {
+      "file_path": "src/gpu/api_system/utils/gpu_utils.py",
+      "file_name": "gpu_utils.py",
+      "success": true,
+      "changes": [
+        "Added kernel import: from src.gpu.core.kernels import get_kernel_executor"
+      ],
+      "backup_path": "gpu_simple_backups_20251218_171406/src/gpu/api_system/utils/gpu_utils.py",
+      "original_lines": 393,
+      "modified_lines": 394
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+src/data_access.py.backup
+    M 707:4 TDengineDataAccess._build_timeseries_query - C (16)
+src/data_access.py
+    M 1204:4 PostgreSQLDataAccess._build_analytical_query - D (26)
+    M 621:4 TDengineDataAccess._build_timeseries_query - C (16)
+src/ml_strategy/automation/notification_manager.py
+    M 150:4 NotificationManager.send_notification - C (11)
+src/ml_strategy/strategy/stock_screener.py
+    M 115:4 StockScreener.screen - C (18)
+src/ml_strategy/strategy/signal_manager.py
+    M 63:4 SignalManager.save_signals - C (16)
+src/ml_strategy/strategy/strategy_executor.py
+    M 118:4 StrategyExecutor.execute - D (22)
+src/ml_strategy/backtest/vectorized_backtester.py
+    M 341:4 VectorizedBacktester._calculate_summary - C (18)
+    M 96:4 VectorizedBacktester.run - C (17)
+src/ml_strategy/backtest/performance_metrics.py
+    M 397:4 PerformanceMetrics._trade_statistics - D (24)
+src/database/monitoring_data_manager.py
+    M 179:4 MonitoringDataManager._query_monitoring_data - C (11)
+src/database/database_service.py
+    M 285:4 DatabaseService.get_technical_indicators - C (16)
+    M 37:4 DatabaseService.get_stock_list - C (15)
+    M 363:4 DatabaseService.get_monitoring_alerts - C (15)
+    M 997:4 DatabaseService.get_data_from_adapter - C (12)
+src/database/indicator_calculator.py
+    M 129:4 TechnicalIndicatorCalculator.generate_trading_signals - C (14)
+src/database/services/database_service.py
+    ERROR: expected 'except' or 'finally' block (<unknown>, line 235)
+src/monitoring/gpu_performance_optimizer.py
+    M 771:4 GPUPerformanceOptimizer.load_optimization_state - C (12)
+src/monitoring/multi_channel_alert_manager.py
+    M 719:4 MultiChannelAlertManager.get_statistics - C (12)
+src/monitoring/gpu_integration_manager.py
+    F 440:0 main - C (12)
+src/monitoring/intelligent_threshold_manager.py
+    M 977:4 IntelligentThresholdManager._evaluate_threshold_reasonableness - C (12)
+    M 824:4 IntelligentThresholdManager._optimize_single_rule - C (11)
+src/monitoring/monitoring_service.py
+    M 748:4 PerformanceMonitor.get_performance_summary - C (17)
+src/monitoring/ai_realtime_monitor.py
+    M 426:4 AIRealtimeMonitor._collect_all_metrics - C (17)
+    M 612:4 AIRealtimeMonitor.run_health_check - C (17)
+    M 350:4 AIRealtimeMonitor.start_monitoring - C (12)
+src/monitoring/threshold/intelligent_threshold_manager.py
+    M 162:4 IntelligentThresholdManager.optimize_threshold - C (13)
+src/adapters/test_customer_adapter.py
+    F 22:0 test_customer_data_source - C (20)
+src/adapters/data_validator.py
+    M 81:4 DataValidator.validate_price_data - C (12)
+src/adapters/legacy_adapter.py
+    M 20:4 LegacyAdapter.process_request - C (14)
+src/adapters/base_adapter.py
+    M 40:4 BaseDataSourceAdapter._apply_quality_check - C (11)
+src/adapters/financial_adapter.py
+    M 1057:4 FinancialDataSource._validate_and_clean_data - D (29)
+    M 416:4 FinancialDataSource.get_index_daily - D (27)
+    M 201:4 FinancialDataSource.get_stock_daily - D (25)
+    M 664:4 FinancialDataSource.get_real_time_data - D (22)
+    M 523:4 FinancialDataSource.get_stock_basic - C (15)
+    M 822:4 FinancialDataSource.get_financial_data - C (14)
+    C 70:0 FinancialDataSource - C (12)
+src/adapters/customer_adapter.py
+    M 202:4 CustomerDataSource.get_real_time_data - E (31)
+src/adapters/financial_adapter_example.py
+    F 18:0 main - C (11)
+src/adapters/akshare_adapter.py
+    M 176:4 AkshareDataSource.get_index_daily - C (15)
+    M 696:4 AkshareDataSource.get_stock_industry_concept - C (14)
+    M 95:4 AkshareDataSource.get_stock_daily - C (11)
+src/adapters/tdx_adapter.py
+    M 425:4 TdxDataSource.get_index_daily - C (20)
+    M 276:4 TdxDataSource.get_stock_daily - C (18)
+    M 800:4 TdxDataSource.get_stock_kline - C (18)
+    M 930:4 TdxDataSource.get_index_kline - C (16)
+src/adapters/tdx/kline_data_service.py
+    M 179:4 KlineDataService.get_stock_kline - C (15)
+    M 251:4 KlineDataService.get_index_kline - C (15)
+src/adapters/tdx/base_tdx_adapter.py
+    M 172:4 BaseTdxAdapter._validate_kline_data - C (12)
+src/adapters/financial/stock_daily_adapter.py
+    M 203:4 StockDailyAdapter._process_efinance_stock_daily_data - C (15)
+src/data_sources/baostock_importer.py
+    M 143:4 BaoStockData.query_history_k_data_plus - C (11)
+src/data_sources/real/connection_pool.py
+    M 496:4 PostgreSQLConnectionPool._cleanup_worker - C (11)
+src/data_sources/real/data_mapper.py
+    C 50:0 TypeConverter - D (21)
+    M 54:4 TypeConverter.convert_value - C (20)
+    M 136:4 ResultSetMapper.map_row - C (17)
+src/data_sources/real/tdengine_timeseries.py
+    M 446:4 TDengineTimeSeriesDataSource.get_market_overview - C (13)
+    M 716:4 TDengineTimeSeriesDataSource.check_data_quality - C (12)
+src/visualization/chart_generator.py
+    M 134:4 ChartGenerator.plot_with_signals - C (14)
+    M 363:4 ChartGenerator.plot_complete - C (14)
+src/utils/tdx_server_config.py
+    M 64:4 TdxServerConfig._load_config - C (12)
+src/utils/column_mapper.py
+    M 130:4 ColumnMapper.standardize_columns - C (11)
+src/utils/date_utils.py
+    F 10:0 normalize_date - C (16)
+src/utils/data_source_validator.py
+    F 12:0 compare_data_structure - C (14)
+src/utils/check_api_health_v2.py
+    M 319:4 APIHealthChecker.generate_report - E (31)
+    M 91:4 APIHealthChecker.test_endpoint - C (15)
+src/utils/symbol_utils.py
+    F 9:0 normalize_stock_code - D (25)
+    F 253:0 normalize_index_code - D (22)
+src/utils/data_format_converter.py
+    F 13:0 normalize_stock_data_format - D (21)
+    F 126:0 normalize_api_response_format - C (13)
+    F 170:0 normalize_stock_list_format - C (11)
+src/utils/validate_gitignore.py
+    M 171:4 GitIgnoreValidator.generate_report - D (27)
+src/utils/check_api_health.py
+    F 185:0 main - D (28)
+    F 135:0 test_api_endpoint - C (13)
+src/gpu/acceleration/feature_calculation_gpu.py
+    M 57:4 FeatureCalculationGPU.calculate_features_gpu - C (17)
+    M 314:4 FeatureCalculationGPU._calculate_volume_price_features - C (11)
+    M 384:4 FeatureCalculationGPU._calculate_momentum_features - C (11)
+src/gpu/acceleration/optimization_gpu.py
+    M 143:4 OptimizationGPU._grid_search_gpu - C (13)
+    M 211:4 OptimizationGPU._random_search_gpu - C (13)
+    M 275:4 OptimizationGPU._bayesian_optimization_gpu - C (13)
+    M 350:4 OptimizationGPU._genetic_optimization_gpu - C (13)
+    M 551:4 OptimizationGPU._genetic_operations - C (13)
+src/gpu/acceleration/ml_training_gpu.py
+    M 77:4 MLTrainingGPU.train_model_gpu - C (12)
+src/gpu/acceleration/backtest_engine_gpu.py
+    M 487:4 BacktestEngineGPU._calculate_performance_cpu - C (11)
+src/gpu/api_system/generate_test_report.py
+    M 128:4 TestReportGenerator.generate_markdown_report - C (12)
+src/gpu/api_system/tests/unit/test_cache/test_cache_optimization_enhanced.py
+    M 365:4 TestEnhancedCacheManager.test_cache_hit_rate_improvement - C (12)
+src/gpu/api_system/utils/monitoring.py
+    M 261:4 MetricsCollector.export_metrics - C (11)
+src/gpu/api_system/utils/gpu_acceleration_engine.py
+    M 511:4 MLTrainingGPU.train_model_gpu - C (11)
+src/gpu/api_system/services/integrated_realtime_service.py
+    M 518:4 IntegratedRealTimeService._compute_features_gpu - C (11)
+src/gpu/api_system/services/realtime_service.py
+    M 213:4 RealTimeService._calculate_technical_indicators - C (11)
+    M 404:4 RealTimeService.CalculateFeatures - C (11)
+src/gpu/api_system/services/integrated_backtest_service.py
+    M 323:4 IntegratedBacktestService._execute_integrated_backtest - C (12)
+src/gpu/accelerated/gpu_manager.py
+    M 310:4 GPUUnifiedManager.benchmark_gpu_vs_cpu - C (13)
+src/gpu/accelerated/cpu_data_processor.py
+    M 96:4 CPUDataProcessor.compute_features - C (14)
+src/gpu/accelerated/memory_management_fix.py
+    F 214:0 optimize_dataframe_memory - C (17)
+src/gpu/accelerated/real_time_performance_monitor.py
+    M 312:4 RealTimePerformanceMonitor.get_workload_recommendations - C (11)
+src/gpu/accelerated/data_processor_gpu_fixed.py
+    M 238:4 GPUDataProcessorFixed.compute_features - C (18)
+    M 403:4 GPUDataProcessorFixed._optimize_dtypes - C (13)
+    M 179:4 GPUDataProcessorFixed.process_batch - C (12)
+src/gpu/core/kernels/matrix_kernels.py
+    M 208:4 MatrixKernelEngine._execute_gpu_matrix_kernel - C (16)
+    M 277:4 MatrixKernelEngine._execute_cpu_matrix_kernel - C (15)
+src/gpu/core/kernels/transform_kernels.py
+    M 190:4 TransformKernelEngine._execute_gpu_transform_kernel - C (17)
+    M 270:4 TransformKernelEngine._execute_cpu_transform_kernel - C (14)
+src/gpu/core/kernels/inference_kernels.py
+    M 138:4 InferenceKernelEngine.execute_inference_operation - C (11)
+src/gpu/core/kernels/kernel_registry.py
+    M 543:4 KernelRegistry._select_kernel_by_data_size - C (12)
+src/storage/access/postgresql.py
+    M 555:4 PostgreSQLDataAccess._build_analytical_query - D (26)
+src/storage/access/tdengine.py
+    M 548:4 TDengineDataAccess._build_timeseries_query - C (16)
+src/storage/access/modules/mysql.py
+    M 161:4 MySQLDataAccess.update_data - C (11)
+src/storage/access/modules/postgresql.py
+    M 324:4 PostgreSQLDataAccess._build_analytical_query - C (12)
+    M 372:4 PostgreSQLDataAccess._upsert_data_with_engine - C (12)
+    M 181:4 PostgreSQLDataAccess.update_data - C (11)
+src/storage/access/modules/tdengine.py
+    M 542:4 TDengineDataAccess._build_timeseries_query - C (16)
+src/storage/access/modules/base.py
+    F 79:0 normalize_dataframe - C (15)
+src/storage/database/validate_mystocks_architecture.py
+    F 290:0 main - C (14)
+src/storage/database/save_realtime_market_data_simple.py
+    M 140:4 SimpleRealtimeDataSaver.get_realtime_market_data - C (13)
+    M 341:4 SimpleRealtimeDataSaver.run - C (13)
+src/storage/database/fix_database_connections.py
+    F 107:0 create_databases - C (11)
+src/storage/database/database_manager.py
+    M 601:4 DatabaseTableManager.validate_table_structure - C (19)
+    M 211:4 DatabaseTableManager.get_connection - C (18)
+    M 867:4 DatabaseTableManager._generate_mysql_ddl - C (13)
+    M 783:4 DatabaseTableManager._generate_tdengine_ddl - C (12)
+    M 823:4 DatabaseTableManager._generate_postgresql_ddl - C (12)
+    M 942:4 DatabaseTableManager.get_table_info - C (11)
+src/storage/database/test_database_menu.py
+    M 345:4 DatabaseTestTool.test_database_connectivity - D (30)
+    M 256:4 DatabaseTestTool._check_tdengine_drivers - C (19)
+    M 541:4 DatabaseTestTool._test_tdengine_multi - C (12)
+src/storage/database/init_db_monitor.py
+    F 260:0 create_database_and_tables - C (14)
+    F 97:0 load_env_config - C (11)
+src/storage/database/save_realtime_market_data_offline.py
+    M 318:4 OfflineRealtimeDataSaver.run - C (12)
+src/storage/database/connection_context.py
+    F 121:0 database_connection_sync - C (17)
+src/storage/database/df2sql.py
+    F 18:0 create_sql_cmd - C (14)
+src/storage/database/security_check.py
+    M 68:4 SecurityChecker.scan_file - C (11)
+src/storage/database/save_realtime_market_data.py
+    M 355:4 RealtimeMarketDataSaver._prepare_daily_data - C (17)
+    M 505:4 RealtimeMarketDataSaver.run - C (17)
+    M 261:4 RealtimeMarketDataSaver.save_data_using_unified_interface - C (15)
+    M 453:4 RealtimeMarketDataSaver._prepare_tick_data - C (12)
+src/data_access/unified_data_access_manager.py
+    M 253:4 UnifiedDataAccessManager.save_data - C (14)
+src/data_access/postgresql_access.py
+    M 253:4 PostgreSQLDataAccess.query - C (18)
+src/data_access/optimizers/query_optimizer.py
+    M 94:4 QueryOptimizer._initialize_optimization_rules - C (12)
+src/contract_testing/contract_engine.py
+    M 234:4 ContractTestEngine._get_test_summary - C (11)
+src/contract_testing/report_generator.py
+    M 64:4 ContractTestReportGenerator.generate_markdown_report - D (21)
+src/backup_recovery/recovery_manager.py
+    M 45:4 RecoveryManager.restore_backup - C (12)
+src/backup_recovery/integrity_checker.py
+    M 34:4 IntegrityChecker.verify_backup_integrity - C (12)
+    M 134:4 IntegrityChecker.verify_tdengine_backup_integrity - C (11)
+src/mock/mock_IndicatorLibrary.py
+    F 212:0 get_indicator_data - C (14)
+src/mock/mock_StockSearch.py
+    F 61:0 search_stocks - C (12)
+src/mock/mock_RealTimeMonitor.py
+    F 25:0 get_realtime_alerts - C (13)
+src/mock/mock_Market.py
+    F 501:0 get_stock_list - C (13)
+src/mock/mock_TradingView.py
+    F 397:0 get_chart_studies - C (19)
+src/core/data_quality_validator.py
+    M 162:4 DataQualityValidator._check_accuracy - C (11)
+    M 293:4 DataQualityValidator._calculate_statistics - C (11)
+src/core/config_driven_table_manager.py
+    M 249:4 ConfigDrivenTableManager._create_postgresql_table - C (19)
+    M 341:4 ConfigDrivenTableManager._create_mysql_table - C (16)
+    M 183:4 ConfigDrivenTableManager._create_tdengine_super_table - C (12)
+    M 423:4 ConfigDrivenTableManager.validate_table_structure - C (11)
+src/core/error_handling.py
+    F 365:0 validate_dataframe - C (12)
+src/core/database_pool.py
+    M 407:4 DatabaseConnectionPool._detect_memory_leak_indicators - C (14)

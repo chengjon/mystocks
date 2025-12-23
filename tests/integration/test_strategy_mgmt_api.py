@@ -20,10 +20,11 @@ import sys
 import os
 import pytest
 from fastapi.testclient import TestClient
-from datetime import date
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 
@@ -62,7 +63,7 @@ class TestStrategyManagementAPI:
         assert "service" in data, "响应应包含service字段"
         assert data["service"] == "strategy-mgmt", "服务名称应为strategy-mgmt"
 
-        print(f"\n✅ 健康检查测试通过")
+        print("\n✅ 健康检查测试通过")
         print(f"   状态: {data['status']}")
         print(f"   策略数: {data.get('strategies_count', 0)}")
         print(f"   回测数: {data.get('backtests_count', 0)}")
@@ -79,19 +80,19 @@ class TestStrategyManagementAPI:
                     "name": "short_period",
                     "value": 5,
                     "description": "短期均线周期",
-                    "data_type": "int"
+                    "data_type": "int",
                 },
                 {
                     "name": "long_period",
                     "value": 20,
                     "description": "长期均线周期",
-                    "data_type": "int"
-                }
+                    "data_type": "int",
+                },
             ],
             "max_position_size": 0.2,
             "stop_loss_percent": 5.0,
             "take_profit_percent": 10.0,
-            "tags": ["均线", "趋势跟踪"]
+            "tags": ["均线", "趋势跟踪"],
         }
 
         response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
@@ -111,7 +112,7 @@ class TestStrategyManagementAPI:
         assert data["strategy_name"] == "双均线策略", "strategy_name应该匹配"
         assert data["status"] == "draft", "新策略状态应为draft"
 
-        print(f"\n✅ 创建策略测试通过")
+        print("\n✅ 创建策略测试通过")
         print(f"   策略ID: {data['strategy_id']}")
         print(f"   策略名称: {data['strategy_name']}")
         print(f"   状态: {data['status']}")
@@ -123,7 +124,7 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "测试策略",
             "strategy_type": "custom",
-            "parameters": []
+            "parameters": [],
         }
         client.post("/api/strategy-mgmt/strategies", json=strategy_data)
 
@@ -142,7 +143,7 @@ class TestStrategyManagementAPI:
         assert data["total_count"] >= 1, "至少应有1个策略"
         assert len(data["strategies"]) >= 1, "策略列表不应为空"
 
-        print(f"\n✅ 获取策略列表测试通过")
+        print("\n✅ 获取策略列表测试通过")
         print(f"   总数: {data['total_count']}")
         print(f"   当前页策略数: {len(data['strategies'])}")
 
@@ -153,9 +154,11 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "详情测试策略",
             "strategy_type": "breakout",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         # 获取策略详情
@@ -168,7 +171,7 @@ class TestStrategyManagementAPI:
         assert data["strategy_id"] == strategy_id, "strategy_id应该匹配"
         assert data["strategy_name"] == "详情测试策略", "strategy_name应该匹配"
 
-        print(f"\n✅ 获取策略详情测试通过")
+        print("\n✅ 获取策略详情测试通过")
         print(f"   策略ID: {data['strategy_id']}")
         print(f"   策略名称: {data['strategy_name']}")
 
@@ -179,18 +182,22 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "更新前的策略",
             "strategy_type": "grid",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         # 更新策略
         update_data = {
             "strategy_name": "更新后的策略",
             "description": "这是更新后的描述",
-            "status": "active"
+            "status": "active",
         }
-        response = client.put(f"/api/strategy-mgmt/strategies/{strategy_id}", json=update_data)
+        response = client.put(
+            f"/api/strategy-mgmt/strategies/{strategy_id}", json=update_data
+        )
 
         assert response.status_code == 200, f"更新策略应该返回200: {response.text}"
 
@@ -200,7 +207,7 @@ class TestStrategyManagementAPI:
         assert data["description"] == "这是更新后的描述", "描述应该已更新"
         assert data["status"] == "active", "状态应该已更新"
 
-        print(f"\n✅ 更新策略测试通过")
+        print("\n✅ 更新策略测试通过")
         print(f"   新策略名称: {data['strategy_name']}")
         print(f"   新状态: {data['status']}")
 
@@ -211,21 +218,25 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "待删除策略",
             "strategy_type": "custom",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         # 删除策略
         response = client.delete(f"/api/strategy-mgmt/strategies/{strategy_id}")
 
-        assert response.status_code == 204, f"删除策略应该返回204: {response.status_code}"
+        assert (
+            response.status_code == 204
+        ), f"删除策略应该返回204: {response.status_code}"
 
         # 验证策略已被删除
         get_response = client.get(f"/api/strategy-mgmt/strategies/{strategy_id}")
         assert get_response.status_code == 404, "删除后的策略不应存在"
 
-        print(f"\n✅ 删除策略测试通过")
+        print("\n✅ 删除策略测试通过")
         print(f"   删除的策略ID: {strategy_id}")
 
     def test_create_strategy_validation(self, client):
@@ -235,7 +246,7 @@ class TestStrategyManagementAPI:
             "user_id": -1,  # 无效的user_id
             "strategy_name": "测试",
             "strategy_type": "custom",
-            "parameters": []
+            "parameters": [],
         }
         response = client.post("/api/strategy-mgmt/strategies", json=invalid_data)
         assert response.status_code == 422, "无效user_id应该返回422"
@@ -248,7 +259,7 @@ class TestStrategyManagementAPI:
         response = client.post("/api/strategy-mgmt/strategies", json=incomplete_data)
         assert response.status_code == 422, "缺少必需字段应该返回422"
 
-        print(f"\n✅ 策略参数验证测试通过")
+        print("\n✅ 策略参数验证测试通过")
 
     def test_execute_backtest(self, client):
         """测试执行回测"""
@@ -257,9 +268,11 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "回测策略",
             "strategy_type": "momentum",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         # 执行回测
@@ -273,9 +286,11 @@ class TestStrategyManagementAPI:
             "commission_rate": 0.0003,
             "slippage_rate": 0.001,
             "benchmark": "000300.SH",
-            "include_analysis": True
+            "include_analysis": True,
         }
-        response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
+        response = client.post(
+            "/api/strategy-mgmt/backtest/execute", json=backtest_data
+        )
 
         assert response.status_code == 202, f"执行回测应该返回202: {response.text}"
 
@@ -289,7 +304,7 @@ class TestStrategyManagementAPI:
         assert data["strategy_id"] == strategy_id, "strategy_id应该匹配"
         assert data["status"] == "pending", "初始状态应为pending"
 
-        print(f"\n✅ 执行回测测试通过")
+        print("\n✅ 执行回测测试通过")
         print(f"   回测ID: {data['backtest_id']}")
         print(f"   策略ID: {data['strategy_id']}")
         print(f"   状态: {data['status']}")
@@ -301,9 +316,11 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "回测结果测试策略",
             "strategy_type": "momentum",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         backtest_data = {
@@ -312,9 +329,11 @@ class TestStrategyManagementAPI:
             "symbols": ["000001.SZ"],
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "initial_capital": 100000.0
+            "initial_capital": 100000.0,
         }
-        backtest_response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
+        backtest_response = client.post(
+            "/api/strategy-mgmt/backtest/execute", json=backtest_data
+        )
         backtest_id = backtest_response.json()["backtest_id"]
 
         # 获取回测结果
@@ -329,7 +348,7 @@ class TestStrategyManagementAPI:
         assert "equity_curve" in data, "响应应包含equity_curve"
         assert "trades" in data, "响应应包含trades"
 
-        print(f"\n✅ 获取回测结果测试通过")
+        print("\n✅ 获取回测结果测试通过")
         print(f"   回测ID: {data['backtest_id']}")
         print(f"   总收益率: {data['performance']['total_return']}%")
 
@@ -340,9 +359,11 @@ class TestStrategyManagementAPI:
             "user_id": 1001,
             "strategy_name": "回测列表测试策略",
             "strategy_type": "momentum",
-            "parameters": []
+            "parameters": [],
         }
-        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
+        create_response = client.post(
+            "/api/strategy-mgmt/strategies", json=strategy_data
+        )
         strategy_id = create_response.json()["strategy_id"]
 
         backtest_data = {
@@ -351,7 +372,7 @@ class TestStrategyManagementAPI:
             "symbols": ["000001.SZ"],
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "initial_capital": 100000.0
+            "initial_capital": 100000.0,
         }
         client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
 
@@ -369,7 +390,7 @@ class TestStrategyManagementAPI:
 
         assert data["total_count"] >= 1, "至少应有1个回测"
 
-        print(f"\n✅ 获取回测列表测试通过")
+        print("\n✅ 获取回测列表测试通过")
         print(f"   总数: {data['total_count']}")
         print(f"   当前页回测数: {len(data['backtests'])}")
 
@@ -382,12 +403,14 @@ class TestStrategyManagementAPI:
             "symbols": ["000001.SZ"],
             "start_date": "2024-12-31",
             "end_date": "2024-01-01",  # 结束日期早于开始日期
-            "initial_capital": 100000.0
+            "initial_capital": 100000.0,
         }
-        response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
+        response = client.post(
+            "/api/strategy-mgmt/backtest/execute", json=backtest_data
+        )
         assert response.status_code in [400, 404, 422], "无效参数应该返回错误"
 
-        print(f"\n✅ 回测参数验证测试通过")
+        print("\n✅ 回测参数验证测试通过")
 
     def test_concurrent_strategy_operations(self, client):
         """测试并发策略操作"""
@@ -398,7 +421,7 @@ class TestStrategyManagementAPI:
                 "user_id": 1001,
                 "strategy_name": f"并发测试策略{index}",
                 "strategy_type": "custom",
-                "parameters": []
+                "parameters": [],
             }
             return client.post("/api/strategy-mgmt/strategies", json=strategy_data)
 
@@ -410,9 +433,11 @@ class TestStrategyManagementAPI:
         # 所有请求都应该成功
         success_count = sum(1 for r in responses if r.status_code == 201)
 
-        assert success_count == 5, f"5个并发创建请求应该都成功, 实际成功{success_count}个"
+        assert (
+            success_count == 5
+        ), f"5个并发创建请求应该都成功, 实际成功{success_count}个"
 
-        print(f"\n✅ 并发策略操作测试通过")
+        print("\n✅ 并发策略操作测试通过")
         print(f"   成功: {success_count}/5")
 
 

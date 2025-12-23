@@ -9,8 +9,6 @@ src.storage.database.connection_manager 的单元测试
 """
 
 import unittest
-from typing import Any
-from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -18,7 +16,10 @@ import pytest
 try:
     from src.storage.database.connection_manager import *
 except ImportError as e:
-    pytest.skip(f"无法导入 src.storage.database.connection_manager: {e}", allow_module_level=True)
+    pytest.skip(
+        f"无法导入 src.storage.database.connection_manager: {e}",
+        allow_module_level=True,
+    )
 
 
 class TestSrcStorageDatabaseConnection_Manager:
@@ -41,7 +42,10 @@ class TestSrcStorageDatabaseConnection_Manager:
     def setup_method(self):
         """每个测试方法前的设置"""
         # 初始化测试数据
-        self.test_data = {"sample_input": "test_value", "expected_output": "expected_value"}
+        self.test_data = {
+            "sample_input": "test_value",
+            "expected_output": "expected_value",
+        }
 
     # ========================
     # DatabaseConnectionManager 类测试

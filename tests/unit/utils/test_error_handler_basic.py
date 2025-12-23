@@ -6,7 +6,7 @@ Error Handler基础测试
 import logging
 import os
 import sys
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -14,7 +14,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 测试目标模块
-from src.utils.error_handler import UnifiedErrorHandler, retry_on_failure, safe_execute
+from src.utils.error_handler import UnifiedErrorHandler
 
 
 class TestUnifiedErrorHandlerBasic:
@@ -32,8 +32,12 @@ class TestUnifiedErrorHandlerBasic:
         static_methods = ["log_error", "safe_execute", "retry_on_failure"]
 
         for method_name in static_methods:
-            assert hasattr(UnifiedErrorHandler, method_name), f"缺少静态方法: {method_name}"
-            assert callable(getattr(UnifiedErrorHandler, method_name)), f"方法不可调用: {method_name}"
+            assert hasattr(
+                UnifiedErrorHandler, method_name
+            ), f"缺少静态方法: {method_name}"
+            assert callable(
+                getattr(UnifiedErrorHandler, method_name)
+            ), f"方法不可调用: {method_name}"
 
     def test_log_error_method(self):
         """测试log_error方法"""
@@ -60,7 +64,8 @@ class TestUnifiedErrorHandlerBasic:
             UnifiedErrorHandler.log_error(test_error, "测试", level=logging.WARNING)
 
             mock_logger.log.assert_called_once_with(
-                logging.WARNING, "错误发生 - 上下文: 测试, 错误: 运行时错误, 类型: RuntimeError"
+                logging.WARNING,
+                "错误发生 - 上下文: 测试, 错误: 运行时错误, 类型: RuntimeError",
             )
 
     def test_log_error_without_context(self):
@@ -91,7 +96,9 @@ class TestUnifiedErrorHandlerBasic:
             raise ValueError("函数失败")
 
         with patch.object(UnifiedErrorHandler, "log_error") as mock_log:
-            result = UnifiedErrorHandler.safe_execute(failing_func, "测试上下文", default_return="默认值")
+            result = UnifiedErrorHandler.safe_execute(
+                failing_func, "测试上下文", default_return="默认值"
+            )
 
             assert result == "默认值"
             mock_log.assert_called_once()

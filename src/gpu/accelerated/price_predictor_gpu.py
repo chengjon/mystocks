@@ -9,12 +9,11 @@ import time
 import numpy as np
 import pandas as pd
 import cupy as cp
-import cuml
 from cuml.linear_model import LinearRegression, Ridge, Lasso
 from cuml.ensemble import RandomForestRegressor
-from cuml.preprocessing import StandardScaler, MinMaxScaler
+from cuml.preprocessing import StandardScaler
 from cuml.model_selection import train_test_split as gpu_train_test_split
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import logging
 from datetime import datetime, timedelta
@@ -570,10 +569,10 @@ def benchmark_gpu_vs_cpu(data: pd.DataFrame, prediction_horizon: int = 1):
     cpu_time = time.time() - cpu_start
 
     # 对比结果
-    print(f"\n📊 性能对比结果:")
+    print("\n📊 性能对比结果:")
     print(f"GPU训练时间: {gpu_time:.2f}秒")
     print(f"CPU训练时间: {cpu_time:.2f}秒")
-    print(f"加速比: {cpu_time/gpu_time:.2f}x")
+    print(f"加速比: {cpu_time / gpu_time:.2f}x")
     print(f"GPU预测结果: {gpu_results['prediction'].predicted_price:.2f}")
     print(f"CPU预测结果: {cpu_results['prediction'].predicted_price:.2f}")
     print(
@@ -612,7 +611,7 @@ if __name__ == "__main__":
 
     # 性能总结
     performance = predictor.get_performance_summary()
-    print(f"\n性能总结:")
+    print("\n性能总结:")
     print(f"GPU加速: {performance['gpu_enabled']}")
     print(f"总预测次数: {performance['total_predictions']}")
     print(f"平均预测时间: {performance['avg_prediction_time']:.4f}秒")

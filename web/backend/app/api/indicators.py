@@ -16,18 +16,19 @@ import hashlib
 import json
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
-from functools import lru_cache, wraps
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from functools import wraps
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import structlog
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
-from app.core.config import settings
-from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
+from app.core.responses import (
+    create_success_response,
+)
 from app.core.security import User
 from app.schemas.indicator_request import (
     IndicatorCalculateRequest,
@@ -35,19 +36,21 @@ from app.schemas.indicator_request import (
     IndicatorConfigUpdateRequest,
 )
 from app.schemas.indicator_response import (
-    APIResponse,
-    ErrorDetail,
-    IndicatorCalculateResponse,
     IndicatorConfigListResponse,
     IndicatorConfigResponse,
     IndicatorMetadata,
     IndicatorRegistryResponse,
-    IndicatorResult,
-    IndicatorValueOutput,
-    OHLCVData,
 )
-from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service
-from app.services.indicator_calculator import IndicatorCalculationError, InsufficientDataError, get_indicator_calculator
+from app.services.data_service import (
+    InvalidDateRangeError,
+    StockDataNotFoundError,
+    get_data_service,
+)
+from app.services.indicator_calculator import (
+    IndicatorCalculationError,
+    InsufficientDataError,
+    get_indicator_calculator,
+)
 from app.services.indicator_registry import IndicatorCategory, get_indicator_registry
 
 logger = structlog.get_logger()
@@ -66,7 +69,9 @@ class IndicatorCache:
         self.ttl = ttl  # 缓存时间（秒）
         self.access_times: Dict[str, datetime] = {}
 
-    def _generate_cache_key(self, symbol: str, start_date: str, end_date: str, indicators: List[Dict]) -> str:
+    def _generate_cache_key(
+        self, symbol: str, start_date: str, end_date: str, indicators: List[Dict]
+    ) -> str:
         """生成缓存键"""
         cache_data = {
             "symbol": symbol,
@@ -127,7 +132,8 @@ class IndicatorCache:
             "size": len(self.cache),
             "max_size": self.max_size,
             "ttl": self.ttl,
-            "hit_rate": getattr(self, "_hit_count", 0) / max(getattr(self, "_total_requests", 1), 1),
+            "hit_rate": getattr(self, "_hit_count", 0)
+            / max(getattr(self, "_total_requests", 1), 1),
         }
 
 
@@ -146,7 +152,11 @@ class RateLimiter:
         now = datetime.utcnow()
 
         # 清理过期的请求记录
-        self.requests[key] = [req_time for req_time in self.requests[key] if (now - req_time).seconds < window]
+        self.requests[key] = [
+            req_time
+            for req_time in self.requests[key]
+            if (now - req_time).seconds < window
+        ]
 
         # 检查是否超过限制
         if len(self.requests[key]) >= limit:
@@ -185,7 +195,10 @@ def rate_limit(limit: int, window: int):
                 user_key = "indicators_anonymous"
 
             if not rate_limiter.is_allowed(user_key, limit, window):
-                raise HTTPException(status_code=429, detail=f"技术指标计算请求过于频繁，请在{window}秒后重试")
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"技术指标计算请求过于频繁，请在{window}秒后重试",
+                )
 
             return await func(*args, **kwargs)
 
@@ -227,10 +240,16 @@ class IndicatorOptimizationRequest(BaseModel):
     symbol: constr(min_length=1, max_length=20) = Field(..., description="股票代码")
     start_date: datetime = Field(..., description="开始日期")
     end_date: datetime = Field(..., description="结束日期")
-    indicator_abbr: constr(min_length=1, max_length=10) = Field(..., description="指标简称")
-    parameter_ranges: Dict[str, List[Union[int, float]]] = Field(..., description="参数范围")
+    indicator_abbr: constr(min_length=1, max_length=10) = Field(
+        ..., description="指标简称"
+    )
+    parameter_ranges: Dict[str, List[Union[int, float]]] = Field(
+        ..., description="参数范围"
+    )
     optimization_target: str = Field(
-        "profit", pattern="^(profit|sharpe|max_drawdown|win_rate)$", description="优化目标"
+        "profit",
+        pattern="^(profit|sharpe|max_drawdown|win_rate)$",
+        description="优化目标",
     )
     max_iterations: int = Field(50, ge=1, le=200, description="最大迭代次数")
 
@@ -269,7 +288,9 @@ async def get_indicator_registry_endpoint(
                 try:
                     category_enum = IndicatorCategory(category)
                     category_value = (
-                        meta["category"].value if hasattr(meta["category"], "value") else str(meta["category"])
+                        meta["category"].value
+                        if hasattr(meta["category"], "value")
+                        else str(meta["category"])
                     )
                     if category_value != category:
                         continue
@@ -302,7 +323,11 @@ async def get_indicator_registry_endpoint(
             indicators_in_category = [
                 meta
                 for meta in filtered_indicators.values()
-                if (meta["category"].value if hasattr(meta["category"], "value") else str(meta["category"]))
+                if (
+                    meta["category"].value
+                    if hasattr(meta["category"], "value")
+                    else str(meta["category"])
+                )
                 == cat.value
             ]
             categories[cat.value] = len(indicators_in_category)
@@ -311,9 +336,15 @@ async def get_indicator_registry_endpoint(
         indicators_list = []
         for abbr, meta in filtered_indicators.items():
             # 确保enum值正确提取
-            category_value = meta["category"].value if hasattr(meta["category"], "value") else str(meta["category"])
+            category_value = (
+                meta["category"].value
+                if hasattr(meta["category"], "value")
+                else str(meta["category"])
+            )
             panel_type_value = (
-                meta["panel_type"].value if hasattr(meta["panel_type"], "value") else str(meta["panel_type"])
+                meta["panel_type"].value
+                if hasattr(meta["panel_type"], "value")
+                else str(meta["panel_type"])
             )
 
             # 增强的元数据
@@ -346,11 +377,17 @@ async def get_indicator_registry_endpoint(
         )
 
         return create_success_response(
-            data=response_data.dict(), message=f"技术指标注册表查询成功，共{len(filtered_indicators)}个指标"
+            data=response_data.dict(),
+            message=f"技术指标注册表查询成功，共{len(filtered_indicators)}个指标",
         ).dict(exclude_unset=True)
 
     except Exception as e:
-        logger.error("技术指标注册表查询失败", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error(
+            "技术指标注册表查询失败",
+            user_id=current_user.id,
+            error=str(e),
+            exc_info=True,
+        )
         raise HTTPException(status_code=500, detail=f"获取指标注册表失败: {str(e)}")
 
 
@@ -378,9 +415,15 @@ async def get_indicators_by_category(category: str):
         indicators_list = []
         for abbr, meta in indicators.items():
             # 确保enum值正确提取
-            category_value = meta["category"].value if hasattr(meta["category"], "value") else str(meta["category"])
+            category_value = (
+                meta["category"].value
+                if hasattr(meta["category"], "value")
+                else str(meta["category"])
+            )
             panel_type_value = (
-                meta["panel_type"].value if hasattr(meta["panel_type"], "value") else str(meta["panel_type"])
+                meta["panel_type"].value
+                if hasattr(meta["panel_type"], "value")
+                else str(meta["panel_type"])
             )
 
             indicators_list.append(
@@ -410,7 +453,8 @@ async def get_indicators_by_category(category: str):
 @router.post("/calculate")
 @rate_limit(limit=20, window=60)  # 每分钟最多20次计算请求
 async def calculate_indicators(
-    request: IndicatorCalculateRequest, current_user: User = Depends(get_current_active_user)
+    request: IndicatorCalculateRequest,
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     计算技术指标 - Phase 4C Enhanced
@@ -455,10 +499,14 @@ async def calculate_indicators(
 
         # 生成缓存键
         indicator_specs = [
-            {"abbreviation": ind.abbreviation, "parameters": ind.parameters} for ind in request.indicators
+            {"abbreviation": ind.abbreviation, "parameters": ind.parameters}
+            for ind in request.indicators
         ]
         cache_key = indicator_cache._generate_cache_key(
-            request.symbol, str(request.start_date), str(request.end_date), indicator_specs
+            request.symbol,
+            str(request.start_date),
+            str(request.end_date),
+            indicator_specs,
         )
 
         # 尝试从缓存获取结果
@@ -477,15 +525,22 @@ async def calculate_indicators(
                 )
 
                 # 更新缓存统计
-                indicator_cache._hit_count = getattr(indicator_cache, "_hit_count", 0) + 1
-                indicator_cache._total_requests = getattr(indicator_cache, "_total_requests", 0) + 1
+                indicator_cache._hit_count = (
+                    getattr(indicator_cache, "_hit_count", 0) + 1
+                )
+                indicator_cache._total_requests = (
+                    getattr(indicator_cache, "_total_requests", 0) + 1
+                )
 
                 return create_success_response(
-                    data=cached_result, message=f"技术指标计算成功（缓存），共{len(request.indicators)}个指标"
+                    data=cached_result,
+                    message=f"技术指标计算成功（缓存），共{len(request.indicators)}个指标",
                 ).dict(exclude_unset=True)
 
         # 缓存未命中，执行计算
-        indicator_cache._total_requests = getattr(indicator_cache, "_total_requests", 0) + 1
+        indicator_cache._total_requests = (
+            getattr(indicator_cache, "_total_requests", 0) + 1
+        )
 
         # Load OHLCV data from database via DataService
         data_service = get_data_service()
@@ -498,7 +553,9 @@ async def calculate_indicators(
 
         # Get OHLCV data with error handling
         try:
-            df, ohlcv_data = data_service.get_daily_ohlcv(symbol=request.symbol, start_date=start_dt, end_date=end_dt)
+            df, ohlcv_data = data_service.get_daily_ohlcv(
+                symbol=request.symbol, start_date=start_dt, end_date=end_dt
+            )
         except StockDataNotFoundError as e:
             raise HTTPException(status_code=404, detail=f"股票数据未找到: {str(e)}")
         except InvalidDateRangeError as e:
@@ -514,13 +571,19 @@ async def calculate_indicators(
         calculator = get_indicator_calculator()
         is_valid, error_msg = calculator.validate_data_quality(ohlcv_data)
         if not is_valid:
-            raise HTTPException(status_code=422, detail=f"OHLCV数据质量验证失败: {error_msg}")
+            raise HTTPException(
+                status_code=422, detail=f"OHLCV数据质量验证失败: {error_msg}"
+            )
 
         # 批量计算指标（优化版本）
         try:
-            results = calculator.calculate_multiple_indicators(indicator_specs, ohlcv_data)
+            results = calculator.calculate_multiple_indicators(
+                indicator_specs, ohlcv_data
+            )
         except InsufficientDataError as e:
-            raise HTTPException(status_code=422, detail=f"数据不足，无法计算指标: {str(e)}")
+            raise HTTPException(
+                status_code=422, detail=f"数据不足，无法计算指标: {str(e)}"
+            )
         except IndicatorCalculationError as e:
             raise HTTPException(status_code=500, detail=f"指标计算错误: {str(e)}")
 
@@ -558,7 +621,9 @@ async def calculate_indicators(
                 outputs = []
                 for output_name, values in result["values"].items():
                     # 将 NumPy 数组转换为 Python list (处理 NaN)
-                    values_list = [float(v) if not np.isnan(v) else None for v in values]
+                    values_list = [
+                        float(v) if not np.isnan(v) else None for v in values
+                    ]
 
                     outputs.append(
                         {
@@ -659,14 +724,17 @@ async def calculate_indicators(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error(
+            "技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True
+        )
         raise HTTPException(status_code=500, detail=f"计算指标时发生错误: {str(e)}")
 
 
 @router.post("/calculate/batch")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次批量计算
 async def calculate_indicators_batch(
-    request: IndicatorCalculateBatchRequest, current_user: User = Depends(get_current_active_user)
+    request: IndicatorCalculateBatchRequest,
+    current_user: User = Depends(get_current_active_user),
 ) -> Dict:
     """
     批量计算技术指标 - Phase 4C Enhanced
@@ -695,10 +763,17 @@ async def calculate_indicators_batch(
                     "start_date": str(calc_request.start_date),
                     "end_date": str(calc_request.end_date),
                     "success": True,
-                    "data": await _calculate_single_indicator(calc_request, current_user),
+                    "data": await _calculate_single_indicator(
+                        calc_request, current_user
+                    ),
                 }
             except Exception as e:
-                logger.error("单个指标计算失败", user_id=current_user.id, symbol=calc_request.symbol, error=str(e))
+                logger.error(
+                    "单个指标计算失败",
+                    user_id=current_user.id,
+                    symbol=calc_request.symbol,
+                    error=str(e),
+                )
                 return {
                     "symbol": calc_request.symbol,
                     "start_date": str(calc_request.start_date),
@@ -719,7 +794,9 @@ async def calculate_indicators_batch(
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # 统计结果
-        successful_calculations = sum(1 for r in results if isinstance(r, dict) and r.get("success"))
+        successful_calculations = sum(
+            1 for r in results if isinstance(r, dict) and r.get("success")
+        )
         failed_calculations = total_calculations - successful_calculations
         calculation_time_ms = (time.time() - start_time) * 1000
 
@@ -730,7 +807,9 @@ async def calculate_indicators_batch(
                 "failed_calculations": failed_calculations,
                 "total_indicators": total_indicators,
                 "calculation_time_ms": round(calculation_time_ms, 2),
-                "average_time_per_calculation": round(calculation_time_ms / total_calculations, 2),
+                "average_time_per_calculation": round(
+                    calculation_time_ms / total_calculations, 2
+                ),
             },
             "results": results,
         }
@@ -744,11 +823,14 @@ async def calculate_indicators_batch(
         )
 
         return create_success_response(
-            data=response_data, message=f"批量计算完成，{successful_calculations}/{total_calculations}个请求成功"
+            data=response_data,
+            message=f"批量计算完成，{successful_calculations}/{total_calculations}个请求成功",
         ).dict(exclude_unset=True)
 
     except Exception as e:
-        logger.error("批量技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error(
+            "批量技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True
+        )
         raise HTTPException(status_code=500, detail=f"批量计算失败: {str(e)}")
 
 
@@ -756,7 +838,10 @@ async def _calculate_single_indicator(request, current_user):
     """内部函数：计算单个指标请求"""
     # 重用calculate_indicators的核心逻辑
     # 这里简化实现，实际应该提取共同逻辑
-    indicator_specs = [{"abbreviation": ind.abbreviation, "parameters": ind.parameters} for ind in request.indicators]
+    indicator_specs = [
+        {"abbreviation": ind.abbreviation, "parameters": ind.parameters}
+        for ind in request.indicators
+    ]
 
     data_service = get_data_service()
     calculator = get_indicator_calculator()
@@ -767,7 +852,9 @@ async def _calculate_single_indicator(request, current_user):
     start_dt = datetime.combine(request.start_date, datetime.min.time())
     end_dt = datetime.combine(request.end_date, datetime.min.time())
 
-    df, ohlcv_data = data_service.get_daily_ohlcv(symbol=request.symbol, start_date=start_dt, end_date=end_dt)
+    df, ohlcv_data = data_service.get_daily_ohlcv(
+        symbol=request.symbol, start_date=start_dt, end_date=end_dt
+    )
     symbol_name = data_service.get_symbol_name(request.symbol)
 
     results = calculator.calculate_multiple_indicators(indicator_specs, ohlcv_data)
@@ -784,26 +871,39 @@ async def _calculate_single_indicator(request, current_user):
 
 @router.get("/cache/stats")
 @rate_limit(limit=10, window=60)
-async def get_cache_statistics(current_user: User = Depends(get_current_active_user)) -> Dict:
+async def get_cache_statistics(
+    current_user: User = Depends(get_current_active_user),
+) -> Dict:
     """
     获取指标计算缓存统计信息
     """
     try:
         stats = indicator_cache.get_stats()
 
-        logger.info("缓存统计查询", user_id=current_user.id, cache_size=stats["size"], hit_rate=stats["hit_rate"])
+        logger.info(
+            "缓存统计查询",
+            user_id=current_user.id,
+            cache_size=stats["size"],
+            hit_rate=stats["hit_rate"],
+        )
 
-        return create_success_response(data=stats, message="缓存统计信息获取成功").dict(exclude_unset=True)
+        return create_success_response(data=stats, message="缓存统计信息获取成功").dict(
+            exclude_unset=True
+        )
 
     except Exception as e:
-        logger.error("缓存统计查询失败", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error(
+            "缓存统计查询失败", user_id=current_user.id, error=str(e), exc_info=True
+        )
         raise HTTPException(status_code=500, detail=f"获取缓存统计失败: {str(e)}")
 
 
 @router.post("/cache/clear")
 @rate_limit(limit=3, window=60)  # 每分钟最多3次清理
 async def clear_cache(
-    pattern: Optional[str] = Query(None, description="清理模式: all, expired, or symbol prefix"),
+    pattern: Optional[str] = Query(
+        None, description="清理模式: all, expired, or symbol prefix"
+    ),
     current_user: User = Depends(get_current_active_user),
 ) -> Dict:
     """
@@ -827,16 +927,24 @@ async def clear_cache(
             # 按symbol前缀清理（需要在缓存类中实现）
             cleared_count = f"匹配模式 '{pattern}' 的缓存条目"
 
-        logger.info("缓存清理操作", user_id=current_user.id, pattern=pattern, cleared_count=cleared_count)
+        logger.info(
+            "缓存清理操作",
+            user_id=current_user.id,
+            pattern=pattern,
+            cleared_count=cleared_count,
+        )
 
         return create_success_response(
-            data={"cleared_count": cleared_count}, message=f"缓存清理完成，已清理{cleared_count}"
+            data={"cleared_count": cleared_count},
+            message=f"缓存清理完成，已清理{cleared_count}",
         ).dict(exclude_unset=True)
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("缓存清理失败", user_id=current_user.id, error=str(e), exc_info=True)
+        logger.error(
+            "缓存清理失败", user_id=current_user.id, error=str(e), exc_info=True
+        )
         raise HTTPException(status_code=500, detail=f"缓存清理失败: {str(e)}")
 
 
@@ -864,8 +972,6 @@ async def create_indicator_config(
     user_id = current_user.id
 
     try:
-        from datetime import datetime
-
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
 
@@ -883,14 +989,19 @@ async def create_indicator_config(
             )
 
             if existing:
-                raise HTTPException(status_code=409, detail=f"配置名称已存在: {request.name}")
+                raise HTTPException(
+                    status_code=409, detail=f"配置名称已存在: {request.name}"
+                )
 
             # 创建新配置
             indicators_json = [
-                {"abbreviation": ind.abbreviation, "parameters": ind.parameters} for ind in request.indicators
+                {"abbreviation": ind.abbreviation, "parameters": ind.parameters}
+                for ind in request.indicators
             ]
 
-            new_config = IndicatorConfiguration(user_id=user_id, name=request.name, indicators=indicators_json)
+            new_config = IndicatorConfiguration(
+                user_id=user_id, name=request.name, indicators=indicators_json
+            )
 
             session.add(new_config)
             session.commit()
@@ -967,9 +1078,13 @@ async def list_indicator_configs(current_user: User = Depends(get_current_active
                 for cfg in configs
             ]
 
-            logger.info("Listed indicator configs", user_id=user_id, count=len(config_list))
+            logger.info(
+                "Listed indicator configs", user_id=user_id, count=len(config_list)
+            )
 
-            return IndicatorConfigListResponse(total_count=len(config_list), configs=config_list)
+            return IndicatorConfigListResponse(
+                total_count=len(config_list), configs=config_list
+            )
 
         finally:
             session.close()
@@ -980,7 +1095,9 @@ async def list_indicator_configs(current_user: User = Depends(get_current_active
 
 
 @router.get("/configs/{config_id}", response_model=IndicatorConfigResponse)
-async def get_indicator_config(config_id: int, current_user: User = Depends(get_current_active_user)):
+async def get_indicator_config(
+    config_id: int, current_user: User = Depends(get_current_active_user)
+):
     """
     获取指定的指标配置详情
 
@@ -1008,7 +1125,9 @@ async def get_indicator_config(config_id: int, current_user: User = Depends(get_
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise HTTPException(
+                    status_code=404, detail=f"配置不存在: ID={config_id}"
+                )
 
             # 更新最后使用时间
             config.last_used_at = datetime.now()
@@ -1070,7 +1189,9 @@ async def update_indicator_config(
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise HTTPException(
+                    status_code=404, detail=f"配置不存在: ID={config_id}"
+                )
 
             # 更新字段
             if request.name is not None:
@@ -1086,20 +1207,25 @@ async def update_indicator_config(
                 )
 
                 if existing:
-                    raise HTTPException(status_code=409, detail=f"配置名称已存在: {request.name}")
+                    raise HTTPException(
+                        status_code=409, detail=f"配置名称已存在: {request.name}"
+                    )
 
                 config.name = request.name
 
             if request.indicators is not None:
                 indicators_json = [
-                    {"abbreviation": ind.abbreviation, "parameters": ind.parameters} for ind in request.indicators
+                    {"abbreviation": ind.abbreviation, "parameters": ind.parameters}
+                    for ind in request.indicators
                 ]
                 config.indicators = indicators_json
 
             session.commit()
             session.refresh(config)
 
-            logger.info("Updated indicator config", config_id=config_id, user_id=user_id)
+            logger.info(
+                "Updated indicator config", config_id=config_id, user_id=user_id
+            )
 
             return IndicatorConfigResponse(
                 id=config.id,
@@ -1122,7 +1248,9 @@ async def update_indicator_config(
 
 
 @router.delete("/configs/{config_id}", status_code=204)
-async def delete_indicator_config(config_id: int, current_user: User = Depends(get_current_active_user)):
+async def delete_indicator_config(
+    config_id: int, current_user: User = Depends(get_current_active_user)
+):
     """
     删除指标配置
 
@@ -1148,12 +1276,16 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise HTTPException(
+                    status_code=404, detail=f"配置不存在: ID={config_id}"
+                )
 
             session.delete(config)
             session.commit()
 
-            logger.info("Deleted indicator config", config_id=config_id, user_id=user_id)
+            logger.info(
+                "Deleted indicator config", config_id=config_id, user_id=user_id
+            )
 
             return None  # 204 No Content
 

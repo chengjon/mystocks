@@ -28,7 +28,7 @@ error() {
 # 检查 lnav 是否安装
 check_lnav() {
     info "检查 lnav 是否已安装..."
-    
+
     if ! command -v lnav &> /dev/null; then
         error "lnav 未安装，请先安装: sudo apt-get install lnav"
         warn "将使用 tail -f 作为备选方案"
@@ -42,13 +42,13 @@ check_lnav() {
 # 安装 lnav 格式配置
 install_lnav_format() {
     info "安装 MyStocks 日志格式配置..."
-    
+
     local lnav_config_dir="$HOME/.config/lnav"
     local project_config="/opt/claude/mystocks_spec/config/lnav_formats.json"
-    
+
     # 创建 lnav 配置目录
     mkdir -p "$lnav_config_dir"
-    
+
     # 复制格式配置文件
     if [ -f "$project_config" ]; then
         cp "$project_config" "$lnav_config_dir/formats.json"
@@ -63,7 +63,7 @@ install_lnav_format() {
 # 测试 lnav 配置
 test_lnav_config() {
     info "测试 lnav 配置..."
-    
+
     # 创建测试日志文件
     local test_log="/tmp/mystocks_test.log"
     cat > "$test_log" << 'EOF'
@@ -73,14 +73,14 @@ test_lnav_config() {
 2025-11-16 10:00:03 [INFO] request_id=jkl012 duration=150ms path=/api/indicators status=200
 2025-11-16 10:00:04 [DEBUG] request_id=mno345 duration=80ms path=/api/auth action=login_success
 EOF
-    
+
     # 测试 lnav 能否识别格式
     if lnav -d /tmp/lnav_test.log -c ":ms-to-filter" -c ":quit" "$test_log" &>/dev/null; then
         info "lnav 格式测试通过"
     else
         warn "lnav 格式测试失败，但这是正常的（无网络连接等）"
     fi
-    
+
     # 清理测试文件
     rm -f "$test_log"
 }
@@ -88,16 +88,16 @@ EOF
 # 启动 lnav 监控
 start_lnav_monitoring() {
     local log_file="${1:-/opt/claude/mystocks_spec/logs/backend.log}"
-    
+
     info "启动 lnav 监控: $log_file"
-    
+
     if [ -f "$log_file" ]; then
         # 使用 lnav 监控指定日志文件
         lnav "$log_file"
     else
         warn "日志文件不存在: $log_file"
         warn "将创建测试日志并监控"
-        
+
         # 创建测试日志
         echo "2025-11-16 10:00:00 [INFO] request_id=test123 duration=100ms path=/test status=200" > "$log_file"
         lnav "$log_file"
@@ -107,26 +107,26 @@ start_lnav_monitoring() {
 # 启动开发环境中的 lnav 监控
 start_dev_lnav() {
     info "为开发环境启动 lnav 监控..."
-    
+
     # 检查项目日志目录
     local log_dir="/opt/claude/mystocks_spec/logs"
     local backend_log="$log_dir/backend.log"
     local combined_log="$log_dir/backend-combined.log"
-    
+
     if [ ! -d "$log_dir" ]; then
         warn "日志目录不存在: $log_dir"
         return 1
     fi
-    
+
     # 创建后端日志文件（如果不存在）
     touch "$backend_log"
     touch "$combined_log"
-    
+
     # 添加一些示例日志（如果文件为空）
     if [ ! -s "$backend_log" ]; then
         echo "2025-11-16 10:00:00 [INFO] request_id=startup duration=0ms path=/ action=service_started" >> "$backend_log"
     fi
-    
+
     info "开始监控后端日志文件..."
     info "格式化字段将自动识别:"
     echo "  - timestamp: 时间戳 (2025-11-16 10:00:00)"
@@ -144,7 +144,7 @@ start_dev_lnav() {
     echo "  /关键词  搜索"
     echo "  Tab     切换窗格"
     echo ""
-    
+
     # 启动 lnav
     lnav "$backend_log"
 }
@@ -155,7 +155,7 @@ main() {
     echo -e "${BLUE}    MyStocks Lnav 配置工具${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo ""
-    
+
     # 检查 lnav 是否安装
     if ! check_lnav; then
         info "正在安装 lnav..."
@@ -167,11 +167,11 @@ main() {
             exit 1
         fi
     fi
-    
+
     # 安装格式配置
     if install_lnav_format; then
         test_lnav_config
-        
+
         # 解析命令行参数
         if [ "$1" == "dev" ]; then
             start_dev_lnav

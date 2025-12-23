@@ -1,8 +1,8 @@
 # MyStocks Web API - Architecture Analysis
 ## Current API Structure and Considerations for Task 11: API Gateway and Request Routing
 
-**Analysis Date:** 2025-11-07  
-**Backend Location:** `/opt/claude/mystocks_spec/web/backend`  
+**Analysis Date:** 2025-11-07
+**Backend Location:** `/opt/claude/mystocks_spec/web/backend`
 **Analysis Focus:** FastAPI setup, middleware chain, route organization, error handling
 
 ---
@@ -29,8 +29,8 @@ The application is currently using **direct router inclusion** without an API Ga
 
 ### Entry Point: `/app/main.py`
 
-**File Size:** ~409 lines  
-**Created:** Enhanced OpenAPI configuration  
+**File Size:** ~409 lines
+**Created:** Enhanced OpenAPI configuration
 **Lifespan Management:** Yes (startup/shutdown hooks)
 
 ```python
@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
     # Startup: PostgreSQL, cache scheduler, Socket.IO
     # Shutdown: Cleanup, connection closure
     yield
-    
+
 # FastAPI app with enhanced OpenAPI config
 app = FastAPI(
     title="MyStocks Web API",
@@ -93,7 +93,7 @@ async def csrf_protection_middleware(request: Request, call_next):
     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
         exclude_paths = ["/api/csrf-token"]
         csrf_token = request.headers.get("x-csrf-token")
-        
+
         if not csrf_token or not csrf_manager.validate_token(csrf_token):
             return JSONResponse(
                 status_code=403,
@@ -103,7 +103,7 @@ async def csrf_protection_middleware(request: Request, call_next):
 ```
 
 **Security Mechanism:**
-- Token generation: `csrf_manager.generate_token()` 
+- Token generation: `csrf_manager.generate_token()`
 - Validation: One-time use + 3600s TTL
 - Storage: In-memory (should use Redis in production)
 - Exclusion: GET, HEAD, OPTIONS operations
@@ -114,17 +114,17 @@ async def csrf_protection_middleware(request: Request, call_next):
 async def log_requests(request: Request, call_next):
     """Log all HTTP requests with performance metrics"""
     start_time = time.time()
-    
+
     logger.info(
         "HTTP request started",
         method=request.method,
         url=str(request.url),
         client_host=request.client.host,
     )
-    
+
     response = await call_next(request)
     process_time = time.time() - start_time
-    
+
     logger.info(
         "HTTP request completed",
         method=request.method,
@@ -233,8 +233,8 @@ Specialized for database operations
 
 # Pattern 1: With custom prefix
 app.include_router(
-    data.router, 
-    prefix="/api/data", 
+    data.router,
+    prefix="/api/data",
     tags=["data"]
 )
 
@@ -246,8 +246,8 @@ app.include_router(
 
 # Pattern 3: Custom prefix for specific modules
 app.include_router(
-    indicators.router, 
-    prefix="/api/indicators", 
+    indicators.router,
+    prefix="/api/indicators",
     tags=["indicators"]
 )
 ```
@@ -333,7 +333,7 @@ class APIResponse:
         errors: Optional[Dict] = None,
     ) -> Dict[str, Any]:
         # Returns 400 error with field-level validation details
-        
+
     @staticmethod
     def not_found(
         resource: str = "Resource",
@@ -540,7 +540,7 @@ OPENAPI_TAGS = [
 - **Library:** PyJWT
 - **Algorithm:** HS256 (configurable)
 - **Location:** `/app/core/security.py`
-- **Token Structure:** 
+- **Token Structure:**
   ```python
   {
     "sub": username,
@@ -661,14 +661,14 @@ Response:
 
 ### Current Strengths to Preserve
 
-✅ Excellent middleware chain (CORS, CSRF, logging)  
-✅ Unified exception handling (decorators)  
-✅ Standardized response formatting  
-✅ Service layer abstraction  
-✅ Comprehensive OpenAPI documentation  
-✅ JWT + CSRF security  
-✅ Dependency injection pattern  
-✅ Built-in caching strategy  
+✅ Excellent middleware chain (CORS, CSRF, logging)
+✅ Unified exception handling (decorators)
+✅ Standardized response formatting
+✅ Service layer abstraction
+✅ Comprehensive OpenAPI documentation
+✅ JWT + CSRF security
+✅ Dependency injection pattern
+✅ Built-in caching strategy
 
 ---
 
@@ -681,13 +681,13 @@ Response:
 # Create /app/gateway/request_router.py
 class APIGateway:
     """FastAPI middleware-based API gateway"""
-    
+
     def __init__(self):
         self.routes_config = {}  # Load from YAML
         self.transformers = {}    # Request/response transformers
         self.rate_limiter = RateLimiter()
         self.circuit_breakers = {}
-    
+
     async def route_request(self, request: Request):
         """Central routing logic"""
         # 1. Extract version from path or header
@@ -728,7 +728,7 @@ class APIGateway:
        version: "1.0"
        rate_limit: 100/minute
        timeout: 30s
-       
+
      - path: "/api/v2/data/*"
        upstream: "/api/data"
        version: "2.0"
@@ -808,4 +808,3 @@ from app.api import (
 ---
 
 **End of Analysis**
-

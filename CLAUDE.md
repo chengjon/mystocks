@@ -120,6 +120,136 @@ python test_config_driven_table_manager.py
 2. 🔄 Phase 2: 提升测试覆盖率 (进行中)
 3. ⏳ Phase 3: 重构高复杂度方法
 
+### Python 代码质量保证工具 (2025-12-23 更新)
+
+**优化策略**: Ruff 优先 + Black 兜底 + Pylint 深度审查
+
+**统一配置**: 所有工具行长度 120 字符
+
+**工具版本**:
+- Ruff: 0.9.10 (日常开发 - 效率优先)
+- Black: 25.11.0 (格式化兜底)
+- Pylint: 4.0.3 (深度质量分析)
+- MyPy: (在 dev 依赖中)
+- Bandit: 1.7.5+ (安全扫描)
+- Safety: 2.3.0+ (依赖安全)
+
+#### 四阶段质量保证流程
+
+**阶段 1: 日常开发** (效率优先)
+- **工具**: Ruff (一站式格式化 + Lint)
+- **触发时机**: 每次保存文件后
+- **命令**: `ruff check --fix .`
+- **特点**:
+  - 测试专属规则 (PT: pytest 专属规则)
+  - 快速失败: 仅检查影响测试执行的问题
+  - 自动修复: 大部分问题可自动修复
+
+**阶段 2: 提交前检查** (格式兜底 + 核心检查)
+- **工具**: Pre-commit Hooks (自动触发)
+- **触发时机**: 每次 `git commit` 时自动运行
+- **执行顺序** (9 个步骤):
+  1. Ruff (Lint & Fix) - 快速修复错误型问题
+  2. Black (Formatter) - 统一代码风格 (1-2秒)
+  3. Ruff (Check only) - 二次校验，确保无新问题
+  4. MyPy - 类型检查
+  5. Bandit - 安全扫描
+  6. Safety - 依赖安全检查
+  7-9. 通用文件检查、密钥检测、Python 语法检查
+- **命令**: `pre-commit run --all-files`
+
+**阶段 3: 定期深度分析** (Pylint 核心价值)
+- **工具**: Pylint (测试代码专用配置)
+- **触发时机**: 每周 / 每迭代末
+- **命令**: `pylint --rcfile=.pylint.test.rc tests/`
+- **特点**:
+  - 测试专用规则 (`.pylint.test.rc`)
+  - 禁用所有，启用核心规则
+  - 更宽松的复杂度阈值 (max-args=15, max-locals=25)
+  - pytest 专属规则 (PT001-PT025)
+  - 生成 HTML 报告
+
+**阶段 4: CI/CD 集成** (快速失败 + 完整检查)
+- **工具顺序**: Ruff+Black → MyPy+Bandit+Safety → Pylint (仅记录)
+- **策略**:
+  - Ruff/Black 问题直接失败 (快速失败)
+  - MyPy/Bandit/Safety 问题必须修复 (核心检查)
+  - Pylint 仅生成报告，不阻断构建 (记录分析)
+
+#### 关键配置文件
+
+| 配置文件 | 用途 | 位置 |
+|----------|------|------|
+| `pyproject.toml` | Ruff, Black, MyPy, Pylint (常规) | 项目根目录 |
+| `.pylint.test.rc` | Pylint (测试专用) | 项目根目录 |
+| `.pre-commit-config.yaml` | Pre-commit hooks | 项目根目录 |
+| `config/.security.yml` | 安全配置 | `config/` 目录 |
+
+#### 快速开始
+
+**首次设置**:
+```bash
+# 安装开发依赖
+pip install -e ".[dev]"
+
+# 安装 pre-commit hooks
+pre-commit install
+
+# (可选) 安装 pylint-pytest 插件
+pip install pylint-pytest
+
+# 验证安装
+ruff --version && black --version && pylint --version
+```
+
+**日常使用**:
+```bash
+# 日常开发: 一键修复
+ruff check --fix .
+
+# 提交代码: 自动运行 9 步检查
+git add . && git commit -m "message"
+
+# 每周分析: 生成质量报告
+pylint --rcfile=.pylint.test.rc --output=report.html --output-format=html tests/
+```
+
+#### 工作流程图
+
+```
+开发代码 → ruff check --fix . → 保存
+    ↓
+git add → git commit → pre-commit hooks 自动运行
+    ↓
+    ├─ Ruff (fix) → Black → Ruff (check) → MyPy → Bandit → Safety
+    └─ 通用文件检查、密钥检测、Python语法检查
+    ↓
+提交成功 → 推送到远程 → CI/CD 运行
+    ↓
+每周末 → pylint --rcfile=.pylint.test.rc tests/ → 生成报告
+```
+
+#### 详细文档
+
+完整的 Python 代码质量保证工作流程请参阅:
+- **完整工作流程**: `docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
+- **快速参考**: `docs/guides/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`
+- **实施总结**: `docs/guides/PYTHON_QUALITY_TOOLS_IMPLEMENTATION_SUMMARY.md`
+
+#### 核心原则
+
+1. **Ruff 优先** - 日常开发快速修复
+2. **Black 兜底** - 确保格式统一
+3. **Pylint 深度** - 定期质量分析
+4. **安全必保** - Bandit + Safety 不可替代
+5. **统一配置** - 所有工具行长度 120
+
+**优化成果**:
+- ✅ 日常开发效率提升: Ruff 一站式处理
+- ✅ 提交前自动化: Pre-commit 9 步检查 (1-2 分钟)
+- ✅ 深度质量分析: Pylint 每周/每迭代末
+- ✅ CI/CD 优化: 快速失败 + 记录报告
+
 ### Core Architecture (核心架构)
 
 ```

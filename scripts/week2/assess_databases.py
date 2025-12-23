@@ -7,10 +7,11 @@
 用途: Week 2 Day 1 - 数据库使用情况评估
 输出: database_assessment_YYYYMMDD_HHMMSS.json
 """
+
 import sys
 import os
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any
 import json
 
 # 添加项目根目录到路径
@@ -29,7 +30,6 @@ try:
 except ImportError as e:
     print(f"警告: 无法导入数据访问模块: {e}")
     print("尝试从db_manager导入...")
-    from src.storage.database.database_manager import DatabaseTableManager
 
 
 class DatabaseAssessor:
@@ -121,7 +121,7 @@ class DatabaseAssessor:
                 print(f"评估TDengine表结构失败: {e}")
                 results["error"] = str(e)
 
-            print(f"\nTDengine 总计:")
+            print("\nTDengine 总计:")
             print(f"  总大小: ~{results['total_size_mb']:.2f} MB")
             print(f"  总行数: {results['total_rows']:,}")
 
@@ -181,7 +181,7 @@ class DatabaseAssessor:
 
                 print(f"  {schema}.{name}: {size_mb:.2f} MB, {row_count:,} 行")
 
-            print(f"\nPostgreSQL 总计:")
+            print("\nPostgreSQL 总计:")
             print(f"  总大小: {results['total_size_mb']:.2f} MB")
             print(f"  总行数: {results['total_rows']:,}")
 
@@ -250,7 +250,7 @@ class DatabaseAssessor:
 
                     print(f"  {name}: {total_size:.2f} MB, {row_count:,} 行")
 
-            print(f"\nMySQL 总计:")
+            print("\nMySQL 总计:")
             print(f"  总大小: {results['total_size_mb']:.2f} MB")
             print(f"  总行数: {results['total_rows']:,}")
 
@@ -305,7 +305,7 @@ class DatabaseAssessor:
 
                 results["sample_keys"] = sample_keys[:10]  # 只保存前10个样本
 
-                print(f"\nKey样本 (前5个):")
+                print("\nKey样本 (前5个):")
                 for key in sample_keys[:5]:
                     print(f"  - {key['key']} ({key['type']})")
             else:
@@ -354,9 +354,9 @@ class DatabaseAssessor:
                 print(f"  状态: {db_result.get('connection', '✗ 失败')}")
                 print(f"  错误: {db_result.get('message', '未知错误')}")
 
-        print(f"\n" + "=" * 60)
+        print("\n" + "=" * 60)
         print(f"总计 ({successful_connections}/4 数据库成功连接):")
-        print(f"  总大小: {total_size:.2f} MB (~{total_size/1024:.2f} GB)")
+        print(f"  总大小: {total_size:.2f} MB (~{total_size / 1024:.2f} GB)")
         print(f"  总行数: {total_rows:,}")
         print("=" * 60)
 

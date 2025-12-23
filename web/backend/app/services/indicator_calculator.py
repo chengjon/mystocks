@@ -8,7 +8,7 @@ import talib
 from typing import Dict, List, Any, Optional
 import logging
 
-from .indicator_registry import get_indicator_registry, IndicatorCategory
+from .indicator_registry import get_indicator_registry
 
 logger = logging.getLogger(__name__)
 

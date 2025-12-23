@@ -1,7 +1,6 @@
 # MyStocks GPU加速测试代码示例
 import cudf
 import cupy as cp
-import cuml
 import numpy as np
 
 

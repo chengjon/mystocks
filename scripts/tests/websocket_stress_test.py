@@ -21,9 +21,8 @@ import asyncio
 import aiohttp
 import time
 import json
-import uuid
 import statistics
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 import structlog
@@ -98,7 +97,9 @@ class WebSocketStressTest:
     async def check_server_status(self) -> bool:
         """检查服务器状态"""
         try:
-            async with self.session.get(f"{self.base_url}/api/socketio-status") as response:
+            async with self.session.get(
+                f"{self.base_url}/api/socketio-status"
+            ) as response:
                 if response.status == 200:
                     data = await response.json()
                     logger.info("✅ WebSocket服务器状态正常", status=data.get("status"))
@@ -163,18 +164,26 @@ class WebSocketStressTest:
                                 error_count += 1
                         except asyncio.TimeoutError:
                             error_count += 1
-                            logger.debug("⏰ 消息响应超时", connection_id=connection_id, message_id=i)
+                            logger.debug(
+                                "⏰ 消息响应超时",
+                                connection_id=connection_id,
+                                message_id=i,
+                            )
 
                     except Exception as e:
                         error_count += 1
-                        logger.debug("❌ 消息发送失败", connection_id=connection_id, error=str(e))
+                        logger.debug(
+                            "❌ 消息发送失败", connection_id=connection_id, error=str(e)
+                        )
 
                     # 小延迟避免过于频繁的请求
                     await asyncio.sleep(0.1)
 
                 # 计算连接统计
                 connection_time = time.time() - start_time
-                avg_response_time = statistics.mean(response_times) if response_times else 0
+                avg_response_time = (
+                    statistics.mean(response_times) if response_times else 0
+                )
                 max_response_time = max(response_times) if response_times else 0
                 min_response_time = min(response_times) if response_times else 0
 
@@ -191,7 +200,9 @@ class WebSocketStressTest:
                 }
 
         except Exception as e:
-            logger.error("❌ WebSocket连接失败", connection_id=connection_id, error=str(e))
+            logger.error(
+                "❌ WebSocket连接失败", connection_id=connection_id, error=str(e)
+            )
             return {
                 "connection_id": connection_id,
                 "success": False,
@@ -233,22 +244,28 @@ class WebSocketStressTest:
         # 创建并发连接任务
         for i in range(concurrent_connections):
             connection_id = f"conn_{i}_{int(time.time())}"
-            task = asyncio.create_task(
-                self.create_websocket_connection(connection_id)
-            )
+            task = asyncio.create_task(self.create_websocket_connection(connection_id))
             connection_tasks.append(task)
 
             # 分批启动连接，避免瞬时负载过高
             if len(connection_tasks) >= 20:
-                batch_results = await asyncio.gather(*connection_tasks, return_exceptions=True)
-                all_results.extend([r for r in batch_results if not isinstance(r, Exception)])
+                batch_results = await asyncio.gather(
+                    *connection_tasks, return_exceptions=True
+                )
+                all_results.extend(
+                    [r for r in batch_results if not isinstance(r, Exception)]
+                )
                 connection_tasks.clear()
                 await asyncio.sleep(0.5)  # 批次间延迟
 
         # 等待剩余连接完成
         if connection_tasks:
-            batch_results = await asyncio.gather(*connection_tasks, return_exceptions=True)
-            all_results.extend([r for r in batch_results if not isinstance(r, Exception)])
+            batch_results = await asyncio.gather(
+                *connection_tasks, return_exceptions=True
+            )
+            all_results.extend(
+                [r for r in batch_results if not isinstance(r, Exception)]
+            )
 
         end_time = time.time()
         total_duration = end_time - start_time
@@ -267,15 +284,21 @@ class WebSocketStressTest:
             if r.get("avg_response_time_ms", 0) > 0:
                 all_response_times.append(r["avg_response_time_ms"])
 
-        avg_response_time = statistics.mean(all_response_times) if all_response_times else 0
+        avg_response_time = (
+            statistics.mean(all_response_times) if all_response_times else 0
+        )
         max_response_time = max(all_response_times) if all_response_times else 0
         min_response_time = min(all_response_times) if all_response_times else 0
 
         # 计算成功率
-        success_rate = (len(successful_connections) / len(all_results)) * 100 if all_results else 0
+        success_rate = (
+            (len(successful_connections) / len(all_results)) * 100 if all_results else 0
+        )
 
         # 计算消息吞吐量
-        messages_per_second = total_messages / total_duration if total_duration > 0 else 0
+        messages_per_second = (
+            total_messages / total_duration if total_duration > 0 else 0
+        )
 
         # 估算内存使用（简化版本）
         memory_usage_mb = len(all_results) * 0.5  # 估算每连接0.5MB
@@ -390,7 +413,7 @@ async def main():
                 tester.save_test_results(metrics)
 
                 # 显示结果
-                print(f"✅ 测试完成:")
+                print("✅ 测试完成:")
                 print(f"   成功率: {metrics.success_rate:.2f}%")
                 print(f"   平均响应时间: {metrics.avg_response_time_ms:.2f}ms")
                 print(f"   最大响应时间: {metrics.max_response_time_ms:.2f}ms")
@@ -408,10 +431,14 @@ async def main():
             best_metric = min(all_metrics, key=lambda m: m.avg_response_time_ms)
             worst_metric = max(all_metrics, key=lambda m: m.avg_response_time_ms)
 
-            print(f"最佳性能: {best_metric.concurrent_connections}连接, "
-                  f"响应时间: {best_metric.avg_response_time_ms:.2f}ms")
-            print(f"最差性能: {worst_metric.concurrent_connections}连接, "
-                  f"响应时间: {worst_metric.avg_response_time_ms:.2f}ms")
+            print(
+                f"最佳性能: {best_metric.concurrent_connections}连接, "
+                f"响应时间: {best_metric.avg_response_time_ms:.2f}ms"
+            )
+            print(
+                f"最差性能: {worst_metric.concurrent_connections}连接, "
+                f"响应时间: {worst_metric.avg_response_time_ms:.2f}ms"
+            )
 
             avg_success_rate = statistics.mean(m.success_rate for m in all_metrics)
             avg_throughput = statistics.mean(m.messages_per_second for m in all_metrics)
@@ -422,7 +449,7 @@ async def main():
 
 if __name__ == "__main__":
     # 设置事件循环策略（Windows兼容性）
-    if hasattr(asyncio, 'WindowsSelectorEventLoopPolicy'):
+    if hasattr(asyncio, "WindowsSelectorEventLoopPolicy"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     # 运行测试

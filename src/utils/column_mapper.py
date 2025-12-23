@@ -16,8 +16,7 @@
 """
 
 import pandas as pd
-from typing import Dict, Union, Optional, List
-import warnings
+from typing import Dict, Optional, List
 
 
 class ColumnMapper:

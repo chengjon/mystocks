@@ -17,9 +17,9 @@ Date: 2025-11-12
 """
 
 import asyncio
-from typing import Dict, List, Optional, Any, Set, Tuple
+from typing import Dict, List, Optional, Any, Set
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 import structlog
 import time
@@ -313,7 +313,9 @@ class WebSocketConnectionPool:
             连接列表
         """
         sids = self.user_connections.get(user_id, set())
-        return [self.all_connections[sid] for sid in sids if sid in self.all_connections]
+        return [
+            self.all_connections[sid] for sid in sids if sid in self.all_connections
+        ]
 
     async def start_cleanup(self) -> None:
         """启动定期清理任务"""
@@ -350,10 +352,7 @@ class WebSocketConnectionPool:
         """清理陈旧连接"""
         stale_sids = []
         for sid, conn in self.all_connections.items():
-            if (
-                conn.state == ConnectionState.IDLE
-                and conn.is_stale(self.stale_timeout)
-            ):
+            if conn.state == ConnectionState.IDLE and conn.is_stale(self.stale_timeout):
                 stale_sids.append(sid)
 
         if stale_sids:

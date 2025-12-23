@@ -17,6 +17,7 @@ try:
 except ImportError:
     # Fallback if app.main doesn't exist yet
     from fastapi import FastAPI
+
     app = FastAPI()
 
 
@@ -34,7 +35,7 @@ def sample_strategy():
         "description": "用于测试的策略",
         "strategy_type": "rule_based",
         "parameters": {"param1": "value1"},
-        "status": "draft"
+        "status": "draft",
     }
 
 
@@ -45,7 +46,7 @@ def sample_model():
         "name": "测试模型",
         "model_type": "random_forest",
         "hyperparameters": {"n_estimators": 100},
-        "training_config": {"test_size": 0.2}
+        "training_config": {"test_size": 0.2},
     }
 
 
@@ -58,7 +59,7 @@ def sample_backtest_config():
         "start_date": "2024-01-01",
         "end_date": "2024-12-31",
         "initial_cash": 1000000,
-        "commission_rate": 0.0003
+        "commission_rate": 0.0003,
     }
 
 
@@ -71,5 +72,5 @@ def sample_risk_alert():
         "threshold_value": -0.05,
         "comparison_operator": "<",
         "is_active": True,
-        "notification_channels": ["email"]
+        "notification_channels": ["email"],
     }

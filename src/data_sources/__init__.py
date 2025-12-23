@@ -31,7 +31,7 @@ from src.data_sources.factory import (
     get_business_source,
     DataSourceFactoryException,
     UnsupportedDataSourceType,
-    DataSourceNotRegistered
+    DataSourceNotRegistered,
 )
 
 # 数据解析器
@@ -43,14 +43,12 @@ __all__ = [
     "get_timeseries_source",
     "get_relational_source",
     "get_business_source",
-
     # 异常类
     "DataSourceFactoryException",
     "UnsupportedDataSourceType",
     "DataSourceNotRegistered",
-
     # 数据解析器
-    "TdxBinaryParser"
+    "TdxBinaryParser",
 ]
 
 __version__ = "1.0.0"

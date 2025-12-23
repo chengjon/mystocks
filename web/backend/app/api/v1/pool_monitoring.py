@@ -9,7 +9,7 @@ Features:
 - 连接泄漏检测
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
 import structlog

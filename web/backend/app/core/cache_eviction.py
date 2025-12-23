@@ -16,7 +16,7 @@ Architecture:
 - EvictionScheduler: APScheduler集成
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from collections import defaultdict
 from apscheduler.schedulers.background import BackgroundScheduler

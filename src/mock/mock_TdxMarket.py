@@ -2,7 +2,7 @@
 Mock数据文件: TdxMarket
 提供接口:
 1. get_data_list() -> List[Dict] - 获取数据列表
-2. get_data_detail() -> Dict - 获取数据详情  
+2. get_data_detail() -> Dict - 获取数据详情
 3. get_data_table() -> pd.DataFrame - 获取数据表格
 
 使用说明:
@@ -15,20 +15,19 @@ Mock数据文件: TdxMarket
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict
 import pandas as pd
 import datetime
 import random
-from decimal import Decimal
 
 
 # TODO: 根据实际API接口修改函数实现
 def get_data_list() -> List[Dict]:
     """获取数据列表
-    
+
     Args:
-        
-        
+
+
     Returns:
         List[Dict]: 获取数据列表数据列表
     """
@@ -39,7 +38,7 @@ def get_data_list() -> List[Dict]:
             "id": 1,
             "name": "示例数据",
             "value": 100.0,
-            "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
     ]
     return mock_data
@@ -47,10 +46,10 @@ def get_data_list() -> List[Dict]:
 
 def get_data_detail() -> Dict:
     """获取数据详情
-    
+
     Args:
-        
-        
+
+
     Returns:
         Dict: 获取数据详情数据
     """
@@ -59,17 +58,17 @@ def get_data_detail() -> Dict:
         "id": 1,
         "name": "示例数据",
         "value": 100.0,
-        "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
     return mock_data
 
 
 def get_data_table() -> pd.DataFrame:
     """获取数据表格
-    
+
     Args:
-        
-        
+
+
     Returns:
         pd.DataFrame: 获取数据表格数据表格，列名对应前端表格字段
     """
@@ -78,18 +77,20 @@ def get_data_table() -> pd.DataFrame:
     data = {
         "date": ["2025-01-01", "2025-01-02", "2025-01-03"],
         "value": [100.0, 101.0, 99.5],
-        "change_rate": [0.0, 0.01, -0.015]
+        "change_rate": [0.0, 0.01, -0.015],
     }
     return pd.DataFrame(data)
 
 
-def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
+def generate_realistic_price(
+    base_price: float = 100.0, volatility: float = 0.02
+) -> float:
     """生成真实感的价格数据
-    
+
     Args:
         base_price: 基准价格
         volatility: 波动率
-        
+
     Returns:
         float: 生成的价格（保留2位小数）
     """
@@ -100,7 +101,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
 def generate_realistic_volume() -> int:
     """生成真实感的成交量数据
-    
+
     Returns:
         int: 成交量（股）
     """

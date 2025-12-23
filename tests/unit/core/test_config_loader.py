@@ -10,11 +10,7 @@ config_loader 模块单元测试
 
 import pytest
 import sys
-import os
-import tempfile
 import yaml
-from pathlib import Path
-from unittest.mock import Mock, patch, mock_open
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -30,16 +26,9 @@ class TestConfigLoaderBasicFunctionality:
         # 创建临时配置文件
         config_file = tmp_path / "test_config.yaml"
         config_data = {
-            "database": {
-                "host": "localhost",
-                "port": 5432,
-                "name": "test_db"
-            },
-            "server": {
-                "host": "0.0.0.0",
-                "port": 8000
-            },
-            "debug": True
+            "database": {"host": "localhost", "port": 5432, "name": "test_db"},
+            "server": {"host": "0.0.0.0", "port": 8000},
+            "debug": True,
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -71,14 +60,11 @@ class TestConfigLoaderBasicFunctionality:
         config_data = {
             "level1": {
                 "level2": {
-                    "level3": {
-                        "key": "deep_value",
-                        "number": 42
-                    },
-                    "list": [1, 2, 3]
+                    "level3": {"key": "deep_value", "number": 42},
+                    "list": [1, 2, 3],
                 }
             },
-            "top_level_list": ["a", "b", "c"]
+            "top_level_list": ["a", "b", "c"],
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -175,7 +161,7 @@ class TestConfigLoaderDataTypes:
         config_data = {
             "simple_string": "value",
             "quoted_string": "value with spaces",
-            "multiline_string": "line1\nline2\nline3"
+            "multiline_string": "line1\nline2\nline3",
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -190,12 +176,7 @@ class TestConfigLoaderDataTypes:
     def test_load_config_with_numbers(self, tmp_path):
         """测试数字类型"""
         config_file = tmp_path / "number_config.yaml"
-        config_data = {
-            "integer": 42,
-            "float": 3.14159,
-            "negative": -100,
-            "zero": 0
-        }
+        config_data = {"integer": 42, "float": 3.14159, "negative": -100, "zero": 0}
 
         with open(config_file, "w", encoding="utf-8") as f:
             yaml.dump(config_data, f)
@@ -214,7 +195,7 @@ class TestConfigLoaderDataTypes:
             "true_value": True,
             "false_value": False,
             "yes_value": True,
-            "no_value": False
+            "no_value": False,
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -231,7 +212,7 @@ class TestConfigLoaderDataTypes:
         config_data = {
             "simple_list": [1, 2, 3, 4, 5],
             "string_list": ["apple", "banana", "cherry"],
-            "mixed_list": [1, "two", 3.0, True, None]
+            "mixed_list": [1, "two", 3.0, True, None],
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -246,11 +227,7 @@ class TestConfigLoaderDataTypes:
     def test_load_config_with_null_values(self, tmp_path):
         """测试null值"""
         config_file = tmp_path / "null_values_config.yaml"
-        config_data = {
-            "null_value": None,
-            "empty_value": "",
-            "key_with_null": None
-        }
+        config_data = {"null_value": None, "empty_value": "", "key_with_null": None}
 
         with open(config_file, "w", encoding="utf-8") as f:
             yaml.dump(config_data, f)
@@ -289,10 +266,7 @@ class TestConfigLoaderEncoding:
         config_file = tmp_path / "chinese_config.yaml"
         config_data = {
             "中文键": "中文值",
-            "database": {
-                "名称": "测试数据库",
-                "描述": "这是一个测试配置"
-            }
+            "database": {"名称": "测试数据库", "描述": "这是一个测试配置"},
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -310,7 +284,7 @@ class TestConfigLoaderEncoding:
         config_data = {
             "special": "!@#$%^&*()",
             "emoji": "😀🎉🚀",
-            "unicode": "Ñoño Müller"
+            "unicode": "Ñoño Müller",
         }
 
         with open(config_file, "w", encoding="utf-8") as f:
@@ -331,12 +305,7 @@ class TestConfigLoaderEdgeCases:
 
         # 创建一个大配置
         config_data = {
-            f"key_{i}": {
-                "value": i,
-                "nested": {
-                    "data": f"value_{i}"
-                }
-            }
+            f"key_{i}": {"value": i, "nested": {"data": f"value_{i}"}}
             for i in range(1000)
         }
 

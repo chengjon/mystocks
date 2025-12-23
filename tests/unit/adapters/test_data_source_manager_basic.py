@@ -5,7 +5,7 @@ Data Source Manager基础测试
 
 import os
 import sys
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -248,7 +248,11 @@ class TestDataSourceManagerBasic:
         manager = DataSourceManager()
 
         # 测试不同类型的模拟数据源
-        source_types = [("api_source", Mock()), ("file_source", Mock()), ("cache_source", Mock())]
+        source_types = [
+            ("api_source", Mock()),
+            ("file_source", Mock()),
+            ("cache_source", Mock()),
+        ]
 
         for source_name, source_obj in source_types:
             manager.register_source(source_name, source_obj)

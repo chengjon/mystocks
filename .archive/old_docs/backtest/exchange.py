@@ -11,8 +11,6 @@
 """
 
 from typing import Dict, Optional
-from datetime import datetime
-import pandas as pd
 
 
 class Exchange:
@@ -83,35 +81,35 @@ class Exchange:
             如果无法成交返回None
         """
         # 获取当前行情
-        quote = self.get_quote(order['symbol'], timestamp)
+        quote = self.get_quote(order["symbol"], timestamp)
         if quote is None:
             print(f"⚠️ 无法撮合订单：无行情数据 {order['symbol']}@{timestamp}")
             return None
 
         # 确定成交价格
-        if order['price'] is None:  # 市价单
+        if order["price"] is None:  # 市价单
             # 使用收盘价作为成交价
-            filled_price = quote['close']
+            filled_price = quote["close"]
         else:  # 限价单
             # 简化处理：直接使用限价
             # 实际可以检查是否在当日价格范围内
-            filled_price = order['price']
+            filled_price = order["price"]
 
         # 应用滑点
         # 买入：价格略高；卖出：价格略低
-        if order['direction'] == 'buy':
-            filled_price *= (1 + self.slippage_rate)
+        if order["direction"] == "buy":
+            filled_price *= 1 + self.slippage_rate
         else:  # sell
-            filled_price *= (1 - self.slippage_rate)
+            filled_price *= 1 - self.slippage_rate
 
         # 返回成交结果
         return {
-            'symbol': order['symbol'],
-            'amount': order['amount'],
-            'price': round(filled_price, 2),
-            'direction': order['direction'],
-            'timestamp': timestamp,
-            'slippage': self.slippage_rate
+            "symbol": order["symbol"],
+            "amount": order["amount"],
+            "price": round(filled_price, 2),
+            "direction": order["direction"],
+            "timestamp": timestamp,
+            "slippage": self.slippage_rate,
         }
 
     def get_market_value(self, symbol: str, amount: int, timestamp: str) -> float:
@@ -129,4 +127,4 @@ class Exchange:
         quote = self.get_quote(symbol, timestamp)
         if quote is None:
             return 0.0
-        return quote['close'] * amount
+        return quote["close"] * amount

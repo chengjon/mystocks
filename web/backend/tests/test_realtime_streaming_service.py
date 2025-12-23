@@ -9,7 +9,6 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import pytest
 from app.services.realtime_streaming_service import (
     RealtimeStreamingService,
     MarketDataStream,

@@ -91,7 +91,7 @@ class WatchlistService:
             user_id INTEGER NOT NULL,
             group_name VARCHAR(100) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            
+
             UNIQUE(user_id, group_name)
         );
 
@@ -104,11 +104,11 @@ class WatchlistService:
             group_id INTEGER REFERENCES watchlist_groups(id) ON DELETE CASCADE,
             stock_code VARCHAR(20) NOT NULL,
             stock_name VARCHAR(100),
-            
-            
+
+
             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             notes TEXT,
-            
+
             UNIQUE(user_id, group_id, stock_code)
         );
 

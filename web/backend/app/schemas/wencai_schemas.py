@@ -41,7 +41,7 @@ class WencaiQueryRequest(BaseModel):
         """验证查询名称格式 - 只允许 qs_1 到 qs_9"""
         if not re.match(r"^qs_[1-9]$", v):
             raise ValueError(
-                "query_name must be in format 'qs_N' where N is 1-9. " f"Got: {v}"
+                f"query_name must be in format 'qs_N' where N is 1-9. Got: {v}"
             )
         return v
 

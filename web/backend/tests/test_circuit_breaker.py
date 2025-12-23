@@ -6,9 +6,7 @@ P0改进 Task 4: CircuitBreaker熔断器单元测试
 """
 
 import time
-from datetime import datetime, timedelta
 
-import pytest
 
 from app.core.circuit_breaker_manager import CircuitBreakerManager
 from app.core.error_handling import CircuitBreaker, CircuitBreakerState
@@ -228,7 +226,9 @@ class TestCircuitBreakerManager:
         assert cb is not None
         assert cb.name == "market_data"
 
-    def test_manager_get_circuit_breaker_unknown_service_falls_back(self, circuit_breaker_manager):
+    def test_manager_get_circuit_breaker_unknown_service_falls_back(
+        self, circuit_breaker_manager
+    ):
         """测试获取未知服务时回退到external_api"""
         manager = circuit_breaker_manager
         cb = manager.get_circuit_breaker("unknown_service")

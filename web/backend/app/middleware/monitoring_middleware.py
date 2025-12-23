@@ -49,7 +49,11 @@ class APIMonitoringMiddleware(BaseHTTPMiddleware):
             # 捕获异常
             status_code = 500
             error_message = str(e)
-            logger.error(f"Unhandled exception in {method} {endpoint}", error=error_message, exc_info=True)
+            logger.error(
+                f"Unhandled exception in {method} {endpoint}",
+                error=error_message,
+                exc_info=True,
+            )
             # 重新抛出异常以让FastAPI处理
             raise
 

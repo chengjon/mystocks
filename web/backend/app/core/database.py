@@ -8,7 +8,6 @@ import functools
 
 # 添加重试逻辑
 import time
-from typing import Any, Dict, Optional
 
 import pandas as pd
 import structlog
@@ -64,7 +63,10 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                             current_delay *= backoff
                         else:
                             logger.error(
-                                "数据库连接重试失败", function=func.__name__, error=str(e), retries=max_retries
+                                "数据库连接重试失败",
+                                function=func.__name__,
+                                error=str(e),
+                                retries=max_retries,
                             )
                             raise
                     else:
@@ -126,20 +128,26 @@ def get_postgresql_session() -> Session:
     """获取 PostgreSQL 会话（工厂模式）"""
     if "postgresql" not in sessions:
         engine = get_postgresql_engine()
-        sessions["postgresql"] = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        sessions["postgresql"] = sessionmaker(
+            autocommit=False, autoflush=False, bind=engine
+        )
     return sessions["postgresql"]()
 
 
 # Week 3 兼容性别名 - 将MySQL请求重定向到PostgreSQL
 def get_mysql_engine():
     """兼容性别名: Week 3简化后，MySQL请求重定向到PostgreSQL"""
-    logger.warning("get_mysql_engine() called, redirecting to PostgreSQL (Week 3 simplified)")
+    logger.warning(
+        "get_mysql_engine() called, redirecting to PostgreSQL (Week 3 simplified)"
+    )
     return get_postgresql_engine()
 
 
 def get_mysql_session() -> Session:
     """兼容性别名: Week 3简化后，MySQL会话重定向到PostgreSQL"""
-    logger.warning("get_mysql_session() called, redirecting to PostgreSQL (Week 3 simplified)")
+    logger.warning(
+        "get_mysql_session() called, redirecting to PostgreSQL (Week 3 simplified)"
+    )
     return get_postgresql_session()
 
 
@@ -156,7 +164,9 @@ try:
     import sys
 
     # 添加项目根目录到 Python 路径
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
+    project_root = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../../../")
+    )
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
@@ -173,7 +183,9 @@ try:
 
 except (ImportError, OSError, EnvironmentError) as e:
     # Week 3 简化: 如果MyStocks核心模块不可用，跳过（web backend可独立运行）
-    logger.warning(f"MyStocks data access modules not available (expected in Week 3 simplified mode): {e}")
+    logger.warning(
+        f"MyStocks data access modules not available (expected in Week 3 simplified mode): {e}"
+    )
     postgresql_access = None
 
 
@@ -207,8 +219,12 @@ class DatabaseService:
             if postgresql_access:
                 # 使用 PostgreSQLDataAccess
                 result = postgresql_access.query("symbols_info", limit=limit)
-                if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-                    logger.warning(f"Empty result from PostgreSQL access, symbol count=0")
+                if result is None or (
+                    isinstance(result, pd.DataFrame) and result.empty
+                ):
+                    logger.warning(
+                        "Empty result from PostgreSQL access, symbol count=0"
+                    )
                     return pd.DataFrame()
                 return result
             else:
@@ -226,12 +242,19 @@ class DatabaseService:
                     result = session.execute(query, {"limit": limit})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning(f"Empty stocks_basic result from database, limit={limit}")
+                        logger.warning(
+                            f"Empty stocks_basic result from database, limit={limit}"
+                        )
                     else:
-                        logger.info(f"Successfully fetched {len(df)} stocks from database")
+                        logger.info(
+                            f"Successfully fetched {len(df)} stocks from database"
+                        )
                     return df
                 except Exception as e:
-                    logger.error(f"Database query error in query_stocks_basic: {e}", exc_info=True)
+                    logger.error(
+                        f"Database query error in query_stocks_basic: {e}",
+                        exc_info=True,
+                    )
                     raise
                 finally:
                     if session:
@@ -241,7 +264,9 @@ class DatabaseService:
             raise
 
     @db_retry(max_retries=3, delay=1.0)
-    def query_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def query_daily_kline(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
         """查询日线数据"""
         try:
             if postgresql_access:
@@ -249,7 +274,10 @@ class DatabaseService:
                 where_clause = "symbol = %s AND trade_date >= %s AND trade_date <= %s"
                 params = [symbol, start_date, end_date]
                 return postgresql_access.query(
-                    "daily_kline", where=where_clause, order_by="trade_date ASC", params=params
+                    "daily_kline",
+                    where=where_clause,
+                    order_by="trade_date ASC",
+                    params=params,
                 )
             else:
                 # 直接查询 PostgreSQL
@@ -301,4 +329,6 @@ def get_db() -> Session:
 
 
 # Session工厂 - 用于向后兼容
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_postgresql_engine())
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=get_postgresql_engine()
+)

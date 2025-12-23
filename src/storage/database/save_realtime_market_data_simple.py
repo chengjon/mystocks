@@ -21,7 +21,6 @@ import logging
 import argparse
 import pandas as pd
 import redis
-import json
 from datetime import datetime
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv

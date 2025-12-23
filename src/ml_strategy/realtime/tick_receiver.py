@@ -22,7 +22,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, Callable, Any
+from typing import Dict, List, Optional, Callable
 from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum

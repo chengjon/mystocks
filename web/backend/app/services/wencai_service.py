@@ -18,13 +18,13 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 
 import pandas as pd
-from sqlalchemy import create_engine, inspect, text
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 from sqlalchemy import exc as sqlalchemy_exc
 
-from app.adapters.wencai_adapter import WencaiDataSource, get_query_text
+from app.adapters.wencai_adapter import WencaiDataSource
 from app.models.wencai_data import WencaiQuery
-from app.core.database import get_db, get_mysql_engine
+from app.core.database import get_mysql_engine
 from app.core.config import settings
 
 # 配置日志

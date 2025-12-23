@@ -15,11 +15,10 @@ import pytest
 import json
 import tempfile
 import os
-from pathlib import Path
-from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from src.contract_testing import (
@@ -299,7 +298,11 @@ class TestAPIConsistencyChecker:
                 "/api/users": {
                     "get": {
                         "parameters": [
-                            {"name": "limit", "in": "query", "schema": {"type": "integer"}}
+                            {
+                                "name": "limit",
+                                "in": "query",
+                                "schema": {"type": "integer"},
+                            }
                         ],
                         "responses": {"200": {}, "400": {}},
                     }
@@ -412,7 +415,7 @@ class TestContractTestEngine:
                 }
             },
         }
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(spec, f)
             return f.name
 
@@ -481,8 +484,16 @@ class TestContractTestReportGenerator:
         """Test adding test results"""
         generator = ContractTestReportGenerator()
         results = [
-            {"status": "passed", "endpoint_method": "GET", "endpoint_path": "/api/users"},
-            {"status": "failed", "endpoint_method": "POST", "endpoint_path": "/api/users"},
+            {
+                "status": "passed",
+                "endpoint_method": "GET",
+                "endpoint_path": "/api/users",
+            },
+            {
+                "status": "failed",
+                "endpoint_method": "POST",
+                "endpoint_path": "/api/users",
+            },
         ]
 
         generator.add_test_results(results)
@@ -492,9 +503,15 @@ class TestContractTestReportGenerator:
         """Test JSON report generation"""
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = ContractTestReportGenerator()
-            generator.add_test_results([
-                {"status": "passed", "endpoint_method": "GET", "endpoint_path": "/api/users"}
-            ])
+            generator.add_test_results(
+                [
+                    {
+                        "status": "passed",
+                        "endpoint_method": "GET",
+                        "endpoint_path": "/api/users",
+                    }
+                ]
+            )
 
             output_path = os.path.join(tmpdir, "report.json")
             generator.generate_json_report(output_path)
@@ -508,9 +525,15 @@ class TestContractTestReportGenerator:
         """Test Markdown report generation"""
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = ContractTestReportGenerator()
-            generator.add_test_results([
-                {"status": "passed", "endpoint_method": "GET", "endpoint_path": "/api/users"}
-            ])
+            generator.add_test_results(
+                [
+                    {
+                        "status": "passed",
+                        "endpoint_method": "GET",
+                        "endpoint_path": "/api/users",
+                    }
+                ]
+            )
 
             output_path = os.path.join(tmpdir, "report.md")
             generator.generate_markdown_report(output_path)
@@ -524,9 +547,15 @@ class TestContractTestReportGenerator:
         """Test HTML report generation"""
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = ContractTestReportGenerator()
-            generator.add_test_results([
-                {"status": "passed", "endpoint_method": "GET", "endpoint_path": "/api/users"}
-            ])
+            generator.add_test_results(
+                [
+                    {
+                        "status": "passed",
+                        "endpoint_method": "GET",
+                        "endpoint_path": "/api/users",
+                    }
+                ]
+            )
 
             output_path = os.path.join(tmpdir, "report.html")
             generator.generate_html_report(output_path)
@@ -540,17 +569,23 @@ class TestContractTestReportGenerator:
         """Test generating all report formats"""
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = ContractTestReportGenerator()
-            generator.add_test_results([
-                {"status": "passed", "endpoint_method": "GET", "endpoint_path": "/api/users"}
-            ])
+            generator.add_test_results(
+                [
+                    {
+                        "status": "passed",
+                        "endpoint_method": "GET",
+                        "endpoint_path": "/api/users",
+                    }
+                ]
+            )
 
             generator.generate_all_reports(tmpdir)
 
             # Check that all report files were created
             files = os.listdir(tmpdir)
-            assert any(f.endswith('.json') for f in files)
-            assert any(f.endswith('.md') for f in files)
-            assert any(f.endswith('.html') for f in files)
+            assert any(f.endswith(".json") for f in files)
+            assert any(f.endswith(".md") for f in files)
+            assert any(f.endswith(".html") for f in files)
 
 
 if __name__ == "__main__":

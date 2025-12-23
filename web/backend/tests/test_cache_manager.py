@@ -13,9 +13,7 @@ Task 2.2: 实现缓存读写逻辑
 """
 
 import pytest
-import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
 import sys
 import os
 import time
@@ -28,7 +26,7 @@ from app.core.cache_manager import (
     get_cache_manager,
     reset_cache_manager,
 )
-from app.core.tdengine_manager import TDengineManager, reset_tdengine_manager
+from app.core.tdengine_manager import reset_tdengine_manager
 
 
 class TestCacheManagerBasics:

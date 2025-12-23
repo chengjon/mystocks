@@ -7,7 +7,7 @@ Supports JSON, HTML, and Markdown formats.
 
 import json
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List
 from datetime import datetime
 from pathlib import Path
 
@@ -56,7 +56,7 @@ class ContractTestReportGenerator:
             "discrepancies": self.discrepancies,
         }
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
         logger.info(f"✅ Generated JSON report: {output_path}")
@@ -72,41 +72,57 @@ class ContractTestReportGenerator:
         if self.test_results:
             lines.append("## Test Results\n")
             total = len(self.test_results)
-            passed = sum(1 for r in self.test_results if r.get('status') == 'passed')
-            failed = sum(1 for r in self.test_results if r.get('status') == 'failed')
+            passed = sum(1 for r in self.test_results if r.get("status") == "passed")
+            failed = sum(1 for r in self.test_results if r.get("status") == "failed")
 
             lines.append(f"- **Total Tests**: {total}\n")
             lines.append(f"- **Passed**: {passed} ✅\n")
             lines.append(f"- **Failed**: {failed} ❌\n")
-            lines.append(f"- **Pass Rate**: {(passed/total*100) if total > 0 else 0:.1f}%\n\n")
+            lines.append(
+                f"- **Pass Rate**: {(passed / total * 100) if total > 0 else 0:.1f}%\n\n"
+            )
 
             # Failed tests detail
             if failed > 0:
                 lines.append("### Failed Tests\n")
                 for result in self.test_results:
-                    if result.get('status') == 'failed':
-                        lines.append(f"- `{result['endpoint_method']} {result['endpoint_path']}`\n")
-                        if result.get('error_message'):
+                    if result.get("status") == "failed":
+                        lines.append(
+                            f"- `{result['endpoint_method']} {result['endpoint_path']}`\n"
+                        )
+                        if result.get("error_message"):
                             lines.append(f"  - Error: {result['error_message']}\n")
                 lines.append("\n")
 
         # Consistency Check Summary
         if self.consistency_summary:
             lines.append("## API Consistency\n")
-            lines.append(f"- **Consistency Score**: {self.consistency_summary.get('consistency_score', 0):.1f}/100\n")
-            lines.append(f"- **Total Discrepancies**: {self.consistency_summary.get('total_discrepancies', 0)}\n")
-            lines.append(f"- **Critical Issues**: {self.consistency_summary.get('critical_issues', 0)}\n")
-            lines.append(f"- **Warnings**: {self.consistency_summary.get('warnings', 0)}\n\n")
+            lines.append(
+                f"- **Consistency Score**: {self.consistency_summary.get('consistency_score', 0):.1f}/100\n"
+            )
+            lines.append(
+                f"- **Total Discrepancies**: {self.consistency_summary.get('total_discrepancies', 0)}\n"
+            )
+            lines.append(
+                f"- **Critical Issues**: {self.consistency_summary.get('critical_issues', 0)}\n"
+            )
+            lines.append(
+                f"- **Warnings**: {self.consistency_summary.get('warnings', 0)}\n\n"
+            )
 
         # Discrepancies Detail
         if self.discrepancies:
-            critical = [d for d in self.discrepancies if d.get('severity') == 'critical']
-            warnings = [d for d in self.discrepancies if d.get('severity') == 'warning']
+            critical = [
+                d for d in self.discrepancies if d.get("severity") == "critical"
+            ]
+            warnings = [d for d in self.discrepancies if d.get("severity") == "warning"]
 
             if critical:
                 lines.append("### Critical Issues\n")
                 for disc in critical:
-                    lines.append(f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n")
+                    lines.append(
+                        f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n"
+                    )
                     lines.append(f"  - {disc['description']}\n")
                     lines.append(f"  - Suggestion: {disc['suggestion']}\n")
                 lines.append("\n")
@@ -114,11 +130,13 @@ class ContractTestReportGenerator:
             if warnings:
                 lines.append("### Warnings\n")
                 for disc in warnings:
-                    lines.append(f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n")
+                    lines.append(
+                        f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n"
+                    )
                     lines.append(f"  - {disc['description']}\n")
 
         # Write report
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
         logger.info(f"✅ Generated Markdown report: {output_path}")
@@ -126,9 +144,9 @@ class ContractTestReportGenerator:
     def generate_html_report(self, output_path: str) -> None:
         """Generate HTML report"""
         total = len(self.test_results)
-        passed = sum(1 for r in self.test_results if r.get('status') == 'passed')
+        passed = sum(1 for r in self.test_results if r.get("status") == "passed")
         failed = total - passed
-        consistency = self.consistency_summary.get('consistency_score', 0)
+        consistency = self.consistency_summary.get("consistency_score", 0)
 
         html_content = f"""
 <!DOCTYPE html>
@@ -183,7 +201,7 @@ class ContractTestReportGenerator:
             </div>
             <div class="card">
                 <h3>Pass Rate</h3>
-                <div class="number">{(passed/total*100) if total > 0 else 0:.1f}%</div>
+                <div class="number">{(passed / total * 100) if total > 0 else 0:.1f}%</div>
             </div>
         </div>
 
@@ -196,7 +214,7 @@ class ContractTestReportGenerator:
         <h2>Critical Issues</h2>
         <p>Critical issues must be resolved before deployment.</p>
         <div class="issues">
-            {''.join([f'<div class="test-result consistency-critical">❌ {d["type"]}: {d["description"]}</div>' for d in self.discrepancies if d.get("severity") == "critical"])}
+            {"".join([f'<div class="test-result consistency-critical">❌ {d["type"]}: {d["description"]}</div>' for d in self.discrepancies if d.get("severity") == "critical"])}
         </div>
 
         <div class="footer">
@@ -207,7 +225,7 @@ class ContractTestReportGenerator:
 </html>
 """
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
         logger.info(f"✅ Generated HTML report: {output_path}")
@@ -218,7 +236,9 @@ class ContractTestReportGenerator:
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.generate_json_report(f"{output_dir}/contract_test_report_{timestamp}.json")
-        self.generate_markdown_report(f"{output_dir}/contract_test_report_{timestamp}.md")
+        self.generate_markdown_report(
+            f"{output_dir}/contract_test_report_{timestamp}.md"
+        )
         self.generate_html_report(f"{output_dir}/contract_test_report_{timestamp}.html")
 
         logger.info(f"✅ Generated all reports in {output_dir}")

@@ -87,7 +87,7 @@ ts_source = get_timeseries_source()  # 自动从环境变量选择
 quotes = ts_source.get_realtime_quotes(symbols=["600000", "000001"])
 # 返回: 2条数据, 包含symbol/name/price/change等字段
 
-# ✅ 测试2: 市场概览  
+# ✅ 测试2: 市场概览
 market = ts_source.get_market_overview()
 # 返回: 总100只股票, 涨跌家数, 4大指数数据
 

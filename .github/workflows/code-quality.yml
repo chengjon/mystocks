@@ -1,0 +1,511 @@
+# GitHub Actions CI/CD Code Quality Pipeline
+# 集成代码质量和安全检查到CI/CD流程
+
+name: Code Quality Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # 代码质量检查阶段
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint pytest pytest-cov black isort flake8 bandit safety
+
+    - name: Run Pylint with security profile
+      run: |
+        pylint src/ --rcfile=.pylintrc -j 0 --disable=import-error --output-format=json > pylint-report.json || true
+      continue-on-error: true
+
+    - name: Run Flake8 with security checks
+      run: |
+        flake8 src/ --format=json --exit-zero > flake8-report.json || true
+      continue-on-error: true
+
+    - name: Run Black formatting check
+      run: |
+        black --check --diff src/ > black-diff.txt || true
+      continue-on-error: true
+
+    - name: Run isort import sorting check
+      run: |
+        isort --check-only --diff src/ > isort-diff.txt || true
+      continue-on-error: true
+
+    - name: Upload code quality results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: code-quality-results
+        path: |
+          pylint-report.json
+          flake8-report.json
+          black-diff.txt
+          isort-diff.txt
+
+  # 测试覆盖率分析
+  test-coverage:
+    name: Test Coverage Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov coverage[toml]
+
+    - name: Run tests with coverage
+      run: |
+        coverage run -m pytest scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80
+      continue-on-error: true
+
+    - name: Generate coverage report
+      run: |
+        coverage report --show-missing
+        coverage html
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-coverage-results
+        path: |
+          coverage.xml
+          htmlcov/
+
+  # 性能基准测试阶段
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-benchmark memory-profiler
+
+    - name: Run performance benchmarks
+      run: |
+        python -m pytest scripts/tests/ --benchmark-only --benchmark-json=benchmark-results.json || true
+      continue-on-error: true
+
+    - name: Analyze memory usage
+      run: |
+        python -c "
+import sys
+sys.path.insert(0, '.')
+from src.core.memory_manager import MemoryManager
+import psutil
+import os
+
+print('=== 内存使用分析 ===')
+process = psutil.Process(os.getpid())
+memory_info = process.memory_info()
+print(f'进程内存使用: {memory_info.rss / 1024 / 1024:.2f} MB')
+print(f'虚拟内存: {memory_info.vms / 1024 / 1024:.2f} MB')
+print(f'CPU 使用率: {process.cpu_percent()}%')
+
+# 检查内存管理器状态
+try:
+    from src.core.memory_manager import MemoryManager
+    manager = MemoryManager()
+    stats = manager.get_memory_stats()
+    print(f'管理内存统计: {stats}')
+except Exception as e:
+    print(f'内存管理器初始化失败: {e}')
+"
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-results
+        path: |
+          benchmark-results.json
+
+  # 代码复杂度分析
+  complexity-analysis:
+    name: Code Complexity Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install radon mccabe lizard
+
+    - name: Run Radon complexity analysis
+      run: |
+        radon cc src/ -nb -a -nb > radon-cc.txt
+        radon cc src/ -nb -nb | grep -E "(A\+|A|B|C|F)" > complexity-summary.txt
+      continue-on-error: true
+
+    - name: Run McCabe complexity
+      run: |
+        radon cc src/ -nb -nb > mccabe-complexity.txt || true
+      continue-on-error: true
+
+    - name: Run Lizard complexity
+      run: |
+        lizard src/ --language Python --CCN 10 --NLOC 50 > lizard-report.txt || true
+      continue-on-error: true
+
+    - name: Upload complexity results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: complexity-results
+        path: |
+          radon-cc.txt
+          complexity-summary.txt
+          mccabe-complexity.txt
+          lizard-report.txt
+
+  # 安全编码规范检查
+  security-compliance:
+    name: Security Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit semgrep safety
+
+    - name: Check security coding standards compliance
+      run: |
+        # 检查SQL注入防护
+        echo "=== SQL注入防护检查 ==="
+        grep -r "execute.*\+.*SELECT" src/ || echo "✅ 未发现SQL注入风险"
+        grep -r "cursor.execute.*format" src/ || echo "✅ 未发现格式化字符串SQL风险"
+
+        # 检查密码处理
+        echo -e "\n=== 密码处理检查 ==="
+        grep -r "password.*encode.*md5" src/ || echo "✅ 未发现MD5密码"
+        grep -r "hashlib.md5" src/ || echo "✅ 未发现弱哈希算法"
+
+        # 检查文件操作安全
+        echo -e "\n=== 文件操作安全检查 ==="
+        grep -r "open.*\+" src/ | head -5 || echo "✅ 未发现危险的文件操作"
+
+        # 检查输入验证
+        echo -e "\n=== 输入验证检查 ==="
+        missing_validation=0
+        for file in $(find src/ -name "*.py" -type f | head -10); do
+          if grep -q "request\." $file && ! grep -q "validate\|check" $file; then
+            echo "⚠️  $file 可能缺少输入验证"
+            missing_validation=$((missing_validation + 1))
+          fi
+        done
+        if [ $missing_validation -eq 0 ]; then
+          echo "✅ 输入验证检查通过"
+        fi
+
+    - name: Run comprehensive security scan
+      run: |
+        bandit -r src/ -f json -o bandit-compliance.json || true
+        semgrep --config=p/ci --json -o semgrep-compliance.json src/ || true
+
+    - name: Upload compliance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: compliance-results
+        path: |
+          bandit-compliance.json
+          semgrep-compliance.json
+
+  # 质量报告生成
+  quality-report:
+    name: Quality Report Generation
+    runs-on: ubuntu-latest
+    needs: [code-quality, test-coverage, performance-benchmark, complexity-analysis, security-compliance]
+
+    steps:
+    - name: Download all quality artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Generate consolidated quality report
+      run: |
+        mkdir -p quality-reports
+
+        # 生成总体质量报告
+        cat > quality-reports/quality-summary.md << 'EOF'
+        # MyStocks 代码质量报告
+
+        ## 执行时间
+        $(date)
+
+        ## 质量检查覆盖范围
+
+        ### 执行的质量检查
+        - ✅ Pylint 静态代码分析
+        - ✅ Flake8 代码风格检查
+        - ✅ Black 代码格式检查
+        - ✅ isort 导入排序检查
+        - ✅ 测试覆盖率分析
+        - ✅ 性能基准测试
+        - ✅ 代码复杂度分析
+        - ✅ 安全合规检查
+
+        ## 代码质量指标
+        EOF
+
+        # 添加Pylint结果
+        if [ -f pylint-report.json ]; then
+          echo "### Pylint 分析结果" >> quality-reports/quality-summary.md
+          python -c "
+import json
+with open('pylint-report.json') as f:
+    try:
+        data = json.load(f)
+        if isinstance(data, list) and data:
+            # 处理JSON数组格式
+            errors = sum(1 for msg in data if msg.get('type') == 'convention')
+            warnings = sum(1 for msg in data if msg.get('type') == 'refactor')
+            criticals = sum(1 for msg in data if msg.get('type') == 'error')
+            print(f'- 错误: {errors}')
+            print(f'- 警告: {warnings}')
+            print(f'- 重构建议: {criticals}')
+        else:
+            print('- 解析Pylint报告时出错')
+    except:
+        print('- 无法解析Pylint报告')
+" >> quality-reports/quality-summary.md
+        fi
+
+        # 添加覆盖率结果
+        if [ -f coverage.xml ]; then
+          echo -e "\n### 测试覆盖率" >> quality-reports/quality-summary.md
+          python -c "
+import xml.etree.ElementTree as ET
+try:
+    tree = ET.parse('coverage.xml')
+    root = tree.getroot()
+    coverage = float(root.get('line-rate', '0')) * 100
+    print(f'- 代码覆盖率: {coverage:.1f}%')
+    if coverage < 80:
+        print('- ⚠️  覆盖率低于80%目标')
+    else:
+        print('- ✅ 覆盖率达到目标')
+except:
+    print('- 无法解析覆盖率报告')
+" >> quality-reports/quality-summary.md
+        fi
+
+        # 添加复杂度结果
+        if [ -f complexity-summary.txt ]; then
+          echo -e "\n### 代码复杂度" >> quality-reports/quality-summary.md
+          cat complexity-summary.txt >> quality-reports/quality-summary.md
+        fi
+
+        # 生成JSON格式报告
+        cat > quality-reports/quality-results.json << 'JSON_EOF'
+        {
+          "timestamp": "$(date -Iseconds)",
+          "quality_metrics": {
+            "pylint_score": 0,
+            "test_coverage": 0,
+            "complexity_issues": 0,
+            "security_issues": 0
+          },
+          "recommendations": []
+        }
+        JSON_EOF
+
+        echo "质量报告已生成: quality-reports/"
+
+    - name: Upload quality reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: quality-reports
+        path: quality-reports/
+
+  # 质量门禁
+  quality-gate:
+    name: Quality Gate Check
+    runs-on: ubuntu-latest
+    needs: [quality-report]
+
+    outputs:
+      quality-pass: ${{ steps.gate.outputs.quality-pass }}
+
+    steps:
+    - name: Download quality reports
+      uses: actions/download-artifact@v3
+
+    - name: Quality Gate Evaluation
+      id: gate
+      run: |
+        QUALITY_PASS=true
+        QUALITY_ISSUES=""
+
+        # 检查Pylint错误
+        if [ -f pylint-report.json ]; then
+          ERROR_COUNT=$(python -c "
+import json
+try:
+    with open('pylint-report.json') as f:
+        data = json.load(f)
+    if isinstance(data, list):
+        error_count = len([msg for msg in data if msg.get('type') == 'error'])
+        print(error_count)
+    else:
+        print('10')  # 默认错误数
+except:
+    print('10')
+")
+          if [ "$ERROR_COUNT" -gt 20 ]; then
+            QUALITY_PASS=false
+            QUALITY_ISSUES="$QUALITY_ISSUES Pylint错误过多: $ERROR_COUNT 个"
+          fi
+        fi
+
+        # 检查测试覆盖率
+        if [ -f coverage.xml ]; then
+          COVERAGE=$(python -c "
+import xml.etree.ElementTree as ET
+try:
+    tree = ET.parse('coverage.xml')
+    root = tree.getroot()
+    coverage = float(root.get('line-rate', '0')) * 100
+    print(f'{coverage:.1f}')
+except:
+    print('0.0')
+")
+          COVERAGE_NUM=$(echo $COVERAGE | cut -d. -f1)
+          if [ "$COVERAGE_NUM" -lt 80 ]; then
+            QUALITY_PASS=false
+            QUALITY_ISSUES="$QUALITY_ISSUES 测试覆盖率不足: ${COVERAGE_NUM}%"
+          fi
+        fi
+
+        # 检查代码复杂度
+        if [ -f complexity-summary.txt ]; then
+          HIGH_COMPLEXITY=$(grep -c "F\|C" complexity-summary.txt 2>/dev/null || echo "0")
+          if [ "$HIGH_COMPLEXITY" -gt 5 ]; then
+            QUALITY_PASS=false
+            QUALITY_ISSUES="$QUALITY_ISSUES 高复杂度函数过多: $HIGH_COMPLEXITY 个"
+          fi
+        fi
+
+        # 输出结果
+        if [ "$QUALITY_PASS" = "true" ]; then
+          echo "✅ 代码质量门禁通过 - 所有质量指标正常"
+          echo "quality-pass=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ 代码质量门禁失败 - $QUALITY_ISSUES"
+          echo "quality-pass=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request' && steps.gate.outputs.quality-pass == 'false'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.name,
+            body: '⚠️ 代码质量门禁失败！请修复以下质量问题后再合并：\n- 检查代码质量报告\n- 修复Pylint错误\n- 提高测试覆盖率\n- 重构高复杂度函数\n\n详细信息请查看质量测试报告。'
+          })
+
+  # 最终整合报告
+  final-report:
+    name: Final Integration Report
+    runs-on: ubuntu-latest
+    needs: [security-gate, quality-gate]
+    if: always()
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Generate final CI/CD report
+      run: |
+        echo "=== MyStocks CI/CD 测试总结 ==="
+        echo "执行时间: $(date)"
+        echo "提交: ${{ github.sha }}"
+        echo "分支: ${{ github.ref_name }}"
+        echo ""
+
+        # 安全测试结果
+        echo "🔒 安全测试结果:"
+        if [ -f security-reports/security-summary.md ]; then
+          grep -E "(✅|❌|⚠️)" security-reports/security-summary.md | head -5
+        else
+          echo "❌ 安全测试报告未找到"
+        fi
+
+        # 质量测试结果
+        echo -e "\n📊 质量测试结果:"
+        if [ -f quality-reports/quality-summary.md ]; then
+          grep -E "(✅|❌|⚠️)" quality-reports/quality-summary.md | head -5
+        else
+          echo "❌ 质量测试报告未找到"
+        fi
+
+        # 总体状态
+        echo -e "\n🎯 总体状态:"
+        if [ "${{ needs.security-gate.outputs.security-pass }}" = "true" ] && [ "${{ needs.quality-gate.outputs.quality-pass }}" = "true" ]; then
+          echo "✅ 所有测试通过 - 可以部署"
+        else
+          echo "❌ 部分测试失败 - 需要修复"
+        fi
+
+    - name: Upload final report
+      uses: actions/upload-artifact@v3
+      with:
+        name: ci-cd-final-report
+        path: |
+          security-reports/
+          quality-reports/

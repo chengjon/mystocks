@@ -60,7 +60,7 @@ def _generate_correlated_change(volatility=0.02):
 
 📁 Mock模块文件检查:
    ✅ src/mock/mock_Market.py (25,903 bytes)
-   ✅ src/mock/mock_StockSearch.py (16,016 bytes) 
+   ✅ src/mock/mock_StockSearch.py (16,016 bytes)
    ✅ src/mock/mock_TradingView.py (17,618 bytes)
    ✅ web/backend/app/mock/unified_mock_data.py (27,736 bytes)
 
@@ -364,7 +364,7 @@ Mock数据系统现在可以安全、高效地用于生产环境的开发、测�
 
 ---
 
-**项目状态**: ✅ 完成  
-**最后更新**: 2025-11-13  
-**版本**: v2.1.0 (增强版)  
-**维护团队**: MyStocks Backend Team  
+**项目状态**: ✅ 完成
+**最后更新**: 2025-11-13
+**版本**: v2.1.0 (增强版)
+**维护团队**: MyStocks Backend Team

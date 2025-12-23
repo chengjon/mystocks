@@ -21,8 +21,8 @@
 
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Tuple
-from datetime import date, datetime
+from typing import Dict, List, Optional
+from datetime import date
 from dataclasses import dataclass
 import logging
 
@@ -459,7 +459,7 @@ if __name__ == "__main__":
     result = backtester.run(price_data, signals)
 
     # 打印结果
-    print(f"\n回测结果:")
+    print("\n回测结果:")
     print(f"  总收益率: {result['summary']['total_return']:.2%}")
     print(f"  总交易次数: {result['summary']['total_trades']}")
     print(f"  胜率: {result['summary']['win_rate']:.2%}")
@@ -467,7 +467,7 @@ if __name__ == "__main__":
 
     trades_df = backtester.get_trades_df()
     if not trades_df.empty:
-        print(f"\n前5笔交易:")
+        print("\n前5笔交易:")
         print(trades_df.head()[["entry_date", "exit_date", "pnl", "pnl_pct"]])
 
     print("\n测试通过！")

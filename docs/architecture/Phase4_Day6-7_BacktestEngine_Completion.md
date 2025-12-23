@@ -79,7 +79,7 @@ def _run_backtest_loop(self):
     for trade_date in trading_dates:
         # 1. 生成市场数据事件
         self._generate_market_events(trade_date)
-        
+
         # 2. 处理事件队列
         while len(self.event_queue) > 0:
             event = self.event_queue.popleft()
@@ -88,10 +88,10 @@ def _run_backtest_loop(self):
             elif isinstance(event, SignalEvent):
                 self._on_signal_event(event)
             # ...
-        
+
         # 3. 检查止损止盈
         self._check_stop_loss_take_profit(trade_date)
-        
+
         # 4. 记录资金曲线
         self.portfolio.record_equity_curve(trade_date)
 ```
@@ -107,7 +107,7 @@ def run_backtest_task(self, backtest_id, strategy_config, backtest_config):
             state='PROGRESS',
             meta={'progress': progress_event.progress, ...}
         )
-    
+
     # 执行回测
     engine = BacktestEngine(
         strategy_config=strategy_config,

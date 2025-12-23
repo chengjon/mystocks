@@ -1,4 +1,4 @@
-'''
+"""
 # 功能：数据源管理器，统一管理多个数据源适配器的生命周期
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
@@ -7,8 +7,7 @@
 # 注意事项：
 #   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
 # 版权：MyStocks Project © 2025
-'''
-
+"""
 
 import logging
 from typing import Dict, List, Optional, Union
@@ -51,9 +50,9 @@ class DataSourceManager:
 
         # 数据源优先级配置
         self._priority_config = {
-            'real_time': ['tdx', 'akshare'],  # 实时行情优先级
-            'daily': ['tdx', 'akshare'],      # 日线数据优先级
-            'financial': ['akshare', 'tdx'],  # 财务数据优先级
+            "real_time": ["tdx", "akshare"],  # 实时行情优先级
+            "daily": ["tdx", "akshare"],  # 日线数据优先级
+            "financial": ["akshare", "tdx"],  # 财务数据优先级
         }
 
         self.logger.info("数据源管理器初始化完成")
@@ -91,9 +90,7 @@ class DataSourceManager:
     # ==================== 实时行情 ====================
 
     def get_real_time_data(
-        self,
-        symbol: str,
-        source: Optional[str] = None
+        self, symbol: str, source: Optional[str] = None
     ) -> Union[Dict, str]:
         """
         获取实时行情数据
@@ -115,7 +112,7 @@ class DataSourceManager:
             return data_source.get_real_time_data(symbol)
 
         # 按优先级尝试多个数据源
-        for source_name in self._priority_config['real_time']:
+        for source_name in self._priority_config["real_time"]:
             data_source = self._sources.get(source_name)
             if not data_source:
                 continue
@@ -134,11 +131,7 @@ class DataSourceManager:
     # ==================== 历史K线 ====================
 
     def get_stock_daily(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        source: Optional[str] = None
+        self, symbol: str, start_date: str, end_date: str, source: Optional[str] = None
     ) -> pd.DataFrame:
         """
         获取股票日线数据
@@ -162,7 +155,7 @@ class DataSourceManager:
             return data_source.get_stock_daily(symbol, start_date, end_date)
 
         # 按优先级尝试多个数据源
-        for source_name in self._priority_config['daily']:
+        for source_name in self._priority_config["daily"]:
             data_source = self._sources.get(source_name)
             if not data_source:
                 continue
@@ -180,11 +173,7 @@ class DataSourceManager:
         return pd.DataFrame()
 
     def get_index_daily(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str,
-        source: Optional[str] = None
+        self, symbol: str, start_date: str, end_date: str, source: Optional[str] = None
     ) -> pd.DataFrame:
         """
         获取指数日线数据
@@ -208,7 +197,7 @@ class DataSourceManager:
             return data_source.get_index_daily(symbol, start_date, end_date)
 
         # 按优先级尝试多个数据源
-        for source_name in self._priority_config['daily']:
+        for source_name in self._priority_config["daily"]:
             data_source = self._sources.get(source_name)
             if not data_source:
                 continue
@@ -227,11 +216,7 @@ class DataSourceManager:
 
     # ==================== 其他接口 ====================
 
-    def get_stock_basic(
-        self,
-        symbol: str,
-        source: Optional[str] = None
-    ) -> Dict:
+    def get_stock_basic(self, symbol: str, source: Optional[str] = None) -> Dict:
         """获取股票基本信息"""
         if source:
             data_source = self._sources.get(source)
@@ -247,10 +232,7 @@ class DataSourceManager:
         return {}
 
     def get_financial_data(
-        self,
-        symbol: str,
-        period: str = 'quarter',
-        source: Optional[str] = None
+        self, symbol: str, period: str = "quarter", source: Optional[str] = None
     ) -> pd.DataFrame:
         """获取财务数据"""
         if source:
@@ -259,7 +241,7 @@ class DataSourceManager:
                 return data_source.get_financial_data(symbol, period)
 
         # 按优先级尝试(财务数据优先akshare)
-        for source_name in self._priority_config['financial']:
+        for source_name in self._priority_config["financial"]:
             data_source = self._sources.get(source_name)
             if not data_source:
                 continue
@@ -271,9 +253,7 @@ class DataSourceManager:
         return pd.DataFrame()
 
     def get_index_components(
-        self,
-        symbol: str,
-        source: Optional[str] = None
+        self, symbol: str, source: Optional[str] = None
     ) -> List[str]:
         """获取指数成分股"""
         if source:
@@ -318,21 +298,21 @@ def get_default_manager() -> DataSourceManager:
     # 注册TDX数据源
     try:
         tdx = TdxDataSource()
-        manager.register_source('tdx', tdx)
+        manager.register_source("tdx", tdx)
     except Exception as e:
         logging.warning(f"TDX数据源注册失败: {e}")
 
     # 注册AKShare数据源
     try:
         akshare = AkshareDataSource()
-        manager.register_source('akshare', akshare)
+        manager.register_source("akshare", akshare)
     except Exception as e:
         logging.warning(f"AKShare数据源注册失败: {e}")
 
     return manager
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """测试数据源管理器"""
     logging.basicConfig(level=logging.INFO)
 
@@ -347,7 +327,7 @@ if __name__ == '__main__':
 
     # 测试实时行情
     print("\n测试实时行情 (贵州茅台 600519):")
-    quote = manager.get_real_time_data('600519', source='tdx')
+    quote = manager.get_real_time_data("600519", source="tdx")
     if isinstance(quote, dict):
         print(f"  股票名称: {quote['name']}")
         print(f"  最新价: {quote['price']:.2f}")
@@ -358,10 +338,11 @@ if __name__ == '__main__':
     # 测试日线数据
     print("\n测试日线数据 (最近10天):")
     from datetime import datetime, timedelta
-    end_date = datetime.now().strftime('%Y-%m-%d')
-    start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
 
-    df = manager.get_stock_daily('600519', start_date, end_date, source='tdx')
+    end_date = datetime.now().strftime("%Y-%m-%d")
+    start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    df = manager.get_stock_daily("600519", start_date, end_date, source="tdx")
     if not df.empty:
         print(f"  获取成功: {len(df)}条数据")
         print(f"  日期范围: {df['date'].min()} ~ {df['date'].max()}")

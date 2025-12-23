@@ -28,7 +28,7 @@ error() {
 # 检查端口占用情况
 check_ports() {
     info "检查端口占用情况..."
-    
+
     # 检查后端端口 (8000)
     if lsof -i :8000 &> /dev/null; then
         warn "端口 8000 (后端) 已被占用"
@@ -38,7 +38,7 @@ check_ports() {
     else
         info "端口 8000 (后端) 可用"
     fi
-    
+
     # 检查前端端口 (5173)
     if lsof -i :5173 &> /dev/null; then
         warn "端口 5173 (前端) 已被占用"
@@ -53,13 +53,13 @@ check_ports() {
 # 启动后端服务
 start_backend() {
     info "启动后端服务..."
-    
+
     cd /opt/claude/mystocks_spec
-    
+
     # 确保环境变量设置正确
     export USE_MOCK_DATA=true
     export PORT=8000
-    
+
     # 检查.env文件是否存在，如果存在则加载
     if [ -f .env ]; then
         info "加载 .env 文件..."
@@ -68,7 +68,7 @@ start_backend() {
         source <(grep -v '^#' .env | grep -v '^$')
         set +a  # 停止自动导出
     fi
-    
+
     # 检查是否需要安装依赖
     if [ ! -d "web/backend/__pycache__" ]; then
         warn "后端依赖可能未安装，正在安装..."
@@ -76,16 +76,16 @@ start_backend() {
         pip install -r requirements.txt
         cd /opt/claude/mystocks_spec
     fi
-    
+
     # 启动服务
     info "在后台启动后端服务..."
     cd web/backend
     nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /opt/claude/mystocks_spec/logs/backend.log 2>&1 &
     BACKEND_PID=$!
     echo $BACKEND_PID > /opt/claude/mystocks_spec/backend.pid
-    
+
     cd /opt/claude/mystocks_spec
-    
+
     # 等待服务启动
     for i in {1..30}; do
         if curl -s http://localhost:8000/ > /dev/null; then
@@ -94,7 +94,7 @@ start_backend() {
         fi
         sleep 1
     done
-    
+
     error "后端服务启动超时"
     return 1
 }
@@ -102,25 +102,25 @@ start_backend() {
 # 启动前端服务
 start_frontend() {
     info "启动前端服务..."
-    
+
     cd /opt/claude/mystocks_spec/web/frontend
-    
+
     # 确保环境变量设置正确
     export VITE_APP_MODE=mock
     export VITE_API_BASE_URL=http://localhost:8000
-    
+
     # 检查是否需要安装依赖
     if [ ! -d "node_modules" ]; then
         warn "前端依赖可能未安装，正在安装..."
         npm install
     fi
-    
+
     # 启动服务
     info "在后台启动前端服务..."
     nohup npm run dev -- --host 0.0.0.0 --port 5173 > /opt/claude/mystocks_spec/logs/frontend.log 2>&1 &
     FRONTEND_PID=$!
     echo $FRONTEND_PID > /opt/claude/mystocks_spec/frontend.pid
-    
+
     # 等待服务启动
     for i in {1..30}; do
         if curl -s http://localhost:5173/ > /dev/null; then
@@ -129,7 +129,7 @@ start_frontend() {
         fi
         sleep 1
     done
-    
+
     error "前端服务启动超时"
     return 1
 }
@@ -137,11 +137,11 @@ start_frontend() {
 # 检查服务状态
 check_services() {
     info "检查服务状态..."
-    
+
     # 后端检查
     if curl -s http://localhost:8000/ > /dev/null; then
         info "✅ 后端服务 (API) 正常运行"
-        
+
         # 检查缓存状态
         if curl -s http://localhost:8000/api/cache/status > /dev/null; then
             info "✅ 后端缓存系统正常工作"
@@ -152,7 +152,7 @@ check_services() {
         error "❌ 后端服务 (API) 未正常运行"
         return 1
     fi
-    
+
     # 前端检查
     if curl -s http://localhost:5173/ > /dev/null; then
         info "✅ 前端服务正常运行"
@@ -160,7 +160,7 @@ check_services() {
         error "❌ 前端服务未正常运行"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -196,7 +196,7 @@ show_startup_info() {
 # 停止服务
 stop_services() {
     info "正在停止所有服务..."
-    
+
     # 停止后端服务
     if [ -f /opt/claude/mystocks_spec/backend.pid ]; then
         BACKEND_PID=$(cat /opt/claude/mystocks_spec/backend.pid)
@@ -208,7 +208,7 @@ stop_services() {
         fi
         rm -f /opt/claude/mystocks_spec/backend.pid
     fi
-    
+
     # 停止前端服务
     if [ -f /opt/claude/mystocks_spec/frontend.pid ]; then
         FRONTEND_PID=$(cat /opt/claude/mystocks_spec/frontend.pid)
@@ -220,11 +220,11 @@ stop_services() {
         fi
         rm -f /opt/claude/mystocks_spec/frontend.pid
     fi
-    
+
     # 确保所有相关进程已停止
     pkill -f "uvicorn app.main:app --host 0.0.0.0 --port 8000" || true
     pkill -f "vite.*--port 5173" || true
-    
+
     info "所有服务已停止"
 }
 
@@ -253,7 +253,7 @@ show_help() {
 # 主函数
 main() {
     local action="start"
-    
+
     # 解析命令行参数
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -284,13 +284,13 @@ main() {
                 ;;
         esac
     done
-    
+
     # 显示标题
     echo -e "${BLUE}========================================${NC}"
     echo -e "${BLUE}    MyStocks 服务启动器${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo ""
-    
+
     # 根据操作执行相应函数
     case $action in
         start)

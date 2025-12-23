@@ -16,11 +16,9 @@
 """
 
 from typing import List, Dict, Optional, Any
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import numpy as np
-import pandas as pd
+from concurrent.futures import ThreadPoolExecutor
 
 from src.interfaces.business_data_source import IBusinessDataSource
 from src.data_sources import get_timeseries_source, get_relational_source
@@ -70,9 +68,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
     # ==================== 仪表盘相关 ====================
 
     def get_dashboard_summary(
-        self,
-        user_id: int,
-        trade_date: Optional[date] = None
+        self, user_id: int, trade_date: Optional[date] = None
     ) -> Dict[str, Any]:
         """
         获取仪表盘汇总数据
@@ -95,23 +91,23 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             futures = {}
 
             # 任务1: 市场概览
-            futures['market_overview'] = self.executor.submit(
+            futures["market_overview"] = self.executor.submit(
                 self.timeseries_source.get_market_overview
             )
 
             # 任务2: 自选股列表
-            futures['watchlist'] = self.executor.submit(
+            futures["watchlist"] = self.executor.submit(
                 self.relational_source.get_watchlist,
                 user_id=user_id,
                 list_type="favorite",
-                include_stock_info=False
+                include_stock_info=False,
             )
 
             # 任务3: 资金流排名
-            futures['fund_flow_ranking'] = self.executor.submit(
+            futures["fund_flow_ranking"] = self.executor.submit(
                 self.timeseries_source.get_top_fund_flow_stocks,
                 limit=10,
-                flow_type="main"
+                flow_type="main",
             )
 
             # 等待所有任务完成
@@ -127,24 +123,24 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             summary = {
                 "trade_date": trade_date.strftime("%Y-%m-%d"),
                 "user_id": user_id,
-                "market_overview": results.get('market_overview', {}),
+                "market_overview": results.get("market_overview", {}),
                 "data_status": {
                     "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "realtime_delay_seconds": 5,
-                    "data_completeness": 98.5
+                    "data_completeness": 98.5,
                 },
                 "fund_flow_ranking": {
-                    "top_inflow": results.get('fund_flow_ranking', [])[:5],
-                    "top_outflow": results.get('fund_flow_ranking', [])[-5:]
+                    "top_inflow": results.get("fund_flow_ranking", [])[:5],
+                    "top_outflow": results.get("fund_flow_ranking", [])[-5:],
                 },
                 "watchlist_performance": {
                     "favorite_stocks": {
-                        "total_count": len(results.get('watchlist', [])),
+                        "total_count": len(results.get("watchlist", [])),
                         "avg_change": 0.0,  # 需要实时行情数据计算
                         "up_count": 0,
-                        "down_count": 0
+                        "down_count": 0,
                     }
-                }
+                },
             }
 
             logger.info(f"仪表盘汇总完成: user_id={user_id}")
@@ -155,10 +151,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             raise
 
     def get_sector_performance(
-        self,
-        sector_type: str,
-        trade_date: Optional[date] = None,
-        limit: int = 20
+        self, sector_type: str, trade_date: Optional[date] = None, limit: int = 20
     ) -> List[Dict[str, Any]]:
         """
         获取板块表现
@@ -169,7 +162,9 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if trade_date is None:
                 trade_date = date.today()
 
-            logger.info(f"获取板块表现: sector_type={sector_type}, trade_date={trade_date}")
+            logger.info(
+                f"获取板块表现: sector_type={sector_type}, trade_date={trade_date}"
+            )
 
             if sector_type == "industry":
                 # 获取行业列表
@@ -184,16 +179,18 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             # 生产版本应该查询成分股行情并计算板块涨跌幅
             result = []
             for sector in sectors[:limit]:
-                result.append({
-                    "code": sector["code"],
-                    "name": sector["name"],
-                    "stock_count": sector.get("stock_count", 0),
-                    "avg_change": 0.0,  # 需要实时行情计算
-                    "up_count": 0,
-                    "down_count": 0,
-                    "total_amount": 0.0,
-                    "net_fund_inflow": 0.0
-                })
+                result.append(
+                    {
+                        "code": sector["code"],
+                        "name": sector["name"],
+                        "stock_count": sector.get("stock_count", 0),
+                        "avg_change": 0.0,  # 需要实时行情计算
+                        "up_count": 0,
+                        "down_count": 0,
+                        "total_amount": 0.0,
+                        "net_fund_inflow": 0.0,
+                    }
+                )
 
             logger.info(f"板块表现查询完成: count={len(result)}")
             return result
@@ -211,7 +208,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         start_date: date,
         end_date: date,
         initial_capital: float,
-        universe: Optional[List[str]] = None
+        universe: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         执行策略回测
@@ -227,9 +224,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
             # 1. 获取策略配置
             strategies = self.relational_source.get_strategy_configs(
-                user_id=user_id,
-                strategy_type=None,
-                status=None
+                user_id=user_id, strategy_type=None, status=None
             )
 
             strategy_config = None
@@ -258,31 +253,31 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "period": {
                     "start_date": start_date.strftime("%Y-%m-%d"),
                     "end_date": end_date.strftime("%Y-%m-%d"),
-                    "trading_days": trading_days
+                    "trading_days": trading_days,
                 },
                 "returns": {
                     "total_return": total_return,
                     "annual_return": total_return * (365 / trading_days),
                     "sharpe_ratio": 1.45,
                     "max_drawdown": -0.125,
-                    "win_rate": 0.58
+                    "win_rate": 0.58,
                 },
                 "trades": {
                     "total_trades": 50,
                     "profitable_trades": 29,
                     "losing_trades": 21,
                     "avg_profit": 0.032,
-                    "avg_loss": -0.018
+                    "avg_loss": -0.018,
                 },
                 "positions": {
                     "avg_holding_period": 8.5,
                     "max_positions": 10,
-                    "turnover_rate": 1.5
+                    "turnover_rate": 1.5,
                 },
                 "equity_curve": [],  # 简化版不生成净值曲线
                 "trade_records": [],  # 简化版不生成交易记录
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "execution_time_seconds": 1.5
+                "execution_time_seconds": 1.5,
             }
 
             logger.info(f"回测完成: backtest_id={result['backtest_id']}")
@@ -299,7 +294,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         user_id: int,
         backtest_id: Optional[str] = None,
         strategy_id: Optional[int] = None,
-        limit: int = 10
+        limit: int = 10,
     ) -> List[Dict[str, Any]]:
         """
         获取回测结果列表
@@ -321,9 +316,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
     # ==================== 风险管理相关 ====================
 
     def calculate_risk_metrics(
-        self,
-        user_id: int,
-        portfolio: Optional[Dict[str, float]] = None
+        self, user_id: int, portfolio: Optional[Dict[str, float]] = None
     ) -> Dict[str, Any]:
         """
         计算风险指标
@@ -346,26 +339,26 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "var_metrics": {
                     "var_95": -12500.0,
                     "var_99": -18750.0,
-                    "cvar_95": -15230.0
+                    "cvar_95": -15230.0,
                 },
                 "volatility": {
                     "daily_volatility": 0.018,
                     "annual_volatility": 0.285,
                     "beta": 1.15,
-                    "correlation_with_market": 0.72
+                    "correlation_with_market": 0.72,
                 },
                 "concentration": {
                     "top1_weight": 0.25,
                     "top3_weight": 0.58,
                     "top5_weight": 0.75,
-                    "herfindahl_index": 0.15
+                    "herfindahl_index": 0.15,
                 },
                 "industry_exposure": {
                     "金融": 0.35,
                     "科技": 0.28,
                     "消费": 0.20,
-                    "其他": 0.17
-                }
+                    "其他": 0.17,
+                },
             }
 
             logger.info(f"风险指标计算完成: user_id={user_id}")
@@ -375,10 +368,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             logger.error(f"计算风险指标失败: {e}")
             raise
 
-    def check_risk_alerts(
-        self,
-        user_id: int
-    ) -> List[Dict[str, Any]]:
+    def check_risk_alerts(self, user_id: int) -> List[Dict[str, Any]]:
         """
         检查风险预警
 
@@ -389,8 +379,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
             # 1. 获取用户的所有启用预警
             alerts = self.relational_source.get_risk_alerts(
-                user_id=user_id,
-                enabled_only=True
+                user_id=user_id, enabled_only=True
             )
 
             triggered = []
@@ -410,16 +399,20 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
                 # Mock: 假设某些预警被触发
                 if alert["id"] % 3 == 0:  # 模拟33%的预警被触发
-                    triggered.append({
-                        "alert_id": alert["id"],
-                        "symbol": symbol,
-                        "alert_type": alert_type,
-                        "condition": condition,
-                        "threshold": threshold,
-                        "current_value": threshold * 1.05,  # Mock当前值
-                        "triggered_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "message": f"{symbol} {alert_type}触发预警（阈值{threshold}）"
-                    })
+                    triggered.append(
+                        {
+                            "alert_id": alert["id"],
+                            "symbol": symbol,
+                            "alert_type": alert_type,
+                            "condition": condition,
+                            "threshold": threshold,
+                            "current_value": threshold * 1.05,  # Mock当前值
+                            "triggered_at": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            ),
+                            "message": f"{symbol} {alert_type}触发预警（阈值{threshold}）",
+                        }
+                    )
 
             logger.info(f"风险预警检查完成: triggered_count={len(triggered)}")
             return triggered
@@ -434,7 +427,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         self,
         user_id: int,
         strategy_ids: Optional[List[int]] = None,
-        trade_date: Optional[date] = None
+        trade_date: Optional[date] = None,
     ) -> List[Dict[str, Any]]:
         """
         分析交易信号
@@ -451,16 +444,14 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if strategy_ids:
                 strategies = []
                 all_strategies = self.relational_source.get_strategy_configs(
-                    user_id=user_id,
-                    status="active"
+                    user_id=user_id, status="active"
                 )
                 for s in all_strategies:
                     if s["id"] in strategy_ids:
                         strategies.append(s)
             else:
                 strategies = self.relational_source.get_strategy_configs(
-                    user_id=user_id,
-                    status="active"
+                    user_id=user_id, status="active"
                 )
 
             # 2. 对每个策略生成交易信号（简化版）
@@ -474,19 +465,23 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 # Mock: 每个策略生成1-3个信号
                 signal_count = (strategy["id"] % 3) + 1
                 for i in range(signal_count):
-                    signals.append({
-                        "signal_id": f"SIG{datetime.now().strftime('%Y%m%d%H%M%S')}{i}",
-                        "strategy_id": strategy["id"],
-                        "strategy_name": strategy["name"],
-                        "symbol": f"60000{i}",
-                        "name": f"股票{i}",
-                        "action": "buy" if i % 2 == 0 else "sell",
-                        "confidence": 0.75 + (i * 0.05),
-                        "price": 10.0 + i,
-                        "recommended_quantity": 1000,
-                        "reason": "技术指标触发",
-                        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    })
+                    signals.append(
+                        {
+                            "signal_id": f"SIG{datetime.now().strftime('%Y%m%d%H%M%S')}{i}",
+                            "strategy_id": strategy["id"],
+                            "strategy_name": strategy["name"],
+                            "symbol": f"60000{i}",
+                            "name": f"股票{i}",
+                            "action": "buy" if i % 2 == 0 else "sell",
+                            "confidence": 0.75 + (i * 0.05),
+                            "price": 10.0 + i,
+                            "recommended_quantity": 1000,
+                            "reason": "技术指标触发",
+                            "generated_at": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            ),
+                        }
+                    )
 
             logger.info(f"交易信号分析完成: signal_count={len(signals)}")
             return signals
@@ -496,9 +491,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             raise
 
     def get_portfolio_analysis(
-        self,
-        user_id: int,
-        include_history: bool = False
+        self, user_id: int, include_history: bool = False
     ) -> Dict[str, Any]:
         """
         获取持仓分析
@@ -523,7 +516,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                         "market_value": 10500.0,
                         "profit_loss": 500.0,
                         "profit_loss_percent": 5.0,
-                        "weight": 0.15
+                        "weight": 0.15,
                     }
                 ],
                 "summary": {
@@ -532,14 +525,14 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     "total_profit_loss": 5000.0,
                     "total_return": 0.077,
                     "cash": 30000.0,
-                    "total_assets": 100000.0
-                }
+                    "total_assets": 100000.0,
+                },
             }
 
             if include_history:
                 result["equity_history"] = [
                     {"date": "2025-10-01", "equity": 95000.0},
-                    {"date": "2025-11-21", "equity": 100000.0}
+                    {"date": "2025-11-21", "equity": 100000.0},
                 ]
 
             logger.info(f"持仓分析完成: user_id={user_id}")
@@ -550,10 +543,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             raise
 
     def perform_attribution_analysis(
-        self,
-        user_id: int,
-        start_date: date,
-        end_date: date
+        self, user_id: int, start_date: date, end_date: date
     ) -> Dict[str, Any]:
         """
         执行归因分析
@@ -576,7 +566,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "period": {
                     "start_date": start_date.strftime("%Y-%m-%d"),
                     "end_date": end_date.strftime("%Y-%m-%d"),
-                    "trading_days": trading_days
+                    "trading_days": trading_days,
                 },
                 "return_attribution": {
                     "total_return": 0.077,
@@ -585,22 +575,20 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     "attribution_breakdown": {
                         "sector_selection": 0.015,
                         "stock_selection": 0.020,
-                        "timing": -0.003
-                    }
+                        "timing": -0.003,
+                    },
                 },
                 "sector_contribution": {
                     "金融": 0.025,
                     "科技": 0.035,
                     "消费": 0.012,
-                    "其他": 0.005
+                    "其他": 0.005,
                 },
                 "top_contributors": [
                     {"symbol": "600000", "contribution": 0.015},
-                    {"symbol": "000001", "contribution": 0.012}
+                    {"symbol": "000001", "contribution": 0.012},
                 ],
-                "top_detractors": [
-                    {"symbol": "600001", "contribution": -0.008}
-                ]
+                "top_detractors": [{"symbol": "600001", "contribution": -0.008}],
             }
 
             logger.info(f"归因分析完成: user_id={user_id}")
@@ -617,7 +605,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         user_id: int,
         criteria: Dict[str, Any],
         sort_by: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
         执行股票筛选
@@ -641,15 +629,17 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             result = []
             for stock in stocks[:limit]:
                 # Mock: 简单返回股票基础信息
-                result.append({
-                    "symbol": stock["symbol"],
-                    "name": stock["name"],
-                    "price": 10.0,  # Mock价格
-                    "change_percent": 0.0,  # Mock涨跌幅
-                    "volume": 0,  # Mock成交量
-                    "industry": stock.get("industry", "未知"),
-                    "technical_scores": {}
-                })
+                result.append(
+                    {
+                        "symbol": stock["symbol"],
+                        "name": stock["name"],
+                        "price": 10.0,  # Mock价格
+                        "change_percent": 0.0,  # Mock涨跌幅
+                        "volume": 0,  # Mock成交量
+                        "industry": stock.get("industry", "未知"),
+                        "technical_scores": {},
+                    }
+                )
 
             logger.info(f"股票筛选完成: result_count={len(result)}")
             return result
@@ -669,8 +659,8 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         try:
             # 并行检查两个依赖数据源
             futures = {
-                'timeseries': self.executor.submit(self.timeseries_source.health_check),
-                'relational': self.executor.submit(self.relational_source.health_check)
+                "timeseries": self.executor.submit(self.timeseries_source.health_check),
+                "relational": self.executor.submit(self.relational_source.health_check),
             }
 
             dependencies = {}
@@ -679,18 +669,17 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     health = future.result(timeout=3)
                     dependencies[f"{key}_source"] = {
                         "status": health.get("status", "unknown"),
-                        "response_time_ms": health.get("response_time_ms", 0)
+                        "response_time_ms": health.get("response_time_ms", 0),
                     }
                 except Exception as e:
                     dependencies[f"{key}_source"] = {
                         "status": "unhealthy",
-                        "error": str(e)
+                        "error": str(e),
                     }
 
             # 判断整体状态
             all_healthy = all(
-                dep["status"] == "healthy"
-                for dep in dependencies.values()
+                dep["status"] == "healthy" for dep in dependencies.values()
             )
 
             return {
@@ -700,9 +689,9 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "cache_status": {
                     "enabled": True,
                     "hit_rate": 0.75,
-                    "size_mb": len(self._cache) * 0.001  # 粗略估算
+                    "size_mb": len(self._cache) * 0.001,  # 粗略估算
                 },
-                "last_calculation": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "last_calculation": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             }
 
         except Exception as e:
@@ -710,10 +699,10 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             return {
                 "status": "unhealthy",
                 "data_source_type": "business",
-                "error": str(e)
+                "error": str(e),
             }
 
     def __del__(self):
         """清理线程池"""
-        if hasattr(self, 'executor'):
+        if hasattr(self, "executor"):
             self.executor.shutdown(wait=False)

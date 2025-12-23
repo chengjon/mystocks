@@ -16,10 +16,9 @@ PostgreSQL关系数据源实现
 版本: 1.0.0
 """
 
-from typing import List, Dict, Optional, Any, Tuple
-from datetime import datetime, date
+from typing import List, Dict, Optional, Any
+from datetime import datetime
 import logging
-from contextlib import contextmanager
 
 from src.interfaces.relational_data_source import IRelationalDataSource
 from src.data_access.postgresql_access import PostgreSQLDataAccess
@@ -53,15 +52,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         """
         self.pg_access = PostgreSQLDataAccess()
         self._connection_pool_size = connection_pool_size
-        logger.info(f"PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})")
+        logger.info(
+            f"PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})"
+        )
 
     # ==================== 自选股管理 ====================
 
     def get_watchlist(
-        self,
-        user_id: int,
-        list_type: str = "favorite",
-        include_stock_info: bool = True
+        self, user_id: int, list_type: str = "favorite", include_stock_info: bool = True
     ) -> List[Dict[str, Any]]:
         """
         获取自选股列表
@@ -102,7 +100,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                     "symbol": row[2],
                     "list_type": row[3],
                     "note": row[4],
-                    "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S") if row[5] else None
+                    "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S")
+                    if row[5]
+                    else None,
                 }
 
                 if include_stock_info and len(row) > 6:
@@ -110,7 +110,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                         "name": row[6],
                         "industry": row[7],
                         "market": row[8],
-                        "pinyin": row[9]
+                        "pinyin": row[9],
                     }
 
                 result.append(item)
@@ -118,7 +118,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}")
+            logger.info(
+                f"获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}"
+            )
             return result
 
         except Exception as e:
@@ -130,7 +132,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         user_id: int,
         symbol: str,
         list_type: str = "favorite",
-        note: Optional[str] = None
+        note: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         添加股票到自选列表
@@ -169,10 +171,12 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "symbol": row[2],
                 "list_type": row[3],
                 "note": row[4],
-                "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S")
+                "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
-            logger.info(f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}")
+            logger.info(
+                f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}"
+            )
             return result
 
         except ValueError:
@@ -183,10 +187,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             raise
 
     def remove_from_watchlist(
-        self,
-        user_id: int,
-        symbol: str,
-        list_type: Optional[str] = None
+        self, user_id: int, symbol: str, list_type: Optional[str] = None
     ) -> bool:
         """
         从自选列表移除股票
@@ -215,7 +216,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"删除自选股成功: user_id={user_id}, symbol={symbol}, deleted={deleted_count}")
+            logger.info(
+                f"删除自选股成功: user_id={user_id}, symbol={symbol}, deleted={deleted_count}"
+            )
             return deleted_count > 0
 
         except Exception as e:
@@ -224,11 +227,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             raise
 
     def update_watchlist_note(
-        self,
-        user_id: int,
-        symbol: str,
-        list_type: str,
-        note: str
+        self, user_id: int, symbol: str, list_type: str, note: str
     ) -> bool:
         """
         更新自选股备注
@@ -263,7 +262,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         self,
         user_id: int,
         strategy_type: Optional[str] = None,
-        status: Optional[str] = None
+        status: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         获取策略配置列表
@@ -301,17 +300,23 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             result = []
             for row in rows:
-                result.append({
-                    "id": row[0],
-                    "user_id": row[1],
-                    "name": row[2],
-                    "strategy_type": row[3],
-                    "status": row[4],
-                    "parameters": row[5],  # JSONB字段自动转换为dict
-                    "description": row[6],
-                    "created_at": row[7].strftime("%Y-%m-%d %H:%M:%S") if row[7] else None,
-                    "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S") if row[8] else None
-                })
+                result.append(
+                    {
+                        "id": row[0],
+                        "user_id": row[1],
+                        "name": row[2],
+                        "strategy_type": row[3],
+                        "status": row[4],
+                        "parameters": row[5],  # JSONB字段自动转换为dict
+                        "description": row[6],
+                        "created_at": row[7].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[7]
+                        else None,
+                        "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[8]
+                        else None,
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
@@ -329,7 +334,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         name: str,
         strategy_type: str,
         parameters: Dict[str, Any],
-        description: Optional[str] = None
+        description: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         保存策略配置
@@ -351,6 +356,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             # 插入新策略
             import json
+
             insert_sql = """
                 INSERT INTO strategy_configs
                 (user_id, name, strategy_type, status, parameters, description,
@@ -360,10 +366,10 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 RETURNING id, user_id, name, strategy_type, status,
                           parameters, description, created_at, updated_at
             """
-            cursor.execute(insert_sql, (
-                user_id, name, strategy_type,
-                json.dumps(parameters), description
-            ))
+            cursor.execute(
+                insert_sql,
+                (user_id, name, strategy_type, json.dumps(parameters), description),
+            )
             row = cursor.fetchone()
 
             conn.commit()
@@ -379,7 +385,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "parameters": row[5],
                 "description": row[6],
                 "created_at": row[7].strftime("%Y-%m-%d %H:%M:%S"),
-                "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S")
+                "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
             logger.info(f"保存策略配置成功: user_id={user_id}, name={name}")
@@ -393,10 +399,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             raise
 
     def update_strategy_status(
-        self,
-        strategy_id: int,
-        user_id: int,
-        status: str
+        self, strategy_id: int, user_id: int, status: str
     ) -> bool:
         """
         更新策略状态
@@ -439,11 +442,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"更新策略状态失败: {e}")
             raise
 
-    def delete_strategy_config(
-        self,
-        strategy_id: int,
-        user_id: int
-    ) -> bool:
+    def delete_strategy_config(self, strategy_id: int, user_id: int) -> bool:
         """
         删除策略配置
 
@@ -485,7 +484,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         user_id: int,
         symbol: Optional[str] = None,
         alert_type: Optional[str] = None,
-        enabled_only: bool = True
+        enabled_only: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         获取风险预警配置
@@ -527,20 +526,28 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             result = []
             for row in rows:
-                result.append({
-                    "id": row[0],
-                    "user_id": row[1],
-                    "symbol": row[2],
-                    "alert_type": row[3],
-                    "condition": row[4],
-                    "threshold": float(row[5]),
-                    "notification_methods": row[6],  # JSONB自动转换
-                    "enabled": row[7],
-                    "triggered_count": row[8],
-                    "last_triggered": row[9].strftime("%Y-%m-%d %H:%M:%S") if row[9] else None,
-                    "created_at": row[10].strftime("%Y-%m-%d %H:%M:%S") if row[10] else None,
-                    "updated_at": row[11].strftime("%Y-%m-%d %H:%M:%S") if row[11] else None
-                })
+                result.append(
+                    {
+                        "id": row[0],
+                        "user_id": row[1],
+                        "symbol": row[2],
+                        "alert_type": row[3],
+                        "condition": row[4],
+                        "threshold": float(row[5]),
+                        "notification_methods": row[6],  # JSONB自动转换
+                        "enabled": row[7],
+                        "triggered_count": row[8],
+                        "last_triggered": row[9].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[9]
+                        else None,
+                        "created_at": row[10].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[10]
+                        else None,
+                        "updated_at": row[11].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[11]
+                        else None,
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
@@ -560,7 +567,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         condition: str,
         threshold: float,
         notification_methods: List[str],
-        enabled: bool = True
+        enabled: bool = True,
     ) -> Dict[str, Any]:
         """
         保存风险预警配置
@@ -572,6 +579,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor = conn.cursor()
 
             import json
+
             insert_sql = """
                 INSERT INTO risk_alerts
                 (user_id, symbol, alert_type, condition, threshold,
@@ -582,10 +590,18 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 RETURNING id, user_id, symbol, alert_type, condition, threshold,
                           notification_methods, enabled, created_at
             """
-            cursor.execute(insert_sql, (
-                user_id, symbol, alert_type, condition, threshold,
-                json.dumps(notification_methods), enabled
-            ))
+            cursor.execute(
+                insert_sql,
+                (
+                    user_id,
+                    symbol,
+                    alert_type,
+                    condition,
+                    threshold,
+                    json.dumps(notification_methods),
+                    enabled,
+                ),
+            )
             row = cursor.fetchone()
 
             conn.commit()
@@ -601,7 +617,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "threshold": float(row[5]),
                 "notification_methods": row[6],
                 "enabled": row[7],
-                "created_at": row[8].strftime("%Y-%m-%d %H:%M:%S")
+                "created_at": row[8].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
             logger.info(f"保存风险预警成功: user_id={user_id}, symbol={symbol}")
@@ -612,12 +628,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"保存风险预警失败: {e}")
             raise
 
-    def toggle_risk_alert(
-        self,
-        alert_id: int,
-        user_id: int,
-        enabled: bool
-    ) -> bool:
+    def toggle_risk_alert(self, alert_id: int, user_id: int, enabled: bool) -> bool:
         """
         启用/禁用风险预警
 
@@ -655,10 +666,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
     # ==================== 用户配置管理 ====================
 
-    def get_user_preferences(
-        self,
-        user_id: int
-    ) -> Dict[str, Any]:
+    def get_user_preferences(self, user_id: int) -> Dict[str, Any]:
         """
         获取用户偏好设置
 
@@ -684,7 +692,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                     "display_settings": {},
                     "notification_settings": {},
                     "trading_settings": {},
-                    "updated_at": None
+                    "updated_at": None,
                 }
 
             result = {
@@ -692,7 +700,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "display_settings": row[1] or {},
                 "notification_settings": row[2] or {},
                 "trading_settings": row[3] or {},
-                "updated_at": row[4].strftime("%Y-%m-%d %H:%M:%S") if row[4] else None
+                "updated_at": row[4].strftime("%Y-%m-%d %H:%M:%S") if row[4] else None,
             }
 
             cursor.close()
@@ -706,9 +714,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             raise
 
     def update_user_preferences(
-        self,
-        user_id: int,
-        preferences: Dict[str, Any]
+        self, user_id: int, preferences: Dict[str, Any]
     ) -> bool:
         """
         更新用户偏好设置
@@ -730,7 +736,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 params.append(json.dumps(preferences["display_settings"]))
 
             if "notification_settings" in preferences:
-                set_clauses.append("notification_settings = notification_settings || %s::jsonb")
+                set_clauses.append(
+                    "notification_settings = notification_settings || %s::jsonb"
+                )
                 params.append(json.dumps(preferences["notification_settings"]))
 
             if "trading_settings" in preferences:
@@ -773,7 +781,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         self,
         symbols: Optional[List[str]] = None,
         market: Optional[str] = None,
-        industry: Optional[str] = None
+        industry: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         获取股票基础信息
@@ -789,7 +797,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             params = []
 
             if symbols:
-                placeholders = ', '.join(['%s'] * len(symbols))
+                placeholders = ", ".join(["%s"] * len(symbols))
                 where_clauses.append(f"symbol IN ({placeholders})")
                 params.extend(symbols)
 
@@ -816,19 +824,23 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             result = []
             for row in rows:
-                result.append({
-                    "symbol": row[0],
-                    "name": row[1],
-                    "pinyin": row[2],
-                    "market": row[3],
-                    "industry": row[4],
-                    "sector": row[5],
-                    "list_date": row[6].strftime("%Y-%m-%d") if row[6] else None,
-                    "total_shares": row[7],
-                    "float_shares": row[8],
-                    "status": row[9],
-                    "updated_at": row[10].strftime("%Y-%m-%d %H:%M:%S") if row[10] else None
-                })
+                result.append(
+                    {
+                        "symbol": row[0],
+                        "name": row[1],
+                        "pinyin": row[2],
+                        "market": row[3],
+                        "industry": row[4],
+                        "sector": row[5],
+                        "list_date": row[6].strftime("%Y-%m-%d") if row[6] else None,
+                        "total_shares": row[7],
+                        "float_shares": row[8],
+                        "status": row[9],
+                        "updated_at": row[10].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[10]
+                        else None,
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
@@ -840,11 +852,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"获取股票基础信息失败: {e}")
             raise
 
-    def search_stocks(
-        self,
-        keyword: str,
-        limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
         """
         搜索股票
 
@@ -877,23 +885,32 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 LIMIT %s
             """
 
-            cursor.execute(sql, (
-                keyword_pattern, keyword_pattern,  # CASE条件
-                keyword_pattern, keyword_pattern, keyword_pattern,  # WHERE条件
-                keyword_pattern, keyword_pattern,  # ORDER BY条件
-                limit
-            ))
+            cursor.execute(
+                sql,
+                (
+                    keyword_pattern,
+                    keyword_pattern,  # CASE条件
+                    keyword_pattern,
+                    keyword_pattern,
+                    keyword_pattern,  # WHERE条件
+                    keyword_pattern,
+                    keyword_pattern,  # ORDER BY条件
+                    limit,
+                ),
+            )
             rows = cursor.fetchall()
 
             result = []
             for row in rows:
-                result.append({
-                    "symbol": row[0],
-                    "name": row[1],
-                    "pinyin": row[2],
-                    "market": row[3],
-                    "match_type": row[4]
-                })
+                result.append(
+                    {
+                        "symbol": row[0],
+                        "name": row[1],
+                        "pinyin": row[2],
+                        "market": row[3],
+                        "match_type": row[4],
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
@@ -907,10 +924,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
     # ==================== 行业概念板块 ====================
 
-    def get_industry_list(
-        self,
-        classification: str = "sw"
-    ) -> List[Dict[str, Any]]:
+    def get_industry_list(self, classification: str = "sw") -> List[Dict[str, Any]]:
         """
         获取行业分类列表
 
@@ -932,20 +946,26 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             result = []
             for row in rows:
-                result.append({
-                    "code": row[0],
-                    "name": row[1],
-                    "classification": row[2],
-                    "level": row[3],
-                    "parent_code": row[4],
-                    "stock_count": row[5],
-                    "updated_at": row[6].strftime("%Y-%m-%d %H:%M:%S") if row[6] else None
-                })
+                result.append(
+                    {
+                        "code": row[0],
+                        "name": row[1],
+                        "classification": row[2],
+                        "level": row[3],
+                        "parent_code": row[4],
+                        "stock_count": row[5],
+                        "updated_at": row[6].strftime("%Y-%m-%d %H:%M:%S")
+                        if row[6]
+                        else None,
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取行业列表成功: classification={classification}, count={len(result)}")
+            logger.info(
+                f"获取行业列表成功: classification={classification}, count={len(result)}"
+            )
             return result
 
         except Exception as e:
@@ -971,13 +991,15 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             result = []
             for row in rows:
-                result.append({
-                    "code": row[0],
-                    "name": row[1],
-                    "stock_count": row[2],
-                    "description": row[3],
-                    "updated_at": row[4].strftime("%Y-%m-%d") if row[4] else None
-                })
+                result.append(
+                    {
+                        "code": row[0],
+                        "name": row[1],
+                        "stock_count": row[2],
+                        "description": row[3],
+                        "updated_at": row[4].strftime("%Y-%m-%d") if row[4] else None,
+                    }
+                )
 
             cursor.close()
             self.pg_access._return_connection(conn)
@@ -989,10 +1011,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"获取概念列表失败: {e}")
             raise
 
-    def get_stocks_by_industry(
-        self,
-        industry_code: str
-    ) -> List[str]:
+    def get_stocks_by_industry(self, industry_code: str) -> List[str]:
         """
         获取行业成分股
 
@@ -1018,17 +1037,16 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取行业成分股成功: industry_code={industry_code}, count={len(result)}")
+            logger.info(
+                f"获取行业成分股成功: industry_code={industry_code}, count={len(result)}"
+            )
             return result
 
         except Exception as e:
             logger.error(f"获取行业成分股失败: {e}")
             raise
 
-    def get_stocks_by_concept(
-        self,
-        concept_code: str
-    ) -> List[str]:
+    def get_stocks_by_concept(self, concept_code: str) -> List[str]:
         """
         获取概念成分股
 
@@ -1054,7 +1072,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取概念成分股成功: concept_code={concept_code}, count={len(result)}")
+            logger.info(
+                f"获取概念成分股成功: concept_code={concept_code}, count={len(result)}"
+            )
             return result
 
         except Exception as e:
@@ -1125,7 +1145,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             pool_info = {
                 "size": self._connection_pool_size,
                 "in_use": 1,  # 当前这个连接
-                "available": self._connection_pool_size - 1
+                "available": self._connection_pool_size - 1,
             }
 
             elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
@@ -1143,8 +1163,8 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "metrics": {
                     "total_queries_today": 0,  # 需要从监控系统获取
                     "avg_response_time_ms": 0,
-                    "slow_queries_count": 0
-                }
+                    "slow_queries_count": 0,
+                },
             }
 
         except Exception as e:
@@ -1152,5 +1172,5 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             return {
                 "status": "unhealthy",
                 "data_source_type": "postgresql",
-                "error": str(e)
+                "error": str(e),
             }

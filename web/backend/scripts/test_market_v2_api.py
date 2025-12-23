@@ -3,6 +3,7 @@
 测试市场数据V2 API端点
 测试东方财富直接API的各项功能
 """
+
 import requests
 import json
 from datetime import datetime
@@ -12,9 +13,9 @@ BASE_URL = "http://localhost:8000"
 
 def print_response(response, title="响应"):
     """打印响应结果"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"{title}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Status: {response.status_code}")
     try:
         data = response.json()

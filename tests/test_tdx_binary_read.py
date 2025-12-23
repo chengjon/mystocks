@@ -85,7 +85,7 @@ class TestTdxBinaryRead:
         assert pd.api.types.is_numeric_dtype(df["amount"]), "amount 应为数值类型"
         assert pd.api.types.is_numeric_dtype(df["vol"]), "vol 应为数值类型"
 
-        print(f"✅ 测试通过: 数据类型正确")
+        print("✅ 测试通过: 数据类型正确")
 
     def test_read_day_file_data_validity(self, tdx_adapter, test_day_file):
         """测试数据有效性"""
@@ -107,7 +107,7 @@ class TestTdxBinaryRead:
         # 验证最低价 <= 收盘价
         assert (df["low"] <= df["close"]).all(), "最低价应 <= 收盘价"
 
-        print(f"✅ 测试通过: 数据有效性检查通过")
+        print("✅ 测试通过: 数据有效性检查通过")
 
     def test_read_day_file_stock_code(self, tdx_adapter, test_day_file):
         """测试股票代码提取"""
@@ -137,7 +137,7 @@ class TestTdxBinaryRead:
         # 尝试转换为日期
         pd.to_datetime(df["tradeDate"], format="%Y%m%d")
 
-        print(f"✅ 测试通过: 日期格式正确")
+        print("✅ 测试通过: 日期格式正确")
         print(f"   第一条记录日期: {df['tradeDate'].iloc[0]}")
         print(f"   最后一条记录日期: {df['tradeDate'].iloc[-1]}")
 
@@ -146,7 +146,7 @@ class TestTdxBinaryRead:
         with pytest.raises(FileNotFoundError):
             tdx_adapter.read_day_file("/nonexistent/path/file.day")
 
-        print(f"✅ 测试通过: 文件不存在时抛出正确异常")
+        print("✅ 测试通过: 文件不存在时抛出正确异常")
 
     def test_read_day_file_statistics(self, tdx_adapter, test_day_file):
         """测试数据统计信息"""
@@ -155,16 +155,16 @@ class TestTdxBinaryRead:
 
         df = tdx_adapter.read_day_file(test_day_file)
 
-        print(f"\n=== 数据统计信息 ===")
+        print("\n=== 数据统计信息 ===")
         print(f"记录总数: {len(df)}")
         print(f"股票代码: {df['code'].iloc[0]}")
         print(f"日期范围: {df['tradeDate'].iloc[0]} - {df['tradeDate'].iloc[-1]}")
-        print(f"\n价格统计:")
+        print("\n价格统计:")
         print(df[["open", "high", "low", "close"]].describe())
-        print(f"\n成交量统计:")
+        print("\n成交量统计:")
         print(df[["amount", "vol"]].describe())
 
-        print(f"\n前5条记录:")
+        print("\n前5条记录:")
         print(df.head())
 
 

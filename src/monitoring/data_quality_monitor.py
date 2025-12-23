@@ -10,7 +10,7 @@
 """
 
 import logging
-from typing import Dict, Any, Optional, List, Callable
+from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
 from src.monitoring.monitoring_database import (
@@ -314,36 +314,36 @@ class DataQualityMonitor:
             # 查询监控数据库获取最近的检查结果
             # 这里应该使用监控数据库连接
             from src.monitoring.monitoring_database import get_monitoring_database
-            
+
             monitoring_db = get_monitoring_database()
             if not monitoring_db:
                 return None
-                
+
             # 构建查询SQL
             # 注意: 这里需要根据实际的监控数据库表结构调整
             query_sql = """
             SELECT check_status, check_message, timestamp
-            FROM data_quality_checks 
+            FROM data_quality_checks
             WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 1
             """
-            
+
             # 执行查询 (这里需要根据实际的数据库访问方式调整)
             # 由于这是一个示例，我们返回模拟数据
             import random
             from datetime import datetime, timedelta
-            
+
             # 模拟查询结果
             status_options = ["PASS", "WARNING", "FAIL"]
             status = random.choice(status_options)
-            
+
             return {
                 "check_status": status,
                 "check_message": f"{check_type}检查完成",
-                "timestamp": datetime.now() - timedelta(hours=random.randint(0, 24))
+                "timestamp": datetime.now() - timedelta(hours=random.randint(0, 24)),
             }
-            
+
         except Exception as e:
             logger.warning(f"查询检查结果失败: {e}")
             return None
@@ -380,27 +380,35 @@ class DataQualityMonitor:
         # 从监控数据库查询最近的检查结果
         try:
             # 查询最近的检查结果
-            completeness_result = self._get_latest_check_result(classification, database_type, table_name, "COMPLETENESS")
-            freshness_result = self._get_latest_check_result(classification, database_type, table_name, "FRESHNESS")
-            accuracy_result = self._get_latest_check_result(classification, database_type, table_name, "ACCURACY")
-            
+            completeness_result = self._get_latest_check_result(
+                classification, database_type, table_name, "COMPLETENESS"
+            )
+            freshness_result = self._get_latest_check_result(
+                classification, database_type, table_name, "FRESHNESS"
+            )
+            accuracy_result = self._get_latest_check_result(
+                classification, database_type, table_name, "ACCURACY"
+            )
+
             report["checks"] = {
                 "completeness": completeness_result,
                 "freshness": freshness_result,
-                "accuracy": accuracy_result
+                "accuracy": accuracy_result,
             }
-            
+
             # 计算整体状态
-            check_statuses = [result["check_status"] if result else "UNKNOWN" 
-                             for result in [completeness_result, freshness_result, accuracy_result]]
-            
+            check_statuses = [
+                result["check_status"] if result else "UNKNOWN"
+                for result in [completeness_result, freshness_result, accuracy_result]
+            ]
+
             if "FAIL" in check_statuses:
                 report["overall_status"] = "FAIL"
             elif "WARNING" in check_statuses:
                 report["overall_status"] = "WARNING"
             else:
                 report["overall_status"] = "PASS"
-                
+
         except Exception as e:
             logger.warning(f"查询历史检查结果失败: {e}")
             # 如果查询失败，仍返回基本结构

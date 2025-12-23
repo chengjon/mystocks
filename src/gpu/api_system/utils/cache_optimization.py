@@ -6,14 +6,12 @@ Cache Optimization Component
 import logging
 import time
 import threading
-from typing import Dict, List, Optional, Any, Tuple, Union
-from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Any
+from datetime import datetime
 import hashlib
 import json
 import pickle
-from collections import OrderedDict
-import concurrent.futures
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 import psutil
 import redis
 

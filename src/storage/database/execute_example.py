@@ -49,7 +49,9 @@ success = manager.alter_table(
 
 # 删除表
 success = manager.drop_table(
-    DatabaseType.MYSQL, "test_db", "my_table"  # 使用与table_config.yaml一致的数据库名
+    DatabaseType.MYSQL,
+    "test_db",
+    "my_table",  # 使用与table_config.yaml一致的数据库名
 )
 
 # 关闭所有连接

@@ -1,0 +1,129 @@
+# Pylint 测试代码专用配置文件
+# 使用方法: pylint --rcfile=.pylint.test.rc tests/
+#
+# 此配置文件专门用于每周/每迭代末的测试代码深度分析
+# 聚焦测试核心问题，避免冗余警告
+
+[MASTER]
+# 并行作业数
+jobs = 4
+
+# 忽略的模块（C扩展动态成员）
+extension-pkg-whitelist = talib,baostock,efinance,cupy,cudf,cuml,taospy
+
+[MESSAGES CONTROL]
+# 禁用所有规则，然后启用测试相关的核心规则
+disable = all
+enable =
+    # ========== 基础语法错误（兜底检查） ==========
+    bad-indentation,           # 缩进错误
+    E0602,                     # 未定义变量
+    E0601,                     # 使用前未赋值变量
+
+    # ========== 测试代码质量问题 ==========
+    W0611,                     # 未用导入
+    R0914,                     # 函数变量过多（测试用例复杂度过高）
+    R0903,                     # 测试类方法过少（冗余类）
+
+    # ========== pytest 专属规则（需要 pylint-pytest 插件）==========
+    PT001,                     # pytest fixture 应该使用 @pytest.fixture
+    PT002,                     # pytest fixture 参数化错误
+    PT003,                     # pytest 测试函数命名不规范
+    PT004,                     # pytest fixture 未使用
+    PT005,                     # pytest 测试函数没有返回值（应使用断言）
+    PT006,                     # pytest 参数化参数名错误
+    PT007,                     # pytest 参数化参数顺序错误
+    PT011,                     # pytest.raises() 过于宽泛
+    PT012,                     # pytest.raises() 与异常类型不匹配
+    PT017,                     # pytest 断言在迭代中（应该使用 pytest.raises）
+    PT018,                     # pytest 断言应该使用特定方法
+    PT019,                     # pytest fixture 未使用
+    PT020,                     # pytest 测试函数有返回值（应使用断言）
+    PT021,                     # pytest 测试函数 yield fixture
+    PT022,                     # pytest 未使用 yield fixture
+    PT023,                     # pytest 测试类应该以 Test 开头
+    PT024,                     # pytest 测试类不应包含 __init__ 方法
+    PT025,                     # pytest 测试类不应包含 setUp/tearDown（应使用 fixture）
+
+    # ========== 代码质量警告（核心） ==========
+    W0612,                     # 测试中的未使用变量
+    W0613,                     # 测试中的未使用参数（fixture 参数除外）
+    R0913,                     # 测试函数参数过多（复杂度过高）
+    R0915,                     # 测试函数语句过多（应该拆分）
+    C0304,                     # 缺失尾随换行符
+    C0305,                     # 尾随空格
+    C0321,                     # 多个语句在一行
+    C0324,                     # 括号后多余空格
+    C0330,                     # 错误的缩进
+    W0101,                     # 无法到达的代码
+    W0102,                     # 冗余的返回语句
+    W0105,                     # 无意义的字符串语句
+    W0106,                     # 未使用的表达式
+    W0107,                     # 未使用的比较
+    W0108,                     # Lambda 表达式可以直接替换
+    W0120,                     # else 块后紧跟 return
+    W0121,                     # 重复的比较
+    W0122,                     # 重复的条件
+    W0199,                     # 断言总是为 True
+    W0201,                     # 属性定义在方法外
+    W0211,                     # 访问受保护成员
+    W0212,                     # 访问私有成员
+    W0221,                     # 参数数量不匹配
+    W0222,                     # 签名不同
+    W0231,                     # __init__ 方法没有调用父类
+    W0232,                     # 类没有 __init__ 方法
+    W0233,                     # __init__ 方法没有调用父类
+    W0235,                     # 使用过时的语法
+    W0301,                     # 不必要的分号
+    W0311,                     # 缩进错误
+    W0312,                     # 缩进错误
+    W0401,                     # 通配符导入
+    W0402,                     # 过时的模块
+    W0404,                     # 重新导入模块
+    W0410,                     # 通配符导入
+    W0601,                     # 全局变量
+    W0602,                     # 全局变量未使用
+    W0603,                     # 全局变量过多
+    W0604,                     # 全局变量在函数内
+    W0622,                     # 重新定义内置函数
+    W0623,                     # 重新定义内置函数
+    W0624,                     # 重新定义内置函数
+    W0631,                     # 循环变量未定义
+    W0632,                     # 未使用的循环变量
+    W0640,                     # 未使用的循环变量
+    W0641,                     # 未使用的循环变量
+    W0642,                     # 未使用的循环变量
+    W0702,                     # 使用裸 except
+    W0703,                     # 捕获太宽泛的异常
+    W0705,                     # 多个 except 子句相同
+    W0711,                     # 捕获异常但未使用
+    W0715,                     # 异常参数未使用
+    W0716,                     # 捕获异常但未使用
+    W0718,                     # 捕获异常但未使用
+    W1201,                     # 使用字符串作为异常
+    W1202,                     # 使用 % 格式化日志
+    W1203,                     # 使用 % 格式化日志
+
+[FORMAT]
+# 统一行长度为 120，与 Black/Ruff 保持一致
+max-line-length = 120
+max-module-lines = 2000
+
+[DESIGN]
+# 测试代码的设计复杂度阈值（更宽松）
+max-args = 15
+max-locals = 25
+max-returns = 10
+max-branches = 20
+max-statements = 100
+
+[REPORTS]
+# 输出格式
+output-format = text,colorized
+
+# 生成 HTML 报告
+# 命令行使用: pylint --rcfile=.pylint.test.rc --output=pylint_test_report.html --output-format=html tests/
+
+[TYPECHECK]
+# 生成成员的模块（动态属性）
+generated-members = talib.*,baostock.*,efinance.*,cupy.*,cudf.*,cuml.*

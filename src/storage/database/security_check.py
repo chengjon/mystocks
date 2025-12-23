@@ -3,10 +3,10 @@
 数据库安全检查脚本
 检查代码中是否存在硬编码的敏感信息
 """
+
 import os
 import re
-import glob
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Optional
 
 
 class SecurityChecker:

@@ -3,15 +3,13 @@ FastAPI 主应用入口
 MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 """
 
-import json
 import os
 import secrets
 import time
-import uuid
 from contextlib import asynccontextmanager
 
 import structlog
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -37,7 +35,7 @@ from .core.socketio_manager import get_socketio_manager
 from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
 
 # 导入OpenAPI配置
-from .openapi_config import OPENAPI_TAGS, get_openapi_config
+from .openapi_config import get_openapi_config
 
 # 配置日志
 logger = structlog.get_logger()
@@ -77,7 +75,9 @@ class CSRFTokenManager:
         """清理过期的tokens"""
         current_time = time.time()
         expired_tokens = [
-            token for token, info in self.tokens.items() if current_time - info["created_at"] > self.token_timeout
+            token
+            for token, info in self.tokens.items()
+            if current_time - info["created_at"] > self.token_timeout
         ]
         for token in expired_tokens:
             del self.tokens[token]
@@ -171,7 +171,9 @@ app.add_middleware(
 )
 
 # 配置响应压缩 (性能优化)
-app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
+app.add_middleware(
+    GZipMiddleware, minimum_size=1000, compresslevel=5
+)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
 # 配置统一响应格式中间件 (API标准化)
 app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
@@ -212,7 +214,9 @@ async def csrf_protection_middleware(request: Request, call_next):
             csrf_token = request.headers.get("x-csrf-token")
 
             if not csrf_token:
-                logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
+                logger.warning(
+                    f"❌ CSRF token missing for {request.method} {request.url.path}"
+                )
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -224,7 +228,9 @@ async def csrf_protection_middleware(request: Request, call_next):
 
             # 验证CSRF token
             if not csrf_manager.validate_token(csrf_token):
-                logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                logger.warning(
+                    f"❌ Invalid CSRF token for {request.method} {request.url.path}"
+                )
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -300,7 +306,11 @@ async def health_check(request: Request):
     return create_health_response(
         service="mystocks-web-api",
         status="healthy",
-        details={"timestamp": time.time(), "version": "1.0.0", "middleware": "response_format_enabled"},
+        details={
+            "timestamp": time.time(),
+            "version": "1.0.0",
+            "middleware": "response_format_enabled",
+        },
         request_id=request_id,
     )
 
@@ -414,14 +424,22 @@ from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitori
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
-app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
+app.include_router(
+    data_quality.router, prefix="/api", tags=["data-quality"]
+)  # 数据质量监控
+app.include_router(
+    auth.router, prefix="/api/v1/auth", tags=["auth"]
+)  # 更新至v1标准版本
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix
-app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
+app.include_router(
+    market_v2.router, tags=["market-v2"]
+)  # market V2路由（东方财富直接API）
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
-app.include_router(metrics.router, prefix="/api", tags=["metrics"])  # Prometheus metrics
+app.include_router(
+    metrics.router, prefix="/api", tags=["metrics"]
+)  # Prometheus metrics
 app.include_router(
     pool_monitoring.router, prefix="/api", tags=["pool-monitoring"]
 )  # Phase 3 Task 19: Connection Pool Monitoring
@@ -431,10 +449,18 @@ app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理
 app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
 
 # OpenStock 迁移功能路由
-app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])  # 股票搜索
-app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])  # 自选股管理
-app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])  # TradingView widgets
-app.include_router(notification.router, prefix="/api/notification", tags=["notification"])  # 邮件通知
+app.include_router(
+    stock_search.router, prefix="/api/stock-search", tags=["stock-search"]
+)  # 股票搜索
+app.include_router(
+    watchlist.router, prefix="/api/watchlist", tags=["watchlist"]
+)  # 自选股管理
+app.include_router(
+    tradingview.router, prefix="/api/tradingview", tags=["tradingview"]
+)  # TradingView widgets
+app.include_router(
+    notification.router, prefix="/api/notification", tags=["notification"]
+)  # 邮件通知
 
 # PyProfiling 机器学习功能路由
 app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预测和分析
@@ -446,7 +472,9 @@ app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告警
 
 #  技术分析系统路由 (Phase 2)
-app.include_router(technical_analysis.router, tags=["technical-analysis"])  # 增强技术分析
+app.include_router(
+    technical_analysis.router, tags=["technical-analysis"]
+)  # 增强技术分析
 
 #  仪表盘系统路由 (Phase 4)
 app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
@@ -454,14 +482,22 @@ app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理
 
 #  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
-app.include_router(announcement.router, prefix="/api", tags=["announcement"])  # 公告监控
+app.include_router(
+    announcement.router, prefix="/api", tags=["announcement"]
+)  # 公告监控
 
 # Week 1 Architecture-Compliant APIs (策略管理和风险管理)
-app.include_router(strategy_management.router)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
-app.include_router(risk_management.router)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(
+    strategy_management.router
+)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(
+    risk_management.router
+)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
 
 # Week 2 SSE Real-time Push (实时推送)
-app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest, alerts, dashboard)
+app.include_router(
+    sse_endpoints.router
+)  # SSE实时推送 (training, backtest, alerts, dashboard)
 
 # 行业概念分析API
 app.include_router(industry_concept_analysis.router)  # 行业概念分析
@@ -491,9 +527,17 @@ if __name__ == "__main__":
 
     try:
         # 在端口范围内查找可用端口
-        available_port = find_available_port(settings.port_range_start, settings.port_range_end)
+        available_port = find_available_port(
+            settings.port_range_start, settings.port_range_end
+        )
         logger.info(f"🚀 Starting server on port {available_port}")
-        uvicorn.run("main:app", host=settings.host, port=available_port, reload=True, log_level="info")
+        uvicorn.run(
+            "main:app",
+            host=settings.host,
+            port=available_port,
+            reload=True,
+            log_level="info",
+        )
     except RuntimeError as e:
         logger.error(f"❌ {e}")
         exit(1)

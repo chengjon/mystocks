@@ -18,7 +18,7 @@ Mock关系数据源实现
 import uuid
 import copy
 from typing import List, Dict, Optional, Any
-from datetime import date, datetime
+from datetime import datetime
 from faker import Faker
 
 from src.interfaces.relational_data_source import IRelationalDataSource
@@ -33,7 +33,7 @@ class MockRelationalDataSource(IRelationalDataSource):
     所有数据存储在内存中，重启后数据会丢失（除非启用持久化）。
     """
 
-    def __init__(self, seed: Optional[int] = None, locale: str = 'zh_CN'):
+    def __init__(self, seed: Optional[int] = None, locale: str = "zh_CN"):
         """
         初始化Mock关系数据源
 
@@ -68,40 +68,91 @@ class MockRelationalDataSource(IRelationalDataSource):
         # 生成100只股票
         for i in range(100):
             symbol = f"6{str(i).zfill(5)}" if i % 2 == 0 else f"0{str(i).zfill(5)}"
-            self._stocks.append({
-                "symbol": symbol,
-                "name": self.fake.company(),
-                "industry": f"IND{(i % 20):02d}",
-                "market": "上海A股" if symbol.startswith("6") else "深圳A股",
-                "list_date": self.fake.date_between(start_date='-10y', end_date='today').isoformat(),
-                "total_shares": self.fake.random_int(min=100000000, max=10000000000),
-                "float_shares": self.fake.random_int(min=50000000, max=5000000000)
-            })
+            self._stocks.append(
+                {
+                    "symbol": symbol,
+                    "name": self.fake.company(),
+                    "industry": f"IND{(i % 20):02d}",
+                    "market": "上海A股" if symbol.startswith("6") else "深圳A股",
+                    "list_date": self.fake.date_between(
+                        start_date="-10y", end_date="today"
+                    ).isoformat(),
+                    "total_shares": self.fake.random_int(
+                        min=100000000, max=10000000000
+                    ),
+                    "float_shares": self.fake.random_int(min=50000000, max=5000000000),
+                }
+            )
 
         # 生成20个行业
         industry_names = [
-            "银行", "证券", "保险", "房地产", "建筑材料", "钢铁", "煤炭", "石油", "化工", "医药",
-            "电子", "计算机", "通信", "汽车", "家电", "食品饮料", "农业", "纺织服装", "轻工制造", "公用事业"
+            "银行",
+            "证券",
+            "保险",
+            "房地产",
+            "建筑材料",
+            "钢铁",
+            "煤炭",
+            "石油",
+            "化工",
+            "医药",
+            "电子",
+            "计算机",
+            "通信",
+            "汽车",
+            "家电",
+            "食品饮料",
+            "农业",
+            "纺织服装",
+            "轻工制造",
+            "公用事业",
         ]
         for i, name in enumerate(industry_names):
-            self._industries.append({
-                "code": f"IND{i:02d}",
-                "name": name,
-                "stock_count": 5
-            })
+            self._industries.append(
+                {"code": f"IND{i:02d}", "name": name, "stock_count": 5}
+            )
 
         # 生成30个概念
         concept_names = [
-            "5G", "人工智能", "云计算", "大数据", "物联网", "新能源", "光伏", "风电", "锂电池", "储能",
-            "芯片", "半导体", "软件", "游戏", "电商", "在线教育", "医疗器械", "生物医药", "新冠疫苗", "口罩",
-            "军工", "航空", "高铁", "新基建", "智能制造", "工业互联网", "区块链", "数字货币", "元宇宙", "碳中和"
+            "5G",
+            "人工智能",
+            "云计算",
+            "大数据",
+            "物联网",
+            "新能源",
+            "光伏",
+            "风电",
+            "锂电池",
+            "储能",
+            "芯片",
+            "半导体",
+            "软件",
+            "游戏",
+            "电商",
+            "在线教育",
+            "医疗器械",
+            "生物医药",
+            "新冠疫苗",
+            "口罩",
+            "军工",
+            "航空",
+            "高铁",
+            "新基建",
+            "智能制造",
+            "工业互联网",
+            "区块链",
+            "数字货币",
+            "元宇宙",
+            "碳中和",
         ]
         for i, name in enumerate(concept_names):
-            self._concepts.append({
-                "code": f"CON{i:02d}",
-                "name": name,
-                "stock_count": self.fake.random_int(min=5, max=50)
-            })
+            self._concepts.append(
+                {
+                    "code": f"CON{i:02d}",
+                    "name": name,
+                    "stock_count": self.fake.random_int(min=5, max=50),
+                }
+            )
 
         # 建立股票-行业映射
         for stock in self._stocks:
@@ -113,16 +164,14 @@ class MockRelationalDataSource(IRelationalDataSource):
             concepts = self.fake.random_elements(
                 elements=[c["code"] for c in self._concepts],
                 length=num_concepts,
-                unique=True
+                unique=True,
             )
             self._stock_concept_map[stock["symbol"]] = concepts
 
     # ==================== 自选股管理 ====================
 
     def get_watchlist(
-        self,
-        user_id: int,
-        group_name: Optional[str] = None
+        self, user_id: int, group_name: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """获取用户自选股列表"""
         if user_id not in self._watchlist:
@@ -132,22 +181,25 @@ class MockRelationalDataSource(IRelationalDataSource):
 
         # 如果指定了分组，过滤
         if group_name:
-            watchlist = [item for item in watchlist if item.get("group_name") == group_name]
+            watchlist = [
+                item for item in watchlist if item.get("group_name") == group_name
+            ]
 
         # 关联股票基本信息（模拟joinedload）
         result = []
         for item in watchlist:
             stock_info = next(
-                (s for s in self._stocks if s["symbol"] == item["symbol"]),
-                None
+                (s for s in self._stocks if s["symbol"] == item["symbol"]), None
             )
             if stock_info:
-                result.append({
-                    **item,
-                    "stock_name": stock_info["name"],
-                    "industry": stock_info["industry"],
-                    "market": stock_info["market"]
-                })
+                result.append(
+                    {
+                        **item,
+                        "stock_name": stock_info["name"],
+                        "industry": stock_info["industry"],
+                        "market": stock_info["market"],
+                    }
+                )
 
         return result
 
@@ -156,7 +208,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         user_id: int,
         symbol: str,
         group_name: str = "默认分组",
-        note: Optional[str] = None
+        note: Optional[str] = None,
     ) -> Dict[str, Any]:
         """添加股票到自选股"""
         # 检查股票是否存在
@@ -165,7 +217,7 @@ class MockRelationalDataSource(IRelationalDataSource):
             raise DataSourceDataNotFound(
                 f"Stock {symbol} not found",
                 source_type="mock",
-                query_params={"symbol": symbol}
+                query_params={"symbol": symbol},
             )
 
         # 初始化用户自选股列表
@@ -175,12 +227,11 @@ class MockRelationalDataSource(IRelationalDataSource):
         # 检查是否已存在
         existing = next(
             (item for item in self._watchlist[user_id] if item["symbol"] == symbol),
-            None
+            None,
         )
         if existing:
             raise DataSourceException(
-                f"Stock {symbol} already in watchlist",
-                error_code="DUPLICATE_ENTRY"
+                f"Stock {symbol} already in watchlist", error_code="DUPLICATE_ENTRY"
             )
 
         # 添加到自选股
@@ -191,35 +242,25 @@ class MockRelationalDataSource(IRelationalDataSource):
             "group_name": group_name,
             "note": note,
             "add_time": datetime.now().isoformat(),
-            "stock_name": stock_info["name"]
+            "stock_name": stock_info["name"],
         }
         self._watchlist[user_id].append(watchlist_item)
 
         return watchlist_item
 
-    def remove_from_watchlist(
-        self,
-        user_id: int,
-        symbol: str
-    ) -> bool:
+    def remove_from_watchlist(self, user_id: int, symbol: str) -> bool:
         """从自选股中删除股票"""
         if user_id not in self._watchlist:
             return False
 
         original_len = len(self._watchlist[user_id])
         self._watchlist[user_id] = [
-            item for item in self._watchlist[user_id]
-            if item["symbol"] != symbol
+            item for item in self._watchlist[user_id] if item["symbol"] != symbol
         ]
 
         return len(self._watchlist[user_id]) < original_len
 
-    def update_watchlist_note(
-        self,
-        user_id: int,
-        symbol: str,
-        note: str
-    ) -> bool:
+    def update_watchlist_note(self, user_id: int, symbol: str, note: str) -> bool:
         """更新自选股备注"""
         if user_id not in self._watchlist:
             return False
@@ -235,9 +276,7 @@ class MockRelationalDataSource(IRelationalDataSource):
     # ==================== 策略配置 ====================
 
     def get_strategy_configs(
-        self,
-        user_id: int,
-        status: Optional[str] = None
+        self, user_id: int, status: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """获取用户策略配置列表"""
         if user_id not in self._strategies:
@@ -257,7 +296,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         strategy_name: str,
         strategy_type: str,
         parameters: Dict[str, Any],
-        description: Optional[str] = None
+        description: Optional[str] = None,
     ) -> Dict[str, Any]:
         """保存策略配置"""
         # 初始化用户策略列表
@@ -275,7 +314,7 @@ class MockRelationalDataSource(IRelationalDataSource):
             "description": description,
             "status": "active",
             "create_time": datetime.now().isoformat(),
-            "update_time": datetime.now().isoformat()
+            "update_time": datetime.now().isoformat(),
         }
 
         self._strategies[user_id].append(strategy)
@@ -283,10 +322,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         return strategy
 
     def update_strategy_status(
-        self,
-        user_id: int,
-        strategy_id: str,
-        status: str
+        self, user_id: int, strategy_id: str, status: str
     ) -> bool:
         """更新策略状态"""
         if user_id not in self._strategies:
@@ -300,19 +336,14 @@ class MockRelationalDataSource(IRelationalDataSource):
 
         return False
 
-    def delete_strategy_config(
-        self,
-        user_id: int,
-        strategy_id: str
-    ) -> bool:
+    def delete_strategy_config(self, user_id: int, strategy_id: str) -> bool:
         """删除策略配置"""
         if user_id not in self._strategies:
             return False
 
         original_len = len(self._strategies[user_id])
         self._strategies[user_id] = [
-            s for s in self._strategies[user_id]
-            if s["id"] != strategy_id
+            s for s in self._strategies[user_id] if s["id"] != strategy_id
         ]
 
         return len(self._strategies[user_id]) < original_len
@@ -323,7 +354,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         self,
         user_id: int,
         alert_type: Optional[str] = None,
-        is_active: Optional[bool] = None
+        is_active: Optional[bool] = None,
     ) -> List[Dict[str, Any]]:
         """获取用户风险预警列表"""
         if user_id not in self._risk_alerts:
@@ -345,7 +376,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         alert_type: str,
         alert_name: str,
         condition: Dict[str, Any],
-        notification_methods: List[str]
+        notification_methods: List[str],
     ) -> Dict[str, Any]:
         """保存风险预警配置"""
         # 初始化用户预警列表
@@ -363,19 +394,14 @@ class MockRelationalDataSource(IRelationalDataSource):
             "notification_methods": notification_methods,
             "is_active": True,
             "create_time": datetime.now().isoformat(),
-            "last_trigger_time": None
+            "last_trigger_time": None,
         }
 
         self._risk_alerts[user_id].append(alert)
 
         return alert
 
-    def toggle_risk_alert(
-        self,
-        user_id: int,
-        alert_id: str,
-        is_active: bool
-    ) -> bool:
+    def toggle_risk_alert(self, user_id: int, alert_id: str, is_active: bool) -> bool:
         """切换风险预警状态"""
         if user_id not in self._risk_alerts:
             return False
@@ -390,10 +416,7 @@ class MockRelationalDataSource(IRelationalDataSource):
 
     # ==================== 用户偏好 ====================
 
-    def get_user_preferences(
-        self,
-        user_id: int
-    ) -> Dict[str, Any]:
+    def get_user_preferences(self, user_id: int) -> Dict[str, Any]:
         """获取用户偏好设置"""
         if user_id not in self._user_preferences:
             # 返回默认偏好
@@ -409,15 +432,13 @@ class MockRelationalDataSource(IRelationalDataSource):
                 "default_interval": "1d",
                 "notification_enabled": True,
                 "email_notification": False,
-                "wechat_notification": False
+                "wechat_notification": False,
             }
 
         return self._user_preferences[user_id]
 
     def update_user_preferences(
-        self,
-        user_id: int,
-        preferences: Dict[str, Any]
+        self, user_id: int, preferences: Dict[str, Any]
     ) -> Dict[str, Any]:
         """更新用户偏好设置"""
         # 获取当前偏好
@@ -434,10 +455,7 @@ class MockRelationalDataSource(IRelationalDataSource):
 
     # ==================== 股票信息 ====================
 
-    def get_stock_basic_info(
-        self,
-        symbol: str
-    ) -> Dict[str, Any]:
+    def get_stock_basic_info(self, symbol: str) -> Dict[str, Any]:
         """获取股票基本信息"""
         stock = next((s for s in self._stocks if s["symbol"] == symbol), None)
 
@@ -445,12 +463,14 @@ class MockRelationalDataSource(IRelationalDataSource):
             raise DataSourceDataNotFound(
                 f"Stock {symbol} not found",
                 source_type="mock",
-                query_params={"symbol": symbol}
+                query_params={"symbol": symbol},
             )
 
         # 添加关联的行业和概念信息
         industry_code = self._stock_industry_map.get(symbol)
-        industry = next((i for i in self._industries if i["code"] == industry_code), None)
+        industry = next(
+            (i for i in self._industries if i["code"] == industry_code), None
+        )
 
         concept_codes = self._stock_concept_map.get(symbol, [])
         concepts = [c for c in self._concepts if c["code"] in concept_codes]
@@ -458,28 +478,28 @@ class MockRelationalDataSource(IRelationalDataSource):
         return {
             **stock,
             "industry_name": industry["name"] if industry else None,
-            "concepts": [c["name"] for c in concepts]
+            "concepts": [c["name"] for c in concepts],
         }
 
-    def search_stocks(
-        self,
-        keyword: str,
-        limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
         """搜索股票"""
         keyword_lower = keyword.lower()
 
         # 搜索股票代码或名称
         results = []
         for stock in self._stocks:
-            if (keyword_lower in stock["symbol"].lower() or
-                keyword_lower in stock["name"].lower()):
-                results.append({
-                    "symbol": stock["symbol"],
-                    "name": stock["name"],
-                    "market": stock["market"],
-                    "industry": stock["industry"]
-                })
+            if (
+                keyword_lower in stock["symbol"].lower()
+                or keyword_lower in stock["name"].lower()
+            ):
+                results.append(
+                    {
+                        "symbol": stock["symbol"],
+                        "name": stock["name"],
+                        "market": stock["market"],
+                        "industry": stock["industry"],
+                    }
+                )
 
                 if len(results) >= limit:
                     break
@@ -497,34 +517,25 @@ class MockRelationalDataSource(IRelationalDataSource):
         return copy.deepcopy(self._concepts)
 
     def get_stocks_by_industry(
-        self,
-        industry_code: str,
-        limit: int = 100
+        self, industry_code: str, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """获取指定行业的股票列表"""
-        stocks = [
-            stock for stock in self._stocks
-            if stock["industry"] == industry_code
-        ]
+        stocks = [stock for stock in self._stocks if stock["industry"] == industry_code]
 
         return stocks[:limit]
 
     def get_stocks_by_concept(
-        self,
-        concept_code: str,
-        limit: int = 100
+        self, concept_code: str, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """获取指定概念的股票列表"""
         # 找到所有属于该概念的股票
         symbols = [
-            symbol for symbol, concepts in self._stock_concept_map.items()
+            symbol
+            for symbol, concepts in self._stock_concept_map.items()
             if concept_code in concepts
         ]
 
-        stocks = [
-            stock for stock in self._stocks
-            if stock["symbol"] in symbols
-        ]
+        stocks = [stock for stock in self._stocks if stock["symbol"] in symbols]
 
         return stocks[:limit]
 
@@ -534,8 +545,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         """开始事务"""
         if self._in_transaction:
             raise DataSourceException(
-                "Transaction already started",
-                error_code="TRANSACTION_ERROR"
+                "Transaction already started", error_code="TRANSACTION_ERROR"
             )
 
         # 创建快照
@@ -543,7 +553,7 @@ class MockRelationalDataSource(IRelationalDataSource):
             "watchlist": copy.deepcopy(self._watchlist),
             "strategies": copy.deepcopy(self._strategies),
             "risk_alerts": copy.deepcopy(self._risk_alerts),
-            "user_preferences": copy.deepcopy(self._user_preferences)
+            "user_preferences": copy.deepcopy(self._user_preferences),
         }
         self._in_transaction = True
 
@@ -551,8 +561,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         """提交事务"""
         if not self._in_transaction:
             raise DataSourceException(
-                "No active transaction",
-                error_code="TRANSACTION_ERROR"
+                "No active transaction", error_code="TRANSACTION_ERROR"
             )
 
         # 清除快照
@@ -563,8 +572,7 @@ class MockRelationalDataSource(IRelationalDataSource):
         """回滚事务"""
         if not self._in_transaction:
             raise DataSourceException(
-                "No active transaction",
-                error_code="TRANSACTION_ERROR"
+                "No active transaction", error_code="TRANSACTION_ERROR"
             )
 
         # 恢复快照
@@ -588,11 +596,17 @@ class MockRelationalDataSource(IRelationalDataSource):
             "connection_status": "connected",
             "statistics": {
                 "total_users": len(self._watchlist),
-                "total_watchlist_items": sum(len(items) for items in self._watchlist.values()),
-                "total_strategies": sum(len(items) for items in self._strategies.values()),
-                "total_risk_alerts": sum(len(items) for items in self._risk_alerts.values()),
+                "total_watchlist_items": sum(
+                    len(items) for items in self._watchlist.values()
+                ),
+                "total_strategies": sum(
+                    len(items) for items in self._strategies.values()
+                ),
+                "total_risk_alerts": sum(
+                    len(items) for items in self._risk_alerts.values()
+                ),
                 "total_stocks": len(self._stocks),
                 "total_industries": len(self._industries),
-                "total_concepts": len(self._concepts)
-            }
+                "total_concepts": len(self._concepts),
+            },
         }

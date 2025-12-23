@@ -1,0 +1,41 @@
+{
+  "summary": {
+    "total_files": 3,
+    "successful_files": 0,
+    "failed_files": 3,
+    "success_rate": 0.0,
+    "total_changes": 4,
+    "total_errors": 3
+  },
+  "statistics": {
+    "total_original_lines": 2235,
+    "total_modified_lines": 2237,
+    "line_change_rate": 0.0894854586129754
+  },
+  "files": [
+    {
+      "path": "src/gpu/api_system/utils/gpu_acceleration_engine.py",
+      "name": "gpu_acceleration_engine.py",
+      "success": false,
+      "changes_count": 2,
+      "errors_count": 1,
+      "backup_path": "gpu_migration_backups_20251218_171258/src/gpu/api_system/utils/gpu_acceleration_engine.py"
+    },
+    {
+      "path": "src/gpu/api_system/services/realtime_service.py",
+      "name": "realtime_service.py",
+      "success": false,
+      "changes_count": 1,
+      "errors_count": 1,
+      "backup_path": "gpu_migration_backups_20251218_171258/src/gpu/api_system/services/realtime_service.py"
+    },
+    {
+      "path": "src/gpu/api_system/utils/gpu_utils.py",
+      "name": "gpu_utils.py",
+      "success": false,
+      "changes_count": 1,
+      "errors_count": 1,
+      "backup_path": "gpu_migration_backups_20251218_171258/src/gpu/api_system/utils/gpu_utils.py"
+    }
+  ]
+}

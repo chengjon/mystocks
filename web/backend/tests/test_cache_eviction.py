@@ -10,8 +10,7 @@ Test Coverage:
 """
 
 import pytest
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import time
 
 from app.core.cache_eviction import (

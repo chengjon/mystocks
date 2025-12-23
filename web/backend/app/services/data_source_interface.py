@@ -6,7 +6,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class HealthStatusEnum(str, Enum):
@@ -29,7 +29,13 @@ class DataSourceStatus(str, Enum):
 class HealthStatus:
     """健康状态数据类"""
 
-    def __init__(self, status: HealthStatusEnum, response_time: float, message: str, timestamp: datetime):
+    def __init__(
+        self,
+        status: HealthStatusEnum,
+        response_time: float,
+        message: str,
+        timestamp: datetime,
+    ):
         self.status = status
         self.response_time = response_time
         self.message = message
@@ -44,7 +50,9 @@ class IDataSource(ABC):
         self.type = config.get("type", "unknown")
 
     @abstractmethod
-    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def get_data(
+        self, endpoint: str, params: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """获取数据"""
         pass
 

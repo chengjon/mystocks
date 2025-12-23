@@ -4,13 +4,12 @@
 """
 
 import pytest
-from fastapi.testclient import TestClient
-from datetime import datetime, timedelta
+from datetime import datetime
 import sys
 import os
 
 # 添加源码路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../web/backend'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../web/backend"))
 
 
 class MockMarketData:
@@ -33,7 +32,7 @@ class MockMarketData:
                     "open": 1730.00,
                     "high": 1760.00,
                     "low": 1725.00,
-                    "prev_close": 1725.20
+                    "prev_close": 1725.20,
                 },
                 {
                     "symbol": "000001",
@@ -46,10 +45,10 @@ class MockMarketData:
                     "open": 12.25,
                     "high": 12.40,
                     "low": 12.20,
-                    "prev_close": 12.20
-                }
+                    "prev_close": 12.20,
+                },
             ],
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
     @staticmethod
@@ -68,7 +67,7 @@ class MockMarketData:
                         "low": 9.80,
                         "close": 10.20,
                         "volume": 1000000,
-                        "amount": 10100000
+                        "amount": 10100000,
                     },
                     {
                         "date": "2024-01-02",
@@ -77,10 +76,10 @@ class MockMarketData:
                         "low": 10.10,
                         "close": 10.40,
                         "volume": 1200000,
-                        "amount": 12420000
-                    }
-                ]
-            }
+                        "amount": 12420000,
+                    },
+                ],
+            },
         }
 
     @staticmethod
@@ -97,7 +96,7 @@ class MockMarketData:
                     "amount": 280000000000,
                     "up_count": 2500,
                     "down_count": 1800,
-                    "flat_count": 200
+                    "flat_count": 200,
                 },
                 "shenzhen": {
                     "index": 10500.20,
@@ -107,9 +106,9 @@ class MockMarketData:
                     "amount": 420000000000,
                     "up_count": 2200,
                     "down_count": 1500,
-                    "flat_count": 150
-                }
-            }
+                    "flat_count": 150,
+                },
+            },
         }
 
 
@@ -132,8 +131,17 @@ class TestMarketAPI:
         # 验证第一条数据的结构
         quote = response["data"][0]
         required_fields = [
-            "symbol", "name", "price", "change", "change_percent",
-            "volume", "amount", "open", "high", "low", "prev_close"
+            "symbol",
+            "name",
+            "price",
+            "change",
+            "change_percent",
+            "volume",
+            "amount",
+            "open",
+            "high",
+            "low",
+            "prev_close",
         ]
         for field in required_fields:
             assert field in quote, f"Missing required field: {field}"
@@ -157,8 +165,9 @@ class TestMarketAPI:
 
             # 验证涨跌幅计算
             expected_change_pct = (quote["change"] / quote["prev_close"]) * 100
-            assert abs(quote["change_percent"] - expected_change_pct) < 0.1, \
-                "涨跌幅计算应该准确"
+            assert (
+                abs(quote["change_percent"] - expected_change_pct) < 0.1
+            ), "涨跌幅计算应该准确"
 
     def test_get_stock_daily_structure(self):
         """测试股票日线数据结构"""
@@ -206,8 +215,14 @@ class TestMarketAPI:
         # 验证上证数据
         sh = response["data"]["shanghai"]
         required_fields = [
-            "index", "change", "change_percent", "volume", "amount",
-            "up_count", "down_count", "flat_count"
+            "index",
+            "change",
+            "change_percent",
+            "volume",
+            "amount",
+            "up_count",
+            "down_count",
+            "flat_count",
         ]
         for field in required_fields:
             assert field in sh, f"Missing required field: {field}"
@@ -254,12 +269,15 @@ class TestMarketAPI:
         """测试股票代码格式验证"""
         valid_symbols = ["600519", "000001", "300750"]
         for symbol in valid_symbols:
-            response = self.mock_data.get_stock_daily(symbol, "2024-01-01", "2024-01-10")
+            response = self.mock_data.get_stock_daily(
+                symbol, "2024-01-01", "2024-01-10"
+            )
             assert "success" in response
 
     def test_response_time_acceptable(self):
         """测试响应时间是否可接受"""
         import time
+
         start_time = time.time()
         response = self.mock_data.get_realtime_quotes()
         elapsed_time = time.time() - start_time
@@ -278,5 +296,5 @@ class TestMarketAPI:
         assert len(response1["data"]) == len(response2["data"]), "数据条数应该一致"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

@@ -12,9 +12,8 @@ Markdown 文档生成器 - 生成手册文档
 日期: 2025-10-19
 """
 
-from typing import List, Dict, Optional
+from typing import List
 from pathlib import Path
-from datetime import datetime
 
 import sys
 
@@ -27,8 +26,6 @@ from models import (
     OptimizationOpportunity,
     MergeRecommendation,
     DataFlow,
-    ManualMetadata,
-    ModuleInventory,
     DuplicationIndex,
     OptimizationRoadmap,
     ConsolidationGuide,

@@ -9,7 +9,7 @@
 import os
 import requests
 import pandas as pd
-from typing import Dict, Optional
+from typing import Optional
 from functools import wraps
 import time
 import logging

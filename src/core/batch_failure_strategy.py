@@ -15,7 +15,6 @@ from typing import List, Dict, Any, Optional, Callable
 from dataclasses import dataclass
 import pandas as pd
 import time
-from datetime import datetime
 
 
 class BatchFailureStrategy(str, Enum):
@@ -209,7 +208,7 @@ class BatchFailureHandler:
                 )
             else:
                 # 操作失败,标记为需要回滚
-                print(f"❌ 批量操作失败,准备回滚")
+                print("❌ 批量操作失败,准备回滚")
                 return BatchOperationResult(
                     total_records=len(data),
                     successful_records=0,
@@ -387,16 +386,16 @@ if __name__ == "__main__":
     ]
 
     for strategy in strategies:
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print(f"测试策略: {strategy.value.upper()}")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         handler = BatchFailureHandler(strategy=strategy, max_retries=2)
         result = handler.execute_batch(
             test_data, mock_operation, f"test_{strategy.value}"
         )
 
-        print(f"\n结果统计:")
+        print("\n结果统计:")
         for key, value in result.to_dict().items():
             print(f"  {key}: {value}")
 

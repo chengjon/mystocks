@@ -19,7 +19,7 @@ import sys
 import time
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import Dict, Any
 import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
@@ -91,9 +91,9 @@ class PerformanceBaseline:
         Returns:
             性能指标字典
         """
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"PostgreSQL 批量插入性能测试 ({n_rows}条记录)")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         try:
             # 生成测试数据
@@ -193,9 +193,9 @@ class PerformanceBaseline:
         Returns:
             性能指标字典
         """
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"TDengine 批量插入性能测试 ({n_rows}条记录)")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         try:
             # 尝试导入 TDengine 模块
@@ -222,7 +222,7 @@ class PerformanceBaseline:
             print(f"✓ 数据库连接建立: {conn_time:.2f}ms")
 
             # 创建数据库和超级表
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS test_baseline")
+            cursor.execute("CREATE DATABASE IF NOT EXISTS test_baseline")
             cursor.execute("USE test_baseline")
             cursor.execute("DROP TABLE IF EXISTS test_perf")
             cursor.execute(
@@ -299,7 +299,7 @@ class PerformanceBaseline:
         print("性能基准测试套件")
         print("=" * 60)
         print(f"测试时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"测试目标: 1000条记录插入 ≤120ms (基线) / ≤80ms (优化目标)")
+        print("测试目标: 1000条记录插入 ≤120ms (基线) / ≤80ms (优化目标)")
 
         # PostgreSQL 测试
         pg_result = self.benchmark_postgresql_insert(1000)
@@ -351,9 +351,9 @@ class PerformanceBaseline:
                 # 性能评估
                 insert_time = metrics["插入时间_ms"]
                 if insert_time <= 80:
-                    print(f"  评估: ✓ 优秀 (≤80ms优化目标)")
+                    print("  评估: ✓ 优秀 (≤80ms优化目标)")
                 elif insert_time <= 120:
-                    print(f"  评估: ✓ 良好 (≤120ms基线目标)")
+                    print("  评估: ✓ 良好 (≤120ms基线目标)")
                 else:
                     print(f"  评估: ⚠ 需优化 (>{120}ms)")
             elif metrics.get("状态") == "跳过":

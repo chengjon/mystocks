@@ -6,7 +6,7 @@ Validate GitIgnore基础测试
 import os
 import subprocess
 import sys
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -47,7 +47,15 @@ class TestGitIgnoreValidatorBasic:
         validator = GitIgnoreValidator()
 
         # 验证关键忽略模式
-        expected_patterns = ["__pycache__", "*.pyc", "*.log", ".env", "*.swp", "node_modules", ".idea"]
+        expected_patterns = [
+            "__pycache__",
+            "*.pyc",
+            "*.log",
+            ".env",
+            "*.swp",
+            "node_modules",
+            ".idea",
+        ]
 
         for pattern in expected_patterns:
             assert pattern in validator.should_be_ignored, f"缺少忽略模式: {pattern}"
@@ -60,7 +68,9 @@ class TestGitIgnoreValidatorBasic:
         expected_files = [".env.example", "temp/README.md", "data/backups/.gitkeep"]
 
         for file_path in expected_files:
-            assert file_path in validator.should_be_visible, f"缺少可见文件: {file_path}"
+            assert (
+                file_path in validator.should_be_visible
+            ), f"缺少可见文件: {file_path}"
 
     def test_run_git_command_success(self):
         """测试git命令执行成功"""
@@ -128,7 +138,12 @@ class TestGitIgnoreValidatorBasic:
 
         with patch.object(validator, "get_untracked_files") as mock_untracked:
             # 模拟有未跟踪的Python缓存文件
-            mock_untracked.return_value = ["some/__pycache__/file.pyc", "test.pyc", ".env", "normal.py"]  # 正常文件
+            mock_untracked.return_value = [
+                "some/__pycache__/file.pyc",
+                "test.pyc",
+                ".env",
+                "normal.py",
+            ]  # 正常文件
 
             validator.check_ignored_patterns()
 
@@ -231,7 +246,12 @@ class TestGitIgnoreValidatorBasic:
                 "files": ["dir1/__pycache__", "dir2/__pycache__"],
                 "total": 2,
             },
-            {"type": "NOT_IGNORED", "pattern": "*.log", "files": ["debug.log", "error.log"], "total": 2},
+            {
+                "type": "NOT_IGNORED",
+                "pattern": "*.log",
+                "files": ["debug.log", "error.log"],
+                "total": 2,
+            },
         ]
 
         commands = validator.generate_cleanup_commands()
@@ -245,7 +265,14 @@ class TestGitIgnoreValidatorBasic:
         validator = GitIgnoreValidator()
 
         # 添加一些测试数据
-        validator.issues = [{"type": "NOT_IGNORED", "pattern": "*.pyc", "files": ["test.pyc"], "total": 1}]
+        validator.issues = [
+            {
+                "type": "NOT_IGNORED",
+                "pattern": "*.pyc",
+                "files": ["test.pyc"],
+                "total": 1,
+            }
+        ]
         validator.warnings = ["测试警告"]
         validator.successes = ["✅ 成功项1", "✅ 成功项2"]
 

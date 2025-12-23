@@ -5,7 +5,7 @@
 基于akshare的 `stock_board_industry_summary_ths` 接口，在 `akshare_adapter.py` 中新增了三个方法来获取同花顺行业相关数据：
 
 1. **获取同花顺行业一览表** - `get_ths_industry_summary()`
-2. **获取同花顺行业名称列表** - `get_ths_industry_names()`  
+2. **获取同花顺行业名称列表** - `get_ths_industry_names()`
 3. **获取指定行业成分股数据** - `get_ths_industry_stocks(industry_name)`
 
 ## 功能详情
@@ -127,10 +127,10 @@ from adapters.akshare_adapter import AkshareDataSource
 
 def demo_ths_industry_data():
     """演示同花顺行业数据获取功能"""
-    
+
     # 初始化数据源
     adapter = AkshareDataSource()
-    
+
     # 1. 获取行业一览表
     print("=== 获取同花顺行业一览表 ===")
     industry_summary = adapter.get_ths_industry_summary()
@@ -139,15 +139,15 @@ def demo_ths_industry_data():
     top5_industries = industry_summary.head()
     for _, row in top5_industries.iterrows():
         print(f"  {row['板块']}: {row['涨跌幅']}%")
-    
-    # 2. 获取行业名称列表  
+
+    # 2. 获取行业名称列表
     print("\\n=== 获取行业名称列表 ===")
     industry_names = adapter.get_ths_industry_names()
     print(f"共有 {len(industry_names)} 个行业分类")
     print("前10个行业:")
     for _, row in industry_names.head(10).iterrows():
         print(f"  {row['name']} (代码: {row['code']})")
-    
+
     # 3. 获取特定行业的成分股
     print("\\n=== 获取银行行业成分股 ===")
     bank_stocks = adapter.get_ths_industry_stocks("银行")
@@ -156,13 +156,13 @@ def demo_ths_industry_data():
         print("市值前5的银行股:")
         for _, row in bank_stocks.head().iterrows():
             print(f"  {row['代码']} {row['名称']}: {row['最新价']}元 ({row['涨跌幅']}%)")
-    
+
     # 4. 保存数据到文件
     industry_summary.to_csv("同花顺行业一览表.csv", index=False, encoding='utf-8-sig')
     industry_names.to_csv("同花顺行业名称列表.csv", index=False, encoding='utf-8-sig')
     if not bank_stocks.empty:
         bank_stocks.to_csv("银行行业成分股.csv", index=False, encoding='utf-8-sig')
-    
+
     print("\\n✅ 数据已保存到CSV文件")
 
 if __name__ == "__main__":
@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
 ## 注意事项
 
-1. **数据来源差异**: 
+1. **数据来源差异**:
    - `get_ths_industry_summary()` 使用同花顺数据源
    - `get_ths_industry_stocks()` 使用东方财富数据源（因为akshare的限制）
 

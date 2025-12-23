@@ -20,7 +20,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
-from src.interfaces.data_source import IDataSource
+from src.interfaces.data_source import IDataSource  # noqa: E402
 
 # 导入列名映射工具
 try:
@@ -76,7 +76,7 @@ class CustomerDataSource(IDataSource):
         except Exception as e:
             print(f"[Customer] easyquotation库导入失败: {e}")
 
-        print(f"[Customer] 数据源初始化完成:")
+        print("[Customer] 数据源初始化完成:")
         print(f"  - efinance: {'可用' if self.efinance_available else '不可用'}")
         print(
             f"  - easyquotation: {'可用' if self.easyquotation_available else '不可用'}"
@@ -427,27 +427,27 @@ class CustomerDataSource(IDataSource):
         # 使用akshare获取交易日历
         try:
             import akshare as ak
-            
+
             # 获取交易日历
             calendar_df = ak.tool_trade_date_hist_sina()
-            
+
             # 过滤指定日期范围
             start_date = pd.to_datetime(start_date)
             end_date = pd.to_datetime(end_date)
-            
+
             # 确保日期列是datetime类型
-            calendar_df['trade_date'] = pd.to_datetime(calendar_df['trade_date'])
-            
+            calendar_df["trade_date"] = pd.to_datetime(calendar_df["trade_date"])
+
             # 过滤日期范围
             filtered_df = calendar_df[
-                (calendar_df['trade_date'] >= start_date) & 
-                (calendar_df['trade_date'] <= end_date)
+                (calendar_df["trade_date"] >= start_date)
+                & (calendar_df["trade_date"] <= end_date)
             ]
-            
+
             # 重命名列以符合标准格式
-            if 'trade_date' in filtered_df.columns:
-                filtered_df = filtered_df.rename(columns={'trade_date': 'date'})
-            
+            if "trade_date" in filtered_df.columns:
+                filtered_df = filtered_df.rename(columns={"trade_date": "date"})
+
             print(f"[Customer] 成功获取交易日历: {len(filtered_df)}个交易日")
             return filtered_df
         except ImportError:
@@ -496,12 +496,14 @@ class CustomerDataSource(IDataSource):
         # 使用akshare获取新闻数据
         try:
             import akshare as ak
-            
+
             if symbol:
                 # 获取个股新闻（如果有接口的话）
                 # akshare可能没有直接的个股新闻接口，这里提供通用新闻
-                news_data = ak.stock_news_em(symbol=symbol if len(symbol) == 6 else f"{symbol.zfill(6)}")
-                
+                news_data = ak.stock_news_em(
+                    symbol=symbol if len(symbol) == 6 else f"{symbol.zfill(6)}"
+                )
+
                 if not news_data.empty:
                     # 标准化新闻数据格式
                     news_list = []
@@ -512,10 +514,10 @@ class CustomerDataSource(IDataSource):
                             "publish_time": row.get("publish_time", ""),
                             "source": row.get("source", ""),
                             "url": row.get("url", ""),
-                            "symbol": symbol
+                            "symbol": symbol,
                         }
                         news_list.append(news_item)
-                    
+
                     print(f"[Customer] 成功获取{len(news_list)}条新闻数据")
                     return news_list
                 else:

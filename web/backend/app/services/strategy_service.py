@@ -8,17 +8,17 @@
 4. 批量扫描: 扫描全市场股票
 """
 
-from sqlalchemy import create_engine, and_, or_, desc
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine, and_, desc
+from sqlalchemy.orm import sessionmaker
 from datetime import date, datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any
 import pandas as pd
 import logging
 import os
 import akshare as ak
 
-from app.models.strategy import StrategyDefinition, StrategyResult, Base
-from app.strategies.stock_strategies import get_strategy, get_all_strategies
+from app.models.strategy import StrategyDefinition, StrategyResult
+from app.strategies.stock_strategies import get_strategy
 
 logger = logging.getLogger(__name__)
 

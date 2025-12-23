@@ -36,19 +36,19 @@ log_error() {
 # 创建安全扫描虚拟环境
 setup_security_environment() {
     log_info "设置安全扫描环境..."
-    
+
     # 创建虚拟环境
     if [ ! -d "$VENV_DIR" ]; then
         python3 -m venv "$VENV_DIR"
         log_success "创建安全扫描虚拟环境"
     fi
-    
+
     # 激活虚拟环境
     source "$VENV_DIR/bin/activate"
-    
+
     # 升级pip
     pip install --upgrade pip
-    
+
     # 安装安全工具
     if [ -f "$PROJECT_ROOT/requirements-security.txt" ]; then
         pip install -r "$PROJECT_ROOT/requirements-security.txt"
@@ -62,16 +62,16 @@ setup_security_environment() {
 # 检查必要工具
 check_security_tools() {
     log_info "检查安全扫描工具..."
-    
+
     local tools=("bandit" "safety" "pip-audit")
     local missing_tools=()
-    
+
     for tool in "${tools[@]}"; do
         if ! command -v "$tool" &> /dev/null; then
             missing_tools+=("$tool")
         fi
     done
-    
+
     if [ ${#missing_tools[@]} -gt 0 ]; then
         log_error "缺少安全扫描工具: ${missing_tools[*]}"
         log_info "尝试安装缺少的工具..."
@@ -84,10 +84,10 @@ check_security_tools() {
 # 运行Bandit代码安全分析
 run_bandit_scan() {
     log_info "运行Bandit代码安全分析..."
-    
+
     local output_file="$PROJECT_ROOT/logs/security/bandit_report.json"
     mkdir -p "$(dirname "$output_file")"
-    
+
     if bandit -r "$PROJECT_ROOT/src" \
               --exclude "*/test*,*/tests,*/__pycache__,*/venv/*,*/node_modules/*" \
               --format json \
@@ -102,10 +102,10 @@ run_bandit_scan() {
 # 运行Safety依赖漏洞扫描
 run_safety_scan() {
     log_info "运行Safety依赖漏洞扫描..."
-    
+
     local output_file="$PROJECT_ROOT/logs/security/safety_report.json"
     mkdir -p "$(dirname "$output_file")"
-    
+
     if safety check --json --full-report --output "$output_file"; then
         log_success "Safety扫描完成 - 未发现已知漏洞"
     else
@@ -116,10 +116,10 @@ run_safety_scan() {
 # 运行pip-audit包安全审计
 run_pip_audit_scan() {
     log_info "运行pip-audit包安全审计..."
-    
+
     local output_file="$PROJECT_ROOT/logs/security/pip_audit_report.json"
     mkdir -p "$(dirname "$output_file")"
-    
+
     if pip-audit --format=json --local --output "$output_file"; then
         log_success "pip-audit扫描完成 - 未发现包安全漏洞"
     else
@@ -130,9 +130,9 @@ run_pip_audit_scan() {
 # 运行综合安全扫描
 run_comprehensive_security_scan() {
     log_info "开始运行综合安全扫描..."
-    
+
     local scanner_script="$SCRIPT_DIR/security_scanner.py"
-    
+
     if [ -f "$scanner_script" ]; then
         python3 "$scanner_script" --project-root "$PROJECT_ROOT" --quiet
         log_success "综合安全扫描完成"
@@ -145,33 +145,33 @@ run_comprehensive_security_scan() {
 # 生成安全报告摘要
 generate_security_summary() {
     log_info "生成安全报告摘要..."
-    
+
     local log_dir="$PROJECT_ROOT/logs/security"
     local summary_file="$log_dir/security_summary_$(date +%Y%m%d_%H%M%S).txt"
-    
+
     echo "MyStocks项目安全扫描摘要报告" > "$summary_file"
     echo "生成时间: $(date)" >> "$summary_file"
     echo "======================================" >> "$summary_file"
     echo "" >> "$summary_file"
-    
+
     # 扫描HTML报告
     local html_reports=($(find "$log_dir" -name "security_report_*.html" -type f 2>/dev/null | sort -r | head -1))
     if [ ${#html_reports[@]} -gt 0 ]; then
         echo "最新HTML安全报告:" >> "$summary_file"
         echo "  - ${html_reports[0]}" >> "$summary_file"
     fi
-    
+
     # 扫描JSON报告
     local json_reports=($(find "$log_dir" -name "security_scan_*.json" -type f 2>/dev/null | sort -r | head -1))
     if [ ${#json_reports[@]} -gt 0 ]; then
         echo "最新JSON安全报告:" >> "$summary_file"
         echo "  - ${json_reports[0]}" >> "$summary_file"
     fi
-    
+
     # 显示摘要
     echo "" >> "$summary_file"
     echo "请查看上述报告文件获取详细的安全扫描结果。" >> "$summary_file"
-    
+
     log_success "安全报告摘要已生成: $summary_file"
     cat "$summary_file"
 }
@@ -201,7 +201,7 @@ show_help() {
 # 主函数
 main() {
     local mode="$1"
-    
+
     case "$mode" in
         --setup)
             setup_security_environment

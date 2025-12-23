@@ -77,7 +77,7 @@ class TestTDengineTableCreation:
         for table in tdengine_tables:
             print(f"    - {table['table_name']} ({table.get('classification', 'N/A')})")
 
-        print(f"  ✅ TDengine表定义验证通过")
+        print("  ✅ TDengine表定义验证通过")
 
     def test_04_super_table_structure(self):
         """测试4: 验证Super Table结构定义"""
@@ -107,7 +107,7 @@ class TestTDengineTableCreation:
         assert "volume" in col_names, "缺少成交量列"
 
         print(f"  列数量: {len(columns)}")
-        print(f"  必需列验证: ✓")
+        print("  必需列验证: ✓")
 
         # 验证标签(Tags) - 在columns中通过is_tag: true标记
         tags = [col for col in columns if col.get("is_tag", False)]
@@ -120,9 +120,9 @@ class TestTDengineTableCreation:
             tag_names = [tag["name"] for tag in tags]
             print(f"  标签数量: {len(tags)}")
             if "symbol" in tag_names:
-                print(f"  必需标签验证: ✓")
+                print("  必需标签验证: ✓")
         else:
-            print(f"  标签数量: 0 (配置未定义tags)")
+            print("  标签数量: 0 (配置未定义tags)")
 
         # 验证压缩配置 (可选)
         compression = tick_table.get("compression", {})
@@ -131,17 +131,17 @@ class TestTDengineTableCreation:
                 codec = compression.get("codec", "N/A")
                 print(f"  压缩配置: {codec} / {compression.get('level', 'N/A')}")
             else:
-                print(f"  压缩配置: 未启用")
+                print("  压缩配置: 未启用")
         else:
-            print(f"  压缩配置: 未定义")
+            print("  压缩配置: 未定义")
 
         # 验证保留策略 (可选)
         retention_days = tick_table.get("retention_days")
         if retention_days is not None and retention_days > 0:
             print(f"  保留策略: {retention_days}天")
         else:
-            print(f"  保留策略: 未定义")
-        print(f"  ✅ Super Table结构验证通过")
+            print("  保留策略: 未定义")
+        print("  ✅ Super Table结构验证通过")
 
     def test_05_create_super_table(self):
         """测试5: 创建Super Table"""
@@ -171,7 +171,7 @@ class TestTDengineTableCreation:
                     print(f"  ⚠️  失败: {table_def['table_name']} - {e}")
 
             print(f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个")
-            print(f"  ✅ TDengine表创建测试完成")
+            print("  ✅ TDengine表创建测试完成")
 
         except Exception as e:
             print(f"  ⚠️  测试失败: {e}")
@@ -195,7 +195,7 @@ class TestTDengineTableCreation:
                 status = "✅ 存在" if exists else "❌ 不存在"
                 print(f"  {table_name}: {status}")
 
-            print(f"  ✅ 表存在性验证完成")
+            print("  ✅ 表存在性验证完成")
 
         except Exception as e:
             print(f"  ⚠️  验证失败: {e}")

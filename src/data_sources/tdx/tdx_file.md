@@ -238,7 +238,7 @@ def read_day_data(file_path):
     buf = f.read()
     size = len(buf)
     rec_count = int(size / 32)
-    
+
     result = []
     for i in range(rec_count):
       data = unpack('=IIIIIfII', buf[i * 32:(i + 1) * 32])
@@ -251,7 +251,7 @@ def read_day_data(file_path):
         'amount': data[5],
         'volume': data[6]
       })
-      
+
     return pd.DataFrame(result)
 分钟数据读取
 
@@ -263,7 +263,7 @@ def read_minute_data(file_path):
     buf = f.read()
     size = len(buf)
     rec_count = int(size / 32)
-    
+
     result = []
     for i in range(rec_count):
       data = unpack('=IIIIIfII', buf[i * 32:(i + 1) * 32])
@@ -276,7 +276,7 @@ def read_minute_data(file_path):
         'amount': data[5],
         'volume': data[6]
       })
-      
+
     return pd.DataFrame(result)
 使用示例
 

@@ -1,0 +1,127 @@
+{
+  "notification_channels": [
+    {
+      "name": "email",
+      "type": "email",
+      "enabled": true,
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "your-email@gmail.com",
+      "password": "your-app-password",
+      "from_email": "your-email@gmail.com",
+      "to_emails": ["admin@example.com", "team@example.com"],
+      "use_tls": true
+    },
+    {
+      "name": "slack",
+      "type": "slack",
+      "enabled": true,
+      "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+      "channel": "#test-alerts"
+    },
+    {
+      "name": "webhook",
+      "type": "webhook",
+      "enabled": true,
+      "url": "https://your-webhook-endpoint.com/alerts",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer your-token"
+      },
+      "timeout": 30
+    }
+  ],
+  "templates": [
+    {
+      "id": "alert_template",
+      "name": "Alert Notification",
+      "type": "email",
+      "category": "alert",
+      "subject_template": "测试告警: {{ alert.rule_name }} - {{ alert.severity.value.upper() }}",
+      "body_template": "告警详情：\n\n规则名称：{{ alert.rule_name }}\n严重级别：{{ alert.severity.value }}\n告警消息：{{ alert.message }}\n时间：{{ alert.timestamp }}\n\n请及时处理。",
+      "html_template": "alert.html"
+    },
+    {
+      "id": "summary_template",
+      "name": "Test Summary",
+      "type": "email",
+      "category": "summary",
+      "subject_template": "测试执行摘要 - {{ timestamp }}",
+      "body_template": "测试执行完成，请查看详细报告。",
+      "html_template": "summary.html"
+    }
+  ],
+  "integrations": [
+    {
+      "id": "jenkins_integration",
+      "name": "Jenkins Integration",
+      "type": "webhook",
+      "endpoint": "http://jenkins.example.com/webhook",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "enabled": true,
+      "timeout": 30,
+      "retry_policy": {
+        "max_retries": 3,
+        "retry_delay": 60
+      }
+    },
+    {
+      "id": "grafana_integration",
+      "name": "Grafana Integration",
+      "type": "api",
+      "endpoint": "http://grafana.example.com/api/alerts",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer your-grafana-token",
+        "Content-Type": "application/json"
+      },
+      "enabled": true,
+      "timeout": 10
+    }
+  ],
+  "monitoring_settings": {
+    "check_interval": 60,
+    "alert_retention_days": 30,
+    "metric_retention_hours": 24,
+    "max_metric_history": 10000,
+    "auto_suppress_duration": 60,
+    "batch_size": 100
+  },
+  "dashboard_settings": {
+    "refresh_interval": 30,
+    "chart_colors": [
+      "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+      "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+    ],
+    "default_time_range": "1h",
+    "enable_realtime": true
+  },
+  "performance_settings": {
+    "anomaly_detection": {
+      "enabled": true,
+      "threshold_std": 3.0,
+      "window_minutes": 60
+    },
+    "trend_analysis": {
+      "enabled": true,
+      "window_minutes": 120
+    },
+    "optimization": {
+      "enabled": true,
+      "auto_optimize": false,
+      "optimization_interval": 3600
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "monitoring.log",
+    "max_size": "100MB",
+    "backup_count": 5,
+    "include_metrics": true,
+    "include_alerts": true
+  }
+}

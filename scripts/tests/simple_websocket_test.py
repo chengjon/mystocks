@@ -12,7 +12,6 @@ Date: 2025-11-13
 import asyncio
 import time
 import json
-import uuid
 import statistics
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
@@ -39,7 +38,9 @@ class TestResult:
         }
 
 
-async def simple_connection_test(url: str = "http://localhost:8000") -> List[TestResult]:
+async def simple_connection_test(
+    url: str = "http://localhost:8000",
+) -> List[TestResult]:
     """
     简单的连接测试
 
@@ -87,9 +88,8 @@ async def run_basic_stress_test(
     Returns:
         测试统计结果
     """
-    import aiohttp
 
-    print(f"🚀 开始基本压力测试")
+    print("🚀 开始基本压力测试")
     print(f"   并发请求数: {concurrent_requests}")
     print(f"   每连接请求数: {requests_per_connection}")
 
@@ -112,14 +112,11 @@ async def run_basic_stress_test(
                         return TestResult(request_id, True, response_time)
                     else:
                         return TestResult(
-                            request_id, False, response_time,
-                            f"HTTP {response.status}"
+                            request_id, False, response_time, f"HTTP {response.status}"
                         )
 
         except Exception as e:
-            return TestResult(
-                request_id, False, 0, str(e)
-            )
+            return TestResult(request_id, False, 0, str(e))
 
     # 创建并发任务
     tasks = []
@@ -150,7 +147,9 @@ async def run_basic_stress_test(
 
     success_rate = (len(successful_results) / len(results)) * 100 if results else 0
 
-    response_times = [r.response_time_ms for r in successful_results if r.response_time_ms > 0]
+    response_times = [
+        r.response_time_ms for r in successful_results if r.response_time_ms > 0
+    ]
     avg_response_time = statistics.mean(response_times) if response_times else 0
     max_response_time = max(response_times) if response_times else 0
     min_response_time = min(response_times) if response_times else 0
@@ -171,7 +170,7 @@ async def run_basic_stress_test(
     }
 
     # 显示结果
-    print(f"\n📊 测试结果:")
+    print("\n📊 测试结果:")
     print(f"   总请求数: {stats['total_requests']}")
     print(f"   成功请求: {stats['successful_requests']}")
     print(f"   失败请求: {stats['failed_requests']}")
@@ -182,9 +181,9 @@ async def run_basic_stress_test(
     print(f"   最大响应时间: {stats['max_response_time_ms']}ms")
     print(f"   最小响应时间: {stats['min_response_time_ms']}ms")
 
-    if stats['errors']:
-        print(f"\n⚠️ 错误信息:")
-        unique_errors = list(set(stats['errors']))[:5]  # 只显示前5个唯一错误
+    if stats["errors"]:
+        print("\n⚠️ 错误信息:")
+        unique_errors = list(set(stats["errors"]))[:5]  # 只显示前5个唯一错误
         for error in unique_errors:
             print(f"   - {error}")
 
@@ -228,46 +227,57 @@ async def main():
 
     # 3. 生成综合报告
     if all_stats:
-        print(f"\n📈 综合测试报告")
+        print("\n📈 综合测试报告")
         print("=" * 40)
 
-        best_scenario = min(all_stats, key=lambda s: s['avg_response_time_ms'])
-        worst_scenario = max(all_stats, key=lambda s: s['avg_response_time_ms'])
+        best_scenario = min(all_stats, key=lambda s: s["avg_response_time_ms"])
+        worst_scenario = max(all_stats, key=lambda s: s["avg_response_time_ms"])
 
-        print(f"最佳性能场景:")
-        print(f"  并发: {best_scenario['concurrent_requests']}, "
-              f"响应时间: {best_scenario['avg_response_time_ms']}ms, "
-              f"成功率: {best_scenario['success_rate']}%")
+        print("最佳性能场景:")
+        print(
+            f"  并发: {best_scenario['concurrent_requests']}, "
+            f"响应时间: {best_scenario['avg_response_time_ms']}ms, "
+            f"成功率: {best_scenario['success_rate']}%"
+        )
 
-        print(f"最差性能场景:")
-        print(f"  并发: {worst_scenario['concurrent_requests']}, "
-              f"响应时间: {worst_scenario['avg_response_time_ms']}ms, "
-              f"成功率: {worst_scenario['success_rate']}%")
+        print("最差性能场景:")
+        print(
+            f"  并发: {worst_scenario['concurrent_requests']}, "
+            f"响应时间: {worst_scenario['avg_response_time_ms']}ms, "
+            f"成功率: {worst_scenario['success_rate']}%"
+        )
 
-        avg_success_rate = statistics.mean(s['success_rate'] for s in all_stats)
-        avg_throughput = statistics.mean(s['throughput'] for s in all_stats)
+        avg_success_rate = statistics.mean(s["success_rate"] for s in all_stats)
+        avg_throughput = statistics.mean(s["throughput"] for s in all_stats)
 
-        print(f"\n平均指标:")
+        print("\n平均指标:")
         print(f"  平均成功率: {avg_success_rate:.2f}%")
         print(f"  平均吞吐量: {avg_throughput:.2f} 请求/秒")
 
         # 保存结果
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"/opt/claude/mystocks_spec/logs/basic_websocket_test_{timestamp}.json"
+        filename = (
+            f"/opt/claude/mystocks_spec/logs/basic_websocket_test_{timestamp}.json"
+        )
 
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
-                json.dump({
-                    "test_type": "basic_websocket_stress_test",
-                    "timestamp": datetime.now().isoformat(),
-                    "scenarios": all_stats,
-                    "summary": {
-                        "best_performance": best_scenario,
-                        "worst_performance": worst_scenario,
-                        "average_success_rate": avg_success_rate,
-                        "average_throughput": avg_throughput,
-                    }
-                }, f, indent=2, ensure_ascii=False)
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        "test_type": "basic_websocket_stress_test",
+                        "timestamp": datetime.now().isoformat(),
+                        "scenarios": all_stats,
+                        "summary": {
+                            "best_performance": best_scenario,
+                            "worst_performance": worst_scenario,
+                            "average_success_rate": avg_success_rate,
+                            "average_throughput": avg_throughput,
+                        },
+                    },
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
             print(f"\n💾 测试结果已保存: {filename}")
         except Exception as e:
             print(f"\n❌ 保存结果失败: {e}")
@@ -275,7 +285,7 @@ async def main():
 
 if __name__ == "__main__":
     # 设置事件循环策略
-    if hasattr(asyncio, 'WindowsSelectorEventLoopPolicy'):
+    if hasattr(asyncio, "WindowsSelectorEventLoopPolicy"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     asyncio.run(main())

@@ -18,8 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.gridspec import GridSpec
-from typing import Dict, List, Optional, Tuple
-from datetime import date
+from typing import Dict, Optional, Tuple
 import logging
 
 
@@ -406,18 +405,18 @@ class BacktestVisualizer:
         ax2.axis("off")
         metrics_text = f"""
         PERFORMANCE METRICS
-        {'='*30}
-        Total Return:     {metrics.get('total_return', 0):.2%}
-        Annual Return:    {metrics.get('annualized_return', 0):.2%}
-        Sharpe Ratio:     {metrics.get('sharpe_ratio', 0):.3f}
-        Max Drawdown:     {metrics.get('max_drawdown', 0):.2%}
+        {"=" * 30}
+        Total Return:     {metrics.get("total_return", 0):.2%}
+        Annual Return:    {metrics.get("annualized_return", 0):.2%}
+        Sharpe Ratio:     {metrics.get("sharpe_ratio", 0):.3f}
+        Max Drawdown:     {metrics.get("max_drawdown", 0):.2%}
 
         TRADE STATISTICS
-        {'='*30}
-        Total Trades:     {metrics.get('total_trades', 0)}
-        Win Rate:         {metrics.get('win_rate', 0):.2%}
-        Profit Factor:    {metrics.get('profit_factor', 0):.2f}
-        Avg Holding:      {metrics.get('avg_holding_days', 0):.1f} days
+        {"=" * 30}
+        Total Trades:     {metrics.get("total_trades", 0)}
+        Win Rate:         {metrics.get("win_rate", 0):.2%}
+        Profit Factor:    {metrics.get("profit_factor", 0):.2f}
+        Avg Holding:      {metrics.get("avg_holding_days", 0):.1f} days
         """
         ax2.text(
             0.1,

@@ -1,0 +1,46 @@
+{
+  "coverage_target": 95.0,
+  "performance_threshold": 1.1,
+  "complexity_limit": 10,
+  "test_generation_mode": "comprehensive",
+  "optimization_strategies": [
+    "missing_branch_coverage",
+    "exception_path_testing",
+    "performance_testing",
+    "integration_testing",
+    "edge_case_testing",
+    "mock_dependency_testing"
+  ],
+  "exclusion_patterns": [
+    "test_*.py",
+    "*_test.py",
+    "__pycache__",
+    "migrations/*",
+    "venv/*",
+    "node_modules/*"
+  ],
+  "priority_modules": [
+    "src/adapters/",
+    "src/core/",
+    "src/data_access/",
+    "src/monitoring/"
+  ],
+  "quality_gates": {
+    "min_coverage": 80.0,
+    "max_complexity": 15,
+    "max_test_duration": 300,
+    "min_quality_score": 70.0
+  },
+  "test_templates": {
+    "unit_test": "pytest_standard",
+    "integration_test": "pytest_integration",
+    "performance_test": "pytest_benchmark",
+    "security_test": "bandit_compliant"
+  },
+  "reporting": {
+    "include_suggestions": true,
+    "include_generated_tests": true,
+    "include_performance_baseline": true,
+    "format": "markdown"
+  }
+}

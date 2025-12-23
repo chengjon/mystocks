@@ -30,10 +30,8 @@ TDX二进制文件解析器 (TDX Binary File Parser)
 import os
 import struct
 import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from datetime import datetime, date, timedelta
-from pathlib import Path
 import logging
 
 
@@ -482,11 +480,11 @@ if __name__ == "__main__":
 
         if not day_data.empty:
             print(f"  ✓ 读取成功: {len(day_data)} 条记录")
-            print(f"\n  最近5天数据:")
+            print("\n  最近5天数据:")
             print(day_data.tail())
 
             # 测试3: 获取最新日期
-            print(f"\n测试3: 获取最新数据日期")
+            print("\n测试3: 获取最新数据日期")
             latest_date = parser.get_latest_date(test_symbol)
             print(f"  ✓ 最新日期: {latest_date}")
         else:

@@ -4,9 +4,7 @@
 """
 
 import sys
-import traceback
 from pathlib import Path
-from typing import Optional, Dict, Any
 from contextlib import contextmanager
 from loguru import logger as loguru_logger
 from functools import wraps
@@ -77,47 +75,53 @@ loguru_logger.add(
 
 class UnifiedLogger:
     """统一日志记录器类"""
-    
+
     def __init__(self, name: str = "MyStocks"):
         self.logger = loguru_logger.bind(name=name)
-    
+
     def trace(self, message: str, **kwargs):
         """追踪级别日志"""
         self.logger.opt(depth=1).trace(message, **kwargs)
-    
+
     def debug(self, message: str, **kwargs):
         """调试级别日志"""
         self.logger.opt(depth=1).debug(message, **kwargs)
-    
+
     def info(self, message: str, **kwargs):
         """信息级别日志"""
         self.logger.opt(depth=1).info(message, **kwargs)
-    
+
     def success(self, message: str, **kwargs):
         """成功级别日志"""
         self.logger.opt(depth=1).success(message, **kwargs)
-    
+
     def warning(self, message: str, **kwargs):
         """警告级别日志"""
         self.logger.opt(depth=1).warning(message, **kwargs)
-    
+
     def error(self, message: str, **kwargs):
         """错误级别日志"""
         self.logger.opt(depth=1).error(message, **kwargs)
-    
+
     def critical(self, message: str, **kwargs):
         """严重级别日志"""
         self.logger.opt(depth=1).critical(message, **kwargs)
-    
+
     def exception(self, message: str, **kwargs):
         """异常级别日志（自动包含异常堆栈）"""
         self.logger.opt(depth=1, exception=True).error(message, **kwargs)
-    
+
     @contextmanager
-    def catch(self, message: str = "发生异常", reraise: bool = True, exclude=None, level="ERROR"):
+    def catch(
+        self,
+        message: str = "发生异常",
+        reraise: bool = True,
+        exclude=None,
+        level="ERROR",
+    ):
         """
         异常捕获上下文管理器
-        
+
         Args:
             message: 异常发生时记录的消息
             reraise: 是否重新抛出异常
@@ -131,48 +135,61 @@ class UnifiedLogger:
                 if reraise:
                     raise
                 return
-            
+
             # 记录异常
             getattr(self.logger.opt(exception=True), level.lower())(message)
-            
+
             if reraise:
                 raise
-    
+
     def log_performance(self, func):
         """
         记录函数执行时间的装饰器
-        
+
         Usage:
             @logger.log_performance
             def my_function():
                 pass
         """
+
         @wraps(func)
         def wrapper(*args, **kwargs):
-            start_time = self.logger.catch()(lambda: __import__('time').time())()
+            start_time = self.logger.catch()(lambda: __import__("time").time())()
             try:
                 result = func(*args, **kwargs)
-                duration = (self.logger.catch()(lambda: __import__('time').time())() - start_time) * 1000  # ms
+                duration = (
+                    self.logger.catch()(lambda: __import__("time").time())()
+                    - start_time
+                ) * 1000  # ms
                 self.info(f"{func.__name__} 执行完成，耗时: {duration:.2f}ms")
                 return result
             except Exception as e:
-                duration = (self.logger.catch()(lambda: __import__('time').time())() - start_time) * 1000
-                self.error(f"{func.__name__} 执行失败，耗时: {duration:.2f}ms, 错误: {e}")
+                duration = (
+                    self.logger.catch()(lambda: __import__("time").time())()
+                    - start_time
+                ) * 1000
+                self.error(
+                    f"{func.__name__} 执行失败，耗时: {duration:.2f}ms, 错误: {e}"
+                )
                 raise
+
         return wrapper
 
 
 # 创建全局logger实例
 logger = UnifiedLogger("MyStocks")
 
+
 # 导出常用的loguru函数
 def add_handler(*args, **kwargs):
     """添加日志处理器"""
     return loguru_logger.add(*args, **kwargs)
 
+
 def remove_handler(handler_id):
     """移除日志处理器"""
     return loguru_logger.remove(handler_id)
+
 
 # 数据库日志处理器（可选，连接到monitoring数据库）
 def db_sink(message):
@@ -184,7 +201,6 @@ def db_sink(message):
     """
     try:
         import psycopg2
-        from datetime import datetime
         import json
         import os
 
@@ -238,7 +254,7 @@ def db_sink(message):
         cursor.close()
         conn.close()
 
-    except Exception as e:
+    except Exception:
         # 数据库日志失败不应影响主程序，静默处理
         pass
 
@@ -257,4 +273,4 @@ except Exception as e:
 # 初始化完成日志
 logger.info("统一日志系统初始化完成")
 logger.info(f"日志目录: {LOG_DIR}")
-logger.info(f"日志级别: 控制台=INFO, 文件=DEBUG, 数据库=WARNING")
+logger.info("日志级别: 控制台=INFO, 文件=DEBUG, 数据库=WARNING")

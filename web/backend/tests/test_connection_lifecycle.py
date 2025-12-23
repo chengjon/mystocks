@@ -12,7 +12,6 @@ Date: 2025-11-06
 import pytest
 import asyncio
 import time
-from datetime import datetime, timedelta
 
 from app.core.connection_lifecycle import (
     ConnectionLifecycleManager,

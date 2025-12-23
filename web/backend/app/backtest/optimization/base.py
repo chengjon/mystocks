@@ -3,9 +3,10 @@ Base Optimizer
 
 参数优化基类 - 定义优化器接口和通用功能
 """
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional, Callable, Tuple
+from typing import Dict, Any, List, Optional
 from datetime import datetime
 import logging
 import copy
@@ -20,28 +21,29 @@ class OptimizationResult:
 
     存储单次参数组合的回测结果
     """
+
     # 参数组合
     parameters: Dict[str, Any]
 
     # 性能指标
-    total_return: float = 0.0          # 总收益率
-    annual_return: float = 0.0         # 年化收益率
-    sharpe_ratio: float = 0.0          # 夏普比率
-    max_drawdown: float = 0.0          # 最大回撤
-    win_rate: float = 0.0              # 胜率
-    profit_factor: float = 0.0         # 盈亏比
+    total_return: float = 0.0  # 总收益率
+    annual_return: float = 0.0  # 年化收益率
+    sharpe_ratio: float = 0.0  # 夏普比率
+    max_drawdown: float = 0.0  # 最大回撤
+    win_rate: float = 0.0  # 胜率
+    profit_factor: float = 0.0  # 盈亏比
 
     # 交易统计
-    total_trades: int = 0              # 总交易次数
-    winning_trades: int = 0            # 盈利交易次数
-    losing_trades: int = 0             # 亏损交易次数
+    total_trades: int = 0  # 总交易次数
+    winning_trades: int = 0  # 盈利交易次数
+    losing_trades: int = 0  # 亏损交易次数
 
     # 其他指标
-    calmar_ratio: float = 0.0          # 卡玛比率
-    sortino_ratio: float = 0.0         # 索提诺比率
+    calmar_ratio: float = 0.0  # 卡玛比率
+    sortino_ratio: float = 0.0  # 索提诺比率
 
     # 元数据
-    optimization_time: float = 0.0     # 优化耗时(秒)
+    optimization_time: float = 0.0  # 优化耗时(秒)
     backtest_start: Optional[datetime] = None
     backtest_end: Optional[datetime] = None
 
@@ -53,7 +55,7 @@ class OptimizationResult:
         if self.total_trades > 0:
             self.win_rate = self.winning_trades / self.total_trades
 
-    def get_score(self, metric: str = 'sharpe_ratio') -> float:
+    def get_score(self, metric: str = "sharpe_ratio") -> float:
         """
         获取评分指标值
 
@@ -68,20 +70,20 @@ class OptimizationResult:
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {
-            'parameters': self.parameters,
-            'total_return': self.total_return,
-            'annual_return': self.annual_return,
-            'sharpe_ratio': self.sharpe_ratio,
-            'max_drawdown': self.max_drawdown,
-            'win_rate': self.win_rate,
-            'profit_factor': self.profit_factor,
-            'total_trades': self.total_trades,
-            'winning_trades': self.winning_trades,
-            'losing_trades': self.losing_trades,
-            'calmar_ratio': self.calmar_ratio,
-            'sortino_ratio': self.sortino_ratio,
-            'optimization_time': self.optimization_time,
-            'metadata': self.metadata
+            "parameters": self.parameters,
+            "total_return": self.total_return,
+            "annual_return": self.annual_return,
+            "sharpe_ratio": self.sharpe_ratio,
+            "max_drawdown": self.max_drawdown,
+            "win_rate": self.win_rate,
+            "profit_factor": self.profit_factor,
+            "total_trades": self.total_trades,
+            "winning_trades": self.winning_trades,
+            "losing_trades": self.losing_trades,
+            "calmar_ratio": self.calmar_ratio,
+            "sortino_ratio": self.sortino_ratio,
+            "optimization_time": self.optimization_time,
+            "metadata": self.metadata,
         }
 
 
@@ -92,16 +94,17 @@ class ParameterSpace:
 
     定义单个参数的取值范围
     """
-    name: str                          # 参数名
-    param_type: str                    # 参数类型: int, float, choice
+
+    name: str  # 参数名
+    param_type: str  # 参数类型: int, float, choice
     min_value: Optional[float] = None  # 最小值 (int/float)
     max_value: Optional[float] = None  # 最大值 (int/float)
-    step: Optional[float] = None       # 步长 (网格搜索用)
+    step: Optional[float] = None  # 步长 (网格搜索用)
     choices: Optional[List[Any]] = None  # 选项列表 (choice类型)
 
     def get_grid_values(self) -> List[Any]:
         """获取网格搜索的所有取值"""
-        if self.param_type == 'choice':
+        if self.param_type == "choice":
             return self.choices or []
 
         if self.min_value is None or self.max_value is None:
@@ -112,7 +115,7 @@ class ParameterSpace:
         current = self.min_value
 
         while current <= self.max_value:
-            if self.param_type == 'int':
+            if self.param_type == "int":
                 values.append(int(current))
             else:
                 values.append(current)
@@ -123,15 +126,16 @@ class ParameterSpace:
     def get_random_value(self, rng=None) -> Any:
         """获取随机取值"""
         import random
+
         rand = rng or random
 
-        if self.param_type == 'choice':
+        if self.param_type == "choice":
             return rand.choice(self.choices) if self.choices else None
 
         if self.min_value is None or self.max_value is None:
             return None
 
-        if self.param_type == 'int':
+        if self.param_type == "int":
             return rand.randint(int(self.min_value), int(self.max_value))
         else:
             return rand.uniform(self.min_value, self.max_value)
@@ -148,8 +152,8 @@ class BaseOptimizer(ABC):
         self,
         strategy_type: str,
         parameter_spaces: List[ParameterSpace],
-        objective: str = 'sharpe_ratio',
-        maximize: bool = True
+        objective: str = "sharpe_ratio",
+        maximize: bool = True,
     ):
         """
         初始化优化器
@@ -176,7 +180,9 @@ class BaseOptimizer(ABC):
         self._data_source = None
         self._market_data = None
 
-        logger.info(f"优化器初始化: 策略={strategy_type}, 目标={objective}, 参数数={len(parameter_spaces)}")
+        logger.info(
+            f"优化器初始化: 策略={strategy_type}, 目标={objective}, 参数数={len(parameter_spaces)}"
+        )
 
     def set_backtest_engine(self, engine):
         """设置回测引擎"""
@@ -193,6 +199,7 @@ class BaseOptimizer(ABC):
         if self._data_source is None:
             try:
                 from src.data_sources.factory import get_timeseries_source
+
                 self._data_source = get_timeseries_source(source_type="mock")
                 logger.info("Mock数据源初始化成功")
             except ImportError:
@@ -206,7 +213,7 @@ class BaseOptimizer(ABC):
         symbols: List[str],
         start_date: datetime,
         end_date: datetime,
-        interval: str = "1d"
+        interval: str = "1d",
     ) -> Dict[str, Any]:
         """
         加载市场数据 (使用mock数据源)
@@ -234,7 +241,7 @@ class BaseOptimizer(ABC):
                     symbol=symbol,
                     start_time=start_date,
                     end_time=end_date,
-                    interval=interval
+                    interval=interval,
                 )
                 if df is not None and not df.empty:
                     market_data[symbol] = df
@@ -246,9 +253,7 @@ class BaseOptimizer(ABC):
         return market_data
 
     def _run_single_backtest(
-        self,
-        parameters: Dict[str, Any],
-        market_data: Dict[str, Any] = None
+        self, parameters: Dict[str, Any], market_data: Dict[str, Any] = None
     ) -> OptimizationResult:
         """
         运行单次回测
@@ -261,6 +266,7 @@ class BaseOptimizer(ABC):
             优化结果
         """
         import time
+
         start_time = time.time()
 
         data = market_data or self._market_data
@@ -274,24 +280,24 @@ class BaseOptimizer(ABC):
             backtest_result = self.backtest_engine.run(
                 strategy_type=self.strategy_type,
                 parameters=parameters,
-                market_data=data
+                market_data=data,
             )
 
             # 转换结果
             result = OptimizationResult(
                 parameters=copy.deepcopy(parameters),
-                total_return=backtest_result.get('total_return', 0.0),
-                annual_return=backtest_result.get('annual_return', 0.0),
-                sharpe_ratio=backtest_result.get('sharpe_ratio', 0.0),
-                max_drawdown=backtest_result.get('max_drawdown', 0.0),
-                win_rate=backtest_result.get('win_rate', 0.0),
-                profit_factor=backtest_result.get('profit_factor', 0.0),
-                total_trades=backtest_result.get('total_trades', 0),
-                winning_trades=backtest_result.get('winning_trades', 0),
-                losing_trades=backtest_result.get('losing_trades', 0),
-                calmar_ratio=backtest_result.get('calmar_ratio', 0.0),
-                sortino_ratio=backtest_result.get('sortino_ratio', 0.0),
-                optimization_time=time.time() - start_time
+                total_return=backtest_result.get("total_return", 0.0),
+                annual_return=backtest_result.get("annual_return", 0.0),
+                sharpe_ratio=backtest_result.get("sharpe_ratio", 0.0),
+                max_drawdown=backtest_result.get("max_drawdown", 0.0),
+                win_rate=backtest_result.get("win_rate", 0.0),
+                profit_factor=backtest_result.get("profit_factor", 0.0),
+                total_trades=backtest_result.get("total_trades", 0),
+                winning_trades=backtest_result.get("winning_trades", 0),
+                losing_trades=backtest_result.get("losing_trades", 0),
+                calmar_ratio=backtest_result.get("calmar_ratio", 0.0),
+                sortino_ratio=backtest_result.get("sortino_ratio", 0.0),
+                optimization_time=time.time() - start_time,
             )
 
         except Exception as e:
@@ -299,7 +305,7 @@ class BaseOptimizer(ABC):
             result = OptimizationResult(
                 parameters=parameters,
                 optimization_time=time.time() - start_time,
-                metadata={'error': str(e)}
+                metadata={"error": str(e)},
             )
 
         return result
@@ -322,9 +328,7 @@ class BaseOptimizer(ABC):
 
     @abstractmethod
     def optimize(
-        self,
-        market_data: Dict[str, Any] = None,
-        **kwargs
+        self, market_data: Dict[str, Any] = None, **kwargs
     ) -> List[OptimizationResult]:
         """
         执行参数优化
@@ -351,7 +355,7 @@ class BaseOptimizer(ABC):
         sorted_results = sorted(
             self.results,
             key=lambda r: r.get_score(self.objective),
-            reverse=self.maximize
+            reverse=self.maximize,
         )
         return sorted_results[:n]
 
@@ -363,19 +367,21 @@ class BaseOptimizer(ABC):
             摘要字典
         """
         if not self.results:
-            return {'status': 'no_results'}
+            return {"status": "no_results"}
 
         scores = [r.get_score(self.objective) for r in self.results]
 
         return {
-            'strategy_type': self.strategy_type,
-            'objective': self.objective,
-            'total_iterations': len(self.results),
-            'best_score': max(scores) if self.maximize else min(scores),
-            'worst_score': min(scores) if self.maximize else max(scores),
-            'avg_score': sum(scores) / len(scores),
-            'best_parameters': self.best_result.parameters if self.best_result else None,
-            'total_time': sum(r.optimization_time for r in self.results)
+            "strategy_type": self.strategy_type,
+            "objective": self.objective,
+            "total_iterations": len(self.results),
+            "best_score": max(scores) if self.maximize else min(scores),
+            "worst_score": min(scores) if self.maximize else max(scores),
+            "avg_score": sum(scores) / len(scores),
+            "best_parameters": self.best_result.parameters
+            if self.best_result
+            else None,
+            "total_time": sum(r.optimization_time for r in self.results),
         }
 
     def export_results(self, filepath: str):
@@ -388,11 +394,11 @@ class BaseOptimizer(ABC):
         import json
 
         export_data = {
-            'summary': self.get_optimization_summary(),
-            'results': [r.to_dict() for r in self.results]
+            "summary": self.get_optimization_summary(),
+            "results": [r.to_dict() for r in self.results],
         }
 
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2, default=str)
 
         logger.info(f"优化结果已导出: {filepath}")

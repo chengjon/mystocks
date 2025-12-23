@@ -7,13 +7,13 @@ GPU加速集成接口
 
 import time
 import logging
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, Optional, Union, Any
 import pandas as pd
 from dataclasses import dataclass
 
 # 导入原有的统一管理器
 from ..unified_manager import MyStocksUnifiedManager
-from .gpu_manager import GPUUnifiedManager, GPUConfig, GPUProcessingResult
+from .gpu_manager import GPUUnifiedManager
 from .data_processor_gpu import ProcessingConfig
 
 
@@ -389,7 +389,8 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
 
             # 进行小规模基准测试
             benchmark_result = self.gpu_manager.benchmark_gpu_vs_cpu(
-                sample_data[:1000], operation="process"  # 使用小样本
+                sample_data[:1000],
+                operation="process",  # 使用小样本
             )
 
             # 记录基准测试结果
@@ -445,23 +446,23 @@ MyStocks GPU集成状态报告
 ==========================
 
 🔗 集成配置:
-  • 自动启用GPU: {'✅ 是' if status['auto_enable_gpu'] else '❌ 否'}
-  • CPU回退功能: {'✅ 是' if status['fallback_to_cpu'] else '❌ 否'}
-  • 性能阈值: {status['gpu_config']['performance_threshold']}秒/万行
-  • GPU内存限制: {status['gpu_config']['gpu_memory_threshold_mb']}MB
-  • 启用基准测试: {'✅ 是' if status['gpu_config']['enable_benchmarking'] else '❌ 否'}
+  • 自动启用GPU: {"✅ 是" if status["auto_enable_gpu"] else "❌ 否"}
+  • CPU回退功能: {"✅ 是" if status["fallback_to_cpu"] else "❌ 否"}
+  • 性能阈值: {status["gpu_config"]["performance_threshold"]}秒/万行
+  • GPU内存限制: {status["gpu_config"]["gpu_memory_threshold_mb"]}MB
+  • 启用基准测试: {"✅ 是" if status["gpu_config"]["enable_benchmarking"] else "❌ 否"}
 
 📊 GPU使用统计:
-  • 总操作次数: {status['gpu_usage_stats']['total_operations']}
-  • GPU操作次数: {status['gpu_usage_stats']['gpu_operations']}
-  • CPU回退次数: {status['gpu_usage_stats']['cpu_fallback_operations']}
-  • GPU使用率: {(status['gpu_usage_stats']['gpu_operations'] / max(1, status['gpu_usage_stats']['total_operations']) * 100):.1f}%
+  • 总操作次数: {status["gpu_usage_stats"]["total_operations"]}
+  • GPU操作次数: {status["gpu_usage_stats"]["gpu_operations"]}
+  • CPU回退次数: {status["gpu_usage_stats"]["cpu_fallback_operations"]}
+  • GPU使用率: {(status["gpu_usage_stats"]["gpu_operations"] / max(1, status["gpu_usage_stats"]["total_operations"]) * 100):.1f}%
 
 ⚡ GPU组件状态:
-  • GPU环境: {'✅ 可用' if status['gpu_available'] else '❌ 不可用'}
-  • 数据处理器: {'✅ 已启用' if status['gpu_performance_summary']['gpu_components_status']['data_processor']['enabled'] else '❌ 已禁用'}
-  • 特征生成器: {'✅ 已启用' if status['gpu_performance_summary']['gpu_components_status']['feature_generator']['enabled'] else '❌ 已禁用'}
-  • 价格预测器: {'✅ 已启用' if status['gpu_performance_summary']['gpu_components_status']['price_predictor']['enabled'] else '❌ 已禁用'}
+  • GPU环境: {"✅ 可用" if status["gpu_available"] else "❌ 不可用"}
+  • 数据处理器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["data_processor"]["enabled"] else "❌ 已禁用"}
+  • 特征生成器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["feature_generator"]["enabled"] else "❌ 已禁用"}
+  • 价格预测器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["price_predictor"]["enabled"] else "❌ 已禁用"}
 
 🏆 性能基准测试:
 """
@@ -469,10 +470,10 @@ MyStocks GPU集成状态报告
         if status["last_benchmark"]:
             benchmark = status["last_benchmark"]
             report += f"""
-  • 最后测试时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(benchmark['timestamp']))}
-  • GPU处理时间: {benchmark['gpu_time']:.4f}秒
-  • CPU处理时间: {benchmark['cpu_time']:.4f}秒
-  • 加速比: {benchmark['speedup']:.2f}x
+  • 最后测试时间: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(benchmark["timestamp"]))}
+  • GPU处理时间: {benchmark["gpu_time"]:.4f}秒
+  • CPU处理时间: {benchmark["cpu_time"]:.4f}秒
+  • 加速比: {benchmark["speedup"]:.2f}x
 """
         else:
             report += """
@@ -521,7 +522,8 @@ def main():
     # 数据保存测试
     print("\n1. 数据保存测试:")
     save_result = gpu_manager.save_data_by_classification_with_gpu(
-        sample_data[:100], data_classification="market_data"  # 使用小样本
+        sample_data[:100],
+        data_classification="market_data",  # 使用小样本
     )
     print(
         f"保存结果 - GPU: {save_result.get('gpu_enabled', False)}, "

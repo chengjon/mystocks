@@ -1,0 +1,125 @@
+{
+  "summary": {
+    "total_test_suites": 7,
+    "successful_test_suites": 5,
+    "failed_test_suites": 2,
+    "success_rate_percent": 71.42857142857143,
+    "timestamp": "2025-12-18T17:21:20.404362",
+    "test_environment": "CPU-only (GPU fallback enabled)"
+  },
+  "key_performance_metrics": {
+    "hal_allocation_avg_ms": 1.0,
+    "matrix_1000x1000_avg_ms": 15.296506881713867,
+    "concurrency_4_throughput": 440.6591547816038,
+    "fault_tolerance_success_rate": 50.0
+  },
+  "detailed_results": {
+    "HAL性能测试": {
+      "success": true,
+      "allocation_times": {
+        "average_ms": 1.0,
+        "median_ms": 1.0,
+        "min_ms": 1.0,
+        "max_ms": 1.0
+      },
+      "total_allocations": 50
+    },
+    "内核执行器性能测试": {
+      "success": true,
+      "initialization_times": {
+        "average_ms": 1.0,
+        "median_ms": 1.0,
+        "min_ms": 1.0,
+        "max_ms": 1.0
+      },
+      "total_initializations": 10
+    },
+    "矩阵操作性能测试": {
+      "success": true,
+      "matrix_multiplication": {
+        "size_100": {
+          "average_ms": 2.7622222900390625,
+          "median_ms": 0.4127025604248047,
+          "min_ms": 0.2713203430175781,
+          "max_ms": 12.36104965209961
+        },
+        "size_1000": {
+          "average_ms": 15.296506881713867,
+          "median_ms": 3.0205249786376953,
+          "min_ms": 2.8977394104003906,
+          "max_ms": 43.28799247741699
+        },
+        "size_5000": {
+          "average_ms": 233.73823165893555,
+          "median_ms": 78.16696166992188,
+          "min_ms": 72.06249237060547,
+          "max_ms": 861.9277477264404
+        },
+        "size_10000": {
+          "average_ms": 6766.163110733032,
+          "median_ms": 6174.672365188599,
+          "min_ms": 5658.420562744141,
+          "max_ms": 9080.713748931885
+        }
+      },
+      "test_sizes": [
+        100,
+        1000,
+        5000,
+        10000
+      ]
+    },
+    "数据变换性能测试": {
+      "success": false,
+      "error": "cannot import name 'TransformOperationConfig' from 'src.gpu.core.kernels.standardized_interface' (/opt/claude/mystocks_spec/src/gpu/core/kernels/standardized_interface.py)"
+    },
+    "内存管理性能测试": {
+      "success": false,
+      "error": "MemoryPool.__init__() missing 1 required positional argument: 'config'"
+    },
+    "并发性能测试": {
+      "success": true,
+      "concurrent_operations": {
+        "concurrency_1": {
+          "total_time_seconds": 0.0027201175689697266,
+          "average_task_time_ms": 0.6194114685058594,
+          "throughput_tasks_per_second": 367.63116837584363
+        },
+        "concurrency_2": {
+          "total_time_seconds": 0.003991842269897461,
+          "average_task_time_ms": 0.6462335586547852,
+          "throughput_tasks_per_second": 501.02180015528876
+        },
+        "concurrency_4": {
+          "total_time_seconds": 0.009077310562133789,
+          "average_task_time_ms": 1.0799765586853027,
+          "throughput_tasks_per_second": 440.6591547816038
+        },
+        "concurrency_8": {
+          "total_time_seconds": 0.01086115837097168,
+          "average_task_time_ms": 0.7811486721038818,
+          "throughput_tasks_per_second": 736.5696849961585
+        }
+      },
+      "concurrency_levels": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "matrix_size": 100
+    },
+    "故障容灾测试": {
+      "success": true,
+      "fault_tolerance": {
+        "total_operations": 10,
+        "successful_gpu_operations": 5,
+        "cpu_fallback_operations": 5,
+        "success_rate_percent": 50.0,
+        "average_execution_time_ms": 0.9375333786010742,
+        "gpu_average_ms": 0.4413127899169922,
+        "cpu_fallback_average_ms": 1.4337539672851562
+      }
+    }
+  }
+}

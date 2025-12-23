@@ -13,11 +13,9 @@ Multi-data Source Support
 """
 
 import time
-import json
-import hashlib
 import requests
 from typing import List, Optional, Dict, Any
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import pandas as pd
 import logging
 

@@ -1,9 +1,9 @@
 """
 调试配置加载问题
 """
-import os
+
 from pydantic_settings import BaseSettings
-from typing import Optional, List
+from typing import List
 
 
 class DebugSettings(BaseSettings):
@@ -60,4 +60,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"创建配置实例失败: {e}")
         import traceback
+
         traceback.print_exc()

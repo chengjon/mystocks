@@ -11,9 +11,7 @@ Tests cover:
 """
 
 import pytest
-import json
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
 import sys
 import os
 
@@ -288,7 +286,9 @@ class TestCacheReadOperations:
 
         # Read outside time window (expect None)
         result = self.manager.read_cache(
-            symbol="000001", data_type="test", days=0  # 0 days = no lookback
+            symbol="000001",
+            data_type="test",
+            days=0,  # 0 days = no lookback
         )
         # May be None or not depending on exact timing
         assert isinstance(result, (dict, type(None))), "Should return dict or None"

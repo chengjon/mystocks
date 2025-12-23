@@ -12,9 +12,6 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-import pandas as pd
-import numpy as np
-from datetime import datetime
 from src.data_access.mysql_access import MySQLDataAccess
 from src.data_access.redis_access import RedisDataAccess
 from src.core.data_classification import DataClassification
@@ -150,7 +147,7 @@ try:
     retrieved = redis_access.get(test_key)
 
     assert retrieved == test_data, "Redis数据读写不一致"
-    print(f"  String操作: ✓")
+    print("  String操作: ✓")
 
     # 测试Hash操作
     hash_key = "test:account:user001"
@@ -160,7 +157,7 @@ try:
 
     account = redis_access.hgetall(hash_key)
     assert "cash" in account, "Hash操作失败"
-    print(f"  Hash操作: ✓")
+    print("  Hash操作: ✓")
 
     # 清理测试数据
     redis_access.delete(test_key, hash_key)

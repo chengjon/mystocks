@@ -5,7 +5,7 @@
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
@@ -46,7 +46,7 @@ class TestDatabaseHealthCheck:
         mock_connect.return_value = mock_conn
 
         # 调用方法
-        if hasattr(check_db_health, 'check_postgresql_connection'):
+        if hasattr(check_db_health, "check_postgresql_connection"):
             result = check_db_health.check_postgresql_connection()
 
             # 验证
@@ -63,7 +63,7 @@ class TestDatabaseHealthCheck:
         mock_connect.side_effect = Exception("Connection refused")
 
         # 调用方法
-        if hasattr(check_db_health, 'check_postgresql_connection'):
+        if hasattr(check_db_health, "check_postgresql_connection"):
             result = check_db_health.check_postgresql_connection()
 
             # 验证
@@ -85,7 +85,7 @@ class TestDatabaseHealthCheck:
         mock_connect.return_value = mock_conn
 
         # 调用方法
-        if hasattr(check_db_health, 'check_tdengine_connection'):
+        if hasattr(check_db_health, "check_tdengine_connection"):
             result = check_db_health.check_tdengine_connection()
 
             # 验证
@@ -102,7 +102,7 @@ class TestDatabaseHealthCheck:
         mock_connect.side_effect = Exception("Connection refused")
 
         # 调用方法
-        if hasattr(check_db_health, 'check_tdengine_connection'):
+        if hasattr(check_db_health, "check_tdengine_connection"):
             result = check_db_health.check_tdengine_connection()
 
             # 验证
@@ -123,12 +123,12 @@ class TestHealthCheckIntegration:
             results = []
 
             # 运行 PostgreSQL 检查
-            if hasattr(check_db_health, 'check_postgresql_connection'):
+            if hasattr(check_db_health, "check_postgresql_connection"):
                 postgresql_result = check_db_health.check_postgresql_connection()
                 results.append(postgresql_result)
 
             # 运行 TDengine 检查
-            if hasattr(check_db_health, 'check_tdengine_connection'):
+            if hasattr(check_db_health, "check_tdengine_connection"):
                 tdengine_result = check_db_health.check_tdengine_connection()
                 results.append(tdengine_result)
 
