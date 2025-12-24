@@ -1236,11 +1236,10 @@ async def health_check():
         - healthy: 服务正常运行，可以接受数据请求
         - 建议监控系统每 30 秒调用一次
     """
-    return create_success_response(
-        data={
-            "status": "healthy",
-            "timestamp": datetime.now().isoformat(),
-            "service": "market-data-api",
-        },
-        message="市场数据 API 服务正常",
+    from app.core.responses import create_health_response
+
+    return create_health_response(
+        service="market-data-api",
+        status="healthy",
+        details={"timestamp": datetime.now().isoformat()},
     )

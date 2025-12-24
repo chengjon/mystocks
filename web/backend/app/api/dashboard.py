@@ -56,6 +56,34 @@ router = APIRouter(
 )
 
 
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    仪表盘服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="dashboard",
+        status="healthy",
+        details={
+            "endpoints": [
+                "summary",
+                "market_overview",
+                "portfolio",
+                "watchlist",
+                "risk_alerts",
+            ],
+            "cache_enabled": True,
+            "version": "1.0.0",
+        },
+    )
+
+
 # ============================================================================
 # 辅助函数
 # ============================================================================

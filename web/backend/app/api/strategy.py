@@ -16,6 +16,7 @@ from app.core.responses import (
     ResponseMessages,
     create_error_response,
     create_success_response,
+    create_health_response,
 )
 from app.services.data_source_factory import DataSourceFactory
 from app.services.strategy_service import get_strategy_service
@@ -23,6 +24,27 @@ from app.services.strategy_service import get_strategy_service
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/strategy")
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    策略服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="strategy",
+        status="healthy",
+        details={
+            "endpoints": ["run", "list", "get_result", "cancel"],
+            "version": "1.0.0",
+        },
+    )
 
 
 # ==================== 请求/响应模型 ====================

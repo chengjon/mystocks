@@ -402,14 +402,20 @@ async def execute_custom_query(
 @router.get("/health", summary="健康检查", description="检查问财API服务状态")
 async def health_check():
     """
-    健康检查
+    健康检查 (Phase 2.4.6: 更新为统一响应格式)
 
     检查服务是否正常运行
 
     Returns:
         健康状态
     """
-    return {"status": "healthy", "service": "wencai", "version": "1.0.0"}
+    from app.core.responses import create_health_response
+
+    return create_health_response(
+        service="wencai",
+        status="healthy",
+        details={"version": "1.0.0"},
+    )
 
 
 # ============================================================================

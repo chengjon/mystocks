@@ -105,7 +105,7 @@ class TaskRegistrationRequest(BaseModel):
         config_str = json.dumps(v).lower()
         dangerous_patterns = [
             "__import__",
-            "eval(",
+            "eval(",  # noqa: S307  # pragma: allowlist secret
             "exec(",
             "subprocess",
             "os.system",
@@ -766,16 +766,20 @@ async def tasks_health():
         - mock_mode=true 表示当前使用测试数据
         - 建议监控系统每 60 秒调用一次以进行持续监控
     """
+    from app.core.responses import create_health_response
+
     if use_mock:
         # Mock数据：返回模拟健康状态
-        return {
-            "status": "healthy",
-            "total_tasks": 25,
-            "running_tasks": 3,
-            "total_executions": 156,
-            "last_check": datetime.now().isoformat(),
-            "mock_mode": True,
-        }
+        return create_health_response(
+            service="tasks",
+            status="healthy",
+            details={
+                "total_tasks": 25,
+                "running_tasks": 3,
+                "total_executions": 156,
+                "mock_mode": True,
+            },
+        )
 
     try:
         # 获取基本统计信息
@@ -784,20 +788,23 @@ async def tasks_health():
         running_tasks = len(getattr(task_manager, "running_tasks", []))
         total_executions = len(getattr(task_manager, "executions", []))
 
-        return {
-            "status": "healthy",
-            "total_tasks": total_tasks,
-            "running_tasks": running_tasks,
-            "total_executions": total_executions,
-            "last_check": datetime.now().isoformat(),
-        }
+        return create_health_response(
+            service="tasks",
+            status="healthy",
+            details={
+                "total_tasks": total_tasks,
+                "running_tasks": running_tasks,
+                "total_executions": total_executions,
+                "mock_mode": False,
+            },
+        )
     except Exception as e:
         logger.error("Tasks health check failed", error=str(e))
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "last_check": datetime.now().isoformat(),
-        }
+        return create_health_response(
+            service="tasks",
+            status="unhealthy",
+            details={"error": str(e)},
+        )
 
 
 # ==================== 管理员专用端点 ====================

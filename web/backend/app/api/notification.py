@@ -31,11 +31,35 @@ from pydantic import BaseModel, EmailStr, Field, constr, validator
 from app.api.auth import User, get_current_active_user, get_current_user
 from app.core.responses import (
     create_success_response,
+    create_health_response,
 )
 from app.services.email_service import get_email_service
 
 logger = structlog.get_logger()
 router = APIRouter()
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    通知服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="notification",
+        status="healthy",
+        details={
+            "endpoints": ["send_email", "price_alerts", "ws_notifications"],
+            "email_enabled": True,
+            "websocket_enabled": True,
+            "version": "4C-Enhanced",
+        },
+    )
 
 
 # ==================== 请求模型 ====================

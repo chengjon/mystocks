@@ -150,7 +150,7 @@ def update_database_metrics():
 @router.get("/health")
 async def health_check() -> Dict[str, Any]:
     """
-    公共健康检查端点
+    公共健康检查端点 (Phase 2.4.6: 更新为统一响应格式)
 
     Returns:
         Dict: 基础健康状态信息
@@ -159,11 +159,20 @@ async def health_check() -> Dict[str, Any]:
         - 无需认证
         - 仅返回基础状态，不包含敏感信息
     """
+    from app.core.responses import create_health_response
+
     try:
         # 更新基础健康状态
         update_database_metrics()
 
-        return {"status": "healthy", "timestamp": time.time(), "version": "1.0.0"}
+        return create_health_response(
+            service="metrics",
+            status="healthy",
+            details={
+                "prometheus_enabled": True,
+                "version": "1.0.0",
+            },
+        )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(

@@ -2,10 +2,29 @@
 应用配置管理
 """
 
+import os
+from pathlib import Path
 from typing import List
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# 确定.env文件的路径（支持多层级查找）
+_ENV_FILE_LOCATIONS = [
+    ".env",  # 当前目录
+    "../.env",  # 上级目录
+    "../../.env",  # 上上级目录
+    "/opt/claude/mystocks_spec/.env",  # 项目根目录（绝对路径）
+]
+
+def find_env_file() -> str:
+    """查找存在的.env文件"""
+    for env_path in _ENV_FILE_LOCATIONS:
+        if os.path.exists(env_path):
+            return env_path
+    return ".env"  # 默认返回当前目录
+
+_ENV_FILE_PATH = find_env_file()
 
 
 class Settings(BaseSettings):
@@ -39,9 +58,16 @@ class Settings(BaseSettings):
     monitor_db_database: str = "mystocks"
 
     # JWT 认证配置
-    secret_key: str = ""  # 必须从环境变量设置，否则启动失败
+    # 注意: 字段名使用 jwt_secret_key 以便在 case_sensitive=False 时正确映射到 JWT_SECRET_KEY 环境变量
+    jwt_secret_key: str = Field(default="", env="JWT_SECRET_KEY")  # 必须从环境变量设置，否则启动失败
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+
+    # 向后兼容: secret_key 属性指向 jwt_secret_key
+    @property
+    def secret_key(self) -> str:
+        """向后兼容的 secret_key 属性"""
+        return self.jwt_secret_key
 
     # 管理员初始密码配置
     admin_initial_password: str = Field(
@@ -87,8 +113,8 @@ class Settings(BaseSettings):
     wencai_auto_refresh: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="allow"
-    )  # 允许额外字段
+        env_file=_ENV_FILE_PATH, env_file_encoding="utf-8", case_sensitive=False, extra="allow"
+    )  # 允许额外字段，使用动态查找的.env文件路径
 
 
 def validate_required_settings():
@@ -102,9 +128,9 @@ def validate_required_settings():
         ValueError: 当必需的配置项缺失时
     """
     required_settings = {
-        "postgresql_password": "POSTGRESQL_PASSWORD",
-        "monitor_db_password": "POSTGRESQL_PASSWORD",  # 使用相同的密码
-        "secret_key": "JWT_SECRET_KEY",
+        "postgresql_password": "POSTGRESQL_PASSWORD",  # pragma: allowlist secret
+        "monitor_db_password": "POSTGRESQL_PASSWORD",  # pragma: allowlist secret
+        "jwt_secret_key": "JWT_SECRET_KEY",
     }
 
     missing_settings = []
