@@ -1,22 +1,51 @@
 """
 多数据源API路由
+
+Phase 2.4.6: 更新健康检查为统一响应格式
 """
 
 from fastapi import APIRouter
+
+from app.core.responses import create_health_response, create_success_response
 
 router = APIRouter(prefix="/multi_source")
 
 
 @router.get("/health")
 async def health_check():
-    """健康检查"""
-    return {"status": "ok", "service": "multi_source"}
+    """
+    健康检查 (Phase 2.4.6: 更新为统一响应格式)
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="multi_source",
+        status="healthy",
+        details={
+            "data_sources": [
+                "technical",
+                "fundamental",
+                "sentiment",
+                "flow",
+            ],
+            "version": "1.0.0",
+        },
+    )
 
 
 @router.get("/status")
 async def get_status():
-    """获取服务状态"""
-    return {"status": "active", "endpoint": "multi_source"}
+    """
+    获取服务状态 (Phase 2.4.6: 更新为统一响应格式)
+
+    Returns:
+        统一格式的状态响应
+    """
+    return create_success_response(
+        data={"status": "active", "endpoint": "multi_source"},
+        message="多数据源分析服务运行中",
+    )
 
 
 @router.post("/analyze")

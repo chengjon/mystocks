@@ -29,6 +29,7 @@ from slowapi.util import get_remote_address
 
 from app.core.responses import (
     ErrorCode,
+    create_health_response,
     error_response,
     success_response,
 )
@@ -1173,29 +1174,29 @@ async def cleanup_old_backups(
 
 @router.get("/health")
 async def backup_service_health():
-    """备份服务健康检查 [LOW - 公开访问]"""
+    """备份服务健康检查 (Phase 2.4.6: 更新为统一响应格式) [LOW - 公开访问]"""
     try:
-        health_data = {
-            "status": "healthy",
-            "service": "backup-recovery",
-            "timestamp": datetime.utcnow().isoformat(),
-            "components": {
-                "backup_manager": "operational",
-                "recovery_manager": "operational",
-                "backup_scheduler": "running"
-                if backup_scheduler.is_running()
-                else "stopped",
-                "integrity_checker": "operational",
-            },
-            "security": {
-                "authentication": "enabled",
-                "authorization": "enabled",
-                "rate_limiting": "enabled",
-                "audit_logging": "enabled",
-            },
-        }
+        scheduler_status = "running" if backup_scheduler.is_running() else "stopped"
 
-        return success_response(data=health_data, message="备份恢复服务健康检查通过")
+        return create_health_response(
+            service="backup-recovery",
+            status="healthy",
+            details={
+                "components": {
+                    "backup_manager": "operational",
+                    "recovery_manager": "operational",
+                    "backup_scheduler": scheduler_status,
+                    "integrity_checker": "operational",
+                },
+                "security": {
+                    "authentication": "enabled",
+                    "authorization": "enabled",
+                    "rate_limiting": "enabled",
+                    "audit_logging": "enabled",
+                },
+                "version": "2.0.0",
+            },
+        )
 
     except Exception as e:
         return error_response(

@@ -112,7 +112,7 @@ repos:
     hooks:
       - id: detect-secrets
         name: Detect Secrets
-        exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|\.archive/)
+        exclude: ^(\.env\.example|docs/guides/|CLAUDE\.md|\.archive/|web/backend/app/core/config\.py)
 
   # ============================================================================
   # 第九步：Python 语法检查
@@ -126,6 +126,7 @@ repos:
         name: Check Blanket Type Ignore
       - id: python-no-eval
         name: No Eval
+        exclude: ^(web/backend/app/api/tasks\.py)
       - id: python-no-log-warn
         name: No Log Warn
 

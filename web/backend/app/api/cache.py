@@ -29,11 +29,49 @@ from app.core.cache_prewarming import (
     get_cache_monitor,
     get_prewarming_strategy,
 )
+from app.core.responses import create_health_response
 from app.core.security import get_current_user, User
 
 logger = structlog.get_logger()
 
 router = APIRouter(prefix="/cache", tags=["cache"])
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    缓存服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    try:
+        cache_mgr = get_cache_manager()
+        stats = cache_mgr.get_cache_stats()
+        strategy = get_eviction_strategy()
+
+        return create_health_response(
+            service="cache",
+            status="healthy",
+            details={
+                "hit_rate": stats.get("hit_rate", 0),
+                "cache_hits": stats.get("cache_hits", 0),
+                "cache_misses": stats.get("cache_misses", 0),
+                "total_reads": stats.get("total_reads", 0),
+                "total_writes": stats.get("total_writes", 0),
+                "ttl_days": strategy.get("ttl_days", 7) if strategy else 7,
+                "version": "1.0.0",
+            },
+        )
+    except Exception as e:
+        return create_health_response(
+            service="cache",
+            status="unhealthy",
+            details={"error": str(e), "version": "1.0.0"},
+        )
 
 
 # ==================== 缓存统计 ====================

@@ -27,6 +27,9 @@ from .core.socketio_manager import get_socketio_manager
 # 导入统一响应格式中间件
 from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
 
+# 导入全局异常处理器 (增强版 - UnifiedResponse格式)
+from .core.global_exception_handlers import register_global_exception_handlers
+
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
@@ -34,9 +37,13 @@ from .openapi_config import get_openapi_config
 from .core.responses import (
     ErrorCodes,
     ResponseMessages,
+    BusinessCode,
+    ErrorDetail,
+    UnifiedResponse,
     create_error_response,
     create_health_response,
     create_success_response,
+    create_unified_error_response,
 )
 
 # 导入输入验证中间件
@@ -237,13 +244,22 @@ def create_app() -> FastAPI:
                     logger.warning(
                         f"❌ CSRF token missing for {request.method} {request.url.path}"
                     )
+                    request_id = getattr(request.state, "request_id", None)
+                    unified_response = UnifiedResponse(
+                        success=False,
+                        code=BusinessCode.FORBIDDEN,
+                        message="CSRF token is required for this request",
+                        errors=[
+                            ErrorDetail(
+                                code=ErrorCodes.FORBIDDEN,
+                                message="CSRF token is required for this request"
+                            )
+                        ],
+                        request_id=request_id,
+                    )
                     return JSONResponse(
                         status_code=403,
-                        content=create_error_response(
-                            error_code=ErrorCodes.FORBIDDEN,
-                            message="CSRF token is required for this request",
-                            request_id=getattr(request.state, "request_id", None),
-                        ).dict(exclude_unset=True),
+                        content=unified_response.model_dump(exclude_unset=True),
                     )
 
                 # 验证CSRF token
@@ -251,13 +267,22 @@ def create_app() -> FastAPI:
                     logger.warning(
                         f"❌ Invalid CSRF token for {request.method} {request.url.path}"
                     )
+                    request_id = getattr(request.state, "request_id", None)
+                    unified_response = UnifiedResponse(
+                        success=False,
+                        code=BusinessCode.FORBIDDEN,
+                        message="CSRF token is invalid or expired",
+                        errors=[
+                            ErrorDetail(
+                                code=ErrorCodes.FORBIDDEN,
+                                message="CSRF token is invalid or expired"
+                            )
+                        ],
+                        request_id=request_id,
+                    )
                     return JSONResponse(
                         status_code=403,
-                        content=create_error_response(
-                            error_code=ErrorCodes.FORBIDDEN,
-                            message="CSRF token is invalid or expired",
-                            request_id=getattr(request.state, "request_id", None),
-                        ).dict(exclude_unset=True),
+                        content=unified_response.model_dump(exclude_unset=True),
                     )
 
         response = await call_next(request)
@@ -290,22 +315,39 @@ def create_app() -> FastAPI:
 
         return response
 
-    # 全局异常处理 - 使用统一响应格式
+    # 注册增强版全局异常处理器 (UnifiedResponse格式)
+    register_global_exception_handlers(app)
+    logger.info("✅ Global exception handlers registered (UnifiedResponse format)")
+
+    # 兜底全局异常处理 - 使用统一响应格式 (增强版)
     @app.exception_handler(Exception)
-    async def global_exception_handler(request: Request, exc: Exception):
+    async def fallback_global_exception_handler(request: Request, exc: Exception):
+        """
+        兜底全局异常处理器 - 捕获所有未被注册处理器处理的异常
+        使用 UnifiedResponse 格式 (success, code, message, data, errors, request_id)
+        """
         logger.error("Unhandled exception", exc_info=exc)
 
         # 获取请求ID
         request_id = getattr(request.state, "request_id", str(id(request)))
 
+        unified_response = UnifiedResponse(
+            success=False,
+            code=BusinessCode.INTERNAL_ERROR,
+            message=ResponseMessages.INTERNAL_ERROR,
+            data=None,
+            errors=[
+                ErrorDetail(
+                    code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                    message=f"{type(exc).__name__}: {str(exc)}",
+                )
+            ],
+            request_id=request_id,
+        )
+
         return JSONResponse(
             status_code=500,
-            content=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
-                message=ResponseMessages.INTERNAL_ERROR,
-                details={"exception": str(exc), "type": type(exc).__name__},
-                request_id=request_id,
-            ).dict(exclude_unset=True),
+            content=unified_response.model_dump(exclude_unset=True),
         )
 
     # 健康检查端点 - 使用统一响应格式

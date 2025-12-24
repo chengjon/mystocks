@@ -11,6 +11,7 @@ Prometheus Exporter - Enhanced Version
 作者：Claude
 创建日期：2025-11-12
 版本：2.0.0
+Phase 2.4.6: 更新健康检查为统一响应格式
 """
 
 import logging
@@ -27,6 +28,8 @@ from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
 )
+
+from app.core.responses import create_health_response
 
 # 导入自定义指标收集器
 try:
@@ -386,7 +389,7 @@ async def metrics():
 @router.get("/metrics/health", tags=["monitoring"])
 async def metrics_health():
     """
-    Prometheus 健康检查端点
+    Prometheus 健康检查端点 (Phase 2.4.6: 更新为统一响应格式)
 
     快速检查指标收集器是否正常工作
 
@@ -401,18 +404,20 @@ async def metrics_health():
         collector_status = "healthy"
         metrics_count = len(prometheus_registry._collector_to_names)
 
-        return {
-            "status": collector_status,
-            "metrics_available": metrics_count,
-            "last_update": datetime.now().isoformat(),
-            "exporter_version": "2.0.0",
-        }
+        return create_health_response(
+            service="prometheus-exporter",
+            status=collector_status,
+            details={
+                "metrics_available": metrics_count,
+                "exporter_version": "2.0.0",
+            },
+        )
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "last_update": datetime.now().isoformat(),
-        }
+        return create_health_response(
+            service="prometheus-exporter",
+            status="unhealthy",
+            details={"error": str(e)},
+        )
 
 
 @router.get("/metrics/list", tags=["monitoring"])

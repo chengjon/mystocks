@@ -14,7 +14,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
 from app.core.responses import (
+    create_success_response,
     create_error_response,
+    create_health_response,
     ErrorCodes,
 )
 from app.core.security import User, get_current_user
@@ -33,6 +35,50 @@ from utils.data_format_converter import (
 )
 
 router = APIRouter()
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    数据服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    try:
+        # 测试数据库连接
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+        available_sources = factory.get_available_sources()
+
+        return create_health_response(
+            service="data",
+            status="healthy",
+            details={
+                "endpoints": [
+                    "stocks/basic",
+                    "stocks/industries",
+                    "stocks/concepts",
+                    "stocks/daily",
+                    "markets/overview",
+                    "stocks/search",
+                    "financial",
+                    "stocks/intraday",
+                ],
+                "data_sources": list(available_sources.keys()),
+                "version": "1.0.0",
+            },
+        )
+    except Exception as e:
+        return create_health_response(
+            service="data",
+            status="unhealthy",
+            details={"error": str(e), "version": "1.0.0"},
+        )
 
 
 @router.get("/stocks/basic")

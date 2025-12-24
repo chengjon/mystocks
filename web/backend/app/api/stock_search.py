@@ -19,7 +19,11 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import APIResponse, create_error_response
+from app.core.responses import (
+    APIResponse,
+    create_error_response,
+    create_health_response,
+)
 from app.schema import (
     StockListQueryModel,
 )  # 导入P0改进的验证模型
@@ -37,6 +41,29 @@ from src.core.exceptions import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    股票搜索服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="stock_search",
+        status="healthy",
+        details={
+            "endpoints": ["search", "quote", "news", "list"],
+            "circuit_breaker_enabled": True,
+            "version": "1.0.0",
+        },
+    )
+
 
 # Rate limiting for search operations
 search_operation_count = {}

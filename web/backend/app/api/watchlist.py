@@ -1,6 +1,8 @@
 """
 自选股管理 API
 提供用户自选股的增删改查功能
+
+Phase 2.5.2: 更新为统一响应格式，添加健康检查端点
 """
 
 import re
@@ -10,9 +12,47 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
+from app.core.responses import (
+    create_success_response,
+    create_error_response,
+    create_health_response,
+    ErrorCodes,
+)
 from app.services.data_source_factory import DataSourceFactory
+from app.services.watchlist_service import WatchlistError, get_watchlist_service
 
 router = APIRouter()
+
+
+# ==================== 健康检查 (Phase 2.5.2) ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    自选股服务健康检查 (Phase 2.5.2: 统一响应格式)
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    return create_health_response(
+        service="watchlist",
+        status="healthy",
+        details={
+            "database": "postgresql",
+            "features": [
+                "add",
+                "remove",
+                "list",
+                "check",
+                "update_notes",
+                "count",
+                "clear",
+                "groups",
+            ],
+            "version": "1.0.0",
+        },
+    )
 
 
 class WatchlistItem(BaseModel):
@@ -201,7 +241,7 @@ async def get_my_watchlist(
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
-    获取当前用户的自选股列表
+    获取当前用户的自选股列表 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -214,7 +254,8 @@ async def get_my_watchlist(
 
         if not result.get("success", False):
             raise HTTPException(
-                status_code=500, detail=result.get("error", "获取自选股列表失败")
+                status_code=500,
+                detail=result.get("error", "获取自选股列表失败"),
             )
 
         return result.get("data", [])
@@ -222,7 +263,10 @@ async def get_my_watchlist(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取自选股列表失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"获取自选股列表失败: {str(e)}",
+        )
 
 
 @router.get("/symbols", response_model=List[str])
@@ -259,7 +303,7 @@ async def add_to_watchlist(
     request: AddWatchlistRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    添加股票到自选股列表
+    添加股票到自选股列表 (Phase 2.5.2: 更新为统一响应格式)
     支持通过 group_id 或 group_name 指定分组
     如果提供 group_name 且分组不存在，会自动创建
     """
@@ -284,20 +328,25 @@ async def add_to_watchlist(
 
         if not result.get("success", False):
             raise HTTPException(
-                status_code=500, detail=result.get("error", "添加自选股失败")
+                status_code=500,
+                detail=result.get("error", "添加自选股失败"),
             )
 
-        return {
-            "success": True,
-            "message": result.get("message", "已添加到自选股"),
-            "symbol": request.symbol,
-            "group_name": request.group_name if request.group_name else "默认分组",
-        }
+        return create_success_response(
+            data={
+                "symbol": request.symbol,
+                "group_name": request.group_name if request.group_name else "默认分组",
+            },
+            message=result.get("message", "已添加到自选股"),
+        )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"添加自选股失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"添加自选股失败: {str(e)}",
+        )
 
 
 @router.delete("/remove/{symbol}")
@@ -312,7 +361,7 @@ async def remove_from_watchlist(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    从自选股列表中删除股票
+    从自选股列表中删除股票 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -325,14 +374,21 @@ async def remove_from_watchlist(
 
         if not result.get("success", False):
             raise HTTPException(
-                status_code=404, detail=result.get("error", "自选股不存在或删除失败")
+                status_code=404,
+                detail=result.get("error", "自选股不存在或删除失败"),
             )
 
-        return {"success": True, "message": "已从自选股移除", "symbol": symbol}
+        return create_success_response(
+            data={"symbol": symbol},
+            message="已从自选股移除",
+        )
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除自选股失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"删除自选股失败: {str(e)}",
+        )
 
 
 @router.get("/check/{symbol}")
@@ -347,7 +403,7 @@ async def check_in_watchlist(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    检查股票是否在自选股列表中
+    检查股票是否在自选股列表中 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -360,17 +416,26 @@ async def check_in_watchlist(
 
         if not result.get("success", False):
             raise HTTPException(
-                status_code=500, detail=result.get("error", "检查自选股失败")
+                status_code=500,
+                detail=result.get("error", "检查自选股失败"),
             )
 
-        return {
-            "symbol": symbol,
-            "is_in_watchlist": result.get("data", {}).get("is_in_watchlist", False),
-        }
+        return create_success_response(
+            data={
+                "symbol": symbol,
+                "is_in_watchlist": result.get("data", {}).get(
+                    "is_in_watchlist", False
+                ),
+            },
+            message="检查完成",
+        )
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"检查自选股失败: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"检查自选股失败: {str(e)}",
+        )
 
 
 @router.put("/notes/{symbol}")
@@ -386,7 +451,7 @@ async def update_watchlist_notes(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    更新自选股备注
+    更新自选股备注 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -407,7 +472,10 @@ async def update_watchlist_notes(
                 status_code=404, detail=result.get("error", "自选股不存在或更新失败")
             )
 
-        return {"success": True, "message": "备注已更新", "symbol": symbol}
+        return create_success_response(
+            data={"symbol": symbol, "notes": request.notes},
+            message="备注已更新",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -417,7 +485,7 @@ async def update_watchlist_notes(
 @router.get("/count")
 async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
     """
-    获取自选股数量
+    获取自选股数量 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -433,7 +501,11 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
                 status_code=500, detail=result.get("error", "获取自选股数量失败")
             )
 
-        return {"count": result.get("data", {}).get("count", 0)}
+        count = result.get("data", {}).get("count", 0)
+        return create_success_response(
+            data={"count": count},
+            message=f"当前有 {count} 只自选股",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -443,7 +515,7 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
 @router.delete("/clear")
 async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
     """
-    清空当前用户的自选股列表
+    清空当前用户的自选股列表 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         # 使用数据源工厂
@@ -459,7 +531,10 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
                 status_code=500, detail=result.get("error", "清空自选股失败")
             )
 
-        return {"success": True, "message": "自选股列表已清空"}
+        return create_success_response(
+            data={"cleared": True},
+            message="自选股列表已清空",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -470,14 +545,19 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
 
 
 @router.get("/groups")
-async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
+async def get_user_groups(
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
-    获取当前用户的所有自选股分组
+    获取当前用户的所有自选股分组 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
         groups = service.get_user_groups(current_user.id)
-        return groups
+        return create_success_response(
+            data={"groups": groups, "total": len(groups)},
+            message=f"获取到 {len(groups)} 个分组",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取分组列表失败: {str(e)}")
 
@@ -487,7 +567,7 @@ async def create_group(
     request: CreateGroupRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    创建新的自选股分组
+    创建新的自选股分组 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
@@ -496,11 +576,10 @@ async def create_group(
         if not group:
             raise HTTPException(status_code=400, detail="分组创建失败")
 
-        return {
-            "success": True,
-            "message": f"分组 '{request.group_name}' 创建成功",
-            "group": group,
-        }
+        return create_success_response(
+            data={"group": group},
+            message=f"分组 '{request.group_name}' 创建成功",
+        )
     except HTTPException:
         raise
     except WatchlistError as e:
@@ -517,7 +596,7 @@ async def update_group(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    修改分组名称
+    修改分组名称 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
@@ -526,11 +605,10 @@ async def update_group(
         if not success:
             raise HTTPException(status_code=404, detail="分组不存在或更新失败")
 
-        return {
-            "success": True,
-            "message": f"分组已更新为 '{request.group_name}'",
-            "group_id": group_id,
-        }
+        return create_success_response(
+            data={"group_id": group_id, "group_name": request.group_name},
+            message=f"分组已更新为 '{request.group_name}'",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -543,7 +621,7 @@ async def delete_group(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    删除分组（会同时删除该分组下的所有自选股）
+    删除分组（会同时删除该分组下的所有自选股）(Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
@@ -554,7 +632,10 @@ async def delete_group(
                 status_code=404, detail="分组不存在或无法删除（默认分组不能删除）"
             )
 
-        return {"success": True, "message": "分组已删除", "group_id": group_id}
+        return create_success_response(
+            data={"group_id": group_id},
+            message="分组已删除",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -565,14 +646,17 @@ async def delete_group(
 async def get_watchlist_by_group(
     group_id: int = Path(..., description="分组ID", ge=1),
     current_user: User = Depends(get_current_user),
-) -> List[Dict]:
+) -> Dict:
     """
-    获取指定分组的自选股列表
+    获取指定分组的自选股列表 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
         watchlist = service.get_watchlist_by_group(current_user.id, group_id)
-        return watchlist
+        return create_success_response(
+            data={"group_id": group_id, "watchlist": watchlist},
+            message=f"获取到分组 {group_id} 的自选股",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取分组自选股失败: {str(e)}")
 
@@ -582,7 +666,7 @@ async def move_stock_to_group(
     request: MoveStockRequest, current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    将股票从一个分组移动到另一个分组
+    将股票从一个分组移动到另一个分组 (Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
@@ -596,12 +680,14 @@ async def move_stock_to_group(
         if not success:
             raise HTTPException(status_code=404, detail="移动失败，股票或分组不存在")
 
-        return {
-            "success": True,
-            "message": f"股票 {request.symbol} 已移动到新分组",
-            "symbol": request.symbol,
-            "to_group_id": request.to_group_id,
-        }
+        return create_success_response(
+            data={
+                "symbol": request.symbol,
+                "from_group_id": request.from_group_id,
+                "to_group_id": request.to_group_id,
+            },
+            message=f"股票 {request.symbol} 已移动到新分组",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -613,11 +699,14 @@ async def get_watchlist_with_groups(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
-    获取所有分组及其包含的自选股（分组视图）
+    获取所有分组及其包含的自选股（分组视图）(Phase 2.5.2: 更新为统一响应格式)
     """
     try:
         service = get_watchlist_service()
         result = service.get_watchlist_with_groups(current_user.id)
-        return result
+        return create_success_response(
+            data=result,
+            message="获取分组视图成功",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取分组视图失败: {str(e)}")

@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field, constr, validator
 from app.api.auth import get_current_active_user
 from app.core.responses import (
     create_success_response,
+    create_health_response,
 )
 from app.core.security import User
 from app.schemas.indicator_request import (
@@ -169,6 +170,34 @@ class RateLimiter:
 
 # 全局速率限制器
 rate_limiter = RateLimiter()
+
+
+# ==================== 健康检查 ====================
+
+
+@router.get("/health")
+async def health_check():
+    """
+    技术指标服务健康检查
+
+    Returns:
+        统一格式的健康检查响应
+    """
+    registry = get_indicator_registry()
+    all_indicators = registry.get_all_indicators()
+
+    return create_health_response(
+        service="indicators",
+        status="healthy",
+        details={
+            "total_indicators": len(all_indicators),
+            "cache_size": indicator_cache.get_stats()["size"],
+            "cache_max_size": indicator_cache.max_size,
+            "cache_ttl": indicator_cache.ttl,
+            "rate_limit_enabled": True,
+            "version": "4C-Enhanced",
+        },
+    )
 
 
 def rate_limit(limit: int, window: int):

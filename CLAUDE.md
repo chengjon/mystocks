@@ -343,7 +343,55 @@ pip install pandas numpy pyyaml psycopg2-binary taospy akshare
 # - MONITOR_DB_URL (uses PostgreSQL for monitoring database)
 
 # Note: MySQL (pymysql) and Redis removed after Week 3 simplification
+
+# JWT Authentication Configuration
+# - JWT_SECRET_KEY (required for API authentication)
+# Use the provided script to generate and set up JWT key:
+# bash scripts/JWT_key_update.sh
 ```
+
+### JWT 密钥配置 (JWT_SECRET_KEY)
+
+**问题描述**: 如果启动后端服务时出现 `JWT_SECRET_KEY` 配置错误，需要设置 JWT 密钥。
+
+**解决方案 - 自动化脚本 (推荐)**:
+```bash
+# 运行自动化脚本，自动生成并配置 JWT_SECRET_KEY
+bash scripts/JWT_key_update.sh
+```
+
+**解决方案 - 手动配置**:
+```bash
+# 方法1: 使用 Python 生成密钥
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+
+# 方法2: 使用 OpenSSL 生成密钥 (推荐)
+openssl rand -hex 32
+
+# 然后将生成的密钥添加到 .env 文件:
+# echo "JWT_SECRET_KEY=<生成的密钥>" >> .env
+```
+
+**相关文件**:
+- 配置脚本: `scripts/JWT_key_update.sh` - 自动化 JWT 密钥配置和服务重启
+- 配置模板: `.env.example` - 包含所有必需的环境变量
+- 配置文档: `docs/standards/LOCAL_ENV_SETUP.md` - 环境配置完整指南
+- 安全指南: `docs/guides/PHASE0_CREDENTIAL_ROTATION_GUIDE.md` - 凭证轮换指南
+
+**后端配置实现** (`web/backend/app/core/config.py`):
+```python
+# JWT 认证配置字段
+jwt_secret_key: str = Field(default="", env="JWT_SECRET_KEY")
+
+# 向后兼容属性
+@property
+def secret_key(self) -> str:
+    return self.jwt_secret_key
+```
+
+**注意**: Pydantic-Settings v2 中，字段名 `jwt_secret_key` 在 `case_sensitive=False` 时会自动映射到 `JWT_SECRET_KEY` 环境变量。
+
+---
 
 ### System Initialization and Management
 ```bash
