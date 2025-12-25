@@ -34,7 +34,7 @@ async def get_status():
     Returns:
         统一格式的状态响应
     """
-    return create_success_response(
+    return create_unified_success_response(
         data={"status": "active", "endpoint": "technical"},
         message="技术分析服务运行中",
     )

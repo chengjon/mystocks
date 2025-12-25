@@ -42,7 +42,7 @@ async def get_status():
     Returns:
         统一格式的状态响应
     """
-    return create_success_response(
+    return create_unified_success_response(
         data={"status": "active", "endpoint": "multi_source"},
         message="多数据源分析服务运行中",
     )

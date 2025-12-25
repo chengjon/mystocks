@@ -8,6 +8,14 @@
 - **[API 使用示例和最佳实践](API_EXAMPLES.md)** - 详细的代码示例、常见场景和客户端SDK 🆕
 - **[Swagger UI 指南](SWAGGER_UI_GUIDE.md)** - 本地 Swagger UI 使用
 
+### 🔗 API-Web 对齐集成 🆕
+- **[API集成优化计划](API_Integration_Optimization_Plan.md)** - 4阶段优化实施方案（2025-12-25）
+- **[API集成实施状态](API_INTEGRATION_IMPLEMENTATION_STATUS.md)** - Phase 1-2 实施进度报告（50%完成）
+- **[API验收标准](API_ACCEPTANCE_STANDARDS.md)** - 完整的4层验收体系（E2E/UX/运维）🆕
+- **[Phase 2 完成报告](PHASE2_COMPLETION_REPORT.md)** - 策略管理模块完整实施报告 🆕
+- **[前后端API对齐方案](../guides/API对齐方案.md)** - 完整的对齐策略和方法论
+- **[前后端API对齐核心流程](../guides/API对齐核心流程.md)** - 数据对接与控件对齐核心流程
+
 ### 📋 导入指南
 - **[Apifox 导入指南](APIFOX_IMPORT_GUIDE.md)** - 完整的导入操作手册
 - **[导入成功报告](APIFOX_IMPORT_SUCCESS.md)** - 最近一次导入结果
@@ -424,11 +432,11 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 
 ---
 
-**最后更新**: 2025-12-03
-**文档版本**: 2.2.0
+**最后更新**: 2025-12-25 17:00 UTC
+**文档版本**: 2.3.0
 **API 端点**: 231 (+13 Alert History/Analytics endpoints)
 **数据模型**: 96
 **API合规性**: 97% (企业级标准)
-**完成任务**: Task 13 (Monitoring) ✅ | Task 15 (Alert Escalation) ✅ | Phase 4 API Security ✅
+**完成任务**: Task 13 (Monitoring) ✅ | Task 15 (Alert Escalation) ✅ | Phase 4 API Security ✅ | Phase 2: Strategy Management ✅
 
 _开始您的 API 探索之旅！_ 🚀

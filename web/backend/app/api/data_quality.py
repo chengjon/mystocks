@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.core.responses import create_error_response, create_success_response
+from app.core.responses import create_unified_error_response, create_success_response
 from app.services.data_quality_monitor import (
     get_data_quality_monitor,
     monitor_data_quality,
@@ -66,14 +66,14 @@ async def get_sources_health():
                 ),
             }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=health_summary,
             message="Data sources health status retrieved successfully",
         )
 
     except Exception as e:
         logger.error(f"Failed to get sources health: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="HEALTH_CHECK_FAILED",
             message="Failed to retrieve data sources health status",
             details={"error": str(e)},
@@ -127,7 +127,7 @@ async def get_data_quality_metrics(
                 },
             }
 
-            return create_success_response(
+            return create_unified_success_response(
                 data=metrics_data,
                 message=f"Data quality metrics for '{source}' retrieved successfully",
             )
@@ -167,7 +167,7 @@ async def get_data_quality_metrics(
                     },
                 }
 
-            return create_success_response(
+            return create_unified_success_response(
                 data=all_metrics_data,
                 message="All data quality metrics retrieved successfully",
             )
@@ -176,7 +176,7 @@ async def get_data_quality_metrics(
         raise
     except Exception as e:
         logger.error(f"Failed to get data quality metrics: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="METRICS_RETRIEVAL_FAILED",
             message="Failed to retrieve data quality metrics",
             details={"error": str(e)},
@@ -231,13 +231,13 @@ async def get_active_alerts(
             ],
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=alerts_data, message="Active alerts retrieved successfully"
         )
 
     except Exception as e:
         logger.error(f"Failed to get active alerts: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="ALERTS_RETRIEVAL_FAILED",
             message="Failed to retrieve active alerts",
             details={"error": str(e)},
@@ -260,7 +260,7 @@ async def acknowledge_alert(alert_id: str):
         if not acknowledged:
             raise HTTPException(status_code=404, detail=f"Alert '{alert_id}' not found")
 
-        return create_success_response(
+        return create_unified_success_response(
             message=f"Alert '{alert_id}' acknowledged successfully"
         )
 
@@ -268,7 +268,7 @@ async def acknowledge_alert(alert_id: str):
         raise
     except Exception as e:
         logger.error(f"Failed to acknowledge alert: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="ALERT_ACKNOWLEDGE_FAILED",
             message="Failed to acknowledge alert",
             details={"error": str(e)},
@@ -291,7 +291,7 @@ async def resolve_alert(alert_id: str):
         if not resolved:
             raise HTTPException(status_code=404, detail=f"Alert '{alert_id}' not found")
 
-        return create_success_response(
+        return create_unified_success_response(
             message=f"Alert '{alert_id}' resolved successfully"
         )
 
@@ -299,7 +299,7 @@ async def resolve_alert(alert_id: str):
         raise
     except Exception as e:
         logger.error(f"Failed to resolve alert: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="ALERT_RESOLVE_FAILED",
             message="Failed to resolve alert",
             details={"error": str(e)},
@@ -329,14 +329,14 @@ async def get_data_source_mode():
             },
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=config_data,
             message="Data source mode configuration retrieved successfully",
         )
 
     except Exception as e:
         logger.error(f"Failed to get data source mode: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="MODE_RETRIEVAL_FAILED",
             message="Failed to retrieve data source mode",
             details={"error": str(e)},
@@ -415,13 +415,13 @@ async def get_system_status_overview():
             },
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=overview_data, message="System status overview retrieved successfully"
         )
 
     except Exception as e:
         logger.error(f"Failed to get system status overview: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="OVERVIEW_RETRIEVAL_FAILED",
             message="Failed to retrieve system status overview",
             details={"error": str(e)},
@@ -452,13 +452,13 @@ async def test_data_quality(
             data=test_data, source=source, response_time=response_time, success=True
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=quality_result, message=f"Data quality test completed for '{source}'"
         )
 
     except Exception as e:
         logger.error(f"Failed to test data quality: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="QUALITY_TEST_FAILED",
             message="Failed to test data quality",
             details={"error": str(e)},
@@ -558,7 +558,7 @@ async def get_quality_trends(
                 "hourly_trends": {},
             }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=trend_data,
             message=f"Quality trends for '{source}' retrieved successfully",
         )
@@ -567,7 +567,7 @@ async def get_quality_trends(
         raise
     except Exception as e:
         logger.error(f"Failed to get quality trends: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code="TRENDS_RETRIEVAL_FAILED",
             message="Failed to retrieve quality trends",
             details={"error": str(e)},

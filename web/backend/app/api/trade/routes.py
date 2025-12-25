@@ -30,8 +30,8 @@ from pydantic import BaseModel, Field, field_validator
 from app.core.responses import (
     ErrorCodes,
     ResponseMessages,
-    create_error_response,
-    create_success_response,
+    create_unified_error_response,
+    create_unified_success_response,
     create_health_response,
 )
 
@@ -282,7 +282,7 @@ async def get_account():
 
         logger.info("[TRADE] Account info retrieved")
 
-        return create_success_response(
+        return create_unified_success_response(
             data=account_data.model_dump(),
             message="获取账户信息成功",
         )
@@ -291,7 +291,7 @@ async def get_account():
         logger.error(f"[TRADE] Failed to get account info: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取账户信息失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -321,7 +321,7 @@ async def get_portfolio():
             "timestamp": date.today().isoformat(),
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=portfolio_data,
             message="获取投资组合成功",
         )
@@ -330,7 +330,7 @@ async def get_portfolio():
         logger.error(f"[TRADE] Failed to get portfolio: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取投资组合失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -395,7 +395,7 @@ async def get_positions(
 
         logger.info(f"[TRADE] Retrieved {len(positions_data)} positions")
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "positions": positions_data,
                 "total_count": len(positions_data),
@@ -409,7 +409,7 @@ async def get_positions(
         logger.error(f"[TRADE] Failed to get positions: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取持仓列表失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -511,7 +511,7 @@ async def get_trades(
 
         trades_data = [t.model_dump() for t in paginated_trades]
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "trades": trades_data,
                 "total": total,
@@ -526,7 +526,7 @@ async def get_trades(
         logger.error(f"[TRADE] Failed to get trades: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取交易记录失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -560,7 +560,7 @@ async def get_statistics():
             "avg_profit_per_trade": 1000.00,
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=statistics_data,
             message="获取交易统计成功",
         )
@@ -569,7 +569,7 @@ async def get_statistics():
         logger.error(f"[TRADE] Failed to get statistics: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取交易统计失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -640,7 +640,7 @@ async def execute_trade(
             amount=trade_amount,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=result.model_dump(),
             message=f"交易执行成功: {trade_data.trade_type.value.upper()} {trade_data.symbol}",
             request_id=x_request_id,
@@ -652,7 +652,7 @@ async def execute_trade(
         logger.error(f"[TRADE] Trade execution failed: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"交易执行失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -685,7 +685,7 @@ async def cancel_order(
         if not order_id or len(order_id) < 5:
             raise HTTPException(
                 status_code=400,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.BAD_REQUEST,
                     "无效的订单ID",
                 ).model_dump(mode="json"),
@@ -694,7 +694,7 @@ async def cancel_order(
         # 模拟取消订单
         logger.info(f"[TRADE] Order cancellation requested: {order_id}")
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "order_id": order_id,
                 "status": "cancelled",
@@ -710,7 +710,7 @@ async def cancel_order(
         logger.error(f"[TRADE] Order cancellation failed: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"取消订单失败: {str(e)}",
             ).model_dump(mode="json"),

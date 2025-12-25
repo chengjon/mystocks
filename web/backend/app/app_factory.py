@@ -44,6 +44,7 @@ from .core.responses import (
     create_health_response,
     create_success_response,
     create_unified_error_response,
+    create_unified_success_response,
 )
 
 # 导入输入验证中间件
@@ -393,11 +394,15 @@ def create_app() -> FastAPI:
         # 在生产环境，应该设置HttpOnly cookie而不是返回在响应体中
         logger.info("✅ CSRF token generated for client")
 
-        return {
-            "csrf_token": token,
-            "token_type": "Bearer",
-            "expires_in": csrf_manager.token_timeout,
-        }
+        # 使用统一响应格式 (v2.0.0)
+        return create_unified_success_response(
+            data={
+                "csrf_token": token,
+                "token_type": "Bearer",
+                "expires_in": csrf_manager.token_timeout,
+            },
+            message="CSRF token generated successfully",
+        )
 
     # 根路径重定向到文档 - 使用统一响应格式
     @app.get("/")

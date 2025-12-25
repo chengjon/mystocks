@@ -10,6 +10,7 @@ Prometheus监控指标端点
 
 import logging
 import time
+from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -159,20 +160,23 @@ async def health_check() -> Dict[str, Any]:
         - 无需认证
         - 仅返回基础状态，不包含敏感信息
     """
-    from app.core.responses import create_health_response
+    from app.core.responses import create_unified_success_response
 
     try:
         # 更新基础健康状态
         update_database_metrics()
 
-        return create_health_response(
-            service="metrics",
-            status="healthy",
-            details={
+        response = create_unified_success_response(
+            data={
+                "service": "metrics",
+                "status": "healthy",
                 "prometheus_enabled": True,
                 "version": "1.0.0",
+                "timestamp": datetime.now().isoformat(),
             },
+            message="服务metrics状态检查",
         )
+        return response.model_dump(exclude_none=True)
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(

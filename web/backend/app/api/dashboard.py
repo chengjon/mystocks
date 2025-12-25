@@ -15,8 +15,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.core.cache_manager import CacheManager
 from app.core.responses import (
+    
     ErrorCodes,
-    create_error_response,
+    create_unified_error_response,
     create_health_response,
 )
 from app.models.dashboard import (
@@ -734,7 +735,7 @@ async def health_check(request: Request, data_source=Depends(get_data_source)):
 
     except Exception as e:
         logger.error(f"健康检查失败: {str(e)}")
-        return create_error_response(
+        return create_unified_error_response(
             error_code=ErrorCodes.SERVICE_UNAVAILABLE,
             message=f"仪表盘服务不可用: {str(e)}",
             request_id=getattr(request.state, "request_id", None),

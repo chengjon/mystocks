@@ -193,18 +193,11 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
                 pass
 
-        # 无法解析响应体，返回默认成功响应
-        unified_response = create_unified_success_response(
-            data=None,
-            message="操作成功",
-            code=status_code,
-            request_id=request_id,
-        )
-
-        return JSONResponse(
-            content=unified_response.model_dump(exclude_unset=True),
-            status_code=status_code,
-        )
+        # 无法解析响应体，直接返回原始响应（避免覆盖已有的数据）
+        # 这确保了当端点返回 UnifiedResponse 时，数据不会被丢失
+        # BaseHTTPMiddleware 将响应包装为 StreamingResponse，无法访问原始响应体
+        # 因此当无法解析时，我们信任原始响应而不是返回默认的空响应
+        return response
 
     async def _wrap_error_response(
         self, response: Response, request_id: str, status_code: int

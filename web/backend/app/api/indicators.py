@@ -27,7 +27,8 @@ from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
 from app.core.responses import (
-    create_success_response,
+    
+    create_unified_success_response,
     create_health_response,
 )
 from app.core.security import User
@@ -405,7 +406,7 @@ async def get_indicator_registry_endpoint(
             filtered_count=len(all_indicators) - len(filtered_indicators),
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data.dict(),
             message=f"技术指标注册表查询成功，共{len(filtered_indicators)}个指标",
         ).dict(exclude_unset=True)
@@ -561,7 +562,7 @@ async def calculate_indicators(
                     getattr(indicator_cache, "_total_requests", 0) + 1
                 )
 
-                return create_success_response(
+                return create_unified_success_response(
                     data=cached_result,
                     message=f"技术指标计算成功（缓存），共{len(request.indicators)}个指标",
                 ).dict(exclude_unset=True)
@@ -717,7 +718,7 @@ async def calculate_indicators(
             cache_used=cache_used,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data,
             message=f"技术指标计算成功，共{successful_calculations}/{len(request.indicators)}个指标计算完成",
         ).dict(exclude_unset=True)
@@ -851,7 +852,7 @@ async def calculate_indicators_batch(
             calculation_time_ms=calculation_time_ms,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data,
             message=f"批量计算完成，{successful_calculations}/{total_calculations}个请求成功",
         ).dict(exclude_unset=True)
@@ -916,7 +917,7 @@ async def get_cache_statistics(
             hit_rate=stats["hit_rate"],
         )
 
-        return create_success_response(data=stats, message="缓存统计信息获取成功").dict(
+        return create_unified_success_response(data=stats, message="缓存统计信息获取成功").dict(
             exclude_unset=True
         )
 
@@ -963,7 +964,7 @@ async def clear_cache(
             cleared_count=cleared_count,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"cleared_count": cleared_count},
             message=f"缓存清理完成，已清理{cleared_count}",
         ).dict(exclude_unset=True)

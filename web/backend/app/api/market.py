@@ -29,6 +29,8 @@ from app.core.responses import (
     ErrorCodes,
     create_error_response,
     create_success_response,
+    create_unified_success_response,
+    create_unified_error_response,
 )
 from app.schema import (  # 导入P0改进的验证模型
     MarketDataQueryModel,
@@ -255,7 +257,7 @@ async def get_fund_flow(
             logger.warning(
                 "⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data"
             )
-            return create_success_response(
+            return create_unified_success_response(
                 data=FundFlowDataResponse(
                     fund_flow=[], total=0, symbol=symbol, timeframe=timeframe
                 ).model_dump(mode='json'),
@@ -331,7 +333,7 @@ async def get_fund_flow(
             timeframe=timeframe,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data.model_dump(mode='json'),
             message=f"获取{symbol}资金流向数据成功，共{len(fund_flow_items)}条记录",
         )
@@ -376,7 +378,7 @@ async def refresh_fund_flow(
                 ).model_dump(),
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"symbol": symbol, "timeframe": timeframe, "refreshed": True},
             message=result.get("message", f"{symbol}资金流向数据刷新成功"),
         )
@@ -428,7 +430,7 @@ async def get_etf_list(
         results = service.query_etf_spot(symbol, keyword, limit)
         etf_data = [ETFDataResponse.model_validate(r) for r in results]
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "etf_list": etf_data,
                 "total": len(etf_data),
@@ -572,7 +574,7 @@ async def get_market_overview(
             "timestamp": datetime.now().isoformat(),
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=overview_data,
             message="获取市场概览成功",
         )
@@ -613,7 +615,7 @@ async def get_chip_race(
         results = service.query_chip_race(race_type, trade_date, min_race_amount, limit)
         chip_race_data = [ChipRaceResponse.model_validate(r) for r in results]
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"chip_races": chip_race_data, "total": len(chip_race_data)},
             message=f"获取竞价抢筹数据成功，共{len(chip_race_data)}条记录",
         )
@@ -681,7 +683,7 @@ async def get_lhb_detail(
         )
         lhb_data = [LongHuBangResponse.model_validate(r) for r in results]
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"long_hu_bang": lhb_data, "total": len(lhb_data)},
             message=f"获取龙虎榜数据成功，共{len(lhb_data)}条记录",
         )
@@ -752,7 +754,7 @@ async def get_market_quotes(
 
         quotes_data = result.get("data", [])
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "quotes": quotes_data,
                 "total": len(quotes_data),
@@ -807,7 +809,7 @@ async def get_stock_list(
                 exchange=exchange,
                 security_type=security_type,
             )
-            return create_success_response(
+            return create_unified_success_response(
                 data={
                     "stocks": mock_data.get("data", []),
                     "total": len(mock_data.get("data", [])),
@@ -869,7 +871,7 @@ async def get_stock_list(
 
             session.close()
 
-            return create_success_response(
+            return create_unified_success_response(
                 data={
                     "stocks": stocks,
                     "total": len(stocks),
@@ -998,7 +1000,7 @@ async def get_kline_data(
             "count": result.get("count", 0),
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"kline": kline_data, "metadata": metadata},
             message=f"获取{stock_code} K线数据成功，共{result.get('count', 0)}条记录",
         )
@@ -1074,7 +1076,7 @@ async def get_market_heatmap(
                 "market_heatmap", market=market, limit=limit
             )
             heatmap_data = mock_data.get("data", [])
-            return create_success_response(
+            return create_unified_success_response(
                 data={
                     "heatmap": heatmap_data,
                     "total": len(heatmap_data),
@@ -1155,7 +1157,7 @@ async def get_market_heatmap(
             # 按涨跌幅排序
             result = sorted(result, key=lambda x: x["change_pct"], reverse=True)
 
-            return create_success_response(
+            return create_unified_success_response(
                 data={
                     "heatmap": result,
                     "total": len(result),
