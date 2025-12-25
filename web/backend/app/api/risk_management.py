@@ -201,9 +201,7 @@ async def calculate_var_cvar(
 
 @router.get("/beta")
 async def calculate_beta(
-    entity_type: str,
-    entity_id: int,
-    market_index: str = "000001",  # 默认上证指数
+    entity_type: str, entity_id: int, market_index: str = "000001"  # 默认上证指数
 ) -> Dict[str, float]:
     """
     计算Beta系数

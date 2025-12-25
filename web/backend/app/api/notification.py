@@ -13,54 +13,21 @@ Phase 4C Enhanced - 企业级通知服务
 
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import structlog
-from fastapi import (
-    APIRouter,
-    BackgroundTasks,
-    Depends,
-    HTTPException,
-    WebSocket,
-    WebSocketDisconnect,
-)
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 from app.api.auth import User, get_current_active_user, get_current_user
-from app.core.responses import (
-
-    create_unified_success_response,
-    create_health_response,
-)
+from app.core.config import settings
+from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.services.email_service import get_email_service
 
 logger = structlog.get_logger()
 router = APIRouter()
-
-
-# ==================== 健康检查 ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    通知服务健康检查
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="notification",
-        status="healthy",
-        details={
-            "endpoints": ["send_email", "price_alerts", "ws_notifications"],
-            "email_enabled": True,
-            "websocket_enabled": True,
-            "version": "4C-Enhanced",
-        },
-    )
 
 
 # ==================== 请求模型 ====================
@@ -69,24 +36,14 @@ async def health_check():
 class SendEmailRequest(BaseModel):
     """发送邮件请求 - Phase 4C Enhanced"""
 
-    to_addresses: List[EmailStr] = Field(
-        ..., min_items=1, max_items=100, description="收件人列表，最多100个邮箱地址"
-    )
-    subject: constr(min_length=1, max_length=200, strip_whitespace=True) = Field(
-        ..., description="邮件主题，1-200字符"
-    )
+    to_addresses: List[EmailStr] = Field(..., min_items=1, max_items=100, description="收件人列表，最多100个邮箱地址")
+    subject: constr(min_length=1, max_length=200, strip_whitespace=True) = Field(..., description="邮件主题，1-200字符")
     content: constr(min_length=1, max_length=100000, strip_whitespace=True) = Field(
         ..., description="邮件内容，1-100000字符"
     )
-    content_type: str = Field(
-        "plain", pattern="^(plain|html)$", description="内容类型: plain 或 html"
-    )
-    priority: str = Field(
-        "normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级"
-    )
-    scheduled_at: Optional[datetime] = Field(
-        None, description="定时发送时间（UTC），为空则立即发送"
-    )
+    content_type: str = Field("plain", pattern="^(plain|html)$", description="内容类型: plain 或 html")
+    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级")
+    scheduled_at: Optional[datetime] = Field(None, description="定时发送时间（UTC），为空则立即发送")
 
     @validator("to_addresses")
     def validate_recipients(cls, v):
@@ -115,9 +72,7 @@ class SendWelcomeEmailRequest(BaseModel):
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
         ..., description="用户姓名，1-100字符"
     )
-    welcome_offer: Optional[str] = Field(
-        None, max_length=500, description="欢迎优惠信息，最多500字符"
-    )
+    welcome_offer: Optional[str] = Field(None, max_length=500, description="欢迎优惠信息，最多500字符")
     language: str = Field("zh-CN", pattern="^(zh-CN|en-US)$", description="邮件语言")
 
 
@@ -125,18 +80,12 @@ class SendNewsletterRequest(BaseModel):
     """发送新闻简报请求 - Phase 4C Enhanced"""
 
     user_email: EmailStr = Field(..., description="用户邮箱")
-    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
-        ..., description="用户姓名"
+    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
+    watchlist_symbols: List[constr(min_length=1, max_length=20, strip_whitespace=True)] = Field(
+        ..., min_items=1, max_items=50, description="自选股列表，1-50个股票代码"
     )
-    watchlist_symbols: List[
-        constr(min_length=1, max_length=20, strip_whitespace=True)
-    ] = Field(..., min_items=1, max_items=50, description="自选股列表，1-50个股票代码")
-    news_data: List[Dict] = Field(
-        ..., min_items=1, max_items=100, description="新闻数据，1-100条新闻"
-    )
-    newsletter_type: str = Field(
-        "daily", pattern="^(daily|weekly|monthly)$", description="简报类型"
-    )
+    news_data: List[Dict] = Field(..., min_items=1, max_items=100, description="新闻数据，1-100条新闻")
+    newsletter_type: str = Field("daily", pattern="^(daily|weekly|monthly)$", description="简报类型")
 
     @validator("watchlist_symbols")
     def validate_symbols(cls, v):
@@ -150,23 +99,15 @@ class SendPriceAlertRequest(BaseModel):
     """发送价格提醒请求 - Phase 4C Enhanced"""
 
     user_email: EmailStr = Field(..., description="用户邮箱")
-    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
-        ..., description="用户姓名"
+    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
+    symbol: constr(min_length=1, max_length=20, strip_whitespace=True, pattern=r"^[A-Za-z0-9\.]+$") = Field(
+        ..., description="股票代码"
     )
-    symbol: constr(
-        min_length=1, max_length=20, strip_whitespace=True, pattern=r"^[A-Za-z0-9\.]+$"
-    ) = Field(..., description="股票代码")
-    stock_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
-        ..., description="股票名称"
-    )
+    stock_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="股票名称")
     current_price: float = Field(..., gt=0, description="当前价格，必须大于0")
-    alert_condition: str = Field(
-        ..., pattern="^(高于|低于|突破|跌破)$", description="提醒条件"
-    )
+    alert_condition: str = Field(..., pattern="^(高于|低于|突破|跌破)$", description="提醒条件")
     alert_price: float = Field(..., gt=0, description="提醒价格，必须大于0")
-    percentage_change: Optional[float] = Field(
-        None, ge=-100, le=1000, description="价格变化百分比，-100%到1000%"
-    )
+    percentage_change: Optional[float] = Field(None, ge=-100, le=1000, description="价格变化百分比，-100%到1000%")
 
 
 class NotificationPreferences(BaseModel):
@@ -177,9 +118,7 @@ class NotificationPreferences(BaseModel):
     price_alerts: bool = Field(True, description="是否接收价格提醒")
     news_alerts: bool = Field(True, description="是否接收新闻提醒")
     system_alerts: bool = Field(True, description="是否接收系统提醒")
-    quiet_hours: Optional[Dict[str, str]] = Field(
-        None, description="免打扰时间段 {'start': '22:00', 'end': '08:00'}"
-    )
+    quiet_hours: Optional[Dict[str, str]] = Field(None, description="免打扰时间段 {'start': '22:00', 'end': '08:00'}")
     max_daily_emails: int = Field(50, ge=1, le=200, description="每日最大邮件数量")
 
 
@@ -188,18 +127,12 @@ class RealTimeNotification(BaseModel):
 
     notification_id: str = Field(..., description="通知唯一ID")
     user_id: int = Field(..., description="用户ID")
-    type: str = Field(
-        ..., pattern="^(price_alert|news|system|reminder)$", description="通知类型"
-    )
+    type: str = Field(..., pattern="^(price_alert|news|system|reminder)$", description="通知类型")
     title: constr(min_length=1, max_length=200) = Field(..., description="通知标题")
     message: constr(min_length=1, max_length=1000) = Field(..., description="通知内容")
     data: Optional[Dict] = Field(None, description="通知相关数据")
-    priority: str = Field(
-        "normal", pattern="^(low|normal|high|urgent)$", description="优先级"
-    )
-    created_at: datetime = Field(
-        default_factory=datetime.utcnow, description="创建时间"
-    )
+    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="优先级")
+    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
     expires_at: Optional[datetime] = Field(None, description="过期时间")
     action_required: bool = Field(False, description="是否需要用户操作")
     action_url: Optional[str] = Field(None, description="操作链接")
@@ -230,11 +163,7 @@ class RateLimiter:
             self.requests[key] = []
 
         # 清理过期的请求记录
-        self.requests[key] = [
-            req_time
-            for req_time in self.requests[key]
-            if (now - req_time).seconds < window
-        ]
+        self.requests[key] = [req_time for req_time in self.requests[key] if (now - req_time).seconds < window]
 
         # 检查是否超过限制
         if len(self.requests[key]) >= limit:
@@ -276,9 +205,7 @@ def rate_limit(limit: int, window: int):
                 user_key = "anonymous"
 
             if not rate_limiter.is_allowed(user_key, limit, window):
-                raise HTTPException(
-                    status_code=429, detail=f"请求过于频繁，请在{window}秒后重试"
-                )
+                raise HTTPException(status_code=429, detail=f"请求过于频繁，请在{window}秒后重试")
 
             return await func(*args, **kwargs)
 
@@ -302,7 +229,7 @@ class ConnectionManager:
             self.active_connections[user_id] = []
 
         self.active_connections[user_id].append(websocket)
-        logger.info("WebSocket连接建立", user_id=user_id)
+        logger.info(f"WebSocket连接建立", user_id=user_id)
 
     def disconnect(self, websocket: WebSocket, user_id: int):
         """断开WebSocket连接"""
@@ -314,7 +241,7 @@ class ConnectionManager:
             if not self.active_connections[user_id]:
                 del self.active_connections[user_id]
 
-        logger.info("WebSocket连接断开", user_id=user_id)
+        logger.info(f"WebSocket连接断开", user_id=user_id)
 
     async def send_personal_notification(self, notification: RealTimeNotification):
         """发送个人实时通知"""
@@ -376,9 +303,7 @@ def is_in_quiet_hours(user_id: int) -> bool:
 
 @router.get("/status")
 @rate_limit(limit=10, window=60)  # 每分钟最多10次请求
-async def get_email_service_status(
-    current_user: User = Depends(get_current_user),
-) -> Dict:
+async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
     """
     获取邮件服务状态 - Phase 4C Enhanced
 
@@ -396,11 +321,7 @@ async def get_email_service_status(
             "service_type": "smtp",
             "supported_content_types": ["plain", "html"],
             "max_recipients_per_email": 100,
-            "rate_limits": {
-                "user_per_minute": 5,
-                "user_per_hour": 50,
-                "global_per_minute": 100,
-            },
+            "rate_limits": {"user_per_minute": 5, "user_per_hour": 50, "global_per_minute": 100},
         }
 
         if is_configured:
@@ -417,14 +338,10 @@ async def get_email_service_status(
             host=email_service.smtp_host if is_configured else None,
         )
 
-        return create_unified_success_response(
-            data=status_data, message="邮件服务状态查询成功"
-        ).dict(exclude_unset=True)
+        return create_success_response(data=status_data, message="邮件服务状态查询成功").dict(exclude_unset=True)
 
     except Exception as e:
-        logger.error(
-            "邮件服务状态查询失败", user_id=current_user.id, error=str(e), exc_info=True
-        )
+        logger.error("邮件服务状态查询失败", user_id=current_user.id, error=str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取邮件服务状态失败: {str(e)}")
 
 
@@ -506,9 +423,7 @@ async def send_email(
                             message=f"邮件《{request.subject[:30]}...》已发送给 {len(request.to_addresses)} 位收件人",
                             priority="low",
                         )
-                        await connection_manager.send_personal_notification(
-                            notification
-                        )
+                        await connection_manager.send_personal_notification(notification)
                 else:
                     logger.error(
                         "邮件发送失败",
@@ -518,12 +433,7 @@ async def send_email(
                     )
 
             except Exception as e:
-                logger.error(
-                    "邮件发送任务异常",
-                    user_id=current_user.id,
-                    error=str(e),
-                    exc_info=True,
-                )
+                logger.error("邮件发送任务异常", user_id=current_user.id, error=str(e), exc_info=True)
 
         # 添加后台任务
         background_tasks.add_task(send_email_task)
@@ -531,31 +441,21 @@ async def send_email(
         response_data = {
             "success": True,
             "message": (
-                "邮件已加入发送队列"
-                if not request.scheduled_at
-                else f"邮件已安排在 {request.scheduled_at} 发送"
+                "邮件已加入发送队列" if not request.scheduled_at else f"邮件已安排在 {request.scheduled_at} 发送"
             ),
             "recipients_count": len(request.to_addresses),
             "priority": request.priority,
-            "scheduled_at": request.scheduled_at.isoformat()
-            if request.scheduled_at
-            else None,
+            "scheduled_at": request.scheduled_at.isoformat() if request.scheduled_at else None,
             "content_type": request.content_type,
         }
 
-        return create_unified_success_response(
-            data=response_data, message="邮件发送请求已受理"
-        ).dict(exclude_unset=True)
+        return create_success_response(data=response_data, message="邮件发送请求已受理").dict(exclude_unset=True)
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            "邮件发送请求处理失败", user_id=current_user.id, error=str(e), exc_info=True
-        )
-        raise HTTPException(
-            status_code=500, detail=f"处理邮件发送请求时发生错误: {str(e)}"
-        )
+        logger.error("邮件发送请求处理失败", user_id=current_user.id, error=str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail=f"处理邮件发送请求时发生错误: {str(e)}")
 
 
 @router.websocket("/ws/notifications")
@@ -609,32 +509,22 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
 
                     if message.get("type") == "ping":
                         # 响应心跳包
-                        await websocket.send_json(
-                            {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
-                        )
+                        await websocket.send_json({"type": "pong", "timestamp": datetime.utcnow().isoformat()})
 
                     elif message.get("type") == "mark_read":
                         # 标记通知已读（这里可以实现具体的标记逻辑）
                         notification_id = message.get("notification_id")
-                        logger.info(
-                            "用户标记通知已读",
-                            user_id=user.id,
-                            notification_id=notification_id,
-                        )
+                        logger.info("用户标记通知已读", user_id=user.id, notification_id=notification_id)
 
                 except json.JSONDecodeError:
-                    logger.warning(
-                        "收到无效的WebSocket消息", user_id=user.id, message=data[:100]
-                    )
+                    logger.warning("收到无效的WebSocket消息", user_id=user.id, message=data[:100])
 
         except WebSocketDisconnect:
-            logger.info("WebSocket客户端断开连接", user_id=user.id)
+            logger.info(f"WebSocket客户端断开连接", user_id=user.id)
             connection_manager.disconnect(websocket, user.id)
 
         except Exception as e:
-            logger.error(
-                "WebSocket连接处理异常", user_id=user.id, error=str(e), exc_info=True
-            )
+            logger.error("WebSocket连接处理异常", user_id=user.id, error=str(e), exc_info=True)
             await websocket.close(code=4000, reason="服务器内部错误")
 
     except Exception as e:
@@ -658,9 +548,7 @@ async def send_welcome_email(
         email_service = get_email_service()
 
         if not email_service.is_configured():
-            raise HTTPException(
-                status_code=503, detail="邮件服务未配置，无法发送欢迎邮件"
-            )
+            raise HTTPException(status_code=503, detail="邮件服务未配置，无法发送欢迎邮件")
 
         # 验证邮箱地址与当前用户是否匹配（管理员可以为其他用户发送）
         if current_user.role != "admin" and current_user.email != request.user_email:
@@ -677,16 +565,10 @@ async def send_welcome_email(
         # 后台任务：发送欢迎邮件
         async def send_welcome_task():
             try:
-                result = email_service.send_welcome_email(
-                    user_email=request.user_email, user_name=request.user_name
-                )
+                result = email_service.send_welcome_email(user_email=request.user_email, user_name=request.user_name)
 
                 if result["success"]:
-                    logger.info(
-                        "欢迎邮件发送成功",
-                        user_id=current_user.id,
-                        recipient=request.user_email,
-                    )
+                    logger.info("欢迎邮件发送成功", user_id=current_user.id, recipient=request.user_email)
 
                     # 发送实时通知
                     notification = RealTimeNotification(
@@ -700,18 +582,11 @@ async def send_welcome_email(
                     await connection_manager.send_personal_notification(notification)
                 else:
                     logger.error(
-                        "欢迎邮件发送失败",
-                        user_id=current_user.id,
-                        error=result.get("message", "Unknown error"),
+                        "欢迎邮件发送失败", user_id=current_user.id, error=result.get("message", "Unknown error")
                     )
 
             except Exception as e:
-                logger.error(
-                    "欢迎邮件发送任务异常",
-                    user_id=current_user.id,
-                    error=str(e),
-                    exc_info=True,
-                )
+                logger.error("欢迎邮件发送任务异常", user_id=current_user.id, error=str(e), exc_info=True)
 
         background_tasks.add_task(send_welcome_task)
 
@@ -723,22 +598,13 @@ async def send_welcome_email(
             "estimated_delivery": "2-5分钟",
         }
 
-        return create_unified_success_response(
-            data=response_data, message="欢迎邮件发送请求已受理"
-        ).dict(exclude_unset=True)
+        return create_success_response(data=response_data, message="欢迎邮件发送请求已受理").dict(exclude_unset=True)
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            "欢迎邮件发送请求处理失败",
-            user_id=current_user.id,
-            error=str(e),
-            exc_info=True,
-        )
-        raise HTTPException(
-            status_code=500, detail=f"处理欢迎邮件发送请求时发生错误: {str(e)}"
-        )
+        logger.error("欢迎邮件发送请求处理失败", user_id=current_user.id, error=str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail=f"处理欢迎邮件发送请求时发生错误: {str(e)}")
 
 
 @router.post("/email/newsletter")
@@ -928,18 +794,12 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
             "recipient": user_email,
         }
     else:
-        logger.error(
-            "测试邮件发送失败", user_id=current_user.id, error=result["message"]
-        )
-        raise HTTPException(
-            status_code=500, detail=f"测试邮件发送失败: {result['message']}"
-        )
+        logger.error("测试邮件发送失败", user_id=current_user.id, error=result["message"])
+        raise HTTPException(status_code=500, detail=f"测试邮件发送失败: {result['message']}")
 
 
 @router.get("/preferences")
-async def get_notification_preferences(
-    current_user: User = Depends(get_current_active_user),
-) -> Dict:
+async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
     """
     获取用户通知偏好设置
     """
@@ -965,22 +825,17 @@ async def get_notification_preferences(
 
         logger.info("获取通知偏好设置", user_id=current_user.id)
 
-        return create_unified_success_response(
-            data=preferences, message="通知偏好设置获取成功"
-        ).dict(exclude_unset=True)
+        return create_success_response(data=preferences, message="通知偏好设置获取成功").dict(exclude_unset=True)
 
     except Exception as e:
-        logger.error(
-            "获取通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True
-        )
+        logger.error("获取通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取通知偏好设置失败: {str(e)}")
 
 
 @router.post("/preferences")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次设置更新
 async def update_notification_preferences(
-    preferences: NotificationPreferences,
-    current_user: User = Depends(get_current_active_user),
+    preferences: NotificationPreferences, current_user: User = Depends(get_current_active_user)
 ) -> Dict:
     """
     更新用户通知偏好设置
@@ -988,18 +843,10 @@ async def update_notification_preferences(
     try:
         # 这里应该保存到数据库
         # 暂时只记录日志
-        logger.info(
-            "更新通知偏好设置",
-            user_id=current_user.id,
-            preferences=preferences.dict(exclude_unset=True),
-        )
+        logger.info("更新通知偏好设置", user_id=current_user.id, preferences=preferences.dict(exclude_unset=True))
 
-        return create_unified_success_response(
-            data={"updated": True}, message="通知偏好设置更新成功"
-        ).dict(exclude_unset=True)
+        return create_success_response(data={"updated": True}, message="通知偏好设置更新成功").dict(exclude_unset=True)
 
     except Exception as e:
-        logger.error(
-            "更新通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True
-        )
+        logger.error("更新通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=f"更新通知偏好设置失败: {str(e)}")

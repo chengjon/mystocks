@@ -8,16 +8,10 @@ import re
 from datetime import date, datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Path, Query
 from pydantic import BaseModel, Field, field_validator
 
-from app.core.responses import (
-    ErrorCodes,
-    ResponseMessages,
-    create_unified_error_response,
-    create_unified_success_response,
-    create_health_response,
-)
+from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.services.data_source_factory import DataSourceFactory
 from app.services.strategy_service import get_strategy_service
 
@@ -26,51 +20,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/strategy")
 
 
-# ==================== 健康检查 ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    策略服务健康检查
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="strategy",
-        status="healthy",
-        details={
-            "endpoints": ["run", "list", "get_result", "cancel"],
-            "version": "1.0.0",
-        },
-    )
-
-
 # ==================== 请求/响应模型 ====================
 
 
 class StrategyRunRequest(BaseModel):
     """运行策略请求"""
 
-    strategy_code: str = Field(
-        ...,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
-    )
+    strategy_code: str = Field(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
     symbol: Optional[str] = Field(
-        None,
-        description="单个股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r"^[A-Z0-9.]+$",
+        None, description="单个股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"
     )
     symbols: Optional[List[str]] = Field(None, description="多个股票代码列表")
-    check_date: Optional[str] = Field(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    )
+    check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
     limit: Optional[int] = Field(None, description="处理数量限制", ge=1, le=10000)
 
     @field_validator("symbols")
@@ -93,9 +54,7 @@ class StrategyRunRequest(BaseModel):
             if len(symbol) > 20:
                 raise ValueError(f'股票代码 "{symbol}" 长度超过限制')
             if not re.match(r"^[A-Z0-9.]+$", symbol):
-                raise ValueError(
-                    f'股票代码 "{symbol}" 格式无效，只能包含大写字母、数字和点'
-                )
+                raise ValueError(f'股票代码 "{symbol}" 格式无效，只能包含大写字母、数字和点')
 
         # 去重并转换为大写
         return list(set(s.upper() for s in v))
@@ -163,9 +122,7 @@ class StrategyRunRequest(BaseModel):
         }
 
         if v not in valid_strategies:
-            raise ValueError(
-                f'无效的策略代码 "{v}"，支持的策略: {", ".join(sorted(valid_strategies))}'
-            )
+            raise ValueError(f'无效的策略代码 "{v}"，支持的策略: {", ".join(sorted(valid_strategies))}')
 
         return v
 
@@ -182,22 +139,10 @@ class StrategyQueryParams(BaseModel):
     """策略查询参数"""
 
     strategy_code: Optional[str] = Field(
-        None,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
+        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"
     )
-    symbol: Optional[str] = Field(
-        None,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r"^[A-Z0-9.]+$",
-    )
-    check_date: Optional[str] = Field(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    )
+    symbol: Optional[str] = Field(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
+    check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
     match_result: Optional[bool] = Field(None, description="是否匹配结果")
     limit: int = Field(100, description="返回数量", ge=1, le=1000)
     offset: int = Field(0, description="偏移量", ge=0, le=10000)
@@ -226,13 +171,7 @@ class MarketFilterParams(BaseModel):
     @classmethod
     def validate_market(cls, v: str) -> str:
         """验证市场类型"""
-        market_mapping = {
-            "A": "全部A股",
-            "SH": "上海主板",
-            "SZ": "深圳主板",
-            "CYB": "创业板",
-            "KCB": "科创板",
-        }
+        market_mapping = {"A": "全部A股", "SH": "上海主板", "SZ": "深圳主板", "CYB": "创业板", "KCB": "科创板"}
         return market_mapping.get(v, v)
 
 
@@ -257,16 +196,13 @@ async def get_strategy_definitions():
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
-                    ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(mode='json'),
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
             )
 
         definitions_data = result.get("data", [])
 
         return create_success_response(
-            data={"definitions": definitions_data, "total": len(definitions_data)},
-            message=ResponseMessages.SUCCESS,
+            data={"definitions": definitions_data, "total": len(definitions_data)}, message=ResponseMessages.SUCCESS
         )
 
     except HTTPException:
@@ -281,24 +217,10 @@ async def get_strategy_definitions():
 
 @router.post("/run/single", tags=["strategy"])
 async def run_strategy_single(
-    strategy_code: str = Query(
-        ...,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
-    ),
-    symbol: str = Query(
-        ...,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r"^[A-Z0-9.]+$",
-    ),
+    strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
+    symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     stock_name: Optional[str] = Query(None, description="股票名称", max_length=100),
-    check_date: Optional[str] = Query(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    ),
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
 ):
     """
     对单只股票运行策略
@@ -317,21 +239,14 @@ async def run_strategy_single(
         data_source_factory = DataSourceFactory()
         strategy_adapter = await data_source_factory.get_data_source("strategy")
 
-        params = {
-            "strategy_code": strategy_code,
-            "symbol": symbol,
-            "stock_name": stock_name,
-            "check_date": check_date,
-        }
+        params = {"strategy_code": strategy_code, "symbol": symbol, "stock_name": stock_name, "check_date": check_date}
 
         result = await strategy_adapter.get_data("run_single", params)
 
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
-                    ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(mode='json'),
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
             )
 
         return create_success_response(
@@ -350,33 +265,19 @@ async def run_strategy_single(
         logger.error(f"运行单只股票策略失败: {e}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}"
-            ).model_dump(mode='json'),
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}").model_dump(),
         )
 
 
 @router.post("/run/batch", tags=["strategy"])
 async def run_strategy_batch(
-    strategy_code: str = Query(
-        ...,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
-    ),
+    strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     symbols: Optional[str] = Query(
-        None,
-        description="股票代码列表，逗号分隔",
-        max_length=20000,  # 1000个股票代码 * 20字符 + 999个逗号
+        None, description="股票代码列表，逗号分隔", max_length=20000  # 1000个股票代码 * 20字符 + 999个逗号
     ),
-    market: Optional[str] = Query(
-        "A", description="市场类型 (A/SH/SZ/CYB/KCB)", pattern=r"^(A|SH|SZ|CYB|KCB)$"
-    ),
+    market: Optional[str] = Query("A", description="市场类型 (A/SH/SZ/CYB/KCB)", pattern=r"^(A|SH|SZ|CYB|KCB)$"),
     limit: Optional[int] = Query(None, description="限制处理数量", ge=1, le=5000),
-    check_date: Optional[str] = Query(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    ),
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
 ):
     """
     批量运行策略
@@ -409,9 +310,7 @@ async def run_strategy_batch(
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
-                    ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
-                ).model_dump(mode='json'),
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
             )
 
         return create_success_response(
@@ -431,9 +330,7 @@ async def run_strategy_batch(
         logger.error(f"批量运行策略失败: {e}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}"
-            ).model_dump(mode='json'),
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}").model_dump(),
         )
 
 
@@ -443,22 +340,10 @@ async def run_strategy_batch(
 @router.get("/results", tags=["strategy"])
 async def query_strategy_results(
     strategy_code: Optional[str] = Query(
-        None,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
+        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"
     ),
-    symbol: Optional[str] = Query(
-        None,
-        description="股票代码",
-        min_length=1,
-        max_length=20,
-        pattern=r"^[A-Z0-9.]+$",
-    ),
-    check_date: Optional[str] = Query(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    ),
+    symbol: Optional[str] = Query(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
     match_result: Optional[bool] = Query(None, description="是否匹配"),
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
@@ -512,24 +397,14 @@ async def query_strategy_results(
         logger.error(f"查询策略结果失败: {e}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}"
-            ).model_dump(mode='json'),
+            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}").model_dump(),
         )
 
 
 @router.get("/matched-stocks", tags=["strategy"])
 async def get_matched_stocks(
-    strategy_code: str = Query(
-        ...,
-        description="策略代码",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-z0-9_]+$",
-    ),
-    check_date: Optional[str] = Query(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    ),
+    strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
 ):
     """
@@ -551,28 +426,18 @@ async def get_matched_stocks(
         if check_date:
             check_date_obj = datetime.strptime(check_date, "%Y-%m-%d").date()
 
-        stocks = service.get_matched_stocks(
-            strategy_code=strategy_code, check_date=check_date_obj, limit=limit
-        )
+        stocks = service.get_matched_stocks(strategy_code=strategy_code, check_date=check_date_obj, limit=limit)
 
-        return create_success_response(
-            data={
-                "matched_stocks": stocks,
-                "strategy_code": strategy_code,
-                "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
-                "total": len(stocks),
-            },
-            message=f"找到{len(stocks)}只匹配股票",
-        )
+        return {
+            "success": True,
+            "data": stocks,
+            "total": len(stocks),
+            "message": f"找到{len(stocks)}只匹配股票",
+        }
 
     except Exception as e:
         logger.error(f"获取匹配股票失败: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR, f"获取匹配股票失败: {str(e)}"
-            ).model_dump(mode='json'),
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ==================== 统计分析相关 ====================
@@ -580,9 +445,7 @@ async def get_matched_stocks(
 
 @router.get("/stats/summary", tags=["strategy"])
 async def get_strategy_summary(
-    check_date: Optional[str] = Query(
-        None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"
-    ),
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
 ):
     """
     获取策略统计摘要
@@ -629,9 +492,7 @@ async def get_strategy_summary(
             data={
                 "strategy_summary": summary,
                 "check_date": (
-                    check_date_obj.strftime("%Y-%m-%d")
-                    if check_date_obj
-                    else datetime.now().strftime("%Y-%m-%d")
+                    check_date_obj.strftime("%Y-%m-%d") if check_date_obj else datetime.now().strftime("%Y-%m-%d")
                 ),
             },
             message="获取策略统计摘要成功",
@@ -641,7 +502,5 @@ async def get_strategy_summary(
         logger.error(f"获取策略统计失败: {e}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
-                ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}"
-            ).model_dump(mode='json'),
+            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}").model_dump(),
         )

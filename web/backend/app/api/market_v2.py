@@ -12,7 +12,7 @@
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from typing import Optional
+from typing import List, Optional
 from datetime import date, datetime
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
@@ -127,7 +127,7 @@ async def get_lhb_detail(
 
 @router.post("/lhb/refresh", summary="刷新龙虎榜数据")
 async def refresh_lhb_detail(
-    trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)"),
+    trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")
 ):
     """
     从东方财富刷新指定日期的龙虎榜数据
@@ -244,7 +244,7 @@ async def get_stock_blocktrade(
 async def refresh_stock_blocktrade(
     trade_date: Optional[str] = Query(
         None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"
-    ),
+    )
 ):
     """
     从东方财富刷新大宗交易数据

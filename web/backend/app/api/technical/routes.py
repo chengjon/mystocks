@@ -1,43 +1,22 @@
 """
 技术分析API路由
-
-Phase 2.4.4: 更新健康检查为统一响应格式
 """
 
 from fastapi import APIRouter
-
-from app.core.responses import create_health_response, create_success_response
 
 router = APIRouter(prefix="/technical")
 
 
 @router.get("/health")
 async def health_check():
-    """
-    健康检查 (Phase 2.4.4: 更新为统一响应格式)
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="technical",
-        status="healthy",
-        details={"version": "2.4.0"},
-    )
+    """健康检查"""
+    return {"status": "ok", "service": "technical"}
 
 
 @router.get("/status")
 async def get_status():
-    """
-    获取服务状态 (Phase 2.4.4: 更新为统一响应格式)
-
-    Returns:
-        统一格式的状态响应
-    """
-    return create_unified_success_response(
-        data={"status": "active", "endpoint": "technical"},
-        message="技术分析服务运行中",
-    )
+    """获取服务状态"""
+    return {"status": "active", "endpoint": "technical"}
 
 
 @router.post("/analyze")

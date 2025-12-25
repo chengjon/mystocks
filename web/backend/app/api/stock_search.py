@@ -19,18 +19,9 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import (
-
-    APIResponse,
-    create_unified_error_response,
-    create_health_response,
-)
-from app.schema import (
-    StockListQueryModel,
-)  # 导入P0改进的验证模型
-from app.services.stock_search_service import (
-    get_stock_search_service,
-)
+from app.core.responses import APIResponse, ErrorResponse, create_error_response
+from app.schema import ResponseModel, StockListQueryModel, StockSymbolModel  # 导入P0改进的验证模型
+from app.services.stock_search_service import StockSearchService, get_stock_search_service
 from src.core.exceptions import (
     DatabaseNotFoundError,
     DatabaseOperationError,
@@ -38,33 +29,11 @@ from src.core.exceptions import (
     DataValidationError,
     NetworkError,
     ServiceError,
+    UnauthorizedAccessError,
 )
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-# ==================== 健康检查 ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    股票搜索服务健康检查
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="stock_search",
-        status="healthy",
-        details={
-            "endpoints": ["search", "quote", "news", "list"],
-            "circuit_breaker_enabled": True,
-            "version": "1.0.0",
-        },
-    )
-
 
 # Rate limiting for search operations
 search_operation_count = {}
@@ -202,12 +171,7 @@ def check_admin_privileges(user: User) -> bool:
     return user.role in ["admin", "backup_operator"]
 
 
-def log_search_operation(
-    user: User,
-    operation: str,
-    query: Optional[str] = None,
-    details: Optional[Dict] = None,
-):
+def log_search_operation(user: User, operation: str, query: Optional[str] = None, details: Optional[Dict] = None):
     """
     记录搜索操作分析
 
@@ -233,10 +197,7 @@ def log_search_operation(
     if len(search_analytics) > 1000:
         search_analytics.pop(0)
 
-    logger.info(
-        f"Search operation logged: {operation} by {user.username}",
-        analytics_data=analytics_entry,
-    )
+    logger.info(f"Search operation logged: {operation} by {user.username}", analytics_data=analytics_entry)
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
@@ -292,9 +253,7 @@ def sanitize_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
 @router.get("/search", response_model=List[StockSearchResult])
 async def search_stocks(
     q: str = Query(..., description="搜索关键词", min_length=1, max_length=100),
-    market: str = Query(
-        "auto", description="市场类型: auto, cn, hk", pattern=r"^(auto|cn|hk)$"
-    ),
+    market: str = Query("auto", description="市场类型: auto, cn, hk", pattern=r"^(auto|cn|hk)$"),
     page: int = Query(1, description="页码", ge=1, le=10000),
     page_size: int = Query(20, description="每页数量", ge=1, le=100),
     sort_by: str = Query("relevance", description="排序字段"),
@@ -317,38 +276,23 @@ async def search_stocks(
     try:
         # 检查搜索频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=30):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="搜索频率过高，请稍后再试",
-            )
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="搜索频率过高，请稍后再试")
 
         # 使用 StockListQueryModel 验证参数
         try:
             validated_params = StockListQueryModel(
-                query=q,
-                page=page,
-                page_size=page_size,
-                sort_by=sort_by,
-                sort_order=sort_order,
+                query=q, page=page, page_size=page_size, sort_by=sort_by, sort_order=sort_order
             )
         except ValidationError as ve:
-            error_details = [
-                {"field": str(err["loc"][0]), "message": err["msg"]}
-                for err in ve.errors()
-            ]
-            return create_unified_error_response(
-                error_code="VALIDATION_ERROR",
-                message="输入参数验证失败",
-                details=error_details,
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details
             )
 
         # 清理搜索关键词，防止注入攻击
         clean_query = re.sub(r'[<>"\'/\\;]', "", validated_params.query.strip())
         if len(clean_query) > 100:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="搜索关键词过长，最多100个字符",
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="搜索关键词过长，最多100个字符")
 
         # 记录搜索操作分析
         log_search_operation(
@@ -367,9 +311,7 @@ async def search_stocks(
         )
 
         # 清理查询参数
-        params = sanitize_query_params(
-            {"market": market, "limit": validated_params.page_size}
-        )
+        params = sanitize_query_params({"market": market, "limit": validated_params.page_size})
 
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -379,9 +321,7 @@ async def search_stocks(
             from app.mock.unified_mock_data import get_mock_data_manager
 
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "stock_search", keyword=clean_query, **params
-            )
+            mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
             results = mock_data.get("data", [])
 
             # 应用分页
@@ -393,15 +333,11 @@ async def search_stocks(
 
             if circuit_breaker.is_open():
                 # 熔断器打开，降级到Mock数据
-                logger.warning(
-                    "⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data"
-                )
+                logger.warning(f"⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
                 from app.mock.unified_mock_data import get_mock_data_manager
 
                 mock_manager = get_mock_data_manager()
-                mock_data = mock_manager.get_data(
-                    "stock_search", keyword=clean_query, **params
-                )
+                mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
                 results = mock_data.get("data", [])
 
                 # 应用分页
@@ -424,39 +360,26 @@ async def search_stocks(
                     f"❌ Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
                     extra=api_error.to_dict(),
                 )
-                raise HTTPException(
-                    status_code=503, detail="股票搜索服务暂时不可用，请稍后重试"
-                ) from api_error
+                raise HTTPException(status_code=503, detail="股票搜索服务暂时不可用，请稍后重试") from api_error
             except Exception as api_error:
                 circuit_breaker.record_failure()
                 logger.error(
                     f"❌ Stock search API failed with unexpected error: {str(api_error)}, failures: {circuit_breaker.failure_count}"
                 )
-                raise HTTPException(
-                    status_code=500, detail="股票搜索失败，请稍后重试"
-                ) from api_error
+                raise HTTPException(status_code=500, detail="股票搜索失败，请稍后重试") from api_error
 
             # 应用排序
             if validated_params.sort_by and validated_params.sort_by != "relevance":
                 reverse = validated_params.sort_order.lower() == "desc"
-                results = sorted(
-                    results,
-                    key=lambda x: x.get(validated_params.sort_by, 0),
-                    reverse=reverse,
-                )
+                results = sorted(results, key=lambda x: x.get(validated_params.sort_by, 0), reverse=reverse)
 
             return results
 
     except HTTPException:
         raise
     except (DataFetchError, DataValidationError, ServiceError) as e:
-        logger.error(
-            f"Stock search failed for user {current_user.username}: {e.message}",
-            extra=e.to_dict(),
-        )
-        raise HTTPException(
-            status_code=400, detail="搜索参数无效或数据源暂时不可用，请稍后重试"
-        ) from e
+        logger.error(f"Stock search failed for user {current_user.username}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=400, detail="搜索参数无效或数据源暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Stock search failed for user {current_user.username}: {str(e)}")
         raise HTTPException(status_code=500, detail="搜索失败，请稍后重试") from e
@@ -484,10 +407,7 @@ async def get_stock_quote(
     try:
         # 检查访问频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=60):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="访问频率过高，请稍后再试",
-            )
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="访问频率过高，请稍后再试")
 
         # 验证股票代码格式
         validated_symbol = validate_stock_symbol(symbol, market)
@@ -497,11 +417,7 @@ async def get_stock_quote(
             user=current_user,
             operation="get_stock_quote",
             query=validated_symbol,
-            details={
-                "market": market,
-                "original_symbol": symbol,
-                "validated_symbol": validated_symbol,
-            },
+            details={"market": market, "original_symbol": symbol, "validated_symbol": validated_symbol},
         )
 
         # 检查是否使用Mock数据
@@ -512,9 +428,7 @@ async def get_stock_quote(
             from app.mock.unified_mock_data import get_mock_data_manager
 
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "stock_quote", symbol=validated_symbol, market=market
-            )
+            mock_data = mock_manager.get_data("stock_quote", symbol=validated_symbol, market=market)
             quote_data = mock_data.get("data", {})
 
             if not quote_data:
@@ -530,9 +444,7 @@ async def get_stock_quote(
             elif market.lower() == "hk":
                 quote = service.get_hk_stock_realtime(validated_symbol)
             else:
-                raise HTTPException(
-                    status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
-                )
+                raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
 
             if not quote:
                 raise HTTPException(status_code=404, detail="未找到股票报价")
@@ -545,16 +457,11 @@ async def get_stock_quote(
         raise HTTPException(status_code=400, detail=str(e))
     except (DataFetchError, NetworkError, ServiceError) as e:
         logger.error(
-            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}",
-            extra=e.to_dict(),
+            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}", extra=e.to_dict()
         )
-        raise HTTPException(
-            status_code=503, detail="数据源暂时不可用，请稍后重试"
-        ) from e
+        raise HTTPException(status_code=503, detail="数据源暂时不可用，请稍后重试") from e
     except Exception as e:
-        logger.error(
-            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {str(e)}"
-        )
+        logger.error(f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {str(e)}")
         raise HTTPException(status_code=500, detail="获取报价失败，请稍后重试") from e
 
 
@@ -580,9 +487,7 @@ async def get_company_profile(
             from app.mock.unified_mock_data import get_mock_data_manager
 
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "stock_profile", symbol=symbol, market=market
-            )
+            mock_data = mock_manager.get_data("stock_profile", symbol=symbol, market=market)
             return mock_data.get("data", {})
         else:
             # 正常获取真实数据
@@ -593,18 +498,11 @@ async def get_company_profile(
     except HTTPException:
         raise
     except (DataFetchError, ServiceError) as e:
-        logger.error(
-            f"Get company profile failed for symbol {symbol}: {e.message}",
-            extra=e.to_dict(),
-        )
-        raise HTTPException(
-            status_code=503, detail="公司信息服务暂时不可用，请稍后重试"
-        ) from e
+        logger.error(f"Get company profile failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="公司信息服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get company profile failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="获取公司信息失败，请稍后重试"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"获取公司信息失败，请稍后重试") from e
 
 
 @router.get("/news/{symbol}", response_model=List[NewsItem])
@@ -631,9 +529,7 @@ async def get_stock_news(
             from app.mock.unified_mock_data import get_mock_data_manager
 
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "stock_news", symbol=symbol, market=market, days=days
-            )
+            mock_data = mock_manager.get_data("stock_news", symbol=symbol, market=market, days=days)
             return mock_data.get("data", [])
         else:
             # 正常获取真实数据
@@ -644,21 +540,15 @@ async def get_stock_news(
             elif market.lower() == "hk":
                 news = service.get_hk_stock_news(symbol)
             else:
-                raise HTTPException(
-                    status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
-                )
+                raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
 
             return news
     except (DataFetchError, ServiceError, NetworkError) as e:
-        logger.error(
-            f"Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict()
-        )
-        raise HTTPException(
-            status_code=503, detail="新闻服务暂时不可用，请稍后重试"
-        ) from e
+        logger.error(f"Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get stock news failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(status_code=500, detail="获取新闻失败，请稍后重试") from e
+        raise HTTPException(status_code=500, detail=f"获取新闻失败，请稍后重试") from e
 
 
 @router.get("/news/market/{category}", response_model=List[NewsItem])
@@ -682,30 +572,19 @@ async def get_market_news(
         elif market.lower() == "hk":
             news = service.get_hk_stock_news()
         else:
-            raise HTTPException(
-                status_code=400, detail="不支持的市场类型，仅支持: cn, hk"
-            )
+            raise HTTPException(status_code=400, detail="不支持的市场类型，仅支持: cn, hk")
 
         return news
     except (DataFetchError, ServiceError, NetworkError) as e:
-        logger.error(
-            f"Get market news failed for category {category}: {e.message}",
-            extra=e.to_dict(),
-        )
-        raise HTTPException(
-            status_code=503, detail="市场新闻服务暂时不可用，请稍后重试"
-        ) from e
+        logger.error(f"Get market news failed for category {category}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="市场新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get market news failed for category {category}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="获取市场新闻失败，请稍后重试"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"获取市场新闻失败，请稍后重试") from e
 
 
 @router.get("/recommendation/{symbol}")
-async def get_recommendation_trends(
-    symbol: str, current_user: User = Depends(get_current_user)
-) -> Dict:
+async def get_recommendation_trends(symbol: str, current_user: User = Depends(get_current_user)) -> Dict:
     """
     获取分析师推荐趋势
 
@@ -732,24 +611,15 @@ async def get_recommendation_trends(
     except HTTPException:
         raise
     except (DataFetchError, ServiceError) as e:
-        logger.error(
-            f"Get recommendation trends failed for symbol {symbol}: {e.message}",
-            extra=e.to_dict(),
-        )
-        raise HTTPException(
-            status_code=503, detail="推荐分析服务暂时不可用，请稍后重试"
-        ) from e
+        logger.error(f"Get recommendation trends failed for symbol {symbol}: {e.message}", extra=e.to_dict())
+        raise HTTPException(status_code=503, detail="推荐分析服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get recommendation trends failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="获取分析师推荐失败，请稍后重试"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"获取分析师推荐失败，请稍后重试") from e
 
 
 @router.post("/cache/clear", response_model=APIResponse)
-async def clear_search_cache(
-    current_user: User = Depends(get_current_user),
-) -> APIResponse:
+async def clear_search_cache(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     清除搜索缓存
 
@@ -761,43 +631,26 @@ async def clear_search_cache(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized cache clear attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized cache clear attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 记录操作分析
-        log_search_operation(
-            user=current_user,
-            operation="clear_search_cache",
-            details={"admin_action": True},
-        )
+        log_search_operation(user=current_user, operation="clear_search_cache", details={"admin_action": True})
 
         service = get_stock_search_service()
         service.clear_cache()
 
         logger.info(f"Search cache cleared by admin: {current_user.username}")
 
-        return APIResponse(
-            success=True,
-            data={"cleared_by": current_user.username},
-            message="搜索缓存已清除",
-        )
+        return APIResponse(success=True, data={"cleared_by": current_user.username}, message="搜索缓存已清除")
 
     except HTTPException:
         raise
     except (DatabaseNotFoundError, ServiceError) as e:
-        logger.error(
-            f"Failed to clear search cache for admin {current_user.username}: {e.message}",
-            extra=e.to_dict(),
-        )
+        logger.error(f"Failed to clear search cache for admin {current_user.username}: {e.message}", extra=e.to_dict())
         raise HTTPException(status_code=500, detail="清除缓存失败") from e
     except Exception as e:
-        logger.error(
-            f"Failed to clear search cache for admin {current_user.username}: {str(e)}"
-        )
+        logger.error(f"Failed to clear search cache for admin {current_user.username}: {str(e)}")
         raise HTTPException(status_code=500, detail="清除缓存失败") from e
 
 
@@ -822,40 +675,24 @@ async def get_search_analytics(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized analytics access attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized analytics access attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 记录分析访问
         log_search_operation(
             user=current_user,
             operation="access_search_analytics",
-            details={
-                "limit": limit,
-                "operation_filter": operation,
-                "username_filter": username,
-            },
+            details={"limit": limit, "operation_filter": operation, "username_filter": username},
         )
 
         # 过滤分析数据
         filtered_analytics = search_analytics.copy()
 
         if operation:
-            filtered_analytics = [
-                entry
-                for entry in filtered_analytics
-                if entry.get("operation") == operation
-            ]
+            filtered_analytics = [entry for entry in filtered_analytics if entry.get("operation") == operation]
 
         if username:
-            filtered_analytics = [
-                entry
-                for entry in filtered_analytics
-                if entry.get("username") == username
-            ]
+            filtered_analytics = [entry for entry in filtered_analytics if entry.get("username") == username]
 
         # 按时间倒序排列，取最近的记录
         filtered_analytics.sort(key=lambda x: x.get("timestamp", 0), reverse=True)
@@ -872,18 +709,14 @@ async def get_search_analytics(
             operation_counts[op] = operation_counts.get(op, 0) + 1
             user_counts[user] = user_counts.get(user, 0) + 1
 
-        logger.info(
-            f"Search analytics accessed by admin {current_user.username}: {len(result_analytics)} records"
-        )
+        logger.info(f"Search analytics accessed by admin {current_user.username}: {len(result_analytics)} records")
 
         return {
             "analytics": result_analytics,
             "total_count": len(filtered_analytics),
             "statistics": {
                 "operation_counts": operation_counts,
-                "user_counts": dict(
-                    sorted(user_counts.items(), key=lambda x: x[1], reverse=True)[:10]
-                ),  # Top 10 users
+                "user_counts": dict(sorted(user_counts.items(), key=lambda x: x[1], reverse=True)[:10]),  # Top 10 users
             },
             "filter_applied": {"operation": operation, "username": username},
             "returned_count": len(result_analytics),
@@ -893,21 +726,17 @@ async def get_search_analytics(
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
-            f"Failed to get search analytics for admin {current_user.username}: {e.message}",
-            extra=e.to_dict(),
+            f"Failed to get search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
         )
         raise HTTPException(status_code=500, detail="获取搜索分析数据失败") from e
     except Exception as e:
-        logger.error(
-            f"Failed to get search analytics for admin {current_user.username}: {str(e)}"
-        )
+        logger.error(f"Failed to get search analytics for admin {current_user.username}: {str(e)}")
         raise HTTPException(status_code=500, detail="获取搜索分析数据失败") from e
 
 
 @router.post("/analytics/cleanup", response_model=APIResponse)
 async def cleanup_search_analytics(
-    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30),
-    current_user: User = Depends(get_current_user),
+    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30), current_user: User = Depends(get_current_user)
 ):
     """
     清理旧的搜索分析数据
@@ -919,47 +748,29 @@ async def cleanup_search_analytics(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized analytics cleanup attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized analytics cleanup attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 计算清理时间点
         cutoff_time = time.time() - (days * 24 * 60 * 60)
 
         # 清理旧的分析数据
         original_count = len(search_analytics)
-        search_analytics[:] = [
-            entry
-            for entry in search_analytics
-            if entry.get("timestamp", 0) >= cutoff_time
-        ]
+        search_analytics[:] = [entry for entry in search_analytics if entry.get("timestamp", 0) >= cutoff_time]
         cleaned_count = original_count - len(search_analytics)
 
         # 记录清理操作
         log_search_operation(
             user=current_user,
             operation="cleanup_search_analytics",
-            details={
-                "days": days,
-                "cleaned_count": cleaned_count,
-                "remaining_count": len(search_analytics),
-            },
+            details={"days": days, "cleaned_count": cleaned_count, "remaining_count": len(search_analytics)},
         )
 
-        logger.info(
-            f"Search analytics cleaned by admin {current_user.username}: {cleaned_count} records removed"
-        )
+        logger.info(f"Search analytics cleaned by admin {current_user.username}: {cleaned_count} records removed")
 
         return APIResponse(
             success=True,
-            data={
-                "cleaned_count": cleaned_count,
-                "remaining_count": len(search_analytics),
-                "cutoff_days": days,
-            },
+            data={"cleaned_count": cleaned_count, "remaining_count": len(search_analytics), "cutoff_days": days},
             message=f"已清理 {cleaned_count} 条旧搜索分析数据",
         )
 
@@ -967,14 +778,11 @@ async def cleanup_search_analytics(
         raise
     except (DatabaseNotFoundError, DatabaseOperationError) as e:
         logger.error(
-            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}",
-            extra=e.to_dict(),
+            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
         )
         raise HTTPException(status_code=500, detail="清理搜索分析数据失败") from e
     except Exception as e:
-        logger.error(
-            f"Failed to cleanup search analytics for admin {current_user.username}: {str(e)}"
-        )
+        logger.error(f"Failed to cleanup search analytics for admin {current_user.username}: {str(e)}")
         raise HTTPException(status_code=500, detail="清理搜索分析数据失败") from e
 
 
@@ -993,12 +801,8 @@ async def get_rate_limits_status(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized rate limits access attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized rate limits access attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 获取频率限制状态
         if user_id:
@@ -1006,11 +810,7 @@ async def get_rate_limits_status(
             user_limits = search_operation_count.get(user_id, {})
             return APIResponse(
                 success=True,
-                data={
-                    "user_id": user_id,
-                    "rate_limits": user_limits,
-                    "total_minutes": len(user_limits),
-                },
+                data={"user_id": user_id, "rate_limits": user_limits, "total_minutes": len(user_limits)},
                 message=f"用户 {user_id} 的频率限制状态",
             )
         else:
@@ -1033,12 +833,9 @@ async def get_rate_limits_status(
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
-            f"Failed to get rate limits status for admin {current_user.username}: {e.message}",
-            extra=e.to_dict(),
+            f"Failed to get rate limits status for admin {current_user.username}: {e.message}", extra=e.to_dict()
         )
         raise HTTPException(status_code=500, detail="获取频率限制状态失败") from e
     except Exception as e:
-        logger.error(
-            f"Failed to get rate limits status for admin {current_user.username}: {str(e)}"
-        )
+        logger.error(f"Failed to get rate limits status for admin {current_user.username}: {str(e)}")
         raise HTTPException(status_code=500, detail="获取频率限制状态失败") from e

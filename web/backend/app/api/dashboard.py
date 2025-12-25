@@ -8,20 +8,23 @@
 """
 
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.core.cache_manager import CacheManager
 from app.core.responses import (
-
     ErrorCodes,
-    create_unified_error_response,
+    ResponseMessages,
+    create_error_response,
     create_health_response,
+    create_success_response,
 )
 from app.models.dashboard import (
+    DashboardRequest,
     DashboardResponse,
+    ErrorResponse,
     MarketIndexItem,
     MarketOverview,
     PortfolioSummary,
@@ -50,39 +53,7 @@ def get_cache_manager() -> CacheManager:
 
 
 # 创建路由器
-router = APIRouter(
-    prefix="/api/dashboard",
-    tags=["dashboard"],
-    responses={404: {"description": "Not found"}},
-)
-
-
-# ==================== 健康检查 ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    仪表盘服务健康检查
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="dashboard",
-        status="healthy",
-        details={
-            "endpoints": [
-                "summary",
-                "market_overview",
-                "portfolio",
-                "watchlist",
-                "risk_alerts",
-            ],
-            "cache_enabled": True,
-            "version": "1.0.0",
-        },
-    )
+router = APIRouter(prefix="/api/dashboard", tags=["dashboard"], responses={404: {"description": "Not found"}})
 
 
 # ============================================================================
@@ -322,9 +293,7 @@ def build_watchlist_summary(raw_data: list) -> Optional[WatchlistSummary]:
 
         avg_change = total_change / count_with_price if count_with_price > 0 else None
 
-        return WatchlistSummary(
-            total_count=len(items), items=items, avg_change_percent=avg_change
-        )
+        return WatchlistSummary(total_count=len(items), items=items, avg_change_percent=avg_change)
     except Exception as e:
         logger.error(f"构建自选股汇总失败: {str(e)}")
         return None
@@ -356,9 +325,7 @@ def build_portfolio_summary(raw_data: dict) -> Optional[PortfolioSummary]:
             total_market_value=float(raw_data.get("total_market_value", 0)),
             total_cost=float(raw_data.get("total_cost", 0)),
             total_profit_loss=float(raw_data.get("total_profit_loss", 0)),
-            total_profit_loss_percent=float(
-                raw_data.get("total_profit_loss_percent", 0)
-            ),
+            total_profit_loss_percent=float(raw_data.get("total_profit_loss_percent", 0)),
             position_count=int(raw_data.get("position_count", 0)),
             positions=positions,
         )
@@ -395,10 +362,7 @@ def build_risk_alert_summary(raw_data: list) -> Optional[RiskAlertSummary]:
                 critical_count += 1
 
         return RiskAlertSummary(
-            total_count=len(alerts),
-            unread_count=unread_count,
-            critical_count=critical_count,
-            alerts=alerts,
+            total_count=len(alerts), unread_count=unread_count, critical_count=critical_count, alerts=alerts
         )
     except Exception as e:
         logger.error(f"构建风险预警汇总失败: {str(e)}")
@@ -568,9 +532,7 @@ async def get_dashboard_summary(
                 trade_date,
             )
             if cache_hit and cached_entry:
-                logger.info(
-                    f"仪表盘缓存命中: user_id={user_id}, trade_date={trade_date}"
-                )
+                logger.info(f"仪表盘缓存命中: user_id={user_id}, trade_date={trade_date}")
                 raw_dashboard = cached_entry.get("dashboard_data", {})
             else:
                 raw_dashboard = None
@@ -620,9 +582,7 @@ async def get_dashboard_summary(
 
         # 根据参数选择性包含各模块数据
         if include_market and "market_overview" in raw_dashboard:
-            response.market_overview = build_market_overview(
-                raw_dashboard["market_overview"]
-            )
+            response.market_overview = build_market_overview(raw_dashboard["market_overview"])
 
         if include_watchlist and "watchlist" in raw_dashboard:
             response.watchlist = build_watchlist_summary(raw_dashboard["watchlist"])
@@ -631,9 +591,7 @@ async def get_dashboard_summary(
             response.portfolio = build_portfolio_summary(raw_dashboard["portfolio"])
 
         if include_alerts and "risk_alerts" in raw_dashboard:
-            response.risk_alerts = build_risk_alert_summary(
-                raw_dashboard["risk_alerts"]
-            )
+            response.risk_alerts = build_risk_alert_summary(raw_dashboard["risk_alerts"])
 
         # 记录缓存统计
         cache_stats = cache_manager.get_cache_stats()
@@ -658,8 +616,7 @@ async def get_dashboard_summary(
     description="获取市场指数、涨跌家数、榜单等市场概览信息",
 )
 async def get_market_overview(
-    limit: int = Query(10, description="榜单数量限制", ge=1, le=100),
-    data_source=Depends(get_data_source),
+    limit: int = Query(10, description="榜单数量限制", ge=1, le=100), data_source=Depends(get_data_source)
 ):
     """获取市场概览数据"""
     try:
@@ -683,12 +640,7 @@ async def get_market_overview(
         raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
 
 
-@router.get(
-    "/health",
-    summary="仪表盘健康检查",
-    description="检查仪表盘服务和数据源的健康状态",
-    tags=["health"],
-)
+@router.get("/health", summary="仪表盘健康检查", description="检查仪表盘服务和数据源的健康状态", tags=["health"])
 async def health_check(request: Request, data_source=Depends(get_data_source)):
     """
     检查仪表盘服务及其依赖组件的健康状态
@@ -720,22 +672,14 @@ async def health_check(request: Request, data_source=Depends(get_data_source)):
         health_data = {
             "data_source": health,
             "mock_data": "enabled",
-            "database_connections": {
-                "postgresql": "connected",
-                "tdengine": "connected",
-            },
+            "database_connections": {"postgresql": "connected", "tdengine": "connected"},
         }
 
-        return create_health_response(
-            service="dashboard",
-            status="healthy",
-            details=health_data,
-            request_id=request_id,
-        )
+        return create_health_response(service="dashboard", status="healthy", details=health_data, request_id=request_id)
 
     except Exception as e:
         logger.error(f"健康检查失败: {str(e)}")
-        return create_unified_error_response(
+        return create_error_response(
             error_code=ErrorCodes.SERVICE_UNAVAILABLE,
             message=f"仪表盘服务不可用: {str(e)}",
             request_id=getattr(request.state, "request_id", None),

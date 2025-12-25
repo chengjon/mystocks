@@ -20,20 +20,15 @@
 
 import logging
 import time
-from datetime import datetime
-from typing import Any, Dict, Optional
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.responses import (
-    ErrorCode,
-    create_health_response,
-    error_response,
-    success_response,
-)
-from app.core.security import User, get_current_user
+from app.core.responses import BaseResponse, ErrorCode, ErrorResponse, error_response, success_response
+from app.core.security import User, check_permission, get_current_user
 from app.models.backup_schemas import (
     BackupListQueryParams,
     BackupMetadata,
@@ -53,12 +48,7 @@ from app.models.backup_schemas import (
     require_backup_permission,
     require_recovery_permission,
 )
-from src.backup_recovery import (
-    BackupManager,
-    BackupScheduler,
-    IntegrityChecker,
-    RecoveryManager,
-)
+from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
 # 初始化速率限制器
 limiter = Limiter(key_func=get_remote_address)
@@ -89,11 +79,7 @@ _max_recovery_operations = 1  # 每5分钟最多1次恢复操作
 
 
 def log_security_event(
-    event_type: str,
-    user: User,
-    action: str,
-    details: Optional[Dict[str, Any]] = None,
-    success: bool = True,
+    event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True
 ):
     """记录安全审计日志"""
     log_data = {
@@ -119,9 +105,7 @@ def check_backup_rate_limit(user: User) -> bool:
     # 清理过期记录
     cutoff_time = current_time - _rate_limit_window
     if user_id in _backup_operation_cache:
-        _backup_operation_cache[user_id] = [
-            t for t in _backup_operation_cache[user_id] if t > cutoff_time
-        ]
+        _backup_operation_cache[user_id] = [t for t in _backup_operation_cache[user_id] if t > cutoff_time]
 
     # 检查当前窗口内的操作次数
     user_operations = _backup_operation_cache.get(user_id, [])
@@ -142,9 +126,7 @@ def check_recovery_rate_limit(user: User) -> bool:
     # 清理过期记录
     cutoff_time = current_time - _rate_limit_window
     if user_id in _recovery_operation_cache:
-        _recovery_operation_cache[user_id] = [
-            t for t in _recovery_operation_cache[user_id] if t > cutoff_time
-        ]
+        _recovery_operation_cache[user_id] = [t for t in _recovery_operation_cache[user_id] if t > cutoff_time]
 
     # 检查当前窗口内的操作次数
     user_operations = _recovery_operation_cache.get(user_id, [])
@@ -167,9 +149,7 @@ def verify_admin_permission(user: User) -> None:
             {"required_role": "admin", "user_role": user.role},
             success=False,
         )
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行此操作"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行此操作")
 
 
 def verify_backup_permission(user: User) -> None:
@@ -182,9 +162,7 @@ def verify_backup_permission(user: User) -> None:
             {"required_permission": "backup", "user_role": user.role},
             success=False,
         )
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="需要备份操作权限"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要备份操作权限")
 
 
 def verify_recovery_permission(user: User) -> None:
@@ -197,9 +175,7 @@ def verify_recovery_permission(user: User) -> None:
             {"required_permission": "recovery", "user_role": user.role},
             success=False,
         )
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行恢复操作"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行恢复操作")
 
 
 # ==================== 备份端点 (CRITICAL - 需要备份权限) ====================
@@ -207,8 +183,7 @@ def verify_recovery_permission(user: User) -> None:
 
 @router.post("/backup/tdengine/full")
 async def backup_tdengine_full(
-    request: TDengineFullBackupRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: TDengineFullBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """
     执行 TDengine 全量备份 [CRITICAL - 需要备份权限]
@@ -225,25 +200,15 @@ async def backup_tdengine_full(
 
         if not check_backup_rate_limit(current_user):
             log_security_event(
-                "RATE_LIMIT_EXCEEDED",
-                current_user,
-                "tdengine_full_backup",
-                {"reason": "Too many backup operations"},
+                "RATE_LIMIT_EXCEEDED", current_user, "tdengine_full_backup", {"reason": "Too many backup operations"}
             )
-            return error_response(
-                message="备份操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="备份操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "BACKUP_START",
             current_user,
             "tdengine_full_backup",
-            {
-                "database": "tdengine",
-                "backup_type": "full",
-                "description": request.description,
-            },
+            {"database": "tdengine", "backup_type": "full", "description": request.description},
         )
 
         metadata = backup_manager.backup_tdengine_full()
@@ -280,9 +245,7 @@ async def backup_tdengine_full(
             tags=request.tags,
         )
 
-        return success_response(
-            data=backup_data.model_dump(), message="TDengine 全量备份操作完成"
-        )
+        return success_response(data=backup_data.model_dump(), message="TDengine 全量备份操作完成")
 
     except Exception as e:
         log_security_event(
@@ -302,27 +265,20 @@ async def backup_tdengine_full(
 
 @router.post("/backup/tdengine/incremental")
 async def backup_tdengine_incremental(
-    request: TDengineIncrementalBackupRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: TDengineIncrementalBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """执行 TDengine 增量备份 [CRITICAL - 需要备份权限]"""
     try:
         verify_backup_permission(current_user)
 
         if not check_backup_rate_limit(current_user):
-            return error_response(
-                message="备份操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="备份操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "BACKUP_START",
             current_user,
             "tdengine_incremental_backup",
-            {
-                "since_backup_id": request.since_backup_id,
-                "description": request.description,
-            },
+            {"since_backup_id": request.since_backup_id, "description": request.description},
         )
 
         metadata = backup_manager.backup_tdengine_incremental(request.since_backup_id)
@@ -332,11 +288,7 @@ async def backup_tdengine_incremental(
             "BACKUP_COMPLETE",
             current_user,
             "tdengine_incremental_backup",
-            {
-                "backup_id": metadata.backup_id,
-                "since_backup_id": request.since_backup_id,
-                "success": success,
-            },
+            {"backup_id": metadata.backup_id, "since_backup_id": request.since_backup_id, "success": success},
             success=success,
         )
 
@@ -357,9 +309,7 @@ async def backup_tdengine_incremental(
             tags=["incremental"],
         )
 
-        return success_response(
-            data=backup_data.model_dump(), message="TDengine 增量备份操作完成"
-        )
+        return success_response(data=backup_data.model_dump(), message="TDengine 增量备份操作完成")
 
     except Exception as e:
         log_security_event(
@@ -370,34 +320,25 @@ async def backup_tdengine_incremental(
             success=False,
         )
 
-        return error_response(
-            message="TDengine 增量备份失败", error_code=ErrorCode.INTERNAL_ERROR
-        )
+        return error_response(message="TDengine 增量备份失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
 @router.post("/backup/postgresql/full")
 async def backup_postgresql_full(
-    request: PostgreSQLFullBackupRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: PostgreSQLFullBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """执行 PostgreSQL 全量备份 [CRITICAL - 需要备份权限]"""
     try:
         verify_backup_permission(current_user)
 
         if not check_backup_rate_limit(current_user):
-            return error_response(
-                message="备份操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="备份操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "BACKUP_START",
             current_user,
             "postgresql_full_backup",
-            {
-                "exclude_tables": request.exclude_tables,
-                "include_tables": request.include_tables,
-            },
+            {"exclude_tables": request.exclude_tables, "include_tables": request.include_tables},
         )
 
         metadata = backup_manager.backup_postgresql_full()
@@ -428,22 +369,12 @@ async def backup_postgresql_full(
             tags=["postgresql"],
         )
 
-        return success_response(
-            data=backup_data.model_dump(), message="PostgreSQL 全量备份操作完成"
-        )
+        return success_response(data=backup_data.model_dump(), message="PostgreSQL 全量备份操作完成")
 
     except Exception as e:
-        log_security_event(
-            "BACKUP_ERROR",
-            current_user,
-            "postgresql_full_backup",
-            {"error": str(e)},
-            success=False,
-        )
+        log_security_event("BACKUP_ERROR", current_user, "postgresql_full_backup", {"error": str(e)}, success=False)
 
-        return error_response(
-            message="PostgreSQL 全量备份失败", error_code=ErrorCode.INTERNAL_ERROR
-        )
+        return error_response(message="PostgreSQL 全量备份失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
 # ==================== 备份查询端点 (MODERATE - 需要认证) ====================
@@ -459,9 +390,7 @@ async def list_backups(
     """列出所有备份 [MODERATE - 需要认证]"""
     try:
         # 验证查询参数
-        params = BackupListQueryParams(
-            database=database, backup_type=backup_type, status=status
-        )
+        params = BackupListQueryParams(database=database, backup_type=backup_type, status=status)
 
         log_security_event(
             "BACKUP_LIST_ACCESS",
@@ -515,17 +444,9 @@ async def list_backups(
         )
 
     except Exception as e:
-        log_security_event(
-            "BACKUP_LIST_ERROR",
-            current_user,
-            "list_backups",
-            {"error": str(e)},
-            success=False,
-        )
+        log_security_event("BACKUP_LIST_ERROR", current_user, "list_backups", {"error": str(e)}, success=False)
 
-        return error_response(
-            message="备份列表查询失败", error_code=ErrorCode.INTERNAL_ERROR
-        )
+        return error_response(message="备份列表查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
 # ==================== 恢复端点 (CRITICAL - 需要管理员权限) ====================
@@ -533,8 +454,7 @@ async def list_backups(
 
 @router.post("/recovery/tdengine/full")
 async def restore_tdengine_full(
-    request: TDengineFullRecoveryRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: TDengineFullRecoveryRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """从全量备份恢复 TDengine [CRITICAL - 需要管理员权限]"""
     try:
@@ -547,10 +467,7 @@ async def restore_tdengine_full(
                 "tdengine_full_recovery",
                 {"reason": "Too many recovery operations"},
             )
-            return error_response(
-                message="恢复操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="恢复操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "RECOVERY_START",
@@ -574,12 +491,7 @@ async def restore_tdengine_full(
             "RECOVERY_COMPLETE",
             current_user,
             "tdengine_full_recovery",
-            {
-                "backup_id": request.backup_id,
-                "success": success,
-                "message": message,
-                "dry_run": request.dry_run,
-            },
+            {"backup_id": request.backup_id, "success": success, "message": message, "dry_run": request.dry_run},
             success=success,
         )
 
@@ -595,9 +507,7 @@ async def restore_tdengine_full(
                 duration_seconds=0,  # 实际应从恢复管理器获取
             )
 
-            return success_response(
-                data=recovery_data.model_dump(), message="TDengine 恢复操作完成"
-            )
+            return success_response(data=recovery_data.model_dump(), message="TDengine 恢复操作完成")
         else:
             return error_response(
                 message=message,
@@ -623,18 +533,14 @@ async def restore_tdengine_full(
 
 @router.post("/recovery/tdengine/pitr")
 async def restore_tdengine_pitr(
-    request: TDenginePITRRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: TDenginePITRRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """TDengine 点对点时间恢复 (PITR) [CRITICAL - 需要管理员权限]"""
     try:
         verify_admin_permission(current_user)
 
         if not check_recovery_rate_limit(current_user):
-            return error_response(
-                message="恢复操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="恢复操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "RECOVERY_START",
@@ -657,11 +563,7 @@ async def restore_tdengine_pitr(
             "RECOVERY_COMPLETE",
             current_user,
             "tdengine_pitr",
-            {
-                "target_time": request.target_time,
-                "success": success,
-                "message": message,
-            },
+            {"target_time": request.target_time, "success": success, "message": message},
             success=success,
         )
 
@@ -678,14 +580,10 @@ async def restore_tdengine_pitr(
                 duration_seconds=0,
             )
 
-            return success_response(
-                data=recovery_data.model_dump(), message="TDengine PITR 恢复操作完成"
-            )
+            return success_response(data=recovery_data.model_dump(), message="TDengine PITR 恢复操作完成")
         else:
             return error_response(
-                message=message,
-                error_code=ErrorCode.OPERATION_FAILED,
-                details={"target_time": request.target_time},
+                message=message, error_code=ErrorCode.OPERATION_FAILED, details={"target_time": request.target_time}
             )
 
     except ValueError as e:
@@ -693,11 +591,7 @@ async def restore_tdengine_pitr(
             "RECOVERY_ERROR",
             current_user,
             "tdengine_pitr",
-            {
-                "error": str(e),
-                "target_time": request.target_time,
-                "error_type": "validation",
-            },
+            {"error": str(e), "target_time": request.target_time, "error_type": "validation"},
             success=False,
         )
 
@@ -724,18 +618,14 @@ async def restore_tdengine_pitr(
 
 @router.post("/recovery/postgresql/full")
 async def restore_postgresql_full(
-    request: PostgreSQLFullRecoveryRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: PostgreSQLFullRecoveryRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """从全量备份恢复 PostgreSQL [CRITICAL - 需要管理员权限]"""
     try:
         verify_admin_permission(current_user)
 
         if not check_recovery_rate_limit(current_user):
-            return error_response(
-                message="恢复操作过于频繁，请稍后再试",
-                error_code=ErrorCode.RATE_LIMIT_EXCEEDED,
-            )
+            return error_response(message="恢复操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
         log_security_event(
             "RECOVERY_START",
@@ -760,12 +650,7 @@ async def restore_postgresql_full(
             "RECOVERY_COMPLETE",
             current_user,
             "postgresql_full_recovery",
-            {
-                "backup_id": request.backup_id,
-                "success": success,
-                "message": message,
-                "dry_run": request.dry_run,
-            },
+            {"backup_id": request.backup_id, "success": success, "message": message, "dry_run": request.dry_run},
             success=success,
         )
 
@@ -781,14 +666,10 @@ async def restore_postgresql_full(
                 duration_seconds=0,
             )
 
-            return success_response(
-                data=recovery_data.model_dump(), message="PostgreSQL 恢复操作完成"
-            )
+            return success_response(data=recovery_data.model_dump(), message="PostgreSQL 恢复操作完成")
         else:
             return error_response(
-                message=message,
-                error_code=ErrorCode.OPERATION_FAILED,
-                details={"backup_id": request.backup_id},
+                message=message, error_code=ErrorCode.OPERATION_FAILED, details={"backup_id": request.backup_id}
             )
 
     except Exception as e:
@@ -816,10 +697,8 @@ async def get_recovery_objectives():
     try:
         objectives = recovery_manager.get_recovery_time_objective()
         return success_response(data=objectives, message="恢复目标查询成功")
-    except Exception:
-        return error_response(
-            message="恢复目标查询失败", error_code=ErrorCode.INTERNAL_ERROR
-        )
+    except Exception as e:
+        return error_response(message="恢复目标查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
 # ==================== 调度器端点 (CRITICAL - 需要管理员权限) ====================
@@ -827,8 +706,7 @@ async def get_recovery_objectives():
 
 @router.post("/scheduler/control")
 async def scheduler_control(
-    request: SchedulerControlRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: SchedulerControlRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """控制备份调度器 [CRITICAL - 需要管理员权限]"""
     try:
@@ -854,14 +732,11 @@ async def scheduler_control(
         elif request.action == "status":
             status = "running" if backup_scheduler.is_running() else "stopped"
             return success_response(
-                data={"status": status, "message": f"调度器状态: {status}"},
-                message="调度器状态查询成功",
+                data={"status": status, "message": f"调度器状态: {status}"}, message="调度器状态查询成功"
             )
         else:
             return error_response(
-                message="无效的调度器操作",
-                error_code=ErrorCode.INVALID_PARAMETER,
-                details={"action": request.action},
+                message="无效的调度器操作", error_code=ErrorCode.INVALID_PARAMETER, details={"action": request.action}
             )
 
         log_security_event(
@@ -872,9 +747,7 @@ async def scheduler_control(
             success=True,
         )
 
-        return success_response(
-            data={"action": request.action, "status": "success"}, message=message
-        )
+        return success_response(data={"action": request.action, "status": "success"}, message=message)
 
     except Exception as e:
         log_security_event(
@@ -898,9 +771,7 @@ async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
     try:
         verify_backup_permission(current_user)
 
-        log_security_event(
-            "SCHEDULER_JOBS_ACCESS", current_user, "get_scheduled_jobs", {}
-        )
+        log_security_event("SCHEDULER_JOBS_ACCESS", current_user, "get_scheduled_jobs", {})
 
         jobs = backup_scheduler.get_scheduled_jobs()
 
@@ -918,34 +789,21 @@ async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
         ]
 
         return success_response(
-            data={
-                "total_jobs": len(job_list),
-                "jobs": [job.model_dump() for job in job_list],
-            },
+            data={"total_jobs": len(job_list), "jobs": [job.model_dump() for job in job_list]},
             message="计划任务查询成功",
         )
 
     except Exception as e:
-        log_security_event(
-            "SCHEDULER_JOBS_ERROR",
-            current_user,
-            "get_scheduled_jobs",
-            {"error": str(e)},
-            success=False,
-        )
+        log_security_event("SCHEDULER_JOBS_ERROR", current_user, "get_scheduled_jobs", {"error": str(e)}, success=False)
 
-        return error_response(
-            message="计划任务查询失败", error_code=ErrorCode.INTERNAL_ERROR
-        )
+        return error_response(message="计划任务查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
 # ==================== 完整性检查端点 (MODERATE - 需要认证) ====================
 
 
 @router.get("/integrity/verify/{backup_id}")
-async def verify_backup_integrity(
-    backup_id: str, current_user: User = Depends(get_current_user)
-):
+async def verify_backup_integrity(backup_id: str, current_user: User = Depends(get_current_user)):
     """验证备份完整性 [MODERATE - 需要认证]"""
     try:
         verify_backup_permission(current_user)
@@ -955,38 +813,20 @@ async def verify_backup_integrity(
 
         if not re.match(r"^[a-zA-Z0-9_-]+$", backup_id):
             log_security_event(
-                "INVALID_BACKUP_ID",
-                current_user,
-                "verify_backup_integrity",
-                {"backup_id": backup_id},
-                success=False,
+                "INVALID_BACKUP_ID", current_user, "verify_backup_integrity", {"backup_id": backup_id}, success=False
             )
-            return error_response(
-                message="无效的备份ID格式", error_code=ErrorCode.INVALID_PARAMETER
-            )
+            return error_response(message="无效的备份ID格式", error_code=ErrorCode.INVALID_PARAMETER)
 
-        log_security_event(
-            "INTEGRITY_CHECK_START",
-            current_user,
-            "verify_backup_integrity",
-            {"backup_id": backup_id},
-        )
+        log_security_event("INTEGRITY_CHECK_START", current_user, "verify_backup_integrity", {"backup_id": backup_id})
 
         # 加载元数据
         metadata = backup_manager._load_metadata(backup_id)
 
         if not metadata:
             log_security_event(
-                "BACKUP_NOT_FOUND",
-                current_user,
-                "verify_backup_integrity",
-                {"backup_id": backup_id},
-                success=False,
+                "BACKUP_NOT_FOUND", current_user, "verify_backup_integrity", {"backup_id": backup_id}, success=False
             )
-            return error_response(
-                message=f"备份文件不存在: {backup_id}",
-                error_code=ErrorCode.RESOURCE_NOT_FOUND,
-            )
+            return error_response(message=f"备份文件不存在: {backup_id}", error_code=ErrorCode.RESOURCE_NOT_FOUND)
 
         # 验证恢复后的数据完整性
         if metadata["database"] == "tdengine":
@@ -1001,8 +841,7 @@ async def verify_backup_integrity(
             )
         else:
             return error_response(
-                message=f"不支持的数据库类型: {metadata['database']}",
-                error_code=ErrorCode.INVALID_PARAMETER,
+                message=f"不支持的数据库类型: {metadata['database']}", error_code=ErrorCode.INVALID_PARAMETER
             )
 
         # 生成报告
@@ -1023,17 +862,11 @@ async def verify_backup_integrity(
             "INTEGRITY_CHECK_COMPLETE",
             current_user,
             "verify_backup_integrity",
-            {
-                "backup_id": backup_id,
-                "is_valid": is_valid,
-                "verification_details": details,
-            },
+            {"backup_id": backup_id, "is_valid": is_valid, "verification_details": details},
             success=is_valid,
         )
 
-        return success_response(
-            data=integrity_result.model_dump(), message="备份完整性验证完成"
-        )
+        return success_response(data=integrity_result.model_dump(), message="备份完整性验证完成")
 
     except Exception as e:
         log_security_event(
@@ -1045,9 +878,7 @@ async def verify_backup_integrity(
         )
 
         return error_response(
-            message="备份完整性验证失败",
-            error_code=ErrorCode.INTERNAL_ERROR,
-            details={"backup_id": backup_id},
+            message="备份完整性验证失败", error_code=ErrorCode.INTERNAL_ERROR, details={"backup_id": backup_id}
         )
 
 
@@ -1056,8 +887,7 @@ async def verify_backup_integrity(
 
 @router.post("/cleanup/old-backups")
 async def cleanup_old_backups(
-    request: CleanupBackupsRequest = Body(...),
-    current_user: User = Depends(get_current_user),
+    request: CleanupBackupsRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
     """
     清理过期备份文件 [CRITICAL - 需要管理员权限]
@@ -1145,20 +975,14 @@ async def cleanup_old_backups(
             success=True,
         )
 
-        return success_response(
-            data=cleanup_result.model_dump(), message="过期备份清理操作完成"
-        )
+        return success_response(data=cleanup_result.model_dump(), message="过期备份清理操作完成")
 
     except Exception as e:
         log_security_event(
             "CLEANUP_ERROR",
             current_user,
             "cleanup_old_backups",
-            {
-                "error": str(e),
-                "retention_days": request.retention_days,
-                "error_type": type(e).__name__,
-            },
+            {"error": str(e), "retention_days": request.retention_days, "error_type": type(e).__name__},
             success=False,
         )
 
@@ -1174,33 +998,29 @@ async def cleanup_old_backups(
 
 @router.get("/health")
 async def backup_service_health():
-    """备份服务健康检查 (Phase 2.4.6: 更新为统一响应格式) [LOW - 公开访问]"""
+    """备份服务健康检查 [LOW - 公开访问]"""
     try:
-        scheduler_status = "running" if backup_scheduler.is_running() else "stopped"
-
-        return create_health_response(
-            service="backup-recovery",
-            status="healthy",
-            details={
-                "components": {
-                    "backup_manager": "operational",
-                    "recovery_manager": "operational",
-                    "backup_scheduler": scheduler_status,
-                    "integrity_checker": "operational",
-                },
-                "security": {
-                    "authentication": "enabled",
-                    "authorization": "enabled",
-                    "rate_limiting": "enabled",
-                    "audit_logging": "enabled",
-                },
-                "version": "2.0.0",
+        health_data = {
+            "status": "healthy",
+            "service": "backup-recovery",
+            "timestamp": datetime.utcnow().isoformat(),
+            "components": {
+                "backup_manager": "operational",
+                "recovery_manager": "operational",
+                "backup_scheduler": "running" if backup_scheduler.is_running() else "stopped",
+                "integrity_checker": "operational",
             },
-        )
+            "security": {
+                "authentication": "enabled",
+                "authorization": "enabled",
+                "rate_limiting": "enabled",
+                "audit_logging": "enabled",
+            },
+        }
+
+        return success_response(data=health_data, message="备份恢复服务健康检查通过")
 
     except Exception as e:
         return error_response(
-            message="健康检查失败",
-            error_code=ErrorCode.SERVICE_UNAVAILABLE,
-            details={"error": str(e)},
+            message="健康检查失败", error_code=ErrorCode.SERVICE_UNAVAILABLE, details={"error": str(e)}
         )

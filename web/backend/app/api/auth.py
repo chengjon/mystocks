@@ -1,57 +1,29 @@
 """
 认证相关 API
-
-Phase 2.5.1: 更新为统一响应格式，添加健康检查端点
 """
 
 from datetime import timedelta
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import (
-    HTTPAuthorizationCredentials,
-    HTTPBearer,
-    OAuth2PasswordRequestForm,
-)
+from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
 from app.core.config import settings
-from app.core.responses import (
-    create_unified_success_response,
-    create_unified_error_response,
-    create_health_response,
-    ErrorCodes,
-)
+from app.core.responses import create_success_response
 from app.core.security import (
     Token,
+    TokenData,
     User,
+    UserInDB,
     authenticate_user,
     create_access_token,
+    get_password_hash,
+    verify_password,
     verify_token,
 )
 
 router = APIRouter()
 security = HTTPBearer()
-
-
-# ==================== 健康检查 (Phase 2.5.1) ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    认证服务健康检查 (Phase 2.5.1: 统一响应格式)
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    return create_health_response(
-        service="auth",
-        status="healthy",
-        details={
-            "endpoints": ["login", "logout", "refresh", "me", "users", "csrf/token"],
-            "version": "1.0.0",
-        },
-    )
 
 # User database now backed by PostgreSQL via security.py
 # The authenticate_user() and get_user_from_database() functions
@@ -139,7 +111,7 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Dict[str, Any]:
     """
-    用户登录获取访问令牌 (Phase 2.5.1: 更新为统一响应格式)
+    用户登录获取访问令牌
     支持 OAuth2 标准的 form data 格式
     """
     # 验证用户身份
@@ -158,31 +130,21 @@ async def login_for_access_token(
         expires_delta=access_token_expires,
     )
 
-    return create_unified_success_response(
-        data={
-            "access_token": access_token,
-            "token_type": "bearer",
-            "expires_in": settings.access_token_expire_minutes * 60,
-            "user": {
-                "username": user.username,
-                "email": user.email,
-                "role": user.role,
-            },
-        },
-        message="登录成功",
-    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": settings.access_token_expire_minutes * 60,
+        "user": {"username": user.username, "email": user.email, "role": user.role},
+    }
 
 
 @router.post("/logout")
 async def logout(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """
-    用户登出 (Phase 2.5.1: 更新为统一响应格式)
+    用户登出
     """
     # 在实际应用中，可以将 token 加入黑名单
-    return create_unified_success_response(
-        data={"logged_out": True},
-        message="登出成功",
-    )
+    return {"message": "登出成功", "success": True}
 
 
 @router.get("/me", response_model=User)
@@ -198,7 +160,7 @@ async def refresh_token(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
-    刷新访问令牌 (Phase 2.5.1: 更新为统一响应格式)
+    刷新访问令牌
     """
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
@@ -210,27 +172,21 @@ async def refresh_token(
         expires_delta=access_token_expires,
     )
 
-    return create_unified_success_response(
-        data={
-            "access_token": access_token,
-            "token_type": "bearer",
-            "expires_in": settings.access_token_expire_minutes * 60,
-        },
-        message="令牌刷新成功",
-    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": settings.access_token_expire_minutes * 60,
+    }
 
 
 @router.get("/users")
 async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """
-    获取用户列表（仅管理员）(Phase 2.5.1: 更新为统一响应格式)
+    获取用户列表（仅管理员）
     从PostgreSQL数据库获取所有活跃用户
     """
     if not check_permission(current_user.role, "admin"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="权限不足",
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="权限不足")
 
     try:
         from app.core.database import get_postgresql_session
@@ -254,10 +210,7 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
                 }
                 users.append(user_info)
 
-            return create_unified_success_response(
-                data={"users": users, "total": len(users)},
-                message="获取用户列表成功",
-            )
+            return {"users": users, "total": len(users)}
 
         finally:
             session.close()
@@ -343,7 +296,7 @@ async def get_csrf_token():
         # 生成新的CSRF token
         token = csrf_manager.generate_token()
 
-        return create_unified_success_response(
+        return create_success_response(
             data={
                 "token": token,
                 "token_type": "csrf",
@@ -352,7 +305,7 @@ async def get_csrf_token():
             message="CSRF token generated successfully",
         )
     except Exception as e:
-        return create_unified_success_response(
+        return create_success_response(
             data=None,
             message=f"Failed to generate CSRF token: {str(e)}",
             code="INTERNAL_SERVER_ERROR",

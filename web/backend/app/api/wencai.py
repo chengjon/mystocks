@@ -10,13 +10,14 @@
 """
 
 import logging
+from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.orm import Session
 import os
 
 from app.core.database import get_db, SessionLocal
-from app.services.wencai_service import WencaiService
+from app.services.wencai_service import WencaiService, get_wencai_service
 from app.schemas.wencai_schemas import (
     WencaiQueryRequest,
     WencaiQueryResponse,
@@ -27,6 +28,7 @@ from app.schemas.wencai_schemas import (
     WencaiResultsResponse,
     WencaiRefreshResponse,
     WencaiHistoryResponse,
+    WencaiErrorResponse,
 )
 from app.mock.unified_mock_data import get_mock_data_manager
 
@@ -57,16 +59,16 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             queries_data = mock_manager.get_data("wencai", query_name="all")
-
+            
             return WencaiQueryListResponse(
-                queries=queries_data.get("queries", []),
-                total=len(queries_data.get("queries", [])),
+                queries=queries_data.get("queries", []), 
+                total=len(queries_data.get("queries", []))
             )
         else:
             # 使用真实数据库
@@ -136,25 +138,23 @@ async def execute_query(
     """
     try:
         logger.info(f"Executing query: {request.query_name}, pages={request.pages}")
-
+        
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             result_data = mock_manager.get_data("wencai", query_name=request.query_name)
-
+            
             return WencaiQueryResponse(
                 query_name=request.query_name,
                 success=True,
                 message=f"Mock查询执行成功: {request.query_name}",
                 new_records=len(result_data.get("query_result", {}).get("results", [])),
-                total_records=len(
-                    result_data.get("query_result", {}).get("results", [])
-                ),
+                total_records=len(result_data.get("query_result", {}).get("results", [])),
                 execution_time=0.1,
-                timestamp=datetime.now(),
+                timestamp=datetime.now()
             )
         else:
             # 使用真实数据库
@@ -323,14 +323,14 @@ async def execute_custom_query(
         logger.info(
             f"Executing custom query: {request.query_text[:50]}..., pages={request.pages}"
         )
-
+        
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据 - 模拟自定义查询
             mock_manager = get_mock_data_manager()
-
+            
             # 生成模拟查询结果
             mock_results = [
                 {
@@ -339,33 +339,23 @@ async def execute_custom_query(
                     "current_price": round(10 + i * 0.5, 2),
                     "change_percent": round((i % 10 - 5) * 0.1, 2),
                     "volume": i * 1000,
-                    "market_cap": i * 1000000,
-                }
-                for i in range(request.pages * 10)
+                    "market_cap": i * 1000000
+                } for i in range(request.pages * 10)
             ]
-
+            
             return WencaiCustomQueryResponse(
                 success=True,
                 message=f"Mock自定义查询成功，共获取 {len(mock_results)} 条数据",
                 query_text=request.query_text,
                 total_records=len(mock_results),
                 results=mock_results,
-                columns=[
-                    "stock_code",
-                    "stock_name",
-                    "current_price",
-                    "change_percent",
-                    "volume",
-                    "market_cap",
-                ],
+                columns=["stock_code", "stock_name", "current_price", "change_percent", "volume", "market_cap"],
                 fetch_time=datetime.now(),
             )
         else:
             # 使用真实数据库
             service = WencaiService(db=db)
-            df = service.adapter.fetch_data(
-                query=request.query_text, pages=request.pages
-            )
+            df = service.adapter.fetch_data(query=request.query_text, pages=request.pages)
 
             if df.empty:
                 return WencaiCustomQueryResponse(
@@ -402,20 +392,14 @@ async def execute_custom_query(
 @router.get("/health", summary="健康检查", description="检查问财API服务状态")
 async def health_check():
     """
-    健康检查 (Phase 2.4.6: 更新为统一响应格式)
+    健康检查
 
     检查服务是否正常运行
 
     Returns:
         健康状态
     """
-    from app.core.responses import create_health_response
-
-    return create_health_response(
-        service="wencai",
-        status="healthy",
-        details={"version": "1.0.0"},
-    )
+    return {"status": "healthy", "service": "wencai", "version": "1.0.0"}
 
 
 # ============================================================================

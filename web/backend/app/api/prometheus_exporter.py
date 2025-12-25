@@ -11,14 +11,13 @@ Prometheus Exporter - Enhanced Version
 作者：Claude
 创建日期：2025-11-12
 版本：2.0.0
-Phase 2.4.6: 更新健康检查为统一响应格式
 """
 
 import logging
 import time
 import psutil
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Response
 from prometheus_client import (
     Counter,
@@ -28,13 +27,11 @@ from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
 )
-
-from app.core.responses import create_health_response
+from typing import Dict, Optional, Any
 
 # 导入自定义指标收集器
 try:
     from src.monitoring.metrics_collector import get_metrics_collector
-
     HAS_METRICS_COLLECTOR = True
 except ImportError:
     HAS_METRICS_COLLECTOR = False
@@ -318,10 +315,8 @@ def update_cache_metrics():
         cache_hit_rate.labels(cache_type="redis").set(75.5)
         cache_hit_rate.labels(cache_type="memory").set(85.2)
 
-        cache_memory_usage_bytes.labels(cache_type="redis").set(
-            10 * 1024 * 1024
-        )  # 10MB
-        cache_memory_usage_bytes.labels(cache_type="memory").set(5 * 1024 * 1024)  # 5MB
+        cache_memory_usage_bytes.labels(cache_type="redis").set(10 * 1024 * 1024)  # 10MB
+        cache_memory_usage_bytes.labels(cache_type="memory").set(5 * 1024 * 1024)   # 5MB
 
         logger.debug("✅ Cache metrics updated")
     except Exception as e:
@@ -382,14 +377,14 @@ async def metrics():
         return Response(
             content=f"# ERROR: {str(e)}\n",
             media_type=CONTENT_TYPE_LATEST,
-            status_code=500,
+            status_code=500
         )
 
 
 @router.get("/metrics/health", tags=["monitoring"])
 async def metrics_health():
     """
-    Prometheus 健康检查端点 (Phase 2.4.6: 更新为统一响应格式)
+    Prometheus 健康检查端点
 
     快速检查指标收集器是否正常工作
 
@@ -404,20 +399,18 @@ async def metrics_health():
         collector_status = "healthy"
         metrics_count = len(prometheus_registry._collector_to_names)
 
-        return create_health_response(
-            service="prometheus-exporter",
-            status=collector_status,
-            details={
-                "metrics_available": metrics_count,
-                "exporter_version": "2.0.0",
-            },
-        )
+        return {
+            "status": collector_status,
+            "metrics_available": metrics_count,
+            "last_update": datetime.now().isoformat(),
+            "exporter_version": "2.0.0"
+        }
     except Exception as e:
-        return create_health_response(
-            service="prometheus-exporter",
-            status="unhealthy",
-            details={"error": str(e)},
-        )
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "last_update": datetime.now().isoformat()
+        }
 
 
 @router.get("/metrics/list", tags=["monitoring"])
@@ -449,7 +442,7 @@ async def metrics_list():
                     "name": sample.name,
                     "type": sample.type,
                     "help": getattr(metric_name, "documentation", ""),
-                    "labels": list(sample.labels.keys()) if sample.labels else [],
+                    "labels": list(sample.labels.keys()) if sample.labels else []
                 }
                 if metric_info not in metrics_info:
                     metrics_info.append(metric_info)
@@ -459,7 +452,7 @@ async def metrics_list():
     return {
         "total": len(metrics_info),
         "exporter_version": "2.0.0",
-        "metrics": sorted(metrics_info, key=lambda x: x["name"]),
+        "metrics": sorted(metrics_info, key=lambda x: x["name"])
     }
 
 
@@ -476,9 +469,9 @@ def record_api_request(
     http_requests_total.labels(
         method=method, endpoint=endpoint, status=status_code
     ).inc()
-    http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(
-        duration_seconds
-    )
+    http_request_duration_seconds.labels(
+        method=method, endpoint=endpoint
+    ).observe(duration_seconds)
 
 
 def record_websocket_event(
@@ -489,9 +482,9 @@ def record_websocket_event(
     direction: str,  # "sent" or "received"
 ):
     """记录WebSocket事件"""
-    websocket_connections_active.labels(namespace=namespace, version=version).set(
-        active_connections
-    )
+    websocket_connections_active.labels(
+        namespace=namespace, version=version
+    ).set(active_connections)
     websocket_messages_total.labels(
         direction=direction, message_type=message_type
     ).inc()
@@ -504,9 +497,13 @@ def record_cache_event(
 ):
     """记录缓存事件"""
     if is_hit:
-        cache_hits_total.labels(cache_type=cache_type, key_pattern=key_pattern).inc()
+        cache_hits_total.labels(
+            cache_type=cache_type, key_pattern=key_pattern
+        ).inc()
     else:
-        cache_misses_total.labels(cache_type=cache_type, key_pattern=key_pattern).inc()
+        cache_misses_total.labels(
+            cache_type=cache_type, key_pattern=key_pattern
+        ).inc()
 
 
 def record_db_query(
@@ -524,6 +521,4 @@ def record_db_query(
 if __name__ == "__main__":
     """测试Prometheus Exporter"""
     logger.info("✅ Prometheus Exporter Initialized")
-    logger.info(
-        f"Total metrics registered: {len(prometheus_registry._collector_to_names)}"
-    )
+    logger.info(f"Total metrics registered: {len(prometheus_registry._collector_to_names)}")
