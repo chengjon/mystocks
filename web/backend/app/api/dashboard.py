@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.core.cache_manager import CacheManager
 from app.core.responses import (
-    
+
     ErrorCodes,
     create_unified_error_response,
     create_health_response,

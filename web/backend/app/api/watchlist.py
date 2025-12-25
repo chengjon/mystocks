@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.responses import (
-    
+
     create_unified_success_response,
     create_unified_error_response,
     create_health_response,

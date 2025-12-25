@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from app.api.auth import User, get_current_user
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import (
-    
+
     APIResponse,
     create_unified_error_response,
     create_health_response,

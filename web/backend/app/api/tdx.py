@@ -17,7 +17,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.responses import (
-    
+
     ErrorCodes,
     create_unified_error_response,
     create_unified_success_response,
