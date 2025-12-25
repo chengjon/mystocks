@@ -13,8 +13,9 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.responses import (
-    create_success_response,
-    create_error_response,
+    
+    create_unified_success_response,
+    create_unified_error_response,
     create_health_response,
     ErrorCodes,
 )
@@ -332,7 +333,7 @@ async def add_to_watchlist(
                 detail=result.get("error", "添加自选股失败"),
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "symbol": request.symbol,
                 "group_name": request.group_name if request.group_name else "默认分组",
@@ -378,7 +379,7 @@ async def remove_from_watchlist(
                 detail=result.get("error", "自选股不存在或删除失败"),
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"symbol": symbol},
             message="已从自选股移除",
         )
@@ -420,7 +421,7 @@ async def check_in_watchlist(
                 detail=result.get("error", "检查自选股失败"),
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "symbol": symbol,
                 "is_in_watchlist": result.get("data", {}).get(
@@ -472,7 +473,7 @@ async def update_watchlist_notes(
                 status_code=404, detail=result.get("error", "自选股不存在或更新失败")
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"symbol": symbol, "notes": request.notes},
             message="备注已更新",
         )
@@ -502,7 +503,7 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
             )
 
         count = result.get("data", {}).get("count", 0)
-        return create_success_response(
+        return create_unified_success_response(
             data={"count": count},
             message=f"当前有 {count} 只自选股",
         )
@@ -531,7 +532,7 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
                 status_code=500, detail=result.get("error", "清空自选股失败")
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"cleared": True},
             message="自选股列表已清空",
         )
@@ -554,7 +555,7 @@ async def get_user_groups(
     try:
         service = get_watchlist_service()
         groups = service.get_user_groups(current_user.id)
-        return create_success_response(
+        return create_unified_success_response(
             data={"groups": groups, "total": len(groups)},
             message=f"获取到 {len(groups)} 个分组",
         )
@@ -576,7 +577,7 @@ async def create_group(
         if not group:
             raise HTTPException(status_code=400, detail="分组创建失败")
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"group": group},
             message=f"分组 '{request.group_name}' 创建成功",
         )
@@ -605,7 +606,7 @@ async def update_group(
         if not success:
             raise HTTPException(status_code=404, detail="分组不存在或更新失败")
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"group_id": group_id, "group_name": request.group_name},
             message=f"分组已更新为 '{request.group_name}'",
         )
@@ -632,7 +633,7 @@ async def delete_group(
                 status_code=404, detail="分组不存在或无法删除（默认分组不能删除）"
             )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"group_id": group_id},
             message="分组已删除",
         )
@@ -653,7 +654,7 @@ async def get_watchlist_by_group(
     try:
         service = get_watchlist_service()
         watchlist = service.get_watchlist_by_group(current_user.id, group_id)
-        return create_success_response(
+        return create_unified_success_response(
             data={"group_id": group_id, "watchlist": watchlist},
             message=f"获取到分组 {group_id} 的自选股",
         )
@@ -680,7 +681,7 @@ async def move_stock_to_group(
         if not success:
             raise HTTPException(status_code=404, detail="移动失败，股票或分组不存在")
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "symbol": request.symbol,
                 "from_group_id": request.from_group_id,
@@ -704,7 +705,7 @@ async def get_watchlist_with_groups(
     try:
         service = get_watchlist_service()
         result = service.get_watchlist_with_groups(current_user.id)
-        return create_success_response(
+        return create_unified_success_response(
             data=result,
             message="获取分组视图成功",
         )

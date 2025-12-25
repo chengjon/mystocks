@@ -17,9 +17,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.responses import (
+    
     ErrorCodes,
-    create_error_response,
-    create_success_response,
+    create_unified_error_response,
+    create_unified_success_response,
 )
 from app.core.security import User, get_current_active_user
 from app.schemas.tdx_schemas import (
@@ -67,7 +68,7 @@ async def get_stock_quote(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.BAD_REQUEST,
                     "无效的股票代码,必须为6位数字",
                 ).model_dump(),
@@ -76,7 +77,7 @@ async def get_stock_quote(
         # 调用服务获取行情
         quote = service.get_real_time_quote(symbol)
 
-        return create_success_response(
+        return create_unified_success_response(
             data=quote,
             message=f"获取{symbol}实时行情成功",
         )
@@ -84,7 +85,7 @@ async def get_stock_quote(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.BAD_REQUEST,
                 str(e),
             ).model_dump(),
@@ -92,7 +93,7 @@ async def get_stock_quote(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.EXTERNAL_SERVICE_ERROR,
                 f"获取实时行情失败: {str(e)}",
             ).model_dump(),
@@ -178,7 +179,7 @@ async def get_stock_kline(
             symbol=symbol, start_date=start_date, end_date=end_date, period=period
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=kline_data,
             message=f"获取{symbol} K线数据成功 ({period}周期)",
         )
@@ -186,7 +187,7 @@ async def get_stock_kline(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.BAD_REQUEST,
                 str(e),
             ).model_dump(),
@@ -194,7 +195,7 @@ async def get_stock_kline(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.EXTERNAL_SERVICE_ERROR,
                 f"获取K线数据失败: {str(e)}",
             ).model_dump(),
@@ -238,7 +239,7 @@ async def get_index_quote(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.BAD_REQUEST,
                     "无效的指数代码,必须为6位数字",
                 ).model_dump(),
@@ -247,7 +248,7 @@ async def get_index_quote(
         # 调用服务获取指数行情
         quote = service.get_index_quote(symbol)
 
-        return create_success_response(
+        return create_unified_success_response(
             data=quote,
             message=f"获取{symbol}指数实时行情成功",
         )
@@ -255,7 +256,7 @@ async def get_index_quote(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.BAD_REQUEST,
                 str(e),
             ).model_dump(),
@@ -263,7 +264,7 @@ async def get_index_quote(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.EXTERNAL_SERVICE_ERROR,
                 f"获取指数行情失败: {str(e)}",
             ).model_dump(),
@@ -310,7 +311,7 @@ async def get_index_kline(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.BAD_REQUEST,
                     "无效的指数代码,必须为6位数字",
                 ).model_dump(),
@@ -321,7 +322,7 @@ async def get_index_kline(
         if period not in valid_periods:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.BAD_REQUEST,
                     f"无效的K线周期,支持的周期: {', '.join(valid_periods)}",
                 ).model_dump(),
@@ -340,7 +341,7 @@ async def get_index_kline(
             symbol=symbol, start_date=start_date, end_date=end_date, period=period
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=kline_data,
             message=f"获取{symbol}指数K线数据成功 ({period}周期)",
         )
@@ -348,7 +349,7 @@ async def get_index_kline(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.BAD_REQUEST,
                 str(e),
             ).model_dump(),
@@ -356,7 +357,7 @@ async def get_index_kline(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.EXTERNAL_SERVICE_ERROR,
                 f"获取指数K线失败: {str(e)}",
             ).model_dump(),

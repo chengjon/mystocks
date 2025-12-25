@@ -11,9 +11,10 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import (
+    
     ErrorCodes,
-    create_error_response,
-    create_success_response,
+    create_unified_error_response,
+    create_unified_success_response,
 )
 from app.schema import (
     StockSymbolModel,
@@ -494,7 +495,7 @@ async def get_indicators_registry():
         },
     ]
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "indicators": indicators_registry,
             "categories": categories,
@@ -561,7 +562,7 @@ async def get_all_indicators(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="输入参数验证失败",
                 details=error_details,
@@ -666,7 +667,7 @@ async def get_trend_indicators(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="股票代码验证失败",
                 details=error_details,
@@ -685,14 +686,14 @@ async def get_trend_indicators(
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
                 ).model_dump(),
             )
 
         data = result.get("data", {})
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "symbol": validated_symbol.symbol,
                 "indicators": data.get("indicators", {}),
@@ -707,7 +708,7 @@ async def get_trend_indicators(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"获取趋势指标失败: {str(e)}"
             ).model_dump(),
         )
@@ -741,7 +742,7 @@ async def get_momentum_indicators(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="股票代码验证失败",
                 details=error_details,
@@ -800,7 +801,7 @@ async def get_volatility_indicators(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="股票代码验证失败",
                 details=error_details,
@@ -859,7 +860,7 @@ async def get_volume_indicators(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="股票代码验证失败",
                 details=error_details,
@@ -920,7 +921,7 @@ async def get_trading_signals(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="股票代码验证失败",
                 details=error_details,
@@ -939,14 +940,14 @@ async def get_trading_signals(
         if "error" in result:
             raise HTTPException(
                 status_code=500,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]
                 ).model_dump(),
             )
 
         signals_data = result.get("data", {})
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "symbol": validated_symbol.symbol,
                 "signals": signals_data,
@@ -960,7 +961,7 @@ async def get_trading_signals(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"获取交易信号失败: {str(e)}"
             ).model_dump(),
         )

@@ -305,16 +305,17 @@ async def health_check(request: Request):
     # 获取请求ID
     request_id = getattr(request.state, "request_id", None)
 
-    from .core.responses import create_health_response
+    from .core.responses import create_unified_success_response
 
-    return create_health_response(
-        service="mystocks-web-api",
-        status="healthy",
-        details={
+    return create_unified_success_response(
+        data={
+            "service": "mystocks-web-api",
+            "status": "healthy",
             "timestamp": time.time(),
             "version": "1.0.0",
             "middleware": "response_format_enabled",
         },
+        message="系统健康检查完成",
         request_id=request_id,
     )
 
@@ -340,16 +341,25 @@ async def get_csrf_token(request: Request):
     SECURITY: 前端应在应用启动时调用此端点获取CSRF token
     返回一个新的CSRF token供后续修改操作使用
     """
+    # 获取请求ID
+    request_id = getattr(request.state, "request_id", None)
+
+    from .core.responses import create_unified_success_response
+
     token = csrf_manager.generate_token()
 
     # 在生产环境，应该设置HttpOnly cookie而不是返回在响应体中
     logger.info("✅ CSRF token generated for client")
 
-    return {
-        "csrf_token": token,
-        "token_type": "Bearer",
-        "expires_in": csrf_manager.token_timeout,
-    }
+    return create_unified_success_response(
+        data={
+            "csrf_token": token,
+            "token_type": "Bearer",
+            "expires_in": csrf_manager.token_timeout,
+        },
+        message="CSRF token生成成功",
+        request_id=request_id,
+    )
 
 
 # 根路径重定向到文档 - 使用统一响应格式

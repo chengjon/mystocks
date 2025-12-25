@@ -31,8 +31,8 @@ from sse_starlette.sse import EventSourceResponse
 from app.core.responses import (
     ErrorCodes,
     ResponseMessages,
-    create_error_response,
-    create_success_response,
+    create_unified_error_response,
+    create_unified_success_response,
     create_health_response,
 )
 
@@ -515,7 +515,7 @@ async def get_system_status():
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=status_data.model_dump(),
             message=f"系统状态: {overall_status.upper()}",
         )
@@ -524,7 +524,7 @@ async def get_system_status():
         logger.error(f"[SYSTEM] Failed to get system status: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取系统状态失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -2276,7 +2276,7 @@ async def get_performance_metrics(
             alerts=alerts,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=performance_data.model_dump(),
             message=f"性能指标获取成功 (时间窗口: {time_window}秒)",
         )
@@ -2285,7 +2285,7 @@ async def get_performance_metrics(
         logger.error(f"[SYSTEM] Failed to get performance metrics: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取性能指标失败: {str(e)}",
             ).model_dump(mode="json"),
@@ -2310,7 +2310,7 @@ async def get_performance_summary():
         monitor = get_monitor()
         health_check = monitor.get_health_check()
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "system": {
                     "status": health_check["status"],
@@ -2337,7 +2337,7 @@ async def get_performance_summary():
         logger.error(f"[SYSTEM] Failed to get performance summary: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR,
                 f"获取性能摘要失败: {str(e)}",
             ).model_dump(mode="json"),

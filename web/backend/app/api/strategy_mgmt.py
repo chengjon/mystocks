@@ -29,9 +29,10 @@ from app.models.strategy_schemas import (
 from app.repositories import StrategyRepository, BacktestRepository
 from app.core.database import get_db
 from app.core.responses import (
+    
     ErrorCodes,
-    create_error_response,
-    create_success_response,
+    create_unified_error_response,
+    create_unified_success_response,
     create_health_response,
 )
 from src.data_sources import get_business_source
@@ -155,7 +156,7 @@ async def list_strategies(
         logger.info(f"获取策略列表成功: user_id={user_id}, count={total_count}")
 
         # 使用统一响应格式
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "strategies": strategies,
                 "total_count": total_count,
@@ -169,7 +170,7 @@ async def list_strategies(
         logger.error(f"获取策略列表失败: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"获取策略列表失败: {str(e)}"
             ).model_dump(mode='json'),
         )
@@ -576,13 +577,13 @@ async def get_backtest_status(
         if backtest is None:
             raise HTTPException(
                 status_code=404,
-                detail=create_error_response(
+                detail=create_unified_error_response(
                     ErrorCodes.NOT_FOUND, f"回测不存在: backtest_id={backtest_id}"
                 ).model_dump(mode='json'),
             )
 
         # 返回状态信息 (使用统一响应格式)
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "backtest_id": backtest_id,
                 "status": backtest.status.value
@@ -609,7 +610,7 @@ async def get_backtest_status(
         logger.error(f"获取回测状态失败: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(
+            detail=create_unified_error_response(
                 ErrorCodes.INTERNAL_SERVER_ERROR, f"获取回测状态失败: {str(e)}"
             ).model_dump(mode='json'),
         )

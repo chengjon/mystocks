@@ -16,8 +16,8 @@ from fastapi.security import (
 
 from app.core.config import settings
 from app.core.responses import (
-    create_success_response,
-    create_error_response,
+    create_unified_success_response,
+    create_unified_error_response,
     create_health_response,
     ErrorCodes,
 )
@@ -158,7 +158,7 @@ async def login_for_access_token(
         expires_delta=access_token_expires,
     )
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "access_token": access_token,
             "token_type": "bearer",
@@ -179,7 +179,7 @@ async def logout(current_user: User = Depends(get_current_user)) -> Dict[str, An
     用户登出 (Phase 2.5.1: 更新为统一响应格式)
     """
     # 在实际应用中，可以将 token 加入黑名单
-    return create_success_response(
+    return create_unified_success_response(
         data={"logged_out": True},
         message="登出成功",
     )
@@ -210,7 +210,7 @@ async def refresh_token(
         expires_delta=access_token_expires,
     )
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "access_token": access_token,
             "token_type": "bearer",
@@ -254,7 +254,7 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
                 }
                 users.append(user_info)
 
-            return create_success_response(
+            return create_unified_success_response(
                 data={"users": users, "total": len(users)},
                 message="获取用户列表成功",
             )
@@ -343,7 +343,7 @@ async def get_csrf_token():
         # 生成新的CSRF token
         token = csrf_manager.generate_token()
 
-        return create_success_response(
+        return create_unified_success_response(
             data={
                 "token": token,
                 "token_type": "csrf",
@@ -352,7 +352,7 @@ async def get_csrf_token():
             message="CSRF token generated successfully",
         )
     except Exception as e:
-        return create_success_response(
+        return create_unified_success_response(
             data=None,
             message=f"Failed to generate CSRF token: {str(e)}",
             code="INTERNAL_SERVER_ERROR",

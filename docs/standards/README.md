@@ -1,10 +1,63 @@
 # 项目开发标准和规范 (Standards & Guidelines)
 
-本目录包含所有项目开发标准、代码质量指南和实施规范。
+本目录包含所有项目开发标准、代码质量指南、UI设计规范和实施规范。
 
 ---
 
 ## 📋 标准文档索引
+
+### 🎨 UI 设计系统 (UI Design System) - NEW! 🎨
+
+**最后更新**: 2025-12-25
+
+#### 17. **[UI 设计系统总索引](./UI_DESIGN_SYSTEM.md)** - UI_DESIGN_SYSTEM.md
+- 设计原则和理念
+- 技术栈选型说明
+- 主题系统 (浅色/深色)
+- 响应式断点
+- Design Tokens
+
+#### 18. **[设计总览](./00-DESIGN_OVERVIEW.md)** - 00-DESIGN_OVERVIEW.md
+- 项目概述和用户角色
+- 技术架构说明
+- 核心功能模块
+- 信息架构
+- 性能指标
+
+#### 19. **[设计系统](./01-DESIGN_SYSTEM/README.md)** - 01-DESIGN_SYSTEM/
+- [颜色系统](./01-DESIGN_SYSTEM/color-system.md) - Color System
+- [字体系统](./01-DESIGN_SYSTEM/typography.md) - Typography
+- 布局系统
+- Design Tokens
+
+#### 20. **[组件库](./02-COMPONENT_LIBRARY/README.md)** - 02-COMPONENT_LIBRARY/
+- 基础组件 (Buttons, Forms, Inputs)
+- 业务组件 (Stock Cards, Quote Tables)
+- 图表组件 (Kline Charts, Heatmaps)
+- 复合组件 (Strategy Configurator, Backtest Reports)
+
+#### 21. **[页面设计](./03-PAGE_DESIGNS/README.md)** - 03-PAGE_DESIGNS/
+- 仪表盘 (Dashboard)
+- 市场行情 (Market Quotes)
+- 市场数据 (Market Data)
+- 股票管理 (Stock Management)
+- 数据分析 (Data Analysis)
+- 风险管理 (Risk Management)
+- 策略回测 (Strategy Backtest)
+- 交易管理 (Trading Management)
+- 其他页面 (Settings, Data Management)
+
+#### 22. **[交互流程](./04-INTERACTION_FLOWS/README.md)** - 04-INTERACTION_FLOWS/
+- 交互原则
+- 核心流程 (登录、搜索、交易、回测)
+- 页面跳转规范
+- 操作反馈
+- 错误处理
+- 键盘导航
+
+**面向**: 设计师、前端开发者、产品经理
+
+---
 
 ### 核心规范 (Core Standards)
 
@@ -259,34 +312,23 @@
 
 ---
 
-## 🔐 安全文档使用指南
-
-### 不同角色的使用顺序
-
-**新开发人员** (入职第一周):
-1. 📖 **LOCAL_ENV_SETUP.md** (20 min) - 本地环境快速配置
-2. 📖 **SECURITY_QUICK_REFERENCE.md** (10 min) - 日常安全规范
-3. 📖 **SECURITY_AUDIT_REPORT_20251130.md** (15 min) - 理解过去的问题
-
-**项目负责人/安全负责人** (审核和推进):
-1. 📋 **SECURITY_AUDIT_REPORT_20251130.md** (全面了解)
-2. 📋 **SECURITY_FOLLOWUP_PLAN_20251130.md** (实施路线图)
-3. ✅ 推进 Phase 1-3 执行
-
-**代码审查者** (PR 审查):
-1. 📌 **SECURITY_QUICK_REFERENCE.md** - 快速检查清单
-2. 📌 **SECURITY_AUDIT_REPORT_20251130.md** 第 7-8 章 - 合规性标准
-
----
-
-### 遗留文档 (Legacy / Variants)
-
-#### 13. **代码修改规则变体** - 代码修改规则-new.md, 代码修改规则-合并.md
-- 历史版本，参考用
-
----
-
 ## 🎯 使用指南
+
+### 设计师 & 前端开发者
+
+**第一步**: 阅读UI设计系统 (按顺序):
+1. UI_DESIGN_SYSTEM.md (总索引)
+2. 00-DESIGN_OVERVIEW.md (项目概览)
+3. 01-DESIGN_SYSTEM/ (颜色、字体、布局)
+4. 02-COMPONENT_LIBRARY/ (组件库)
+5. 03-PAGE_DESIGNS/ (页面设计)
+6. 04-INTERACTION_FLOWS/ (交互流程)
+
+**第二步**: 前端开发规范:
+1. [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
+2. WEB_PAGE_STRUCTURE_GUIDE.md (页面结构)
+
+---
 
 ### 新开发工程师
 
@@ -331,6 +373,26 @@
 
 ---
 
+## 🔐 安全文档使用指南
+
+### 不同角色的使用顺序
+
+**新开发人员** (入职第一周):
+1. 📖 **LOCAL_ENV_SETUP.md** (20 min) - 本地环境快速配置
+2. 📖 **SECURITY_QUICK_REFERENCE.md** (10 min) - 日常安全规范
+3. 📖 **SECURITY_AUDIT_REPORT_20251130.md** (15 min) - 理解过去的问题
+
+**项目负责人/安全负责人** (审核和推进):
+1. 📋 **SECURITY_AUDIT_REPORT_20251130.md** (全面了解)
+2. 📋 **SECURITY_FOLLOWUP_PLAN_20251130.md** (实施路线图)
+3. ✅ 推进 Phase 1-3 执行
+
+**代码审查者** (PR 审查):
+1. 📌 **SECURITY_QUICK_REFERENCE.md** - 快速检查清单
+2. 📌 **SECURITY_AUDIT_REPORT_20251130.md** 第 7-8 章 - 合规性标准
+
+---
+
 ## 📊 当前状态仪表板 (Status Dashboard)
 
 ### 代码质量 (Code Quality)
@@ -352,6 +414,16 @@ Adapter:     ░░░░░░░░░░ 0% (需要添加)
 ```
 通过率:      ██████████ 548/548 (100%)
 跳过:        ░░░░░░░░░░ 16 skipped
+```
+
+### UI 设计系统 (Design System)
+```
+设计系统:    ██████████ ✅ 已完成
+颜色系统:    ██████████ ✅ 已完成
+字体系统:    ██████████ ✅ 已完成
+组件库:      ████████░░ 🔄 进行中
+页面设计:    ████████░░ 🔄 进行中
+交互流程:    ██████████ ✅ 已完成
 ```
 
 ---
@@ -393,6 +465,16 @@ pytest tests/unit/ --cov=src --cov-report=html
 
 | 文件名 | 最后更新 | 大小 | 优先级 | 状态 |
 |--------|---------|------|--------|------|
+| **UI 设计系统** | | | | |
+| UI_DESIGN_SYSTEM.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 00-DESIGN_OVERVIEW.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 01-DESIGN_SYSTEM/README.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 01-DESIGN_SYSTEM/color-system.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 01-DESIGN_SYSTEM/typography.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 02-COMPONENT_LIBRARY/README.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 03-PAGE_DESIGNS/README.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| 04-INTERACTION_FLOWS/README.md | 2025-12-25 | - | ⭐⭐⭐ | ✅ |
+| **代码质量** | | | | |
 | FILE_ORGANIZATION_RULES.md | 2025-11-20 | 12.5 KB | ⭐⭐⭐ | ✅ |
 | MODULE_REGISTRY.md | 2025-11-20 | 25.5 KB | ⭐⭐⭐ | ✅ |
 | PROJECT_MODULES.md | 2025-11-20 | 32 KB | ⭐⭐⭐ | ✅ |
@@ -414,10 +496,19 @@ pytest tests/unit/ --cov=src --cov-report=html
 - 📖 [CLAUDE.md](../../CLAUDE.md) - Claude Code 集成指南
 - 📖 [开发指南](../guides/) - 详细的操作指南
 - 📖 [架构文档](../architecture/) - 系统架构设计
+- 📖 [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
 
 ---
 
 ## 💬 版本历史
+
+### Version 2.0 (2025-12-25)
+- ✅ 添加完整的 UI 设计系统
+- ✅ 设计总览和技术架构
+- ✅ 颜色系统和字体系统
+- ✅ 组件库规范
+- ✅ 页面设计模板
+- ✅ 交互流程设计
 
 ### Version 1.1 (2025-11-23)
 - ✅ 添加资源泄漏审计报告 (RESOURCE_LEAK_AUDIT_REPORT.md)
@@ -433,9 +524,9 @@ pytest tests/unit/ --cov=src --cov-report=html
 
 ---
 
-**最后更新**: 2025-11-23 17:30 UTC
-**维护者**: Claude Code
-**版本**: 1.1
+**最后更新**: 2025-12-25
+**维护者**: Project Team
+**版本**: 2.0
 
 ---
 

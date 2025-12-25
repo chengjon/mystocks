@@ -14,8 +14,8 @@ from pydantic import BaseModel
 
 from app.core.responses import (
     ErrorCodes,
-    create_error_response,
-    create_health_response,
+    create_unified_error_response,
+    create_unified_success_response,
 )
 from app.core.security import get_current_user, User
 
@@ -76,25 +76,32 @@ async def check_system_health(request: Request):
                 overall_status = "degraded"
 
         # 创建健康数据
+        # Convert HealthStatus objects to dicts
+        services_dict = {
+            name: status.model_dump(exclude_none=True)
+            for name, status in services.items()
+        }
+
         health_data = {
             "overall_status": overall_status,
-            "services": services,
+            "services": services_dict,
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-        return create_health_response(
-            service="mystocks-web-api",
-            status=overall_status,
-            details=health_data,
+        response = create_unified_success_response(
+            data=health_data,
+            message=f"系统健康检查完成，状态: {overall_status}",
             request_id=request_id,
         )
+        return response.model_dump(exclude_none=True)
 
     except Exception as e:
-        return create_error_response(
+        error_response = create_unified_error_response(
             error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
             message=f"健康检查失败: {str(e)}",
             request_id=getattr(request.state, "request_id", None),
         )
+        return error_response.model_dump(exclude_none=True)
 
 
 async def check_frontend_service() -> HealthStatus:
@@ -206,10 +213,14 @@ async def check_tdengine_service() -> HealthStatus:
     try:
         import socket
 
+        # 从环境变量获取TDengine配置
+        td_host = os.getenv("TDENGINE_HOST", "localhost")
+        td_port = int(os.getenv("TDENGINE_PORT", "6030"))
+
         # 尝试连接到TDengine端口
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(5)
-        result = sock.connect_ex(("localhost", 6030))
+        result = sock.connect_ex((td_host, td_port))
         sock.close()
 
         if result == 0:

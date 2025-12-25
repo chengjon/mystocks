@@ -30,7 +30,8 @@ from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 from app.api.auth import User, get_current_active_user, get_current_user
 from app.core.responses import (
-    create_success_response,
+    
+    create_unified_success_response,
     create_health_response,
 )
 from app.services.email_service import get_email_service
@@ -416,7 +417,7 @@ async def get_email_service_status(
             host=email_service.smtp_host if is_configured else None,
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data=status_data, message="邮件服务状态查询成功"
         ).dict(exclude_unset=True)
 
@@ -542,7 +543,7 @@ async def send_email(
             "content_type": request.content_type,
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data, message="邮件发送请求已受理"
         ).dict(exclude_unset=True)
 
@@ -722,7 +723,7 @@ async def send_welcome_email(
             "estimated_delivery": "2-5分钟",
         }
 
-        return create_success_response(
+        return create_unified_success_response(
             data=response_data, message="欢迎邮件发送请求已受理"
         ).dict(exclude_unset=True)
 
@@ -964,7 +965,7 @@ async def get_notification_preferences(
 
         logger.info("获取通知偏好设置", user_id=current_user.id)
 
-        return create_success_response(
+        return create_unified_success_response(
             data=preferences, message="通知偏好设置获取成功"
         ).dict(exclude_unset=True)
 
@@ -993,7 +994,7 @@ async def update_notification_preferences(
             preferences=preferences.dict(exclude_unset=True),
         )
 
-        return create_success_response(
+        return create_unified_success_response(
             data={"updated": True}, message="通知偏好设置更新成功"
         ).dict(exclude_unset=True)
 

@@ -54,7 +54,7 @@ async def get_status():
 
     manager = get_sse_manager()
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "status": "active",
             "endpoint": "monitoring",

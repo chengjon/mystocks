@@ -20,8 +20,9 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from app.api.auth import User, get_current_user
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import (
+    
     APIResponse,
-    create_error_response,
+    create_unified_error_response,
     create_health_response,
 )
 from app.schema import (
@@ -335,7 +336,7 @@ async def search_stocks(
                 {"field": str(err["loc"][0]), "message": err["msg"]}
                 for err in ve.errors()
             ]
-            return create_error_response(
+            return create_unified_error_response(
                 error_code="VALIDATION_ERROR",
                 message="输入参数验证失败",
                 details=error_details,
