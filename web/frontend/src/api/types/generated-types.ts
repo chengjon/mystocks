@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-06T11:10:27.931316
+// Generated at: 2025-12-25T10:28:05.848724
 
 // API Response Types
 export interface APIResponse {
@@ -28,6 +28,14 @@ export interface BatchOperationResult {
   success?: boolean;
   data?: any | null;
   error?: string | null;
+}
+
+export interface ChipRaceItem {
+
+  symbol?: string;
+  name?: string;
+  raceAmount?: number;
+  changePercent?: number;
 }
 
 export interface ChipRaceRequest {
@@ -133,6 +141,25 @@ export interface FilterRequest {
   filters?: Record<(str, any) | null>;
 }
 
+export interface FundFlowDataResponse {
+
+  fundFlow?: FundFlowItem[];
+  total?: number;
+  symbol?: string | null;
+  timeframe?: string | null;
+}
+
+export interface FundFlowItem {
+
+  tradeDate?: string;
+  mainNetInflow?: number;
+  mainNetInflowRate: number; // Default: 0
+  superLargeNetInflow?: number;
+  largeNetInflow?: number;
+  mediumNetInflow?: number;
+  smallNetInflow?: number;
+}
+
 export interface FundFlowRequest {
 
   symbol?: string;
@@ -154,6 +181,21 @@ export interface FundFlowResponse {
   mediumNetInflow?: number;
   smallNetInflow?: number;
   createdAt: string | null; // Default: None
+}
+
+export interface HeatmapResponse {
+
+  sector?: string;
+  stocks?: HeatmapStock[];
+  avgChange?: number;
+}
+
+export interface HeatmapStock {
+
+  symbol?: string;
+  name?: string;
+  changePercent?: number;
+  marketCap?: number | null;
 }
 
 export interface HyperparameterSearchRequest {
@@ -285,6 +327,17 @@ export interface IndicatorValueOutput {
   displayName?: string;
 }
 
+export interface KlineCandle {
+
+  datetime?: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number | null;
+}
+
 export interface KlineDataPoint {
 
   date?: string;
@@ -296,12 +349,28 @@ export interface KlineDataPoint {
   amount?: number | null;
 }
 
+export interface KlineRequest {
+
+  symbol?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  period: string; // Default: '1d'
+}
+
 export interface KlineResponse {
 
-  code?: string;
+  symbol?: string;
   period?: string;
-  data?: KlineDataPoint[];
+  data?: KlineCandle[];
   count?: number;
+}
+
+export interface LongHuBangItem {
+
+  symbol?: string;
+  name?: string;
+  netAmount?: number;
+  reason?: string | null;
 }
 
 export interface LongHuBangRequest {
@@ -334,6 +403,23 @@ export interface MLResponse {
   success?: boolean;
   message?: string;
   data?: any | null;
+}
+
+export interface MarketOverviewResponse {
+
+  marketStats?: MarketOverviewStats;
+  topEtfs?: TopETFItem[];
+  chipRaces?: ChipRaceItem[];
+  longHuBang?: LongHuBangItem[];
+  timestamp?: string;
+}
+
+export interface MarketOverviewStats {
+
+  totalStocks?: number;
+  risingStocks?: number;
+  fallingStocks?: number;
+  avgChangePercent?: number;
 }
 
 export interface MessageResponse {
@@ -545,6 +631,15 @@ export interface TdxHealthResponse {
 export interface TimestampField {
 
   timestamp?: string;
+}
+
+export interface TopETFItem {
+
+  symbol?: string;
+  name?: string;
+  latestPrice?: number;
+  changePercent?: number;
+  volume?: number;
 }
 
 export interface VolumeField {
