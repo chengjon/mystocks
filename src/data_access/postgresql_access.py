@@ -46,9 +46,7 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.putconn(conn)
 
-    def create_table(
-        self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None
-    ):
+    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
         """
         创建普通表
 
@@ -72,9 +70,7 @@ class PostgreSQLDataAccess:
 
         try:
             # 构建字段列表
-            fields = ",\n    ".join(
-                [f"{name} {dtype}" for name, dtype in schema.items()]
-            )
+            fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
 
             # 添加主键约束
             if primary_key:
@@ -96,9 +92,7 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def create_hypertable(
-        self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"
-    ):
+    def create_hypertable(self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"):
         """
         将表转换为TimescaleDB时序表(Hypertable)
 
@@ -229,9 +223,7 @@ class PostgreSQLDataAccess:
             if update_columns is None:
                 update_columns = [col for col in columns if col not in conflict_columns]
 
-            update_str = ", ".join(
-                [f"{col} = EXCLUDED.{col}" for col in update_columns]
-            )
+            update_str = ", ".join([f"{col} = EXCLUDED.{col}" for col in update_columns])
 
             # Upsert SQL
             sql = f"""
@@ -444,16 +436,12 @@ class PostgreSQLDataAccess:
         Returns:
             查询结果DataFrame
         """
-        where_clause = (
-            f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
-        )
+        where_clause = f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
 
         if filters:
             where_clause += f" AND {filters}"
 
-        return self.query(
-            table_name, columns, where_clause, order_by=f"{time_column} ASC"
-        )
+        return self.query(table_name, columns, where_clause, order_by=f"{time_column} ASC")
 
     def execute_sql(self, sql: str, params: Optional[Tuple] = None) -> pd.DataFrame:
         """
@@ -654,9 +642,7 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def save_data(
-        self, data: pd.DataFrame, classification, table_name: str, **kwargs
-    ) -> bool:
+    def save_data(self, data: pd.DataFrame, classification, table_name: str, **kwargs) -> bool:
         """
         保存数据（DataManager API适配器）
 
@@ -708,9 +694,7 @@ class PostgreSQLDataAccess:
                 sql = f"SELECT * FROM {table_name} WHERE {filters['where']}"
                 if "limit" in filters:
                     sql += f" LIMIT {filters['limit']}"
-                return self.query(
-                    table_name, where=filters["where"], limit=filters.get("limit")
-                )
+                return self.query(table_name, where=filters["where"], limit=filters.get("limit"))
             else:
                 # 查询全表（带limit）
                 sql = f"SELECT * FROM {table_name}"

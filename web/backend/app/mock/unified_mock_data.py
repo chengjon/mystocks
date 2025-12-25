@@ -240,6 +240,9 @@ class UnifiedMockDataManager:
                         "strategies": strategies.get("strategies", []),
                         "timestamp": datetime.now().isoformat(),
                     }
+                elif action == "list":
+                    strategies = get_strategy_definitions()
+                    return {"strategies": strategies.get("strategies", []), "timestamp": datetime.now().isoformat()}
                 elif action == "run":
                     strategy_name = kwargs.get("strategy_name")
                     symbols = kwargs.get("symbols", [])

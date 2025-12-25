@@ -119,7 +119,10 @@ class UnifiedErrorHandler:
 
 
 # 便捷函数
-def safe_execute(func: Callable, context: str = "", default_return: Any = None):
+def safe_execute(
+        func: Callable,
+        context: str = "",
+        default_return: Any = None):
     """安全执行函数的便捷函数"""
     return UnifiedErrorHandler.safe_execute(func, context, default_return)
 

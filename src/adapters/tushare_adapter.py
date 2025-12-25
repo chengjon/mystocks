@@ -42,9 +42,7 @@ class TushareDataSource(IDataSource):
             self.available = False
             raise ImportError(f"Tushare不可用: {e}")
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据-Tushare实现"""
         if not self.available:
             return pd.DataFrame()
@@ -82,9 +80,7 @@ class TushareDataSource(IDataSource):
             print(f"Tushare获取股票日线数据失败: {e}")
             return pd.DataFrame()
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取指数日线数据-Tushare实现"""
         if not self.available:
             return pd.DataFrame()
@@ -161,9 +157,7 @@ class TushareDataSource(IDataSource):
         # Tushare主要提供历史数据，实时数据功能有限
         return {"error": "Tushare主要提供历史数据，请使用其他数据源获取实时数据"}
 
-    def get_market_calendar(
-        self, start_date: str, end_date: str
-    ) -> Union[pd.DataFrame, str]:
+    def get_market_calendar(self, start_date: str, end_date: str) -> Union[pd.DataFrame, str]:
         """获取交易日历-Tushare实现"""
         if not self.available:
             return pd.DataFrame()
@@ -178,9 +172,7 @@ class TushareDataSource(IDataSource):
             print(f"Tushare获取交易日历失败: {e}")
             return pd.DataFrame()
 
-    def get_financial_data(
-        self, symbol: str, period: str = "annual"
-    ) -> Union[pd.DataFrame, str]:
+    def get_financial_data(self, symbol: str, period: str = "annual") -> Union[pd.DataFrame, str]:
         """获取财务数据-Tushare实现"""
         if not self.available:
             return pd.DataFrame()
@@ -196,9 +188,7 @@ class TushareDataSource(IDataSource):
             print(f"Tushare获取财务数据失败: {e}")
             return pd.DataFrame()
 
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> Union[List[Dict], str]:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> Union[List[Dict], str]:
         """获取新闻数据-Tushare实现"""
         # Tushare的新闻数据功能有限
         return "Tushare新闻数据功能有限，请使用其他数据源"

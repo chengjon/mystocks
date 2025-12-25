@@ -307,10 +307,7 @@ class PostgreSQLIndexOptimizer:
         brin = self.design_brin_indexes()
 
         total_indexes = (
-            single_col["total_indexes"]
-            + composite["total_indexes"]
-            + partial["total_indexes"]
-            + brin["total_indexes"]
+            single_col["total_indexes"] + composite["total_indexes"] + partial["total_indexes"] + brin["total_indexes"]
         )
 
         return {
