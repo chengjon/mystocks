@@ -20,7 +20,8 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 import structlog
 
-from app.core.cache_manager import get_cache_manager
+from app.core.cache_manager import get_cache_manager, CacheManager
+from app.core.cache_integration import get_cache_integration, CacheIntegration
 from app.core.cache_eviction import (
     get_eviction_strategy,
     get_eviction_scheduler,
@@ -29,7 +30,6 @@ from app.core.cache_prewarming import (
     get_cache_monitor,
     get_prewarming_strategy,
 )
-from app.core.responses import create_health_response
 from app.core.security import get_current_user, User
 
 logger = structlog.get_logger()
@@ -37,49 +37,12 @@ logger = structlog.get_logger()
 router = APIRouter(prefix="/cache", tags=["cache"])
 
 
-# ==================== 健康检查 ====================
-
-
-@router.get("/health")
-async def health_check():
-    """
-    缓存服务健康检查
-
-    Returns:
-        统一格式的健康检查响应
-    """
-    try:
-        cache_mgr = get_cache_manager()
-        stats = cache_mgr.get_cache_stats()
-        strategy = get_eviction_strategy()
-
-        return create_health_response(
-            service="cache",
-            status="healthy",
-            details={
-                "hit_rate": stats.get("hit_rate", 0),
-                "cache_hits": stats.get("cache_hits", 0),
-                "cache_misses": stats.get("cache_misses", 0),
-                "total_reads": stats.get("total_reads", 0),
-                "total_writes": stats.get("total_writes", 0),
-                "ttl_days": strategy.get("ttl_days", 7) if strategy else 7,
-                "version": "1.0.0",
-            },
-        )
-    except Exception as e:
-        return create_health_response(
-            service="cache",
-            status="unhealthy",
-            details={"error": str(e), "version": "1.0.0"},
-        )
-
-
 # ==================== 缓存统计 ====================
 
 
 @router.get("/status")
 async def get_cache_status(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     获取缓存统计信息
@@ -135,7 +98,7 @@ async def get_cached_data(
     symbol: str,
     data_type: str,
     timeframe: Optional[str] = Query(None),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     读取特定的缓存数据
@@ -229,7 +192,7 @@ async def write_cache_data(
     data: Dict[str, Any],
     timeframe: Optional[str] = Query(None),
     ttl_days: int = Query(7),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     写入或更新缓存数据
@@ -326,7 +289,8 @@ async def write_cache_data(
 
 @router.delete("/{symbol}")
 async def invalidate_symbol_cache(
-    symbol: str, current_user: User = Depends(get_current_user)
+    symbol: str,
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     清除特定符号的缓存
@@ -383,7 +347,8 @@ async def invalidate_symbol_cache(
 
 @router.delete("")
 async def clear_all_cache(
-    confirm: bool = Query(False), current_user: User = Depends(get_current_user)
+    confirm: bool = Query(False),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     清除所有缓存 (需要确认)
@@ -442,7 +407,7 @@ async def check_cache_freshness(
     symbol: str,
     data_type: str,
     max_age_days: int = Query(7),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     检查缓存是否新鲜（有效且未过期）
@@ -515,7 +480,7 @@ async def check_cache_freshness(
 
 @router.post("/evict/manual")
 async def manual_cache_eviction(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     手动触发缓存淘汰任务
@@ -567,7 +532,7 @@ async def manual_cache_eviction(
 
 @router.get("/eviction/stats")
 async def get_eviction_statistics(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     获取缓存淘汰策略统计信息
@@ -639,7 +604,7 @@ async def get_eviction_statistics(
 
 @router.post("/prewarming/trigger")
 async def trigger_cache_prewarming(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     触发缓存预热任务
@@ -690,7 +655,7 @@ async def trigger_cache_prewarming(
 
 @router.get("/prewarming/status")
 async def get_prewarming_status(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     获取缓存预热状态
@@ -732,7 +697,7 @@ async def get_prewarming_status(
 
 @router.get("/monitoring/metrics")
 async def get_cache_monitoring_metrics(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     获取缓存监控指标
@@ -788,7 +753,7 @@ async def get_cache_monitoring_metrics(
 
 @router.get("/monitoring/health")
 async def get_cache_health_status(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     获取缓存系统健康状态

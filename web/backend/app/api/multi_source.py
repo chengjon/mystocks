@@ -5,6 +5,7 @@ Multi-data Source Support
 提供多数据源管理和查询的API端点
 """
 
+from datetime import date
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel

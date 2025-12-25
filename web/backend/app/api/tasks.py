@@ -20,13 +20,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
-from app.core.responses import APIResponse
-from app.models.task import (
-    TaskConfig,
-    TaskExecution,
-    TaskResponse,
-    TaskStatistics,
-)
+from app.core.responses import APIResponse, ErrorResponse
+from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics, TaskStatus, TaskType
 from app.services.task_manager import task_manager
 
 # Mock数据支持
@@ -60,9 +55,7 @@ class TaskRegistrationRequest(BaseModel):
     config: Dict[str, Any] = Field(..., description="任务配置参数")
     tags: Optional[List[str]] = Field(None, description="任务标签")
     enabled: bool = Field(True, description="是否启用")
-    schedule: Optional[str] = Field(
-        None, description="调度表达式(cron格式)", max_length=100
-    )
+    schedule: Optional[str] = Field(None, description="调度表达式(cron格式)", max_length=100)
 
     @field_validator("name")
     @classmethod
@@ -105,7 +98,7 @@ class TaskRegistrationRequest(BaseModel):
         config_str = json.dumps(v).lower()
         dangerous_patterns = [
             "__import__",
-            "eval(",  # noqa: S307  # pragma: allowlist secret
+            "eval(",
             "exec(",
             "subprocess",
             "os.system",
@@ -206,12 +199,7 @@ def check_admin_privileges(user: User) -> bool:
     return user.role in ["admin", "backup_operator"]
 
 
-def log_task_operation(
-    user: User,
-    operation: str,
-    task_id: Optional[str] = None,
-    details: Optional[Dict] = None,
-):
+def log_task_operation(user: User, operation: str, task_id: Optional[str] = None, details: Optional[Dict] = None):
     """
     记录任务操作审计日志
 
@@ -237,9 +225,7 @@ def log_task_operation(
     if len(task_audit_log) > 1000:
         task_audit_log.pop(0)
 
-    logger.info(
-        f"Task operation logged: {operation} by {user.username}", audit_data=audit_entry
-    )
+    logger.info(f"Task operation logged: {operation} by {user.username}", audit_data=audit_entry)
 
 
 class TaskQueryParams(BaseModel):
@@ -251,11 +237,7 @@ class TaskQueryParams(BaseModel):
         pattern=r"^(DATA_PROCESSING|MARKET_ANALYSIS|SIGNAL_GENERATION|NOTIFICATION|CLEANUP|BACKTEST|REPORT)$",
     )
     tags: Optional[str] = Field(None, description="逗号分隔的任务标签", max_length=200)
-    status: Optional[str] = Field(
-        None,
-        description="任务状态",
-        pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$",
-    )
+    status: Optional[str] = Field(None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$")
     enabled: Optional[bool] = Field(None, description="是否启用")
     limit: int = Field(50, description="返回数量", ge=1, le=200)
     offset: int = Field(0, description="偏移量", ge=0, le=10000)
@@ -284,13 +266,7 @@ class TaskQueryParams(BaseModel):
 class TaskExecutionRequest(BaseModel):
     """任务执行请求"""
 
-    task_id: str = Field(
-        ...,
-        description="任务ID",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-zA-Z0-9_-]+$",
-    )
+    task_id: str = Field(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
     force: bool = Field(False, description="是否强制执行")
     params: Optional[Dict[str, Any]] = Field(None, description="执行参数")
 
@@ -304,9 +280,7 @@ class TaskExecutionRequest(BaseModel):
 
 
 @router.post("/register", response_model=TaskResponse)
-async def register_task(
-    task_config: TaskConfig, current_user: User = Depends(get_current_user)
-):
+async def register_task(task_config: TaskConfig, current_user: User = Depends(get_current_user)):
     """
     注册新任务
 
@@ -319,20 +293,13 @@ async def register_task(
     try:
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="任务注册频率过高，请稍后再试",
-            )
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="任务注册频率过高，请稍后再试")
 
         # 记录操作审计
         log_task_operation(
             user=current_user,
             operation="register_task",
-            details={
-                "task_name": task_config.name,
-                "task_type": task_config.task_type,
-                "enabled": task_config.enabled,
-            },
+            details={"task_name": task_config.name, "task_type": task_config.task_type, "enabled": task_config.enabled},
         )
 
         if use_mock:
@@ -343,11 +310,7 @@ async def register_task(
             return TaskResponse(
                 success=True,
                 message="任务注册成功",
-                data={
-                    "task_id": task_id,
-                    "status": "registered",
-                    "created_by": current_user.username,
-                },
+                data={"task_id": task_id, "status": "registered", "created_by": current_user.username},
             )
 
         response = task_manager.register_task(task_config)
@@ -358,9 +321,7 @@ async def register_task(
         if response.data:
             response.data["created_by"] = current_user.username
 
-        logger.info(
-            f"Task registered successfully by {current_user.username}: {task_config.name}"
-        )
+        logger.info(f"Task registered successfully by {current_user.username}: {task_config.name}")
         return response
 
     except HTTPException:
@@ -372,13 +333,7 @@ async def register_task(
 
 @router.delete("/{task_id}", response_model=TaskResponse)
 async def unregister_task(
-    task_id: str = Path(
-        ...,
-        description="任务ID",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-zA-Z0-9_-]+$",
-    ),
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -393,31 +348,22 @@ async def unregister_task(
     try:
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="任务操作频率过高，请稍后再试",
-            )
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="任务操作频率过高，请稍后再试")
 
         # 记录操作审计
-        log_task_operation(
-            user=current_user, operation="unregister_task", task_id=task_id
-        )
+        log_task_operation(user=current_user, operation="unregister_task", task_id=task_id)
 
         response = task_manager.unregister_task(task_id)
         if not response.success:
             raise HTTPException(status_code=404, detail=response.message)
 
-        logger.info(
-            f"Task {task_id} unregistered successfully by {current_user.username}"
-        )
+        logger.info(f"Task {task_id} unregistered successfully by {current_user.username}")
         return response
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Failed to unregister task {task_id} for user {current_user.username}: {e}"
-        )
+        logger.error(f"Failed to unregister task {task_id} for user {current_user.username}: {e}")
         raise HTTPException(status_code=500, detail="任务注销失败")
 
 
@@ -430,9 +376,7 @@ async def list_tasks(
     ),
     tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
     status: Optional[str] = Query(
-        None,
-        description="任务状态",
-        pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$",
+        None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"
     ),
     enabled: Optional[bool] = Query(None, description="是否启用"),
     limit: int = Query(50, description="返回数量", ge=1, le=200),
@@ -450,38 +394,30 @@ async def list_tasks(
     try:
         # 检查操作频率限制（读取操作限制较宽松）
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=30):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="查询频率过高，请稍后再试",
-            )
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="查询频率过高，请稍后再试")
 
         # 记录操作审计
         log_task_operation(
             user=current_user,
             operation="list_tasks",
-            details={
-                "task_type": task_type,
-                "tags": tags,
-                "status": status,
-                "limit": limit,
-                "offset": offset,
-            },
+            details={"task_type": task_type, "tags": tags, "status": status, "limit": limit, "offset": offset},
         )
 
         if use_mock:
             # Mock数据：返回模拟任务列表
+            import random
 
             from app.models.task import TaskConfig, TaskType
 
             mock_tasks = []
             for i in range(min(limit, 10)):
                 task = TaskConfig(
-                    task_id=f"task_{i + 1000}",
-                    name=f"模拟任务_{i + 1}",
-                    description=f"这是一个模拟任务_{i + 1}",
+                    task_id=f"task_{i+1000}",
+                    name=f"模拟任务_{i+1}",
+                    description=f"这是一个模拟任务_{i+1}",
                     task_type=TaskType.DATA_PROCESSING,
-                    config={"param1": f"value{i + 1}"},
-                    tags=[f"tag{i + 1}", "mock"],
+                    config={"param1": f"value{i+1}"},
+                    tags=[f"tag{i+1}", "mock"],
                     enabled=True,
                     created_at=datetime.now() - timedelta(days=i),
                     created_by=current_user.username,  # 标记创建者
@@ -494,11 +430,7 @@ async def list_tasks(
 
         # 普通用户只能看到自己创建的任务
         if not check_admin_privileges(current_user):
-            tasks = [
-                task
-                for task in tasks
-                if getattr(task, "created_by", None) == current_user.username
-            ]
+            tasks = [task for task in tasks if getattr(task, "created_by", None) == current_user.username]
 
         logger.info(f"Tasks listed by {current_user.username}: {len(tasks)} tasks")
         return tasks
@@ -512,13 +444,7 @@ async def list_tasks(
 
 @router.get("/{task_id}", response_model=TaskConfig)
 async def get_task(
-    task_id: str = Path(
-        ...,
-        description="任务ID",
-        min_length=1,
-        max_length=50,
-        pattern=r"^[a-zA-Z0-9_-]+$",
-    ),
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
 ):
     """获取任务详情"""
     if use_mock:
@@ -592,8 +518,8 @@ async def list_task_executions(
         executions = []
         for i in range(min(limit, 10)):
             execution = TaskExecution(
-                execution_id=f"exec_{i + 1000}",
-                task_id=task_id or f"task_{i % 3 + 1000}",
+                execution_id=f"exec_{i+1000}",
+                task_id=task_id or f"task_{i%3+1000}",
                 status=TaskStatus.COMPLETED if i % 4 != 0 else TaskStatus.FAILED,
                 start_time=datetime.now() - timedelta(hours=i + 1),
                 end_time=datetime.now() - timedelta(hours=i) + timedelta(minutes=30),
@@ -617,9 +543,7 @@ async def get_execution(execution_id: str):
     try:
         execution = task_manager.get_execution(execution_id)
         if not execution:
-            raise HTTPException(
-                status_code=404, detail=f"Execution {execution_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Execution {execution_id} not found")
         return execution
     except HTTPException:
         raise
@@ -633,41 +557,22 @@ async def get_task_statistics():
     """获取任务统计信息"""
     if use_mock:
         # Mock数据：返回模拟统计信息
+        import random
 
-        from app.models.task import TaskStatistics
+        from app.models.task import TaskStatistics, TaskStatus
 
         stats = {
             "total_tasks": TaskStatistics(
-                count=25,
-                success_count=20,
-                failed_count=3,
-                running_count=2,
-                avg_execution_time=45.5,
-                success_rate=80.0,
+                count=25, success_count=20, failed_count=3, running_count=2, avg_execution_time=45.5, success_rate=80.0
             ),
             "data_processing": TaskStatistics(
-                count=15,
-                success_count=12,
-                failed_count=2,
-                running_count=1,
-                avg_execution_time=30.2,
-                success_rate=80.0,
+                count=15, success_count=12, failed_count=2, running_count=1, avg_execution_time=30.2, success_rate=80.0
             ),
             "backtest": TaskStatistics(
-                count=8,
-                success_count=6,
-                failed_count=1,
-                running_count=1,
-                avg_execution_time=120.8,
-                success_rate=75.0,
+                count=8, success_count=6, failed_count=1, running_count=1, avg_execution_time=120.8, success_rate=75.0
             ),
             "alert": TaskStatistics(
-                count=2,
-                success_count=2,
-                failed_count=0,
-                running_count=0,
-                avg_execution_time=5.3,
-                success_rate=100.0,
+                count=2, success_count=2, failed_count=0, running_count=0, avg_execution_time=5.3, success_rate=100.0
             ),
         }
         return stats
@@ -725,12 +630,7 @@ async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get(
-    "/health",
-    summary="任务管理健康检查",
-    description="检查后台任务系统的运行状态",
-    tags=["health"],
-)
+@router.get("/health", summary="任务管理健康检查", description="检查后台任务系统的运行状态", tags=["health"])
 async def tasks_health():
     """
     公共健康检查端点（无需认证）
@@ -766,20 +666,16 @@ async def tasks_health():
         - mock_mode=true 表示当前使用测试数据
         - 建议监控系统每 60 秒调用一次以进行持续监控
     """
-    from app.core.responses import create_health_response
-
     if use_mock:
         # Mock数据：返回模拟健康状态
-        return create_health_response(
-            service="tasks",
-            status="healthy",
-            details={
-                "total_tasks": 25,
-                "running_tasks": 3,
-                "total_executions": 156,
-                "mock_mode": True,
-            },
-        )
+        return {
+            "status": "healthy",
+            "total_tasks": 25,
+            "running_tasks": 3,
+            "total_executions": 156,
+            "last_check": datetime.now().isoformat(),
+            "mock_mode": True,
+        }
 
     try:
         # 获取基本统计信息
@@ -788,23 +684,20 @@ async def tasks_health():
         running_tasks = len(getattr(task_manager, "running_tasks", []))
         total_executions = len(getattr(task_manager, "executions", []))
 
-        return create_health_response(
-            service="tasks",
-            status="healthy",
-            details={
-                "total_tasks": total_tasks,
-                "running_tasks": running_tasks,
-                "total_executions": total_executions,
-                "mock_mode": False,
-            },
-        )
+        return {
+            "status": "healthy",
+            "total_tasks": total_tasks,
+            "running_tasks": running_tasks,
+            "total_executions": total_executions,
+            "last_check": datetime.now().isoformat(),
+        }
     except Exception as e:
         logger.error("Tasks health check failed", error=str(e))
-        return create_health_response(
-            service="tasks",
-            status="unhealthy",
-            details={"error": str(e)},
-        )
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "last_check": datetime.now().isoformat(),
+        }
 
 
 # ==================== 管理员专用端点 ====================
@@ -828,36 +721,24 @@ async def get_audit_logs(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized audit log access attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized audit log access attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 记录审计日志访问
         log_task_operation(
             user=current_user,
             operation="access_audit_logs",
-            details={
-                "limit": limit,
-                "operation_filter": operation,
-                "username_filter": username,
-            },
+            details={"limit": limit, "operation_filter": operation, "username_filter": username},
         )
 
         # 过滤审计日志
         filtered_logs = task_audit_log.copy()
 
         if operation:
-            filtered_logs = [
-                log for log in filtered_logs if log.get("operation") == operation
-            ]
+            filtered_logs = [log for log in filtered_logs if log.get("operation") == operation]
 
         if username:
-            filtered_logs = [
-                log for log in filtered_logs if log.get("username") == username
-            ]
+            filtered_logs = [log for log in filtered_logs if log.get("username") == username]
 
         # 按时间倒序排列，取最近的记录
         filtered_logs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
@@ -865,9 +746,7 @@ async def get_audit_logs(
         # 返回指定的记录数
         result_logs = filtered_logs[:limit]
 
-        logger.info(
-            f"Audit logs accessed by admin {current_user.username}: {len(result_logs)} records"
-        )
+        logger.info(f"Audit logs accessed by admin {current_user.username}: {len(result_logs)} records")
 
         return {
             "logs": result_logs,
@@ -898,12 +777,8 @@ async def cleanup_audit_logs(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(
-                f"Unauthorized audit cleanup attempt by user: {current_user.username}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点"
-            )
+            logger.warning(f"Unauthorized audit cleanup attempt by user: {current_user.username}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
 
         # 计算清理时间点
         cutoff_time = datetime.utcnow() - timedelta(days=days)
@@ -911,40 +786,26 @@ async def cleanup_audit_logs(
 
         # 清理旧的审计日志
         original_count = len(task_audit_log)
-        task_audit_log[:] = [
-            log for log in task_audit_log if log.get("timestamp", "") >= cutoff_str
-        ]
+        task_audit_log[:] = [log for log in task_audit_log if log.get("timestamp", "") >= cutoff_str]
         cleaned_count = original_count - len(task_audit_log)
 
         # 记录清理操作
         log_task_operation(
             user=current_user,
             operation="cleanup_audit_logs",
-            details={
-                "days": days,
-                "cleaned_count": cleaned_count,
-                "remaining_count": len(task_audit_log),
-            },
+            details={"days": days, "cleaned_count": cleaned_count, "remaining_count": len(task_audit_log)},
         )
 
-        logger.info(
-            f"Audit logs cleaned by admin {current_user.username}: {cleaned_count} records removed"
-        )
+        logger.info(f"Audit logs cleaned by admin {current_user.username}: {cleaned_count} records removed")
 
         return APIResponse(
             success=True,
-            data={
-                "cleaned_count": cleaned_count,
-                "remaining_count": len(task_audit_log),
-                "cutoff_date": cutoff_str,
-            },
+            data={"cleaned_count": cleaned_count, "remaining_count": len(task_audit_log), "cutoff_date": cutoff_str},
             message=f"已清理 {cleaned_count} 条旧审计日志",
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Failed to cleanup audit logs for admin {current_user.username}: {e}"
-        )
+        logger.error(f"Failed to cleanup audit logs for admin {current_user.username}: {e}")
         raise HTTPException(status_code=500, detail="清理审计日志失败")

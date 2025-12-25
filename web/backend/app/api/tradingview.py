@@ -4,7 +4,7 @@ TradingView Widget API
 """
 
 from fastapi import APIRouter, Query, HTTPException, Depends
-from typing import Dict, List
+from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 
 from app.services.tradingview_widget_service import get_tradingview_service
@@ -51,22 +51,19 @@ async def get_chart_config(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "tradingview_chart",
-                symbol=request.symbol,
-                market=request.market,
-                interval=request.interval,
-                theme=request.theme,
-                locale=request.locale,
-                container_id=request.container_id,
-            )
+            mock_data = mock_manager.get_data("tradingview_chart", 
+                                             symbol=request.symbol, 
+                                             market=request.market,
+                                             interval=request.interval,
+                                             theme=request.theme,
+                                             locale=request.locale,
+                                             container_id=request.container_id)
             return {"success": True, "config": mock_data.get("config", {})}
         else:
             # 正常获取真实数据
@@ -105,21 +102,18 @@ async def get_mini_chart_config(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "tradingview_mini_chart",
-                symbol=symbol,
-                market=market,
-                theme=theme,
-                locale=locale,
-                container_id=container_id,
-            )
+            mock_data = mock_manager.get_data("tradingview_mini_chart",
+                                             symbol=symbol,
+                                             market=market,
+                                             theme=theme,
+                                             locale=locale,
+                                             container_id=container_id)
             return {"success": True, "config": mock_data.get("config", {})}
         else:
             # 正常获取真实数据
@@ -147,23 +141,20 @@ async def get_ticker_tape_config(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
             symbols = None
             if request.symbols:
                 symbols = [item.dict() for item in request.symbols]
-            mock_data = mock_manager.get_data(
-                "tradingview_ticker_tape",
-                symbols=symbols,
-                theme=request.theme,
-                locale=request.locale,
-                container_id=request.container_id,
-            )
+            mock_data = mock_manager.get_data("tradingview_ticker_tape",
+                                             symbols=symbols,
+                                             theme=request.theme,
+                                             locale=request.locale,
+                                             container_id=request.container_id)
             return {"success": True, "config": mock_data.get("config", {})}
         else:
             # 正常获取真实数据
@@ -202,20 +193,17 @@ async def get_market_overview_config(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "tradingview_market_overview",
-                market=market,
-                theme=theme,
-                locale=locale,
-                container_id=container_id,
-            )
+            mock_data = mock_manager.get_data("tradingview_market_overview",
+                                             market=market,
+                                             theme=theme,
+                                             locale=locale,
+                                             container_id=container_id)
             return {"success": True, "config": mock_data.get("config", {})}
         else:
             # 正常获取真实数据
@@ -244,20 +232,17 @@ async def get_screener_config(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "tradingview_screener",
-                market=market,
-                theme=theme,
-                locale=locale,
-                container_id=container_id,
-            )
+            mock_data = mock_manager.get_data("tradingview_screener",
+                                             market=market,
+                                             theme=theme,
+                                             locale=locale,
+                                             container_id=container_id)
             return {"success": True, "config": mock_data.get("config", {})}
         else:
             # 正常获取真实数据
@@ -284,16 +269,15 @@ async def convert_symbol(
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
+        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+        
         if use_mock:
             # 使用Mock数据
             from app.mock.unified_mock_data import get_mock_data_manager
-
             mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "tradingview_symbol_convert", symbol=symbol, market=market
-            )
+            mock_data = mock_manager.get_data("tradingview_symbol_convert",
+                                             symbol=symbol,
+                                             market=market)
             return {
                 "success": True,
                 "original_symbol": symbol,

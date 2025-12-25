@@ -4,7 +4,7 @@ Real-time Monitoring System
 """
 
 import os
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -37,7 +37,7 @@ router = APIRouter(prefix="/api/monitoring", tags=["monitoring"])
 async def get_alert_rules(
     rule_type: Optional[AlertRuleType] = None,
     is_active: Optional[bool] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取告警规则列表
@@ -57,7 +57,8 @@ async def get_alert_rules(
 
 @router.post("/alert-rules", response_model=AlertRuleResponse)
 async def create_alert_rule(
-    rule: AlertRuleCreate, current_user: User = Depends(get_current_user)
+    rule: AlertRuleCreate,
+    current_user: User = Depends(get_current_user)
 ):
     """
     创建告警规则
@@ -88,7 +89,7 @@ async def create_alert_rule(
 async def update_alert_rule(
     rule_id: int,
     updates: AlertRuleUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
     """
     更新告警规则
@@ -109,7 +110,8 @@ async def update_alert_rule(
 
 @router.delete("/alert-rules/{rule_id}")
 async def delete_alert_rule(
-    rule_id: int, current_user: User = Depends(get_current_user)
+    rule_id: int,
+    current_user: User = Depends(get_current_user)
 ):
     """
     删除告警规则
@@ -151,7 +153,7 @@ async def get_alert_records(
     end_date: Optional[date] = None,
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
     """
     查询告警记录
@@ -195,7 +197,8 @@ async def get_alert_records(
 
 @router.post("/alerts/{alert_id}/mark-read")
 async def mark_alert_read(
-    alert_id: int, current_user: User = Depends(get_current_user)
+    alert_id: int,
+    current_user: User = Depends(get_current_user)
 ):
     """
     标记告警为已读
@@ -215,7 +218,9 @@ async def mark_alert_read(
 
 
 @router.post("/alerts/mark-all-read")
-async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
+async def mark_all_alerts_read(
+    current_user: User = Depends(get_current_user)
+):
     """批量标记所有未读告警为已读"""
     try:
         # TODO: 实现批量标记功能
@@ -231,7 +236,8 @@ async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
 
 @router.get("/realtime/{symbol}", response_model=RealtimeMonitoringResponse)
 async def get_realtime_monitoring(
-    symbol: str, current_user: User = Depends(get_current_user)
+    symbol: str,
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取单只股票的最新实时监控数据
@@ -272,7 +278,7 @@ async def get_realtime_monitoring_list(
     limit: int = Query(100, ge=1, le=1000),
     is_limit_up: Optional[bool] = None,
     is_limit_down: Optional[bool] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取实时监控数据列表
@@ -291,11 +297,11 @@ async def get_realtime_monitoring_list(
     try:
         session = monitoring_service.get_session()
         try:
+            from sqlalchemy import and_
+
             from app.models.monitoring import RealtimeMonitoring
 
-            query = session.query(RealtimeMonitoring).filter(
-                RealtimeMonitoring.trade_date == date.today()
-            )
+            query = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == date.today())
 
             # 筛选指定股票
             if symbols:
@@ -310,9 +316,7 @@ async def get_realtime_monitoring_list(
 
             # 对于每只股票，只取最新的记录
             # 这里简化处理，实际应该用子查询
-            records = (
-                query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
-            )
+            records = query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
 
             return [RealtimeMonitoringResponse.from_orm(r) for r in records]
         finally:
@@ -323,7 +327,8 @@ async def get_realtime_monitoring_list(
 
 @router.post("/realtime/fetch")
 async def fetch_realtime_data(
-    symbols: Optional[List[str]] = None, current_user: User = Depends(get_current_user)
+    symbols: Optional[List[str]] = None,
+    current_user: User = Depends(get_current_user)
 ):
     """
     手动触发获取实时数据
@@ -373,7 +378,7 @@ async def get_dragon_tiger_list(
     symbol: Optional[str] = None,
     min_net_amount: Optional[float] = None,
     limit: int = Query(100, ge=1, le=500),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取龙虎榜数据
@@ -397,18 +402,14 @@ async def get_dragon_tiger_list(
             if trade_date is None:
                 trade_date = date.today()
 
-            query = session.query(DragonTigerList).filter(
-                DragonTigerList.trade_date == trade_date
-            )
+            query = session.query(DragonTigerList).filter(DragonTigerList.trade_date == trade_date)
 
             if symbol:
                 query = query.filter(DragonTigerList.symbol == symbol)
             if min_net_amount is not None:
                 query = query.filter(DragonTigerList.net_amount >= min_net_amount)
 
-            records = (
-                query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
-            )
+            records = query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
 
             return [DragonTigerListResponse.from_orm(r) for r in records]
         finally:
@@ -419,7 +420,8 @@ async def get_dragon_tiger_list(
 
 @router.post("/dragon-tiger/fetch")
 async def fetch_dragon_tiger_data(
-    trade_date: Optional[date] = None, current_user: User = Depends(get_current_user)
+    trade_date: Optional[date] = None,
+    current_user: User = Depends(get_current_user)
 ):
     """
     手动触发获取龙虎榜数据
@@ -452,7 +454,9 @@ async def fetch_dragon_tiger_data(
 
 
 @router.get("/summary", response_model=MonitoringSummaryResponse)
-async def get_monitoring_summary(current_user: User = Depends(get_current_user)):
+async def get_monitoring_summary(
+    current_user: User = Depends(get_current_user)
+):
     """
     获取监控系统摘要
 
@@ -496,7 +500,9 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
 
 
 @router.get("/stats/today")
-async def get_today_statistics(current_user: User = Depends(get_current_user)):
+async def get_today_statistics(
+    current_user: User = Depends(get_current_user)
+):
     """获取今日统计数据"""
     try:
         session = monitoring_service.get_session()
@@ -505,28 +511,20 @@ async def get_today_statistics(current_user: User = Depends(get_current_user)):
             from sqlalchemy import text
 
             # 今日告警摘要
-            alerts_summary = session.execute(
-                text("SELECT * FROM v_today_alerts_summary")
-            ).fetchall()
+            alerts_summary = session.execute(text("SELECT * FROM v_today_alerts_summary")).fetchall()
 
             # 活跃规则
-            active_rules = session.execute(
-                text("SELECT * FROM v_active_alert_rules LIMIT 10")
-            ).fetchall()
+            active_rules = session.execute(text("SELECT * FROM v_active_alert_rules LIMIT 10")).fetchall()
 
             # 实时监控摘要
-            realtime_summary = session.execute(
-                text("SELECT * FROM v_realtime_summary")
-            ).fetchone()
+            realtime_summary = session.execute(text("SELECT * FROM v_realtime_summary")).fetchone()
 
             return {
                 "success": True,
                 "data": {
                     "alerts_summary": [dict(row._mapping) for row in alerts_summary],
                     "active_rules": [dict(row._mapping) for row in active_rules],
-                    "realtime_summary": (
-                        dict(realtime_summary._mapping) if realtime_summary else {}
-                    ),
+                    "realtime_summary": (dict(realtime_summary._mapping) if realtime_summary else {}),
                 },
             }
         finally:
@@ -549,7 +547,8 @@ class MonitoringControlRequest(BaseModel):
 
 @router.post("/control/start")
 async def start_monitoring(
-    request: MonitoringControlRequest, current_user: User = Depends(get_current_user)
+    request: MonitoringControlRequest,
+    current_user: User = Depends(get_current_user)
 ):
     """
     启动监控
@@ -571,7 +570,9 @@ async def start_monitoring(
 
 
 @router.post("/control/stop")
-async def stop_monitoring(current_user: User = Depends(get_current_user)):
+async def stop_monitoring(
+    current_user: User = Depends(get_current_user)
+):
     """停止监控"""
     try:
         monitoring_service.stop_monitoring()
@@ -663,286 +664,3 @@ async def get_monitoring_status():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# ============================================================================
-# SSE 实时推送端点 (Phase 2.4.2 - 新增)
-# ============================================================================
-
-
-@router.get("/alerts/stream")
-async def sse_alerts_stream():
-    """
-    SSE endpoint for real-time alert notifications (Phase 2.4.2 - 新增)
-
-    提供实时的告警推送服务，使用Server-Sent Events (SSE)协议。
-
-    **Event Types:**
-    - `connected`: 初始连接确认
-    - `alert`: 新告警通知
-    - `alert_updated`: 告警状态更新
-    - `ping`: 心跳保活 (每30秒)
-
-    **Alert Event Data Structure:**
-    ```json
-    {
-        "event": "alert",
-        "data": {
-            "alert_id": 123,
-            "alert_type": "limit_up",
-            "severity": "high",
-            "symbol": "600519",
-            "stock_name": "贵州茅台",
-            "message": "贵州茅台涨停",
-            "created_at": "2025-12-24T10:30:00",
-            "is_read": false
-        },
-        "timestamp": "2025-12-24T10:30:00"
-    }
-    ```
-
-    **Severity Levels:**
-    - `info`: 信息提示
-    - `warning`: 警告
-    - `high`: 高重要级
-    - `critical`: 严重告警
-
-    **Example (JavaScript):**
-    ```javascript
-    const eventSource = new EventSource('/api/monitoring/alerts/stream');
-
-    eventSource.addEventListener('connected', (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Connected:', data.client_id);
-    });
-
-    eventSource.addEventListener('alert', (event) => {
-        const alert = JSON.parse(event.data);
-        showNotification(alert);
-    });
-
-    eventSource.addEventListener('error', () => {
-        console.error('SSE connection error');
-        eventSource.close();
-    });
-    ```
-
-    **Reconnection:**
-    - 浏览器会自动重连
-    - 使用 `Last-Event-ID` 头部恢复断开前的消息
-    """
-    from fastapi import Request
-    from sse_starlette.sse import EventSourceResponse
-    from app.core.sse_manager import sse_event_generator
-
-    # 使用现有的 SSE 基础设施，channel 为 "monitoring_alerts"
-    # 这样可以与现有的 alerts channel 区分开来
-    async def monitoring_alerts_generator(request: Request):
-        """监控告警SSE生成器"""
-        from app.core.sse_manager import get_sse_manager
-        import asyncio
-
-        manager = get_sse_manager()
-        client_id, queue = await manager.connect("monitoring_alerts")
-
-        try:
-            while True:
-                if await request.is_disconnected():
-                    break
-
-                try:
-                    event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                    yield {
-                        "event": event.event,
-                        "data": event.data,
-                        "id": event.id,
-                        "timestamp": event.data.get("timestamp") or asyncio.get_event_loop().time(),
-                    }
-                except asyncio.TimeoutError:
-                    # 发送心跳保活
-                    yield {
-                        "event": "ping",
-                        "data": {
-                            "channel": "monitoring_alerts",
-                            "timestamp": datetime.now().isoformat(),
-                        },
-                    }
-
-        finally:
-            await manager.disconnect("monitoring_alerts", client_id)
-
-    return EventSourceResponse(
-        monitoring_alerts_generator,
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",  # 禁用nginx缓冲
-        },
-    )
-
-
-@router.get("/alerts/summary/stream")
-async def sse_alerts_summary_stream():
-    """
-    SSE endpoint for alert summary updates (Phase 2.4.2 - 新增)
-
-    推送告警摘要的实时更新，包括未读告警数量、各级别告警统计等。
-
-    **Event Types:**
-    - `connected`: 初始连接确认
-    - `summary_updated`: 告警摘要更新
-    - `ping`: 心跳保活 (每30秒)
-
-    **Summary Event Data Structure:**
-    ```json
-    {
-        "event": "summary_updated",
-        "data": {
-            "total_alerts": 150,
-            "unread_count": 12,
-            "critical_count": 2,
-            "high_count": 5,
-            "warning_count": 8,
-            "info_count": 135,
-            "last_update": "2025-12-24T10:30:00"
-        },
-        "timestamp": "2025-12-24T10:30:00"
-    }
-    ```
-
-    **Example (JavaScript):**
-    ```javascript
-    const eventSource = new EventSource('/api/monitoring/alerts/summary/stream');
-
-    eventSource.addEventListener('summary_updated', (event) => {
-        const summary = JSON.parse(event.data);
-        updateAlertBadge(summary.unread_count);
-        updateAlertChart(summary);
-    });
-    ```
-    """
-    from fastapi import Request
-    from sse_starlette.sse import EventSourceResponse
-
-    async def alert_summary_generator(request: Request):
-        """告警摘要SSE生成器"""
-        from app.core.sse_manager import get_sse_manager
-        import asyncio
-
-        manager = get_sse_manager()
-        client_id, queue = await manager.connect("alert_summary")
-
-        try:
-            # 发送初始摘要
-            from app.services.monitoring_service import monitoring_service
-
-            initial_alerts, _ = monitoring_service.get_alert_records(
-                limit=1000, is_read=False
-            )
-            critical_count = sum(1 for a in initial_alerts if a.alert_level == "critical")
-            high_count = sum(1 for a in initial_alerts if a.alert_level == "high")
-
-            yield {
-                "event": "summary_updated",
-                "data": {
-                    "total_alerts": len(initial_alerts),
-                    "unread_count": len(initial_alerts),
-                    "critical_count": critical_count,
-                    "high_count": high_count,
-                    "warning_count": len(initial_alerts) - critical_count - high_count,
-                    "last_update": datetime.now().isoformat(),
-                },
-            }
-
-            try:
-                while True:
-                    if await request.is_disconnected():
-                        break
-
-                    try:
-                        event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                        yield {
-                            "event": event.event,
-                            "data": event.data,
-                            "id": event.id,
-                        }
-                    except asyncio.TimeoutError:
-                        # 定期发送摘要更新
-                        alerts, _ = monitoring_service.get_alert_records(
-                            limit=1000, is_read=False
-                        )
-                        yield {
-                            "event": "summary_updated",
-                            "data": {
-                                "total_alerts": len(alerts),
-                                "unread_count": len(alerts),
-                                "last_update": datetime.now().isoformat(),
-                            },
-                        }
-
-        finally:
-            await manager.disconnect("alert_summary", client_id)
-
-    return EventSourceResponse(
-        alert_summary_generator,
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-        },
-    )
-
-
-# 用于外部调用的告警广播函数
-async def broadcast_monitoring_alert(
-    alert_id: int,
-    alert_type: str,
-    severity: str,
-    symbol: str,
-    stock_name: str,
-    message: str,
-):
-    """
-    广播监控告警到所有连接的SSE客户端
-
-    Args:
-        alert_id: 告警ID
-        alert_type: 告警类型 (limit_up, limit_down, etc.)
-        severity: 严重级别 (info, warning, high, critical)
-        symbol: 股票代码
-        stock_name: 股票名称
-        message: 告警消息
-    """
-    from app.core.sse_manager import get_sse_broadcaster
-
-    broadcaster = get_sse_broadcaster()
-    await broadcaster.manager.broadcast(
-        "monitoring_alerts",
-        {
-            "event": "alert",
-            "data": {
-                "alert_id": alert_id,
-                "alert_type": alert_type,
-                "severity": severity,
-                "symbol": symbol,
-                "stock_name": stock_name,
-                "message": message,
-                "created_at": datetime.now().isoformat(),
-                "is_read": False,
-            },
-            "id": str(alert_id),
-        },
-    )
-
-    # 同时更新摘要
-    await broadcaster.manager.broadcast(
-        "alert_summary",
-        {
-            "event": "summary_updated",
-            "data": {"timestamp": datetime.now().isoformat()},
-        },
-    )
-
-
-__all__ = [
-    "router",
-    "broadcast_monitoring_alert",
-]

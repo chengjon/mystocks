@@ -11,25 +11,19 @@ TDX数据API路由
 所有接口均需JWT认证
 """
 
-from datetime import datetime, timedelta
+from fastapi import APIRouter, HTTPException, Query, Depends, status
 from typing import Optional
+from datetime import date, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-
-from app.core.responses import (
-
-    ErrorCodes,
-    create_unified_error_response,
-    create_unified_success_response,
-)
-from app.core.security import User, get_current_active_user
 from app.schemas.tdx_schemas import (
-    IndexQuoteResponse,
-    KlineResponse,
     RealTimeQuoteResponse,
+    KlineResponse,
+    IndexQuoteResponse,
+    ErrorResponse,
     TdxHealthResponse,
 )
-from app.services.tdx_service import TdxService, get_tdx_service
+from app.services.tdx_service import get_tdx_service, TdxService
+from app.core.security import get_current_active_user, User
 
 router = APIRouter(prefix="/api/tdx", tags=["TDX行情数据"])
 
@@ -39,6 +33,7 @@ router = APIRouter(prefix="/api/tdx", tags=["TDX行情数据"])
 
 @router.get(
     "/quote/{symbol}",
+    response_model=RealTimeQuoteResponse,
     summary="获取股票实时行情",
     description="查询指定股票的实时行情数据,包括最新价、涨跌幅、成交量、五档行情等",
 )
@@ -54,7 +49,7 @@ async def get_stock_quote(
     - symbol: 6位数字股票代码(如: 600519)
 
     **返回:**
-    - 实时行情数据,包含最新价、涨跌幅、五档行情等，使用统一响应格式
+    - 实时行情数据,包含最新价、涨跌幅、五档行情等
 
     **示例:**
     ```
@@ -68,35 +63,20 @@ async def get_stock_quote(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_unified_error_response(
-                    ErrorCodes.BAD_REQUEST,
-                    "无效的股票代码,必须为6位数字",
-                ).model_dump(),
+                detail="无效的股票代码,必须为6位数字",
             )
 
         # 调用服务获取行情
         quote = service.get_real_time_quote(symbol)
 
-        return create_unified_success_response(
-            data=quote,
-            message=f"获取{symbol}实时行情成功",
-        )
+        return RealTimeQuoteResponse(**quote)
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_unified_error_response(
-                ErrorCodes.BAD_REQUEST,
-                str(e),
-            ).model_dump(),
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_unified_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取实时行情失败: {str(e)}",
-            ).model_dump(),
+            detail=f"获取实时行情失败: {str(e)}",
         )
 
 
@@ -179,26 +159,14 @@ async def get_stock_kline(
             symbol=symbol, start_date=start_date, end_date=end_date, period=period
         )
 
-        return create_unified_success_response(
-            data=kline_data,
-            message=f"获取{symbol} K线数据成功 ({period}周期)",
-        )
+        return KlineResponse(**kline_data)
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_unified_error_response(
-                ErrorCodes.BAD_REQUEST,
-                str(e),
-            ).model_dump(),
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_unified_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取K线数据失败: {str(e)}",
-            ).model_dump(),
+            detail=f"获取K线数据失败: {str(e)}",
         )
 
 
@@ -207,6 +175,7 @@ async def get_stock_kline(
 
 @router.get(
     "/index/quote/{symbol}",
+    response_model=IndexQuoteResponse,
     summary="获取指数实时行情",
     description="查询指定指数的实时点位和涨跌幅",
 )
@@ -239,35 +208,20 @@ async def get_index_quote(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_unified_error_response(
-                    ErrorCodes.BAD_REQUEST,
-                    "无效的指数代码,必须为6位数字",
-                ).model_dump(),
+                detail="无效的指数代码,必须为6位数字",
             )
 
         # 调用服务获取指数行情
         quote = service.get_index_quote(symbol)
 
-        return create_unified_success_response(
-            data=quote,
-            message=f"获取{symbol}指数实时行情成功",
-        )
+        return IndexQuoteResponse(**quote)
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_unified_error_response(
-                ErrorCodes.BAD_REQUEST,
-                str(e),
-            ).model_dump(),
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_unified_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取指数行情失败: {str(e)}",
-            ).model_dump(),
+            detail=f"获取指数行情失败: {str(e)}",
         )
 
 
@@ -276,6 +230,7 @@ async def get_index_quote(
 
 @router.get(
     "/index/kline",
+    response_model=KlineResponse,
     summary="获取指数K线数据",
     description="查询指数历史K线数据,支持多种周期",
 )
@@ -311,10 +266,7 @@ async def get_index_kline(
         if not symbol or len(symbol) != 6 or not symbol.isdigit():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_unified_error_response(
-                    ErrorCodes.BAD_REQUEST,
-                    "无效的指数代码,必须为6位数字",
-                ).model_dump(),
+                detail="无效的指数代码,必须为6位数字",
             )
 
         # 验证周期
@@ -322,10 +274,7 @@ async def get_index_kline(
         if period not in valid_periods:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=create_unified_error_response(
-                    ErrorCodes.BAD_REQUEST,
-                    f"无效的K线周期,支持的周期: {', '.join(valid_periods)}",
-                ).model_dump(),
+                detail=f"无效的K线周期,支持的周期: {', '.join(valid_periods)}",
             )
 
         # 默认日期范围
@@ -341,26 +290,14 @@ async def get_index_kline(
             symbol=symbol, start_date=start_date, end_date=end_date, period=period
         )
 
-        return create_unified_success_response(
-            data=kline_data,
-            message=f"获取{symbol}指数K线数据成功 ({period}周期)",
-        )
+        return KlineResponse(**kline_data)
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_unified_error_response(
-                ErrorCodes.BAD_REQUEST,
-                str(e),
-            ).model_dump(),
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=create_unified_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR,
-                f"获取指数K线失败: {str(e)}",
-            ).model_dump(),
+            detail=f"获取指数K线失败: {str(e)}",
         )
 
 
@@ -369,6 +306,7 @@ async def get_index_kline(
 
 @router.get(
     "/health",
+    response_model=TdxHealthResponse,
     summary="TDX服务健康检查",
     description="检查TDX服务器连接状态",
 )
@@ -386,22 +324,13 @@ async def health_check(service: TdxService = Depends(get_tdx_service)):
 
     **注意:** 此接口不需要认证
     """
-    from app.core.responses import create_health_response
-
     try:
         health_info = service.check_connection()
-        return create_health_response(
-            service="TDX行情数据",
-            status="healthy" if health_info.get("tdx_connected") else "unhealthy",
-            details=health_info,
-        )
+        return TdxHealthResponse(**health_info)
     except Exception as e:
-        return create_health_response(
-            service="TDX行情数据",
+        return TdxHealthResponse(
             status="error",
-            details={
-                "tdx_connected": False,
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "error": str(e),
-            },
+            tdx_connected=False,
+            timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            server_info={"error": str(e)},
         )
