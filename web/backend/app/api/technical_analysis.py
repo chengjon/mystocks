@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import (
-    
+
     ErrorCodes,
     create_unified_error_response,
     create_unified_success_response,

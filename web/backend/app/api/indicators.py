@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
 from app.core.responses import (
-    
+
     create_unified_success_response,
     create_health_response,
 )

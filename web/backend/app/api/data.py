@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
 from app.core.responses import (
-    
+
     create_unified_success_response,
     create_unified_error_response,
     create_health_response,
