@@ -150,6 +150,39 @@ def validate_required_settings():
         raise ValueError(error_msg)
 
 
+def validate_required_settings():
+    """
+    验证必需的安全配置项
+
+    在应用启动时验证所有必需的敏感信息是否已正确设置
+    如果缺少必需配置，抛出ValueError
+
+    Raises:
+        ValueError: 当必需的配置项缺失时
+    """
+    required_settings = {
+        "postgresql_password": "POSTGRESQL_PASSWORD",
+        "monitor_db_password": "POSTGRESQL_PASSWORD",  # 使用相同的密码
+        "secret_key": "JWT_SECRET_KEY",
+    }
+
+    missing_settings = []
+
+    for attr_name, env_name in required_settings.items():
+        value = getattr(settings, attr_name, None)
+        if not value or value == "":
+            missing_settings.append(env_name)
+
+    if missing_settings:
+        error_msg = (
+            f"安全配置错误：缺少必需的环境变量配置\n"
+            f"缺失项：{', '.join(missing_settings)}\n"
+            f"请检查 .env 文件或参考 .env.example 文件进行配置\n"
+            f"可以通过以下命令生成安全的JWT密钥：openssl rand -hex 32"
+        )
+        raise ValueError(error_msg)
+
+
 # 创建全局配置实例
 settings = Settings()
 
@@ -182,9 +215,7 @@ def get_monitor_db_connection_string() -> str:
 # 为兼容性保留（部分服务可能引用）
 def get_mysql_connection_string() -> str:
     """已废弃: Week 3简化后不再使用MySQL"""
-    raise NotImplementedError(
-        "MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()"
-    )
+    raise NotImplementedError("MySQL已于Week 3迁移至PostgreSQL，请使用get_postgresql_connection_string()")
 
 
 # 设置数据库URL（用于某些服务的向后兼容）

@@ -79,9 +79,7 @@ class CSRFTokenManager:
         """清理过期的tokens"""
         current_time = time.time()
         expired_tokens = [
-            token
-            for token, info in self.tokens.items()
-            if current_time - info["created_at"] > self.token_timeout
+            token for token, info in self.tokens.items() if current_time - info["created_at"] > self.token_timeout
         ]
         for token in expired_tokens:
             del self.tokens[token]
@@ -447,13 +445,9 @@ app.include_router(
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix
-app.include_router(
-    market_v2.router, tags=["market-v2"]
-)  # market V2路由（东方财富直接API）
+app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
-app.include_router(
-    metrics.router, prefix="/api", tags=["metrics"]
-)  # Prometheus metrics
+app.include_router(metrics.router, prefix="/api", tags=["metrics"])  # Prometheus metrics
 app.include_router(
     pool_monitoring.router, prefix="/api", tags=["pool-monitoring"]
 )  # Phase 3 Task 19: Connection Pool Monitoring
@@ -463,18 +457,10 @@ app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理
 app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
 
 # OpenStock 迁移功能路由
-app.include_router(
-    stock_search.router, prefix="/api/stock-search", tags=["stock-search"]
-)  # 股票搜索
-app.include_router(
-    watchlist.router, prefix="/api/watchlist", tags=["watchlist"]
-)  # 自选股管理
-app.include_router(
-    tradingview.router, prefix="/api/tradingview", tags=["tradingview"]
-)  # TradingView widgets
-app.include_router(
-    notification.router, prefix="/api/notification", tags=["notification"]
-)  # 邮件通知
+app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])  # 股票搜索
+app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])  # 自选股管理
+app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])  # TradingView widgets
+app.include_router(notification.router, prefix="/api/notification", tags=["notification"])  # 邮件通知
 
 # PyProfiling 机器学习功能路由
 app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预测和分析
@@ -486,9 +472,7 @@ app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告警
 
 #  技术分析系统路由 (Phase 2)
-app.include_router(
-    technical_analysis.router, tags=["technical-analysis"]
-)  # 增强技术分析
+app.include_router(technical_analysis.router, tags=["technical-analysis"])  # 增强技术分析
 
 #  仪表盘系统路由 (Phase 4)
 app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
@@ -501,17 +485,11 @@ app.include_router(
 )  # 公告监控
 
 # Week 1 Architecture-Compliant APIs (策略管理和风险管理)
-app.include_router(
-    strategy_management.router
-)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
-app.include_router(
-    risk_management.router
-)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(strategy_management.router)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
+app.include_router(risk_management.router)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
 
 # Week 2 SSE Real-time Push (实时推送)
-app.include_router(
-    sse_endpoints.router
-)  # SSE实时推送 (training, backtest, alerts, dashboard)
+app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest, alerts, dashboard)
 
 # 行业概念分析API
 app.include_router(industry_concept_analysis.router)  # 行业概念分析

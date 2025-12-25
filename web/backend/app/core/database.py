@@ -128,26 +128,20 @@ def get_postgresql_session() -> Session:
     """获取 PostgreSQL 会话（工厂模式）"""
     if "postgresql" not in sessions:
         engine = get_postgresql_engine()
-        sessions["postgresql"] = sessionmaker(
-            autocommit=False, autoflush=False, bind=engine
-        )
+        sessions["postgresql"] = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return sessions["postgresql"]()
 
 
 # Week 3 兼容性别名 - 将MySQL请求重定向到PostgreSQL
 def get_mysql_engine():
     """兼容性别名: Week 3简化后，MySQL请求重定向到PostgreSQL"""
-    logger.warning(
-        "get_mysql_engine() called, redirecting to PostgreSQL (Week 3 simplified)"
-    )
+    logger.warning("get_mysql_engine() called, redirecting to PostgreSQL (Week 3 simplified)")
     return get_postgresql_engine()
 
 
 def get_mysql_session() -> Session:
     """兼容性别名: Week 3简化后，MySQL会话重定向到PostgreSQL"""
-    logger.warning(
-        "get_mysql_session() called, redirecting to PostgreSQL (Week 3 simplified)"
-    )
+    logger.warning("get_mysql_session() called, redirecting to PostgreSQL (Week 3 simplified)")
     return get_postgresql_session()
 
 
@@ -164,9 +158,7 @@ try:
     import sys
 
     # 添加项目根目录到 Python 路径
-    project_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../../../../")
-    )
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
@@ -183,9 +175,7 @@ try:
 
 except (ImportError, OSError, EnvironmentError) as e:
     # Week 3 简化: 如果MyStocks核心模块不可用，跳过（web backend可独立运行）
-    logger.warning(
-        f"MyStocks data access modules not available (expected in Week 3 simplified mode): {e}"
-    )
+    logger.warning(f"MyStocks data access modules not available (expected in Week 3 simplified mode): {e}")
     postgresql_access = None
 
 
@@ -264,9 +254,7 @@ class DatabaseService:
             raise
 
     @db_retry(max_retries=3, delay=1.0)
-    def query_daily_kline(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def query_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """查询日线数据"""
         try:
             if postgresql_access:
@@ -329,6 +317,4 @@ def get_db() -> Session:
 
 
 # Session工厂 - 用于向后兼容
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=get_postgresql_engine()
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_postgresql_engine())
