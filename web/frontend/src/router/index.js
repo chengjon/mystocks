@@ -1,6 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import { useAuthStore } from '@/stores/auth'  // 已移除认证依赖
 
+/**
+ * MyStocks Frontend Router Configuration
+ *
+ * Layout Mapping:
+ * - MainLayout: Dashboard, Analysis, Settings, and general pages
+ * - MarketLayout: Market data pages (market, tdx-market, realtime)
+ * - DataLayout: Market data analysis pages (fund-flow, etf, chip-race, longhubang, wencai)
+ * - RiskLayout: Risk monitoring pages (risk, announcement)
+ * - StrategyLayout: Strategy and backtesting pages (strategy, backtest, signals)
+ *
+ * Architecture: Nested routes with layout components as parents
+ * Reference: openspec/changes/frontend-optimization-six-phase/design.md
+ */
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,11 +24,13 @@ const router = createRouter({
       component: () => import('@/views/Login.vue'),
       meta: { requiresAuth: false }
     },
+
+    // ========== MainLayout Routes (仪表盘/分析/设置/通用页面) ==========
     {
       path: '/',
-      component: () => import('@/layout/index.vue'),
+      component: () => import('@/layouts/MainLayout.vue'),
       redirect: '/dashboard',
-      meta: { requiresAuth: false },  // 已禁用认证要求
+      meta: { requiresAuth: false },
       children: [
         {
           path: 'dashboard',
@@ -23,52 +39,16 @@ const router = createRouter({
           meta: { title: '仪表盘', icon: 'Odometer' }
         },
         {
-          path: 'market',
-          name: 'market',
-          component: () => import('@/views/Market.vue'),
-          meta: { title: '市场行情', icon: 'TrendCharts' }
+          path: 'analysis',
+          name: 'analysis',
+          component: () => import('@/views/Analysis.vue'),
+          meta: { title: '数据分析', icon: 'DataAnalysis' }
         },
         {
-          path: 'tdx-market',
-          name: 'tdx-market',
-          component: () => import('@/views/TdxMarket.vue'),
-          meta: { title: 'TDX行情', icon: 'TrendCharts' }
-        },
-        {
-          path: 'market-data',
-          name: 'market-data',
-          redirect: '/market-data/fund-flow',
-          meta: { title: '市场数据', icon: 'DataLine' }
-        },
-        {
-          path: 'market-data/fund-flow',
-          name: 'market-data-fund-flow',
-          component: () => import('@/components/market/FundFlowPanel.vue'),
-          meta: { title: '资金流向', icon: 'Money' }
-        },
-        {
-          path: 'market-data/etf',
-          name: 'market-data-etf',
-          component: () => import('@/components/market/ETFDataTable.vue'),
-          meta: { title: 'ETF行情', icon: 'TrendCharts' }
-        },
-        {
-          path: 'market-data/chip-race',
-          name: 'market-data-chip-race',
-          component: () => import('@/components/market/ChipRaceTable.vue'),
-          meta: { title: '竞价抢筹', icon: 'ShoppingCart' }
-        },
-        {
-          path: 'market-data/lhb',
-          name: 'market-data-lhb',
-          component: () => import('@/components/market/LongHuBangTable.vue'),
-          meta: { title: '龙虎榜', icon: 'Flag' }
-        },
-        {
-          path: 'market-data/wencai',
-          name: 'market-data-wencai',
-          component: () => import('@/components/market/WencaiPanelV2.vue'),
-          meta: { title: '问财筛选', icon: 'Search' }
+          path: 'analysis/industry-concept',
+          name: 'industry-concept-analysis',
+          component: () => import('@/views/IndustryConceptAnalysis.vue'),
+          meta: { title: '行业概念分析', icon: 'Box' }
         },
         {
           path: 'stocks',
@@ -84,18 +64,6 @@ const router = createRouter({
           meta: { title: '股票详情', icon: 'Document' }
         },
         {
-          path: 'analysis',
-          name: 'analysis',
-          component: () => import('@/views/Analysis.vue'),
-          meta: { title: '数据分析', icon: 'DataAnalysis' }
-        },
-        {
-          path: 'analysis/industry-concept',
-          name: 'industry-concept-analysis',
-          component: () => import('@/views/IndustryConceptAnalysis.vue'),
-          meta: { title: '行业概念分析', icon: 'Box' }
-        },
-        {
           path: 'technical',
           name: 'technical',
           component: () => import('@/views/TechnicalAnalysis.vue'),
@@ -108,40 +76,10 @@ const router = createRouter({
           meta: { title: '指标库', icon: 'Grid' }
         },
         {
-          path: 'risk',
-          name: 'risk',
-          component: () => import('@/views/RiskMonitor.vue'),
-          meta: { title: '风险监控', icon: 'Warning' }
-        },
-        {
-          path: 'announcement',
-          name: 'announcement',
-          component: () => import('@/views/announcement/AnnouncementMonitor.vue'),
-          meta: { title: '公告监控', icon: 'Document' }
-        },
-        {
-          path: 'realtime',
-          name: 'realtime',
-          component: () => import('@/views/RealTimeMonitor.vue'),
-          meta: { title: '实时监控', icon: 'Monitor' }
-        },
-        {
           path: 'trade',
           name: 'trade',
           component: () => import('@/views/TradeManagement.vue'),
           meta: { title: '交易管理', icon: 'Tickets' }
-        },
-        {
-          path: 'strategy',
-          name: 'strategy',
-          component: () => import('@/views/StrategyManagement.vue'),
-          meta: { title: '策略管理', icon: 'Management' }
-        },
-        {
-          path: 'backtest',
-          name: 'backtest',
-          component: () => import('@/views/BacktestAnalysis.vue'),
-          meta: { title: '回测分析', icon: 'Histogram' }
         },
         {
           path: 'tasks',
@@ -167,6 +105,7 @@ const router = createRouter({
           component: () => import('@/views/system/DatabaseMonitor.vue'),
           meta: { title: '数据库监控', icon: 'Database' }
         },
+        // Demo pages
         {
           path: 'openstock-demo',
           name: 'openstock-demo',
@@ -205,6 +144,120 @@ const router = createRouter({
         }
       ]
     },
+
+    // ========== MarketLayout Routes (市场行情/TDX行情/实时监控) ==========
+    {
+      path: '/market',
+      component: () => import('@/layouts/MarketLayout.vue'),
+      redirect: '/market/list',
+      meta: { requiresAuth: false },
+      children: [
+        {
+          path: 'list',
+          name: 'market',
+          component: () => import('@/views/Market.vue'),
+          meta: { title: '市场行情', icon: 'TrendCharts' }
+        },
+        {
+          path: 'tdx-market',
+          name: 'tdx-market',
+          component: () => import('@/views/TdxMarket.vue'),
+          meta: { title: 'TDX行情', icon: 'TrendCharts' }
+        },
+        {
+          path: 'realtime',
+          name: 'realtime',
+          component: () => import('@/views/RealTimeMonitor.vue'),
+          meta: { title: '实时监控', icon: 'Monitor' }
+        }
+      ]
+    },
+
+    // ========== DataLayout Routes (市场数据分析/资金流向/ETF/龙虎榜等) ==========
+    {
+      path: '/market-data',
+      component: () => import('@/layouts/DataLayout.vue'),
+      redirect: '/market-data/fund-flow',
+      meta: { requiresAuth: false, title: '市场数据', icon: 'DataLine' },
+      children: [
+        {
+          path: 'fund-flow',
+          name: 'market-data-fund-flow',
+          component: () => import('@/components/market/FundFlowPanel.vue'),
+          meta: { title: '资金流向', icon: 'Money' }
+        },
+        {
+          path: 'etf',
+          name: 'market-data-etf',
+          component: () => import('@/components/market/ETFDataTable.vue'),
+          meta: { title: 'ETF行情', icon: 'TrendCharts' }
+        },
+        {
+          path: 'chip-race',
+          name: 'market-data-chip-race',
+          component: () => import('@/components/market/ChipRaceTable.vue'),
+          meta: { title: '竞价抢筹', icon: 'ShoppingCart' }
+        },
+        {
+          path: 'lhb',
+          name: 'market-data-lhb',
+          component: () => import('@/components/market/LongHuBangTable.vue'),
+          meta: { title: '龙虎榜', icon: 'Flag' }
+        },
+        {
+          path: 'wencai',
+          name: 'market-data-wencai',
+          component: () => import('@/components/market/WencaiPanelV2.vue'),
+          meta: { title: '问财筛选', icon: 'Search' }
+        }
+      ]
+    },
+
+    // ========== RiskLayout Routes (风险监控/公告监控) ==========
+    {
+      path: '/risk-monitor',
+      component: () => import('@/layouts/RiskLayout.vue'),
+      redirect: '/risk-monitor/overview',
+      meta: { requiresAuth: false, title: '风险监控', icon: 'Warning' },
+      children: [
+        {
+          path: 'overview',
+          name: 'risk',
+          component: () => import('@/views/RiskMonitor.vue'),
+          meta: { title: '风险监控', icon: 'Warning' }
+        },
+        {
+          path: 'announcement',
+          name: 'announcement',
+          component: () => import('@/views/announcement/AnnouncementMonitor.vue'),
+          meta: { title: '公告监控', icon: 'Document' }
+        }
+      ]
+    },
+
+    // ========== StrategyLayout Routes (策略管理/回测分析/交易信号) ==========
+    {
+      path: '/strategy-hub',
+      component: () => import('@/layouts/StrategyLayout.vue'),
+      redirect: '/strategy-hub/management',
+      meta: { requiresAuth: false, title: '策略中心', icon: 'Management' },
+      children: [
+        {
+          path: 'management',
+          name: 'strategy',
+          component: () => import('@/views/StrategyManagement.vue'),
+          meta: { title: '策略管理', icon: 'Management' }
+        },
+        {
+          path: 'backtest',
+          name: 'backtest',
+          component: () => import('@/views/BacktestAnalysis.vue'),
+          meta: { title: '回测分析', icon: 'Histogram' }
+        }
+      ]
+    },
+
+    // 404 Not Found
     {
       path: '/:pathMatch(.*)*',
       name: 'notFound',
