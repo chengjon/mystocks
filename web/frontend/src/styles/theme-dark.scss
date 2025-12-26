@@ -1,0 +1,777 @@
+/**
+ * MyStocks Professional Dark Theme
+ * MyStocks 量化交易平台 - 专业深色主题
+ *
+ * Design Philosophy: Bloomberg Terminal + Wind Trading System
+ * 设计理念: Bloomberg 终端 + Wind 交易系统
+ *
+ * CRITICAL: A股市场颜色约定 (A-Share Market Color Convention)
+ * 中国大陆 A 股市场使用红涨绿跌，与国际市场相反
+ * RED = UP (涨), GREEN = DOWN (跌), GRAY = FLAT (平)
+ *
+ * Author: MyStocks Frontend Team
+ * Updated: 2025-12-26
+ */
+
+/* ============================================
+   CSS Variables Root Definition
+   CSS 变量根定义
+   ============================================ */
+:root {
+  /* ------------------------------------------
+     Background Colors - 深蓝色系背景
+     Deep Blue-Black Palette (专业金融终端风格)
+     ------------------------------------------ */
+
+  /// Main background - 极深蓝黑色
+  /// 用于主页面背景、应用整体背景
+  --bg-primary: #0B0F19;
+
+  /// Secondary background - 深蓝灰色
+  /// 用于次级区域、嵌套容器
+  --bg-secondary: #1A1F2E;
+
+  /// Card background - 中蓝色
+  /// 用于卡片、面板、对话框
+  --bg-card: #232936;
+
+  /// Hover state - 交互悬停状态
+  /// 用于按钮悬停、列表项悬停
+  --bg-hover: #2D3446;
+
+  /// Active state - 激活状态
+  /// 用于选中项、激活标签页
+  --bg-active: #343A4D;
+
+  /// Overlay/Mask background - 遮罩层
+  /// 用于模态框背景、加载遮罩
+  --bg-overlay: rgba(11, 15, 25, 0.85);
+
+  /* ------------------------------------------
+     A-Share Market Colors - A股市场颜色 (CRITICAL)
+     红涨绿跌 - 中国市场标准约定
+     ------------------------------------------ */
+
+  /// UP color - 红色 (上涨)
+  /// 用于: 价格上涨、正值、收益增加、买入信号
+  /// RGB: 255, 82, 82 | HSL: 4, 100%, 66%
+  --color-up: #FF5252;
+
+  /// UP background - 红色背景（淡化）
+  /// 用于: 上涨趋势背景、买入按钮
+  --color-up-bg: rgba(255, 82, 82, 0.15);
+
+  /// DOWN color - 绿色 (下跌)
+  /// 用于: 价格下跌、负值、收益减少、卖出信号
+  /// RGB: 0, 230, 118 | HSL: 152, 100%, 45%
+  --color-down: #00E676;
+
+  /// DOWN background - 绿色背景（淡化）
+  /// 用于: 下跌趋势背景、卖出按钮
+  --color-down-bg: rgba(0, 230, 118, 0.15);
+
+  /// FLAT color - 灰色 (平盘)
+  /// 用于: 价格不变、零值、持平状态
+  --color-flat: #B0B3B8;
+
+  /// FLAT background - 灰色背景（淡化）
+  --color-flat-bg: rgba(176, 179, 184, 0.15);
+
+  /* ------------------------------------------
+     Accent Colors - 功能强调色
+     Semantic Colors (功能性颜色)
+     ------------------------------------------ */
+
+  /// Primary color - 专业蓝
+  /// 用于: 主要操作、导航高亮、品牌色
+  --color-primary: #2979FF;
+
+  /// Primary hover - 悬停状态
+  --color-primary-hover: #5393FF;
+
+  /// Primary active - 激活状态
+  --color-primary-active: #1E5CBF;
+
+  /// Success color - 成功绿
+  /// 用于: 操作成功、正常状态
+  --color-success: #00C853;
+
+  /// Warning color - 警告橙
+  /// 用于: 警告提示、注意信息
+  --color-warning: #FFAB00;
+
+  /// Danger color - 危险红
+  /// 用于: 错误提示、删除操作、风险警告
+  --color-danger: #FF1744;
+
+  /// Info color - 信息蓝
+  /// 用于: 信息提示、帮助说明
+  --color-info: #00B0FF;
+
+  /* ------------------------------------------
+     Text Colors - 文本颜色系统
+     Typography Colors (确保可读性)
+     ------------------------------------------ */
+
+  /// Primary text - 纯白
+  /// 用于: 标题、重要文本、主要信息
+  --text-primary: #FFFFFF;
+
+  /// Secondary text - 浅灰色
+  /// 用于: 正文、描述文本、次要信息
+  --text-secondary: #B0B3B8;
+
+  /// Tertiary text - 深灰色
+  /// 用于: 辅助文本、标签、占位符
+  --text-tertiary: #7A7E85;
+
+  /// Disabled text - 更深灰色
+  /// 用于: 禁用状态、不可操作文本
+  --text-disabled: #4A4E55;
+
+  /// Link text - 链接色
+  /// 用于: 超链接、可点击文本
+  --text-link: #5393FF;
+
+  /// Code text - 代码文本
+  /// 用于: 代码块、命令行、数据展示
+  --text-code: #00E676;
+
+  /* ------------------------------------------
+     Border Colors - 边框颜色系统
+     Border & Divider Colors (分隔与层次)
+     ------------------------------------------ */
+
+  /// Base border - 基础边框
+  /// 用于: 输入框边框、卡片边框
+  --border-base: #3A3E45;
+
+  /// Light border - 浅色边框
+  /// 用于: 分隔线、次要边框
+  --border-light: #4A4E55;
+
+  /// Dark border - 深色边框
+  /// 用于: 内嵌边框、弱化分隔
+  --border-dark: #2A2E35;
+
+  /// Focus border - 聚焦边框
+  /// 用于: 输入框聚焦、键盘导航
+  --border-focus: #2979FF;
+
+  /// Error border - 错误边框
+  /// 用于: 表单验证错误、危险操作
+  --border-error: #FF1744;
+
+  /* ------------------------------------------
+     Shadow System - 阴影系统
+     Box Shadows (层次与深度)
+     ------------------------------------------ */
+
+  /// Level 1 shadow - 轻微阴影
+  /// 用于: 卡片默认状态、按钮
+  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /// Level 2 shadow - 中等阴影
+  /// 用于: 下拉菜单、弹出框
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /// Level 3 shadow - 深度阴影
+  /// 用于: 模态框、对话框
+  --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /// Glow effect - 发光效果
+  /// 用于: 重要元素高亮、聚焦状态
+  --shadow-glow: 0 0 20px rgba(41, 121, 255, 0.4);
+
+  /* ------------------------------------------
+     Spacing Scale - 间距系统
+     Spacing (一致性间距规范)
+     ------------------------------------------ */
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* ------------------------------------------
+     Border Radius - 圆角系统
+     Radius (圆角规范)
+     ------------------------------------------ */
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-round: 50%;
+
+  /* ------------------------------------------
+     Typography - 字体系统
+     Font Sizes & Weights
+     ------------------------------------------ */
+
+  --font-family-base: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+
+  --font-family-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.75;
+
+  /* ------------------------------------------
+     Transitions - 过渡动画
+     Animation Timing (流畅交互体验)
+     ------------------------------------------ */
+
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* ------------------------------------------
+     Z-Index Scale - 层级系统
+     Z-Index Layers (堆叠上下文)
+     ------------------------------------------ */
+
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/* ============================================
+   Usage Examples / 使用示例
+   ============================================ */
+
+/*
+  Example 1: 股票价格涨跌样式 (Stock Price Up/Down)
+  -------------------------------------------------
+  .stock-price {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-bold);
+
+    &.up {
+      color: var(--color-up);  // 红色 - 涨
+      background: var(--color-up-bg);
+    }
+
+    &.down {
+      color: var(--color-down);  // 绿色 - 跌
+      background: var(--color-down-bg);
+    }
+
+    &.flat {
+      color: var(--color-flat);  // 灰色 - 平
+      background: var(--color-flat-bg);
+    }
+  }
+
+  Example 2: 卡片样式 (Card Component)
+  -------------------------------------------------
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-base);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+    padding: var(--spacing-lg);
+
+    &:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--shadow-2);
+    }
+  }
+
+  Example 3: 按钮样式 (Button Component)
+  -------------------------------------------------
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all var(--transition-base);
+
+    &:hover {
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    &:active {
+      background: var(--color-primary-active);
+    }
+  }
+
+  Example 4: 输入框样式 (Input Component)
+  -------------------------------------------------
+  .input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-base);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-glow);
+    }
+
+    &:disabled {
+      background: var(--bg-primary);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  Example 5: 表格样式 (Table Component)
+  -------------------------------------------------
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-weight: var(--font-weight-semibold);
+      text-align: left;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 2px solid var(--border-base);
+    }
+
+    td {
+      color: var(--text-primary);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    tr:hover {
+      background: var(--bg-hover);
+    }
+  }
+*/
+
+/* ============================================
+   Utility Classes - 工具类
+   快速应用常用样式
+   ============================================ */
+
+/* Text Colors - 文本颜色 */
+.text-up { color: var(--color-up) !important; }
+.text-down { color: var(--color-down) !important; }
+.text-flat { color: var(--color-flat) !important; }
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-disabled { color: var(--text-disabled) !important; }
+
+/* Background Colors - 背景颜色 */
+.bg-up { background-color: var(--color-up-bg) !important; }
+.bg-down { background-color: var(--color-down-bg) !important; }
+.bg-flat { background-color: var(--color-flat-bg) !important; }
+.bg-primary { background-color: var(--bg-primary) !important; }
+.bg-secondary { background-color: var(--bg-secondary) !important; }
+.bg-card { background-color: var(--bg-card) !important; }
+
+/* Border Colors - 边框颜色 */
+.border-up { border-color: var(--color-up) !important; }
+.border-down { border-color: var(--color-down) !important; }
+.border-base { border-color: var(--border-base) !important; }
+.border-focus { border-color: var(--border-focus) !important; }
+
+/* Font Weights - 字重 */
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+
+/* ============================================
+   Component Overrides - 组件样式覆盖
+   Element Plus Theme Overrides
+   ============================================ */
+
+/*
+  Element Plus 组件样式自定义示例
+  需要在组件中覆盖 Element Plus 默认样式时使用
+*/
+
+/* Button 按钮覆盖 */
+.el-button--primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+
+  &:hover {
+    background-color: var(--color-primary-hover) !important;
+  }
+
+  &:active {
+    background-color: var(--color-primary-active) !important;
+  }
+}
+
+/* Input 输入框覆盖 */
+.el-input__wrapper {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: var(--border-light) !important;
+  }
+
+  &.is-focus {
+    border-color: var(--border-focus) !important;
+  }
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+  }
+}
+
+/* Table 表格覆盖 */
+.el-table {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+
+  th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-base) !important;
+  }
+
+  tr:hover > td {
+    background-color: var(--bg-hover) !important;
+  }
+
+  td {
+    border-color: var(--border-dark) !important;
+  }
+}
+
+/* Card 卡片覆盖 */
+.el-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-card__header {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-base) !important;
+}
+
+/* Dialog 对话框覆盖 */
+.el-dialog {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+}
+
+.el-dialog__body {
+  color: var(--text-secondary) !important;
+}
+
+/* Dropdown 下拉菜单覆盖 */
+.el-dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-secondary) !important;
+
+  &:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+/* ============================================
+   Accessibility - 无障碍访问
+   WCAG 2.1 AA Compliance
+   ============================================ */
+
+/*
+  Focus Visible - 清晰的键盘导航焦点
+  对于只用键盘导航的用户至关重要
+*/
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/*
+  Skip Link - 跳过导航链接
+  允许屏幕阅读器用户跳过重复导航
+*/
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  z-index: var(--z-index-tooltip);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/*
+  Screen Reader Only - 仅屏幕阅读器可见
+  用于辅助技术但不影响视觉设计
+*/
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Print Styles - 打印样式
+   优化打印输出
+   ============================================ */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+
+  img {
+    page-break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* ============================================
+   Responsive Design - 响应式设计
+   移动端优化
+   ============================================ */
+
+@media (max-width: 768px) {
+  :root {
+    /* Mobile - 调整间距 */
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+
+    /* Mobile - 调整字体 */
+    --font-size-base: 13px;
+    --font-size-md: 15px;
+    --font-size-lg: 17px;
+  }
+
+  /* 移动端减小阴影强度 */
+  .card,
+  .el-card {
+    box-shadow: none !important;
+    border: 1px solid var(--border-dark) !important;
+  }
+}
+
+/* ============================================
+   Dark Mode Transitions - 深色模式过渡
+   防止主题切换时的闪烁
+   ============================================ */
+
+/*
+  如果需要支持深色/浅色模式切换，
+  可以在 body 上添加此类以实现平滑过渡
+*/
+.theme-transition {
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--transition-base);
+  transition-timing-function: ease-in-out;
+}
+
+/* ============================================
+   Custom Scrollbar - 自定义滚动条
+   与深色主题保持一致的滚动条样式
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-base);
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background: var(--border-light);
+  }
+
+  &:active {
+    background: var(--border-focus);
+  }
+}
+
+/* Firefox 滚动条样式 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-base) var(--bg-primary);
+}
+
+/* ============================================
+   Animation Keyframes - 动画关键帧
+   微交互动画
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 动画工具类 */
+.animate-fade-in {
+  animation: fadeIn var(--transition-base);
+}
+
+.animate-slide-in-up {
+  animation: slideInUp var(--transition-base);
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   Theme Validation & Debug - 主题验证与调试
+   开发阶段使用的工具类
+   ============================================ */
+
+/*
+  开发阶段使用，验证 CSS 变量是否正确加载
+  Usage: <div class="debug-theme">Theme Debug</div>
+*/
+.debug-theme {
+  &::before {
+    content: "Theme Variables Loaded";
+    display: block;
+    background: var(--color-success);
+    color: var(--text-primary);
+    padding: var(--spacing-sm);
+    margin: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+
+/*
+  颜色对比度检查工具
+  验证文本与背景的对比度是否符合 WCAG 标准
+*/
+.debug-contrast {
+  .contrast-test {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md);
+    border: 1px solid var(--border-base);
+  }
+
+  .contrast-primary {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .contrast-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+
+  .contrast-up {
+    background: var(--color-up-bg);
+    color: var(--color-up);
+  }
+
+  .contrast-down {
+    background: var(--color-down-bg);
+    color: var(--color-down);
+  }
+}
+
+/* ============================================
+   END: theme-dark.scss
+   MyStocks Professional Dark Theme
+   ============================================ */

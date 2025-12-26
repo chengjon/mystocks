@@ -1,0 +1,688 @@
+/**
+ * MyStocks Dark Theme Application
+ * MyStocks 深色主题应用文件
+ *
+ * Purpose: 全局应用深色主题到所有页面和组件
+ *          Apply dark theme globally to all pages and components
+ *
+ * Strategy:
+ * 1. 使用全局样式覆盖，避免修改每个组件
+ * 2. Element Plus 组件自动使用 CSS 变量
+ * 3. 提供 A股颜色工具类（红涨绿跌）
+ *
+ * Author: MyStocks Frontend Team
+ * Updated: 2025-12-26
+ */
+
+/* ============================================
+   Global Body Styles - 全局基础样式
+   ============================================ */
+
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* ============================================
+   Page Container Styles - 页面容器样式
+   ============================================ */
+
+#app {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ============================================
+   A股市场颜色工具类 - A-Share Market Color Utilities
+   红涨绿跌 - 中国市场标准约定
+   ============================================ */
+
+/* 价格涨跌颜色 */
+.text-up,
+.price-up,
+.change-up {
+  color: var(--color-up) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-down,
+.price-down,
+.change-down {
+  color: var(--color-down) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-flat,
+.price-flat,
+.change-flat {
+  color: var(--color-flat) !important;
+}
+
+/* 背景色 */
+.bg-up {
+  background-color: var(--color-up-bg) !important;
+}
+
+.bg-down {
+  background-color: var(--color-down-bg) !important;
+}
+
+.bg-flat {
+  background-color: var(--color-flat-bg) !important;
+}
+
+/* 边框色 */
+.border-up {
+  border-color: var(--color-up) !important;
+}
+
+.border-down {
+  border-color: var(--color-down) !important;
+}
+
+/* ============================================
+   Element Plus 组件全局覆盖
+   Element Plus Component Overrides
+   ============================================ */
+
+/* Card 卡片 */
+.el-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: var(--shadow-1) !important;
+
+  &:hover {
+    border-color: var(--border-light) !important;
+    box-shadow: var(--shadow-2) !important;
+  }
+}
+
+.el-card__header {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-base) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.el-card__body {
+  color: var(--text-secondary) !important;
+}
+
+/* Table 表格 */
+.el-table {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+
+  th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-base) !important;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  td {
+    border-color: var(--border-dark) !important;
+  }
+
+  tr:hover > td {
+    background-color: var(--bg-hover) !important;
+  }
+
+  .el-table__row {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+  }
+
+  .el-table__body tr.current-row > td {
+    background-color: var(--bg-active) !important;
+  }
+}
+
+/* Button 按钮 */
+.el-button--primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--text-primary) !important;
+
+  &:hover {
+    background-color: var(--color-primary-hover) !important;
+    border-color: var(--color-primary-hover) !important;
+  }
+
+  &:active {
+    background-color: var(--color-primary-active) !important;
+    border-color: var(--color-primary-active) !important;
+  }
+}
+
+.el-button--success {
+  background-color: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.el-button--warning {
+  background-color: var(--color-warning) !important;
+  border-color: var(--color-warning) !important;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.el-button--danger {
+  background-color: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.el-button--info {
+  background-color: var(--color-info) !important;
+  border-color: var(--color-info) !important;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+/* Input 输入框 */
+.el-input__wrapper {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: none !important;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    border-color: var(--border-light) !important;
+  }
+
+  &.is-focus {
+    border-color: var(--border-focus) !important;
+    box-shadow: 0 0 0 2px var(--color-up-bg) !important;
+  }
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+  }
+}
+
+/* Select 选择器 */
+.el-select__wrapper {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: var(--border-light) !important;
+  }
+
+  &.is-focus {
+    border-color: var(--border-focus) !important;
+  }
+}
+
+.el-select__input {
+  color: var(--text-primary) !important;
+}
+
+.el-select-dropdown {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--text-secondary) !important;
+
+  &:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+  }
+
+  &.is-selected {
+    color: var(--color-primary) !important;
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+/* Tag 标签 */
+.el-tag {
+  border-color: var(--border-base) !important;
+
+  &.el-tag--primary {
+    background-color: var(--color-up-bg) !important;
+    border-color: var(--color-up) !important;
+    color: var(--color-up) !important;
+  }
+
+  &.el-tag--success {
+    background-color: var(--color-down-bg) !important;
+    border-color: var(--color-down) !important;
+    color: var(--color-down) !important;
+  }
+
+  &.el-tag--info {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-light) !important;
+    color: var(--text-secondary) !important;
+  }
+
+  &.el-tag--warning {
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+    color: var(--text-primary) !important;
+  }
+
+  &.el-tag--danger {
+    background-color: var(--color-danger) !important;
+    border-color: var(--color-danger) !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+/* Tabs 标签页 */
+.el-tabs {
+  .el-tabs__nav-wrap::after {
+    background-color: var(--border-base) !important;
+  }
+
+  .el-tabs__item {
+    color: var(--text-secondary) !important;
+
+    &:hover {
+      color: var(--text-primary) !important;
+    }
+
+    &.is-active {
+      color: var(--color-primary) !important;
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--color-primary) !important;
+  }
+
+  .el-tabs__content {
+    color: var(--text-secondary) !important;
+  }
+}
+
+/* Pagination 分页 */
+.el-pagination {
+  color: var(--text-secondary) !important;
+
+  button {
+    background-color: var(--bg-card) !important;
+    color: var(--text-secondary) !important;
+
+    &:hover {
+      color: var(--color-primary) !important;
+    }
+
+    &:disabled {
+      color: var(--text-disabled) !important;
+    }
+  }
+
+  .el-pager li {
+    background-color: var(--bg-card) !important;
+    color: var(--text-secondary) !important;
+
+    &:hover {
+      color: var(--color-primary) !important;
+    }
+
+    &.is-active {
+      background-color: var(--color-primary) !important;
+      color: var(--text-primary) !important;
+    }
+  }
+}
+
+/* Dialog 对话框 */
+.el-dialog {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: var(--shadow-3) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.el-dialog__body {
+  color: var(--text-secondary) !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--border-base) !important;
+}
+
+/* Message 消息提示 */
+.el-message {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: var(--shadow-2) !important;
+
+  &.el-message--success {
+    background-color: var(--color-down-bg) !important;
+    border-color: var(--color-down) !important;
+  }
+
+  &.el-message--warning {
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+  }
+
+  &.el-message--error {
+    background-color: var(--color-up-bg) !important;
+    border-color: var(--color-up) !important;
+  }
+
+  &.el-message--info {
+    background-color: var(--color-info) !important;
+    border-color: var(--color-info) !important;
+  }
+}
+
+/* Dropdown 下拉菜单 */
+.el-dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: var(--shadow-2) !important;
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-secondary) !important;
+
+  &:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+  }
+
+  &.is-disabled {
+    color: var(--text-disabled) !important;
+  }
+}
+
+/* Loading 加载 */
+.el-loading-mask {
+  background-color: var(--bg-overlay) !important;
+}
+
+.el-loading-spinner {
+  .circular {
+    stroke: var(--color-primary) !important;
+  }
+
+  .el-loading-text {
+    color: var(--text-secondary) !important;
+  }
+}
+
+/* ============================================
+   Page-Specific Styles - 页面专用样式
+   ============================================ */
+
+/* Dashboard 仪表盘 */
+.dashboard {
+  .dashboard-header {
+    border-bottom: 1px solid var(--border-base) !important;
+  }
+
+  .page-title {
+    color: var(--text-primary) !important;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary) !important;
+  }
+
+  .stat-card {
+    &:hover {
+      box-shadow: var(--shadow-2) !important;
+    }
+  }
+
+  .stat-title {
+    color: var(--text-secondary) !important;
+  }
+
+  .stat-value {
+    color: var(--text-primary) !important;
+  }
+}
+
+/* Stocks 股票列表 */
+.stocks {
+  .header-section {
+    h2 {
+      color: var(--text-primary) !important;
+    }
+  }
+
+  .filter-section {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-base) !important;
+  }
+
+  .total-info {
+    color: var(--text-secondary) !important;
+  }
+
+  .price {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+/* Strategy Management 策略管理 */
+.strategy-list {
+  .header h1 {
+    color: var(--text-primary) !important;
+  }
+
+  .subtitle {
+    color: var(--text-secondary) !important;
+  }
+
+  .error-state h3,
+  .empty-state h3 {
+    color: var(--text-primary) !important;
+  }
+
+  .error-state p,
+  .empty-state p {
+    color: var(--text-secondary) !important;
+  }
+}
+
+/* Technical Analysis 技术分析 */
+.technical-analysis {
+  .chart-header {
+    border-bottom: 1px solid var(--border-base) !important;
+  }
+
+  .chart-title {
+    color: var(--text-primary) !important;
+  }
+}
+
+/* ============================================
+   Chart Styles - 图表样式
+   ECharts 主题应用
+   ============================================ */
+
+/* ECharts tooltip */
+ echarts-tooltip {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   Custom Scrollbar - 自定义滚动条
+   ============================================ */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary) !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-base) !important;
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background: var(--border-light) !important;
+  }
+
+  &:active {
+    background: var(--border-focus) !important;
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-base) var(--bg-primary);
+}
+
+/* ============================================
+   Utility Classes - 通用工具类
+   ============================================ */
+
+/* Text Colors */
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-disabled { color: var(--text-disabled) !important; }
+.text-link { color: var(--text-link) !important; }
+
+/* Background Colors */
+.bg-primary { background-color: var(--bg-primary) !important; }
+.bg-secondary { background-color: var(--bg-secondary) !important; }
+.bg-card { background-color: var(--bg-card) !important; }
+.bg-hover { background-color: var(--bg-hover) !important; }
+.bg-active { background-color: var(--bg-active) !important; }
+
+/* Border Colors */
+.border-base { border-color: var(--border-base) !important; }
+.border-light { border-color: var(--border-light) !important; }
+.border-dark { border-color: var(--border-dark) !important; }
+.border-focus { border-color: var(--border-focus) !important; }
+
+/* Font Weights */
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+
+/* Spacing Utilities */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: var(--spacing-xs) !important; }
+.m-2 { margin: var(--spacing-sm) !important; }
+.m-3 { margin: var(--spacing-md) !important; }
+.m-4 { margin: var(--spacing-lg) !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: var(--spacing-xs) !important; }
+.p-2 { padding: var(--spacing-sm) !important; }
+.p-3 { padding: var(--spacing-md) !important; }
+.p-4 { padding: var(--spacing-lg) !important; }
+
+/* ============================================
+   Animations - 动画效果
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-base);
+}
+
+.slide-in-up {
+  animation: slideInUp var(--transition-base);
+}
+
+/* ============================================
+   Responsive Design - 响应式设计
+   移动端适配
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Mobile - 减小阴影 */
+  .el-card,
+  .chart-card {
+    box-shadow: none !important;
+    border: 1px solid var(--border-dark) !important;
+  }
+
+  /* Mobile - 调整间距 */
+  .dashboard,
+  .stocks,
+  .strategy-list {
+    padding: var(--spacing-sm) !important;
+  }
+}
+
+/* ============================================
+   Print Styles - 打印样式
+   ============================================ */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
+/* ============================================
+   END: theme-apply.scss
+   MyStocks Dark Theme Application
+   ============================================ */
