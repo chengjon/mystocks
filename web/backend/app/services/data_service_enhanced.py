@@ -18,9 +18,7 @@ import pandas as pd
 from pydantic import ValidationError
 
 # Add project root to path to import unified_manager
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "src"))
 
@@ -72,9 +70,7 @@ try:
     import os
     import sys
 
-    parent_dir = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    )
+    parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     if parent_dir not in sys.path:
         sys.path.insert(0, parent_dir)
 
@@ -102,9 +98,7 @@ class EnhancedDataService:
             self.api_monitor = get_api_monitor()
             self.metrics_collector = get_metrics_collector()
             self.alert_manager = get_alert_manager()
-            self.circuit_breaker = CircuitBreaker(
-                failure_threshold=5, recovery_timeout=60.0
-            )
+            self.circuit_breaker = CircuitBreaker(failure_threshold=5, recovery_timeout=60.0)
         else:
             self.api_monitor = None
             self.metrics_collector = None
@@ -177,18 +171,12 @@ class EnhancedDataService:
 
             # Check circuit breaker
             if self.circuit_breaker:
-                df, ohlcv_data = self.circuit_breaker(self._load_data_with_retry)(
-                    symbol, start_date, end_date
-                )
+                df, ohlcv_data = self.circuit_breaker(self._load_data_with_retry)(symbol, start_date, end_date)
             else:
-                df, ohlcv_data = self._load_data_with_retry(
-                    symbol, start_date, end_date
-                )
+                df, ohlcv_data = self._load_data_with_retry(symbol, start_date, end_date)
 
             if df.empty:
-                raise ValueError(
-                    f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据"
-                )
+                raise ValueError(f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据")
 
             # Validate result DataFrame
             if ENHANCED_ERROR_HANDLING:
@@ -211,13 +199,9 @@ class EnhancedDataService:
             # Record successful request
             response_time = time.time() - start_time
             if self.api_monitor:
-                self.api_monitor.record_request(
-                    "/data/ohlcv", "GET", 200, response_time
-                )
+                self.api_monitor.record_request("/data/ohlcv", "GET", 200, response_time)
             if self.metrics_collector:
-                self.metrics_collector.record_timer(
-                    "data_ohlcv_response_time", response_time
-                )
+                self.metrics_collector.record_timer("data_ohlcv_response_time", response_time)
                 self.metrics_collector.increment("data_ohlcv_requests_total")
                 self.metrics_collector.set_gauge("data_ohlcv_success_rate", 100.0)
 
@@ -232,16 +216,10 @@ class EnhancedDataService:
             # Record failed request
             response_time = time.time() - start_time
             if self.api_monitor:
-                status_code = (
-                    500 if isinstance(e, (ValueError, ValidationError)) else 503
-                )
-                self.api_monitor.record_request(
-                    "/data/ohlcv", "GET", status_code, response_time
-                )
+                status_code = 500 if isinstance(e, (ValueError, ValidationError)) else 503
+                self.api_monitor.record_request("/data/ohlcv", "GET", status_code, response_time)
             if self.metrics_collector:
-                self.metrics_collector.record_timer(
-                    "data_ohlcv_response_time", response_time
-                )
+                self.metrics_collector.record_timer("data_ohlcv_response_time", response_time)
                 self.metrics_collector.increment("data_ohlcv_requests_total")
                 self.metrics_collector.increment("data_ohlcv_errors_total")
                 self.metrics_collector.set_gauge("data_ohlcv_success_rate", 0.0)
@@ -266,9 +244,7 @@ class EnhancedDataService:
 
             # If data not found and auto_fetch enabled, fetch from Akshare
             if df.empty and self.auto_fetch:
-                logger.info(
-                    f"Data not found in database, fetching from Akshare for {symbol}"
-                )
+                logger.info(f"Data not found in database, fetching from Akshare for {symbol}")
                 df = self._fetch_and_save_from_akshare(symbol, start_date, end_date)
 
             return df
@@ -276,9 +252,7 @@ class EnhancedDataService:
         df = _load_from_sources()
 
         if df.empty:
-            raise ValueError(
-                f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据"
-            )
+            raise ValueError(f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据")
 
         # Convert to TA-Lib format
         ohlcv_data = self._dataframe_to_ohlcv_arrays(df)
@@ -287,9 +261,7 @@ class EnhancedDataService:
     def _validate_date_range(self, start_date: datetime, end_date: datetime) -> None:
         """验证日期范围"""
         if start_date >= end_date:
-            raise ValueError(
-                f"开始日期 ({start_date.date()}) 必须早于结束日期 ({end_date.date()})"
-            )
+            raise ValueError(f"开始日期 ({start_date.date()}) 必须早于结束日期 ({end_date.date()})")
 
         if end_date > datetime.now():
             raise ValueError(f"结束日期 ({end_date.date()}) 不能是未来日期")
@@ -346,17 +318,13 @@ class EnhancedDataService:
         # Get circuit breaker status
         if self.circuit_breaker:
             health_status["components"]["circuit_breaker"] = {
-                "status": "closed"
-                if self.circuit_breaker.state == "CLOSED"
-                else "open",
+                "status": "closed" if self.circuit_breaker.state == "CLOSED" else "open",
                 "type": "circuit_breaker",
                 "failure_count": getattr(self.circuit_breaker, "failure_count", 0),
             }
 
         # Check overall health
-        component_status = [
-            comp["status"] for comp in health_status["components"].values()
-        ]
+        component_status = [comp["status"] for comp in health_status["components"].values()]
         if "unavailable" in component_status:
             health_status["status"] = "degraded"
         if len(health_status["components"]) == 0:
@@ -380,9 +348,7 @@ class EnhancedDataService:
 
         return performance_metrics
 
-    def _load_from_unified_manager(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _load_from_unified_manager(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """从UnifiedManager加载数据 (带错误处理)"""
         try:
             # Use load_data_by_classification to query PostgreSQL daily_kline table
@@ -415,9 +381,7 @@ class EnhancedDataService:
             logger.error(f"Failed to load from UnifiedManager: {e}")
             raise DatabaseQueryError(f"数据库查询失败: {str(e)}")
 
-    def _fetch_and_save_from_akshare(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """从Akshare获取数据并保存到数据库 (带错误处理)"""
         try:
             if not self.akshare_adapter:
@@ -425,9 +389,7 @@ class EnhancedDataService:
                 return pd.DataFrame()
 
             # Call Akshare adapter to fetch data
-            logger.info(
-                f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}"
-            )
+            logger.info(f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}")
 
             df = self.akshare_adapter.get_stock_daily(
                 symbol=symbol,
@@ -445,19 +407,13 @@ class EnhancedDataService:
             df_save = pd.DataFrame(
                 {
                     "symbol": symbol,
-                    "trade_date": (
-                        pd.to_datetime(df["date"])
-                        if "date" in df.columns
-                        else pd.to_datetime(df.index)
-                    ),
+                    "trade_date": (pd.to_datetime(df["date"]) if "date" in df.columns else pd.to_datetime(df.index)),
                     "open": df["open"],
                     "high": df["high"],
                     "low": df["low"],
                     "close": df["close"],
                     "volume": df["volume"],
-                    "amount": df.get(
-                        "amount", df["volume"] * df["close"]
-                    ),  # Calculate if missing
+                    "amount": df.get("amount", df["volume"] * df["close"]),  # Calculate if missing
                 }
             )
 
@@ -507,21 +463,15 @@ class EnhancedDataService:
         np.random.seed(hash(symbol) % 2**32)  # Consistent seed per symbol
 
         # Generate returns
-        returns = np.random.normal(
-            0.001, 0.02, len(dates)
-        )  # 0.1% daily return, 2% volatility
+        returns = np.random.normal(0.001, 0.02, len(dates))  # 0.1% daily return, 2% volatility
         prices = base_price * np.exp(np.cumsum(returns))
 
         # Generate OHLC from close prices
         volatility = 0.01  # 1% intraday volatility
 
         opens = prices * (1 + np.random.normal(0, volatility, len(dates)))
-        highs = np.maximum(opens, prices) * (
-            1 + np.abs(np.random.normal(0, volatility, len(dates)))
-        )
-        lows = np.minimum(opens, prices) * (
-            1 - np.abs(np.random.normal(0, volatility, len(dates)))
-        )
+        highs = np.maximum(opens, prices) * (1 + np.abs(np.random.normal(0, volatility, len(dates))))
+        lows = np.minimum(opens, prices) * (1 - np.abs(np.random.normal(0, volatility, len(dates))))
         closes = prices
 
         # Generate volume
@@ -601,9 +551,7 @@ class EnhancedDataService:
         except Exception:
             return False
 
-    def get_available_date_range(
-        self, symbol: str
-    ) -> Optional[Tuple[datetime, datetime]]:
+    def get_available_date_range(self, symbol: str) -> Optional[Tuple[datetime, datetime]]:
         """获取股票可用的数据日期范围"""
         try:
             if not self.unified_manager:

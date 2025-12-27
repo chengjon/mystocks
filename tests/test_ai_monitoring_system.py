@@ -126,9 +126,7 @@ class TestAIAlertManager:
         assert success is True
 
         # 验证更新
-        updated_rule = next(
-            (r for r in alert_manager.get_alert_rules() if r.name == rule.name), None
-        )
+        updated_rule = next((r for r in alert_manager.get_alert_rules() if r.name == rule.name), None)
         assert updated_rule is not None
         assert updated_rule.threshold == 90.0
         assert updated_rule.threshold != original_threshold
@@ -147,9 +145,7 @@ class TestAIAlertManager:
         assert len(active_alerts) > 0
 
         # 验证告警信息
-        cpu_alert = next(
-            (alert for alert in active_alerts if "CPU" in alert.rule_name), None
-        )
+        cpu_alert = next((alert for alert in active_alerts if "CPU" in alert.rule_name), None)
         assert cpu_alert is not None
         assert cpu_alert.severity == AlertSeverity.WARNING
         assert "CPU使用率过高" in cpu_alert.message
@@ -432,9 +428,7 @@ class TestAIRealtimeMonitor:
         """测试性能阈值设置"""
         original_cpu_warning = monitor.thresholds.cpu_warning
 
-        monitor.set_performance_thresholds(
-            {"cpu_warning": 75.0, "gpu_memory_warning": 80.0}
-        )
+        monitor.set_performance_thresholds({"cpu_warning": 75.0, "gpu_memory_warning": 80.0})
 
         assert monitor.thresholds.cpu_warning == 75.0
         assert monitor.thresholds.cpu_warning != original_cpu_warning
@@ -446,9 +440,7 @@ class TestAdaptiveIntervalManager:
 
     def test_interval_calculation(self):
         """测试间隔计算"""
-        manager = AdaptiveIntervalManager(
-            base_interval=5.0, min_interval=2.0, max_interval=60.0
-        )
+        manager = AdaptiveIntervalManager(base_interval=5.0, min_interval=2.0, max_interval=60.0)
 
         # 测试正常负载
         system_metrics = {"cpu_usage": 50, "memory_usage": 50}
@@ -467,9 +459,7 @@ class TestAdaptiveIntervalManager:
 
     def test_interval_bounds(self):
         """测试间隔边界"""
-        manager = AdaptiveIntervalManager(
-            base_interval=5.0, min_interval=2.0, max_interval=60.0
-        )
+        manager = AdaptiveIntervalManager(base_interval=5.0, min_interval=2.0, max_interval=60.0)
 
         # 多次调用确保不会超出边界
         for _ in range(100):

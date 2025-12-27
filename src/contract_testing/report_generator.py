@@ -78,18 +78,14 @@ class ContractTestReportGenerator:
             lines.append(f"- **Total Tests**: {total}\n")
             lines.append(f"- **Passed**: {passed} ✅\n")
             lines.append(f"- **Failed**: {failed} ❌\n")
-            lines.append(
-                f"- **Pass Rate**: {(passed / total * 100) if total > 0 else 0:.1f}%\n\n"
-            )
+            lines.append(f"- **Pass Rate**: {(passed / total * 100) if total > 0 else 0:.1f}%\n\n")
 
             # Failed tests detail
             if failed > 0:
                 lines.append("### Failed Tests\n")
                 for result in self.test_results:
                     if result.get("status") == "failed":
-                        lines.append(
-                            f"- `{result['endpoint_method']} {result['endpoint_path']}`\n"
-                        )
+                        lines.append(f"- `{result['endpoint_method']} {result['endpoint_path']}`\n")
                         if result.get("error_message"):
                             lines.append(f"  - Error: {result['error_message']}\n")
                 lines.append("\n")
@@ -97,32 +93,20 @@ class ContractTestReportGenerator:
         # Consistency Check Summary
         if self.consistency_summary:
             lines.append("## API Consistency\n")
-            lines.append(
-                f"- **Consistency Score**: {self.consistency_summary.get('consistency_score', 0):.1f}/100\n"
-            )
-            lines.append(
-                f"- **Total Discrepancies**: {self.consistency_summary.get('total_discrepancies', 0)}\n"
-            )
-            lines.append(
-                f"- **Critical Issues**: {self.consistency_summary.get('critical_issues', 0)}\n"
-            )
-            lines.append(
-                f"- **Warnings**: {self.consistency_summary.get('warnings', 0)}\n\n"
-            )
+            lines.append(f"- **Consistency Score**: {self.consistency_summary.get('consistency_score', 0):.1f}/100\n")
+            lines.append(f"- **Total Discrepancies**: {self.consistency_summary.get('total_discrepancies', 0)}\n")
+            lines.append(f"- **Critical Issues**: {self.consistency_summary.get('critical_issues', 0)}\n")
+            lines.append(f"- **Warnings**: {self.consistency_summary.get('warnings', 0)}\n\n")
 
         # Discrepancies Detail
         if self.discrepancies:
-            critical = [
-                d for d in self.discrepancies if d.get("severity") == "critical"
-            ]
+            critical = [d for d in self.discrepancies if d.get("severity") == "critical"]
             warnings = [d for d in self.discrepancies if d.get("severity") == "warning"]
 
             if critical:
                 lines.append("### Critical Issues\n")
                 for disc in critical:
-                    lines.append(
-                        f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n"
-                    )
+                    lines.append(f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n")
                     lines.append(f"  - {disc['description']}\n")
                     lines.append(f"  - Suggestion: {disc['suggestion']}\n")
                 lines.append("\n")
@@ -130,9 +114,7 @@ class ContractTestReportGenerator:
             if warnings:
                 lines.append("### Warnings\n")
                 for disc in warnings:
-                    lines.append(
-                        f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n"
-                    )
+                    lines.append(f"- **{disc['type']}** - `{disc['endpoint_method']} {disc['endpoint_path']}`\n")
                     lines.append(f"  - {disc['description']}\n")
 
         # Write report
@@ -236,9 +218,7 @@ class ContractTestReportGenerator:
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.generate_json_report(f"{output_dir}/contract_test_report_{timestamp}.json")
-        self.generate_markdown_report(
-            f"{output_dir}/contract_test_report_{timestamp}.md"
-        )
+        self.generate_markdown_report(f"{output_dir}/contract_test_report_{timestamp}.md")
         self.generate_html_report(f"{output_dir}/contract_test_report_{timestamp}.html")
 
         logger.info(f"✅ Generated all reports in {output_dir}")

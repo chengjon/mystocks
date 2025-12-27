@@ -23,9 +23,7 @@ class IndexPerformanceMonitor:
         self.slow_query_threshold_ms = 500
         self.very_slow_query_threshold_ms = 2000
 
-    def record_query_execution(
-        self, query_name: str, execution_time_ms: float, table_name: str = None
-    ) -> None:
+    def record_query_execution(self, query_name: str, execution_time_ms: float, table_name: str = None) -> None:
         """
         记录查询执行时间
 
@@ -65,9 +63,7 @@ class IndexPerformanceMonitor:
 
         results = {}
 
-        queries_to_analyze = (
-            [query_name] if query_name else list(self.query_metrics.keys())
-        )
+        queries_to_analyze = [query_name] if query_name else list(self.query_metrics.keys())
 
         for qname in queries_to_analyze:
             metrics = self.query_metrics.get(qname, [])
@@ -81,21 +77,13 @@ class IndexPerformanceMonitor:
             results[qname] = {
                 "query_name": qname,
                 "execution_count": len(metrics),
-                "avg_execution_time_ms": round(
-                    sum(execution_times) / len(execution_times), 2
-                ),
+                "avg_execution_time_ms": round(sum(execution_times) / len(execution_times), 2),
                 "min_execution_time_ms": min(execution_times),
                 "max_execution_time_ms": max(execution_times),
-                "median_execution_time_ms": sorted(execution_times)[
-                    len(execution_times) // 2
-                ],
+                "median_execution_time_ms": sorted(execution_times)[len(execution_times) // 2],
                 "slow_query_percentage": round((slow_queries / len(metrics)) * 100, 2),
-                "p95_execution_time_ms": sorted(execution_times)[
-                    int(len(execution_times) * 0.95)
-                ],
-                "p99_execution_time_ms": sorted(execution_times)[
-                    int(len(execution_times) * 0.99)
-                ],
+                "p95_execution_time_ms": sorted(execution_times)[int(len(execution_times) * 0.95)],
+                "p99_execution_time_ms": sorted(execution_times)[int(len(execution_times) * 0.99)],
             }
 
         return results
@@ -133,11 +121,7 @@ class IndexPerformanceMonitor:
         """
         logger.info("Generating index usage report...")
 
-        unused_indexes = [
-            name
-            for name, stats in self.index_usage_stats.items()
-            if stats["total_uses"] == 0
-        ]
+        unused_indexes = [name for name, stats in self.index_usage_stats.items() if stats["total_uses"] == 0]
 
         underused_indexes = [
             {
@@ -151,9 +135,7 @@ class IndexPerformanceMonitor:
 
         return {
             "total_indexes": len(self.index_usage_stats),
-            "actively_used_indexes": len(self.index_usage_stats)
-            - len(unused_indexes)
-            - len(underused_indexes),
+            "actively_used_indexes": len(self.index_usage_stats) - len(unused_indexes) - len(underused_indexes),
             "unused_indexes": unused_indexes,
             "underused_indexes": underused_indexes,
             "recommendations": [
@@ -163,9 +145,7 @@ class IndexPerformanceMonitor:
                     "benefit": f"Free up {len(unused_indexes) * 5}MB+ disk space, reduce INSERT/UPDATE overhead",
                 }
             ],
-            "estimated_disk_space_savings": f"{len(unused_indexes) * 5}MB+"
-            if unused_indexes
-            else "0MB",
+            "estimated_disk_space_savings": f"{len(unused_indexes) * 5}MB+" if unused_indexes else "0MB",
         }
 
     def establish_performance_baseline(self, baseline_name: str, metrics: Dict) -> None:
@@ -237,9 +217,9 @@ class IndexPerformanceMonitor:
             },
         ]
 
-        achieved_speedup = sum(
-            (test["baseline_time_ms"] / test["target_time_ms"]) for test in test_results
-        ) / len(test_results)
+        achieved_speedup = sum((test["baseline_time_ms"] / test["target_time_ms"]) for test in test_results) / len(
+            test_results
+        )
 
         return {
             "baseline_name": "Index Optimization Benchmark",
@@ -248,16 +228,8 @@ class IndexPerformanceMonitor:
             "total_tests": len(test_results),
             "average_speedup": f"{round(achieved_speedup, 1)}x",
             "target_query_time_ms": 500,
-            "performance_grade": "A"
-            if achieved_speedup > 10
-            else "B"
-            if achieved_speedup > 5
-            else "C",
-            "overall_performance": "Excellent"
-            if achieved_speedup > 10
-            else "Good"
-            if achieved_speedup > 5
-            else "Fair",
+            "performance_grade": "A" if achieved_speedup > 10 else "B" if achieved_speedup > 5 else "C",
+            "overall_performance": "Excellent" if achieved_speedup > 10 else "Good" if achieved_speedup > 5 else "Fair",
         }
 
     def generate_performance_report(self) -> Dict:
@@ -306,17 +278,11 @@ class IndexPerformanceMonitor:
             "query_performance_summary": {
                 "total_queries_tracked": len(query_perf),
                 "average_execution_time_ms": round(
-                    sum(q["avg_execution_time_ms"] for q in query_perf.values())
-                    / len(query_perf)
-                    if query_perf
-                    else 0,
+                    sum(q["avg_execution_time_ms"] for q in query_perf.values()) / len(query_perf) if query_perf else 0,
                     2,
                 ),
                 "slow_query_percentage": round(
-                    sum(q["slow_query_percentage"] for q in query_perf.values())
-                    / len(query_perf)
-                    if query_perf
-                    else 0,
+                    sum(q["slow_query_percentage"] for q in query_perf.values()) / len(query_perf) if query_perf else 0,
                     2,
                 ),
             },

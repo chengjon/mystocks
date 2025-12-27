@@ -120,9 +120,7 @@ class DataDataSourceAdapter(IDataSource):
         self.error_count = 0
         self.last_response_time = 0.0
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         获取数据
 
@@ -149,9 +147,7 @@ class DataDataSourceAdapter(IDataSource):
             self._update_metrics(success=True, response_time=response_time * 1000)
 
             # 触发数据质量监控
-            await self._trigger_quality_monitoring(
-                endpoint, result, response_time * 1000
-            )
+            await self._trigger_quality_monitoring(endpoint, result, response_time * 1000)
 
             return result
 
@@ -161,14 +157,10 @@ class DataDataSourceAdapter(IDataSource):
             logger.error(f"Data fetch failed for {endpoint}: {str(e)}")
 
             # 更新监控指标
-            self._update_metrics(
-                success=False, response_time=response_time * 1000, error=str(e)
-            )
+            self._update_metrics(success=False, response_time=response_time * 1000, error=str(e))
 
             # 记录失败的质量监控
-            await self._trigger_quality_monitoring(
-                endpoint, None, response_time * 1000, success=False
-            )
+            await self._trigger_quality_monitoring(endpoint, None, response_time * 1000, success=False)
 
             # 返回错误响应格式
             return {
@@ -180,9 +172,7 @@ class DataDataSourceAdapter(IDataSource):
                 "endpoint": endpoint,
             }
 
-    async def _fetch_data(
-        self, endpoint: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         实际的数据获取逻辑
         """
@@ -234,18 +224,16 @@ class DataDataSourceAdapter(IDataSource):
 
             # 应用筛选条件 (复制原有逻辑)
             if search:
-                search_mask = df["symbol"].str.contains(
+                search_mask = df["symbol"].str.contains(search, case=False, na=False) | df["name"].str.contains(
                     search, case=False, na=False
-                ) | df["name"].str.contains(search, case=False, na=False)
+                )
                 df = df[search_mask]
 
             if industry:
                 df = df[df["industry"] == industry]
 
             if concept:
-                df = df[
-                    df.get("concepts", "").str.contains(concept, case=False, na=False)
-                ]
+                df = df[df.get("concepts", "").str.contains(concept, case=False, na=False)]
 
             if market:
                 df = df[df["market"] == market]
@@ -256,17 +244,12 @@ class DataDataSourceAdapter(IDataSource):
             random.seed(42)
 
             if "price" not in df.columns:
-                df["price"] = [
-                    round(random.uniform(10, 100), 2) for _ in range(len(df))
-                ]
+                df["price"] = [round(random.uniform(10, 100), 2) for _ in range(len(df))]
             if "change" not in df.columns:
                 df["change"] = [round(random.uniform(-5, 5), 2) for _ in range(len(df))]
             if "change_pct" not in df.columns:
                 df["change_pct"] = [
-                    round(row["change"] / row["price"] * 100, 2)
-                    if row["price"] > 0
-                    else 0
-                    for _, row in df.iterrows()
+                    round(row["change"] / row["price"] * 100, 2) if row["price"] > 0 else 0 for _, row in df.iterrows()
                 ]
 
             # 应用排序
@@ -610,9 +593,7 @@ class DataDataSourceAdapter(IDataSource):
             overview_data = {
                 "market_status": "trading",  # trading/closed
                 "total_stocks": total_stocks,
-                "total_market_cap": round(
-                    total_market_cap_trillion, 2
-                ),  # 新增：总市值(万亿元)
+                "total_market_cap": round(total_market_cap_trillion, 2),  # 新增：总市值(万亿元)
                 "rising_stocks": rising_stocks,
                 "falling_stocks": falling_stocks,
                 "flat_stocks": flat_stocks,
@@ -672,9 +653,7 @@ class DataDataSourceAdapter(IDataSource):
 
             intraday_data = []
             for i in range(240):  # 4小时交易时间，每分钟一个数据点
-                time_point = current_time.replace(hour=9, minute=30) + timedelta(
-                    minutes=i
-                )
+                time_point = current_time.replace(hour=9, minute=30) + timedelta(minutes=i)
                 price_change = random.uniform(-2, 2)
                 volume = random.randint(100, 10000)
 
@@ -749,11 +728,7 @@ class DataDataSourceAdapter(IDataSource):
 
     def get_metrics(self) -> Dict[str, Any]:
         """获取性能指标"""
-        success_rate = (
-            (self.successful_requests / self.total_requests * 100)
-            if self.total_requests > 0
-            else 0
-        )
+        success_rate = (self.successful_requests / self.total_requests * 100) if self.total_requests > 0 else 0
 
         return {
             "total_requests": self.total_requests,
@@ -778,9 +753,7 @@ class DataDataSourceAdapter(IDataSource):
                 self.metrics.response_time = response_time
             else:
                 alpha = 0.3  # 平滑因子
-                self.metrics.response_time = (
-                    alpha * response_time + (1 - alpha) * self.metrics.response_time
-                )
+                self.metrics.response_time = alpha * response_time + (1 - alpha) * self.metrics.response_time
         else:
             self.metrics.error_count += 1
             self.metrics.last_error = error
@@ -788,9 +761,7 @@ class DataDataSourceAdapter(IDataSource):
         # 计算成功率
         if self.metrics.total_requests > 0:
             self.metrics.success_rate = (
-                (self.metrics.total_requests - self.metrics.error_count)
-                / self.metrics.total_requests
-                * 100
+                (self.metrics.total_requests - self.metrics.error_count) / self.metrics.total_requests * 100
             )
 
         # 计算可用性 (基于最近的成功率)
@@ -823,9 +794,7 @@ class DashboardDataSourceAdapter(IDataSource):
         self.error_count = 0
         self.last_response_time = 0.0
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         从仪表盘数据源获取数据
         """
@@ -858,9 +827,7 @@ class DashboardDataSourceAdapter(IDataSource):
             logger.error(f"Dashboard数据获取失败: endpoint={endpoint}, error={str(e)}")
             raise
 
-    async def _generate_mock_dashboard_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def _generate_mock_dashboard_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """生成模拟仪表盘数据"""
         import random
 
@@ -980,12 +947,8 @@ class DashboardDataSourceAdapter(IDataSource):
                 "alerts": alerts,
                 "summary": {
                     "user_id": user_id,
-                    "total_value": sum(
-                        item["shares"] * item["price"] for item in portfolio
-                    ),
-                    "total_cost": sum(
-                        item["shares"] * item["cost"] for item in portfolio
-                    ),
+                    "total_value": sum(item["shares"] * item["price"] for item in portfolio),
+                    "total_cost": sum(item["shares"] * item["cost"] for item in portfolio),
                     "total_profit": sum(item["profit"] for item in portfolio),
                     "watchlist_count": len(watchlist),
                     "alert_count": len(alerts),
@@ -1010,9 +973,7 @@ class DashboardDataSourceAdapter(IDataSource):
         """更新监控指标"""
         # 更新成功率
         if self.total_requests > 0:
-            self.metrics.success_rate = (
-                self.successful_requests / self.total_requests
-            ) * 100
+            self.metrics.success_rate = (self.successful_requests / self.total_requests) * 100
 
         # 更新错误次数
         self.metrics.error_count = self.error_count
@@ -1025,20 +986,14 @@ class DashboardDataSourceAdapter(IDataSource):
             else:
                 # 使用指数移动平均
                 alpha = 0.3
-                self.metrics.response_time = (
-                    alpha * response_time + (1 - alpha) * self.metrics.response_time
-                )
+                self.metrics.response_time = alpha * response_time + (1 - alpha) * self.metrics.response_time
 
         # 更新可用性 (假设95%基础可用性，成功请求时提升)
         base_availability = 95.0
         if success:
-            self.metrics.availability = min(
-                100.0, base_availability + (self.metrics.success_rate - 90.0) * 0.1
-            )
+            self.metrics.availability = min(100.0, base_availability + (self.metrics.success_rate - 90.0) * 0.1)
         else:
-            self.metrics.availability = max(
-                0.0, base_availability - (self.error_count / self.total_requests) * 10.0
-            )
+            self.metrics.availability = max(0.0, base_availability - (self.error_count / self.total_requests) * 10.0)
 
     async def _trigger_quality_monitoring(
         self,
@@ -1133,9 +1088,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 self._technical_service = technical_analysis_service
             except Exception as e:
                 self._technical_service = None
-                raise RuntimeError(
-                    f"Failed to initialize technical analysis service: {e}"
-                )
+                raise RuntimeError(f"Failed to initialize technical analysis service: {e}")
         return self._technical_service
 
     def _get_mock_manager(self):
@@ -1150,9 +1103,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 raise RuntimeError(f"Failed to initialize mock manager: {e}")
         return self._mock_manager
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取技术分析数据"""
         # In mock mode, we don't need the technical service
         # if self._get_technical_service() is None:
@@ -1168,17 +1119,13 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             # 获取symbol参数
             symbol = params.get("symbol", "000001")
 
-            if endpoint == "indicators" or (
-                len(path_parts) >= 2 and path_parts[1] == "indicators"
-            ):
+            if endpoint == "indicators" or (len(path_parts) >= 2 and path_parts[1] == "indicators"):
                 # "indicators" or /{symbol}/indicators
                 period = params.get("period", "daily")
                 start_date = params.get("start_date")
                 end_date = params.get("end_date")
 
-                data = await self._get_all_indicators(
-                    symbol, period, start_date, end_date
-                )
+                data = await self._get_all_indicators(symbol, period, start_date, end_date)
 
                 # For indicators endpoint, return data directly without wrapping
                 # The API expects the indicators data structure at the top level
@@ -1191,62 +1138,46 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "trend" or (
-                len(path_parts) >= 2 and path_parts[1] == "trend"
-            ):
+            elif endpoint == "trend" or (len(path_parts) >= 2 and path_parts[1] == "trend"):
                 # "trend" or /{symbol}/trend
                 period = params.get("period", "daily")
 
                 data = await self._get_trend_indicators(symbol, period)
 
-            elif endpoint == "momentum" or (
-                len(path_parts) >= 2 and path_parts[1] == "momentum"
-            ):
+            elif endpoint == "momentum" or (len(path_parts) >= 2 and path_parts[1] == "momentum"):
                 # "momentum" or /{symbol}/momentum
                 period = params.get("period", "daily")
 
                 data = await self._get_momentum_indicators(symbol, period)
 
-            elif endpoint == "volatility" or (
-                len(path_parts) >= 2 and path_parts[1] == "volatility"
-            ):
+            elif endpoint == "volatility" or (len(path_parts) >= 2 and path_parts[1] == "volatility"):
                 # "volatility" or /{symbol}/volatility
                 period = params.get("period", "daily")
 
                 data = await self._get_volatility_indicators(symbol, period)
 
-            elif endpoint == "volume" or (
-                len(path_parts) >= 2 and path_parts[1] == "volume"
-            ):
+            elif endpoint == "volume" or (len(path_parts) >= 2 and path_parts[1] == "volume"):
                 # "volume" or /{symbol}/volume
                 period = params.get("period", "daily")
 
                 data = await self._get_volume_indicators(symbol, period)
 
-            elif endpoint == "signals" or (
-                len(path_parts) >= 2 and path_parts[1] == "signals"
-            ):
+            elif endpoint == "signals" or (len(path_parts) >= 2 and path_parts[1] == "signals"):
                 # "signals" or /{symbol}/signals
                 period = params.get("period", "daily")
 
                 data = await self._get_trading_signals(symbol, period)
 
-            elif endpoint == "history" or (
-                len(path_parts) >= 2 and path_parts[1] == "history"
-            ):
+            elif endpoint == "history" or (len(path_parts) >= 2 and path_parts[1] == "history"):
                 # "history" or /{symbol}/history
                 start_date = params.get("start_date")
                 end_date = params.get("end_date")
                 limit = params.get("limit", 500)
 
-                data = await self._get_stock_history(
-                    symbol, "daily", start_date, end_date, limit
-                )
+                data = await self._get_stock_history(symbol, "daily", start_date, end_date, limit)
 
             elif endpoint == "batch_indicators" or (
-                len(path_parts) >= 2
-                and path_parts[0] == "batch"
-                and path_parts[1] == "indicators"
+                len(path_parts) >= 2 and path_parts[0] == "batch" and path_parts[1] == "indicators"
             ):
                 # "batch_indicators" or /batch/indicators
                 symbols = params.get("symbols", ["000001", "600519"])
@@ -1407,9 +1338,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             },
         }
 
-    async def _get_trend_indicators(
-        self, symbol: str, period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_trend_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
         """获取趋势指标"""
         return {
             "ma5": 98.5,
@@ -1431,9 +1360,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             "sar": 97.8,
         }
 
-    async def _get_momentum_indicators(
-        self, symbol: str, period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_momentum_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
         """获取动量指标"""
         return {
             "rsi6": 65.2,
@@ -1447,9 +1374,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             "roc": 2.8,
         }
 
-    async def _get_volatility_indicators(
-        self, symbol: str, period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_volatility_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
         """获取波动性指标"""
         return {
             "bb_upper": 108.5,
@@ -1462,9 +1387,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             "stddev": 3.2,
         }
 
-    async def _get_volume_indicators(
-        self, symbol: str, period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_volume_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
         """获取成交量指标"""
         return {
             "obv": 1256800000,
@@ -1474,9 +1397,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             "volume_ratio": 1.15,
         }
 
-    async def _get_trading_signals(
-        self, symbol: str, period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_trading_signals(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
         """获取交易信号"""
         return {
             "trend_signal": "neutral",
@@ -1535,9 +1456,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         return data
 
-    async def _get_batch_indicators(
-        self, symbols: List[str], period: str = "1y"
-    ) -> Dict[str, Any]:
+    async def _get_batch_indicators(self, symbols: List[str], period: str = "1y") -> Dict[str, Any]:
         """批量获取指标"""
         results = {}
         for symbol in symbols:
@@ -1685,14 +1604,8 @@ class StrategyDataSourceAdapter(IDataSource):
                 # 策略执行相关
                 if len(path_parts) >= 3 and path_parts[1] == "single":
                     # 单股策略执行 run/single/{strategy_code}/{symbol}
-                    strategy_code = (
-                        path_parts[2]
-                        if len(path_parts) > 2
-                        else params.get("strategy_code")
-                    )
-                    symbol = (
-                        path_parts[3] if len(path_parts) > 3 else params.get("symbol")
-                    )
+                    strategy_code = path_parts[2] if len(path_parts) > 2 else params.get("strategy_code")
+                    symbol = path_parts[3] if len(path_parts) > 3 else params.get("symbol")
 
                     if strategy_code and symbol:
                         result = self._get_strategy_service().run_strategy_for_stock(
@@ -1712,14 +1625,10 @@ class StrategyDataSourceAdapter(IDataSource):
                         results = []
                         for symbol in symbols:
                             try:
-                                result = (
-                                    self._get_strategy_service().run_strategy_for_stock(
-                                        strategy_code=strategy_code, symbol=symbol
-                                    )
+                                result = self._get_strategy_service().run_strategy_for_stock(
+                                    strategy_code=strategy_code, symbol=symbol
                                 )
-                                results.append(
-                                    {"symbol": symbol, "success": True, "data": result}
-                                )
+                                results.append({"symbol": symbol, "success": True, "data": result})
                             except Exception as e:
                                 results.append(
                                     {
@@ -1913,11 +1822,7 @@ class StrategyDataSourceAdapter(IDataSource):
                         connection_test = True
                         self.last_successful_check = time.time()
 
-            status = (
-                HealthStatusEnum.HEALTHY
-                if (basic_healthy and connection_test)
-                else HealthStatusEnum.FAILED
-            )
+            status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
             details = {
                 "service_available": service_available,
@@ -2065,17 +1970,15 @@ class WatchlistDataSourceAdapter(IDataSource):
                     group_name = params.get("group_name")
 
                     try:
-                        watchlist_item = (
-                            self._get_watchlist_service().add_stock_to_watchlist(
-                                user_id=user_id,
-                                symbol=symbol,
-                                display_name=display_name,
-                                exchange=exchange,
-                                market=market,
-                                notes=notes,
-                                group_id=group_id,
-                                group_name=group_name,
-                            )
+                        watchlist_item = self._get_watchlist_service().add_stock_to_watchlist(
+                            user_id=user_id,
+                            symbol=symbol,
+                            display_name=display_name,
+                            exchange=exchange,
+                            market=market,
+                            notes=notes,
+                            group_id=group_id,
+                            group_name=group_name,
                         )
                         return {
                             "success": True,
@@ -2095,9 +1998,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                     symbol = path_parts[1]
 
                     try:
-                        self._get_watchlist_service().remove_stock_from_watchlist(
-                            user_id=user_id, symbol=symbol
-                        )
+                        self._get_watchlist_service().remove_stock_from_watchlist(user_id=user_id, symbol=symbol)
                         return {
                             "success": True,
                             "message": f"成功从自选股中移除 {symbol}",
@@ -2126,9 +2027,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                     group_name = params.get("group_name", "默认分组")
 
                     try:
-                        group = self._get_watchlist_service().create_group(
-                            user_id=user_id, group_name=group_name
-                        )
+                        group = self._get_watchlist_service().create_group(user_id=user_id, group_name=group_name)
                         return {
                             "success": True,
                             "data": group,
@@ -2195,11 +2094,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                         connection_test = True
                         self.last_successful_check = time.time()
 
-            status = (
-                HealthStatusEnum.HEALTHY
-                if (basic_healthy and connection_test)
-                else HealthStatusEnum.FAILED
-            )
+            status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
             details = {
                 "service_available": service_available,

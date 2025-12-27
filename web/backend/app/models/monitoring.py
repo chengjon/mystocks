@@ -33,9 +33,7 @@ class AlertRule(Base):
 
     id = Column(Integer, primary_key=True)
     rule_name = Column(String(100), nullable=False, unique=True)
-    rule_type = Column(
-        String(50), nullable=False
-    )  # price_change, volume_surge, technical_break, etc.
+    rule_type = Column(String(50), nullable=False)  # price_change, volume_surge, technical_break, etc.
     description = Column(Text)
     symbol = Column(String(20), index=True)  # NULL表示全市场规则
     stock_name = Column(String(100))
@@ -75,9 +73,7 @@ class AlertRecord(Base):
     # 告警信息
     alert_time = Column(DateTime, default=datetime.now, index=True)
     alert_type = Column(String(50), nullable=False, index=True)
-    alert_level = Column(
-        String(20), default="info", index=True
-    )  # info, warning, critical
+    alert_level = Column(String(20), default="info", index=True)  # info, warning, critical
     alert_title = Column(String(200))
     alert_message = Column(Text)
     alert_details = Column(JSONB)
@@ -98,7 +94,9 @@ class AlertRecord(Base):
     rule = relationship("AlertRule", back_populates="alert_records")
 
     def __repr__(self):
-        return f"<AlertRecord(id={self.id}, symbol='{self.symbol}', type='{self.alert_type}', level='{self.alert_level}')>"
+        return (
+            f"<AlertRecord(id={self.id}, symbol='{self.symbol}', type='{self.alert_type}', level='{self.alert_level}')>"
+        )
 
 
 class RealtimeMonitoring(Base):
@@ -181,9 +179,7 @@ class DragonTigerList(Base):
 
     created_at = Column(DateTime, default=datetime.now)
 
-    __table_args__ = (
-        UniqueConstraint("symbol", "trade_date", name="uq_dragon_tiger_symbol_date"),
-    )
+    __table_args__ = (UniqueConstraint("symbol", "trade_date", name="uq_dragon_tiger_symbol_date"),)
 
     def __repr__(self):
         return f"<DragonTigerList(id={self.id}, symbol='{self.symbol}', date={self.trade_date})>"
@@ -218,9 +214,7 @@ class MonitoringStatistics(Base):
 
     created_at = Column(DateTime, default=datetime.now)
 
-    __table_args__ = (
-        UniqueConstraint("stat_date", "stat_hour", name="uq_monitoring_stat_date_hour"),
-    )
+    __table_args__ = (UniqueConstraint("stat_date", "stat_hour", name="uq_monitoring_stat_date_hour"),)
 
     def __repr__(self):
         return f"<MonitoringStatistics(date={self.stat_date}, hour={self.stat_hour})>"

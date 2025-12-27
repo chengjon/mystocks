@@ -95,9 +95,7 @@ class TestSubscriptionStorageSave:
             storage.connection = mock_conn
 
             # Create filter expression with conditions
-            expr = FilterExpression(
-                id="expr_1", name="Test Filter", expression="", logic="AND"
-            )
+            expr = FilterExpression(id="expr_1", name="Test Filter", expression="", logic="AND")
             expr.add_condition(
                 FilterCondition(
                     field="price",
@@ -476,12 +474,8 @@ class TestSubscriptionStorageIntegration:
             storage.connection = mock_conn
 
             # Create subscription
-            expr = FilterExpression(
-                id="expr_1", name="Test Filter", expression="", logic="AND"
-            )
-            expr.add_condition(
-                FilterCondition(field="price", operator=FilterOperator.GT, value=100.0)
-            )
+            expr = FilterExpression(id="expr_1", name="Test Filter", expression="", logic="AND")
+            expr.add_condition(FilterCondition(field="price", operator=FilterOperator.GT, value=100.0))
 
             sub = Subscription(
                 id="sub_1",
@@ -510,19 +504,11 @@ class TestSubscriptionStorageIntegration:
             storage = SubscriptionStorage()
             storage.connection = mock_conn
 
-            expr = FilterExpression(
-                id="expr_1", name="Complex Filter", expression="", logic="AND"
-            )
+            expr = FilterExpression(id="expr_1", name="Complex Filter", expression="", logic="AND")
 
             # Add multiple conditions
-            expr.add_condition(
-                FilterCondition(field="price", operator=FilterOperator.GT, value=100.0)
-            )
-            expr.add_condition(
-                FilterCondition(
-                    field="volume", operator=FilterOperator.LT, value=1000000
-                )
-            )
+            expr.add_condition(FilterCondition(field="price", operator=FilterOperator.GT, value=100.0))
+            expr.add_condition(FilterCondition(field="volume", operator=FilterOperator.LT, value=1000000))
             expr.add_condition(
                 FilterCondition(
                     field="symbol",

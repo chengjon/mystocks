@@ -29,9 +29,7 @@ class TestDataQualityValidator:
     def test_validator_initialization_default(self):
         """测试验证器默认初始化"""
         # Mock the monitoring dependencies
-        with patch(
-            "src.core.data_quality_validator.get_quality_monitor"
-        ) as mock_get_monitor:
+        with patch("src.core.data_quality_validator.get_quality_monitor") as mock_get_monitor:
             mock_monitor = Mock()
             mock_get_monitor.return_value = mock_monitor
 
@@ -86,11 +84,7 @@ class TestDataQualityValidator:
             assert result["quality_score"] < 100.0
 
             # 检查缺少列的问题
-            missing_column_issues = [
-                issue
-                for issue in result["issues"]
-                if issue["type"] == "missing_columns"
-            ]
+            missing_column_issues = [issue for issue in result["issues"] if issue["type"] == "missing_columns"]
             assert len(missing_column_issues) > 0
 
     def test_validate_stock_data_with_issues(self):
@@ -394,9 +388,7 @@ class TestEdgeCases:
             # 创建较大的数据框（但不要太大以免测试缓慢）
             large_data = pd.DataFrame(
                 {
-                    "date": pd.date_range("2024-01-01", periods=100, freq="D").strftime(
-                        "%Y-%m-%d"
-                    ),
+                    "date": pd.date_range("2024-01-01", periods=100, freq="D").strftime("%Y-%m-%d"),
                     "open": np.random.uniform(10, 100, 100),
                     "high": np.random.uniform(10, 100, 100),
                     "low": np.random.uniform(10, 100, 100),
@@ -421,9 +413,7 @@ class TestEdgeCases:
 
             single_column_data = pd.DataFrame({"close": [10.0, 11.0, 12.0]})
 
-            result = validator.validate_stock_data(
-                single_column_data, "600000", "daily"
-            )
+            result = validator.validate_stock_data(single_column_data, "600000", "daily")
 
             assert result["is_valid"] is False  # 应该因为缺少必需列而无效
             assert len(result["issues"]) > 0

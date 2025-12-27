@@ -77,9 +77,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 )
 
                 # 将GPU处理后的数据保存到传统数据库
-                result = super().save_data_by_classification(
-                    processed_result.results, data_classification
-                )
+                result = super().save_data_by_classification(processed_result.results, data_classification)
 
                 # 更新GPU统计
                 self.gpu_usage_stats["gpu_operations"] += 1
@@ -87,9 +85,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 result["processing_time"] = processed_result.processing_time
                 result["speedup_factor"] = processed_result.speedup_factor
 
-                self.logger.info(
-                    f"GPU数据处理完成 - 耗时: {processed_result.processing_time:.4f}秒"
-                )
+                self.logger.info(f"GPU数据处理完成 - 耗时: {processed_result.processing_time:.4f}秒")
 
             else:
                 # 使用传统方法
@@ -101,9 +97,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 result["gpu_enabled"] = False
                 result["processing_time"] = time.time() - start_time
 
-                self.logger.info(
-                    f"CPU数据处理完成 - 耗时: {result['processing_time']:.4f}秒"
-                )
+                self.logger.info(f"CPU数据处理完成 - 耗时: {result['processing_time']:.4f}秒")
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -165,9 +159,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "speedup_factor": processed_result.speedup_factor,
                 }
 
-                self.logger.info(
-                    f"GPU数据加载完成 - 耗时: {processed_result.processing_time:.4f}秒"
-                )
+                self.logger.info(f"GPU数据加载完成 - 耗时: {processed_result.processing_time:.4f}秒")
 
             else:
                 # 使用传统方法
@@ -179,9 +171,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "speedup_factor": 1.0,
                 }
 
-                self.logger.info(
-                    f"CPU数据加载完成 - 耗时: {time.time() - start_time:.4f}秒"
-                )
+                self.logger.info(f"CPU数据加载完成 - 耗时: {time.time() - start_time:.4f}秒")
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -214,9 +204,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
         """使用GPU生成价格预测 - 新增方法"""
 
         # 决策是否使用GPU
-        should_use_gpu = self._should_use_gpu(
-            stock_data if isinstance(stock_data, pd.DataFrame) else None, use_gpu
-        )
+        should_use_gpu = self._should_use_gpu(stock_data if isinstance(stock_data, pd.DataFrame) else None, use_gpu)
 
         start_time = time.time()
 
@@ -230,9 +218,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
 
             if should_use_gpu:
                 # 使用GPU进行预测
-                self.logger.info(
-                    f"使用GPU生成价格预测: {model_type}, 预测周期: {prediction_horizon}"
-                )
+                self.logger.info(f"使用GPU生成价格预测: {model_type}, 预测周期: {prediction_horizon}")
 
                 prediction_result = self.gpu_manager.generate_predictions_with_gpu(
                     data=stock_data,
@@ -263,9 +249,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                         }
                     )
 
-                self.logger.info(
-                    f"GPU预测完成 - 价格: {result.get('predicted_price', 'N/A')}"
-                )
+                self.logger.info(f"GPU预测完成 - 价格: {result.get('predicted_price', 'N/A')}")
 
             else:
                 # 使用CPU预测
@@ -280,9 +264,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 cpu_predictor.train_models(stock_data)
 
                 # 进行预测
-                prediction_result = cpu_predictor.predict_price(
-                    stock_data, model_type, prediction_horizon
-                )
+                prediction_result = cpu_predictor.predict_price(stock_data, model_type, prediction_horizon)
 
                 # 更新CPU统计
                 self.gpu_usage_stats["cpu_fallback_operations"] += 1
@@ -299,9 +281,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "errors": [],
                 }
 
-                self.logger.info(
-                    f"CPU预测完成 - 价格: {prediction_result.predicted_price}"
-                )
+                self.logger.info(f"CPU预测完成 - 价格: {prediction_result.predicted_price}")
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -309,9 +289,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             # 如果启用了基准测试，定期进行性能评估
             if (
                 self.gpu_config.enable_benchmarking
-                and self.gpu_usage_stats["total_operations"]
-                % self.gpu_config.benchmark_interval
-                == 0
+                and self.gpu_usage_stats["total_operations"] % self.gpu_config.benchmark_interval == 0
             ):
                 self._run_performance_benchmark()
 
@@ -323,9 +301,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             # GPU失败回退
             if should_use_gpu and self.gpu_config.fallback_to_cpu:
                 self.logger.warning("GPU预测失败，回退到CPU模式")
-                return self.generate_price_predictions_with_gpu(
-                    stock_data, prediction_horizon, model_type, False
-                )
+                return self.generate_price_predictions_with_gpu(stock_data, prediction_horizon, model_type, False)
 
             return {
                 "gpu_enabled": should_use_gpu,
@@ -334,9 +310,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 "errors": [str(e)],
             }
 
-    def _should_use_gpu(
-        self, data: Optional[pd.DataFrame], use_gpu: Optional[bool]
-    ) -> bool:
+    def _should_use_gpu(self, data: Optional[pd.DataFrame], use_gpu: Optional[bool]) -> bool:
         """判断是否应该使用GPU"""
 
         # 如果用户明确指定，则直接使用

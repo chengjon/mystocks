@@ -99,11 +99,7 @@ class SecurityChecker:
                                 "content": line,
                                 "pattern": pattern_name,
                                 "match": match.group(),
-                                "type": (
-                                    "warning"
-                                    if pattern_name == "ip_address"
-                                    else "error"
-                                ),
+                                "type": ("warning" if pattern_name == "ip_address" else "error"),
                             }
                         )
 
@@ -123,11 +119,7 @@ class SecurityChecker:
         python_files = []
         for root, dirs, files in os.walk(directory):
             # 排除特定目录
-            dirs[:] = [
-                d
-                for d in dirs
-                if not any(pattern in d for pattern in self.exclude_patterns)
-            ]
+            dirs[:] = [d for d in dirs if not any(pattern in d for pattern in self.exclude_patterns)]
 
             for file in files:
                 if file.endswith(".py"):

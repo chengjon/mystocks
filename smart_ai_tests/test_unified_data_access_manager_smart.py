@@ -31,7 +31,7 @@ import unified_data_access_manager
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(unified_data_access_manager, 'execute_query'):
                     unified_data_access_manager.execute_query(malicious_input)
-            
+
 
 
     def test_unified_data_access_manager_execute_query_boundary(self):
@@ -54,7 +54,7 @@ import unified_data_access_manager
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
+
 
 
     def test_unified_data_access_manager__execute_with_load_balance_security(self):
@@ -72,7 +72,7 @@ import unified_data_access_manager
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(unified_data_access_manager, '_execute_with_load_balance'):
                     unified_data_access_manager._execute_with_load_balance(malicious_input)
-            
+
 
 
     def test_unified_data_access_manager__execute_with_load_balance_boundary(self):
@@ -95,7 +95,7 @@ import unified_data_access_manager
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
+
 
 
     def test_unified_data_access_manager_save_data_security(self):
@@ -113,7 +113,7 @@ import unified_data_access_manager
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(unified_data_access_manager, 'save_data'):
                     unified_data_access_manager.save_data(malicious_input)
-            
+
 
 
     def test_unified_data_access_manager_save_data_boundary(self):
@@ -136,28 +136,7 @@ import unified_data_access_manager
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
 
-
-    def test_unified_data_access_manager_bug_prevention_sql_injection(self):
-        """Bug防护测试 - 存在SQL注入风险"""
-        # 测试防护措施
-        safe_inputs = ["safe_input", 1, [1, 2, 3]]
-        unsafe_inputs = [None, "", "'; DROP TABLE users; --"]
-
-        for safe_input in safe_inputs:
-            try:
-                if hasattr(unified_data_access_manager, 'target_function'):
-                    result = unified_data_access_manager.target_function(safe_input)
-                    self.assertIsNotNone(result)
-            except Exception:
-                pass  # 安全输入也可能异常，这是可接受的
-
-        for unsafe_input in unsafe_inputs:
-            with self.assertRaises((ValueError, SecurityError)):
-                if hasattr(unified_data_access_manager, 'target_function'):
-                    unified_data_access_manager.target_function(unsafe_input)
-            
 
 
     def test_unified_data_access_manager_bug_prevention_sql_injection(self):
@@ -178,7 +157,7 @@ import unified_data_access_manager
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(unified_data_access_manager, 'target_function'):
                     unified_data_access_manager.target_function(unsafe_input)
-            
+
 
 
     def test_unified_data_access_manager_bug_prevention_sql_injection(self):
@@ -199,7 +178,28 @@ import unified_data_access_manager
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(unified_data_access_manager, 'target_function'):
                     unified_data_access_manager.target_function(unsafe_input)
-            
+
+
+
+    def test_unified_data_access_manager_bug_prevention_sql_injection(self):
+        """Bug防护测试 - 存在SQL注入风险"""
+        # 测试防护措施
+        safe_inputs = ["safe_input", 1, [1, 2, 3]]
+        unsafe_inputs = [None, "", "'; DROP TABLE users; --"]
+
+        for safe_input in safe_inputs:
+            try:
+                if hasattr(unified_data_access_manager, 'target_function'):
+                    result = unified_data_access_manager.target_function(safe_input)
+                    self.assertIsNotNone(result)
+            except Exception:
+                pass  # 安全输入也可能异常，这是可接受的
+
+        for unsafe_input in unsafe_inputs:
+            with self.assertRaises((ValueError, SecurityError)):
+                if hasattr(unified_data_access_manager, 'target_function'):
+                    unified_data_access_manager.target_function(unsafe_input)
+
 
 
     def test_unified_data_access_manager_basic_functionality(self):
@@ -211,7 +211,7 @@ import unified_data_access_manager
         # 测试是否有公共函数
         public_funcs = [f for f in dir(unified_data_access_manager) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

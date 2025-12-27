@@ -167,9 +167,7 @@ class TestConnectionPoolConfig:
         os.environ["POOL_RECYCLE"] = "-1"
         config = ConnectionPoolConfig()
 
-        with pytest.raises(
-            ValueError, match="Connection recycle time must be non-negative"
-        ):
+        with pytest.raises(ValueError, match="Connection recycle time must be non-negative"):
             config.validate_config()
 
     def test_validate_config_health_check_interval_too_low(self, clean_env):
@@ -177,9 +175,7 @@ class TestConnectionPoolConfig:
         os.environ["HEALTH_CHECK_INTERVAL"] = "0"
         config = ConnectionPoolConfig()
 
-        with pytest.raises(
-            ValueError, match="Health check interval must be at least 1"
-        ):
+        with pytest.raises(ValueError, match="Health check interval must be at least 1"):
             config.validate_config()
 
     def test_validate_config_health_check_timeout_too_low(self, clean_env):
@@ -291,9 +287,7 @@ class TestGlobalFunctions:
     def test_get_optimal_pool_size_limit(self):
         """测试获取最优连接池大小 - 最大限制"""
         # 模拟基础连接数较大
-        with patch(
-            "src.core.connection_pool_config.get_optimal_pool_size"
-        ) as mock_optimal:
+        with patch("src.core.connection_pool_config.get_optimal_pool_size") as mock_optimal:
 
             def mock_implementation():
                 # 基础连接数太大，应该被限制到50

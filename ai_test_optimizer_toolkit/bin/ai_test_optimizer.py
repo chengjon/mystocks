@@ -21,7 +21,7 @@ import sys
 import time
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 import argparse
 import logging
@@ -795,7 +795,7 @@ class Test{result.module_name.title()}Optimized:
                     print(f"✅ 生成测试文件: {test_file}")
 
         # 输出摘要
-        print(f"\n📊 优化摘要:")
+        print("\n📊 优化摘要:")
         print(f"- 分析文件: {len(results)} 个")
         print(
             f"- 平均覆盖率: {sum(r.current_coverage for r in results) / len(results):.1f}%"

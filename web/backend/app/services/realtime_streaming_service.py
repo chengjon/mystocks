@@ -52,9 +52,7 @@ class StreamSubscriber:
     sid: str  # Socket.IO连接ID
     user_id: Optional[str] = None
     subscribed_at: datetime = field(default_factory=datetime.utcnow)
-    fields: Set[str] = field(
-        default_factory=lambda: {"price", "volume", "timestamp"}
-    )  # 订阅的字段
+    fields: Set[str] = field(default_factory=lambda: {"price", "volume", "timestamp"})  # 订阅的字段
     last_message_id: Optional[str] = None  # 最后接收的消息ID
     messages_received: int = 0  # 接收消息计数
 
@@ -195,20 +193,14 @@ class MarketDataStream:
 
         return True
 
-    def get_buffered_data(
-        self, since_message_id: Optional[str] = None
-    ) -> List[StreamData]:
+    def get_buffered_data(self, since_message_id: Optional[str] = None) -> List[StreamData]:
         """获取缓冲的数据（可选：自某个消息ID以后）"""
         if since_message_id is None:
             return list(self.data_buffer)
 
         # 查找起始位置
         try:
-            start_idx = next(
-                i
-                for i, msg in enumerate(self.data_buffer)
-                if msg.message_id == since_message_id
-            )
+            start_idx = next(i for i, msg in enumerate(self.data_buffer) if msg.message_id == since_message_id)
             return self.data_buffer[start_idx + 1 :]
         except StopIteration:
             # 消息ID未找到，返回所有数据
@@ -246,9 +238,7 @@ class RealtimeStreamingService:
         self.default_buffer_size = default_buffer_size
 
         # 事件回调
-        self.event_callbacks: Dict[StreamEventType, List[Callable]] = {
-            event_type: [] for event_type in StreamEventType
-        }
+        self.event_callbacks: Dict[StreamEventType, List[Callable]] = {event_type: [] for event_type in StreamEventType}
 
         # 指标
         self.total_messages_sent = 0
@@ -400,15 +390,11 @@ class RealtimeStreamingService:
             "peak_subscribers": self.peak_subscribers,
             "total_messages_sent": self.total_messages_sent,
             "total_messages_dropped": self.total_messages_dropped,
-            "streams": {
-                symbol: stream.get_stats() for symbol, stream in self.streams.items()
-            },
+            "streams": {symbol: stream.get_stats() for symbol, stream in self.streams.items()},
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    def register_event_handler(
-        self, event_type: StreamEventType, handler: Callable
-    ) -> None:
+    def register_event_handler(self, event_type: StreamEventType, handler: Callable) -> None:
         """注册事件处理器"""
         if event_type not in self.event_callbacks:
             self.event_callbacks[event_type] = []

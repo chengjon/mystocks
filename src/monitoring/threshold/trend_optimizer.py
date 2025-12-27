@@ -51,9 +51,7 @@ class TrendOptimizer:
             slope, intercept = np.polyfit(time_values, values, 1)
 
             # 计算趋势强度
-            correlation = (
-                np.corrcoef(time_values, values)[0, 1] if len(values) > 2 else 0
-            )
+            correlation = np.corrcoef(time_values, values)[0, 1] if len(values) > 2 else 0
 
             # 预测未来值
             last_time = time_values[-1]
@@ -114,9 +112,7 @@ class TrendOptimizer:
                 metadata={"error": True, "error_message": str(e)},
             )
 
-    def detect_seasonal_patterns(
-        self, values: List[float], timestamps: List[datetime]
-    ) -> dict:
+    def detect_seasonal_patterns(self, values: List[float], timestamps: List[datetime]) -> dict:
         """检测季节性模式"""
         if len(values) < 24:  # 需要足够的数据点
             return {"has_seasonality": False, "period": None, "strength": 0}

@@ -5,7 +5,7 @@ Metrics Collector
 
 import logging
 from typing import Dict, List, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 import psutil
 import threading
 from prometheus_client import Counter, Histogram, Gauge, Summary
@@ -38,9 +38,7 @@ class MetricsCollector:
             ["method", "service"],
         )
 
-        self.gauges["active_connections"] = Gauge(
-            "active_connections", "Number of active connections", ["service"]
-        )
+        self.gauges["active_connections"] = Gauge("active_connections", "Number of active connections", ["service"])
 
         # GPU指标
         self.gauges["gpu_utilization"] = Gauge(
@@ -55,29 +53,21 @@ class MetricsCollector:
             ["gpu_id", "service"],
         )
 
-        self.gauges["gpu_temperature"] = Gauge(
-            "gpu_temperature_celsius", "GPU temperature in Celsius", ["gpu_id"]
-        )
+        self.gauges["gpu_temperature"] = Gauge("gpu_temperature_celsius", "GPU temperature in Celsius", ["gpu_id"])
 
         # 任务队列指标
-        self.gauges["queue_length"] = Gauge(
-            "task_queue_length", "Number of tasks in queue", ["queue_type"]
-        )
+        self.gauges["queue_length"] = Gauge("task_queue_length", "Number of tasks in queue", ["queue_type"])
 
         self.counters["tasks_completed"] = Counter(
             "tasks_completed_total", "Total tasks completed", ["queue_type", "status"]
         )
 
-        self.histograms["task_duration"] = Histogram(
-            "task_duration_seconds", "Task execution duration", ["queue_type"]
-        )
+        self.histograms["task_duration"] = Histogram("task_duration_seconds", "Task execution duration", ["queue_type"])
 
         # 系统指标
         self.gauges["cpu_usage"] = Gauge("cpu_usage_percent", "CPU usage percentage")
 
-        self.gauges["memory_usage"] = Gauge(
-            "memory_usage_percent", "Memory usage percentage"
-        )
+        self.gauges["memory_usage"] = Gauge("memory_usage_percent", "Memory usage percentage")
 
         self.gauges["disk_usage"] = Gauge("disk_usage_percent", "Disk usage percentage")
 
@@ -88,44 +78,28 @@ class MetricsCollector:
             ["query_type", "table"],
         )
 
-    def record_api_request(
-        self, method: str, service: str, status: str, duration: float
-    ):
+    def record_api_request(self, method: str, service: str, status: str, duration: float):
         """记录API请求"""
         with self.lock:
-            self.counters["api_requests"].labels(
-                method=method, service=service, status=status
-            ).inc()
+            self.counters["api_requests"].labels(method=method, service=service, status=status).inc()
 
-            self.histograms["api_duration"].labels(
-                method=method, service=service
-            ).observe(duration)
+            self.histograms["api_duration"].labels(method=method, service=service).observe(duration)
 
-    def record_gpu_metrics(
-        self, gpu_id: int, utilization: float, memory_usage: float, temperature: float
-    ):
+    def record_gpu_metrics(self, gpu_id: int, utilization: float, memory_usage: float, temperature: float):
         """记录GPU指标"""
         with self.lock:
-            self.gauges["gpu_utilization"].labels(
-                gpu_id=str(gpu_id), service="gpu_api"
-            ).set(utilization)
+            self.gauges["gpu_utilization"].labels(gpu_id=str(gpu_id), service="gpu_api").set(utilization)
 
-            self.gauges["gpu_memory_usage"].labels(
-                gpu_id=str(gpu_id), service="gpu_api"
-            ).set(memory_usage)
+            self.gauges["gpu_memory_usage"].labels(gpu_id=str(gpu_id), service="gpu_api").set(memory_usage)
 
             self.gauges["gpu_temperature"].labels(gpu_id=str(gpu_id)).set(temperature)
 
     def record_task_metrics(self, queue_type: str, status: str, duration: float):
         """记录任务指标"""
         with self.lock:
-            self.counters["tasks_completed"].labels(
-                queue_type=queue_type, status=status
-            ).inc()
+            self.counters["tasks_completed"].labels(queue_type=queue_type, status=status).inc()
 
-            self.histograms["task_duration"].labels(queue_type=queue_type).observe(
-                duration
-            )
+            self.histograms["task_duration"].labels(queue_type=queue_type).observe(duration)
 
     def record_queue_length(self, queue_type: str, length: int):
         """记录队列长度"""
@@ -158,9 +132,7 @@ class MetricsCollector:
     def record_query_performance(self, query_type: str, table: str, duration: float):
         """记录查询性能"""
         with self.lock:
-            self.summaries["query_performance"].labels(
-                query_type=query_type, table=table
-            ).observe(duration)
+            self.summaries["query_performance"].labels(query_type=query_type, table=table).observe(duration)
 
     def get_metrics_summary(self) -> Dict[str, Any]:
         """获取指标摘要"""
@@ -179,9 +151,7 @@ class MetricsCollector:
         try:
             return {
                 "cpu_usage": (
-                    self.gauges["cpu_usage"]._value._value
-                    if hasattr(self.gauges["cpu_usage"]._value, "_value")
-                    else 0
+                    self.gauges["cpu_usage"]._value._value if hasattr(self.gauges["cpu_usage"]._value, "_value") else 0
                 ),
                 "memory_usage": (
                     self.gauges["memory_usage"]._value._value
@@ -207,11 +177,7 @@ class MetricsCollector:
                     if hasattr(gauge, "_labels") and hasattr(gauge, "_value"):
                         gpu_metrics[gauge_name] = {
                             "labels": gauge._labels,
-                            "value": (
-                                gauge._value._value
-                                if hasattr(gauge._value, "_value")
-                                else 0
-                            ),
+                            "value": (gauge._value._value if hasattr(gauge._value, "_value") else 0),
                         }
             return gpu_metrics
         except Exception as e:
@@ -226,11 +192,7 @@ class MetricsCollector:
                 if "api" in counter_name:
                     api_metrics[counter_name] = {
                         "labels": list(counter._labelnames),
-                        "value": (
-                            counter._value._value
-                            if hasattr(counter._value, "_value")
-                            else 0
-                        ),
+                        "value": (counter._value._value if hasattr(counter._value, "_value") else 0),
                     }
             return api_metrics
         except Exception as e:
@@ -245,11 +207,7 @@ class MetricsCollector:
                 if "task" in counter_name:
                     task_metrics[counter_name] = {
                         "labels": list(counter._labelnames),
-                        "value": (
-                            counter._value._value
-                            if hasattr(counter._value, "_value")
-                            else 0
-                        ),
+                        "value": (counter._value._value if hasattr(counter._value, "_value") else 0),
                     }
             return task_metrics
         except Exception as e:
@@ -270,50 +228,30 @@ class MetricsCollector:
             # 导出计数器
             for name, counter in self.counters.items():
                 export_data["counters"][name] = {
-                    "value": (
-                        counter._value._value
-                        if hasattr(counter._value, "_value")
-                        else 0
-                    ),
+                    "value": (counter._value._value if hasattr(counter._value, "_value") else 0),
                     "labels": list(counter._labelnames),
                 }
 
             # 导出仪表
             for name, gauge in self.gauges.items():
                 export_data["gauges"][name] = {
-                    "value": (
-                        gauge._value._value if hasattr(gauge._value, "_value") else 0
-                    ),
+                    "value": (gauge._value._value if hasattr(gauge._value, "_value") else 0),
                     "labels": list(gauge._labelnames),
                 }
 
             # 导出直方图
             for name, histogram in self.histograms.items():
                 export_data["histograms"][name] = {
-                    "count": (
-                        histogram._count._value
-                        if hasattr(histogram._count, "_value")
-                        else 0
-                    ),
-                    "sum": (
-                        histogram._sum._value
-                        if hasattr(histogram._sum, "_value")
-                        else 0
-                    ),
+                    "count": (histogram._count._value if hasattr(histogram._count, "_value") else 0),
+                    "sum": (histogram._sum._value if hasattr(histogram._sum, "_value") else 0),
                     "labels": list(histogram._labelnames),
                 }
 
             # 导出摘要
             for name, summary in self.summaries.items():
                 export_data["summaries"][name] = {
-                    "count": (
-                        summary._count._value
-                        if hasattr(summary._count, "_value")
-                        else 0
-                    ),
-                    "sum": (
-                        summary._sum._value if hasattr(summary._sum, "_value") else 0
-                    ),
+                    "count": (summary._count._value if hasattr(summary._count, "_value") else 0),
+                    "sum": (summary._sum._value if hasattr(summary._sum, "_value") else 0),
                     "labels": list(summary._labelnames),
                 }
 
@@ -321,7 +259,7 @@ class MetricsCollector:
 
     def cleanup_old_metrics(self, days: int = 30):
         """清理旧指标"""
-        cutoff_time = datetime.now() - timedelta(days=days)
+        datetime.now() - timedelta(days=days)
 
         # 这里可以实现基于时间的指标清理逻辑
         # 由于Prometheus指标是累积的，通常不需要清理
@@ -420,8 +358,4 @@ class PerformanceMonitor:
     def clear_alerts(self, older_than_hours: int = 24):
         """清理旧告警"""
         cutoff_time = datetime.now() - timedelta(hours=older_than_hours)
-        self.alerts = [
-            alert
-            for alert in self.alerts
-            if datetime.fromisoformat(alert["timestamp"]) > cutoff_time
-        ]
+        self.alerts = [alert for alert in self.alerts if datetime.fromisoformat(alert["timestamp"]) > cutoff_time]

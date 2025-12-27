@@ -148,9 +148,7 @@ class MockAlertManager:
     def get_alert_history(self, hours=24):
         """获取告警历史"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
-        return [
-            alert for alert in self.alert_history if alert["timestamp"] > cutoff_time
-        ]
+        return [alert for alert in self.alert_history if alert["timestamp"] > cutoff_time]
 
     def get_monitoring_statistics(self):
         """获取监控统计信息"""
@@ -178,9 +176,7 @@ class TestAlertManager:
 
     def test_create_alert_rule(self):
         """测试创建告警规则"""
-        rule = self.alert_manager.create_alert_rule(
-            "price_alert", "价格告警", "gt", 100.0, True
-        )
+        rule = self.alert_manager.create_alert_rule("price_alert", "价格告警", "gt", 100.0, True)
 
         assert rule.rule_id == "price_alert"
         assert rule.name == "价格告警"
@@ -233,9 +229,7 @@ class TestAlertManager:
 
     def test_evaluate_alert_rules_no_trigger(self):
         """测试不触发告警的情况"""
-        self.alert_manager.create_alert_rule(
-            "moderate_price", "中等价格告警", "gt", 100.0
-        )
+        self.alert_manager.create_alert_rule("moderate_price", "中等价格告警", "gt", 100.0)
 
         # 测试未超过阈值
         metric_data = {"value": 50.0, "symbol": "000001"}
@@ -245,9 +239,7 @@ class TestAlertManager:
 
     def test_disabled_rule_not_evaluated(self):
         """测试禁用的规则不会被评估"""
-        self.alert_manager.create_alert_rule(
-            "disabled_rule", "禁用规则", "gt", 100.0, enabled=False
-        )
+        self.alert_manager.create_alert_rule("disabled_rule", "禁用规则", "gt", 100.0, enabled=False)
 
         metric_data = {"value": 150.0, "symbol": "000001"}
         alerts = self.alert_manager.evaluate_alert_rules(metric_data)
@@ -311,9 +303,7 @@ class TestAlertManager:
         # 创建一些规则
         self.alert_manager.create_alert_rule("rule1", "规则1", "gt", 50.0)
         self.alert_manager.create_alert_rule("rule2", "规则2", "lt", 10.0)
-        self.alert_manager.create_alert_rule(
-            "rule3", "规则3", "gt", 100.0, enabled=False
-        )
+        self.alert_manager.create_alert_rule("rule3", "规则3", "gt", 100.0, enabled=False)
 
         # 触发一些告警
         self.alert_manager.evaluate_alert_rules({"value": 60.0})
@@ -329,9 +319,7 @@ class TestAlertManager:
 
     def test_rule_trigger_counting(self):
         """测试规则触发计数"""
-        rule = self.alert_manager.create_alert_rule(
-            "count_rule", "计数规则", "gt", 50.0
-        )
+        rule = self.alert_manager.create_alert_rule("count_rule", "计数规则", "gt", 50.0)
 
         # 触发规则多次
         for i in range(3):
@@ -350,9 +338,7 @@ class TestAlertSeverityDetermination:
 
     def test_critical_severity(self):
         """测试严重告警"""
-        rule = self.alert_manager.create_alert_rule(
-            "critical_test", "严重测试", "gt", 100.0
-        )
+        rule = self.alert_manager.create_alert_rule("critical_test", "严重测试", "gt", 100.0)
 
         # 触发严重告警（偏离50%以上）
         metric_data = {"value": 160.0}
@@ -363,9 +349,7 @@ class TestAlertSeverityDetermination:
 
     def test_warning_severity(self):
         """测试警告告警"""
-        rule = self.alert_manager.create_alert_rule(
-            "warning_test", "警告测试", "gt", 100.0
-        )
+        rule = self.alert_manager.create_alert_rule("warning_test", "警告测试", "gt", 100.0)
 
         # 触发警告告警（偏离20-50%）
         metric_data = {"value": 125.0}
@@ -376,9 +360,7 @@ class TestAlertSeverityDetermination:
 
     def test_info_severity(self):
         """测试信息告警"""
-        rule = self.alert_manager.create_alert_rule(
-            "info_test", "信息测试", "gt", 100.0
-        )
+        rule = self.alert_manager.create_alert_rule("info_test", "信息测试", "gt", 100.0)
 
         # 触发信息告警（偏离小于20%）
         metric_data = {"value": 110.0}

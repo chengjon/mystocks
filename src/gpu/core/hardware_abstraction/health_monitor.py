@@ -218,9 +218,7 @@ class DeviceHealthMonitor:
             logger.error(f"Error checking device {device_id} health: {e}")
             await self._mark_device_failed(device_id, str(e))
 
-    def _check_performance_thresholds(
-        self, device_id: int, metrics: Dict[str, float]
-    ) -> List[AlertType]:
+    def _check_performance_thresholds(self, device_id: int, metrics: Dict[str, float]) -> List[AlertType]:
         """检查性能阈值"""
         alerts = []
 
@@ -246,9 +244,7 @@ class DeviceHealthMonitor:
 
         return alerts
 
-    def _determine_health_status(
-        self, metrics: Dict[str, float], alerts: List[AlertType]
-    ) -> HealthStatus:
+    def _determine_health_status(self, metrics: Dict[str, float], alerts: List[AlertType]) -> HealthStatus:
         """确定健康状态"""
         if AlertType.DEVICE_ERROR in alerts or AlertType.DRIVER_ERROR in alerts:
             return HealthStatus.FAILED
@@ -264,18 +260,14 @@ class DeviceHealthMonitor:
 
         return HealthStatus.HEALTHY
 
-    async def _handle_alerts(
-        self, device_id: int, alerts: List[AlertType], metrics: Dict[str, float]
-    ):
+    async def _handle_alerts(self, device_id: int, alerts: List[AlertType], metrics: Dict[str, float]):
         """处理告警"""
         for alert_type in alerts:
             await self._trigger_alert(device_id, alert_type, metrics)
 
         self.stats["alerts_triggered"] += len(alerts)
 
-    async def _trigger_alert(
-        self, device_id: int, alert_type: AlertType, metrics: Dict[str, float]
-    ):
+    async def _trigger_alert(self, device_id: int, alert_type: AlertType, metrics: Dict[str, float]):
         """触发告警"""
         alert_data = {
             "device_id": device_id,
@@ -294,9 +286,7 @@ class DeviceHealthMonitor:
             except Exception as e:
                 logger.error(f"Error in alert callback: {e}")
 
-    def _generate_alert_message(
-        self, alert_type: AlertType, metrics: Dict[str, float]
-    ) -> str:
+    def _generate_alert_message(self, alert_type: AlertType, metrics: Dict[str, float]) -> str:
         """生成告警消息"""
         messages = {
             AlertType.HIGH_MEMORY_USAGE: f"High memory usage: {metrics.get('memory_utilization', 0):.1%}",
@@ -318,25 +308,19 @@ class DeviceHealthMonitor:
         # 执行渐进式降级
         for i, recovery_strategy in enumerate(self.recovery_strategies):
             try:
-                logger.info(
-                    f"Attempting recovery strategy {i + 1}: {recovery_strategy.__name__}"
-                )
+                logger.info(f"Attempting recovery strategy {i + 1}: {recovery_strategy.__name__}")
 
                 start_time = time.time()
                 result = await recovery_strategy(device_id)
-                recovery_time = (time.time() - start_time) * 1000
+                (time.time() - start_time) * 1000
 
                 if result.success:
                     self.stats["recoveries_completed"] += 1
-                    logger.info(
-                        f"Recovery strategy {i + 1} succeeded for device {device_id}"
-                    )
+                    logger.info(f"Recovery strategy {i + 1} succeeded for device {device_id}")
                     return result
 
             except Exception as e:
-                logger.error(
-                    f"Recovery strategy {i + 1} failed for device {device_id}: {e}"
-                )
+                logger.error(f"Recovery strategy {i + 1} failed for device {device_id}: {e}")
                 continue
 
         # 所有恢复策略都失败
@@ -363,9 +347,7 @@ class DeviceHealthMonitor:
             )
 
         except Exception as e:
-            logger.error(
-                f"Failed to switch to backup stream for device {device_id}: {e}"
-            )
+            logger.error(f"Failed to switch to backup stream for device {device_id}: {e}")
             return FailureResponse(
                 success=False,
                 action_taken="Backup stream switch failed",
@@ -377,16 +359,12 @@ class DeviceHealthMonitor:
         try:
             # 查找可用的备用GPU
             available_devices = [
-                d
-                for d in self.resource_manager.get_available_devices()
-                if d.device_id != device_id and d.is_available
+                d for d in self.resource_manager.get_available_devices() if d.device_id != device_id and d.is_available
             ]
 
             if not available_devices:
                 logger.warning(f"No backup GPU available for device {device_id}")
-                return FailureResponse(
-                    success=False, action_taken="No backup GPU available"
-                )
+                return FailureResponse(success=False, action_taken="No backup GPU available")
 
             # 选择最佳备用GPU（内存最多，利用率最低）
             backup_device = min(
@@ -397,9 +375,7 @@ class DeviceHealthMonitor:
             # 模拟迁移过程
             await asyncio.sleep(0.05)  # 50ms迁移时间
 
-            logger.info(
-                f"Migrated from device {device_id} to backup device {backup_device.device_id}"
-            )
+            logger.info(f"Migrated from device {device_id} to backup device {backup_device.device_id}")
             return FailureResponse(
                 success=True,
                 action_taken="Migrated to backup GPU",
@@ -440,9 +416,7 @@ class DeviceHealthMonitor:
 
         except Exception as e:
             logger.error(f"Failed to fallback to CPU for device {device_id}: {e}")
-            return FailureResponse(
-                success=False, action_taken="CPU fallback failed", error_details=str(e)
-            )
+            return FailureResponse(success=False, action_taken="CPU fallback failed", error_details=str(e))
 
     async def _mark_device_failed(self, device_id: int, error_message: str):
         """标记设备为故障状态"""
@@ -476,9 +450,7 @@ class DeviceHealthMonitor:
 
         return []
 
-    def trigger_proactive_alert(
-        self, device_id: int, alert_type: str, message: str
-    ) -> None:
+    def trigger_proactive_alert(self, device_id: int, alert_type: str, message: str) -> None:
         """触发主动告警"""
         alert_data = {
             "device_id": device_id,

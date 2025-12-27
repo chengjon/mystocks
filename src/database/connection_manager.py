@@ -157,11 +157,7 @@ class DatabaseConnectionManager:
             return False
 
         # 简单的连接测试
-        return (
-            isinstance(connection, dict)
-            and "status" in connection
-            and connection["status"] == "active"
-        )
+        return isinstance(connection, dict) and "status" in connection and connection["status"] == "active"
 
     def _query_database(self, connection: Dict, query: str) -> Any:
         """

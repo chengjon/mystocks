@@ -341,9 +341,7 @@ class TestEvictionIntegration:
             strategy.record_cache_access("000001", "fund_flow")
 
         # 验证频率追踪
-        frequency = strategy.frequency_tracker.get_access_frequency(
-            "000001:fund_flow:1d"
-        )
+        frequency = strategy.frequency_tracker.get_access_frequency("000001:fund_flow:1d")
         assert frequency == 5
 
     def test_hot_data_identification(self, setup_teardown):
@@ -418,15 +416,11 @@ class TestEvictionIntegration:
 
         # 如果写入成功，检查新鲜度
         if write_success:
-            is_valid = cache_mgr.is_cache_valid(
-                symbol="000001", data_type="fund_flow", max_age_days=7
-            )
+            is_valid = cache_mgr.is_cache_valid(symbol="000001", data_type="fund_flow", max_age_days=7)
             assert is_valid is True
         else:
             # 如果写入失败（如TDengine不可用），验证is_cache_valid返回False
-            is_valid = cache_mgr.is_cache_valid(
-                symbol="000001", data_type="fund_flow", max_age_days=7
-            )
+            is_valid = cache_mgr.is_cache_valid(symbol="000001", data_type="fund_flow", max_age_days=7)
             assert is_valid is False
 
 

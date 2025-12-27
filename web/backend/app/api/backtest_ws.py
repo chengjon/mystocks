@@ -3,10 +3,11 @@ WebSocket endpoints for backtest progress
 
 回测进度 WebSocket 推送
 """
+
 import json
 import logging
 from typing import Dict, Set
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.core.celery_app import register_progress_callback, unregister_progress_callback
 
@@ -32,10 +33,7 @@ class ConnectionManager:
         self.connections[backtest_id].add(websocket)
 
         # 注册进度回调
-        register_progress_callback(
-            backtest_id,
-            lambda data: self._sync_broadcast(backtest_id, data)
-        )
+        register_progress_callback(backtest_id, lambda data: self._sync_broadcast(backtest_id, data))
 
         logger.info(f"WebSocket连接建立: backtest_id={backtest_id}")
 
@@ -103,10 +101,7 @@ manager = ConnectionManager()
 
 
 @router.websocket("/backtest/{backtest_id}")
-async def websocket_backtest_progress(
-    websocket: WebSocket,
-    backtest_id: str
-):
+async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
     """
     WebSocket endpoint for backtest progress updates
 
@@ -117,12 +112,7 @@ async def websocket_backtest_progress(
     try:
         # 发送连接确认
         await manager.send_personal_message(
-            json.dumps({
-                "type": "connected",
-                "backtest_id": backtest_id,
-                "message": "已连接到回测进度推送"
-            }),
-            websocket
+            json.dumps({"type": "connected", "backtest_id": backtest_id, "message": "已连接到回测进度推送"}), websocket
         )
 
         # 保持连接，等待消息
@@ -134,19 +124,12 @@ async def websocket_backtest_progress(
 
                 if message.get("type") == "ping":
                     # 心跳响应
-                    await manager.send_personal_message(
-                        json.dumps({"type": "pong"}),
-                        websocket
-                    )
+                    await manager.send_personal_message(json.dumps({"type": "pong"}), websocket)
                 elif message.get("type") == "cancel":
                     # 取消回测请求
                     # TODO: 实现取消逻辑
                     await manager.send_personal_message(
-                        json.dumps({
-                            "type": "cancelled",
-                            "message": "回测已取消"
-                        }),
-                        websocket
+                        json.dumps({"type": "cancelled", "message": "回测已取消"}), websocket
                     )
                     break
 
@@ -169,16 +152,11 @@ async def get_websocket_status():
     Returns:
         当前活跃连接数
     """
-    total_connections = sum(
-        len(conns) for conns in manager.connections.values()
-    )
+    total_connections = sum(len(conns) for conns in manager.connections.values())
 
     return {
         "status": "ok",
         "total_connections": total_connections,
         "backtest_subscriptions": len(manager.connections),
-        "details": {
-            backtest_id: len(conns)
-            for backtest_id, conns in manager.connections.items()
-        }
+        "details": {backtest_id: len(conns) for backtest_id, conns in manager.connections.items()},
     }

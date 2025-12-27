@@ -169,9 +169,7 @@ class ResilienceTestFramework:
 
         return report
 
-    async def _run_resilience_test(
-        self, config: ResilienceTestConfig
-    ) -> ResilienceTestResult:
+    async def _run_resilience_test(self, config: ResilienceTestConfig) -> ResilienceTestResult:
         """执行单个弹性测试"""
         test_id = f"resilience_test_{int(time.time())}_{config.name}"
         start_time = datetime.now()
@@ -194,9 +192,7 @@ class ResilienceTestFramework:
             await self._initialize_test_environment(config)
 
             # 开始基线监控
-            baseline_metrics = (
-                await self.metrics_collector.collect_comprehensive_metrics()
-            )
+            baseline_metrics = await self.metrics_collector.collect_comprehensive_metrics()
 
             # 注入故障
             await self._inject_test_scenario(config)
@@ -205,20 +201,14 @@ class ResilienceTestFramework:
             await self._monitor_resilience_performance(config, result)
 
             # 评估恢复能力
-            recovery_result = await self._evaluate_recovery_performance(
-                config, result, baseline_metrics
-            )
+            recovery_result = await self._evaluate_recovery_performance(config, result, baseline_metrics)
 
             # 更新结果
             result.end_time = datetime.now()
-            result.duration_seconds = (
-                result.end_time - result.start_time
-            ).total_seconds()
+            result.duration_seconds = (result.end_time - result.start_time).total_seconds()
             result.recovery_time_seconds = recovery_result["recovery_time"]
             result.success = recovery_result["success"]
-            result.business_continuity_maintained = recovery_result[
-                "business_continuity"
-            ]
+            result.business_continuity_maintained = recovery_result["business_continuity"]
             result.recovery_actions = recovery_result["actions"]
 
             # 更新统计
@@ -226,9 +216,7 @@ class ResilienceTestFramework:
 
             print("    ✅ 弹性测试完成")
             print(f"    📈 恢复时间: {result.recovery_time_seconds:.2f}秒")
-            print(
-                f"    🏢 业务连续性: {'✅ 维持' if result.business_continuity_maintained else '❌ 中断'}"
-            )
+            print(f"    🏢 业务连续性: {'✅ 维持' if result.business_continuity_maintained else '❌ 中断'}")
             print(
                 f"    🎯 实现弹性等级: {result.resilience_level_achieved.value if result.resilience_level_achieved else '未达标'}"
             )
@@ -293,18 +281,14 @@ class ResilienceTestFramework:
             # 默认方法
             await self.stimulator.inject_generic_failure(scenario)
 
-    async def _monitor_resilience_performance(
-        self, config: ResilienceTestConfig, result: ResilienceTestResult
-    ):
+    async def _monitor_resilience_performance(self, config: ResilienceTestConfig, result: ResilienceTestResult):
         """监控弹性表现"""
         print("    👀 监控弹性表现...")
 
         monitoring_start = datetime.now()
         last_failure_time = None
 
-        while (
-            datetime.now() - monitoring_start
-        ).total_seconds() < config.test_duration_minutes * 60:
+        while (datetime.now() - monitoring_start).total_seconds() < config.test_duration_minutes * 60:
             # 收集指标
             metrics = await self.metrics_collector.collect_comprehensive_metrics()
 
@@ -325,18 +309,14 @@ class ResilienceTestFramework:
                     print("    ⚠️  检测到故障")
 
                 # 监控恢复进度
-                recovery_started = await self.recovery_engine.check_recovery_progress(
-                    metrics
-                )
+                recovery_started = await self.recovery_engine.check_recovery_progress(metrics)
 
                 if recovery_started:
                     result.recovery_actions.append("recovery_started")
 
             # 检查业务连续性
             if config.business_continuity:
-                business_ok = await self.business_continuity.check_business_continuity(
-                    metrics
-                )
+                business_ok = await self.business_continuity.check_business_continuity(metrics)
                 if not business_ok:
                     result.business_continuity_maintained = False
 
@@ -361,23 +341,17 @@ class ResilienceTestFramework:
         max_recovery_time = config.recovery_threshold_seconds * 3
         while (datetime.now() - recovery_start).total_seconds() < max_recovery_time:
             # 收集当前指标
-            current_metrics = (
-                await self.metrics_collector.collect_comprehensive_metrics()
-            )
+            current_metrics = await self.metrics_collector.collect_comprehensive_metrics()
 
             # 检查是否恢复到基线水平
-            recovered = await self._check_recovery_status(
-                baseline_metrics, current_metrics
-            )
+            recovered = await self._check_recovery_status(baseline_metrics, current_metrics)
 
             if recovered:
                 recovery_time = (datetime.now() - recovery_start).total_seconds()
                 print(f"    ✅ 系统已恢复，耗时: {recovery_time:.2f}秒")
 
                 # 评估弹性等级
-                achieved_level = self._evaluate_resilience_level(
-                    config, result, recovery_time
-                )
+                achieved_level = self._evaluate_resilience_level(config, result, recovery_time)
 
                 return {
                     "success": True,
@@ -388,9 +362,7 @@ class ResilienceTestFramework:
                 }
 
             # 执行恢复动作
-            action_taken = await self.recovery_engine.execute_recovery_action(
-                current_metrics
-            )
+            action_taken = await self.recovery_engine.execute_recovery_action(current_metrics)
             if action_taken and action_taken not in recovery_actions:
                 recovery_actions.append(action_taken)
 
@@ -424,9 +396,7 @@ class ResilienceTestFramework:
 
         print("    ✅ 测试环境清理完成")
 
-    async def _check_recovery_status(
-        self, baseline: Dict[str, Any], current: Dict[str, Any]
-    ) -> bool:
+    async def _check_recovery_status(self, baseline: Dict[str, Any], current: Dict[str, Any]) -> bool:
         """检查恢复状态"""
         # 检查关键指标是否恢复到基线水平
         recovery_threshold = 0.1  # 10%的差异阈值
@@ -463,10 +433,7 @@ class ResilienceTestFramework:
         # 根据恢复时间评估
         if recovery_time < recovery_threshold * 0.5:
             # 很快恢复，可能是自适应或反脆弱
-            if (
-                result.business_continuity_maintained
-                and len(result.recovery_actions) < 3
-            ):
+            if result.business_continuity_maintained and len(result.recovery_actions) < 3:
                 return ResilienceLevel.L4_ANTIFRAGILE
             else:
                 return ResilienceLevel.L3_ADAPTIVE
@@ -488,17 +455,11 @@ class ResilienceTestFramework:
             recovery_time = result.recovery_time_seconds or 0
             if recovery_time:
                 self.stats["average_recovery_time"] = (
-                    self.stats["average_recovery_time"]
-                    * (self.stats["successful_tests"] - 1)
-                    + recovery_time
+                    self.stats["average_recovery_time"] * (self.stats["successful_tests"] - 1) + recovery_time
                 ) / self.stats["successful_tests"]
 
-                self.stats["best_recovery_time"] = min(
-                    self.stats["best_recovery_time"], recovery_time
-                )
-                self.stats["worst_recovery_time"] = max(
-                    self.stats["worst_recovery_time"], recovery_time
-                )
+                self.stats["best_recovery_time"] = min(self.stats["best_recovery_time"], recovery_time)
+                self.stats["worst_recovery_time"] = max(self.stats["worst_recovery_time"], recovery_time)
 
         # 计算弹性评分
         self._calculate_resilience_score()
@@ -510,9 +471,7 @@ class ResilienceTestFramework:
             return
 
         # 成功率
-        success_rate = (
-            self.stats["successful_tests"] / self.stats["total_tests"]
-        ) * 100
+        success_rate = (self.stats["successful_tests"] / self.stats["total_tests"]) * 100
 
         # 恢复速度评分
         if self.stats["best_recovery_time"] == float("inf"):
@@ -546,15 +505,11 @@ class ResilienceTestFramework:
                 "total_tests": len(results),
                 "successful_tests": len([r for r in results if r.success]),
                 "failed_tests": len([r for r in results if not r.success]),
-                "test_duration_minutes": max(
-                    [
-                        (r.end_time - r.start_time).total_seconds() / 60
-                        for r in results
-                        if r.end_time
-                    ]
-                )
-                if results
-                else 0,
+                "test_duration_minutes": (
+                    max([(r.end_time - r.start_time).total_seconds() / 60 for r in results if r.end_time])
+                    if results
+                    else 0
+                ),
             },
             "scenario_statistics": dict(scenario_stats),
             "resilience_level_distribution": dict(level_stats),
@@ -565,9 +520,7 @@ class ResilienceTestFramework:
                 "overall_resilience_score": self.stats["resilience_score"],
             },
             "detailed_results": [],
-            "improvement_recommendations": self._generate_resilience_recommendations(
-                results
-            ),
+            "improvement_recommendations": self._generate_resilience_recommendations(results),
         }
 
         # 添加详细结果
@@ -578,9 +531,9 @@ class ResilienceTestFramework:
                     "scenario": result.scenario.value,
                     "name": result.test_id,
                     "success": result.success,
-                    "resilience_level_achieved": result.resilience_level_achieved.value
-                    if result.resilience_level_achieved
-                    else None,
+                    "resilience_level_achieved": (
+                        result.resilience_level_achieved.value if result.resilience_level_achieved else None
+                    ),
                     "recovery_time_seconds": result.recovery_time_seconds,
                     "business_continuity_maintained": result.business_continuity_maintained,
                     "failure_detected": result.failure_detected,
@@ -595,45 +548,29 @@ class ResilienceTestFramework:
 
         return report_path
 
-    def _generate_resilience_recommendations(
-        self, results: List[ResilienceTestResult]
-    ) -> List[str]:
+    def _generate_resilience_recommendations(self, results: List[ResilienceTestResult]) -> List[str]:
         """生成弹性改进建议"""
         recommendations = []
 
         # 分析失败的测试
         failed_tests = [r for r in results if not r.success]
         if failed_tests:
-            recommendations.append(
-                f"有 {len(failed_tests)} 个弹性测试失败，需要重点改进"
-            )
+            recommendations.append(f"有 {len(failed_tests)} 个弹性测试失败，需要重点改进")
 
         # 分析业务连续性
-        continuity_failures = [
-            r for r in results if not r.business_continuity_maintained
-        ]
+        continuity_failures = [r for r in results if not r.business_continuity_maintained]
         if continuity_failures:
-            recommendations.append(
-                f"有 {len(continuity_failures)} 个测试业务连续性中断，建议优化业务切换机制"
-            )
+            recommendations.append(f"有 {len(continuity_failures)} 个测试业务连续性中断，建议优化业务切换机制")
 
         # 分析恢复时间
-        slow_recovery = [
-            r
-            for r in results
-            if r.recovery_time_seconds and r.recovery_time_seconds > 60
-        ]
+        slow_recovery = [r for r in results if r.recovery_time_seconds and r.recovery_time_seconds > 60]
         if slow_recovery:
-            recommendations.append(
-                f"有 {len(slow_recovery)} 个测试恢复时间较长，建议优化自动化恢复流程"
-            )
+            recommendations.append(f"有 {len(slow_recovery)} 个测试恢复时间较长，建议优化自动化恢复流程")
 
         # 分析故障检测
         no_detection = [r for r in results if not r.failure_detected]
         if no_detection:
-            recommendations.append(
-                f"有 {len(no_detection)} 个测试未能检测到故障，建议改进监控和告警"
-            )
+            recommendations.append(f"有 {len(no_detection)} 个测试未能检测到故障，建议改进监控和告警")
 
         # 按场景分析
         scenario_issues = defaultdict(int)

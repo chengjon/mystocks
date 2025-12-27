@@ -37,9 +37,7 @@ class TDengineDataAccess:
             self.conn = self.conn_manager.get_tdengine_connection()
         return self.conn
 
-    def create_stable(
-        self, stable_name: str, schema: Dict[str, str], tags: Dict[str, str]
-    ):
+    def create_stable(self, stable_name: str, schema: Dict[str, str], tags: Dict[str, str]):
         """
         创建超表(STable)
 
@@ -60,9 +58,7 @@ class TDengineDataAccess:
         tag_fields = ", ".join([f"{name} {dtype}" for name, dtype in tags.items()])
 
         # 创建超表SQL
-        sql = (
-            f"CREATE STABLE IF NOT EXISTS {stable_name} ({fields}) TAGS ({tag_fields})"
-        )
+        sql = f"CREATE STABLE IF NOT EXISTS {stable_name} ({fields}) TAGS ({tag_fields})"
 
         cursor = conn.cursor()
         try:
@@ -74,9 +70,7 @@ class TDengineDataAccess:
         finally:
             cursor.close()
 
-    def create_table(
-        self, table_name: str, stable_name: str, tag_values: Dict[str, Any]
-    ):
+    def create_table(self, table_name: str, stable_name: str, tag_values: Dict[str, Any]):
         """
         创建子表(基于超表)
 
@@ -91,14 +85,10 @@ class TDengineDataAccess:
         conn = self._get_connection()
 
         # 构建标签值列表
-        tags = ", ".join(
-            [f"'{v}'" if isinstance(v, str) else str(v) for v in tag_values.values()]
-        )
+        tags = ", ".join([f"'{v}'" if isinstance(v, str) else str(v) for v in tag_values.values()])
 
         # 创建子表SQL
-        sql = (
-            f"CREATE TABLE IF NOT EXISTS {table_name} USING {stable_name} TAGS ({tags})"
-        )
+        sql = f"CREATE TABLE IF NOT EXISTS {table_name} USING {stable_name} TAGS ({tags})"
 
         cursor = conn.cursor()
         try:
@@ -109,9 +99,7 @@ class TDengineDataAccess:
         finally:
             cursor.close()
 
-    def insert_dataframe(
-        self, table_name: str, df: pd.DataFrame, timestamp_col: str = "ts"
-    ):
+    def insert_dataframe(self, table_name: str, df: pd.DataFrame, timestamp_col: str = "ts"):
         """
         批量插入DataFrame数据
 
@@ -344,9 +332,7 @@ class TDengineDataAccess:
         finally:
             cursor.close()
 
-    def delete_by_time_range(
-        self, table_name: str, start_time: datetime, end_time: datetime
-    ) -> int:
+    def delete_by_time_range(self, table_name: str, start_time: datetime, end_time: datetime) -> int:
         """
         删除时间范围内的数据
 
@@ -417,9 +403,7 @@ class TDengineDataAccess:
         finally:
             cursor.close()
 
-    def save_data(
-        self, data: pd.DataFrame, classification, table_name: str, **kwargs
-    ) -> bool:
+    def save_data(self, data: pd.DataFrame, classification, table_name: str, **kwargs) -> bool:
         """
         保存数据（DataManager API适配器）
 
@@ -433,9 +417,7 @@ class TDengineDataAccess:
             bool: 保存是否成功
         """
         try:
-            self.insert_dataframe(
-                table_name, data, timestamp_col=kwargs.get("timestamp_col", "ts")
-            )
+            self.insert_dataframe(table_name, data, timestamp_col=kwargs.get("timestamp_col", "ts"))
             return True
         except Exception as e:
             print(f"❌ 保存数据失败: {e}")

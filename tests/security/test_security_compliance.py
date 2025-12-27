@@ -254,9 +254,7 @@ class ComplianceTestEngine:
             print(f"\n🎯 测试合规标准: {standard.value}")
 
             # 获取该标准的所有控制项
-            standard_controls = [
-                c for c in self.compliance_controls if c.standard == standard
-            ]
+            standard_controls = [c for c in self.compliance_controls if c.standard == standard]
 
             standard_results = {}
             for control in standard_controls:
@@ -336,9 +334,7 @@ class ComplianceTestEngine:
             # 模拟测试数据访问功能
             access_granted = await self._simulate_data_access("user123")
             test_item["result"] = access_granted
-            test_item["details"] = (
-                "数据访问功能正常" if access_granted else "数据访问功能异常"
-            )
+            test_item["details"] = "数据访问功能正常" if access_granted else "数据访问功能异常"
             results["evidence"].append("用户数据访问日志")
         except Exception as e:
             test_item["result"] = False
@@ -355,13 +351,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            deletion_success = await self._simulate_data_deletion(
-                "user123", "test_data"
-            )
+            deletion_success = await self._simulate_data_deletion("user123", "test_data")
             test_item["result"] = deletion_success
-            test_item["details"] = (
-                "数据删除功能正常" if deletion_success else "数据删除功能异常"
-            )
+            test_item["details"] = "数据删除功能正常" if deletion_success else "数据删除功能异常"
             results["evidence"].append("数据删除确认记录")
         except Exception as e:
             test_item["result"] = False
@@ -378,13 +370,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            correction_success = await self._simulate_data_correction(
-                "user123", "phone", "1234567890"
-            )
+            correction_success = await self._simulate_data_correction("user123", "phone", "1234567890")
             test_item["result"] = correction_success
-            test_item["details"] = (
-                "数据更正功能正常" if correction_success else "数据更正功能异常"
-            )
+            test_item["details"] = "数据更正功能正常" if correction_success else "数据更正功能异常"
             results["evidence"].append("数据修改记录")
         except Exception as e:
             test_item["result"] = False
@@ -406,9 +394,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_consent_mechanism(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_consent_mechanism(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试数据处理同意控制"""
         results = {
             "control_id": control.control_id,
@@ -428,13 +414,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            consent_obtained = await self._simulate_consent_obtained(
-                "user123", "data_processing"
-            )
+            consent_obtained = await self._simulate_consent_obtained("user123", "data_processing")
             test_item["result"] = consent_obtained
-            test_item["details"] = (
-                "同意获取机制正常" if consent_obtained else "同意获取机制异常"
-            )
+            test_item["details"] = "同意获取机制正常" if consent_obtained else "同意获取机制异常"
             results["evidence"].append("同意记录")
         except Exception as e:
             test_item["result"] = False
@@ -451,13 +433,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            withdrawal_success = await self._simulate_consent_withdrawal(
-                "user123", "data_processing"
-            )
+            withdrawal_success = await self._simulate_consent_withdrawal("user123", "data_processing")
             test_item["result"] = withdrawal_success
-            test_item["details"] = (
-                "同意撤回机制正常" if withdrawal_success else "同意撤回机制异常"
-            )
+            test_item["details"] = "同意撤回机制正常" if withdrawal_success else "同意撤回机制异常"
             results["evidence"].append("撤回同意记录")
         except Exception as e:
             test_item["result"] = False
@@ -476,9 +454,7 @@ class ComplianceTestEngine:
         try:
             records_saved = await self._simulate_consent_records("user123")
             test_item["result"] = records_saved
-            test_item["details"] = (
-                "同意记录保存正常" if records_saved else "同意记录保存异常"
-            )
+            test_item["details"] = "同意记录保存正常" if records_saved else "同意记录保存异常"
             results["evidence"].append("同意时间戳记录")
         except Exception as e:
             test_item["result"] = False
@@ -500,9 +476,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_data_minimization(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_data_minimization(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试数据最小化控制"""
         results = {
             "control_id": control.control_id,
@@ -524,9 +498,7 @@ class ComplianceTestEngine:
         try:
             list_maintained = await self._simulate_data_collection_inventory()
             test_item["result"] = list_maintained
-            test_item["details"] = (
-                "数据收集清单已维护" if list_maintained else "数据收集清单未维护"
-            )
+            test_item["details"] = "数据收集清单已维护" if list_maintained else "数据收集清单未维护"
             results["evidence"].append("数据收集清单文档")
         except Exception as e:
             test_item["result"] = False
@@ -545,9 +517,7 @@ class ComplianceTestEngine:
         try:
             policy_implemented = await self._simulate_retention_policy()
             test_item["result"] = policy_implemented
-            test_item["details"] = (
-                "数据保留策略已实施" if policy_implemented else "数据保留策略未实施"
-            )
+            test_item["details"] = "数据保留策略已实施" if policy_implemented else "数据保留策略未实施"
             results["evidence"].append("数据保留策略文档")
         except Exception as e:
             test_item["result"] = False
@@ -566,9 +536,7 @@ class ComplianceTestEngine:
         try:
             lifecycle_managed = await self._simulate_data_lifecycle()
             test_item["result"] = lifecycle_managed
-            test_item["details"] = (
-                "数据生命周期管理正常" if lifecycle_managed else "数据生命周期管理异常"
-            )
+            test_item["details"] = "数据生命周期管理正常" if lifecycle_managed else "数据生命周期管理异常"
             results["evidence"].append("数据生命周期记录")
         except Exception as e:
             test_item["result"] = False
@@ -612,9 +580,7 @@ class ComplianceTestEngine:
         try:
             complexity_met = await self._simulate_password_complexity("Password123!")
             test_item["result"] = complexity_met
-            test_item["details"] = (
-                "密码复杂度要求满足" if complexity_met else "密码复杂度要求不满足"
-            )
+            test_item["details"] = "密码复杂度要求满足" if complexity_met else "密码复杂度要求不满足"
             results["evidence"].append("密码策略文档")
         except Exception as e:
             test_item["result"] = False
@@ -633,9 +599,7 @@ class ComplianceTestEngine:
         try:
             history_maintained = await self._simulate_password_history("user123")
             test_item["result"] = history_maintained
-            test_item["details"] = (
-                "密码历史记录已维护" if history_maintained else "密码历史记录未维护"
-            )
+            test_item["details"] = "密码历史记录已维护" if history_maintained else "密码历史记录未维护"
             results["evidence"].append("密码历史记录")
         except Exception as e:
             test_item["result"] = False
@@ -654,9 +618,7 @@ class ComplianceTestEngine:
         try:
             expiry_policy = await self._simulate_password_expiry("user123")
             test_item["result"] = expiry_policy
-            test_item["details"] = (
-                "密码过期策略已实施" if expiry_policy else "密码过期策略未实施"
-            )
+            test_item["details"] = "密码过期策略已实施" if expiry_policy else "密码过期策略未实施"
             results["evidence"].append("密码过期记录")
         except Exception as e:
             test_item["result"] = False
@@ -678,9 +640,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_network_segmentation(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_network_segmentation(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试网络分段控制"""
         results = {
             "control_id": control.control_id,
@@ -721,9 +681,7 @@ class ComplianceTestEngine:
         try:
             firewall_configured = await self._simulate_firewall_rules()
             test_item["result"] = firewall_configured
-            test_item["details"] = (
-                "防火墙配置正常" if firewall_configured else "防火墙配置异常"
-            )
+            test_item["details"] = "防火墙配置正常" if firewall_configured else "防火墙配置异常"
             results["evidence"].append("防火墙配置记录")
         except Exception as e:
             test_item["result"] = False
@@ -742,9 +700,7 @@ class ComplianceTestEngine:
         try:
             acl_implemented = await self._simulate_access_control_lists()
             test_item["result"] = acl_implemented
-            test_item["details"] = (
-                "访问控制列表已实施" if acl_implemented else "访问控制列表未实施"
-            )
+            test_item["details"] = "访问控制列表已实施" if acl_implemented else "访问控制列表未实施"
             results["evidence"].append("访问控制列表")
         except Exception as e:
             test_item["result"] = False
@@ -766,9 +722,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_application_security(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_application_security(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试应用安全控制"""
         results = {
             "control_id": control.control_id,
@@ -790,9 +744,7 @@ class ComplianceTestEngine:
         try:
             security_tested = await self._simulate_security_testing()
             test_item["result"] = security_tested
-            test_item["details"] = (
-                "安全测试已执行" if security_tested else "安全测试未执行"
-            )
+            test_item["details"] = "安全测试已执行" if security_tested else "安全测试未执行"
             results["evidence"].append("安全测试报告")
         except Exception as e:
             test_item["result"] = False
@@ -811,9 +763,7 @@ class ComplianceTestEngine:
         try:
             vulnerability_scanned = await self._simulate_vulnerability_scanning()
             test_item["result"] = vulnerability_scanned
-            test_item["details"] = (
-                "漏洞扫描已执行" if vulnerability_scanned else "漏洞扫描未执行"
-            )
+            test_item["details"] = "漏洞扫描已执行" if vulnerability_scanned else "漏洞扫描未执行"
             results["evidence"].append("漏洞扫描记录")
         except Exception as e:
             test_item["result"] = False
@@ -854,9 +804,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_financial_integrity(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_financial_integrity(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试财务完整性控制"""
         results = {
             "control_id": control.control_id,
@@ -878,9 +826,7 @@ class ComplianceTestEngine:
         try:
             integrity_validated = await self._simulate_data_integrity_check()
             test_item["result"] = integrity_validated
-            test_item["details"] = (
-                "数据完整性检查通过" if integrity_validated else "数据完整性检查失败"
-            )
+            test_item["details"] = "数据完整性检查通过" if integrity_validated else "数据完整性检查失败"
             results["evidence"].append("数据完整性检查记录")
         except Exception as e:
             test_item["result"] = False
@@ -899,9 +845,7 @@ class ComplianceTestEngine:
         try:
             audit_log_maintained = await self._simulate_audit_log_maintenance()
             test_item["result"] = audit_log_maintained
-            test_item["details"] = (
-                "审计日志已维护" if audit_log_maintained else "审计日志未维护"
-            )
+            test_item["details"] = "审计日志已维护" if audit_log_maintained else "审计日志未维护"
             results["evidence"].append("审计日志")
         except Exception as e:
             test_item["result"] = False
@@ -920,9 +864,7 @@ class ComplianceTestEngine:
         try:
             reconciliation_records = await self._simulate_reconciliation_records()
             test_item["result"] = reconciliation_records
-            test_item["details"] = (
-                "对账记录已维护" if reconciliation_records else "对账记录未维护"
-            )
+            test_item["details"] = "对账记录已维护" if reconciliation_records else "对账记录未维护"
             results["evidence"].append("对账记录")
         except Exception as e:
             test_item["result"] = False
@@ -966,9 +908,7 @@ class ComplianceTestEngine:
         try:
             access_list_maintained = await self._simulate_access_list_maintenance()
             test_item["result"] = access_list_maintained
-            test_item["details"] = (
-                "访问权限列表已维护" if access_list_maintained else "访问权限列表未维护"
-            )
+            test_item["details"] = "访问权限列表已维护" if access_list_maintained else "访问权限列表未维护"
             results["evidence"].append("访问权限列表")
         except Exception as e:
             test_item["result"] = False
@@ -987,9 +927,7 @@ class ComplianceTestEngine:
         try:
             change_records = await self._simulate_permission_change_records()
             test_item["result"] = change_records
-            test_item["details"] = (
-                "权限变更记录已维护" if change_records else "权限变更记录未维护"
-            )
+            test_item["details"] = "权限变更记录已维护" if change_records else "权限变更记录未维护"
             results["evidence"].append("权限变更记录")
         except Exception as e:
             test_item["result"] = False
@@ -1030,9 +968,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_transaction_integrity(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_transaction_integrity(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试交易完整性控制"""
         results = {
             "control_id": control.control_id,
@@ -1054,9 +990,7 @@ class ComplianceTestEngine:
         try:
             transaction_records = await self._simulate_transaction_records()
             test_item["result"] = transaction_records
-            test_item["details"] = (
-                "交易记录已维护" if transaction_records else "交易记录未维护"
-            )
+            test_item["details"] = "交易记录已维护" if transaction_records else "交易记录未维护"
             results["evidence"].append("交易记录")
         except Exception as e:
             test_item["result"] = False
@@ -1094,9 +1028,7 @@ class ComplianceTestEngine:
         try:
             modification_history = await self._simulate_modification_history()
             test_item["result"] = modification_history
-            test_item["details"] = (
-                "修改历史已记录" if modification_history else "修改历史未记录"
-            )
+            test_item["details"] = "修改历史已记录" if modification_history else "修改历史未记录"
             results["evidence"].append("修改历史")
         except Exception as e:
             test_item["result"] = False
@@ -1118,9 +1050,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_access_control_effectiveness(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_access_control_effectiveness(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试访问控制有效性"""
         results = {
             "control_id": control.control_id,
@@ -1140,15 +1070,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            vertical_escalation_failed = (
-                await self._simulate_vertical_privilege_escalation()
-            )
+            vertical_escalation_failed = await self._simulate_vertical_privilege_escalation()
             test_item["result"] = vertical_escalation_failed
-            test_item["details"] = (
-                "垂直权限提升防护有效"
-                if vertical_escalation_failed
-                else "垂直权限提升防护无效"
-            )
+            test_item["details"] = "垂直权限提升防护有效" if vertical_escalation_failed else "垂直权限提升防护无效"
             results["evidence"].append("访问测试结果")
         except Exception as e:
             test_item["result"] = False
@@ -1165,15 +1089,9 @@ class ComplianceTestEngine:
         }
 
         try:
-            horizontal_escalation_failed = (
-                await self._simulate_horizontal_privilege_escalation()
-            )
+            horizontal_escalation_failed = await self._simulate_horizontal_privilege_escalation()
             test_item["result"] = horizontal_escalation_failed
-            test_item["details"] = (
-                "水平权限提升防护有效"
-                if horizontal_escalation_failed
-                else "水平权限提升防护无效"
-            )
+            test_item["details"] = "水平权限提升防护有效" if horizontal_escalation_failed else "水平权限提升防护无效"
             results["evidence"].append("权限验证记录")
         except Exception as e:
             test_item["result"] = False
@@ -1192,11 +1110,7 @@ class ComplianceTestEngine:
         try:
             bypass_attempts_failed = await self._simulate_access_control_bypass()
             test_item["result"] = bypass_attempts_failed
-            test_item["details"] = (
-                "访问控制绕过防护有效"
-                if bypass_attempts_failed
-                else "访问控制绕过防护无效"
-            )
+            test_item["details"] = "访问控制绕过防护有效" if bypass_attempts_failed else "访问控制绕过防护无效"
             results["evidence"].append("绕过尝试记录")
         except Exception as e:
             test_item["result"] = False
@@ -1218,9 +1132,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_crypto_implementations(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_crypto_implementations(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试加密实现"""
         results = {
             "control_id": control.control_id,
@@ -1242,9 +1154,7 @@ class ComplianceTestEngine:
         try:
             strong_algorithm = await self._simulate_encryption_algorithm()
             test_item["result"] = strong_algorithm
-            test_item["details"] = (
-                "使用强加密算法" if strong_algorithm else "使用弱加密算法"
-            )
+            test_item["details"] = "使用强加密算法" if strong_algorithm else "使用弱加密算法"
             results["evidence"].append("加密算法文档")
         except Exception as e:
             test_item["result"] = False
@@ -1263,9 +1173,7 @@ class ComplianceTestEngine:
         try:
             key_management_secure = await self._simulate_key_management()
             test_item["result"] = key_management_secure
-            test_item["details"] = (
-                "密钥管理安全" if key_management_secure else "密钥管理不安全"
-            )
+            test_item["details"] = "密钥管理安全" if key_management_secure else "密钥管理不安全"
             results["evidence"].append("密钥管理记录")
         except Exception as e:
             test_item["result"] = False
@@ -1284,9 +1192,7 @@ class ComplianceTestEngine:
         try:
             encryption_strength = await self._simulate_encryption_strength()
             test_item["result"] = encryption_strength
-            test_item["details"] = (
-                "加密强度足够" if encryption_strength else "加密强度不足"
-            )
+            test_item["details"] = "加密强度足够" if encryption_strength else "加密强度不足"
             results["evidence"].append("加密强度测试")
         except Exception as e:
             test_item["result"] = False
@@ -1308,9 +1214,7 @@ class ComplianceTestEngine:
 
         return results
 
-    async def test_injection_prevention(
-        self, control: ComplianceControl
-    ) -> Dict[str, Any]:
+    async def test_injection_prevention(self, control: ComplianceControl) -> Dict[str, Any]:
         """测试注入防护"""
         results = {
             "control_id": control.control_id,
@@ -1332,9 +1236,7 @@ class ComplianceTestEngine:
         try:
             input_validation = await self._simulate_input_validation()
             test_item["result"] = input_validation
-            test_item["details"] = (
-                "输入验证有效" if input_validation else "输入验证无效"
-            )
+            test_item["details"] = "输入验证有效" if input_validation else "输入验证无效"
             results["evidence"].append("输入验证记录")
         except Exception as e:
             test_item["result"] = False
@@ -1353,9 +1255,7 @@ class ComplianceTestEngine:
         try:
             parameterized_queries = await self._simulate_parameterized_queries()
             test_item["result"] = parameterized_queries
-            test_item["details"] = (
-                "参数化查询使用正确" if parameterized_queries else "参数化查询使用错误"
-            )
+            test_item["details"] = "参数化查询使用正确" if parameterized_queries else "参数化查询使用错误"
             results["evidence"].append("参数化查询使用记录")
         except Exception as e:
             test_item["result"] = False
@@ -1408,9 +1308,7 @@ class ComplianceTestEngine:
         # 模拟数据删除逻辑
         return True
 
-    async def _simulate_data_correction(
-        self, user_id: str, field: str, new_value: str
-    ) -> bool:
+    async def _simulate_data_correction(self, user_id: str, field: str, new_value: str) -> bool:
         """模拟数据更正"""
         # 模拟数据更正逻辑
         return True
@@ -1448,11 +1346,7 @@ class ComplianceTestEngine:
     async def _simulate_password_complexity(self, password: str) -> bool:
         """模拟密码复杂度"""
         # 模拟密码复杂度检查
-        return (
-            len(password) >= 8
-            and any(c.isdigit() for c in password)
-            and any(c.isalpha() for c in password)
-        )
+        return len(password) >= 8 and any(c.isdigit() for c in password) and any(c.isalpha() for c in password)
 
     async def _simulate_password_history(self, user_id: str) -> bool:
         """模拟密码历史记录"""
@@ -1616,32 +1510,18 @@ class ComplianceTestEngine:
     ) -> ComplianceReport:
         """生成单个合规报告"""
         tested_controls = len(results)
-        compliant_controls = sum(
-            1
-            for result in results.values()
-            if result["status"] == ComplianceLevel.COMPLIANT
-        )
+        compliant_controls = sum(1 for result in results.values() if result["status"] == ComplianceLevel.COMPLIANT)
         non_compliant_controls = sum(
-            1
-            for result in results.values()
-            if result["status"] == ComplianceLevel.NON_COMPLIANT
+            1 for result in results.values() if result["status"] == ComplianceLevel.NON_COMPLIANT
         )
         partially_compliant_controls = sum(
-            1
-            for result in results.values()
-            if result["status"] == ComplianceLevel.PARTIALLY_COMPLIANT
+            1 for result in results.values() if result["status"] == ComplianceLevel.PARTIALLY_COMPLIANT
         )
-        not_tested_controls = sum(
-            1
-            for result in results.values()
-            if result["status"] == ComplianceLevel.NOT_TESTED
-        )
+        not_tested_controls = sum(1 for result in results.values() if result["status"] == ComplianceLevel.NOT_TESTED)
 
         # 计算总体得分
         total_score = sum(result["score"] for result in results.values())
-        score_percentage = (
-            (total_score / (tested_controls * 100)) * 100 if tested_controls > 0 else 0
-        )
+        score_percentage = (total_score / (tested_controls * 100)) * 100 if tested_controls > 0 else 0
 
         # 确定整体状态
         if score_percentage >= 90:
@@ -1777,9 +1657,7 @@ async def test_compliance_gdpr():
     engine = ComplianceTestEngine()
 
     # 只测试GDPR控制项
-    gdpr_controls = [
-        c for c in engine.compliance_controls if c.standard == ComplianceStandard.GDPR
-    ]
+    gdpr_controls = [c for c in engine.compliance_controls if c.standard == ComplianceStandard.GDPR]
 
     results = {}
     for control in gdpr_controls:
@@ -1802,9 +1680,7 @@ async def test_compliance_gdpr():
     print("\n📊 GDPR合规测试结果:")
     print(f"   测试控制项数: {len(results)}")
     print(f"   合规得分: {compliance_score:.1f}%")
-    print(
-        f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}"
-    )
+    print(f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}")
 
 
 @pytest.mark.compliance
@@ -1813,11 +1689,7 @@ async def test_compliance_pci_dss():
     engine = ComplianceTestEngine()
 
     # 只测试PCI DSS控制项
-    pci_controls = [
-        c
-        for c in engine.compliance_controls
-        if c.standard == ComplianceStandard.PCI_DSS
-    ]
+    pci_controls = [c for c in engine.compliance_controls if c.standard == ComplianceStandard.PCI_DSS]
 
     results = {}
     for control in pci_controls:
@@ -1842,9 +1714,7 @@ async def test_compliance_pci_dss():
     print("\n📊 PCI DSS合规测试结果:")
     print(f"   测试控制项数: {len(results)}")
     print(f"   合规得分: {compliance_score:.1f}%")
-    print(
-        f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}"
-    )
+    print(f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}")
 
 
 @pytest.mark.compliance
@@ -1853,9 +1723,7 @@ async def test_compliance_sox():
     engine = ComplianceTestEngine()
 
     # 只测试SOX控制项
-    sox_controls = [
-        c for c in engine.compliance_controls if c.standard == ComplianceStandard.SOX
-    ]
+    sox_controls = [c for c in engine.compliance_controls if c.standard == ComplianceStandard.SOX]
 
     results = {}
     for control in sox_controls:
@@ -1880,9 +1748,7 @@ async def test_compliance_sox():
     print("\n📊 SOX合规测试结果:")
     print(f"   测试控制项数: {len(results)}")
     print(f"   合规得分: {compliance_score:.1f}%")
-    print(
-        f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}"
-    )
+    print(f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}")
 
 
 @pytest.mark.compliance
@@ -1891,9 +1757,7 @@ async def test_compliance_owasp():
     engine = ComplianceTestEngine()
 
     # 只测试OWASP控制项
-    owasp_controls = [
-        c for c in engine.compliance_controls if c.standard == ComplianceStandard.OWASP
-    ]
+    owasp_controls = [c for c in engine.compliance_controls if c.standard == ComplianceStandard.OWASP]
 
     results = {}
     for control in owasp_controls:
@@ -1918,9 +1782,7 @@ async def test_compliance_owasp():
     print("\n📊 OWASP合规测试结果:")
     print(f"   测试控制项数: {len(results)}")
     print(f"   合规得分: {compliance_score:.1f}%")
-    print(
-        f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}"
-    )
+    print(f"   整体状态: {'合规' if compliance_score >= 90 else '部分合规' if compliance_score >= 70 else '不合规'}")
 
 
 @pytest.mark.compliance
@@ -1942,9 +1804,7 @@ async def test_comprehensive_compliance():
 
     print(f"\n📋 共生成 {len(reports)} 份合规报告:")
     for report in reports:
-        print(
-            f"   📄 {report.standard.value}: {report.score_percentage:.1f}% ({report.overall_status.value})"
-        )
+        print(f"   📄 {report.standard.value}: {report.score_percentage:.1f}% ({report.overall_status.value})")
 
 
 if __name__ == "__main__":

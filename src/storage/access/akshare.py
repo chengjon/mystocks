@@ -84,28 +84,18 @@ class AkshareDataAccess(IDataAccessLayer):
                 from src.storage.access.tdengine import TDengineDataAccess
 
                 tdengine_access = TDengineDataAccess(self.monitoring_db)
-                success = tdengine_access.save_data(
-                    normalized_data, classification, actual_table_name, **kwargs
-                )
+                success = tdengine_access.save_data(normalized_data, classification, actual_table_name, **kwargs)
             else:  # PostgreSQL
                 from src.storage.access.postgresql import PostgreSQLDataAccess
 
                 postgresql_access = PostgreSQLDataAccess(self.monitoring_db)
-                success = postgresql_access.save_data(
-                    normalized_data, classification, actual_table_name, **kwargs
-                )
+                success = postgresql_access.save_data(normalized_data, classification, actual_table_name, **kwargs)
 
             if success:
-                self.monitoring_db.log_operation_result(
-                    operation_id, True, len(processed_data)
-                )
-                logger.info(
-                    f"保存akshare数据成功: {actual_table_name}, {len(processed_data)}条记录"
-                )
+                self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+                logger.info(f"保存akshare数据成功: {actual_table_name}, {len(processed_data)}条记录")
             else:
-                self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, "保存失败"
-                )
+                self.monitoring_db.log_operation_result(operation_id, False, 0, "保存失败")
 
             return success
 
@@ -165,12 +155,8 @@ class AkshareDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_akshare_data(data, classification)
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"从akshare获取数据成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"从akshare获取数据成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return processed_data
 
@@ -246,16 +232,10 @@ class AkshareDataAccess(IDataAccessLayer):
                 )
 
             if success:
-                self.monitoring_db.log_operation_result(
-                    operation_id, True, len(processed_data)
-                )
-                logger.info(
-                    f"更新数据成功: {actual_table_name}, {len(processed_data)}条记录"
-                )
+                self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+                logger.info(f"更新数据成功: {actual_table_name}, {len(processed_data)}条记录")
             else:
-                self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, "更新失败"
-                )
+                self.monitoring_db.log_operation_result(operation_id, False, 0, "更新失败")
 
             return success
 
@@ -304,24 +284,18 @@ class AkshareDataAccess(IDataAccessLayer):
                 from src.storage.access.tdengine import TDengineDataAccess
 
                 tdengine_access = TDengineDataAccess(self.monitoring_db)
-                success = tdengine_access.delete_data(
-                    classification, actual_table_name, filters, **kwargs
-                )
+                success = tdengine_access.delete_data(classification, actual_table_name, filters, **kwargs)
             else:  # PostgreSQL
                 from src.storage.access.postgresql import PostgreSQLDataAccess
 
                 postgresql_access = PostgreSQLDataAccess(self.monitoring_db)
-                success = postgresql_access.delete_data(
-                    classification, actual_table_name, filters, **kwargs
-                )
+                success = postgresql_access.delete_data(classification, actual_table_name, filters, **kwargs)
 
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, 0)
                 logger.info(f"删除数据成功: {actual_table_name}")
             else:
-                self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, "删除失败"
-                )
+                self.monitoring_db.log_operation_result(operation_id, False, 0, "删除失败")
 
             return success
 
@@ -432,9 +406,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
         return stock_info
 
-    def _fetch_daily_kline(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def _fetch_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取日K线数据"""
         try:
             import akshare as ak
@@ -465,9 +437,7 @@ class AkshareDataAccess(IDataAccessLayer):
             logger.error(f"获取日K线数据失败: {e}")
             return pd.DataFrame()
 
-    def _process_daily_kline_data(
-        self, kline_data: pd.DataFrame, symbol: str
-    ) -> pd.DataFrame:
+    def _process_daily_kline_data(self, kline_data: pd.DataFrame, symbol: str) -> pd.DataFrame:
         """处理日K线数据"""
         if kline_data.empty:
             return kline_data
@@ -552,8 +522,6 @@ class AkshareDataAccess(IDataAccessLayer):
             "成交量": "volume",
             "成交额": "amount",
             "换手率": "turnover",
-            "涨跌幅": "change_pct",  # 注意这个字段可能有重复
-            "涨跌额": "change",
         }
 
         quote_data = quote_data.rename(columns=column_mapping)
@@ -563,9 +531,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
         return quote_data
 
-    def _fetch_generic_data(
-        self, classification: DataClassification, filters: Dict = None, **kwargs
-    ) -> pd.DataFrame:
+    def _fetch_generic_data(self, classification: DataClassification, filters: Dict = None, **kwargs) -> pd.DataFrame:
         """
         获取通用数据
 
@@ -602,9 +568,7 @@ class AkshareDataAccess(IDataAccessLayer):
             logger.error(f"获取通用数据失败: {e}")
             return pd.DataFrame()
 
-    def _fetch_technical_indicators(
-        self, symbol: str, start_date: str = None, end_date: str = None
-    ) -> pd.DataFrame:
+    def _fetch_technical_indicators(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """获取技术指标数据"""
         try:
             import akshare as ak
@@ -649,9 +613,7 @@ class AkshareDataAccess(IDataAccessLayer):
             logger.error(f"获取技术指标数据失败: {e}")
             return pd.DataFrame()
 
-    def _fetch_quantitative_factors(
-        self, symbol: str, start_date: str = None, end_date: str = None
-    ) -> pd.DataFrame:
+    def _fetch_quantitative_factors(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """获取量化因子数据"""
         try:
             import akshare as ak
@@ -675,23 +637,15 @@ class AkshareDataAccess(IDataAccessLayer):
             # 计算量化因子
             if not kline_data.empty:
                 # 计算价格动量因子
-                kline_data["momentum_5"] = (
-                    kline_data["收盘"] / kline_data["收盘"].shift(5) - 1
-                )
-                kline_data["momentum_10"] = (
-                    kline_data["收盘"] / kline_data["收盘"].shift(10) - 1
-                )
+                kline_data["momentum_5"] = kline_data["收盘"] / kline_data["收盘"].shift(5) - 1
+                kline_data["momentum_10"] = kline_data["收盘"] / kline_data["收盘"].shift(10) - 1
 
                 # 计算波动率因子
-                kline_data["volatility_10"] = (
-                    kline_data["收盘"].pct_change().rolling(window=10).std()
-                )
+                kline_data["volatility_10"] = kline_data["收盘"].pct_change().rolling(window=10).std()
 
                 # 计算成交量因子
                 kline_data["volume_ma5"] = kline_data["成交量"].rolling(window=5).mean()
-                kline_data["volume_ratio"] = (
-                    kline_data["成交量"] / kline_data["volume_ma5"]
-                )
+                kline_data["volume_ratio"] = kline_data["成交量"] / kline_data["volume_ma5"]
 
                 # 添加symbol列
                 if len(symbol) >= 3:
@@ -704,9 +658,7 @@ class AkshareDataAccess(IDataAccessLayer):
             logger.error(f"获取量化因子数据失败: {e}")
             return pd.DataFrame()
 
-    def _preprocess_akshare_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _preprocess_akshare_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """预处理akshare数据"""
         processed_data = data.copy()
 
@@ -715,15 +667,11 @@ class AkshareDataAccess(IDataAccessLayer):
             # 确保symbol列格式统一
             if "symbol" in processed_data.columns:
                 # 去除市场前缀，统一格式
-                processed_data["symbol"] = processed_data["symbol"].str.replace(
-                    r"^(sh|sz)", "", regex=True
-                )
+                processed_data["symbol"] = processed_data["symbol"].str.replace(r"^(sh|sz)", "", regex=True)
 
         return processed_data
 
-    def _postprocess_akshare_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _postprocess_akshare_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """后处理akshare数据"""
         if data.empty:
             return data

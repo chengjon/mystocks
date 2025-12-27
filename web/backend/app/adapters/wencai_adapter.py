@@ -40,9 +40,7 @@ class WencaiDataSource:
     DEFAULT_RETRY_COUNT = 3
     DEFAULT_PAGES = 1
 
-    def __init__(
-        self, timeout: int = DEFAULT_TIMEOUT, retry_count: int = DEFAULT_RETRY_COUNT
-    ):
+    def __init__(self, timeout: int = DEFAULT_TIMEOUT, retry_count: int = DEFAULT_RETRY_COUNT):
         """
         初始化问财数据源
 
@@ -54,10 +52,7 @@ class WencaiDataSource:
         self.retry_count = retry_count
         self.session = self._create_session()
 
-        logger.info(
-            f"WencaiDataSource initialized: timeout={timeout}s, "
-            f"retry_count={retry_count}"
-        )
+        logger.info(f"WencaiDataSource initialized: timeout={timeout}s, " f"retry_count={retry_count}")
 
     def _create_session(self) -> requests.Session:
         """
@@ -254,9 +249,7 @@ class WencaiDataSource:
         # 再次处理可能的重复列名
         cleaned_data = self._handle_duplicate_columns(cleaned_data)
 
-        logger.info(
-            f"Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns"
-        )
+        logger.info(f"Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns")
 
         return cleaned_data
 

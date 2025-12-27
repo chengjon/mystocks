@@ -130,12 +130,8 @@ class P2ModuleTester:
                         if field not in result["response"]:
                             print(f"    ⚠️  缺少字段: {field}")
                             success = False
-                            self.test_results["technical_analysis"][test_case["name"]][
-                                "success"
-                            ] = False
-                self.test_results["technical_analysis"][test_case["name"]][
-                    "success"
-                ] = success
+                            self.test_results["technical_analysis"][test_case["name"]]["success"] = False
+                self.test_results["technical_analysis"][test_case["name"]]["success"] = success
 
             status = "✅" if success else "❌"
             print(f"  {status} {test_case['name']}")
@@ -193,9 +189,7 @@ class P2ModuleTester:
                         if field not in result["response"]:
                             print(f"    ⚠️  缺少字段: {field}")
                             success = False
-                            self.test_results["strategy"][test_case["name"]][
-                                "success"
-                            ] = False
+                            self.test_results["strategy"][test_case["name"]]["success"] = False
                 self.test_results["strategy"][test_case["name"]]["success"] = success
 
             status = "✅" if success else "❌"
@@ -280,9 +274,7 @@ class P2ModuleTester:
                                     print(f"    ⚠️  缺少字段: {field}")
                                     success = False
                                     break
-                    self.test_results["watchlist"][test_case["name"]]["success"] = (
-                        success
-                    )
+                    self.test_results["watchlist"][test_case["name"]]["success"] = success
 
             status = "✅" if success else "❌"
             print(f"  {status} {test_case['name']}")
@@ -298,9 +290,7 @@ class P2ModuleTester:
         for module in ["technical_analysis", "strategy", "watchlist"]:
             module_results = self.test_results[module]
             module_total = len(module_results)
-            module_passed = sum(
-                1 for result in module_results.values() if result["success"]
-            )
+            module_passed = sum(1 for result in module_results.values() if result["success"])
             total_tests += module_total
             total_passed += module_passed
 
@@ -309,17 +299,13 @@ class P2ModuleTester:
                 status = "✅" if result["success"] else "❌"
                 print(f"  {status} {test_name}")
 
-            print(
-                f"  通过率: {module_passed}/{module_total} ({module_passed / module_total * 100:.1f}%)"
-            )
+            print(f"  通过率: {module_passed}/{module_total} ({module_passed / module_total * 100:.1f}%)")
 
         # 更新总结
         self.test_results["summary"]["total_tests"] = total_tests
         self.test_results["summary"]["passed"] = total_passed
         self.test_results["summary"]["failed"] = total_tests - total_passed
-        self.test_results["summary"]["success_rate"] = (
-            (total_passed / total_tests * 100) if total_tests > 0 else 0
-        )
+        self.test_results["summary"]["success_rate"] = (total_passed / total_tests * 100) if total_tests > 0 else 0
 
         print("\n📈 总体统计:")
         print(f"  总测试数: {total_tests}")

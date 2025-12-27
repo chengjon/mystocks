@@ -368,10 +368,43 @@
   </el-container>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 面包屑导航项
+ */
+interface BreadcrumbItem {
+  path: string
+  title: string
+}
+
+/**
+ * 用户命令类型
+ */
+type UserCommand = 'profile' | 'settings' | 'logout'
+
+/**
+ * 数据统计信息
+ */
+interface DataStats {
+  totalRecords: number
+  dataSources: number
+  lastUpdate: string
+  updateTimeAgo: string
+  dataQuality: number
+}
+
+/**
+ * 质量等级样式
+ */
+type QualityClass = 'text-up' | 'text-flat' | 'text-down'
 
 // ============================================
 // Composables
@@ -382,21 +415,21 @@ const router = useRouter()
 // ============================================
 // State
 // ============================================
-const isCollapsed = ref(false)
-const notificationCount = ref(0)
-const username = ref('Admin')
+const isCollapsed: Ref<boolean> = ref(false)
+const notificationCount: Ref<number> = ref(0)
+const username: Ref<string> = ref('Admin')
 
 // Data-specific state
-const selectedDataSource = ref('all')
-const selectedDataType = ref('all')
-const dateRange = ref([])
-const searchKeyword = ref('')
-const selectedRows = ref([])
-const isRefreshing = ref(false)
-const showDataPreview = ref(true)
+const selectedDataSource: Ref<string> = ref('all')
+const selectedDataType: Ref<string> = ref('all')
+const dateRange: Ref<string[]> = ref([])
+const searchKeyword: Ref<string> = ref('')
+const selectedRows: Ref<any[]> = ref([])
+const isRefreshing: Ref<boolean> = ref(false)
+const showDataPreview: Ref<boolean> = ref(true)
 
 // Data statistics
-const dataStats = ref({
+const dataStats: Ref<DataStats> = ref({
   totalRecords: 1256789,
   dataSources: 4,
   lastUpdate: '15:30:45',
@@ -407,36 +440,36 @@ const dataStats = ref({
 // ============================================
 // Computed Properties
 // ============================================
-const sidebarWidth = computed(() => {
+const sidebarWidth: ComputedRef<string> = computed((): string => {
   return isCollapsed.value ? '64px' : '220px'
 })
 
-const activeMenu = computed(() => {
+const activeMenu: ComputedRef<string> = computed((): string => {
   return route.path
 })
 
-const breadcrumbs = computed(() => {
+const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[] => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
     path: item.path,
-    title: item.meta.title
+    title: item.meta.title as string
   }))
 })
 
 // ============================================
 // Methods
 // ============================================
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string): void => {
   if (index && index.startsWith('/')) {
     router.push(index)
   }
 }
 
-const handleUserCommand = async (command) => {
+const handleUserCommand = async (command: UserCommand): Promise<void> => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人信息功能开发中...')
@@ -465,12 +498,12 @@ const handleUserCommand = async (command) => {
 }
 
 // Data-specific methods
-const handleDataSourceChange = (source) => {
+const handleDataSourceChange = (source: string): void => {
   ElMessage.info(`切换数据源: ${source}`)
   // TODO: Emit event or call API to filter data
 }
 
-const handleDateRangeChange = (dates) => {
+const handleDateRangeChange = (dates: string[] | null): void => {
   if (dates) {
     ElMessage.info(`时间范围: ${dates[0]} 至 ${dates[1]}`)
   } else {
@@ -479,19 +512,19 @@ const handleDateRangeChange = (dates) => {
   // TODO: Emit event or call API to filter data
 }
 
-const handleDataTypeChange = (type) => {
+const handleDataTypeChange = (type: string): void => {
   ElMessage.info(`数据类型: ${type}`)
   // TODO: Emit event or call API to filter data
 }
 
-const handleSearch = (keyword) => {
+const handleSearch = (keyword: string): void => {
   // Debounce search in real implementation
   if (keyword.length > 0) {
     console.log('Searching:', keyword)
   }
 }
 
-const handleBatchDelete = async () => {
+const handleBatchDelete = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `确定要删除选中的 ${selectedRows.value.length} 条数据吗?`,
@@ -509,16 +542,16 @@ const handleBatchDelete = async () => {
   }
 }
 
-const handleBatchExport = () => {
+const handleBatchExport = (): void => {
   ElMessage.info(`导出 ${selectedRows.value.length} 条数据`)
   // TODO: Implement export functionality
 }
 
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   isRefreshing.value = true
   try {
     // TODO: Call API to refresh data
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise<void>(resolve => setTimeout(resolve, 1000))
     ElMessage.success('数据已刷新')
 
     // Update last update time
@@ -532,7 +565,7 @@ const handleRefresh = async () => {
   }
 }
 
-const getQualityClass = (quality) => {
+const getQualityClass = (quality: number): QualityClass => {
   if (quality >= 95) return 'text-up'
   if (quality >= 80) return 'text-flat'
   return 'text-down'
@@ -542,7 +575,7 @@ const getQualityClass = (quality) => {
 // Lifecycle
 // ============================================
 // Watch for route changes
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>

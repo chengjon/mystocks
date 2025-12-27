@@ -55,9 +55,7 @@ def tdx_retry(max_retries: int = 3, retry_delay: int = 1, api_timeout: int = 10)
                     last_exception = e
 
                     if attempt == max_retries:
-                        self.logger.error(
-                            f"TDX API调用失败 (尝试 {attempt + 1}/{max_retries + 1}): {e}"
-                        )
+                        self.logger.error(f"TDX API调用失败 (尝试 {attempt + 1}/{max_retries + 1}): {e}")
                         raise
 
                     self.logger.warning(
@@ -123,9 +121,7 @@ class BaseTdxAdapter(IDataSource):
                 self.tdx_host, self.tdx_port = self.server_config.get_primary_server()
                 self.logger.info("TDX适配器初始化: 使用connect.cfg配置")
                 self.logger.info(f"主服务器: {self.tdx_host}:{self.tdx_port}")
-                self.logger.info(
-                    f"可用服务器总数: {self.server_config.get_server_count()}"
-                )
+                self.logger.info(f"可用服务器总数: {self.server_config.get_server_count()}")
             except Exception as e:
                 self.logger.warning(f"加载connect.cfg失败: {e}, 使用环境变量配置")
                 self.use_server_config = False
@@ -143,20 +139,14 @@ class BaseTdxAdapter(IDataSource):
 
     def _get_tdx_connection(self) -> TdxHq_API:
         """获取TDX连接"""
-        if (
-            self._connection is None
-            or not hasattr(self._connection, "connected")
-            or not self._connection.connected
-        ):
+        if self._connection is None or not hasattr(self._connection, "connected") or not self._connection.connected:
             try:
                 self.logger.info(f"创建TDX连接到 {self.tdx_host}:{self.tdx_port}")
                 self._connection = TdxHq_API()
 
                 # 连接到服务器
                 if not self._connection.connect(self.tdx_host, self.tdx_port):
-                    raise ConnectionError(
-                        f"无法连接到TDX服务器 {self.tdx_host}:{self.tdx_port}"
-                    )
+                    raise ConnectionError(f"无法连接到TDX服务器 {self.tdx_host}:{self.tdx_port}")
 
                 self.logger.info("TDX连接创建成功")
             except Exception as e:

@@ -42,9 +42,7 @@ class DatabaseTestTool:
         search_paths = [
             os.path.join(current_dir, ".env"),  # db_manager/.env
             os.path.join(os.path.dirname(current_dir), ".env"),  # mystocks/.env
-            os.path.join(
-                os.path.dirname(os.path.dirname(current_dir)), ".env"
-            ),  # GITHUB/.env
+            os.path.join(os.path.dirname(os.path.dirname(current_dir)), ".env"),  # GITHUB/.env
         ]
 
         print(f"当前脚本位置: {current_dir}")
@@ -167,9 +165,7 @@ class DatabaseTestTool:
                     if "user" in config:
                         print(f"  ✅ 用户: {config['user']}")
                     if "password" in config:
-                        print(
-                            f"  ✅ 密码: {'已设置' if config.get('password') else '未设置'}"
-                        )
+                        print(f"  ✅ 密码: {'已设置' if config.get('password') else '未设置'}")
                     if db_name == "redis":
                         print(f"  ✅ 数据库: {config['db']}")
                     self.test_results[db_name] = True
@@ -221,9 +217,7 @@ class DatabaseTestTool:
                             print("      提示: 请安装以下任意一种 TDengine 驱动:")
                             print("      - WebSocket(推荐): pip install taos-ws-py")
                             print("      - REST连接: pip install taospy")
-                            print(
-                                "      - 原生连接: pip install taospy + 安装TDengine客户端"
-                            )
+                            print("      - 原生连接: pip install taospy + 安装TDengine客户端")
                     except Exception as e:
                         print(f"  ❌ {description}: 检查时出错 ({str(e)})")
                         self.db_libs[driver_name] = None
@@ -331,9 +325,7 @@ class DatabaseTestTool:
                         version = line.split(":", 1)[1].strip()
                         break
                 # 避免重复（如果WebSocket已经通过import检测到）
-                websocket_found = any(
-                    "WebSocket" in method for method in available_methods
-                )
+                websocket_found = any("WebSocket" in method for method in available_methods)
                 if not websocket_found:
                     available_methods.append(f"taos-ws-py(v{version})")
         except Exception:
@@ -419,9 +411,7 @@ class DatabaseTestTool:
 
                 try:
                     if db_name == "monitor_mysql":
-                        success = self._test_mysql_monitor_simple(
-                            config, create_engine, text
-                        )
+                        success = self._test_mysql_monitor_simple(config, create_engine, text)
                     elif db_name in ["mysql", "mariadb"]:
                         success = self._test_mysql_simple(config, pymysql)
                     elif db_name == "redis":
@@ -431,18 +421,14 @@ class DatabaseTestTool:
                         tdengine_lib_status = self.db_libs.get("tdengine")
                         if tdengine_methods:
                             # 有可导入的模块，进行实际连接测试
-                            success = self._test_tdengine_multi(
-                                config, tdengine_methods
-                            )
+                            success = self._test_tdengine_multi(config, tdengine_methods)
                         elif (
                             tdengine_lib_status
                             and isinstance(tdengine_lib_status, list)
                             and len(tdengine_lib_status) > 0
                         ):
                             # 检测到TDengine包但无法导入模块，提示安装问题
-                            print(
-                                f"  ⚠️ 检测到TDengine包 ({', '.join(tdengine_lib_status)})，但无法导入模块"
-                            )
+                            print(f"  ⚠️ 检测到TDengine包 ({', '.join(tdengine_lib_status)})，但无法导入模块")
                             print("  提示: 可能缺少TDengine客户端或环境配置问题")
                             success = False
                         else:
@@ -468,9 +454,7 @@ class DatabaseTestTool:
         )
         return successful_connections > 0
 
-    def _test_mysql_monitor_simple(
-        self, config: Dict[str, Any], create_engine, text
-    ) -> bool:
+    def _test_mysql_monitor_simple(self, config: Dict[str, Any], create_engine, text) -> bool:
         """简化版MySQL监控数据库测试"""
         try:
             start_time = time.time()
@@ -505,9 +489,7 @@ class DatabaseTestTool:
             conn.close()
 
             response_time = round((time.time() - start_time) * 1000, 2)
-            print(
-                f"  ✅ 连接成功 ({response_time}ms), 版本: {version[0] if version else 'Unknown'}"
-            )
+            print(f"  ✅ 连接成功 ({response_time}ms), 版本: {version[0] if version else 'Unknown'}")
             return True
         except Exception as e:
             print(f"  ❌ 连接失败: {str(e)}")
@@ -537,13 +519,9 @@ class DatabaseTestTool:
             print(f"  ❌ 连接失败: {str(e)}")
             return False
 
-    def _test_tdengine_multi(
-        self, config: Dict[str, Any], methods: Dict[str, Any]
-    ) -> bool:
+    def _test_tdengine_multi(self, config: Dict[str, Any], methods: Dict[str, Any]) -> bool:
         """多种连接方式测试TDengine，只要有一种成功即可"""
-        print(
-            f"  🔍 检测到 {len(methods)} 种 TDengine 连接方式: {', '.join(methods.keys())}"
-        )
+        print(f"  🔍 检测到 {len(methods)} 种 TDengine 连接方式: {', '.join(methods.keys())}")
 
         success_count = 0
         total_methods = len(methods)
@@ -585,9 +563,7 @@ class DatabaseTestTool:
                 print(f"      ❌ {method_name} 连接失败: {str(e)}")
 
         if success_count > 0:
-            print(
-                f"  ✅ TDengine 连接成功 ({success_count}/{total_methods} 种方式可用)"
-            )
+            print(f"  ✅ TDengine 连接成功 ({success_count}/{total_methods} 种方式可用)")
             return True
         else:
             print("  ❌ 所有 TDengine 连接方式都失败")

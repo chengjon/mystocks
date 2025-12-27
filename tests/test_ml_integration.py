@@ -32,9 +32,7 @@ class TestMLIntegration:
     @pytest.fixture
     def test_day_file(self):
         """测试数据文件路径"""
-        return os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "temp/pyprof/data/sh000001.day"
-        )
+        return os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp/pyprof/data/sh000001.day")
 
     @pytest.fixture
     def sample_data(self):
@@ -83,9 +81,7 @@ class TestMLIntegration:
         metrics = predictor.train(X, y, test_size=0.2)
 
         assert metrics["r2_score"] > 0.5, "模型性能太差"
-        print(
-            f"   ✅ 训练完成: RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}"
-        )
+        print(f"   ✅ 训练完成: RMSE={metrics['rmse']:.2f}, R²={metrics['r2_score']:.4f}")
 
         # 4. 预测
         print("步骤 4: 价格预测...")
@@ -160,17 +156,13 @@ class TestMLIntegration:
         # 1. 聚合特征
         print("测试聚合特征...")
         generator_agg = RollingFeatureGenerator(window_size=10)
-        X_agg, y_agg = generator_agg.prepare_ml_data(
-            df, target_col="close", feature_type="aggregate"
-        )
+        X_agg, y_agg = generator_agg.prepare_ml_data(df, target_col="close", feature_type="aggregate")
         print(f"   ✅ 聚合特征: X={X_agg.shape}")
 
         # 2. 原始滚动特征
         print("测试原始滚动特征...")
         generator_raw = RollingFeatureGenerator(window_size=5)
-        X_raw, y_raw = generator_raw.prepare_ml_data(
-            df, target_col="close", feature_type="raw"
-        )
+        X_raw, y_raw = generator_raw.prepare_ml_data(df, target_col="close", feature_type="raw")
         print(f"   ✅ 原始特征: X={X_raw.shape}")
 
         # 3. 训练对比

@@ -62,9 +62,7 @@ class TestUnifiedErrorHandler(unittest.TestCase):
         """测试重试成功"""
         call_count = 0
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.1, context="测试重试"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, delay=0.1, context="测试重试")
         def test_func():
             nonlocal call_count
             call_count += 1
@@ -80,9 +78,7 @@ class TestUnifiedErrorHandler(unittest.TestCase):
         """测试重试全部失败"""
         call_count = 0
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.1, context="测试重试"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, delay=0.1, context="测试重试")
         def test_func():
             nonlocal call_count
             call_count += 1

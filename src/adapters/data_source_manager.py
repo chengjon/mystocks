@@ -89,9 +89,7 @@ class DataSourceManager:
 
     # ==================== 实时行情 ====================
 
-    def get_real_time_data(
-        self, symbol: str, source: Optional[str] = None
-    ) -> Union[Dict, str]:
+    def get_real_time_data(self, symbol: str, source: Optional[str] = None) -> Union[Dict, str]:
         """
         获取实时行情数据
 
@@ -231,9 +229,7 @@ class DataSourceManager:
 
         return {}
 
-    def get_financial_data(
-        self, symbol: str, period: str = "quarter", source: Optional[str] = None
-    ) -> pd.DataFrame:
+    def get_financial_data(self, symbol: str, period: str = "quarter", source: Optional[str] = None) -> pd.DataFrame:
         """获取财务数据"""
         if source:
             data_source = self._sources.get(source)
@@ -252,9 +248,7 @@ class DataSourceManager:
 
         return pd.DataFrame()
 
-    def get_index_components(
-        self, symbol: str, source: Optional[str] = None
-    ) -> List[str]:
+    def get_index_components(self, symbol: str, source: Optional[str] = None) -> List[str]:
         """获取指数成分股"""
         if source:
             data_source = self._sources.get(source)

@@ -223,9 +223,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
         if self.use_casbin and self.enforcer:
             try:
-                result = self.enforcer.enforce(
-                    user_id, room_id, room_id, permission.value
-                )
+                result = self.enforcer.enforce(user_id, room_id, room_id, permission.value)
             except Exception as e:
                 logger.warning(
                     "⚠️ Casbin enforce failed, using default permissions",
@@ -239,9 +237,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
         self.permission_cache[cache_key] = result
         return result
 
-    def _check_default_permission(
-        self, user_role: RoomRole, permission: RoomPermission
-    ) -> bool:
+    def _check_default_permission(self, user_role: RoomRole, permission: RoomPermission) -> bool:
         """使用默认权限映射检查权限"""
         if user_role not in self.role_permissions:
             return False
@@ -266,9 +262,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
         logger.info("✅ Permission added", role=role.value, permission=permission.value)
         return True
 
-    def remove_role_permission(
-        self, role: RoomRole, permission: RoomPermission
-    ) -> bool:
+    def remove_role_permission(self, role: RoomRole, permission: RoomPermission) -> bool:
         """从角色移除权限
 
         Args:
@@ -284,9 +278,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
         self.role_permissions[role].discard(permission)
         self._clear_cache()
 
-        logger.info(
-            "✅ Permission removed", role=role.value, permission=permission.value
-        )
+        logger.info("✅ Permission removed", role=role.value, permission=permission.value)
         return True
 
     def get_role_permissions(self, role: RoomRole) -> Set[RoomPermission]:
@@ -310,9 +302,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
             "use_casbin": self.use_casbin,
             "cache_size": len(self.permission_cache),
             "roles_defined": len(self.role_permissions),
-            "total_permissions": sum(
-                len(perms) for perms in self.role_permissions.values()
-            ),
+            "total_permissions": sum(len(perms) for perms in self.role_permissions.values()),
         }
 
 
@@ -340,9 +330,7 @@ class RoomAccessControl:
         Returns:
             是否可以加入
         """
-        has_permission = self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.JOIN, user_role
-        )
+        has_permission = self.permission_manager.check_permission(user_id, room_id, RoomPermission.JOIN, user_role)
 
         if has_permission:
             self._log_access("join", user_id, room_id, True)
@@ -368,9 +356,7 @@ class RoomAccessControl:
         self._log_access("send_message", user_id, room_id, has_permission)
         return has_permission
 
-    def can_delete_message(
-        self, user_id: str, room_id: str, message_owner: str, user_role: RoomRole
-    ) -> bool:
+    def can_delete_message(self, user_id: str, room_id: str, message_owner: str, user_role: RoomRole) -> bool:
         """检查用户是否可以删除消息
 
         Args:
@@ -386,13 +372,9 @@ class RoomAccessControl:
         if user_id == message_owner:
             return True
 
-        return self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.DELETE_MESSAGE, user_role
-        )
+        return self.permission_manager.check_permission(user_id, room_id, RoomPermission.DELETE_MESSAGE, user_role)
 
-    def can_kick_member(
-        self, user_id: str, room_id: str, target_user_id: str, user_role: RoomRole
-    ) -> bool:
+    def can_kick_member(self, user_id: str, room_id: str, target_user_id: str, user_role: RoomRole) -> bool:
         """检查用户是否可以踢出成员
 
         Args:
@@ -426,9 +408,7 @@ class RoomAccessControl:
         Returns:
             是否可以更改
         """
-        return self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.CHANGE_MEMBER_ROLE, user_role
-        )
+        return self.permission_manager.check_permission(user_id, room_id, RoomPermission.CHANGE_MEMBER_ROLE, user_role)
 
     def can_delete_room(self, user_id: str, room_id: str, user_role: RoomRole) -> bool:
         """检查用户是否可以删除房间
@@ -441,13 +421,9 @@ class RoomAccessControl:
         Returns:
             是否可以删除
         """
-        return self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.DELETE_ROOM, user_role
-        )
+        return self.permission_manager.check_permission(user_id, room_id, RoomPermission.DELETE_ROOM, user_role)
 
-    def _log_access(
-        self, action: str, user_id: str, room_id: str, success: bool
-    ) -> None:
+    def _log_access(self, action: str, user_id: str, room_id: str, success: bool) -> None:
         """记录访问日志"""
         self.access_log.append(
             {

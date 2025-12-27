@@ -75,9 +75,7 @@ class AccessFrequencyTracker:
         Returns:
             [(cache_key, access_count), ...] 按访问频率排序
         """
-        sorted_items = sorted(
-            self.access_counts.items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_items = sorted(self.access_counts.items(), key=lambda x: x[1], reverse=True)
         return sorted_items[:top_n]
 
     def get_statistics(self) -> Dict[str, Any]:
@@ -96,9 +94,7 @@ class AccessFrequencyTracker:
         return {
             "total_tracked": total_tracked,
             "total_accesses": total_accesses,
-            "average_frequency": (
-                total_accesses / total_tracked if total_tracked > 0 else 0.0
-            ),
+            "average_frequency": (total_accesses / total_tracked if total_tracked > 0 else 0.0),
             "hot_data_count": min(10, total_tracked),
             "timestamp": datetime.utcnow().isoformat(),
         }
@@ -135,9 +131,7 @@ class TimeWindowEvictionStrategy:
             ttl_days=ttl_days,
         )
 
-    def record_cache_access(
-        self, symbol: str, data_type: str, timeframe: str = "1d"
-    ) -> None:
+    def record_cache_access(self, symbol: str, data_type: str, timeframe: str = "1d") -> None:
         """
         记录缓存访问以进行热数据分析
 

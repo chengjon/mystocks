@@ -49,9 +49,7 @@ class ContractTestExecutor:
 
         # 创建 aiohttp 会话
         timeout = aiohttp.ClientTimeout(total=self.config.test_timeout)
-        connector = aiohttp.TCPConnector(
-            limit=100, limit_per_host=30, ttl_dns_cache=300, use_dns_cache=True
-        )
+        connector = aiohttp.TCPConnector(limit=100, limit_per_host=30, ttl_dns_cache=300, use_dns_cache=True)
 
         self.session = aiohttp.ClientSession(
             timeout=timeout,
@@ -68,9 +66,7 @@ class ContractTestExecutor:
             await self.session.close()
         logger.info("契约测试执行器已清理")
 
-    async def execute_suite(
-        self, suite: ContractTestSuite
-    ) -> List[TestExecutionResult]:
+    async def execute_suite(self, suite: ContractTestSuite) -> List[TestExecutionResult]:
         """执行测试套件"""
         self.results = []
 
@@ -128,9 +124,7 @@ class ContractTestExecutor:
                     )
                     self.results.append(error_result)
 
-    async def _execute_test_case_with_retry(
-        self, test_case: ContractTestCase
-    ) -> TestExecutionResult:
+    async def _execute_test_case_with_retry(self, test_case: ContractTestCase) -> TestExecutionResult:
         """执行测试用例（带重试机制）"""
         last_error = None
 
@@ -151,9 +145,7 @@ class ContractTestExecutor:
 
             except Exception as e:
                 last_error = str(e)
-                logger.warning(
-                    f"测试用例 {test_case.name} 第 {attempt + 1} 次执行失败: {e}"
-                )
+                logger.warning(f"测试用例 {test_case.name} 第 {attempt + 1} 次执行失败: {e}")
 
                 if attempt < self.config.max_retries:
                     await asyncio.sleep(self.config.retry_delay)
@@ -166,54 +158,40 @@ class ContractTestExecutor:
             error_message=f"所有重试都失败: {last_error}",
         )
 
-    async def _execute_test_case(
-        self, test_case: ContractTestCase
-    ) -> TestExecutionResult:
+    async def _execute_test_case(self, test_case: ContractTestCase) -> TestExecutionResult:
         """执行单个测试用例"""
         start_time = time.time()
 
         try:
             # 检查跳过条件
             if await self._should_skip_test(test_case):
-                return TestExecutionResult(
-                    test_case=test_case, status=TestStatus.SKIPPED, duration=0.0
-                )
+                return TestExecutionResult(test_case=test_case, status=TestStatus.SKIPPED, duration=0.0)
 
             # 准备请求
             request_data = await self._prepare_request(test_case)
 
             # 执行请求
-            response, response_time = await self._make_request(
-                test_case.method, test_case.endpoint, request_data
-            )
+            response, response_time = await self._make_request(test_case.method, test_case.endpoint, request_data)
 
             # 解析响应
             response_data = await self._parse_response(response)
 
             # 记录请求 ID
-            request_id = response_data.get("request_id") or response.headers.get(
-                "X-Request-ID"
-            )
+            request_id = response_data.get("request_id") or response.headers.get("X-Request-ID")
             test_case.request_id = request_id
 
             # 验证响应
-            validation_result = self.validator.validate_response_data(
-                response_data, test_case
-            )
+            validation_result = self.validator.validate_response_data(response_data, test_case)
 
             # 收集性能指标
-            performance_metrics = self._collect_performance_metrics(
-                response, response_time, test_case
-            )
+            performance_metrics = self._collect_performance_metrics(response, response_time, test_case)
 
             # 确定测试状态
             if validation_result.is_valid():
                 status = TestStatus.PASSED
             else:
                 status = TestStatus.FAILED
-                error_message = "; ".join(
-                    validation_result.errors[:3]
-                )  # 只显示前3个错误
+                error_message = "; ".join(validation_result.errors[:3])  # 只显示前3个错误
 
             # 生成验证结果摘要
             validation_results = [
@@ -227,9 +205,7 @@ class ContractTestExecutor:
 
             # 添加验证失败的详细信息
             for error in validation_result.errors:
-                validation_results.append(
-                    {"rule": "general", "valid": False, "message": error}
-                )
+                validation_results.append({"rule": "general", "valid": False, "message": error})
 
             duration = time.time() - start_time
 
@@ -258,32 +234,20 @@ class ContractTestExecutor:
         """检查是否应该跳过测试"""
         # 检查跳过条件
         for condition in test_case.skip_conditions:
-            if (
-                condition.lower() == "offline"
-                and not await self._check_network_connectivity()
-            ):
+            if condition.lower() == "offline" and not await self._check_network_connectivity():
                 logger.info(f"跳过测试 {test_case.name}: 网络离线")
                 return True
 
-            if (
-                condition.lower() == "maintenance"
-                and await self._check_maintenance_mode()
-            ):
+            if condition.lower() == "maintenance" and await self._check_maintenance_mode():
                 logger.info(f"跳过测试 {test_case.name}: 维护模式")
                 return True
 
         # 检查特定类别的跳过条件
-        if (
-            test_case.category == TestCategory.SECURITY
-            and not self.config.enable_security_tests
-        ):
+        if test_case.category == TestCategory.SECURITY and not self.config.enable_security_tests:
             logger.info(f"跳过安全测试: {test_case.name}")
             return True
 
-        if (
-            test_case.category == TestCategory.AUTHENTICATION
-            and not self.config.enable_auth_tests
-        ):
+        if test_case.category == TestCategory.AUTHENTICATION and not self.config.enable_auth_tests:
             logger.info(f"跳过认证测试: {test_case.name}")
             return True
 
@@ -292,9 +256,7 @@ class ContractTestExecutor:
     async def _check_network_connectivity(self) -> bool:
         """检查网络连接"""
         try:
-            async with self.session.get(
-                f"{self.config.api_base_url}/api/health", timeout=5
-            ) as response:
+            async with self.session.get(f"{self.config.api_base_url}/api/health", timeout=5) as response:
                 return response.status == 200
         except:
             return False
@@ -302,9 +264,7 @@ class ContractTestExecutor:
     async def _check_maintenance_mode(self) -> bool:
         """检查维护模式"""
         try:
-            async with self.session.get(
-                f"{self.config.api_base_url}/api/system/maintenance", timeout=5
-            ) as response:
+            async with self.session.get(f"{self.config.api_base_url}/api/system/maintenance", timeout=5) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("maintenance_mode", False)
@@ -430,9 +390,7 @@ class ContractTestExecutor:
             if response_time * 1000 <= threshold:
                 metrics["performance_score"] = 100
             else:
-                metrics["performance_score"] = max(
-                    0, 100 - (response_time * 1000 - threshold) / threshold * 100
-                )
+                metrics["performance_score"] = max(0, 100 - (response_time * 1000 - threshold) / threshold * 100)
 
         return metrics
 
@@ -451,9 +409,7 @@ class ContractTestExecutor:
 
         return results
 
-    async def execute_single_test(
-        self, test_case: ContractTestCase
-    ) -> TestExecutionResult:
+    async def execute_single_test(self, test_case: ContractTestCase) -> TestExecutionResult:
         """执行单个测试用例（独立方法）"""
         return await self._execute_test_case_with_retry(test_case)
 
@@ -469,12 +425,8 @@ class ContractTestExecutor:
         error = sum(1 for r in self.results if r.status == TestStatus.ERROR)
 
         # 计算平均响应时间
-        response_times = [
-            r.performance_metrics.get("response_time_ms", 0) for r in self.results
-        ]
-        avg_response_time = (
-            sum(response_times) / len(response_times) if response_times else 0
-        )
+        response_times = [r.performance_metrics.get("response_time_ms", 0) for r in self.results]
+        avg_response_time = sum(response_times) / len(response_times) if response_times else 0
 
         # 按类别统计
         category_stats = {}

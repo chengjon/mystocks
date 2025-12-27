@@ -86,11 +86,7 @@ class TestNamingValidator:
             "total": len(test_files),
             "compliant": len(self.compliant_files),
             "non_compliant": len(self.non_compliant_files),
-            "compliance_rate": (
-                (len(self.compliant_files) / len(test_files) * 100)
-                if test_files
-                else 100.0
-            ),
+            "compliance_rate": ((len(self.compliant_files) / len(test_files) * 100) if test_files else 100.0),
         }
 
     def suggest_rename(self, file_path: Path) -> str:
@@ -114,15 +110,9 @@ class TestNamingValidator:
                 test_index = parts.index("test")
                 # 重组为test_开头
                 remaining = (
-                    "_".join(parts[test_index + 1 :])
-                    if test_index + 1 < len(parts)
-                    else "_".join(parts[:test_index])
+                    "_".join(parts[test_index + 1 :]) if test_index + 1 < len(parts) else "_".join(parts[:test_index])
                 )
-                return (
-                    f"test_{remaining}.py"
-                    if remaining
-                    else f"test_{name_without_ext}.py"
-                )
+                return f"test_{remaining}.py" if remaining else f"test_{name_without_ext}.py"
 
         # 默认直接加test_前缀
         return f"test_{name_without_ext}.py"
@@ -160,9 +150,7 @@ class TestNamingValidator:
                 rel_path = file_path.relative_to(self.root_dir)
                 report.append(f"  {i}. {rel_path}")
                 report.append(f"     建议: {file_path.parent}/{suggested_name}")
-                report.append(
-                    f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}"
-                )
+                report.append(f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}")
             report.append("")
 
         # 验收标准

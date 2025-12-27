@@ -18087,18 +18087,18 @@ External dependencies
     aiofiles (mystocks_spec.src.monitoring.multi_channel_alert_manager)
     aiohttp (mystocks_spec.src.monitoring.ai_alert_manager,mystocks_spec.src.monitoring.alert_notifier,mystocks_spec.src.monitoring.multi_channel_alert_manager)
     akshare (mystocks_spec.src.adapters.akshare_adapter,mystocks_spec.src.adapters.akshare_proxy_adapter,mystocks_spec.src.adapters.customer_adapter,mystocks_spec.src.adapters.financial.financial_data_source,mystocks_spec.src.adapters.financial.financial_report_adapter,mystocks_spec.src.storage.access.akshare)
-    apscheduler 
+    apscheduler
       \-events (mystocks_spec.src.ml_strategy.automation.scheduler)
-      \-schedulers 
+      \-schedulers
       | \-background (mystocks_spec.src.backup_recovery.backup_scheduler,mystocks_spec.src.ml_strategy.automation.scheduler)
-      \-triggers 
+      \-triggers
         \-cron (mystocks_spec.src.backup_recovery.backup_scheduler,mystocks_spec.src.ml_strategy.automation.scheduler)
         \-interval (mystocks_spec.src.ml_strategy.automation.scheduler)
     asyncpg (mystocks_spec.src.core.database_pool)
     baostock (mystocks_spec.src.adapters.baostock_adapter,mystocks_spec.src.data_sources.baostock_importer)
     cudf (mystocks_spec.src.monitoring.gpu_performance_optimizer)
     cupy (mystocks_spec.src.monitoring.gpu_performance_optimizer)
-    dateutil 
+    dateutil
       \-parser (mystocks_spec.src.utils.date_utils)
     dotenv (mystocks_spec.src.monitoring.monitoring_service,mystocks_spec.src.storage.database.connection_context,mystocks_spec.src.storage.database.connection_manager,mystocks_spec.src.storage.database.database_manager,mystocks_spec.src.storage.database.db_utils,mystocks_spec.src.storage.database.execute_example,mystocks_spec.src.storage.database.execute_example_mysql_only,mystocks_spec.src.storage.database.save_realtime_market_data,mystocks_spec.src.storage.database.save_realtime_market_data_simple,mystocks_spec.src.storage.database.test_database_menu,mystocks_spec.src.storage.database.test_tdengine,mystocks_spec.src.utils.tdx_server_config)
     efinance (mystocks_spec.src.adapters.customer_adapter,mystocks_spec.src.adapters.financial.financial_data_source,mystocks_spec.src.adapters.financial.stock_daily_adapter,mystocks_spec.src.adapters.financial_adapter,mystocks_spec.src.storage.database.save_realtime_market_data_offline,mystocks_spec.src.storage.database.save_realtime_market_data_simple)
@@ -18106,71 +18106,71 @@ External dependencies
     joblib (mystocks_spec.src.ml_strategy.price_predictor)
     lightgbm (mystocks_spec.src.ml_strategy.price_predictor)
     loguru (mystocks_spec.src.adapters.financial.base_financial_adapter,mystocks_spec.src.adapters.financial.financial_data_source,mystocks_spec.src.adapters.financial.financial_report_adapter,mystocks_spec.src.adapters.financial.stock_daily_adapter,mystocks_spec.src.adapters.financial_adapter,mystocks_spec.src.adapters.tdx.kline_data_service,mystocks_spec.src.adapters.tdx.realtime_service,mystocks_spec.src.adapters.tdx.tdx_data_source,mystocks_spec.src.core.logging,mystocks_spec.src.storage.database.init_db_monitor)
-    matplotlib 
+    matplotlib
       \-dates (mystocks_spec.src.visualization.backtest_visualizer)
       \-gridspec (mystocks_spec.src.visualization.backtest_visualizer)
       \-patches (mystocks_spec.src.visualization.chart_generator)
       \-pyplot (mystocks_spec.src.ml_strategy.price_predictor,mystocks_spec.src.visualization.backtest_visualizer,mystocks_spec.src.visualization.chart_generator)
     mplfinance (mystocks_spec.src.visualization.chart_generator)
-    mystocks_spec 
-      \-src 
-        \-adapters 
+    mystocks_spec
+      \-src
+        \-adapters
         | \-data_validator (mystocks_spec.src.adapters.price_data_adapter)
-        | \-financial 
+        | \-financial
         | | \-base_financial_adapter (mystocks_spec.src.adapters.financial.financial_report_adapter,mystocks_spec.src.adapters.financial.stock_daily_adapter)
         | | \-financial_report_adapter (mystocks_spec.src.adapters.financial.financial_data_source)
         | | \-stock_daily_adapter (mystocks_spec.src.adapters.financial.financial_data_source)
-        | \-tdx 
+        | \-tdx
         |   \-base_tdx_adapter (mystocks_spec.src.adapters.tdx.kline_data_service,mystocks_spec.src.adapters.tdx.realtime_service,mystocks_spec.src.adapters.tdx.tdx_data_source)
         |   \-kline_data_service (mystocks_spec.src.adapters.tdx.tdx_data_source)
         |   \-realtime_service (mystocks_spec.src.adapters.tdx.tdx_data_source)
-        \-backup_recovery 
+        \-backup_recovery
         | \-backup_manager (mystocks_spec.src.backup_recovery.backup_scheduler)
-        \-contract_testing 
+        \-contract_testing
         | \-api_consistency_checker (mystocks_spec.src.contract_testing.contract_engine)
         | \-spec_validator (mystocks_spec.src.contract_testing.api_consistency_checker,mystocks_spec.src.contract_testing.contract_engine)
         | \-test_hooks (mystocks_spec.src.contract_testing.contract_engine)
-        \-core 
+        \-core
         | \-config (mystocks_spec.src.core.database_pool)
         | \-exceptions (mystocks_spec.src.core.database,mystocks_spec.src.core.database_pool)
         | \-memory_manager (mystocks_spec.src.core.database_pool)
-        \-data_access 
-        | \-capabilities 
+        \-data_access
+        | \-capabilities
         | | \-database_detector (mystocks_spec.src.data_access.optimizers.query_optimizer,mystocks_spec.src.data_access.routers.query_router,mystocks_spec.src.data_access.unified_data_access_manager)
         | \-interfaces (mystocks_spec.src.data_access.factory)
         | | \-i_data_access (mystocks_spec.src.data_access.capabilities.database_detector,mystocks_spec.src.data_access.optimizers.query_optimizer,mystocks_spec.src.data_access.routers.query_router,mystocks_spec.src.data_access.unified_data_access_manager)
-        | \-optimizers 
+        | \-optimizers
         | | \-query_optimizer (mystocks_spec.src.data_access.unified_data_access_manager)
         | \-postgresql_access (mystocks_spec.src.data_access.factory,mystocks_spec.src.data_access.unified_data_access_manager)
-        | \-routers 
+        | \-routers
         | | \-query_router (mystocks_spec.src.data_access.unified_data_access_manager)
         | \-tdengine_access (mystocks_spec.src.data_access.factory,mystocks_spec.src.data_access.unified_data_access_manager)
-        \-data_sources 
-        | \-real 
+        \-data_sources
+        | \-real
         |   \-business_mappers (mystocks_spec.src.data_sources.real.enhanced_postgresql_relational)
         |   \-connection_adapter (mystocks_spec.src.data_sources.real.enhanced_postgresql_relational)
         |   \-data_mapper (mystocks_spec.src.data_sources.real.business_mappers)
         |   \-query_builder (mystocks_spec.src.data_sources.real.enhanced_postgresql_relational)
-        \-ml_strategy 
-        | \-backtest 
+        \-ml_strategy
+        | \-backtest
         | | \-performance_metrics (mystocks_spec.src.ml_strategy.backtest.backtest_engine)
         | | \-risk_metrics (mystocks_spec.src.ml_strategy.backtest.backtest_engine)
         | | \-vectorized_backtester (mystocks_spec.src.ml_strategy.backtest.backtest_engine)
-        | \-strategy 
+        | \-strategy
         |   \-base_strategy (mystocks_spec.src.ml_strategy.strategy.strategy_executor)
         |   \-signal_manager (mystocks_spec.src.ml_strategy.strategy.strategy_executor)
-        \-monitoring 
+        \-monitoring
         | \-ai_alert_manager (mystocks_spec.src.monitoring.multi_channel_alert_manager)
         | \-monitoring_database (mystocks_spec.src.monitoring.intelligent_threshold_manager,mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager)
         | \-performance_monitor (mystocks_spec.src.monitoring.intelligent_threshold_manager,mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager)
-        | \-threshold 
+        | \-threshold
         |   \-base_threshold_manager (mystocks_spec.src.monitoring.threshold.clustering_optimizer,mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager,mystocks_spec.src.monitoring.threshold.statistical_optimizer,mystocks_spec.src.monitoring.threshold.trend_optimizer)
         |   \-clustering_optimizer (mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager)
         |   \-statistical_optimizer (mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager)
         |   \-trend_optimizer (mystocks_spec.src.monitoring.threshold.intelligent_threshold_manager)
-        \-storage 
-          \-access 
-            \-modules 
+        \-storage
+          \-access
+            \-modules
               \-base (mystocks_spec.src.storage.access.data_access)
               \-mysql (mystocks_spec.src.storage.access.data_access)
               \-postgresql (mystocks_spec.src.storage.access.data_access)
@@ -18188,25 +18188,25 @@ External dependencies
     pydantic (mystocks_spec.src.core.config_loader)
     pymysql (mystocks_spec.src.monitoring.monitoring_service,mystocks_spec.src.storage.database.connection_manager,mystocks_spec.src.storage.database.database_manager,mystocks_spec.src.storage.database.db_utils,mystocks_spec.src.storage.database.df2sql,mystocks_spec.src.storage.database.fix_database_connections,mystocks_spec.src.storage.database.test_database_menu,mystocks_spec.src.storage.database.test_simple,mystocks_spec.src.utils.check_db_health)
       \-cursors (mystocks_spec.src.storage.database.connection_manager)
-    pytdx 
+    pytdx
       \-hq (mystocks_spec.src.adapters.tdx.base_tdx_adapter,mystocks_spec.src.adapters.tdx_adapter)
     redis (mystocks_spec.src.ml_strategy.realtime.tick_receiver,mystocks_spec.src.storage.access.modules.redis,mystocks_spec.src.storage.database.connection_manager,mystocks_spec.src.storage.database.database_manager,mystocks_spec.src.storage.database.save_realtime_market_data_simple,mystocks_spec.src.storage.database.test_database_menu,mystocks_spec.src.storage.database.test_simple,mystocks_spec.src.utils.check_db_health)
-    reportlab 
-      \-lib 
+    reportlab
+      \-lib
       | \-colors (mystocks_spec.src.reporting.pdf_generator)
       | \-enums (mystocks_spec.src.reporting.pdf_generator)
       | \-pagesizes (mystocks_spec.src.reporting.pdf_generator)
       | \-styles (mystocks_spec.src.reporting.pdf_generator)
       | \-units (mystocks_spec.src.reporting.pdf_generator)
-      \-pdfbase 
+      \-pdfbase
       | \-pdfmetrics (mystocks_spec.src.reporting.pdf_generator)
       | \-ttfonts (mystocks_spec.src.reporting.pdf_generator)
       \-platypus (mystocks_spec.src.reporting.pdf_generator)
     requests (mystocks_spec.src.adapters.byapi_adapter,mystocks_spec.src.ml_strategy.automation.notification_manager,mystocks_spec.src.utils.check_api_health,mystocks_spec.src.utils.check_api_health_v2,mystocks_spec.src.utils.test_logs_api)
     schedule (mystocks_spec.src.monitoring.monitoring_service)
-    scipy 
+    scipy
       \-stats (mystocks_spec.src.ml_strategy.backtest.risk_metrics,mystocks_spec.src.visualization.backtest_visualizer)
-    sklearn 
+    sklearn
       \-cluster (mystocks_spec.src.monitoring.intelligent_threshold_manager,mystocks_spec.src.monitoring.threshold.clustering_optimizer)
       \-ensemble (mystocks_spec.src.ml_strategy.ml_strategy,mystocks_spec.src.monitoring.data_analyzer,mystocks_spec.src.monitoring.intelligent_threshold_manager)
       \-metrics (mystocks_spec.src.ml_strategy.ml_strategy,mystocks_spec.src.ml_strategy.price_predictor,mystocks_spec.src.monitoring.threshold.clustering_optimizer)
@@ -18829,4 +18829,3 @@ Messages
 
 ------------------------------------------------------------------
 Your code has been rated at 8.21/10 (previous run: 0.00/10, +8.21)
-

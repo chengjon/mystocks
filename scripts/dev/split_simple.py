@@ -5,10 +5,7 @@
 """
 
 import os
-import sys
 import re
-import shutil
-from datetime import datetime
 
 # 添加源码路径
 SOURCE_FILE = "/opt/claude/mystocks_spec/web/frontend/nicegui_monitoring_dashboard_kline.py"
@@ -48,10 +45,10 @@ def split_simple():
     if not source_code:
         print(f"错误: 无法读取文件 {SOURCE_FILE}")
         return
-    
+
     # 创建目录
     os.makedirs(TARGET_DIR, exist_ok=True)
-    
+
     # 提取所有函数
     def extract_functions(code):
         lines = code.split('\n')
@@ -61,11 +58,11 @@ def split_simple():
         function_indent = None
         function_start = None
         function_name = None
-        
+
         for i, line in enumerate(lines):
             # 检查是否是函数定义行
             function_match = re.match(r'^\s*def\s+([A-Za-z_]\w*)\s*\(', line)
-            
+
             if function_match:
                 # 保存之前的函数
                 if in_function and current_function and function_name:
@@ -73,7 +70,7 @@ def split_simple():
                         'name': function_name,
                         'content': '\n'.join(current_function)
                     })
-                
+
                 # 开始新函数
                 in_function = True
                 function_start = i
@@ -81,7 +78,7 @@ def split_simple():
                 function_name = function_match.group(1)
                 current_function = [line]
                 continue
-            
+
             # 如果在函数内部，添加当前行
             if in_function:
                 # 如果遇到缩进级别小于等于函数缩进级别的非空行，则认为函数结束
@@ -97,20 +94,20 @@ def split_simple():
                     # 不添加当前行，继续处理下一行
                 else:
                     current_function.append(line)
-        
+
         # 保存最后一个函数
         if in_function and current_function and function_name:
             functions.append({
                 'name': function_name,
                 'content': '\n'.join(current_function)
             })
-        
+
         return functions
-    
+
     # 提取函数
     functions = extract_functions(source_code)
     print(f"提取到 {len(functions)} 个函数")
-    
+
     # 分类函数
     kline_functions = []
     chart_functions = []
@@ -118,7 +115,7 @@ def split_simple():
     control_functions = []
     action_functions = []
     utility_functions = []
-    
+
     for func in functions:
         name = func['name'].lower()
         if 'kline' in name or 'chart' in name:
@@ -133,13 +130,13 @@ def split_simple():
             utility_functions.append(func)
         else:
             utility_functions.append(func)  # 默认为工具函数
-    
+
     print(f"K线相关函数: {len(kline_functions)}")
     print(f"告警相关函数: {len(alert_functions)}")
     print(f"控制相关函数: {len(control_functions)}")
     print(f"操作相关函数: {len(action_functions)}")
     print(f"工具函数: {len(utility_functions)}")
-    
+
     # 创建组件文件
     create_component_file(KLINE_FILE, "K线图表相关功能", kline_functions)
     create_component_file(CHART_FILE, "实时图表功能", chart_functions)
@@ -147,7 +144,7 @@ def split_simple():
     create_component_file(CONTROL_FILE, "控制面板功能", control_functions)
     create_component_file(ACTION_FILE, "浮动操作按钮功能", action_functions)
     create_component_file(UTILITY_FILE, "通用工具函数", utility_functions)
-    
+
     # 创建__init__.py
     init_content = """# 组件索引文件
 
@@ -161,7 +158,7 @@ from .utility import *
     init_file = os.path.join(TARGET_DIR, "__init__.py")
     write_file(init_file, init_content)
     print(f"创建文件: {init_file}")
-    
+
     print("\n✅ 拆分完成!")
 
 
@@ -176,7 +173,7 @@ def create_component_file(file_path, title, functions):
 
     for func in functions:
         content += f"\n\n{func['content']}\n"
-    
+
     # 检查内容长度
     if len(functions) > 0:
         if write_file(file_path, content):

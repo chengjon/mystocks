@@ -286,11 +286,7 @@ class TestTDengineDataAccessFunctionality:
 
             def get_pool_efficiency(self):
                 """获取连接池效率"""
-                return (
-                    self.pool_hits / self.total_requests * 100
-                    if self.total_requests > 0
-                    else 0
-                )
+                return self.pool_hits / self.total_requests * 100 if self.total_requests > 0 else 0
 
         # 测试连接池效率
         pool = MockTDengineConnectionPool(max_connections=10)
@@ -359,9 +355,7 @@ class TestTDengineDataAccessIntegration:
             """保存tick数据"""
             cursor = conn.cursor()
             # 模拟批量插入
-            insert_sql = (
-                f"INSERT INTO tick_data USING market_data TAGS('{symbol}') VALUES "
-            )
+            insert_sql = f"INSERT INTO tick_data USING market_data TAGS('{symbol}') VALUES "
             values = []
             for _, row in tick_data.iterrows():
                 values.append(f"('{row['ts']}', {row['price']}, {row['volume']})")
@@ -372,13 +366,15 @@ class TestTDengineDataAccessIntegration:
         def query_latest_data(conn, symbol, limit=100):
             """查询最新数据"""
             cursor = conn.cursor()
-            cursor.execute(f"""
+            cursor.execute(
+                f"""
                 SELECT ts, price, volume
                 FROM tick_data
                 WHERE symbol = '{symbol}'
                 ORDER BY ts DESC
                 LIMIT {limit}
-            """)
+            """
+            )
             return cursor.fetchall()
 
         # 测试数据保存和查询

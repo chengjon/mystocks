@@ -22,9 +22,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 
@@ -156,9 +154,7 @@ class TestStrategyManagementAPI:
             "strategy_type": "breakout",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         # 获取策略详情
@@ -184,9 +180,7 @@ class TestStrategyManagementAPI:
             "strategy_type": "grid",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         # 更新策略
@@ -195,9 +189,7 @@ class TestStrategyManagementAPI:
             "description": "这是更新后的描述",
             "status": "active",
         }
-        response = client.put(
-            f"/api/strategy-mgmt/strategies/{strategy_id}", json=update_data
-        )
+        response = client.put(f"/api/strategy-mgmt/strategies/{strategy_id}", json=update_data)
 
         assert response.status_code == 200, f"更新策略应该返回200: {response.text}"
 
@@ -220,17 +212,13 @@ class TestStrategyManagementAPI:
             "strategy_type": "custom",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         # 删除策略
         response = client.delete(f"/api/strategy-mgmt/strategies/{strategy_id}")
 
-        assert (
-            response.status_code == 204
-        ), f"删除策略应该返回204: {response.status_code}"
+        assert response.status_code == 204, f"删除策略应该返回204: {response.status_code}"
 
         # 验证策略已被删除
         get_response = client.get(f"/api/strategy-mgmt/strategies/{strategy_id}")
@@ -270,9 +258,7 @@ class TestStrategyManagementAPI:
             "strategy_type": "momentum",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         # 执行回测
@@ -288,9 +274,7 @@ class TestStrategyManagementAPI:
             "benchmark": "000300.SH",
             "include_analysis": True,
         }
-        response = client.post(
-            "/api/strategy-mgmt/backtest/execute", json=backtest_data
-        )
+        response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
 
         assert response.status_code == 202, f"执行回测应该返回202: {response.text}"
 
@@ -318,9 +302,7 @@ class TestStrategyManagementAPI:
             "strategy_type": "momentum",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         backtest_data = {
@@ -331,9 +313,7 @@ class TestStrategyManagementAPI:
             "end_date": "2024-12-31",
             "initial_capital": 100000.0,
         }
-        backtest_response = client.post(
-            "/api/strategy-mgmt/backtest/execute", json=backtest_data
-        )
+        backtest_response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
         backtest_id = backtest_response.json()["backtest_id"]
 
         # 获取回测结果
@@ -361,9 +341,7 @@ class TestStrategyManagementAPI:
             "strategy_type": "momentum",
             "parameters": [],
         }
-        create_response = client.post(
-            "/api/strategy-mgmt/strategies", json=strategy_data
-        )
+        create_response = client.post("/api/strategy-mgmt/strategies", json=strategy_data)
         strategy_id = create_response.json()["strategy_id"]
 
         backtest_data = {
@@ -405,9 +383,7 @@ class TestStrategyManagementAPI:
             "end_date": "2024-01-01",  # 结束日期早于开始日期
             "initial_capital": 100000.0,
         }
-        response = client.post(
-            "/api/strategy-mgmt/backtest/execute", json=backtest_data
-        )
+        response = client.post("/api/strategy-mgmt/backtest/execute", json=backtest_data)
         assert response.status_code in [400, 404, 422], "无效参数应该返回错误"
 
         print("\n✅ 回测参数验证测试通过")
@@ -433,9 +409,7 @@ class TestStrategyManagementAPI:
         # 所有请求都应该成功
         success_count = sum(1 for r in responses if r.status_code == 201)
 
-        assert (
-            success_count == 5
-        ), f"5个并发创建请求应该都成功, 实际成功{success_count}个"
+        assert success_count == 5, f"5个并发创建请求应该都成功, 实际成功{success_count}个"
 
         print("\n✅ 并发策略操作测试通过")
         print(f"   成功: {success_count}/5")

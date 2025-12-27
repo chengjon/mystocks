@@ -52,9 +52,7 @@ class TestTDengineTableCreation:
             version = cursor.fetchone()
             cursor.close()
 
-            print(
-                f"  ✅ TDengine连接成功 (version={version[0] if version else 'unknown'})"
-            )
+            print(f"  ✅ TDengine连接成功 (version={version[0] if version else 'unknown'})")
             assert conn is not None
         except Exception as e:
             print(f"  ⚠️  TDengine连接失败: {e}")
@@ -64,9 +62,7 @@ class TestTDengineTableCreation:
         """测试3: 统计TDengine表定义数量"""
         print("\n📍 测试3: 统计TDengine表定义")
 
-        tdengine_tables = [
-            t for t in self.manager.config["tables"] if t["database_type"] == "TDengine"
-        ]
+        tdengine_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "TDengine"]
 
         print(f"  TDengine表数量: {len(tdengine_tables)}")
 
@@ -85,11 +81,7 @@ class TestTDengineTableCreation:
 
         # 查找tick_data表定义
         tick_table = next(
-            (
-                t
-                for t in self.manager.config["tables"]
-                if t["table_name"] == "tick_data"
-            ),
+            (t for t in self.manager.config["tables"] if t["table_name"] == "tick_data"),
             None,
         )
 
@@ -149,11 +141,7 @@ class TestTDengineTableCreation:
 
         try:
             # 尝试创建所有TDengine表
-            tdengine_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "TDengine"
-            ]
+            tdengine_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "TDengine"]
 
             created_count = 0
             skipped_count = 0
@@ -182,11 +170,7 @@ class TestTDengineTableCreation:
         print("\n📍 测试6: 验证表存在性")
 
         try:
-            tdengine_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "TDengine"
-            ]
+            tdengine_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "TDengine"]
 
             for table_def in tdengine_tables[:3]:  # 只检查前3个
                 table_name = table_def["table_name"]

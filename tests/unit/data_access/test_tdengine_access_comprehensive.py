@@ -20,9 +20,7 @@ class TestTDengineDataAccessComprehensive:
 
     @pytest.fixture
     def access(self):
-        with patch(
-            "src.data_access.tdengine_access.get_connection_manager"
-        ) as mock_get_manager:
+        with patch("src.data_access.tdengine_access.get_connection_manager") as mock_get_manager:
             mock_manager = Mock()
             mock_conn = Mock()
             mock_manager.get_tdengine_connection.return_value = mock_conn
@@ -157,9 +155,7 @@ class TestTDengineDataAccessComprehensive:
         ]
         mock_cursor.fetchall.return_value = [(datetime.now(), 10, 11, 9, 10.5, 1000)]
 
-        df = access.aggregate_to_kline(
-            "t1", datetime.now(), datetime.now(), interval="5m"
-        )
+        df = access.aggregate_to_kline("t1", datetime.now(), datetime.now(), interval="5m")
         assert len(df) == 1
         assert mock_cursor.close.called
 
@@ -216,9 +212,7 @@ class TestTDengineDataAccessComprehensive:
         with patch.object(access, "insert_dataframe", return_value=1):
             assert access.save_data(df, None, "t1") is True
 
-        with patch.object(
-            access, "insert_dataframe", side_effect=Exception("Save Error")
-        ):
+        with patch.object(access, "insert_dataframe", side_effect=Exception("Save Error")):
             assert access.save_data(df, None, "t1") is False
 
     def test_load_data_interface(self, access):
@@ -227,9 +221,7 @@ class TestTDengineDataAccessComprehensive:
 
         # 时间范围分支
         with patch.object(access, "query_by_time_range", return_value=mock_df):
-            res = access.load_data(
-                "t1", start_time=datetime.now(), end_time=datetime.now()
-            )
+            res = access.load_data("t1", start_time=datetime.now(), end_time=datetime.now())
             assert len(res) == 1
 
         # 最新数据分支

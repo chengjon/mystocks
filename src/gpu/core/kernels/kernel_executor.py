@@ -187,9 +187,7 @@ class KernelExecutor:
 
             # 更新统计
             execution_time = (time.time() - start_time) * 1000
-            self._update_batch_stats(
-                len(contexts), len([r for r in results if r.success]), execution_time
-            )
+            self._update_batch_stats(len(contexts), len([r for r in results if r.success]), execution_time)
 
             return results
 
@@ -217,15 +215,11 @@ class KernelExecutor:
 
                 if result.success:
                     if kernel_name != primary_kernel:
-                        logger.info(
-                            f"Fallback kernel {kernel_name} succeeded after primary {primary_kernel} failed"
-                        )
+                        logger.info(f"Fallback kernel {kernel_name} succeeded after primary {primary_kernel} failed")
                     return result
                 else:
                     last_error = result.error_message
-                    logger.warning(
-                        f"Kernel {kernel_name} failed: {result.error_message}"
-                    )
+                    logger.warning(f"Kernel {kernel_name} failed: {result.error_message}")
 
             except Exception as e:
                 last_error = str(e)
@@ -250,9 +244,7 @@ class KernelExecutor:
     ) -> ExecutionResult:
         """自动选择内核执行"""
         # 选择最佳内核
-        best_kernel = self.kernel_registry.get_best_kernel_for_operation(
-            operation_type, operation_name, data_shape
-        )
+        best_kernel = self.kernel_registry.get_best_kernel_for_operation(operation_type, operation_name, data_shape)
 
         if not best_kernel:
             return ExecutionResult(
@@ -280,9 +272,7 @@ class KernelExecutor:
             return
 
         self._is_running = True
-        self._queue_processor_task = asyncio.create_task(
-            self._process_execution_queue()
-        )
+        self._queue_processor_task = asyncio.create_task(self._process_execution_queue())
         logger.info("Queue processor started")
 
     async def stop_queue_processor(self) -> None:
@@ -320,9 +310,7 @@ class KernelExecutor:
 
         try:
             # 获取内核实例
-            kernel = await self.kernel_registry.get_or_create_kernel(
-                context.kernel_name
-            )
+            kernel = await self.kernel_registry.get_or_create_kernel(context.kernel_name)
 
             if kernel is None:
                 return ExecutionResult(
@@ -337,9 +325,7 @@ class KernelExecutor:
             if context.operation_type == "matrix":
                 left_data, right_data = context.data
                 result = await self._execute_with_timeout(
-                    kernel.execute_matrix_operation(
-                        left_data, right_data, context.config
-                    ),
+                    kernel.execute_matrix_operation(left_data, right_data, context.config),
                     context.timeout_ms,
                 )
             elif context.operation_type == "transform":
@@ -353,16 +339,12 @@ class KernelExecutor:
                     context.timeout_ms,
                 )
             else:
-                raise ValueError(
-                    f"Unsupported operation type: {context.operation_type}"
-                )
+                raise ValueError(f"Unsupported operation type: {context.operation_type}")
 
             execution_time = (time.time() - start_time) * 1000
 
             # 更新内核性能统计
-            self.kernel_registry.update_kernel_performance(
-                context.kernel_name, execution_time, result.success
-            )
+            self.kernel_registry.update_kernel_performance(context.kernel_name, execution_time, result.success)
 
             # 更新执行器统计
             self._update_single_stats(result.success, execution_time)
@@ -377,10 +359,7 @@ class KernelExecutor:
                 context=context,
                 performance_metrics={
                     "memory_used_bytes": result.memory_used_bytes,
-                    "gpu_accelerated": result.performance_metrics.get(
-                        "execution_backend"
-                    )
-                    != "CPU",
+                    "gpu_accelerated": result.performance_metrics.get("execution_backend") != "CPU",
                 },
             )
 
@@ -437,15 +416,9 @@ class KernelExecutor:
             results.append(result)
 
             # 重试失败的作业
-            if (
-                config.retry_failed_jobs
-                and not result.success
-                and context.retry_count < context.max_retries
-            ):
+            if config.retry_failed_jobs and not result.success and context.retry_count < context.max_retries:
                 context.retry_count += 1
-                logger.info(
-                    f"Retrying failed operation {context.kernel_name}:{context.operation_type}"
-                )
+                logger.info(f"Retrying failed operation {context.kernel_name}:{context.operation_type}")
 
                 retry_result = await self._execute_context(context)
                 if retry_result.success:
@@ -578,9 +551,7 @@ class KernelExecutor:
     ) -> List[ExecutionResult]:
         """流水线执行"""
         # 流水线执行是高级功能，这里简化实现为并行执行
-        logger.info(
-            "Pipelined execution not fully implemented, falling back to parallel"
-        )
+        logger.info("Pipelined execution not fully implemented, falling back to parallel")
         return await self._execute_parallel(contexts, config)
 
     def _prepare_batch_data(self, contexts: List[ExecutionContext]) -> List[Tuple]:
@@ -589,13 +560,9 @@ class KernelExecutor:
 
         for context in contexts:
             if context.operation_type == "matrix":
-                batch_data.append(
-                    (context.operation_type, *context.data, context.config)
-                )
+                batch_data.append((context.operation_type, *context.data, context.config))
             else:
-                batch_data.append(
-                    (context.operation_type, context.data, context.config)
-                )
+                batch_data.append((context.operation_type, context.data, context.config))
 
         return batch_data
 
@@ -607,9 +574,7 @@ class KernelExecutor:
             try:
                 # 获取任务（带超时）
                 try:
-                    context = await asyncio.wait_for(
-                        self._execution_queue.get(), timeout=1.0
-                    )
+                    context = await asyncio.wait_for(self._execution_queue.get(), timeout=1.0)
                 except asyncio.TimeoutError:
                     continue
 
@@ -640,9 +605,7 @@ class KernelExecutor:
                 self.stats["total_execution_time_ms"] / self.stats["total_executions"]
             )
 
-    def _update_batch_stats(
-        self, total_contexts: int, successful_results: int, execution_time: float
-    ) -> None:
+    def _update_batch_stats(self, total_contexts: int, successful_results: int, execution_time: float) -> None:
         """更新批量执行统计"""
         self.stats["total_executions"] += total_contexts
         self.stats["total_execution_time_ms"] += execution_time
@@ -655,9 +618,7 @@ class KernelExecutor:
                 self.stats["total_execution_time_ms"] / self.stats["total_executions"]
             )
 
-    def _create_error_results(
-        self, contexts: List[ExecutionContext], error_message: str
-    ) -> List[ExecutionResult]:
+    def _create_error_results(self, contexts: List[ExecutionContext], error_message: str) -> List[ExecutionResult]:
         """创建错误结果列表"""
         return [
             ExecutionResult(
@@ -676,20 +637,14 @@ class KernelExecutor:
 
         # 计算成功率
         if stats["total_executions"] > 0:
-            stats["success_rate"] = (
-                stats["successful_executions"] / stats["total_executions"]
-            )
-            stats["failure_rate"] = (
-                stats["failed_executions"] / stats["total_executions"]
-            )
+            stats["success_rate"] = stats["successful_executions"] / stats["total_executions"]
+            stats["failure_rate"] = stats["failed_executions"] / stats["total_executions"]
         else:
             stats["success_rate"] = 0.0
             stats["failure_rate"] = 0.0
 
         # 添加队列统计
-        stats["queue_size"] = (
-            self._execution_queue.qsize() if self._execution_queue else 0
-        )
+        stats["queue_size"] = self._execution_queue.qsize() if self._execution_queue else 0
         stats["queue_processor_running"] = self._is_running
 
         return stats

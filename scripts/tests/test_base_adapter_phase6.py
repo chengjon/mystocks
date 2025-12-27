@@ -6,13 +6,11 @@ BaseDataSourceAdapter Phase 6 测试套件
 """
 
 import sys
-import os
 import time
 import pandas as pd
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch
 import pytest
-from datetime import datetime, timedelta
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent

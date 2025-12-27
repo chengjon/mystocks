@@ -226,9 +226,7 @@ class IDataAccess(ABC):
         pass
 
     @abstractmethod
-    async def execute_raw_query(
-        self, sql: str, parameters: Optional[Dict[str, Any]] = None
-    ) -> QueryResult:
+    async def execute_raw_query(self, sql: str, parameters: Optional[Dict[str, Any]] = None) -> QueryResult:
         """执行原生SQL查询"""
         pass
 
@@ -238,16 +236,12 @@ class IDataAccess(ABC):
         pass
 
     @abstractmethod
-    async def save_data(
-        self, records: List[DataRecord], options: Optional[SaveOptions] = None
-    ) -> SaveResult:
+    async def save_data(self, records: List[DataRecord], options: Optional[SaveOptions] = None) -> SaveResult:
         """保存数据 (INSERT/UPDATE操作)"""
         pass
 
     @abstractmethod
-    async def update_data(
-        self, criteria: QueryCriteria, updates: Dict[str, Any]
-    ) -> UpdateResult:
+    async def update_data(self, criteria: QueryCriteria, updates: Dict[str, Any]) -> UpdateResult:
         """更新数据"""
         pass
 
@@ -281,9 +275,7 @@ class IDataAccess(ABC):
         pass
 
     @abstractmethod
-    async def begin_transaction(
-        self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED
-    ) -> Transaction:
+    async def begin_transaction(self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED) -> Transaction:
         """开始事务"""
         pass
 
@@ -385,9 +377,7 @@ class IQueryRouter(ABC):
         pass
 
     @abstractmethod
-    async def route_operation(
-        self, operation: QueryOperation, table_name: str
-    ) -> IDataAccess:
+    async def route_operation(self, operation: QueryOperation, table_name: str) -> IDataAccess:
         """路由操作到合适的数据库"""
         pass
 
@@ -406,30 +396,22 @@ class IQueryOptimizer(ABC):
     """查询优化器接口"""
 
     @abstractmethod
-    async def optimize_query(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> DataQuery:
+    async def optimize_query(self, query: DataQuery, target_database: DatabaseType) -> DataQuery:
         """优化查询"""
         pass
 
     @abstractmethod
-    async def analyze_query_plan(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> Dict[str, Any]:
+    async def analyze_query_plan(self, query: DataQuery, target_database: DatabaseType) -> Dict[str, Any]:
         """分析查询执行计划"""
         pass
 
     @abstractmethod
-    async def suggest_indexes(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> List[Dict[str, Any]]:
+    async def suggest_indexes(self, query: DataQuery, target_database: DatabaseType) -> List[Dict[str, Any]]:
         """建议索引"""
         pass
 
     @abstractmethod
-    async def estimate_query_cost(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> float:
+    async def estimate_query_cost(self, query: DataQuery, target_database: DatabaseType) -> float:
         """估算查询成本"""
         pass
 

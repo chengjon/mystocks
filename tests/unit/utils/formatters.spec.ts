@@ -26,7 +26,7 @@ describe('Utility Formatters', () => {
     it('should support USD', () => {
       const result = formatCurrency(1000, 'USD');
       // output might vary slightly by locale environment (US$ or $)
-      expect(result).toMatch(/(\$|US\$)/); 
+      expect(result).toMatch(/(\$|US\$)/);
       expect(result).toContain('1,000.00');
     });
   });

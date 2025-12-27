@@ -1,0 +1,81 @@
+{
+  "report_name": "Test Report",
+  "generated_at": "2025-12-27T00:41:38.087616",
+  "suites": [
+    {
+      "name": "ai_tests",
+      "total_tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration": 2.11,
+      "success_rate": 100.0,
+      "tests": [
+        {
+          "name": "test_ai_assisted_testing",
+          "module": "tests.ai.test_ai_assisted_testing",
+          "status": "passed",
+          "duration": 1.234,
+          "error": null,
+          "metadata": {}
+        },
+        {
+          "name": "test_data_analyzer",
+          "module": "tests.ai.test_data_analyzer",
+          "status": "passed",
+          "duration": 0.876,
+          "error": null,
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "name": "contract_tests",
+      "total_tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration": 2.345,
+      "success_rate": 100.0,
+      "tests": [
+        {
+          "name": "test_contract_validator",
+          "module": "tests.contract.test_contract_validator",
+          "status": "passed",
+          "duration": 2.345,
+          "error": null,
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "name": "performance_tests",
+      "total_tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "errors": 0,
+      "duration": 0.123,
+      "success_rate": 0.0,
+      "tests": [
+        {
+          "name": "test_benchmark",
+          "module": "tests.performance.test_benchmark",
+          "status": "failed",
+          "duration": 0.123,
+          "error": "AssertionError: throughput too low",
+          "metadata": {}
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1,
+    "skipped": 0,
+    "success_rate": 75.0
+  }
+}

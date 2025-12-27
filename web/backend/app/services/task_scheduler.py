@@ -133,9 +133,7 @@ class TaskScheduler:
                 {
                     "job_id": job.id,
                     "name": job.name,
-                    "next_run_time": (
-                        job.next_run_time.isoformat() if job.next_run_time else None
-                    ),
+                    "next_run_time": (job.next_run_time.isoformat() if job.next_run_time else None),
                     "trigger": str(job.trigger),
                 }
             )
@@ -177,9 +175,7 @@ class TaskScheduler:
             elif schedule.schedule_type == "once":
                 if not schedule.start_time:
                     return None
-                return DateTrigger(
-                    run_date=schedule.start_time, timezone="Asia/Shanghai"
-                )
+                return DateTrigger(run_date=schedule.start_time, timezone="Asia/Shanghai")
 
             else:
                 logger.error(f"Unknown schedule type: {schedule.schedule_type}")

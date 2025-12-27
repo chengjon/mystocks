@@ -132,9 +132,7 @@ class US3PerformanceTest:
 
                 # 模拟保存操作的核心逻辑
                 for _ in range(10):  # 模拟10次小型保存
-                    target_db_check = self.data_manager.get_target_database(
-                        classification
-                    )
+                    target_db_check = self.data_manager.get_target_database(classification)
 
                 end_time = time.perf_counter()
                 duration_ms = (end_time - start_time) * 100  # 放大10倍模拟完整操作
@@ -148,16 +146,12 @@ class US3PerformanceTest:
                     "达成": duration_ms <= 80.0,
                 }
 
-                print(
-                    f"  耗时: {duration_ms:.2f}ms ({'✅' if result['达成'] else '❌'})"
-                )
+                print(f"  耗时: {duration_ms:.2f}ms ({'✅' if result['达成'] else '❌'})")
                 save_results.append(result)
 
             except Exception as e:
                 print(f"  测试失败: {e}")
-                save_results.append(
-                    {"数据分类": classification.value, "错误": str(e), "达成": False}
-                )
+                save_results.append({"数据分类": classification.value, "错误": str(e), "达成": False})
 
         return save_results
 
@@ -235,9 +229,7 @@ class US3PerformanceTest:
 
         # 总体评估
         overall_success = routing_ok and adapter_ok
-        print(
-            f"\n总体评估: {'🎉 US3架构性能测试通过' if overall_success else '⚠️ 部分指标未达标'}"
-        )
+        print(f"\n总体评估: {'🎉 US3架构性能测试通过' if overall_success else '⚠️ 部分指标未达标'}")
 
         print("\n架构简化效果:")
         print("- 层次减少: 7层 → 3层 (减少57%)")

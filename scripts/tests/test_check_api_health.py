@@ -5,9 +5,8 @@ API健康检查模块测试套件
 """
 
 import sys
-import os
 from pathlib import Path
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch, Mock
 import pytest
 import requests
 

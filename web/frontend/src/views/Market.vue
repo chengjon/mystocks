@@ -138,34 +138,98 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 
-// API调用对象
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 资产组合数据
+ */
+interface Portfolio {
+  total_assets: number
+  available_cash: number
+  position_value: number
+  total_profit: number
+  profit_rate: number
+}
+
+/**
+ * 交易统计数据
+ */
+interface Stats {
+  total_trades: number
+  buy_count: number
+  sell_count: number
+  realized_profit: number
+}
+
+/**
+ * 持仓数据
+ */
+interface Position {
+  symbol: string
+  stock_name: string
+  quantity: number
+  cost_price: number
+  current_price: number
+}
+
+/**
+ * 交易记录
+ */
+interface Trade {
+  symbol: string
+  type: 'buy' | 'sell'
+  quantity: number
+  price: number
+  date: string
+  trade_amount: number
+}
+
+/**
+ * API 响应基础类型
+ */
+interface ApiResponse<T> {
+  success: boolean
+  data: T
+  message?: string
+}
+
+// ============================================
+// API 调用对象
+// ============================================
+
 const api = {
-  async getPortfolio() {
+  async getPortfolio(): Promise<ApiResponse<Portfolio>> {
     const response = await fetch('/api/trade/portfolio')
     return await response.json()
   },
-  async getPositions() {
+  async getPositions(): Promise<ApiResponse<Position[]>> {
     const response = await fetch('/api/trade/positions')
     return await response.json()
   },
-  async getTrades() {
+  async getTrades(): Promise<ApiResponse<Trade[]>> {
     const response = await fetch('/api/trade/trades?page=1&page_size=20')
     return await response.json()
   },
-  async getStatistics() {
+  async getStatistics(): Promise<ApiResponse<Stats>> {
     const response = await fetch('/api/trade/statistics')
     return await response.json()
   }
 }
 
-const loading = ref(false)
-const activeTab = ref('stats')
+// ============================================
+// 响应式数据
+// ============================================
 
-const portfolio = ref({
+const loading: Ref<boolean> = ref(false)
+const activeTab: Ref<string> = ref('stats')
+
+const portfolio: Ref<Portfolio> = ref({
   total_assets: 0,
   available_cash: 0,
   position_value: 0,
@@ -173,17 +237,21 @@ const portfolio = ref({
   profit_rate: 0
 })
 
-const stats = ref({
+const stats: Ref<Stats> = ref({
   total_trades: 0,
   buy_count: 0,
   sell_count: 0,
   realized_profit: 0
 })
 
-const positions = ref([])
-const trades = ref([])
+const positions: Ref<Position[]> = ref([])
+const trades: Ref<Trade[]> = ref([])
 
-const loadData = async () => {
+// ============================================
+// 方法定义
+// ============================================
+
+const loadData = async (): Promise<void> => {
   loading.value = true
   try {
     const [portfolioRes, positionsRes, tradesRes, statsRes] = await Promise.all([
@@ -213,7 +281,7 @@ const loadData = async () => {
   }
 }
 
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   await loadData()
   ElMessage.success('数据已刷新')
 }

@@ -26,9 +26,7 @@ class Position:
         """更新市值和未实现盈亏"""
         if self.quantity != 0:
             self.market_value = Decimal(self.quantity) * current_price
-            self.unrealized_pnl = self.market_value - (
-                Decimal(self.quantity) * self.avg_cost
-            )
+            self.unrealized_pnl = self.market_value - (Decimal(self.quantity) * self.avg_cost)
         else:
             self.market_value = Decimal("0")
             self.unrealized_pnl = Decimal("0")
@@ -46,13 +44,9 @@ class Position:
             # 新开仓
             self.quantity = quantity
             self.avg_cost = price
-        elif (self.quantity > 0 and quantity > 0) or (
-            self.quantity < 0 and quantity < 0
-        ):
+        elif (self.quantity > 0 and quantity > 0) or (self.quantity < 0 and quantity < 0):
             # 加仓（同向）
-            total_cost = (Decimal(self.quantity) * self.avg_cost) + (
-                Decimal(quantity) * price
-            )
+            total_cost = (Decimal(self.quantity) * self.avg_cost) + (Decimal(quantity) * price)
             self.quantity += quantity
             self.avg_cost = total_cost / Decimal(self.quantity)
         else:
@@ -209,9 +203,7 @@ class PortfolioManager:
                 "price": float(fill_price),
                 "amount": float(fill_price * Decimal(quantity)),
                 "commission": float(commission),
-                "profit_loss": float(position.realized_pnl)
-                if action == "SELL"
-                else None,
+                "profit_loss": float(position.realized_pnl) if action == "SELL" else None,
             }
         )
 
@@ -240,14 +232,8 @@ class PortfolioManager:
             peak_equity = self.equity
             drawdown = Decimal("0")
         else:
-            peak_equity = max(
-                self.equity, max(point["equity"] for point in self.equity_curve)
-            )
-            drawdown = (
-                (peak_equity - self.equity) / peak_equity
-                if peak_equity > 0
-                else Decimal("0")
-            )
+            peak_equity = max(self.equity, max(point["equity"] for point in self.equity_curve))
+            drawdown = (peak_equity - self.equity) / peak_equity if peak_equity > 0 else Decimal("0")
 
         self.equity_curve.append(
             {
@@ -278,11 +264,7 @@ class PortfolioManager:
     def get_portfolio_summary(self) -> Dict[str, Any]:
         """获取组合摘要"""
         total_pnl = self.equity - self.initial_capital
-        total_return = (
-            (total_pnl / self.initial_capital)
-            if self.initial_capital > 0
-            else Decimal("0")
-        )
+        total_return = (total_pnl / self.initial_capital) if self.initial_capital > 0 else Decimal("0")
 
         return {
             "initial_capital": float(self.initial_capital),
@@ -292,9 +274,7 @@ class PortfolioManager:
             "total_return": float(total_return),
             "total_commission": float(self.total_commission),
             "total_slippage": float(self.total_slippage),
-            "num_positions": len(
-                [p for p in self.positions.values() if p.quantity != 0]
-            ),
+            "num_positions": len([p for p in self.positions.values() if p.quantity != 0]),
             "num_trades": len(self.trades),
         }
 
@@ -318,9 +298,7 @@ class PortfolioManager:
             应该买入的数量
         """
         # 可用资金
-        available_cash = (
-            self.cash * Decimal(max_position_size) * Decimal(signal_strength)
-        )
+        available_cash = self.cash * Decimal(max_position_size) * Decimal(signal_strength)
 
         # 计算数量（向下取整到100的倍数，A股最小交易单位）
         quantity = int(available_cash / current_price / 100) * 100

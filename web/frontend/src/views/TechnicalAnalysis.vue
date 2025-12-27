@@ -124,8 +124,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, onMounted, watch, type Ref } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
 import { Refresh, Setting, FolderOpened, DocumentAdd, Files, ArrowDown } from '@element-plus/icons-vue'
 import StockSearchBar from '@/components/technical/StockSearchBar.vue'
@@ -135,22 +135,143 @@ import { indicatorService, handleIndicatorError } from '@/services/indicatorServ
 import { dataApi } from '@/api/index.js'
 import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
 
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 指标参数配置
+ */
+interface IndicatorParameters {
+  [key: string]: number | string | boolean
+  timeperiod?: number
+}
+
+/**
+ * 选中的指标
+ */
+interface SelectedIndicator {
+  abbreviation: string
+  parameters: IndicatorParameters
+}
+
+/**
+ * OHLCV数据
+ */
+interface OHLCVData {
+  dates: string[]
+  open: number[]
+  high: number[]
+  low: number[]
+  close: number[]
+  volume: number[]
+}
+
+/**
+ * 指标输出
+ */
+interface IndicatorOutput {
+  output_name: string
+  values: (number | null)[]
+  display_name: string
+}
+
+/**
+ * 图表指标数据
+ */
+interface ChartIndicator {
+  abbreviation: string
+  parameters: IndicatorParameters
+  outputs: IndicatorOutput[]
+  panel_type: 'overlay' | 'separate'
+}
+
+/**
+ * 图表数据
+ */
+interface ChartData {
+  symbol: string
+  symbolName: string
+  ohlcv: OHLCVData | null
+  indicators: ChartIndicator[]
+  calculationTime: number
+}
+
+/**
+ * 日期范围快捷选项
+ */
+interface DateRangeShortcut {
+  text: string
+  value: () => Date[]
+}
+
+/**
+ * K线数据项
+ */
+interface KlineDataItem {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
+/**
+ * K线API响应
+ */
+interface KlineApiResponse {
+  success: boolean
+  data: KlineDataItem[]
+  stock_code?: string
+  stock_name?: string
+  total?: number
+}
+
+/**
+ * 指标配置
+ */
+interface IndicatorConfig {
+  id: number
+  name: string
+  indicators: SelectedIndicator[]
+}
+
+/**
+ * 配置列表响应
+ */
+interface ConfigListResponse {
+  total_count: number
+  configs: IndicatorConfig[]
+}
+
+/**
+ * 配置选项
+ */
+interface ConfigOption {
+  label: string
+  value: number
+}
+
+// ============================================
 // 状态管理
-const loading = ref(false)
-const selectedSymbol = ref('')
-const dateRange = ref([])
-const showIndicatorPanel = ref(false)
-const selectedPeriod = ref('day') // 新增周期选择
+// ============================================
+
+const loading: Ref<boolean> = ref(false)
+const selectedSymbol: Ref<string> = ref('')
+const dateRange: Ref<string[]> = ref([])
+const showIndicatorPanel: Ref<boolean> = ref(false)
+const selectedPeriod: Ref<string> = ref('day') // 新增周期选择
 
 // 选中的指标列表
-const selectedIndicators = ref([
+const selectedIndicators: Ref<SelectedIndicator[]> = ref([
   // 默认添加MA5和MA10
   { abbreviation: 'SMA', parameters: { timeperiod: 5 } },
   { abbreviation: 'SMA', parameters: { timeperiod: 10 } }
 ])
 
 // 图表数据
-const chartData = reactive({
+const chartData: ChartData = reactive({
   symbol: '',
   symbolName: '',
   ohlcv: null,
@@ -158,8 +279,14 @@ const chartData = reactive({
   calculationTime: 0
 })
 
-// 添加重试机制
-const handleRetry = async () => {
+// ============================================
+// 方法定义
+// ============================================
+
+/**
+ * 添加重试机制
+ */
+const handleRetry = async (): Promise<void> => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     await fetchKlineData()
   } else {
@@ -167,8 +294,10 @@ const handleRetry = async () => {
   }
 }
 
-// 日期范围快捷选项
-const dateRangeShortcuts = [
+/**
+ * 日期范围快捷选项
+ */
+const dateRangeShortcuts: DateRangeShortcut[] = [
   {
     text: '最近1个月',
     value: () => {
@@ -207,8 +336,10 @@ const dateRangeShortcuts = [
   }
 ]
 
-// 处理股票搜索
-const handleStockSearch = async (symbol) => {
+/**
+ * 处理股票搜索
+ */
+const handleStockSearch = async (symbol: string): Promise<void> => {
   selectedSymbol.value = symbol
 
   // 如果没有选择日期范围，默认最近3个月
@@ -225,15 +356,19 @@ const handleStockSearch = async (symbol) => {
   await fetchKlineData()
 }
 
-// 处理日期范围变化
-const handleDateRangeChange = () => {
+/**
+ * 处理日期范围变化
+ */
+const handleDateRangeChange = (): void => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     fetchKlineData()
   }
 }
 
-// 刷新数据
-const refreshData = () => {
+/**
+ * 刷新数据
+ */
+const refreshData = (): void => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     fetchKlineData()
   } else {
@@ -241,8 +376,10 @@ const refreshData = () => {
   }
 }
 
-// 获取K线数据并计算技术指标
-const fetchKlineData = async () => {
+/**
+ * 获取K线数据并计算技术指标
+ */
+const fetchKlineData = async (): Promise<void> => {
   if (!selectedSymbol.value) {
     ElMessage.warning('请输入股票代码')
     return
@@ -257,7 +394,7 @@ const fetchKlineData = async () => {
 
   try {
     // 调用K线API (使用market/kline端点)
-    const response = await dataApi.getKline({
+    const response: KlineApiResponse = await dataApi.getKline({
       symbol: selectedSymbol.value,
       start_date: dateRange.value[0],
       end_date: dateRange.value[1],
@@ -287,16 +424,16 @@ const fetchKlineData = async () => {
       }
 
       // 计算技术指标
-      const startTime = performance.now();
+      const startTime = performance.now()
       const calculatedIndicators = calculateTechnicalIndicators(
         chartData.ohlcv,
         selectedIndicators.value
-      );
-      const endTime = performance.now();
+      )
+      const endTime = performance.now()
 
       // 将计算结果转换为图表组件需要的格式
       const indicatorsResult = Object.keys(calculatedIndicators).map(key => {
-        const values = calculatedIndicators[key];
+        const values = calculatedIndicators[key]
         return {
           abbreviation: key,
           parameters: {},
@@ -306,11 +443,11 @@ const fetchKlineData = async () => {
             display_name: key
           }],
           panel_type: key.includes('rsi') || key.includes('macd') ? 'separate' : 'overlay'
-        };
-      });
+        }
+      })
 
-      chartData.indicators = indicatorsResult;
-      chartData.calculationTime = Math.round(endTime - startTime);
+      chartData.indicators = indicatorsResult
+      chartData.calculationTime = Math.round(endTime - startTime)
 
       ElNotification({
         title: '数据加载成功',
@@ -323,7 +460,7 @@ const fetchKlineData = async () => {
       // 清空图表数据
       chartData.ohlcv = null
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch kline data:', error)
     const errorMessage = error.response?.data?.msg || error.message || '获取K线数据失败'
 
@@ -343,8 +480,10 @@ const fetchKlineData = async () => {
   }
 }
 
-// 添加指标
-const handleAddIndicator = (indicator) => {
+/**
+ * 添加指标
+ */
+const handleAddIndicator = (indicator: SelectedIndicator): void => {
   selectedIndicators.value.push(indicator)
 
   // 如果已经有数据，重新加载
@@ -353,8 +492,10 @@ const handleAddIndicator = (indicator) => {
   }
 }
 
-// 移除指标
-const handleRemoveIndicator = (index) => {
+/**
+ * 移除指标
+ */
+const handleRemoveIndicator = (index: number): void => {
   selectedIndicators.value.splice(index, 1)
 
   // 如果已经有数据，重新加载
@@ -363,13 +504,21 @@ const handleRemoveIndicator = (index) => {
   }
 }
 
-// 从图表移除指标
-const handleIndicatorRemove = (indicatorIndex) => {
+/**
+ * 从图表移除指标
+ */
+const handleIndicatorRemove = (indicatorIndex: number): void => {
   handleRemoveIndicator(indicatorIndex)
 }
 
-// 组件挂载时初始化
-onMounted(() => {
+// ============================================
+// 生命周期与监听器
+// ============================================
+
+/**
+ * 组件挂载时初始化
+ */
+onMounted((): void => {
   // 可以从URL参数或localStorage恢复上次的选择
   const cachedSymbol = localStorage.getItem('lastSelectedSymbol')
   const cachedDateRange = localStorage.getItem('lastDateRange')
@@ -387,8 +536,10 @@ onMounted(() => {
   }
 })
 
-// 保存用户选择到localStorage
-const saveToLocalStorage = () => {
+/**
+ * 保存用户选择到localStorage
+ */
+const saveToLocalStorage = (): void => {
   if (selectedSymbol.value) {
     localStorage.setItem('lastSelectedSymbol', selectedSymbol.value)
   }
@@ -400,8 +551,14 @@ const saveToLocalStorage = () => {
 // 监听变化并保存
 watch([selectedSymbol, dateRange], saveToLocalStorage)
 
+// ============================================
 // 配置管理功能
-const handleConfigCommand = async (command) => {
+// ============================================
+
+/**
+ * 配置管理功能
+ */
+const handleConfigCommand = async (command: string): Promise<void> => {
   switch (command) {
     case 'save':
       await handleSaveConfig()
@@ -415,8 +572,10 @@ const handleConfigCommand = async (command) => {
   }
 }
 
-// 保存当前配置
-const handleSaveConfig = async () => {
+/**
+ * 保存当前配置
+ */
+const handleSaveConfig = async (): Promise<void> => {
   if (selectedIndicators.value.length === 0) {
     ElMessage.warning('当前没有选择任何指标')
     return
@@ -427,7 +586,7 @@ const handleSaveConfig = async () => {
     cancelButtonText: '取消',
     inputPattern: /\S+/,
     inputErrorMessage: '配置名称不能为空'
-  }).then(async ({ value }) => {
+  }).then(async ({ value }: { value: string }) => {
     try {
       await indicatorService.createConfig({
         name: value,
@@ -435,7 +594,7 @@ const handleSaveConfig = async () => {
       })
 
       ElMessage.success(`配置"${value}"已保存`)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save config:', error)
       const errorMessage = handleIndicatorError(error)
       ElMessage.error(`保存失败: ${errorMessage}`)
@@ -445,10 +604,12 @@ const handleSaveConfig = async () => {
   })
 }
 
-// 加载已保存配置
-const handleLoadConfig = async () => {
+/**
+ * 加载已保存配置
+ */
+const handleLoadConfig = async (): Promise<void> => {
   try {
-    const response = await indicatorService.listConfigs()
+    const response: ConfigListResponse = await indicatorService.listConfigs()
 
     if (response.total_count === 0) {
       ElMessage.info('暂无已保存的配置')
@@ -456,7 +617,7 @@ const handleLoadConfig = async () => {
     }
 
     // 创建配置选择列表
-    const configOptions = response.configs.map(config => ({
+    const configOptions: ConfigOption[] = response.configs.map(config => ({
       label: `${config.name} (${config.indicators.length}个指标)`,
       value: config.id
     }))
@@ -476,7 +637,7 @@ const handleLoadConfig = async () => {
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
-            .then(config => {
+            .then((config: IndicatorConfig) => {
               selectedIndicators.value = config.indicators
               ElMessage.success(`已加载配置"${config.name}"`)
 
@@ -487,7 +648,7 @@ const handleLoadConfig = async () => {
 
               done()
             })
-            .catch(error => {
+            .catch((error: any) => {
               console.error('Failed to load config:', error)
               ElMessage.error('加载失败')
             })
@@ -498,16 +659,18 @@ const handleLoadConfig = async () => {
     }).catch(() => {
       // 用户取消
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to list configs:', error)
     ElMessage.error('获取配置列表失败')
   }
 }
 
-// 管理配置
-const handleManageConfigs = async () => {
+/**
+ * 管理配置
+ */
+const handleManageConfigs = async (): Promise<void> => {
   try {
-    const response = await indicatorService.listConfigs()
+    const response: ConfigListResponse = await indicatorService.listConfigs()
 
     if (response.total_count === 0) {
       ElMessage.info('暂无已保存的配置')
@@ -542,14 +705,16 @@ const handleManageConfigs = async () => {
         }
       }
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to manage configs:', error)
     ElMessage.error('获取配置列表失败')
   }
 }
 
-// 删除配置（需要在全局暴露）
-window.deleteConfig = async (configId) => {
+/**
+ * 删除配置（需要在全局暴露）
+ */
+const deleteConfig = async (configId: number): Promise<void> => {
   try {
     await ElMessageBox.confirm('确认删除该配置吗？', '提示', {
       type: 'warning'
@@ -560,13 +725,22 @@ window.deleteConfig = async (configId) => {
 
     // 重新打开管理面板
     setTimeout(() => handleManageConfigs(), 300)
-  } catch (error) {
+  } catch (error: any) {
     if (error !== 'cancel') {
       console.error('Failed to delete config:', error)
       ElMessage.error('删除失败')
     }
   }
 }
+
+// 暴露到全局窗口对象
+declare global {
+  interface Window {
+    deleteConfig: (configId: number) => Promise<void>
+  }
+}
+
+window.deleteConfig = deleteConfig
 </script>
 
 <style scoped lang="scss">

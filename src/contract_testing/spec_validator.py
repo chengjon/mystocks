@@ -160,9 +160,9 @@ class SpecificationValidator:
 
         # Check required fields
         required_fields = ["info", "paths"]
-        for field in required_fields:
-            if field not in self.spec:
-                raise ValueError(f"Missing required field: {field}")
+        for required_field in required_fields:
+            if required_field not in self.spec:
+                raise ValueError(f"Missing required field: {required_field}")
 
         logger.info(f"✅ Specification structure is valid (OpenAPI {openapi_version})")
         return True
@@ -179,15 +179,11 @@ class SpecificationValidator:
             self.base_url = servers[0].get("url", "")
 
         # Extract security schemes
-        self.security_schemes = self.spec.get("components", {}).get(
-            "securitySchemes", {}
-        )
+        self.security_schemes = self.spec.get("components", {}).get("securitySchemes", {})
 
         logger.info(f"📋 API Title: {self.title} v{self.version}")
         logger.info(f"🔗 Base URL: {self.base_url or 'Not specified'}")
-        logger.info(
-            f"🔐 Security Schemes: {list(self.security_schemes.keys()) or 'None'}"
-        )
+        logger.info(f"🔐 Security Schemes: {list(self.security_schemes.keys()) or 'None'}")
 
     def _parse_endpoints(self) -> None:
         """Parse endpoints from specification"""
@@ -203,9 +199,7 @@ class SpecificationValidator:
                     endpoint = self._parse_endpoint(path, method_name, method_spec)
                     self.endpoints.append(endpoint)
                 except Exception as e:
-                    logger.warning(
-                        f"⚠️  Failed to parse {method_name.upper()} {path}: {e}"
-                    )
+                    logger.warning(f"⚠️  Failed to parse {method_name.upper()} {path}: {e}")
 
         logger.info(f"✅ Parsed {len(self.endpoints)} endpoints from specification")
 

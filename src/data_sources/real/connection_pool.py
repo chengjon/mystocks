@@ -76,10 +76,7 @@ class PooledConnection:
         age = (now - self._created_at).total_seconds()
         idle_time = (now - self._last_used).total_seconds()
 
-        return (
-            age > self._pool.config.max_lifetime
-            or idle_time > self._pool.config.max_idle_time
-        )
+        return age > self._pool.config.max_lifetime or idle_time > self._pool.config.max_idle_time
 
     def is_healthy(self) -> bool:
         """检查连接是否健康"""
@@ -144,9 +141,7 @@ class PostgreSQLConnectionPool:
         self._health_check_thread = None
         self._cleanup_thread = None
 
-        logger.info(
-            f"PostgreSQL连接池初始化完成: min={self.config.min_connections}, max={self.config.max_connections}"
-        )
+        logger.info(f"PostgreSQL连接池初始化完成: min={self.config.min_connections}, max={self.config.max_connections}")
 
         # 预热连接池
         self._initialize_pool()
@@ -223,9 +218,7 @@ class PostgreSQLConnectionPool:
                 # 更新等待时间统计
                 wait_time = time.time() - start_time
                 with self._lock:
-                    self.metrics.average_wait_time = (
-                        self.metrics.average_wait_time * 0.9 + wait_time * 0.1
-                    )
+                    self.metrics.average_wait_time = self.metrics.average_wait_time * 0.9 + wait_time * 0.1
 
     def _acquire_connection(self, timeout: Optional[float] = None) -> PooledConnection:
         """获取连接"""
@@ -246,28 +239,22 @@ class PostgreSQLConnectionPool:
                 with self._lock:
                     self._active_connections.add(conn)
                     self.metrics.current_active = len(self._active_connections)
-                    self.metrics.peak_active = max(
-                        self.metrics.peak_active, self.metrics.current_active
-                    )
+                    self.metrics.peak_active = max(self.metrics.peak_active, self.metrics.current_active)
 
                 logger.debug(f"从池中获取连接: {id(conn.connection)}")
                 return conn
             else:
                 # 连接不健康，关闭并创建新连接
                 self._close_connection(conn)
-                return self._create_and_acquire_connection(
-                    timeout - (time.time() - start_time)
-                )
+                return self._create_and_acquire_connection(timeout - (time.time() - start_time))
 
         except queue.Empty:
             # 池中没有可用连接，尝试创建新连接
-            return self._create_and_acquire_connection(
-                timeout - (time.time() - start_time)
-            )
+            return self._create_and_acquire_connection(timeout - (time.time() - start_time))
 
     def _create_and_acquire_connection(self, timeout: float) -> PooledConnection:
         """创建并获取新连接"""
-        remaining_time = max(timeout, 1.0)
+        max(timeout, 1.0)
 
         for attempt in range(self.config.retry_attempts):
             try:
@@ -280,9 +267,7 @@ class PostgreSQLConnectionPool:
                     return conn
 
             except Exception as e:
-                logger.warning(
-                    f"创建连接失败 (尝试 {attempt + 1}/{self.config.retry_attempts}): {e}"
-                )
+                logger.warning(f"创建连接失败 (尝试 {attempt + 1}/{self.config.retry_attempts}): {e}")
 
                 if attempt < self.config.retry_attempts - 1:
                     time.sleep(self.config.retry_delay * (2**attempt))
@@ -333,9 +318,7 @@ class PostgreSQLConnectionPool:
         except Exception as e:
             logger.error(f"关闭连接时出错: {e}")
 
-    def execute_query(
-        self, query: str, params: Optional[tuple] = None, fetch: bool = True
-    ) -> Any:
+    def execute_query(self, query: str, params: Optional[tuple] = None, fetch: bool = True) -> Any:
         """
         执行SQL查询
 
@@ -359,10 +342,7 @@ class PostgreSQLConnectionPool:
                             # 返回字典格式结果
                             columns = [desc[0] for desc in cursor.description]
                             rows = cursor.fetchall()
-                            result = [
-                                {columns[i]: row[i] for i in range(len(columns))}
-                                for row in rows
-                            ]
+                            result = [{columns[i]: row[i] for i in range(len(columns))} for row in rows]
                         else:
                             result = cursor.fetchall()
                     else:
@@ -379,9 +359,7 @@ class PostgreSQLConnectionPool:
         finally:
             execution_time = time.time() - start_time
             if execution_time > 1.0:  # 记录慢查询
-                logger.warning(
-                    f"慢查询检测: 执行时间 {execution_time:.2f}s, SQL: {query[:100]}..."
-                )
+                logger.warning(f"慢查询检测: 执行时间 {execution_time:.2f}s, SQL: {query[:100]}...")
 
     def execute_transaction(self, queries: List[tuple]) -> bool:
         """
@@ -473,9 +451,7 @@ class PostgreSQLConnectionPool:
         self._health_check_thread.start()
 
         # 启动清理线程
-        self._cleanup_thread = threading.Thread(
-            target=self._cleanup_worker, daemon=True, name="PostgreSQL-Cleanup"
-        )
+        self._cleanup_thread = threading.Thread(target=self._cleanup_worker, daemon=True, name="PostgreSQL-Cleanup")
         self._cleanup_thread.start()
 
     def _health_check_worker(self):
@@ -528,7 +504,7 @@ class PostgreSQLConnectionPool:
                 # 如果连接数少于最小值，补充连接
                 current_size = self._pool.qsize()
                 with self._lock:
-                    current_active = len(self._active_connections)
+                    len(self._active_connections)
 
                 if current_size < self.config.min_connections:
                     needed = self.config.min_connections - current_size
@@ -591,9 +567,7 @@ class ConnectionPoolManager:
     _lock = threading.Lock()
 
     @classmethod
-    def get_pool(
-        cls, dsn: str, config: Optional[PoolConfig] = None
-    ) -> PostgreSQLConnectionPool:
+    def get_pool(cls, dsn: str, config: Optional[PoolConfig] = None) -> PostgreSQLConnectionPool:
         """
         获取连接池实例（单例模式）
 

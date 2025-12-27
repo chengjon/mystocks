@@ -5,20 +5,16 @@
 from datetime import timedelta
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
 from app.core.config import settings
 from app.core.responses import create_success_response
 from app.core.security import (
     Token,
-    TokenData,
     User,
-    UserInDB,
     authenticate_user,
     create_access_token,
-    get_password_hash,
-    verify_password,
     verify_token,
 )
 

@@ -101,9 +101,7 @@ class TdxRealtimeManager:
                 "active": True,
             }
 
-        logger.info(
-            f"Subscribed to realtime updates for {symbol}, ID: {subscription_id}"
-        )
+        logger.info(f"Subscribed to realtime updates for {symbol}, ID: {subscription_id}")
 
         return subscription_id
 
@@ -123,9 +121,7 @@ class TdxRealtimeManager:
                 subscription["active"] = False
                 del self.subscriptions[subscription_id]
 
-                logger.info(
-                    f"Unsubscribed from realtime updates, ID: {subscription_id}"
-                )
+                logger.info(f"Unsubscribed from realtime updates, ID: {subscription_id}")
                 return True
 
         return False
@@ -179,9 +175,7 @@ class TdxRealtimeManager:
             "low": round(base_price - 0.5, 2),
         }
 
-    def _fetch_realtime_batch_internal(
-        self, symbols: List[str]
-    ) -> Dict[str, Dict[str, Any]]:
+    def _fetch_realtime_batch_internal(self, symbols: List[str]) -> Dict[str, Dict[str, Any]]:
         """
         批量获取实时数据（内部方法）
 
@@ -223,9 +217,7 @@ class TdxRealtimeManager:
         # 生成订阅ID
         subscription_id = str(uuid.uuid4())
 
-        logger.debug(
-            f"Setting up realtime subscription for {symbol}, ID: {subscription_id}"
-        )
+        logger.debug(f"Setting up realtime subscription for {symbol}, ID: {subscription_id}")
 
         # 在实际实现中，这里会建立WebSocket连接或其他推送机制
         # 这里只是模拟设置并返回订阅ID
@@ -248,9 +240,7 @@ class TdxRealtimeManager:
                         callback = subscription["callback"]
                         callback(data)
                     except Exception as e:
-                        logger.error(
-                            f"Error in realtime callback for {subscription_id}: {str(e)}"
-                        )
+                        logger.error(f"Error in realtime callback for {subscription_id}: {str(e)}")
 
     def _get_cached_realtime_data(self, key: str) -> Optional[Dict[str, Any]]:
         """
@@ -299,7 +289,5 @@ class TdxRealtimeManager:
         return {
             "cache_size": len(self.realtime_cache),
             "cache_ttl": self.cache_ttl,
-            "cached_symbols": [
-                key.replace("realtime_", "") for key in self.realtime_cache.keys()
-            ],
+            "cached_symbols": [key.replace("realtime_", "") for key in self.realtime_cache.keys()],
         }

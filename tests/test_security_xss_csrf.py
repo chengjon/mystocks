@@ -336,14 +336,7 @@ class TestHTTPClientCSRFHandling:
         # Note: This tests the JavaScript client structure by reading the file
         from pathlib import Path
 
-        http_client_path = (
-            Path(__file__).parent.parent
-            / "web"
-            / "frontend"
-            / "src"
-            / "services"
-            / "httpClient.js"
-        )
+        http_client_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "services" / "httpClient.js"
         with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
@@ -359,14 +352,7 @@ class TestHTTPClientCSRFHandling:
         """HTTP client targets correct CSRF token endpoint"""
         from pathlib import Path
 
-        http_client_path = (
-            Path(__file__).parent.parent
-            / "web"
-            / "frontend"
-            / "src"
-            / "services"
-            / "httpClient.js"
-        )
+        http_client_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "services" / "httpClient.js"
         with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
@@ -377,14 +363,7 @@ class TestHTTPClientCSRFHandling:
         """HTTP client adds X-CSRF-Token header for state-modifying requests"""
         from pathlib import Path
 
-        http_client_path = (
-            Path(__file__).parent.parent
-            / "web"
-            / "frontend"
-            / "src"
-            / "services"
-            / "httpClient.js"
-        )
+        http_client_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "services" / "httpClient.js"
         with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
@@ -401,22 +380,12 @@ class TestHTTPClientCSRFHandling:
         """HTTP client includes credentials for session management"""
         from pathlib import Path
 
-        http_client_path = (
-            Path(__file__).parent.parent
-            / "web"
-            / "frontend"
-            / "src"
-            / "services"
-            / "httpClient.js"
-        )
+        http_client_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "services" / "httpClient.js"
         with open(http_client_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
         # Should include credentials
-        assert (
-            "credentials: 'include'" in js_content
-            or 'credentials: "include"' in js_content
-        )
+        assert "credentials: 'include'" in js_content or 'credentials: "include"' in js_content
 
 
 # ============================================================================
@@ -431,9 +400,7 @@ class TestVueAppSecurityInit:
         """main.js calls initializeSecurity before mount"""
         from pathlib import Path
 
-        main_js_path = (
-            Path(__file__).parent.parent / "web" / "frontend" / "src" / "main.js"
-        )
+        main_js_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "main.js"
         with open(main_js_path, "r", encoding="utf-8") as f:
             js_content = f.read()
 
@@ -520,15 +487,11 @@ class TestXSSCSRFIntegration:
         assert token1 != token2
 
         # Each should validate independently
-        response_with_1 = test_client.post(
-            "/api/data/example", json={}, headers={"x-csrf-token": token1}
-        )
+        response_with_1 = test_client.post("/api/data/example", json={}, headers={"x-csrf-token": token1})
         # Should not be CSRF error
         assert response_with_1.status_code != 403
 
-        response_with_2 = test_client.post(
-            "/api/data/example", json={}, headers={"x-csrf-token": token2}
-        )
+        response_with_2 = test_client.post("/api/data/example", json={}, headers={"x-csrf-token": token2})
         # Should not be CSRF error
         assert response_with_2.status_code != 403
 
@@ -601,9 +564,7 @@ class TestSecurityBestPractices:
         from pathlib import Path
 
         # Check main.py
-        main_py_path = (
-            Path(__file__).parent.parent / "web" / "backend" / "app" / "main.py"
-        )
+        main_py_path = Path(__file__).parent.parent / "web" / "backend" / "app" / "main.py"
         with open(main_py_path, "r", encoding="utf-8") as f:
             content = f.read()
 
@@ -612,14 +573,7 @@ class TestSecurityBestPractices:
         assert "'password'" not in content.lower()
 
         # Check httpClient.js
-        http_client_path = (
-            Path(__file__).parent.parent
-            / "web"
-            / "frontend"
-            / "src"
-            / "services"
-            / "httpClient.js"
-        )
+        http_client_path = Path(__file__).parent.parent / "web" / "frontend" / "src" / "services" / "httpClient.js"
         with open(http_client_path, "r", encoding="utf-8") as f:
             content = f.read()
 

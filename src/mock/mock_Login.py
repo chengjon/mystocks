@@ -82,9 +82,7 @@ def get_data_table() -> pd.DataFrame:
     return pd.DataFrame(data)
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:
@@ -116,14 +114,20 @@ if __name__ == "__main__":
     result1 = get_data_list()
     print(f"返回数据: {result1}")
 
-    print("""
-get_data_detail() 调用测试:""")
+    print(
+        """
+get_data_detail() 调用测试:"""
+    )
     result2 = get_data_detail()
     print(f"返回数据: {result2}")
 
-    print("""
-get_data_table() 调用测试:""")
+    print(
+        """
+get_data_table() 调用测试:"""
+    )
     result3 = get_data_table()
-    print("""返回数据:
-""")
+    print(
+        """返回数据:
+"""
+    )
     print(f"返回数据: {result3}")

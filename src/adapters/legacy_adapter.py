@@ -3,6 +3,7 @@
 用于演示AI测试优化器在重构支持中的应用
 """
 
+import time
 from typing import Dict
 
 
@@ -31,9 +32,7 @@ class LegacyAdapter:
                 if "symbol" not in request_data:
                     raise ValueError("缺少symbol参数")
 
-                if request_data["symbol"].startswith("6") or request_data[
-                    "symbol"
-                ].startswith("0"):
+                if request_data["symbol"].startswith("6") or request_data["symbol"].startswith("0"):
                     exchange = "SZSE"
                 elif request_data["symbol"].startswith("6"):
                     exchange = "SSE"

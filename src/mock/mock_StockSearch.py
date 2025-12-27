@@ -55,9 +55,7 @@ def _generate_correlated_price_data(base_price: float) -> Dict[str, float]:
     }
 
 
-def search_stocks(
-    keyword: str = "", industry: str = "", market: str = "", limit: int = 20
-) -> List[Dict]:
+def search_stocks(keyword: str = "", industry: str = "", market: str = "", limit: int = 20) -> List[Dict]:
     """搜索股票（支持按代码、名称、行业搜索）
 
     Args:
@@ -201,20 +199,14 @@ def search_stocks(
     if keyword:
         keyword = keyword.lower()
         filtered_stocks = [
-            stock
-            for stock in filtered_stocks
-            if keyword in stock["symbol"].lower() or keyword in stock["name"].lower()
+            stock for stock in filtered_stocks if keyword in stock["symbol"].lower() or keyword in stock["name"].lower()
         ]
 
     if industry:
-        filtered_stocks = [
-            stock for stock in filtered_stocks if stock["industry"] == industry
-        ]
+        filtered_stocks = [stock for stock in filtered_stocks if stock["industry"] == industry]
 
     if market:
-        filtered_stocks = [
-            stock for stock in filtered_stocks if stock["market"] == market
-        ]
+        filtered_stocks = [stock for stock in filtered_stocks if stock["market"] == market]
 
     # 生成搜索结果
     results = []

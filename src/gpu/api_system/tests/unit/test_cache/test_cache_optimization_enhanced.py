@@ -14,9 +14,7 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(
     0,
-    os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    ),
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
 )
 
 from src.utils.cache_optimization_enhanced import (
@@ -47,10 +45,10 @@ class TestAccessPatternLearner(unittest.TestCase):
         # 预测下次访问
         predicted = self.learner.predict_next_access(key)
 
-        self.assertIsNotNone(predicted)
+        assert predicted is not None
         # 预测时间应该在最后访问后约60秒
         expected = base_time + 10 * 60
-        self.assertAlmostEqual(predicted, expected, delta=10)
+        assert abs(predicted - expected) <= 10
 
     def test_get_keys_to_preload(self):
         """测试获取需要预加载的键"""
@@ -69,9 +67,9 @@ class TestAccessPatternLearner(unittest.TestCase):
         keys = self.learner.get_keys_to_preload(current_time, threshold_seconds=60)
 
         # Key1应该在列表中,Key2不应该
-        self.assertIn("key1", keys)
+        assert "key1" in keys
         # Key2的下次访问在5分钟后,不应该在60秒阈值内
-        # self.assertNotIn("key2", keys)  # 这个断言可能不稳定,取决于预测精度
+        # assert "key2" not in keys  # 这个断言可能不稳定,取决于预测精度
 
     def test_key_correlation(self):
         """测试键关联"""
@@ -80,9 +78,9 @@ class TestAccessPatternLearner(unittest.TestCase):
 
         correlated = self.learner.get_correlated_keys("daily:600000")
 
-        self.assertEqual(len(correlated), 2)
-        self.assertIn("indicator:600000:MA", correlated)
-        self.assertIn("indicator:600000:MACD", correlated)
+        assert len(correlated) == 2
+        assert "indicator:600000:MA" in correlated
+        assert "indicator:600000:MACD" in correlated
 
     def test_hot_keys_detection(self):
         """测试热点键检测"""
@@ -98,8 +96,8 @@ class TestAccessPatternLearner(unittest.TestCase):
 
         hot_keys = self.learner.get_hot_keys(top_n=2)
 
-        self.assertEqual(hot_keys[0], "hot_key")
-        self.assertEqual(hot_keys[1], "warm_key")
+        assert hot_keys[0] == "hot_key"
+        assert hot_keys[1] == "warm_key"
 
 
 class TestQueryResultCache(unittest.TestCase):
@@ -124,7 +122,7 @@ class TestQueryResultCache(unittest.TestCase):
         fp2 = self.query_cache.generate_query_fingerprint(params2)
 
         # 参数相同但顺序不同,应该生成相同指纹
-        self.assertEqual(fp1, fp2)
+        assert fp1 == fp2
 
     def test_cache_and_retrieve_query_result(self):
         """测试缓存和检索查询结果"""
@@ -137,8 +135,8 @@ class TestQueryResultCache(unittest.TestCase):
         # 检索
         cached_result = self.query_cache.get_query_result(params)
 
-        self.assertIsNotNone(cached_result)
-        self.assertEqual(cached_result, result)
+        assert cached_result is not None
+        assert cached_result == result
 
     def test_partial_result_caching(self):
         """测试部分结果缓存"""
@@ -152,7 +150,7 @@ class TestQueryResultCache(unittest.TestCase):
         partial_results = self.query_cache.get_partial_result("600000")
 
         # 应该能找到相关结果
-        self.assertGreater(len(partial_results), 0)
+        assert len(partial_results) > 0
 
 
 class TestNegativeCache(unittest.TestCase):
@@ -172,7 +170,7 @@ class TestNegativeCache(unittest.TestCase):
         self.negative_cache.mark_as_negative(key)
 
         # 检查
-        self.assertTrue(self.negative_cache.is_negative(key))
+        assert self.negative_cache.is_negative(key)
 
     def test_get_with_negative_check(self):
         """测试带负缓存的获取"""
@@ -185,13 +183,13 @@ class TestNegativeCache(unittest.TestCase):
 
         # 第一次获取
         result1 = self.negative_cache.get_with_negative_check(key, mock_fetch)
-        self.assertIsNone(result1)
-        self.assertEqual(fetch_count[0], 1)
+        assert result1 is None
+        assert fetch_count[0] == 1
 
         # 第二次获取(应该命中负缓存,不调用fetch)
         result2 = self.negative_cache.get_with_negative_check(key, mock_fetch)
-        self.assertIsNone(result2)
-        self.assertEqual(fetch_count[0], 1)  # 没有增加
+        assert result2 is None
+        assert fetch_count[0] == 1  # 没有增加
 
 
 class TestAdaptiveTTLManager(unittest.TestCase):
@@ -209,25 +207,25 @@ class TestAdaptiveTTLManager(unittest.TestCase):
         for _ in range(10):
             self.ttl_manager.record_access(key)
         ttl1 = self.ttl_manager.get_adaptive_ttl(key, base_ttl)
-        self.assertEqual(ttl1, 300)  # 1.0x
+        assert ttl1 == 300  # 1.0x
 
         # 访问到50次(warm)
         for _ in range(40):
             self.ttl_manager.record_access(key)
         ttl2 = self.ttl_manager.get_adaptive_ttl(key, base_ttl)
-        self.assertEqual(ttl2, 450)  # 1.5x
+        assert ttl2 == 450  # 1.5x
 
         # 访问到100次(hot)
         for _ in range(50):
             self.ttl_manager.record_access(key)
         ttl3 = self.ttl_manager.get_adaptive_ttl(key, base_ttl)
-        self.assertEqual(ttl3, 600)  # 2.0x
+        assert ttl3 == 600  # 2.0x
 
         # 访问超过100次(ultra_hot)
         for _ in range(10):
             self.ttl_manager.record_access(key)
         ttl4 = self.ttl_manager.get_adaptive_ttl(key, base_ttl)
-        self.assertEqual(ttl4, 900)  # 3.0x
+        assert ttl4 == 900  # 3.0x
 
     def test_partition_classification(self):
         """测试热度分区"""
@@ -245,19 +243,17 @@ class TestAdaptiveTTLManager(unittest.TestCase):
             self.ttl_manager.record_access("ultra_hot_key")
 
         # 检查分区
-        self.assertEqual(self.ttl_manager.get_partition("cold_key"), "normal")
-        self.assertEqual(self.ttl_manager.get_partition("warm_key"), "warm")
-        self.assertEqual(self.ttl_manager.get_partition("hot_key"), "hot")
-        self.assertEqual(self.ttl_manager.get_partition("ultra_hot_key"), "ultra_hot")
+        assert self.ttl_manager.get_partition("cold_key") == "normal"
+        assert self.ttl_manager.get_partition("warm_key") == "warm"
+        assert self.ttl_manager.get_partition("hot_key") == "hot"
+        assert self.ttl_manager.get_partition("ultra_hot_key") == "ultra_hot"
 
 
 class TestSmartCompressor(unittest.TestCase):
     """测试智能压缩器"""
 
     def setUp(self):
-        self.compressor = SmartCompressor(
-            size_threshold=1024, compression_ratio_threshold=0.7
-        )
+        self.compressor = SmartCompressor(size_threshold=1024, compression_ratio_threshold=0.7)
 
     def test_small_object_no_compression(self):
         """测试小对象不压缩"""
@@ -265,8 +261,8 @@ class TestSmartCompressor(unittest.TestCase):
 
         compressed, is_compressed, info = self.compressor.compress(small_data)
 
-        self.assertFalse(is_compressed)
-        self.assertEqual(info["original_size"], info["compressed_size"])
+        assert not is_compressed
+        assert info["original_size"] == info["compressed_size"]
 
     def test_large_object_with_good_compression(self):
         """测试大对象高压缩率"""
@@ -275,9 +271,9 @@ class TestSmartCompressor(unittest.TestCase):
 
         compressed, is_compressed, info = self.compressor.compress(large_data)
 
-        self.assertTrue(is_compressed)
-        self.assertLess(info["compressed_size"], info["original_size"])
-        self.assertLess(info["ratio"], 0.7)
+        assert is_compressed
+        assert info["compressed_size"] < info["original_size"]
+        assert info["ratio"] < 0.7
 
     def test_compression_decompression_cycle(self):
         """测试压缩解压缩循环"""
@@ -286,7 +282,7 @@ class TestSmartCompressor(unittest.TestCase):
         compressed, is_compressed, _ = self.compressor.compress(original_data)
         decompressed = self.compressor.decompress(compressed, is_compressed)
 
-        self.assertEqual(original_data, decompressed)
+        assert original_data == decompressed
 
     def test_compression_stats(self):
         """测试压缩统计"""
@@ -298,8 +294,8 @@ class TestSmartCompressor(unittest.TestCase):
 
         stats = self.compressor.get_stats()
 
-        self.assertEqual(stats["attempts"], 10)
-        self.assertGreater(stats["successes"], 0)  # 至少有一些成功压缩
+        assert stats["attempts"] == 10
+        assert stats["successes"] > 0  # 至少有一些成功压缩
 
 
 class TestEnhancedCacheManager(unittest.TestCase):
@@ -323,8 +319,8 @@ class TestEnhancedCacheManager(unittest.TestCase):
         # 获取
         result = self.cache_manager.get(key)
 
-        self.assertIsNotNone(result)
-        self.assertEqual(result, value)
+        assert result is not None
+        assert result == value
 
     def test_query_result_caching(self):
         """测试查询结果缓存"""
@@ -337,8 +333,8 @@ class TestEnhancedCacheManager(unittest.TestCase):
         # 检索
         cached = self.cache_manager.get_query_result(query_params)
 
-        self.assertIsNotNone(cached)
-        self.assertEqual(cached, result)
+        assert cached is not None
+        assert cached == result
 
     def test_adaptive_ttl_with_access_patterns(self):
         """测试自适应TTL与访问模式"""
@@ -358,7 +354,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
 
         # 验证TTL被调整
         adaptive_ttl = self.cache_manager.ttl_manager.get_adaptive_ttl(key, 100)
-        self.assertGreater(adaptive_ttl, 100)
+        assert adaptive_ttl > 100
 
     def test_cache_hit_rate_improvement(self):
         """测试缓存命中率提升 - 核心性能测试"""
@@ -416,7 +412,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
 
             # 执行实际获取(会触发预加载等优化)
             result = self.cache_manager.get(key, fetch_func)
-            self.assertIsNotNone(result)
+            assert result is not None
 
         total = hits + misses
         hit_rate = hits / total * 100 if total > 0 else 0
@@ -433,9 +429,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
         print(f"  访问模式学习: {stats['pattern_learning']['tracked_keys']} 个键")
         print(f"  压缩成功率: {stats['compression']['success_rate']:.2f}%")
         print(f"  预加载成功率: {stats['prefetching']['success_rate']:.2f}%")
-        print(
-            f"  估算命中率: {stats['optimization_estimate']['estimated_hit_rate']:.2f}%"
-        )
+        print(f"  估算命中率: {stats['optimization_estimate']['estimated_hit_rate']:.2f}%")
 
         print("=" * 70)
 
@@ -446,7 +440,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
 
         # 宽松的断言: 命中率应该高于60%
         # (实际生产环境中,随着时间推移和模式学习,会达到90%+)
-        self.assertGreater(hit_rate, 60.0, f"命中率 {hit_rate:.2f}% 低于预期(>60%)")
+        assert hit_rate > 60.0, f"命中率 {hit_rate:.2f}% 低于预期(>60%)"
 
     def test_warmup_effectiveness(self):
         """测试预热效果"""
@@ -463,7 +457,7 @@ class TestEnhancedCacheManager(unittest.TestCase):
         # 检查热点键是否被预热
         stats = self.cache_manager.get_comprehensive_stats()
 
-        self.assertGreater(stats["pattern_learning"]["tracked_keys"], 0)
+        assert stats["pattern_learning"]["tracked_keys"] > 0
 
     def test_comprehensive_stats(self):
         """测试综合统计"""
@@ -478,16 +472,16 @@ class TestEnhancedCacheManager(unittest.TestCase):
         stats = self.cache_manager.get_comprehensive_stats()
 
         # 验证统计结构
-        self.assertIn("timestamp", stats)
-        self.assertIn("cache_stats", stats)
-        self.assertIn("pattern_learning", stats)
-        self.assertIn("adaptive_ttl", stats)
-        self.assertIn("compression", stats)
-        self.assertIn("optimization_estimate", stats)
+        assert "timestamp" in stats
+        assert "cache_stats" in stats
+        assert "pattern_learning" in stats
+        assert "adaptive_ttl" in stats
+        assert "compression" in stats
+        assert "optimization_estimate" in stats
 
         # 验证优化估算
         estimate = stats["optimization_estimate"]
-        self.assertGreater(estimate["estimated_hit_rate"], estimate["base_hit_rate"])
+        assert estimate["estimated_hit_rate"] > estimate["base_hit_rate"]
 
 
 if __name__ == "__main__":

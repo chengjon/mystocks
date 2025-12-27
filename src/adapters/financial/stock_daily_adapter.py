@@ -28,25 +28,23 @@ class StockDailyAdapter(BaseFinancialAdapter):
 
     def _check_dependency_availability(self) -> None:
         """检查依赖库的可用性"""
-        try:
-            import efinance
+        import importlib.util
 
+        # 检查 efinance 可用性
+        if importlib.util.find_spec("efinance"):
             self._efinance_available = True
             logger.info("efinance 库可用")
-        except ImportError:
+        else:
             logger.warning("efinance 库不可用")
 
-        try:
-            import easyquotation
-
+        # 检查 easyquotation 可用性
+        if importlib.util.find_spec("easyquotation"):
             self._easyquotation_available = True
             logger.info("easyquotation 库可用")
-        except ImportError:
+        else:
             logger.warning("easyquotation 库不可用")
 
-    def _validate_stock_daily_params(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> Tuple[str, str, str]:
+    def _validate_stock_daily_params(self, symbol: str, start_date: str, end_date: str) -> Tuple[str, str, str]:
         """验证股票日线数据参数"""
         if not symbol:
             raise ValueError("股票代码不能为空")
@@ -59,24 +57,18 @@ class StockDailyAdapter(BaseFinancialAdapter):
 
         # 标准化日期格式
         try:
-            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+            datetime.strptime(start_date, "%Y-%m-%d")
+            datetime.strptime(end_date, "%Y-%m-%d")
         except ValueError as e:
             raise ValueError(f"日期格式错误，应为 YYYY-MM-DD: {e}")
 
         return symbol, start_date, end_date
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据"""
-        symbol, start_date, end_date = self._validate_stock_daily_params(
-            symbol, start_date, end_date
-        )
+        symbol, start_date, end_date = self._validate_stock_daily_params(symbol, start_date, end_date)
 
-        cache_key = self._get_cache_key(
-            symbol, "stock_daily", start_date=start_date, end_date=end_date
-        )
+        cache_key = self._get_cache_key(symbol, "stock_daily", start_date=start_date, end_date=end_date)
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
             logger.info(f"从缓存获取股票日线数据: {symbol}")
@@ -102,9 +94,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
 
         raise Exception(f"所有数据源都无法获取股票 {symbol} 的日线数据")
 
-    def _fetch_stock_daily_from_efinance(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def _fetch_stock_daily_from_efinance(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """通过 efinance 获取股票日线数据"""
         if not self._efinance_available:
             raise Exception("efinance 库不可用")
@@ -120,9 +110,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             buffer_start = (start_dt - timedelta(days=7)).strftime("%Y-%m-%d")
             buffer_end = (end_dt + timedelta(days=7)).strftime("%Y-%m-%d")
 
-            data = efinance.stock.get_quote_history(
-                code=symbol, beg=buffer_start, end=buffer_end
-            )
+            data = efinance.stock.get_quote_history(code=symbol, beg=buffer_start, end=buffer_end)
 
             if data is None or data.empty:
                 return pd.DataFrame()
@@ -136,9 +124,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             logger.error(f"efinance 获取股票日线数据失败: {e}")
             raise
 
-    def _fetch_stock_daily_from_easyquotation(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def _fetch_stock_daily_from_easyquotation(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """通过 easyquotation 获取股票日线数据"""
         if not self._easyquotation_available:
             raise Exception("easyquotation 库不可用")
@@ -175,9 +161,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             logger.error(f"easyquotation 获取股票日线数据失败: {e}")
             raise
 
-    def _filter_broader_data_by_date(
-        self, data: pd.DataFrame, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def _filter_broader_data_by_date(self, data: pd.DataFrame, start_date: str, end_date: str) -> pd.DataFrame:
         """过滤扩展范围数据到指定日期范围"""
         date_col = None
 
@@ -225,9 +209,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
                 "收盘",
                 "成交量",
             ]
-            missing_columns = [
-                col for col in required_columns if col not in data.columns
-            ]
+            missing_columns = [col for col in required_columns if col not in data.columns]
 
             if missing_columns:
                 logger.warning(f"缺少必要的列: {missing_columns}")

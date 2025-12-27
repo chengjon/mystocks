@@ -21,9 +21,7 @@ class IDataProcessor(ABC):
         pass
 
     @abstractmethod
-    def compute_features(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """
         计算给定历史数据的特征。
         Args:

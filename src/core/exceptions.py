@@ -53,15 +53,11 @@ class MyStocksException(Exception):
             "severity": self.severity,
             "context": self.context,
             "timestamp": self.timestamp.isoformat(),
-            "original_exception": str(self.original_exception)
-            if self.original_exception
-            else None,
+            "original_exception": str(self.original_exception) if self.original_exception else None,
         }
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(code={self.code!r}, severity={self.severity!r})"
-        )
+        return f"{self.__class__.__name__}(code={self.code!r}, severity={self.severity!r})"
 
 
 # Data Source Exceptions

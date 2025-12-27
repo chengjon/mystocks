@@ -76,9 +76,7 @@ class TdxService:
             logger.error(f"获取实时行情异常: {symbol}, 错误: {e}")
             raise
 
-    def get_stock_kline(
-        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
-    ) -> Dict:
+    def get_stock_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
         """
         获取股票K线数据
 
@@ -165,9 +163,7 @@ class TdxService:
             logger.error(f"获取指数行情异常: {symbol}, 错误: {e}")
             raise
 
-    def get_index_kline(
-        self, symbol: str, start_date: str, end_date: str, period: str = "1d"
-    ) -> Dict:
+    def get_index_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
         """
         获取指数K线数据
 

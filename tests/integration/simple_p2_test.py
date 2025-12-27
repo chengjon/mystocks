@@ -117,9 +117,7 @@ async def test_api_connectivity():
     try:
         async with aiohttp.ClientSession() as session:
             # Test health endpoint
-            async with session.get(
-                "http://localhost:8000/health", timeout=aiohttp.ClientTimeout(total=5)
-            ) as response:
+            async with session.get("http://localhost:8000/health", timeout=aiohttp.ClientTimeout(total=5)) as response:
                 if response.status == 200:
                     health_data = await response.json()
                     print(f"  ✅ 健康检查: {health_data.get('status', 'unknown')}")

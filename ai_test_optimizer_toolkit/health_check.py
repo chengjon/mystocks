@@ -5,7 +5,6 @@ AI Test Optimizer 健康检查
 """
 
 import sys
-import os
 from pathlib import Path
 
 

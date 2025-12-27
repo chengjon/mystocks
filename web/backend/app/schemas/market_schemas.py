@@ -20,9 +20,7 @@ from datetime import date, datetime
 class FundFlowRequest(BaseModel):
     """资金流向查询请求 (用于POST请求)"""
 
-    symbol: str = Field(
-        ..., description="股票代码 (如: 600519.SH)", min_length=6, max_length=20
-    )
+    symbol: str = Field(..., description="股票代码 (如: 600519.SH)", min_length=6, max_length=20)
     timeframe: str = Field(default="1", description="时间维度: 1/3/5/10天")
     start_date: Optional[date] = Field(None, description="开始日期")
     end_date: Optional[date] = Field(None, description="结束日期")
@@ -124,9 +122,7 @@ class ETFDataResponse(BaseModel):
 class ChipRaceRequest(BaseModel):
     """竞价抢筹查询请求"""
 
-    race_type: str = Field(
-        default="open", description="抢筹类型: open(早盘) / end(尾盘)"
-    )
+    race_type: str = Field(default="open", description="抢筹类型: open(早盘) / end(尾盘)")
     trade_date: Optional[date] = Field(None, description="交易日期")
     min_race_amount: Optional[float] = Field(None, ge=0, description="最小抢筹金额(元)")
     limit: int = Field(default=100, ge=1, le=500)

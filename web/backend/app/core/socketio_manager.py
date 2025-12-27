@@ -22,9 +22,7 @@ import structlog
 try:
     from socketio import AsyncServer, AsyncNamespace
 except ImportError:
-    raise ImportError(
-        "python-socketio is not installed. Install it with: pip install python-socketio"
-    )
+    raise ImportError("python-socketio is not installed. Install it with: pip install python-socketio")
 
 from app.models.websocket_message import (
     WebSocketRequestMessage,
@@ -481,9 +479,7 @@ class MySocketIONamespace(AsyncNamespace):
                 )
 
         except Exception as e:
-            logger.error(
-                "❌ Market stream unsubscription failed", error=str(e), sid=sid
-            )
+            logger.error("❌ Market stream unsubscription failed", error=str(e), sid=sid)
             await self.emit(
                 "stream_error",
                 {

@@ -17,9 +17,7 @@ class IndicatorSpec(BaseModel):
         {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
     """
 
-    abbreviation: str = Field(
-        ..., description="指标缩写 (如 SMA, RSI, MACD)", min_length=2, max_length=20
-    )
+    abbreviation: str = Field(..., description="指标缩写 (如 SMA, RSI, MACD)", min_length=2, max_length=20)
     parameters: Dict[str, Any] = Field(default_factory=dict, description="指标参数字典")
 
     @validator("abbreviation")
@@ -34,10 +32,7 @@ class IndicatorSpec(BaseModel):
         """参数值必须为有效类型"""
         for key, value in v.items():
             if not isinstance(value, (int, float, str, bool)):
-                raise ValueError(
-                    f"参数 {key} 的值类型无效: {type(value).__name__}. "
-                    "只支持 int, float, str, bool"
-                )
+                raise ValueError(f"参数 {key} 的值类型无效: {type(value).__name__}. " "只支持 int, float, str, bool")
         return v
 
 
@@ -66,9 +61,7 @@ class IndicatorCalculateRequest(BaseModel):
     )
     start_date: date = Field(..., description="开始日期 (YYYY-MM-DD)")
     end_date: date = Field(..., description="结束日期 (YYYY-MM-DD)")
-    indicators: List[IndicatorSpec] = Field(
-        ..., description="指标列表", min_items=1, max_items=10
-    )
+    indicators: List[IndicatorSpec] = Field(..., description="指标列表", min_items=1, max_items=10)
     use_cache: bool = Field(default=True, description="是否使用缓存 (默认true)")
 
     @validator("symbol")
@@ -76,9 +69,7 @@ class IndicatorCalculateRequest(BaseModel):
         """验证股票代码格式"""
         pattern = r"^\d{6}\.(SH|SZ)$"
         if not re.match(pattern, v):
-            raise ValueError(
-                f"股票代码格式无效: {v}. 正确格式: 6位数字 + .SH 或 .SZ (如 600519.SH)"
-            )
+            raise ValueError(f"股票代码格式无效: {v}. 正确格式: 6位数字 + .SH 或 .SZ (如 600519.SH)")
         return v
 
     @validator("end_date")
@@ -143,9 +134,7 @@ class IndicatorConfigCreateRequest(BaseModel):
     """
 
     name: str = Field(..., description="配置名称", min_length=1, max_length=100)
-    indicators: List[IndicatorSpec] = Field(
-        ..., description="指标列表", min_items=1, max_items=20
-    )
+    indicators: List[IndicatorSpec] = Field(..., description="指标列表", min_items=1, max_items=20)
 
     @validator("name")
     def name_must_not_be_empty(cls, v):
@@ -166,12 +155,8 @@ class IndicatorConfigUpdateRequest(BaseModel):
         }
     """
 
-    name: Optional[str] = Field(
-        None, description="配置名称 (可选)", min_length=1, max_length=100
-    )
-    indicators: Optional[List[IndicatorSpec]] = Field(
-        None, description="指标列表 (可选)", min_items=1, max_items=20
-    )
+    name: Optional[str] = Field(None, description="配置名称 (可选)", min_length=1, max_length=100)
+    indicators: Optional[List[IndicatorSpec]] = Field(None, description="指标列表 (可选)", min_items=1, max_items=20)
 
     @validator("name")
     def name_must_not_be_empty_if_provided(cls, v):

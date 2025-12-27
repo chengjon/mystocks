@@ -50,9 +50,7 @@ try:
     # === 仅需3行代码 ===
     # 第1行: 初始化管理器 (已完成)
     # 第2行: 保存数据
-    result = manager.save_data_by_classification(
-        DataClassification.TICK_DATA, tick_data, "test_tick_600000"
-    )
+    result = manager.save_data_by_classification(DataClassification.TICK_DATA, tick_data, "test_tick_600000")
     # 第3行: (可选) 检查结果
     print("  代码行数: 3行 ✓")
     print("  操作简洁性: 通过 ✓")
@@ -67,6 +65,7 @@ print("【验收场景2】系统支持完整的34个数据分类的自动路由,
 print("📍 测试: 验证所有34个数据分类的路由")
 try:
     from src.core.data_classification import DataClassification
+
     # DataStorageStrategy已移除
 
     all_classifications = list(DataClassification)
@@ -116,9 +115,7 @@ try:
     )
 
     print(f"  数据量: {len(large_data):,}条")
-    print(
-        f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB"
-    )
+    print(f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
 
     # 注意: 实际写入需要创建表,这里测试数据准备时间
     start_time = time.time()
@@ -145,9 +142,7 @@ print("\n【验收场景4】实时数据从Redis缓存访问的响应时间不�
 print("📍 测试: Redis读写响应时间")
 try:
     # 测试Redis写入
-    test_data = pd.DataFrame(
-        {"symbol": ["600000.SH"], "quantity": [1000], "cost": [15.5]}
-    )
+    test_data = pd.DataFrame({"symbol": ["600000.SH"], "quantity": [1000], "cost": [15.5]})
 
     # 写入测试
     write_times = []
@@ -233,9 +228,7 @@ try:
     }
 
     # 加入队列
-    queue.enqueue(
-        classification="TICK_DATA", target_database="tdengine", data=failed_data
-    )
+    queue.enqueue(classification="TICK_DATA", target_database="tdengine", data=failed_data)
 
     # 验证队列
     pending = queue.get_pending_items(limit=10)

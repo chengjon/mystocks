@@ -54,9 +54,7 @@ def MA(data: Union[np.ndarray, pd.Series], period: int) -> np.ndarray:
     return result
 
 
-def SMA(
-    data: Union[np.ndarray, pd.Series], period: int, weight: float = 1.0
-) -> np.ndarray:
+def SMA(data: Union[np.ndarray, pd.Series], period: int, weight: float = 1.0) -> np.ndarray:
     """
     平滑移动平均 (Smoothed Moving Average)
 
@@ -123,9 +121,7 @@ def EMA(data: Union[np.ndarray, pd.Series], period: int) -> np.ndarray:
     return result
 
 
-def CROSS(
-    series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]
-) -> np.ndarray:
+def CROSS(series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]) -> np.ndarray:
     """
     交叉函数 - 判断series1是否向上穿越series2
 
@@ -354,9 +350,7 @@ def COUNT(condition: Union[np.ndarray, pd.Series], period: int) -> np.ndarray:
     return result
 
 
-def MAX(
-    series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]
-) -> np.ndarray:
+def MAX(series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]) -> np.ndarray:
     """
     取最大值 - 逐个元素比较取大
 
@@ -375,9 +369,7 @@ def MAX(
     return np.maximum(series1, series2)
 
 
-def MIN(
-    series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]
-) -> np.ndarray:
+def MIN(series1: Union[np.ndarray, pd.Series], series2: Union[np.ndarray, pd.Series]) -> np.ndarray:
     """
     取最小值 - 逐个元素比较取小
 
@@ -538,9 +530,7 @@ def RSI(close: Union[np.ndarray, pd.Series], period: int = 14) -> np.ndarray:
     return rsi
 
 
-def BOLL(
-    close: Union[np.ndarray, pd.Series], period: int = 20, std_dev: float = 2.0
-) -> tuple:
+def BOLL(close: Union[np.ndarray, pd.Series], period: int = 20, std_dev: float = 2.0) -> tuple:
     """
     布林带指标 (Bollinger Bands)
 
@@ -602,8 +592,6 @@ if __name__ == "__main__":
 
     # 测试BOLL
     test_upper, test_middle, test_lower = BOLL(test_close, 20, 2)
-    print(
-        f"BOLL最后值: 上轨={test_upper[-1]:.2f}, 中轨={test_middle[-1]:.2f}, 下轨={test_lower[-1]:.2f}"
-    )
+    print(f"BOLL最后值: 上轨={test_upper[-1]:.2f}, 中轨={test_middle[-1]:.2f}, 下轨={test_lower[-1]:.2f}")
 
     print("\n所有测试通过！")

@@ -435,10 +435,57 @@
   </el-container>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 面包屑导航项
+ */
+interface BreadcrumbItem {
+  path: string
+  title: string
+}
+
+/**
+ * 用户命令类型
+ */
+type UserCommand = 'profile' | 'settings' | 'logout'
+
+/**
+ * 风险告警统计
+ */
+interface RiskStats {
+  critical: number
+  high: number
+  medium: number
+  low: number
+}
+
+/**
+ * 风险指标数据
+ */
+interface RiskMetrics {
+  var: string
+  maxDrawdown: string
+  sharpe: string
+  volatility: string
+}
+
+/**
+ * 告警严重级别
+ */
+type SeverityLevel = 'critical' | 'high' | 'medium' | 'low'
+
+/**
+ * 指标变化类型
+ */
+type MetricClass = 'metric-up' | 'metric-flat' | 'metric-down'
 
 // ============================================
 // Composables
@@ -449,21 +496,21 @@ const router = useRouter()
 // ============================================
 // State
 // ============================================
-const isCollapsed = ref(false)
-const criticalAlertCount = ref(3)
-const username = ref('Admin')
+const isCollapsed: Ref<boolean> = ref(false)
+const criticalAlertCount: Ref<number> = ref(3)
+const username: Ref<string> = ref('Admin')
 
 // Risk-specific state
-const selectedRiskType = ref('all')
-const selectedSeverity = ref('all')
-const selectedTimeRange = ref('today')
-const selectedStatuses = ref(['active', 'acknowledged'])
-const selectedAlerts = ref([])
-const isRefreshing = ref(false)
-const refreshInterval = ref(null)
+const selectedRiskType: Ref<string> = ref('all')
+const selectedSeverity: Ref<string> = ref('all')
+const selectedTimeRange: Ref<string> = ref('today')
+const selectedStatuses: Ref<string[]> = ref(['active', 'acknowledged'])
+const selectedAlerts: Ref<any[]> = ref([])
+const isRefreshing: Ref<boolean> = ref(false)
+const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
 
 // Risk statistics
-const riskStats = ref({
+const riskStats: Ref<RiskStats> = ref({
   critical: 3,
   high: 12,
   medium: 28,
@@ -471,7 +518,7 @@ const riskStats = ref({
 })
 
 // Risk metrics
-const riskMetrics = ref({
+const riskMetrics: Ref<RiskMetrics> = ref({
   var: '125.67',
   maxDrawdown: '-8.45',
   sharpe: '1.85',
@@ -481,36 +528,36 @@ const riskMetrics = ref({
 // ============================================
 // Computed Properties
 // ============================================
-const sidebarWidth = computed(() => {
+const sidebarWidth: ComputedRef<string> = computed((): string => {
   return isCollapsed.value ? '64px' : '220px'
 })
 
-const activeMenu = computed(() => {
+const activeMenu: ComputedRef<string> = computed((): string => {
   return route.path
 })
 
-const breadcrumbs = computed(() => {
+const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[] => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
     path: item.path,
-    title: item.meta.title
+    title: item.meta.title as string
   }))
 })
 
 // ============================================
 // Methods
 // ============================================
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string): void => {
   if (index && index.startsWith('/')) {
     router.push(index)
   }
 }
 
-const handleUserCommand = async (command) => {
+const handleUserCommand = async (command: UserCommand): Promise<void> => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人信息功能开发中...')
@@ -539,27 +586,27 @@ const handleUserCommand = async (command) => {
 }
 
 // Risk-specific methods
-const handleRiskTypeChange = (type) => {
+const handleRiskTypeChange = (type: string): void => {
   ElMessage.info(`风险类型: ${type}`)
   // TODO: Emit event or call API to filter alerts
 }
 
-const handleSeverityChange = (severity) => {
+const handleSeverityChange = (severity: string): void => {
   ElMessage.info(`严重级别: ${severity}`)
   // TODO: Emit event or call API to filter alerts
 }
 
-const handleTimeRangeChange = (range) => {
+const handleTimeRangeChange = (range: string): void => {
   ElMessage.info(`时间范围: ${range}`)
   // TODO: Emit event or call API to filter alerts
 }
 
-const handleStatusChange = (statuses) => {
+const handleStatusChange = (statuses: string[]): void => {
   console.log('Alert statuses:', statuses)
   // TODO: Emit event or call API to filter alerts
 }
 
-const handleTestAlert = () => {
+const handleTestAlert = (): void => {
   ElNotification({
     title: '严重风险告警',
     message: '检测到市场异常波动，请立即关注！',
@@ -569,7 +616,7 @@ const handleTestAlert = () => {
   })
 }
 
-const handleBatchAcknowledge = async () => {
+const handleBatchAcknowledge = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `确定要确认选中的 ${selectedAlerts.value.length} 条告警吗?`,
@@ -588,11 +635,11 @@ const handleBatchAcknowledge = async () => {
   }
 }
 
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   isRefreshing.value = true
   try {
     // TODO: Call API to refresh risk data
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise<void>(resolve => setTimeout(resolve, 1000))
     ElMessage.success('数据已刷新')
   } catch (error) {
     ElMessage.error('刷新失败')
@@ -601,20 +648,20 @@ const handleRefresh = async () => {
   }
 }
 
-const viewAlertsBySeverity = (severity) => {
+const viewAlertsBySeverity = (severity: SeverityLevel): void => {
   ElMessage.info(`查看${severity}级别告警`)
   selectedSeverity.value = severity
   // TODO: Navigate to alert list or open dialog
 }
 
-const getSharpeClass = (sharpe) => {
+const getSharpeClass = (sharpe: string): MetricClass => {
   const value = parseFloat(sharpe)
   if (value >= 2) return 'metric-up'
   if (value >= 1) return 'metric-flat'
   return 'metric-down'
 }
 
-const startRealtimeUpdates = () => {
+const startRealtimeUpdates = (): void => {
   if (refreshInterval.value) return
 
   refreshInterval.value = setInterval(() => {
@@ -629,7 +676,7 @@ const startRealtimeUpdates = () => {
   }, 5000)
 }
 
-const stopRealtimeUpdates = () => {
+const stopRealtimeUpdates = (): void => {
   if (refreshInterval.value) {
     clearInterval(refreshInterval.value)
     refreshInterval.value = null
@@ -639,16 +686,16 @@ const stopRealtimeUpdates = () => {
 // ============================================
 // Lifecycle
 // ============================================
-onMounted(() => {
+onMounted((): void => {
   startRealtimeUpdates()
 })
 
-onUnmounted(() => {
+onUnmounted((): void => {
   stopRealtimeUpdates()
 })
 
 // Watch for route changes
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>

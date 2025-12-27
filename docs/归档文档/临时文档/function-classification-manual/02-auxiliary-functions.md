@@ -296,7 +296,7 @@ API映射配置文件
     api_type: API类型
     api_name: API名称
     api_url: API URL
-    
+
 返回:
     dict: API接口信息
 
@@ -317,7 +317,7 @@ API映射配置文件
 
 参数:
     api_type: API类型
-    
+
 返回:
     list: 特定类型的所有API名称列表
 
@@ -330,7 +330,7 @@ API映射配置文件
 参数:
     api_type: API类型
     api_name: API名称
-    
+
 返回:
     dict: 字段映射字典
 
@@ -342,7 +342,7 @@ API映射配置文件
 
 参数:
     api_name: API中文名称
-    
+
 返回:
     dict: 包含API文档信息的字典
 

@@ -109,11 +109,7 @@ def get_date_range(
         end = end_dt.strftime("%Y-%m-%d")
     else:
         # 否则使用提供的结束日期
-        end = (
-            normalize_date(end_date)
-            if end_date
-            else datetime.datetime.now().strftime("%Y-%m-%d")
-        )
+        end = normalize_date(end_date) if end_date else datetime.datetime.now().strftime("%Y-%m-%d")
 
     return start, end
 

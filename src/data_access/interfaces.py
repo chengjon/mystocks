@@ -120,9 +120,7 @@ class IDataAccessLayer(ABC):
         pass
 
     @abstractmethod
-    def get_latest_timestamp(
-        self, classification: DataClassification, symbol: str
-    ) -> Optional[datetime]:
+    def get_latest_timestamp(self, classification: DataClassification, symbol: str) -> Optional[datetime]:
         """
         获取最新时间戳
 
@@ -305,9 +303,7 @@ class IDataAccessLayer(ABC):
         start_time = datetime(2020, 1, 1)
         end_time = datetime.now()
 
-        return self.get_data(
-            DataClassification.METADATA, "", start_time, end_time, filters=filters
-        )
+        return self.get_data(DataClassification.METADATA, "", start_time, end_time, filters=filters)
 
 
 class DataAccessError(Exception):

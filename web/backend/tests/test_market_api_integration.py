@@ -339,6 +339,7 @@ class TestUnifiedResponseFormat:
 
     def test_error_response_has_correct_format(self, client):
         """测试错误响应格式正确"""
+
         # 使用 FastAPI 的 dependency override 来触发错误
         def broken_service():
             raise Exception("Service error")
@@ -376,15 +377,11 @@ class TestFundFlow:
 
         # Mock data source factory
         mock_ds_factory = Mock()
-        mock_ds_factory.get_data = AsyncMock(return_value={
-            "data": {
-                "data": {
-                    "details": [
-                        {"date": "2025-01-01", "main_net": 1000000, "main_net_rate": 5.2}
-                    ]
-                }
+        mock_ds_factory.get_data = AsyncMock(
+            return_value={
+                "data": {"data": {"details": [{"date": "2025-01-01", "main_net": 1000000, "main_net_rate": 5.2}]}}
             }
-        })
+        )
 
         # Mock get_data_source_factory to return our mock factory
         mock_gdsf.return_value = mock_ds_factory
@@ -405,15 +402,11 @@ class TestFundFlow:
 
         # Mock data source factory
         mock_ds_factory = Mock()
-        mock_ds_factory.get_data = AsyncMock(return_value={
-            "data": {
-                "data": {
-                    "details": [
-                        {"date": "2025-01-01", "main_net": 1000000, "main_net_rate": 5.2}
-                    ]
-                }
+        mock_ds_factory.get_data = AsyncMock(
+            return_value={
+                "data": {"data": {"details": [{"date": "2025-01-01", "main_net": 1000000, "main_net_rate": 5.2}]}}
             }
-        })
+        )
 
         # Mock get_data_source_factory to return our mock factory
         mock_gdsf.return_value = mock_ds_factory

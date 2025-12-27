@@ -4,32 +4,19 @@
 提供智能测试优化、资源管理、执行策略和性能调优功能。
 """
 
-import asyncio
-import json
 import logging
-import math
 import random
 import time
-import traceback
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union, Callable, Set
+from datetime import datetime
+from typing import Dict, List, Any, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from collections import defaultdict, Counter, deque
+from collections import defaultdict, deque
 from abc import ABC, abstractmethod
 
 import numpy as np
-import pandas as pd
 import psutil
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-from sklearn.model_selection import cross_val_score
-from scipy.optimize import minimize
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class TestOptimizationStrategy(Enum):
     """测试优化策略枚举"""
+
     SPEED = "speed"
     RESOURCE = "resource"
     COVERAGE = "coverage"
@@ -47,6 +35,7 @@ class TestOptimizationStrategy(Enum):
 
 class OptimizationPriority(Enum):
     """优化优先级枚举"""
+
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
@@ -55,6 +44,7 @@ class OptimizationPriority(Enum):
 @dataclass
 class TestExecutionResult:
     """测试执行结果"""
+
     test_name: str
     duration: float
     memory_usage: float
@@ -68,6 +58,7 @@ class TestExecutionResult:
 @dataclass
 class OptimizationTarget:
     """优化目标"""
+
     name: str
     current_value: float
     target_value: float
@@ -111,10 +102,10 @@ class PerformanceAnalyzer(TestAnalyzer):
                 "avg_memory_usage": statistics.mean(memory_usage),
                 "avg_cpu_usage": statistics.mean(cpu_usage),
                 "test_throughput": len(test_results) / sum(durations) if sum(durations) > 0 else 0,
-                "resource_efficiency": self._calculate_efficiency(test_results)
+                "resource_efficiency": self._calculate_efficiency(test_results),
             },
             "performance_trends": self._analyze_trends(),
-            "bottlenecks": self._identify_bottlenecks(test_results)
+            "bottlenecks": self._identify_bottlenecks(test_results),
         }
 
     def _calculate_efficiency(self, results: List[TestExecutionResult]) -> float:
@@ -142,7 +133,7 @@ class PerformanceAnalyzer(TestAnalyzer):
             return {
                 "trend_direction": "increasing" if slope > 0 else "decreasing" if slope < 0 else "stable",
                 "slope": slope,
-                "volatility": np.std(durations)
+                "volatility": np.std(durations),
             }
         return {}
 
@@ -181,7 +172,7 @@ class CoverageAnalyzer(TestAnalyzer):
                 "total_tests": total,
                 "passed_tests": passed,
                 "failed_tests": total - passed,
-                "coverage_score": self._calculate_coverage(test_results)
+                "coverage_score": self._calculate_coverage(test_results),
             }
         }
 
@@ -209,17 +200,15 @@ class ReliabilityAnalyzer(TestAnalyzer):
             "mtbf": self._calculate_mtbf(),  # 平均故障间隔时间
             "failure_rate": self._calculate_failure_rate(test_results),
             "reliability_score": self._calculate_reliability_score(test_results),
-            "flakiness_analysis": self._analyze_flakiness()
+            "flakiness_analysis": self._analyze_flakiness(),
         }
 
-        return {
-            "reliability_metrics": reliability_metrics
-        }
+        return {"reliability_metrics": reliability_metrics}
 
     def _calculate_mtbf(self) -> float:
         """计算平均故障间隔时间（小时）"""
         if not self.failure_history:
-            return float('inf')
+            return float("inf")
 
         all_failures = []
         for test_failures in self.failure_history.values():
@@ -229,8 +218,9 @@ class ReliabilityAnalyzer(TestAnalyzer):
             return 0.0
 
         all_failures.sort()
-        intervals = [(all_failures[i+1] - all_failures[i]).total_seconds() / 3600
-                    for i in range(len(all_failures)-1)]
+        intervals = [
+            (all_failures[i + 1] - all_failures[i]).total_seconds() / 3600 for i in range(len(all_failures) - 1)
+        ]
 
         return sum(intervals) / len(intervals) if intervals else 0.0
 
@@ -260,16 +250,17 @@ class ReliabilityAnalyzer(TestAnalyzer):
                 flakiness_scores[test_name] = {
                     "failure_count": len(failures),
                     "volatility": volatility,
-                    "flakiness_score": min(1.0, volatility / 3600)  # 归一化
+                    "flakiness_score": min(1.0, volatility / 3600),  # 归一化
                 }
 
         # 计算整体不稳定性分数
-        overall_flakiness = sum(score["flakiness_score"] for score in flakiness_scores.values()) / len(flakiness_scores) if flakiness_scores else 0
+        overall_flakiness = (
+            sum(score["flakiness_score"] for score in flakiness_scores.values()) / len(flakiness_scores)
+            if flakiness_scores
+            else 0
+        )
 
-        return {
-            "flakiness_scores": flakiness_scores,
-            "overall_flakiness": overall_flakiness
-        }
+        return {"flakiness_scores": flakiness_scores, "overall_flakiness": overall_flakiness}
 
 
 class TestOptimizer:
@@ -284,7 +275,7 @@ class TestOptimizer:
         self.analyzers = {
             "performance": PerformanceAnalyzer(),
             "coverage": CoverageAnalyzer(),
-            "reliability": ReliabilityAnalyzer()
+            "reliability": ReliabilityAnalyzer(),
         }
 
         # 优化策略配置
@@ -293,7 +284,7 @@ class TestOptimizer:
             TestOptimizationStrategy.RESOURCE: self._optimize_resources,
             TestOptimizationStrategy.COVERAGE: self._optimize_coverage,
             TestOptimizationStrategy.RELIABILITY: self._optimize_reliability,
-            TestOptimizationStrategy.BALANCED: self._optimize_balanced
+            TestOptimizationStrategy.BALANCED: self._optimize_balanced,
         }
 
         # 系统监控
@@ -305,7 +296,7 @@ class TestOptimizer:
             "max_memory_mb": 512,
             "max_cpu_percent": 80,
             "batch_size": 10,
-            "retry_limit": 3
+            "retry_limit": 3,
         }
 
     def add_optimization_target(self, target: OptimizationTarget):
@@ -313,9 +304,12 @@ class TestOptimizer:
         self.optimization_targets.append(target)
         logger.info(f"添加优化目标: {target.name}")
 
-    def run_optimization(self, test_functions: List[Callable],
-                        strategy: TestOptimizationStrategy = TestOptimizationStrategy.BALANCED,
-                        iterations: int = 3) -> Dict[str, Any]:
+    def run_optimization(
+        self,
+        test_functions: List[Callable],
+        strategy: TestOptimizationStrategy = TestOptimizationStrategy.BALANCED,
+        iterations: int = 3,
+    ) -> Dict[str, Any]:
         """运行优化"""
         logger.info(f"开始优化，策略: {strategy.value}")
 
@@ -336,67 +330,83 @@ class TestOptimizer:
             # 应用调整
             self._apply_adjustments(adjusted_plan)
 
-            yield {
-                "iteration": iteration + 1,
-                "results": results,
-                "analysis": analysis,
-                "adjusted_plan": adjusted_plan
-            }
+            yield {"iteration": iteration + 1, "results": results, "analysis": analysis, "adjusted_plan": adjusted_plan}
 
-    def _create_optimization_plan(self, test_functions: List[Callable],
-                                 strategy: TestOptimizationStrategy) -> List[Dict]:
+    def _create_optimization_plan(
+        self, test_functions: List[Callable], strategy: TestOptimizationStrategy
+    ) -> List[Dict]:
         """创建优化计划"""
         plan = []
 
         # 基于策略制定计划
         if strategy == TestOptimizationStrategy.SPEED:
             # 速度优化：并行执行，超时控制
-            plan.extend([{
-                "test_func": func,
-                "execution_mode": "parallel",
-                "timeout": self.adaptive_params["execution_timeout"] // 2,
-                "priority": "high"
-            } for func in test_functions])
+            plan.extend(
+                [
+                    {
+                        "test_func": func,
+                        "execution_mode": "parallel",
+                        "timeout": self.adaptive_params["execution_timeout"] // 2,
+                        "priority": "high",
+                    }
+                    for func in test_functions
+                ]
+            )
 
         elif strategy == TestOptimizationStrategy.RESOURCE:
             # 资源优化：顺序执行，资源限制
-            plan.extend([{
-                "test_func": func,
-                "execution_mode": "sequential",
-                "memory_limit": self.adaptive_params["max_memory_mb"] // 2,
-                "cpu_limit": self.adaptive_params["max_cpu_percent"] // 2,
-                "priority": "medium"
-            } for func in test_functions])
+            plan.extend(
+                [
+                    {
+                        "test_func": func,
+                        "execution_mode": "sequential",
+                        "memory_limit": self.adaptive_params["max_memory_mb"] // 2,
+                        "cpu_limit": self.adaptive_params["max_cpu_percent"] // 2,
+                        "priority": "medium",
+                    }
+                    for func in test_functions
+                ]
+            )
 
         elif strategy == TestOptimizationStrategy.COVERAGE:
             # 覆盖率优化：重点测试关键路径
-            plan.extend([{
-                "test_func": func,
-                "execution_mode": "focus",
-                "coverage_weight": 1.2,
-                "priority": "high"
-            } for func in test_functions])
+            plan.extend(
+                [
+                    {"test_func": func, "execution_mode": "focus", "coverage_weight": 1.2, "priority": "high"}
+                    for func in test_functions
+                ]
+            )
 
         elif strategy == TestOptimizationStrategy.RELIABILITY:
             # 可靠性优化：重试机制，错误处理
-            plan.extend([{
-                "test_func": func,
-                "execution_mode": "robust",
-                "retry_count": self.adaptive_params["retry_limit"],
-                "error_handling": "strict",
-                "priority": "high"
-            } for func in test_functions])
+            plan.extend(
+                [
+                    {
+                        "test_func": func,
+                        "execution_mode": "robust",
+                        "retry_count": self.adaptive_params["retry_limit"],
+                        "error_handling": "strict",
+                        "priority": "high",
+                    }
+                    for func in test_functions
+                ]
+            )
 
         else:  # BALANCED
             # 平衡优化：综合策略
-            plan.extend([{
-                "test_func": func,
-                "execution_mode": "adaptive",
-                "timeout": self.adaptive_params["execution_timeout"],
-                "memory_limit": self.adaptive_params["max_memory_mb"],
-                "retry_count": 1,
-                "priority": "medium"
-            } for func in test_functions])
+            plan.extend(
+                [
+                    {
+                        "test_func": func,
+                        "execution_mode": "adaptive",
+                        "timeout": self.adaptive_params["execution_timeout"],
+                        "memory_limit": self.adaptive_params["max_memory_mb"],
+                        "retry_count": 1,
+                        "priority": "medium",
+                    }
+                    for func in test_functions
+                ]
+            )
 
         return plan
 
@@ -426,7 +436,7 @@ class TestOptimizer:
                         memory_usage=0,
                         cpu_usage=0,
                         passed=False,
-                        error_message=str(e)
+                        error_message=str(e),
                     )
                     results.append(result)
 
@@ -475,7 +485,7 @@ class TestOptimizer:
                 memory_usage=memory_usage,
                 cpu_usage=cpu_usage,
                 passed=True,
-                metadata={"result": result}
+                metadata={"result": result},
             )
 
         except Exception as e:
@@ -489,7 +499,7 @@ class TestOptimizer:
                 memory_usage=memory_usage,
                 cpu_usage=cpu_usage,
                 passed=False,
-                error_message=str(e)
+                error_message=str(e),
             )
         finally:
             # 停止监控
@@ -521,7 +531,7 @@ class TestOptimizer:
             "pass_rate": passed_tests / total_tests if total_tests > 0 else 0,
             "avg_duration": statistics.mean([r.duration for r in results]),
             "total_duration": sum(r.duration for r in results),
-            "success_rate": self._calculate_success_rate(results)
+            "success_rate": self._calculate_success_rate(results),
         }
 
     def _generate_recommendations(self, results: List[TestExecutionResult]) -> List[str]:
@@ -544,14 +554,17 @@ class TestOptimizer:
             recommendations.append(f"有 {len(failed_tests)} 个测试失败，建议检查失败原因")
 
         # 覆盖率建议
-        coverage_score = self.analyzers["coverage"].analyze(results).get("coverage_metrics", {}).get("coverage_score", 0)
+        coverage_score = (
+            self.analyzers["coverage"].analyze(results).get("coverage_metrics", {}).get("coverage_score", 0)
+        )
         if coverage_score < 0.8:
             recommendations.append(f"覆盖率较低 ({coverage_score:.2%})，建议增加测试用例")
 
         return recommendations
 
-    def _adjust_optimization_strategy(self, analysis: Dict[str, Any],
-                                   current_strategy: TestOptimizationStrategy) -> List[Dict]:
+    def _adjust_optimization_strategy(
+        self, analysis: Dict[str, Any], current_strategy: TestOptimizationStrategy
+    ) -> List[Dict]:
         """调整优化策略"""
         adjusted_plan = []
 
@@ -573,8 +586,9 @@ class TestOptimizer:
             # 应用具体的调整逻辑
             logger.info(f"应用调整: {adjustment}")
 
-    def optimize_test_execution(self, test_functions: List[Callable],
-                               strategy: TestOptimizationStrategy = TestOptimizationStrategy.BALANCED) -> Dict[str, Any]:
+    def optimize_test_execution(
+        self, test_functions: List[Callable], strategy: TestOptimizationStrategy = TestOptimizationStrategy.BALANCED
+    ) -> Dict[str, Any]:
         """优化测试执行"""
         logger.info("开始测试执行优化")
 
@@ -600,18 +614,13 @@ class TestOptimizer:
             "optimization_results": optimization_results,
             "summary": optimization_summary,
             "final_strategy": strategy,
-            "adaptive_params": self.adaptive_params
+            "adaptive_params": self.adaptive_params,
         }
 
     def _run_baseline_tests(self, test_functions: List[Callable]) -> List[TestExecutionResult]:
         """运行基线测试"""
         logger.info("运行基线测试")
-        baseline_config = {
-            "test_func": func,
-            "execution_mode": "baseline",
-            "timeout": 30,
-            "retry_count": 0
-        }
+        baseline_config = {"test_func": func, "execution_mode": "baseline", "timeout": 30, "retry_count": 0}
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             futures = [executor.submit(self._execute_single_test, baseline_config) for func in test_functions]
@@ -646,7 +655,7 @@ class TestOptimizer:
             "duration_improvement": baseline_avg_duration - final_avg_duration,
             "duration_reduction_percent": (baseline_avg_duration - final_avg_duration) / baseline_avg_duration * 100,
             "iterations_completed": len(optimization_results),
-            "convergence_achieved": self._check_convergence(optimization_results)
+            "convergence_achieved": self._check_convergence(optimization_results),
         }
 
     def _check_convergence(self, optimization_results: List[Dict]) -> bool:
@@ -657,13 +666,13 @@ class TestOptimizer:
         # 检查最近几次迭代的改进幅度
         recent_improvements = []
         for i in range(1, len(optimization_results)):
-            prev = optimization_results[i-1]["analysis"]["summary"]["avg_duration"]
+            prev = optimization_results[i - 1]["analysis"]["summary"]["avg_duration"]
             curr = optimization_results[i]["analysis"]["summary"]["avg_duration"]
             improvement = (prev - curr) / prev if prev > 0 else 0
             recent_improvements.append(improvement)
 
         # 如果最近几次改进都很小，认为收敛
-        return improvement < 0.01 for improvement in recent_improvements[-3:]
+        return all(improvement < 0.01 for improvement in recent_improvements[-3:])
 
 
 class SystemMonitor:
@@ -683,19 +692,12 @@ class SystemMonitor:
     def stop_monitoring(self) -> Dict[str, Any]:
         """停止监控"""
         self.monitoring = False
-        return {
-            "duration": time.time() - self.start_time,
-            "metrics": self.metrics
-        }
+        return {"duration": time.time() - self.start_time, "metrics": self.metrics}
 
     def record_metric(self, metric_type: str, value: float):
         """记录指标"""
         if self.monitoring:
-            self.metrics.append({
-                "timestamp": time.time(),
-                "type": metric_type,
-                "value": value
-            })
+            self.metrics.append({"timestamp": time.time(), "type": metric_type, "value": value})
 
 
 # 添加缺失的导入
@@ -716,7 +718,7 @@ def demo_test_optimizer():
         current_value=5.0,
         target_value=2.0,
         priority=OptimizationPriority.HIGH,
-        strategy=TestOptimizationStrategy.SPEED
+        strategy=TestOptimizationStrategy.SPEED,
     )
     optimizer.add_optimization_target(speed_target)
 
@@ -743,21 +745,13 @@ def demo_test_optimizer():
             raise Exception("Random failure")
         return "flaky_test_passed"
 
-    test_functions = [
-        fast_test,
-        slow_test,
-        resource_intensive_test,
-        flaky_test
-    ]
+    test_functions = [fast_test, slow_test, resource_intensive_test, flaky_test]
 
     # 运行优化
-    results = optimizer.optimize_test_execution(
-        test_functions,
-        strategy=TestOptimizationStrategy.BALANCED
-    )
+    results = optimizer.optimize_test_execution(test_functions, strategy=TestOptimizationStrategy.BALANCED)
 
     # 显示结果
-    print(f"\n📊 优化结果:")
+    print("\n📊 优化结果:")
     print(f"基线通过率: {results['baseline']['summary']['pass_rate']:.2%}")
     print(f"优化后通过率: {results['summary']['pass_rate_improvement']:+.2%}")
     print(f"执行时间改进: {results['summary']['duration_improvement']:.2f}s")
@@ -767,9 +761,9 @@ def demo_test_optimizer():
     print(f"📈 自适应参数: {results['adaptive_params']}")
 
     # 显示建议
-    analysis = results['optimization_results'][-1]['analysis']
+    analysis = results["optimization_results"][-1]["analysis"]
     if "recommendations" in analysis:
-        print(f"\n💡 优化建议:")
+        print("\n💡 优化建议:")
         for rec in analysis["recommendations"]:
             print(f"  - {rec}")
 

@@ -39,6 +39,4 @@ def test_generate_report_output_consistency():
     assert "P1: 1/2" in output
     assert "P2: 1/1" in output
     assert "响应时间统计" in output
-    assert (
-        "平均: 125ms" in output
-    )  # Only PASS results are counted for response time stats in original code
+    assert "平均: 125ms" in output  # Only PASS results are counted for response time stats in original code

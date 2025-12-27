@@ -146,9 +146,7 @@ class WebSocketMessageBatcher:
             max_batch_bytes=max_batch_bytes,
         )
 
-    def register_send_callback(
-        self, callback: Callable[[str, str, Any], Coroutine]
-    ) -> None:
+    def register_send_callback(self, callback: Callable[[str, str, Any], Coroutine]) -> None:
         """
         注册发送回调
 
@@ -158,9 +156,7 @@ class WebSocketMessageBatcher:
         self.send_callback = callback
         logger.info("✅ Send callback registered")
 
-    async def queue_message(
-        self, message: BatchMessage, send_immediately: bool = False
-    ) -> None:
+    async def queue_message(self, message: BatchMessage, send_immediately: bool = False) -> None:
         """
         将消息加入处理队列
 
@@ -189,12 +185,8 @@ class WebSocketMessageBatcher:
         if buffer.is_full(self.max_batch_bytes, self.batch_size):
             await self._flush_buffer(message.sid)
         # 否则，安排批处理任务
-        elif (
-            message.sid not in self.batch_tasks or self.batch_tasks[message.sid].done()
-        ):
-            self.batch_tasks[message.sid] = asyncio.create_task(
-                self._batch_timeout_handler(message.sid)
-            )
+        elif message.sid not in self.batch_tasks or self.batch_tasks[message.sid].done():
+            self.batch_tasks[message.sid] = asyncio.create_task(self._batch_timeout_handler(message.sid))
 
     async def _batch_timeout_handler(self, sid: str) -> None:
         """
@@ -325,13 +317,9 @@ class WebSocketMessageBatcher:
                 "total_batches_sent": self.total_batches_sent,
                 "total_messages_sent": self.total_messages_sent,
                 "total_bytes_sent": self.total_bytes_sent,
-                "avg_batch_size": (
-                    self.total_messages_sent / max(1, self.total_batches_sent)
-                ),
+                "avg_batch_size": (self.total_messages_sent / max(1, self.total_batches_sent)),
                 "compression_ratio": (
-                    self.total_messages_buffered / max(1, self.total_batches_sent)
-                    if self.total_batches_sent > 0
-                    else 0
+                    self.total_messages_buffered / max(1, self.total_batches_sent) if self.total_batches_sent > 0 else 0
                 ),
             },
             "timestamp": datetime.utcnow().isoformat(),

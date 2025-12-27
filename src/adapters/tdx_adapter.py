@@ -15,7 +15,7 @@ import sys
 import time
 from datetime import datetime
 from functools import wraps
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import pandas as pd
 
@@ -89,7 +89,7 @@ class TdxDataSource(IDataSource):
             try:
                 self.server_config = TdxServerConfig(config_file)
                 self.tdx_host, self.tdx_port = self.server_config.get_primary_server()
-                self.logger.info(f"TDX适配器初始化: 使用connect.cfg配置")
+                self.logger.info("TDX适配器初始化: 使用connect.cfg配置")
                 self.logger.info(f"主服务器: {self.tdx_host}:{self.tdx_port}")
                 self.logger.info(f"可用服务器总数: {self.server_config.get_server_count()}")
             except Exception as e:
@@ -862,7 +862,7 @@ class TdxDataSource(IDataSource):
             def fetch_kline_batch(start_position):
                 with self._get_tdx_connection() as api:
                     if not api.connect(self.tdx_host, self.tdx_port):
-                        raise ConnectionError(f"无法连接到TDX服务器")
+                        raise ConnectionError("无法连接到TDX服务器")
 
                     result = api.get_security_bars(category, market, symbol, start_position, batch_size)
                     return result

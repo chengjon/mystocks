@@ -64,9 +64,7 @@ async def test_authentication():
         headers = {"Authorization": f"Bearer {access_token}"}
 
         for endpoint in protected_endpoints:
-            async with session.get(
-                f"{BASE_URL}{endpoint}", headers=headers
-            ) as response:
+            async with session.get(f"{BASE_URL}{endpoint}", headers=headers) as response:
                 if response.status in [200, 404]:  # 200=成功, 404=功能不存在但认证通过
                     print(f"✅ {endpoint} - 认证通过")
                 else:
@@ -91,9 +89,7 @@ async def test_authentication():
             if response.status == 200:
                 print("✅ 监控状态端点 - 公开访问正常")
                 status_data = await response.json()
-                print(
-                    f"   监控中: {status_data.get('data', {}).get('is_monitoring', False)}"
-                )
+                print(f"   监控中: {status_data.get('data', {}).get('is_monitoring', False)}")
             else:
                 print(f"❌ 监控状态端点失败: {response.status}")
 

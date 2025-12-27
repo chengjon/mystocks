@@ -6,11 +6,10 @@ DataManager Phase 6 测试套件
 """
 
 import sys
-import os
 import time
 import pandas as pd
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import pytest
 
 # 添加项目根目录到路径

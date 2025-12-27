@@ -761,6 +761,52 @@ Organized by functionality into 4 categories:
 
 **Naming Convention**: Use ISO date format for timestamped files: `YYYYMMDD_HHMMSS`
 
+#### 5. **子模块文档自治规范** (Submodule Documentation Autonomy)
+
+**重要更新 (2025-12-26)**: 项目支持子模块文档管理自主权，以保护模块目录结构的完整性。
+
+**核心原则**:
+- 子模块（如 `web/`, `services/` 等）拥有文档管理自主权
+- 子模块文档不受主项目 `docs/` 目录规范的强制约束
+- Hook 自动文档整理会排除特定目录和文件类型
+
+**Hook 排除规则** (自动文档整理不会触发):
+
+**排除目录关键字**（路径包含以下关键字将不会被移动）:
+- `web` - Web 前端模块
+- `css`, `js` - 样式和脚本目录
+- `frontend`, `backend` - 前后端代码
+- `api` - API 相关目录
+- `services` - 服务目录
+- `temp`, `build`, `dist` - 临时和构建目录
+- `node_modules` - Node.js 依赖
+
+**排除文件后缀**（以下文件类型不会被移动）:
+- `.html` - HTML 文档
+- `.css` - CSS 样式
+- `.js` - JavaScript 脚本
+- `.json`, `.xml`, `.yaml`, `.yml`, `.toml` - 配置和数据文件
+
+**特殊文件名排除** ⭐（以下文件名将完全不会被移动）:
+- `README.md` / `README` - 项目/模块说明文档（所有位置）
+- `readme.md` / `readme` - 小写变体（所有位置）
+- `Readme.md` / `Readme` - 首字母大写（所有位置）
+
+**重要**: **所有 README 文件（不区分大小写）保留在原位置，永不移动**
+
+**文档位置选择**:
+
+| 文档类型 | 位置 | Hook 检查 |
+|---------|------|----------|
+| 项目级架构文档 | `docs/architecture/` | ✅ 检查并建议移动 |
+| 跨模块开发指南 | `docs/guides/` | ✅ 检查并建议移动 |
+| **README 文件** | **任何位置** | ❌ **完全排除（永不移动）** ⭐ |
+| **Web 模块文档** | `web/docs/` | ❌ **完全排除** |
+| **Services 文档** | `services/*/docs/` | ❌ **完全排除** |
+| Web 前端文件 | `web/frontend/*.html` | ❌ **完全排除** |
+
+**详细规范**: 参阅 [`docs/standards/FILE_ORGANIZATION_RULES.md`](./docs/standards/FILE_ORGANIZATION_RULES.md) 中的"子模块文档自治规范"章节。
+
 ### File Lifecycle Management
 
 #### Pre-Classification (Proactive)

@@ -186,9 +186,7 @@ class UnifiedDataAccessManager:
                 await self._cache_result(optimized_query, result)
 
             # 6. 更新指标
-            self._update_metrics(
-                adapter.get_database_type(), query.operation, start_time, success=True
-            )
+            self._update_metrics(adapter.get_database_type(), query.operation, start_time, success=True)
 
             logger.debug(
                 f"查询执行成功: {query.table_name}, 耗时: {(datetime.now() - start_time).total_seconds():.3f}s"
@@ -196,9 +194,7 @@ class UnifiedDataAccessManager:
             return result
 
         except Exception as e:
-            self._update_metrics(
-                DatabaseType.POSTGRESQL, query.operation, start_time, success=False
-            )
+            self._update_metrics(DatabaseType.POSTGRESQL, query.operation, start_time, success=False)
             self.metrics.error_count += 1
 
             logger.error(f"查询执行失败: {e}")
@@ -220,9 +216,7 @@ class UnifiedDataAccessManager:
         adapter = await self.router.route_query(query)
         return adapter.get_database_type()
 
-    async def _execute_with_mode(
-        self, query: DataQuery, adapter: IDataAccess
-    ) -> QueryResult:
+    async def _execute_with_mode(self, query: DataQuery, adapter: IDataAccess) -> QueryResult:
         """根据模式执行查询"""
         if self.config.mode in [
             DataAccessMode.POSTGRESQL_ONLY,
@@ -247,11 +241,7 @@ class UnifiedDataAccessManager:
             for adapter in adapters:
                 try:
                     stats = await adapter.get_connection_pool_stats()
-                    if (
-                        best_stats is None
-                        or stats.average_response_time
-                        < best_stats.average_response_time
-                    ):
+                    if best_stats is None or stats.average_response_time < best_stats.average_response_time:
                         best_stats = stats
                         best_adapter = adapter
                 except Exception:
@@ -262,9 +252,7 @@ class UnifiedDataAccessManager:
         else:
             raise ValueError("没有可用的适配器")
 
-    async def _execute_with_failover(
-        self, query: DataQuery, original_error: Exception
-    ) -> QueryResult:
+    async def _execute_with_failover(self, query: DataQuery, original_error: Exception) -> QueryResult:
         """故障转移执行"""
         logger.warning(f"主查询失败，尝试故障转移: {original_error}")
 
@@ -289,9 +277,7 @@ class UnifiedDataAccessManager:
         query.operation = QueryOperation.SELECT
         return await self.execute_query(query)
 
-    async def save_data(
-        self, records: List[DataRecord], options: Optional[SaveOptions] = None
-    ) -> SaveResult:
+    async def save_data(self, records: List[DataRecord], options: Optional[SaveOptions] = None) -> SaveResult:
         """保存数据"""
         if not records:
             return SaveResult(success=True, inserted_count=0)
@@ -338,9 +324,7 @@ class UnifiedDataAccessManager:
             errors=[error for r in results if r.errors for error in r.errors],
         )
 
-    async def update_data(
-        self, criteria: QueryCriteria, updates: Dict[str, Any]
-    ) -> UpdateResult:
+    async def update_data(self, criteria: QueryCriteria, updates: Dict[str, Any]) -> UpdateResult:
         """更新数据"""
         query = DataQuery(
             operation=QueryOperation.UPDATE,
@@ -391,9 +375,7 @@ class UnifiedDataAccessManager:
         tasks = [self.save_data(batch, options) for batch in record_batches]
         return await asyncio.gather(*tasks, return_exceptions=True)
 
-    async def begin_transaction(
-        self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED
-    ) -> Transaction:
+    async def begin_transaction(self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED) -> Transaction:
         """开始事务"""
         # 选择支持事务的数据库（主要是PostgreSQL）
         query = DataQuery(operation=QueryOperation.SELECT, table_name="dummy")
@@ -402,9 +384,7 @@ class UnifiedDataAccessManager:
         if adapter.supports_feature("transactions"):
             return await adapter.begin_transaction(isolation_level)
         else:
-            raise NotImplementedError(
-                f"数据库 {adapter.get_database_type().value} 不支持事务"
-            )
+            raise NotImplementedError(f"数据库 {adapter.get_database_type().value} 不支持事务")
 
     async def execute_in_transaction(
         self,
@@ -491,14 +471,10 @@ class UnifiedDataAccessManager:
         self.metrics.total_execution_time += execution_time
 
         # 更新数据库使用统计
-        self.metrics.database_usage[db_type] = (
-            self.metrics.database_usage.get(db_type, 0) + 1
-        )
+        self.metrics.database_usage[db_type] = self.metrics.database_usage.get(db_type, 0) + 1
 
         # 更新操作分布
-        self.metrics.operation_distribution[operation] = (
-            self.metrics.operation_distribution.get(operation, 0) + 1
-        )
+        self.metrics.operation_distribution[operation] = self.metrics.operation_distribution.get(operation, 0) + 1
 
         if not success:
             self.metrics.error_count += 1
@@ -541,9 +517,7 @@ class UnifiedDataAccessManager:
 
         # 更新健康状态
         self.health_status.status = "healthy" if all_healthy else "degraded"
-        self.health_status.databases = {
-            db_type: status for db_type, status in health_info["databases"].items()
-        }
+        self.health_status.databases = {db_type: status for db_type, status in health_info["databases"].items()}
         self.health_status.last_health_check = datetime.now()
 
         return health_info

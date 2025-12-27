@@ -124,14 +124,8 @@ class SystemMetricsCollector(IMetricsCollector):
             if self.previous_network_io:
                 time_diff = 1.0  # 假设间隔1秒
                 network_speed = {
-                    "bytes_sent_per_sec": (
-                        network.bytes_sent - self.previous_network_io.bytes_sent
-                    )
-                    / time_diff,
-                    "bytes_recv_per_sec": (
-                        network.bytes_recv - self.previous_network_io.bytes_recv
-                    )
-                    / time_diff,
+                    "bytes_sent_per_sec": (network.bytes_sent - self.previous_network_io.bytes_sent) / time_diff,
+                    "bytes_recv_per_sec": (network.bytes_recv - self.previous_network_io.bytes_recv) / time_diff,
                 }
 
             self.previous_network_io = network
@@ -299,13 +293,9 @@ class AdaptiveIntervalManager:
 
             # 自适应调整间隔
             if load_score > 80:  # 高负载，增加间隔
-                self.current_interval = min(
-                    self.current_interval * 1.2, self.max_interval
-                )
+                self.current_interval = min(self.current_interval * 1.2, self.max_interval)
             elif load_score < 30:  # 低负载，减少间隔
-                self.current_interval = max(
-                    self.current_interval * 0.8, self.min_interval
-                )
+                self.current_interval = max(self.current_interval * 0.8, self.min_interval)
             else:  # 正常负载，回归基准
                 self.current_interval = self.base_interval
 
@@ -367,9 +357,7 @@ class AIRealtimeMonitor:
             "monitoring_start_time": None,
         }
 
-        logger.info(
-            f"✅ AIRealtimeMonitor initialized (interval: {self.config.monitoring_interval}s)"
-        )
+        logger.info(f"✅ AIRealtimeMonitor initialized (interval: {self.config.monitoring_interval}s)")
 
     async def start_monitoring(self, duration_seconds: int = 120):
         """启动实时监控"""
@@ -423,9 +411,7 @@ class AIRealtimeMonitor:
                         # 如果启用了自适应间隔，根据系统负载调整
                         if self.config.adaptive_intervals and self.current_metrics:
                             system_metrics = self.current_metrics.get("system", {})
-                            interval = self.adaptive_manager.calculate_next_interval(
-                                system_metrics
-                            )
+                            interval = self.adaptive_manager.calculate_next_interval(system_metrics)
 
                         await asyncio.sleep(interval)
 
@@ -543,9 +529,7 @@ class AIRealtimeMonitor:
         else:
             # 移动平均
             current_avg = self.stats["avg_cycle_time"]
-            self.stats["avg_cycle_time"] = (
-                current_avg * (total_cycles - 1) + cycle_time
-            ) / total_cycles
+            self.stats["avg_cycle_time"] = (current_avg * (total_cycles - 1) + cycle_time) / total_cycles
 
     def _print_monitoring_status(self):
         """打印监控状态"""
@@ -566,10 +550,8 @@ class AIRealtimeMonitor:
     def _print_final_stats(self):
         """打印最终统计"""
         stats = self.stats
-        duration = (
-            (datetime.now() - stats["monitoring_start_time"]).total_seconds()
-            if stats["monitoring_start_time"]
-            else 0
+        (
+            (datetime.now() - stats["monitoring_start_time"]).total_seconds() if stats["monitoring_start_time"] else 0
         )
 
         final_msg = (
@@ -596,19 +578,23 @@ class AIRealtimeMonitor:
                 "cpu_usage": f"{metrics.cpu_usage:.1f}%",
                 "memory_usage": f"{metrics.memory_usage:.1f}%",
                 "gpu_utilization": f"{metrics.gpu_utilization:.1f}%",
-                "gpu_memory_usage": f"{metrics.gpu_memory_used:.0f}/{metrics.gpu_memory_total:.0f}MB"
-                if metrics.gpu_memory_total > 0
-                else "N/A",
-                "disk_usage": f"{metrics.disk_usage:.1f}%",
-                "active_strategies": len(
-                    metrics.ai_strategy_metrics.get("strategy_performance", {})
+                "gpu_memory_usage": (
+                    f"{metrics.gpu_memory_used:.0f}/{metrics.gpu_memory_total:.0f}MB"
+                    if metrics.gpu_memory_total > 0
+                    else "N/A"
                 ),
-                "win_rate": f"{metrics.ai_strategy_metrics.get('win_rate', 0) * 100:.1f}%"
-                if metrics.ai_strategy_metrics.get("win_rate")
-                else "N/A",
-                "daily_return": f"{metrics.trading_metrics.get('daily_return', 0) * 100:.2f}%"
-                if metrics.trading_metrics.get("daily_return")
-                else "N/A",
+                "disk_usage": f"{metrics.disk_usage:.1f}%",
+                "active_strategies": len(metrics.ai_strategy_metrics.get("strategy_performance", {})),
+                "win_rate": (
+                    f"{metrics.ai_strategy_metrics.get('win_rate', 0) * 100:.1f}%"
+                    if metrics.ai_strategy_metrics.get("win_rate")
+                    else "N/A"
+                ),
+                "daily_return": (
+                    f"{metrics.trading_metrics.get('daily_return', 0) * 100:.2f}%"
+                    if metrics.trading_metrics.get("daily_return")
+                    else "N/A"
+                ),
             },
             "statistics": {
                 "total_cycles": self.stats["total_cycles"],
@@ -617,9 +603,11 @@ class AIRealtimeMonitor:
                 "success_rate": f"{self.stats['successful_cycles'] / max(self.stats['total_cycles'], 1) * 100:.1f}%",
                 "avg_cycle_time": f"{self.stats['avg_cycle_time']:.3f}s",
                 "history_size": len(self.metrics_history),
-                "monitoring_duration": f"{(datetime.now() - self.stats['monitoring_start_time']).total_seconds():.0f}s"
-                if self.stats["monitoring_start_time"]
-                else "0s",
+                "monitoring_duration": (
+                    f"{(datetime.now() - self.stats['monitoring_start_time']).total_seconds():.0f}s"
+                    if self.stats["monitoring_start_time"]
+                    else "0s"
+                ),
             },
             "configuration": {
                 "monitoring_interval": f"{self.adaptive_manager.get_interval():.1f}s",
@@ -678,9 +666,7 @@ class AIRealtimeMonitor:
                 available = collector.is_available()
                 health_status["checks"][f"{name}_collector"] = {
                     "status": "available" if available else "unavailable",
-                    "message": f"{name}指标收集器可用"
-                    if available
-                    else f"{name}指标收集器不可用",
+                    "message": f"{name}指标收集器可用" if available else f"{name}指标收集器不可用",
                 }
 
             # 检查告警系统
@@ -688,9 +674,7 @@ class AIRealtimeMonitor:
             active_alerts = alert_summary["active_alerts_count"]
             health_status["checks"]["alert_system"] = {
                 "status": "healthy" if active_alerts == 0 else "warning",
-                "message": f"活跃告警数: {active_alerts}"
-                if active_alerts > 0
-                else "无活跃告警",
+                "message": f"活跃告警数: {active_alerts}" if active_alerts > 0 else "无活跃告警",
             }
 
             # 检查GPU状态
@@ -703,14 +687,10 @@ class AIRealtimeMonitor:
 
             # 计算整体状态
             error_checks = [
-                check
-                for check in health_status["checks"].values()
-                if check["status"] in ["error", "unavailable"]
+                check for check in health_status["checks"].values() if check["status"] in ["error", "unavailable"]
             ]
             if error_checks:
-                health_status["overall_status"] = (
-                    "degraded" if active_alerts == 0 else "warning"
-                )
+                health_status["overall_status"] = "degraded" if active_alerts == 0 else "warning"
             elif active_alerts > 0:
                 health_status["overall_status"] = "warning"
 
@@ -742,9 +722,7 @@ if __name__ == "__main__":
 
     sys.path.insert(0, ".")
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     print("\n测试AIRealtimeMonitor...\n")
 
@@ -786,9 +764,7 @@ if __name__ == "__main__":
 
     # 测试5: 测试阈值设置
     print("5. 测试阈值设置...")
-    monitor.set_performance_thresholds(
-        {"cpu_warning": 75.0, "gpu_memory_warning": 80.0}
-    )
+    monitor.set_performance_thresholds({"cpu_warning": 75.0, "gpu_memory_warning": 80.0})
     print("   阈值设置完成\n")
 
     print("✅ AIRealtimeMonitor 所有测试完成!")

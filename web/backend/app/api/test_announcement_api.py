@@ -6,11 +6,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from unittest.mock import patch, MagicMock
 
 from app.main import app
-from app.models.announcement import Announcement, AnnouncementMonitorRule, Base
-from app.services.announcement_service import get_announcement_service
+from app.models.announcement import Base
 
 
 # 创建测试数据库
@@ -79,32 +77,29 @@ def test_monitor_rules_crud(client):
         "stock_codes": ["000001"],
         "min_importance_level": 3,
         "notify_enabled": True,
-        "notify_channels": ["email"]
+        "notify_channels": ["email"],
     }
-    
+
     # 创建
     response = client.post("/api/announcement/monitor-rules", json=rule_data)
     assert response.status_code == 200
     created_rule = response.json()
     assert created_rule["rule_name"] == "测试监控规则"
     rule_id = created_rule["id"]
-    
+
     # 获取规则列表
     response = client.get("/api/announcement/monitor-rules")
     assert response.status_code == 200
     rules = response.json()
     assert len(rules) >= 1
-    
+
     # 更新规则
-    update_data = {
-        "rule_name": "更新的测试监控规则",
-        "min_importance_level": 4
-    }
+    update_data = {"rule_name": "更新的测试监控规则", "min_importance_level": 4}
     response = client.put(f"/api/announcement/monitor-rules/{rule_id}", json=update_data)
     assert response.status_code == 200
     updated_rule = response.json()
     assert updated_rule["rule_name"] == "更新的测试监控规则"
-    
+
     # 删除规则
     response = client.delete(f"/api/announcement/monitor-rules/{rule_id}")
     assert response.status_code == 200

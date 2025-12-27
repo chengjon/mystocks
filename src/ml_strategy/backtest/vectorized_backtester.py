@@ -234,19 +234,13 @@ class VectorizedBacktester:
                 unrealized_pnl_pct = (current_price - entry_price) / entry_price
 
                 # 止损
-                if (
-                    self.config.stop_loss_pct
-                    and unrealized_pnl_pct <= -self.config.stop_loss_pct
-                ):
+                if self.config.stop_loss_pct and unrealized_pnl_pct <= -self.config.stop_loss_pct:
                     self.logger.info(f"触发止损: {idx}, 亏损{unrealized_pnl_pct:.2%}")
                     # 触发卖出（下一个循环会执行）
                     sell_signals.iloc[i] = True
 
                 # 止盈
-                if (
-                    self.config.take_profit_pct
-                    and unrealized_pnl_pct >= self.config.take_profit_pct
-                ):
+                if self.config.take_profit_pct and unrealized_pnl_pct >= self.config.take_profit_pct:
                     self.logger.info(f"触发止盈: {idx}, 盈利{unrealized_pnl_pct:.2%}")
                     # 触发卖出（下一个循环会执行）
                     sell_signals.iloc[i] = True
@@ -259,16 +253,12 @@ class VectorizedBacktester:
         if position > 0:
             final_price = price_data.iloc[-1]["close"]
             sell_amount = position * final_price
-            commission = max(
-                sell_amount * self.config.commission_rate, self.config.min_commission
-            )
+            commission = max(sell_amount * self.config.commission_rate, self.config.min_commission)
             stamp_tax = sell_amount * self.config.stamp_tax_rate
             cash += sell_amount - commission - stamp_tax
 
             if entry_date is not None:
-                pnl = (
-                    sell_amount - (entry_shares * entry_price) - commission - stamp_tax
-                )
+                pnl = sell_amount - (entry_shares * entry_price) - commission - stamp_tax
                 pnl_pct = pnl / (entry_shares * entry_price)
 
                 trade = Trade(
@@ -326,9 +316,7 @@ class VectorizedBacktester:
     def _validate_data(self, price_data: pd.DataFrame, signals: pd.DataFrame):
         """验证输入数据"""
         required_price_cols = ["open", "high", "low", "close", "volume"]
-        missing_cols = [
-            col for col in required_price_cols if col not in price_data.columns
-        ]
+        missing_cols = [col for col in required_price_cols if col not in price_data.columns]
         if missing_cols:
             raise ValueError(f"价格数据缺少必需列: {missing_cols}")
 

@@ -383,46 +383,30 @@ class MetricsCollector:
         duration_seconds: float,
     ):
         """记录API请求"""
-        self._metrics["http_requests_total"].labels(
-            method=method, endpoint=endpoint, status=status_code
-        ).inc()
-        self._metrics["http_request_duration_seconds"].labels(
-            method=method, endpoint=endpoint
-        ).observe(duration_seconds)
+        self._metrics["http_requests_total"].labels(method=method, endpoint=endpoint, status=status_code).inc()
+        self._metrics["http_request_duration_seconds"].labels(method=method, endpoint=endpoint).observe(
+            duration_seconds
+        )
 
     def record_websocket_connection(self, namespace: str, version: str, count: int):
         """更新WebSocket活跃连接数"""
-        self._metrics["websocket_connections_active"].labels(
-            namespace=namespace, version=version
-        ).set(count)
+        self._metrics["websocket_connections_active"].labels(namespace=namespace, version=version).set(count)
 
-    def record_websocket_message(
-        self, message_type: str, namespace: str, sent: bool = True
-    ):
+    def record_websocket_message(self, message_type: str, namespace: str, sent: bool = True):
         """记录WebSocket消息"""
-        metric_name = (
-            "websocket_messages_sent_total"
-            if sent
-            else "websocket_messages_received_total"
-        )
+        metric_name = "websocket_messages_sent_total" if sent else "websocket_messages_received_total"
         if sent:
-            self._metrics[metric_name].labels(
-                message_type=message_type, namespace=namespace
-            ).inc()
+            self._metrics[metric_name].labels(message_type=message_type, namespace=namespace).inc()
         else:
             self._metrics[metric_name].labels(message_type=message_type).inc()
 
     def record_cache_hit(self, cache_type: str, key_pattern: str):
         """记录缓存命中"""
-        self._metrics["cache_hits_total"].labels(
-            cache_type=cache_type, key_pattern=key_pattern
-        ).inc()
+        self._metrics["cache_hits_total"].labels(cache_type=cache_type, key_pattern=key_pattern).inc()
 
     def record_cache_miss(self, cache_type: str, key_pattern: str):
         """记录缓存未命中"""
-        self._metrics["cache_misses_total"].labels(
-            cache_type=cache_type, key_pattern=key_pattern
-        ).inc()
+        self._metrics["cache_misses_total"].labels(cache_type=cache_type, key_pattern=key_pattern).inc()
 
     def update_cache_hit_rate(self, cache_type: str, hit_rate: float):
         """更新缓存命中率"""
@@ -436,15 +420,9 @@ class MetricsCollector:
         idle: int,
     ):
         """更新数据库连接状态"""
-        self._metrics["db_connections_active"].labels(
-            database=database, pool_name=pool_name
-        ).set(active)
-        self._metrics["db_connections_idle"].labels(
-            database=database, pool_name=pool_name
-        ).set(idle)
-        self._metrics["db_connections_total"].labels(database=database).set(
-            active + idle
-        )
+        self._metrics["db_connections_active"].labels(database=database, pool_name=pool_name).set(active)
+        self._metrics["db_connections_idle"].labels(database=database, pool_name=pool_name).set(idle)
+        self._metrics["db_connections_total"].labels(database=database).set(active + idle)
 
     def record_db_query(
         self,
@@ -466,18 +444,14 @@ class MetricsCollector:
         latency_seconds: float,
     ):
         """记录市场数据处理"""
-        self._metrics["market_data_points_processed"].labels(
-            datasource=datasource, data_type=data_type
-        ).inc(points)
-        self._metrics["market_data_latency_seconds"].labels(
-            datasource=datasource, data_type=data_type
-        ).observe(latency_seconds)
+        self._metrics["market_data_points_processed"].labels(datasource=datasource, data_type=data_type).inc(points)
+        self._metrics["market_data_latency_seconds"].labels(datasource=datasource, data_type=data_type).observe(
+            latency_seconds
+        )
 
     def record_alert(self, alert_name: str, severity: str):
         """记录告警触发"""
-        self._metrics["alerts_fired_total"].labels(
-            alert_name=alert_name, severity=severity
-        ).inc()
+        self._metrics["alerts_fired_total"].labels(alert_name=alert_name, severity=severity).inc()
 
     def update_health_status(
         self,
@@ -487,9 +461,7 @@ class MetricsCollector:
     ):
         """更新组件健康状态"""
         status_value = 1 if is_healthy else 0
-        self._metrics["health_status"].labels(
-            component=component, status_type=status_type
-        ).set(status_value)
+        self._metrics["health_status"].labels(component=component, status_type=status_type).set(status_value)
 
     def update_dependency_availability(
         self,
@@ -497,9 +469,7 @@ class MetricsCollector:
         availability_percentage: float,
     ):
         """更新依赖项可用性"""
-        self._metrics["dependency_availability"].labels(
-            dependency_name=dependency_name
-        ).set(availability_percentage)
+        self._metrics["dependency_availability"].labels(dependency_name=dependency_name).set(availability_percentage)
 
     def get_metrics(self) -> Dict[str, Any]:
         """获取所有已定义的指标"""
@@ -534,9 +504,7 @@ def record_api_request(
     duration_seconds: float,
 ):
     """便捷函数：记录API请求"""
-    get_metrics_collector().record_api_request(
-        method, endpoint, status_code, duration_seconds
-    )
+    get_metrics_collector().record_api_request(method, endpoint, status_code, duration_seconds)
 
 
 def record_cache_operation(
@@ -559,18 +527,14 @@ def record_db_query(
     duration_seconds: float,
 ):
     """便捷函数：记录数据库查询"""
-    get_metrics_collector().record_db_query(
-        database, query_type, table, duration_seconds
-    )
+    get_metrics_collector().record_db_query(database, query_type, table, duration_seconds)
 
 
 if __name__ == "__main__":
     """测试指标收集器"""
     import logging
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     collector = get_metrics_collector()
     print("\n✅ MetricsCollector initialized")

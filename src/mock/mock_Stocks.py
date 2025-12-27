@@ -177,9 +177,7 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
 
     # 为每个股票生成上市日期和实际数据
     result = []
-    base_date = datetime.datetime.now() - datetime.timedelta(
-        days=3650
-    )  # 约10年前的日期
+    base_date = datetime.datetime.now() - datetime.timedelta(days=3650)  # 约10年前的日期
 
     for i, stock in enumerate(paginated_stocks):
         list_date = base_date + datetime.timedelta(days=random.randint(0, 3650))
@@ -247,12 +245,8 @@ def get_real_time_quote(stock_codes: List[str]) -> List[Dict]:
 
         current_price = round(base_price + change_amount, 2)
         open_price = round(base_price + random.uniform(-3.0, 3.0), 2)
-        high_price = round(
-            max(base_price, open_price, current_price) + random.uniform(0, 5.0), 2
-        )
-        low_price = round(
-            min(base_price, open_price, current_price) - random.uniform(0, 5.0), 2
-        )
+        high_price = round(max(base_price, open_price, current_price) + random.uniform(0, 5.0), 2)
+        low_price = round(min(base_price, open_price, current_price) - random.uniform(0, 5.0), 2)
 
         volume = random.randint(1000000, 100000000)  # 成交量
         turnover = round(current_price * volume, 2)  # 成交额
@@ -433,10 +427,9 @@ def get_stock_detail(params: Dict) -> Dict:
         "industry": info["industry"],
         "area": info["area"],
         "market": info["market"],
-        "list_date": (
-            datetime.datetime.now()
-            - datetime.timedelta(days=random.randint(1000, 5000))
-        ).strftime("%Y-%m-%d"),
+        "list_date": (datetime.datetime.now() - datetime.timedelta(days=random.randint(1000, 5000))).strftime(
+            "%Y-%m-%d"
+        ),
         "total_shares": random.randint(100000000, 10000000000),
         "circulating_shares": random.randint(50000000, 8000000000),
         "pe_ratio": round(random.uniform(5, 50), 2),
@@ -462,18 +455,15 @@ def get_stock_financial_data(params: Dict) -> Dict:
         "financial_data": {
             "revenue": round(random.uniform(1000000000, 50000000000), 2),  # 收入
             "net_profit": round(random.uniform(100000000, 10000000000), 2),  # 净利润
-            "total_assets": round(
-                random.uniform(5000000000, 100000000000), 2
-            ),  # 总资产
+            "total_assets": round(random.uniform(5000000000, 100000000000), 2),  # 总资产
             "net_assets": round(random.uniform(2000000000, 50000000000), 2),  # 净资产
             "roa": round(random.uniform(0.01, 0.15), 4),  # 总资产收益率
-            "roa": round(random.uniform(0.02, 0.25), 4),  # 净资产收益率
+            "roe": round(random.uniform(0.02, 0.25), 4),  # 净资产收益率
             "debt_ratio": round(random.uniform(0.2, 0.6), 4),  # 资产负债率
             "current_ratio": round(random.uniform(0.8, 2.5), 2),  # 流动比率
-            "report_date": (
-                datetime.datetime.now()
-                - datetime.timedelta(days=random.randint(0, 365))
-            ).strftime("%Y-%m-%d"),  # 报告日期
+            "report_date": (datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 365))).strftime(
+                "%Y-%m-%d"
+            ),  # 报告日期
         },
     }
 
@@ -551,9 +541,7 @@ def get_realtime_quotes() -> List[Dict]:
                 "change": round(current_price - base_price, 2),
                 "change_pct": change_pct,
                 "volume": random.randint(1000000, 100000000),
-                "turnover": round(
-                    current_price * random.randint(1000000, 100000000), 2
-                ),
+                "turnover": round(current_price * random.randint(1000000, 100000000), 2),
                 "high": round(current_price * (1 + random.uniform(0, 0.05)), 2),
                 "low": round(current_price * (1 - random.uniform(0, 0.05)), 2),
                 "open": round(base_price + random.uniform(-2, 2), 2),
@@ -594,10 +582,7 @@ def search_stocks(params: Dict) -> Dict:
     # 根据关键词筛选
     results = []
     for stock in all_stocks:
-        if (
-            keyword.lower() in stock["symbol"].lower()
-            or keyword.lower() in stock["name"].lower()
-        ):
+        if keyword.lower() in stock["symbol"].lower() or keyword.lower() in stock["name"].lower():
             results.append(stock)
 
     # 如果没有匹配结果，返回所有股票
@@ -792,9 +777,7 @@ def remove_from_watchlist(params: Dict) -> Dict:
     }
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

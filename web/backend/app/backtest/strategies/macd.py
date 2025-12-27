@@ -100,9 +100,7 @@ class MACDStrategy(BaseStrategy):
             },
         ]
 
-    def _calculate_macd(
-        self, prices: List[float]
-    ) -> tuple[Optional[float], Optional[float], Optional[float]]:
+    def _calculate_macd(self, prices: List[float]) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """
         计算MACD指标
 
@@ -247,18 +245,8 @@ class MACDStrategy(BaseStrategy):
                         if len(history) >= atr_period:
                             atr = self.atr(history, atr_period)
                             if atr:
-                                stop_loss = Decimal(
-                                    str(
-                                        current_price
-                                        - atr * self.parameters["stop_loss_atr"]
-                                    )
-                                )
-                                take_profit = Decimal(
-                                    str(
-                                        current_price
-                                        + atr * self.parameters["take_profit_atr"]
-                                    )
-                                )
+                                stop_loss = Decimal(str(current_price - atr * self.parameters["stop_loss_atr"]))
+                                take_profit = Decimal(str(current_price + atr * self.parameters["take_profit_atr"]))
 
                     return StrategySignal(
                         symbol=symbol,

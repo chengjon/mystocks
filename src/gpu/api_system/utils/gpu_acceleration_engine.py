@@ -38,9 +38,7 @@ class BacktestEngineGPU:
     ) -> Dict[str, Any]:
         """运行GPU加速回测"""
         try:
-            logger.info(
-                f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}"
-            )
+            logger.info(f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}")
 
             # 转换数据到GPU
             gpu_start = time.time()
@@ -93,9 +91,7 @@ class BacktestEngineGPU:
             required_mem = data.memory_usage(deep=True).sum() * 2  # 预估
 
             if required_mem > available_mem * self.gpu_memory_limit:
-                raise MemoryError(
-                    f"GPU内存不足: 需要 {required_mem / 1e6:.1f}MB, 可用 {available_mem / 1e6:.1f}MB"
-                )
+                raise MemoryError(f"GPU内存不足: 需要 {required_mem / 1e6:.1f}MB, 可用 {available_mem / 1e6:.1f}MB")
 
             # 转换到GPU
             gpu_df = cudf.DataFrame.from_pandas(data)
@@ -129,9 +125,7 @@ class BacktestEngineGPU:
             ema_26 = indicators["ema_26"]
             indicators["macd"] = ema_12 - ema_26
             indicators["macd_signal"] = indicators["macd"].rolling(9).mean()
-            indicators["macd_histogram"] = (
-                indicators["macd"] - indicators["macd_signal"]
-            )
+            indicators["macd_histogram"] = indicators["macd"] - indicators["macd_signal"]
 
             # RSI
             indicators["rsi"] = self._gpu_rsi(close, 14)
@@ -206,15 +200,11 @@ class BacktestEngineGPU:
             if strategy_type == "trend_following":
                 signals = self._trend_following_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "momentum":
-                signals = self._momentum_strategy_gpu(
-                    gpu_df, indicators, strategy_config
-                )
+                signals = self._momentum_strategy_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "mean_reversion":
                 signals = self._mean_reversion_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "arbitrage":
-                signals = self._arbitrage_strategy_gpu(
-                    gpu_df, indicators, strategy_config
-                )
+                signals = self._arbitrage_strategy_gpu(gpu_df, indicators, strategy_config)
             else:
                 raise ValueError(f"未知策略类型: {strategy_type}")
 
@@ -224,16 +214,14 @@ class BacktestEngineGPU:
             logger.error(f"GPU策略应用失败: {e}")
             raise
 
-    def _trend_following_gpu(
-        self, gpu_df: cudf.DataFrame, indicators: cudf.DataFrame, config: Dict
-    ) -> cudf.DataFrame:
+    def _trend_following_gpu(self, gpu_df: cudf.DataFrame, indicators: cudf.DataFrame, config: Dict) -> cudf.DataFrame:
         """趋势跟踪策略（GPU加速）"""
         signals = cudf.DataFrame()
 
         # 获取参数
         fast_ma = config.get("fast_ma", 5)
         slow_ma = config.get("slow_ma", 20)
-        rsi_period = config.get("rsi_period", 14)
+        config.get("rsi_period", 14)
         rsi_overbought = config.get("rsi_overbought", 70)
         rsi_oversold = config.get("rsi_oversold", 30)
 
@@ -244,16 +232,12 @@ class BacktestEngineGPU:
 
         # 买入信号：快线上穿慢线且RSI未超买
         signals["buy"] = (
-            (fast_ma_line > slow_ma_line)
-            & (fast_ma_line.shift(1) <= slow_ma_line.shift(1))
-            & (rsi < rsi_overbought)
+            (fast_ma_line > slow_ma_line) & (fast_ma_line.shift(1) <= slow_ma_line.shift(1)) & (rsi < rsi_overbought)
         ).astype(int)
 
         # 卖出信号：快线下穿慢线且RSI未超卖
         signals["sell"] = (
-            (fast_ma_line < slow_ma_line)
-            & (fast_ma_line.shift(1) >= slow_ma_line.shift(1))
-            & (rsi > rsi_oversold)
+            (fast_ma_line < slow_ma_line) & (fast_ma_line.shift(1) >= slow_ma_line.shift(1)) & (rsi > rsi_oversold)
         ).astype(int)
 
         return signals.fillna(0)
@@ -274,25 +258,21 @@ class BacktestEngineGPU:
         volume_ratio = indicators["volume_ratio"]
 
         # 买入信号：正动量且成交量放大
-        signals["buy"] = (
-            (momentum > momentum_threshold) & (volume_ratio > volume_threshold)
-        ).astype(int)
+        signals["buy"] = ((momentum > momentum_threshold) & (volume_ratio > volume_threshold)).astype(int)
 
         # 卖出信号：负动量
         signals["sell"] = (momentum < -momentum_threshold).astype(int)
 
         return signals.fillna(0)
 
-    def _mean_reversion_gpu(
-        self, gpu_df: cudf.DataFrame, indicators: cudf.DataFrame, config: Dict
-    ) -> cudf.DataFrame:
+    def _mean_reversion_gpu(self, gpu_df: cudf.DataFrame, indicators: cudf.DataFrame, config: Dict) -> cudf.DataFrame:
         """均值回归策略（GPU加速）"""
         signals = cudf.DataFrame()
 
         # 获取参数
-        bb_period = config.get("bb_period", 20)
-        bb_std = config.get("bb_std", 2)
-        rsi_period = config.get("rsi_period", 14)
+        config.get("bb_period", 20)
+        config.get("bb_std", 2)
+        config.get("rsi_period", 14)
         rsi_threshold = config.get("rsi_threshold", 50)
 
         # 布林带信号
@@ -305,19 +285,13 @@ class BacktestEngineGPU:
         # 买入信号：价格接近下轨且RSI显示超卖
         signals["buy"] = (
             (current_price <= bb_lower)
-            | (
-                (current_price <= bb_middle - 0.5 * (bb_upper - bb_lower))
-                & (rsi < rsi_threshold)
-            )
+            | ((current_price <= bb_middle - 0.5 * (bb_upper - bb_lower)) & (rsi < rsi_threshold))
         ).astype(int)
 
         # 卖出信号：价格接近上轨且RSI显示超买
         signals["sell"] = (
             (current_price >= bb_upper)
-            | (
-                (current_price >= bb_middle + 0.5 * (bb_upper - bb_lower))
-                & (rsi > rsi_threshold)
-            )
+            | ((current_price >= bb_middle + 0.5 * (bb_upper - bb_lower)) & (rsi > rsi_threshold))
         ).astype(int)
 
         return signals.fillna(0)
@@ -330,28 +304,24 @@ class BacktestEngineGPU:
 
         # 获取参数
         spread_threshold = config.get("spread_threshold", 0.01)
-        reversion_speed = config.get("reversion_speed", 0.1)
+        config.get("reversion_speed", 0.1)
 
         # 简化的套利信号（基于价格偏离）
         price_deviation = indicators["price_change_abs"].rolling(20).mean()
 
         # 买入信号：价格偏离正向且预期回归
-        signals["buy"] = (
-            (price_deviation > spread_threshold)
-            & (price_deviation.shift(1) > price_deviation)
-        ).astype(int)
+        signals["buy"] = ((price_deviation > spread_threshold) & (price_deviation.shift(1) > price_deviation)).astype(
+            int
+        )
 
         # 卖出信号：价格偏离负向且预期回归
-        signals["sell"] = (
-            (price_deviation > spread_threshold)
-            & (price_deviation.shift(1) < price_deviation)
-        ).astype(int)
+        signals["sell"] = ((price_deviation > spread_threshold) & (price_deviation.shift(1) < price_deviation)).astype(
+            int
+        )
 
         return signals.fillna(0)
 
-    def _simulate_trading_gpu(
-        self, signals: cudf.DataFrame, initial_capital: float
-    ) -> Dict[str, Any]:
+    def _simulate_trading_gpu(self, signals: cudf.DataFrame, initial_capital: float) -> Dict[str, Any]:
         """模拟交易执行（GPU加速）"""
         try:
             portfolio = {
@@ -408,9 +378,7 @@ class BacktestEngineGPU:
             logger.error(f"GPU交易模拟失败: {e}")
             raise
 
-    def _calculate_performance_gpu(
-        self, portfolio: Dict, gpu_df: cudf.DataFrame
-    ) -> Dict[str, float]:
+    def _calculate_performance_gpu(self, portfolio: Dict, gpu_df: cudf.DataFrame) -> Dict[str, float]:
         """计算性能指标（GPU加速）"""
         try:
             portfolio_values = portfolio["portfolio_value"]
@@ -422,9 +390,7 @@ class BacktestEngineGPU:
             returns = cp.diff(portfolio_values_gpu) / portfolio_values_gpu[:-1]
 
             # 基础指标
-            total_return = (
-                portfolio_values[-1] - portfolio_values[0]
-            ) / portfolio_values[0]
+            total_return = (portfolio_values[-1] - portfolio_values[0]) / portfolio_values[0]
             annual_return = total_return * 252 / len(portfolio_values) * 252
 
             # 风险指标（GPU计算）
@@ -438,9 +404,7 @@ class BacktestEngineGPU:
 
             # 交易统计
             total_trades = len(portfolio["trades"])
-            winning_trades = sum(
-                1 for trade in portfolio["trades"] if trade["action"] == "SELL"
-            )
+            winning_trades = sum(1 for trade in portfolio["trades"] if trade["action"] == "SELL")
             win_rate = winning_trades / total_trades if total_trades > 0 else 0
 
             return {
@@ -594,9 +558,7 @@ class MLTrainingGPU:
             logger.error(f"GPU预测失败: {e}")
             raise
 
-    def _convert_to_gpu(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[cudf.DataFrame, cudf.Series]:
+    def _convert_to_gpu(self, data: Union[pd.DataFrame, pd.Series]) -> Union[cudf.DataFrame, cudf.Series]:
         """将数据转换为GPU格式"""
         if isinstance(data, pd.DataFrame):
             return cudf.DataFrame.from_pandas(data)
@@ -613,9 +575,7 @@ class FeatureCalculationGPU:
         self.gpu_manager = gpu_manager
         self.feature_cache = {}
 
-    def calculate_features_gpu(
-        self, data: pd.DataFrame, feature_types: List[str] = None
-    ) -> Dict[str, Any]:
+    def calculate_features_gpu(self, data: pd.DataFrame, feature_types: List[str] = None) -> Dict[str, Any]:
         """GPU加速特征计算"""
         try:
             logger.info(f"开始GPU特征计算: {len(data)} 数据点")
@@ -680,9 +640,7 @@ class FeatureCalculationGPU:
             # MACD
             macd = features["ema_12"] - features["ema_26"]
             features["macd"] = macd
-            features["macd_signal"] = self._gpu_ema(cp.array([macd] * len(close)), 9)[
-                -1
-            ]
+            features["macd_signal"] = self._gpu_ema(cp.array([macd] * len(close)), 9)[-1]
             features["macd_histogram"] = macd - features["macd_signal"]
 
             # RSI
@@ -742,9 +700,7 @@ class FeatureCalculationGPU:
             features["volatility_60d"] = cp.std(returns.rolling(60)) * cp.sqrt(252)
 
             # 波动率聚类
-            features["volatility_clustering"] = self._calculate_volatility_clustering(
-                returns
-            )
+            features["volatility_clustering"] = self._calculate_volatility_clustering(returns)
 
             return features
 
@@ -752,9 +708,7 @@ class FeatureCalculationGPU:
             logger.error(f"波动率特征计算失败: {e}")
             return {}
 
-    def _calculate_volume_price_features(
-        self, gpu_df: cudf.DataFrame
-    ) -> Dict[str, Any]:
+    def _calculate_volume_price_features(self, gpu_df: cudf.DataFrame) -> Dict[str, Any]:
         """计算量价特征"""
         features = {}
 
@@ -769,9 +723,9 @@ class FeatureCalculationGPU:
             # 计算相关性（处理NaN值）
             valid_mask = ~cp.isnan(price_change) & ~cp.isnan(volume_change)
             if cp.any(valid_mask):
-                features["volume_price_correlation"] = cp.corrcoef(
-                    price_change[valid_mask], volume_change[valid_mask]
-                )[0, 1]
+                features["volume_price_correlation"] = cp.corrcoef(price_change[valid_mask], volume_change[valid_mask])[
+                    0, 1
+                ]
             else:
                 features["volume_price_correlation"] = 0
 
@@ -878,9 +832,7 @@ class OptimizationGPU:
             elif method == "random_search":
                 result = self._random_search_gpu(objective_func, param_space, n_trials)
             elif method == "bayesian":
-                result = self._bayesian_optimization_gpu(
-                    objective_func, param_space, n_trials
-                )
+                result = self._bayesian_optimization_gpu(objective_func, param_space, n_trials)
             else:
                 raise ValueError(f"不支持的优化方法: {method}")
 
@@ -925,9 +877,7 @@ class OptimizationGPU:
             logger.error(f"GPU网格搜索失败: {e}")
             raise
 
-    def _random_search_gpu(
-        self, objective_func, param_space: Dict, n_trials: int
-    ) -> Dict[str, Any]:
+    def _random_search_gpu(self, objective_func, param_space: Dict, n_trials: int) -> Dict[str, Any]:
         """随机搜索优化（GPU加速）"""
         try:
             best_params = None
@@ -953,9 +903,7 @@ class OptimizationGPU:
             logger.error(f"GPU随机搜索失败: {e}")
             raise
 
-    def _bayesian_optimization_gpu(
-        self, objective_func, param_space: Dict, n_trials: int
-    ) -> Dict[str, Any]:
+    def _bayesian_optimization_gpu(self, objective_func, param_space: Dict, n_trials: int) -> Dict[str, Any]:
         """贝叶斯优化（GPU加速）"""
         try:
             # 简化的贝叶斯优化实现
@@ -1025,9 +973,7 @@ class OptimizationGPU:
                 mean = (param_range[0] + param_range[-1]) / 2
                 std = (param_range[-1] - param_range[0]) / 4
                 sampled = np.random.normal(mean, std)
-                params[param_name] = max(
-                    param_range[0], min(param_range[-1], int(sampled))
-                )
+                params[param_name] = max(param_range[0], min(param_range[-1], int(sampled)))
             else:
                 # 连续参数：正态分布采样
                 mean = (param_range[0] + param_range[1]) / 2
@@ -1041,9 +987,7 @@ class OptimizationGPU:
 class GPUAccelerationEngine:
     """GPU加速引擎主类"""
 
-    def __init__(
-        self, gpu_manager: GPUResourceManager, metrics_collector: MetricsCollector
-    ):
+    def __init__(self, gpu_manager: GPUResourceManager, metrics_collector: MetricsCollector):
         self.gpu_manager = gpu_manager
         self.metrics_collector = metrics_collector
 
@@ -1112,9 +1056,7 @@ class GPUAccelerationEngine:
                     task.get("params", {}),
                 )
             elif task_type == "feature_calculation":
-                result = self.feature_engine.calculate_features_gpu(
-                    task["data"], task.get("feature_types", None)
-                )
+                result = self.feature_engine.calculate_features_gpu(task["data"], task.get("feature_types", None))
             elif task_type == "optimization":
                 result = self.optimization_engine.optimize_parameters_gpu(
                     task["objective_func"],
@@ -1134,9 +1076,7 @@ class GPUAccelerationEngine:
             result["gpu_memory_used_mb"] = self.gpu_manager.get_gpu_memory_usage()
 
             # 记录指标
-            self.metrics_collector.record_task_metrics(
-                "gpu_acceleration", "success", processing_time
-            )
+            self.metrics_collector.record_task_metrics("gpu_acceleration", "success", processing_time)
 
             logger.info(f"任务完成: {task_id} (耗时: {processing_time:.2f}s)")
             return result
@@ -1147,9 +1087,7 @@ class GPUAccelerationEngine:
                 "task_id": task.get("task_id", "unknown"),
                 "status": "failed",
                 "error": str(e),
-                "processing_time": (
-                    time.time() - start_time if "start_time" in locals() else 0
-                ),
+                "processing_time": (time.time() - start_time if "start_time" in locals() else 0),
             }
 
     def get_engine_statistics(self) -> Dict[str, Any]:
@@ -1172,9 +1110,7 @@ class GPUAccelerationEngine:
                     "gpu_memory_usage_mb": self.gpu_manager.get_gpu_memory_usage(),
                 },
                 "optimization_stats": {
-                    "total_optimizations": len(
-                        self.optimization_engine.optimization_cache
-                    ),
+                    "total_optimizations": len(self.optimization_engine.optimization_cache),
                     "gpu_memory_usage_mb": self.gpu_manager.get_gpu_memory_usage(),
                 },
                 "overall_stats": {
@@ -1187,9 +1123,7 @@ class GPUAccelerationEngine:
                         ]
                     ),
                     "gpu_memory_usage_mb": self.gpu_manager.get_gpu_memory_usage(),
-                    "gpu_utilization": self.gpu_manager.get_gpu_stats().get(
-                        "utilization", 0
-                    ),
+                    "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
                 },
             }
 

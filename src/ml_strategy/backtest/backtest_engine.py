@@ -44,9 +44,7 @@ class BacktestEngine:
     - 支持基准比较
     """
 
-    def __init__(
-        self, config: Optional[BacktestConfig] = None, risk_free_rate: float = 0.03
-    ):
+    def __init__(self, config: Optional[BacktestConfig] = None, risk_free_rate: float = 0.03):
         """
         初始化回测引擎
 

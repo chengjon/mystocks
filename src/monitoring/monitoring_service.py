@@ -124,9 +124,7 @@ class MonitoringDatabase:
         # 初始化监控表结构
         self._ensure_monitoring_tables()
 
-        logger.info(
-            f"监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']}"
-        )
+        logger.info(f"监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']}")
 
     def _get_monitor_connection(self):
         """获取监控数据库连接"""
@@ -396,9 +394,7 @@ class MonitoringDatabase:
                 "successful_operations": total_result[1] if total_result[1] else 0,
                 "failed_operations": total_result[2] if total_result[2] else 0,
                 "database_breakdown": {db[0]: db[1] for db in db_breakdown_results},
-                "operation_type_breakdown": {
-                    op[0]: op[1] for op in op_breakdown_results
-                },
+                "operation_type_breakdown": {op[0]: op[1] for op in op_breakdown_results},
                 "average_duration": float(total_result[3]) if total_result[3] else 0.0,
                 "last_update": datetime.now().isoformat(),
             }
@@ -466,9 +462,7 @@ class DataQualityMonitor:
             },
         }
 
-    def check_data_completeness(
-        self, classification: DataClassification
-    ) -> Dict[str, Any]:
+    def check_data_completeness(self, classification: DataClassification) -> Dict[str, Any]:
         """
         检查数据完整性
 
@@ -528,9 +522,7 @@ class DataQualityMonitor:
             freshness_rules = self.quality_rules["freshness"]
 
             # 检查日线数据
-            daily_freshness = self._check_table_freshness(
-                "daily_kline", freshness_rules["daily_data_hours"]
-            )
+            daily_freshness = self._check_table_freshness("daily_kline", freshness_rules["daily_data_hours"])
             if daily_freshness["is_stale"]:
                 result["stale_data"].append(daily_freshness)
 
@@ -541,9 +533,7 @@ class DataQualityMonitor:
             logger.error(f"数据新鲜度检查失败: {e}")
             return {"error": str(e)}
 
-    def _check_table_freshness(
-        self, table_name: str, threshold_hours: int
-    ) -> Dict[str, Any]:
+    def _check_table_freshness(self, table_name: str, threshold_hours: int) -> Dict[str, Any]:
         """
         检查单个表的数据新鲜度
 
@@ -574,9 +564,7 @@ class DataQualityMonitor:
             logger.error(f"检查表新鲜度失败: {table_name}, {e}")
             return {"table_name": table_name, "error": str(e)}
 
-    def check_data_accuracy(
-        self, classification: DataClassification, sample_size: int = 1000
-    ) -> Dict[str, Any]:
+    def check_data_accuracy(self, classification: DataClassification, sample_size: int = 1000) -> Dict[str, Any]:
         """
         检查数据准确性
 
@@ -645,9 +633,7 @@ class DataQualityMonitor:
                 completeness_result = self.check_data_completeness(classification)
                 report["completeness"][classification.value] = completeness_result
                 if "completeness_score" in completeness_result:
-                    completeness_scores.append(
-                        completeness_result["completeness_score"]
-                    )
+                    completeness_scores.append(completeness_result["completeness_score"])
 
                 # 准确性检查
                 accuracy_result = self.check_data_accuracy(classification)
@@ -668,9 +654,7 @@ class DataQualityMonitor:
             # 生成建议
             report["recommendations"] = self._generate_recommendations(report)
 
-            logger.info(
-                f"数据质量报告生成完成，整体评分: {report['overall_score']:.2f}"
-            )
+            logger.info(f"数据质量报告生成完成，整体评分: {report['overall_score']:.2f}")
             return report
 
         except Exception as e:
@@ -700,9 +684,7 @@ class DataQualityMonitor:
         # 基于完整性给出建议
         for classification, result in report["completeness"].items():
             if result.get("completeness_score", 1.0) < 0.9:
-                recommendations.append(
-                    f"{classification} 数据完整性不足，建议检查数据采集流程"
-                )
+                recommendations.append(f"{classification} 数据完整性不足，建议检查数据采集流程")
 
         return recommendations
 
@@ -739,8 +721,7 @@ class PerformanceMonitor:
     def _alert_slow_operation(self, metrics: OperationMetrics):
         """告警慢操作"""
         alert_message = (
-            f"慢操作告警: {metrics.operation_type} "
-            f"on {metrics.table_name} 耗时 {metrics.duration:.2f}秒"
+            f"慢操作告警: {metrics.operation_type} " f"on {metrics.table_name} 耗时 {metrics.duration:.2f}秒"
         )
         logger.warning(alert_message)
 
@@ -756,11 +737,7 @@ class PerformanceMonitor:
         """
         try:
             cutoff_time = datetime.now() - timedelta(hours=hours)
-            recent_metrics = [
-                m
-                for m in self.metrics_history
-                if m.start_time >= cutoff_time and m.duration is not None
-            ]
+            recent_metrics = [m for m in self.metrics_history if m.start_time >= cutoff_time and m.duration is not None]
 
             if not recent_metrics:
                 return {"message": "没有性能数据"}
@@ -773,13 +750,8 @@ class PerformanceMonitor:
                 "avg_duration": sum(durations) / len(durations),
                 "min_duration": min(durations),
                 "max_duration": max(durations),
-                "slow_operations": len(
-                    [d for d in durations if d > self.slow_query_threshold]
-                ),
-                "success_rate": len(
-                    [m for m in recent_metrics if m.status == "success"]
-                )
-                / len(recent_metrics),
+                "slow_operations": len([d for d in durations if d > self.slow_query_threshold]),
+                "success_rate": len([m for m in recent_metrics if m.status == "success"]) / len(recent_metrics),
                 "operation_breakdown": {},
                 "database_breakdown": {},
             }
@@ -798,22 +770,16 @@ class PerformanceMonitor:
             for op_type in summary["operation_breakdown"]:
                 op_metrics = [m for m in recent_metrics if m.operation_type == op_type]
                 op_durations = [m.duration for m in op_metrics]
-                summary["operation_breakdown"][op_type]["avg_duration"] = sum(
-                    op_durations
-                ) / len(op_durations)
+                summary["operation_breakdown"][op_type]["avg_duration"] = sum(op_durations) / len(op_durations)
 
-            logger.info(
-                f"性能摘要生成完成: 最近{hours}小时，{len(recent_metrics)}个操作"
-            )
+            logger.info(f"性能摘要生成完成: 最近{hours}小时，{len(recent_metrics)}个操作")
             return summary
 
         except Exception as e:
             logger.error(f"获取性能摘要失败: {e}")
             return {"error": str(e)}
 
-    def get_slow_operations(
-        self, hours: int = 24, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_slow_operations(self, hours: int = 24, limit: int = 10) -> List[Dict[str, Any]]:
         """
         获取慢操作列表
 
@@ -836,11 +802,7 @@ class PerformanceMonitor:
                     "data_count": m.data_count,
                 }
                 for m in self.metrics_history
-                if (
-                    m.start_time >= cutoff_time
-                    and m.duration is not None
-                    and m.duration > self.slow_query_threshold
-                )
+                if (m.start_time >= cutoff_time and m.duration is not None and m.duration > self.slow_query_threshold)
             ]
 
             # 按持续时间降序排序
@@ -899,9 +861,7 @@ class AlertManager:
 
         return channels
 
-    def create_alert(
-        self, level: AlertLevel, title: str, message: str, source: str = "system"
-    ) -> Alert:
+    def create_alert(self, level: AlertLevel, title: str, message: str, source: str = "system") -> Alert:
         """
         创建告警
 
@@ -1005,9 +965,7 @@ class AlertManager:
 
             before_count = len(self.active_alerts)
             self.active_alerts = [
-                alert
-                for alert in self.active_alerts
-                if alert.timestamp >= cutoff_time or not alert.resolved
+                alert for alert in self.active_alerts if alert.timestamp >= cutoff_time or not alert.resolved
             ]
             after_count = len(self.active_alerts)
 
@@ -1035,9 +993,7 @@ class LogAlertChannel(AlertChannel):
 
     def send_alert(self, alert: Alert):
         """发送告警到日志"""
-        log_message = (
-            f"[ALERT] {alert.level.value.upper()} - {alert.title}: {alert.message}"
-        )
+        log_message = f"[ALERT] {alert.level.value.upper()} - {alert.title}: {alert.message}"
 
         if alert.level == AlertLevel.CRITICAL:
             logger.critical(log_message)
@@ -1087,7 +1043,7 @@ class WebhookAlertChannel(AlertChannel):
                 logger.warning("Webhook告警: 未配置URL")
                 return
 
-            payload = {
+            {
                 "alert_id": alert.alert_id,
                 "level": alert.level.value,
                 "title": alert.title,

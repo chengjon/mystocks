@@ -18,9 +18,7 @@ class IDataSource(abc.ABC):
     """统一数据接口：定义所有数据源必须实现的方法"""
 
     @abc.abstractmethod
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -36,9 +34,7 @@ class IDataSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取指数日线数据
 
@@ -125,9 +121,7 @@ class IDataSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         """
         获取新闻数据
 

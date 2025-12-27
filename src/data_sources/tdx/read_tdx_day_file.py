@@ -32,9 +32,7 @@ def read_day_file(file_path):
     # 使用struct.iter_unpack直接迭代解析二进制数据
     items = [
         {
-            cols[0]: datetime.strptime(str(record[0]), "%Y%m%d").strftime(
-                "%Y-%m-%d"
-            ),  # 日期
+            cols[0]: datetime.strptime(str(record[0]), "%Y%m%d").strftime("%Y-%m-%d"),  # 日期
             cols[1]: str(record[1] / 100.0),  # 开盘价（保留原始精度）
             cols[2]: str(record[2] / 100.0),  # 最高价（保留原始精度）
             cols[3]: str(record[3] / 100.0),  # 最低价（保留原始精度）

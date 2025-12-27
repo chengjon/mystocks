@@ -66,9 +66,7 @@ class AITestDataAnalyzer:
         self.cache_dir = Path(__file__).parent / "cache"
         self.cache_dir.mkdir(exist_ok=True)
 
-    def analyze_test_patterns(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[TestPattern]:
+    def analyze_test_patterns(self, test_results: List[Dict[str, Any]]) -> List[TestPattern]:
         """分析测试模式"""
         print("🤖 AI正在分析测试模式...")
 
@@ -91,9 +89,7 @@ class AITestDataAnalyzer:
         patterns.sort(key=lambda p: p.frequency, reverse=True)
         return patterns
 
-    def _extract_function_pattern(
-        self, func_name: str, results: List[Dict[str, Any]]
-    ) -> Optional[TestPattern]:
+    def _extract_function_pattern(self, func_name: str, results: List[Dict[str, Any]]) -> Optional[TestPattern]:
         """提取函数测试模式"""
         try:
             # 计算成功率
@@ -123,18 +119,14 @@ class AITestDataAnalyzer:
             self.logger.error(f"模式提取失败 {func_name}: {e}")
             return None
 
-    def _classify_pattern_type(
-        self, func_name: str, results: List[Dict[str, Any]]
-    ) -> str:
+    def _classify_pattern_type(self, func_name: str, results: List[Dict[str, Any]]) -> str:
         """分类模式类型"""
         func_lower = func_name.lower()
 
         # 基于函数名称分类
         if any(keyword in func_lower for keyword in ["get", "fetch", "retrieve"]):
             return "data_retrieval"
-        elif any(
-            keyword in func_lower for keyword in ["calculate", "compute", "analyze"]
-        ):
+        elif any(keyword in func_lower for keyword in ["calculate", "compute", "analyze"]):
             return "calculation"
         elif any(keyword in func_lower for keyword in ["validate", "check", "verify"]):
             return "validation"
@@ -143,9 +135,7 @@ class AITestDataAnalyzer:
         else:
             return "general"
 
-    def detect_test_anomalies(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[AnomalyDetection]:
+    def detect_test_anomalies(self, test_results: List[Dict[str, Any]]) -> List[AnomalyDetection]:
         """检测测试异常"""
         print("🤖 AI正在检测测试异常...")
 
@@ -169,9 +159,7 @@ class AITestDataAnalyzer:
 
         return sorted(anomalies, key=lambda a: a.confidence_score, reverse=True)
 
-    def _detect_time_anomalies(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[AnomalyDetection]:
+    def _detect_time_anomalies(self, test_results: List[Dict[str, Any]]) -> List[AnomalyDetection]:
         """检测时间异常"""
         anomalies = []
         time_data = defaultdict(list)
@@ -196,18 +184,14 @@ class AITestDataAnalyzer:
                             type="execution_time_spike",
                             description=f"函数 {func_name} 执行时间异常: {duration:.2f}ms (平均: {mean_time:.2f}ms)",
                             affected_tests=[func_name],
-                            confidence_score=min(
-                                (duration - mean_time) / (std_time + 1), 1.0
-                            ),
+                            confidence_score=min((duration - mean_time) / (std_time + 1), 1.0),
                             recommended_action="检查函数是否有性能瓶颈或资源竞争",
                         )
                         anomalies.append(anomaly)
 
         return anomalies
 
-    def _detect_failure_anomalies(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[AnomalyDetection]:
+    def _detect_failure_anomalies(self, test_results: List[Dict[str, Any]]) -> List[AnomalyDetection]:
         """检测失败率异常"""
         anomalies = []
         failure_data = defaultdict(list)
@@ -220,9 +204,7 @@ class AITestDataAnalyzer:
         for func_name, statuses in failure_data.items():
             if len(statuses) >= 10:  # 至少10次数据
                 recent_failures = statuses[-5:]
-                failure_rate = sum(1 for s in recent_failures if s != "passed") / len(
-                    recent_failures
-                )
+                failure_rate = sum(1 for s in recent_failures if s != "passed") / len(recent_failures)
 
                 # 如果最近5次失败率超过50%
                 if failure_rate > 0.5:
@@ -239,9 +221,7 @@ class AITestDataAnalyzer:
 
         return anomalies
 
-    def _detect_pattern_anomalies(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[AnomalyDetection]:
+    def _detect_pattern_anomalies(self, test_results: List[Dict[str, Any]]) -> List[AnomalyDetection]:
         """检测模式变化异常"""
         anomalies = []
 
@@ -268,12 +248,8 @@ class AITestDataAnalyzer:
                         severity="medium",
                         type="pattern_change",
                         description=f"测试模式在第 {i} 次执行发生显著变化",
-                        affected_tests=list(
-                            set(r.get("function_name", "") for r in window)
-                        ),
-                        confidence_score=min(
-                            abs(pattern_score - prev_score) / prev_score, 1.0
-                        ),
+                        affected_tests=list(set(r.get("function_name", "") for r in window)),
+                        confidence_score=min(abs(pattern_score - prev_score) / prev_score, 1.0),
                         recommended_action="检查是否有代码变更或环境变化",
                     )
                     anomalies.append(anomaly)
@@ -286,9 +262,7 @@ class AITestDataAnalyzer:
             return 0.0
 
         # 综合成功率、平均时间、函数分布等因素
-        success_rate = sum(1 for r in window if r.get("status") == "passed") / len(
-            window
-        )
+        success_rate = sum(1 for r in window if r.get("status") == "passed") / len(window)
 
         durations = [r.get("duration", 0) for r in window if r.get("duration")]
         avg_duration = np.mean(durations) if durations else 0
@@ -297,9 +271,7 @@ class AITestDataAnalyzer:
         score = success_rate * 0.7 + (1 / (1 + avg_duration / 1000)) * 0.3
         return score
 
-    def _detect_resource_anomalies(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[AnomalyDetection]:
+    def _detect_resource_anomalies(self, test_results: List[Dict[str, Any]]) -> List[AnomalyDetection]:
         """检测资源使用异常"""
         anomalies = []
 
@@ -323,18 +295,14 @@ class AITestDataAnalyzer:
                         type="memory_spike",
                         description=f"函数 {func_name} 内存使用异常: {recent_usage:.2f}MB (平均: {mean_usage:.2f}MB)",
                         affected_tests=[func_name],
-                        confidence_score=min(
-                            (recent_usage - mean_usage) / (mean_usage + 1), 1.0
-                        ),
+                        confidence_score=min((recent_usage - mean_usage) / (mean_usage + 1), 1.0),
                         recommended_action="检查内存泄漏或大数据处理逻辑",
                     )
                     anomalies.append(anomaly)
 
         return anomalies
 
-    def predict_test_trends(
-        self, test_results: List[Dict[str, Any]]
-    ) -> List[TestTrend]:
+    def predict_test_trends(self, test_results: List[Dict[str, Any]]) -> List[TestTrend]:
         """预测测试趋势"""
         print("🤖 AI正在预测测试趋势...")
 
@@ -382,17 +350,9 @@ class AITestDataAnalyzer:
         if len(coverage_values) >= 3:
             # 简单线性预测
             recent_coverage = np.mean(coverage_values[-3:])
-            previous_coverage = (
-                np.mean(coverage_values[-6:-3])
-                if len(coverage_values) >= 6
-                else recent_coverage
-            )
+            previous_coverage = np.mean(coverage_values[-6:-3]) if len(coverage_values) >= 6 else recent_coverage
 
-            change_rate = (
-                (recent_coverage - previous_coverage) / previous_coverage
-                if previous_coverage > 0
-                else 0
-            )
+            change_rate = (recent_coverage - previous_coverage) / previous_coverage if previous_coverage > 0 else 0
 
             if change_rate > 0.05:
                 direction = "increasing"
@@ -419,9 +379,7 @@ class AITestDataAnalyzer:
             time_frame="next_week",
         )
 
-    def _predict_performance_trend(
-        self, test_results: List[Dict[str, Any]]
-    ) -> TestTrend:
+    def _predict_performance_trend(self, test_results: List[Dict[str, Any]]) -> TestTrend:
         """预测性能趋势"""
         durations = [r.get("duration", 0) for r in test_results if r.get("duration")]
 
@@ -429,9 +387,7 @@ class AITestDataAnalyzer:
             recent_avg = np.mean(durations[-5:])
             previous_avg = np.mean(durations[-10:-5])
 
-            change_rate = (
-                (recent_avg - previous_avg) / previous_avg if previous_avg > 0 else 0
-            )
+            change_rate = (recent_avg - previous_avg) / previous_avg if previous_avg > 0 else 0
 
             if change_rate > 0.1:
                 direction = "increasing"  # 性能下降
@@ -471,15 +427,9 @@ class AITestDataAnalyzer:
 
         if len(failure_rates) >= 3:
             recent_rate = np.mean(failure_rates[-3:])
-            previous_rate = (
-                np.mean(failure_rates[:-3]) if len(failure_rates) > 3 else recent_rate
-            )
+            previous_rate = np.mean(failure_rates[:-3]) if len(failure_rates) > 3 else recent_rate
 
-            change_rate = (
-                (recent_rate - previous_rate) / previous_rate
-                if previous_rate > 0
-                else 0
-            )
+            change_rate = (recent_rate - previous_rate) / previous_rate if previous_rate > 0 else 0
 
             if change_rate > 0.2:
                 direction = "increasing"
@@ -520,15 +470,9 @@ class AITestDataAnalyzer:
 
             if len(moving_avgs) >= 3:
                 recent_avg = np.mean(moving_avgs[-3:])
-                previous_avg = (
-                    np.mean(moving_avgs[:-3]) if len(moving_avgs) > 3 else recent_avg
-                )
+                previous_avg = np.mean(moving_avgs[:-3]) if len(moving_avgs) > 3 else recent_avg
 
-                change_rate = (
-                    (recent_avg - previous_avg) / previous_avg
-                    if previous_avg > 0
-                    else 0
-                )
+                change_rate = (recent_avg - previous_avg) / previous_avg if previous_avg > 0 else 0
 
                 if change_rate > 0.15:
                     direction = "increasing"
@@ -555,9 +499,7 @@ class AITestDataAnalyzer:
             time_frame="next_week",
         )
 
-    def generate_intelligence_report(
-        self, test_results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+    def generate_intelligence_report(self, test_results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """生成智能分析报告"""
         print("🤖 AI正在生成智能分析报告...")
 
@@ -574,15 +516,11 @@ class AITestDataAnalyzer:
 
         # 分析测试模式
         patterns = self.analyze_test_patterns(test_results)
-        report["patterns"] = [
-            self._pattern_to_dict(p) for p in patterns[:10]
-        ]  # 取前10个
+        report["patterns"] = [self._pattern_to_dict(p) for p in patterns[:10]]  # 取前10个
 
         # 检测异常
         anomalies = self.detect_test_anomalies(test_results)
-        report["anomalies"] = [
-            self._anomaly_to_dict(a) for a in anomalies[:10]
-        ]  # 取前10个
+        report["anomalies"] = [self._anomaly_to_dict(a) for a in anomalies[:10]]  # 取前10个
 
         # 预测趋势
         trends = self.predict_test_trends(test_results)
@@ -592,9 +530,7 @@ class AITestDataAnalyzer:
         report["summary"] = self._generate_summary(patterns, anomalies, trends)
 
         # 生成建议
-        report["recommendations"] = self._generate_recommendations(
-            patterns, anomalies, trends
-        )
+        report["recommendations"] = self._generate_recommendations(patterns, anomalies, trends)
 
         return report
 
@@ -632,9 +568,7 @@ class AITestDataAnalyzer:
             "time_frame": trend.time_frame,
         }
 
-    def _get_analysis_period(
-        self, test_results: List[Dict[str, Any]]
-    ) -> Dict[str, str]:
+    def _get_analysis_period(self, test_results: List[Dict[str, Any]]) -> Dict[str, str]:
         """获取分析时间段"""
         if not test_results:
             return {"start": None, "end": None}
@@ -661,14 +595,8 @@ class AITestDataAnalyzer:
             "total_anomalies": len(anomalies),
             "anomaly_severity_distribution": Counter(a.severity for a in anomalies),
             "trend_directions": Counter(t.direction for t in trends),
-            "most_common_pattern": max(patterns, key=lambda p: p.frequency).pattern_name
-            if patterns
-            else None,
-            "highest_confidence_anomaly": max(
-                anomalies, key=lambda a: a.confidence_score
-            ).type
-            if anomalies
-            else None,
+            "most_common_pattern": max(patterns, key=lambda p: p.frequency).pattern_name if patterns else None,
+            "highest_confidence_anomaly": max(anomalies, key=lambda a: a.confidence_score).type if anomalies else None,
         }
 
     def _generate_recommendations(
@@ -693,13 +621,9 @@ class AITestDataAnalyzer:
 
         # 基于模式的建议
         if patterns:
-            high_freq_patterns = [
-                p for p in patterns if p.frequency > 20 and p.success_rate < 0.9
-            ]
+            high_freq_patterns = [p for p in patterns if p.frequency > 20 and p.success_rate < 0.9]
             if high_freq_patterns:
-                recommendations.append(
-                    f"📊 {len(high_freq_patterns)} 个高频模式成功率较低，建议优化"
-                )
+                recommendations.append(f"📊 {len(high_freq_patterns)} 个高频模式成功率较低，建议优化")
 
         # 通用建议
         recommendations.extend(
@@ -723,9 +647,7 @@ class AnomalyDetector:
     def __init__(self, contamination: float = 0.1, random_state: int = 42):
         self.contamination = contamination
         self.random_state = random_state
-        self.model = IsolationForest(
-            contamination=contamination, random_state=random_state, n_estimators=100
-        )
+        self.model = IsolationForest(contamination=contamination, random_state=random_state, n_estimators=100)
         self.scaler = StandardScaler()
         self.is_fitted = False
         self.anomaly_history = []
@@ -792,9 +714,7 @@ class TrendAnalyzer:
             data = data.fillna(method="ffill").fillna(method="bfill")
 
             # 季节性分解
-            decomposition = seasonal_decompose(
-                data, model="additive", period=min(freq, len(data) // 2)
-            )
+            decomposition = seasonal_decompose(data, model="additive", period=min(freq, len(data) // 2))
 
             # 趋势分析
             trend = decomposition.trend.dropna()
@@ -803,16 +723,10 @@ class TrendAnalyzer:
 
             # 计算趋势指标
             trend_slope = self._calculate_trend_slope(trend)
-            seasonality_strength = self._calculate_seasonality_strength(
-                seasonal, residual
-            )
+            seasonality_strength = self._calculate_seasonality_strength(seasonal, residual)
 
             return {
-                "trend_direction": "upward"
-                if trend_slope > 0
-                else "downward"
-                if trend_slope < 0
-                else "stable",
+                "trend_direction": "upward" if trend_slope > 0 else "downward" if trend_slope < 0 else "stable",
                 "trend_strength": abs(trend_slope),
                 "seasonality_strength": seasonality_strength,
                 "volatility": residual.std(),
@@ -831,17 +745,11 @@ class TrendAnalyzer:
         y = series.values
         return np.polyfit(x, y, 1)[0]
 
-    def _calculate_seasonality_strength(
-        self, seasonal: pd.Series, residual: pd.Series
-    ) -> float:
+    def _calculate_seasonality_strength(self, seasonal: pd.Series, residual: pd.Series) -> float:
         """计算季节性强度"""
         var_seasonal = seasonal.var()
         var_residual = residual.var()
-        return (
-            var_seasonal / (var_seasonal + var_residual)
-            if (var_seasonal + var_residual) > 0
-            else 0
-        )
+        return var_seasonal / (var_seasonal + var_residual) if (var_seasonal + var_residual) > 0 else 0
 
 
 class PatternRecognizer:
@@ -916,9 +824,7 @@ class PatternRecognizer:
 
         for group, stats in plateau_stats.iterrows():
             if stats["count"] >= min_duration and stats["all"]:
-                plateau_indices = data[plateaus].index[
-                    plateaus.groupby(plateau_groups).cumsum() == group
-                ]
+                plateau_indices = data[plateaus].index[plateaus.groupby(plateau_groups).cumsum() == group]
                 patterns.append(
                     {
                         "pattern_type": "plateau",
@@ -985,16 +891,12 @@ class TestDataAnalyzer:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.anomaly_detector = AnomalyDetector(
-            contamination=self.config.get("contamination", 0.1)
-        )
+        self.anomaly_detector = AnomalyDetector(contamination=self.config.get("contamination", 0.1))
         self.trend_analyzer = TrendAnalyzer()
         self.pattern_recognizer = PatternRecognizer()
         self.analysis_history = []
 
-    def analyze_test_metrics(
-        self, metrics_data: Dict[str, List[float]]
-    ) -> Dict[str, Any]:
+    def analyze_test_metrics(self, metrics_data: Dict[str, List[float]]) -> Dict[str, Any]:
         """分析测试指标数据"""
         analysis_result = {
             "timestamp": datetime.now().isoformat(),
@@ -1018,9 +920,7 @@ class TestDataAnalyzer:
                     "median": series.median(),
                     "skewness": series.skew(),
                     "kurtosis": series.kurtosis(),
-                    "coefficient_variation": series.std() / series.mean()
-                    if series.mean() != 0
-                    else 0,
+                    "coefficient_variation": series.std() / series.mean() if series.mean() != 0 else 0,
                 }
 
         # 2. 异常检测
@@ -1037,9 +937,7 @@ class TestDataAnalyzer:
                         "summary": self.anomaly_detector.get_anomaly_summary(),
                     }
                 except Exception as e:
-                    analysis_result["anomaly_detection"][metric_name] = {
-                        "error": str(e)
-                    }
+                    analysis_result["anomaly_detection"][metric_name] = {"error": str(e)}
 
         # 3. 趋势分析（如果有时间序列数据）
         if "timestamp" in metrics_data and len(metrics_data["timestamp"]) > 10:
@@ -1048,9 +946,7 @@ class TestDataAnalyzer:
                 timestamps = pd.to_datetime(metrics_data["timestamp"])
                 for metric_name in [k for k in metrics_data.keys() if k != "timestamp"]:
                     if len(metrics_data[metric_name]) == len(timestamps):
-                        time_series = pd.Series(
-                            metrics_data[metric_name], index=timestamps
-                        )
+                        time_series = pd.Series(metrics_data[metric_name], index=timestamps)
                         trend_result = self.trend_analyzer.analyze_trend(time_series)
                         analysis_result["trend_analysis"][metric_name] = trend_result
             except Exception as e:
@@ -1064,14 +960,10 @@ class TestDataAnalyzer:
                     patterns = self.pattern_recognizer.recognize_patterns(series)
                     analysis_result["pattern_recognition"][metric_name] = patterns
                 except Exception as e:
-                    analysis_result["pattern_recognition"][metric_name] = {
-                        "error": str(e)
-                    }
+                    analysis_result["pattern_recognition"][metric_name] = {"error": str(e)}
 
         # 5. 生成建议
-        analysis_result["recommendations"] = self._generate_recommendations(
-            analysis_result
-        )
+        analysis_result["recommendations"] = self._generate_recommendations(analysis_result)
 
         # 记录分析历史
         self.analysis_history.append(analysis_result)
@@ -1087,9 +979,7 @@ class TestDataAnalyzer:
             if isinstance(anomaly_data, dict) and "anomaly_rate" in anomaly_data:
                 anomaly_rate = anomaly_data["anomaly_rate"]
                 if anomaly_rate > 0.2:  # 异常率超过20%
-                    recommendations.append(
-                        f"{metric_name} 异常率较高 ({anomaly_rate:.2%})，建议检查测试环境或数据源"
-                    )
+                    recommendations.append(f"{metric_name} 异常率较高 ({anomaly_rate:.2%})，建议检查测试环境或数据源")
 
         # 检查趋势
         for metric_name, trend_data in analysis_result["trend_analysis"].items():
@@ -1097,21 +987,15 @@ class TestDataAnalyzer:
                 direction = trend_data["trend_direction"]
                 strength = trend_data.get("trend_strength", 0)
                 if direction == "upward" and strength > 0.5:
-                    recommendations.append(
-                        f"{metric_name} 呈上升趋势 (强度: {strength:.2f})，可能存在性能退化"
-                    )
+                    recommendations.append(f"{metric_name} 呈上升趋势 (强度: {strength:.2f})，可能存在性能退化")
                 elif direction == "downward" and strength > 0.5:
-                    recommendations.append(
-                        f"{metric_name} 呈下降趋势 (强度: {strength:.2f})，性能正在改善"
-                    )
+                    recommendations.append(f"{metric_name} 呈下降趋势 (强度: {strength:.2f})，性能正在改善")
 
         # 检查波动性
         for metric_name, summary in analysis_result["metrics_summary"].items():
             cv = summary.get("coefficient_variation", 0)
             if cv > 0.5:  # 变异系数超过50%
-                recommendations.append(
-                    f"{metric_name} 波动较大 (CV: {cv:.2f})，建议增加稳定性测试"
-                )
+                recommendations.append(f"{metric_name} 波动较大 (CV: {cv:.2f})，建议增加稳定性测试")
 
         return recommendations
 
@@ -1362,11 +1246,7 @@ async def demo_enhanced_data_analyzer():
     print("🚀 演示增强的数据分析器功能")
 
     # 创建分析器
-    analyzer = TestDataAnalyzer(
-        {
-            "contamination": 0.05  # 5%的异常率
-        }
-    )
+    analyzer = TestDataAnalyzer({"contamination": 0.05})  # 5%的异常率
 
     # 模拟测试指标数据
     test_metrics = {
@@ -1435,16 +1315,12 @@ async def demo_enhanced_data_analyzer():
     print("\n🔍 异常检测结果:")
     for metric, data in analysis_result["anomaly_detection"].items():
         if isinstance(data, dict) and "anomaly_rate" in data:
-            print(
-                f"  {metric}: {data['anomaly_count']} 个异常 ({data['anomaly_rate']:.2%})"
-            )
+            print(f"  {metric}: {data['anomaly_count']} 个异常 ({data['anomaly_rate']:.2%})")
 
     print("\n📈 趋势分析结果:")
     for metric, data in analysis_result["trend_analysis"].items():
         if isinstance(data, dict) and "trend_direction" in data:
-            print(
-                f"  {metric}: {data['trend_direction']} (强度: {data['trend_strength']:.2f})"
-            )
+            print(f"  {metric}: {data['trend_direction']} (强度: {data['trend_strength']:.2f})")
 
     print("\n🔮 识别到的模式:")
     for metric, patterns in analysis_result["pattern_recognition"].items():
@@ -1543,9 +1419,7 @@ def test_pattern_analysis():
 
     print(f"识别到 {len(patterns)} 个模式:")
     for pattern in patterns[:5]:
-        print(
-            f"  - {pattern.pattern_name}: 频率={pattern.frequency}, 成功率={pattern.success_rate:.2%}"
-        )
+        print(f"  - {pattern.pattern_name}: 频率={pattern.frequency}, 成功率={pattern.success_rate:.2%}")
 
 
 def test_trend_prediction():
@@ -1572,9 +1446,7 @@ def test_trend_prediction():
 
     print("预测的趋势:")
     for trend in trends:
-        print(
-            f"  - {trend.trend_name}: {trend.direction} (变化率: {trend.change_rate:.2%})"
-        )
+        print(f"  - {trend.trend_name}: {trend.direction} (变化率: {trend.change_rate:.2%})")
 
 
 if __name__ == "__main__":

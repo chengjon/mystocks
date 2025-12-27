@@ -4,10 +4,13 @@ GPU硬件抽象层接口定义
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
+
+if TYPE_CHECKING:
+    from .memory_pool import MemoryPool
 
 
 class StrategyPriority(Enum):
@@ -77,9 +80,7 @@ class IGPUResourceProvider(ABC):
         pass
 
     @abstractmethod
-    async def allocate_context(
-        self, request: AllocationRequest
-    ) -> Optional["IStrategyContext"]:
+    async def allocate_context(self, request: AllocationRequest) -> Optional["IStrategyContext"]:
         """为策略分配GPU上下文"""
         pass
 
@@ -147,9 +148,7 @@ class IHealthMonitor(ABC):
         pass
 
     @abstractmethod
-    def trigger_proactive_alert(
-        self, device_id: int, alert_type: str, message: str
-    ) -> None:
+    def trigger_proactive_alert(self, device_id: int, alert_type: str, message: str) -> None:
         """触发主动告警"""
         pass
 
@@ -158,9 +157,7 @@ class IRealTimeExecutor(ABC):
     """实时执行接口"""
 
     @abstractmethod
-    async def prewarm_for_trading(
-        self, strategy_contexts: List[IStrategyContext]
-    ) -> bool:
+    async def prewarm_for_trading(self, strategy_contexts: List[IStrategyContext]) -> bool:
         """为交易预热GPU资源"""
         pass
 

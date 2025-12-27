@@ -45,7 +45,7 @@ class TestGPUResourceManager:
 
         # 先分配
         gpu_manager.allocate_gpu.return_value = 0
-        gpu_id = gpu_manager.allocate_gpu(task_id, 1)
+        gpu_manager.allocate_gpu(task_id, 1)
 
         # 再释放
         gpu_manager.release_gpu.return_value = True
@@ -72,7 +72,7 @@ class TestGPUResourceManager:
 
         # 高优先级应该优先获得GPU
         gpu_high = gpu_manager.allocate_gpu(high_priority_task, priority=0)
-        gpu_low = gpu_manager.allocate_gpu(low_priority_task, priority=2)
+        gpu_manager.allocate_gpu(low_priority_task, priority=2)
 
         # 高优先级应该成功
         assert gpu_high is not None
@@ -298,9 +298,7 @@ class TestResourceScheduler:
 
         # 应该允许抢占
         scheduler.can_preempt.return_value = True
-        can_preempt = scheduler.can_preempt(
-            current_task=low_priority_task, new_task=high_priority_task
-        )
+        can_preempt = scheduler.can_preempt(current_task=low_priority_task, new_task=high_priority_task)
 
         assert can_preempt is True
 

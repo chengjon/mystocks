@@ -88,9 +88,7 @@ class SyncExecutor:
             logger.error(
                 "❌ Sync execution failed",
                 message_id=message.id,
-                direction=(
-                    message.sync_direction.value if message.sync_direction else None
-                ),
+                direction=(message.sync_direction.value if message.sync_direction else None),
                 error=str(e),
             )
             return {
@@ -275,9 +273,7 @@ class SyncExecutor:
             result2 = self._sync_postgresql_to_tdengine(message)
 
             success = result1["success"] and result2["success"]
-            rows_affected = result1.get("rows_affected", 0) + result2.get(
-                "rows_affected", 0
-            )
+            rows_affected = result1.get("rows_affected", 0) + result2.get("rows_affected", 0)
 
             if success:
                 logger.info(
@@ -300,9 +296,7 @@ class SyncExecutor:
             }
 
         except Exception as e:
-            logger.error(
-                "❌ Bidirectional sync failed", message_id=message.id, error=str(e)
-            )
+            logger.error("❌ Bidirectional sync failed", message_id=message.id, error=str(e))
             return {"success": False, "error": str(e)}
 
 
@@ -434,9 +428,7 @@ class SyncProcessor:
             # 计算同步延迟
             sync_latency_ms = None
             if message.created_at:
-                sync_latency_ms = (
-                    datetime.utcnow() - message.created_at
-                ).total_seconds() * 1000
+                sync_latency_ms = (datetime.utcnow() - message.created_at).total_seconds() * 1000
 
             # 更新状态
             if result["success"]:
@@ -486,9 +478,7 @@ class SyncProcessor:
                 }
 
         except Exception as e:
-            logger.error(
-                "❌ Failed to process message", message_id=message.id, error=str(e)
-            )
+            logger.error("❌ Failed to process message", message_id=message.id, error=str(e))
 
             # 更新为失败状态
             try:
@@ -581,8 +571,7 @@ class SyncProcessor:
             "processed_count": self.processed_count,
             "failed_count": self.failed_count,
             "success_rate": (
-                (self.processed_count / (self.processed_count + self.failed_count))
-                * 100
+                (self.processed_count / (self.processed_count + self.failed_count)) * 100
                 if (self.processed_count + self.failed_count) > 0
                 else 0
             ),

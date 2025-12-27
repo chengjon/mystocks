@@ -335,9 +335,7 @@ class LoadBalancer:
             return server["id"]
 
         elif self.strategy == "least_connections":
-            min_connections_server = min(
-                active_servers, key=lambda s: self.connection_counts[s["id"]]
-            )
+            min_connections_server = min(active_servers, key=lambda s: self.connection_counts[s["id"]])
             return min_connections_server["id"]
 
         elif self.strategy == "random":
@@ -379,9 +377,7 @@ class SSEPerformanceOptimizer:
         }
 
         # 事件队列（按优先级分组）
-        self.event_queues: Dict[EventPriority, deque] = {
-            priority: deque() for priority in EventPriority
-        }
+        self.event_queues: Dict[EventPriority, deque] = {priority: deque() for priority in EventPriority}
 
         # 连接管理
         self.active_connections: Dict[str, Dict[str, Any]] = {}
@@ -395,9 +391,7 @@ class SSEPerformanceOptimizer:
     async def optimize_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
         """优化单个事件"""
         # 1. 去重检查
-        if self.performance_config[
-            "enable_deduplication"
-        ] and self.deduplicator.is_duplicate(event):
+        if self.performance_config["enable_deduplication"] and self.deduplicator.is_duplicate(event):
             logger.debug(f"事件去重: {event.get('event')}")
             return None  # 丢弃重复事件
 
@@ -482,15 +476,12 @@ class SSEPerformanceOptimizer:
                 CompressionType.GZIP
                 if (
                     self.performance_config["enable_compression"]
-                    and len(batch_str)
-                    > self.performance_config["compression_threshold"]
+                    and len(batch_str) > self.performance_config["compression_threshold"]
                 )
                 else CompressionType.NONE
             )
 
-            compressed_data = self.compression_manager.compress_data(
-                batch_str, compression_type
-            )
+            compressed_data = self.compression_manager.compress_data(batch_str, compression_type)
 
             # 更新指标
             self.metrics.total_events_sent += len(batch.events)
@@ -499,9 +490,7 @@ class SSEPerformanceOptimizer:
 
             # 这里应该通过实际的SSE连接发送数据
             # 模拟发送
-            await self._send_to_connection(
-                connection_id, compressed_data, compression_type
-            )
+            await self._send_to_connection(connection_id, compressed_data, compression_type)
 
             return True
 
@@ -510,9 +499,7 @@ class SSEPerformanceOptimizer:
             self.metrics.total_events_dropped += len(batch.events)
             return False
 
-    async def _send_to_connection(
-        self, connection_id: str, data: bytes, compression_type: CompressionType
-    ):
+    async def _send_to_connection(self, connection_id: str, data: bytes, compression_type: CompressionType):
         """发送数据到连接（模拟实现）"""
         # 这里应该集成实际的SSE发送逻辑
         pass
@@ -522,23 +509,15 @@ class SSEPerformanceOptimizer:
         event_type = event.get("event", "")
 
         # 关键事件设为高优先级
-        if any(
-            keyword in event_type.lower()
-            for keyword in ["alert", "error", "critical", "urgent"]
-        ):
+        if any(keyword in event_type.lower() for keyword in ["alert", "error", "critical", "urgent"]):
             return EventPriority.CRITICAL
 
         # 重要事件设为高优先级
-        if any(
-            keyword in event_type.lower()
-            for keyword in ["trade", "order", "position", "price"]
-        ):
+        if any(keyword in event_type.lower() for keyword in ["trade", "order", "position", "price"]):
             return EventPriority.HIGH
 
         # 普通事件设为正常优先级
-        if any(
-            keyword in event_type.lower() for keyword in ["status", "update", "info"]
-        ):
+        if any(keyword in event_type.lower() for keyword in ["status", "update", "info"]):
             return EventPriority.NORMAL
 
         # 其他事件设为低优先级
@@ -571,9 +550,7 @@ class SSEPerformanceOptimizer:
                         # 选择连接（负载均衡）
                         connection_id = self.load_balancer.get_next_server()
                         if connection_id:
-                            task = asyncio.create_task(
-                                self.send_optimized_batch(batch, connection_id)
-                            )
+                            task = asyncio.create_task(self.send_optimized_batch(batch, connection_id))
                             tasks.append(task)
 
                     # 等待所有批次发送完成
@@ -596,8 +573,7 @@ class SSEPerformanceOptimizer:
                 # 计算峰值事件速率（简化计算）
                 self.metrics.peak_events_per_second = max(
                     self.metrics.peak_events_per_second,
-                    self.metrics.total_events_sent
-                    / max(1, time.time() - 1620000000),  # 简化计算
+                    self.metrics.total_events_sent / max(1, time.time() - 1620000000),  # 简化计算
                 )
 
                 # 更新缓存命中率
@@ -605,10 +581,7 @@ class SSEPerformanceOptimizer:
                 self.metrics.cache_hit_rate = cache_stats.get("hit_rate", 0)
 
                 # 记录性能指标
-                if (
-                    self.metrics.total_events_sent > 0
-                    and self.metrics.total_events_sent % 100 == 0
-                ):
+                if self.metrics.total_events_sent > 0 and self.metrics.total_events_sent % 100 == 0:
                     logger.info(
                         f"SSE性能指标: "
                         f"事件发送={self.metrics.total_events_sent}, "
@@ -652,10 +625,7 @@ class SSEPerformanceOptimizer:
             "cache_stats": self.event_cache.get_stats(),
             "deduplication_stats": self.deduplicator.get_stats(),
             "compression_stats": self.compression_manager.get_compression_stats(),
-            "queue_sizes": {
-                priority.value: len(queue)
-                for priority, queue in self.event_queues.items()
-            },
+            "queue_sizes": {priority.value: len(queue) for priority, queue in self.event_queues.items()},
             "config": {
                 "batch_config": self.batch_config,
                 "performance_config": self.performance_config,

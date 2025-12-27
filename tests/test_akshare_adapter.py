@@ -134,9 +134,7 @@ class TestAkshareAdapter:
         assert result is not None
         assert isinstance(result, (dict, pd.DataFrame))
 
-    @pytest.mark.skip(
-        reason="AkshareDataSource未实现get_balance_sheet方法，请使用get_financial_data"
-    )
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_balance_sheet方法，请使用get_financial_data")
     @patch("adapters.akshare_adapter.ak")
     def test_get_balance_sheet(self, mock_ak, sample_financial_data):
         """测试获取资产负债表"""
@@ -150,13 +148,9 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
             if len(result) > 0:
-                assert "report_date" in result.columns or "total_assets" in str(
-                    result.columns
-                )
+                assert "report_date" in result.columns or "total_assets" in str(result.columns)
 
-    @pytest.mark.skip(
-        reason="AkshareDataSource未实现get_income_statement方法，请使用get_financial_data"
-    )
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_income_statement方法，请使用get_financial_data")
     @patch("adapters.akshare_adapter.ak")
     def test_get_income_statement(self, mock_ak, sample_financial_data):
         """测试获取利润表"""
@@ -170,9 +164,7 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
 
-    @pytest.mark.skip(
-        reason="AkshareDataSource未实现get_cashflow_statement方法，请使用get_financial_data"
-    )
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_cashflow_statement方法，请使用get_financial_data")
     @patch("adapters.akshare_adapter.ak")
     def test_get_cashflow_statement(self, mock_ak, sample_financial_data):
         """测试获取现金流量表"""
@@ -201,9 +193,7 @@ class TestAkshareAdapter:
             # 这里只测试不抛出异常
             try:
                 # 调用某个方法看是否能处理格式
-                result = self.adapter.get_stock_daily(
-                    input_symbol, "2024-01-01", "2024-01-10"
-                )
+                result = self.adapter.get_stock_daily(input_symbol, "2024-01-01", "2024-01-10")
                 # 不抛出异常就算通过
                 assert True
             except:

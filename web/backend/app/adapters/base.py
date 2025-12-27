@@ -190,10 +190,7 @@ class BaseDataSourceAdapter(IDataSource):
         self._error_count = 0
         self._total_response_time = 0.0
 
-        logger.info(
-            f"Initialized {self.config.source_type.value} adapter "
-            f"(priority={self.config.priority})"
-        )
+        logger.info(f"Initialized {self.config.source_type.value} adapter " f"(priority={self.config.priority})")
 
     def get_source_type(self) -> DataSourceType:
         """获取数据源类型"""
@@ -203,9 +200,7 @@ class BaseDataSourceAdapter(IDataSource):
         """获取配置"""
         return self.config
 
-    def update_health_status(
-        self, status: DataSourceStatus, error_message: Optional[str] = None
-    ):
+    def update_health_status(self, status: DataSourceStatus, error_message: Optional[str] = None):
         """
         更新健康状态
 
@@ -220,8 +215,7 @@ class BaseDataSourceAdapter(IDataSource):
             self._health_status.error_message = error_message
             self._health_status.error_count += 1
             logger.warning(
-                f"{self.config.source_type.value} health status changed to {status.value}: "
-                f"{error_message}"
+                f"{self.config.source_type.value} health status changed to {status.value}: " f"{error_message}"
             )
 
     def record_request(self, success: bool, response_time: float):
@@ -243,9 +237,7 @@ class BaseDataSourceAdapter(IDataSource):
         # 更新成功率和平均响应时间
         if self._request_count > 0:
             self._health_status.success_rate = self._success_count / self._request_count
-            self._health_status.avg_response_time = (
-                self._total_response_time / self._request_count
-            )
+            self._health_status.avg_response_time = self._total_response_time / self._request_count
 
     def check_health(self) -> DataSourceHealthStatus:
         """
@@ -321,9 +313,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 实时行情数据
         """
-        logger.warning(
-            f"{self.config.source_type.value} does not support realtime_quote"
-        )
+        logger.warning(f"{self.config.source_type.value} does not support realtime_quote")
         return pd.DataFrame()
 
     def fetch_historical_quote(
@@ -345,14 +335,10 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 历史行情数据
         """
-        logger.warning(
-            f"{self.config.source_type.value} does not support historical_quote"
-        )
+        logger.warning(f"{self.config.source_type.value} does not support historical_quote")
         return pd.DataFrame()
 
-    def fetch_fund_flow(
-        self, symbol: Optional[str] = None, timeframe: str = "今日"
-    ) -> pd.DataFrame:
+    def fetch_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> pd.DataFrame:
         """
         获取资金流向（可选方法）
 
@@ -398,9 +384,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 公告数据
         """
-        logger.warning(
-            f"{self.config.source_type.value} does not support announcements"
-        )
+        logger.warning(f"{self.config.source_type.value} does not support announcements")
         return pd.DataFrame()
 
 
@@ -450,9 +434,7 @@ class DataSourceFactory:
 
         elif source_type == DataSourceType.WENCAI:
             # WencaiDataSource暂时不继承BaseDataSourceAdapter
-            logger.warning(
-                "Wencai adapter not yet integrated with BaseDataSourceAdapter"
-            )
+            logger.warning("Wencai adapter not yet integrated with BaseDataSourceAdapter")
 
         else:
             raise ValueError(f"Unsupported data source type: {source_type}")
@@ -464,9 +446,7 @@ class DataSourceFactory:
         return adapter
 
     @classmethod
-    def get_adapter(
-        cls, source_type: DataSourceType
-    ) -> Optional[BaseDataSourceAdapter]:
+    def get_adapter(cls, source_type: DataSourceType) -> Optional[BaseDataSourceAdapter]:
         """
         获取已创建的适配器
 

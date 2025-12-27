@@ -54,9 +54,7 @@ class TestMySQLTableCreation:
         """测试2: 统计MySQL表定义数量"""
         print("\n📍 测试2: 统计MySQL表定义")
 
-        mysql_tables = [
-            t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"
-        ]
+        mysql_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"]
 
         print(f"  MySQL表数量: {len(mysql_tables)}")
 
@@ -105,11 +103,7 @@ class TestMySQLTableCreation:
 
         # 查找stock_info表定义
         stock_info = next(
-            (
-                t
-                for t in self.manager.config["tables"]
-                if t["table_name"] == "stock_info"
-            ),
+            (t for t in self.manager.config["tables"] if t["table_name"] == "stock_info"),
             None,
         )
 
@@ -152,11 +146,7 @@ class TestMySQLTableCreation:
         print("\n📍 测试4: 创建MySQL表")
 
         try:
-            mysql_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "MySQL"
-            ]
+            mysql_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"]
 
             created_count = 0
             skipped_count = 0
@@ -176,9 +166,7 @@ class TestMySQLTableCreation:
                     error_count += 1
                     print(f"  ⚠️  失败: {table_def['table_name']} - {str(e)[:50]}")
 
-            print(
-                f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
-            )
+            print(f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个")
             print("  ✅ MySQL表创建测试完成")
 
         except Exception as e:
@@ -190,15 +178,9 @@ class TestMySQLTableCreation:
         print("\n📍 测试5: 验证表存在性")
 
         try:
-            mysql_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "MySQL"
-            ]
+            mysql_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"]
 
-            database_name = (
-                mysql_tables[0].get("database_name") if mysql_tables else None
-            )
+            database_name = mysql_tables[0].get("database_name") if mysql_tables else None
 
             for table_def in mysql_tables[:5]:  # 只检查前5个
                 table_name = table_def["table_name"]
@@ -241,9 +223,7 @@ class TestMySQLTableCreation:
         """测试7: 验证自增主键"""
         print("\n📍 测试7: 验证自增主键配置")
 
-        mysql_tables = [
-            t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"
-        ]
+        mysql_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "MySQL"]
 
         tables_with_auto_inc = []
         for table in mysql_tables:

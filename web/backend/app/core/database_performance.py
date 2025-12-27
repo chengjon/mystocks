@@ -124,9 +124,7 @@ class DatabasePerformanceManager:
         try:
             await self.pool_optimizer.start_monitoring()
             await self.performance_monitor.start_monitoring()
-            logger.info(
-                "✅ Database Performance Manager initialized and monitoring started"
-            )
+            logger.info("✅ Database Performance Manager initialized and monitoring started")
         except Exception as e:
             logger.error("❌ Error initializing performance manager", error=str(e))
             raise
@@ -145,9 +143,7 @@ class DatabasePerformanceManager:
         """获取数据库连接"""
         return self.pool_optimizer.get_connection(conn_obj)
 
-    def return_connection(
-        self, conn_id: str, error: bool = False, latency_ms: float = 0.0
-    ) -> None:
+    def return_connection(self, conn_id: str, error: bool = False, latency_ms: float = 0.0) -> None:
         """归还数据库连接"""
         self.pool_optimizer.return_connection(conn_id, error, latency_ms)
 
@@ -158,9 +154,7 @@ class DatabasePerformanceManager:
         execute_immediately: bool = False,
     ):
         """排队批量INSERT"""
-        return await self.query_batcher.queue_insert(
-            table_name, rows, execute_immediately
-        )
+        return await self.query_batcher.queue_insert(table_name, rows, execute_immediately)
 
     async def queue_update(
         self,
@@ -169,9 +163,7 @@ class DatabasePerformanceManager:
         execute_immediately: bool = False,
     ):
         """排队批量UPDATE"""
-        return await self.query_batcher.queue_update(
-            table_name, updates, execute_immediately
-        )
+        return await self.query_batcher.queue_update(table_name, updates, execute_immediately)
 
     async def queue_delete(
         self,
@@ -180,9 +172,7 @@ class DatabasePerformanceManager:
         execute_immediately: bool = False,
     ):
         """排队批量DELETE"""
-        return await self.query_batcher.queue_delete(
-            table_name, delete_rows, execute_immediately
-        )
+        return await self.query_batcher.queue_delete(table_name, delete_rows, execute_immediately)
 
     async def flush_batches(self) -> None:
         """刷新所有批处理缓冲"""
@@ -260,15 +250,9 @@ class DatabasePerformanceManager:
 
         recent_metrics = self.metrics_history[-60:]  # 最近60个数据点
 
-        avg_pool_idle = sum(m.pool_size_idle for m in recent_metrics) / len(
-            recent_metrics
-        )
-        avg_pool_in_use = sum(m.pool_size_in_use for m in recent_metrics) / len(
-            recent_metrics
-        )
-        avg_slow_queries = sum(m.slow_queries for m in recent_metrics) / len(
-            recent_metrics
-        )
+        avg_pool_idle = sum(m.pool_size_idle for m in recent_metrics) / len(recent_metrics)
+        avg_pool_in_use = sum(m.pool_size_in_use for m in recent_metrics) / len(recent_metrics)
+        avg_slow_queries = sum(m.slow_queries for m in recent_metrics) / len(recent_metrics)
         avg_error_rate = sum(m.error_rate for m in recent_metrics) / len(recent_metrics)
 
         return {
@@ -278,9 +262,7 @@ class DatabasePerformanceManager:
             "average_slow_queries": round(avg_slow_queries, 2),
             "average_error_rate": round(avg_error_rate, 2),
             "peak_in_use_connections": max(m.pool_size_in_use for m in recent_metrics),
-            "connection_reuse_rate": self.pool_optimizer.get_pool_stats()[
-                "performance"
-            ]["connection_reuse_rate"],
+            "connection_reuse_rate": self.pool_optimizer.get_pool_stats()["performance"]["connection_reuse_rate"],
             "timestamp": datetime.utcnow().isoformat(),
         }
 

@@ -43,16 +43,12 @@ class DeviceAllocation:
     def add_strategy(self, strategy_id: str, context: IStrategyContext, memory_mb: int):
         self.allocated_strategies[strategy_id] = context
         self.total_allocated_memory += memory_mb
-        self.peak_memory_usage = max(
-            self.peak_memory_usage, self.total_allocated_memory
-        )
+        self.peak_memory_usage = max(self.peak_memory_usage, self.total_allocated_memory)
 
     def remove_strategy(self, strategy_id: str, memory_mb: int):
         if strategy_id in self.allocated_strategies:
             del self.allocated_strategies[strategy_id]
-            self.total_allocated_memory = max(
-                0, self.total_allocated_memory - memory_mb
-            )
+            self.total_allocated_memory = max(0, self.total_allocated_memory - memory_mb)
 
 
 class GPUResourceManager(IGPUResourceProvider):
@@ -86,15 +82,11 @@ class GPUResourceManager(IGPUResourceProvider):
 
             # 初始化设备分配状态
             for device_id in self.devices:
-                self.device_allocations[device_id] = DeviceAllocation(
-                    device_id=device_id
-                )
+                self.device_allocations[device_id] = DeviceAllocation(device_id=device_id)
                 self.available_devices.add(device_id)
 
             self._initialized = True
-            logger.info(
-                f"GPU ResourceManager initialized with {len(self.devices)} devices"
-            )
+            logger.info(f"GPU ResourceManager initialized with {len(self.devices)} devices")
             return True
 
         except Exception as e:
@@ -132,7 +124,7 @@ class GPUResourceManager(IGPUResourceProvider):
                 try:
                     major, minor = pynvml.nvmlDeviceGetCudaComputeCapability(handle)
                     compute_capability = (major, minor)
-                except:
+                except Exception:
                     compute_capability = (0, 0)
 
                 device = GPUDeviceInfo(
@@ -179,9 +171,7 @@ class GPUResourceManager(IGPUResourceProvider):
 
         for device in simulated_devices:
             self.devices[device.device_id] = device
-            logger.info(
-                f"Simulated GPU {device.device_id}: {device.name} ({device.memory_total}MB)"
-            )
+            logger.info(f"Simulated GPU {device.device_id}: {device.name} ({device.memory_total}MB)")
 
     def get_available_devices(self) -> List[GPUDeviceInfo]:
         """获取可用GPU设备列表"""
@@ -190,9 +180,7 @@ class GPUResourceManager(IGPUResourceProvider):
 
         return [device for device in self.devices.values() if device.is_available]
 
-    async def allocate_context(
-        self, request: AllocationRequest
-    ) -> Optional[IStrategyContext]:
+    async def allocate_context(self, request: AllocationRequest) -> Optional[IStrategyContext]:
         """为策略分配GPU上下文"""
         async with self._lock:
             if not self._initialized:
@@ -220,14 +208,10 @@ class GPUResourceManager(IGPUResourceProvider):
 
             # 记录分配
             device_allocation = self.device_allocations[device_id]
-            device_allocation.add_strategy(
-                request.strategy_id, context, request.required_memory
-            )
+            device_allocation.add_strategy(request.strategy_id, context, request.required_memory)
             self.strategy_contexts[request.strategy_id] = context
 
-            logger.info(
-                f"Allocated GPU context for strategy {request.strategy_id} on device {device_id}"
-            )
+            logger.info(f"Allocated GPU context for strategy {request.strategy_id} on device {device_id}")
             return context
 
     async def _select_best_device(self, request: AllocationRequest) -> Optional[int]:
@@ -241,9 +225,7 @@ class GPUResourceManager(IGPUResourceProvider):
             device_allocation = self.device_allocations[device_id]
 
             # 检查内存是否足够
-            available_memory = (
-                device.memory_total - device_allocation.total_allocated_memory
-            )
+            available_memory = device.memory_total - device_allocation.total_allocated_memory
             if available_memory < request.required_memory:
                 continue
 
@@ -251,22 +233,16 @@ class GPUResourceManager(IGPUResourceProvider):
             if device.current_utilization > 0.9:  # 90%以上设备不考虑
                 continue
 
-            suitable_devices.append(
-                (device_id, available_memory, device.current_utilization)
-            )
+            suitable_devices.append((device_id, available_memory, device.current_utilization))
 
         if not suitable_devices:
             return None
 
         # 选择可用内存最多且利用率最低的设备
-        suitable_devices.sort(
-            key=lambda x: (x[2], -x[1])
-        )  # 先按利用率升序，再按可用内存降序
+        suitable_devices.sort(key=lambda x: (x[2], -x[1]))  # 先按利用率升序，再按可用内存降序
         return suitable_devices[0][0]
 
-    async def _try_preempt_low_priority_strategies(
-        self, request: AllocationRequest
-    ) -> Optional[int]:
+    async def _try_preempt_low_priority_strategies(self, request: AllocationRequest) -> Optional[int]:
         """尝试抢占低优先级策略资源"""
         if request.priority == StrategyPriority.LOW:
             return None  # 低优先级策略不能抢占其他策略
@@ -276,15 +252,12 @@ class GPUResourceManager(IGPUResourceProvider):
 
         for device_id, device_allocation in self.device_allocations.items():
             for strategy_id, context in device_allocation.allocated_strategies.items():
-                strategy_priority = getattr(
-                    context, "priority", StrategyPriority.MEDIUM
-                )
+                strategy_priority = getattr(context, "priority", StrategyPriority.MEDIUM)
 
                 # 只有高优先级策略可以抢占中低优先级策略
                 if request.priority.value < strategy_priority.value:
                     available_memory = self.devices[device_id].memory_total - (
-                        device_allocation.total_allocated_memory
-                        - getattr(context, "allocated_memory", 0)
+                        device_allocation.total_allocated_memory - getattr(context, "allocated_memory", 0)
                     )
 
                     if available_memory >= request.required_memory:
@@ -305,9 +278,7 @@ class GPUResourceManager(IGPUResourceProvider):
         device_id, strategy_id, _, _ = preemptible_strategies[0]
 
         # 执行抢占
-        logger.info(
-            f"Preempting low priority strategy {strategy_id} on device {device_id}"
-        )
+        logger.info(f"Preempting low priority strategy {strategy_id} on device {device_id}")
         success = await self._execute_preemption(device_id, strategy_id)
 
         if success:
@@ -331,17 +302,15 @@ class GPUResourceManager(IGPUResourceProvider):
             logger.error(f"Error during preemption of strategy {strategy_id}: {e}")
             return False
 
-    async def _create_strategy_context(
-        self, device_id: int, request: AllocationRequest
-    ) -> Optional[IStrategyContext]:
+    async def _create_strategy_context(self, device_id: int, request: AllocationRequest) -> Optional[IStrategyContext]:
         """创建策略上下文"""
         try:
-            # 创建内存池
-            memory_config = MemoryPoolConfig(
-                pool_size_mb=request.required_memory,
-                device_id=device_id,
-                strategy_id=request.strategy_id,
-            )
+            # 创建内存池配置
+            memory_config = {
+                "pool_size_mb": request.required_memory,
+                "device_id": device_id,
+                "strategy_id": request.strategy_id,
+            }
             memory_pool = MemoryPool(memory_config)
 
             # 使用默认性能配置
@@ -378,9 +347,7 @@ class GPUResourceManager(IGPUResourceProvider):
                 memory_pool = context.get_memory_pool()
                 memory_pool.cleanup()
             except Exception as e:
-                logger.error(
-                    f"Error cleaning up memory pool for strategy {strategy_id}: {e}"
-                )
+                logger.error(f"Error cleaning up memory pool for strategy {strategy_id}: {e}")
 
             # 从设备分配中移除
             if device_id in self.device_allocations:
@@ -410,12 +377,8 @@ class GPUResourceManager(IGPUResourceProvider):
             "memory_used_mb": device.current_memory_usage,
             "memory_utilization": device.current_memory_usage / device.memory_total,
             "compute_utilization": device.current_utilization,
-            "allocated_strategies": len(allocation.allocated_strategies)
-            if allocation
-            else 0,
-            "allocated_memory_mb": allocation.total_allocated_memory
-            if allocation
-            else 0,
+            "allocated_strategies": len(allocation.allocated_strategies) if allocation else 0,
+            "allocated_memory_mb": allocation.total_allocated_memory if allocation else 0,
             "peak_memory_usage_mb": allocation.peak_memory_usage if allocation else 0,
             "health_status": self._calculate_health_status(device),
         }
@@ -436,9 +399,7 @@ class GPUResourceManager(IGPUResourceProvider):
         else:
             return "healthy"
 
-    async def get_strategy_context(
-        self, strategy_id: str
-    ) -> Optional[IStrategyContext]:
+    async def get_strategy_context(self, strategy_id: str) -> Optional[IStrategyContext]:
         """获取策略上下文"""
         return self.strategy_contexts.get(strategy_id)
 
@@ -460,13 +421,11 @@ class GPUResourceManager(IGPUResourceProvider):
                         try:
                             utilization = pynvml.nvmlDeviceGetUtilizationRates(handle)
                             device.current_utilization = utilization.gpu / 100.0
-                        except:
+                        except Exception:
                             device.current_utilization = 0.0
 
                     except Exception as e:
-                        logger.warning(
-                            f"Failed to update metrics for device {device_id}: {e}"
-                        )
+                        logger.warning(f"Failed to update metrics for device {device_id}: {e}")
                         device.current_utilization = 0.0
                         device.current_memory_usage = 0
 
@@ -481,13 +440,8 @@ class GPUResourceManager(IGPUResourceProvider):
         active_strategies = len(self.strategy_contexts)
 
         total_memory = sum(device.memory_total for device in self.devices.values())
-        used_memory = sum(
-            device.current_memory_usage for device in self.devices.values()
-        )
-        allocated_memory = sum(
-            allocation.total_allocated_memory
-            for allocation in self.device_allocations.values()
-        )
+        used_memory = sum(device.current_memory_usage for device in self.devices.values())
+        allocated_memory = sum(allocation.total_allocated_memory for allocation in self.device_allocations.values())
 
         summary = {
             "total_devices": total_devices,
@@ -497,9 +451,7 @@ class GPUResourceManager(IGPUResourceProvider):
             "used_memory_mb": used_memory,
             "allocated_memory_mb": allocated_memory,
             "memory_utilization": used_memory / total_memory if total_memory > 0 else 0,
-            "devices": [
-                self.get_device_health(device_id) for device_id in self.devices.keys()
-            ],
+            "devices": [self.get_device_health(device_id) for device_id in self.devices.keys()],
         }
 
         return summary

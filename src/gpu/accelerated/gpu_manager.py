@@ -93,9 +93,7 @@ class GPUUnifiedManager:
 
         try:
             # 数据预处理
-            processed_data = self.data_processor.preprocess(
-                data=data, config=processing_config or ProcessingConfig()
-            )
+            processed_data = self.data_processor.preprocess(data=data, config=processing_config or ProcessingConfig())
 
             # 特征生成
             feature_data = self.feature_generator.generate_features(processed_data)
@@ -108,9 +106,7 @@ class GPUUnifiedManager:
                 try:
                     import cupy as cp
 
-                    gpu_memory = (
-                        cp.cuda.get_default_memory_pool().used_bytes() / 1024 / 1024
-                    )
+                    gpu_memory = cp.cuda.get_default_memory_pool().used_bytes() / 1024 / 1024
                 except Exception:
                     gpu_memory = 0.0
 
@@ -126,9 +122,7 @@ class GPUUnifiedManager:
 
             self._update_performance_stats(result)
 
-            self.logger.info(
-                f"GPU数据处理完成 - 耗时: {processing_time:.4f}秒, 数据量: {len(data)}行"
-            )
+            self.logger.info(f"GPU数据处理完成 - 耗时: {processing_time:.4f}秒, 数据量: {len(data)}行")
             return result
 
         except Exception as e:
@@ -160,11 +154,9 @@ class GPUUnifiedManager:
         try:
             # 如果没有训练过，先训练模型
             if not self.price_predictor.is_fitted:
-                training_data = (
-                    data if training_horizon is None else data[-training_horizon:]
-                )
+                training_data = data if training_horizon is None else data[-training_horizon:]
                 self.logger.info("开始训练GPU预测模型...")
-                training_results = self.price_predictor.train_models(training_data)
+                self.price_predictor.train_models(training_data)
                 self.logger.info("GPU模型训练完成")
 
             # 进行预测
@@ -191,9 +183,7 @@ class GPUUnifiedManager:
 
             self._update_performance_stats(result)
 
-            self.logger.info(
-                f"GPU预测完成 - 模型: {model_type}, 预测价格: {prediction_result.predicted_price:.2f}"
-            )
+            self.logger.info(f"GPU预测完成 - 模型: {model_type}, 预测价格: {prediction_result.predicted_price:.2f}")
             return result
 
         except Exception as e:
@@ -218,9 +208,7 @@ class GPUUnifiedManager:
         """批量GPU处理"""
         results = []
 
-        self.logger.info(
-            f"开始批量GPU处理 - 数据数量: {len(data_list)}, 操作: {operation}"
-        )
+        self.logger.info(f"开始批量GPU处理 - 数据数量: {len(data_list)}, 操作: {operation}")
 
         for i, data in enumerate(data_list):
             try:
@@ -251,21 +239,15 @@ class GPUUnifiedManager:
                 )
                 results.append(error_result)
 
-        self.logger.info(
-            f"批量GPU处理完成 - 成功: {len([r for r in results if not r.errors])}/{len(data_list)}"
-        )
+        self.logger.info(f"批量GPU处理完成 - 成功: {len([r for r in results if not r.errors])}/{len(data_list)}")
         return results
 
-    def optimize_hyperparameters_with_gpu(
-        self, data: pd.DataFrame, model_type: str = "ridge"
-    ) -> GPUProcessingResult:
+    def optimize_hyperparameters_with_gpu(self, data: pd.DataFrame, model_type: str = "ridge") -> GPUProcessingResult:
         """使用GPU优化超参数"""
         start_time = time.time()
 
         try:
-            optimization_result = self.price_predictor.optimize_hyperparameters(
-                data=data, model_type=model_type
-            )
+            optimization_result = self.price_predictor.optimize_hyperparameters(data=data, model_type=model_type)
 
             processing_time = time.time() - start_time
 
@@ -306,9 +288,7 @@ class GPUUnifiedManager:
 
             return result
 
-    def benchmark_gpu_vs_cpu(
-        self, data: pd.DataFrame, operation: str = "process"
-    ) -> Dict:
+    def benchmark_gpu_vs_cpu(self, data: pd.DataFrame, operation: str = "process") -> Dict:
         """GPU与CPU性能对比"""
         self.logger.info("开始GPU vs CPU性能对比测试")
 
@@ -360,34 +340,20 @@ class GPUUnifiedManager:
             "gpu_time": gpu_time,
             "cpu_time": cpu_time,
             "speedup": speedup,
-            "gpu_memory_usage": (
-                gpu_result.gpu_memory_usage
-                if hasattr(gpu_result, "gpu_memory_usage")
-                else 0
-            ),
-            "gpu_result": (
-                gpu_result.results if hasattr(gpu_result, "results") else None
-            ),
+            "gpu_memory_usage": (gpu_result.gpu_memory_usage if hasattr(gpu_result, "gpu_memory_usage") else 0),
+            "gpu_result": (gpu_result.results if hasattr(gpu_result, "results") else None),
             "cpu_result": cpu_result,
             "efficiency_metrics": {
                 "gpu_efficiency": (1 / gpu_time) if gpu_time > 0 else 0,
                 "cpu_efficiency": (1 / cpu_time) if cpu_time > 0 else 0,
-                "memory_efficiency": (
-                    (1 / gpu_result.gpu_memory_usage)
-                    if gpu_result.gpu_memory_usage > 0
-                    else 0
-                ),
+                "memory_efficiency": ((1 / gpu_result.gpu_memory_usage) if gpu_result.gpu_memory_usage > 0 else 0),
             },
         }
 
-        self.logger.info(
-            f"性能对比完成 - GPU: {gpu_time:.4f}s, CPU: {cpu_time:.4f}s, 加速比: {speedup:.2f}x"
-        )
+        self.logger.info(f"性能对比完成 - GPU: {gpu_time:.4f}s, CPU: {cpu_time:.4f}s, 加速比: {speedup:.2f}x")
         return benchmark_result
 
-    def _calculate_speedup_factor(
-        self, data: pd.DataFrame, processing_time: float
-    ) -> float:
+    def _calculate_speedup_factor(self, data: pd.DataFrame, processing_time: float) -> float:
         """计算加速因子"""
         # 基于数据大小和时间的简单估算
         data_size = len(data)
@@ -436,13 +402,12 @@ class GPUUnifiedManager:
 
         # 计算平均加速比
         total_operations = (
-            self.performance_stats["gpu_enabled_operations"]
-            + self.performance_stats["cpu_fallback_operations"]
+            self.performance_stats["gpu_enabled_operations"] + self.performance_stats["cpu_fallback_operations"]
         )
         if total_operations > 0:
-            self.performance_stats["average_speedup"] = self.performance_stats[
-                "total_processing_time"
-            ] / max(1, result.processing_time * total_operations)
+            self.performance_stats["average_speedup"] = self.performance_stats["total_processing_time"] / max(
+                1, result.processing_time * total_operations
+            )
 
     def get_performance_summary(self) -> Dict[str, Any]:
         """获取性能总结"""
@@ -451,22 +416,16 @@ class GPUUnifiedManager:
             "gpu_components_status": {
                 "data_processor": {
                     "enabled": self.data_processor.gpu_enabled,
-                    "chunks_processed": getattr(
-                        self.data_processor, "chunks_processed", 0
-                    ),
+                    "chunks_processed": getattr(self.data_processor, "chunks_processed", 0),
                 },
                 "feature_generator": {
                     "enabled": self.feature_generator.gpu_enabled,
-                    "features_generated": getattr(
-                        self.feature_generator, "features_generated", 0
-                    ),
+                    "features_generated": getattr(self.feature_generator, "features_generated", 0),
                 },
                 "price_predictor": {
                     "enabled": self.price_predictor.gpu_enabled,
                     "is_fitted": self.price_predictor.is_fitted,
-                    "total_predictions": self.price_predictor.performance_stats[
-                        "total_predictions"
-                    ],
+                    "total_predictions": self.price_predictor.performance_stats["total_predictions"],
                 },
             },
             "configuration": {

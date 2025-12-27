@@ -193,9 +193,7 @@ class QueryRouter(IQueryRouter):
             decision = await self._make_routing_decision(query)
             self._update_metrics(start_time, success=True)
 
-            logger.info(
-                f"查询路由到: {decision.target_database.value}, 置信度: {decision.confidence:.2f}"
-            )
+            logger.info(f"查询路由到: {decision.target_database.value}, 置信度: {decision.confidence:.2f}")
             logger.debug(f"路由原因: {decision.reasoning}")
 
             return decision.selected_adapter
@@ -205,9 +203,7 @@ class QueryRouter(IQueryRouter):
             logger.error(f"查询路由失败: {e}")
             raise
 
-    async def route_operation(
-        self, operation: QueryOperation, table_name: str
-    ) -> IDataAccess:
+    async def route_operation(self, operation: QueryOperation, table_name: str) -> IDataAccess:
         """路由操作到合适的数据库"""
         # 创建简单查询用于路由
         query = DataQuery(operation=operation, table_name=table_name)
@@ -259,9 +255,7 @@ class QueryRouter(IQueryRouter):
         selected_adapter = await self._select_adapter(target_db)
 
         # 生成替代方案
-        alternatives = await self._generate_alternatives(
-            query, target_db, applicable_rules[1:3]
-        )
+        alternatives = await self._generate_alternatives(query, target_db, applicable_rules[1:3])
 
         return RoutingDecision(
             target_database=target_db,
@@ -296,10 +290,7 @@ class QueryRouter(IQueryRouter):
 
         for rule, confidence in other_rules:
             try:
-                if (
-                    rule.target_database in self.adapters
-                    and self.adapters[rule.target_database]
-                ):
+                if rule.target_database in self.adapters and self.adapters[rule.target_database]:
                     adapter = await self._select_adapter(rule.target_database)
                     reason = f"替代规则: {rule.name} (置信度: {confidence:.2f})"
                     alternatives.append((rule.target_database, adapter, reason))
@@ -313,10 +304,7 @@ class QueryRouter(IQueryRouter):
         logger.warning("使用回退路由策略")
 
         # 优先使用PostgreSQL
-        if (
-            DatabaseType.POSTGRESQL in self.adapters
-            and self.adapters[DatabaseType.POSTGRESQL]
-        ):
+        if DatabaseType.POSTGRESQL in self.adapters and self.adapters[DatabaseType.POSTGRESQL]:
             adapter = await self._select_adapter(DatabaseType.POSTGRESQL)
             return RoutingDecision(
                 target_database=DatabaseType.POSTGRESQL,
@@ -327,10 +315,7 @@ class QueryRouter(IQueryRouter):
             )
 
         # 其次使用TDengine
-        elif (
-            DatabaseType.TDENGINE in self.adapters
-            and self.adapters[DatabaseType.TDENGINE]
-        ):
+        elif DatabaseType.TDENGINE in self.adapters and self.adapters[DatabaseType.TDENGINE]:
             adapter = await self._select_adapter(DatabaseType.TDENGINE)
             return RoutingDecision(
                 target_database=DatabaseType.TDENGINE,
@@ -417,10 +402,7 @@ class QueryRouter(IQueryRouter):
         # 检查过滤器中的时间条件
         if query.filters:
             for key, value in query.filters.items():
-                if any(
-                    time_key in key.lower()
-                    for time_key in ["time", "date", "timestamp"]
-                ):
+                if any(time_key in key.lower() for time_key in ["time", "date", "timestamp"]):
                     return True
 
         return False
@@ -516,9 +498,7 @@ class QueryRouter(IQueryRouter):
 
         return False
 
-    def _estimate_routing_cost(
-        self, query: DataQuery, target_db: DatabaseType
-    ) -> float:
+    def _estimate_routing_cost(self, query: DataQuery, target_db: DatabaseType) -> float:
         """估算路由成本"""
         # 简化的成本估算
         base_cost = 1.0
@@ -550,9 +530,7 @@ class QueryRouter(IQueryRouter):
         if self.routing_metrics.total_routes == 1:
             self.routing_metrics.average_routing_time = execution_time
         else:
-            total_time = self.routing_metrics.average_routing_time * (
-                self.routing_metrics.total_routes - 1
-            )
+            total_time = self.routing_metrics.average_routing_time * (self.routing_metrics.total_routes - 1)
             self.routing_metrics.average_routing_time = (
                 total_time + execution_time
             ) / self.routing_metrics.total_routes

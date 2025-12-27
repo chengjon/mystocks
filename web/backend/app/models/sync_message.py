@@ -162,16 +162,12 @@ class SyncMessage(Base):
 
     max_retries = Column(Integer, nullable=False, default=3, comment="最大重试次数")
 
-    next_retry_at = Column(
-        DateTime, nullable=True, index=True, comment="下次重试时间 (指数退避策略)"
-    )
+    next_retry_at = Column(DateTime, nullable=True, index=True, comment="下次重试时间 (指数退避策略)")
 
     # ==================== 错误信息 ====================
     error_message = Column(Text, nullable=True, comment="错误消息")
 
-    error_details = Column(
-        JSONB, nullable=True, comment="错误详情 (堆栈跟踪、上下文等)"
-    )
+    error_details = Column(JSONB, nullable=True, comment="错误详情 (堆栈跟踪、上下文等)")
 
     # ==================== 时间戳 ====================
     created_at = Column(
@@ -207,21 +203,15 @@ class SyncMessage(Base):
         comment="处理耗时(毫秒): completed_at - started_at",
     )
 
-    processed_by = Column(
-        String(100), nullable=True, comment="处理者 (worker ID或进程ID)"
-    )
+    processed_by = Column(String(100), nullable=True, comment="处理者 (worker ID或进程ID)")
 
     # ==================== 额外元数据 ====================
-    extra_metadata = Column(
-        JSONB, nullable=True, comment="额外元数据 (请求ID、用户ID、业务上下文等)"
-    )
+    extra_metadata = Column(JSONB, nullable=True, comment="额外元数据 (请求ID、用户ID、业务上下文等)")
 
     # ==================== 表约束 ====================
     __table_args__ = (
         # 优先级约束
-        CheckConstraint(
-            "priority >= 1 AND priority <= 10", name="check_priority_range"
-        ),
+        CheckConstraint("priority >= 1 AND priority <= 10", name="check_priority_range"),
         # 重试次数约束
         CheckConstraint("retry_count >= 0", name="check_retry_count_non_negative"),
         CheckConstraint("max_retries >= 0", name="check_max_retries_non_negative"),
@@ -263,25 +253,15 @@ class SyncMessage(Base):
             "priority": self.priority,
             "retry_count": self.retry_count,
             "max_retries": self.max_retries,
-            "next_retry_at": (
-                self.next_retry_at.isoformat() if self.next_retry_at else None
-            ),
+            "next_retry_at": (self.next_retry_at.isoformat() if self.next_retry_at else None),
             "error_message": self.error_message,
             "error_details": self.error_details,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": (
-                self.completed_at.isoformat() if self.completed_at else None
-            ),
-            "sync_latency_ms": (
-                float(self.sync_latency_ms) if self.sync_latency_ms else None
-            ),
-            "processing_duration_ms": (
-                float(self.processing_duration_ms)
-                if self.processing_duration_ms
-                else None
-            ),
+            "completed_at": (self.completed_at.isoformat() if self.completed_at else None),
+            "sync_latency_ms": (float(self.sync_latency_ms) if self.sync_latency_ms else None),
+            "processing_duration_ms": (float(self.processing_duration_ms) if self.processing_duration_ms else None),
             "processed_by": self.processed_by,
             "extra_metadata": self.extra_metadata,
         }
@@ -289,17 +269,12 @@ class SyncMessage(Base):
     @property
     def is_retryable(self) -> bool:
         """判断是否可以重试"""
-        return (
-            self.status in [MessageStatus.FAILED, MessageStatus.RETRY]
-            and self.retry_count < self.max_retries
-        )
+        return self.status in [MessageStatus.FAILED, MessageStatus.RETRY] and self.retry_count < self.max_retries
 
     @property
     def should_move_to_dead_letter(self) -> bool:
         """判断是否应该移动到死信队列"""
-        return (
-            self.status == MessageStatus.FAILED and self.retry_count >= self.max_retries
-        )
+        return self.status == MessageStatus.FAILED and self.retry_count >= self.max_retries
 
 
 class SyncStatistics(Base):
@@ -317,20 +292,12 @@ class SyncStatistics(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     # ==================== 时间窗口 ====================
-    window_start = Column(
-        DateTime, nullable=False, index=True, comment="统计窗口开始时间"
-    )
-    window_end = Column(
-        DateTime, nullable=False, index=True, comment="统计窗口结束时间"
-    )
-    window_size_minutes = Column(
-        Integer, nullable=False, default=5, comment="窗口大小(分钟)"
-    )
+    window_start = Column(DateTime, nullable=False, index=True, comment="统计窗口开始时间")
+    window_end = Column(DateTime, nullable=False, index=True, comment="统计窗口结束时间")
+    window_size_minutes = Column(Integer, nullable=False, default=5, comment="窗口大小(分钟)")
 
     # ==================== 表级维度 ====================
-    source_table = Column(
-        String(100), nullable=True, index=True, comment="源表名称 (NULL表示全局统计)"
-    )
+    source_table = Column(String(100), nullable=True, index=True, comment="源表名称 (NULL表示全局统计)")
     target_table = Column(String(100), nullable=True, index=True, comment="目标表名称")
 
     # ==================== 消息计数 ====================
@@ -341,34 +308,20 @@ class SyncStatistics(Base):
     dead_letter_count = Column(Integer, nullable=False, default=0, comment="死信数")
 
     # ==================== 性能指标 ====================
-    avg_sync_latency_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="平均同步延迟(毫秒)"
-    )
-    p50_sync_latency_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="P50同步延迟(毫秒)"
-    )
-    p95_sync_latency_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="P95同步延迟(毫秒)"
-    )
-    p99_sync_latency_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="P99同步延迟(毫秒)"
-    )
-    max_sync_latency_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="最大同步延迟(毫秒)"
-    )
+    avg_sync_latency_ms = Column(DECIMAL(10, 2), nullable=True, comment="平均同步延迟(毫秒)")
+    p50_sync_latency_ms = Column(DECIMAL(10, 2), nullable=True, comment="P50同步延迟(毫秒)")
+    p95_sync_latency_ms = Column(DECIMAL(10, 2), nullable=True, comment="P95同步延迟(毫秒)")
+    p99_sync_latency_ms = Column(DECIMAL(10, 2), nullable=True, comment="P99同步延迟(毫秒)")
+    max_sync_latency_ms = Column(DECIMAL(10, 2), nullable=True, comment="最大同步延迟(毫秒)")
 
-    avg_processing_duration_ms = Column(
-        DECIMAL(10, 2), nullable=True, comment="平均处理耗时(毫秒)"
-    )
+    avg_processing_duration_ms = Column(DECIMAL(10, 2), nullable=True, comment="平均处理耗时(毫秒)")
 
     # ==================== 成功率 ====================
     success_rate = Column(DECIMAL(5, 2), nullable=True, comment="成功率 (%)")
     failure_rate = Column(DECIMAL(5, 2), nullable=True, comment="失败率 (%)")
 
     # ==================== 时间戳 ====================
-    calculated_at = Column(
-        DateTime, nullable=False, default=datetime.utcnow, comment="计算时间"
-    )
+    calculated_at = Column(DateTime, nullable=False, default=datetime.utcnow, comment="计算时间")
 
     # ==================== 表约束 ====================
     __table_args__ = (

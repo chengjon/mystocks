@@ -64,21 +64,15 @@ class UserStrategyModel(Base):
     status = Column(String(20), nullable=False, default="draft")
     tags = Column(ARRAY(Text), default=list)
     created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
-    updated_at = Column(
-        TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    updated_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     __table_args__ = (
         CheckConstraint(
             "strategy_type IN ('momentum', 'mean_reversion', 'breakout', 'grid', 'custom')",
             name="chk_strategy_type",
         ),
-        CheckConstraint(
-            "status IN ('draft', 'active', 'paused', 'archived')", name="chk_status"
-        ),
-        CheckConstraint(
-            "max_position_size > 0 AND max_position_size <= 1", name="chk_position_size"
-        ),
+        CheckConstraint("status IN ('draft', 'active', 'paused', 'archived')", name="chk_status"),
+        CheckConstraint("max_position_size > 0 AND max_position_size <= 1", name="chk_position_size"),
         Index("idx_user_strategies_user_id", "user_id"),
         Index("idx_user_strategies_status", "status"),
         Index("idx_user_strategies_type", "strategy_type"),
@@ -137,9 +131,7 @@ class StrategyRepository:
             self.db.commit()
             self.db.refresh(strategy_orm)
 
-            logger.info(
-                f"创建策略成功: strategy_id={strategy_orm.strategy_id}, name={strategy_orm.strategy_name}"
-            )
+            logger.info(f"创建策略成功: strategy_id={strategy_orm.strategy_id}, name={strategy_orm.strategy_name}")
 
             # 转换为Pydantic响应模型
             return self._orm_to_pydantic(strategy_orm)
@@ -159,11 +151,7 @@ class StrategyRepository:
             策略配置对象，不存在时返回None
         """
         try:
-            strategy_orm = (
-                self.db.query(UserStrategyModel)
-                .filter(UserStrategyModel.strategy_id == strategy_id)
-                .first()
-            )
+            strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
 
             if strategy_orm is None:
                 logger.warning(f"策略不存在: strategy_id={strategy_id}")
@@ -197,9 +185,7 @@ class StrategyRepository:
         """
         try:
             # 构建查询
-            query = self.db.query(UserStrategyModel).filter(
-                UserStrategyModel.user_id == user_id
-            )
+            query = self.db.query(UserStrategyModel).filter(UserStrategyModel.user_id == user_id)
 
             # 状态筛选
             if status:
@@ -207,21 +193,14 @@ class StrategyRepository:
 
             # 类型筛选
             if strategy_type:
-                query = query.filter(
-                    UserStrategyModel.strategy_type == strategy_type.value
-                )
+                query = query.filter(UserStrategyModel.strategy_type == strategy_type.value)
 
             # 获取总数
             total_count = query.count()
 
             # 分页查询
             offset = (page - 1) * page_size
-            strategies_orm = (
-                query.order_by(UserStrategyModel.created_at.desc())
-                .offset(offset)
-                .limit(page_size)
-                .all()
-            )
+            strategies_orm = query.order_by(UserStrategyModel.created_at.desc()).offset(offset).limit(page_size).all()
 
             # 转换为Pydantic模型
             strategies = [self._orm_to_pydantic(s) for s in strategies_orm]
@@ -236,9 +215,7 @@ class StrategyRepository:
             logger.error(f"查询策略列表失败: user_id={user_id}, error={str(e)}")
             raise
 
-    def update_strategy(
-        self, strategy_id: int, request: StrategyUpdateRequest
-    ) -> Optional[StrategyConfig]:
+    def update_strategy(self, strategy_id: int, request: StrategyUpdateRequest) -> Optional[StrategyConfig]:
         """更新策略
 
         Args:
@@ -252,11 +229,7 @@ class StrategyRepository:
             SQLAlchemyError: 数据库操作失败
         """
         try:
-            strategy_orm = (
-                self.db.query(UserStrategyModel)
-                .filter(UserStrategyModel.strategy_id == strategy_id)
-                .first()
-            )
+            strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
 
             if strategy_orm is None:
                 logger.warning(f"策略不存在: strategy_id={strategy_id}")
@@ -268,17 +241,12 @@ class StrategyRepository:
             # 处理枚举类型
             if "status" in update_data and update_data["status"] is not None:
                 update_data["status"] = update_data["status"].value
-            if (
-                "strategy_type" in update_data
-                and update_data["strategy_type"] is not None
-            ):
+            if "strategy_type" in update_data and update_data["strategy_type"] is not None:
                 update_data["strategy_type"] = update_data["strategy_type"].value
 
             # 处理parameters字段（转换为dict列表）
             if "parameters" in update_data and update_data["parameters"] is not None:
-                update_data["parameters"] = [
-                    param.dict() for param in update_data["parameters"]
-                ]
+                update_data["parameters"] = [param.dict() for param in update_data["parameters"]]
 
             # 应用更新
             for key, value in update_data.items():
@@ -290,9 +258,7 @@ class StrategyRepository:
             self.db.commit()
             self.db.refresh(strategy_orm)
 
-            logger.info(
-                f"更新策略成功: strategy_id={strategy_id}, updated_fields={list(update_data.keys())}"
-            )
+            logger.info(f"更新策略成功: strategy_id={strategy_id}, updated_fields={list(update_data.keys())}")
 
             return self._orm_to_pydantic(strategy_orm)
 
@@ -314,11 +280,7 @@ class StrategyRepository:
             SQLAlchemyError: 数据库操作失败
         """
         try:
-            result = (
-                self.db.query(UserStrategyModel)
-                .filter(UserStrategyModel.strategy_id == strategy_id)
-                .delete()
-            )
+            result = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).delete()
 
             self.db.commit()
 
@@ -334,9 +296,7 @@ class StrategyRepository:
             logger.error(f"删除策略失败: strategy_id={strategy_id}, error={str(e)}")
             raise
 
-    def get_strategies_by_status(
-        self, user_id: int, status: StrategyStatus
-    ) -> List[StrategyConfig]:
+    def get_strategies_by_status(self, user_id: int, status: StrategyStatus) -> List[StrategyConfig]:
         """根据状态获取所有策略（不分页）
 
         Args:
@@ -360,9 +320,7 @@ class StrategyRepository:
             return [self._orm_to_pydantic(s) for s in strategies_orm]
 
         except SQLAlchemyError as e:
-            logger.error(
-                f"查询策略失败: user_id={user_id}, status={status}, error={str(e)}"
-            )
+            logger.error(f"查询策略失败: user_id={user_id}, status={status}, error={str(e)}")
             raise
 
     # ============================================================
@@ -392,12 +350,8 @@ class StrategyRepository:
             description=strategy_orm.description,
             parameters=parameters,
             max_position_size=float(strategy_orm.max_position_size),
-            stop_loss_percent=float(strategy_orm.stop_loss_percent)
-            if strategy_orm.stop_loss_percent
-            else None,
-            take_profit_percent=float(strategy_orm.take_profit_percent)
-            if strategy_orm.take_profit_percent
-            else None,
+            stop_loss_percent=float(strategy_orm.stop_loss_percent) if strategy_orm.stop_loss_percent else None,
+            take_profit_percent=float(strategy_orm.take_profit_percent) if strategy_orm.take_profit_percent else None,
             status=StrategyStatus(strategy_orm.status),
             tags=strategy_orm.tags or [],
             created_at=strategy_orm.created_at,

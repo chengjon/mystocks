@@ -216,19 +216,11 @@ def test_data_cleanup():
 def pytest_configure(config):
     """Register custom markers"""
     config.addinivalue_line("markers", "login: test login functionality (Task 6.2)")
-    config.addinivalue_line(
-        "markers", "subscription: test subscription workflow (Task 6.3)"
-    )
-    config.addinivalue_line(
-        "markers", "query: test data query functionality (Task 6.3)"
-    )
-    config.addinivalue_line(
-        "markers", "performance: test performance metrics (Task 6.4)"
-    )
+    config.addinivalue_line("markers", "subscription: test subscription workflow (Task 6.3)")
+    config.addinivalue_line("markers", "query: test data query functionality (Task 6.3)")
+    config.addinivalue_line("markers", "performance: test performance metrics (Task 6.4)")
     config.addinivalue_line("markers", "e2e: end-to-end workflow tests (Task 6.3)")
-    config.addinivalue_line(
-        "markers", "slow: marks tests as slow (use -m 'not slow' to skip)"
-    )
+    config.addinivalue_line("markers", "slow: marks tests as slow (use -m 'not slow' to skip)")
 
 
 # ============================================================================

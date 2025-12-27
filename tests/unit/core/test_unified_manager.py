@@ -104,9 +104,7 @@ class MockMyStocksUnifiedManager:
     def get_cache_statistics(self):
         """获取缓存统计信息"""
         total_requests = self.statistics["cache_hits"] + self.statistics["cache_misses"]
-        hit_rate = (
-            self.statistics["cache_hits"] / total_requests if total_requests > 0 else 0
-        )
+        hit_rate = self.statistics["cache_hits"] / total_requests if total_requests > 0 else 0
 
         return {
             "hit_rate": hit_rate,
@@ -162,9 +160,7 @@ class TestMyStocksUnifiedManager:
             }
         )
 
-        result = self.manager.save_data_by_classification(
-            DataClassification.TICK_DATA, test_data, "tick_000001"
-        )
+        result = self.manager.save_data_by_classification(DataClassification.TICK_DATA, test_data, "tick_000001")
 
         assert result["success"] is True
         assert result["identifier"] == "tick_000001"
@@ -178,9 +174,7 @@ class TestMyStocksUnifiedManager:
         empty_data = pd.DataFrame()
 
         with pytest.raises(ValueError, match="Cannot save empty DataFrame"):
-            self.manager.save_data_by_classification(
-                DataClassification.TICK_DATA, empty_data, "empty_test"
-            )
+            self.manager.save_data_by_classification(DataClassification.TICK_DATA, empty_data, "empty_test")
 
     def test_save_unknown_classification(self):
         """测试保存未知分类的数据"""
@@ -189,27 +183,19 @@ class TestMyStocksUnifiedManager:
         test_data = pd.DataFrame({"test": [1, 2, 3]})
 
         with pytest.raises(ValueError, match="Unknown classification"):
-            self.manager.save_data_by_classification(
-                "unknown_classification", test_data, "test_identifier"
-            )
+            self.manager.save_data_by_classification("unknown_classification", test_data, "test_identifier")
 
     def test_load_data_by_classification(self):
         """测试按分类加载数据"""
         self.manager.initialize_system()
 
         # 先保存数据
-        test_data = pd.DataFrame(
-            {"symbol": ["000001", "000001", "000002"], "price": [10.0, 10.5, 15.0]}
-        )
+        test_data = pd.DataFrame({"symbol": ["000001", "000001", "000002"], "price": [10.0, 10.5, 15.0]})
 
-        self.manager.save_data_by_classification(
-            DataClassification.DAILY_KLINE, test_data, "daily_000001"
-        )
+        self.manager.save_data_by_classification(DataClassification.DAILY_KLINE, test_data, "daily_000001")
 
         # 加载数据
-        loaded_data = self.manager.load_data_by_classification(
-            DataClassification.DAILY_KLINE, "daily_000001"
-        )
+        loaded_data = self.manager.load_data_by_classification(DataClassification.DAILY_KLINE, "daily_000001")
 
         assert isinstance(loaded_data, pd.DataFrame)
         assert len(loaded_data) == 3
@@ -229,9 +215,7 @@ class TestMyStocksUnifiedManager:
             }
         )
 
-        self.manager.save_data_by_classification(
-            DataClassification.DAILY_KLINE, test_data, "daily_mixed"
-        )
+        self.manager.save_data_by_classification(DataClassification.DAILY_KLINE, test_data, "daily_mixed")
 
         # 使用过滤器加载特定股票的数据
         filtered_data = self.manager.load_data_by_classification(
@@ -246,9 +230,7 @@ class TestMyStocksUnifiedManager:
         self.manager.initialize_system()
 
         with pytest.raises(FileNotFoundError, match="Data not found"):
-            self.manager.load_data_by_classification(
-                DataClassification.TICK_DATA, "nonexistent_identifier"
-            )
+            self.manager.load_data_by_classification(DataClassification.TICK_DATA, "nonexistent_identifier")
 
     @pytest.mark.skip(
         reason="unified_manager.py does not implement caching - get_cache_statistics() method does not exist"
@@ -274,13 +256,9 @@ class TestMyStocksUnifiedManager:
 
         # 执行一些读写操作
         test_data = pd.DataFrame({"test": range(5)})
-        self.manager.save_data_by_classification(
-            DataClassification.FUNDAMENTAL_DATA, test_data, "perf_test"
-        )
+        self.manager.save_data_by_classification(DataClassification.FUNDAMENTAL_DATA, test_data, "perf_test")
 
-        self.manager.load_data_by_classification(
-            DataClassification.FUNDAMENTAL_DATA, "perf_test"
-        )
+        self.manager.load_data_by_classification(DataClassification.FUNDAMENTAL_DATA, "perf_test")
 
         stats = self.manager.get_cache_statistics()
         assert stats["statistics"]["reads"] == 1

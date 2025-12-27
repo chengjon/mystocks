@@ -34,9 +34,7 @@ class TestDataValidator:
 
         valid_symbols = ["000001", "600000", "300001", "002001"]
         for symbol in valid_symbols:
-            assert validator.validate_stock_symbol(symbol), (
-                f"Symbol {symbol} should be valid"
-            )
+            assert validator.validate_stock_symbol(symbol), f"Symbol {symbol} should be valid"
 
     def test_validate_stock_symbol_invalid_symbols(self):
         """测试无效股票代码验证"""
@@ -55,9 +53,7 @@ class TestDataValidator:
             "00 0001",  # 内部空格
         ]
         for symbol in invalid_symbols:
-            assert not validator.validate_stock_symbol(symbol), (
-                f"Symbol {symbol} should be invalid"
-            )
+            assert not validator.validate_stock_symbol(symbol), f"Symbol {symbol} should be invalid"
 
     def test_validate_stock_symbol_whitespace_handling(self):
         """测试股票代码空格处理"""
@@ -101,9 +97,7 @@ class TestDataValidator:
             "01-01-2024",  # 日月年格式
         ]
         for date in invalid_dates:
-            assert not validator.validate_date_format(date), (
-                f"Date {date} should be invalid"
-            )
+            assert not validator.validate_date_format(date), f"Date {date} should be invalid"
 
     def test_validate_date_range_valid(self):
         """测试有效日期范围验证"""
@@ -284,11 +278,7 @@ class TestDataValidator:
         """测试负成交量值"""
         validator = DataValidator()
 
-        data = pd.DataFrame(
-            {
-                "volume": [1000, -500, 2000]  # 包含负值
-            }
-        )
+        data = pd.DataFrame({"volume": [1000, -500, 2000]})  # 包含负值
 
         assert not validator.validate_volume_data(data)
 
@@ -296,11 +286,7 @@ class TestDataValidator:
         """测试NaN成交量值"""
         validator = DataValidator()
 
-        data = pd.DataFrame(
-            {
-                "volume": [1000, np.nan, 2000]  # 包含NaN
-            }
-        )
+        data = pd.DataFrame({"volume": [1000, np.nan, 2000]})  # 包含NaN
 
         assert not validator.validate_volume_data(data)
 
@@ -444,9 +430,7 @@ class TestDataValidator:
         data = pd.DataFrame({"symbol": ["000001", "000002"], "price": [10.0, 10.5]})
 
         # 使用自定义必需列
-        assert validator.check_data_completeness(
-            data, required_columns=["symbol", "price"]
-        )
+        assert validator.check_data_completeness(data, required_columns=["symbol", "price"])
 
 
 class TestDataValidatorAdvanced:
@@ -501,9 +485,7 @@ class TestDataValidatorAdvanced:
             open_price = data.loc[i, "open"]
             data.loc[i, "high"] = max(data.loc[i, "high"], open_price)
             data.loc[i, "low"] = min(data.loc[i, "low"], open_price)
-            data.loc[i, "close"] = np.random.uniform(
-                data.loc[i, "low"], data.loc[i, "high"]
-            )
+            data.loc[i, "close"] = np.random.uniform(data.loc[i, "low"], data.loc[i, "high"])
 
         assert validator.validate_price_data(data)
 
@@ -621,15 +603,11 @@ class TestDataValidatorAdvanced:
         assert validator.validate_stock_symbol(data["symbol"][0])
         assert validator.validate_date_format("2024-01-01")
         assert validator.validate_date_range("2024-01-01", "2024-01-05")
-        assert validator.validate_price_data(
-            data[["open", "high", "low", "close", "volume"]]
-        )
+        assert validator.validate_price_data(data[["open", "high", "low", "close", "volume"]])
         assert validator.validate_volume_data(data[["volume"]])
         assert validator.validate_trading_day("2024-01-01")  # 假设是工作日
         assert validator.validate_price_range(data[["open", "high", "low", "close"]])
-        assert validator.check_data_completeness(
-            data[["open", "high", "low", "close", "volume"]]
-        )
+        assert validator.check_data_completeness(data[["open", "high", "low", "close", "volume"]])
 
 
 if __name__ == "__main__":

@@ -93,9 +93,7 @@ class IntelligentDataGenerator:
             logger.error(f"数据生成失败: {e}")
             return self._generate_fallback_data(request)
 
-    def _generate_ai_enhanced_data(
-        self, request: DataGenerationRequest
-    ) -> Dict[str, Any]:
+    def _generate_ai_enhanced_data(self, request: DataGenerationRequest) -> Dict[str, Any]:
         """AI增强的数据生成"""
         # 使用AI分析数据模式
         if request.seed:
@@ -105,9 +103,7 @@ class IntelligentDataGenerator:
         data = {}
 
         # 生成整数型数据
-        for field_name, field_schema in request.data_schema.get(
-            "properties", {}
-        ).items():
+        for field_name, field_schema in request.data_schema.get("properties", {}).items():
             field_type = field_schema.get("type")
 
             if field_type == "integer":
@@ -198,9 +194,7 @@ class IntelligentDataGenerator:
 
         return obj
 
-    def _apply_constraints(
-        self, data: Dict[str, Any], constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_constraints(self, data: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[str, Any]:
         """应用约束条件"""
         constraint_type = constraints.get("type")
 
@@ -213,9 +207,7 @@ class IntelligentDataGenerator:
         else:
             return data
 
-    def _apply_range_constraints(
-        self, data: Dict[str, Any], constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_range_constraints(self, data: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[str, Any]:
         """应用范围约束"""
         field_ranges = constraints.get("ranges", {})
 
@@ -231,16 +223,12 @@ class IntelligentDataGenerator:
 
         return data
 
-    def _apply_pattern_constraints(
-        self, data: Dict[str, Any], constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_pattern_constraints(self, data: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[str, Any]:
         """应用模式约束"""
         # 可以添加更复杂的模式匹配逻辑
         return data
 
-    def _apply_uniqueness_constraints(
-        self, data: Dict[str, Any], constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_uniqueness_constraints(self, data: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[str, Any]:
         """应用唯一性约束"""
         # 确保生成的数据具有唯一性
         return data
@@ -287,9 +275,7 @@ class IntelligentDataGenerator:
         key_data = f"{request.profile_name}_{request.target_size}_{json.dumps(request.data_schema, sort_keys=True)}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
-    def _record_generation(
-        self, request: DataGenerationRequest, data: Dict[str, Any], start_time: float
-    ):
+    def _record_generation(self, request: DataGenerationRequest, data: Dict[str, Any], start_time: float):
         """记录生成历史"""
         history_entry = {
             "timestamp": datetime.now(),
@@ -323,19 +309,13 @@ class IntelligentDataOptimizer:
 
         for profile in profiles:
             # 分析测试结果中的性能指标
-            performance_metrics = self._analyze_performance_metrics(
-                profile, test_results
-            )
+            performance_metrics = self._analyze_performance_metrics(profile, test_results)
 
             # 生成优化建议
-            optimization_suggestions = self._generate_optimization_suggestions(
-                profile, performance_metrics
-            )
+            optimization_suggestions = self._generate_optimization_suggestions(profile, performance_metrics)
 
             # 应用优化
-            optimized_profile = self._apply_optimizations(
-                profile, optimization_suggestions
-            )
+            optimized_profile = self._apply_optimizations(profile, optimization_suggestions)
 
             optimized_profiles.append(optimized_profile)
 
@@ -354,15 +334,11 @@ class IntelligentDataOptimizer:
         }
 
         # 过滤相关的测试结果
-        relevant_results = [
-            r for r in test_results if r.get("data_profile") == profile.name
-        ]
+        relevant_results = [r for r in test_results if r.get("data_profile") == profile.name]
 
         if relevant_results:
             execution_times = [r.get("execution_time", 0) for r in relevant_results]
-            success_count = sum(
-                1 for r in relevant_results if r.get("status") == "success"
-            )
+            success_count = sum(1 for r in relevant_results if r.get("status") == "success")
 
             metrics["avg_execution_time"] = sum(execution_times) / len(execution_times)
             metrics["success_rate"] = success_count / len(relevant_results)
@@ -375,21 +351,15 @@ class IntelligentDataOptimizer:
 
         return metrics
 
-    def _generate_optimization_suggestions(
-        self, profile: TestDataProfile, metrics: Dict[str, Any]
-    ) -> List[str]:
+    def _generate_optimization_suggestions(self, profile: TestDataProfile, metrics: Dict[str, Any]) -> List[str]:
         """生成优化建议"""
         suggestions = []
 
         if metrics["avg_execution_time"] > 1.0:  # 执行时间过长
-            suggestions.append(
-                f"减少数据大小以降低执行时间 (当前: {metrics['avg_execution_time']:.2f}s)"
-            )
+            suggestions.append(f"减少数据大小以降低执行时间 (当前: {metrics['avg_execution_time']:.2f}s)")
 
         if metrics["success_rate"] < 0.9:  # 成功率低
-            suggestions.append(
-                f"改善数据质量以提高成功率 (当前: {metrics['success_rate']:.2%})"
-            )
+            suggestions.append(f"改善数据质量以提高成功率 (当前: {metrics['success_rate']:.2%})")
 
         if metrics["data_freshness_needed"]:
             suggestions.append("更新数据以保持新鲜度")
@@ -399,9 +369,7 @@ class IntelligentDataOptimizer:
 
         return suggestions
 
-    def _apply_optimizations(
-        self, profile: TestDataProfile, suggestions: List[str]
-    ) -> TestDataProfile:
+    def _apply_optimizations(self, profile: TestDataProfile, suggestions: List[str]) -> TestDataProfile:
         """应用优化"""
         optimized_profile = TestDataProfile(
             name=profile.name,
@@ -515,12 +483,8 @@ class AITestDataManager:
             profile_name=profile_name,
             target_size=profile.size,
             data_schema=data_schema,
-            use_ai_enhancement=request_params.get("use_ai_enhancement", True)
-            if request_params
-            else True,
-            simulate_real_data=request_params.get("simulate_real_data", True)
-            if request_params
-            else True,
+            use_ai_enhancement=request_params.get("use_ai_enhancement", True) if request_params else True,
+            simulate_real_data=request_params.get("simulate_real_data", True) if request_params else True,
             seed=request_params.get("seed") if request_params else None,
             constraints=profile.constraints,
         )
@@ -558,9 +522,7 @@ class AITestDataManager:
         except Exception as e:
             logger.error(f"保存测试数据失败: {e}")
 
-    def load_test_data(
-        self, profile_name: str, timestamp: str = None
-    ) -> Dict[str, Any]:
+    def load_test_data(self, profile_name: str, timestamp: str = None) -> Dict[str, Any]:
         """加载测试数据"""
         if timestamp:
             filename = f"{profile_name}_{timestamp}.json"
@@ -591,11 +553,9 @@ class AITestDataManager:
         profile = self.profiles[profile_name]
 
         # 获取最近的测试结果
-        recent_tests = [
-            r
-            for r in self.generator.generation_history
-            if r["profile_name"] == profile_name
-        ][-10:]  # 最近10条
+        recent_tests = [r for r in self.generator.generation_history if r["profile_name"] == profile_name][
+            -10:
+        ]  # 最近10条
 
         # 分析质量指标
         quality_analysis = {
@@ -611,9 +571,7 @@ class AITestDataManager:
 
         if recent_tests:
             generation_times = [t["generation_time"] for t in recent_tests]
-            quality_analysis["average_generation_time"] = sum(generation_times) / len(
-                generation_times
-            )
+            quality_analysis["average_generation_time"] = sum(generation_times) / len(generation_times)
 
             # 估算成功率（基于数据质量）
             quality_analysis["success_rate"] = min(profile.quality_score, 0.95)
@@ -629,9 +587,7 @@ class AITestDataManager:
 
         # 优化数据档案
         profiles = list(self.profiles.values())
-        optimized_profiles = self.optimizer.optimize_data_profiles(
-            profiles, test_results
-        )
+        optimized_profiles = self.optimizer.optimize_data_profiles(profiles, test_results)
 
         # 更新档案
         for profile in optimized_profiles:
@@ -669,8 +625,7 @@ class AITestDataManager:
         report = {
             "timestamp": datetime.now().isoformat(),
             "profiles_count": len(self.profiles),
-            "data_files_count": len(list(self.data_storage_path.glob("*.json")))
-            - 1,  # 排除latest
+            "data_files_count": len(list(self.data_storage_path.glob("*.json"))) - 1,  # 排除latest
             "total_storage_mb": self._calculate_storage_usage(),
             "profiles_summary": {},
         }
@@ -737,11 +692,8 @@ class AITestDataManager:
 
         stats = {
             "total_generations": len(recent_history),
-            "avg_generation_time": sum(t["generation_time"] for t in recent_history)
-            / len(recent_history),
-            "ai_enhanced_usage": sum(
-                1 for t in recent_history if t["use_ai_enhancement"]
-            ),
+            "avg_generation_time": sum(t["generation_time"] for t in recent_history) / len(recent_history),
+            "ai_enhanced_usage": sum(1 for t in recent_history if t["use_ai_enhancement"]),
             "cache_hits": sum(1 for t in recent_history if t["cache_hit"]),
             "most_used_profiles": {},
         }
@@ -752,9 +704,7 @@ class AITestDataManager:
             profile = entry["profile_name"]
             profile_counts[profile] = profile_counts.get(profile, 0) + 1
 
-        stats["most_used_profiles"] = dict(
-            sorted(profile_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        )
+        stats["most_used_profiles"] = dict(sorted(profile_counts.items(), key=lambda x: x[1], reverse=True)[:5])
 
         return stats
 
@@ -766,9 +716,7 @@ class AITestDataManager:
             # 模拟质量趋势分析
             trends[name] = {
                 "quality_score": profile.quality_score,
-                "freshness_trend": "increasing"
-                if profile.freshness > 0.8
-                else "stable",
+                "freshness_trend": "increasing" if profile.freshness > 0.8 else "stable",
                 "usage_trend": "high" if profile.usage_count > 10 else "medium",
             }
 
@@ -781,18 +729,12 @@ class AITestDataManager:
         # 检查数据新鲜度
         for name, profile in self.profiles.items():
             if profile.freshness < 0.5:
-                recommendations.append(
-                    f"档案 {name} 需要更新数据 (新鲜度: {profile.freshness:.2f})"
-                )
+                recommendations.append(f"档案 {name} 需要更新数据 (新鲜度: {profile.freshness:.2f})")
 
         # 检查使用频率
-        low_usage_profiles = [
-            name for name, profile in self.profiles.items() if profile.usage_count == 0
-        ]
+        low_usage_profiles = [name for name, profile in self.profiles.items() if profile.usage_count == 0]
         if low_usage_profiles:
-            recommendations.append(
-                f"以下档案从未被使用: {', '.join(low_usage_profiles)}"
-            )
+            recommendations.append(f"以下档案从未被使用: {', '.join(low_usage_profiles)}")
 
         # 检查存储使用
         storage_usage = self._calculate_storage_usage()

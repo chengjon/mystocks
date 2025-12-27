@@ -92,9 +92,7 @@ async def get_stock_list(
         Dict: 股票列表数据
     """
     try:
-        logger.info(
-            f"获取股票列表: page={page}, limit={limit}, exchange={exchange}, industry={industry}"
-        )
+        logger.info(f"获取股票列表: page={page}, limit={limit}, exchange={exchange}, industry={industry}")
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取股票列表")
@@ -540,12 +538,8 @@ async def get_stock_by_industry(
         if check_use_mock_data():
             logger.info("使用Mock数据源: 按行业获取股票")
             mock_data = get_stocks_mock_data()
-            result = mock_data["get_stock_by_industry"](
-                {"industry_name": industry_name, "page": page, "limit": limit}
-            )
-            logger.info(
-                f"Mock数据响应: {industry_name}行业共{result.get('total', 0)}只股票"
-            )
+            result = mock_data["get_stock_by_industry"]({"industry_name": industry_name, "page": page, "limit": limit})
+            logger.info(f"Mock数据响应: {industry_name}行业共{result.get('total', 0)}只股票")
             return {
                 "success": True,
                 "data": result,
@@ -569,9 +563,7 @@ async def get_stock_by_industry(
                 from src.database.database_service import db_service
 
                 # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_stock_list(
-                    {"industry": industry_name, "page": page, "limit": limit}
-                )
+                result = db_service.get_stock_list({"industry": industry_name, "page": page, "limit": limit})
 
                 logger.info(f"真实数据库查询成功: 按行业{industry_name}获取股票")
 

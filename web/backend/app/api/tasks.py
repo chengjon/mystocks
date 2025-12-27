@@ -20,8 +20,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
-from app.core.responses import APIResponse, ErrorResponse
-from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics, TaskStatus, TaskType
+from app.core.responses import APIResponse
+from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics
 from app.services.task_manager import task_manager
 
 # Mock数据支持
@@ -405,7 +405,6 @@ async def list_tasks(
 
         if use_mock:
             # Mock数据：返回模拟任务列表
-            import random
 
             from app.models.task import TaskConfig, TaskType
 
@@ -557,9 +556,8 @@ async def get_task_statistics():
     """获取任务统计信息"""
     if use_mock:
         # Mock数据：返回模拟统计信息
-        import random
 
-        from app.models.task import TaskStatistics, TaskStatus
+        from app.models.task import TaskStatistics
 
         stats = {
             "total_tasks": TaskStatistics(

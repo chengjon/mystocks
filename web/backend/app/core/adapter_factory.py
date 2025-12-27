@@ -84,9 +84,7 @@ class AdapterRegistry:
 
         if name not in AdapterRegistry._adapters:
             logger.info(f"📦 Instantiating adapter: {name}")
-            AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(
-                name, *args, **kwargs
-            )
+            AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(name, *args, **kwargs)
 
         return AdapterRegistry._adapters[name]
 

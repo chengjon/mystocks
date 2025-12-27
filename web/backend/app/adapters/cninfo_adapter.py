@@ -151,9 +151,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 "column": "szse_main",  # 默认深圳主板
                 "tabName": "fulltext",
                 "plate": "",
-                "stock": (
-                    symbol.split(".")[0] if symbol and "." in symbol else symbol or ""
-                ),
+                "stock": (symbol.split(".")[0] if symbol and "." in symbol else symbol or ""),
                 "searchkey": "",
                 "secid": "",
                 "category": category_code,
@@ -164,27 +162,20 @@ class CninfoAdapter(BaseDataSourceAdapter):
             }
 
             # 发送请求
-            response = self.session.post(
-                self.ANNOUNCEMENT_API, data=params, timeout=self.config.timeout
-            )
+            response = self.session.post(self.ANNOUNCEMENT_API, data=params, timeout=self.config.timeout)
             response.raise_for_status()
 
             # 解析响应
             result = response.json()
 
             if result.get("returncode") != 200:
-                raise Exception(
-                    f"API returned error: {result.get('returnmsg', 'Unknown error')}"
-                )
+                raise Exception(f"API returned error: {result.get('returnmsg', 'Unknown error')}")
 
             # 提取公告数据
             announcements = result.get("announcements", [])
 
             if not announcements:
-                logger.info(
-                    f"No announcements found for {symbol or 'all'} "
-                    f"from {start_date} to {end_date}"
-                )
+                logger.info(f"No announcements found for {symbol or 'all'} " f"from {start_date} to {end_date}")
                 success = True  # 空结果也算成功
                 self.update_health_status(DataSourceStatus.AVAILABLE)
                 return data
@@ -207,16 +198,12 @@ class CninfoAdapter(BaseDataSourceAdapter):
             data = data.rename(columns=column_mapping)
 
             # 选择需要的列
-            available_columns = [
-                col for col in column_mapping.values() if col in data.columns
-            ]
+            available_columns = [col for col in column_mapping.values() if col in data.columns]
             data = data[available_columns]
 
             # 转换日期格式
             if "publish_time" in data.columns:
-                data["publish_time"] = pd.to_datetime(
-                    data["publish_time"], unit="ms", errors="coerce"
-                )
+                data["publish_time"] = pd.to_datetime(data["publish_time"], unit="ms", errors="coerce")
                 data["publish_date"] = data["publish_time"].dt.date
 
             # 添加来源标识
@@ -224,9 +211,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
             # 构建完整URL
             if "pdf_url" in data.columns:
-                data["pdf_url"] = data["pdf_url"].apply(
-                    lambda x: f"http://static.cninfo.com.cn/{x}" if x else None
-                )
+                data["pdf_url"] = data["pdf_url"].apply(lambda x: f"http://static.cninfo.com.cn/{x}" if x else None)
 
             success = True
             self.update_health_status(DataSourceStatus.AVAILABLE)
@@ -289,9 +274,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 "pageSize": page_size,
             }
 
-            response = self.session.post(
-                self.FULLTEXT_API, data=params, timeout=self.config.timeout
-            )
+            response = self.session.post(self.FULLTEXT_API, data=params, timeout=self.config.timeout)
             response.raise_for_status()
 
             result = response.json()

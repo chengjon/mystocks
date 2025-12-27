@@ -33,9 +33,7 @@ class ColoredFormatter(logging.Formatter):
         return super().format(record)
 
 
-def setup_logging(
-    level: str = "INFO", log_file: Optional[str] = None, use_colors: bool = True
-) -> None:
+def setup_logging(level: str = "INFO", log_file: Optional[str] = None, use_colors: bool = True) -> None:
     """
     设置项目日志配置
 
@@ -61,13 +59,9 @@ def setup_logging(
 
     # 格式化器
     if use_colors and sys.stdout.isatty():
-        formatter = ColoredFormatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = ColoredFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     else:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     console_handler.setFormatter(formatter)
     console_handler.setLevel(getattr(logging, log_level.upper()))

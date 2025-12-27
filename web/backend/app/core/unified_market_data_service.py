@@ -124,9 +124,7 @@ class UnifiedMarketDataService:
 
         try:
             self.adapter = AdapterFactory.get(adapter_name)
-            logger.info(
-                f"✅ Initialized market data service with adapter: {adapter_name}"
-            )
+            logger.info(f"✅ Initialized market data service with adapter: {adapter_name}")
         except KeyError as e:
             logger.error(f"❌ Adapter '{adapter_name}' not registered: {str(e)}")
             raise
@@ -198,9 +196,7 @@ class UnifiedMarketDataService:
                 - error (str, optional): Error details if failed
         """
         try:
-            logger.info(
-                f"📊 Fetching fund flow: symbol={symbol}, timeframe={timeframe}"
-            )
+            logger.info(f"📊 Fetching fund flow: symbol={symbol}, timeframe={timeframe}")
 
             # Normalize timeframe for different adapters
             if self.adapter_name == "eastmoney" and isinstance(timeframe, int):
@@ -231,9 +227,7 @@ class UnifiedMarketDataService:
                 "error": str(e),
             }
 
-    def _save_fund_flow_single(
-        self, symbol: str, data: Dict[str, Any], timeframe: Union[str, int]
-    ) -> Dict[str, Any]:
+    def _save_fund_flow_single(self, symbol: str, data: Dict[str, Any], timeframe: Union[str, int]) -> Dict[str, Any]:
         """Save single symbol fund flow data"""
         if not data:
             return {"success": False, "message": "No data returned from adapter"}
@@ -323,24 +317,12 @@ class UnifiedMarketDataService:
                             symbol=row.get("代码") or row.get("symbol"),
                             trade_date=today,
                             timeframe=tf_value,
-                            main_net_inflow=float(
-                                row.get(f"{timeframe}主力净流入-净额", 0) or 0
-                            ),
-                            main_net_inflow_rate=float(
-                                row.get(f"{timeframe}主力净流入-净占比", 0) or 0
-                            ),
-                            super_large_net_inflow=float(
-                                row.get(f"{timeframe}超大单净流入-净额", 0) or 0
-                            ),
-                            large_net_inflow=float(
-                                row.get(f"{timeframe}大单净流入-净额", 0) or 0
-                            ),
-                            medium_net_inflow=float(
-                                row.get(f"{timeframe}中单净流入-净额", 0) or 0
-                            ),
-                            small_net_inflow=float(
-                                row.get(f"{timeframe}小单净流入-净额", 0) or 0
-                            ),
+                            main_net_inflow=float(row.get(f"{timeframe}主力净流入-净额", 0) or 0),
+                            main_net_inflow_rate=float(row.get(f"{timeframe}主力净流入-净占比", 0) or 0),
+                            super_large_net_inflow=float(row.get(f"{timeframe}超大单净流入-净额", 0) or 0),
+                            large_net_inflow=float(row.get(f"{timeframe}大单净流入-净额", 0) or 0),
+                            medium_net_inflow=float(row.get(f"{timeframe}中单净流入-净额", 0) or 0),
+                            small_net_inflow=float(row.get(f"{timeframe}小单净流入-净额", 0) or 0),
                         )
 
                         # Check if exists
@@ -370,9 +352,7 @@ class UnifiedMarketDataService:
                         continue
 
                 db.commit()
-                logger.info(
-                    f"✅ Batch saved: {saved_count} records, skipped: {skipped_count}"
-                )
+                logger.info(f"✅ Batch saved: {saved_count} records, skipped: {skipped_count}")
 
                 return {
                     "success": True,
@@ -446,14 +426,8 @@ class UnifiedMarketDataService:
                         "symbol": r.symbol,
                         "trade_date": r.trade_date.isoformat(),
                         "timeframe": r.timeframe,
-                        "main_net_inflow": (
-                            float(r.main_net_inflow) if r.main_net_inflow else 0
-                        ),
-                        "main_net_inflow_rate": (
-                            float(r.main_net_inflow_rate)
-                            if r.main_net_inflow_rate
-                            else 0
-                        ),
+                        "main_net_inflow": (float(r.main_net_inflow) if r.main_net_inflow else 0),
+                        "main_net_inflow_rate": (float(r.main_net_inflow_rate) if r.main_net_inflow_rate else 0),
                     }
                     for r in results
                 ]

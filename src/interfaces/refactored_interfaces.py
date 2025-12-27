@@ -43,9 +43,7 @@ class DataResponse:
         return cls(success=True, data=data, metadata=metadata)
 
     @classmethod
-    def create_error(
-        cls, error_msg: str, metadata: Optional[Dict] = None
-    ) -> "DataResponse":
+    def create_error(cls, error_msg: str, metadata: Optional[Dict] = None) -> "DataResponse":
         """创建错误响应"""
         return cls(success=False, error=error_msg, metadata=metadata)
 
@@ -68,9 +66,7 @@ class IPriceDataSource(abc.ABC):
     """
 
     @abc.abstractmethod
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> DataResponse:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> DataResponse:
         """获取股票日线数据
 
         Args:
@@ -113,9 +109,7 @@ class IIndexDataSource(abc.ABC):
     """
 
     @abc.abstractmethod
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> DataResponse:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> DataResponse:
         """获取指数日线数据
 
         Args:
@@ -213,9 +207,7 @@ class IAdvancedDataSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> DataResponse:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> DataResponse:
         """获取新闻数据
 
         Args:
@@ -235,9 +227,7 @@ class IAdvancedDataSource(abc.ABC):
 # =============================================================================
 
 
-class IDataSource(
-    IPriceDataSource, IIndexDataSource, IBasicInfoSource, IAdvancedDataSource
-):
+class IDataSource(IPriceDataSource, IIndexDataSource, IBasicInfoSource, IAdvancedDataSource):
     """完整数据接口 - 向后兼容的组合接口
 
     这个接口提供了完整的向后兼容性。
@@ -322,9 +312,7 @@ def validate_date(date_str: str) -> bool:
         return False
 
 
-def standardize_response(
-    data: Union[pd.DataFrame, Dict, List], metadata: Optional[Dict] = None
-) -> DataResponse:
+def standardize_response(data: Union[pd.DataFrame, Dict, List], metadata: Optional[Dict] = None) -> DataResponse:
     """标准化响应格式
 
     Args:
@@ -349,9 +337,7 @@ class BaseDataSource(IPriceDataSource):
         self.name = name
         self._initialized = False
 
-    def _validate_inputs(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> Optional[str]:
+    def _validate_inputs(self, symbol: str, start_date: str, end_date: str) -> Optional[str]:
         """验证输入参数"""
         if not validate_symbol(symbol):
             return f"Invalid symbol format: {symbol}"
@@ -366,9 +352,7 @@ class BaseDataSource(IPriceDataSource):
 
     def _create_error_response(self, error: str) -> DataResponse:
         """创建错误响应"""
-        return DataResponse.create_error(
-            error_msg=error, metadata={"source": self.name}
-        )
+        return DataResponse.create_error(error_msg=error, metadata={"source": self.name})
 
 
 # =============================================================================

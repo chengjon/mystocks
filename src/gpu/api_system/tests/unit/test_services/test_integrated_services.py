@@ -13,16 +13,10 @@ class TestIntegratedBacktestService:
     """集成回测服务测试"""
 
     @pytest.fixture
-    def backtest_service(
-        self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-    ):
+    def backtest_service(self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector):
         """创建回测服务实例"""
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
-            service = MockService(
-                mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-            )
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
+            service = MockService(mock_gpu_manager, mock_redis_queue, mock_metrics_collector)
             yield service
 
     def test_submit_backtest(self, backtest_service, sample_strategy_config):
@@ -130,16 +124,10 @@ class TestIntegratedRealTimeService:
     """集成实时处理服务测试"""
 
     @pytest.fixture
-    def realtime_service(
-        self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-    ):
+    def realtime_service(self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector):
         """创建实时处理服务实例"""
-        with patch(
-            "services.integrated_realtime_service.IntegratedRealTimeService"
-        ) as MockService:
-            service = MockService(
-                mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-            )
+        with patch("services.integrated_realtime_service.IntegratedRealTimeService") as MockService:
+            service = MockService(mock_gpu_manager, mock_redis_queue, mock_metrics_collector)
             yield service
 
     def test_stream_market_data(self, realtime_service):
@@ -252,9 +240,7 @@ class TestIntegratedMLService:
     def ml_service(self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector):
         """创建ML服务实例"""
         with patch("services.integrated_ml_service.IntegratedMLService") as MockService:
-            service = MockService(
-                mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-            )
+            service = MockService(mock_gpu_manager, mock_redis_queue, mock_metrics_collector)
             yield service
 
     def test_train_model(self, ml_service, sample_ml_training_data):
@@ -301,9 +287,7 @@ class TestIntegratedMLService:
         """测试模型预测"""
         request = Mock()
         request.model_id = "model_12345"
-        request.input_data = json.dumps(
-            {"price": [11.5], "volume": [1400000], "sma_20": [10.7], "rsi": [65]}
-        )
+        request.input_data = json.dumps({"price": [11.5], "volume": [1400000], "sma_20": [10.7], "rsi": [65]})
 
         response = Mock()
         response.predictions = [1]  # 预测上涨
@@ -412,9 +396,7 @@ class TestIntegratedMLService:
 class TestServiceIntegration:
     """服务集成测试"""
 
-    def test_multi_service_workflow(
-        self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector
-    ):
+    def test_multi_service_workflow(self, mock_gpu_manager, mock_redis_queue, mock_metrics_collector):
         """测试多服务工作流"""
         # 1. 实时处理获取数据和特征
         # 2. ML训练模型
@@ -439,9 +421,7 @@ class TestServiceIntegration:
 
     def test_error_handling(self):
         """测试错误处理"""
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
             service = MockService(None, None, None)
 
             # 模拟错误

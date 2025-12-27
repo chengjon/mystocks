@@ -99,9 +99,7 @@ def handle_exceptions(
                 }, 400
 
             except KeyError as e:
-                logger.warning(
-                    f"Missing required parameter in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
                     message_key: f"Required parameter not found: {str(e)}",
@@ -152,9 +150,7 @@ def handle_exceptions(
                 }, 400
 
             except KeyError as e:
-                logger.warning(
-                    f"Missing required parameter in {f.__name__}", error=str(e)
-                )
+                logger.warning(f"Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
                     message_key: f"Required parameter not found: {str(e)}",

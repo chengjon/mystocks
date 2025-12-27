@@ -289,7 +289,7 @@ update: 2025-09-12
 
 功能介绍：这是用来把dataframe保存到mysql的必备转化工具，可根据dataframe生成SQL建表命令
           这个版本是更新过的，它支持设置primary_key和字符集utf8mb4
-          
+
 修改日期：2025-09-12
 修改内容：增加了对大整数的支持，自动选择INT或BIGINT类型
 
@@ -411,10 +411,10 @@ update: 2025-09-12
 
 Args:
     default_path (str): 默认相对路径
-    
+
 Returns:
     str: 找到的环境文件绝对路径
-    
+
 Raises:
     FileNotFoundError: 如果所有路径都找不到文件
 
@@ -451,7 +451,7 @@ Returns:
 Examples:
     # 在 Jupyter 中使用
     success = init_monitoring_database()
-    
+
     # 删除已存在的表并重建
     success = init_monitoring_database(drop_existing=True)
 

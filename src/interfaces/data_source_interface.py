@@ -71,9 +71,7 @@ class DataSourceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_technical_indicators(
-        self, stock_code: str, start_date: str, end_date: str
-    ) -> List[Dict]:
+    def get_technical_indicators(self, stock_code: str, start_date: str, end_date: str) -> List[Dict]:
         """
         获取技术指标
 
@@ -278,9 +276,7 @@ class DataSourceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_query_results(
-        self, query_name: str, limit: int = 20, offset: int = 0
-    ) -> Dict:
+    def get_query_results(self, query_name: str, limit: int = 20, offset: int = 0) -> Dict:
         """
         获取查询结果
 
@@ -407,9 +403,7 @@ class DataSourceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_indicator_data(
-        self, indicator_id: str, symbol: str, days: int = 30
-    ) -> pd.DataFrame:
+    def get_indicator_data(self, indicator_id: str, symbol: str, days: int = 30) -> pd.DataFrame:
         """
         获取指标数据表格
 
@@ -424,9 +418,7 @@ class DataSourceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_data_from_adapter(
-        self, adapter_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_from_adapter(self, adapter_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """
         从指定适配器获取数据（统一适配器调用入口）
 
@@ -441,9 +433,7 @@ class DataSourceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_data_with_failover(
-        self, data_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_with_failover(self, data_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """
         使用故障转移机制获取数据
 
@@ -460,9 +450,7 @@ class DataSourceInterface(ABC):
     # 新增的方法定义
 
     @abstractmethod
-    def get_minute_kline(
-        self, symbol: str, period: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取分钟K线数据
 

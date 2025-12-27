@@ -114,9 +114,7 @@ class ResponseValidator:
 
             if validator_type in self.validators:
                 try:
-                    result = self.validators[validator_type](
-                        test_case, response, execution_result, validator_config
-                    )
+                    result = self.validators[validator_type](test_case, response, execution_result, validator_config)
                     validation_results.append(result)
                 except Exception as e:
                     validation_results.append(
@@ -142,11 +140,7 @@ class ResponseValidator:
         actual = response.status_code
 
         status = "passed" if actual == expected else "failed"
-        message = (
-            f"Expected status {expected}, got {actual}"
-            if status == "failed"
-            else "Status code validation passed"
-        )
+        message = f"Expected status {expected}, got {actual}" if status == "failed" else "Status code validation passed"
 
         return {
             "validator": "status_code",
@@ -259,9 +253,7 @@ class ResponseValidator:
         return {
             "validator": "headers",
             "status": "passed" if overall_status else "failed",
-            "message": "All headers validation passed"
-            if overall_status
-            else "Some headers validation failed",
+            "message": "All headers validation passed" if overall_status else "Some headers validation failed",
             "details": {"header_results": results},
         }
 
@@ -330,25 +322,17 @@ class ResponseValidator:
             expected_structure = config.get("structure", {})
             actual_data = response.json()
 
-            structure_matches = self._compare_structures(
-                expected_structure, actual_data
-            )
+            structure_matches = self._compare_structures(expected_structure, actual_data)
 
             status = "passed" if structure_matches else "failed"
-            message = (
-                "JSON structure validation passed"
-                if status == "passed"
-                else "JSON structure validation failed"
-            )
+            message = "JSON structure validation passed" if status == "passed" else "JSON structure validation failed"
 
             return {
                 "validator": "json_structure",
                 "status": status,
                 "message": message,
                 "expected_structure": expected_structure,
-                "actual_keys": list(actual_data.keys())
-                if isinstance(actual_data, dict)
-                else [],
+                "actual_keys": list(actual_data.keys()) if isinstance(actual_data, dict) else [],
             }
         except Exception as e:
             return {
@@ -374,9 +358,7 @@ class ResponseValidator:
                 if not self._compare_structures(exp_item, act_item):
                     return False
             return True
-        elif isinstance(expected, (str, int, float, bool)) and isinstance(
-            actual, (str, int, float, bool)
-        ):
+        elif isinstance(expected, (str, int, float, bool)) and isinstance(actual, (str, int, float, bool)):
             return type(expected) == type(actual)
         else:
             return isinstance(expected, type(actual))
@@ -429,9 +411,7 @@ class ContractTestExecutor:
 
         # 记录执行历史
         end_time = time.time()
-        self._record_execution_history(
-            test_suite, results, execution_mode, end_time - start_time
-        )
+        self._record_execution_history(test_suite, results, execution_mode, end_time - start_time)
 
         # 分析结果
         self._analyze_results(results)
@@ -452,17 +432,13 @@ class ContractTestExecutor:
 
         return results
 
-    async def _execute_parallelly(
-        self, test_cases: List[TestCase], test_suite: TestSuite
-    ) -> List[TestExecutionResult]:
+    async def _execute_parallelly(self, test_cases: List[TestCase], test_suite: TestSuite) -> List[TestExecutionResult]:
         """并行执行测试"""
         semaphore = asyncio.Semaphore(self.max_workers)
         tasks = []
 
         for test_case in test_cases:
-            task = asyncio.create_task(
-                self._execute_with_semaphore(test_case, test_suite, semaphore)
-            )
+            task = asyncio.create_task(self._execute_with_semaphore(test_case, test_suite, semaphore))
             tasks.append(task)
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -498,9 +474,7 @@ class ContractTestExecutor:
 
         return results
 
-    async def _execute_adaptively(
-        self, test_cases: List[TestCase], test_suite: TestSuite
-    ) -> List[TestExecutionResult]:
+    async def _execute_adaptively(self, test_cases: List[TestCase], test_suite: TestSuite) -> List[TestExecutionResult]:
         """自适应执行测试"""
         results = []
 
@@ -518,9 +492,7 @@ class ContractTestExecutor:
         if medium_priority:
             print(f"🎯 执行中等优先级测试: {len(medium_priority)} 个")
             results.extend(
-                await self._execute_parallelly(
-                    medium_priority, test_suite, max_workers=self.max_workers // 2
-                )
+                await self._execute_parallelly(medium_priority, test_suite, max_workers=self.max_workers // 2)
             )
 
         # 最后执行低优先级测试
@@ -538,13 +510,9 @@ class ContractTestExecutor:
         async with semaphore:
             return await self._execute_single_test(test_case, test_suite)
 
-    async def _execute_single_test(
-        self, test_case: TestCase, test_suite: TestSuite
-    ) -> TestExecutionResult:
+    async def _execute_single_test(self, test_case: TestCase, test_suite: TestSuite) -> TestExecutionResult:
         """执行单个测试"""
-        execution_result = TestExecutionResult(
-            test_case=test_case, status=TestResultStatus.RUNNING
-        )
+        execution_result = TestExecutionResult(test_case=test_case, status=TestResultStatus.RUNNING)
 
         start_time = time.time()
 
@@ -560,9 +528,7 @@ class ContractTestExecutor:
             json_data = test_case.body if method in ["POST", "PUT", "PATCH"] else None
 
             # 发送请求
-            response = await self.client.request(
-                method=method, url=url, headers=headers, params=params, json=json_data
-            )
+            response = await self.client.request(method=method, url=url, headers=headers, params=params, json=json_data)
 
             # 记录响应信息
             execution_result.response_status = response.status_code
@@ -576,31 +542,21 @@ class ContractTestExecutor:
                 execution_result.response_body = response.text
 
             # 验证响应
-            validation_results = self.validator.validate_response(
-                test_case, response, execution_result
-            )
+            validation_results = self.validator.validate_response(test_case, response, execution_result)
             execution_result.validation_results = validation_results
 
             # 确定测试状态
             if any(v["status"] == "failed" for v in validation_results):
                 execution_result.status = TestResultStatus.FAILED
                 error_msg = next(
-                    (
-                        v["message"]
-                        for v in validation_results
-                        if v["status"] == "failed"
-                    ),
+                    (v["message"] for v in validation_results if v["status"] == "failed"),
                     "Validation failed",
                 )
                 execution_result.error_message = error_msg
             elif any(v["status"] == "error" for v in validation_results):
                 execution_result.status = TestResultStatus.ERROR
                 error_msg = next(
-                    (
-                        v["message"]
-                        for v in validation_results
-                        if v["status"] == "error"
-                    ),
+                    (v["message"] for v in validation_results if v["status"] == "error"),
                     "Validation error",
                 )
                 execution_result.error_message = error_msg
@@ -637,9 +593,7 @@ class ContractTestExecutor:
         json_data = action.get("json")
 
         try:
-            response = await self.client.request(
-                method=method, url=url, headers=headers, params=params, json=json_data
-            )
+            response = await self.client.request(method=method, url=url, headers=headers, params=params, json=json_data)
             print(f"  ✓ HTTP操作成功: {method} {url} (HTTP {response.status_code})")
         except Exception as e:
             print(f"  ✗ HTTP操作失败: {method} {url} - {e}")
@@ -671,10 +625,7 @@ class ContractTestExecutor:
             "passed": len([r for r in results if r.status == TestResultStatus.PASSED]),
             "failed": len([r for r in results if r.status == TestResultStatus.FAILED]),
             "errors": len([r for r in results if r.status == TestResultStatus.ERROR]),
-            "average_response_time": sum(r.execution_time for r in results)
-            / len(results)
-            if results
-            else 0,
+            "average_response_time": sum(r.execution_time for r in results) / len(results) if results else 0,
         }
 
         self.execution_history.append(history_entry)
@@ -712,9 +663,7 @@ class ContractTestExecutor:
                 if result.status in [TestResultStatus.FAILED, TestResultStatus.ERROR]:
                     print(f"  - {result.test_case.name}: {result.error_message}")
 
-    def generate_test_report(
-        self, results: List[TestExecutionResult], output_path: str, format: str = "html"
-    ):
+    def generate_test_report(self, results: List[TestExecutionResult], output_path: str, format: str = "html"):
         """生成测试报告"""
         if format.lower() == "html":
             self._generate_html_report(results, output_path)
@@ -725,9 +674,7 @@ class ContractTestExecutor:
         else:
             raise ValueError(f"不支持的报告格式: {format}")
 
-    def _generate_html_report(
-        self, results: List[TestExecutionResult], output_path: str
-    ):
+    def _generate_html_report(self, results: List[TestExecutionResult], output_path: str):
         """生成HTML报告"""
         from datetime import datetime
 
@@ -823,9 +770,7 @@ class ContractTestExecutor:
 
         print(f"✓ HTML报告已生成: {output_path}")
 
-    def _generate_json_report(
-        self, results: List[TestExecutionResult], output_path: str
-    ):
+    def _generate_json_report(self, results: List[TestExecutionResult], output_path: str):
         """生成JSON报告"""
         import json
         from datetime import datetime
@@ -860,9 +805,7 @@ class ContractTestExecutor:
 
         print(f"✓ JSON报告已生成: {output_path}")
 
-    def _generate_markdown_report(
-        self, results: List[TestExecutionResult], output_path: str
-    ):
+    def _generate_markdown_report(self, results: List[TestExecutionResult], output_path: str):
         """生成Markdown报告"""
         from datetime import datetime
 
@@ -929,14 +872,10 @@ async def demo_contract_executor():
     print("🚀 演示契约测试执行器")
 
     # 创建执行器
-    executor = ContractTestExecutor(
-        base_url="https://httpbin.org", max_workers=5, timeout=10
-    )
+    executor = ContractTestExecutor(base_url="https://httpbin.org", max_workers=5, timeout=10)
 
     # 创建测试套件
-    test_suite = TestSuite(
-        name="HTTPBin Test Suite", description="Test suite for HTTPBin API"
-    )
+    test_suite = TestSuite(name="HTTPBin Test Suite", description="Test suite for HTTPBin API")
 
     # 添加测试用例
     test_cases = [
@@ -972,22 +911,14 @@ async def demo_contract_executor():
 
     # 执行测试
     try:
-        results = await executor.execute_test_suite(
-            test_suite, execution_mode=TestExecutionMode.PARALLEL
-        )
+        results = await executor.execute_test_suite(test_suite, execution_mode=TestExecutionMode.PARALLEL)
 
         # 生成报告
-        executor.generate_test_report(
-            results, output_path="contract_test_report.html", format="html"
-        )
+        executor.generate_test_report(results, output_path="contract_test_report.html", format="html")
 
-        executor.generate_test_report(
-            results, output_path="contract_test_report.json", format="json"
-        )
+        executor.generate_test_report(results, output_path="contract_test_report.json", format="json")
 
-        executor.generate_test_report(
-            results, output_path="contract_test_report.md", format="markdown"
-        )
+        executor.generate_test_report(results, output_path="contract_test_report.md", format="markdown")
 
         print("\n✅ 契约测试执行器演示完成")
 

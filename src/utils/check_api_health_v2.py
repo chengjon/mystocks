@@ -294,8 +294,7 @@ class APIHealthChecker:
             # 打印结果
             if result["status"] == "PASS":
                 detail = (
-                    f"Status {result.get('status_code', 'N/A')}, "
-                    f"响应时间: {result.get('response_time', 0):.0f}ms"
+                    f"Status {result.get('status_code', 'N/A')}, " f"响应时间: {result.get('response_time', 0):.0f}ms"
                 )
                 if "data_keys" in result:
                     detail += f", 返回字段: {', '.join(result['data_keys'][:5])}"
@@ -306,9 +305,7 @@ class APIHealthChecker:
                     error_msg = f"Status {result['status_code']}: {error_msg}"
                 self.print_result(test_case["name"], "FAIL", error_msg)
             else:
-                self.print_result(
-                    test_case["name"], "WARN", result.get("error", "警告")
-                )
+                self.print_result(test_case["name"], "WARN", result.get("error", "警告"))
 
             print()  # 空行
 
@@ -334,9 +331,7 @@ class APIHealthChecker:
         """打印分优先级统计"""
         print(f"\n{Colors.BOLD}按优先级统计:{Colors.END}")
         for priority in ["P1", "P2", "P3"]:
-            priority_results = [
-                r for r in self.results if r.get("priority") == priority
-            ]
+            priority_results = [r for r in self.results if r.get("priority") == priority]
             if priority_results:
                 p_total = len(priority_results)
                 p_passed = sum(1 for r in priority_results if r["status"] == "PASS")
@@ -345,9 +340,7 @@ class APIHealthChecker:
 
     def _get_performance_metrics(self) -> Tuple[float, List[float]]:
         """获取响应时间指标"""
-        response_times = [
-            r.get("response_time", 0) for r in self.results if r["status"] == "PASS"
-        ]
+        response_times = [r.get("response_time", 0) for r in self.results if r["status"] == "PASS"]
         avg_time = sum(response_times) / len(response_times) if response_times else 0
         return avg_time, response_times
 
@@ -359,9 +352,7 @@ class APIHealthChecker:
             print(f"  最快: {min(response_times):.0f}ms")
             print(f"  最慢: {max(response_times):.0f}ms")
 
-    def _check_acceptance_criteria(
-        self, pass_rate: float, avg_time: float, has_times: bool
-    ):
+    def _check_acceptance_criteria(self, pass_rate: float, avg_time: float, has_times: bool):
         """检查各项验收标准"""
         self.print_header("验收标准检查 (SC-001)")
 
@@ -372,8 +363,7 @@ class APIHealthChecker:
                 all(
                     r["status"] == "PASS"
                     for r in self.results
-                    if r.get("priority") == "P1"
-                    and r.get("name") not in ["用户登录", "技术指标计算"]
+                    if r.get("priority") == "P1" and r.get("name") not in ["用户登录", "技术指标计算"]
                 ),
             ),
             (
@@ -382,11 +372,7 @@ class APIHealthChecker:
             ),
             (
                 "TDX核心功能100%可用",
-                all(
-                    r["status"] == "PASS"
-                    for r in self.results
-                    if "TDX" in r.get("name", "")
-                ),
+                all(r["status"] == "PASS" for r in self.results if "TDX" in r.get("name", "")),
             ),
             ("平均响应时间 < 500ms", avg_time < 500 if has_times else False),
         ]
@@ -401,9 +387,7 @@ class APIHealthChecker:
 
         print()
         if all_passed:
-            print(
-                f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}"
-            )
+            print(f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}")
         else:
             print(f"{Colors.YELLOW}⚠️  部分验收标准未通过，需要进一步优化。{Colors.END}")
 

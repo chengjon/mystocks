@@ -105,9 +105,7 @@ class RateLimiter:
         # Calculate reset time (when bucket will be full again)
         tokens_to_full = max(0, self.config.capacity - bucket["tokens"])
         if self.config.refill_rate > 0:
-            reset_time = bucket["last_refill"] + (
-                tokens_to_full / self.config.refill_rate
-            )
+            reset_time = bucket["last_refill"] + (tokens_to_full / self.config.refill_rate)
         else:
             reset_time = float("inf")  # Never refill if rate is 0
 
@@ -171,9 +169,7 @@ class RateLimiter:
         """
         now = time.time()
         stale_clients = [
-            client_id
-            for client_id, bucket in self.buckets.items()
-            if now - bucket["last_refill"] > timeout_seconds
+            client_id for client_id, bucket in self.buckets.items() if now - bucket["last_refill"] > timeout_seconds
         ]
 
         for client_id in stale_clients:

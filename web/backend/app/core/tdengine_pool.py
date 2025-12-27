@@ -114,14 +114,10 @@ class TDengineConnectionPool:
         self._initialize_pool()
 
         # 启动健康检查线程
-        self._health_check_thread = threading.Thread(
-            target=self._health_check_loop, daemon=True
-        )
+        self._health_check_thread = threading.Thread(target=self._health_check_loop, daemon=True)
         self._health_check_thread.start()
 
-        logger.info(
-            "🔧 TDengine连接池已初始化", host=host, min_size=min_size, max_size=max_size
-        )
+        logger.info("🔧 TDengine连接池已初始化", host=host, min_size=min_size, max_size=max_size)
 
     def _initialize_pool(self):
         """初始化连接池（创建最小连接数）"""
@@ -205,9 +201,7 @@ class TDengineConnectionPool:
                 self._close_connection(conn)
                 return self._create_connection()
 
-            logger.debug(
-                "获取连接", conn_id=conn_id, active=self._stats["active_connections"]
-            )
+            logger.debug("获取连接", conn_id=conn_id, active=self._stats["active_connections"])
 
             return conn
 
@@ -259,9 +253,7 @@ class TDengineConnectionPool:
                 self._stats["active_connections"] -= 1
                 self._stats["idle_connections"] += 1
 
-            logger.debug(
-                "归还连接", conn_id=conn_id, idle=self._stats["idle_connections"]
-            )
+            logger.debug("归还连接", conn_id=conn_id, idle=self._stats["idle_connections"])
 
         except queue.Full:
             # 池已满，关闭连接
@@ -330,9 +322,7 @@ class TDengineConnectionPool:
                 idle_seconds = (now - last_used).total_seconds()
 
                 if idle_seconds > self.max_idle_time:
-                    logger.info(
-                        "清理空闲连接", conn_id=conn_id, idle_seconds=idle_seconds
-                    )
+                    logger.info("清理空闲连接", conn_id=conn_id, idle_seconds=idle_seconds)
                     self._close_connection(conn)
                     closed_count += 1
 

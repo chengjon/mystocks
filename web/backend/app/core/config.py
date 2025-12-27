@@ -3,7 +3,6 @@
 """
 
 import os
-from pathlib import Path
 from typing import List
 
 from pydantic import Field
@@ -17,12 +16,14 @@ _ENV_FILE_LOCATIONS = [
     "/opt/claude/mystocks_spec/.env",  # 项目根目录（绝对路径）
 ]
 
+
 def find_env_file() -> str:
     """查找存在的.env文件"""
     for env_path in _ENV_FILE_LOCATIONS:
         if os.path.exists(env_path):
             return env_path
     return ".env"  # 默认返回当前目录
+
 
 _ENV_FILE_PATH = find_env_file()
 
@@ -75,9 +76,7 @@ class Settings(BaseSettings):
     )  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
-    cors_origins_str: str = (
-        "http://localhost:3000,http://localhost:8080,http://localhost:5173"
-    )
+    cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
 
     @property
     def cors_origins(self) -> List[str]:

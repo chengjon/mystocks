@@ -47,9 +47,7 @@ class TestTDXAdapter:
         """测试连接失败场景"""
         # Mock连接失败
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_quotes.side_effect = Exception(
-            "Connection failed"
-        )
+        mock_api_instance.get_security_quotes.side_effect = Exception("Connection failed")
         mock_api.return_value = mock_api_instance
 
         with patch.object(self.adapter, "api", mock_api_instance):
@@ -64,9 +62,7 @@ class TestTDXAdapter:
         """测试获取日K线数据"""
         # Mock返回数据
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict(
-            "records"
-        )
+        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict("records")
         mock_api.return_value = mock_api_instance
 
         with patch.object(self.adapter, "api", mock_api_instance):
@@ -82,9 +78,7 @@ class TestTDXAdapter:
         """测试获取分钟K线数据"""
         # Mock返回数据
         mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict(
-            "records"
-        )
+        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict("records")
         mock_api.return_value = mock_api_instance
 
         with patch.object(self.adapter, "api", mock_api_instance):
@@ -161,9 +155,7 @@ class TestTDXAdapter:
 
         for count in test_counts:
             try:
-                result = self.adapter.get_kline_data(
-                    "000001", period="daily", count=count
-                )
+                result = self.adapter.get_kline_data("000001", period="daily", count=count)
                 # 不抛出异常就通过
                 assert True
             except:

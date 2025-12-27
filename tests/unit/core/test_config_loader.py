@@ -304,10 +304,7 @@ class TestConfigLoaderEdgeCases:
         config_file = tmp_path / "large_config.yaml"
 
         # 创建一个大配置
-        config_data = {
-            f"key_{i}": {"value": i, "nested": {"data": f"value_{i}"}}
-            for i in range(1000)
-        }
+        config_data = {f"key_{i}": {"value": i, "nested": {"data": f"value_{i}"}} for i in range(1000)}
 
         with open(config_file, "w", encoding="utf-8") as f:
             yaml.dump(config_data, f)
@@ -322,7 +319,8 @@ class TestConfigLoaderEdgeCases:
         config_file = tmp_path / "commented_config.yaml"
 
         with open(config_file, "w", encoding="utf-8") as f:
-            f.write("""
+            f.write(
+                """
 # This is a comment
 database:
   host: localhost  # inline comment
@@ -330,7 +328,8 @@ database:
 # Another comment
 server:
   port: 8000
-""")
+"""
+            )
 
         loaded_config = ConfigLoader.load_config(str(config_file))
 

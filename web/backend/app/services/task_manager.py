@@ -56,9 +56,7 @@ class TaskManager:
                 task_id=task_config.task_id, task_name=task_config.task_name
             )
 
-            logger.info(
-                f"Task registered: {task_config.task_id} - {task_config.task_name}"
-            )
+            logger.info(f"Task registered: {task_config.task_id} - {task_config.task_name}")
 
             return TaskResponse(
                 success=True,
@@ -68,9 +66,7 @@ class TaskManager:
             )
         except Exception as e:
             logger.error(f"Failed to register task: {e}")
-            return TaskResponse(
-                success=False, message=f"Failed to register task: {str(e)}"
-            )
+            return TaskResponse(success=False, message=f"Failed to register task: {str(e)}")
 
     def unregister_task(self, task_id: str) -> TaskResponse:
         """注销任务"""
@@ -88,23 +84,17 @@ class TaskManager:
 
             logger.info(f"Task unregistered: {task_id}")
 
-            return TaskResponse(
-                success=True, message="Task unregistered successfully", task_id=task_id
-            )
+            return TaskResponse(success=True, message="Task unregistered successfully", task_id=task_id)
         except Exception as e:
             logger.error(f"Failed to unregister task: {e}")
-            return TaskResponse(
-                success=False, message=f"Failed to unregister task: {str(e)}"
-            )
+            return TaskResponse(success=False, message=f"Failed to unregister task: {str(e)}")
 
     def register_function(self, function_name: str, function: Callable):
         """注册任务函数"""
         self.task_functions[function_name] = function
         logger.info(f"Function registered: {function_name}")
 
-    async def execute_task(
-        self, task_id: str, params: Optional[Dict[str, Any]] = None
-    ) -> TaskExecution:
+    async def execute_task(self, task_id: str, params: Optional[Dict[str, Any]] = None) -> TaskExecution:
         """执行任务"""
         if task_id not in self.tasks:
             raise ValueError(f"Task {task_id} not found")
@@ -133,9 +123,7 @@ class TaskManager:
             if task_config.task_function in self.task_functions:
                 task_func = self.task_functions[task_config.task_function]
             else:
-                raise ValueError(
-                    f"Task function {task_config.task_function} not registered"
-                )
+                raise ValueError(f"Task function {task_config.task_function} not registered")
 
             # 执行任务(在线程池中执行,避免阻塞)
             loop = asyncio.get_event_loop()
@@ -147,24 +135,18 @@ class TaskManager:
             # 更新执行记录
             execution.status = TaskStatus.SUCCESS
             execution.end_time = datetime.now()
-            execution.duration = (
-                execution.end_time - execution.start_time
-            ).total_seconds()
+            execution.duration = (execution.end_time - execution.start_time).total_seconds()
             execution.result = result if isinstance(result, dict) else {"data": result}
 
             # 更新统计信息
             self._update_statistics(task_id, execution)
 
-            logger.info(
-                f"Task completed successfully: {task_id} [{execution_id}] in {execution.duration}s"
-            )
+            logger.info(f"Task completed successfully: {task_id} [{execution_id}] in {execution.duration}s")
 
         except asyncio.TimeoutError:
             execution.status = TaskStatus.FAILED
             execution.end_time = datetime.now()
-            execution.error_message = (
-                f"Task execution timeout after {task_config.timeout}s"
-            )
+            execution.error_message = f"Task execution timeout after {task_config.timeout}s"
             logger.error(f"Task timeout: {task_id} [{execution_id}]")
 
         except Exception as e:
@@ -176,9 +158,7 @@ class TaskManager:
             # 检查是否需要重试
             if execution.retry_count < task_config.retry_count:
                 execution.retry_count += 1
-                logger.info(
-                    f"Retrying task: {task_id} (attempt {execution.retry_count}/{task_config.retry_count})"
-                )
+                logger.info(f"Retrying task: {task_id} (attempt {execution.retry_count}/{task_config.retry_count})")
                 await asyncio.sleep(task_config.retry_delay)
                 return await self.execute_task(task_id, params)
 
@@ -188,39 +168,29 @@ class TaskManager:
 
         return execution
 
-    async def start_task(
-        self, task_id: str, params: Optional[Dict[str, Any]] = None
-    ) -> TaskResponse:
+    async def start_task(self, task_id: str, params: Optional[Dict[str, Any]] = None) -> TaskResponse:
         """启动任务(异步)"""
         try:
             if task_id not in self.tasks:
                 return TaskResponse(success=False, message=f"Task {task_id} not found")
 
             if task_id in self.running_tasks:
-                return TaskResponse(
-                    success=False, message=f"Task {task_id} is already running"
-                )
+                return TaskResponse(success=False, message=f"Task {task_id} is already running")
 
             # 创建异步任务
             task = asyncio.create_task(self.execute_task(task_id, params))
             self.running_tasks[task_id] = task
 
-            return TaskResponse(
-                success=True, message="Task started successfully", task_id=task_id
-            )
+            return TaskResponse(success=True, message="Task started successfully", task_id=task_id)
         except Exception as e:
             logger.error(f"Failed to start task: {e}")
-            return TaskResponse(
-                success=False, message=f"Failed to start task: {str(e)}"
-            )
+            return TaskResponse(success=False, message=f"Failed to start task: {str(e)}")
 
     def stop_task(self, task_id: str) -> TaskResponse:
         """停止任务"""
         try:
             if task_id not in self.running_tasks:
-                return TaskResponse(
-                    success=False, message=f"Task {task_id} is not running"
-                )
+                return TaskResponse(success=False, message=f"Task {task_id} is not running")
 
             task = self.running_tasks[task_id]
             task.cancel()
@@ -228,9 +198,7 @@ class TaskManager:
 
             logger.info(f"Task stopped: {task_id}")
 
-            return TaskResponse(
-                success=True, message="Task stopped successfully", task_id=task_id
-            )
+            return TaskResponse(success=True, message="Task stopped successfully", task_id=task_id)
         except Exception as e:
             logger.error(f"Failed to stop task: {e}")
             return TaskResponse(success=False, message=f"Failed to stop task: {str(e)}")
@@ -239,9 +207,7 @@ class TaskManager:
         """获取任务配置"""
         return self.tasks.get(task_id)
 
-    def list_tasks(
-        self, task_type: Optional[TaskType] = None, tags: Optional[List[str]] = None
-    ) -> List[TaskConfig]:
+    def list_tasks(self, task_type: Optional[TaskType] = None, tags: Optional[List[str]] = None) -> List[TaskConfig]:
         """列出所有任务"""
         tasks = list(self.tasks.values())
 
@@ -257,9 +223,7 @@ class TaskManager:
         """获取执行记录"""
         return self.executions.get(execution_id)
 
-    def list_executions(
-        self, task_id: Optional[str] = None, limit: int = 100
-    ) -> List[TaskExecution]:
+    def list_executions(self, task_id: Optional[str] = None, limit: int = 100) -> List[TaskExecution]:
         """列出执行记录"""
         executions = list(self.executions.values())
 
@@ -271,24 +235,16 @@ class TaskManager:
 
         return executions[:limit]
 
-    def get_statistics(
-        self, task_id: Optional[str] = None
-    ) -> Dict[str, TaskStatistics]:
+    def get_statistics(self, task_id: Optional[str] = None) -> Dict[str, TaskStatistics]:
         """获取统计信息"""
         if task_id:
-            return (
-                {task_id: self.statistics.get(task_id)}
-                if task_id in self.statistics
-                else {}
-            )
+            return {task_id: self.statistics.get(task_id)} if task_id in self.statistics else {}
         return self.statistics
 
     def _update_statistics(self, task_id: str, execution: TaskExecution):
         """更新统计信息"""
         if task_id not in self.statistics:
-            self.statistics[task_id] = TaskStatistics(
-                task_id=task_id, task_name=self.tasks[task_id].task_name
-            )
+            self.statistics[task_id] = TaskStatistics(task_id=task_id, task_name=self.tasks[task_id].task_name)
 
         stats = self.statistics[task_id]
         stats.total_executions += 1
@@ -300,9 +256,7 @@ class TaskManager:
 
         if execution.duration:
             # 计算平均执行时长
-            total_duration = (
-                stats.avg_duration * (stats.total_executions - 1) + execution.duration
-            )
+            total_duration = stats.avg_duration * (stats.total_executions - 1) + execution.duration
             stats.avg_duration = total_duration / stats.total_executions
 
         stats.last_execution_time = execution.end_time
@@ -343,9 +297,7 @@ class TaskManager:
             )
         except Exception as e:
             logger.error(f"Failed to import config: {e}")
-            return TaskResponse(
-                success=False, message=f"Failed to import config: {str(e)}"
-            )
+            return TaskResponse(success=False, message=f"Failed to import config: {str(e)}")
 
     def cleanup_old_executions(self, days: int = 7):
         """清理旧的执行记录"""

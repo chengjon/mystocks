@@ -100,17 +100,13 @@ class RiskManager:
         # 单个股票仓位限制
         max_single_value = portfolio.equity * Decimal(self.max_position_size)
         current_position = portfolio.get_position(order.symbol)
-        current_value = (
-            current_position.market_value if current_position else Decimal("0")
-        )
+        current_value = current_position.market_value if current_position else Decimal("0")
 
         if current_value + order_value > max_single_value:
             return False, f"超过单股票最大仓位限制 ({self.max_position_size * 100}%)"
 
         # 总仓位限制
-        total_position_value = sum(
-            pos.market_value for pos in portfolio.positions.values()
-        )
+        total_position_value = sum(pos.market_value for pos in portfolio.positions.values())
         max_total_value = portfolio.equity * Decimal(self.max_total_position)
 
         if total_position_value + order_value > max_total_value:
@@ -123,9 +119,7 @@ class RiskManager:
     ) -> tuple[bool, Optional[str]]:
         """检查现金是否充足"""
         # 估算手续费
-        estimated_commission = (
-            current_price * Decimal(order.quantity) * portfolio.commission_rate
-        )
+        estimated_commission = current_price * Decimal(order.quantity) * portfolio.commission_rate
         required_cash = current_price * Decimal(order.quantity) + estimated_commission
 
         if portfolio.cash < required_cash:
@@ -136,9 +130,7 @@ class RiskManager:
 
         return True, None
 
-    def _check_daily_loss_limit(
-        self, portfolio: PortfolioManager
-    ) -> tuple[bool, Optional[str]]:
+    def _check_daily_loss_limit(self, portfolio: PortfolioManager) -> tuple[bool, Optional[str]]:
         """检查每日亏损限制"""
         if not self.max_daily_loss:
             return True, None
@@ -148,38 +140,28 @@ class RiskManager:
         if len(portfolio.equity_curve) > 0:
             yesterday_equity = portfolio.equity_curve[-1]["equity"]
             daily_pnl = today_equity - yesterday_equity
-            daily_return = (
-                daily_pnl / yesterday_equity if yesterday_equity > 0 else Decimal("0")
-            )
+            daily_return = daily_pnl / yesterday_equity if yesterday_equity > 0 else Decimal("0")
 
             if daily_return < Decimal(-self.max_daily_loss):
                 return False, f"触发单日最大亏损限制 ({self.max_daily_loss * 100}%)"
 
         return True, None
 
-    def _check_max_drawdown(
-        self, portfolio: PortfolioManager
-    ) -> tuple[bool, Optional[str]]:
+    def _check_max_drawdown(self, portfolio: PortfolioManager) -> tuple[bool, Optional[str]]:
         """检查最大回撤限制"""
         if not self.max_drawdown or len(portfolio.equity_curve) == 0:
             return True, None
 
         # 计算当前回撤
         peak_equity = max(point["equity"] for point in portfolio.equity_curve)
-        current_drawdown = (
-            (peak_equity - portfolio.equity) / peak_equity
-            if peak_equity > 0
-            else Decimal("0")
-        )
+        current_drawdown = (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal("0")
 
         if current_drawdown > Decimal(self.max_drawdown):
             return False, f"触发最大回撤限制 ({self.max_drawdown * 100}%)"
 
         return True, None
 
-    def check_stop_loss_take_profit(
-        self, symbol: str, position: Position, current_price: Decimal
-    ) -> Optional[str]:
+    def check_stop_loss_take_profit(self, symbol: str, position: Position, current_price: Decimal) -> Optional[str]:
         """
         检查止损止盈
 
@@ -256,22 +238,14 @@ class RiskManager:
             风险指标摘要
         """
         # 计算当前仓位比例
-        total_position_value = sum(
-            pos.market_value for pos in portfolio.positions.values()
-        )
-        position_ratio = (
-            float(total_position_value / portfolio.equity)
-            if portfolio.equity > 0
-            else 0.0
-        )
+        total_position_value = sum(pos.market_value for pos in portfolio.positions.values())
+        position_ratio = float(total_position_value / portfolio.equity) if portfolio.equity > 0 else 0.0
 
         # 计算当前回撤
         if len(portfolio.equity_curve) > 0:
             peak_equity = max(point["equity"] for point in portfolio.equity_curve)
             current_drawdown = float(
-                (peak_equity - portfolio.equity) / peak_equity
-                if peak_equity > 0
-                else Decimal("0")
+                (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal("0")
             )
         else:
             current_drawdown = 0.0
@@ -280,9 +254,7 @@ class RiskManager:
         if len(portfolio.equity_curve) > 1:
             yesterday_equity = portfolio.equity_curve[-2]["equity"]
             daily_pnl = float(portfolio.equity - yesterday_equity)
-            daily_return = (
-                float(daily_pnl / yesterday_equity) if yesterday_equity > 0 else 0.0
-            )
+            daily_return = float(daily_pnl / yesterday_equity) if yesterday_equity > 0 else 0.0
         else:
             daily_pnl = 0.0
             daily_return = 0.0
@@ -298,9 +270,7 @@ class RiskManager:
             "max_daily_loss": self.max_daily_loss,
             "stop_loss_pct": self.stop_loss_pct,
             "take_profit_pct": self.take_profit_pct,
-            "num_positions": len(
-                [p for p in portfolio.positions.values() if p.quantity != 0]
-            ),
+            "num_positions": len([p for p in portfolio.positions.values() if p.quantity != 0]),
         }
 
     def reset(self):

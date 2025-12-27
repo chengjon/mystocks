@@ -88,9 +88,7 @@ class TestBaostockDataSource:
 
     def test_get_stock_daily_success(self, mock_baostock, adapter):
         """测试成功获取股票日线数据"""
-        result = adapter.get_stock_daily(
-            "000001", start_date="2024-01-01", end_date="2024-01-02"
-        )
+        result = adapter.get_stock_daily("000001", start_date="2024-01-01", end_date="2024-01-02")
 
         # 验证API调用
         mock_baostock.query_history_k_data_plus.assert_called_once()
@@ -123,9 +121,7 @@ class TestBaostockDataSource:
 
     def test_get_stock_daily_with_date_format(self, mock_baostock, adapter):
         """测试不同日期格式的股票数据获取"""
-        result = adapter.get_stock_daily(
-            "000001", start_date="20240101", end_date="20240102"
-        )
+        result = adapter.get_stock_daily("000001", start_date="20240101", end_date="20240102")
 
         assert result is not None
         assert isinstance(result, pd.DataFrame)

@@ -389,9 +389,7 @@ class TestSecretManagerMigration:
     @pytest.fixture
     def secret_manager(self):
         """Create SecretManager for migration tests"""
-        encryption_mgr = EncryptionManager(
-            master_password="migration-test-pwd", key_version=1
-        )
+        encryption_mgr = EncryptionManager(master_password="migration-test-pwd", key_version=1)
         return SecretManager(encryption_manager=encryption_mgr)
 
     def test_migrate_to_key_version_success(self, secret_manager):
@@ -484,9 +482,7 @@ class TestVersionReport:
     @pytest.fixture
     def secret_manager(self):
         """Create SecretManager for version report tests"""
-        encryption_mgr = EncryptionManager(
-            master_password="report-test-pwd", key_version=1
-        )
+        encryption_mgr = EncryptionManager(master_password="report-test-pwd", key_version=1)
         return SecretManager(encryption_manager=encryption_mgr)
 
     def test_version_report_single_version(self, secret_manager):
@@ -639,9 +635,7 @@ class TestIntegrationScenarios:
     def test_full_key_rotation_workflow(self):
         """Test complete key rotation workflow"""
         # 1. Initialize with version 1
-        encryption_mgr = EncryptionManager(
-            master_password="workflow-test", key_version=1
-        )
+        encryption_mgr = EncryptionManager(master_password="workflow-test", key_version=1)
         manager = SecretManager(encryption_manager=encryption_mgr)
 
         # 2. Add secrets
@@ -676,9 +670,7 @@ class TestIntegrationScenarios:
 
     def test_gradual_migration_scenario(self):
         """Test gradual migration with mixed versions"""
-        encryption_mgr = EncryptionManager(
-            master_password="gradual-test", key_version=1
-        )
+        encryption_mgr = EncryptionManager(master_password="gradual-test", key_version=1)
         manager = SecretManager(encryption_manager=encryption_mgr)
 
         # Add secrets with v1

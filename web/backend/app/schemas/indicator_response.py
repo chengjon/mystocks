@@ -21,9 +21,7 @@ class IndicatorValueOutput(BaseModel):
     """
 
     output_name: str = Field(..., description="输出字段名称 (如 sma, macd, rsi)")
-    values: List[Optional[float]] = Field(
-        ..., description="指标值数组 (与日期一一对应, None表示数据不足)"
-    )
+    values: List[Optional[float]] = Field(..., description="指标值数组 (与日期一一对应, None表示数据不足)")
     display_name: str = Field(..., description="显示名称 (如 SMA(20), RSI(14))")
 
 
@@ -50,15 +48,9 @@ class IndicatorResult(BaseModel):
 
     abbreviation: str = Field(..., description="指标缩写")
     parameters: Dict[str, Any] = Field(..., description="使用的参数")
-    outputs: List[IndicatorValueOutput] = Field(
-        default_factory=list, description="指标输出列表"
-    )
-    panel_type: str = Field(
-        ..., description="面板类型: overlay (叠加主图) 或 oscillator (独立面板)"
-    )
-    reference_lines: Optional[List[float]] = Field(
-        None, description="参考线数值 (如 RSI 的 30, 70)"
-    )
+    outputs: List[IndicatorValueOutput] = Field(default_factory=list, description="指标输出列表")
+    panel_type: str = Field(..., description="面板类型: overlay (叠加主图) 或 oscillator (独立面板)")
+    reference_lines: Optional[List[float]] = Field(None, description="参考线数值 (如 RSI 的 30, 70)")
     error: Optional[str] = Field(None, description="错误信息 (如果计算失败)")
 
 
@@ -84,9 +76,7 @@ class OHLCVData(BaseModel):
     low: List[float] = Field(..., description="最低价列表")
     close: List[float] = Field(..., description="收盘价列表")
     volume: List[float] = Field(..., description="成交量列表")
-    turnover: List[float] = Field(
-        default_factory=list, description="成交额列表 (可选, 用于EMV和AVP指标)"
-    )
+    turnover: List[float] = Field(default_factory=list, description="成交额列表 (可选, 用于EMV和AVP指标)")
 
 
 class IndicatorCalculateResponse(BaseModel):
@@ -165,14 +155,10 @@ class IndicatorMetadata(BaseModel):
     abbreviation: str = Field(..., description="指标缩写")
     full_name: str = Field(..., description="完整英文名称")
     chinese_name: str = Field(..., description="中文名称")
-    category: str = Field(
-        ..., description="指标分类: trend, momentum, volatility, volume, candlestick"
-    )
+    category: str = Field(..., description="指标分类: trend, momentum, volatility, volume, candlestick")
     description: str = Field(..., description="指标描述")
     panel_type: str = Field(..., description="面板类型: overlay 或 oscillator")
-    parameters: List[Dict[str, Any]] = Field(
-        default_factory=list, description="参数定义列表"
-    )
+    parameters: List[Dict[str, Any]] = Field(default_factory=list, description="参数定义列表")
     outputs: List[Dict[str, str]] = Field(..., description="输出定义列表")
     reference_lines: Optional[List[float]] = Field(None, description="参考线数值")
     min_data_points_formula: str = Field(..., description="最小数据点计算公式")

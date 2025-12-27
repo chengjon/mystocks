@@ -28,9 +28,7 @@ except (ImportError, ModuleNotFoundError):
     import sys
     import os
 
-    project_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
@@ -96,9 +94,7 @@ class ErrorResponse(StandardResponse):
 
     status: str = Field(default="error")
     error: Optional[str] = Field(None, description="Error type/code")
-    details: Optional[Dict[str, Any]] = Field(
-        None, description="Additional error details"
-    )
+    details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
 
     class Config:
         json_schema_extra = {
@@ -128,18 +124,14 @@ class PaginationInfo(BaseModel):
         return v if v is not None else 0
 
     class Config:
-        json_schema_extra = {
-            "example": {"page": 1, "page_size": 20, "total": 100, "pages": 5}
-        }
+        json_schema_extra = {"example": {"page": 1, "page_size": 20, "total": 100, "pages": 5}}
 
 
 class PaginatedResponse(StandardResponse):
     """Standard paginated response"""
 
     status: str = Field(default="success")
-    data: Optional[Dict[str, Any]] = Field(
-        None, description="Response data with items and pagination info"
-    )
+    data: Optional[Dict[str, Any]] = Field(None, description="Response data with items and pagination info")
 
     class Config:
         json_schema_extra = {
@@ -169,9 +161,7 @@ class ValidationErrorResponse(ErrorResponse):
 
     code: int = Field(default=400)
     error: str = Field(default="VALIDATION_ERROR")
-    details: Dict[str, List[str]] = Field(
-        ..., description="Field-level validation errors"
-    )
+    details: Dict[str, List[str]] = Field(..., description="Field-level validation errors")
 
     class Config:
         json_schema_extra = {
@@ -286,9 +276,7 @@ class StockSymbolField(BaseModel):
 class PriceField(BaseModel):
     """Price field with automatic precision handling"""
 
-    price: Decimal = Field(
-        ..., ge=0, decimal_places=2, description="Price with 2 decimal places"
-    )
+    price: Decimal = Field(..., ge=0, decimal_places=2, description="Price with 2 decimal places")
 
     @validator("price", pre=True)
     def validate_price_value(cls, v):
@@ -302,9 +290,7 @@ class PriceField(BaseModel):
 class PercentageField(BaseModel):
     """Percentage field with automatic precision handling"""
 
-    percentage: Decimal = Field(
-        ..., ge=-100, le=100, description="Percentage value (2-4 decimal places)"
-    )
+    percentage: Decimal = Field(..., ge=-100, le=100, description="Percentage value (2-4 decimal places)")
 
     @validator("percentage", pre=True)
     def validate_percentage_value(cls, v):
@@ -331,9 +317,7 @@ class VolumeField(BaseModel):
 class CurrencyField(BaseModel):
     """Currency amount field with automatic precision handling"""
 
-    amount: Decimal = Field(
-        ..., decimal_places=2, description="Currency amount with 2 decimal places"
-    )
+    amount: Decimal = Field(..., decimal_places=2, description="Currency amount with 2 decimal places")
 
     @validator("amount", pre=True)
     def validate_currency_value(cls, v):
@@ -347,9 +331,7 @@ class CurrencyField(BaseModel):
 class DateField(BaseModel):
     """Date field (YYYY-MM-DD format)"""
 
-    date: constr(pattern=r"^\d{4}-\d{2}-\d{2}$") = Field(
-        ..., description="Date in YYYY-MM-DD format"
-    )
+    date: constr(pattern=r"^\d{4}-\d{2}-\d{2}$") = Field(..., description="Date in YYYY-MM-DD format")
 
     @validator("date", pre=True)
     def validate_date_value(cls, v):
@@ -392,9 +374,7 @@ class PaginationRequest(BaseModel):
     """Standard pagination request parameters"""
 
     page: int = Field(default=1, ge=1, description="Page number (1-indexed)")
-    page_size: int = Field(
-        default=20, ge=1, le=100, description="Number of items per page"
-    )
+    page_size: int = Field(default=20, ge=1, le=100, description="Number of items per page")
 
     class Config:
         json_schema_extra = {"example": {"page": 1, "page_size": 20}}
@@ -404,9 +384,7 @@ class SortRequest(BaseModel):
     """Standard sorting request parameters"""
 
     sort_by: Optional[str] = Field(None, description="Field to sort by")
-    sort_order: Optional[str] = Field(
-        "asc", pattern="^(asc|desc)$", description="Sort order: 'asc' or 'desc'"
-    )
+    sort_order: Optional[str] = Field("asc", pattern="^(asc|desc)$", description="Sort order: 'asc' or 'desc'")
 
     class Config:
         json_schema_extra = {"example": {"sort_by": "price", "sort_order": "desc"}}
@@ -415,16 +393,10 @@ class SortRequest(BaseModel):
 class FilterRequest(BaseModel):
     """Standard filter request parameters"""
 
-    filters: Optional[Dict[str, Any]] = Field(
-        None, description="Filter conditions as key-value pairs"
-    )
+    filters: Optional[Dict[str, Any]] = Field(None, description="Filter conditions as key-value pairs")
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "filters": {"symbol": "600000", "price_min": 100, "price_max": 200}
-            }
-        }
+        json_schema_extra = {"example": {"filters": {"symbol": "600000", "price_min": 100, "price_max": 200}}}
 
 
 # ============================================================================
@@ -569,9 +541,7 @@ if __name__ == "__main__":
     print("=" * 50)
 
     # Example: Create a success response
-    response = SuccessResponse(
-        status="success", code=200, message="Test successful", data={"test": "data"}
-    )
+    response = SuccessResponse(status="success", code=200, message="Test successful", data={"test": "data"})
     print(f"\nSuccess Response:\n{response.json(indent=2)}")
 
     # Example: Create a paginated response

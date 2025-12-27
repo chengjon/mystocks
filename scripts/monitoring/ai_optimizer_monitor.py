@@ -18,14 +18,12 @@ AI测试优化器监控和反馈收集系统
 import json
 import time
 import sqlite3
-import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
+from typing import Dict, List, Optional
+from dataclasses import dataclass
 import argparse
 import logging
-import hashlib
 
 # 设置日志
 logging.basicConfig(

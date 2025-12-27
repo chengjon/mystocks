@@ -92,9 +92,7 @@ class TestDataManagerSimplified:
         # 验证所有映射都是有效的DatabaseTarget
         valid_targets = {"TDENGINE", "POSTGRESQL"}
         for classification, target in dm._ROUTING_MAP.items():
-            assert target in valid_targets, (
-                f"Invalid target {target} for {classification}"
-            )
+            assert target in valid_targets, f"Invalid target {target} for {classification}"
 
     def test_route_database_performance(self):
         """测试路由决策性能"""
@@ -199,11 +197,7 @@ class TestDataManagerSimplified:
         dm = DataManager(enable_monitoring=False)
 
         # 验证所有数据分类都有路由映射
-        all_classifications = [
-            attr
-            for attr in dir(DataClassification)
-            if not attr.startswith("_") and attr.isupper()
-        ]
+        all_classifications = [attr for attr in dir(DataClassification) if not attr.startswith("_") and attr.isupper()]
 
         for classification_name in all_classifications:
             try:

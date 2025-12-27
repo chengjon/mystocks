@@ -19,9 +19,9 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import APIResponse, ErrorResponse, create_error_response
-from app.schema import ResponseModel, StockListQueryModel, StockSymbolModel  # 导入P0改进的验证模型
-from app.services.stock_search_service import StockSearchService, get_stock_search_service
+from app.core.responses import APIResponse, create_error_response
+from app.schema import StockListQueryModel  # 导入P0改进的验证模型
+from app.services.stock_search_service import get_stock_search_service
 from src.core.exceptions import (
     DatabaseNotFoundError,
     DatabaseOperationError,
@@ -29,7 +29,6 @@ from src.core.exceptions import (
     DataValidationError,
     NetworkError,
     ServiceError,
-    UnauthorizedAccessError,
 )
 
 logger = logging.getLogger(__name__)
@@ -333,7 +332,7 @@ async def search_stocks(
 
             if circuit_breaker.is_open():
                 # 熔断器打开，降级到Mock数据
-                logger.warning(f"⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
+                logger.warning("⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
                 from app.mock.unified_mock_data import get_mock_data_manager
 
                 mock_manager = get_mock_data_manager()
@@ -502,7 +501,7 @@ async def get_company_profile(
         raise HTTPException(status_code=503, detail="公司信息服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get company profile failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取公司信息失败，请稍后重试") from e
+        raise HTTPException(status_code=500, detail="获取公司信息失败，请稍后重试") from e
 
 
 @router.get("/news/{symbol}", response_model=List[NewsItem])
@@ -548,7 +547,7 @@ async def get_stock_news(
         raise HTTPException(status_code=503, detail="新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get stock news failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取新闻失败，请稍后重试") from e
+        raise HTTPException(status_code=500, detail="获取新闻失败，请稍后重试") from e
 
 
 @router.get("/news/market/{category}", response_model=List[NewsItem])
@@ -580,7 +579,7 @@ async def get_market_news(
         raise HTTPException(status_code=503, detail="市场新闻服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get market news failed for category {category}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取市场新闻失败，请稍后重试") from e
+        raise HTTPException(status_code=500, detail="获取市场新闻失败，请稍后重试") from e
 
 
 @router.get("/recommendation/{symbol}")
@@ -615,7 +614,7 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
         raise HTTPException(status_code=503, detail="推荐分析服务暂时不可用，请稍后重试") from e
     except Exception as e:
         logger.error(f"Get recommendation trends failed for symbol {symbol}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取分析师推荐失败，请稍后重试") from e
+        raise HTTPException(status_code=500, detail="获取分析师推荐失败，请稍后重试") from e
 
 
 @router.post("/cache/clear", response_model=APIResponse)

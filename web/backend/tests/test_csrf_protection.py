@@ -16,14 +16,12 @@ CSRF 保护安全测试
 """
 
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import Request
 from fastapi.testclient import TestClient
 
 # 导入 CSRF 管理器
-from app.app_factory import CSRFTokenManager, csrf_manager
+from app.app_factory import csrf_manager
 
 
 class TestCSRFTokenManager:

@@ -35,17 +35,11 @@ class WencaiQuery(Base):
     __tablename__ = "wencai_queries"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    query_name = Column(
-        String(20), unique=True, nullable=False, index=True, comment="查询名称，如qs_1"
-    )
+    query_name = Column(String(20), unique=True, nullable=False, index=True, comment="查询名称，如qs_1")
     query_text = Column(Text, nullable=False, comment="查询语句（自然语言）")
     description = Column(String(255), nullable=True, comment="查询说明")
-    is_active = Column(
-        Boolean, default=True, nullable=False, index=True, comment="是否启用"
-    )
-    created_at = Column(
-        TIMESTAMP, default=datetime.now, nullable=False, comment="创建时间"
-    )
+    is_active = Column(Boolean, default=True, nullable=False, index=True, comment="是否启用")
+    created_at = Column(TIMESTAMP, default=datetime.now, nullable=False, comment="创建时间")
     updated_at = Column(
         TIMESTAMP,
         default=datetime.now,

@@ -53,12 +53,8 @@ class PerformanceMetrics:
         dates = [point["date"] for point in equity_curve]
 
         # 计算基础指标
-        total_return = self._calculate_total_return(
-            equity_values, float(initial_capital)
-        )
-        annualized_return = self._calculate_annualized_return(
-            equity_values, dates, float(initial_capital)
-        )
+        total_return = self._calculate_total_return(equity_values, float(initial_capital))
+        annualized_return = self._calculate_annualized_return(equity_values, dates, float(initial_capital))
 
         # 计算风险指标
         volatility = self._calculate_volatility(equity_values, dates)
@@ -79,12 +75,8 @@ class PerformanceMetrics:
         information_ratio = None
         if benchmark_curve and len(benchmark_curve) > 0:
             benchmark_values = [float(point["equity"]) for point in benchmark_curve]
-            alpha, beta = self._calculate_alpha_beta(
-                equity_values, benchmark_values, dates
-            )
-            information_ratio = self._calculate_information_ratio(
-                equity_values, benchmark_values
-            )
+            alpha, beta = self._calculate_alpha_beta(equity_values, benchmark_values, dates)
+            information_ratio = self._calculate_information_ratio(equity_values, benchmark_values)
 
         return {
             # 收益指标
@@ -104,9 +96,7 @@ class PerformanceMetrics:
             # 相对指标（vs基准）
             "alpha": round(alpha, 4) if alpha is not None else None,
             "beta": round(beta, 4) if beta is not None else None,
-            "information_ratio": round(information_ratio, 4)
-            if information_ratio
-            else None,
+            "information_ratio": round(information_ratio, 4) if information_ratio else None,
             # 其他信息
             "total_trades": len(trades),
             "trading_days": len(equity_curve),
@@ -136,9 +126,7 @@ class PerformanceMetrics:
             "trading_days": 0,
         }
 
-    def _calculate_total_return(
-        self, equity_values: List[float], initial_capital: float
-    ) -> float:
+    def _calculate_total_return(self, equity_values: List[float], initial_capital: float) -> float:
         """计算总收益率"""
         if initial_capital == 0:
             return 0.0
@@ -162,9 +150,7 @@ class PerformanceMetrics:
         annualized = (1 + total_return) ** (1 / years) - 1
         return annualized
 
-    def _calculate_volatility(
-        self, equity_values: List[float], dates: List[datetime]
-    ) -> float:
+    def _calculate_volatility(self, equity_values: List[float], dates: List[datetime]) -> float:
         """计算年化波动率"""
         if len(equity_values) < 2:
             return 0.0
@@ -173,9 +159,7 @@ class PerformanceMetrics:
         returns = []
         for i in range(1, len(equity_values)):
             if equity_values[i - 1] != 0:
-                daily_return = (
-                    equity_values[i] - equity_values[i - 1]
-                ) / equity_values[i - 1]
+                daily_return = (equity_values[i] - equity_values[i - 1]) / equity_values[i - 1]
                 returns.append(daily_return)
 
         if len(returns) == 0:
@@ -186,9 +170,7 @@ class PerformanceMetrics:
         annualized_volatility = daily_volatility * np.sqrt(252)  # 假设252个交易日
         return float(annualized_volatility)
 
-    def _calculate_sharpe_ratio(
-        self, annualized_return: float, volatility: float
-    ) -> float:
+    def _calculate_sharpe_ratio(self, annualized_return: float, volatility: float) -> float:
         """计算夏普比率"""
         if volatility == 0:
             return 0.0
@@ -211,9 +193,7 @@ class PerformanceMetrics:
 
         return max_dd
 
-    def _calculate_max_drawdown_duration(
-        self, equity_curve: List[Dict[str, Any]]
-    ) -> int:
+    def _calculate_max_drawdown_duration(self, equity_curve: List[Dict[str, Any]]) -> int:
         """计算最大回撤持续时间（天数）"""
         if not equity_curve:
             return 0
@@ -235,17 +215,13 @@ class PerformanceMetrics:
 
         return max(max_duration, current_duration)
 
-    def _calculate_calmar_ratio(
-        self, annualized_return: float, max_drawdown: float
-    ) -> Optional[float]:
+    def _calculate_calmar_ratio(self, annualized_return: float, max_drawdown: float) -> Optional[float]:
         """计算Calmar比率"""
         if max_drawdown == 0:
             return None
         return annualized_return / max_drawdown
 
-    def _calculate_sortino_ratio(
-        self, equity_values: List[float], dates: List[datetime]
-    ) -> float:
+    def _calculate_sortino_ratio(self, equity_values: List[float], dates: List[datetime]) -> float:
         """计算Sortino比率（只考虑下行波动）"""
         if len(equity_values) < 2:
             return 0.0
@@ -254,9 +230,7 @@ class PerformanceMetrics:
         returns = []
         for i in range(1, len(equity_values)):
             if equity_values[i - 1] != 0:
-                daily_return = (
-                    equity_values[i] - equity_values[i - 1]
-                ) / equity_values[i - 1]
+                daily_return = (equity_values[i] - equity_values[i - 1]) / equity_values[i - 1]
                 returns.append(daily_return)
 
         if len(returns) == 0:
@@ -292,11 +266,7 @@ class PerformanceMetrics:
             }
 
         # 提取盈亏
-        pnls = [
-            float(trade.get("profit_loss", 0))
-            for trade in trades
-            if trade.get("profit_loss")
-        ]
+        pnls = [float(trade.get("profit_loss", 0)) for trade in trades if trade.get("profit_loss")]
 
         if not pnls:
             return {
@@ -344,12 +314,8 @@ class PerformanceMetrics:
 
         for i in range(1, len(portfolio_values)):
             if portfolio_values[i - 1] != 0 and benchmark_values[i - 1] != 0:
-                p_ret = (
-                    portfolio_values[i] - portfolio_values[i - 1]
-                ) / portfolio_values[i - 1]
-                b_ret = (
-                    benchmark_values[i] - benchmark_values[i - 1]
-                ) / benchmark_values[i - 1]
+                p_ret = (portfolio_values[i] - portfolio_values[i - 1]) / portfolio_values[i - 1]
+                b_ret = (benchmark_values[i] - benchmark_values[i - 1]) / benchmark_values[i - 1]
                 portfolio_returns.append(p_ret)
                 benchmark_returns.append(b_ret)
 
@@ -368,9 +334,7 @@ class PerformanceMetrics:
         # 计算Alpha（年化）
         avg_portfolio_return = np.mean(portfolio_returns) * 252
         avg_benchmark_return = np.mean(benchmark_returns) * 252
-        alpha = avg_portfolio_return - (
-            self.risk_free_rate + beta * (avg_benchmark_return - self.risk_free_rate)
-        )
+        alpha = avg_portfolio_return - (self.risk_free_rate + beta * (avg_benchmark_return - self.risk_free_rate))
 
         return alpha, beta
 
@@ -385,12 +349,8 @@ class PerformanceMetrics:
         excess_returns = []
         for i in range(1, len(portfolio_values)):
             if portfolio_values[i - 1] != 0 and benchmark_values[i - 1] != 0:
-                p_ret = (
-                    portfolio_values[i] - portfolio_values[i - 1]
-                ) / portfolio_values[i - 1]
-                b_ret = (
-                    benchmark_values[i] - benchmark_values[i - 1]
-                ) / benchmark_values[i - 1]
+                p_ret = (portfolio_values[i] - portfolio_values[i - 1]) / portfolio_values[i - 1]
+                b_ret = (benchmark_values[i] - benchmark_values[i - 1]) / benchmark_values[i - 1]
                 excess_returns.append(p_ret - b_ret)
 
         if len(excess_returns) < 2:

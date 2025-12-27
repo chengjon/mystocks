@@ -66,9 +66,7 @@ def assert_tdx_dataframe_basic_structure(df: pd.DataFrame, expected_columns: Lis
     """
     assert isinstance(df, pd.DataFrame), "返回值应为 DataFrame"
     assert not df.empty, "返回的 DataFrame 不应为空"
-    assert list(df.columns) == expected_columns, (
-        f"列名不匹配,期望{expected_columns}, 实际{list(df.columns)}"
-    )
+    assert list(df.columns) == expected_columns, f"列名不匹配,期望{expected_columns}, 实际{list(df.columns)}"
 
 
 def assert_tdx_dataframe_data_types(df: pd.DataFrame):

@@ -61,15 +61,9 @@ class Announcement(Base):
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 关系
-    monitor_records = relationship(
-        "AnnouncementMonitorRecord", back_populates="announcement"
-    )
+    monitor_records = relationship("AnnouncementMonitorRecord", back_populates="announcement")
 
-    __table_args__ = (
-        UniqueConstraint(
-            "stock_code", "source_id", "data_source", name="uq_announcement_source"
-        ),
-    )
+    __table_args__ = (UniqueConstraint("stock_code", "source_id", "data_source", name="uq_announcement_source"),)
 
     def __repr__(self):
         return f"<Announcement(id={self.id}, code='{self.stock_code}', title='{self.announcement_title[:30]}...')>"
@@ -114,9 +108,7 @@ class AnnouncementMonitorRecord(Base):
         ForeignKey("announcement_monitor_rule.id", ondelete="CASCADE"),
         index=True,
     )
-    announcement_id = Column(
-        Integer, ForeignKey("announcement.id", ondelete="CASCADE"), index=True
-    )
+    announcement_id = Column(Integer, ForeignKey("announcement.id", ondelete="CASCADE"), index=True)
     matched_keywords = Column(JSONB, default=list)
     triggered_at = Column(DateTime, default=datetime.now, index=True)
     notified = Column(Boolean, default=False)
@@ -128,7 +120,9 @@ class AnnouncementMonitorRecord(Base):
     announcement = relationship("Announcement", back_populates="monitor_records")
 
     def __repr__(self):
-        return f"<AnnouncementMonitorRecord(id={self.id}, rule_id={self.rule_id}, announcement_id={self.announcement_id})>"
+        return (
+            f"<AnnouncementMonitorRecord(id={self.id}, rule_id={self.rule_id}, announcement_id={self.announcement_id})>"
+        )
 
 
 # ============================================================================

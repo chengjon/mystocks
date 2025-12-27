@@ -50,10 +50,7 @@ class MultiSourceManager:
         self._category_sources: Dict[DataCategory, List[DataSourceType]] = {}
         self._build_category_mapping()
 
-        logger.info(
-            "MultiSourceManager initialized with adapters: "
-            f"{list(self._adapters.keys())}"
-        )
+        logger.info("MultiSourceManager initialized with adapters: " f"{list(self._adapters.keys())}")
 
     def _initialize_adapters(self):
         """初始化所有数据源适配器"""
@@ -94,15 +91,11 @@ class MultiSourceManager:
 
         # 按优先级排序
         for category in self._category_sources:
-            self._category_sources[category].sort(
-                key=lambda st: self._adapters[st].get_config().priority
-            )
+            self._category_sources[category].sort(key=lambda st: self._adapters[st].get_config().priority)
 
         logger.info(f"Built category mapping: {len(self._category_sources)} categories")
 
-    def get_adapter(
-        self, source_type: DataSourceType
-    ) -> Optional[BaseDataSourceAdapter]:
+    def get_adapter(self, source_type: DataSourceType) -> Optional[BaseDataSourceAdapter]:
         """
         获取指定类型的适配器
 
@@ -121,9 +114,7 @@ class MultiSourceManager:
         Returns:
             List[BaseDataSourceAdapter]: 可用适配器列表
         """
-        return [
-            adapter for adapter in self._adapters.values() if adapter.is_available()
-        ]
+        return [adapter for adapter in self._adapters.values() if adapter.is_available()]
 
     def get_sources_for_category(self, category: DataCategory) -> List[DataSourceType]:
         """
@@ -211,8 +202,7 @@ class MultiSourceManager:
                         self._cache[cache_key] = (data, time.time())
 
                     logger.info(
-                        f"Successfully fetched from {source_type.value} "
-                        f"({len(data)} rows in {response_time:.3f}s)"
+                        f"Successfully fetched from {source_type.value} " f"({len(data)} rows in {response_time:.3f}s)"
                     )
 
                     return result
@@ -308,16 +298,12 @@ class MultiSourceManager:
         return self.fetch_with_fallback(
             DataCategory.FUND_FLOW,
             lambda adapter: (
-                adapter.fetch_fund_flow(symbol, timeframe)
-                if hasattr(adapter, "fetch_fund_flow")
-                else pd.DataFrame()
+                adapter.fetch_fund_flow(symbol, timeframe) if hasattr(adapter, "fetch_fund_flow") else pd.DataFrame()
             ),
             cache_key,
         )
 
-    def fetch_dragon_tiger(
-        self, date_str: str, source: Optional[DataSourceType] = None
-    ) -> Dict[str, Any]:
+    def fetch_dragon_tiger(self, date_str: str, source: Optional[DataSourceType] = None) -> Dict[str, Any]:
         """
         获取龙虎榜
 
@@ -333,9 +319,7 @@ class MultiSourceManager:
         return self.fetch_with_fallback(
             DataCategory.DRAGON_TIGER,
             lambda adapter: (
-                adapter.fetch_dragon_tiger(date_str)
-                if hasattr(adapter, "fetch_dragon_tiger")
-                else pd.DataFrame()
+                adapter.fetch_dragon_tiger(date_str) if hasattr(adapter, "fetch_dragon_tiger") else pd.DataFrame()
             ),
             cache_key,
         )
@@ -424,17 +408,13 @@ class MultiSourceManager:
                         "avg_response_time": health.avg_response_time,
                         "error_count": health.error_count,
                         "last_check": health.last_check.isoformat(),
-                        "supported_categories": [
-                            cat.value for cat in health.supported_categories
-                        ],
+                        "supported_categories": [cat.value for cat in health.supported_categories],
                         **stats,
                     }
                 )
 
             except Exception as e:
-                logger.error(
-                    f"Failed to get health status for {source_type.value}: {e}"
-                )
+                logger.error(f"Failed to get health status for {source_type.value}: {e}")
 
         return statuses
 

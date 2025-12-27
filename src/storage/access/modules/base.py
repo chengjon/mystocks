@@ -89,9 +89,7 @@ def normalize_dataframe(data: pd.DataFrame) -> pd.DataFrame:
     normalized = data.copy()
 
     # 清理列名：移除空格和特殊字符
-    normalized.columns = [
-        str(col).strip().replace(" ", "_") for col in normalized.columns
-    ]
+    normalized.columns = [str(col).strip().replace(" ", "_") for col in normalized.columns]
 
     # 数据类型转换
     for col in normalized.columns:
@@ -99,23 +97,14 @@ def normalize_dataframe(data: pd.DataFrame) -> pd.DataFrame:
         if "volume" in col.lower():
             normalized[col] = pd.to_numeric(normalized[col], errors="coerce").fillna(0)
         # 如果列名包含"price"或"close"或"open"，确保它是浮点类型
-        elif any(
-            name in col.lower()
-            for name in ["price", "amount", "close", "open", "high", "low"]
-        ):
-            normalized[col] = pd.to_numeric(normalized[col], errors="coerce").fillna(
-                0.0
-            )
+        elif any(name in col.lower() for name in ["price", "amount", "close", "open", "high", "low"]):
+            normalized[col] = pd.to_numeric(normalized[col], errors="coerce").fillna(0.0)
         # 如果列名包含"timestamp"或"date"，确保它是datetime类型
         elif any(name in col.lower() for name in ["timestamp", "date", "time"]):
             normalized[col] = pd.to_datetime(normalized[col], errors="coerce")
 
     # 排序时间列（如果有）
-    time_cols = [
-        col
-        for col in normalized.columns
-        if "time" in col.lower() or "date" in col.lower()
-    ]
+    time_cols = [col for col in normalized.columns if "time" in col.lower() or "date" in col.lower()]
     if time_cols:
         for col in time_cols:
             if pd.api.types.is_datetime64_any_dtype(normalized[col]):
@@ -138,11 +127,7 @@ def validate_time_series_data(data: pd.DataFrame) -> bool:
         return False
 
     # 检查是否存在时间列
-    time_cols = [
-        col
-        for col in data.columns
-        if "time" in col.lower() or "date" in col.lower() or "ts" in col.lower()
-    ]
+    time_cols = [col for col in data.columns if "time" in col.lower() or "date" in col.lower() or "ts" in col.lower()]
     if not time_cols:
         return False
 

@@ -32,7 +32,7 @@ def gpu_available():
         import cudf
 
         # 简单的GPU测试
-        df = cudf.DataFrame({"a": [1, 2, 3]})
+        cudf.DataFrame({"a": [1, 2, 3]})
         return True
     except Exception as e:
         print(f"GPU initialization failed: {e}")
@@ -56,7 +56,7 @@ def redis_available():
         return False
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mock_gpu_manager():
     """模拟GPU资源管理器"""
     from unittest.mock import Mock
@@ -70,7 +70,7 @@ def mock_gpu_manager():
     return manager
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mock_redis_queue():
     """模拟Redis队列"""
     from unittest.mock import Mock
@@ -84,7 +84,7 @@ def mock_redis_queue():
     return queue
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mock_metrics_collector():
     """模拟指标收集器"""
     from unittest.mock import Mock
@@ -97,7 +97,7 @@ def mock_metrics_collector():
     return collector
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def sample_market_data():
     """生成样本市场数据"""
     import pandas as pd
@@ -119,7 +119,7 @@ def sample_market_data():
     return pd.DataFrame(data)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def sample_strategy_config():
     """样本策略配置"""
     return {
@@ -132,7 +132,7 @@ def sample_strategy_config():
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def sample_ml_training_data():
     """生成ML训练样本数据"""
     import pandas as pd

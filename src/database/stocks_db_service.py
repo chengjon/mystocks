@@ -56,14 +56,10 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
                 filters["market"] = "深交所"
 
         # 查询股票基本信息表
-        df = postgresql_access.query(
-            table_name="symbols_info", filters=filters, limit=limit, offset=offset
-        )
+        df = postgresql_access.query(table_name="symbols_info", filters=filters, limit=limit, offset=offset)
 
         # 获取总数量
-        total_df = postgresql_access.query(
-            table_name="symbols_info", filters=filters, columns=["COUNT(*) as total"]
-        )
+        total_df = postgresql_access.query(table_name="symbols_info", filters=filters, columns=["COUNT(*) as total"])
         total_count = total_df.iloc[0]["total"] if not total_df.empty else 0
 
         # 转换为与Mock数据一致的格式
@@ -77,9 +73,9 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
                         "industry": row.get("industry", ""),
                         "area": row.get("area", ""),
                         "market": row.get("market", ""),
-                        "list_date": row.get("list_date", "").strftime("%Y-%m-%d")
-                        if pd.notna(row.get("list_date"))
-                        else "",
+                        "list_date": (
+                            row.get("list_date", "").strftime("%Y-%m-%d") if pd.notna(row.get("list_date")) else ""
+                        ),
                         "total": total_count,  # 用于分页的总数量
                     }
                 )
@@ -107,9 +103,7 @@ def get_real_time_quote(code: str) -> Dict:
 
         # 查询实时行情表（假设表名为realtime_quotes）
         filters = {"symbol": code}
-        df = postgresql_access.query(
-            table_name="realtime_quotes", filters=filters, limit=1
-        )
+        df = postgresql_access.query(table_name="realtime_quotes", filters=filters, limit=1)
 
         # 转换为与Mock数据一致的格式
         if not df.empty:
@@ -126,9 +120,9 @@ def get_real_time_quote(code: str) -> Dict:
                 "high": float(row.get("high", 0.0)),
                 "low": float(row.get("low", 0.0)),
                 "pre_close": float(row.get("pre_close", 0.0)),
-                "timestamp": row.get("timestamp", "").strftime("%Y-%m-%d %H:%M:%S")
-                if pd.notna(row.get("timestamp"))
-                else "",
+                "timestamp": (
+                    row.get("timestamp", "").strftime("%Y-%m-%d %H:%M:%S") if pd.notna(row.get("timestamp")) else ""
+                ),
             }
 
         return {}
@@ -169,9 +163,7 @@ def get_history_profit(params: Optional[Dict] = None) -> pd.DataFrame:
             "date <= ": end_date.strftime("%Y-%m-%d"),
         }
 
-        df = postgresql_access.query(
-            table_name="daily_kline", filters=filters, order_by="date ASC"
-        )
+        df = postgresql_access.query(table_name="daily_kline", filters=filters, order_by="date ASC")
 
         # 计算收益（假设已有收益字段或需要计算）
         if not df.empty:

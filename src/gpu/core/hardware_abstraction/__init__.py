@@ -14,7 +14,6 @@ from .interfaces import (
     IGPUResourceProvider,
     IStrategyContext,
     StrategyPriority,
-    PerformanceProfile,
 )
 
 

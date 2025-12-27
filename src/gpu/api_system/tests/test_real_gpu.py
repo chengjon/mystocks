@@ -74,9 +74,7 @@ class TestRealGPUAcceleration:
         # 生成测试数据
         n_samples = 100000
         n_features = 20
-        X, y = make_classification(
-            n_samples=n_samples, n_features=n_features, random_state=42
-        )
+        X, y = make_classification(n_samples=n_samples, n_features=n_features, random_state=42)
 
         # CPU训练
         cpu_model = skRF(n_estimators=100, max_depth=10, random_state=42)
@@ -113,7 +111,7 @@ class TestRealGPUAcceleration:
         # 获取GPU初始内存
         mempool = cp.get_default_memory_pool()
         mempool.free_all_blocks()
-        initial_used = mempool.used_bytes()
+        mempool.used_bytes()
 
         # 创建大数组
         n_elements = 10_000_000  # 1000万元素
@@ -171,18 +169,8 @@ class TestRealGPUAcceleration:
 
         # 简单移动平均策略 - 不使用transform+lambda，改用rolling on grouped
         cpu_df = cpu_df.sort_values(["stock_id", "date"])
-        cpu_df["ma5"] = (
-            cpu_df.groupby("stock_id")["close"]
-            .rolling(5)
-            .mean()
-            .reset_index(level=0, drop=True)
-        )
-        cpu_df["ma20"] = (
-            cpu_df.groupby("stock_id")["close"]
-            .rolling(20)
-            .mean()
-            .reset_index(level=0, drop=True)
-        )
+        cpu_df["ma5"] = cpu_df.groupby("stock_id")["close"].rolling(5).mean().reset_index(level=0, drop=True)
+        cpu_df["ma20"] = cpu_df.groupby("stock_id")["close"].rolling(20).mean().reset_index(level=0, drop=True)
         cpu_df["signal"] = (cpu_df["ma5"] > cpu_df["ma20"]).astype(int)
 
         cpu_time = (datetime.now() - cpu_start).total_seconds()

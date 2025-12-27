@@ -113,7 +113,6 @@ class DatabaseConnectionManager:
             ConnectionError: 连接失败
         """
         try:
-            import psycopg2
             from psycopg2 import pool
 
             if "postgresql" not in self._connections:

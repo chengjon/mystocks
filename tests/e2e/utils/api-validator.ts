@@ -24,11 +24,11 @@ export async function setupApiStandardization(page: Page, apiBaseUrl: string = '
       response = await route.fetch({ timeout: 3000 });
     } catch (e) {
       console.warn(`[ApiValidator] Failed to fetch ${route.request().url()}: ${e.message}`);
-      // If fetch fails (e.g. backend down), we can't validate. 
+      // If fetch fails (e.g. backend down), we can't validate.
       // Option A: Fail the test. Option B: Continue (let the app handle the error).
       // For "Critical Scan" where we expect mocks, falling through to a dead backend is usually a bug in the test setup.
       // We'll continue to let the app fail naturally or show an error.
-      return route.continue(); 
+      return route.continue();
     }
 
     const headers = response.headers();
@@ -42,12 +42,12 @@ export async function setupApiStandardization(page: Page, apiBaseUrl: string = '
         // Perform the validation checks
         expect(json).toHaveProperty('success');
         expect(typeof json.success).toBe('boolean');
-        
+
         expect(json).toHaveProperty('code');
         expect(typeof json.code).toBe('number');
 
         expect(json).toHaveProperty('data'); // Data can be anything, so just check existence
-        
+
         expect(json).toHaveProperty('message');
         expect(typeof json.message).toBe('string');
 

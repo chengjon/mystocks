@@ -218,9 +218,7 @@ class CircuitBreakerManager:
         """
         return self.breakers.get(name)
 
-    def call(
-        self, name: str, func: Callable, *args: Any, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def call(self, name: str, func: Callable, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Call a function through a registered circuit breaker
 
         Args:

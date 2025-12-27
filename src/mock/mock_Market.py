@@ -27,9 +27,7 @@ import numpy as np
 import math
 
 
-def _generate_realistic_stock_price(
-    base_price: float, volatility: float = 0.02
-) -> float:
+def _generate_realistic_stock_price(base_price: float, volatility: float = 0.02) -> float:
     """生成更真实的股票价格，使用对数正态分布
 
     Args:
@@ -298,15 +296,9 @@ def get_real_time_quotes(symbols: Optional[str] = None) -> List[Dict]:
         change_pct = round((change_amount / base_price) * 100, 2)
         price = round(base_price + change_amount, 2)
 
-        open_price = round(
-            base_price + random.uniform(-base_price * 0.02, base_price * 0.02), 2
-        )
-        high_price = round(
-            max(price, open_price) + random.uniform(0, base_price * 0.01), 2
-        )
-        low_price = round(
-            min(price, open_price) - random.uniform(0, base_price * 0.01), 2
-        )
+        open_price = round(base_price + random.uniform(-base_price * 0.02, base_price * 0.02), 2)
+        high_price = round(max(price, open_price) + random.uniform(0, base_price * 0.01), 2)
+        low_price = round(min(price, open_price) - random.uniform(0, base_price * 0.01), 2)
 
         volume = random.randint(1000000, 50000000)
         turnover = round(price * volume, 2)
@@ -362,10 +354,9 @@ def get_fund_flow(
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not start_date:
         days = int(timeframe) if timeframe.isdigit() else 1
-        start_date = (
-            datetime.datetime.strptime(end_date, "%Y-%m-%d")
-            - datetime.timedelta(days=days)
-        ).strftime("%Y-%m-%d")
+        start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=days)).strftime(
+            "%Y-%m-%d"
+        )
 
     start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d")
     end_dt = datetime.datetime.strptime(end_date, "%Y-%m-%d")
@@ -403,9 +394,7 @@ def get_fund_flow(
     return fund_flow_data
 
 
-def get_etf_list(
-    symbol: Optional[str] = None, keyword: Optional[str] = None, limit: int = 50
-) -> List[Dict]:
+def get_etf_list(symbol: Optional[str] = None, keyword: Optional[str] = None, limit: int = 50) -> List[Dict]:
     """获取ETF列表
 
     Args:
@@ -459,9 +448,7 @@ def get_etf_list(
     if symbol:
         filtered_etfs = [etf for etf in etf_pool if etf["symbol"] == symbol]
     elif keyword:
-        filtered_etfs = [
-            etf for etf in etf_pool if keyword.lower() in etf["name"].lower()
-        ]
+        filtered_etfs = [etf for etf in etf_pool if keyword.lower() in etf["name"].lower()]
 
     # 生成ETF数据
     result = []
@@ -595,10 +582,9 @@ def get_lhb_detail(
     if not end_date:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not start_date:
-        start_date = (
-            datetime.datetime.strptime(end_date, "%Y-%m-%d")
-            - datetime.timedelta(days=30)
-        ).strftime("%Y-%m-%d")
+        start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=30)).strftime(
+            "%Y-%m-%d"
+        )
 
     # 生成龙虎榜数据
     lhb_data = []
@@ -646,9 +632,7 @@ def get_lhb_detail(
         current_date += datetime.timedelta(days=1)
 
     # 按日期和净买入额排序
-    lhb_data = sorted(
-        lhb_data, key=lambda x: (x["trade_date"], x["net_amount"]), reverse=True
-    )
+    lhb_data = sorted(lhb_data, key=lambda x: (x["trade_date"], x["net_amount"]), reverse=True)
 
     return lhb_data[:limit]
 
@@ -733,28 +717,19 @@ def get_stock_list(
     # 筛选逻辑
     filtered_stocks = stock_pool
     if exchange:
-        filtered_stocks = [
-            stock for stock in filtered_stocks if stock["exchange"] == exchange
-        ]
+        filtered_stocks = [stock for stock in filtered_stocks if stock["exchange"] == exchange]
     if security_type:
-        filtered_stocks = [
-            stock
-            for stock in filtered_stocks
-            if stock["security_type"] == security_type
-        ]
+        filtered_stocks = [stock for stock in filtered_stocks if stock["security_type"] == security_type]
     if search:
         filtered_stocks = [
             stock
             for stock in filtered_stocks
-            if search.lower() in stock["symbol"].lower()
-            or search.lower() in stock["name"].lower()
+            if search.lower() in stock["symbol"].lower() or search.lower() in stock["name"].lower()
         ]
 
     # 生成上市日期和状态
     result = []
-    base_date = datetime.datetime.now() - datetime.timedelta(
-        days=random.randint(1000, 8000)
-    )
+    base_date = datetime.datetime.now() - datetime.timedelta(days=random.randint(1000, 8000))
 
     for stock in filtered_stocks[:limit]:
         list_date = base_date + datetime.timedelta(days=random.randint(0, 7000))
@@ -820,10 +795,9 @@ def get_kline_data(
     if not end_date:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not start_date:
-        start_date = (
-            datetime.datetime.strptime(end_date, "%Y-%m-%d")
-            - datetime.timedelta(days=60)
-        ).strftime("%Y-%m-%d")
+        start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=60)).strftime(
+            "%Y-%m-%d"
+        )
 
     # 根据周期调整日期间隔
     if period == "weekly":
@@ -847,12 +821,8 @@ def get_kline_data(
             # 生成OHLC数据
             open_price = round(current_price + random.uniform(-2.0, 2.0), 2)
             daily_change = random.uniform(-0.03, 0.03)
-            high_price = round(
-                max(open_price, current_price) * (1 + random.uniform(0, 0.02)), 2
-            )
-            low_price = round(
-                min(open_price, current_price) * (1 - random.uniform(0, 0.02)), 2
-            )
+            high_price = round(max(open_price, current_price) * (1 + random.uniform(0, 0.02)), 2)
+            low_price = round(min(open_price, current_price) * (1 - random.uniform(0, 0.02)), 2)
             close_price = round(open_price * (1 + daily_change), 2)
             volume = random.randint(1000000, 50000000)
             amount = round(close_price * volume, 2)
@@ -877,9 +847,7 @@ def get_kline_data(
     return kline_data
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

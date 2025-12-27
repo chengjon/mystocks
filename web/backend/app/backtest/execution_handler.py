@@ -85,9 +85,7 @@ class ExecutionHandler:
 
         return fill_event
 
-    def _calculate_fill_price(
-        self, order: OrderEvent, current_price: Decimal
-    ) -> Decimal:
+    def _calculate_fill_price(self, order: OrderEvent, current_price: Decimal) -> Decimal:
         """
         计算成交价格（考虑滑点）
 

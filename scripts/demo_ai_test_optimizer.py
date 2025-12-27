@@ -163,10 +163,10 @@ def demo_integration_with_existing_tools():
 
             workflow = AIAutomationWorkflow()
             print("   🤖 AI工作流组件:")
-            print(f"      - 数据获取: ✅")
-            print(f"      - AI分析: ✅")
-            print(f"      - 策略决策: ✅")
-            print(f"      - 性能监控: ✅")
+            print("      - 数据获取: ✅")
+            print("      - AI分析: ✅")
+            print("      - 策略决策: ✅")
+            print("      - 性能监控: ✅")
 
         except Exception as e:
             print(f"   ⚠️  AI工作流集成失败: {e}")

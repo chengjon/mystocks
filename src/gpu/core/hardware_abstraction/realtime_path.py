@@ -84,14 +84,10 @@ class MemoryPrewarmer:
         self.prewarmed_pools: Dict[str, Any] = {}
         self.locked_memory_blocks: Dict[int, Any] = {}  # device_id -> locked_blocks
 
-    async def allocate_and_lock_pools(
-        self, device_id: int, total_memory_mb: int
-    ) -> bool:
+    async def allocate_and_lock_pools(self, device_id: int, total_memory_mb: int) -> bool:
         """分配并锁定内存池"""
         try:
-            logger.info(
-                f"Allocating and locking {total_memory_mb}MB memory pool on device {device_id}"
-            )
+            logger.info(f"Allocating and locking {total_memory_mb}MB memory pool on device {device_id}")
 
             # 模拟内存分配
             allocation_time = total_memory_mb / 10000  # 分配时间与内存大小相关
@@ -109,9 +105,7 @@ class MemoryPrewarmer:
 
             self.locked_memory_blocks[device_id] = memory_blocks
 
-            logger.info(
-                f"Memory pool allocated and locked on device {device_id}: {total_memory_mb}MB"
-            )
+            logger.info(f"Memory pool allocated and locked on device {device_id}: {total_memory_mb}MB")
             return True
 
         except Exception as e:
@@ -141,9 +135,7 @@ class MemoryPrewarmer:
         """获取预热状态"""
         status = {
             "locked_devices": list(self.locked_memory_blocks.keys()),
-            "total_locked_memory_mb": sum(
-                blocks["total_size_mb"] for blocks in self.locked_memory_blocks.values()
-            ),
+            "total_locked_memory_mb": sum(blocks["total_size_mb"] for blocks in self.locked_memory_blocks.values()),
             "device_details": dict(self.locked_memory_blocks),
         }
 
@@ -157,19 +149,13 @@ class MarketDataCache:
         self.cached_data: Dict[str, np.ndarray] = {}
         self.cache_metadata: Dict[str, Any] = {}
 
-    async def load_market_data_to_gpu(
-        self, market_data: np.ndarray, data_key: str = "default"
-    ) -> bool:
+    async def load_market_data_to_gpu(self, market_data: np.ndarray, data_key: str = "default") -> bool:
         """加载行情数据到GPU"""
         try:
-            logger.debug(
-                f"Loading market data to GPU: {data_key}, shape: {market_data.shape}"
-            )
+            logger.debug(f"Loading market data to GPU: {data_key}, shape: {market_data.shape}")
 
             # 模拟GPU数据传输
-            transfer_time = market_data.nbytes / (
-                1024 * 1024 * 1024
-            )  # 传输时间与数据大小相关
+            transfer_time = market_data.nbytes / (1024 * 1024 * 1024)  # 传输时间与数据大小相关
             await asyncio.sleep(transfer_time)
 
             # 模拟GPU内存指针
@@ -217,9 +203,7 @@ class MarketDataCache:
         """获取缓存状态"""
         return {
             "cached_items": len(self.cached_data),
-            "total_size_bytes": sum(
-                meta["size_bytes"] for meta in self.cache_metadata.values()
-            ),
+            "total_size_bytes": sum(meta["size_bytes"] for meta in self.cache_metadata.values()),
             "cache_items": dict(self.cache_metadata),
         }
 
@@ -254,9 +238,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
 
         logger.info("RealTimeGPUPath initialized")
 
-    async def prewarm_for_trading(
-        self, strategy_contexts: List[IStrategyContext]
-    ) -> bool:
+    async def prewarm_for_trading(self, strategy_contexts: List[IStrategyContext]) -> bool:
         """为交易预热GPU资源"""
         logger.info("Starting GPU prewarming for trading")
 
@@ -311,10 +293,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
         results = {}
 
         # 并行编译核函数
-        tasks = [
-            self.kernel_compiler.compile_kernel(kernel_name)
-            for kernel_name in kernel_names
-        ]
+        tasks = [self.kernel_compiler.compile_kernel(kernel_name) for kernel_name in kernel_names]
 
         compiled_results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -326,9 +305,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 results[kernel_name] = result
 
         success_count = sum(1 for success in results.values() if success)
-        logger.info(
-            f"Kernel compilation completed: {success_count}/{len(kernel_names)} successful"
-        )
+        logger.info(f"Kernel compilation completed: {success_count}/{len(kernel_names)} successful")
 
         return results
 
@@ -343,25 +320,17 @@ class RealTimeGPUPath(IRealTimeExecutor):
             total_allocated = 0
             for device_id in device_ids:
                 # 根据策略数量计算每个设备的内存需求
-                device_strategies = [
-                    ctx
-                    for ctx in self.target_strategies
-                    if ctx.get_device_id() == device_id
-                ]
+                device_strategies = [ctx for ctx in self.target_strategies if ctx.get_device_id() == device_id]
 
                 # 每个策略预留一定内存
                 device_memory_mb = len(device_strategies) * 256  # 256MB per strategy
 
-                success = await self.memory_prewarmer.allocate_and_lock_pools(
-                    device_id, device_memory_mb
-                )
+                success = await self.memory_prewarmer.allocate_and_lock_pools(device_id, device_memory_mb)
 
                 if success:
                     total_allocated += device_memory_mb
                 else:
-                    logger.error(
-                        f"Failed to allocate memory pool for device {device_id}"
-                    )
+                    logger.error(f"Failed to allocate memory pool for device {device_id}")
                     return False
 
             logger.info(f"Memory pools allocated and locked: {total_allocated}MB total")
@@ -396,15 +365,11 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 # 模拟生成行情数据
                 mock_data = np.random.random(shape).astype(np.float32)
 
-                success = await self.market_data_cache.load_market_data_to_gpu(
-                    mock_data, data_key
-                )
+                success = await self.market_data_cache.load_market_data_to_gpu(mock_data, data_key)
                 if success:
                     success_count += 1
 
-            logger.info(
-                f"Market data preloaded: {success_count}/{len(data_configs)} items"
-            )
+            logger.info(f"Market data preloaded: {success_count}/{len(data_configs)} items")
             return success_count > 0
 
         except Exception as e:
@@ -427,9 +392,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 success_count += 1
 
             except Exception as e:
-                logger.error(
-                    f"Error prewarming strategy {context.get_strategy_id()}: {e}"
-                )
+                logger.error(f"Error prewarming strategy {context.get_strategy_id()}: {e}")
 
         logger.info(f"Strategy contexts prewarmed: {success_count}/{total_strategies}")
         return success_count == total_strategies
@@ -463,9 +426,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
 
         logger.info("GPU prewarming state cleared")
 
-    async def execute_prewarmed_kernel(
-        self, kernel_name: str, data: np.ndarray
-    ) -> Optional[np.ndarray]:
+    async def execute_prewarmed_kernel(self, kernel_name: str, data: np.ndarray) -> Optional[np.ndarray]:
         """执行预热的核函数"""
         if not self.is_prewarmed:
             logger.warning("GPU not prewarmed, kernel execution may be slower")

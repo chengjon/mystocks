@@ -142,9 +142,7 @@ class TestPerformanceMonitoring(unittest.TestCase):
         execution_time_ms = (time.time() - start_time) * 1000
 
         # 计算吞吐量
-        throughput = (
-            (batch_size / execution_time_ms) * 1000 if execution_time_ms > 0 else 0
-        )
+        throughput = (batch_size / execution_time_ms) * 1000 if execution_time_ms > 0 else 0
 
         print(f"  批量大小: {batch_size}条")
         print(f"  执行时间: {execution_time_ms:.2f}ms")

@@ -252,9 +252,7 @@ class DatabaseQueryBuilder:
 
         return query, params
 
-    async def execute(
-        self, db_manager: DatabaseConnectionManager
-    ) -> List[Dict[str, Any]]:
+    async def execute(self, db_manager: DatabaseConnectionManager) -> List[Dict[str, Any]]:
         """
         执行查询
 

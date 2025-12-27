@@ -128,49 +128,29 @@ class TestHooksManager:
 
         logger.info(f"✅ Registered hook: {name} ({hook_type.value})")
 
-    def before_all(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def before_all(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register beforeAll hook"""
-        self.register_hook(
-            HookType.BEFORE_ALL, handler, name, description, priority=100
-        )
+        self.register_hook(HookType.BEFORE_ALL, handler, name, description, priority=100)
 
-    def after_all(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def after_all(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register afterAll hook"""
         self.register_hook(HookType.AFTER_ALL, handler, name, description, priority=100)
 
-    def before_each(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def before_each(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register beforeEach hook"""
-        self.register_hook(
-            HookType.BEFORE_EACH, handler, name, description, priority=50
-        )
+        self.register_hook(HookType.BEFORE_EACH, handler, name, description, priority=50)
 
-    def after_each(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def after_each(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register afterEach hook"""
         self.register_hook(HookType.AFTER_EACH, handler, name, description, priority=50)
 
-    def before_transaction(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def before_transaction(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register beforeTransaction hook"""
-        self.register_hook(
-            HookType.BEFORE_TRANSACTION, handler, name, description, priority=10
-        )
+        self.register_hook(HookType.BEFORE_TRANSACTION, handler, name, description, priority=10)
 
-    def after_transaction(
-        self, handler: Callable, name: str = "", description: str = ""
-    ) -> None:
+    def after_transaction(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register afterTransaction hook"""
-        self.register_hook(
-            HookType.AFTER_TRANSACTION, handler, name, description, priority=10
-        )
+        self.register_hook(HookType.AFTER_TRANSACTION, handler, name, description, priority=10)
 
     def execute_hooks(self, hook_type: HookType, context: HookContext) -> None:
         """
@@ -262,15 +242,11 @@ def add_auth_headers_hook(context: HookContext) -> None:
         "Authorization": f"Bearer {test_token}",
         "Content-Type": "application/json",
     }
-    logger.debug(
-        f"✅ Added auth headers to {context.endpoint_method} {context.endpoint_path}"
-    )
+    logger.debug(f"✅ Added auth headers to {context.endpoint_method} {context.endpoint_path}")
 
 
 def validate_response_structure_hook(context: HookContext) -> None:
     """Validate response structure matches specification"""
     if not context.response_data:
-        raise ValueError(
-            f"Empty response for {context.endpoint_method} {context.endpoint_path}"
-        )
+        raise ValueError(f"Empty response for {context.endpoint_method} {context.endpoint_path}")
     logger.debug(f"✅ Validated response structure for {context.test_id}")

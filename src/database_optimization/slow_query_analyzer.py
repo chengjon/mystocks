@@ -119,17 +119,11 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(
-                1 for q in slow_queries if q["severity"] == "CRITICAL"
-            ),
-            "high_priority_queries": sum(
-                1 for q in slow_queries if q["severity"] == "HIGH"
-            ),
+            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
+            "high_priority_queries": sum(1 for q in slow_queries if q["severity"] == "HIGH"),
             "slow_queries": slow_queries,
             "recommendations": recommendations,
-            "total_daily_slow_queries": sum(
-                q["affected_queries_per_day"] for q in slow_queries
-            ),
+            "total_daily_slow_queries": sum(q["affected_queries_per_day"] for q in slow_queries),
             "estimated_total_speedup": "10-30x average improvement",
         }
 
@@ -218,23 +212,15 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(
-                1 for q in slow_queries if q["severity"] == "CRITICAL"
-            ),
-            "high_priority_queries": sum(
-                1 for q in slow_queries if q["severity"] == "HIGH"
-            ),
+            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
+            "high_priority_queries": sum(1 for q in slow_queries if q["severity"] == "HIGH"),
             "slow_queries": slow_queries,
             "recommendations": recommendations,
-            "total_daily_slow_queries": sum(
-                q["affected_queries_per_day"] for q in slow_queries
-            ),
+            "total_daily_slow_queries": sum(q["affected_queries_per_day"] for q in slow_queries),
             "estimated_total_speedup": "15-40x average improvement",
         }
 
-    def generate_explain_analysis(
-        self, query: str, database: str = "postgresql"
-    ) -> Dict:
+    def generate_explain_analysis(self, query: str, database: str = "postgresql") -> Dict:
         """
         生成EXPLAIN分析
 
@@ -275,9 +261,7 @@ class SlowQueryAnalyzer:
                     "impact": "Nested loop join scans entire tables",
                 }
             )
-            optimization_suggestions.append(
-                "Create indexes on join columns (both sides)"
-            )
+            optimization_suggestions.append("Create indexes on join columns (both sides)")
 
         if "group by" in query.lower() and "index" not in query.lower():
             bottlenecks.append(
@@ -308,19 +292,11 @@ class SlowQueryAnalyzer:
             "postgresql": pg_analysis,
             "tdengine": td_analysis,
             "total_slow_queries": (
-                pg_analysis["total_slow_queries_identified"]
-                + td_analysis["total_slow_queries_identified"]
+                pg_analysis["total_slow_queries_identified"] + td_analysis["total_slow_queries_identified"]
             ),
-            "total_daily_impact": (
-                pg_analysis["total_daily_slow_queries"]
-                + td_analysis["total_daily_slow_queries"]
-            ),
+            "total_daily_impact": (pg_analysis["total_daily_slow_queries"] + td_analysis["total_daily_slow_queries"]),
             "estimated_cumulative_slowdown_hours_per_day": round(
-                (
-                    pg_analysis["total_daily_slow_queries"] * 1.2
-                    + td_analysis["total_daily_slow_queries"] * 1.5
-                )
-                / 3600,
+                (pg_analysis["total_daily_slow_queries"] * 1.2 + td_analysis["total_daily_slow_queries"] * 1.5) / 3600,
                 2,
             ),
             "top_priority_actions": [

@@ -368,10 +368,51 @@
   </el-container>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 面包屑导航项
+ */
+interface BreadcrumbItem {
+  path: string
+  title: string
+}
+
+/**
+ * 用户命令类型
+ */
+type UserCommand = 'profile' | 'settings' | 'logout'
+
+/**
+ * 市场概览数据
+ */
+interface MarketOverview {
+  shIndex: string
+  shIndexChange: number
+  szIndex: string
+  szIndexChange: number
+  cyIndex: string
+  cyIndexChange: number
+  upCount: number
+  downCount: number
+  flatCount: number
+  heat: string
+  amount: string
+  limitUp: number
+  limitDown: number
+}
+
+/**
+ * 涨跌样式类
+ */
+type ChangeClass = 'text-up' | 'text-down' | 'text-flat'
 
 // ============================================
 // Composables
@@ -382,18 +423,18 @@ const router = useRouter()
 // ============================================
 // State
 // ============================================
-const isCollapsed = ref(false)
-const notificationCount = ref(0)
-const username = ref('Admin')
+const isCollapsed: Ref<boolean> = ref(false)
+const notificationCount: Ref<number> = ref(0)
+const username: Ref<string> = ref('Admin')
 
 // Market-specific state
-const selectedPeriod = ref('1d')
-const isRefreshing = ref(false)
-const isRealtime = ref(true)
-const refreshInterval = ref(null)
+const selectedPeriod: Ref<string> = ref('1d')
+const isRefreshing: Ref<boolean> = ref(false)
+const isRealtime: Ref<boolean> = ref(true)
+const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
 
 // Market overview data
-const marketOverview = ref({
+const marketOverview: Ref<MarketOverview> = ref({
   shIndex: '3,245.67',
   shIndexChange: 1.23,
   szIndex: '10,876.54',
@@ -412,36 +453,36 @@ const marketOverview = ref({
 // ============================================
 // Computed Properties
 // ============================================
-const sidebarWidth = computed(() => {
+const sidebarWidth: ComputedRef<string> = computed((): string => {
   return isCollapsed.value ? '64px' : '220px'
 })
 
-const activeMenu = computed(() => {
+const activeMenu: ComputedRef<string> = computed((): string => {
   return route.path
 })
 
-const breadcrumbs = computed(() => {
+const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[] => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
     path: item.path,
-    title: item.meta.title
+    title: item.meta.title as string
   }))
 })
 
 // ============================================
 // Methods
 // ============================================
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string): void => {
   if (index && index.startsWith('/')) {
     router.push(index)
   }
 }
 
-const handleUserCommand = async (command) => {
+const handleUserCommand = async (command: UserCommand): Promise<void> => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人信息功能开发中...')
@@ -470,16 +511,16 @@ const handleUserCommand = async (command) => {
 }
 
 // Market-specific methods
-const handlePeriodChange = (period) => {
+const handlePeriodChange = (period: string): void => {
   ElMessage.info(`切换到 ${period} 周期`)
   // TODO: Emit event to parent or call API to reload data
 }
 
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   isRefreshing.value = true
   try {
     // TODO: Call API to refresh market data
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise<void>(resolve => setTimeout(resolve, 1000))
     ElMessage.success('数据已刷新')
   } catch (error) {
     ElMessage.error('刷新失败')
@@ -488,12 +529,12 @@ const handleRefresh = async () => {
   }
 }
 
-const handleExport = (format) => {
+const handleExport = (format: string): void => {
   ElMessage.info(`导出为 ${format.toUpperCase()}`)
   // TODO: Implement export functionality
 }
 
-const handleRealtimeToggle = (value) => {
+const handleRealtimeToggle = (value: boolean): void => {
   if (value) {
     startRealtimeUpdates()
     ElMessage.success('已开启实时更新')
@@ -503,24 +544,24 @@ const handleRealtimeToggle = (value) => {
   }
 }
 
-const getChangeClass = (change) => {
+const getChangeClass = (change: number): ChangeClass => {
   if (change > 0) return 'text-up'
   if (change < 0) return 'text-down'
   return 'text-flat'
 }
 
-const startRealtimeUpdates = () => {
+const startRealtimeUpdates = (): void => {
   if (refreshInterval.value) return
 
   refreshInterval.value = setInterval(() => {
     // TODO: Fetch real-time market data
     // Simulate data updates
     marketOverview.value.shIndex = (3000 + Math.random() * 500).toFixed(2)
-    marketOverview.value.shIndexChange = (Math.random() * 4 - 2).toFixed(2)
+    marketOverview.value.shIndexChange = parseFloat((Math.random() * 4 - 2).toFixed(2))
   }, 3000)
 }
 
-const stopRealtimeUpdates = () => {
+const stopRealtimeUpdates = (): void => {
   if (refreshInterval.value) {
     clearInterval(refreshInterval.value)
     refreshInterval.value = null
@@ -530,18 +571,18 @@ const stopRealtimeUpdates = () => {
 // ============================================
 // Lifecycle
 // ============================================
-onMounted(() => {
+onMounted((): void => {
   if (isRealtime.value) {
     startRealtimeUpdates()
   }
 })
 
-onUnmounted(() => {
+onUnmounted((): void => {
   stopRealtimeUpdates()
 })
 
 // Watch for route changes
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>

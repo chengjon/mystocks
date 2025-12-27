@@ -151,9 +151,7 @@ def load_env_config(env_file=None):
 
         load_time = time.time() - start_time
         logger.success(f"✓ 环境配置加载成功! 耗时: {load_time:.3f}s")
-        logger.info(
-            f"🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:{config['MYSQL_PORT']}"
-        )
+        logger.info(f"🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:{config['MYSQL_PORT']}")
 
         return db_config
 
@@ -163,9 +161,7 @@ def load_env_config(env_file=None):
         raise
 
 
-def get_sql_commands(
-    drop_existing=False, charset="utf8mb4", collation="utf8mb4_unicode_ci"
-):
+def get_sql_commands(drop_existing=False, charset="utf8mb4", collation="utf8mb4_unicode_ci"):
     """生成SQL命令，支持删除已有表选项"""
     drop_commands = ""
     if drop_existing:
@@ -176,9 +172,7 @@ def get_sql_commands(
         DROP TABLE IF EXISTS table_creation_log;
         """
 
-    create_table_prefix = (
-        "CREATE TABLE IF NOT EXISTS" if not drop_existing else "CREATE TABLE"
-    )
+    create_table_prefix = "CREATE TABLE IF NOT EXISTS" if not drop_existing else "CREATE TABLE"
 
     return f"""
 CREATE DATABASE IF NOT EXISTS db_monitor
@@ -273,9 +267,7 @@ def create_database_and_tables(drop_existing=False):
             f"charset={db_config['charset']}"
         )
 
-        logger.info(
-            f"🔗 连接数据库: {db_config['user']}@{db_config['host']}:{db_config['port']}"
-        )
+        logger.info(f"🔗 连接数据库: {db_config['user']}@{db_config['host']}:{db_config['port']}")
 
         # 建立数据库连接
         engine = sqlalchemy.create_engine(connection_str)
@@ -306,24 +298,16 @@ def create_database_and_tables(drop_existing=False):
                     try:
                         # 判断命令类型
                         if "CREATE DATABASE" in cmd:
-                            logger.info(
-                                f"📁 [{i}/{total_commands}] 创建数据库: db_monitor"
-                            )
+                            logger.info(f"📁 [{i}/{total_commands}] 创建数据库: db_monitor")
                         elif "USE db_monitor" in cmd:
-                            logger.info(
-                                f"🔄 [{i}/{total_commands}] 切换到数据库: db_monitor"
-                            )
+                            logger.info(f"🔄 [{i}/{total_commands}] 切换到数据库: db_monitor")
                         elif "CREATE TABLE" in cmd:
                             table_name = extract_table_name(cmd)
-                            logger.info(
-                                f"📊 [{i}/{total_commands}] 创建表: {table_name}"
-                            )
+                            logger.info(f"📊 [{i}/{total_commands}] 创建表: {table_name}")
                         elif "DROP TABLE" in cmd:
                             logger.warning(f"🗑️ [{i}/{total_commands}] 删除表")
                         else:
-                            logger.debug(
-                                f"📋 [{i}/{total_commands}] 执行 SQL: {cmd[:50]}..."
-                            )
+                            logger.debug(f"📋 [{i}/{total_commands}] 执行 SQL: {cmd[:50]}...")
 
                         connection.execute(text(cmd))
                         cmd_time = time.time() - cmd_start_time
@@ -335,18 +319,14 @@ def create_database_and_tables(drop_existing=False):
                     except Exception as cmd_error:
                         cmd_time = time.time() - cmd_start_time
                         failed_commands += 1
-                        logger.error(
-                            f"❌ [{i}/{total_commands}] SQL执行失败 (耗时: {cmd_time:.3f}s): {str(cmd_error)}"
-                        )
+                        logger.error(f"❌ [{i}/{total_commands}] SQL执行失败 (耗时: {cmd_time:.3f}s): {str(cmd_error)}")
                         logger.debug(f"失败的SQL: {cmd[:100]}...")
 
         total_time = time.time() - start_time
 
         # 输出成功统计
         logger.success("✓ 数据库初始化完成!")
-        logger.info(
-            f"📊 执行统计: 成功 {executed_commands} / 失败 {failed_commands} / 总计 {total_commands}"
-        )
+        logger.info(f"📊 执行统计: 成功 {executed_commands} / 失败 {failed_commands} / 总计 {total_commands}")
         logger.info(f"⏱️ 总执行时间: {total_time:.3f}s")
 
         # 输出创建的资源汇总
@@ -447,9 +427,7 @@ if __name__ == "__main__":
     else:
         # 在命令行环境中，解析命令行参数
         parser = argparse.ArgumentParser(description="创建监控数据库和表结构")
-        parser.add_argument(
-            "--drop-existing", action="store_true", help="删除已存在的表（如果存在）"
-        )
+        parser.add_argument("--drop-existing", action="store_true", help="删除已存在的表（如果存在）")
         args = parser.parse_args()
         drop_existing = args.drop_existing
 

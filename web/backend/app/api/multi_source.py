@@ -5,7 +5,6 @@ Multi-data Source Support
 提供多数据源管理和查询的API端点
 """
 
-from datetime import date
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
@@ -90,16 +89,12 @@ async def get_data_source_health(source_type: str):
         try:
             source_enum = DataSourceType(source_type)
         except ValueError:
-            raise HTTPException(
-                status_code=400, detail=f"Invalid source type: {source_type}"
-            )
+            raise HTTPException(status_code=400, detail=f"Invalid source type: {source_type}")
 
         adapter = manager.get_adapter(source_enum)
 
         if not adapter:
-            raise HTTPException(
-                status_code=404, detail=f"Data source not found: {source_type}"
-            )
+            raise HTTPException(status_code=404, detail=f"Data source not found: {source_type}")
 
         health = adapter.check_health()
         stats = adapter.get_statistics()
@@ -156,9 +151,7 @@ async def fetch_realtime_quote(
         result = manager.fetch_realtime_quote(symbols=symbol_list, source=source_enum)
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Failed to fetch data")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
 
         # 转换DataFrame为dict
         df = result.get("data")
@@ -201,14 +194,10 @@ async def fetch_fund_flow(
             except ValueError:
                 raise HTTPException(status_code=400, detail=f"Invalid source: {source}")
 
-        result = manager.fetch_fund_flow(
-            symbol=symbol, timeframe=timeframe, source=source_enum
-        )
+        result = manager.fetch_fund_flow(symbol=symbol, timeframe=timeframe, source=source_enum)
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Failed to fetch data")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
 
         df = result.get("data")
         if df is not None and not df.empty:
@@ -251,9 +240,7 @@ async def fetch_dragon_tiger(
         result = manager.fetch_dragon_tiger(date_str=date_str, source=source_enum)
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Failed to fetch data")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch data"))
 
         df = result.get("data")
         if df is not None and not df.empty:

@@ -72,12 +72,8 @@ def get_chart_config(
         ],
         "overrides": {
             "paneProperties.background": "#ffffff" if theme == "light" else "#131722",
-            "paneProperties.vertGridProperties.color": "#E6E9EF"
-            if theme == "light"
-            else "#2A2E39",
-            "paneProperties.horzGridProperties.color": "#E6E9EF"
-            if theme == "light"
-            else "#2A2E39",
+            "paneProperties.vertGridProperties.color": "#E6E9EF" if theme == "light" else "#2A2E39",
+            "paneProperties.horzGridProperties.color": "#E6E9EF" if theme == "light" else "#2A2E39",
             "symbolWatermarkProperties.transparency": 90,
             "scalesProperties.textColor": "#AAA" if theme == "dark" else "#666",
         },
@@ -372,11 +368,7 @@ def convert_symbol_format(symbol: str, market: str) -> Dict:
         "tradingview_symbol": tradingview_symbol,
         "display_name": display_name,
         "market": market,
-        "exchange": "SSE"
-        if symbol.startswith("6")
-        else "SZSE"
-        if symbol.startswith("0")
-        else "Unknown",
+        "exchange": "SSE" if symbol.startswith("6") else "SZSE" if symbol.startswith("0") else "Unknown",
     }
 
 
@@ -445,21 +437,11 @@ def get_chart_studies(theme: str = "dark") -> Dict:
     # 研究指标配置
     studies = {
         "overrides": {
-            "bollingerBands30.upper.line.color": "#FF6B6B"
-            if theme == "dark"
-            else "#FF6B6B",
-            "bollingerBands30.lower.line.color": "#51CF66"
-            if theme == "dark"
-            else "#51CF66",
-            "bollingerBands20.middle.line.color": "#339AF0"
-            if theme == "dark"
-            else "#339AF0",
-            "bollingerBands20.upper.line.color": "#FF6B6B"
-            if theme == "dark"
-            else "#FF6B6B",
-            "bollingerBands20.lower.line.color": "#51CF66"
-            if theme == "dark"
-            else "#51CF66",
+            "bollingerBands30.upper.line.color": "#FF6B6B" if theme == "dark" else "#FF6B6B",
+            "bollingerBands30.lower.line.color": "#51CF66" if theme == "dark" else "#51CF66",
+            "bollingerBands20.middle.line.color": "#339AF0" if theme == "dark" else "#339AF0",
+            "bollingerBands20.upper.line.color": "#FF6B6B" if theme == "dark" else "#FF6B6B",
+            "bollingerBands20.lower.line.color": "#51CF66" if theme == "dark" else "#51CF66",
         },
         "comparisons": [
             {
@@ -469,9 +451,7 @@ def get_chart_studies(theme: str = "dark") -> Dict:
             }
         ],
         "scalesProperties": {
-            "scaleProperties.backgroundColor": "#ffffff"
-            if theme == "light"
-            else "#131722",
+            "scaleProperties.backgroundColor": "#ffffff" if theme == "light" else "#131722",
             "scaleProperties.fontFamily": "Segoe UI, Roboto, Arial, sans-serif",
             "scaleProperties.fontSize": 12,
             "scaleProperties.lineColor": "#E6E9EF" if theme == "light" else "#2A2E39",
@@ -485,9 +465,7 @@ def get_chart_studies(theme: str = "dark") -> Dict:
             "backgroundLeftColor": "#ffffff" if theme == "light" else "#131722",
             "backgroundRightColor": "#ffffff" if theme == "light" else "#131722",
             "backgroundAllColors": "#ffffff" if theme == "light" else "#131722",
-            "backgroundGradientStartColor": "#ffffff"
-            if theme == "light"
-            else "#131722",
+            "backgroundGradientStartColor": "#ffffff" if theme == "light" else "#131722",
             "backgroundGradientEndColor": "#ffffff" if theme == "light" else "#131722",
             "vertGridProperties": {
                 "color": "#E6E9EF" if theme == "light" else "#2A2E39",
@@ -522,9 +500,7 @@ if __name__ == "__main__":
 
     print("\n2. 测试迷你图表配置:")
     mini_config = get_mini_chart_config(symbol="000001", market="CN")
-    print(
-        f"   迷你图表配置生成成功，尺寸: {mini_config['width']}x{mini_config['height']}"
-    )
+    print(f"   迷你图表配置生成成功，尺寸: {mini_config['width']}x{mini_config['height']}")
 
     print("\n3. 测试滚动行情配置:")
     ticker_config = get_ticker_tape_config()
@@ -540,8 +516,6 @@ if __name__ == "__main__":
 
     print("\n6. 测试代码转换:")
     converted = convert_symbol_format("600519", "CN")
-    print(
-        f"   代码转换结果: {converted['original_symbol']} -> {converted['tradingview_symbol']}"
-    )
+    print(f"   代码转换结果: {converted['original_symbol']} -> {converted['tradingview_symbol']}")
 
     print("\n测试完成！")

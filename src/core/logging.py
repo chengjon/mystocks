@@ -157,20 +157,12 @@ class UnifiedLogger:
             start_time = self.logger.catch()(lambda: __import__("time").time())()
             try:
                 result = func(*args, **kwargs)
-                duration = (
-                    self.logger.catch()(lambda: __import__("time").time())()
-                    - start_time
-                ) * 1000  # ms
+                duration = (self.logger.catch()(lambda: __import__("time").time())() - start_time) * 1000  # ms
                 self.info(f"{func.__name__} 执行完成，耗时: {duration:.2f}ms")
                 return result
             except Exception as e:
-                duration = (
-                    self.logger.catch()(lambda: __import__("time").time())()
-                    - start_time
-                ) * 1000
-                self.error(
-                    f"{func.__name__} 执行失败，耗时: {duration:.2f}ms, 错误: {e}"
-                )
+                duration = (self.logger.catch()(lambda: __import__("time").time())() - start_time) * 1000
+                self.error(f"{func.__name__} 执行失败，耗时: {duration:.2f}ms, 错误: {e}")
                 raise
 
         return wrapper
@@ -226,11 +218,7 @@ def db_sink(message):
             "module": message.record["name"],
             "function": message.record["function"],
             "message": message.record["message"],
-            "exception": (
-                str(message.record["exception"])
-                if message.record["exception"]
-                else None
-            ),
+            "exception": (str(message.record["exception"]) if message.record["exception"] else None),
             "metadata": json.dumps(
                 {
                     "file": message.record["file"].path,

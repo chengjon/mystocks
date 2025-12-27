@@ -139,9 +139,7 @@ class ModelDetailResponse(BaseModel):
     name: str = Field(..., description="模型名称")
     metadata: Dict[str, Any] = Field(..., description="模型元数据")
     training_history: List[Dict[str, Any]] = Field(..., description="训练历史")
-    feature_importance: Optional[List[Dict[str, Any]]] = Field(
-        None, description="特征重要性"
-    )
+    feature_importance: Optional[List[Dict[str, Any]]] = Field(None, description="特征重要性")
 
 
 # ==================== 超参数搜索相关 ====================

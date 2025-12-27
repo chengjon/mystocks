@@ -100,9 +100,7 @@ class KDJStrategy(BaseStrategy):
             },
         ]
 
-    def _calculate_kdj(
-        self, history: List[Dict[str, Any]]
-    ) -> tuple[Optional[float], Optional[float], Optional[float]]:
+    def _calculate_kdj(self, history: List[Dict[str, Any]]) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """
         计算KDJ指标
 
@@ -154,15 +152,11 @@ class KDJStrategy(BaseStrategy):
 
         return k_value, d_value, j_value
 
-    def _check_golden_cross(
-        self, k: float, d: float, prev_k: float, prev_d: float
-    ) -> bool:
+    def _check_golden_cross(self, k: float, d: float, prev_k: float, prev_d: float) -> bool:
         """检测金叉: K上穿D"""
         return k > d and prev_k <= prev_d
 
-    def _check_death_cross(
-        self, k: float, d: float, prev_k: float, prev_d: float
-    ) -> bool:
+    def _check_death_cross(self, k: float, d: float, prev_k: float, prev_d: float) -> bool:
         """检测死叉: K下穿D"""
         return k < d and prev_k >= prev_d
 
@@ -246,22 +240,15 @@ class KDJStrategy(BaseStrategy):
                 # 是否要求在超卖区域
                 if self.parameters.get("require_extreme_area"):
                     # 至少有一个在超卖区
-                    if not (
-                        prev_k < self.parameters["oversold_k"]
-                        or prev_d < self.parameters["oversold_d"]
-                    ):
+                    if not (prev_k < self.parameters["oversold_k"] or prev_d < self.parameters["oversold_d"]):
                         return None
 
                 # 计算信号强度 (基于超卖程度)
                 oversold_degree = 0
                 if k < self.parameters["oversold_k"]:
-                    oversold_degree += (
-                        self.parameters["oversold_k"] - k
-                    ) / self.parameters["oversold_k"]
+                    oversold_degree += (self.parameters["oversold_k"] - k) / self.parameters["oversold_k"]
                 if d < self.parameters["oversold_d"]:
-                    oversold_degree += (
-                        self.parameters["oversold_d"] - d
-                    ) / self.parameters["oversold_d"]
+                    oversold_degree += (self.parameters["oversold_d"] - d) / self.parameters["oversold_d"]
 
                 strength = min(1.0, 0.5 + oversold_degree / 2)
 
@@ -284,10 +271,7 @@ class KDJStrategy(BaseStrategy):
                 # 是否要求在超买区域
                 if self.parameters.get("require_extreme_area"):
                     # 至少有一个在超买区
-                    if not (
-                        prev_k > self.parameters["overbought_k"]
-                        or prev_d > self.parameters["overbought_d"]
-                    ):
+                    if not (prev_k > self.parameters["overbought_k"] or prev_d > self.parameters["overbought_d"]):
                         return None
 
                 return StrategySignal(

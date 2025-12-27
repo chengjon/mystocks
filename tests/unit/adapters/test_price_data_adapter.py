@@ -140,27 +140,14 @@ class TestPriceDataAdapter:
                 close_price = row["close"]
 
                 # 验证价格关系
-                assert high_price >= open_price, (
-                    f"High {high_price} should be >= Open {open_price}"
-                )
-                assert high_price >= close_price, (
-                    f"High {high_price} should be >= Close {close_price}"
-                )
-                assert high_price >= low_price, (
-                    f"High {high_price} should be >= Low {low_price}"
-                )
-                assert low_price <= open_price, (
-                    f"Low {low_price} should be <= Open {open_price}"
-                )
-                assert low_price <= close_price, (
-                    f"Low {low_price} should be <= Close {close_price}"
-                )
+                assert high_price >= open_price, f"High {high_price} should be >= Open {open_price}"
+                assert high_price >= close_price, f"High {high_price} should be >= Close {close_price}"
+                assert high_price >= low_price, f"High {high_price} should be >= Low {low_price}"
+                assert low_price <= open_price, f"Low {low_price} should be <= Open {open_price}"
+                assert low_price <= close_price, f"Low {low_price} should be <= Close {close_price}"
 
                 # 检查价格合理性
-                assert all(
-                    price > 0
-                    for price in [open_price, high_price, low_price, close_price]
-                )
+                assert all(price > 0 for price in [open_price, high_price, low_price, close_price])
 
                 # 检查成交量
                 assert isinstance(row["volume"], (int, float))
@@ -267,16 +254,12 @@ class TestPriceDataAdapter:
         # 测试有效的股票代码
         valid_symbols = ["000001", "600000", "300001", "002001"]
         for symbol in valid_symbols:
-            assert adapter.validator.validate_stock_symbol(symbol), (
-                f"Symbol {symbol} should be valid"
-            )
+            assert adapter.validator.validate_stock_symbol(symbol), f"Symbol {symbol} should be valid"
 
         # 测试无效的股票代码
         invalid_symbols = ["", "ABC123", "12345", "1234567", "000001A", None, 123456]
         for symbol in invalid_symbols:
-            assert not adapter.validator.validate_stock_symbol(symbol), (
-                f"Symbol {symbol} should be invalid"
-            )
+            assert not adapter.validator.validate_stock_symbol(symbol), f"Symbol {symbol} should be invalid"
 
     def test_validator_date_format_validation(self):
         """测试日期格式验证"""
@@ -291,9 +274,7 @@ class TestPriceDataAdapter:
             "2024-01-5",
         ]
         for date in valid_dates:
-            assert adapter.validator.validate_date_format(date), (
-                f"Date {date} should be valid"
-            )
+            assert adapter.validator.validate_date_format(date), f"Date {date} should be valid"
 
         # 测试无效的日期格式
         invalid_dates = [
@@ -306,9 +287,7 @@ class TestPriceDataAdapter:
             "invalid_date",  # 完全无效
         ]
         for date in invalid_dates:
-            assert not adapter.validator.validate_date_format(date), (
-                f"Date {date} should be invalid"
-            )
+            assert not adapter.validator.validate_date_format(date), f"Date {date} should be invalid"
 
 
 class TestPriceDataAdapterAdvanced:
@@ -390,18 +369,10 @@ class TestPriceDataAdapterAdvanced:
             # 检查价格精度（应该是小数点后2位）
             for _, row in result.iterrows():
                 # 检查是否为合理的精度
-                assert str(row["open"]).count(".") <= 1, (
-                    "Open price should have reasonable precision"
-                )
-                assert str(row["high"]).count(".") <= 1, (
-                    "High price should have reasonable precision"
-                )
-                assert str(row["low"]).count(".") <= 1, (
-                    "Low price should have reasonable precision"
-                )
-                assert str(row["close"]).count(".") <= 1, (
-                    "Close price should have reasonable precision"
-                )
+                assert str(row["open"]).count(".") <= 1, "Open price should have reasonable precision"
+                assert str(row["high"]).count(".") <= 1, "High price should have reasonable precision"
+                assert str(row["low"]).count(".") <= 1, "Low price should have reasonable precision"
+                assert str(row["close"]).count(".") <= 1, "Close price should have reasonable precision"
 
     def test_symbol_handling_case_sensitivity(self):
         """测试股票代码处理的大小写敏感性"""

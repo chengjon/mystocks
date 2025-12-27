@@ -10,14 +10,13 @@
 """
 
 import logging
-from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.orm import Session
 import os
 
 from app.core.database import get_db, SessionLocal
-from app.services.wencai_service import WencaiService, get_wencai_service
+from app.services.wencai_service import WencaiService
 from app.schemas.wencai_schemas import (
     WencaiQueryRequest,
     WencaiQueryResponse,
@@ -28,7 +27,6 @@ from app.schemas.wencai_schemas import (
     WencaiResultsResponse,
     WencaiRefreshResponse,
     WencaiHistoryResponse,
-    WencaiErrorResponse,
 )
 from app.mock.unified_mock_data import get_mock_data_manager
 
@@ -59,16 +57,15 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     """
     try:
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             queries_data = mock_manager.get_data("wencai", query_name="all")
-            
+
             return WencaiQueryListResponse(
-                queries=queries_data.get("queries", []), 
-                total=len(queries_data.get("queries", []))
+                queries=queries_data.get("queries", []), total=len(queries_data.get("queries", []))
             )
         else:
             # 使用真实数据库
@@ -87,9 +84,7 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     summary="获取指定查询信息",
     description="根据查询名称获取查询配置详情",
 )
-async def get_query_by_name(
-    query_name: str, db: Session = Depends(get_db)
-) -> WencaiQueryInfo:
+async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> WencaiQueryInfo:
     """
     获取指定查询信息
 
@@ -121,9 +116,7 @@ async def get_query_by_name(
     summary="执行问财查询",
     description="执行指定的问财查询并保存结果到数据库",
 )
-async def execute_query(
-    request: WencaiQueryRequest, db: Session = Depends(get_db)
-) -> WencaiQueryResponse:
+async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_db)) -> WencaiQueryResponse:
     """
     执行问财查询
 
@@ -138,15 +131,15 @@ async def execute_query(
     """
     try:
         logger.info(f"Executing query: {request.query_name}, pages={request.pages}")
-        
+
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
             result_data = mock_manager.get_data("wencai", query_name=request.query_name)
-            
+
             return WencaiQueryResponse(
                 query_name=request.query_name,
                 success=True,
@@ -154,14 +147,12 @@ async def execute_query(
                 new_records=len(result_data.get("query_result", {}).get("results", [])),
                 total_records=len(result_data.get("query_result", {}).get("results", [])),
                 execution_time=0.1,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             )
         else:
             # 使用真实数据库
             service = WencaiService(db=db)
-            result = service.fetch_and_save(
-                query_name=request.query_name, pages=request.pages
-            )
+            result = service.fetch_and_save(query_name=request.query_name, pages=request.pages)
             return WencaiQueryResponse(**result)
 
     except ValueError as e:
@@ -199,9 +190,7 @@ async def get_query_results(
     """
     try:
         service = WencaiService(db=db)
-        results = service.get_query_results(
-            query_name=query_name, limit=limit, offset=offset
-        )
+        results = service.get_query_results(query_name=query_name, limit=limit, offset=offset)
 
         return WencaiResultsResponse(**results)
 
@@ -244,9 +233,7 @@ async def refresh_query(
             raise HTTPException(status_code=404, detail=f"查询'{query_name}'不存在")
 
         # 添加后台任务
-        background_tasks.add_task(
-            _refresh_query_task, query_name=query_name, pages=pages
-        )
+        background_tasks.add_task(_refresh_query_task, query_name=query_name, pages=pages)
 
         logger.info(f"Background refresh task added for {query_name}")
 
@@ -320,17 +307,15 @@ async def execute_custom_query(
         查询结果（不保存到数据库）
     """
     try:
-        logger.info(
-            f"Executing custom query: {request.query_text[:50]}..., pages={request.pages}"
-        )
-        
+        logger.info(f"Executing custom query: {request.query_text[:50]}..., pages={request.pages}")
+
         # 检查是否使用Mock数据
-        use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+
         if use_mock:
             # 使用Mock数据 - 模拟自定义查询
             mock_manager = get_mock_data_manager()
-            
+
             # 生成模拟查询结果
             mock_results = [
                 {
@@ -339,10 +324,11 @@ async def execute_custom_query(
                     "current_price": round(10 + i * 0.5, 2),
                     "change_percent": round((i % 10 - 5) * 0.1, 2),
                     "volume": i * 1000,
-                    "market_cap": i * 1000000
-                } for i in range(request.pages * 10)
+                    "market_cap": i * 1000000,
+                }
+                for i in range(request.pages * 10)
             ]
-            
+
             return WencaiCustomQueryResponse(
                 success=True,
                 message=f"Mock自定义查询成功，共获取 {len(mock_results)} 条数据",
@@ -424,14 +410,9 @@ async def _refresh_query_task(query_name: str, pages: int = 1):
 
         result = service.fetch_and_save(query_name=query_name, pages=pages)
 
-        logger.info(
-            f"[Background] Refresh completed for {query_name}: "
-            f"{result['new_records']} new records"
-        )
+        logger.info(f"[Background] Refresh completed for {query_name}: " f"{result['new_records']} new records")
 
     except Exception as e:
-        logger.error(
-            f"[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True
-        )
+        logger.error(f"[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True)
     finally:
         db.close()

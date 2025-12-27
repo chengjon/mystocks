@@ -79,9 +79,7 @@ class RequestTransformer:
         validated_body = self._validate_body(body) if body else None
 
         # Validate and sanitize query params
-        validated_params = (
-            self._validate_query_params(query_params) if query_params else None
-        )
+        validated_params = self._validate_query_params(query_params) if query_params else None
 
         return {
             "path": normalized_path,
@@ -312,9 +310,7 @@ class RequestValidator:
     """Validator for request data"""
 
     @staticmethod
-    def validate_required_fields(
-        data: Dict[str, Any], required_fields: List[str]
-    ) -> None:
+    def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -> None:
         """Validate that required fields are present
 
         Args:
@@ -326,14 +322,10 @@ class RequestValidator:
         """
         missing = [field for field in required_fields if field not in data]
         if missing:
-            raise RequestValidationError(
-                f"Missing required fields: {', '.join(missing)}"
-            )
+            raise RequestValidationError(f"Missing required fields: {', '.join(missing)}")
 
     @staticmethod
-    def validate_field_type(
-        data: Dict[str, Any], field: str, expected_type: type
-    ) -> None:
+    def validate_field_type(data: Dict[str, Any], field: str, expected_type: type) -> None:
         """Validate field type
 
         Args:
@@ -376,13 +368,9 @@ class RequestValidator:
 
         value = data[field]
         if min_value is not None and value < min_value:
-            raise RequestValidationError(
-                f"Field '{field}' must be >= {min_value}", field=field
-            )
+            raise RequestValidationError(f"Field '{field}' must be >= {min_value}", field=field)
         if max_value is not None and value > max_value:
-            raise RequestValidationError(
-                f"Field '{field}' must be <= {max_value}", field=field
-            )
+            raise RequestValidationError(f"Field '{field}' must be <= {max_value}", field=field)
 
     @staticmethod
     def validate_choices(data: Dict[str, Any], field: str, choices: List[Any]) -> None:

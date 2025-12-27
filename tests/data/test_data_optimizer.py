@@ -141,9 +141,7 @@ class TestDataOptimizer:
             optimization_tasks = []
             for strategy in self.strategies:
                 if strategy.enabled:
-                    task = self._execute_strategy(
-                        strategy, profile_name, current_quality
-                    )
+                    task = self._execute_strategy(strategy, profile_name, current_quality)
                     optimization_tasks.append(task)
 
             # 并行执行优化策略
@@ -154,9 +152,7 @@ class TestDataOptimizer:
 
             # 4. 验证优化效果
             final_quality = await self.analyze_data_quality(profile_name)
-            improvement = self._calculate_quality_improvement(
-                current_quality, final_quality
-            )
+            improvement = self._calculate_quality_improvement(current_quality, final_quality)
 
             # 5. 生成优化报告
             optimization_report = {
@@ -169,9 +165,7 @@ class TestDataOptimizer:
                 "quality_improvement": improvement,
                 "optimization_summary": optimization_summary,
                 "strategies_applied": [s.name for s in self.strategies if s.enabled],
-                "recommendations": self._generate_recommendations(
-                    current_quality, final_quality
-                ),
+                "recommendations": self._generate_recommendations(current_quality, final_quality),
             }
 
             # 保存优化历史
@@ -197,14 +191,10 @@ class TestDataOptimizer:
             metrics = DataQualityMetrics(total_records=len(test_data))
 
             # 1. 唯一性分析
-            unique_records = len(
-                set(json.dumps(record, sort_keys=True) for record in test_data)
-            )
+            unique_records = len(set(json.dumps(record, sort_keys=True) for record in test_data))
             metrics.unique_records = unique_records
             metrics.duplicate_ratio = (
-                (metrics.total_records - unique_records) / metrics.total_records
-                if metrics.total_records > 0
-                else 0
+                (metrics.total_records - unique_records) / metrics.total_records if metrics.total_records > 0 else 0
             )
 
             # 2. 完整性分析
@@ -212,40 +202,30 @@ class TestDataOptimizer:
             for record in test_data:
                 score = self._calculate_completeness_score(record)
                 completeness_scores.append(score)
-            metrics.completeness_score = (
-                statistics.mean(completeness_scores) if completeness_scores else 0
-            )
+            metrics.completeness_score = statistics.mean(completeness_scores) if completeness_scores else 0
 
             # 3. 一致性分析
             consistency_scores = []
             for record in test_data:
                 score = self._calculate_consistency_score(record)
                 consistency_scores.append(score)
-            metrics.consistency_score = (
-                statistics.mean(consistency_scores) if consistency_scores else 0
-            )
+            metrics.consistency_score = statistics.mean(consistency_scores) if consistency_scores else 0
 
             # 4. 准确性分析
             accuracy_scores = []
             for record in test_data:
                 score = self._calculate_accuracy_score(record)
                 accuracy_scores.append(score)
-            metrics.accuracy_score = (
-                statistics.mean(accuracy_scores) if accuracy_scores else 0
-            )
+            metrics.accuracy_score = statistics.mean(accuracy_scores) if accuracy_scores else 0
 
             # 5. 时效性分析
             timeliness_scores = []
             current_time = datetime.now()
             for record in test_data:
                 if "timestamp" in record:
-                    score = self._calculate_timeliness_score(
-                        record["timestamp"], current_time
-                    )
+                    score = self._calculate_timeliness_score(record["timestamp"], current_time)
                     timeliness_scores.append(score)
-            metrics.timeliness_score = (
-                statistics.mean(timeliness_scores) if timeliness_scores else 0
-            )
+            metrics.timeliness_score = statistics.mean(timeliness_scores) if timeliness_scores else 0
 
             # 计算总体质量分数
             weights = {
@@ -317,9 +297,7 @@ class TestDataOptimizer:
 
         return max(0, score)
 
-    def _calculate_timeliness_score(
-        self, timestamp: Any, current_time: datetime
-    ) -> float:
+    def _calculate_timeliness_score(self, timestamp: Any, current_time: datetime) -> float:
         """计算时效性得分"""
         try:
             # 解析时间戳
@@ -360,9 +338,7 @@ class TestDataOptimizer:
             elif strategy.name == "data_compression":
                 return await self._compress_data(profile_name, strategy.parameters)
             elif strategy.name == "quality_enhancement":
-                return await self._enhance_data_quality(
-                    profile_name, strategy.parameters, current_quality
-                )
+                return await self._enhance_data_quality(profile_name, strategy.parameters, current_quality)
             elif strategy.name == "data_synthesis":
                 return await self._synthesize_data(profile_name, strategy.parameters)
             elif strategy.name == "lifecycle_management":
@@ -378,9 +354,7 @@ class TestDataOptimizer:
             logger.error(f"执行策略 {strategy.name} 失败: {e}")
             return {"strategy": strategy.name, "status": "error", "error": str(e)}
 
-    async def _remove_duplicates(
-        self, profile_name: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _remove_duplicates(self, profile_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """移除重复数据"""
         threshold = parameters.get("threshold", 0.95)
 
@@ -421,9 +395,7 @@ class TestDataOptimizer:
             "compression_ratio": removed_count / len(test_data) if test_data else 0,
         }
 
-    def _calculate_record_similarity(
-        self, record1: Dict[str, Any], record2: Dict[str, Any]
-    ) -> float:
+    def _calculate_record_similarity(self, record1: Dict[str, Any], record2: Dict[str, Any]) -> float:
         """计算记录相似度"""
         if not record1 or not record2:
             return 0.0
@@ -442,9 +414,7 @@ class TestDataOptimizer:
 
             if isinstance(value1, (int, float)) and isinstance(value2, (int, float)):
                 if value2 != 0:
-                    similarity = 1 - abs(value1 - value2) / max(
-                        abs(value1), abs(value2)
-                    )
+                    similarity = 1 - abs(value1 - value2) / max(abs(value1), abs(value2))
                 else:
                     similarity = 1.0 if value1 == value2 else 0.0
             elif isinstance(value1, str) and isinstance(value2, str):
@@ -457,9 +427,7 @@ class TestDataOptimizer:
 
         return statistics.mean(similarity_scores) if similarity_scores else 0.0
 
-    async def _compress_data(
-        self, profile_name: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _compress_data(self, profile_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """压缩数据"""
         algorithm = parameters.get("algorithm", "zlib")
         level = parameters.get("level", 6)
@@ -492,9 +460,7 @@ class TestDataOptimizer:
                 compressed = serialized  # 不压缩
 
             compressed_size = len(compressed)
-            compression_ratio = (
-                compressed_size / original_size if original_size > 0 else 0
-            )
+            compression_ratio = compressed_size / original_size if original_size > 0 else 0
             time_taken = (datetime.now() - start_time).total_seconds()
 
             # 保存压缩数据
@@ -558,9 +524,7 @@ class TestDataOptimizer:
 
         # 计算改进效果
         enhanced_quality = await self.analyze_data_quality(profile_name)
-        quality_improvement = (
-            enhanced_quality.overall_quality - current_quality.overall_quality
-        )
+        quality_improvement = enhanced_quality.overall_quality - current_quality.overall_quality
 
         return {
             "strategy": "quality_enhancement",
@@ -569,8 +533,7 @@ class TestDataOptimizer:
             "enhanced_quality": enhanced_quality.overall_quality,
             "improvement": quality_improvement,
             "records_improved": improvements_made,
-            "target_quality_achieved": enhanced_quality.overall_quality
-            >= target_quality,
+            "target_quality_achieved": enhanced_quality.overall_quality >= target_quality,
         }
 
     def _enhance_completeness(self, record: Dict[str, Any]) -> Dict[str, Any]:
@@ -579,9 +542,7 @@ class TestDataOptimizer:
 
         # 添加缺失的重要字段
         if "id" not in enhanced:
-            enhanced["id"] = hashlib.md5(
-                json.dumps(enhanced, sort_keys=True).encode()
-            ).hexdigest()[:8]
+            enhanced["id"] = hashlib.md5(json.dumps(enhanced, sort_keys=True).encode()).hexdigest()[:8]
 
         if "timestamp" not in enhanced:
             enhanced["timestamp"] = datetime.now().isoformat()
@@ -618,9 +579,7 @@ class TestDataOptimizer:
 
         return enhanced
 
-    async def _synthesize_data(
-        self, profile_name: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _synthesize_data(self, profile_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """生成合成数据"""
         synthesis_ratio = parameters.get("synthesis_ratio", 0.1)
 
@@ -664,16 +623,10 @@ class TestDataOptimizer:
 
         for key, value in base_record.items():
             if key == "id":
-                synthetic[key] = hashlib.md5(
-                    json.dumps(base_record, sort_keys=True).encode()
-                ).hexdigest()[:8]
+                synthetic[key] = hashlib.md5(json.dumps(base_record, sort_keys=True).encode()).hexdigest()[:8]
             elif key == "timestamp":
                 # 生成稍有不同的时间戳
-                base_time = (
-                    datetime.fromisoformat(value)
-                    if isinstance(value, str)
-                    else datetime.now()
-                )
+                base_time = datetime.fromisoformat(value) if isinstance(value, str) else datetime.now()
                 time_diff = timedelta(minutes=np.random.randint(-60, 60))
                 synthetic[key] = (base_time + time_diff).isoformat()
             elif isinstance(value, (int, float)):
@@ -691,9 +644,7 @@ class TestDataOptimizer:
 
         return synthetic
 
-    async def _manage_lifecycle(
-        self, profile_name: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _manage_lifecycle(self, profile_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """管理数据生命周期"""
         retention_days = parameters.get("retention_days", 30)
 
@@ -717,9 +668,7 @@ class TestDataOptimizer:
             if timestamp:
                 try:
                     if isinstance(timestamp, str):
-                        record_time = datetime.fromisoformat(
-                            timestamp.replace("Z", "+00:00")
-                        )
+                        record_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
                     elif isinstance(timestamp, (int, float)):
                         record_time = datetime.fromtimestamp(timestamp)
                     else:
@@ -748,9 +697,7 @@ class TestDataOptimizer:
             "retention_ratio": len(current_data) / len(test_data) if test_data else 0,
         }
 
-    def _summarize_optimization_results(
-        self, results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+    def _summarize_optimization_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """汇总优化结果"""
         summary = {
             "total_strategies": len(results),
@@ -777,15 +724,11 @@ class TestDataOptimizer:
 
         return summary
 
-    def _calculate_quality_improvement(
-        self, initial: DataQualityMetrics, final: DataQualityMetrics
-    ) -> float:
+    def _calculate_quality_improvement(self, initial: DataQualityMetrics, final: DataQualityMetrics) -> float:
         """计算质量改进"""
         return final.overall_quality - initial.overall_quality
 
-    def _generate_recommendations(
-        self, initial: DataQualityMetrics, final: DataQualityMetrics
-    ) -> List[str]:
+    def _generate_recommendations(self, initial: DataQualityMetrics, final: DataQualityMetrics) -> List[str]:
         """生成优化建议"""
         recommendations = []
 
@@ -815,15 +758,11 @@ class TestDataOptimizer:
             return {"message": "暂无优化历史"}
 
         total_optimizations = len(self.optimization_history)
-        successful_optimizations = sum(
-            1 for h in self.optimization_history if h.get("status") != "failed"
-        )
+        successful_optimizations = sum(1 for h in self.optimization_history if h.get("status") != "failed")
         failed_optimizations = total_optimizations - successful_optimizations
 
         # 计算平均改进
-        improvements = [
-            h.get("quality_improvement", 0) for h in self.optimization_history
-        ]
+        improvements = [h.get("quality_improvement", 0) for h in self.optimization_history]
         avg_improvement = statistics.mean(improvements) if improvements else 0
 
         # 最常用的策略
@@ -836,14 +775,11 @@ class TestDataOptimizer:
             "total_optimizations": total_optimizations,
             "successful_optimizations": successful_optimizations,
             "failed_optimizations": failed_optimizations,
-            "success_rate": successful_optimizations / total_optimizations
-            if total_optimizations > 0
-            else 0,
+            "success_rate": successful_optimizations / total_optimizations if total_optimizations > 0 else 0,
             "average_quality_improvement": avg_improvement,
             "most_used_strategies": strategy_usage.most_common(),
             "baseline_qualities": {
-                profile: metrics.overall_quality
-                for profile, metrics in self.quality_baseline.items()
+                profile: metrics.overall_quality for profile, metrics in self.quality_baseline.items()
             },
         }
 

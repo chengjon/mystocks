@@ -88,11 +88,7 @@ class TestVolumeDataMethods:
         from src.adapters.volume_data_processor import VolumeDataProcessor
 
         processor = VolumeDataProcessor()
-        test_data = pd.DataFrame(
-            {
-                "volume": [1000, 1200, 15000, 1800, 2000]  # 15000是异常值
-            }
-        )
+        test_data = pd.DataFrame({"volume": [1000, 1200, 15000, 1800, 2000]})  # 15000是异常值
 
         anomalies = processor.detect_volume_anomaly(test_data, threshold=5.0)
 
@@ -214,9 +210,7 @@ class TestPerformanceBenchmarks:
         end_time = time.time()
 
         total_time = end_time - start_time
-        assert total_time < 5.0, (
-            f"Performance benchmark failed: {total_time:.2f}s > 5.0s"
-        )
+        assert total_time < 5.0, f"Performance benchmark failed: {total_time:.2f}s > 5.0s"
 
 
 if __name__ == "__main__":

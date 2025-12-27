@@ -311,9 +311,7 @@ class TestSyncProcessor:
         # 手动设置next_retry_at为过去
         session = db_manager.get_session()
         try:
-            msg = (
-                session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
-            )
+            msg = session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
             msg.next_retry_at = datetime.utcnow() - timedelta(seconds=1)
             session.commit()
         finally:

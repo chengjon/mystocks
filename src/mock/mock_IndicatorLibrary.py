@@ -436,9 +436,7 @@ def get_indicator_data(indicator_id: str, symbol: str, days: int = 30) -> pd.Dat
     )
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

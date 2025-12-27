@@ -18,18 +18,14 @@ class TestDatabaseService(unittest.TestCase):
     def setUp(self):
         """设置测试环境"""
         self.mock_postgresql_access = Mock()
-        with patch(
-            "src.database.database_service.PostgreSQLDataAccess"
-        ) as MockPostgreSQLAccess:
+        with patch("src.database.database_service.PostgreSQLDataAccess") as MockPostgreSQLAccess:
             MockPostgreSQLAccess.return_value = self.mock_postgresql_access
             self.db_service = DatabaseService()
 
     def test_get_stock_list_empty_params(self):
         """测试获取股票列表 - 空参数"""
         # 模拟数据库返回空DataFrame
-        mock_df_empty = pd.DataFrame(
-            columns=["symbol", "name", "industry", "area", "market", "list_date"]
-        )
+        mock_df_empty = pd.DataFrame(columns=["symbol", "name", "industry", "area", "market", "list_date"])
         self.mock_postgresql_access.query.return_value = mock_df_empty
 
         result = self.db_service.get_stock_list()
@@ -54,11 +50,7 @@ class TestDatabaseService(unittest.TestCase):
 
         # 修复两次调用query方法
         def side_effect(table_name, **kwargs):
-            if (
-                "columns" in kwargs
-                and kwargs["columns"]
-                and "COUNT(*)" in kwargs["columns"][0]
-            ):
+            if "columns" in kwargs and kwargs["columns"] and "COUNT(*)" in kwargs["columns"][0]:
                 return mock_total_df
             else:
                 return mock_df
@@ -224,9 +216,7 @@ class TestDatabaseService(unittest.TestCase):
             mock_method.return_value = {"symbol": "000001", "trend": {"ma5": 15.5}}
             result = self.db_service.get_trend_indicators("000001")
             assert result["symbol"] == "000001"
-            mock_method.assert_called_once_with(
-                {"symbol": "000001", "indicator_type": "trend"}
-            )
+            mock_method.assert_called_once_with({"symbol": "000001", "indicator_type": "trend"})
 
     def test_get_momentum_indicators(self):
         """测试获取动量指标"""
@@ -234,9 +224,7 @@ class TestDatabaseService(unittest.TestCase):
             mock_method.return_value = {"symbol": "000001", "momentum": {"rsi": 65.0}}
             result = self.db_service.get_momentum_indicators("000001")
             assert result["symbol"] == "000001"
-            mock_method.assert_called_once_with(
-                {"symbol": "000001", "indicator_type": "momentum"}
-            )
+            mock_method.assert_called_once_with({"symbol": "000001", "indicator_type": "momentum"})
 
     def test_get_volatility_indicators(self):
         """测试获取波动率指标"""
@@ -244,9 +232,7 @@ class TestDatabaseService(unittest.TestCase):
             mock_method.return_value = {"symbol": "000001", "volatility": {"atr": 0.5}}
             result = self.db_service.get_volatility_indicators("000001")
             assert result["symbol"] == "000001"
-            mock_method.assert_called_once_with(
-                {"symbol": "000001", "indicator_type": "volatility"}
-            )
+            mock_method.assert_called_once_with({"symbol": "000001", "indicator_type": "volatility"})
 
     def test_get_volume_indicators(self):
         """测试获取成交量指标"""
@@ -257,9 +243,7 @@ class TestDatabaseService(unittest.TestCase):
             }
             result = self.db_service.get_volume_indicators("000001")
             assert result["symbol"] == "000001"
-            mock_method.assert_called_once_with(
-                {"symbol": "000001", "indicator_type": "volume"}
-            )
+            mock_method.assert_called_once_with({"symbol": "000001", "indicator_type": "volume"})
 
     def test_get_trading_signals(self):
         """测试获取交易信号"""

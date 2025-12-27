@@ -71,9 +71,7 @@ class TestUnifiedErrorHandler:
 
         log_record = self.log_records[0]
         assert log_record.levelno == logging.ERROR
-        assert log_record.getMessage().startswith(
-            "错误发生 - 上下文: , 错误: Runtime error"
-        )
+        assert log_record.getMessage().startswith("错误发生 - 上下文: , 错误: Runtime error")
 
     def test_log_error_with_custom_level(self):
         """测试自定义日志级别"""
@@ -119,9 +117,7 @@ class TestUnifiedErrorHandler:
         def failing_func():
             raise ValueError("Test error")
 
-        result = UnifiedErrorHandler.safe_execute(
-            failing_func, "Test failure", default_return="default"
-        )
+        result = UnifiedErrorHandler.safe_execute(failing_func, "Test failure", default_return="default")
 
         assert result == "default"
         assert len(self.log_records) == 1
@@ -135,9 +131,7 @@ class TestUnifiedErrorHandler:
         def failing_func():
             raise RuntimeError("Error without log")
 
-        result = UnifiedErrorHandler.safe_execute(
-            failing_func, "No log", default_return="default", log_error=False
-        )
+        result = UnifiedErrorHandler.safe_execute(failing_func, "No log", default_return="default", log_error=False)
 
         assert result == "default"
         assert len(self.log_records) == 0  # 不应该有日志记录
@@ -160,9 +154,7 @@ class TestUnifiedErrorHandler:
             raise ValueError("Reraise without log")
 
         with pytest.raises(ValueError, match="Reraise without log"):
-            UnifiedErrorHandler.safe_execute(
-                failing_func, "No log", log_error=False, reraise=True
-            )
+            UnifiedErrorHandler.safe_execute(failing_func, "No log", log_error=False, reraise=True)
 
         assert len(self.log_records) == 0
 
@@ -172,9 +164,7 @@ class TestUnifiedErrorHandler:
         def param_func(x, y):
             return x + y
 
-        result = UnifiedErrorHandler.safe_execute(
-            lambda: param_func(2, 3), "Param test"
-        )
+        result = UnifiedErrorHandler.safe_execute(lambda: param_func(2, 3), "Param test")
 
         assert result == 5
         assert len(self.log_records) == 0
@@ -205,9 +195,7 @@ class TestUnifiedErrorHandler:
         """测试重试后成功"""
         attempt_count = 0
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.01, context="Retry success"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, delay=0.01, context="Retry success")
         def eventually_success_func():
             nonlocal attempt_count
             attempt_count += 1
@@ -230,9 +218,7 @@ class TestUnifiedErrorHandler:
     def test_retry_on_failure_all_retries_failed(self):
         """测试所有重试都失败"""
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.01, context="All retries failed"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, delay=0.01, context="All retries failed")
         def always_failing_func():
             raise RuntimeError("Always fails")
 
@@ -249,9 +235,7 @@ class TestUnifiedErrorHandler:
     def test_retry_on_failure_with_custom_exception(self):
         """测试自定义异常类型重试"""
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, exceptions=(ValueError,), context="Custom exception"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=2, exceptions=(ValueError,), context="Custom exception")
         def custom_exception_func():
             raise ValueError("Custom error")
 
@@ -264,9 +248,7 @@ class TestUnifiedErrorHandler:
     def test_retry_on_failure_with_different_exception(self):
         """测试不匹配的异常类型不重试"""
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, exceptions=(ValueError,), context="Different exception"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, exceptions=(ValueError,), context="Different exception")
         def different_exception_func():
             raise TypeError("Different error type")
 
@@ -280,9 +262,7 @@ class TestUnifiedErrorHandler:
         """测试指数退避延迟"""
         attempt_times = []
 
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.01, backoff=2.0, context="Backoff test"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=3, delay=0.01, backoff=2.0, context="Backoff test")
         def backoff_func():
             attempt_times.append(time.time())
             if len(attempt_times) < 3:
@@ -313,9 +293,7 @@ class TestUnifiedErrorHandler:
         """测试零次重试"""
 
         # 使用max_retries=1来测试边界情况，避免exceptions参数问题
-        @UnifiedErrorHandler.retry_on_failure(
-            max_retries=1, delay=0.01, context="One retry"
-        )
+        @UnifiedErrorHandler.retry_on_failure(max_retries=1, delay=0.01, context="One retry")
         def one_retry_func():
             raise ValueError("Single retry fails")
 
@@ -452,9 +430,7 @@ class TestCustomExceptions:
         def failing_with_custom_error():
             raise DataError("Custom data error")
 
-        result = UnifiedErrorHandler.safe_execute(
-            failing_with_custom_error, "Custom error test", "fallback"
-        )
+        result = UnifiedErrorHandler.safe_execute(failing_with_custom_error, "Custom error test", "fallback")
 
         assert result == "fallback"
         assert len(self.log_records) == 1
@@ -466,9 +442,7 @@ class TestCustomExceptions:
         """测试重试特定的自定义异常"""
         attempt_count = 0
 
-        @retry_on_failure(
-            max_retries=2, exceptions=(DataError,), context="Custom exception retry"
-        )
+        @retry_on_failure(max_retries=2, exceptions=(DataError,), context="Custom exception retry")
         def custom_retry_func():
             nonlocal attempt_count
             attempt_count += 1
@@ -509,13 +483,9 @@ class TestErrorHandlerIntegration:
             raise ValueError("Inner error")
 
         def outer_failing_func():
-            return UnifiedErrorHandler.safe_execute(
-                inner_failing_func, "Inner context", "inner_default"
-            )
+            return UnifiedErrorHandler.safe_execute(inner_failing_func, "Inner context", "inner_default")
 
-        result = UnifiedErrorHandler.safe_execute(
-            outer_failing_func, "Outer context", "outer_default"
-        )
+        result = UnifiedErrorHandler.safe_execute(outer_failing_func, "Outer context", "outer_default")
 
         assert result == "inner_default"
         # 只有内部函数的错误日志
@@ -529,9 +499,7 @@ class TestErrorHandlerIntegration:
         def combined_func():
             raise ValueError("Combined error")
 
-        result = UnifiedErrorHandler.safe_execute(
-            combined_func, "Safe execute wrapper", "combined_default"
-        )
+        result = UnifiedErrorHandler.safe_execute(combined_func, "Safe execute wrapper", "combined_default")
 
         assert result == "combined_default"
         # 重试会产生3条日志（2次尝试失败 + 1次最终失败）
@@ -572,9 +540,7 @@ class TestErrorHandlerIntegration:
             assert result == f"default_{exc_type}"
 
         # 测试成功情况
-        result = UnifiedErrorHandler.safe_execute(
-            lambda: multi_exception_func("success"), "Multi exception success"
-        )
+        result = UnifiedErrorHandler.safe_execute(lambda: multi_exception_func("success"), "Multi exception success")
         assert result == "success"
 
         assert len(self.log_records) == 2  # 只有两个失败的日志

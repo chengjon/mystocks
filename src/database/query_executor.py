@@ -92,9 +92,7 @@ class DatabaseQueryExecutor:
 
             # 缓存结果
             if result:
-                self._save_to_cache(
-                    cache_key, result[0] if isinstance(result, list) else result
-                )
+                self._save_to_cache(cache_key, result[0] if isinstance(result, list) else result)
 
             # 更新性能统计
             response_time = time.time() - start_time
@@ -342,16 +340,13 @@ class DatabaseQueryExecutor:
         self.performance_stats["total_queries"] += 1
         total = self.performance_stats["total_queries"]
         current_avg = self.performance_stats["avg_response_time"]
-        self.performance_stats["avg_response_time"] = (
-            current_avg * (total - 1) + response_time
-        ) / total
+        self.performance_stats["avg_response_time"] = (current_avg * (total - 1) + response_time) / total
 
     def get_performance_stats(self) -> Dict[str, Any]:
         """获取性能统计信息"""
         return {
             **self.performance_stats,
-            "cache_hit_rate": self.performance_stats["cache_hits"]
-            / max(1, self.performance_stats["total_queries"]),
+            "cache_hit_rate": self.performance_stats["cache_hits"] / max(1, self.performance_stats["total_queries"]),
             "cache_size": len(self.query_cache),
         }
 

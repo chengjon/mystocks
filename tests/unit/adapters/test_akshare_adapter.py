@@ -64,9 +64,7 @@ class MockAkshareDataSource:
             }
         )
 
-    def get_market_daily(
-        self, market="sh", start_date="2024-01-01", end_date="2024-01-10"
-    ):
+    def get_market_daily(self, market="sh", start_date="2024-01-01", end_date="2024-01-10"):
         """获取市场日线数据"""
         if market == "invalid":
             return pd.DataFrame()

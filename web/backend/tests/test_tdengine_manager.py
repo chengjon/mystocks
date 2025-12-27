@@ -91,9 +91,7 @@ class TestTDengineInitialization:
         """Test database creation and initialization"""
         result = self.manager.initialize()
         assert result is True, "Database initialization should succeed"
-        assert (
-            self.manager._is_initialized is True
-        ), "Manager should be marked as initialized"
+        assert self.manager._is_initialized is True, "Manager should be marked as initialized"
 
     def test_database_already_exists(self):
         """Test initialization when database already exists"""
@@ -108,9 +106,7 @@ class TestTDengineInitialization:
 
         # Try to query from each table
         try:
-            result = self.manager._execute_query(
-                "SELECT COUNT(*) FROM market_data_cache LIMIT 1"
-            )
+            result = self.manager._execute_query("SELECT COUNT(*) FROM market_data_cache LIMIT 1")
             assert result is not None, "market_data_cache table should exist"
         except Exception as e:
             pytest.skip(f"TDengine may not be running: {str(e)}")
@@ -152,9 +148,7 @@ class TestCacheWriteOperations:
             "retail_net_inflow": 500000,
         }
 
-        result = self.manager.write_cache(
-            symbol="000001", data_type="fund_flow", timeframe="1d", data=data
-        )
+        result = self.manager.write_cache(symbol="000001", data_type="fund_flow", timeframe="1d", data=data)
         assert result is True, "Write cache should succeed"
 
     def test_write_cache_complex_data(self):
@@ -177,9 +171,7 @@ class TestCacheWriteOperations:
             },
         }
 
-        result = self.manager.write_cache(
-            symbol="000001", data_type="comprehensive", timeframe="1d", data=data
-        )
+        result = self.manager.write_cache(symbol="000001", data_type="comprehensive", timeframe="1d", data=data)
         assert result is True, "Write complex cache should succeed"
 
     def test_write_cache_multiple_symbols(self):
@@ -188,9 +180,7 @@ class TestCacheWriteOperations:
 
         for symbol in symbols:
             data = {"value": symbol}
-            result = self.manager.write_cache(
-                symbol=symbol, data_type="test", timeframe="1d", data=data
-            )
+            result = self.manager.write_cache(symbol=symbol, data_type="test", timeframe="1d", data=data)
             assert result is True, f"Write for {symbol} should succeed"
 
     def test_write_cache_without_initialization(self):
@@ -198,9 +188,7 @@ class TestCacheWriteOperations:
         manager = TDengineManager()
         manager._is_initialized = False
 
-        result = manager.write_cache(
-            symbol="000001", data_type="test", timeframe="1d", data={"test": "data"}
-        )
+        result = manager.write_cache(symbol="000001", data_type="test", timeframe="1d", data={"test": "data"})
         assert result is False, "Write should fail without initialization"
 
     def test_write_with_custom_timestamp(self):
@@ -243,9 +231,7 @@ class TestCacheReadOperations:
         """Test reading cache after writing data"""
         # Write data
         write_data = {"main_inflow": 1000000, "retail_inflow": 500000}
-        self.manager.write_cache(
-            symbol="000001", data_type="fund_flow", timeframe="1d", data=write_data
-        )
+        self.manager.write_cache(symbol="000001", data_type="fund_flow", timeframe="1d", data=write_data)
 
         # Read it back
         read_data = self.manager.read_cache(symbol="000001", data_type="fund_flow")
@@ -262,23 +248,17 @@ class TestCacheReadOperations:
         """Test reading cache with timeframe filter"""
         data = {"value": 100}
 
-        self.manager.write_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=data
-        )
+        self.manager.write_cache(symbol="000001", data_type="test", timeframe="1d", data=data)
 
         # Read with matching timeframe
-        result = self.manager.read_cache(
-            symbol="000001", data_type="test", timeframe="1d"
-        )
+        result = self.manager.read_cache(symbol="000001", data_type="test", timeframe="1d")
         assert result is not None, "Should find cache with matching timeframe"
 
     def test_read_with_time_window(self):
         """Test reading cache within time window"""
         data = {"value": 100}
 
-        self.manager.write_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=data
-        )
+        self.manager.write_cache(symbol="000001", data_type="test", timeframe="1d", data=data)
 
         # Read within 1 day
         result = self.manager.read_cache(symbol="000001", data_type="test", days=1)
@@ -297,9 +277,7 @@ class TestCacheReadOperations:
         """Test that reads update hit count"""
         data = {"value": 100}
 
-        self.manager.write_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=data
-        )
+        self.manager.write_cache(symbol="000001", data_type="test", timeframe="1d", data=data)
 
         # Read multiple times (should increment hit count)
         self.manager.read_cache(symbol="000001", data_type="test")
@@ -405,9 +383,7 @@ class TestCacheStatistics:
         """Test getting cache stats after writing data"""
         # Write some data
         for i in range(5):
-            self.manager.write_cache(
-                symbol=f"00000{i}", data_type="test", timeframe="1d", data={"index": i}
-            )
+            self.manager.write_cache(symbol=f"00000{i}", data_type="test", timeframe="1d", data={"index": i})
 
         stats = self.manager.get_cache_stats()
         if stats:
@@ -452,9 +428,7 @@ class TestErrorHandling:
             "emoji": "🚀📈💰",
         }
 
-        result = self.manager.write_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=data
-        )
+        result = self.manager.write_cache(symbol="000001", data_type="test", timeframe="1d", data=data)
         assert result is True, "Should handle special characters"
 
     def test_write_with_large_data(self):
@@ -462,9 +436,7 @@ class TestErrorHandling:
         # Create large data structure
         large_data = {f"key_{i}": f"value_{i}" for i in range(100)}
 
-        result = self.manager.write_cache(
-            symbol="000001", data_type="large_data", timeframe="1d", data=large_data
-        )
+        result = self.manager.write_cache(symbol="000001", data_type="large_data", timeframe="1d", data=large_data)
         # May succeed or fail depending on size limits
         assert isinstance(result, bool), "Should return boolean"
 
@@ -491,9 +463,7 @@ def setup_test_environment():
     # Check if TDengine is available
     temp_manager = TDengineManager()
     if not temp_manager.connect():
-        pytest.skip(
-            "TDengine service is not running. Start with: docker-compose -f docker-compose.tdengine.yml up -d"
-        )
+        pytest.skip("TDengine service is not running. Start with: docker-compose -f docker-compose.tdengine.yml up -d")
     temp_manager.close()
 
 

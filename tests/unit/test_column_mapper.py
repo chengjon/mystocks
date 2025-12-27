@@ -74,9 +74,7 @@ class TestColumnMapper(unittest.TestCase):
     def test_standardize_columns_with_target_lang_param(self):
         """测试使用目标语言参数的标准化方法"""
         # 创建包含中文列名的DataFrame
-        df = pd.DataFrame(
-            {"日期": ["2023-01-01", "2023-01-02"], "股票代码": ["000001", "000002"]}
-        )
+        df = pd.DataFrame({"日期": ["2023-01-01", "2023-01-02"], "股票代码": ["000001", "000002"]})
 
         # 使用参数指定目标语言
         result_df = ColumnMapper.standardize_columns(df, target_lang="en")
@@ -146,9 +144,7 @@ class TestColumnMapper(unittest.TestCase):
 
         # 验证缺少列的情况
         required_cols_missing = ["date", "symbol", "open", "close", "volume"]
-        is_valid, missing, extra = ColumnMapper.validate_columns(
-            df, required_cols_missing
-        )
+        is_valid, missing, extra = ColumnMapper.validate_columns(df, required_cols_missing)
 
         self.assertFalse(is_valid)
         self.assertIn("volume", missing)
@@ -161,9 +157,7 @@ class TestColumnMapper(unittest.TestCase):
         ColumnMapper.add_custom_mapping(custom_mapping, "en")
 
         # 创建包含自定义中文列名的DataFrame
-        df = pd.DataFrame(
-            {"自定义列": [1, 2, 3], "日期": ["2023-01-01", "2023-01-02", "2023-01-03"]}
-        )
+        df = pd.DataFrame({"自定义列": [1, 2, 3], "日期": ["2023-01-01", "2023-01-02", "2023-01-03"]})
 
         # 转换为英文
         result_df = ColumnMapper.to_english(df)

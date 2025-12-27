@@ -164,9 +164,7 @@ class TestExecutionHandler:
 
         from app.backtest.execution_handler import ExecutionHandler
 
-        executor = ExecutionHandler(
-            commission_rate=Decimal("0.0003"), min_commission=Decimal("5")
-        )
+        executor = ExecutionHandler(commission_rate=Decimal("0.0003"), min_commission=Decimal("5"))
 
         # 大额交易
         commission = executor._calculate_commission(1000, Decimal("100"))

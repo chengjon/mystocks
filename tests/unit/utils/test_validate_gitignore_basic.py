@@ -68,9 +68,7 @@ class TestGitIgnoreValidatorBasic:
         expected_files = [".env.example", "temp/README.md", "data/backups/.gitkeep"]
 
         for file_path in expected_files:
-            assert (
-                file_path in validator.should_be_visible
-            ), f"缺少可见文件: {file_path}"
+            assert file_path in validator.should_be_visible, f"缺少可见文件: {file_path}"
 
     def test_run_git_command_success(self):
         """测试git命令执行成功"""

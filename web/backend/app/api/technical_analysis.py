@@ -3,21 +3,16 @@
 Enhanced Technical Analysis
 """
 
-import os
-import re
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
-from app.core.security import User, get_current_user
-from app.mock.unified_mock_data import get_mock_data_manager
-from app.schema import ResponseModel, StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
+from app.core.responses import ErrorCodes, create_error_response, create_success_response
+from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
-from app.services.technical_analysis_service import technical_analysis_service
 
 router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
 
@@ -284,7 +279,7 @@ async def get_all_indicators(
         circuit_breaker = get_circuit_breaker("technical_analysis")
 
         if circuit_breaker.is_open():
-            logger.warning(f"⚠️ Circuit breaker for technical_analysis is OPEN")
+            logger.warning("⚠️ Circuit breaker for technical_analysis is OPEN")
             raise HTTPException(status_code=503, detail="技术分析服务暂不可用，请稍后重试")
 
         # 使用数据源工厂

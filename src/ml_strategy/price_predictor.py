@@ -28,9 +28,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 
 # Scikit-learn
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-import joblib
 
 # LightGBM
 try:
@@ -125,9 +122,7 @@ class PricePredictorStrategy:
             X_train, y_train = features, target
             X_val, y_val = eval_set
         else:
-            X_train, X_val, y_train, y_val = train_test_split(
-                features, target, test_size=test_size, shuffle=False
-            )
+            X_train, X_val, y_train, y_val = train_test_split(features, target, test_size=test_size, shuffle=False)
 
         # 初始化模型
         self.model = LGBMRegressor(**self.config)
@@ -373,9 +368,7 @@ class PricePredictorStrategy:
         self.logger.info("模型版本: %s", model_data.get("version", "unknown"))
         self.logger.info("保存时间: %s", model_data.get("saved_at", "unknown"))
 
-    def get_feature_importance(
-        self, feature_names: Optional[list] = None, top_k: int = 10
-    ) -> pd.DataFrame:
+    def get_feature_importance(self, feature_names: Optional[list] = None, top_k: int = 10) -> pd.DataFrame:
         """
         获取特征重要性
 
@@ -392,23 +385,15 @@ class PricePredictorStrategy:
         importance = self.model.feature_importances_
 
         if feature_names is None:
-            feature_names = self.training_history.get(
-                "feature_names", [f"feature_{i}" for i in range(len(importance))]
-            )
+            feature_names = self.training_history.get("feature_names", [f"feature_{i}" for i in range(len(importance))])
 
-        df_importance = pd.DataFrame(
-            {"feature": feature_names, "importance": importance}
-        )
+        df_importance = pd.DataFrame({"feature": feature_names, "importance": importance})
 
-        df_importance = df_importance.sort_values("importance", ascending=False).head(
-            top_k
-        )
+        df_importance = df_importance.sort_values("importance", ascending=False).head(top_k)
 
         return df_importance
 
-    def plot_predictions(
-        self, y_true: np.ndarray, y_pred: np.ndarray, save_path: Optional[str] = None
-    ) -> None:
+    def plot_predictions(self, y_true: np.ndarray, y_pred: np.ndarray, save_path: Optional[str] = None) -> None:
         """
         绘制预测结果对比图
 
@@ -427,9 +412,7 @@ class PricePredictorStrategy:
 
         # 散点图
         axes[0].scatter(y_true, y_pred, alpha=0.5)
-        axes[0].plot(
-            [y_true.min(), y_true.max()], [y_true.min(), y_true.max()], "r--", lw=2
-        )
+        axes[0].plot([y_true.min(), y_true.max()], [y_true.min(), y_true.max()], "r--", lw=2)
         axes[0].set_xlabel("Actual Price")
         axes[0].set_ylabel("Predicted Price")
         axes[0].set_title("Prediction vs Actual")
@@ -470,9 +453,7 @@ if __name__ == "__main__":
     )
     # 目标变量：基于特征的线性组合 + 噪声
     test_y = pd.Series(
-        test_X.iloc[:, :5].sum(axis=1) * 100
-        + np.random.randn(test_n_samples) * 10
-        + 3000,
+        test_X.iloc[:, :5].sum(axis=1) * 100 + np.random.randn(test_n_samples) * 10 + 3000,
         name="price",
     )
 

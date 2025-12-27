@@ -16,16 +16,14 @@ AI测试优化器使用反馈分析器
 """
 
 import sys
-import json
 import sqlite3
 import statistics
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List
 import argparse
 import logging
 import matplotlib.pyplot as plt
-import pandas as pd
 
 # 设置日志
 logging.basicConfig(
@@ -1086,7 +1084,7 @@ def main():
             print(f"✅ 分析报告已生成: {report_path}")
 
             # 显示报告摘要
-            print(f"\n📊 报告摘要:")
+            print("\n📊 报告摘要:")
             if "basic_stats" in usage_patterns:
                 print(f"  - 总使用次数: {usage_patterns['basic_stats']['total_usage']}")
                 print(

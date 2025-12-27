@@ -61,7 +61,7 @@ test.describe('Critical Menu Navigation Scan @critical', () => {
     // Get all primary menu items. This selector is an assumption for Element Plus navigation.
     // We use :visible to avoid trying to click items inside collapsed submenus.
     const menuItems = await page.locator('.el-menu-item:visible').all();
-    
+
     expect(menuItems.length).toBeGreaterThan(0); // Ensure some menu items are found
 
     for (const menuItem of menuItems) {
@@ -85,7 +85,7 @@ test.describe('Critical Menu Navigation Scan @critical', () => {
       // This is a very generic check; more specific checks would be better per page.
       await expect(page.locator('body')).not.toContainText('404 Not Found');
       await expect(page.locator('body')).not.toContainText('An unexpected error occurred');
-      
+
       // Listen for console errors during navigation
       page.on('console', msg => {
         if (msg.type() === 'error') {

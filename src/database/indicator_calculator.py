@@ -119,9 +119,7 @@ class TechnicalIndicatorCalculator:
             momentum_indicators["momentum"] = self._calculate_momentum(data["close"])
 
             # 变化率
-            momentum_indicators["rate_of_change"] = self._calculate_rate_of_change(
-                data["close"]
-            )
+            momentum_indicators["rate_of_change"] = self._calculate_rate_of_change(data["close"])
 
             return momentum_indicators
 

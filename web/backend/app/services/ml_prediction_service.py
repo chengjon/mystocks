@@ -118,9 +118,7 @@ class MLPredictionService:
             Dict: 训练结果（包含评估指标）
         """
         # 分割数据
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=random_state
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
         # 创建模型
         if model_params:
@@ -245,9 +243,7 @@ class MLPredictionService:
 
         return True
 
-    def hyperparameter_search(
-        self, X: pd.DataFrame, y: pd.Series, param_grid: dict = None, cv: int = 5
-    ) -> Dict:
+    def hyperparameter_search(self, X: pd.DataFrame, y: pd.Series, param_grid: dict = None, cv: int = 5) -> Dict:
         """
         超参数搜索
 
@@ -320,8 +316,7 @@ class MLPredictionService:
 
         # 创建特征重要性列表
         feature_importance = [
-            {"feature": name, "importance": float(imp)}
-            for name, imp in zip(feature_names, importances)
+            {"feature": name, "importance": float(imp)} for name, imp in zip(feature_names, importances)
         ]
 
         # 按重要性排序
@@ -378,12 +373,8 @@ class MLPredictionService:
                         {
                             "name": model_path.name,
                             "path": str(model_path),
-                            "trained_at": metadata.get("metrics", {}).get(
-                                "trained_at", "unknown"
-                            ),
-                            "test_rmse": metadata.get("metrics", {}).get(
-                                "test_rmse", 0
-                            ),
+                            "trained_at": metadata.get("metrics", {}).get("trained_at", "unknown"),
+                            "test_rmse": metadata.get("metrics", {}).get("test_rmse", 0),
                             "test_r2": metadata.get("metrics", {}).get("test_r2", 0),
                         }
                     )

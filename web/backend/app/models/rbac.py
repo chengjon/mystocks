@@ -57,9 +57,7 @@ class User(Base):
     locked_until = Column(DateTime(timezone=True), nullable=True)
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -68,15 +66,9 @@ class User(Base):
     )
 
     # Relationships
-    user_roles = relationship(
-        "UserRole", back_populates="user", cascade="all, delete-orphan"
-    )
-    user_sessions = relationship(
-        "UserSession", back_populates="user", cascade="all, delete-orphan"
-    )
-    audit_logs = relationship(
-        "AuditLog", back_populates="user", cascade="all, delete-orphan"
-    )
+    user_roles = relationship("UserRole", back_populates="user", cascade="all, delete-orphan")
+    user_sessions = relationship("UserSession", back_populates="user", cascade="all, delete-orphan")
+    audit_logs = relationship("AuditLog", back_populates="user", cascade="all, delete-orphan")
 
     # Indexes
     __table_args__ = (
@@ -123,14 +115,10 @@ class Role(Base):
 
     # Role status
     is_active = Column(Boolean, default=True, nullable=False)
-    is_system = Column(
-        Boolean, default=False, nullable=False
-    )  # System roles cannot be deleted
+    is_system = Column(Boolean, default=False, nullable=False)  # System roles cannot be deleted
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -139,12 +127,8 @@ class Role(Base):
     )
 
     # Relationships
-    user_roles = relationship(
-        "UserRole", back_populates="role", cascade="all, delete-orphan"
-    )
-    role_permissions = relationship(
-        "RolePermission", back_populates="role", cascade="all, delete-orphan"
-    )
+    user_roles = relationship("UserRole", back_populates="role", cascade="all, delete-orphan")
+    role_permissions = relationship("RolePermission", back_populates="role", cascade="all, delete-orphan")
     child_roles = relationship("Role", backref="parent_role", remote_side=[id])
 
     # Indexes
@@ -164,9 +148,7 @@ class Role(Base):
 
         # Add inherited permissions from parent role
         if self.parent_role_id:
-            parent_role = (
-                db_session.query(Role).filter(Role.id == self.parent_role_id).first()
-            )
+            parent_role = db_session.query(Role).filter(Role.id == self.parent_role_id).first()
             if parent_role and parent_role.is_active:
                 permissions.update(parent_role.get_permissions(db_session))
 
@@ -184,23 +166,15 @@ class Permission(Base):
     description = Column(Text, nullable=True)
 
     # Permission categorization
-    resource = Column(
-        String(50), nullable=False, index=True
-    )  # e.g., 'user', 'market', 'system'
-    action = Column(
-        String(50), nullable=False, index=True
-    )  # e.g., 'read', 'write', 'delete'
+    resource = Column(String(50), nullable=False, index=True)  # e.g., 'user', 'market', 'system'
+    action = Column(String(50), nullable=False, index=True)  # e.g., 'read', 'write', 'delete'
 
     # Permission status
     is_active = Column(Boolean, default=True, nullable=False)
-    is_system = Column(
-        Boolean, default=False, nullable=False
-    )  # System permissions cannot be deleted
+    is_system = Column(Boolean, default=False, nullable=False)  # System permissions cannot be deleted
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -209,9 +183,7 @@ class Permission(Base):
     )
 
     # Relationships
-    role_permissions = relationship(
-        "RolePermission", back_populates="permission", cascade="all, delete-orphan"
-    )
+    role_permissions = relationship("RolePermission", back_populates="permission", cascade="all, delete-orphan")
 
     # Indexes
     __table_args__ = (
@@ -231,18 +203,14 @@ class UserRole(Base):
 
     # Assignment details
     assigned_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    assigned_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     expires_at = Column(DateTime(timezone=True), nullable=True)  # Optional expiration
 
     # Status
     is_active = Column(Boolean, default=True, nullable=False)
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -270,23 +238,17 @@ class RolePermission(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     role_id = Column(UUID(as_uuid=True), ForeignKey("roles.id"), nullable=False)
-    permission_id = Column(
-        UUID(as_uuid=True), ForeignKey("permissions.id"), nullable=False
-    )
+    permission_id = Column(UUID(as_uuid=True), ForeignKey("permissions.id"), nullable=False)
 
     # Assignment details
     assigned_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    assigned_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Status
     is_active = Column(Boolean, default=True, nullable=False)
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -322,15 +284,11 @@ class UserSession(Base):
 
     # Session status
     is_active = Column(Boolean, default=True, nullable=False)
-    last_activity = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    last_activity = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     expires_at = Column(DateTime(timezone=True), nullable=False)
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -359,12 +317,8 @@ class AuditLog(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
 
     # Action details
-    action = Column(
-        String(100), nullable=False, index=True
-    )  # e.g., 'login', 'create_user', 'delete_role'
-    resource_type = Column(
-        String(50), nullable=False, index=True
-    )  # e.g., 'user', 'role', 'permission'
+    action = Column(String(100), nullable=False, index=True)  # e.g., 'login', 'create_user', 'delete_role'
+    resource_type = Column(String(50), nullable=False, index=True)  # e.g., 'user', 'role', 'permission'
     resource_id = Column(String(255), nullable=True)  # ID of affected resource
 
     # Request details
@@ -374,18 +328,14 @@ class AuditLog(Base):
     request_path = Column(String(500), nullable=True)
 
     # Result
-    status = Column(
-        String(20), nullable=False, index=True
-    )  # 'success', 'failure', 'error'
+    status = Column(String(20), nullable=False, index=True)  # 'success', 'failure', 'error'
     error_message = Column(Text, nullable=True)
 
     # Additional data (JSON)
     additional_data = Column(Text, nullable=True)  # JSON string for additional context
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
     user = relationship("User", back_populates="audit_logs")
@@ -412,9 +362,7 @@ class SecurityEvent(Base):
     event_type = Column(
         String(50), nullable=False, index=True
     )  # e.g., 'failed_login', 'rate_limit', 'suspicious_activity'
-    severity = Column(
-        String(20), nullable=False, index=True
-    )  # 'low', 'medium', 'high', 'critical'
+    severity = Column(String(20), nullable=False, index=True)  # 'low', 'medium', 'high', 'critical'
 
     # Event description
     title = Column(String(200), nullable=False)
@@ -427,9 +375,7 @@ class SecurityEvent(Base):
     request_path = Column(String(500), nullable=True)
 
     # Event data (JSON)
-    event_data = Column(
-        Text, nullable=True
-    )  # JSON string for detailed event information
+    event_data = Column(Text, nullable=True)  # JSON string for detailed event information
 
     # Resolution
     resolved = Column(Boolean, default=False, nullable=False)
@@ -438,9 +384,7 @@ class SecurityEvent(Base):
     resolution_notes = Column(Text, nullable=True)
 
     # Timestamps
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
     user = relationship("User", foreign_keys=[user_id])

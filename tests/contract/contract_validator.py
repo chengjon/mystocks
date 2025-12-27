@@ -116,17 +116,13 @@ class ContractValidator:
 
         # 套件统计
         if result.is_valid():
-            result.add_info(
-                f"测试套件验证通过: {suite.name} ({len(suite.test_cases)} 个测试用例)"
-            )
+            result.add_info(f"测试套件验证通过: {suite.name} ({len(suite.test_cases)} 个测试用例)")
         else:
             logger.error(f"测试套件 {suite.name} 验证失败")
 
         return result
 
-    def validate_test_case(
-        self, test_case: ContractTestCase
-    ) -> ContractValidationResult:
+    def validate_test_case(self, test_case: ContractTestCase) -> ContractValidationResult:
         """验证测试用例"""
         result = ContractValidationResult()
 
@@ -140,9 +136,7 @@ class ContractValidator:
         # HTTP 方法验证
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         if test_case.method.upper() not in valid_methods:
-            result.add_error(
-                f"HTTP 方法 '{test_case.method}' 无效，必须是: {', '.join(valid_methods)}"
-            )
+            result.add_error(f"HTTP 方法 '{test_case.method}' 无效，必须是: {', '.join(valid_methods)}")
 
         # 端点格式验证
         endpoint_result = self._validate_endpoint(test_case.endpoint)
@@ -183,9 +177,7 @@ class ContractValidator:
         if test_case.tags:
             for tag in test_case.tags:
                 if not re.match(r"^[a-zA-Z0-9_-]+$", tag):
-                    result.add_error(
-                        f"标签 '{tag}' 包含非法字符，只能使用字母、数字、下划线和连字符"
-                    )
+                    result.add_error(f"标签 '{tag}' 包含非法字符，只能使用字母、数字、下划线和连字符")
 
         # 优先级验证
         if not (1 <= test_case.priority <= 10):
@@ -254,9 +246,7 @@ class ContractValidator:
 
         return result
 
-    def _validate_request_body(
-        self, body: Dict[str, Any], method: str
-    ) -> ContractValidationResult:
+    def _validate_request_body(self, body: Dict[str, Any], method: str) -> ContractValidationResult:
         """验证请求体"""
         result = ContractValidationResult()
 
@@ -269,9 +259,7 @@ class ContractValidator:
 
         return result
 
-    def _validate_object_structure(
-        self, obj: Any, path: str, result: ContractValidationResult
-    ):
+    def _validate_object_structure(self, obj: Any, path: str, result: ContractValidationResult):
         """递归验证对象结构"""
         if isinstance(obj, dict):
             for key, value in obj.items():
@@ -291,9 +279,7 @@ class ContractValidator:
                 item_path = f"{path}[{i}]"
                 self._validate_object_structure(item, item_path, result)
 
-    def _validate_validation_rules(
-        self, rules: List[Dict[str, Any]]
-    ) -> ContractValidationResult:
+    def _validate_validation_rules(self, rules: List[Dict[str, Any]]) -> ContractValidationResult:
         """验证验证规则"""
         result = ContractValidationResult()
 
@@ -339,9 +325,7 @@ class ContractValidator:
 
         return result
 
-    def _validate_authentication_case(
-        self, test_case: ContractTestCase
-    ) -> ContractValidationResult:
+    def _validate_authentication_case(self, test_case: ContractTestCase) -> ContractValidationResult:
         """验证认证相关测试用例"""
         result = ContractValidationResult()
 
@@ -350,11 +334,7 @@ class ContractValidator:
             result.add_warning("认证测试通常需要包含认证头")
 
         # 检查 JWT 验证规则
-        jwt_rules = [
-            rule
-            for rule in test_case.validation_rules
-            if rule.get("type") == "jwt_token"
-        ]
+        jwt_rules = [rule for rule in test_case.validation_rules if rule.get("type") == "jwt_token"]
 
         if jwt_rules and test_case.method.upper() == "GET":
             result.add_warning("JWT 验证通常用于需要认证的请求")
@@ -370,18 +350,12 @@ class ContractValidator:
 
         return result
 
-    def _validate_performance_case(
-        self, test_case: ContractTestCase
-    ) -> ContractValidationResult:
+    def _validate_performance_case(self, test_case: ContractTestCase) -> ContractValidationResult:
         """验证性能相关测试用例"""
         result = ContractValidationResult()
 
         # 检查性能验证规则
-        perf_rules = [
-            rule
-            for rule in test_case.validation_rules
-            if rule.get("type") == "response_time"
-        ]
+        perf_rules = [rule for rule in test_case.validation_rules if rule.get("type") == "response_time"]
 
         if not perf_rules:
             result.add_warning("性能测试应该包含响应时间验证规则")
@@ -394,9 +368,7 @@ class ContractValidator:
 
         return result
 
-    def validate_response_data(
-        self, response: Dict[str, Any], test_case: ContractTestCase
-    ) -> ContractValidationResult:
+    def validate_response_data(self, response: Dict[str, Any], test_case: ContractTestCase) -> ContractValidationResult:
         """验证响应数据"""
         result = ContractValidationResult()
 
@@ -447,9 +419,7 @@ class ContractValidator:
 
         return result
 
-    def _apply_validation_rule(
-        self, response: Dict[str, Any], rule: Dict[str, Any]
-    ) -> ContractValidationResult:
+    def _apply_validation_rule(self, response: Dict[str, Any], rule: Dict[str, Any]) -> ContractValidationResult:
         """应用验证规则"""
         result = ContractValidationResult()
         rule_type = rule.get("type")
@@ -478,9 +448,7 @@ class ContractValidator:
                 for key, expected_value in expected_headers.items():
                     actual_value = response.get(key)
                     if actual_value != expected_value:
-                        result.add_error(
-                            f"头部验证失败 {key}: 期望 {expected_value}, 实际 {actual_value}"
-                        )
+                        result.add_error(f"头部验证失败 {key}: 期望 {expected_value}, 实际 {actual_value}")
 
             elif rule_type == "jwt_token":
                 # JWT 验证逻辑
@@ -561,9 +529,7 @@ class ContractValidator:
             # 解码 payload（不验证签名）
             import base64
 
-            payload = json.loads(
-                base64.urlsafe_b64decode(parts[1] + "=" * (4 - len(parts[1]) % 4))
-            )
+            payload = json.loads(base64.urlsafe_b64decode(parts[1] + "=" * (4 - len(parts[1]) % 4)))
             exp = payload.get("exp")
 
             if exp:

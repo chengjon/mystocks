@@ -692,8 +692,8 @@ src/adapters/byapi_adapter.py:234:80: E501 line too long (103 > 79 characters)
             DataFrame包含:
             - symbol, timestamp/date, open, high, low, close, volume, amount
         """
-           
-              
+
+
 
                                                    ^
 src/adapters/byapi_adapter.py:257:80: E501 line too long (94 > 79 characters)
@@ -775,8 +775,8 @@ src/adapters/byapi_adapter.py:403:80: E501 line too long (101 > 79 characters)
         Returns:
             DataFrame包含财务数据 (列名根据data_type不同而不同)
         """
-           
-              
+
+
 
                                                    ^
 src/adapters/byapi_adapter.py:408:1: RST301 Unexpected indentation.
@@ -874,8 +874,8 @@ src/adapters/byapi_adapter.py:526:80: E501 line too long (125 > 79 characters)
         Returns:
             DataFrame包含技术指标数据
         """
-           
-                          
+
+
 
                                        ^
 src/adapters/byapi_adapter.py:615:80: E501 line too long (84 > 79 characters)
@@ -1349,10 +1349,10 @@ src/adapters/financial_adapter.py:251:80: E501 line too long (95 > 79 characters
         Returns:
             tuple: (normalized_symbol, normalized_start_date, normalized_end_date) 或 None（验证失败）
         """
-           
-                                  
 
-             
+
+
+
                  ^
 src/adapters/financial_adapter.py:282:40: F821 undefined name 'Optional'
         self, symbol: str, start_date: Optional[str], end_date: Optional[str]
@@ -1503,10 +1503,10 @@ src/adapters/financial_adapter.py:552:80: E501 line too long (99 > 79 characters
         Returns:
             tuple: (normalized_index_code, normalized_start_date, normalized_end_date) 或 None（验证失败）
         """
-           
-                              
 
-             
+
+
+
                      ^
 src/adapters/financial_adapter.py:577:80: E501 line too long (80 > 79 characters)
         return normalized_index_code, normalized_start_date, normalized_end_date
@@ -2480,10 +2480,10 @@ src/adapters/tdx_adapter.py:885:80: E501 line too long (91 > 79 characters)
             >>> # 获取5分钟K线
             >>> df = tdx.get_stock_kline('600519', '2024-01-01', '2024-01-31', period='5m')
         """
-           
-                        
 
-             
+
+
+
                            ^
 src/adapters/tdx_adapter.py:932:47: F541 f-string is missing placeholders
                         raise ConnectionError(f"无法连接到TDX服务器")
@@ -2832,8 +2832,8 @@ src/api/alert_history_routes.py:40:80: E501 line too long (86 > 79 characters)
     - limit: Maximum results (default: 1000)
     - offset: Pagination offset (default: 0)
     """
-       
-                                                  
+
+
 
                    ^
 src/api/alert_history_routes.py:67:47: B008 Do not perform function calls in argument defaults.  The call is performed only once at function definition time. All calls to your function will reuse the result of that definition-time function call.  If this is intended, assign the function call to a module-level variable and use that variable as a default value.
@@ -3576,7 +3576,7 @@ src/contract_testing/api_consistency_checker.py:64:80: E501 line too long (83 > 
 
     Identifies missing endpoints, parameter mismatches, response code discrepancies, etc.
     """
-       
+
                                                                        ^
 src/contract_testing/api_consistency_checker.py:66:80: E501 line too long (89 > 79 characters)
     """
@@ -3584,7 +3584,7 @@ src/contract_testing/api_consistency_checker.py:66:80: E501 line too long (89 > 
 
     Identifies missing endpoints, parameter mismatches, response code discrepancies, etc.
     """
-       
+
                                                                        ^
 src/contract_testing/api_consistency_checker.py:70:1: D400 First line should end with a period
         """
@@ -3947,10 +3947,10 @@ src/contract_testing/report_generator.py:217:80: E501 line too long (176 > 79 ch
 </body>
 </html>
 """
-                           
-               
-      
-      
+
+
+
+
                      ^
 src/contract_testing/report_generator.py:234:1: D400 First line should end with a period
         """Generate all report formats"""
@@ -6226,8 +6226,8 @@ MyStocks Custom Exception Hierarchy
 This module defines all custom exceptions used throughout the MyStocks application.
 For details, see docs/guides/PHASE1_EXCEPTION_HIERARCHY.md
 """
-   
-                                   
+
+
 
                                       ^
 src/core/exceptions.py:20:1: D107 Missing docstring in __init__
@@ -6352,14 +6352,14 @@ src/core/logging.py:247:80: E501 line too long (95 > 79 characters)
             INSERT INTO logs (timestamp, level, module, function, message, exception, metadata)
             VALUES (%(timestamp)s, %(level)s, %(module)s, %(function)s, %(message)s, %(exception)s, %(metadata)s::jsonb)
             """,
-               
+
                                                                ^
 src/core/logging.py:248:80: E501 line too long (120 > 79 characters)
             """
             INSERT INTO logs (timestamp, level, module, function, message, exception, metadata)
             VALUES (%(timestamp)s, %(level)s, %(module)s, %(function)s, %(message)s, %(exception)s, %(metadata)s::jsonb)
             """,
-               
+
                                                                ^
 src/core/logging.py:257:1: S110 Try, Except, Pass detected.
     except Exception:
@@ -7505,7 +7505,7 @@ src/data_access.py:625:80: E501 line too long (86 > 79 characters)
                 INSERT INTO {table_name} (ts, symbol, price, volume, amount, exchange)
                 VALUES (?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/data_access.py:651:80: E501 line too long (88 > 79 characters)
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -7524,7 +7524,7 @@ src/data_access.py:656:80: E501 line too long (104 > 79 characters)
                 INSERT INTO {table_name} (ts, symbol, open, high, low, close, volume, amount, frequency)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/data_access.py:688:1: D400 First line should end with a period
         """插入通用时序数据"""
@@ -7992,11 +7992,11 @@ src/data_access/postgresql_access.py:57:80: E501 line too long (92 > 79 characte
                 'volume': 'BIGINT'
             }, primary_key='symbol, date')
         """
-           
-             
 
-             
-                          
+
+
+
+
            ^
 src/data_access/postgresql_access.py:68:1: RST203 Definition list ends without a blank line; unexpected unindent.
         """
@@ -8448,11 +8448,11 @@ src/data_access/tdengine_access.py:53:80: E501 line too long (80 > 79 characters
                          {'ts': 'TIMESTAMP', 'price': 'FLOAT', 'volume': 'INT'},
                          {'symbol': 'BINARY(20)', 'exchange': 'BINARY(10)'})
         """
-           
-                    
 
-             
-                             
+
+
+
+
  ^
 src/data_access/tdengine_access.py:59:80: E501 line too long (81 > 79 characters)
         fields = ", ".join([f"{name} {dtype}" for name, dtype in schema.items()])
@@ -8488,10 +8488,10 @@ src/data_access/tdengine_access.py:88:80: E501 line too long (101 > 79 character
         Example:
             create_table('tick_data_600000', 'tick_data', {'symbol': '600000.SH', 'exchange': 'SSE'})
         """
-           
-                  
 
-             
+
+
+
                                  ^
 src/data_access/tdengine_access.py:94:80: E501 line too long (85 > 79 characters)
             [f"'{v}'" if isinstance(v, str) else str(v) for v in tag_values.values()]
@@ -8923,8 +8923,8 @@ src/data_sources/baostock_importer.py:110:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_stock_basic('300377')
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:112:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -8982,8 +8982,8 @@ src/data_sources/baostock_importer.py:147:80: E501 line too long (92 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_history_k_data_plus('300377', '1d', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:152:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9008,8 +9008,8 @@ src/data_sources/baostock_importer.py:153:80: E501 line too long (105 > 79 chara
         :return: pandas.DataFrame
         示例: bao.query_history_k_data_plus('300377', '1d', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:172:80: E501 line too long (82 > 79 characters)
             fields = "date,time,code,open,high,low,close,volume,amount,adjustflag"
@@ -9055,8 +9055,8 @@ src/data_sources/baostock_importer.py:207:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_dividend_data('300377', 2023, 'operate')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:210:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9097,8 +9097,8 @@ src/data_sources/baostock_importer.py:220:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_adjust_factor('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:223:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9119,8 +9119,8 @@ src/data_sources/baostock_importer.py:224:80: E501 line too long (93 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_adjust_factor('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:228:80: E501 line too long (82 > 79 characters)
             start_date = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
@@ -9157,8 +9157,8 @@ src/data_sources/baostock_importer.py:238:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_profit_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:241:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9199,8 +9199,8 @@ src/data_sources/baostock_importer.py:258:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_operation_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:261:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9241,8 +9241,8 @@ src/data_sources/baostock_importer.py:278:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_growth_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:281:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9283,8 +9283,8 @@ src/data_sources/baostock_importer.py:298:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_balance_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:301:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9325,8 +9325,8 @@ src/data_sources/baostock_importer.py:318:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_cash_flow_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:321:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9367,8 +9367,8 @@ src/data_sources/baostock_importer.py:338:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_dupont_data('300377', year=2023, quarter=2)
         """
-           
-              
+
+
                                                     ^
 src/data_sources/baostock_importer.py:341:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9409,8 +9409,8 @@ src/data_sources/baostock_importer.py:358:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_performance_express_report('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:361:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9431,8 +9431,8 @@ src/data_sources/baostock_importer.py:362:80: E501 line too long (106 > 79 chara
         :return: pandas.DataFrame
         示例: bao.query_performance_express_report('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:371:1: D205 1 blank line required between summary line and description
         """
@@ -9463,8 +9463,8 @@ src/data_sources/baostock_importer.py:373:80: E501 line too long (90 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_forcast_report('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:376:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -9485,8 +9485,8 @@ src/data_sources/baostock_importer.py:377:80: E501 line too long (94 > 79 charac
         :return: pandas.DataFrame
         示例: bao.query_forcast_report('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
-           
-                
+
+
                                                   ^
 src/data_sources/baostock_importer.py:380:80: E501 line too long (85 > 79 characters)
         rs = bs.query_forecast_report(code, start_date=start_date, end_date=end_date)
@@ -9642,8 +9642,8 @@ src/data_sources/baostock_importer.py:485:80: E501 line too long (100 > 79 chara
         :return: pandas.DataFrame
         示例: bao.query_stock_industry('300377')
         """
-           
-            
+
+
                                                       ^
 src/data_sources/baostock_importer.py:487:1: RST206 Field list ends without a blank line; unexpected unindent.
         """
@@ -11573,7 +11573,7 @@ src/data_sources/real/postgresql_relational.py:157:80: E501 line too long (82 > 
                 VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP)
                 RETURNING id, user_id, symbol, list_type, note, added_at
             """
-                            
+
                                                   ^
 src/data_sources/real/postgresql_relational.py:178:80: E501 line too long (85 > 79 characters)
                 f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}"
@@ -11691,8 +11691,8 @@ src/data_sources/real/postgresql_relational.py:590:80: E501 line too long (80 > 
                 RETURNING id, user_id, symbol, alert_type, condition, threshold,
                           notification_methods, enabled, created_at
             """
-                            
-                                       
+
+
           ^
 src/data_sources/real/postgresql_relational.py:631:80: E501 line too long (84 > 79 characters)
     def toggle_risk_alert(self, alert_id: int, user_id: int, enabled: bool) -> bool:
@@ -11743,7 +11743,7 @@ src/data_sources/real/postgresql_relational.py:757:80: E501 line too long (125 >
                 VALUES (%s, '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id) DO UPDATE SET {set_sql}
             """
-                      
+
                                                         ^
 src/data_sources/real/postgresql_relational.py:758:80: E501 line too long (91 > 79 characters)
             sql = f"""
@@ -11751,7 +11751,7 @@ src/data_sources/real/postgresql_relational.py:758:80: E501 line too long (91 > 
                 VALUES (%s, '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id) DO UPDATE SET {set_sql}
             """
-                      
+
                                                         ^
 src/data_sources/real/postgresql_relational.py:786:1: D400 First line should end with a period
         """
@@ -11777,7 +11777,7 @@ src/data_sources/real/postgresql_relational.py:816:80: E501 line too long (80 > 
                 WHERE {where_sql}
                 ORDER BY symbol
             """
-                      
+
                                                         ^
 src/data_sources/real/postgresql_relational.py:835:80: E501 line too long (85 > 79 characters)
                         "list_date": row[6].strftime("%Y-%m-%d") if row[6] else None,
@@ -11813,7 +11813,7 @@ src/data_sources/real/postgresql_relational.py:938:80: E501 line too long (94 > 
                 WHERE classification = %s
                 ORDER BY level, code
             """
-                     
+
                                                          ^
 src/data_sources/real/postgresql_relational.py:958:80: E501 line too long (84 > 79 characters)
                             row[6].strftime("%Y-%m-%d %H:%M:%S") if row[6] else None
@@ -12047,7 +12047,7 @@ src/data_sources/real/tdengine_timeseries.py:475:80: E501 line too long (83 > 79
                 WHERE ts >= NOW - 1d
                 GROUP BY symbol
             """
-                     
+
                                                          ^
 src/data_sources/real/tdengine_timeseries.py:527:80: E501 line too long (81 > 79 characters)
     def get_index_realtime(self, index_codes: List[str]) -> List[Dict[str, Any]]:
@@ -12629,10 +12629,10 @@ src/data_sources/tdx_binary_parser.py:105:80: E501 line too long (82 > 79 charac
             >>> data = parser.read_day_data('600000', start_date=date(2024, 1, 1))
             >>> print(data.head())
         """
-           
-              
 
-           
+
+
+
                                        ^
 src/data_sources/tdx_binary_parser.py:144:1: D400 First line should end with a period
         """
@@ -12866,10 +12866,10 @@ src/data_sources/tdx_importer.py:117:80: E501 line too long (88 > 79 characters)
             >>> result = importer.import_market_daily('sh', start_date=date(2024, 1, 1))
             >>> print(f"成功导入 {result['success_count']} 只股票")
         """
-           
-                   
 
-           
+
+
+
                                   ^
 src/data_sources/tdx_importer.py:135:38: E203 whitespace before ':'
             batch_symbols = symbols[i : i + batch_size]
@@ -13427,20 +13427,20 @@ src/database/mock_data_storage.py:110:1: D400 First line should end with a perio
 ^
 src/database/mock_data_storage.py:132:49: W291 trailing whitespace
                     """
-                INSERT INTO technical_indicators 
+                INSERT INTO technical_indicators
                 (symbol, calc_date, indicator_name, indicator_value, indicator_params)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                       
+
                         ^
 src/database/mock_data_storage.py:133:80: E501 line too long (86 > 79 characters)
                     """
-                INSERT INTO technical_indicators 
+                INSERT INTO technical_indicators
                 (symbol, calc_date, indicator_name, indicator_value, indicator_params)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                       
-                                                 
+
+
      ^
 src/database/mock_data_storage.py:152:1: D400 First line should end with a period
         """
@@ -13455,32 +13455,32 @@ src/database/mock_data_storage.py:152:1: D400 First line should end with a perio
 ^
 src/database/mock_data_storage.py:167:44: W291 trailing whitespace
                     """
-                INSERT INTO realtime_quotes 
-                (symbol, trade_time, open, high, low, close, volume, amount, pre_close, 
+                INSERT INTO realtime_quotes
+                (symbol, trade_time, open, high, low, close, volume, amount, pre_close,
                  change, change_pct, turnover_rate, pe_ratio, pb_ratio)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
+
                    ^
 src/database/mock_data_storage.py:168:80: E501 line too long (87 > 79 characters)
                     """
-                INSERT INTO realtime_quotes 
-                (symbol, trade_time, open, high, low, close, volume, amount, pre_close, 
+                INSERT INTO realtime_quotes
+                (symbol, trade_time, open, high, low, close, volume, amount, pre_close,
                  change, change_pct, turnover_rate, pe_ratio, pb_ratio)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                            
+
+
           ^
 src/database/mock_data_storage.py:168:88: W291 trailing whitespace
                     """
-                INSERT INTO realtime_quotes 
-                (symbol, trade_time, open, high, low, close, volume, amount, pre_close, 
+                INSERT INTO realtime_quotes
+                (symbol, trade_time, open, high, low, close, volume, amount, pre_close,
                  change, change_pct, turnover_rate, pe_ratio, pb_ratio)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                            
+
+
                   ^
 src/database/mock_data_storage.py:197:1: D400 First line should end with a period
         """
@@ -13495,57 +13495,57 @@ src/database/mock_data_storage.py:197:1: D400 First line should end with a perio
 ^
 src/database/mock_data_storage.py:212:50: W291 trailing whitespace
                     """
-                INSERT OR REPLACE INTO stock_info 
-                (symbol, name, exchange, security_type, list_date, delist_date, status, 
-                 listing_board, market_cap, circulating_market_cap, total_shares, 
+                INSERT OR REPLACE INTO stock_info
+                (symbol, name, exchange, security_type, list_date, delist_date, status,
+                 listing_board, market_cap, circulating_market_cap, total_shares,
                  circulating_shares, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
+
                          ^
 src/database/mock_data_storage.py:213:80: E501 line too long (87 > 79 characters)
                     """
-                INSERT OR REPLACE INTO stock_info 
-                (symbol, name, exchange, security_type, list_date, delist_date, status, 
-                 listing_board, market_cap, circulating_market_cap, total_shares, 
+                INSERT OR REPLACE INTO stock_info
+                (symbol, name, exchange, security_type, list_date, delist_date, status,
+                 listing_board, market_cap, circulating_market_cap, total_shares,
                  circulating_shares, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                                  
+
+
     ^
 src/database/mock_data_storage.py:213:88: W291 trailing whitespace
                     """
-                INSERT OR REPLACE INTO stock_info 
-                (symbol, name, exchange, security_type, list_date, delist_date, status, 
-                 listing_board, market_cap, circulating_market_cap, total_shares, 
+                INSERT OR REPLACE INTO stock_info
+                (symbol, name, exchange, security_type, list_date, delist_date, status,
+                 listing_board, market_cap, circulating_market_cap, total_shares,
                  circulating_shares, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                                  
+
+
             ^
 src/database/mock_data_storage.py:214:80: E501 line too long (81 > 79 characters)
                     """
-                INSERT OR REPLACE INTO stock_info 
-                (symbol, name, exchange, security_type, list_date, delist_date, status, 
-                 listing_board, market_cap, circulating_market_cap, total_shares, 
+                INSERT OR REPLACE INTO stock_info
+                (symbol, name, exchange, security_type, list_date, delist_date, status,
+                 listing_board, market_cap, circulating_market_cap, total_shares,
                  circulating_shares, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                                  
+
+
     ^
 src/database/mock_data_storage.py:214:82: W291 trailing whitespace
                     """
-                INSERT OR REPLACE INTO stock_info 
-                (symbol, name, exchange, security_type, list_date, delist_date, status, 
-                 listing_board, market_cap, circulating_market_cap, total_shares, 
+                INSERT OR REPLACE INTO stock_info
+                (symbol, name, exchange, security_type, list_date, delist_date, status,
+                 listing_board, market_cap, circulating_market_cap, total_shares,
                  circulating_shares, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                       
-                                                  
+
+
       ^
 src/database/mock_data_storage.py:232:80: E501 line too long (86 > 79 characters)
                             "created_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -13581,7 +13581,7 @@ src/database/mock_data_storage.py:281:80: E501 line too long (87 > 79 characters
             {where_clause}
             ORDER BY calc_date DESC
             """
-                        
+
                                                       ^
 src/database/mock_data_storage.py:298:80: E501 line too long (81 > 79 characters)
                         "indicator_params": json.loads(row[4]) if row[4] else {},
@@ -13616,7 +13616,7 @@ src/database/mock_data_storage.py:329:80: E501 line too long (83 > 79 characters
             ORDER BY trade_time DESC
             LIMIT 100
             """
-                        
+
                                                       ^
 src/database/mock_data_storage.py:366:1: D400 First line should end with a period
         """
@@ -13648,7 +13648,7 @@ src/database/mock_data_storage.py:386:80: E501 line too long (89 > 79 characters
             {where_clause}
             LIMIT 100
             """
-                        
+
                                                       ^
 src/database/mock_data_storage.py:387:80: E501 line too long (83 > 79 characters)
             query = f"""
@@ -13659,7 +13659,7 @@ src/database/mock_data_storage.py:387:80: E501 line too long (83 > 79 characters
             {where_clause}
             LIMIT 100
             """
-                        
+
                                                       ^
 src/database/mock_data_storage.py:424:1: D400 First line should end with a period
         """关闭数据库连接"""
@@ -14009,11 +14009,11 @@ src/database_optimization/postgresql_index_optimizer.py:42:80: E501 line too lon
                 "implementation": "..."
             }
         """
-           
-              
 
-                
-             
+
+
+
+
                     ^
 src/database_optimization/postgresql_index_optimizer.py:44:1: RST203 Definition list ends without a blank line; unexpected unindent.
         """
@@ -14240,7 +14240,7 @@ src/database_optimization/slow_query_analyzer.py:42:80: E501 line too long (87 >
                     GROUP BY symbol
                     ORDER BY total_volume DESC
                 """,
-                            
+
                                                   ^
 src/database_optimization/slow_query_analyzer.py:50:80: E501 line too long (97 > 79 characters)
                 "root_cause": "Missing index on (user_id, created_at); requires full table scan",
@@ -14268,7 +14268,7 @@ src/database_optimization/slow_query_analyzer.py:80:80: E501 line too long (92 >
                     GROUP BY user_id, symbol
                     HAVING COUNT(*) > 10
                 """,
-                            
+
                                                   ^
 src/database_optimization/slow_query_analyzer.py:88:80: E501 line too long (104 > 79 characters)
                 "root_cause": "No index on (user_id, symbol); requires full table scan for aggregation",
@@ -14330,7 +14330,7 @@ src/database_optimization/slow_query_analyzer.py:153:80: E501 line too long (94 
                     WHERE ts >= now - 1d AND symbol = 'AAPL'
                     GROUP BY time_bucket
                 """,
-                            
+
                                                   ^
 src/database_optimization/slow_query_analyzer.py:160:80: E501 line too long (80 > 79 characters)
                 "root_cause": "Missing timestamp index; full scan of tick data",
@@ -14722,9 +14722,9 @@ src/gpu/accelerated/cpu_data_processor.py:78:80: E501 line too long (92 > 79 cha
         Returns:
             处理后的数据字典列表，包含 'price_change', 'volume_ma' 等
         """
-           
-                 
-             
+
+
+
                                    ^
 src/gpu/accelerated/cpu_data_processor.py:91:37: E261 at least two spaces before inline comment
                 "price_change": 0.0, # 需历史数据计算
@@ -15164,15 +15164,15 @@ src/gpu/accelerated/data_processor_gpu.py:89:80: E501 line too long (92 > 79 cha
         Returns:
             处理后的数据字典列表，包含 'price_change', 'volume_ma' 等
         """
-           
-                 
-             
+
+
+
                                    ^
 src/gpu/accelerated/data_processor_gpu.py:94:80: E501 line too long (85 > 79 characters)
             raise RuntimeError("GPU acceleration is not enabled for this processor.")
                                                                                ^
 src/gpu/accelerated/data_processor_gpu.py:106:1: W293 blank line contains whitespace
-        
+
 ^
 src/gpu/accelerated/data_processor_gpu.py:108:53: E261 at least two spaces before inline comment
         if 'volume' in df.columns and len(df) >= 20: # 至少20个数据点才能计算20日均线
@@ -15281,7 +15281,7 @@ src/gpu/accelerated/data_processor_gpu.py:218:1: D400 First line should end with
         """优化数据类型"""
 ^
 src/gpu/accelerated/data_processor_gpu.py:227:1: W293 blank line contains whitespace
-        
+
 ^
 src/gpu/accelerated/data_processor_gpu.py:233:62: E261 at least two spaces before inline comment
             if len(df_gpu[col].unique()) / len(df_gpu) < 0.5: # Example threshold
@@ -15329,7 +15329,7 @@ src/gpu/accelerated/data_processor_gpu.py:297:25: E261 at least two spaces befor
             return 100.0 # Or handle as NaN / Inf based on desired behavior
                         ^
 src/gpu/accelerated/data_processor_gpu.py:298:1: W293 blank line contains whitespace
-        
+
 ^
 src/gpu/accelerated/data_processor_gpu.py:304:1: D400 First line should end with a period
         """GPU计算MACD"""
@@ -15736,9 +15736,9 @@ MyStocks GPU加速使用报告
   • 定期保存训练好的模型以避免重复训练
 
 """
-                     
-                  
-                          
+
+
+
 
           ^
 src/gpu/accelerated/gpu_manager.py:515:80: E501 line too long (99 > 79 characters)
@@ -15773,9 +15773,9 @@ MyStocks GPU加速使用报告
   • 定期保存训练好的模型以避免重复训练
 
 """
-                     
-                  
-                          
+
+
+
 
           ^
 src/gpu/accelerated/gpu_manager.py:516:80: E501 line too long (97 > 79 characters)
@@ -15810,9 +15810,9 @@ MyStocks GPU加速使用报告
   • 定期保存训练好的模型以避免重复训练
 
 """
-                     
-                  
-                          
+
+
+
 
           ^
 src/gpu/accelerated/gpu_manager.py:517:80: E501 line too long (102 > 79 characters)
@@ -15847,9 +15847,9 @@ MyStocks GPU加速使用报告
   • 定期保存训练好的模型以避免重复训练
 
 """
-                     
-                  
-                          
+
+
+
 
           ^
 src/gpu/accelerated/gpu_manager.py:518:80: E501 line too long (85 > 79 characters)
@@ -15884,9 +15884,9 @@ MyStocks GPU加速使用报告
   • 定期保存训练好的模型以避免重复训练
 
 """
-                     
-                  
-                          
+
+
+
 
           ^
 src/gpu/accelerated/gpu_manager.py:536:1: D400 First line should end with a period
@@ -16028,11 +16028,11 @@ MyStocks GPU集成状态报告
 
 🏆 性能基准测试:
 """
-                     
-                  
-                          
 
-       
+
+
+
+
   ^
 src/gpu/accelerated/integration_interface.py:462:80: E501 line too long (124 > 79 characters)
         report = f"""
@@ -16060,11 +16060,11 @@ MyStocks GPU集成状态报告
 
 🏆 性能基准测试:
 """
-                     
-                  
-                          
 
-       
+
+
+
+
   ^
 src/gpu/accelerated/integration_interface.py:463:80: E501 line too long (127 > 79 characters)
         report = f"""
@@ -16092,11 +16092,11 @@ MyStocks GPU集成状态报告
 
 🏆 性能基准测试:
 """
-                     
-                  
-                          
 
-       
+
+
+
+
   ^
 src/gpu/accelerated/integration_interface.py:464:80: E501 line too long (125 > 79 characters)
         report = f"""
@@ -16124,11 +16124,11 @@ MyStocks GPU集成状态报告
 
 🏆 性能基准测试:
 """
-                     
-                  
-                          
 
-       
+
+
+
+
   ^
 src/gpu/accelerated/integration_interface.py:472:80: E501 line too long (88 > 79 characters)
             report += f"""
@@ -16137,7 +16137,7 @@ src/gpu/accelerated/integration_interface.py:472:80: E501 line too long (88 > 79
   • CPU处理时间: {benchmark['cpu_time']:.4f}秒
   • 加速比: {benchmark['speedup']:.2f}x
 """
-                          
+
                                                     ^
 src/gpu/accelerated/integration_interface.py:497:1: D400 First line should end with a period
     """创建GPU增强统一管理器的工厂函数"""
@@ -16602,9 +16602,9 @@ MyStocks 实时性能监控报告
 
 💡 优化建议:
 """
-                     
-                 
-                        
+
+
+
 
              ^
 src/gpu/accelerated/real_time_performance_monitor.py:432:80: E501 line too long (105 > 79 characters)
@@ -16626,9 +16626,9 @@ MyStocks 实时性能监控报告
 
 💡 优化建议:
 """
-                     
-                 
-                        
+
+
+
 
              ^
 src/gpu/accelerated/real_time_performance_monitor.py:433:80: E501 line too long (96 > 79 characters)
@@ -16650,9 +16650,9 @@ MyStocks 实时性能监控报告
 
 💡 优化建议:
 """
-                     
-                 
-                        
+
+
+
 
              ^
 src/gpu/accelerated/real_time_performance_monitor.py:458:1: D400 First line should end with a period
@@ -17535,7 +17535,7 @@ src/gpu/api_system/services/integrated_realtime_service.py:304:80: E501 line too
                     "timestamp": req.timestamp, # Pass timestamp for potential use in processor
                                                                                ^
 src/gpu/api_system/services/integrated_realtime_service.py:317:1: W293 blank line contains whitespace
-            
+
 ^
 src/gpu/api_system/services/integrated_realtime_service.py:323:80: E501 line too long (83 > 79 characters)
                     # Assuming item is already a dictionary that can be serialized.
@@ -17565,7 +17565,7 @@ src/gpu/api_system/services/integrated_realtime_service.py:408:80: E501 line too
             features = self.data_processor.compute_features(historical_data, feature_types)
                                                                                ^
 src/gpu/api_system/services/integrated_realtime_service.py:409:1: W293 blank line contains whitespace
-            
+
 ^
 src/gpu/api_system/services/integrated_realtime_service.py:411:80: E501 line too long (95 > 79 characters)
             if isinstance(self.data_processor, DataProcessorFactory.get_processor_type("gpu")):
@@ -21503,11 +21503,11 @@ src/interfaces/business_data_source.py:64:80: E501 line too long (85 > 79 charac
         Raises:
             DataSourceException: 数据获取失败
         """
-           
-                 
 
-             
-                         
+
+
+
+
         ^
 src/interfaces/business_data_source.py:65:1: RST201 Block quote ends without a blank line; unexpected unindent.
         """
@@ -21670,11 +21670,11 @@ src/interfaces/business_data_source.py:65:80: E501 line too long (85 > 79 charac
         Raises:
             DataSourceException: 数据获取失败
         """
-           
-                 
 
-             
-                         
+
+
+
+
         ^
 src/interfaces/business_data_source.py:66:1: RST201 Block quote ends without a blank line; unexpected unindent.
         """
@@ -22080,11 +22080,11 @@ src/interfaces/business_data_source.py:79:80: E501 line too long (82 > 79 charac
         Raises:
             DataSourceException: 数据获取失败
         """
-           
-                 
 
-             
-                         
+
+
+
+
         ^
 src/interfaces/business_data_source.py:80:1: RST203 Definition list ends without a blank line; unexpected unindent.
         """
@@ -22652,11 +22652,11 @@ src/interfaces/business_data_source.py:90:80: E501 line too long (85 > 79 charac
         Raises:
             DataSourceException: 数据获取失败
         """
-           
-                 
 
-             
-                         
+
+
+
+
         ^
 src/interfaces/business_data_source.py:92:1: RST301 Unexpected indentation.
         """
@@ -22900,11 +22900,11 @@ src/interfaces/business_data_source.py:93:80: E501 line too long (86 > 79 charac
         Raises:
             DataSourceException: 数据获取失败
         """
-           
-                 
 
-             
-                         
+
+
+
+
         ^
 src/interfaces/business_data_source.py:94:1: RST201 Block quote ends without a blank line; unexpected unindent.
         """
@@ -27889,11 +27889,11 @@ src/interfaces/business_data_source.py:620:80: E501 line too long (87 > 79 chara
         Raises:
             DataSourceException: 健康检查失败
         """
-           
-                 
 
-                
-                      
+
+
+
+
 
        ^
 src/interfaces/business_data_source.py:621:1: RST201 Block quote ends without a blank line; unexpected unindent.
@@ -27949,11 +27949,11 @@ src/interfaces/business_data_source.py:621:80: E501 line too long (86 > 79 chara
         Raises:
             DataSourceException: 健康检查失败
         """
-           
-                 
 
-                
-                      
+
+
+
+
 
        ^
 src/interfaces/business_data_source.py:623:1: RST301 Unexpected indentation.
@@ -28707,9 +28707,9 @@ src/interfaces/refactored_interfaces.py:83:80: E501 line too long (119 > 79 char
                 - success=True时，data为包含['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'amount']的DataFrame
                 - success=False时，error包含错误信息
         """
-                   
 
-             
+
+
                                             ^
 src/interfaces/refactored_interfaces.py:90:1: D400 First line should end with a period
         """获取实时数据
@@ -28784,9 +28784,9 @@ src/interfaces/refactored_interfaces.py:167:80: E501 line too long (81 > 79 char
                 - success=True时，data为包含['code', 'name', 'industry', 'area']等信息的字典
                 - success=False时，error包含错误信息
         """
-                   
 
-             
+
+
                                             ^
 src/interfaces/refactored_interfaces.py:173:80: E501 line too long (82 > 79 characters)
     def get_market_calendar(self, start_date: str, end_date: str) -> DataResponse:
@@ -31448,11 +31448,11 @@ src/interfaces/timeseries_data_source.py:116:80: E501 line too long (82 > 79 cha
             DataSourceException: 数据源查询失败
             ValueError: interval参数无效
         """
-           
-              
 
-             
-                        
+
+
+
+
             ^
 src/interfaces/timeseries_data_source.py:117:80: E501 line too long (83 > 79 characters)
         """
@@ -31492,11 +31492,11 @@ src/interfaces/timeseries_data_source.py:117:80: E501 line too long (83 > 79 cha
             DataSourceException: 数据源查询失败
             ValueError: interval参数无效
         """
-           
-              
 
-             
-                        
+
+
+
+
             ^
 src/interfaces/timeseries_data_source.py:118:80: E501 line too long (83 > 79 characters)
         """
@@ -31536,11 +31536,11 @@ src/interfaces/timeseries_data_source.py:118:80: E501 line too long (83 > 79 cha
             DataSourceException: 数据源查询失败
             ValueError: interval参数无效
         """
-           
-              
 
-             
-                        
+
+
+
+
             ^
 src/interfaces/timeseries_data_source.py:136:1: D400 First line should end with a period
         """
@@ -31969,10 +31969,10 @@ src/interfaces/timeseries_data_source.py:280:80: E501 line too long (81 > 79 cha
         Raises:
             DataSourceException: 数据源查询失败
         """
-           
-                
 
-             
+
+
+
                                    ^
 src/interfaces/timeseries_data_source.py:281:1: RST201 Block quote ends without a blank line; unexpected unindent.
         """
@@ -32041,10 +32041,10 @@ src/interfaces/timeseries_data_source.py:281:80: E501 line too long (81 > 79 cha
         Raises:
             DataSourceException: 数据源查询失败
         """
-           
-                
 
-             
+
+
+
                                    ^
 src/interfaces/timeseries_data_source.py:282:1: RST203 Definition list ends without a blank line; unexpected unindent.
         """
@@ -32910,9 +32910,9 @@ src/ml_strategy/automation/notification_manager.py:410:80: E501 line too long (8
           </body>
         </html>
         """
-                   
-              
-                       
+
+
+
                     ^
 src/ml_strategy/automation/notification_manager.py:417:80: E501 line too long (89 > 79 characters)
         html = f"""
@@ -32937,9 +32937,9 @@ src/ml_strategy/automation/notification_manager.py:417:80: E501 line too long (8
           </body>
         </html>
         """
-                   
-              
-                       
+
+
+
                     ^
 src/ml_strategy/automation/notification_manager.py:419:80: E501 line too long (85 > 79 characters)
         html = f"""
@@ -32964,9 +32964,9 @@ src/ml_strategy/automation/notification_manager.py:419:80: E501 line too long (8
           </body>
         </html>
         """
-                   
-              
-                       
+
+
+
                     ^
 src/ml_strategy/automation/notification_manager.py:431:1: D400 First line should end with a period
         """检查是否达到频率限制"""
@@ -34229,13 +34229,13 @@ src/ml_strategy/feature_engineering.py:37:80: E501 line too long (88 > 79 charac
         >>> generator = RollingFeatureGenerator(window_size=10)
         >>> X, y = generator.prepare_ml_data(df, target_col='close', forecast_horizon=1)
     """
-       
-             
 
-                             
 
-         
-              
+
+
+
+
+
 ^
 src/ml_strategy/feature_engineering.py:41:1: D400 First line should end with a period
         """
@@ -36228,11 +36228,11 @@ src/ml_strategy/strategy/signal_manager.py:385:80: E501 line too long (81 > 79 c
             >>> print(f"总信号数: {stats['total_signals']}")
             >>> print(f"买入/卖出比例: {stats['buy_signals']}/{stats['sell_signals']}")
         """
-           
-                
 
-           
-                             
+
+
+
+
        ^
 src/ml_strategy/strategy/signal_manager.py:410:80: E501 line too long (87 > 79 characters)
             "date_range": (signals["signal_date"].min(), signals["signal_date"].max()),
@@ -36294,11 +36294,11 @@ src/ml_strategy/strategy/signal_manager.py:471:80: E501 line too long (82 > 79 c
             >>> latest = signal_manager.get_latest_signals(strategy_id=1, limit=5)
             >>> print(latest[['symbol', 'signal_type', 'signal_date']])
         """
-           
-                 
 
-           
-                             
+
+
+
+
       ^
 src/ml_strategy/strategy/signal_manager.py:482:1: D400 First line should end with a period
         """
@@ -36388,10 +36388,10 @@ src/ml_strategy/strategy/stock_screener.py:129:80: E501 line too long (82 > 79 c
             >>> filtered = screener.screen(symbols=['000001', '000002', '600000'])
             >>> print(f"筛选后股票数量: {len(filtered)}")
         """
-           
-              
 
-           
+
+
+
                                        ^
 src/ml_strategy/strategy/stock_screener.py:152:80: E501 line too long (83 > 79 characters)
             filtered_symbols = self._filter_st_stocks(filtered_symbols, stock_info)
@@ -37716,10 +37716,10 @@ src/mock/mock_IndicatorLibrary.py:29:80: E501 line too long (83 > 79 characters)
                    - formula: 计算公式
                    - created_at: 创建时间
     """
-             
 
-         
-                            
+
+
+
                          ^
 src/mock/mock_IndicatorLibrary.py:217:55: E203 whitespace before ':'
     paginated_indicators = available_indicators[offset : offset + limit]
@@ -40450,9 +40450,9 @@ src/mock/mock_TradingView.py:143:80: E501 line too long (91 > 79 characters)
     Returns:
         Dict: 滚动行情配置
     """
-               
 
-         
+
+
                                                     ^
 src/mock/mock_TradingView.py:184:1: D400 First line should end with a period
     """获取市场概览配置
@@ -40613,9 +40613,9 @@ Mock数据文件: Wencai
 作者: Claude Code
 生成时间: 2025-11-13
 """
-   
-                
-     
+
+
+
                                                     ^
 src/mock/mock_Wencai.py:26:1: D400 First line should end with a period
     """获取预定义查询列表（对应/api/market/wencai/queries）
@@ -41527,18 +41527,18 @@ src/monitoring/ai_alert_manager.py:176:80: E501 line too long (93 > 79 character
                 <p><strong>告警类型:</strong> {alert.alert_type.value}</p>
                 <p><strong>发生时间:</strong> {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
                 <p><strong>告警消息:</strong> {alert.message}</p>
-                
+
                 <h3>详细指标:</h3>
                 <pre>{json.dumps(alert.metrics, indent=2, ensure_ascii=False)}</pre>
-                
+
                 <p>请及时处理此告警。</p>
                 <p><small>此邮件由MyStocks AI监控系统自动发送</small></p>
             </body>
             </html>
             """
-                       
-                  
-                  
+
+
+
                  ^
 src/monitoring/ai_alert_manager.py:178:1: W293 blank line contains whitespace
             body = f"""
@@ -41551,10 +41551,10 @@ src/monitoring/ai_alert_manager.py:178:1: W293 blank line contains whitespace
                 <p><strong>告警类型:</strong> {alert.alert_type.value}</p>
                 <p><strong>发生时间:</strong> {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
                 <p><strong>告警消息:</strong> {alert.message}</p>
-                
+
                 <h3>详细指标:</h3>
                 <pre>{json.dumps(alert.metrics, indent=2, ensure_ascii=False)}</pre>
-                
+
                 <p>请及时处理此告警。</p>
                 <p><small>此邮件由MyStocks AI监控系统自动发送</small></p>
             </body>
@@ -41572,18 +41572,18 @@ src/monitoring/ai_alert_manager.py:180:80: E501 line too long (84 > 79 character
                 <p><strong>告警类型:</strong> {alert.alert_type.value}</p>
                 <p><strong>发生时间:</strong> {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
                 <p><strong>告警消息:</strong> {alert.message}</p>
-                
+
                 <h3>详细指标:</h3>
                 <pre>{json.dumps(alert.metrics, indent=2, ensure_ascii=False)}</pre>
-                
+
                 <p>请及时处理此告警。</p>
                 <p><small>此邮件由MyStocks AI监控系统自动发送</small></p>
             </body>
             </html>
             """
-                       
-                  
-                  
+
+
+
                  ^
 src/monitoring/ai_alert_manager.py:181:1: W293 blank line contains whitespace
             body = f"""
@@ -41596,10 +41596,10 @@ src/monitoring/ai_alert_manager.py:181:1: W293 blank line contains whitespace
                 <p><strong>告警类型:</strong> {alert.alert_type.value}</p>
                 <p><strong>发生时间:</strong> {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
                 <p><strong>告警消息:</strong> {alert.message}</p>
-                
+
                 <h3>详细指标:</h3>
                 <pre>{json.dumps(alert.metrics, indent=2, ensure_ascii=False)}</pre>
-                
+
                 <p>请及时处理此告警。</p>
                 <p><small>此邮件由MyStocks AI监控系统自动发送</small></p>
             </body>
@@ -42010,8 +42010,8 @@ src/monitoring/alert_history.py:233:80: E501 line too long (81 > 79 characters)
                 labels, annotations, root_cause, related_alerts
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-               
-                                       
+
+
                        ^
 src/monitoring/alert_history.py:263:1: D400 First line should end with a period
         """Update alert history record"""
@@ -42091,8 +42091,8 @@ src/monitoring/alert_history.py:632:80: E501 line too long (89 > 79 characters)
             FROM alert_history
             WHERE service = ? AND start_time >= ?
         """
-                   
-                  
+
+
                                         ^
 src/monitoring/alert_history.py:633:80: E501 line too long (87 > 79 characters)
         query = """
@@ -42106,8 +42106,8 @@ src/monitoring/alert_history.py:633:80: E501 line too long (87 > 79 characters)
             FROM alert_history
             WHERE service = ? AND start_time >= ?
         """
-                   
-                  
+
+
                                         ^
 src/monitoring/alert_history.py:634:80: E501 line too long (81 > 79 characters)
         query = """
@@ -42121,8 +42121,8 @@ src/monitoring/alert_history.py:634:80: E501 line too long (81 > 79 characters)
             FROM alert_history
             WHERE service = ? AND start_time >= ?
         """
-                   
-                  
+
+
                                         ^
 src/monitoring/alert_history.py:636:80: E501 line too long (86 > 79 characters)
         query = """
@@ -42136,8 +42136,8 @@ src/monitoring/alert_history.py:636:80: E501 line too long (86 > 79 characters)
             FROM alert_history
             WHERE service = ? AND start_time >= ?
         """
-                   
-                  
+
+
                                         ^
 src/monitoring/alert_history.py:680:1: D400 First line should end with a period
         """Delete alert records older than specified days"""
@@ -42318,8 +42318,8 @@ src/monitoring/alert_notifier.py:218:80: E501 line too long (97 > 79 characters)
             </body>
         </html>
         """
-                   
-              
+
+
                                             ^
 src/monitoring/alert_notifier.py:230:80: E501 line too long (89 > 79 characters)
         return f"""
@@ -42344,8 +42344,8 @@ src/monitoring/alert_notifier.py:230:80: E501 line too long (89 > 79 characters)
             </body>
         </html>
         """
-                   
-              
+
+
                                             ^
 src/monitoring/alert_notifier.py:240:1: D400 First line should end with a period
     """Slack notification via Webhooks"""
@@ -42489,8 +42489,8 @@ src/monitoring/alert_notifier.py:637:80: E501 line too long (109 > 79 characters
                 (alert_name, channel, recipients, success, timestamp, delivery_time_ms, message, retry_count)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-                   
-                                                
+
+
           ^
 src/monitoring/alert_notifier.py:660:1: D400 First line should end with a period
         """Retrieve notification history"""
@@ -42666,41 +42666,41 @@ src/monitoring/data_quality_monitor.py:316:80: E501 line too long (82 > 79 chara
 src/monitoring/data_quality_monitor.py:324:13: F841 local variable 'query_sql' is assigned to but never used
             query_sql = """
             SELECT check_status, check_message, timestamp
-            FROM data_quality_checks 
+            FROM data_quality_checks
             WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 1
             """
             ^
 src/monitoring/data_quality_monitor.py:326:37: W291 trailing whitespace
             query_sql = """
             SELECT check_status, check_message, timestamp
-            FROM data_quality_checks 
+            FROM data_quality_checks
             WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 1
             """
-                           
+
         ^
 src/monitoring/data_quality_monitor.py:327:80: E501 line too long (100 > 79 characters)
             query_sql = """
             SELECT check_status, check_message, timestamp
-            FROM data_quality_checks 
+            FROM data_quality_checks
             WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 1
             """
-                           
+
                                                    ^
 src/monitoring/data_quality_monitor.py:328:36: W291 trailing whitespace
             query_sql = """
             SELECT check_status, check_message, timestamp
-            FROM data_quality_checks 
+            FROM data_quality_checks
             WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 1
             """
-                           
+
        ^
 src/monitoring/data_quality_monitor.py:339:1: S311 Standard pseudo-random generators are not suitable for security/cryptographic purposes.
             status = random.choice(status_options)
@@ -43994,8 +43994,8 @@ src/monitoring/monitoring_database.py:279:80: E501 line too long (86 > 79 charac
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
                 """,
-                       
-                                                     
+
+
  ^
 src/monitoring/monitoring_database.py:323:1: D400 First line should end with a period
         """
@@ -44047,33 +44047,33 @@ src/monitoring/monitoring_database.py:451:1: D400 First line should end with a p
 ^
 src/monitoring/monitoring_database.py:469:36: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_value > 1000  -- 假设超过1秒的查询为慢查询
                     AND created_at > %s
                 """,
-                       
+
            ^
 src/monitoring/monitoring_database.py:470:45: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_value > 1000  -- 假设超过1秒的查询为慢查询
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:471:53: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_value > 1000  -- 假设超过1秒的查询为慢查询
                     AND created_at > %s
                 """,
-                       
+
                             ^
 src/monitoring/monitoring_database.py:488:1: D400 First line should end with a period
         """
@@ -44088,33 +44088,33 @@ src/monitoring/monitoring_database.py:488:1: D400 First line should end with a p
 ^
 src/monitoring/monitoring_database.py:506:45: W291 trailing whitespace
                     """
-                    SELECT AVG(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT AVG(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:507:45: W291 trailing whitespace
                     """
-                    SELECT AVG(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT AVG(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:508:53: W291 trailing whitespace
                     """
-                    SELECT AVG(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT AVG(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                             ^
 src/monitoring/monitoring_database.py:525:1: D400 First line should end with a period
         """
@@ -44129,33 +44129,33 @@ src/monitoring/monitoring_database.py:525:1: D400 First line should end with a p
 ^
 src/monitoring/monitoring_database.py:543:45: W291 trailing whitespace
                     """
-                    SELECT MAX(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT MAX(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:544:45: W291 trailing whitespace
                     """
-                    SELECT MAX(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT MAX(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:545:53: W291 trailing whitespace
                     """
-                    SELECT MAX(metric_value) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT MAX(metric_value)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                             ^
 src/monitoring/monitoring_database.py:562:1: D400 First line should end with a period
         """
@@ -44170,33 +44170,33 @@ src/monitoring/monitoring_database.py:562:1: D400 First line should end with a p
 ^
 src/monitoring/monitoring_database.py:580:36: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
            ^
 src/monitoring/monitoring_database.py:581:45: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                     ^
 src/monitoring/monitoring_database.py:582:53: W291 trailing whitespace
                     """
-                    SELECT COUNT(*) 
-                    FROM performance_metrics 
-                    WHERE metric_name LIKE '%query%' 
+                    SELECT COUNT(*)
+                    FROM performance_metrics
+                    WHERE metric_name LIKE '%query%'
                     AND metric_type = 'QUERY_TIME'
                     AND created_at > %s
                 """,
-                       
+
                             ^
 src/monitoring/monitoring_database.py:599:1: D400 First line should end with a period
         """
@@ -44329,7 +44329,7 @@ src/monitoring/monitoring_service.py:149:80: E501 line too long (110 > 79 charac
                 WHERE table_schema = %s AND table_name IN
                 ('table_creation_log', 'column_definition_log', 'table_operation_log', 'table_validation_log')
                 """
-                                      
+
                                         ^
 src/monitoring/monitoring_service.py:152:80: E501 line too long (87 > 79 characters)
                 cursor.execute(check_tables_sql, (self.monitor_db_config["database"],))
@@ -44374,7 +44374,7 @@ src/monitoring/monitoring_service.py:278:80: E501 line too long (91 > 79 charact
                     %(operation_details)s, %(ddl_command)s, %(error_message)s
                 )
                 """
-                                
+
                                               ^
 src/monitoring/monitoring_service.py:279:80: E501 line too long (81 > 79 characters)
                 insert_sql = """
@@ -44388,7 +44388,7 @@ src/monitoring/monitoring_service.py:279:80: E501 line too long (81 > 79 charact
                     %(operation_details)s, %(ddl_command)s, %(error_message)s
                 )
                 """
-                                
+
                                               ^
 src/monitoring/monitoring_service.py:295:1: D400 First line should end with a period
         """更新操作日志"""
@@ -44414,8 +44414,8 @@ src/monitoring/monitoring_service.py:355:80: E501 line too long (98 > 79 charact
             FROM table_operation_log
             WHERE operation_time >= %s
             """
-                           
-                  
+
+
                                 ^
 src/monitoring/monitoring_service.py:356:80: E501 line too long (93 > 79 characters)
             total_sql = """
@@ -44427,8 +44427,8 @@ src/monitoring/monitoring_service.py:356:80: E501 line too long (93 > 79 charact
             FROM table_operation_log
             WHERE operation_time >= %s
             """
-                           
-                  
+
+
                                 ^
 src/monitoring/monitoring_service.py:393:80: E501 line too long (83 > 79 characters)
                 "successful_operations": total_result[1] if total_result[1] else 0,
@@ -44746,7 +44746,7 @@ src/monitoring/multi_channel_alert_manager.py:93:3: W291 trailing whitespace
 
 请及时处理此告警。
 
--- 
+--
 MyStocks AI监控系统
 """
   ^
@@ -44818,29 +44818,29 @@ src/monitoring/multi_channel_alert_manager.py:307:36: W291 trailing whitespace
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -44866,37 +44866,37 @@ src/monitoring/multi_channel_alert_manager.py:307:36: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
 ^
 src/monitoring/multi_channel_alert_manager.py:308:52: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -44922,38 +44922,38 @@ src/monitoring/multi_channel_alert_manager.py:308:52: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
-              
+
+
+
  ^
 src/monitoring/multi_channel_alert_manager.py:309:38: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -44979,37 +44979,37 @@ src/monitoring/multi_channel_alert_manager.py:309:38: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
   ^
 src/monitoring/multi_channel_alert_manager.py:310:36: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45035,37 +45035,37 @@ src/monitoring/multi_channel_alert_manager.py:310:36: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
 ^
 src/monitoring/multi_channel_alert_manager.py:311:44: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45091,37 +45091,37 @@ src/monitoring/multi_channel_alert_manager.py:311:44: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
         ^
 src/monitoring/multi_channel_alert_manager.py:312:40: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45147,37 +45147,37 @@ src/monitoring/multi_channel_alert_manager.py:312:40: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
     ^
 src/monitoring/multi_channel_alert_manager.py:314:27: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45203,36 +45203,36 @@ src/monitoring/multi_channel_alert_manager.py:314:27: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
       ^
 src/monitoring/multi_channel_alert_manager.py:315:47: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45258,37 +45258,37 @@ src/monitoring/multi_channel_alert_manager.py:315:47: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
            ^
 src/monitoring/multi_channel_alert_manager.py:316:34: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45314,36 +45314,36 @@ src/monitoring/multi_channel_alert_manager.py:316:34: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
              ^
 src/monitoring/multi_channel_alert_manager.py:317:35: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45369,36 +45369,36 @@ src/monitoring/multi_channel_alert_manager.py:317:35: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
               ^
 src/monitoring/multi_channel_alert_manager.py:318:48: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45424,37 +45424,37 @@ src/monitoring/multi_channel_alert_manager.py:318:48: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
             ^
 src/monitoring/multi_channel_alert_manager.py:320:28: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45480,36 +45480,36 @@ src/monitoring/multi_channel_alert_manager.py:320:28: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
        ^
 src/monitoring/multi_channel_alert_manager.py:321:35: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45535,36 +45535,36 @@ src/monitoring/multi_channel_alert_manager.py:321:35: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
               ^
 src/monitoring/multi_channel_alert_manager.py:322:47: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45590,37 +45590,37 @@ src/monitoring/multi_channel_alert_manager.py:322:47: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
            ^
 src/monitoring/multi_channel_alert_manager.py:324:27: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45646,36 +45646,36 @@ src/monitoring/multi_channel_alert_manager.py:324:27: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
       ^
 src/monitoring/multi_channel_alert_manager.py:325:45: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45701,37 +45701,37 @@ src/monitoring/multi_channel_alert_manager.py:325:45: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
          ^
 src/monitoring/multi_channel_alert_manager.py:326:35: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45757,36 +45757,36 @@ src/monitoring/multi_channel_alert_manager.py:326:35: W291 trailing whitespace
         </body>
         </html>
         """
-                   
+
               ^
 src/monitoring/multi_channel_alert_manager.py:327:36: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45812,37 +45812,37 @@ src/monitoring/multi_channel_alert_manager.py:327:36: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
 ^
 src/monitoring/multi_channel_alert_manager.py:328:40: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45868,37 +45868,37 @@ src/monitoring/multi_channel_alert_manager.py:328:40: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
+
+
     ^
 src/monitoring/multi_channel_alert_manager.py:329:52: W291 trailing whitespace
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45924,38 +45924,38 @@ src/monitoring/multi_channel_alert_manager.py:329:52: W291 trailing whitespace
         </body>
         </html>
         """
-                   
-              
-              
+
+
+
  ^
 src/monitoring/multi_channel_alert_manager.py:342:80: E501 line too long (98 > 79 characters)
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -45981,39 +45981,39 @@ src/monitoring/multi_channel_alert_manager.py:342:80: E501 line too long (98 > 7
         </body>
         </html>
         """
-                   
-              
-              
-                   
+
+
+
+
          ^
 src/monitoring/multi_channel_alert_manager.py:346:80: E501 line too long (93 > 79 characters)
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -46039,39 +46039,39 @@ src/monitoring/multi_channel_alert_manager.py:346:80: E501 line too long (93 > 7
         </body>
         </html>
         """
-                   
-              
-              
-                   
+
+
+
+
          ^
 src/monitoring/multi_channel_alert_manager.py:347:80: E501 line too long (88 > 79 characters)
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -46097,39 +46097,39 @@ src/monitoring/multi_channel_alert_manager.py:347:80: E501 line too long (88 > 7
         </body>
         </html>
         """
-                   
-              
-              
-                   
+
+
+
+
          ^
 src/monitoring/multi_channel_alert_manager.py:348:80: E501 line too long (90 > 79 characters)
         html = f"""
         <html>
         <head>
             <style>
-                .alert-container {{ 
-                    font-family: Arial, sans-serif; 
-                    max-width: 600px; 
-                    margin: 0 auto; 
-                    border: 1px solid #ddd; 
-                    border-radius: 5px; 
+                .alert-container {{
+                    font-family: Arial, sans-serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                 }}
-                .header {{ 
-                    background-color: {color}; 
-                    color: white; 
-                    padding: 20px; 
-                    border-radius: 5px 5px 0 0; 
+                .header {{
+                    background-color: {color};
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px 5px 0 0;
                 }}
-                .content {{ 
-                    padding: 20px; 
-                    background-color: #f9f9f9; 
+                .content {{
+                    padding: 20px;
+                    background-color: #f9f9f9;
                 }}
-                .metric {{ 
-                    background-color: white; 
-                    padding: 10px; 
-                    margin: 10px 0; 
-                    border-radius: 3px; 
-                    border-left: 4px solid {color}; 
+                .metric {{
+                    background-color: white;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 3px;
+                    border-left: 4px solid {color};
                 }}
             </style>
         </head>
@@ -46155,10 +46155,10 @@ src/monitoring/multi_channel_alert_manager.py:348:80: E501 line too long (90 > 7
         </body>
         </html>
         """
-                   
-              
-              
-                   
+
+
+
+
          ^
 src/monitoring/multi_channel_alert_manager.py:359:1: D400 First line should end with a period
         """异步发送邮件"""
@@ -46548,11 +46548,11 @@ src/monitoring/performance_monitor.py:68:80: E501 line too long (87 > 79 charact
             query_sql: SQL语句
             auto_alert: 是否自动告警慢查询
         """
-           
-                     
 
-           
-                 
+
+
+
+
               ^
 src/monitoring/performance_monitor.py:70:1: RST201 Block quote ends without a blank line; unexpected unindent.
         """
@@ -46741,11 +46741,11 @@ src/monitoring/performance_monitor.py:378:80: E501 line too long (89 > 79 charac
         pass
     ```
     """
-       
-           
 
-       
-             
+
+
+
+
                                     ^
 src/monitoring/performance_monitor.py:379:1: RST301 Unexpected indentation.
     """
@@ -46938,7 +46938,7 @@ src/reporting/pdf_generator.py:274:80: E501 line too long (89 > 79 characters)
         Win rate: {metrics.get('win_rate', 0)*100:.2f}%<br/>
         Profit factor: {metrics.get('profit_factor', 0):.2f}
         """
-                           
+
                                                    ^
 src/reporting/pdf_generator.py:277:80: E501 line too long (82 > 79 characters)
         summary_text = f"""
@@ -46951,7 +46951,7 @@ src/reporting/pdf_generator.py:277:80: E501 line too long (82 > 79 characters)
         Win rate: {metrics.get('win_rate', 0)*100:.2f}%<br/>
         Profit factor: {metrics.get('profit_factor', 0):.2f}
         """
-                           
+
                                                    ^
 src/reporting/pdf_generator.py:289:1: D400 First line should end with a period
         """构建性能指标部分"""
@@ -48708,18 +48708,18 @@ src/storage/access/modules/mysql.py:179:80: E501 line too long (84 > 79 characte
                                                                                ^
 src/storage/access/modules/mysql.py:188:1: S608 Possible SQL injection vector through string-based query construction.
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
 ^
 src/storage/access/modules/mysql.py:189:43: W291 trailing whitespace
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
-                                 
+
         ^
 src/storage/access/modules/mysql.py:210:1: D400 First line should end with a period
         """删除MySQL数据（谨慎使用）"""
@@ -48904,18 +48904,18 @@ src/storage/access/modules/postgresql.py:201:80: E501 line too long (84 > 79 cha
                                                                                ^
 src/storage/access/modules/postgresql.py:210:1: S608 Possible SQL injection vector through string-based query construction.
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
 ^
 src/storage/access/modules/postgresql.py:211:43: W291 trailing whitespace
                 update_sql = f"""
-                UPDATE {actual_table_name} 
+                UPDATE {actual_table_name}
                 SET {set_clause}
                 WHERE {where_clause}
                 """
-                                 
+
         ^
 src/storage/access/modules/postgresql.py:232:1: D400 First line should end with a period
         """删除PostgreSQL数据（谨慎使用）"""
@@ -49268,7 +49268,7 @@ src/storage/access/modules/tdengine.py:459:80: E501 line too long (86 > 79 chara
                 INSERT INTO {table_name} (ts, symbol, price, volume, amount, exchange)
                 VALUES (?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/storage/access/modules/tdengine.py:485:80: E501 line too long (88 > 79 characters)
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -49287,7 +49287,7 @@ src/storage/access/modules/tdengine.py:490:80: E501 line too long (104 > 79 char
                 INSERT INTO {table_name} (ts, symbol, open, high, low, close, volume, amount, frequency)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/storage/access/modules/tdengine.py:522:1: D400 First line should end with a period
         """插入通用时序数据"""
@@ -49575,26 +49575,26 @@ src/storage/access/postgresql.py:522:1: D400 First line should end with a period
 ^
 src/storage/access/postgresql.py:541:1: S608 Possible SQL injection vector through string-based query construction.
                 update_sql = f"""
-                    UPDATE {table_name} 
-                    SET {', '.join(set_clauses)} 
+                    UPDATE {table_name}
+                    SET {', '.join(set_clauses)}
                     WHERE {' AND '.join(where_clauses)}
                 """
 ^
 src/storage/access/postgresql.py:542:40: W291 trailing whitespace
                 update_sql = f"""
-                    UPDATE {table_name} 
-                    SET {', '.join(set_clauses)} 
+                    UPDATE {table_name}
+                    SET {', '.join(set_clauses)}
                     WHERE {' AND '.join(where_clauses)}
                 """
-                                 
+
      ^
 src/storage/access/postgresql.py:543:49: W291 trailing whitespace
                 update_sql = f"""
-                    UPDATE {table_name} 
-                    SET {', '.join(set_clauses)} 
+                    UPDATE {table_name}
+                    SET {', '.join(set_clauses)}
                     WHERE {' AND '.join(where_clauses)}
                 """
-                                 
+
               ^
 src/storage/access/postgresql.py:564:1: D400 First line should end with a period
         """
@@ -49866,7 +49866,7 @@ src/storage/access/tdengine.py:464:80: E501 line too long (86 > 79 characters)
                 INSERT INTO {table_name} (ts, symbol, price, volume, amount, exchange)
                 VALUES (?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/storage/access/tdengine.py:490:80: E501 line too long (88 > 79 characters)
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -49885,7 +49885,7 @@ src/storage/access/tdengine.py:495:80: E501 line too long (104 > 79 characters)
                 INSERT INTO {table_name} (ts, symbol, open, high, low, close, volume, amount, frequency)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
-                             
+
                                                  ^
 src/storage/access/tdengine.py:527:1: D400 First line should end with a period
         """插入通用时序数据"""
@@ -50475,42 +50475,42 @@ src/storage/database/database_manager.py:939:1: D400 First line should end with 
 ^
 src/storage/database/database_manager.py:960:1: S608 Possible SQL injection vector through string-based query construction.
                     f"""
-                    SELECT column_name, data_type, is_nullable, column_default, 
+                    SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
-                    FROM information_schema.columns 
+                    FROM information_schema.columns
                     WHERE table_name = '{table_name}'
                     ORDER BY ordinal_position
                 """
 ^
 src/storage/database/database_manager.py:961:80: W291 trailing whitespace
                     f"""
-                    SELECT column_name, data_type, is_nullable, column_default, 
+                    SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
-                    FROM information_schema.columns 
+                    FROM information_schema.columns
                     WHERE table_name = '{table_name}'
                     ORDER BY ordinal_position
                 """
-                        
+
                                                       ^
 src/storage/database/database_manager.py:962:80: E501 line too long (85 > 79 characters)
                     f"""
-                    SELECT column_name, data_type, is_nullable, column_default, 
+                    SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
-                    FROM information_schema.columns 
+                    FROM information_schema.columns
                     WHERE table_name = '{table_name}'
                     ORDER BY ordinal_position
                 """
-                        
+
                                                       ^
 src/storage/database/database_manager.py:963:52: W291 trailing whitespace
                     f"""
-                    SELECT column_name, data_type, is_nullable, column_default, 
+                    SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
-                    FROM information_schema.columns 
+                    FROM information_schema.columns
                     WHERE table_name = '{table_name}'
                     ORDER BY ordinal_position
                 """
-                        
+
                           ^
 src/storage/database/database_manager.py:996:65: E203 whitespace before ':'
                         params = type_str[type_str.find("(") + 1 : type_str.find(")")]
@@ -50577,8 +50577,8 @@ src/storage/database/db_utils.py:81:80: E501 line too long (81 > 79 characters)
     :param db_type: 数据库类型 ('mysql', 'postgresql', 'tdengine', 'redis', 'mariadb')
     :return: 数据库配置字典或None
     """
-       
-              
+
+
                                                         ^
 src/storage/database/df2sql.py:2:1: D205 1 blank line required between summary line and description
 """
@@ -50755,8 +50755,8 @@ src/storage/database/init_db_monitor.py:86:80: E501 line too long (92 > 79 chara
 2. 当前工作目录正确 (当前: {os.getcwd()})
 3. 文件路径权限正确
 """
-                    
-                  
+
+
                                        ^
 src/storage/database/init_db_monitor.py:98:1: D400 First line should end with a period
     """从环境变量文件加载配置"""
@@ -50772,8 +50772,8 @@ src/storage/database/init_db_monitor.py:169:1: D400 First line should end with a
 ^
 src/storage/database/init_db_monitor.py:184:41: W291 trailing whitespace
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -50846,12 +50846,12 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
+
                         ^
 src/storage/database/init_db_monitor.py:185:28: W291 trailing whitespace
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -50924,12 +50924,12 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
+
            ^
 src/storage/database/init_db_monitor.py:198:80: E501 line too long (101 > 79 characters)
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -51002,13 +51002,13 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
-                                         
+
+
                      ^
 src/storage/database/init_db_monitor.py:219:80: E501 line too long (83 > 79 characters)
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -51081,13 +51081,13 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
-                                         
+
+
                      ^
 src/storage/database/init_db_monitor.py:230:80: E501 line too long (167 > 79 characters)
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -51160,13 +51160,13 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
-                                         
+
+
                      ^
 src/storage/database/init_db_monitor.py:232:80: E501 line too long (85 > 79 characters)
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor 
-    CHARACTER SET {charset} 
+CREATE DATABASE IF NOT EXISTS db_monitor
+    CHARACTER SET {charset}
     COLLATE {collation};
 
 USE db_monitor;
@@ -51239,8 +51239,8 @@ USE db_monitor;
     INDEX idx_validation_time (validation_time)
 ) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
 """
-               
-                                         
+
+
                      ^
 src/storage/database/init_db_monitor.py:261:1: D400 First line should end with a period
     """创建数据库和表结构"""
@@ -52185,10 +52185,10 @@ src/utils/add_doc_metadata.py:6:80: E501 line too long (97 > 79 characters)
 用法:
     python utils/add_doc_metadata.py --doc README.md --creator "JohnC & Claude" --version "2.1.0"
 """
-   
-              
 
-   
+
+
+
                                                        ^
 src/utils/add_doc_metadata.py:32:1: D400 First line should end with a period
     """
@@ -52675,8 +52675,8 @@ src/utils/data_format_converter.py:3:80: E501 line too long (98 > 79 characters)
 Data Format Converter Middleware
 Unify Mock data and real database data format to ensure field names and data structure consistency
 """
-   
-                                
+
+
                                           ^
 src/utils/data_format_converter.py:14:1: D400 First line should end with a period
     """
@@ -53142,7 +53142,7 @@ src/utils/failure_recovery_queue.py:72:80: E501 line too long (81 > 79 character
             INSERT INTO outbox_queue (classification, target_database, data_json)
             VALUES (?, ?, ?)
         """,
-               
+
                                                                ^
 src/utils/failure_recovery_queue.py:82:1: D400 First line should end with a period
         """
@@ -54171,10 +54171,10 @@ src/visualization/chart_generator.py:105:80: E501 line too long (85 > 79 charact
             >>> generator = ChartGenerator()
             >>> generator.plot_kline(price_data, title="平安银行", save_path="kline.png")
         """
-           
-               
 
-           
+
+
+
                                       ^
 src/visualization/chart_generator.py:143:1: D400 First line should end with a period
         """

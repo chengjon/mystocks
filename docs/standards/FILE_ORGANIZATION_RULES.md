@@ -1,8 +1,18 @@
 # 文件组织规则 (File Organization Rules)
 
-> **版本**: 1.0
-> **最后更新**: 2025-11-10
+> **版本**: 1.2
+> **最后更新**: 2025-12-26
 > **状态**: 生效中
+
+**v1.2 更新**:
+- ✅ 新增 README.md 特殊文件名排除规则
+- ✅ 所有 README 文件保留在原位置，永不移动
+
+**v1.1 更新**:
+- ✅ 新增"子模块文档自治规范"章节
+- ✅ 定义 Hook 排除规则（目录关键字 + 文件后缀）
+- ✅ 明确子模块文档管理自主权
+- ✅ 提供子模块推荐文档结构
 
 ## 📌 核心原则
 
@@ -125,6 +135,190 @@
   - `WENCAI_INTEGRATION_FILES.txt`
 
 **命名约定**: 对于时间戳文件使用 ISO 日期格式：`YYYYMMDD_HHMMSS`
+
+---
+
+## 🧩 子模块文档自治规范 (Submodule Documentation Autonomy)
+
+> **版本**: 1.0
+> **最后更新**: 2025-12-26
+> **状态**: 生效中
+
+### 核心原则
+
+**子模块自治**: 子模块（如 `web/`, `services/` 等）拥有文档管理自主权，不受主项目 `docs/` 目录规范的强制约束。
+
+**设计哲学**: 不同子模块有不同的文档需求，强制统一管理会破坏子模块的目录结构和开发效率。
+
+### 文档组织 Hook 排除规则
+
+项目使用 `post-tool-use-document-organizer.sh` Hook 自动整理文档，但以下情况**不会触发文档整理**：
+
+#### 1. **目录关键字排除**（路径包含以下关键字将被排除）
+
+| 关键字 | 说明 | 示例路径 |
+|--------|------|----------|
+| `web` | Web 前端模块 | `web/frontend/`, `web/docs/` |
+| `css` | CSS 样式文件目录 | `web/css/`, `frontend/css/` |
+| `js` | JavaScript 文件目录 | `web/js/`, `frontend/js/` |
+| `frontend` | 前端代码目录 | `frontend/`, `web/frontend/` |
+| `backend` | 后端代码目录 | `backend/`, `web/backend/` |
+| `api` | API 相关目录 | `api/`, `web/api/`, `services/api/` |
+| `services` | 服务目录 | `services/`, `services/websocket-server/` |
+| `temp` | 临时文件目录 | `temp/`, `tmp/` |
+| `build` | 构建输出目录 | `build/`, `dist/` |
+| `dist` | 分发目录 | `dist/`, `web/dist/` |
+| `node_modules` | Node.js 依赖 | `node_modules/` |
+
+**匹配规则**：路径中包含以上任一关键字（不区分大小写）即排除
+
+**示例**：
+- ✅ 被排除：`web/frontend/guides/usage.md`（包含 `web` 和 `frontend`）
+- ✅ 被排除：`services/websocket-server/README.md`（包含 `services`）
+- ❌ 不排除：`docs/guides/usage.md`（主项目文档）
+
+#### 2. **文件后缀排除**（以下后缀的文件将被排除）
+
+| 后缀 | 文件类型 | 说明 |
+|------|----------|------|
+| `.html` | HTML 文档 | Web 页面、打包文件 |
+| `.css` | CSS 样式 | 样式表文件 |
+| `.js` | JavaScript | 脚本文件（包括 `.mjs`, `.cjs`） |
+| `.json` | JSON 数据 | 配置文件、数据文件 |
+| `.xml` | XML 文档 | 标记语言文件 |
+| `.yaml` | YAML 配置 | 配置文件（包括 `.yml`） |
+| `.yml` | YAML 配置 | YAML 文件简写 |
+| `.toml` | TOML 配置 | Toml 配置文件 |
+
+**示例**：
+- ✅ 被排除：`web/index.html`（HTML 文件）
+- ✅ 被排除：`web/css/style.css`（CSS 文件）
+- ✅ 被排除：`api/config.json`（JSON 配置）
+
+#### 3. **特殊文件名排除**（以下文件名将完全不被移动）⭐
+
+| 文件名 | 说明 | 适用范围 |
+|--------|------|----------|
+| `README.md` | 项目/模块说明文档 | 所有目录 |
+| `README` | 无扩展名的说明文档 | 所有目录 |
+| `readme.md` | 小写 readme 文档 | 所有目录 |
+| `readme` | 小写 readme（无扩展名） | 所有目录 |
+| `Readme.md` | 首字母大写 | 所有目录 |
+| `Readme` | 首字母大写（无扩展名） | 所有目录 |
+
+**重要规则**: **所有 README 文件（不区分大小写）保留在原位置，永不移动**
+
+**匹配规则**：精确匹配文件名（不区分大小写）
+
+**示例**：
+- ✅ 被排除：`README.md`（根目录）
+- ✅ 被排除：`web/README.md`（web 模块）
+- ✅ 被排除：`services/websocket-server/README.md`（服务目录）
+- ✅ 被排除：`readme.md`（小写变体）
+- ✅ 被排除：`ReadMe.md`（混合大小写）
+- ❌ 不排除：`GUIDE.md`（其他文档，不在排除列表）
+
+**设计理念**: README 文件是项目/模块的入口文档，应该与代码/模块放在同一位置，便于开发者快速找到。
+
+### 子模块文档推荐结构
+
+虽然子模块不受主项目约束，但推荐遵循以下结构以保持一致性：
+
+#### **web/** 模块
+```
+web/
+├── docs/                           # Web 模块专用文档
+│   ├── frontend-guides/           # 前端开发指南
+│   ├── backend-guides/            # 后端开发指南
+│   ├── api-reference/             # API 参考文档
+│   └── deployment/                # 部署文档
+├── frontend/                      # Vue 前端代码
+│   ├── src/
+│   ├── public/
+│   └── index.html                 # ✅ 保留在模块内（被排除）
+├── backend/                       # FastAPI 后端代码
+│   ├── app/
+│   ├── tests/
+│   └── requirements.txt
+└── README.md                      # ✅ 保留在模块内（被排除）
+```
+
+#### **services/** 模块
+```
+services/
+├── websocket-server/              # WebSocket 服务
+│   ├── docs/                      # 服务文档
+│   ├── src/
+│   └── README.md                  # ✅ 保留在服务目录（被排除）
+├── backtest-api/                  # 回测 API 服务
+│   ├── guides/                    # API 指南
+│   ├── src/
+│   └── README.md
+└── risk-control-api/              # 风险控制 API
+    ├── api-docs/                  # API 文档
+    ├── src/
+    └── README.md
+```
+
+### 排除规则生效机制
+
+**Hook 脚本位置**: `.claude/hooks/post-tool-use-document-organizer.sh`
+
+**生效逻辑**：
+```bash
+# 1. 检查文件后缀是否在排除列表
+if [[ "$FILE_EXTENSION" =~ ^(html|css|js|json|xml|yaml|yml|toml)$ ]]; then
+    # 直接返回空结果（不提供整理建议）
+    exit 0
+fi
+
+# 2. 检查路径是否包含排除目录关键字
+for keyword in "web" "css" "js" "frontend" "backend" "api" "services" "temp" "build" "dist"; do
+    if [[ "$FILE_PATH" == *"/$keyword/"* ]] || [[ "$FILE_PATH" == "$keyword/"* ]]; then
+        # 直接返回空结果（不提供整理建议）
+        exit 0
+    fi
+done
+
+# 3. 未被排除的文件继续正常的文档位置检查
+```
+
+### 与主项目文档的区分
+
+| 特性 | 主项目文档 | 子模块文档 |
+|------|-----------|-----------|
+| **位置** | `docs/` 目录 | `web/docs/`, `services/*/docs/` |
+| **规范** | 强制遵循 `FILE_ORGANIZATION_RULES.md` | 自主管理，推荐遵循模块规范 |
+| **Hook 检查** | ✅ 自动检查并建议移动 | ❌ 完全排除，不触发建议 |
+| **适用范围** | 项目级文档、架构文档、开发指南 | 模块级文档、API 文档、用户指南 |
+| **示例** | `docs/architecture/DATABASE_ARCHITECTURE.md` | `web/docs/frontend-guides/COMPONENT_GUIDE.md` |
+
+### 最佳实践
+
+1. **主项目文档** → 放在 `docs/` 目录
+   - 架构设计文档
+   - 跨模块的开发指南
+   - 项目级别的规范和标准
+   - 集成测试文档
+
+2. **子模块文档** → 放在模块内部的 `docs/` 目录
+   - 模块特定的开发指南
+   - 模块 API 参考文档
+   - 模块部署文档
+   - 模块测试文档
+
+3. **配置文件** → 保留在模块内部
+   - `web/frontend/vite.config.js`（不排除，因为是配置）
+   - `services/*/config.yaml`（不排除，因为是配置）
+   - 注意：配置文件可能被其他规则处理
+
+### 更新和审查
+
+**Hook 规则更新**: 修改 `.claude/hooks/post-tool-use-document-organizer.sh` 中的排除列表
+
+**规范文档更新**: 修改本文件（`FILE_ORGANIZATION_RULES.md`）中的排除规则表
+
+**同步要求**: Hook 脚本和规范文档的排除规则必须保持一致
 
 ---
 

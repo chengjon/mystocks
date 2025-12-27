@@ -128,9 +128,7 @@ class DataManager:
         DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
     }
 
-    def __init__(
-        self, enable_monitoring: bool = False, db_manager: DatabaseTableManager = None
-    ):
+    def __init__(self, enable_monitoring: bool = False, db_manager: DatabaseTableManager = None):
         """
         初始化DataManager
 
@@ -175,9 +173,7 @@ class DataManager:
         # 适配器注册表
         self._adapters: Dict[str, Any] = {}
 
-        logger.info(
-            "DataManager initialized with dual-database architecture (TDengine + PostgreSQL)"
-        )
+        logger.info("DataManager initialized with dual-database architecture (TDengine + PostgreSQL)")
 
     def register_adapter(self, name: str, adapter: Any) -> None:
         """
@@ -276,13 +272,9 @@ class DataManager:
 
             # 根据目标数据库选择访问层
             if target_db == DatabaseTarget.TDENGINE:
-                success = self._tdengine.save_data(
-                    data, classification, table_name, **kwargs
-                )
+                success = self._tdengine.save_data(data, classification, table_name, **kwargs)
             else:  # DatabaseTarget.POSTGRESQL
-                success = self._postgresql.save_data(
-                    data, classification, table_name, **kwargs
-                )
+                success = self._postgresql.save_data(data, classification, table_name, **kwargs)
 
             # 记录性能指标
             duration_ms = (time.time() - start_time) * 1000
@@ -301,9 +293,7 @@ class DataManager:
                     f"({len(data)} rows, {duration_ms:.2f}ms)"
                 )
             else:
-                logger.error(
-                    f"保存数据失败: {classification.value} → {target_db.value}"
-                )
+                logger.error(f"保存数据失败: {classification.value} → {target_db.value}")
 
             return success
 
@@ -312,9 +302,7 @@ class DataManager:
             logger.debug(traceback.format_exc())
             return False
 
-    def load_data(
-        self, classification: DataClassification, table_name: str, **filters
-    ) -> Optional[pd.DataFrame]:
+    def load_data(self, classification: DataClassification, table_name: str, **filters) -> Optional[pd.DataFrame]:
         """
         从正确的数据库加载数据
 
@@ -355,9 +343,7 @@ class DataManager:
                     f"({len(data)} rows, {duration_ms:.2f}ms)"
                 )
             else:
-                logger.warning(
-                    f"加载数据为空: {classification.value} → {target_db.value}"
-                )
+                logger.warning(f"加载数据为空: {classification.value} → {target_db.value}")
 
             return data
 
@@ -375,22 +361,14 @@ class DataManager:
         """
         stats = {
             "total_classifications": len(self._ROUTING_MAP),
-            "tdengine_count": sum(
-                1 for db in self._ROUTING_MAP.values() if db == DatabaseTarget.TDENGINE
-            ),
-            "postgresql_count": sum(
-                1
-                for db in self._ROUTING_MAP.values()
-                if db == DatabaseTarget.POSTGRESQL
-            ),
+            "tdengine_count": sum(1 for db in self._ROUTING_MAP.values() if db == DatabaseTarget.TDENGINE),
+            "postgresql_count": sum(1 for db in self._ROUTING_MAP.values() if db == DatabaseTarget.POSTGRESQL),
             "registered_adapters": len(self._adapters),
             "adapter_names": list(self._adapters.keys()),
         }
         return stats
 
-    def validate_data(
-        self, classification: DataClassification, data: pd.DataFrame
-    ) -> Tuple[bool, List[str]]:
+    def validate_data(self, classification: DataClassification, data: pd.DataFrame) -> Tuple[bool, List[str]]:
         """
         验证数据有效性
 
@@ -430,22 +408,14 @@ class DataManager:
         # 检查TDengine
         try:
             # 简单的连接测试
-            test_result = (
-                self._tdengine.health_check()
-                if hasattr(self._tdengine, "health_check")
-                else True
-            )
+            test_result = self._tdengine.health_check() if hasattr(self._tdengine, "health_check") else True
             health["tdengine"] = "healthy" if test_result else "unhealthy"
         except Exception as e:
             health["tdengine"] = f"unhealthy: {str(e)}"
 
         # 检查PostgreSQL
         try:
-            test_result = (
-                self._postgresql.health_check()
-                if hasattr(self._postgresql, "health_check")
-                else True
-            )
+            test_result = self._postgresql.health_check() if hasattr(self._postgresql, "health_check") else True
             health["postgresql"] = "healthy" if test_result else "unhealthy"
         except Exception as e:
             health["postgresql"] = f"unhealthy: {str(e)}"

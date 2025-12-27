@@ -118,9 +118,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def remove_from_watchlist(
-        self, user_id: int, symbol: str, list_type: Optional[str] = None
-    ) -> bool:
+    def remove_from_watchlist(self, user_id: int, symbol: str, list_type: Optional[str] = None) -> bool:
         """
         从自选列表移除股票
 
@@ -140,9 +138,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def update_watchlist_note(
-        self, user_id: int, symbol: str, list_type: str, note: str
-    ) -> bool:
+    def update_watchlist_note(self, user_id: int, symbol: str, list_type: str, note: str) -> bool:
         """
         更新自选股备注
 
@@ -247,9 +243,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def update_strategy_status(
-        self, strategy_id: int, user_id: int, status: str
-    ) -> bool:
+    def update_strategy_status(self, strategy_id: int, user_id: int, status: str) -> bool:
         """
         更新策略状态
 
@@ -434,9 +428,7 @@ class IRelationalDataSource(ABC):
         pass
 
     @abstractmethod
-    def update_user_preferences(
-        self, user_id: int, preferences: Dict[str, Any]
-    ) -> bool:
+    def update_user_preferences(self, user_id: int, preferences: Dict[str, Any]) -> bool:
         """
         更新用户偏好设置
 

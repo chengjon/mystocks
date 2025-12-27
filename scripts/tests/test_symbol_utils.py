@@ -5,7 +5,6 @@
 """
 
 import sys
-import os
 import time
 import concurrent.futures
 from pathlib import Path

@@ -55,9 +55,7 @@ class SyncDatabaseManager:
                 pool_recycle=3600,
                 echo=False,
             )
-            self.SessionLocal = sessionmaker(
-                autocommit=False, autoflush=False, bind=self.engine
-            )
+            self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
             logger.info("✅ Sync database engine initialized")
 
     def create_tables(self):
@@ -88,9 +86,7 @@ class SyncDatabaseManager:
         try:
             self.initialize_engine()
             Base.metadata.drop_all(bind=self.engine)
-            logger.warning(
-                "⚠️ Sync tables dropped", tables=["sync_message", "sync_statistics"]
-            )
+            logger.warning("⚠️ Sync tables dropped", tables=["sync_message", "sync_statistics"])
 
         except SQLAlchemyError as e:
             logger.error("❌ Failed to drop sync tables", error=str(e))
@@ -231,17 +227,13 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            message = (
-                session.query(SyncMessage).filter(SyncMessage.id == message_id).first()
-            )
+            message = session.query(SyncMessage).filter(SyncMessage.id == message_id).first()
             return message
 
         finally:
             session.close()
 
-    def get_pending_messages(
-        self, limit: int = 100, priority_threshold: int = 1
-    ) -> List[SyncMessage]:
+    def get_pending_messages(self, limit: int = 100, priority_threshold: int = 1) -> List[SyncMessage]:
         """
         查询待处理消息 (按优先级和创建时间排序)
 
@@ -310,9 +302,7 @@ class SyncDatabaseManager:
         finally:
             session.close()
 
-    def get_dead_letter_messages(
-        self, limit: int = 100, offset: int = 0
-    ) -> List[SyncMessage]:
+    def get_dead_letter_messages(self, limit: int = 100, offset: int = 0) -> List[SyncMessage]:
         """查询死信队列消息"""
         session = self.get_session()
 
@@ -361,9 +351,7 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            message = (
-                session.query(SyncMessage).filter(SyncMessage.id == message_id).first()
-            )
+            message = session.query(SyncMessage).filter(SyncMessage.id == message_id).first()
 
             if not message:
                 logger.warning("⚠️ Message not found", message_id=message_id)
@@ -397,9 +385,7 @@ class SyncDatabaseManager:
                 else:
                     # 计算下次重试时间 (指数退避)
                     retry_delay = 2**message.retry_count  # 2, 4, 8 秒
-                    message.next_retry_at = datetime.utcnow() + timedelta(
-                        seconds=retry_delay
-                    )
+                    message.next_retry_at = datetime.utcnow() + timedelta(seconds=retry_delay)
                     message.status = MessageStatus.RETRY
 
             if processed_by:
@@ -431,20 +417,14 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            counts = (
-                session.query(SyncMessage.status, func.count(SyncMessage.id))
-                .group_by(SyncMessage.status)
-                .all()
-            )
+            counts = session.query(SyncMessage.status, func.count(SyncMessage.id)).group_by(SyncMessage.status).all()
 
             return {status.value: count for status, count in counts}
 
         finally:
             session.close()
 
-    def get_sync_statistics(
-        self, window_minutes: int = 5, table_name: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def get_sync_statistics(self, window_minutes: int = 5, table_name: Optional[str] = None) -> Dict[str, Any]:
         """
         获取同步统计数据
 
@@ -462,20 +442,14 @@ class SyncDatabaseManager:
 
             query = session.query(
                 func.count(SyncMessage.id).label("total_messages"),
-                func.count(
-                    func.nullif(SyncMessage.status == MessageStatus.SUCCESS, False)
-                ).label("success_count"),
-                func.count(
-                    func.nullif(SyncMessage.status == MessageStatus.FAILED, False)
-                ).label("failed_count"),
-                func.count(
-                    func.nullif(SyncMessage.status == MessageStatus.DEAD_LETTER, False)
-                ).label("dead_letter_count"),
+                func.count(func.nullif(SyncMessage.status == MessageStatus.SUCCESS, False)).label("success_count"),
+                func.count(func.nullif(SyncMessage.status == MessageStatus.FAILED, False)).label("failed_count"),
+                func.count(func.nullif(SyncMessage.status == MessageStatus.DEAD_LETTER, False)).label(
+                    "dead_letter_count"
+                ),
                 func.avg(SyncMessage.sync_latency_ms).label("avg_sync_latency_ms"),
                 func.max(SyncMessage.sync_latency_ms).label("max_sync_latency_ms"),
-                func.avg(SyncMessage.processing_duration_ms).label(
-                    "avg_processing_duration_ms"
-                ),
+                func.avg(SyncMessage.processing_duration_ms).label("avg_processing_duration_ms"),
             ).filter(SyncMessage.created_at >= window_start)
 
             if table_name:
@@ -496,9 +470,7 @@ class SyncDatabaseManager:
                 "success_rate": (success / total * 100) if total > 0 else 0,
                 "avg_sync_latency_ms": float(result.avg_sync_latency_ms or 0),
                 "max_sync_latency_ms": float(result.max_sync_latency_ms or 0),
-                "avg_processing_duration_ms": float(
-                    result.avg_processing_duration_ms or 0
-                ),
+                "avg_processing_duration_ms": float(result.avg_processing_duration_ms or 0),
             }
 
         finally:

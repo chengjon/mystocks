@@ -49,9 +49,7 @@ class TestAddMetadata:
         with open(self.test_file, "w", encoding="utf-8") as f:
             f.write("# 测试文档\n\n这是一个测试文档。\n")
 
-        result = add_metadata(
-            self.test_file, "Claude", "1.0.0", "2025-12-20", "测试添加元数据"
-        )
+        result = add_metadata(self.test_file, "Claude", "1.0.0", "2025-12-20", "测试添加元数据")
 
         assert result is True
 
@@ -241,22 +239,16 @@ class TestBatchAddMetadata:
 
         # 验证统计信息输出
         print_calls = [str(call) for call in mock_print.call_args_list]
-        assert any(
-            "添加" in call and "跳过" in call and "失败" in call for call in print_calls
-        )
+        assert any("添加" in call and "跳过" in call and "失败" in call for call in print_calls)
 
     @patch("utils.add_doc_metadata.os.path.join")
     @patch("utils.add_doc_metadata.add_metadata")
     @patch("builtins.print")
-    def test_batch_add_metadata_mixed_results(
-        self, mock_print, mock_add_metadata, mock_join
-    ):
+    def test_batch_add_metadata_mixed_results(self, mock_print, mock_add_metadata, mock_join):
         """测试批量添加混合结果的情况"""
         mock_join.return_value = "/fake/path/test.md"
         # 模拟不同的返回结果，对应所有13个文档
-        mock_add_metadata.side_effect = [True, False, True, Exception("测试异常")] + [
-            True
-        ] * 9
+        mock_add_metadata.side_effect = [True, False, True, Exception("测试异常")] + [True] * 9
 
         batch_add_metadata()
 

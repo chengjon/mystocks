@@ -6,7 +6,6 @@
 """
 
 import sys
-import os
 import time
 import statistics
 from pathlib import Path

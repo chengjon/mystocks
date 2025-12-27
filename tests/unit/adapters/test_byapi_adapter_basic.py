@@ -38,9 +38,7 @@ class TestByapiAdapterBasic:
 
     def test_initialization_with_params(self):
         """测试带参数的初始化"""
-        adapter = ByapiAdapter(
-            licence="TEST_LICENCE", base_url="https://test.api.com", min_interval=1.0
-        )
+        adapter = ByapiAdapter(licence="TEST_LICENCE", base_url="https://test.api.com", min_interval=1.0)
 
         # 验证参数设置
         assert adapter.licence == "TEST_LICENCE"
@@ -135,9 +133,7 @@ class TestByapiAdapterBasic:
 
         for freq, expected_code in key_mappings.items():
             if freq in adapter.frequency_map:
-                assert (
-                    adapter.frequency_map[freq] == expected_code
-                ), f"频率映射错误: {freq}"
+                assert adapter.frequency_map[freq] == expected_code, f"频率映射错误: {freq}"
 
     def test_configuration_validation(self):
         """测试配置验证"""

@@ -59,9 +59,7 @@ class RealTimeService(RealTimeServiceServicer):
 
         # 启动数据处理线程
         self.running = True
-        self.processing_thread = threading.Thread(
-            target=self._data_processing_loop, daemon=True
-        )
+        self.processing_thread = threading.Thread(target=self._data_processing_loop, daemon=True)
         self.processing_thread.start()
 
         logger.info("实时数据服务初始化完成")
@@ -93,7 +91,7 @@ class RealTimeService(RealTimeServiceServicer):
     def _process_data_buffer(self):
         """处理数据缓冲区"""
         try:
-            current_time = datetime.now()
+            datetime.now()
 
             # 按股票代码处理数据
             for stock_code, data_list in self.data_buffer.items():
@@ -118,9 +116,7 @@ class RealTimeService(RealTimeServiceServicer):
         """使用GPU批量处理数据"""
         try:
             # 获取GPU资源
-            gpu_id = self.gpu_manager.allocate_gpu(
-                f"realtime_{stock_code}", priority="medium", memory_required=512
-            )
+            gpu_id = self.gpu_manager.allocate_gpu(f"realtime_{stock_code}", priority="medium", memory_required=512)
 
             if gpu_id:
                 # 这里应该调用实际的GPU处理逻辑
@@ -176,9 +172,7 @@ class RealTimeService(RealTimeServiceServicer):
 
         # 保持缓冲区大小限制
         if len(self.data_buffer[stock_code]) > self.config["buffer_size"]:
-            self.data_buffer[stock_code] = self.data_buffer[stock_code][
-                -self.config["buffer_size"] :
-            ]
+            self.data_buffer[stock_code] = self.data_buffer[stock_code][-self.config["buffer_size"] :]
 
     def _calculate_features(self):
         """计算特征"""
@@ -194,9 +188,7 @@ class RealTimeService(RealTimeServiceServicer):
                 cache_key = f"{stock_code}_features"
                 if cache_key in self.feature_cache:
                     cache_time = self.feature_cache[cache_key]["timestamp"]
-                    if (
-                        current_time - datetime.fromisoformat(cache_time)
-                    ).seconds < self.config["cache_ttl"]:
+                    if (current_time - datetime.fromisoformat(cache_time)).seconds < self.config["cache_ttl"]:
                         continue
 
                 # 计算技术指标
@@ -223,9 +215,7 @@ class RealTimeService(RealTimeServiceServicer):
         except Exception as e:
             logger.error(f"计算特征失败: {e}")
 
-    def _calculate_technical_indicators(
-        self, data_list: List[Dict]
-    ) -> Dict[str, float]:
+    def _calculate_technical_indicators(self, data_list: List[Dict]) -> Dict[str, float]:
         """计算技术指标"""
         if not data_list:
             return {}
@@ -237,16 +227,8 @@ class RealTimeService(RealTimeServiceServicer):
                 return {}
 
             # 计算简单移动平均
-            sma_20 = (
-                sum(prices[-20:]) / 20
-                if len(prices) >= 20
-                else sum(prices) / len(prices)
-            )
-            sma_50 = (
-                sum(prices[-50:]) / 50
-                if len(prices) >= 50
-                else sum(prices) / len(prices)
-            )
+            sma_20 = sum(prices[-20:]) / 20 if len(prices) >= 20 else sum(prices) / len(prices)
+            sma_50 = sum(prices[-50:]) / 50 if len(prices) >= 50 else sum(prices) / len(prices)
 
             # 计算指数移动平均
             ema_12 = self._calculate_ema(prices, 12)
@@ -254,11 +236,7 @@ class RealTimeService(RealTimeServiceServicer):
 
             # 计算MACD
             macd = ema_12 - ema_26
-            macd_signal = (
-                self._calculate_ema([macd] * len(prices), 9)[-1]
-                if len(prices) >= 9
-                else 0
-            )
+            macd_signal = self._calculate_ema([macd] * len(prices), 9)[-1] if len(prices) >= 9 else 0
             macd_histogram = macd - macd_signal
 
             # 计算相对强弱指数
@@ -266,11 +244,7 @@ class RealTimeService(RealTimeServiceServicer):
 
             # 计算布林带
             bb_middle = sma_20
-            bb_std = (
-                sum((p - sma_20) ** 2 for p in prices[-20:]) / 20
-                if len(prices) >= 20
-                else 0
-            )
+            bb_std = sum((p - sma_20) ** 2 for p in prices[-20:]) / 20 if len(prices) >= 20 else 0
             bb_std = bb_std**0.5
             bb_upper = bb_middle + 2 * bb_std
             bb_lower = bb_middle - 2 * bb_std
@@ -288,9 +262,7 @@ class RealTimeService(RealTimeServiceServicer):
                 "bb_middle": bb_middle,
                 "bb_lower": bb_lower,
                 "volatility": bb_std,
-                "price_change": (prices[-1] - prices[0]) / prices[0] * 100
-                if len(prices) > 1
-                else 0,
+                "price_change": (prices[-1] - prices[0]) / prices[0] * 100 if len(prices) > 1 else 0,
             }
 
         except Exception as e:
@@ -340,15 +312,13 @@ class RealTimeService(RealTimeServiceServicer):
             total_stocks = len(self.data_buffer)
             cache_size = len(self.feature_cache)
 
-            statistics = {
+            {
                 "timestamp": datetime.now().isoformat(),
                 "total_records": total_records,
                 "total_stocks": total_stocks,
                 "cache_size": cache_size,
                 "stream_clients": len(self.stream_clients),
-                "gpu_utilization": self.gpu_manager.get_gpu_stats().get(
-                    "utilization", 0
-                ),
+                "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
             }
 
             # 更新到监控指标
@@ -377,17 +347,13 @@ class RealTimeService(RealTimeServiceServicer):
             # 限制数据缓冲区大小
             for stock_code in list(self.data_buffer.keys()):
                 if len(self.data_buffer[stock_code]) > self.config["buffer_size"]:
-                    self.data_buffer[stock_code] = self.data_buffer[stock_code][
-                        -self.config["buffer_size"] :
-                    ]
+                    self.data_buffer[stock_code] = self.data_buffer[stock_code][-self.config["buffer_size"] :]
 
         except Exception as e:
             logger.error(f"清理过期数据失败: {e}")
 
     # gRPC服务实现
-    def GetMarketData(
-        self, request: StreamRequest, context: grpc.ServicerContext
-    ) -> StreamResponse:
+    def GetMarketData(self, request: StreamRequest, context: grpc.ServicerContext) -> StreamResponse:
         """获取实时行情数据"""
         try:
             stock_code = request.stock_code
@@ -401,19 +367,11 @@ class RealTimeService(RealTimeServiceServicer):
                 # 按时间过滤
                 if start_time:
                     start_dt = datetime.fromisoformat(start_time)
-                    data_list = [
-                        d
-                        for d in data_list
-                        if datetime.fromisoformat(d["timestamp"]) >= start_dt
-                    ]
+                    data_list = [d for d in data_list if datetime.fromisoformat(d["timestamp"]) >= start_dt]
 
                 if end_time:
                     end_dt = datetime.fromisoformat(end_time)
-                    data_list = [
-                        d
-                        for d in data_list
-                        if datetime.fromisoformat(d["timestamp"]) <= end_dt
-                    ]
+                    data_list = [d for d in data_list if datetime.fromisoformat(d["timestamp"]) <= end_dt]
 
                 # 转换为MarketData消息
                 market_data_list = []
@@ -448,9 +406,7 @@ class RealTimeService(RealTimeServiceServicer):
             context.set_details(f"内部错误: {e}")
             return StreamResponse()
 
-    def CalculateFeatures(
-        self, request: FeatureRequest, context: grpc.ServicerContext
-    ) -> FeatureResponse:
+    def CalculateFeatures(self, request: FeatureRequest, context: grpc.ServicerContext) -> FeatureResponse:
         """计算特征"""
         try:
             stock_code = request.stock_code
@@ -463,11 +419,7 @@ class RealTimeService(RealTimeServiceServicer):
 
                 # 过滤请求的特征类型
                 if feature_types:
-                    filtered_features = {
-                        k: v
-                        for k, v in cached_data["features"].items()
-                        if k in feature_types
-                    }
+                    filtered_features = {k: v for k, v in cached_data["features"].items() if k in feature_types}
                 else:
                     filtered_features = cached_data["features"]
 
@@ -480,19 +432,12 @@ class RealTimeService(RealTimeServiceServicer):
 
             # 如果缓存中没有，计算实时特征
             else:
-                if (
-                    stock_code in self.data_buffer
-                    and len(self.data_buffer[stock_code]) >= 10
-                ):
-                    features = self._calculate_technical_indicators(
-                        self.data_buffer[stock_code]
-                    )
+                if stock_code in self.data_buffer and len(self.data_buffer[stock_code]) >= 10:
+                    features = self._calculate_technical_indicators(self.data_buffer[stock_code])
 
                     # 过滤请求的特征类型
                     if feature_types:
-                        features = {
-                            k: v for k, v in features.items() if k in feature_types
-                        }
+                        features = {k: v for k, v in features.items() if k in feature_types}
 
                     return FeatureResponse(
                         stock_code=stock_code,
@@ -538,9 +483,7 @@ class RealTimeService(RealTimeServiceServicer):
             context.set_details(f"内部错误: {e}")
             return RealtimeStatistics()
 
-    def StreamMarketData(
-        self, request: StreamRequest, context: grpc.ServicerContext
-    ) -> StreamResponse:
+    def StreamMarketData(self, request: StreamRequest, context: grpc.ServicerContext) -> StreamResponse:
         """流式市场数据"""
         try:
             stock_code = request.stock_code

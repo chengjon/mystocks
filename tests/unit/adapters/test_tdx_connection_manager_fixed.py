@@ -128,13 +128,9 @@ class TestTdxConnectionManagerFixed:
         from adapters.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
-        mock_connection = MockTdxConnection(
-            should_fail_connect=False, should_fail_operation=False
-        )
+        mock_connection = MockTdxConnection(should_fail_connect=False, should_fail_operation=False)
 
-        with patch.object(
-            manager, "_connect_to_tdx_server", return_value=mock_connection
-        ):
+        with patch.object(manager, "_connect_to_tdx_server", return_value=mock_connection):
             result = manager.create_connection()
 
         assert result == mock_connection
@@ -154,9 +150,7 @@ class TestTdxConnectionManagerFixed:
             call_count += 1
             raise ConnectionError("连接失败")
 
-        with patch.object(
-            manager, "_connect_to_tdx_server", side_effect=failing_connection
-        ):
+        with patch.object(manager, "_connect_to_tdx_server", side_effect=failing_connection):
             with pytest.raises(ConnectionError, match="连接失败"):
                 manager.create_connection()
 
@@ -422,9 +416,7 @@ class TestTdxConnectionManagerIntegrationFixed:
             "created_at": time.time(),
         }
 
-        with patch.object(
-            manager, "_connect_to_tdx_server", return_value=mock_connection
-        ):
+        with patch.object(manager, "_connect_to_tdx_server", return_value=mock_connection):
             # 1. 创建连接
             connection = manager.create_connection()
             assert connection == mock_connection
@@ -463,9 +455,7 @@ class TestTdxConnectionManagerIntegrationFixed:
 
         # 重新创建连接
         new_connection = {"status": "connected", "created_at": time.time()}
-        with patch.object(
-            manager, "_connect_to_tdx_server", return_value=new_connection
-        ):
+        with patch.object(manager, "_connect_to_tdx_server", return_value=new_connection):
             manager.create_connection()
             assert manager.check_connection_health() is True
 
@@ -510,9 +500,7 @@ class TestTdxConnectionManagerIntegrationFixed:
         # 验证退避递增公式
         expected_delays = []
         for i in range(manager.retry_config["max_retries"]):
-            delay = manager.retry_config["retry_delay"] * (
-                manager.retry_config["backoff_factor"] ** i
-            )
+            delay = manager.retry_config["retry_delay"] * (manager.retry_config["backoff_factor"] ** i)
             expected_delays.append(delay)
 
         assert expected_delays == [1.0, 2.0, 4.0]

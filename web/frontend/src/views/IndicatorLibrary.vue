@@ -167,9 +167,10 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
+import type { Component } from 'vue'
 import {
   Search,
   DataLine,
@@ -184,23 +185,74 @@ import {
 } from '@element-plus/icons-vue'
 import { indicatorService } from '@/services/indicatorService'
 
-// 状态管理
-const loading = ref(false)
-const registry = ref(null)
-const searchQuery = ref('')
-const selectedCategory = ref('')
+// ============================================
+// 类型定义
+// ============================================
 
-// 组件挂载时获取指标注册表
-onMounted(async () => {
+/**
+ * 指标元数据
+ */
+interface IndicatorMetadata {
+  abbreviation: string
+  full_name: string
+  chinese_name: string
+  category: string
+  description: string
+  panel_type: 'overlay' | 'separate'
+  parameters?: any[]
+}
+
+/**
+ * 指标注册表
+ */
+interface IndicatorRegistry {
+  indicators: IndicatorMetadata[]
+  total_count: number
+}
+
+/**
+ * 分类类型
+ */
+type CategoryType = 'trend' | 'momentum' | 'volatility' | 'volume' | 'candlestick'
+
+/**
+ * 面板类型
+ */
+type PanelType = 'overlay' | 'separate'
+
+/**
+ * Element Plus 标签类型
+ */
+type TagType = 'primary' | 'success' | 'warning' | 'info' | 'danger' | ''
+
+// ============================================
+// 状态管理
+// ============================================
+
+const loading: Ref<boolean> = ref(false)
+const registry: Ref<IndicatorRegistry | null> = ref(null)
+const searchQuery: Ref<string> = ref('')
+const selectedCategory: Ref<string> = ref('')
+
+// ============================================
+// 生命周期与方法
+// ============================================
+
+/**
+ * 组件挂载时获取指标注册表
+ */
+onMounted(async (): Promise<void> => {
   await fetchIndicatorRegistry()
 })
 
-// 获取指标注册表
-const fetchIndicatorRegistry = async () => {
+/**
+ * 获取指标注册表
+ */
+const fetchIndicatorRegistry = async (): Promise<void> => {
   loading.value = true
   try {
     registry.value = await indicatorService.getRegistry()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch indicator registry:', error)
     ElMessage.error('加载指标库失败')
   } finally {
@@ -208,8 +260,10 @@ const fetchIndicatorRegistry = async () => {
   }
 }
 
-// 过滤指标
-const filteredIndicators = computed(() => {
+/**
+ * 过滤指标
+ */
+const filteredIndicators: ComputedRef<IndicatorMetadata[]> = computed(() => {
   if (!registry.value?.indicators) return []
 
   let indicators = registry.value.indicators
@@ -235,9 +289,11 @@ const filteredIndicators = computed(() => {
   return indicators
 })
 
-// 获取分类标签类型
-const getCategoryTagType = (category) => {
-  const typeMap = {
+/**
+ * 获取分类标签类型
+ */
+const getCategoryTagType = (category: string): TagType => {
+  const typeMap: Record<string, TagType> = {
     trend: 'primary',
     momentum: 'success',
     volatility: 'warning',
@@ -247,19 +303,25 @@ const getCategoryTagType = (category) => {
   return typeMap[category] || 'info'
 }
 
-// 获取面板类型标签
-const getPanelTagType = (panelType) => {
+/**
+ * 获取面板类型标签
+ */
+const getPanelTagType = (panelType: PanelType): TagType => {
   return panelType === 'overlay' ? '' : 'warning'
 }
 
-// 获取面板类型标签文本
-const getPanelLabel = (panelType) => {
+/**
+ * 获取面板类型标签文本
+ */
+const getPanelLabel = (panelType: PanelType): string => {
   return panelType === 'overlay' ? '主图叠加' : '独立面板'
 }
 
-// 获取分类标签文本
-const getCategoryLabel = (category) => {
-  const labelMap = {
+/**
+ * 获取分类标签文本
+ */
+const getCategoryLabel = (category: string): string => {
+  const labelMap: Record<string, string> = {
     trend: '趋势',
     momentum: '动量',
     volatility: '波动率',
@@ -269,9 +331,11 @@ const getCategoryLabel = (category) => {
   return labelMap[category] || category
 }
 
-// 获取分类颜色
-const getCategoryColor = (category) => {
-  const colorMap = {
+/**
+ * 获取分类颜色
+ */
+const getCategoryColor = (category: string): string => {
+  const colorMap: Record<string, string> = {
     trend: '#409eff',
     momentum: '#67c23a',
     volatility: '#e6a23c',
@@ -281,9 +345,11 @@ const getCategoryColor = (category) => {
   return colorMap[category] || '#909399'
 }
 
-// 获取分类图标
-const getCategoryIcon = (category) => {
-  const iconMap = {
+/**
+ * 获取分类图标
+ */
+const getCategoryIcon = (category: string): Component => {
+  const iconMap: Record<string, Component> = {
     trend: TrendCharts,
     momentum: Connection,
     volatility: Histogram,

@@ -63,7 +63,5 @@ class IndicatorConfiguration(Base):
             "indicators": self.indicators,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_used_at": (
-                self.last_used_at.isoformat() if self.last_used_at else None
-            ),
+            "last_used_at": (self.last_used_at.isoformat() if self.last_used_at else None),
         }

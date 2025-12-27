@@ -90,9 +90,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
             "base_price": round(random.uniform(5.0, 300.0), 2),
         }
 
-    def _generate_price_movement(
-        self, base_price: float, volatility: float = 0.02
-    ) -> float:
+    def _generate_price_movement(self, base_price: float, volatility: float = 0.02) -> float:
         """
         生成价格波动
 
@@ -136,9 +134,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
             # 生成涨跌
             pre_close = round(base_price * random.uniform(0.98, 1.02), 2)
             change = round(price - pre_close, 2)
-            change_percent = (
-                round((change / pre_close) * 100, 2) if pre_close > 0 else 0
-            )
+            change_percent = round((change / pre_close) * 100, 2) if pre_close > 0 else 0
 
             # 生成成交量和成交额
             volume = random.randint(1000000, 100000000)
@@ -251,9 +247,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
 
         return pd.DataFrame(klines)
 
-    def get_intraday_chart(
-        self, symbol: str, trade_date: Optional[date] = None
-    ) -> pd.DataFrame:
+    def get_intraday_chart(self, symbol: str, trade_date: Optional[date] = None) -> pd.DataFrame:
         """
         获取分时图数据
 
@@ -272,23 +266,15 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
         times = []
 
         # 上午时段
-        current_time = datetime.combine(
-            trade_date, datetime.min.time().replace(hour=9, minute=30)
-        )
-        end_morning = datetime.combine(
-            trade_date, datetime.min.time().replace(hour=11, minute=30)
-        )
+        current_time = datetime.combine(trade_date, datetime.min.time().replace(hour=9, minute=30))
+        end_morning = datetime.combine(trade_date, datetime.min.time().replace(hour=11, minute=30))
         while current_time <= end_morning:
             times.append(current_time.strftime("%H:%M"))
             current_time += timedelta(minutes=1)
 
         # 下午时段
-        current_time = datetime.combine(
-            trade_date, datetime.min.time().replace(hour=13, minute=0)
-        )
-        end_afternoon = datetime.combine(
-            trade_date, datetime.min.time().replace(hour=15, minute=0)
-        )
+        current_time = datetime.combine(trade_date, datetime.min.time().replace(hour=13, minute=0))
+        end_afternoon = datetime.combine(trade_date, datetime.min.time().replace(hour=15, minute=0))
         while current_time <= end_afternoon:
             times.append(current_time.strftime("%H:%M"))
             current_time += timedelta(minutes=1)
@@ -309,11 +295,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
 
             cumulative_volume += minute_volume
             cumulative_amount += minute_amount
-            avg_price = (
-                round(cumulative_amount / cumulative_volume, 2)
-                if cumulative_volume > 0
-                else price
-            )
+            avg_price = round(cumulative_amount / cumulative_volume, 2) if cumulative_volume > 0 else price
 
             intraday_data.append(
                 {
@@ -329,9 +311,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
 
         return pd.DataFrame(intraday_data)
 
-    def get_fund_flow(
-        self, symbol: str, start_date: date, end_date: date, flow_type: str = "main"
-    ) -> pd.DataFrame:
+    def get_fund_flow(self, symbol: str, start_date: date, end_date: date, flow_type: str = "main") -> pd.DataFrame:
         """
         获取资金流向数据
 
@@ -349,9 +329,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
         for trade_date in date_range:
             # 生成主力净流入
             main_net_inflow = random.uniform(-500000000, 500000000)
-            main_net_inflow_rate = round(
-                (main_net_inflow / (base_price * 100000000)) * 100, 2
-            )
+            main_net_inflow_rate = round((main_net_inflow / (base_price * 100000000)) * 100, 2)
 
             # 生成各类资金净流入（超大单 + 大单 = 主力）
             super_net_inflow = main_net_inflow * random.uniform(0.4, 0.7)
@@ -393,9 +371,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
             trade_date = date.today()
 
         # 从股票池中选择股票
-        selected_stocks = random.sample(
-            self._stock_pool, min(limit, len(self._stock_pool))
-        )
+        selected_stocks = random.sample(self._stock_pool, min(limit, len(self._stock_pool)))
 
         rankings = []
         for rank, stock in enumerate(selected_stocks, 1):
@@ -403,9 +379,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
 
             # 生成资金流向数据
             main_net_inflow = random.uniform(-300000000, 300000000)
-            main_net_inflow_rate = round(
-                (main_net_inflow / (base_price * 100000000)) * 100, 2
-            )
+            main_net_inflow_rate = round((main_net_inflow / (base_price * 100000000)) * 100, 2)
 
             # 生成涨跌幅
             change_percent = round(random.uniform(-10.0, 10.0), 2)
@@ -482,9 +456,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
             "indices": indices,
         }
 
-    def get_index_realtime(
-        self, index_codes: Optional[List[str]] = None
-    ) -> List[Dict[str, Any]]:
+    def get_index_realtime(self, index_codes: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """获取指数实时数据"""
         if index_codes is None:
             index_codes = list(self._index_pool.keys())
@@ -566,12 +538,8 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
             ema12 = result_df["close"].ewm(span=12, adjust=False).mean()
             ema26 = result_df["close"].ewm(span=26, adjust=False).mean()
             result_df["MACD_DIF"] = (ema12 - ema26).round(2)
-            result_df["MACD_DEA"] = (
-                result_df["MACD_DIF"].ewm(span=9, adjust=False).mean().round(2)
-            )
-            result_df["MACD_MACD"] = (
-                (result_df["MACD_DIF"] - result_df["MACD_DEA"]) * 2
-            ).round(2)
+            result_df["MACD_DEA"] = result_df["MACD_DIF"].ewm(span=9, adjust=False).mean().round(2)
+            result_df["MACD_MACD"] = ((result_df["MACD_DIF"] - result_df["MACD_DEA"]) * 2).round(2)
 
         return result_df
 
@@ -588,9 +556,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
         if trade_date is None:
             trade_date = date.today()
 
-        selected_stocks = random.sample(
-            self._stock_pool, min(limit, len(self._stock_pool))
-        )
+        selected_stocks = random.sample(self._stock_pool, min(limit, len(self._stock_pool)))
 
         auction_data = []
         for stock in selected_stocks:
@@ -625,9 +591,7 @@ class MockTimeSeriesDataSource(ITimeSeriesDataSource):
 
     # ==================== 数据质量和健康检查 ====================
 
-    def check_data_quality(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> Dict[str, Any]:
+    def check_data_quality(self, symbol: str, start_date: date, end_date: date) -> Dict[str, Any]:
         """检查时序数据质量"""
         # Mock数据质量总是很好
         total_days = (end_date - start_date).days

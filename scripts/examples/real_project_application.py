@@ -16,12 +16,9 @@ AI测试优化器真实项目应用示例
 """
 
 import sys
-import time
-import subprocess
-import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 # 项目路径
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -112,7 +109,7 @@ class RealProjectApplication:
             with open(report_path, "w", encoding="utf-8") as f:
                 f.write(report)
 
-            print(f"\n✅ 核心模块分析完成")
+            print("\n✅ 核心模块分析完成")
             print(f"📄 报告已保存: {report_path}")
 
             # 记录应用日志
@@ -138,7 +135,7 @@ class RealProjectApplication:
             # 分析新模块的测试需求
             result = self.optimizer.analyze_module_for_optimization(new_module)
 
-            print(f"\n📋 新模块分析结果:")
+            print("\n📋 新模块分析结果:")
             print(
                 f"  模块复杂度: {'高' if result.quality_score < 60 else '中' if result.quality_score < 80 else '低'}"
             )
@@ -146,7 +143,7 @@ class RealProjectApplication:
             print(f"  预估覆盖率提升: {95 - result.current_coverage:.1f}%")
 
             # 提供开发指导
-            print(f"\n🎯 开发测试指导:")
+            print("\n🎯 开发测试指导:")
 
             for i, suggestion in enumerate(result.optimization_suggestions, 1):
                 print(f"  {i}. {suggestion}")
@@ -219,7 +216,7 @@ class TestNewFeatureModule:
 ''')
 
                 print(f"\n✅ 测试框架已生成: {test_file}")
-                print(f"💡 请根据AI建议完善测试实现")
+                print("💡 请根据AI建议完善测试实现")
 
         except Exception as e:
             print(f"❌ 新模块分析失败: {e}")
@@ -341,25 +338,25 @@ def create_adapter(api_key: str) -> NewMarketDataAdapter:
                 refactor_module
             )
 
-            print(f"\n📊 重构前状态:")
+            print("\n📊 重构前状态:")
             print(f"  代码质量评分: {before_result.quality_score:.1f}/100")
             print(
                 f"  复杂度问题: {len([s for s in before_result.optimization_suggestions if '复杂度' in s])}"
             )
 
             # 模拟重构过程
-            print(f"\n🔄 执行重构建议:")
+            print("\n🔄 执行重构建议:")
             refactoring_actions = []
 
             for suggestion in before_result.optimization_suggestions:
                 if "复杂度" in suggestion:
-                    action = f"重构复杂函数"
+                    action = "重构复杂函数"
                 elif "测试" in suggestion:
-                    action = f"添加测试用例"
+                    action = "添加测试用例"
                 elif "异常" in suggestion:
-                    action = f"改进异常处理"
+                    action = "改进异常处理"
                 else:
-                    action = f"通用优化"
+                    action = "通用优化"
 
                 refactoring_actions.append(action)
                 print(f"  • {action}")
@@ -370,7 +367,7 @@ def create_adapter(api_key: str) -> NewMarketDataAdapter:
                 95, before_result.current_coverage + 20
             )  # 假设覆盖率提升
 
-            print(f"\n📈 重构后预期状态:")
+            print("\n📈 重构后预期状态:")
             print(
                 f"  代码质量评分: {after_quality:.1f}/100 (+{after_quality - before_result.quality_score:.1f})"
             )
@@ -648,7 +645,6 @@ class LegacyAdapter:
 '''
 
         # 补充import缺失的time模块
-        import time
 
         module_file = PROJECT_ROOT / module_path
         module_file.parent.mkdir(parents=True, exist_ok=True)
@@ -665,20 +661,20 @@ class LegacyAdapter:
             # 获取团队使用统计
             usage_stats = self.monitor.get_usage_stats(7)  # 最近7天
 
-            print(f"\n📊 团队使用统计 (最近7天):")
+            print("\n📊 团队使用统计 (最近7天):")
             print(f"  总使用次数: {usage_stats['total_usage']}")
             print(f"  成功率: {usage_stats['success_rate']:.1f}%")
             print(f"  平均执行时间: {usage_stats['avg_execution_time']:.2f}秒")
 
             # 获取性能统计
             performance_stats = self.monitor.get_performance_stats(7)
-            print(f"\n⚡ 性能统计:")
+            print("\n⚡ 性能统计:")
             print(f"  平均CPU使用: {performance_stats['avg_cpu_usage']:.1f}%")
             print(f"  平均内存使用: {performance_stats['avg_memory_usage']:.1f}MB")
 
             # 获取用户反馈
             feedback_summary = self.monitor.get_feedback_summary(30)  # 最近30天
-            print(f"\n🗣️ 用户反馈统计 (最近30天):")
+            print("\n🗣️ 用户反馈统计 (最近30天):")
 
             if feedback_summary["feedback_by_type"]:
                 for feedback in feedback_summary["feedback_by_type"]:
@@ -694,7 +690,7 @@ class LegacyAdapter:
                 for anomaly in anomalies:
                     print(f"  [{anomaly['severity'].upper()}] {anomaly['message']}")
             else:
-                print(f"\n✅ 系统运行正常，未检测到异常")
+                print("\n✅ 系统运行正常，未检测到异常")
 
             # 生成团队质量报告
             team_report = self._generate_team_quality_report(
@@ -908,7 +904,7 @@ class LegacyAdapter:
                 r["issues_resolved"] for r in improvement_results
             )
 
-            print(f"\n📊 改进总结:")
+            print("\n📊 改进总结:")
             print(f"  处理模块数: {len(improvement_results)}")
             print(f"  总质量提升: +{total_quality_improvement:.1f}分")
             print(f"  总覆盖率提升: +{total_coverage_improvement:.1f}%")

@@ -130,9 +130,7 @@ class ITimeSeriesDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_intraday_chart(
-        self, symbol: str, trade_date: Optional[date] = None
-    ) -> pd.DataFrame:
+    def get_intraday_chart(self, symbol: str, trade_date: Optional[date] = None) -> pd.DataFrame:
         """
         获取分时图数据
 
@@ -164,9 +162,7 @@ class ITimeSeriesDataSource(ABC):
     # ==================== 资金流向相关 ====================
 
     @abstractmethod
-    def get_fund_flow(
-        self, symbol: str, start_date: date, end_date: date, flow_type: str = "main"
-    ) -> pd.DataFrame:
+    def get_fund_flow(self, symbol: str, start_date: date, end_date: date, flow_type: str = "main") -> pd.DataFrame:
         """
         获取资金流向数据
 
@@ -290,9 +286,7 @@ class ITimeSeriesDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_index_realtime(
-        self, index_codes: Optional[List[str]] = None
-    ) -> List[Dict[str, Any]]:
+    def get_index_realtime(self, index_codes: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """
         获取指数实时数据
 
@@ -414,9 +408,7 @@ class ITimeSeriesDataSource(ABC):
     # ==================== 数据质量和健康检查 ====================
 
     @abstractmethod
-    def check_data_quality(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> Dict[str, Any]:
+    def check_data_quality(self, symbol: str, start_date: date, end_date: date) -> Dict[str, Any]:
         """
         检查时序数据质量
 

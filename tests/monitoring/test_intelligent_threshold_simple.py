@@ -10,9 +10,7 @@ import sys
 import os
 
 # 添加项目根路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 # 直接导入模块测试功能
@@ -63,9 +61,7 @@ class TestCoreFunctionality:
         # 生成足够的数据点
         data = [10.0 + np.random.normal(0, 1) for _ in range(50)]
 
-        result = optimizer.optimize_threshold_statistical(
-            data=data, current_threshold=15.0, threshold_type="upper"
-        )
+        result = optimizer.optimize_threshold_statistical(data=data, current_threshold=15.0, threshold_type="upper")
 
         assert isinstance(result, dict)
         assert "recommended_threshold" in result
@@ -81,9 +77,7 @@ class TestCoreFunctionality:
         # 生成上升趋势数据
         data = [10.0 + i * 0.5 for i in range(20)]
 
-        result = analyzer.optimize_threshold_trend(
-            data=data, current_threshold=15.0, threshold_type="upper"
-        )
+        result = analyzer.optimize_threshold_trend(data=data, current_threshold=15.0, threshold_type="upper")
 
         assert isinstance(result, dict)
         assert "trend_direction" in result
@@ -100,9 +94,7 @@ class TestCoreFunctionality:
         outlier_data = [50.0, 51.0, 52.0]
         data = normal_data + outlier_data
 
-        result = analyzer.optimize_threshold_clustering(
-            data=data, current_threshold=20.0, threshold_type="upper"
-        )
+        result = analyzer.optimize_threshold_clustering(data=data, current_threshold=20.0, threshold_type="upper")
 
         assert isinstance(result, dict)
         assert "recommended_threshold" in result
@@ -168,9 +160,7 @@ class TestCoreFunctionality:
         end_time = time.time()
         total_time = end_time - start_time
 
-        assert total_time < 1.0, (
-            f"Performance benchmark failed: {total_time:.2f}s > 1.0s"
-        )
+        assert total_time < 1.0, f"Performance benchmark failed: {total_time:.2f}s > 1.0s"
 
 
 if __name__ == "__main__":

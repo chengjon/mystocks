@@ -92,9 +92,7 @@ class TestAlertRule:
 
     def test_alert_rule_defaults(self):
         """测试警报规则默认值"""
-        rule = AlertRule(
-            name="test_rule", condition="<", threshold=10.0, severity=AlertSeverity.INFO
-        )
+        rule = AlertRule(name="test_rule", condition="<", threshold=10.0, severity=AlertSeverity.INFO)
 
         assert rule.duration is None
         assert rule.enabled is True
@@ -403,9 +401,7 @@ class TestAlertManager:
         manager.add_rule(rule)
 
         # 创建活跃警报
-        metrics = {
-            "test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())
-        }
+        metrics = {"test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())}
 
         alerts = manager.check_metrics(metrics)
         assert len(alerts) > 0
@@ -436,9 +432,7 @@ class TestAlertManager:
 
         manager.add_rule(rule)
 
-        metrics = {
-            "test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())
-        }
+        metrics = {"test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())}
 
         alerts = manager.check_metrics(metrics)
         assert len(alerts) == 0  # 禁用的规则不应该触发警报
@@ -455,9 +449,7 @@ class TestAlertManager:
 
         manager.add_rule(rule)
 
-        metrics = {
-            "test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())
-        }
+        metrics = {"test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())}
 
         alerts = manager.check_metrics(metrics)
         assert len(alerts) == 1
@@ -477,9 +469,7 @@ class TestAlertManager:
 
         manager.add_rule(rule)
 
-        metrics = {
-            "test": MetricValue(name="cpu_usage", value=75.0, timestamp=datetime.now())
-        }
+        metrics = {"test": MetricValue(name="cpu_usage", value=75.0, timestamp=datetime.now())}
 
         alerts = manager.check_metrics(metrics)
         assert len(alerts) == 0
@@ -531,9 +521,7 @@ class TestAlertManager:
         )
         manager.add_rule(rule)
 
-        metrics = {
-            "test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())
-        }
+        metrics = {"test": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now())}
 
         manager.check_metrics(metrics)
         active_alerts = manager.get_active_alerts()
@@ -563,12 +551,8 @@ class TestAlertManager:
 
         # 触发警报
         metrics = {
-            "test1": MetricValue(
-                name="cpu_usage", value=85.0, timestamp=datetime.now()
-            ),
-            "test2": MetricValue(
-                name="memory_usage", value=95.0, timestamp=datetime.now()
-            ),
+            "test1": MetricValue(name="cpu_usage", value=85.0, timestamp=datetime.now()),
+            "test2": MetricValue(name="memory_usage", value=95.0, timestamp=datetime.now()),
         }
 
         manager.check_metrics(metrics)
@@ -655,9 +639,7 @@ class TestSystemMonitor:
         monitor.start_monitoring()
 
         assert monitor.monitoring is True
-        mock_thread_class.assert_called_once_with(
-            target=monitor._monitor_loop, daemon=True
-        )
+        mock_thread_class.assert_called_once_with(target=monitor._monitor_loop, daemon=True)
         mock_thread.start.assert_called_once()
 
     def test_stop_monitoring(self):
@@ -789,9 +771,7 @@ class TestAPIMonitor:
         assert test_endpoint["request_count"] == 3
         assert test_endpoint["error_count"] == 1
         assert test_endpoint["error_rate_percent"] == 33.33
-        assert (
-            test_endpoint["avg_response_time_ms"] == 600.0
-        )  # (0.5 + 0.3 + 1.0) / 3 * 1000
+        assert test_endpoint["avg_response_time_ms"] == 600.0  # (0.5 + 0.3 + 1.0) / 3 * 1000
 
         other_endpoint = summary["endpoints"]["POST /api/other"]
         assert other_endpoint["request_count"] == 1
@@ -866,9 +846,7 @@ class TestGlobalFunctions:
     @patch("src.core.monitoring.get_system_monitor")
     @patch("src.core.monitoring.setup_default_alert_rules")
     @patch("src.core.monitoring.logger")
-    def test_initialize_monitoring(
-        self, mock_logger, mock_setup_alerts, mock_get_system_monitor
-    ):
+    def test_initialize_monitoring(self, mock_logger, mock_setup_alerts, mock_get_system_monitor):
         """测试初始化监控系统"""
         mock_system_monitor = Mock()
         mock_get_system_monitor.return_value = mock_system_monitor
@@ -889,9 +867,7 @@ class TestGlobalFunctions:
     @patch("src.core.monitoring.get_api_monitor")
     @patch("src.core.monitoring.get_alert_manager")
     @patch("src.core.monitoring.get_metrics_collector")
-    def test_get_monitoring_dashboard(
-        self, mock_get_collector, mock_get_alert_manager, mock_get_api_monitor
-    ):
+    def test_get_monitoring_dashboard(self, mock_get_collector, mock_get_alert_manager, mock_get_api_monitor):
         """测试获取监控仪表板"""
         # Mock 返回值
         mock_collector = Mock()
@@ -943,11 +919,7 @@ class TestIntegrationScenarios:
         api_monitor.record_request("/api/fast", "GET", 200, 0.3)  # 低于阈值
 
         # 创建指标值并检查警报
-        metrics = {
-            "slow_request": MetricValue(
-                name="api_response_time", value=1.5, timestamp=datetime.now()
-            )
-        }
+        metrics = {"slow_request": MetricValue(name="api_response_time", value=1.5, timestamp=datetime.now())}
 
         alerts = alert_manager.check_metrics(metrics)
         assert len(alerts) == 1
@@ -999,9 +971,7 @@ class TestIntegrationScenarios:
         mock_memory.used = 16 * 1024 * 1024 * 1024  # 16GB
         mock_psutil.virtual_memory.return_value = mock_memory
         mock_psutil.disk_usage.return_value = Mock(percent=60.0)
-        mock_psutil.net_io_counters.return_value = Mock(
-            bytes_sent=1000000, bytes_recv=2000000
-        )
+        mock_psutil.net_io_counters.return_value = Mock(bytes_sent=1000000, bytes_recv=2000000)
 
         # 创建组件
         collector = MetricsCollector()
@@ -1030,24 +1000,16 @@ class TestIntegrationScenarios:
 
         # 创建指标值并检查警报
         metrics = {
-            "cpu_metric": MetricValue(
-                name="system_cpu_percent", value=85.0, timestamp=datetime.now()
-            ),
-            "memory_metric": MetricValue(
-                name="system_memory_percent", value=90.0, timestamp=datetime.now()
-            ),
+            "cpu_metric": MetricValue(name="system_cpu_percent", value=85.0, timestamp=datetime.now()),
+            "memory_metric": MetricValue(name="system_memory_percent", value=90.0, timestamp=datetime.now()),
         }
 
         alerts = alert_manager.check_metrics(metrics)
         assert len(alerts) == 2
 
         # 验证警报类型
-        cpu_alert = next(
-            alert for alert in alerts if alert.rule_name == "system_cpu_percent"
-        )
-        memory_alert = next(
-            alert for alert in alerts if alert.rule_name == "system_memory_percent"
-        )
+        cpu_alert = next(alert for alert in alerts if alert.rule_name == "system_cpu_percent")
+        memory_alert = next(alert for alert in alerts if alert.rule_name == "system_memory_percent")
 
         assert cpu_alert.severity == AlertSeverity.WARNING
         assert memory_alert.severity == AlertSeverity.ERROR

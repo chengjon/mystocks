@@ -47,25 +47,15 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_initialization_with_monitoring_enabled(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_initialization_with_monitoring_enabled(self, mock_recovery_queue, mock_data_manager):
         """测试初始化 - 启用监控"""
         # Mock监控组件可用
         with patch("src.core.unified_manager.MONITORING_AVAILABLE", True):
             with (
-                patch(
-                    "src.core.unified_manager.get_monitoring_database"
-                ) as mock_monitoring_db,
-                patch(
-                    "src.core.unified_manager.get_performance_monitor"
-                ) as mock_perf_monitor,
-                patch(
-                    "src.core.unified_manager.get_quality_monitor"
-                ) as mock_quality_monitor,
-                patch(
-                    "src.core.unified_manager.get_alert_manager"
-                ) as mock_alert_manager,
+                patch("src.core.unified_manager.get_monitoring_database") as mock_monitoring_db,
+                patch("src.core.unified_manager.get_performance_monitor") as mock_perf_monitor,
+                patch("src.core.unified_manager.get_quality_monitor") as mock_quality_monitor,
+                patch("src.core.unified_manager.get_alert_manager") as mock_alert_manager,
             ):
                 manager = MyStocksUnifiedManager(enable_monitoring=True)
 
@@ -88,9 +78,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_initialization_with_monitoring_disabled(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_initialization_with_monitoring_disabled(self, mock_recovery_queue, mock_data_manager):
         """测试初始化 - 禁用监控"""
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
@@ -106,9 +94,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_initialization_monitoring_unavailable(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_initialization_monitoring_unavailable(self, mock_recovery_queue, mock_data_manager):
         """测试初始化 - 监控组件不可用"""
         with patch("src.core.unified_manager.MONITORING_AVAILABLE", False):
             manager = MyStocksUnifiedManager(enable_monitoring=True)
@@ -119,9 +105,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_initialization_monitoring_initialization_failure(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_initialization_monitoring_initialization_failure(self, mock_recovery_queue, mock_data_manager):
         """测试初始化 - 监控组件初始化失败"""
         with patch("src.core.unified_manager.MONITORING_AVAILABLE", True):
             with patch(
@@ -136,18 +120,14 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_save_data_by_classification_success(
-        self, mock_recovery_queue, mock_data_manager, sample_dataframe
-    ):
+    def test_save_data_by_classification_success(self, mock_recovery_queue, mock_data_manager, sample_dataframe):
         """测试按分类保存数据 - 成功"""
         # 设置Mock返回值
         mock_data_manager.return_value.save_data.return_value = True
 
         manager = MyStocksUnifiedManager()
 
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, sample_dataframe, "tick_600000"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, sample_dataframe, "tick_600000")
 
         assert result is True
         mock_data_manager.return_value.save_data.assert_called_once_with(
@@ -156,15 +136,11 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_save_data_by_classification_empty_data(
-        self, mock_recovery_queue, mock_data_manager, empty_dataframe
-    ):
+    def test_save_data_by_classification_empty_data(self, mock_recovery_queue, mock_data_manager, empty_dataframe):
         """测试按分类保存数据 - 空数据"""
         manager = MyStocksUnifiedManager()
 
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, empty_dataframe, "tick_600000"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, empty_dataframe, "tick_600000")
 
         assert result is True
         # 验证DataManager未被调用
@@ -177,9 +153,7 @@ class TestMyStocksUnifiedManager:
     ):
         """测试按分类保存数据 - 失败并加入故障恢复队列"""
         # 设置Mock抛出异常
-        mock_data_manager.return_value.save_data.side_effect = Exception(
-            "数据库连接失败"
-        )
+        mock_data_manager.return_value.save_data.side_effect = Exception("数据库连接失败")
         mock_recovery_queue_instance = mock_recovery_queue.return_value
 
         manager = MyStocksUnifiedManager()
@@ -204,18 +178,14 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_load_data_by_classification_success(
-        self, mock_recovery_queue, mock_data_manager, sample_dataframe
-    ):
+    def test_load_data_by_classification_success(self, mock_recovery_queue, mock_data_manager, sample_dataframe):
         """测试按分类加载数据 - 成功"""
         # 设置Mock返回值
         mock_data_manager.return_value.load_data.return_value = sample_dataframe
 
         manager = MyStocksUnifiedManager()
 
-        result = manager.load_data_by_classification(
-            DataClassification.DAILY_KLINE, "daily_kline", symbol="600000"
-        )
+        result = manager.load_data_by_classification(DataClassification.DAILY_KLINE, "daily_kline", symbol="600000")
 
         assert result is not None
         assert len(result) == 5
@@ -234,31 +204,21 @@ class TestMyStocksUnifiedManager:
 
         manager = MyStocksUnifiedManager()
 
-        result = manager.load_data_by_classification(
-            DataClassification.DAILY_KLINE, "daily_kline"
-        )
+        result = manager.load_data_by_classification(DataClassification.DAILY_KLINE, "daily_kline")
 
         assert result is not None
-        mock_data_manager.return_value.load_data.assert_called_once_with(
-            DataClassification.DAILY_KLINE, "daily_kline"
-        )
+        mock_data_manager.return_value.load_data.assert_called_once_with(DataClassification.DAILY_KLINE, "daily_kline")
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_load_data_by_classification_failure(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_load_data_by_classification_failure(self, mock_recovery_queue, mock_data_manager):
         """测试按分类加载数据 - 失败"""
         # 设置Mock抛出异常
-        mock_data_manager.return_value.load_data.side_effect = Exception(
-            "数据库查询失败"
-        )
+        mock_data_manager.return_value.load_data.side_effect = Exception("数据库查询失败")
 
         manager = MyStocksUnifiedManager()
 
-        result = manager.load_data_by_classification(
-            DataClassification.DAILY_KLINE, "daily_kline"
-        )
+        result = manager.load_data_by_classification(DataClassification.DAILY_KLINE, "daily_kline")
 
         assert result is None
 
@@ -269,9 +229,7 @@ class TestMyStocksUnifiedManager:
         # 设置Mock返回值
         from src.core.data_classification import DatabaseTarget
 
-        mock_data_manager.return_value.get_target_database.return_value = (
-            DatabaseTarget.POSTGRESQL
-        )
+        mock_data_manager.return_value.get_target_database.return_value = DatabaseTarget.POSTGRESQL
 
         manager = MyStocksUnifiedManager()
 
@@ -282,9 +240,7 @@ class TestMyStocksUnifiedManager:
             "target_db": DatabaseTarget.POSTGRESQL.value,
         }
         assert result == expected
-        mock_data_manager.return_value.get_target_database.assert_called_once_with(
-            DataClassification.DAILY_KLINE
-        )
+        mock_data_manager.return_value.get_target_database.assert_called_once_with(DataClassification.DAILY_KLINE)
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
@@ -308,9 +264,7 @@ class TestMyStocksUnifiedManager:
                 manager = MyStocksUnifiedManager()
 
                 # Mock save_data_by_classification方法
-                manager.save_data_by_classification = Mock(
-                    side_effect=[True, False, True]
-                )
+                manager.save_data_by_classification = Mock(side_effect=[True, False, True])
 
                 result = manager.save_data_batch_with_strategy(
                     DataClassification.TICK_DATA,
@@ -363,14 +317,10 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_get_monitoring_statistics_with_monitoring_enabled(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_get_monitoring_statistics_with_monitoring_enabled(self, mock_recovery_queue, mock_data_manager):
         """测试获取监控统计信息 - 启用监控"""
         # 设置Mock
-        mock_data_manager.return_value.get_routing_stats.return_value = {
-            "total_operations": 100
-        }
+        mock_data_manager.return_value.get_routing_stats.return_value = {"total_operations": 100}
         mock_perf_monitor = Mock()
         mock_perf_monitor.get_statistics.return_value = {"avg_response_time": 0.5}
 
@@ -384,9 +334,7 @@ class TestMyStocksUnifiedManager:
 
                 result = manager.get_monitoring_statistics()
 
-                assert (
-                    result["manager_type"] == "MyStocksUnifiedManager (US3 Simplified)"
-                )
+                assert result["manager_type"] == "MyStocksUnifiedManager (US3 Simplified)"
                 assert result["data_manager_stats"] == {"total_operations": 100}
                 assert result["monitoring_enabled"] is True
                 assert "performance" in result
@@ -395,13 +343,9 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_get_monitoring_statistics_with_monitoring_disabled(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_get_monitoring_statistics_with_monitoring_disabled(self, mock_recovery_queue, mock_data_manager):
         """测试获取监控统计信息 - 禁用监控"""
-        mock_data_manager.return_value.get_routing_stats.return_value = {
-            "total_operations": 50
-        }
+        mock_data_manager.return_value.get_routing_stats.return_value = {"total_operations": 50}
 
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
@@ -415,14 +359,10 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_get_monitoring_statistics_performance_monitor_exception(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_get_monitoring_statistics_performance_monitor_exception(self, mock_recovery_queue, mock_data_manager):
         """测试获取监控统计信息 - 性能监控器异常"""
         # 设置Mock
-        mock_data_manager.return_value.get_routing_stats.return_value = {
-            "total_operations": 100
-        }
+        mock_data_manager.return_value.get_routing_stats.return_value = {"total_operations": 100}
         mock_perf_monitor = Mock()
         mock_perf_monitor.get_statistics.side_effect = Exception("监控异常")
 
@@ -442,18 +382,14 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_check_data_quality_success(
-        self, mock_recovery_queue, mock_data_manager, sample_dataframe
-    ):
+    def test_check_data_quality_success(self, mock_recovery_queue, mock_data_manager, sample_dataframe):
         """测试检查数据质量 - 成功"""
         # 设置Mock
         mock_data_manager.return_value.load_data.return_value = sample_dataframe
 
         manager = MyStocksUnifiedManager()
 
-        result = manager.check_data_quality(
-            DataClassification.TICK_DATA, "tick_600000", symbol="600000"
-        )
+        result = manager.check_data_quality(DataClassification.TICK_DATA, "tick_600000", symbol="600000")
 
         assert result["classification"] == DataClassification.TICK_DATA.value
         assert result["table_name"] == "tick_600000"
@@ -498,9 +434,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_close_all_connections_success(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_close_all_connections_success(self, mock_recovery_queue, mock_data_manager):
         """测试关闭所有数据库连接 - 成功"""
         # 设置Mock数据库连接
         mock_tdengine = Mock()
@@ -517,9 +451,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_close_all_connections_no_close_method(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_close_all_connections_no_close_method(self, mock_recovery_queue, mock_data_manager):
         """测试关闭所有数据库连接 - 连接对象没有close方法"""
         # 设置Mock数据库连接（没有close方法）
         mock_tdengine = Mock()
@@ -537,9 +469,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_close_all_connections_exception(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_close_all_connections_exception(self, mock_recovery_queue, mock_data_manager):
         """测试关闭所有数据库连接 - 异常"""
         # 设置Mock数据库连接抛出异常
         mock_tdengine = Mock()
@@ -556,9 +486,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_destructor_calls_close_all_connections(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_destructor_calls_close_all_connections(self, mock_recovery_queue, mock_data_manager):
         """测试析构函数调用关闭所有连接"""
         manager = MyStocksUnifiedManager()
         manager.close_all_connections = Mock()
@@ -570,9 +498,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_destructor_exception_handling(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_destructor_exception_handling(self, mock_recovery_queue, mock_data_manager):
         """测试析构函数异常处理"""
         manager = MyStocksUnifiedManager()
         manager.close_all_connections = Mock(side_effect=Exception("析构异常"))
@@ -585,9 +511,7 @@ class TestMyStocksUnifiedManager:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_backward_compatibility_attributes(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_backward_compatibility_attributes(self, mock_recovery_queue, mock_data_manager):
         """测试向后兼容性属性"""
         mock_tdengine = Mock()
         mock_postgresql = Mock()
@@ -606,9 +530,7 @@ class TestEdgeCasesAndIntegration:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_large_dataframe_batch_processing(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_large_dataframe_batch_processing(self, mock_recovery_queue, mock_data_manager):
         """测试大DataFrame的批量处理"""
         # 创建大DataFrame（100行）
         large_df = pd.DataFrame(
@@ -642,19 +564,13 @@ class TestEdgeCasesAndIntegration:
 
     @patch("src.core.unified_manager.DataManager")
     @patch("src.core.unified_manager.FailureRecoveryQueue")
-    def test_dataclassification_all_values(
-        self, mock_recovery_queue, mock_data_manager
-    ):
+    def test_dataclassification_all_values(self, mock_recovery_queue, mock_data_manager):
         """测试所有数据分类值"""
         mock_data_manager.return_value.save_data.return_value = True
-        mock_data_manager.return_value.load_data.return_value = pd.DataFrame(
-            {"test": [1]}
-        )
+        mock_data_manager.return_value.load_data.return_value = pd.DataFrame({"test": [1]})
         from src.core.data_classification import DatabaseTarget
 
-        mock_data_manager.return_value.get_target_database.return_value = (
-            DatabaseTarget.POSTGRESQL
-        )
+        mock_data_manager.return_value.get_target_database.return_value = DatabaseTarget.POSTGRESQL
 
         manager = MyStocksUnifiedManager()
         sample_df = pd.DataFrame({"test": [1]})
@@ -662,15 +578,11 @@ class TestEdgeCasesAndIntegration:
         # 测试所有数据分类枚举值
         for classification in DataClassification:
             # 测试保存
-            save_result = manager.save_data_by_classification(
-                classification, sample_df, "test_table"
-            )
+            save_result = manager.save_data_by_classification(classification, sample_df, "test_table")
             assert isinstance(save_result, bool)
 
             # 测试加载
-            load_result = manager.load_data_by_classification(
-                classification, "test_table"
-            )
+            load_result = manager.load_data_by_classification(classification, "test_table")
             assert load_result is not None
 
             # 测试路由信息

@@ -248,9 +248,7 @@ class PerformanceOptimizer:
     """性能优化器"""
 
     def __init__(self):
-        self.strategies: List[OptimizationStrategy] = (
-            self._initialize_optimization_strategies()
-        )
+        self.strategies: List[OptimizationStrategy] = self._initialize_optimization_strategies()
         self.analyzer = PerformanceAnalyzer()
         self.optimization_history: List[Dict[str, Any]] = []
 
@@ -355,9 +353,7 @@ class PerformanceOptimizer:
             ),
         ]
 
-    async def optimize_test_performance(
-        self, test_name: str, test_function: Callable
-    ) -> Dict[str, Any]:
+    async def optimize_test_performance(self, test_name: str, test_function: Callable) -> Dict[str, Any]:
         """优化测试性能"""
         print(f"\n🔧 开始优化测试: {test_name}")
 
@@ -377,9 +373,7 @@ class PerformanceOptimizer:
         optimization_results = []
         for strategy in strategies:
             print(f"\n📋 应用策略: {strategy.name}")
-            result = await self._apply_optimization_strategy(
-                test_name, test_function, strategy
-            )
+            result = await self._apply_optimization_strategy(test_name, test_function, strategy)
             optimization_results.append(result)
 
         # 评估优化效果
@@ -393,22 +387,16 @@ class PerformanceOptimizer:
             "optimization_results": optimization_results,
             "final_performance": self._execution_to_dict(final_result),
             "improvement_metrics": improvement,
-            "overall_improvement_score": self._calculate_overall_improvement(
-                improvement
-            ),
+            "overall_improvement_score": self._calculate_overall_improvement(improvement),
             "optimization_timestamp": datetime.now().isoformat(),
         }
 
         self.optimization_history.append(optimization_report)
-        print(
-            f"\n✅ 优化完成，整体改进分数: {optimization_report['overall_improvement_score']:.2f}"
-        )
+        print(f"\n✅ 优化完成，整体改进分数: {optimization_report['overall_improvement_score']:.2f}")
 
         return optimization_report
 
-    async def _run_benchmark(
-        self, test_name: str, test_function: Callable
-    ) -> TestExecution:
+    async def _run_benchmark(self, test_name: str, test_function: Callable) -> TestExecution:
         """运行基准测试"""
         process = psutil.Process()
         start_time = time.time()
@@ -437,9 +425,7 @@ class PerformanceOptimizer:
             error=error,
         )
 
-    def _select_optimization_strategies(
-        self, analysis: Dict[str, Any]
-    ) -> List[OptimizationStrategy]:
+    def _select_optimization_strategies(self, analysis: Dict[str, Any]) -> List[OptimizationStrategy]:
         """选择优化策略"""
         selected = []
         bottlenecks = analysis.get("bottlenecks", [])
@@ -450,23 +436,14 @@ class PerformanceOptimizer:
                 selected.extend(
                     s
                     for s in self.strategies
-                    if s.type in [OptimizationType.SPEED, OptimizationType.CONCURRENCY]
-                    and s not in selected
+                    if s.type in [OptimizationType.SPEED, OptimizationType.CONCURRENCY] and s not in selected
                 )
 
             if "内存" in bottleneck:
-                selected.extend(
-                    s
-                    for s in self.strategies
-                    if s.type == OptimizationType.MEMORY and s not in selected
-                )
+                selected.extend(s for s in self.strategies if s.type == OptimizationType.MEMORY and s not in selected)
 
             if "CPU" in bottleneck:
-                selected.extend(
-                    s
-                    for s in self.strategies
-                    if s.type == OptimizationType.CODE and s not in selected
-                )
+                selected.extend(s for s in self.strategies if s.type == OptimizationType.CODE and s not in selected)
 
         # 按优先级和影响排序
         selected.sort(key=lambda x: (x.priority, -x.impact_score))
@@ -497,9 +474,7 @@ class PerformanceOptimizer:
                 optimized_function = test_function
 
             # 测试优化效果
-            execution = await self._run_benchmark(
-                f"{test_name}_{strategy.name}", optimized_function
-            )
+            execution = await self._run_benchmark(f"{test_name}_{strategy.name}", optimized_function)
             improvement = execution.execution_time / (len(self.test_executions) + 1)
 
             result.update(
@@ -515,9 +490,7 @@ class PerformanceOptimizer:
             )
 
         except Exception as e:
-            result.update(
-                {"applied": False, "error": str(e), "details": ["优化策略应用失败"]}
-            )
+            result.update({"applied": False, "error": str(e), "details": ["优化策略应用失败"]})
 
         return result
 
@@ -527,12 +500,7 @@ class PerformanceOptimizer:
         async def parallel_function():
             with ThreadPoolExecutor(max_workers=4) as executor:
                 await asyncio.gather(
-                    *[
-                        asyncio.get_event_loop().run_in_executor(
-                            executor, test_function
-                        )
-                        for _ in range(4)
-                    ]
+                    *[asyncio.get_event_loop().run_in_executor(executor, test_function) for _ in range(4)]
                 )
 
         return parallel_function
@@ -560,28 +528,17 @@ class PerformanceOptimizer:
 
         return memory_optimized_function
 
-    def _calculate_improvement(
-        self, baseline: TestExecution, final: TestExecution
-    ) -> Dict[str, float]:
+    def _calculate_improvement(self, baseline: TestExecution, final: TestExecution) -> Dict[str, float]:
         """计算改进程度"""
-        time_improvement = (
-            baseline.execution_time - final.execution_time
-        ) / baseline.execution_time
-        memory_improvement = (
-            baseline.memory_usage_mb - final.memory_usage_mb
-        ) / baseline.memory_usage_mb
-        cpu_improvement = (
-            baseline.cpu_usage_percent - final.cpu_usage_percent
-        ) / baseline.cpu_usage_percent
+        time_improvement = (baseline.execution_time - final.execution_time) / baseline.execution_time
+        memory_improvement = (baseline.memory_usage_mb - final.memory_usage_mb) / baseline.memory_usage_mb
+        cpu_improvement = (baseline.cpu_usage_percent - final.cpu_usage_percent) / baseline.cpu_usage_percent
 
         return {
             "time_improvement": time_improvement,
             "memory_improvement": memory_improvement,
             "cpu_improvement": cpu_improvement,
-            "overall_improvement": (
-                time_improvement + memory_improvement + cpu_improvement
-            )
-            / 3,
+            "overall_improvement": (time_improvement + memory_improvement + cpu_improvement) / 3,
         }
 
     def _calculate_overall_improvement(self, improvement: Dict[str, float]) -> float:
@@ -631,9 +588,7 @@ class PerformanceOptimizer:
 
             report += "**优化策略:**\n"
             for strategy in optimization["optimization_strategies"]:
-                report += (
-                    f"- {strategy['name']} (影响分数: {strategy['impact_score']:.2f})\n"
-                )
+                report += f"- {strategy['name']} (影响分数: {strategy['impact_score']:.2f})\n"
 
             report += "\n**优化后性能:**\n"
             report += f"- 执行时间: {optimization['final_performance']['execution_time']:.2f}s\n"
@@ -645,9 +600,7 @@ class PerformanceOptimizer:
             report += f"- 时间改进: {(improvement['time_improvement'] * 100):+.1f}%\n"
             report += f"- 内存改进: {(improvement['memory_improvement'] * 100):+.1f}%\n"
             report += f"- CPU改进: {(improvement['cpu_improvement'] * 100):+.1f}%\n"
-            report += (
-                f"- 总体改进分数: {optimization['overall_improvement_score']:.2f}\n\n"
-            )
+            report += f"- 总体改进分数: {optimization['overall_improvement_score']:.2f}\n\n"
 
         return report
 
@@ -674,9 +627,7 @@ async def demo_performance_optimizer():
     await optimizer.optimize_test_performance("slow_test", slow_test)
 
     # 优化第二个测试
-    await optimizer.optimize_test_performance(
-        "memory_intensive_test", memory_intensive_test
-    )
+    await optimizer.optimize_test_performance("memory_intensive_test", memory_intensive_test)
 
     # 生成优化报告
     report = optimizer.generate_optimization_report()

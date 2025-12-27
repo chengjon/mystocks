@@ -6,6 +6,7 @@
 """
 
 import logging
+import importlib.util
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -16,17 +17,12 @@ def test_taos_import():
     """测试TDengine导入"""
     print("开始测试TDengine导入...")
 
-    try:
-        import taos
-
+    if importlib.util.find_spec("taos"):
         print("✓ TDengine客户端库导入成功！")
         return True
-    except ImportError as e:
-        print(f"✗ TDengine客户端库导入失败: {e}")
+    else:
+        print("✗ TDengine客户端库导入失败")
         print("提示: 请确保已正确安装TDengine客户端库")
-        return False
-    except Exception as e:
-        print(f"✗ TDengine导入时发生其他错误: {e}")
         return False
 
 
@@ -35,28 +31,22 @@ def test_other_databases():
     print("\n开始测试其他数据库库...")
 
     # 测试MySQL
-    try:
-        import pymysql
-
+    if importlib.util.find_spec("pymysql"):
         print("✓ PyMySQL导入成功")
-    except ImportError as e:
-        print(f"✗ PyMySQL导入失败: {e}")
+    else:
+        print("✗ PyMySQL导入失败")
 
     # 测试PostgreSQL
-    try:
-        import psycopg2
-
+    if importlib.util.find_spec("psycopg2"):
         print("✓ psycopg2导入成功")
-    except ImportError as e:
-        print(f"✗ psycopg2导入失败: {e}")
+    else:
+        print("✗ psycopg2导入失败")
 
     # 测试Redis
-    try:
-        import redis
-
+    if importlib.util.find_spec("redis"):
         print("✓ redis导入成功")
-    except ImportError as e:
-        print(f"✗ redis导入失败: {e}")
+    else:
+        print("✗ redis导入失败")
 
 
 def test_conditional_import():
@@ -64,15 +54,12 @@ def test_conditional_import():
     print("\n测试条件导入机制...")
 
     # 尝试导入TDengine，如果失败则设置为None
-    try:
-        import taos
-
+    if importlib.util.find_spec("taos"):
         TAOS_AVAILABLE = True
         print("✓ TDengine可用，TAOS_AVAILABLE = True")
-    except ImportError as e:
-        taos = None
+    else:
         TAOS_AVAILABLE = False
-        print(f"✓ TDengine不可用，TAOS_AVAILABLE = False，错误: {e}")
+        print("✓ TDengine不可用，TAOS_AVAILABLE = False")
 
     return TAOS_AVAILABLE
 

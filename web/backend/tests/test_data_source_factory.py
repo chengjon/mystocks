@@ -38,9 +38,7 @@ class TestDataSourceConfig:
 
     def test_data_source_config_creation(self):
         """测试数据源配置创建"""
-        config = DataSourceConfig(
-            name="Test Source", type="market", mode=DataSourceMode.MOCK, timeout=15.0
-        )
+        config = DataSourceConfig(name="Test Source", type="market", mode=DataSourceMode.MOCK, timeout=15.0)
 
         assert config.name == "Test Source"
         assert config.type == "market"
@@ -120,9 +118,7 @@ class TestMockDataSource:
             assert source.metrics.error_count == 0
 
             # 模拟失败请求
-            with patch.object(
-                source, "_generate_mock_data", side_effect=Exception("Test error")
-            ):
+            with patch.object(source, "_generate_mock_data", side_effect=Exception("Test error")):
                 with pytest.raises(Exception):
                     await source.get_data("market/overview")
 
@@ -171,9 +167,7 @@ class TestRealDataSource:
 
         mock_response = Mock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(
-            return_value={"status": "success", "data": {"test": "value"}}
-        )
+        mock_response.json = AsyncMock(return_value={"status": "success", "data": {"test": "value"}})
 
         with patch("aiohttp.ClientSession.get") as mock_get:
             mock_get.return_value.__aenter__.return_value = mock_response
@@ -245,9 +239,7 @@ class TestRealDataSource:
 
         mock_response = Mock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(
-            return_value={"status": "healthy", "version": "1.0"}
-        )
+        mock_response.json = AsyncMock(return_value={"status": "healthy", "version": "1.0"})
 
         with patch("aiohttp.ClientSession.get") as mock_get:
             mock_get.return_value.__aenter__.return_value = mock_response
@@ -307,13 +299,9 @@ class TestHybridDataSource:
         # Mock Real数据源成功
         mock_response = Mock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(
-            return_value={"status": "success", "data": {"source": "real"}}
-        )
+        mock_response.json = AsyncMock(return_value={"status": "success", "data": {"source": "real"}})
 
-        with patch.object(
-            hybrid_source.real_source, "get_data", new_callable=AsyncMock
-        ) as mock_real_get:
+        with patch.object(hybrid_source.real_source, "get_data", new_callable=AsyncMock) as mock_real_get:
             mock_real_get.return_value = {
                 "status": "success",
                 "data": {"source": "real"},
@@ -332,12 +320,8 @@ class TestHybridDataSource:
         """测试Hybrid数据源fallback到Mock"""
         # Mock Real数据源失败，Mock成功
         with (
-            patch.object(
-                hybrid_source.real_source, "get_data", new_callable=AsyncMock
-            ) as mock_real_get,
-            patch.object(
-                hybrid_source.mock_source, "get_data", new_callable=AsyncMock
-            ) as mock_mock_get,
+            patch.object(hybrid_source.real_source, "get_data", new_callable=AsyncMock) as mock_real_get,
+            patch.object(hybrid_source.mock_source, "get_data", new_callable=AsyncMock) as mock_mock_get,
         ):
             mock_real_get.side_effect = Exception("Real source failed")
             mock_mock_get.return_value = {
@@ -369,9 +353,7 @@ class TestHybridDataSource:
 
         hybrid_source = HybridDataSource(hybrid_config, real_source, mock_source)
 
-        with patch.object(
-            hybrid_source.real_source, "get_data", new_callable=AsyncMock
-        ) as mock_real_get:
+        with patch.object(hybrid_source.real_source, "get_data", new_callable=AsyncMock) as mock_real_get:
             mock_real_get.side_effect = Exception("Real source failed")
 
             with pytest.raises(Exception):
@@ -383,12 +365,8 @@ class TestHybridDataSource:
     async def test_hybrid_data_source_both_sources_failed(self, hybrid_source):
         """测试Hybrid数据源两个源都失败"""
         with (
-            patch.object(
-                hybrid_source.real_source, "get_data", new_callable=AsyncMock
-            ) as mock_real_get,
-            patch.object(
-                hybrid_source.mock_source, "get_data", new_callable=AsyncMock
-            ) as mock_mock_get,
+            patch.object(hybrid_source.real_source, "get_data", new_callable=AsyncMock) as mock_real_get,
+            patch.object(hybrid_source.mock_source, "get_data", new_callable=AsyncMock) as mock_mock_get,
         ):
             mock_real_get.side_effect = Exception("Real source failed")
             mock_mock_get.side_effect = Exception("Mock source failed")
@@ -414,12 +392,8 @@ class TestHybridDataSource:
         )
 
         with (
-            patch.object(
-                hybrid_source.real_source, "health_check", new_callable=AsyncMock
-            ) as mock_real_health_check,
-            patch.object(
-                hybrid_source.mock_source, "health_check", new_callable=AsyncMock
-            ) as mock_mock_health_check,
+            patch.object(hybrid_source.real_source, "health_check", new_callable=AsyncMock) as mock_real_health_check,
+            patch.object(hybrid_source.mock_source, "health_check", new_callable=AsyncMock) as mock_mock_health_check,
         ):
             mock_real_health_check.return_value = mock_real_health
             mock_mock_health_check.return_value = mock_mock_health
@@ -714,25 +688,19 @@ class TestEnvironmentVariables:
 
     def test_get_data_source_mode_mock_only(self):
         """测试仅Mock模式"""
-        with patch.dict(
-            os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "false"}
-        ):
+        with patch.dict(os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "false"}):
             mode = get_data_source_mode()
             assert mode == DataSourceMode.MOCK
 
     def test_get_data_source_mode_real_only(self):
         """测试仅Real模式"""
-        with patch.dict(
-            os.environ, {"USE_MOCK_DATA": "false", "REAL_DATA_AVAILABLE": "true"}
-        ):
+        with patch.dict(os.environ, {"USE_MOCK_DATA": "false", "REAL_DATA_AVAILABLE": "true"}):
             mode = get_data_source_mode()
             assert mode == DataSourceMode.REAL
 
     def test_get_data_source_mode_hybrid(self):
         """测试Hybrid模式"""
-        with patch.dict(
-            os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "true"}
-        ):
+        with patch.dict(os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "true"}):
             mode = get_data_source_mode()
             assert mode == DataSourceMode.HYBRID
 
@@ -786,9 +754,7 @@ class TestConvenienceFunctions:
     async def test_get_market_data(self, temp_config_file):
         """测试获取市场数据便捷函数"""
         with patch("app.services.data_source_factory._global_factory", None):
-            with patch(
-                "app.services.data_source_factory.DataSourceFactory"
-            ) as MockFactory:
+            with patch("app.services.data_source_factory.DataSourceFactory") as MockFactory:
                 mock_factory = Mock()
                 MockFactory.return_value = mock_factory
 
@@ -808,9 +774,7 @@ class TestConvenienceFunctions:
     async def test_get_dashboard_data(self, temp_config_file):
         """测试获取仪表盘数据便捷函数"""
         with patch("app.services.data_source_factory._global_factory", None):
-            with patch(
-                "app.services.data_source_factory.DataSourceFactory"
-            ) as MockFactory:
+            with patch("app.services.data_source_factory.DataSourceFactory") as MockFactory:
                 mock_factory = Mock()
                 MockFactory.return_value = mock_factory
 
@@ -829,9 +793,7 @@ class TestConvenienceFunctions:
     async def test_get_technical_analysis_data(self, temp_config_file):
         """测试获取技术分析数据便捷函数"""
         with patch("app.services.data_source_factory._global_factory", None):
-            with patch(
-                "app.services.data_source_factory.DataSourceFactory"
-            ) as MockFactory:
+            with patch("app.services.data_source_factory.DataSourceFactory") as MockFactory:
                 mock_factory = Mock()
                 MockFactory.return_value = mock_factory
 
@@ -843,9 +805,7 @@ class TestConvenienceFunctions:
                 data = await get_technical_analysis_data("indicators")
 
                 assert data == {"technical": "data"}
-                mock_factory.get_data_source.assert_called_once_with(
-                    "technical_analysis"
-                )
+                mock_factory.get_data_source.assert_called_once_with("technical_analysis")
                 mock_data_source.get_data.assert_called_once_with("indicators", None)
 
 

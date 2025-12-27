@@ -41,9 +41,7 @@ class GPUAccelerationEngine:
     ✅ 增强的错误处理和回退机制
     """
 
-    def __init__(
-        self, enable_gpu: bool = True, config: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, enable_gpu: bool = True, config: Optional[Dict[str, Any]] = None):
         """初始化GPU加速引擎
 
         Args:
@@ -144,24 +142,18 @@ class GPUAccelerationEngine:
                 self.performance_metrics["cpu_operations"] += 1
                 logger.info("开始CPU回测...")
 
-            result = self.backtest_engine.run_backtest_gpu(
-                data, strategy_config, initial_capital, benchmark_data
-            )
+            result = self.backtest_engine.run_backtest_gpu(data, strategy_config, initial_capital, benchmark_data)
 
             # 添加引擎级别信息
             result["engine_info"] = {
                 "gpu_mode": self.enable_gpu,
                 "computation_time": time.time() - operation_start,
-                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage()
-                if self.gpu_manager
-                else 0,
+                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage() if self.gpu_manager else 0,
             }
 
             # 更新性能指标
             if self.enable_gpu:
-                self.performance_metrics["total_gpu_time"] += (
-                    time.time() - operation_start
-                )
+                self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
             logger.info(f"回测完成，总收益: {result.get('total_return', 0):.2%}")
             return result
@@ -207,24 +199,18 @@ class GPUAccelerationEngine:
             else:
                 self.performance_metrics["cpu_operations"] += 1
 
-            result = self.ml_engine.train_model_gpu(
-                X_train, y_train, model_type, params, validation_split
-            )
+            result = self.ml_engine.train_model_gpu(X_train, y_train, model_type, params, validation_split)
 
             # 添加引擎级别信息
             result["engine_info"] = {
                 "gpu_mode": self.enable_gpu,
                 "computation_time": time.time() - operation_start,
-                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage()
-                if self.gpu_manager
-                else 0,
+                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage() if self.gpu_manager else 0,
             }
 
             # 更新性能指标
             if self.enable_gpu:
-                self.performance_metrics["total_gpu_time"] += (
-                    time.time() - operation_start
-                )
+                self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
             logger.info(f"模型训练完成，验证得分: {result.get('val_score', 0):.4f}")
             return result
@@ -248,9 +234,7 @@ class GPUAccelerationEngine:
             logger.error(f"预测失败: {e}")
             raise
 
-    def evaluate_model_gpu(
-        self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Dict[str, float]:
+    def evaluate_model_gpu(self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
         """评估GPU模型"""
         try:
             return self.ml_engine.evaluate_model_gpu(model_id, X_test, y_test)
@@ -259,9 +243,7 @@ class GPUAccelerationEngine:
             raise
 
     # 特征计算相关方法
-    def calculate_features_gpu(
-        self, data: pd.DataFrame, feature_types: List[str] = None
-    ) -> Dict[str, Any]:
+    def calculate_features_gpu(self, data: pd.DataFrame, feature_types: List[str] = None) -> Dict[str, Any]:
         """GPU加速特征计算
 
         Args:
@@ -285,19 +267,13 @@ class GPUAccelerationEngine:
             # 添加引擎级别信息
             if "metadata" in result:
                 result["metadata"]["engine_gpu_mode"] = self.enable_gpu
-                result["metadata"]["engine_computation_time"] = (
-                    time.time() - operation_start
-                )
+                result["metadata"]["engine_computation_time"] = time.time() - operation_start
 
             # 更新性能指标
             if self.enable_gpu:
-                self.performance_metrics["total_gpu_time"] += (
-                    time.time() - operation_start
-                )
+                self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(
-                f"特征计算完成，{len(result.get('metadata', {}).get('feature_types', []))} 类特征"
-            )
+            logger.info(f"特征计算完成，{len(result.get('metadata', {}).get('feature_types', []))} 类特征")
             return result
 
         except Exception as e:
@@ -348,16 +324,12 @@ class GPUAccelerationEngine:
             result["engine_info"] = {
                 "gpu_mode": self.enable_gpu,
                 "computation_time": time.time() - operation_start,
-                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage()
-                if self.gpu_manager
-                else 0,
+                "gpu_memory_used": self.gpu_manager.get_gpu_memory_usage() if self.gpu_manager else 0,
             }
 
             # 更新性能指标
             if self.enable_gpu:
-                self.performance_metrics["total_gpu_time"] += (
-                    time.time() - operation_start
-                )
+                self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
             logger.info(f"参数优化完成，最佳得分: {result.get('best_score', 0):.4f}")
             return result
@@ -381,9 +353,7 @@ class GPUAccelerationEngine:
     ) -> Dict[str, Any]:
         """GPU加速投资组合优化"""
         try:
-            result = self.optimization_engine.optimize_portfolio_weights(
-                returns, method, risk_free_rate
-            )
+            result = self.optimization_engine.optimize_portfolio_weights(returns, method, risk_free_rate)
             result["engine_gpu_mode"] = self.enable_gpu
             return result
         except Exception as e:
@@ -447,8 +417,7 @@ class GPUAccelerationEngine:
             if "optimization" in results and "backtest" in results:
                 results["performance_comparison"] = {
                     "optimization_improvement": (
-                        results["backtest"]["sharpe_ratio"]
-                        - results["optimization"].get("best_score", 0)
+                        results["backtest"]["sharpe_ratio"] - results["optimization"].get("best_score", 0)
                     ),
                     "total_analysis_time": time.time() - analysis_start,
                     "gpu_utilization": self.get_gpu_utilization(),
@@ -515,12 +484,8 @@ class GPUAccelerationEngine:
                 "available": True,
                 "memory_used_mb": self.gpu_manager.get_gpu_memory_usage(),
                 "utilization_percent": self.gpu_manager.get_gpu_utilization(),
-                "temperature": getattr(
-                    self.gpu_manager, "get_gpu_temperature", lambda: 0
-                )(),
-                "power_usage": getattr(
-                    self.gpu_manager, "get_gpu_power_usage", lambda: 0
-                )(),
+                "temperature": getattr(self.gpu_manager, "get_gpu_temperature", lambda: 0)(),
+                "power_usage": getattr(self.gpu_manager, "get_gpu_power_usage", lambda: 0)(),
             }
         except Exception as e:
             return {"available": True, "error": str(e)}
@@ -561,13 +526,9 @@ class GPUAccelerationEngine:
             if hasattr(self.feature_engine, "get_cache_info"):
                 cache_info["feature_engine"] = self.feature_engine.get_cache_info()
             if hasattr(self.optimization_engine, "get_cache_info"):
-                cache_info["optimization_engine"] = (
-                    self.optimization_engine.get_cache_info()
-                )
+                cache_info["optimization_engine"] = self.optimization_engine.get_cache_info()
             if hasattr(self.ml_engine, "list_models"):
-                cache_info["ml_engine"] = {
-                    "models_count": len(self.ml_engine.list_models())
-                }
+                cache_info["ml_engine"] = {"models_count": len(self.ml_engine.list_models())}
 
             return cache_info
         except Exception as e:

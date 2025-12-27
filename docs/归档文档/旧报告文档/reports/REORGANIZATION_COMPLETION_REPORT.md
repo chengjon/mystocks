@@ -155,7 +155,7 @@ from src.storage.database.database_manager import DatabaseTableManager, Database
 ### 1. Import验证
 ```bash
 ✅ from src.core.config_driven_table_manager import ConfigDrivenTableManager
-✅ from src.adapters.akshare_adapter import AkshareDataSource  
+✅ from src.adapters.akshare_adapter import AkshareDataSource
 ✅ from src.data_access.tdengine_access import TDengineDataAccess
 ✅ from src.interfaces.data_source import IDataSource
 ```
@@ -231,8 +231,8 @@ from src.storage.database.database_manager import DatabaseTableManager, Database
 
 ---
 
-**生成工具**: Claude Code  
-**报告版本**: 1.0  
+**生成工具**: Claude Code
+**报告版本**: 1.0
 **最后更新**: 2025-11-09
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

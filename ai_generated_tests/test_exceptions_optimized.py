@@ -29,21 +29,21 @@ class TestExceptionsOptimized:
         # TODO: 根据函数具体逻辑实现以下测试场景
 
         # 1. 正常输入测试
-        normal_result = exceptions.__init__(/* 正常参数 */)
+#         normal_result = # exceptions.__init__(None)  # TODO
         assert normal_result is not None
 
         # 2. 边界值测试
-        boundary_result = exceptions.__init__(/* 边界参数 */)
+#         boundary_result = # exceptions.__init__(None)  # TODO
         assert boundary_result is not None
 
         # 3. 异常输入测试
         with pytest.raises((ValueError, TypeError)):
-            exceptions.__init__(/* 异常参数 */)
+            # exceptions.__init__(None)  # TODO
 
         # 4. 性能基准测试
         start_time = time.time()
         for _ in range(1000):
-            exceptions.__init__(/* 标准参数 */)
+            # exceptions.__init__(None)  # TODO
         duration = time.time() - start_time
         assert duration < 1.0  # 应在1秒内完成1000次调用
 
@@ -52,21 +52,21 @@ class TestExceptionsOptimized:
         # TODO: 根据函数具体逻辑实现以下测试场景
 
         # 1. 正常输入测试
-        normal_result = exceptions.__repr__(/* 正常参数 */)
+#         normal_result = # exceptions.__repr__(None)  # TODO
         assert normal_result is not None
 
         # 2. 边界值测试
-        boundary_result = exceptions.__repr__(/* 边界参数 */)
+#         boundary_result = # exceptions.__repr__(None)  # TODO
         assert boundary_result is not None
 
         # 3. 异常输入测试
         with pytest.raises((ValueError, TypeError)):
-            exceptions.__repr__(/* 异常参数 */)
+            # exceptions.__repr__(None)  # TODO
 
         # 4. 性能基准测试
         start_time = time.time()
         for _ in range(1000):
-            exceptions.__repr__(/* 标准参数 */)
+            # exceptions.__repr__(None)  # TODO
         duration = time.time() - start_time
         assert duration < 1.0  # 应在1秒内完成1000次调用
 
@@ -116,4 +116,3 @@ class TestExceptionsOptimized:
             assert e.error_code == "EXPECTED_CODE"
             # 验证系统状态正常
             assert exceptions.is_healthy()
-

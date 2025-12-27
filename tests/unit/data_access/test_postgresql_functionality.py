@@ -83,9 +83,7 @@ class TestPostgreSQLDataAccessFunctionality:
         symbol = "600519"
         date = "2024-01-01"
 
-        query, params = create_parameterized_query(
-            "stocks", ["symbol", "date"], [symbol, date]
-        )
+        query, params = create_parameterized_query("stocks", ["symbol", "date"], [symbol, date])
 
         expected_query = "SELECT * FROM stocks WHERE symbol = %s AND date = %s"
         assert query == expected_query
@@ -228,9 +226,7 @@ class TestPostgreSQLDataAccessIntegration:
 
         def get_stock_data(conn, symbol):
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT symbol, price, date FROM stocks WHERE symbol = %s", (symbol,)
-            )
+            cursor.execute("SELECT symbol, price, date FROM stocks WHERE symbol = %s", (symbol,))
             return cursor.fetchall()
 
         # 测试插入

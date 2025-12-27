@@ -42,9 +42,7 @@ class IDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_kline_data(
-        self, symbol: str, start_date: str, end_date: str, frequency: str = "daily"
-    ) -> pd.DataFrame:
+    def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
         """获取K线数据"""
         pass
 
@@ -54,9 +52,7 @@ class IDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_fundamental_data(
-        self, symbol: str, report_period: str, data_type: str = "income"
-    ) -> pd.DataFrame:
+    def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
         """获取财务数据"""
         pass
 
@@ -212,9 +208,7 @@ class ByapiAdapter(IDataSource):
             df = df.rename(columns=column_map)
 
             # 标准化交易所名称 (jys字段: 'SH' 或 'SZ')
-            df["exchange"] = (
-                df["exchange_code"].map({"SH": "SSE", "SZ": "SZSE"}).fillna("UNKNOWN")
-            )
+            df["exchange"] = df["exchange_code"].map({"SH": "SSE", "SZ": "SZSE"}).fillna("UNKNOWN")
 
             # byapi不提供上市日期,设置为None
             df["list_date"] = pd.NaT
@@ -225,9 +219,7 @@ class ByapiAdapter(IDataSource):
         except Exception as e:
             raise DataSourceError(f"获取股票列表失败: {e}")
 
-    def get_kline_data(
-        self, symbol: str, start_date: str, end_date: str, frequency: str = "daily"
-    ) -> pd.DataFrame:
+    def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
         """
         获取K线数据
 
@@ -248,9 +240,7 @@ class ByapiAdapter(IDataSource):
         # 获取byapi频率参数
         level = self.frequency_map.get(frequency)
         if not level:
-            raise ValueError(
-                f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}"
-            )
+            raise ValueError(f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}")
 
         # 构建API URL (使用https)
         url = (
@@ -377,9 +367,7 @@ class ByapiAdapter(IDataSource):
                     "change_pct": record.get("pc", 0.0),
                     "bid_price_1": 0.0,  # byapi需单独调用五档盘口接口
                     "ask_price_1": 0.0,
-                    "timestamp": pd.to_datetime(
-                        record.get("t", datetime.now().isoformat()), utc=True
-                    ),
+                    "timestamp": pd.to_datetime(record.get("t", datetime.now().isoformat()), utc=True),
                     "turnover_rate": record.get("hs", 0.0),
                 }
 
@@ -394,9 +382,7 @@ class ByapiAdapter(IDataSource):
 
         return pd.DataFrame(result_list)
 
-    def get_fundamental_data(
-        self, symbol: str, report_period: str, data_type: str = "income"
-    ) -> pd.DataFrame:
+    def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
         """
         获取财务数据
 
@@ -419,9 +405,7 @@ class ByapiAdapter(IDataSource):
         # 获取byapi财务类型
         api_type = self.fundamental_type_map.get(data_type)
         if not api_type:
-            raise ValueError(
-                f"不支持的财务数据类型: {data_type}. 支持: {list(self.fundamental_type_map.keys())}"
-            )
+            raise ValueError(f"不支持的财务数据类型: {data_type}. 支持: {list(self.fundamental_type_map.keys())}")
 
         # 构建URL
         if report_period == "latest":
@@ -620,9 +604,7 @@ if __name__ == "__main__":
     # 4. 获取财务数据
     print("【测试4】获取最新利润表 (平安银行):")
     try:
-        financial = adapter.get_fundamental_data(
-            symbol="000001.SZ", report_period="latest", data_type="income"
-        )
+        financial = adapter.get_fundamental_data(symbol="000001.SZ", report_period="latest", data_type="income")
         if not financial.empty:
             print(f"报告期: {financial.iloc[0].get('jzrq', 'N/A')}")
             print(f"营业收入: {financial.iloc[0].get('yysr', 'N/A')}")

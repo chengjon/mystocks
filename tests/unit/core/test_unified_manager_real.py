@@ -57,9 +57,7 @@ class TestUnifiedManagerInitialization:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_initialization_with_monitoring_disabled(
-        self, mock_pg, mock_td, mock_queue
-    ):
+    def test_initialization_with_monitoring_disabled(self, mock_pg, mock_td, mock_queue):
         """测试禁用监控的初始化"""
         from src.core.unified_manager import MyStocksUnifiedManager
 
@@ -75,9 +73,7 @@ class TestUnifiedManagerInitialization:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_initialization_monitoring_failure_graceful(
-        self, mock_pg, mock_td, mock_queue, mock_monitoring
-    ):
+    def test_initialization_monitoring_failure_graceful(self, mock_pg, mock_td, mock_queue, mock_monitoring):
         """测试监控初始化失败时的优雅降级"""
         # Mock监控初始化失败
         mock_monitoring.side_effect = Exception("监控数据库连接失败")
@@ -169,9 +165,7 @@ class TestUnifiedManagerSaveData:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         empty_df = pd.DataFrame()
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, empty_df, "test_table"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, empty_df, "test_table")
 
         # 空DataFrame应该直接返回True,不实际保存
         assert result is True
@@ -190,9 +184,7 @@ class TestUnifiedManagerSaveData:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         test_df = pd.DataFrame({"symbol": ["600000"], "price": [10.0]})
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, test_df, "tick_table"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, test_df, "tick_table")
 
         assert result is True
         mock_td_instance.insert_dataframe.assert_called_once()
@@ -211,9 +203,7 @@ class TestUnifiedManagerSaveData:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         test_df = pd.DataFrame({"symbol": ["600000"], "close": [15.0]})
-        result = manager.save_data_by_classification(
-            DataClassification.DAILY_KLINE, test_df, "daily_kline"
-        )
+        result = manager.save_data_by_classification(DataClassification.DAILY_KLINE, test_df, "daily_kline")
 
         assert result is True
         mock_pg_instance.insert_dataframe.assert_called_once()
@@ -221,17 +211,13 @@ class TestUnifiedManagerSaveData:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_save_data_database_failure_recovery_queue(
-        self, mock_pg, mock_td, mock_queue
-    ):
+    def test_save_data_database_failure_recovery_queue(self, mock_pg, mock_td, mock_queue):
         """测试数据库故障时数据加入恢复队列"""
         from src.core.unified_manager import MyStocksUnifiedManager
 
         # Mock数据库保存失败
         mock_td_instance = mock_td.return_value
-        mock_td_instance.insert_dataframe = Mock(
-            side_effect=Exception("数据库连接失败")
-        )
+        mock_td_instance.insert_dataframe = Mock(side_effect=Exception("数据库连接失败"))
 
         # Mock恢复队列
         mock_queue_instance = mock_queue.return_value
@@ -240,9 +226,7 @@ class TestUnifiedManagerSaveData:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         test_df = pd.DataFrame({"symbol": ["600000"], "price": [10.0]})
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, test_df, "tick_table"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, test_df, "tick_table")
 
         # 保存失败时,系统会捕获异常并加入恢复队列,返回False(保存失败)
         assert result is False
@@ -266,9 +250,7 @@ class TestUnifiedManagerLoadData:
 
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
-        result = manager.load_data_by_classification(
-            DataClassification.TICK_DATA, "tick_table"
-        )
+        result = manager.load_data_by_classification(DataClassification.TICK_DATA, "tick_table")
 
         assert len(result) == 1
         assert result.iloc[0]["symbol"] == "600000"
@@ -310,9 +292,7 @@ class TestUnifiedManagerLoadData:
 
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
-        result = manager.load_data_by_classification(
-            DataClassification.TICK_DATA, "tick_table"
-        )
+        result = manager.load_data_by_classification(DataClassification.TICK_DATA, "tick_table")
 
         # 失败应该返回空DataFrame
         assert result.empty
@@ -360,17 +340,13 @@ class TestUnifiedManagerMonitoring:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_monitoring_statistics(
-        self, mock_pg, mock_td, mock_queue, mock_perf, mock_monitoring
-    ):
+    def test_monitoring_statistics(self, mock_pg, mock_td, mock_queue, mock_perf, mock_monitoring):
         """测试获取监控统计信息"""
         from src.core.unified_manager import MyStocksUnifiedManager
 
         # Mock性能监控器
         mock_perf_instance = mock_perf.return_value
-        mock_perf_instance.get_performance_summary = Mock(
-            return_value={"avg_latency": 50, "total_queries": 1000}
-        )
+        mock_perf_instance.get_performance_summary = Mock(return_value={"avg_latency": 50, "total_queries": 1000})
 
         manager = MyStocksUnifiedManager(enable_monitoring=True)
         stats = manager.get_monitoring_statistics()
@@ -386,17 +362,13 @@ class TestUnifiedManagerMonitoring:
     @patch("src.core.unified_manager.FailureRecoveryQueue")
     @patch("src.core.unified_manager.TDengineDataAccess")
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
-    def test_check_data_quality(
-        self, mock_pg, mock_td, mock_queue, mock_quality, mock_monitoring
-    ):
+    def test_check_data_quality(self, mock_pg, mock_td, mock_queue, mock_quality, mock_monitoring):
         """测试数据质量检查"""
         from src.core.unified_manager import MyStocksUnifiedManager
 
         # Mock质量监控器
         mock_quality_instance = mock_quality.return_value
-        mock_quality_instance.check_completeness = Mock(
-            return_value={"passed": True, "completeness_rate": 0.98}
-        )
+        mock_quality_instance.check_completeness = Mock(return_value={"passed": True, "completeness_rate": 0.98})
 
         manager = MyStocksUnifiedManager(enable_monitoring=True)
 
@@ -469,9 +441,7 @@ class TestUnifiedManagerEdgeCases:
 
         # 创建10万行数据
         large_df = pd.DataFrame({"symbol": [f"60000{i % 10}" for i in range(100000)]})
-        result = manager.save_data_by_classification(
-            DataClassification.TICK_DATA, large_df, "tick_table"
-        )
+        result = manager.save_data_by_classification(DataClassification.TICK_DATA, large_df, "tick_table")
 
         assert result is True
         mock_td_instance.insert_dataframe.assert_called_once()
@@ -490,9 +460,7 @@ class TestUnifiedManagerEdgeCases:
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
         single_row_df = pd.DataFrame({"col": [1]})
-        result = manager.save_data_by_classification(
-            DataClassification.DAILY_KLINE, single_row_df, "single_row_table"
-        )
+        result = manager.save_data_by_classification(DataClassification.DAILY_KLINE, single_row_df, "single_row_table")
 
         assert result is True
         mock_pg_instance.insert_dataframe.assert_called_once()

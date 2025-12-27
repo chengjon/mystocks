@@ -15,9 +15,7 @@ import os
 import pytest
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 
@@ -40,9 +38,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_timeseries_source as get_ts_mock
 
         mock_source = get_ts_mock()
-        assert isinstance(
-            mock_source, MockTimeSeriesDataSource
-        ), "应该返回MockTimeSeriesDataSource实例"
+        assert isinstance(mock_source, MockTimeSeriesDataSource), "应该返回MockTimeSeriesDataSource实例"
 
         # 验证Mock数据源可以正常工作
         mock_health = mock_source.health_check()
@@ -59,9 +55,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_timeseries_source as get_ts_real
 
         real_source = get_ts_real()
-        assert isinstance(
-            real_source, TDengineTimeSeriesDataSource
-        ), "应该返回TDengineTimeSeriesDataSource实例"
+        assert isinstance(real_source, TDengineTimeSeriesDataSource), "应该返回TDengineTimeSeriesDataSource实例"
 
         # 验证Real数据源可以正常工作
         real_health = real_source.health_check()
@@ -90,9 +84,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_relational_source as get_rel_mock
 
         mock_source = get_rel_mock()
-        assert isinstance(
-            mock_source, MockRelationalDataSource
-        ), "应该返回MockRelationalDataSource实例"
+        assert isinstance(mock_source, MockRelationalDataSource), "应该返回MockRelationalDataSource实例"
 
         mock_health = mock_source.health_check()
         assert mock_health["status"] in ["healthy", "mock"]
@@ -105,9 +97,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_relational_source as get_rel_real
 
         real_source = get_rel_real()
-        assert isinstance(
-            real_source, PostgreSQLRelationalDataSource
-        ), "应该返回PostgreSQLRelationalDataSource实例"
+        assert isinstance(real_source, PostgreSQLRelationalDataSource), "应该返回PostgreSQLRelationalDataSource实例"
 
         real_health = real_source.health_check()
         assert real_health["status"] in ["healthy", "degraded"]
@@ -132,9 +122,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_business_source as get_biz_mock
 
         mock_source = get_biz_mock()
-        assert isinstance(
-            mock_source, MockBusinessDataSource
-        ), "应该返回MockBusinessDataSource实例"
+        assert isinstance(mock_source, MockBusinessDataSource), "应该返回MockBusinessDataSource实例"
 
         mock_health = mock_source.health_check()
         assert mock_health["status"] in ["healthy", "mock"]
@@ -149,9 +137,7 @@ class TestDataSourceSwitching:
         from src.data_sources import get_business_source as get_biz_real
 
         real_source = get_biz_real()
-        assert isinstance(
-            real_source, CompositeBusinessDataSource
-        ), "应该返回CompositeBusinessDataSource实例"
+        assert isinstance(real_source, CompositeBusinessDataSource), "应该返回CompositeBusinessDataSource实例"
 
         real_health = real_source.health_check()
         assert real_health["status"] in ["healthy", "degraded"]

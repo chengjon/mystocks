@@ -106,9 +106,7 @@ class TypeConverter:
                 return value
 
         except (ValueError, TypeError) as e:
-            logger.warning(
-                f"类型转换失败 - 字段: {field_name}, 值: {value}, 类型: {field_type}, 错误: {e}"
-            )
+            logger.warning(f"类型转换失败 - 字段: {field_name}, 值: {value}, 类型: {field_type}, 错误: {e}")
             return None
 
 
@@ -155,10 +153,7 @@ class ResultSetMapper:
                     if index < len(row):
                         value = row[index]
                         mapped_value = self._map_field(value, mapping)
-                        if (
-                            mapped_value is not None
-                            or mapping.default_value is not None
-                        ):
+                        if mapped_value is not None or mapping.default_value is not None:
                             result[mapping.target_field] = mapped_value
                     elif mapping.required:
                         raise ValueError(f"必需字段 {mapping.target_field} 缺失")
@@ -169,20 +164,14 @@ class ResultSetMapper:
                     if source_name in row:
                         value = row[source_name]
                         mapped_value = self._map_field(value, mapping)
-                        if (
-                            mapped_value is not None
-                            or mapping.default_value is not None
-                        ):
+                        if mapped_value is not None or mapping.default_value is not None:
                             result[mapping.target_field] = mapped_value
                     elif mapping.required:
                         raise ValueError(f"必需字段 {mapping.target_field} 缺失")
 
             # 应用默认值
             for mapping in self.field_mappings:
-                if (
-                    mapping.target_field not in result
-                    and mapping.default_value is not None
-                ):
+                if mapping.target_field not in result and mapping.default_value is not None:
                     result[mapping.target_field] = mapping.default_value
 
             return result
@@ -207,28 +196,20 @@ class ResultSetMapper:
             try:
                 value = mapping.transformer(value)
             except Exception as e:
-                logger.warning(
-                    f"自定义转换器失败 - 字段: {mapping.target_field}, 错误: {e}"
-                )
+                logger.warning(f"自定义转换器失败 - 字段: {mapping.target_field}, 错误: {e}")
                 return None
 
         # 应用类型转换
-        mapped_value = TypeConverter.convert_value(
-            value, mapping.field_type, mapping.target_field
-        )
+        mapped_value = TypeConverter.convert_value(value, mapping.field_type, mapping.target_field)
 
         # 应用验证器
         if mapping.validator and mapped_value is not None:
             try:
                 if not mapping.validator(mapped_value):
-                    logger.warning(
-                        f"字段验证失败 - 字段: {mapping.target_field}, 值: {mapped_value}"
-                    )
+                    logger.warning(f"字段验证失败 - 字段: {mapping.target_field}, 值: {mapped_value}")
                     return None
             except Exception as e:
-                logger.warning(
-                    f"验证器执行失败 - 字段: {mapping.target_field}, 错误: {e}"
-                )
+                logger.warning(f"验证器执行失败 - 字段: {mapping.target_field}, 错误: {e}")
                 return None
 
         return mapped_value
@@ -276,9 +257,7 @@ class BaseDataMapper:
 
     def remove_field_mapping(self, target_field: str):
         """移除字段映射"""
-        self.field_mappings = [
-            m for m in self.field_mappings if m.target_field != target_field
-        ]
+        self.field_mappings = [m for m in self.field_mappings if m.target_field != target_field]
         self.result_set_mapper = ResultSetMapper(self.field_mappings)
 
     def map_row(self, row: Union[List, Dict[str, Any]]) -> Dict[str, Any]:
@@ -295,9 +274,7 @@ class BaseDataMapper:
 
     def get_required_fields(self) -> List[str]:
         """获取必需字段列表"""
-        return [
-            mapping.target_field for mapping in self.field_mappings if mapping.required
-        ]
+        return [mapping.target_field for mapping in self.field_mappings if mapping.required]
 
 
 class MapperRegistry:

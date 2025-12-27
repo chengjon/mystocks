@@ -9,7 +9,7 @@ Features:
 - 连接泄漏检测
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
 import structlog
@@ -46,9 +46,7 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
             "overflow": pool.overflow(),  # 溢出连接
             "max_overflow": pool._max_overflow,
             "pool_capacity": pool.size() + pool._max_overflow,
-            "usage_percentage": round(
-                (pool.checkedout() / (pool.size() + pool._max_overflow)) * 100, 2
-            ),
+            "usage_percentage": round((pool.checkedout() / (pool.size() + pool._max_overflow)) * 100, 2),
             "timestamp": datetime.utcnow().isoformat(),
         }
 
@@ -93,9 +91,7 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
         stats = tdengine_mgr.get_pool_stats()
 
         if stats is None:
-            raise HTTPException(
-                status_code=503, detail="TDengine连接池未初始化或不可用"
-            )
+            raise HTTPException(status_code=503, detail="TDengine连接池未初始化或不可用")
 
         # 计算连接池使用率
         pool_size = stats.get("pool_size", 0)
@@ -124,12 +120,8 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
         # 计算错误率
         total_requests = stats.get("connection_requests", 0)
         if total_requests > 0:
-            error_rate = round(
-                (stats.get("connection_errors", 0) / total_requests) * 100, 2
-            )
-            timeout_rate = round(
-                (stats.get("connection_timeouts", 0) / total_requests) * 100, 2
-            )
+            error_rate = round((stats.get("connection_errors", 0) / total_requests) * 100, 2)
+            timeout_rate = round((stats.get("connection_timeouts", 0) / total_requests) * 100, 2)
             stats["error_rate"] = error_rate
             stats["timeout_rate"] = timeout_rate
 

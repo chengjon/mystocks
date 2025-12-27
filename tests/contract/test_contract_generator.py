@@ -172,9 +172,7 @@ class FastAPIParser:
 
                 # 解析函数签名
                 signature = inspect.signature(route.endpoint)
-                self._extract_parameters_from_signature(
-                    path_item, signature, path_params
-                )
+                self._extract_parameters_from_signature(path_item, signature, path_params)
 
                 spec.paths[path] = spec.paths.get(path, {})
                 spec.paths[path][method.upper()] = path_item
@@ -213,9 +211,7 @@ class FastAPIParser:
                 continue
 
             # 查询参数
-            annotation = (
-                param.annotation if param.annotation != inspect.Parameter.empty else str
-            )
+            annotation = param.annotation if param.annotation != inspect.Parameter.empty else str
             param_type = self._type_to_string(annotation)
 
             query_param = Parameter(
@@ -223,9 +219,7 @@ class FastAPIParser:
                 type=param_type,
                 required=param.default == inspect.Parameter.empty,
                 description=f"Query parameter {param_name}",
-                default=param.default
-                if param.default != inspect.Parameter.empty
-                else None,
+                default=param.default if param.default != inspect.Parameter.empty else None,
             )
             path_item.parameters.append(query_param)
 
@@ -236,9 +230,7 @@ class FastAPIParser:
         if isinstance(type_annotation, str):
             return type_annotation
         if hasattr(type_annotation, "__name__"):
-            return self.type_mapping.get(
-                type_annotation.__name__, type_annotation.__name__
-            )
+            return self.type_mapping.get(type_annotation.__name__, type_annotation.__name__)
         return "string"
 
 
@@ -392,9 +384,11 @@ class OpenAPISpecGenerator:
             title=content.get("info", {}).get("title", "Generated API"),
             description=content.get("info", {}).get("description", ""),
             version=content.get("info", {}).get("version", "1.0.0"),
-            base_url=content.get("servers", [{}])[0].get("url", "http://localhost:8000")
-            if content.get("servers")
-            else "http://localhost:8000",
+            base_url=(
+                content.get("servers", [{}])[0].get("url", "http://localhost:8000")
+                if content.get("servers")
+                else "http://localhost:8000"
+            ),
         )
 
         # 转换路径
@@ -607,18 +601,11 @@ class ContractGenerator:
             # 中等验证
             for path, methods in spec.paths.items():
                 for method, path_item in methods.items():
-                    if (
-                        not path_item.responses
-                        and self.validation_level == ValidationLevel.MODERATE
-                    ):
-                        path_item.responses.append(
-                            Response(status_code=200, description="成功响应")
-                        )
+                    if not path_item.responses and self.validation_level == ValidationLevel.MODERATE:
+                        path_item.responses.append(Response(status_code=200, description="成功响应"))
 
         if errors:
-            error_msg = "契约验证失败:\n" + "\n".join(
-                f"  - {error}" for error in errors
-            )
+            error_msg = "契约验证失败:\n" + "\n".join(f"  - {error}" for error in errors)
             if self.validation_level == ValidationLevel.LENIENT:
                 print(f"⚠️  {error_msg}")
             else:
@@ -670,25 +657,15 @@ class ContractGenerator:
                 total_responses += len(path_item.responses)
                 method_counts[method] = method_counts.get(method, 0) + 1
 
-                complexity_metrics["path_complexity"][path]["parameters"] += len(
-                    path_item.parameters
-                )
-                complexity_metrics["path_complexity"][path]["responses"] += len(
-                    path_item.responses
-                )
+                complexity_metrics["path_complexity"][path]["parameters"] += len(path_item.parameters)
+                complexity_metrics["path_complexity"][path]["responses"] += len(path_item.responses)
 
         if total_methods > 0:
-            complexity_metrics["avg_parameters_per_method"] = (
-                total_parameters / total_methods
-            )
-            complexity_metrics["avg_responses_per_method"] = (
-                total_responses / total_methods
-            )
+            complexity_metrics["avg_parameters_per_method"] = total_parameters / total_methods
+            complexity_metrics["avg_responses_per_method"] = total_responses / total_methods
 
         if method_counts:
-            complexity_metrics["most_used_method"] = max(
-                method_counts, key=method_counts.get
-            )
+            complexity_metrics["most_used_method"] = max(method_counts, key=method_counts.get)
 
         return complexity_metrics
 

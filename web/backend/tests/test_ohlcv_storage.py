@@ -36,9 +36,7 @@ class TestOHLCVStorageInitialization:
 
     def test_storage_with_custom_params(self):
         """Test storage with custom parameters"""
-        storage = OHLCVStorage(
-            host="192.168.1.1", port=5433, user="admin", database="testdb"
-        )
+        storage = OHLCVStorage(host="192.168.1.1", port=5433, user="admin", database="testdb")
         assert storage.host == "192.168.1.1"
         assert storage.port == 5433
         assert storage.user == "admin"
@@ -393,9 +391,7 @@ class TestOHLCVStorageGetLatest:
             storage = OHLCVStorage()
             storage.connect()
 
-            bar = storage.get_latest_bar(
-                symbol="600519", timeframe=Timeframe.ONE_MINUTE
-            )
+            bar = storage.get_latest_bar(symbol="600519", timeframe=Timeframe.ONE_MINUTE)
 
             assert bar is not None
             assert bar["symbol"] == "600519"
@@ -410,9 +406,7 @@ class TestOHLCVStorageGetLatest:
             storage = OHLCVStorage()
             storage.connect()
 
-            bar = storage.get_latest_bar(
-                symbol="nonexistent", timeframe=Timeframe.ONE_MINUTE
-            )
+            bar = storage.get_latest_bar(symbol="nonexistent", timeframe=Timeframe.ONE_MINUTE)
 
             assert bar is None
 

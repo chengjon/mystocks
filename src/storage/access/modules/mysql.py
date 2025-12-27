@@ -74,15 +74,9 @@ class MySQLDataAccess(IDataAccessLayer):
                 )
             elif mode == "upsert":
                 # 使用MySQL UPSERT实现
-                affected_rows = self._mysql_upsert_data(
-                    processed_data, actual_table_name, conn, classification
-                )
-                self.monitoring_db.log_operation_result(
-                    operation_id, True, affected_rows
-                )
-                logger.info(
-                    f"MySQL保存成功: {actual_table_name}, {affected_rows}条记录"
-                )
+                affected_rows = self._mysql_upsert_data(processed_data, actual_table_name, conn, classification)
+                self.monitoring_db.log_operation_result(operation_id, True, affected_rows)
+                logger.info(f"MySQL保存成功: {actual_table_name}, {affected_rows}条记录")
                 return True
             else:  # default append
                 processed_data.to_sql(
@@ -93,12 +87,8 @@ class MySQLDataAccess(IDataAccessLayer):
                     method="multi",
                 )
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"MySQL保存成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"MySQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return True
 
@@ -129,9 +119,7 @@ class MySQLDataAccess(IDataAccessLayer):
             conn = self.db_manager.get_connection(self.db_type, database_name)
 
             # 构建查询语句
-            query = self._build_reference_query(
-                classification, actual_table_name, filters, **kwargs
-            )
+            query = self._build_reference_query(classification, actual_table_name, filters, **kwargs)
 
             # 执行查询
             data = pd.read_sql(query, conn)
@@ -139,12 +127,8 @@ class MySQLDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_reference_data(data, classification)
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"MySQL加载成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"MySQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return processed_data
 
@@ -251,9 +235,7 @@ class MySQLDataAccess(IDataAccessLayer):
         }
         return table_mapping.get(classification, "unknown_table")
 
-    def _preprocess_reference_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _preprocess_reference_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """预处理参考数据"""
         processed_data = normalize_dataframe(data)
 
@@ -267,9 +249,7 @@ class MySQLDataAccess(IDataAccessLayer):
 
         return processed_data
 
-    def _postprocess_reference_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _postprocess_reference_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """后处理参考数据"""
         if data.empty:
             return data
@@ -352,7 +332,7 @@ class MySQLDataAccess(IDataAccessLayer):
             placeholders = ", ".join(["%s"] * len(columns))
             set_columns = [col for col in columns if col not in primary_key_columns]
             set_clause = ", ".join([f"{col} = VALUES({col})" for col in set_columns])
-            primary_key_clause = ", ".join(primary_key_columns)
+            ", ".join(primary_key_columns)
 
             # 构造并执行INSERT ... ON DUPLICATE KEY UPDATE语句
             sql = f"""

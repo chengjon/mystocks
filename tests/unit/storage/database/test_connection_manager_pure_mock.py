@@ -212,9 +212,7 @@ class TestDatabaseConnectionManagerPureMock:
 
     @patch("src.storage.database.connection_manager.load_dotenv")
     @patch("src.storage.database.connection_manager.os.getenv")
-    def test_get_postgresql_connection_import_error(
-        self, mock_getenv, mock_load_dotenv
-    ):
+    def test_get_postgresql_connection_import_error(self, mock_getenv, mock_load_dotenv):
         """测试PostgreSQL连接导入错误"""
         mock_getenv.return_value = "mock_value"
 
@@ -399,9 +397,7 @@ class TestDatabaseConnectionManagerPureMock:
         ):
             # 模拟连接失败
             mock_taosws.connect.side_effect = Exception("Connection failed")
-            mock_psycopg2.pool.SimpleConnectionPool.side_effect = Exception(
-                "Connection failed"
-            )
+            mock_psycopg2.pool.SimpleConnectionPool.side_effect = Exception("Connection failed")
 
             try:
                 from src.storage.database.connection_manager import (
@@ -423,9 +419,7 @@ class TestDatabaseConnectionManagerPureMock:
         """测试获取连接管理器单例"""
         mock_getenv.return_value = "mock_value"
 
-        with patch(
-            "src.storage.database.connection_manager.DatabaseConnectionManager"
-        ) as mock_manager_class:
+        with patch("src.storage.database.connection_manager.DatabaseConnectionManager") as mock_manager_class:
             mock_instance = Mock()
             mock_manager_class.return_value = mock_instance
 
@@ -457,9 +451,7 @@ class TestDatabaseConnectionManagerEdgeCases:
 
     @patch("src.storage.database.connection_manager.load_dotenv")
     @patch("src.storage.database.connection_manager.os.getenv")
-    def test_validate_env_variables_partial_missing(
-        self, mock_getenv, mock_load_dotenv
-    ):
+    def test_validate_env_variables_partial_missing(self, mock_getenv, mock_load_dotenv):
         """测试部分环境变量缺失"""
 
         # 设置部分环境变量

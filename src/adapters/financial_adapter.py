@@ -196,9 +196,7 @@ class FinancialDataSource(IDataSource):
         # 已添加对akshare的支持，可以获取更全面的财务数据
         # 未来可考虑添加tushare等专业数据源支持
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -225,12 +223,8 @@ class FinancialDataSource(IDataSource):
 
         # 使用date_utils标准化日期
         try:
-            normalized_start_date = (
-                date_utils.normalize_date(start_date) if start_date else None
-            )
-            normalized_end_date = (
-                date_utils.normalize_date(end_date) if end_date else None
-            )
+            normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
+            normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
         except ValueError as e:
             logger.error(f"日期格式错误: {e}")
             return pd.DataFrame()
@@ -272,15 +266,11 @@ class FinancialDataSource(IDataSource):
                             cleaned_data = self._validate_and_clean_data(data, "stock")
                             return cleaned_data
                         else:
-                            logger.warning(
-                                f"数据列名不匹配，实际列名: {list(data.columns)}"
-                            )
+                            logger.warning(f"数据列名不匹配，实际列名: {list(data.columns)}")
                             # 尝试重命名列
                             renamed_data = self._rename_columns(data)
                             # 验证和清洗数据
-                            cleaned_data = self._validate_and_clean_data(
-                                renamed_data, "stock"
-                            )
+                            cleaned_data = self._validate_and_clean_data(renamed_data, "stock")
                             return cleaned_data
                     else:
                         logger.warning("efinance返回空数据")
@@ -290,27 +280,18 @@ class FinancialDataSource(IDataSource):
                             normalized_symbol, beg="2020-01-01", end="2024-12-31"
                         )
                         if not broader_data.empty:
-                            logger.info(
-                                f"更广泛日期范围获取到{len(broader_data)}行数据"
-                            )
+                            logger.info(f"更广泛日期范围获取到{len(broader_data)}行数据")
                             # 过滤日期范围
                             broader_data["日期"] = pd.to_datetime(broader_data["日期"])
-                            start_date_dt = pd.to_datetime(
-                                date_utils.normalize_date(normalized_start_date)
-                            )
-                            end_date_dt = pd.to_datetime(
-                                date_utils.normalize_date(normalized_end_date)
-                            )
+                            start_date_dt = pd.to_datetime(date_utils.normalize_date(normalized_start_date))
+                            end_date_dt = pd.to_datetime(date_utils.normalize_date(normalized_end_date))
                             filtered_data = broader_data[
-                                (broader_data["日期"] >= start_date_dt)
-                                & (broader_data["日期"] <= end_date_dt)
+                                (broader_data["日期"] >= start_date_dt) & (broader_data["日期"] <= end_date_dt)
                             ]
                             if not filtered_data.empty:
                                 logger.info(f"过滤后得到{len(filtered_data)}行数据")
                                 # 验证和清洗数据
-                                cleaned_data = self._validate_and_clean_data(
-                                    filtered_data, "stock"
-                                )
+                                cleaned_data = self._validate_and_clean_data(filtered_data, "stock")
                                 return cleaned_data
                             else:
                                 logger.warning("过滤后数据为空")
@@ -370,9 +351,7 @@ class FinancialDataSource(IDataSource):
                         if col not in df.columns:
                             df[col] = 0  # 默认值
                     # 验证和清洗数据
-                    cleaned_data = self._validate_and_clean_data(
-                        df[expected_columns], "stock"
-                    )  # 按预期顺序返回列
+                    cleaned_data = self._validate_and_clean_data(df[expected_columns], "stock")  # 按预期顺序返回列
                     return cleaned_data
                 else:
                     logger.warning("easyquotation未获取到股票数据")
@@ -438,12 +417,8 @@ class FinancialDataSource(IDataSource):
 
         # 使用date_utils标准化日期
         try:
-            normalized_start_date = (
-                date_utils.normalize_date(start_date) if start_date else None
-            )
-            normalized_end_date = (
-                date_utils.normalize_date(end_date) if end_date else None
-            )
+            normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
+            normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
         except ValueError as e:
             logger.error(f"日期格式错误: {e}")
             return pd.DataFrame()
@@ -462,21 +437,15 @@ class FinancialDataSource(IDataSource):
             logger.info(f"使用格式化代码: {formatted_code}")
 
             # 获取历史行情数据
-            logger.info(
-                f"请求参数: code={formatted_code}, beg={normalized_start_date}, end={normalized_end_date}"
-            )
+            logger.info(f"请求参数: code={formatted_code}, beg={normalized_start_date}, end={normalized_end_date}")
             if normalized_start_date and normalized_end_date:
                 data = self.ef.stock.get_quote_history(
                     formatted_code, beg=normalized_start_date, end=normalized_end_date
                 )
             elif normalized_start_date:
-                data = self.ef.stock.get_quote_history(
-                    formatted_code, beg=normalized_start_date
-                )
+                data = self.ef.stock.get_quote_history(formatted_code, beg=normalized_start_date)
             elif normalized_end_date:
-                data = self.ef.stock.get_quote_history(
-                    formatted_code, end=normalized_end_date
-                )
+                data = self.ef.stock.get_quote_history(formatted_code, end=normalized_end_date)
             else:
                 data = self.ef.stock.get_quote_history(formatted_code)
 
@@ -490,11 +459,7 @@ class FinancialDataSource(IDataSource):
             ):
                 logger.warning("使用日期参数未获取到数据，尝试获取全部数据并过滤...")
                 data = self.ef.stock.get_quote_history(formatted_code)
-                if (
-                    data is not None
-                    and isinstance(data, pd.DataFrame)
-                    and not data.empty
-                ):
+                if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
                     # 过滤日期范围
                     if normalized_start_date:
                         data = data[data["日期"] >= normalized_start_date]
@@ -502,9 +467,7 @@ class FinancialDataSource(IDataSource):
                         data = data[data["日期"] <= normalized_end_date]
 
             if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
-                logger.info(
-                    f"成功获取指数 {index_code} 的日线数据，共 {len(data)} 条记录"
-                )
+                logger.info(f"成功获取指数 {index_code} 的日线数据，共 {len(data)} 条记录")
                 # 验证和清洗数据
                 cleaned_data = self._validate_and_clean_data(data, "index")
                 return cleaned_data
@@ -587,9 +550,7 @@ class FinancialDataSource(IDataSource):
             try:
                 logger.info("使用easyquotation获取股票基本信息")
                 quotation = self.eq.use("sina")  # 使用sina源
-                data = quotation.real(
-                    [normalized_symbol]
-                )  # 获取实时数据，其中包含基本信息
+                data = quotation.real([normalized_symbol])  # 获取实时数据，其中包含基本信息
                 logger.info(f"easyquotation返回数据类型: {type(data)}")
                 if data and normalized_symbol in data:
                     logger.info("easyquotation获取到股票数据")
@@ -710,13 +671,8 @@ class FinancialDataSource(IDataSource):
                     data = pd.DataFrame()
                     for index_code in major_indices:
                         try:
-                            index_data = self.ef.stock.get_realtime_quotes(
-                                symbol=index_code
-                            )
-                            if (
-                                isinstance(index_data, pd.DataFrame)
-                                and not index_data.empty
-                            ):
+                            index_data = self.ef.stock.get_realtime_quotes(symbol=index_code)
+                            if isinstance(index_data, pd.DataFrame) and not index_data.empty:
                                 data = pd.concat([data, index_data], ignore_index=True)
                         except Exception as e:
                             logger.error(f"获取指数{index_code}数据失败: {e}")
@@ -890,24 +846,16 @@ class FinancialDataSource(IDataSource):
                     # 筛选出指定股票的数据
                     filtered_data = all_data[
                         (all_data["股票代码"] == normalized_symbol)
-                        | (
-                            all_data["股票简称"].str.contains(
-                                normalized_symbol, na=False
-                            )
-                        )
+                        | (all_data["股票简称"].str.contains(normalized_symbol, na=False))
                     ]
 
                     if not filtered_data.empty:
                         logger.info(f"efinance获取到{len(filtered_data)}行财务数据")
                         # 添加报告期类型标识
-                        filtered_data = (
-                            filtered_data.copy()
-                        )  # 创建副本避免SettingWithCopyWarning
+                        filtered_data = filtered_data.copy()  # 创建副本避免SettingWithCopyWarning
                         filtered_data.loc[:, "报告期类型"] = "annual"
                         # 验证和清洗数据
-                        cleaned_data = self._validate_and_clean_data(
-                            filtered_data, "financial"
-                        )
+                        cleaned_data = self._validate_and_clean_data(filtered_data, "financial")
                         # 保存到缓存
                         self._save_to_cache(cache_key, cleaned_data)
                         return cleaned_data
@@ -923,20 +871,14 @@ class FinancialDataSource(IDataSource):
                 try:
                     # 尝试获取季度财务数据
                     # pylint: disable=no-member
-                    quarterly_data = self.ef.stock.get_quarterly_performance(
-                        normalized_symbol
-                    )
+                    quarterly_data = self.ef.stock.get_quarterly_performance(normalized_symbol)
                     if quarterly_data is not None and not quarterly_data.empty:
                         logger.info(f"efinance获取到{len(quarterly_data)}行季报数据")
                         # 添加报告期类型标识
-                        quarterly_data = (
-                            quarterly_data.copy()
-                        )  # 创建副本避免SettingWithCopyWarning
+                        quarterly_data = quarterly_data.copy()  # 创建副本避免SettingWithCopyWarning
                         quarterly_data.loc[:, "报告期类型"] = "quarterly"
                         # 验证和清洗数据
-                        cleaned_data = self._validate_and_clean_data(
-                            quarterly_data, "financial"
-                        )
+                        cleaned_data = self._validate_and_clean_data(quarterly_data, "financial")
                         # 保存到缓存
                         self._save_to_cache(cache_key, cleaned_data)
                         return cleaned_data
@@ -1052,9 +994,7 @@ class FinancialDataSource(IDataSource):
             logger.error(traceback.format_exc())
             return pd.DataFrame()
 
-    def _validate_and_clean_data(
-        self, data: pd.DataFrame, data_type: str = "stock"
-    ) -> pd.DataFrame:
+    def _validate_and_clean_data(self, data: pd.DataFrame, data_type: str = "stock") -> pd.DataFrame:
         """
         验证和清洗数据
 
@@ -1088,9 +1028,7 @@ class FinancialDataSource(IDataSource):
             if len(numeric_columns) > 0:
                 # 使用前向填充，如果前面没有数据则使用后向填充
                 # 替换已弃用的fillna(method='ffill')方法
-                cleaned_data[numeric_columns] = (
-                    cleaned_data[numeric_columns].ffill().bfill()
-                )
+                cleaned_data[numeric_columns] = cleaned_data[numeric_columns].ffill().bfill()
                 # 如果仍有缺失值，使用列的均值填充
                 for col in numeric_columns:
                     if cleaned_data[col].isna().any():
@@ -1104,10 +1042,8 @@ class FinancialDataSource(IDataSource):
                 # 确保日期列是datetime类型
                 if "日期" in cleaned_data.columns:
                     # 处理日期列中的异常值
-                    original_dates = len(cleaned_data)
-                    cleaned_data["日期"] = pd.to_datetime(
-                        cleaned_data["日期"], errors="coerce"
-                    )
+                    len(cleaned_data)
+                    cleaned_data["日期"] = pd.to_datetime(cleaned_data["日期"], errors="coerce")
                     # 删除日期转换失败的行
                     invalid_date_rows = cleaned_data["日期"].isna().sum()
                     if invalid_date_rows > 0:
@@ -1117,25 +1053,20 @@ class FinancialDataSource(IDataSource):
                     # 检查日期是否在合理范围内（1990年至今）
                     valid_date_range = (cleaned_data["日期"] >= "1990-01-01") & (
                         cleaned_data["日期"]
-                        <= pd.to_datetime(date_utils.normalize_date(datetime.now()))
-                        + pd.Timedelta(days=1)
+                        <= pd.to_datetime(date_utils.normalize_date(datetime.now())) + pd.Timedelta(days=1)
                     )
                     invalid_dates = ~valid_date_range
                     invalid_date_count = invalid_dates.sum()
                     if invalid_date_count > 0:
-                        logger.info(
-                            f"删除了{invalid_date_count}行日期超出合理范围的数据"
-                        )
+                        logger.info(f"删除了{invalid_date_count}行日期超出合理范围的数据")
                         cleaned_data = cleaned_data[valid_date_range]
 
                 # 确保价格相关列是数值类型
                 price_columns = ["开盘", "收盘", "最高", "最低", "成交量", "成交额"]
                 for col in price_columns:
                     if col in cleaned_data.columns:
-                        original_type = cleaned_data[col].dtype
-                        cleaned_data[col] = pd.to_numeric(
-                            cleaned_data[col], errors="coerce"
-                        )
+                        cleaned_data[col].dtype
+                        cleaned_data[col] = pd.to_numeric(cleaned_data[col], errors="coerce")
                         # 删除数值转换失败的行
                         invalid_numeric_rows = cleaned_data[col].isna().sum()
                         if invalid_numeric_rows > 0:
@@ -1162,13 +1093,9 @@ class FinancialDataSource(IDataSource):
                         errors="coerce",
                     )
                     # 记录转换结果
-                    converted_count = (
-                        cleaned_data[col].notna() & original_values.notna()
-                    ).sum()
+                    converted_count = (cleaned_data[col].notna() & original_values.notna()).sum()
                     if converted_count > 0:
-                        logger.info(
-                            f"成功转换{converted_count}个{col}列的字符串值为数值"
-                        )
+                        logger.info(f"成功转换{converted_count}个{col}列的字符串值为数值")
 
             # 4. 数据范围验证
             if data_type == "stock" or data_type == "index":
@@ -1180,16 +1107,10 @@ class FinancialDataSource(IDataSource):
                     ].shape[0]
                     if invalid_price_rows > 0:
                         logger.info(f"删除了{invalid_price_rows}行价格异常的数据")
-                        cleaned_data = cleaned_data[
-                            (cleaned_data["收盘"] >= 0)
-                            & (cleaned_data["收盘"] <= 100000)
-                        ]
+                        cleaned_data = cleaned_data[(cleaned_data["收盘"] >= 0) & (cleaned_data["收盘"] <= 100000)]
 
                 # 验证最高价、最低价、开盘价与收盘价的合理性
-                if all(
-                    col in cleaned_data.columns
-                    for col in ["开盘", "最高", "最低", "收盘"]
-                ):
+                if all(col in cleaned_data.columns for col in ["开盘", "最高", "最低", "收盘"]):
                     # 检查最高价是否小于最低价等不合理情况
                     invalid_price_relation_rows = cleaned_data[
                         (cleaned_data["最高"] < cleaned_data["最低"])
@@ -1199,9 +1120,7 @@ class FinancialDataSource(IDataSource):
                         | (cleaned_data["收盘"] < cleaned_data["最低"])
                     ].shape[0]
                     if invalid_price_relation_rows > 0:
-                        logger.info(
-                            f"发现{invalid_price_relation_rows}行价格关系异常的数据"
-                        )
+                        logger.info(f"发现{invalid_price_relation_rows}行价格关系异常的数据")
                         # 对于价格关系异常的数据，我们可以尝试修复而不是直接删除
                         # 例如，将最高价设置为四个价格中的最大值
                         price_cols = ["开盘", "收盘", "最高", "最低"]

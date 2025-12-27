@@ -375,9 +375,7 @@ class CacheIntegration:
                         )
 
                 if cache_records:
-                    cache_count = self.cache_manager.batch_write(
-                        cache_records, ttl_days=ttl_days
-                    )
+                    cache_count = self.cache_manager.batch_write(cache_records, ttl_days=ttl_days)
 
                     logger.debug(
                         "✅ 批量缓存写入",

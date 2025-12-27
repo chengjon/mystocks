@@ -60,16 +60,146 @@ class TypeConverter:
         if type_str in cls.TYPE_MAP:
             return cls.TYPE_MAP[type_str]
 
-        # Handle complex types with regex
-        for pattern, replacement in cls.COMPLEX_PATTERNS.items():
-            type_str = re.sub(pattern, replacement, type_str)
+        # Handle complex types by processing from innermost to outermost
+        # This prevents regex from matching partial nested structures
+        max_iterations = 10  # Prevent infinite loops
+        iteration = 0
 
-        # Handle union types
+        while iteration < max_iterations:
+            iteration += 1
+            original = type_str
+
+            # Process in order: Dict first (innermost), then List/Union (outermost)
+            # Handle Dict/Record types - match brackets properly
+            if 'Dict[' in type_str:
+                # Find Dict[ and count brackets to find matching ]
+                while 'Dict[' in type_str:
+                    start = type_str.find('Dict[')
+                    depth = 0
+                    comma_pos = -1
+                    end = -1
+                    for i, char in enumerate(type_str[start+5:], start=start+5):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                        elif char == ',' and depth == 0 and comma_pos == -1:
+                            comma_pos = i
+                    if end != -1 and comma_pos != -1:
+                        key = type_str[start+5:comma_pos].strip()
+                        value = type_str[comma_pos+1:end].strip()
+                        type_str = type_str[:start] + f'Record<{key}, {value}>' + type_str[end+1:]
+                    else:
+                        break
+
+            # Handle List/Array types - use greedy match for nested types
+            if 'List[' in type_str:
+                # Count brackets to find the matching closing bracket
+                while 'List[' in type_str:
+                    start = type_str.find('List[')
+                    depth = 0
+                    end = start + 5  # Start after 'List['
+                    for i, char in enumerate(type_str[start+5:], start=start+5):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    # Extract the content and replace
+                    inner = type_str[start+5:end]
+                    type_str = type_str[:start] + inner + '[]' + type_str[end+1:]
+
+            # Handle Set types
+            if 'Set[' in type_str or 'Set<' in type_str:
+                type_str = re.sub(r'Set\[(.+?)\]', r'Set<\1>', type_str)
+
+            # Handle Optional/Union types - match brackets properly
+            if 'Union[' in type_str:
+                while 'Union[' in type_str:
+                    start = type_str.find('Union[')
+                    depth = 0
+                    end = -1
+                    for i, char in enumerate(type_str[start+6:], start=start+6):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    if end != -1:
+                        inner = type_str[start+6:end]
+                        type_str = type_str[:start] + inner + type_str[end+1:]
+                    else:
+                        break
+            if 'Optional[' in type_str:
+                while 'Optional[' in type_str:
+                    start = type_str.find('Optional[')
+                    depth = 0
+                    end = -1
+                    for i, char in enumerate(type_str[start+9:], start=start+9):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    if end != -1:
+                        inner = type_str[start+9:end]
+                        type_str = type_str[:start] + inner + ' | null' + type_str[end+1:]
+                    else:
+                        break
+
+            # If no changes, we're done
+            if type_str == original:
+                break
+
+        # Fix Python type names
+        type_str = cls._fix_python_type_names(type_str)
+
+        # Handle union types with |
         if " | " in type_str:
             parts = type_str.split(" | ")
-            # Convert each part individually
             converted_parts = [cls.convert_type(part.strip()) for part in parts]
             return " | ".join(converted_parts)
+
+        return type_str
+
+    @classmethod
+    def _fix_python_type_names(cls, type_str: str) -> str:
+        """Fix Python type names in generated TypeScript code"""
+        # Replace Python type names with TypeScript equivalents
+        replacements = {
+            r'\bstr\b': 'string',
+            r'\bint\b': 'number',
+            r'\bfloat\b': 'number',
+            r'\bbool\b': 'boolean',
+            r'\bAny\b': 'any',  # Python typing.Any -> TypeScript any
+        }
+
+        for py_type, ts_type in replacements.items():
+            type_str = re.sub(py_type, ts_type, type_str)
+
+        # Fix ast.unparse() adding parentheses around type names
+        # e.g., Record<(string, any)> -> Record<string, any>
+        type_str = re.sub(r'\(([^)]+)\)', r'\1', type_str)
+
+        # Fix Record types with missing closing >
+        # Record<string, any[>  -> Record<string, any[]>
+        type_str = re.sub(r'Record<([^>]+)\[>', r'Record<\1[]', type_str)
+
+        # Fix malformed array syntax
+        type_str = re.sub(r'\[>;', '[];', type_str)  # [...[>;  -> [...[];
+        # Fix Record types with missing closing >
+        # Record<string, any[>  -> Record<string, any[]>
+        type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
+
 
         return type_str
 
@@ -167,6 +297,11 @@ class PydanticModelExtractor:
             if isinstance(annotation, ast.Name):
                 return annotation.id
             elif isinstance(annotation, ast.Attribute):
+                # Handle Pydantic constraints like constr(), Field(), etc.
+                if annotation.attr == "constr":
+                    return "string"  # constr() -> string
+                elif annotation.attr in ("Field", "validator"):
+                    return "any"  # Skip Field/validator wrappers
                 return f"{annotation.value.id}.{annotation.attr}"
             elif isinstance(annotation, ast.Subscript):
                 value = self._get_type_annotation(annotation.value)
@@ -175,11 +310,11 @@ class PydanticModelExtractor:
                     return f"{value}[{slice_val}]"
                 return f"{value}[...]"
             else:
-                return (
-                    ast.unparse(annotation)
-                    if hasattr(ast, "unparse")
-                    else str(annotation)
-                )
+                unparsed = ast.unparse(annotation) if hasattr(ast, "unparse") else str(annotation)
+                # Clean up Pydantic constraint syntax
+                unparsed = re.sub(r'constr\([^)]*\)', 'string', unparsed)
+                unparsed = re.sub(r'Field\([^)]*\)', '', unparsed)
+                return unparsed
         except:
             return "any"
 
@@ -241,7 +376,39 @@ class TypeScriptGenerator:
         output.append("// API Response Types")
         output.extend(self.interfaces)
 
-        return "\n".join(output)
+        # Post-process to fix any remaining syntax issues
+        ts_code = "\n".join(output)
+        ts_code = self._fix_common_syntax_issues(ts_code)
+
+        return ts_code
+
+    def _fix_common_syntax_issues(self, ts_code: str) -> str:
+        """Fix common TypeScript syntax issues in generated code"""
+        original = ts_code
+
+        # Fix array types with malformed syntax
+        # Record<string, any[>;  -> Record<string, any>[];
+        ts_code = re.sub(r'\[>;', '[];', ts_code)
+
+        # Fix extra closing brackets
+        # ...[]];  -> ...[];
+        ts_code = re.sub(r'\[\]\];', r'[];', ts_code)
+
+        # Fix Record<(type, ...)> -> Record<type, ...>
+        ts_code = re.sub(r'Record<\(([^)]+)\)', r'Record<\1', ts_code)
+
+        # Fix complex array/union patterns
+        # type[ | null]>;  -> type[] | null;
+        ts_code = re.sub(r'\[ \| null\]>;', '[] | null;', ts_code)
+
+        # Fix any remaining parentheses around type names
+        ts_code = re.sub(r'\(([^()]+)\)', r'\1', ts_code)
+
+        # Debug: print if changes were made
+        if ts_code != original:
+            print(f"  🔧 Fixed syntax issues ({len(original) - len(ts_code)} chars removed)")
+
+        return ts_code
 
     def _generate_interface(self, model_name: str, model_info: Dict) -> str:
         """Generate a TypeScript interface for a model"""
@@ -256,6 +423,9 @@ class TypeScriptGenerator:
             ts_field_name = self.type_converter.convert_field_name(field_name)
             ts_type = self.type_converter.convert_type(field_info["type"])
 
+            # Fix common type syntax issues in the generated type string
+            ts_type = self._fix_field_type(ts_type)
+
             # Add optional marker if not required
             optional = "?" if field_info["required"] else ""
             comment = (
@@ -268,6 +438,20 @@ class TypeScriptGenerator:
         interface_lines.append("")
 
         return "\n".join(interface_lines)
+
+    def _fix_field_type(self, type_str: str) -> str:
+        """Fix type string syntax issues"""
+        # Fix malformed array syntax
+        # type[>;  -> type[];
+        type_str = re.sub(r'\[>;', '[];', type_str)
+
+        # Fix type[ | null]>;  -> type[] | null;
+        type_str = re.sub(r'\[ \| null\]>;', '[] | null;', type_str)
+
+        # Fix parentheses around type names
+        type_str = re.sub(r'\(([^()]+)\)', r'\1', type_str)
+
+        return type_str
 
     def _sort_models_by_dependency(self, models: Dict[str, Dict]) -> Dict[str, Dict]:
         """Sort models by dependency order"""

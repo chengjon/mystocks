@@ -16,18 +16,14 @@ class ConnectionPoolConfig:
         self.pool_timeout = int(os.getenv("POOL_TIMEOUT", "30"))
         self.pool_recycle = int(os.getenv("POOL_RECYCLE", "3600"))
         self.pool_max_queries = int(os.getenv("POOL_MAX_QUERIES", "50000"))
-        self.pool_max_inactive_connection_lifetime = float(
-            os.getenv("POOL_MAX_INACTIVE_CONNECTION_LIFETIME", "300")
-        )
+        self.pool_max_inactive_connection_lifetime = float(os.getenv("POOL_MAX_INACTIVE_CONNECTION_LIFETIME", "300"))
 
         # 连接健康检查配置
         self.health_check_interval = int(os.getenv("HEALTH_CHECK_INTERVAL", "60"))
         self.health_check_timeout = int(os.getenv("HEALTH_CHECK_TIMEOUT", "5"))
 
         # 监控配置
-        self.enable_pool_monitoring = (
-            os.getenv("ENABLE_POOL_MONITORING", "true").lower() == "true"
-        )
+        self.enable_pool_monitoring = os.getenv("ENABLE_POOL_MONITORING", "true").lower() == "true"
         self.monitoring_interval = int(os.getenv("MONITORING_INTERVAL", "60"))
 
     # 环境变量配置
@@ -47,9 +43,7 @@ class ConnectionPoolConfig:
             raise ValueError("Minimum connections must be at least 1")
 
         if self.pool_max_connections < self.pool_min_connections:
-            raise ValueError(
-                "Maximum connections must be greater than or equal to minimum connections"
-            )
+            raise ValueError("Maximum connections must be greater than or equal to minimum connections")
 
         if self.pool_timeout < 1:
             raise ValueError("Connection timeout must be at least 1")

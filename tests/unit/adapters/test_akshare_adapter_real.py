@@ -80,9 +80,7 @@ class TestAkshareDataSource:
         mock_ak_stock.return_value = mock_data
 
         # 调用被测试方法
-        result = adapter.get_stock_daily(
-            "000001", start_date="20240101", end_date="20240102"
-        )
+        result = adapter.get_stock_daily("000001", start_date="20240101", end_date="20240102")
 
         # 验证调用参数
         mock_ak_stock.assert_called_once()
@@ -172,9 +170,7 @@ class TestAkshareDataSource:
         )
         mock_ak_index.return_value = mock_data
 
-        result = adapter.get_index_daily(
-            "000001", start_date="20240101", end_date="20240101"
-        )
+        result = adapter.get_index_daily("000001", start_date="20240101", end_date="20240101")
 
         mock_ak_index.assert_called_once()
         assert result is not None
@@ -295,17 +291,13 @@ class TestAkshareDataSource:
     def test_logger_configuration(self, adapter):
         """测试logger配置"""
         # 验证logger是否正确配置
-        assert (
-            hasattr(adapter, "logger") or True
-        )  # 由于已修改为全局logger，这里检查方式需要调整
+        assert hasattr(adapter, "logger") or True  # 由于已修改为全局logger，这里检查方式需要调整
 
     @pytest.mark.benchmark
     def test_performance_get_stock_daily(self, adapter):
         """性能基准测试"""
         with patch("src.adapters.akshare_adapter.ak.stock_zh_a_hist") as mock:
-            mock.return_value = pd.DataFrame(
-                {"日期": pd.date_range("2024-01-01", periods=100), "收盘": [10.0] * 100}
-            )
+            mock.return_value = pd.DataFrame({"日期": pd.date_range("2024-01-01", periods=100), "收盘": [10.0] * 100})
 
             import time
 

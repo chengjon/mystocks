@@ -35,9 +35,7 @@ class IBusinessDataSource(ABC):
     # ==================== 仪表盘相关 ====================
 
     @abstractmethod
-    def get_dashboard_summary(
-        self, user_id: int, trade_date: Optional[date] = None
-    ) -> Dict[str, Any]:
+    def get_dashboard_summary(self, user_id: int, trade_date: Optional[date] = None) -> Dict[str, Any]:
         """
         获取仪表盘汇总数据
 
@@ -288,9 +286,7 @@ class IBusinessDataSource(ABC):
     # ==================== 风险管理相关 ====================
 
     @abstractmethod
-    def calculate_risk_metrics(
-        self, user_id: int, portfolio: Optional[Dict[str, float]] = None
-    ) -> Dict[str, Any]:
+    def calculate_risk_metrics(self, user_id: int, portfolio: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """
         计算风险指标
 
@@ -425,9 +421,7 @@ class IBusinessDataSource(ABC):
         pass
 
     @abstractmethod
-    def get_portfolio_analysis(
-        self, user_id: int, include_history: bool = False
-    ) -> Dict[str, Any]:
+    def get_portfolio_analysis(self, user_id: int, include_history: bool = False) -> Dict[str, Any]:
         """
         获取持仓分析
 
@@ -486,9 +480,7 @@ class IBusinessDataSource(ABC):
         pass
 
     @abstractmethod
-    def perform_attribution_analysis(
-        self, user_id: int, start_date: date, end_date: date
-    ) -> Dict[str, Any]:
+    def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
         """
         执行归因分析
 

@@ -49,9 +49,7 @@ class TestLargeFilesAnalyzer:
     def mock_open(self):
         """模拟open函数，返回不同文件内容的MagicMock"""
 
-        def _mock_open_side_effect(
-            file_path, mode="r", encoding="utf-8", errors="ignore"
-        ):
+        def _mock_open_side_effect(file_path, mode="r", encoding="utf-8", errors="ignore"):
             mock_file = MagicMock()
             filename = os.path.basename(file_path)  # Get just the filename
             if filename == "small_file.py":
@@ -63,9 +61,7 @@ class TestLargeFilesAnalyzer:
             elif filename == "another_large_file.py":
                 mock_file.__enter__.return_value.__iter__.return_value = ["line"] * 3500
             elif filename == "non_py_file.txt":
-                mock_file.__enter__.return_value.__iter__.return_value = [
-                    "text line"
-                ] * 100
+                mock_file.__enter__.return_value.__iter__.return_value = ["text line"] * 100
             else:
                 mock_file.__enter__.return_value.__iter__.return_value = ["line"] * 1
             return mock_file
@@ -111,13 +107,8 @@ class TestLargeFilesAnalyzer:
 
         # 验证返回的大文件列表
         assert len(large_files) == 2
-        assert any(
-            f["relative_path"] == "scripts/dev/another_large_file.py"
-            for f in large_files
-        )
-        assert any(
-            f["relative_path"] == "scripts/dev/large_file.py" for f in large_files
-        )
+        assert any(f["relative_path"] == "scripts/dev/another_large_file.py" for f in large_files)
+        assert any(f["relative_path"] == "scripts/dev/large_file.py" for f in large_files)
         assert large_files[0]["lines"] == 3500  # 确认按行数排序
 
         # 验证输出

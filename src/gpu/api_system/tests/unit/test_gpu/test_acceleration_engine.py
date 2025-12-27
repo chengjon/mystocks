@@ -25,9 +25,7 @@ class TestBacktestEngineGPU:
         assert engine is not None
 
     @patch("cudf.DataFrame")
-    def test_run_backtest_with_gpu(
-        self, mock_cudf, engine, sample_market_data, sample_strategy_config
-    ):
+    def test_run_backtest_with_gpu(self, mock_cudf, engine, sample_market_data, sample_strategy_config):
         """测试GPU回测执行"""
         # 模拟GPU数据转换
         mock_gpu_df = MagicMock()
@@ -158,9 +156,7 @@ class TestFeatureCalculationGPU:
         mock_macd = {
             "macd": pd.Series(np.random.uniform(-1, 1, len(sample_market_data))),
             "signal": pd.Series(np.random.uniform(-1, 1, len(sample_market_data))),
-            "histogram": pd.Series(
-                np.random.uniform(-0.5, 0.5, len(sample_market_data))
-            ),
+            "histogram": pd.Series(np.random.uniform(-0.5, 0.5, len(sample_market_data))),
         }
         engine.calculate_macd.return_value = mock_macd
 

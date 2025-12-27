@@ -137,7 +137,8 @@ class EmailNotificationChannel(NotificationChannel):
         """发送邮件通知"""
         try:
             # 创建邮件内容
-            template = Template("""
+            template = Template(
+                """
             <html>
             <body>
                 <h2>测试监控告警</h2>
@@ -161,7 +162,8 @@ class EmailNotificationChannel(NotificationChannel):
                 <p><em>此邮件由 MyStocks 测试监控系统自动发送</em></p>
             </body>
             </html>
-            """)
+            """
+            )
 
             html_content = template.render(alert=alert)
 
@@ -169,9 +171,7 @@ class EmailNotificationChannel(NotificationChannel):
             msg = MIMEMultipart("alternative")
             msg["From"] = self.from_email
             msg["To"] = ", ".join(self.to_emails)
-            msg["Subject"] = (
-                f"[{alert.severity.value.upper()}] 测试监控告警: {alert.rule_name}"
-            )
+            msg["Subject"] = f"[{alert.severity.value.upper()}] 测试监控告警: {alert.rule_name}"
 
             # 添加HTML内容
             part = MIMEText(html_content, "html")
@@ -309,9 +309,7 @@ class SlackNotificationChannel(NotificationChannel):
                     }
                 )
 
-            response = requests.post(
-                self.webhook_url, json=payload, timeout=self.timeout
-            )
+            response = requests.post(self.webhook_url, json=payload, timeout=self.timeout)
 
             if response.status_code == 200:
                 logging.info(f"Slack通知已发送: {alert.id}")
@@ -373,9 +371,7 @@ class TestMonitor:
         # 保持历史数据在合理范围内
         max_history = self.config.get("max_metric_history", 1000)
         if len(self.metrics_history[metric.name]) > max_history:
-            self.metrics_history[metric.name] = self.metrics_history[metric.name][
-                -max_history:
-            ]
+            self.metrics_history[metric.name] = self.metrics_history[metric.name][-max_history:]
 
     def evaluate_alert_rules(self):
         """评估告警规则"""
@@ -386,11 +382,7 @@ class TestMonitor:
                 continue
 
             # 检查是否需要评估
-            if (
-                rule.last_evaluated
-                and (current_time - rule.last_evaluated).total_seconds()
-                < rule.evaluation_interval
-            ):
+            if rule.last_evaluated and (current_time - rule.last_evaluated).total_seconds() < rule.evaluation_interval:
                 continue
 
             rule.last_evaluated = current_time
@@ -401,11 +393,7 @@ class TestMonitor:
                 continue
 
             # 计算指标值
-            recent_metrics = [
-                m
-                for m in metrics
-                if (current_time - m.timestamp).total_seconds() <= rule.duration
-            ]
+            recent_metrics = [m for m in metrics if (current_time - m.timestamp).total_seconds() <= rule.duration]
 
             if not recent_metrics:
                 continue
@@ -433,11 +421,7 @@ class TestMonitor:
             # 处理告警触发
             if triggered:
                 existing_alert = next(
-                    (
-                        a
-                        for a in self.alerts.values()
-                        if a.rule_id == rule.id and a.status == AlertStatus.OPEN
-                    ),
+                    (a for a in self.alerts.values() if a.rule_id == rule.id and a.status == AlertStatus.OPEN),
                     None,
                 )
 
@@ -467,17 +451,13 @@ class TestMonitor:
             # 检查告警解决
             for alert in self.alerts.values():
                 if alert.rule_id == rule.id and alert.status == AlertStatus.OPEN:
-                    opposite_triggered = self._check_opposite_condition(
-                        rule, recent_metrics, rule.threshold
-                    )
+                    opposite_triggered = self._check_opposite_condition(rule, recent_metrics, rule.threshold)
                     if opposite_triggered:
                         alert.status = AlertStatus.RESOLVED
                         alert.resolved_at = current_time
                         self.send_alert_notifications(alert)
 
-    def _check_opposite_condition(
-        self, rule: AlertRule, metrics: List[MetricData], threshold: float
-    ) -> bool:
+    def _check_opposite_condition(self, rule: AlertRule, metrics: List[MetricData], threshold: float) -> bool:
         """检查相反条件是否满足（用于告警解决）"""
         if rule.condition in ["above_threshold", "average_above"]:
             return all(m.value <= threshold for m in metrics)
@@ -544,9 +524,7 @@ class TestMonitor:
         """抑制告警"""
         if alert_id in self.alerts:
             alert = self.alerts[alert_id]
-            alert.suppressed_until = datetime.now() + timedelta(
-                minutes=duration_minutes
-            )
+            alert.suppressed_until = datetime.now() + timedelta(minutes=duration_minutes)
             alert.status = AlertStatus.SUPPRESSED
             logging.info(f"告警已抑制: {alert_id} until {alert.suppressed_until}")
 
@@ -580,24 +558,14 @@ class TestMonitor:
     def get_alert_summary(self) -> Dict[str, Any]:
         """获取告警摘要"""
         total_alerts = len(self.alerts)
-        open_alerts = len(
-            [a for a in self.alerts.values() if a.status == AlertStatus.OPEN]
-        )
-        acknowledged_alerts = len(
-            [a for a in self.alerts.values() if a.status == AlertStatus.ACKNOWLEDGED]
-        )
-        resolved_alerts = len(
-            [a for a in self.alerts.values() if a.status == AlertStatus.RESOLVED]
-        )
+        open_alerts = len([a for a in self.alerts.values() if a.status == AlertStatus.OPEN])
+        acknowledged_alerts = len([a for a in self.alerts.values() if a.status == AlertStatus.ACKNOWLEDGED])
+        resolved_alerts = len([a for a in self.alerts.values() if a.status == AlertStatus.RESOLVED])
 
         by_severity = {}
         for severity in AlertSeverity:
             by_severity[severity.value] = len(
-                [
-                    a
-                    for a in self.alerts.values()
-                    if a.severity == severity and a.status == AlertStatus.OPEN
-                ]
+                [a for a in self.alerts.values() if a.severity == severity and a.status == AlertStatus.OPEN]
             )
 
         return {
@@ -832,9 +800,7 @@ class TestAlertManager:
                     "name": rule.name,
                     "severity": rule.severity.value,
                     "status": "enabled" if rule.enabled else "disabled",
-                    "last_evaluated": rule.last_evaluated.isoformat()
-                    if rule.last_evaluated
-                    else None,
+                    "last_evaluated": rule.last_evaluated.isoformat() if rule.last_evaluated else None,
                 }
                 for rule in self.monitor.alert_rules.values()
             ],
@@ -867,9 +833,7 @@ class TestAlertManager:
 
             if alert.acknowledged_by:
                 alert_data["acknowledged_by"] = alert.acknowledged_by
-                alert_data["acknowledged_at"] = (
-                    alert.acknowledged_at.isoformat() if alert.acknowledged_at else None
-                )
+                alert_data["acknowledged_at"] = alert.acknowledged_at.isoformat() if alert.acknowledged_at else None
 
             if alert.resolved_at:
                 alert_data["resolved_at"] = alert.resolved_at.isoformat()
@@ -942,9 +906,7 @@ class RealTimeMonitor:
         self.prometheus_port = config.get("prometheus_port", 8001)
 
         # 指标历史
-        self.metrics_history: Dict[str, List[Tuple[float, datetime]]] = defaultdict(
-            list
-        )
+        self.metrics_history: Dict[str, List[Tuple[float, datetime]]] = defaultdict(list)
         self.alerts: List[Dict[str, Any]] = []
         self.alert_thresholds = config.get("alert_thresholds", {})
 
@@ -971,9 +933,7 @@ class RealTimeMonitor:
                 "Test execution duration",
                 ["test_type"],
             ),
-            "alert_count": Gauge(
-                "test_alert_count", "Active alert count", ["severity"]
-            ),
+            "alert_count": Gauge("test_alert_count", "Active alert count", ["severity"]),
             "system_cpu_usage": Gauge("test_system_cpu_usage", "CPU usage"),
             "system_memory_usage": Gauge("test_system_memory_usage", "Memory usage"),
             "test_throughput": Gauge("test_throughput", "Tests per second"),
@@ -1012,9 +972,7 @@ class RealTimeMonitor:
                     # 限制历史记录大小
                     max_history = self.config.get("max_history", 1000)
                     if len(self.metrics_history[name]) > max_history:
-                        self.metrics_history[name] = self.metrics_history[name][
-                            -max_history:
-                        ]
+                        self.metrics_history[name] = self.metrics_history[name][-max_history:]
 
                     # 更新Prometheus指标
                     self._update_prometheus_metric(name, value)
@@ -1104,9 +1062,7 @@ class RealTimeMonitor:
         # 查找最近的测试指标
         for metric_name, history in self.metrics_history.items():
             if "test" in metric_name:
-                recent_tests.extend(
-                    [t for t in history if (now - t[1]).total_seconds() < 60]
-                )
+                recent_tests.extend([t for t in history if (now - t[1]).total_seconds() < 60])
 
         throughput = len(recent_tests) / 60.0 if recent_tests else 0
         self._update_prometheus_metric("test_throughput", throughput)
@@ -1171,9 +1127,7 @@ class IntelligentPerformanceAnalyzer:
 
         # 生成建议
         if analysis_result["anomalies"]:
-            analysis_result["recommendations"] = self._generate_recommendations(
-                analysis_result["anomalies"]
-            )
+            analysis_result["recommendations"] = self._generate_recommendations(analysis_result["anomalies"])
 
         # 保存历史
         self.pattern_history.append(analysis_result)
@@ -1205,9 +1159,7 @@ class IntelligentPerformanceAnalyzer:
         recent_values = [m.get("cpu_usage", 0) for m in self.pattern_history[-10:]]
         if len(recent_values) >= 5:
             avg_usage = statistics.mean(recent_values)
-            if abs(cpu_usage - avg_usage) > self.anomaly_threshold * statistics.stdev(
-                recent_values
-            ):
+            if abs(cpu_usage - avg_usage) > self.anomaly_threshold * statistics.stdev(recent_values):
                 pattern["pattern_type"] = "anomaly"
                 pattern["anomaly"] = True
                 pattern["details"]["deviation"] = abs(cpu_usage - avg_usage)
@@ -1275,40 +1227,29 @@ class DynamicPerformanceOptimizer:
                 optimization = self._apply_optimization(strategy, pattern)
                 if optimization["success"]:
                     optimization_result["applied_optimizations"].append(optimization)
-                    optimization_result["performance_improvement"] += optimization[
-                        "improvement"
-                    ]
+                    optimization_result["performance_improvement"] += optimization["improvement"]
 
         # 更新历史
         self.optimization_history.append(optimization_result)
 
         # 生成下一步建议
-        optimization_result["next_steps"] = self._generate_next_steps(
-            optimization_result
-        )
+        optimization_result["next_steps"] = self._generate_next_steps(optimization_result)
 
         return optimization_result
 
-    def _get_optimization_strategy(
-        self, pattern: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    def _get_optimization_strategy(self, pattern: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """获取优化策略"""
         metric = pattern["metric"]
         pattern_type = pattern["pattern_type"]
 
         # 查找匹配的策略
         for strategy_key, strategy in self.optimization_strategies.items():
-            if (
-                strategy.get("metric") == metric
-                and strategy.get("pattern_type") == pattern_type
-            ):
+            if strategy.get("metric") == metric and strategy.get("pattern_type") == pattern_type:
                 return strategy
 
         return None
 
-    def _apply_optimization(
-        self, strategy: Dict[str, Any], pattern: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_optimization(self, strategy: Dict[str, Any], pattern: Dict[str, Any]) -> Dict[str, Any]:
         """应用优化"""
         optimization = {
             "strategy_id": strategy["id"],
@@ -1340,9 +1281,7 @@ class DynamicPerformanceOptimizer:
 
         return optimization
 
-    def _optimize_resource_allocation(
-        self, strategy: Dict[str, Any], pattern: Dict[str, Any]
-    ) -> float:
+    def _optimize_resource_allocation(self, strategy: Dict[str, Any], pattern: Dict[str, Any]) -> float:
         """优化资源分配"""
         # 模拟资源优化
         current_value = pattern["current_value"]
@@ -1352,16 +1291,12 @@ class DynamicPerformanceOptimizer:
         improvement = (current_value - target_value) * 0.1
         return max(0, improvement)
 
-    def _optimize_code_performance(
-        self, strategy: Dict[str, Any], pattern: Dict[str, Any]
-    ) -> float:
+    def _optimize_code_performance(self, strategy: Dict[str, Any], pattern: Dict[str, Any]) -> float:
         """优化代码性能"""
         # 模拟代码优化
         return 0.05  # 5%改进
 
-    def _optimize_cache_strategy(
-        self, strategy: Dict[str, Any], pattern: Dict[str, Any]
-    ) -> float:
+    def _optimize_cache_strategy(self, strategy: Dict[str, Any], pattern: Dict[str, Any]) -> float:
         """优化缓存策略"""
         # 模拟缓存优化
         return 0.03  # 3%改进
@@ -1387,12 +1322,8 @@ class EnhancedTestMonitor:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.real_time_monitor = RealTimeMonitor(config.get("real_time_monitor", {}))
-        self.performance_analyzer = IntelligentPerformanceAnalyzer(
-            config.get("performance_analyzer", {})
-        )
-        self.performance_optimizer = DynamicPerformanceOptimizer(
-            config.get("performance_optimizer", {})
-        )
+        self.performance_analyzer = IntelligentPerformanceAnalyzer(config.get("performance_analyzer", {}))
+        self.performance_optimizer = DynamicPerformanceOptimizer(config.get("performance_optimizer", {}))
 
         # 测试结果历史
         self.test_results: List[TestExecutionResult] = []
@@ -1435,18 +1366,12 @@ class EnhancedTestMonitor:
 
         # 分析性能
         metrics = self._build_metrics_from_result(result)
-        analysis_result = self.performance_analyzer.analyze_performance_patterns(
-            metrics
-        )
+        analysis_result = self.performance_analyzer.analyze_performance_patterns(metrics)
 
         # 优化性能
         if analysis_result["anomalies"]:
-            optimization_result = self.performance_optimizer.optimize_performance(
-                analysis_result
-            )
-            logging.info(
-                f"性能优化完成，改进: {optimization_result['performance_improvement']:.2%}"
-            )
+            optimization_result = self.performance_optimizer.optimize_performance(analysis_result)
+            logging.info(f"性能优化完成，改进: {optimization_result['performance_improvement']:.2%}")
 
         # 限制历史大小
         max_history = self.config.get("max_test_history", 1000)
@@ -1486,9 +1411,7 @@ class EnhancedTestMonitor:
         # 添加测试统计
         dashboard_data["test_statistics"] = self.test_stats.copy()
         dashboard_data["test_statistics"]["pass_rate"] = (
-            self.test_stats["passed"] / self.test_stats["total"]
-            if self.test_stats["total"] > 0
-            else 0
+            self.test_stats["passed"] / self.test_stats["total"] if self.test_stats["total"] > 0 else 0
         )
 
         # 添加最近的测试结果
@@ -1512,9 +1435,7 @@ class EnhancedTestMonitor:
             }
 
         # 添加优化历史
-        dashboard_data["optimization_history"] = (
-            self.performance_optimizer.optimization_history[-5:]
-        )
+        dashboard_data["optimization_history"] = self.performance_optimizer.optimization_history[-5:]
 
         return dashboard_data
 

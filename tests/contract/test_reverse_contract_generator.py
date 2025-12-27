@@ -226,9 +226,7 @@ class HTTPScanner:
         self.timeout = timeout
         self.max_concurrent = max_concurrent
 
-    async def scan_endpoints(
-        self, base_url: str, paths: List[str]
-    ) -> List[Dict[str, Any]]:
+    async def scan_endpoints(self, base_url: str, paths: List[str]) -> List[Dict[str, Any]]:
         """扫描端点"""
         discovered_endpoints = []
 
@@ -256,12 +254,8 @@ class HTTPScanner:
                                     "path": path,
                                     "method": method,
                                     "status_code": response.status_code,
-                                    "content_type": response.headers.get(
-                                        "content-type", ""
-                                    ),
-                                    "content_length": response.headers.get(
-                                        "content-length", "0"
-                                    ),
+                                    "content_type": response.headers.get("content-type", ""),
+                                    "content_length": response.headers.get("content-length", "0"),
                                 }
                         except Exception:
                             continue
@@ -299,16 +293,12 @@ class ReverseContractGenerator:
         self.openapi_scraper = OpenAPIScraper()
         self.http_scanner = HTTPScanner(timeout, max_concurrent)
 
-    async def generate_contract(
-        self, url: str, scanner_type: ScannerType = ScannerType.AUTO_DETECT
-    ) -> ScanResult:
+    async def generate_contract(self, url: str, scanner_type: ScannerType = ScannerType.AUTO_DETECT) -> ScanResult:
         """生成契约"""
         start_time = time.time()
         base_url = self._normalize_url(url)
 
-        scan_result = ScanResult(
-            scanner_type=scanner_type, base_url=base_url, endpoints=[]
-        )
+        scan_result = ScanResult(scanner_type=scanner_type, base_url=base_url, endpoints=[])
 
         try:
             if scanner_type == ScannerType.SWAGGER_UI:
@@ -354,9 +344,7 @@ class ReverseContractGenerator:
 
         # 尝试直接获取OpenAPI JSON
         try:
-            openapi_url = await self.openapi_scraper.discover_openapi_docs(
-                scan_result.base_url
-            )
+            openapi_url = await self.openapi_scraper.discover_openapi_docs(scan_result.base_url)
             if openapi_url:
                 spec = await self.openapi_scraper.scrape_from_url(openapi_url)
                 await self._parse_openapi_spec(spec, scan_result)
@@ -388,15 +376,11 @@ class ReverseContractGenerator:
         web_scraper = WebScraper()
         async with web_scraper:
             # 发现端点
-            discovered_paths = await web_scraper.discover_endpoints(
-                scan_result.base_url
-            )
+            discovered_paths = await web_scraper.discover_endpoints(scan_result.base_url)
             print(f"  发现 {len(discovered_paths)} 个可能的端点")
 
             # 扫描端点
-            discovered_endpoints = await self.http_scanner.scan_endpoints(
-                scan_result.base_url, discovered_paths
-            )
+            discovered_endpoints = await self.http_scanner.scan_endpoints(scan_result.base_url, discovered_paths)
 
             # 转换为端点对象
             for endpoint_info in discovered_endpoints:
@@ -586,15 +570,11 @@ class ReverseContractGenerator:
             if endpoint.responses:
                 for response in endpoint.responses:
                     status = response["status_code"]
-                    coverage["by_status_code"][status] = (
-                        coverage["by_status_code"].get(status, 0) + 1
-                    )
+                    coverage["by_status_code"][status] = coverage["by_status_code"].get(status, 0) + 1
 
             # 按路径模式统计
             path_pattern = self._extract_path_pattern(endpoint.path)
-            coverage["by_path_pattern"][path_pattern] = (
-                coverage["by_path_pattern"].get(path_pattern, 0) + 1
-            )
+            coverage["by_path_pattern"][path_pattern] = coverage["by_path_pattern"].get(path_pattern, 0) + 1
 
             # 安全端点
             if endpoint.security:
@@ -632,9 +612,7 @@ async def demo_reverse_contract_generator():
         print(f"\n🔗 测试URL: {url}")
         try:
             # 生成契约
-            scan_result = await generator.generate_contract(
-                url, ScannerType.AUTO_DETECT
-            )
+            scan_result = await generator.generate_contract(url, ScannerType.AUTO_DETECT)
 
             # 分析覆盖率
             coverage = generator.analyze_api_coverage(scan_result)

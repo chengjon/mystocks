@@ -6,16 +6,12 @@
 
 import ast
 import json
-import os
 import sys
-import time
-import pickle
 import numpy as np
-import pandas as pd
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List
 from dataclasses import dataclass, asdict
-from collections import Counter, defaultdict
+from collections import Counter
 import logging
 
 # 设置日志
@@ -852,7 +848,7 @@ def main():
         print(f"\n📄 结果已保存到: {args.output}")
 
     # 打印摘要
-    print(f"\n📊 分析摘要:")
+    print("\n📊 分析摘要:")
     print(f"   分析文件数: {len(results)}")
     if results:
         avg_score = np.mean([r["prediction"]["overall_score"] for r in results])

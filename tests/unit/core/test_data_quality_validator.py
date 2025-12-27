@@ -50,9 +50,7 @@ class TestDataQualityValidator:
                 "name": ["平安银行", "万科A", "浦发银行", "招商银行"],
                 "price": [10.5, 12.3, 8.9, 15.6],
                 "volume": [5000, 3000, 8000, 4000],
-                "timestamp": pd.date_range(
-                    "2025-01-01 09:30:00", periods=4, freq="1min"
-                ),
+                "timestamp": pd.date_range("2025-01-01 09:30:00", periods=4, freq="1min"),
             }
         )
 
@@ -138,30 +136,22 @@ class TestDataQualityValidator:
         assert len(result["issues"]) > 0
 
         # 检查是否包含负价格问题
-        invalid_price_issues = [
-            i for i in result["issues"] if i["type"] == "invalid_price"
-        ]
+        invalid_price_issues = [i for i in result["issues"] if i["type"] == "invalid_price"]
         assert len(invalid_price_issues) > 0
 
         # 检查是否包含价格逻辑错误
-        price_logic_issues = [
-            i for i in result["issues"] if i["type"] == "price_logic_error"
-        ]
+        price_logic_issues = [i for i in result["issues"] if i["type"] == "price_logic_error"]
         assert len(price_logic_issues) > 0
 
     @patch("src.core.data_quality_validator.get_quality_monitor")
-    def test_validate_stock_data_realtime_data(
-        self, mock_get_quality_monitor, sample_realtime_data
-    ):
+    def test_validate_stock_data_realtime_data(self, mock_get_quality_monitor, sample_realtime_data):
         """测试验证股票数据 - 实时数据"""
         mock_monitor = Mock()
         mock_get_quality_monitor.return_value = mock_monitor
 
         validator = DataQualityValidator("test_source")
 
-        result = validator.validate_stock_data(
-            sample_realtime_data, "000001", "realtime"
-        )
+        result = validator.validate_stock_data(sample_realtime_data, "000001", "realtime")
 
         assert result["is_valid"] is True
         assert result["quality_score"] == 100.0
@@ -203,9 +193,7 @@ class TestDataQualityValidator:
         """测试检查完整性 - 无问题"""
         validator = DataQualityValidator("test_source")
 
-        issues = validator._check_completeness(
-            sample_daily_data, ["date", "open", "high", "low", "close", "volume"]
-        )
+        issues = validator._check_completeness(sample_daily_data, ["date", "open", "high", "low", "close", "volume"])
 
         assert len(issues) == 0
 
@@ -225,9 +213,7 @@ class TestDataQualityValidator:
 
         validator = DataQualityValidator("test_source")
 
-        issues = validator._check_completeness(
-            data_with_nulls, ["date", "open", "high", "low", "close", "volume"]
-        )
+        issues = validator._check_completeness(data_with_nulls, ["date", "open", "high", "low", "close", "volume"])
 
         assert len(issues) == 2  # open列40%缺失(严重), volume列20%缺失
 
@@ -250,9 +236,7 @@ class TestDataQualityValidator:
 
         validator = DataQualityValidator("test_source")
 
-        issues = validator._check_completeness(
-            data_severe_missing, ["date", "open", "high"]
-        )
+        issues = validator._check_completeness(data_severe_missing, ["date", "open", "high"])
 
         assert len(issues) == 1
         open_issue = issues[0]
@@ -355,9 +339,7 @@ class TestDataQualityValidator:
         """测试检查重复 - 有重复"""
         # 创建有重复的数据
         data_with_duplicates = sample_daily_data.copy()
-        data_with_duplicates = pd.concat(
-            [data_with_duplicates, data_with_duplicates.iloc[:2]], ignore_index=True
-        )
+        data_with_duplicates = pd.concat([data_with_duplicates, data_with_duplicates.iloc[:2]], ignore_index=True)
 
         validator = DataQualityValidator("test_source")
 
@@ -372,9 +354,7 @@ class TestDataQualityValidator:
         """测试检查重复 - 低于阈值"""
         # 创建少量重复的数据
         data_few_duplicates = sample_daily_data.copy()
-        data_few_duplicates = pd.concat(
-            [data_few_duplicates, data_few_duplicates.iloc[:1]], ignore_index=True
-        )
+        data_few_duplicates = pd.concat([data_few_duplicates, data_few_duplicates.iloc[:1]], ignore_index=True)
 
         validator = DataQualityValidator("test_source")
 
@@ -456,9 +436,7 @@ class TestDataQualityValidator:
 
     def test_calculate_statistics_invalid_date(self):
         """测试计算统计信息 - 无效日期"""
-        data_invalid_date = pd.DataFrame(
-            {"date": ["invalid-date", "also-invalid"], "close": [10.0, 10.5]}
-        )
+        data_invalid_date = pd.DataFrame({"date": ["invalid-date", "also-invalid"], "close": [10.0, 10.5]})
 
         validator = DataQualityValidator("test_source")
 
@@ -483,9 +461,7 @@ class TestDataQualityValidator:
             "statistics": {"total_records": 100},
         }
 
-        validator._log_quality_check(
-            "600000", "daily", False, 65.0, result["issues"], result["statistics"]
-        )
+        validator._log_quality_check("600000", "daily", False, 65.0, result["issues"], result["statistics"])
 
         # 验证监控器被调用
         mock_monitor.check_accuracy.assert_called_once()
@@ -520,21 +496,13 @@ class TestDataQualityValidator:
         validator = DataQualityValidator("test_source")
 
         original_thresholds = validator.thresholds.copy()
-        validator.set_thresholds(
-            missing_rate_threshold=10.0, invalid_rate_threshold=2.0
-        )
+        validator.set_thresholds(missing_rate_threshold=10.0, invalid_rate_threshold=2.0)
 
         # 验证阈值被更新
         assert validator.thresholds["missing_rate_threshold"] == 10.0
         assert validator.thresholds["invalid_rate_threshold"] == 2.0
-        assert (
-            validator.thresholds["duplicate_rate_threshold"]
-            == original_thresholds["duplicate_rate_threshold"]
-        )
-        assert (
-            validator.thresholds["outlier_rate_threshold"]
-            == original_thresholds["outlier_rate_threshold"]
-        )
+        assert validator.thresholds["duplicate_rate_threshold"] == original_thresholds["duplicate_rate_threshold"]
+        assert validator.thresholds["outlier_rate_threshold"] == original_thresholds["outlier_rate_threshold"]
 
     def test_set_thresholds_empty_kwargs(self):
         """测试自定义阈值配置 - 空参数"""
@@ -579,9 +547,7 @@ class TestConvenienceFunctions:
         result = validate_dataframe(sample_df, "test_source", "600000", "daily")
 
         mock_create_validator.assert_called_once_with("test_source")
-        mock_validator.validate_stock_data.assert_called_once_with(
-            sample_df, "600000", "daily"
-        )
+        mock_validator.validate_stock_data.assert_called_once_with(sample_df, "600000", "daily")
         assert result == mock_result
 
 
@@ -626,9 +592,7 @@ class TestEdgeCases:
         assert result["is_valid"] is False
         assert result["quality_score"] < 30.0  # 缺失3个重要列
 
-        missing_cols_issues = [
-            i for i in result["issues"] if i["type"] == "missing_columns"
-        ]
+        missing_cols_issues = [i for i in result["issues"] if i["type"] == "missing_columns"]
         assert len(missing_cols_issues) == 1
         assert "high" in missing_cols_issues[0]["message"]
         assert "low" in missing_cols_issues[0]["message"]

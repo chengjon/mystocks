@@ -224,9 +224,7 @@ class TestErrorRecoveryStrategy:
 
     def test_exponential_backoff_max_delay(self):
         """测试指数退避最大延迟"""
-        strategy = ErrorRecoveryStrategy.exponential_backoff(
-            base_delay=1.0, max_delay=60.0, backoff_factor=2.0
-        )
+        strategy = ErrorRecoveryStrategy.exponential_backoff(base_delay=1.0, max_delay=60.0, backoff_factor=2.0)
 
         # 应该被限制在最大值
         for attempt in range(10):
@@ -248,9 +246,7 @@ class TestErrorRecoveryStrategy:
 
     def test_linear_backoff_basic(self):
         """测试基本线性退避"""
-        strategy = ErrorRecoveryStrategy.linear_backoff(
-            base_delay=1.0, increment=0.5, max_delay=5.0
-        )
+        strategy = ErrorRecoveryStrategy.linear_backoff(base_delay=1.0, increment=0.5, max_delay=5.0)
 
         assert strategy(0) == 1.0  # 1.0 + 0.5 * 0
         assert strategy(1) == 1.5  # 1.0 + 0.5 * 1
@@ -261,9 +257,7 @@ class TestErrorRecoveryStrategy:
 
     def test_linear_backoff_max_delay(self):
         """测试线性退避最大延迟"""
-        strategy = ErrorRecoveryStrategy.linear_backoff(
-            base_delay=1.0, increment=0.5, max_delay=10.0
-        )
+        strategy = ErrorRecoveryStrategy.linear_backoff(base_delay=1.0, increment=0.5, max_delay=10.0)
 
         # 应该被限制在最大值
         for attempt in range(20):
@@ -495,9 +489,7 @@ class TestCircuitBreaker:
 
     def test_circuit_breaker_initialization(self):
         """测试熔断器初始化"""
-        breaker = CircuitBreaker(
-            failure_threshold=3, recovery_timeout=1.0, expected_exception=Exception
-        )
+        breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=1.0, expected_exception=Exception)
 
         assert breaker.failure_threshold == 3
         assert breaker.recovery_timeout == 1.0
@@ -656,9 +648,7 @@ class TestValidateDataFrame:
 
     def test_validate_dataframe_invalid_columns(self):
         """测试无效列数据"""
-        df = pd.DataFrame(
-            {"date": ["2024-01-01", "invalid_date"], "close": [10.5, "not_a_number"]}
-        )
+        df = pd.DataFrame({"date": ["2024-01-01", "invalid_date"], "close": [10.5, "not_a_number"]})
 
         with pytest.raises(ValidationError):
             validate_dataframe(df)
@@ -768,18 +758,14 @@ class TestEdgeCases:
 
     def test_very_small_delays(self):
         """测试极小延迟"""
-        strategy = ErrorRecoveryStrategy.exponential_backoff(
-            base_delay=0.001, max_delay=0.01, backoff_factor=2.0
-        )
+        strategy = ErrorRecoveryStrategy.exponential_backoff(base_delay=0.001, max_delay=0.01, backoff_factor=2.0)
 
         delay = strategy(1)
         assert 0.001 <= delay <= 0.01
 
     def test_zero_delay_backoff(self):
         """测试零延迟退避"""
-        strategy = ErrorRecoveryStrategy.exponential_backoff(
-            base_delay=0.0, max_delay=1.0, backoff_factor=2.0
-        )
+        strategy = ErrorRecoveryStrategy.exponential_backoff(base_delay=0.0, max_delay=1.0, backoff_factor=2.0)
 
         delay = strategy(0)
         assert delay == 0.0
@@ -788,9 +774,7 @@ class TestEdgeCases:
 
     def test_large_delay_backoff(self):
         """测试大延迟退避"""
-        strategy = ErrorRecoveryStrategy.exponential_backoff(
-            base_delay=1000.0, max_delay=2000.0, backoff_factor=2.0
-        )
+        strategy = ErrorRecoveryStrategy.exponential_backoff(base_delay=1000.0, max_delay=2000.0, backoff_factor=2.0)
 
         delay = strategy(5)
         assert delay == 2000.0  # 应该被限制在最大值

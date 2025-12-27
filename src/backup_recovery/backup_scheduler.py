@@ -192,9 +192,7 @@ class BackupScheduler:
                 logger.warning("No latest full backup found, doing full backup instead")
                 metadata = self.backup_manager.backup_tdengine_full()
             else:
-                metadata = self.backup_manager.backup_tdengine_incremental(
-                    latest_full.backup_id
-                )
+                metadata = self.backup_manager.backup_tdengine_incremental(latest_full.backup_id)
 
             if metadata.status == "success":
                 logger.info(
@@ -203,9 +201,7 @@ class BackupScheduler:
                     f"rows={metadata.total_rows}"
                 )
             else:
-                logger.error(
-                    f"TDengine incremental backup failed: {metadata.error_message}"
-                )
+                logger.error(f"TDengine incremental backup failed: {metadata.error_message}")
 
         except Exception as e:
             logger.error(f"Error executing TDengine incremental backup: {e}")
@@ -249,9 +245,7 @@ class BackupScheduler:
                 "id": job.id,
                 "name": job.name,
                 "trigger": str(job.trigger),
-                "next_run_time": (
-                    job.next_run_time.isoformat() if job.next_run_time else None
-                ),
+                "next_run_time": (job.next_run_time.isoformat() if job.next_run_time else None),
             }
             for job in self.scheduler.get_jobs()
         ]

@@ -78,7 +78,6 @@ def get_stock_hyblock_tdx_loc():
     logger.info(f"开始读取文件 {file}")
     buf_line = read_file_loc(file, "|")
     buf_lis = []
-    mapping = {"0": "sz.", "1": "sh.", "2": "bj."}
     for x in buf_line:
         # x[1] = mapping[x[0]] + x[1]
         buf_lis.append(x)

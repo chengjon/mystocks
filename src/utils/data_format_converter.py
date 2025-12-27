@@ -122,9 +122,7 @@ def normalize_stock_data_format(df: pd.DataFrame) -> pd.DataFrame:
         ]:
             if not pd.api.types.is_numeric_dtype(normalized_df[col]):
                 try:
-                    normalized_df[col] = pd.to_numeric(
-                        normalized_df[col], errors="coerce"
-                    )
+                    normalized_df[col] = pd.to_numeric(normalized_df[col], errors="coerce")
                 except Exception:
                     # 如果转换失败，保持原值
                     pass

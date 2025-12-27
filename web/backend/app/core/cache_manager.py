@@ -326,11 +326,7 @@ class CacheManager:
 
                 elif symbol:
                     # 清除特定符号的所有缓存
-                    keys_to_delete = [
-                        key
-                        for key in self._memory_cache.keys()
-                        if key.startswith(symbol)
-                    ]
+                    keys_to_delete = [key for key in self._memory_cache.keys() if key.startswith(symbol)]
 
                     for key in keys_to_delete:
                         del self._memory_cache[key]
@@ -354,9 +350,7 @@ class CacheManager:
 
             # 清理TDengine缓存（异步）
             if symbol and data_type:
-                tdengine_deleted = self.tdengine.clear_expired_cache(
-                    days=0
-                )  # 需要实现精确删除
+                tdengine_deleted = self.tdengine.clear_expired_cache(days=0)  # 需要实现精确删除
                 total_deleted += tdengine_deleted
             elif symbol:
                 tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
@@ -488,17 +482,13 @@ class CacheManager:
                             success_count += 1
 
                             # 回填内存缓存
-                            self._add_to_memory_cache(
-                                symbol, data_type, timeframe, enriched_data
-                            )
+                            self._add_to_memory_cache(symbol, data_type, timeframe, enriched_data)
                         else:
                             results[cache_key] = None
                             self._cache_stats["misses"] += 1
 
                     except Exception as e:
-                        logger.warning(
-                            f"批量读取单项失败 {symbol}:{data_type}", error=str(e)
-                        )
+                        logger.warning(f"批量读取单项失败 {symbol}:{data_type}", error=str(e))
                         results[cache_key] = None
                         self._cache_stats["misses"] += 1
 
@@ -571,9 +561,7 @@ class CacheManager:
 
     # ==================== 缓存验证与检查 ====================
 
-    def is_cache_valid(
-        self, symbol: str, data_type: str, max_age_days: int = 7
-    ) -> bool:
+    def is_cache_valid(self, symbol: str, data_type: str, max_age_days: int = 7) -> bool:
         """
         检查缓存的有效性
 
@@ -587,9 +575,7 @@ class CacheManager:
         """
         try:
             # 尝试读取
-            cache_data = self.fetch_from_cache(
-                symbol=symbol, data_type=data_type, days=max_age_days
-            )
+            cache_data = self.fetch_from_cache(symbol=symbol, data_type=data_type, days=max_age_days)
 
             if not cache_data:
                 return False
@@ -644,9 +630,7 @@ class CacheManager:
             统计信息字典
         """
         hit_rate = self._calculate_hit_rate()
-        avg_response_time = self._cache_stats["total_response_time"] / max(
-            self._cache_stats["reads"], 1
-        )
+        avg_response_time = self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
 
         stats = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -664,9 +648,7 @@ class CacheManager:
 
         # 添加响应时间分布统计
         if "response_time_distribution" in self._cache_stats:
-            stats["response_time_distribution"] = self._cache_stats[
-                "response_time_distribution"
-            ]
+            stats["response_time_distribution"] = self._cache_stats["response_time_distribution"]
 
         # 从 TDengine 获取额外统计
         try:
@@ -697,9 +679,7 @@ class CacheManager:
 
     # ==================== 内存缓存层 (替代Redis) ====================
 
-    def _get_from_memory_cache(
-        self, symbol: str, data_type: str, timeframe: Optional[str]
-    ) -> Optional[Dict[str, Any]]:
+    def _get_from_memory_cache(self, symbol: str, data_type: str, timeframe: Optional[str]) -> Optional[Dict[str, Any]]:
         """从内存缓存读取数据"""
         cache_key = self.get_cache_key(symbol, data_type, timeframe or "1d")
 
@@ -736,9 +716,7 @@ class CacheManager:
             ttl_seconds = self._get_tiered_ttl(data_type)
 
             self._memory_cache[cache_key] = data
-            self._cache_ttl[cache_key] = datetime.utcnow() + timedelta(
-                seconds=ttl_seconds
-            )
+            self._cache_ttl[cache_key] = datetime.utcnow() + timedelta(seconds=ttl_seconds)
             self._access_patterns[cache_key].append(datetime.utcnow())
 
     def _is_cache_expired(self, cache_key: str) -> bool:
@@ -827,9 +805,7 @@ class CacheManager:
         """获取内存缓存统计"""
         with self._cache_lock:
             total_entries = len(self._memory_cache)
-            total_size_mb = sum(
-                len(str(data)) for data in self._memory_cache.values()
-            ) / (1024 * 1024)  # 估算大小
+            total_size_mb = sum(len(str(data)) for data in self._memory_cache.values()) / (1024 * 1024)  # 估算大小
 
             # 计算各数据类型的分布
             type_distribution = defaultdict(int)
@@ -866,9 +842,7 @@ class CacheManager:
             expired_count = 0
             now = datetime.utcnow()
 
-            expired_keys = [
-                key for key, expire_time in self._cache_ttl.items() if now > expire_time
-            ]
+            expired_keys = [key for key, expire_time in self._cache_ttl.items() if now > expire_time]
 
             for key in expired_keys:
                 if key in self._memory_cache:
@@ -920,8 +894,7 @@ class CacheManager:
             # 检查内存缓存
             memory_stats = self.get_memory_cache_stats()
             memory_healthy = (
-                memory_stats["usage_percentage"] < 95
-                and len(self._memory_cache) < self._max_memory_entries
+                memory_stats["usage_percentage"] < 95 and len(self._memory_cache) < self._max_memory_entries
             )
 
             health_status["components"]["memory_cache"] = {
@@ -936,14 +909,9 @@ class CacheManager:
 
             # 性能指标
             hit_rate = self._calculate_hit_rate()
-            avg_response_time = self._cache_stats["total_response_time"] / max(
-                self._cache_stats["reads"], 1
-            )
+            avg_response_time = self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
 
-            performance_healthy = (
-                hit_rate > 0.5  # 命中率应该大于50%
-                and avg_response_time < 1.0  # 平均响应时间小于1秒
-            )
+            performance_healthy = hit_rate > 0.5 and avg_response_time < 1.0  # 命中率应该大于50%  # 平均响应时间小于1秒
 
             health_status["performance_metrics"] = {
                 "hit_rate": hit_rate,

@@ -98,9 +98,7 @@ class SecureConfig:
         # Decrypt password
         if "password_encrypted" in db_config:
             try:
-                db_config["password"] = self.encryption.decrypt(
-                    db_config["password_encrypted"]
-                )
+                db_config["password"] = self.encryption.decrypt(db_config["password_encrypted"])
                 del db_config["password_encrypted"]
             except ValueError as e:
                 logger.error(f"❌ Failed to decrypt {db_type} password", error=str(e))

@@ -86,9 +86,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 )
             elif mode == "ignore":
                 # PostgreSQL的ignore逻辑需要特殊处理
-                self._upsert_data_with_engine(
-                    processed_data, actual_table_name, engine, classification
-                )
+                self._upsert_data_with_engine(processed_data, actual_table_name, engine, classification)
             else:  # append
                 processed_data.to_sql(
                     actual_table_name,
@@ -111,9 +109,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(
-                f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            logger.info(f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return True
 
@@ -161,9 +157,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
         try:
             # 构建查询语句 - SECURITY FIX: Now returns (sql, params)
-            query, params = self._build_analytical_query(
-                classification, actual_table_name, filters, **kwargs
-            )
+            query, params = self._build_analytical_query(classification, actual_table_name, filters, **kwargs)
 
             # 执行查询 - SECURITY FIX: Use parameterized query
             conn = self.db_manager.get_connection(self.db_type, database_name)
@@ -185,9 +179,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(
-                f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            logger.info(f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return processed_data
 
@@ -207,7 +199,8 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 execution_time_ms=execution_time_ms,
             )
             logger.error(error_msg)
-            return pd.DataFrame() # Return empty DataFrame on failure
+            return pd.DataFrame()  # Return empty DataFrame on failure
+
     def update_data(
         self,
         data: pd.DataFrame,
@@ -258,9 +251,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     operation_status="SUCCESS",
                     execution_time_ms=execution_time_ms,
                 )
-                logger.info(
-                    f"PostgreSQL更新成功: {actual_table_name}, {len(data)}条记录"
-                )
+                logger.info(f"PostgreSQL更新成功: {actual_table_name}, {len(data)}条记录")
             else:
                 conn.rollback()
                 end_time = datetime.now()
@@ -296,6 +287,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             )
             logger.error(error_msg)
             return False
+
     def delete_data(
         self,
         classification: DataClassification,
@@ -361,9 +353,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(
-                f"PostgreSQL删除成功: {actual_table_name}, {affected_rows}条记录"
-            )
+            logger.info(f"PostgreSQL删除成功: {actual_table_name}, {affected_rows}条记录")
 
             return True
 
@@ -384,6 +374,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             )
             logger.error(error_msg)
             return False
+
     def _get_default_table_name(self, classification: DataClassification) -> str:
         """根据数据分类获取默认表名"""
         table_mapping = {
@@ -427,9 +418,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         }
         return key_mapping.get(classification, ["id"])
 
-    def _preprocess_analytical_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _preprocess_analytical_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """预处理分析数据"""
         processed_data = normalize_dataframe(data)
 
@@ -474,9 +463,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         port = os.getenv("POSTGRESQL_PORT", "5432")
 
         # 构建连接字符串
-        connection_url = (
-            f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database_name}"
-        )
+        connection_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database_name}"
 
         # 创建SQLAlchemy引擎
         engine = sqlalchemy.create_engine(connection_url)
@@ -494,32 +481,23 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             # 首先尝试使用原生UPSERT逻辑
             with engine.begin() as conn:
                 raw_conn = conn.connection
-                affected_rows = self._upsert_data(
-                    data, table_name, raw_conn, classification
-                )
+                affected_rows = self._upsert_data(data, table_name, raw_conn, classification)
                 logger.info(f"UPSERT完成: {table_name}, 影响行数: {affected_rows}")
 
         except Exception as e:
             logger.error(f"UPSERT操作失败，回退到简单插入模式: {e}")
             # 回退到简单插入模式
             try:
-                data.to_sql(
-                    table_name, engine, if_exists="append", index=False, method="multi"
-                )
+                data.to_sql(table_name, engine, if_exists="append", index=False, method="multi")
             except Exception as fallback_error:
-                if (
-                    "duplicate key" in str(fallback_error).lower()
-                    or "unique constraint" in str(fallback_error).lower()
-                ):
+                if "duplicate key" in str(fallback_error).lower() or "unique constraint" in str(fallback_error).lower():
                     logger.warning(f"检测到重复数据，跳过插入: {fallback_error}")
                     # 对于重复数据，我们已经有了UPSERT逻辑处理，这里可以忽略
                     pass
                 else:
                     raise fallback_error
 
-    def _postprocess_analytical_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _postprocess_analytical_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """后处理分析数据"""
         if data.empty:
             return data
@@ -554,9 +532,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
 
             # 构建UPDATE SET子句（排除主键列）
             update_columns = [col for col in columns if col not in key_columns]
-            update_set = ", ".join(
-                [f"{col} = EXCLUDED.{col}" for col in update_columns]
-            )
+            update_set = ", ".join([f"{col} = EXCLUDED.{col}" for col in update_columns])
 
             # 构建完整的UPSERT SQL
             upsert_sql = f"""
@@ -587,9 +563,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             cursor.executemany(upsert_sql, records_to_insert)
             conn.commit()
 
-            logger.info(
-                f"PostgreSQL UPSERT操作完成: {table_name}, 处理记录数: {len(records_to_insert)}"
-            )
+            logger.info(f"PostgreSQL UPSERT操作完成: {table_name}, 处理记录数: {len(records_to_insert)}")
             return len(records_to_insert)
 
         except Exception as e:
@@ -597,9 +571,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             conn.rollback()
             raise
 
-    def _execute_update(
-        self, cursor, data: pd.DataFrame, table_name: str, key_columns: List[str]
-    ) -> bool:
+    def _execute_update(self, cursor, data: pd.DataFrame, table_name: str, key_columns: List[str]) -> bool:
         """执行更新操作"""
         try:
             for _, row in data.iterrows():
@@ -668,7 +640,6 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         base_query = f"SELECT * FROM {table_name}"
         conditions = []
         params = []
-        param_counter = 0
 
         # 添加过滤条件 - 使用参数化查询
         if filters:
@@ -806,9 +777,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     base_query += f" ORDER BY {validated_order_by}"
                 else:
                     # 如果没有有效的排序列，使用默认排序
-                    self.logger.warning(
-                        f"Invalid order_by columns: {order_by}, using default sort"
-                    )
+                    self.logger.warning(f"Invalid order_by columns: {order_by}, using default sort")
                     if classification == DataClassification.DAILY_KLINE:
                         base_query += " ORDER BY trade_date DESC"
                     elif classification in [

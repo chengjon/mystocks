@@ -56,7 +56,7 @@
 
 #### data.py
 - `/api/data/stocks/{symbol}/detail` - 股票详情 ✅
-- `/api/data/stocks/intraday` - 分时数据 ✅  
+- `/api/data/stocks/intraday` - 分时数据 ✅
 - `/api/data/stocks/{symbol}/trading-summary` - 交易摘要 ✅
 
 #### market.py

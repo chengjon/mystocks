@@ -90,9 +90,7 @@ class RoomSocketIOAdapter:
 
         # Socket.IO特定的映射
         self.sid_to_connection: Dict[str, RoomConnection] = {}
-        self.user_room_subscriptions: Dict[
-            str, Set[str]
-        ] = {}  # user_id -> set of room_ids
+        self.user_room_subscriptions: Dict[str, Set[str]] = {}  # user_id -> set of room_ids
         self.socketio_callbacks: List[Callable[[str, str, Dict[str, Any]], Any]] = []
 
         # 统计
@@ -247,9 +245,7 @@ class RoomSocketIOAdapter:
             )
             return {"success": False, "error": "Internal server error"}
 
-    async def handle_leave_room(
-        self, sid: str, user_id: str, room_id: str
-    ) -> Dict[str, Any]:
+    async def handle_leave_room(self, sid: str, user_id: str, room_id: str) -> Dict[str, Any]:
         """处理用户离开房间
 
         Args:
@@ -306,9 +302,7 @@ class RoomSocketIOAdapter:
             )
             return {"success": False, "error": "Internal server error"}
 
-    async def handle_room_message(
-        self, sid: str, user_id: str, room_id: str, content: str
-    ) -> Dict[str, Any]:
+    async def handle_room_message(self, sid: str, user_id: str, room_id: str, content: str) -> Dict[str, Any]:
         """处理房间消息
 
         Args:
@@ -327,9 +321,7 @@ class RoomSocketIOAdapter:
                 return {"success": False, "error": "Not in this room"}
 
             # 检查权限
-            can_send = self.access_control.can_send_message(
-                user_id, room_id, connection.role
-            )
+            can_send = self.access_control.can_send_message(user_id, room_id, connection.role)
             if not can_send:
                 return {"success": False, "error": "Permission denied"}
 
@@ -382,9 +374,7 @@ class RoomSocketIOAdapter:
             connection = self.sid_to_connection.pop(sid, None)
             if connection:
                 # 自动离开房间
-                await self.handle_leave_room(
-                    sid, connection.user_id, connection.room_id
-                )
+                await self.handle_leave_room(sid, connection.user_id, connection.room_id)
 
                 logger.info(
                     "✅ Cleaned up room connection on disconnect",
@@ -400,9 +390,7 @@ class RoomSocketIOAdapter:
                 error=str(e),
             )
 
-    async def _broadcast_room_event(
-        self, room_id: str, event: str, data: Dict[str, Any]
-    ) -> None:
+    async def _broadcast_room_event(self, room_id: str, event: str, data: Dict[str, Any]) -> None:
         """广播房间事件给所有成员
 
         Args:
@@ -439,9 +427,7 @@ class RoomSocketIOAdapter:
                         error=str(e),
                     )
 
-    def register_socketio_callback(
-        self, callback: Callable[[str, str, Dict[str, Any]], Any]
-    ) -> None:
+    def register_socketio_callback(self, callback: Callable[[str, str, Dict[str, Any]], Any]) -> None:
         """注册Socket.IO回调用于发送消息
 
         Args:
@@ -499,9 +485,7 @@ class RoomSocketIOAdapter:
         return {
             "active_connections": len(self.sid_to_connection),
             "active_users": len(self.user_room_subscriptions),
-            "active_rooms": len(
-                set(c.room_id for c in self.sid_to_connection.values())
-            ),
+            "active_rooms": len(set(c.room_id for c in self.sid_to_connection.values())),
             "total_joins": self.total_joins,
             "total_messages": self.total_messages,
             "total_room_broadcasts": self.total_room_broadcasts,

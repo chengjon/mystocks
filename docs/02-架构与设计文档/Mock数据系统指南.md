@@ -368,11 +368,11 @@ def custom_mock_generator():
     # 添加随机化
     import random
     random.seed(42)  # 可重现性
-    
+
     # 添加时间戳
     from datetime import datetime
     timestamp = datetime.now().isoformat()
-    
+
     # 返回格式化数据
     return {
         "timestamp": timestamp,

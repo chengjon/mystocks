@@ -54,9 +54,7 @@ class BacktestEngine:
             market_data = self._prepare_market_data(request)
 
             # 策略加载
-            strategy = self._load_strategy(
-                request.strategy_type, request.strategy_config
-            )
+            strategy = self._load_strategy(request.strategy_type, request.strategy_config)
 
             # 回测执行
             if self.gpu_manager.get_available_gpu_count() > 0:
@@ -68,9 +66,7 @@ class BacktestEngine:
             performance_metrics = self._calculate_performance_metrics(results, request)
 
             # 生成报告
-            backtest_report = self._generate_backtest_report(
-                results, performance_metrics
-            )
+            backtest_report = self._generate_backtest_report(results, performance_metrics)
 
             processing_time = time.time() - start_time
 
@@ -84,9 +80,7 @@ class BacktestEngine:
                 "timestamp": datetime.now().isoformat(),
             }
 
-            logger.info(
-                f"回测完成: {request.backtest_id}, 耗时: {processing_time:.2f}秒"
-            )
+            logger.info(f"回测完成: {request.backtest_id}, 耗时: {processing_time:.2f}秒")
             return results
 
         except Exception as e:
@@ -127,9 +121,7 @@ class BacktestEngine:
 
     def _load_strategy(self, strategy_type: str, strategy_config: Dict) -> Any:
         """加载策略"""
-        strategy_key = (
-            f"{strategy_type}_{hash(json.dumps(strategy_config, sort_keys=True))}"
-        )
+        strategy_key = f"{strategy_type}_{hash(json.dumps(strategy_config, sort_keys=True))}"
 
         if strategy_key in self.strategy_cache:
             return self.strategy_cache[strategy_key]
@@ -149,15 +141,11 @@ class BacktestEngine:
         self.strategy_cache[strategy_key] = strategy
         return strategy
 
-    def _run_backtest_gpu(
-        self, market_data: pd.DataFrame, strategy: Any, request: BacktestRequest
-    ) -> Dict[str, Any]:
+    def _run_backtest_gpu(self, market_data: pd.DataFrame, strategy: Any, request: BacktestRequest) -> Dict[str, Any]:
         """GPU加速回测"""
         try:
             # 分配GPU资源
-            gpu_id = self.gpu_manager.allocate_gpu(
-                request.backtest_id, priority="medium", memory_required=1024
-            )
+            gpu_id = self.gpu_manager.allocate_gpu(request.backtest_id, priority="medium", memory_required=1024)
 
             if gpu_id:
                 logger.info(f"使用GPU {gpu_id} 执行回测")
@@ -179,17 +167,13 @@ class BacktestEngine:
             logger.error(f"GPU回测失败: {e}")
             return self._run_backtest_cpu(market_data, strategy, request)
 
-    def _run_backtest_cpu(
-        self, market_data: pd.DataFrame, strategy: Any, request: BacktestRequest
-    ) -> Dict[str, Any]:
+    def _run_backtest_cpu(self, market_data: pd.DataFrame, strategy: Any, request: BacktestRequest) -> Dict[str, Any]:
         """CPU回测"""
         logger.info("使用CPU执行回测")
         results = strategy.run_backtest(market_data)
         return {"results": results, "gpu_used": False}
 
-    def _calculate_performance_metrics(
-        self, backtest_results: Dict, request: BacktestRequest
-    ) -> PerformanceMetrics:
+    def _calculate_performance_metrics(self, backtest_results: Dict, request: BacktestRequest) -> PerformanceMetrics:
         """计算性能指标"""
         results = backtest_results["results"]
 
@@ -229,9 +213,7 @@ class BacktestEngine:
             timestamp=datetime.now().isoformat(),
         )
 
-    def _generate_backtest_report(
-        self, results: Dict, performance_metrics: PerformanceMetrics
-    ) -> Dict[str, Any]:
+    def _generate_backtest_report(self, results: Dict, performance_metrics: PerformanceMetrics) -> Dict[str, Any]:
         """生成回测报告"""
         return {
             "summary": {
@@ -296,11 +278,8 @@ class TrendFollowingStrategy:
             "total_return": df["cumulative_returns"].iloc[-1] - 1,
             "annual_return": df["strategy_returns"].mean() * 252,
             "volatility": df["strategy_returns"].std() * np.sqrt(252),
-            "sharpe_ratio": (df["strategy_returns"].mean() * 252)
-            / (df["strategy_returns"].std() * np.sqrt(252)),
-            "max_drawdown": (
-                df["cumulative_returns"].cummax() - df["cumulative_returns"]
-            ).max(),
+            "sharpe_ratio": (df["strategy_returns"].mean() * 252) / (df["strategy_returns"].std() * np.sqrt(252)),
+            "max_drawdown": (df["cumulative_returns"].cummax() - df["cumulative_returns"]).max(),
             "total_trades": abs(df["signal"]).sum(),
             "winning_trades": (df["strategy_returns"] > 0).sum(),
             "dates": df["date"].tolist(),
@@ -351,11 +330,8 @@ class MomentumStrategy:
             "total_return": df["cumulative_returns"].iloc[-1] - 1,
             "annual_return": df["strategy_returns"].mean() * 252,
             "volatility": df["strategy_returns"].std() * np.sqrt(252),
-            "sharpe_ratio": (df["strategy_returns"].mean() * 252)
-            / (df["strategy_returns"].std() * np.sqrt(252)),
-            "max_drawdown": (
-                df["cumulative_returns"].cummax() - df["cumulative_returns"]
-            ).max(),
+            "sharpe_ratio": (df["strategy_returns"].mean() * 252) / (df["strategy_returns"].std() * np.sqrt(252)),
+            "max_drawdown": (df["cumulative_returns"].cummax() - df["cumulative_returns"]).max(),
             "total_trades": abs(df["signal"]).sum(),
             "winning_trades": (df["strategy_returns"] > 0).sum(),
             "dates": df["date"].tolist(),
@@ -403,11 +379,8 @@ class MeanReversionStrategy:
             "total_return": df["cumulative_returns"].iloc[-1] - 1,
             "annual_return": df["strategy_returns"].mean() * 252,
             "volatility": df["strategy_returns"].std() * np.sqrt(252),
-            "sharpe_ratio": (df["strategy_returns"].mean() * 252)
-            / (df["strategy_returns"].std() * np.sqrt(252)),
-            "max_drawdown": (
-                df["cumulative_returns"].cummax() - df["cumulative_returns"]
-            ).max(),
+            "sharpe_ratio": (df["strategy_returns"].mean() * 252) / (df["strategy_returns"].std() * np.sqrt(252)),
+            "max_drawdown": (df["cumulative_returns"].cummax() - df["cumulative_returns"]).max(),
             "total_trades": abs(df["signal"]).sum(),
             "winning_trades": (df["strategy_returns"] > 0).sum(),
             "dates": df["date"].tolist(),
@@ -448,11 +421,8 @@ class ArbitrageStrategy:
             "total_return": df["cumulative_returns"].iloc[-1] - 1,
             "annual_return": df["strategy_returns"].mean() * 252,
             "volatility": df["strategy_returns"].std() * np.sqrt(252),
-            "sharpe_ratio": (df["strategy_returns"].mean() * 252)
-            / (df["strategy_returns"].std() * np.sqrt(252)),
-            "max_drawdown": (
-                df["cumulative_returns"].cummax() - df["cumulative_returns"]
-            ).max(),
+            "sharpe_ratio": (df["strategy_returns"].mean() * 252) / (df["strategy_returns"].std() * np.sqrt(252)),
+            "max_drawdown": (df["cumulative_returns"].cummax() - df["cumulative_returns"]).max(),
             "total_trades": abs(df["signal"]).sum(),
             "winning_trades": (df["strategy_returns"] > 0).sum(),
             "dates": df["date"].tolist(),
@@ -492,9 +462,7 @@ class BacktestService(BacktestServiceServicer):
         self.running = True
         logger.info("回测服务初始化完成")
 
-    def SubmitBacktest(
-        self, request: BacktestRequest, context: grpc.ServicerContext
-    ) -> TaskResponse:
+    def SubmitBacktest(self, request: BacktestRequest, context: grpc.ServicerContext) -> TaskResponse:
         """提交回测任务"""
         try:
             # 检查并发任务数
@@ -559,9 +527,7 @@ class BacktestService(BacktestServiceServicer):
             context.set_details(f"内部错误: {e}")
             return TaskResponse()
 
-    def QueryBacktest(
-        self, request: QueryRequest, context: grpc.ServicerContext
-    ) -> QueryResponse:
+    def QueryBacktest(self, request: QueryRequest, context: grpc.ServicerContext) -> QueryResponse:
         """查询回测状态"""
         try:
             task_id = request.task_id
@@ -632,9 +598,7 @@ class BacktestService(BacktestServiceServicer):
             context.set_details(f"内部错误: {e}")
             return HistoryResponse()
 
-    def SubmitBatchBacktest(
-        self, request: BatchRequest, context: grpc.ServicerContext
-    ) -> BatchResponse:
+    def SubmitBatchBacktest(self, request: BatchRequest, context: grpc.ServicerContext) -> BatchResponse:
         """批量提交回测任务"""
         try:
             submitted_tasks = []
@@ -731,9 +695,7 @@ class BacktestService(BacktestServiceServicer):
             context.set_details(f"内部错误: {e}")
             return OptimizationResult()
 
-    def _grid_search_optimization(
-        self, request: ParameterOptimizationRequest
-    ) -> Dict[str, Any]:
+    def _grid_search_optimization(self, request: ParameterOptimizationRequest) -> Dict[str, Any]:
         """网格搜索优化"""
         start_time = time.time()
         best_performance = float("-inf")
@@ -788,9 +750,7 @@ class BacktestService(BacktestServiceServicer):
             "execution_time": execution_time,
         }
 
-    def _random_search_optimization(
-        self, request: ParameterOptimizationRequest
-    ) -> Dict[str, Any]:
+    def _random_search_optimization(self, request: ParameterOptimizationRequest) -> Dict[str, Any]:
         """随机搜索优化"""
         start_time = time.time()
         best_performance = float("-inf")
@@ -802,9 +762,7 @@ class BacktestService(BacktestServiceServicer):
             params = {}
             for param_name, param_range in request.parameter_ranges.items():
                 if param_range["type"] == "integer":
-                    value = np.random.randint(
-                        param_range["min"], param_range["max"] + 1
-                    )
+                    value = np.random.randint(param_range["min"], param_range["max"] + 1)
                 elif param_range["type"] == "float":
                     value = np.random.uniform(param_range["min"], param_range["max"])
                 elif param_range["type"] == "categorical":
@@ -857,9 +815,7 @@ class BacktestService(BacktestServiceServicer):
             "execution_time": execution_time,
         }
 
-    def _bayesian_optimization(
-        self, request: ParameterOptimizationRequest
-    ) -> Dict[str, Any]:
+    def _bayesian_optimization(self, request: ParameterOptimizationRequest) -> Dict[str, Any]:
         """贝叶斯优化"""
         # 简化实现，实际应该使用专业的贝叶斯优化库
         return self._random_search_optimization(request)
@@ -902,14 +858,7 @@ class BacktestService(BacktestServiceServicer):
             "gpu_available": self.gpu_manager.get_available_gpu_count(),
             "gpu_total": len(self.gpu_manager.gpu_ids),
             "queue_status": self.redis_queue.get_queue_statistics(),
-            "strategies_used": list(
-                set(
-                    [
-                        task["request"].strategy_type
-                        for task in self.active_tasks.values()
-                    ]
-                )
-            ),
+            "strategies_used": list(set([task["request"].strategy_type for task in self.active_tasks.values()])),
         }
 
     def stop(self):

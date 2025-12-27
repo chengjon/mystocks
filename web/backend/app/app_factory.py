@@ -40,10 +40,8 @@ from .core.responses import (
     BusinessCode,
     ErrorDetail,
     UnifiedResponse,
-    create_error_response,
     create_health_response,
     create_success_response,
-    create_unified_error_response,
     create_unified_success_response,
 )
 
@@ -92,9 +90,7 @@ class CSRFTokenManager:
         """清理过期的tokens"""
         current_time = time.time()
         expired_tokens = [
-            token
-            for token, info in self.tokens.items()
-            if current_time - info["created_at"] > self.token_timeout
+            token for token, info in self.tokens.items() if current_time - info["created_at"] > self.token_timeout
         ]
         for token in expired_tokens:
             del self.tokens[token]
@@ -168,9 +164,7 @@ def create_app() -> FastAPI:
         docs_url=None,  # 禁用默认 Swagger UI（将手动配置本地版本）
         redoc_url="/api/redoc",
         swagger_ui_parameters=openapi_config.get("swagger_ui_parameters"),
-        swagger_ui_oauth2_redirect_url=openapi_config.get(
-            "swagger_ui_oauth2_redirect_url"
-        ),
+        swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
         lifespan=lifespan,  # 添加生命周期管理
     )
 
@@ -242,19 +236,14 @@ def create_app() -> FastAPI:
                 csrf_token = request.headers.get("x-csrf-token")
 
                 if not csrf_token:
-                    logger.warning(
-                        f"❌ CSRF token missing for {request.method} {request.url.path}"
-                    )
+                    logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
                     request_id = getattr(request.state, "request_id", None)
                     unified_response = UnifiedResponse(
                         success=False,
                         code=BusinessCode.FORBIDDEN,
                         message="CSRF token is required for this request",
                         errors=[
-                            ErrorDetail(
-                                code=ErrorCodes.FORBIDDEN,
-                                message="CSRF token is required for this request"
-                            )
+                            ErrorDetail(code=ErrorCodes.FORBIDDEN, message="CSRF token is required for this request")
                         ],
                         request_id=request_id,
                     )
@@ -265,20 +254,13 @@ def create_app() -> FastAPI:
 
                 # 验证CSRF token
                 if not csrf_manager.validate_token(csrf_token):
-                    logger.warning(
-                        f"❌ Invalid CSRF token for {request.method} {request.url.path}"
-                    )
+                    logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
                     request_id = getattr(request.state, "request_id", None)
                     unified_response = UnifiedResponse(
                         success=False,
                         code=BusinessCode.FORBIDDEN,
                         message="CSRF token is invalid or expired",
-                        errors=[
-                            ErrorDetail(
-                                code=ErrorCodes.FORBIDDEN,
-                                message="CSRF token is invalid or expired"
-                            )
-                        ],
+                        errors=[ErrorDetail(code=ErrorCodes.FORBIDDEN, message="CSRF token is invalid or expired")],
                         request_id=request_id,
                     )
                     return JSONResponse(

@@ -144,9 +144,7 @@ class TestExecutionEngine:
         self.active_tests: Dict[str, asyncio.Task] = {}
         self.test_results: Dict[str, TestExecutionResult] = {}
 
-    async def execute_tests_sequentially(
-        self, test_cases: List[TestCase]
-    ) -> List[TestExecutionResult]:
+    async def execute_tests_sequentially(self, test_cases: List[TestCase]) -> List[TestExecutionResult]:
         """顺序执行测试"""
         results = []
 
@@ -168,9 +166,7 @@ class TestExecutionEngine:
 
         return results
 
-    async def execute_tests_parallelly(
-        self, test_cases: List[TestCase]
-    ) -> List[TestExecutionResult]:
+    async def execute_tests_parallelly(self, test_cases: List[TestCase]) -> List[TestExecutionResult]:
         """并行执行测试"""
         semaphore = asyncio.Semaphore(self.max_workers)
         results = []
@@ -255,10 +251,7 @@ class ComprehensiveTestManager:
     """综合测试管理器"""
 
     def __init__(self, config_path: Optional[str] = None):
-        self.config_path = (
-            config_path
-            or "/opt/claude/mystocks_spec/tests/integration/test_config.json"
-        )
+        self.config_path = config_path or "/opt/claude/mystocks_spec/tests/integration/test_config.json"
         self.config = self._load_config()
 
         # 初始化测试组件
@@ -274,9 +267,7 @@ class ComprehensiveTestManager:
         self.data_optimizer = TestDataOptimizer()
 
         # 初始化执行引擎
-        self.execution_engine = TestExecutionEngine(
-            max_workers=self.config.get("max_workers", 10)
-        )
+        self.execution_engine = TestExecutionEngine(max_workers=self.config.get("max_workers", 10))
 
         # 测试用例和套件存储
         self.test_cases: Dict[str, TestCase] = {}
@@ -331,9 +322,7 @@ class ComprehensiveTestManager:
         self.test_suites[test_suite.id] = test_suite
         print(f"✓ 注册测试套件: {test_suite.name} ({test_suite.id})")
 
-    async def run_test_by_id(
-        self, test_id: str, retry_count: int = 0
-    ) -> TestExecutionResult:
+    async def run_test_by_id(self, test_id: str, retry_count: int = 0) -> TestExecutionResult:
         """运行指定ID的测试"""
         if test_id not in self.test_cases:
             raise ValueError(f"测试用例不存在: {test_id}")
@@ -353,19 +342,13 @@ class ComprehensiveTestManager:
 
         return result
 
-    async def run_test_suite(
-        self, suite_id: str, execution_mode: str = "adaptive"
-    ) -> List[TestExecutionResult]:
+    async def run_test_suite(self, suite_id: str, execution_mode: str = "adaptive") -> List[TestExecutionResult]:
         """运行测试套件"""
         if suite_id not in self.test_suites:
             raise ValueError(f"测试套件不存在: {suite_id}")
 
         suite = self.test_suites[suite_id]
-        test_cases = [
-            self.test_cases[case_id]
-            for case_id in suite.test_cases
-            if case_id in self.test_cases
-        ]
+        test_cases = [self.test_cases[case_id] for case_id in suite.test_cases if case_id in self.test_cases]
 
         print(f"\n🚀 运行测试套件: {suite.name}")
         print(f"📊 测试数量: {len(test_cases)}")
@@ -403,9 +386,7 @@ class ComprehensiveTestManager:
 
         return results
 
-    async def _execute_tests_adaptively(
-        self, test_cases: List[TestCase]
-    ) -> List[TestExecutionResult]:
+    async def _execute_tests_adaptively(self, test_cases: List[TestCase]) -> List[TestExecutionResult]:
         """自适应执行测试"""
         # 按测试类型分组
         by_type = {}
@@ -425,14 +406,10 @@ class ComprehensiveTestManager:
                 TestType.COMPLIANCE,
             ]:
                 # 性能、安全、合规测试：顺序执行
-                case_results = await self.execution_engine.execute_tests_sequentially(
-                    cases
-                )
+                case_results = await self.execution_engine.execute_tests_sequentially(cases)
             else:
                 # 其他测试：并行执行
-                case_results = await self.execution_engine.execute_tests_parallelly(
-                    cases
-                )
+                case_results = await self.execution_engine.execute_tests_parallelly(cases)
             results.extend(case_results)
 
         return results
@@ -470,9 +447,7 @@ class ComprehensiveTestManager:
                 "passed": passed_count,
                 "failed": failed_count,
                 "skipped": skipped_count,
-                "success_rate": round(passed_count / len(results) * 100, 1)
-                if results
-                else 0,
+                "success_rate": round(passed_count / len(results) * 100, 1) if results else 0,
             },
             "by_type": by_type,
             "performance": {
@@ -508,9 +483,7 @@ class ComprehensiveTestManager:
         # 执行所有测试套件
         for suite_id in self.test_suites:
             try:
-                suite_results = await self.run_test_suite(
-                    suite_id, execution_mode="adaptive"
-                )
+                suite_results = await self.run_test_suite(suite_id, execution_mode="adaptive")
                 session_results[suite_id] = suite_results
             except Exception as e:
                 print(f"❌ 测试套件 {suite_id} 执行失败: {str(e)}")
@@ -518,9 +491,7 @@ class ComprehensiveTestManager:
 
         # 生成综合报告
         session_duration = (datetime.now() - session_start).total_seconds()
-        comprehensive_report = self._generate_comprehensive_report(
-            session_results, session_duration
-        )
+        comprehensive_report = self._generate_comprehensive_report(session_results, session_duration)
 
         print("\n🎉 综合测试会话完成")
         print(f"⏱️  总耗时: {session_duration:.2f}秒")
@@ -528,9 +499,7 @@ class ComprehensiveTestManager:
 
         return comprehensive_report
 
-    def _generate_comprehensive_report(
-        self, session_results: Dict, duration: float
-    ) -> Dict[str, Any]:
+    def _generate_comprehensive_report(self, session_results: Dict, duration: float) -> Dict[str, Any]:
         """生成综合报告"""
         total_suites = len(session_results)
         successful_suites = sum(1 for r in session_results.values() if "error" not in r)
@@ -543,19 +512,11 @@ class ComprehensiveTestManager:
         for suite_results in session_results.values():
             if isinstance(suite_results, list):
                 total_tests += len(suite_results)
-                total_passed += sum(
-                    1 for r in suite_results if r.status == TestStatus.PASSED
-                )
-                total_failed += sum(
-                    1 for r in suite_results if r.status == TestStatus.FAILED
-                )
-                total_skipped += sum(
-                    1 for r in suite_results if r.status == TestStatus.SKIPPED
-                )
+                total_passed += sum(1 for r in suite_results if r.status == TestStatus.PASSED)
+                total_failed += sum(1 for r in suite_results if r.status == TestStatus.FAILED)
+                total_skipped += sum(1 for r in suite_results if r.status == TestStatus.SKIPPED)
 
-        overall_success_rate = (
-            (total_passed / total_tests * 100) if total_tests > 0 else 0
-        )
+        overall_success_rate = (total_passed / total_tests * 100) if total_tests > 0 else 0
 
         report = {
             "session_type": "comprehensive",
@@ -597,29 +558,21 @@ class ComprehensiveTestManager:
         all_durations = []
         for suite_results in session_results.values():
             if isinstance(suite_results, list):
-                all_durations.extend(
-                    [r.duration for r in suite_results if r.duration is not None]
-                )
+                all_durations.extend([r.duration for r in suite_results if r.duration is not None])
 
         if all_durations:
             avg_duration = mean(all_durations)
             max_duration = max(all_durations)
 
             if avg_duration > 60:  # 超过1分钟
-                recommendations.append(
-                    f"考虑优化测试性能，平均执行时间 {avg_duration:.2f}秒"
-                )
+                recommendations.append(f"考虑优化测试性能，平均执行时间 {avg_duration:.2f}秒")
 
             if max_duration > 300:  # 超过5分钟
-                recommendations.append(
-                    f"有测试执行时间过长（{max_duration:.2f}秒），需要检查"
-                )
+                recommendations.append(f"有测试执行时间过长（{max_duration:.2f}秒），需要检查")
 
         # 基于成功率提供建议
         if session_results:
-            success_rate = sum(
-                1 for r in session_results.values() if "error" not in r
-            ) / len(session_results)
+            success_rate = sum(1 for r in session_results.values() if "error" not in r) / len(session_results)
             if success_rate < 0.8:
                 recommendations.append("测试成功率偏低，建议检查测试环境配置")
 
@@ -646,17 +599,10 @@ class ComprehensiveTestManager:
             "recent_executions": list(self.execution_engine.test_results.keys())[-10:],
             "performance_metrics": {
                 "average_test_duration": mean(
-                    [
-                        r.duration
-                        for r in self.execution_engine.test_results.values()
-                        if r.duration
-                    ]
+                    [r.duration for r in self.execution_engine.test_results.values() if r.duration]
                 )
                 or 0,
-                "success_rate": (
-                    self.stats["passed_tests"] / max(self.stats["total_tests"], 1)
-                )
-                * 100,
+                "success_rate": (self.stats["passed_tests"] / max(self.stats["total_tests"], 1)) * 100,
             },
         }
 

@@ -25,9 +25,7 @@ class TestBacktestPerformance:
                 "total_return": 0.25,
                 "execution_time": 3.0,
             }
-            gpu_result = gpu_engine.run_backtest(
-                sample_market_data, sample_strategy_config
-            )
+            gpu_result = gpu_engine.run_backtest(sample_market_data, sample_strategy_config)
             gpu_time = time.time() - start_gpu + gpu_result["execution_time"]
 
         # CPU模式
@@ -40,9 +38,7 @@ class TestBacktestPerformance:
                 "total_return": 0.25,
                 "execution_time": 45.0,
             }
-            cpu_result = cpu_engine.run_backtest(
-                sample_market_data, sample_strategy_config
-            )
+            cpu_result = cpu_engine.run_backtest(sample_market_data, sample_strategy_config)
             cpu_time = time.time() - start_cpu + cpu_result["execution_time"]
 
         # 计算加速比
@@ -132,9 +128,7 @@ class TestRealTimePerformance:
         target_throughput = 10000  # 条/秒
         n_messages = 10000
 
-        with patch(
-            "services.integrated_realtime_service.IntegratedRealTimeService"
-        ) as MockService:
+        with patch("services.integrated_realtime_service.IntegratedRealTimeService") as MockService:
             service = MockService(None, None, None)
 
             start = time.time()
@@ -206,7 +200,7 @@ class TestMLPerformance:
         with patch("utils.gpu_acceleration_engine.MLTrainingGPU") as MockGPU:
             gpu_trainer = MockGPU(None, None)
 
-            start_gpu = time.time()
+            time.time()
             gpu_trainer.train_model.return_value = (Mock(), {"training_time": 8.0})
             model_gpu, metrics_gpu = gpu_trainer.train_model(X, y, "random_forest", {})
             gpu_time = metrics_gpu["training_time"]
@@ -215,7 +209,7 @@ class TestMLPerformance:
         with patch("utils.gpu_acceleration_engine.MLTrainingCPU") as MockCPU:
             cpu_trainer = MockCPU()
 
-            start_cpu = time.time()
+            time.time()
             cpu_trainer.train_model.return_value = (Mock(), {"training_time": 120.0})
             model_cpu, metrics_cpu = cpu_trainer.train_model(X, y, "random_forest", {})
             cpu_time = metrics_cpu["training_time"]
@@ -337,9 +331,7 @@ class TestResourceUtilization:
             stats = monitor.get_utilization(0)
 
         # GPU利用率应该 > 80%
-        assert (
-            stats["utilization"] > 80
-        ), f"GPU utilization too low: {stats['utilization']:.1f}%"
+        assert stats["utilization"] > 80, f"GPU utilization too low: {stats['utilization']:.1f}%"
 
     def test_memory_efficiency(self):
         """测试内存效率"""
@@ -355,9 +347,7 @@ class TestResourceUtilization:
             memory = monitor.get_memory_usage(0)
 
         # 内存使用应该 < 90%
-        assert (
-            memory["percentage"] < 90
-        ), f"Memory usage too high: {memory['percentage']:.1f}%"
+        assert memory["percentage"] < 90, f"Memory usage too high: {memory['percentage']:.1f}%"
 
     def test_concurrent_task_limit(self):
         """测试并发任务上限"""
@@ -376,9 +366,7 @@ class TestResourceUtilization:
                     submitted += 1
 
         # 应该能支持最大并发数
-        assert (
-            submitted >= max_concurrent
-        ), f"Insufficient concurrency: {submitted} (target: {max_concurrent})"
+        assert submitted >= max_concurrent, f"Insufficient concurrency: {submitted} (target: {max_concurrent})"
 
 
 class TestStressTest:
@@ -390,9 +378,7 @@ class TestStressTest:
         duration = 60  # 秒
         requests_per_second = 100
 
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
             service = MockService(None, None, None)
 
             start = time.time()
@@ -416,9 +402,7 @@ class TestStressTest:
         """测试峰值负载处理"""
         peak_requests = 1000
 
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
             service = MockService(None, None, None)
 
             start = time.time()

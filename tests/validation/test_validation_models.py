@@ -27,9 +27,7 @@ class AddWatchlistRequest(BaseModel):
 
 class StrategyRunRequest(BaseModel):
     strategy_code: str = Field(..., pattern=r"^[a-z0-9_]+$")
-    symbol: Optional[str] = Field(
-        None, min_length=1, max_length=20, pattern=r"^[a-zA-Z0-9.]+$"
-    )
+    symbol: Optional[str] = Field(None, min_length=1, max_length=20, pattern=r"^[a-zA-Z0-9.]+$")
     symbols: Optional[List[str]] = Field(None)
     check_date: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     limit: Optional[int] = Field(None, ge=1, le=10000)
@@ -76,11 +74,7 @@ class FundFlowRequest(BaseModel):
         if v is None:
             return v
         # Get start_date from data if available
-        if (
-            info.data
-            and "start_date" in info.data
-            and info.data["start_date"] is not None
-        ):
+        if info.data and "start_date" in info.data and info.data["start_date"] is not None:
             start_date = info.data["start_date"]
             if v <= start_date:
                 raise ValueError("结束日期必须大于开始日期")
@@ -128,9 +122,7 @@ class TestValidationModels:
 
     def test_watchlist_valid_request(self):
         """Test valid watchlist request"""
-        request = AddWatchlistRequest(
-            symbol="AAPL", market="US", display_name="Apple Inc."
-        )
+        request = AddWatchlistRequest(symbol="AAPL", market="US", display_name="Apple Inc.")
         assert request.symbol == "AAPL"
         assert request.market == "US"
 
@@ -148,9 +140,7 @@ class TestValidationModels:
 
     def test_strategy_run_valid(self):
         """Test valid strategy run request"""
-        request = StrategyRunRequest(
-            strategy_code="volume_surge", symbol="AAPL", limit=100
-        )
+        request = StrategyRunRequest(strategy_code="volume_surge", symbol="AAPL", limit=100)
         assert request.strategy_code == "volume_surge"
         assert request.symbol == "AAPL"
 
@@ -196,9 +186,7 @@ class TestValidationModels:
     def test_fund_flow_date_range_invalid(self):
         """Test invalid date range"""
         with pytest.raises(ValidationError) as exc_info:
-            FundFlowRequest(
-                symbol="AAPL", start_date=date(2024, 1, 31), end_date=date(2024, 1, 1)
-            )
+            FundFlowRequest(symbol="AAPL", start_date=date(2024, 1, 31), end_date=date(2024, 1, 1))
         assert "结束日期必须大于开始日期" in str(exc_info.value)
 
     def test_task_registration_valid(self):
@@ -215,26 +203,20 @@ class TestValidationModels:
     def test_task_registration_invalid_name(self):
         """Test invalid task name with special characters"""
         with pytest.raises(ValidationError) as exc_info:
-            TaskRegistrationRequest(
-                name="Invalid<script>Task", task_type="DATA_PROCESSING", config={}
-            )
+            TaskRegistrationRequest(name="Invalid<script>Task", task_type="DATA_PROCESSING", config={})
         assert "特殊字符" in str(exc_info.value)
 
     def test_task_registration_empty_config(self):
         """Test empty task configuration"""
         with pytest.raises(ValidationError) as exc_info:
-            TaskRegistrationRequest(
-                name="Test Task", task_type="DATA_PROCESSING", config={}
-            )
+            TaskRegistrationRequest(name="Test Task", task_type="DATA_PROCESSING", config={})
         assert "任务配置不能为空" in str(exc_info.value)
 
     def test_task_registration_too_many_tags(self):
         """Test too many task tags"""
         tags = [f"tag{i}" for i in range(11)]
         with pytest.raises(ValidationError) as exc_info:
-            TaskRegistrationRequest(
-                name="Test Task", task_type="DATA_PROCESSING", config={}, tags=tags
-            )
+            TaskRegistrationRequest(name="Test Task", task_type="DATA_PROCESSING", config={}, tags=tags)
         assert "任务标签数量不能超过10个" in str(exc_info.value)
 
     def test_symbol_case_normalization(self):
@@ -246,9 +228,7 @@ class TestValidationModels:
 
     def test_duplicate_symbol_removal(self):
         """Test duplicate removal in symbol lists"""
-        request = StrategyRunRequest(
-            strategy_code="volume_surge", symbols=["AAPL", "AAPL", "GOOGL", "AAPL"]
-        )
+        request = StrategyRunRequest(strategy_code="volume_surge", symbols=["AAPL", "AAPL", "GOOGL", "AAPL"])
         # Should have unique symbols
         symbol_set = set(request.symbols) if request.symbols else set()
         assert len(symbol_set) == 2
@@ -257,9 +237,7 @@ class TestValidationModels:
 
     def test_whitespace_stripping(self):
         """Test whitespace stripping in task names"""
-        request = TaskRegistrationRequest(
-            name="  Task Name  ", task_type="DATA_PROCESSING", config={"test": "value"}
-        )
+        request = TaskRegistrationRequest(name="  Task Name  ", task_type="DATA_PROCESSING", config={"test": "value"})
         assert request.name == "Task Name"
 
     def test_field_length_limits(self):

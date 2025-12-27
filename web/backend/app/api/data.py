@@ -7,13 +7,13 @@
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
-from app.core.responses import create_success_response, create_error_response, ErrorCodes, ResponseMessages
+from app.core.responses import create_error_response, ErrorCodes
 from app.core.security import User, get_current_user
 
 logger = __import__("logging").getLogger(__name__)
@@ -148,11 +148,9 @@ async def get_stocks_industries(
 
     except Exception as e:
         import logging
+
         logging.error(f"获取行业列表失败: {str(e)}", exc_info=True)
-        return create_error_response(
-            ErrorCodes.DATABASE_ERROR,
-            f"获取行业列表失败: {str(e)}"
-        ).model_dump()
+        return create_error_response(ErrorCodes.DATABASE_ERROR, f"获取行业列表失败: {str(e)}").model_dump()
 
 
 @router.get("/stocks/concepts")
@@ -214,11 +212,9 @@ async def get_stocks_concepts(
 
     except Exception as e:
         import logging
+
         logging.error(f"获取概念列表失败: {str(e)}", exc_info=True)
-        return create_error_response(
-            ErrorCodes.DATABASE_ERROR,
-            f"获取概念列表失败: {str(e)}"
-        ).model_dump()
+        return create_error_response(ErrorCodes.DATABASE_ERROR, f"获取概念列表失败: {str(e)}").model_dump()
 
 
 @router.get("/stocks/daily")
@@ -397,19 +393,13 @@ async def get_kline_data(
         if not symbol:
             raise HTTPException(
                 status_code=400,
-                detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "股票代码不能为空"
-                ).model_dump()
+                detail=create_error_response(ErrorCodes.VALIDATION_ERROR, "股票代码不能为空").model_dump(),
             )
 
         if not start_date or not end_date:
             raise HTTPException(
                 status_code=400,
-                detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "开始日期和结束日期不能为空"
-                ).model_dump()
+                detail=create_error_response(ErrorCodes.VALIDATION_ERROR, "开始日期和结束日期不能为空").model_dump(),
             )
 
         # 验证日期格式
@@ -420,9 +410,8 @@ async def get_kline_data(
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    ErrorCodes.VALIDATION_ERROR,
-                    "日期格式错误，请使用YYYY-MM-DD格式"
-                ).model_dump()
+                    ErrorCodes.VALIDATION_ERROR, "日期格式错误，请使用YYYY-MM-DD格式"
+                ).model_dump(),
             )
 
         # 验证周期参数

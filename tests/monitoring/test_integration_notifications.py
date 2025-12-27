@@ -256,9 +256,7 @@ class SlackNotificationChannel(NotificationChannel):
                             },
                             {
                                 "title": "Created",
-                                "value": message.created_at.strftime(
-                                    "%Y-%m-%d %H:%M:%S"
-                                ),
+                                "value": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                 "short": True,
                             },
                         ],
@@ -269,9 +267,7 @@ class SlackNotificationChannel(NotificationChannel):
             }
 
             if message.html_body:
-                payload["attachments"][0]["text"] = (
-                    f"查看详情: {message.metadata.get('dashboard_url', '#')}"
-                )
+                payload["attachments"][0]["text"] = f"查看详情: {message.metadata.get('dashboard_url', '#')}"
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -296,9 +292,7 @@ class TemplateEngine:
 
     def __init__(self, template_dir: Optional[str] = None):
         self.env = Environment(
-            loader=FileSystemLoader(
-                template_dir or str(Path(__file__).parent / "templates")
-            ),
+            loader=FileSystemLoader(template_dir or str(Path(__file__).parent / "templates")),
             autoescape=select_autoescape(["html", "xml"]),
         )
 
@@ -537,9 +531,7 @@ class TestIntegrationManager:
         self.webhook_handlers[endpoint] = handler
         logging.info(f"添加Webhook处理器: {endpoint}")
 
-    async def handle_webhook(
-        self, endpoint: str, data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def handle_webhook(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """处理Webhook请求"""
         handler = self.webhook_handlers.get(endpoint)
         if handler:
@@ -554,9 +546,7 @@ class TestIntegrationManager:
         else:
             return {"status": "error", "message": "Handler not found"}
 
-    def create_alert_notification(
-        self, alert_data: Dict[str, Any]
-    ) -> NotificationMessage:
+    def create_alert_notification(self, alert_data: Dict[str, Any]) -> NotificationMessage:
         """创建告警通知"""
         level = NotificationLevel(alert_data.get("severity", "info"))
         title = f"测试告警: {alert_data.get('rule_name', 'Unknown Rule')}"
@@ -592,9 +582,7 @@ class TestIntegrationManager:
         message = self.create_alert_notification(alert_data)
         return await self.notification_manager.send_notification(message)
 
-    def create_test_summary_notification(
-        self, summary_data: Dict[str, Any]
-    ) -> NotificationMessage:
+    def create_test_summary_notification(self, summary_data: Dict[str, Any]) -> NotificationMessage:
         """创建测试摘要通知"""
         title = f"测试执行摘要 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         message = f"测试执行完成，共执行 {summary_data.get('total_tests', 0)} 个测试"

@@ -63,9 +63,7 @@ class StrategyGPUContext(IStrategyContext):
         self.created_time = time.time()
         self.last_activity_time = time.time()
 
-        logger.info(
-            f"StrategyGPUContext created for strategy {strategy_id} on device {device_id}"
-        )
+        logger.info(f"StrategyGPUContext created for strategy {strategy_id} on device {device_id}")
 
     def get_strategy_id(self) -> str:
         """获取策略ID"""
@@ -82,18 +80,14 @@ class StrategyGPUContext(IStrategyContext):
     async def execute_compute(self, data: np.ndarray, kernel_name: str) -> np.ndarray:
         """执行GPU计算"""
         if not self.is_active or self.is_preempted:
-            raise RuntimeError(
-                f"Strategy context {self.strategy_id} is not active or is preempted"
-            )
+            raise RuntimeError(f"Strategy context {self.strategy_id} is not active or is preempted")
 
         start_time = time.time()
 
         try:
             # 检查性能阈值
             if not await self._check_performance_thresholds():
-                logger.warning(
-                    f"Performance thresholds exceeded for strategy {self.strategy_id}"
-                )
+                logger.warning(f"Performance thresholds exceeded for strategy {self.strategy_id}")
 
             # 执行计算
             result = await self._execute_kernel(data, kernel_name)
@@ -105,18 +99,13 @@ class StrategyGPUContext(IStrategyContext):
             self.last_activity_time = time.time()
             self.execution_count += 1
 
-            logger.debug(
-                f"Executed kernel {kernel_name} for strategy {self.strategy_id} "
-                f"in {execution_time:.3f}s"
-            )
+            logger.debug(f"Executed kernel {kernel_name} for strategy {self.strategy_id} " f"in {execution_time:.3f}s")
 
             return result
 
         except Exception as e:
             self.error_count += 1
-            logger.error(
-                f"Error executing kernel {kernel_name} for strategy {self.strategy_id}: {e}"
-            )
+            logger.error(f"Error executing kernel {kernel_name} for strategy {self.strategy_id}: {e}")
             raise
 
     async def _execute_kernel(self, data: np.ndarray, kernel_name: str) -> np.ndarray:
@@ -128,9 +117,7 @@ class StrategyGPUContext(IStrategyContext):
         data_size = data.nbytes
         gpu_ptr = self.memory_pool.allocate(data_size, self.strategy_id)
         if gpu_ptr is None:
-            raise RuntimeError(
-                f"Failed to allocate GPU memory for kernel {kernel_name}"
-            )
+            raise RuntimeError(f"Failed to allocate GPU memory for kernel {kernel_name}")
 
         try:
             # 模拟数据传输到GPU
@@ -201,9 +188,7 @@ class StrategyGPUContext(IStrategyContext):
         if self.execution_count > 100:  # 至少执行100次后才检查错误率
             error_rate = self.error_count / self.execution_count
             if error_rate > 0.05:  # 5%错误率阈值
-                logger.warning(
-                    f"Error rate {error_rate:.2%} exceeds acceptable threshold"
-                )
+                logger.warning(f"Error rate {error_rate:.2%} exceeds acceptable threshold")
                 return False
 
         return True
@@ -303,7 +288,7 @@ class StrategyGPUContext(IStrategyContext):
         current_usage = memory_stats["usage"]["total_allocated_bytes"]
 
         # 保留策略状态所需的最小内存（例如，保留10%的当前使用量）
-        critical_memory = int(current_usage * 0.1)
+        int(current_usage * 0.1)
 
         # 这里需要实现具体的内存清理逻辑
         # 暂时只记录日志
@@ -369,14 +354,10 @@ class StrategyGPUContext(IStrategyContext):
         try:
             self.memory_pool.cleanup()
         except Exception as e:
-            logger.error(
-                f"Error cleaning up memory pool for strategy {self.strategy_id}: {e}"
-            )
+            logger.error(f"Error cleaning up memory pool for strategy {self.strategy_id}: {e}")
 
         # 清理其他资源
         self.compute_streams.clear()
         self.compiled_kernels.clear()
 
-        logger.info(
-            f"StrategyGPUContext for strategy {self.strategy_id} shutdown complete"
-        )
+        logger.info(f"StrategyGPUContext for strategy {self.strategy_id} shutdown complete")

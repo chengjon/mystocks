@@ -60,9 +60,7 @@ class BaseStrategy(ABC):
         """
         pass
 
-    def filter_date(
-        self, data: pd.DataFrame, end_date: Optional[str] = None
-    ) -> pd.DataFrame:
+    def filter_date(self, data: pd.DataFrame, end_date: Optional[str] = None) -> pd.DataFrame:
         """过滤数据到指定日期"""
         if end_date is not None:
             mask = data["date"] <= end_date
@@ -104,9 +102,7 @@ class VolumeSurgeStrategy(BaseStrategy):
         p_change = (
             data.iloc[-1]["p_change"]
             if "p_change" in data.columns
-            else (data.iloc[-1]["close"] - data.iloc[-2]["close"])
-            / data.iloc[-2]["close"]
-            * 100
+            else (data.iloc[-1]["close"] - data.iloc[-2]["close"]) / data.iloc[-2]["close"] * 100
         )
 
         # 条件1: 涨幅<2% 或 收盘价<开盘价
@@ -178,10 +174,7 @@ class MABullishStrategy(BaseStrategy):
 
         # 均线递增且涨幅超过20%
         if (
-            data.iloc[0]["ma30"]
-            < data.iloc[step1]["ma30"]
-            < data.iloc[step2]["ma30"]
-            < data.iloc[-1]["ma30"]
+            data.iloc[0]["ma30"] < data.iloc[step1]["ma30"] < data.iloc[step2]["ma30"] < data.iloc[-1]["ma30"]
             and data.iloc[-1]["ma30"] > 1.2 * data.iloc[0]["ma30"]
         ):
             return True
@@ -269,20 +262,14 @@ class ConsolidationPlatformStrategy(BaseStrategy):
             if row["p_change"] > 9.5:
                 # 检查是否创新高（类似海龟交易）
                 check_date = datetime.strptime(row["date"], "%Y-%m-%d")
-                turtle_check = TurtleTradingStrategy().check(
-                    symbol, origin_data, check_date, threshold
-                )
+                turtle_check = TurtleTradingStrategy().check(symbol, origin_data, check_date, threshold)
 
-                if turtle_check and self._check_consolidation(
-                    data, row["close"], row["date"]
-                ):
+                if turtle_check and self._check_consolidation(data, row["close"], row["date"]):
                     return True
 
         return False
 
-    def _check_consolidation(
-        self, data: pd.DataFrame, limitup_price: float, limitup_date: str
-    ) -> bool:
+    def _check_consolidation(self, data: pd.DataFrame, limitup_price: float, limitup_date: str) -> bool:
         """检查涨停后的整理形态"""
         limitup_end = data.loc[data["date"] > limitup_date].head(n=3)
 
@@ -494,9 +481,7 @@ class LowDrawdownStrategy(BaseStrategy):
         data = data.tail(n=threshold)
 
         # 条件1: 60日涨幅必须大于60%
-        ratio_increase = (data.iloc[-1]["close"] - data.iloc[0]["close"]) / data.iloc[
-            0
-        ]["close"]
+        ratio_increase = (data.iloc[-1]["close"] - data.iloc[0]["close"]) / data.iloc[0]["close"]
         if ratio_increase < 0.6:
             return False
 
@@ -526,10 +511,7 @@ class LowDrawdownStrategy(BaseStrategy):
                 return False
 
             # 两日高开低走累计10%
-            if (
-                previous_open > 0
-                and (close - previous_open) / previous_open * 100 < -10
-            ):
+            if previous_open > 0 and (close - previous_open) / previous_open * 100 < -10:
                 return False
 
             previous_p_change = p_change
@@ -642,9 +624,7 @@ class VolumeLimitDownStrategy(BaseStrategy):
         p_change = (
             data.iloc[-1]["p_change"]
             if "p_change" in data.columns
-            else (data.iloc[-1]["close"] - data.iloc[-2]["close"])
-            / data.iloc[-2]["close"]
-            * 100
+            else (data.iloc[-1]["close"] - data.iloc[-2]["close"]) / data.iloc[-2]["close"] * 100
         )
 
         # 条件1: 跌幅>9.5%

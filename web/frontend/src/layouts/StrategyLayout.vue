@@ -397,10 +397,53 @@
   </el-container>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 面包屑导航项
+ */
+interface BreadcrumbItem {
+  path: string
+  title: string
+}
+
+/**
+ * 用户命令类型
+ */
+type UserCommand = 'profile' | 'settings' | 'logout'
+
+/**
+ * 策略统计数据
+ */
+interface StrategyStats {
+  total: number
+  running: number
+  avgReturn: string
+  avgSharpe: string
+  avgWinRate: string
+}
+
+/**
+ * 策略运行状态
+ */
+type StrategyStatus = 'running' | 'paused' | 'stopped' | 'testing'
+
+/**
+ * 策略收益变化类型
+ */
+type StrategyReturnClass = 'strategy-up' | 'strategy-down' | 'strategy-flat'
+
+/**
+ * 排序指标类型
+ */
+type SortMetric = 'return' | 'sharpe' | 'drawdown' | 'winrate' | 'created'
 
 // ============================================
 // Composables
@@ -411,21 +454,21 @@ const router = useRouter()
 // ============================================
 // State
 // ============================================
-const isCollapsed = ref(false)
-const runningStrategyCount = ref(5)
-const username = ref('Admin')
+const isCollapsed: Ref<boolean> = ref(false)
+const runningStrategyCount: Ref<number> = ref(5)
+const username: Ref<string> = ref('Admin')
 
 // Strategy-specific state
-const selectedStrategyType = ref('all')
-const selectedStatus = ref('all')
-const selectedTimeRange = ref('1y')
-const selectedSort = ref('return')
-const selectedStrategies = ref([])
-const isRefreshing = ref(false)
-const refreshInterval = ref(null)
+const selectedStrategyType: Ref<string> = ref('all')
+const selectedStatus: Ref<string> = ref('all')
+const selectedTimeRange: Ref<string> = ref('1y')
+const selectedSort: Ref<string> = ref('return')
+const selectedStrategies: Ref<any[]> = ref([])
+const isRefreshing: Ref<boolean> = ref(false)
+const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
 
 // Strategy statistics
-const strategyStats = ref({
+const strategyStats: Ref<StrategyStats> = ref({
   total: 24,
   running: 5,
   avgReturn: '18.5',
@@ -436,36 +479,36 @@ const strategyStats = ref({
 // ============================================
 // Computed Properties
 // ============================================
-const sidebarWidth = computed(() => {
+const sidebarWidth: ComputedRef<string> = computed((): string => {
   return isCollapsed.value ? '64px' : '220px'
 })
 
-const activeMenu = computed(() => {
+const activeMenu: ComputedRef<string> = computed((): string => {
   return route.path
 })
 
-const breadcrumbs = computed(() => {
+const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[] => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
     path: item.path,
-    title: item.meta.title
+    title: item.meta.title as string
   }))
 })
 
 // ============================================
 // Methods
 // ============================================
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string): void => {
   if (index && index.startsWith('/')) {
     router.push(index)
   }
 }
 
-const handleUserCommand = async (command) => {
+const handleUserCommand = async (command: UserCommand): Promise<void> => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人信息功能开发中...')
@@ -494,32 +537,32 @@ const handleUserCommand = async (command) => {
 }
 
 // Strategy-specific methods
-const handleStrategyTypeChange = (type) => {
+const handleStrategyTypeChange = (type: string): void => {
   ElMessage.info(`策略类型: ${type}`)
   // TODO: Emit event or call API to filter strategies
 }
 
-const handleStatusChange = (status) => {
+const handleStatusChange = (status: string): void => {
   ElMessage.info(`运行状态: ${status}`)
   // TODO: Emit event or call API to filter strategies
 }
 
-const handleTimeRangeChange = (range) => {
+const handleTimeRangeChange = (range: string): void => {
   ElMessage.info(`回测时间: ${range}`)
   // TODO: Emit event or call API to update backtest period
 }
 
-const handleSortChange = (sort) => {
+const handleSortChange = (sort: string): void => {
   ElMessage.info(`排序方式: ${sort}`)
   // TODO: Emit event or call API to sort strategies
 }
 
-const handleCreateStrategy = () => {
+const handleCreateStrategy = (): void => {
   ElMessage.info('打开策略创建向导...')
   // TODO: Open strategy creation dialog or navigate to create page
 }
 
-const handleBatchStart = async () => {
+const handleBatchStart = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `确定要启动选中的 ${selectedStrategies.value.length} 个策略吗?`,
@@ -538,11 +581,11 @@ const handleBatchStart = async () => {
   }
 }
 
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   isRefreshing.value = true
   try {
     // TODO: Call API to refresh strategy data
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise<void>(resolve => setTimeout(resolve, 1000))
     ElMessage.success('数据已刷新')
   } catch (error) {
     ElMessage.error('刷新失败')
@@ -551,26 +594,26 @@ const handleRefresh = async () => {
   }
 }
 
-const viewStrategiesByStatus = (status) => {
+const viewStrategiesByStatus = (status: string): void => {
   ElMessage.info(`查看${status}策略`)
   selectedStatus.value = status
   // TODO: Navigate to strategy list or filter
 }
 
-const sortByMetric = (metric) => {
+const sortByMetric = (metric: SortMetric): void => {
   ElMessage.info(`按${metric}排序`)
   selectedSort.value = metric
   // TODO: Sort strategies by metric
 }
 
-const getReturnClass = (returnValue) => {
+const getReturnClass = (returnValue: string): StrategyReturnClass => {
   const value = parseFloat(returnValue)
   if (value > 0) return 'strategy-up'
   if (value < 0) return 'strategy-down'
   return 'strategy-flat'
 }
 
-const startRealtimeUpdates = () => {
+const startRealtimeUpdates = (): void => {
   if (refreshInterval.value) return
 
   refreshInterval.value = setInterval(() => {
@@ -584,7 +627,7 @@ const startRealtimeUpdates = () => {
   }, 5000)
 }
 
-const stopRealtimeUpdates = () => {
+const stopRealtimeUpdates = (): void => {
   if (refreshInterval.value) {
     clearInterval(refreshInterval.value)
     refreshInterval.value = null
@@ -594,16 +637,16 @@ const stopRealtimeUpdates = () => {
 // ============================================
 // Lifecycle
 // ============================================
-onMounted(() => {
+onMounted((): void => {
   startRealtimeUpdates()
 })
 
-onUnmounted(() => {
+onUnmounted((): void => {
   stopRealtimeUpdates()
 })
 
 // Watch for route changes
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>

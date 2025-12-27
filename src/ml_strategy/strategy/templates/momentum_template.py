@@ -24,9 +24,7 @@ import sys
 import os
 
 # 添加父目录到路径以导入BaseStrategy
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from strategy.base_strategy import BaseStrategy
 from indicators.tdx_functions import MA, CROSS, RSI
@@ -87,17 +85,11 @@ class MomentumStrategy(BaseStrategy):
         # 验证均线周期
         if self.parameters["ma_short"] >= self.parameters["ma_long"]:
             raise ValueError(
-                f"短期均线周期({self.parameters['ma_short']})必须小于"
-                f"长期均线周期({self.parameters['ma_long']})"
+                f"短期均线周期({self.parameters['ma_short']})必须小于" f"长期均线周期({self.parameters['ma_long']})"
             )
 
         # 验证RSI阈值
-        if not (
-            0
-            < self.parameters["rsi_oversold"]
-            < self.parameters["rsi_overbought"]
-            < 100
-        ):
+        if not (0 < self.parameters["rsi_oversold"] < self.parameters["rsi_overbought"] < 100):
             raise ValueError("RSI阈值设置不合理")
 
         return True
@@ -139,15 +131,12 @@ class MomentumStrategy(BaseStrategy):
 
         # 计算信号强度
         # 买入强度: RSI越低强度越高
-        buy_strength = np.where(
-            buy_condition, 1.0 - (rsi / self.parameters["rsi_oversold"]), 0.0
-        )
+        buy_strength = np.where(buy_condition, 1.0 - (rsi / self.parameters["rsi_oversold"]), 0.0)
 
         # 卖出强度: RSI越高强度越高
         sell_strength = np.where(
             sell_condition,
-            (rsi - self.parameters["rsi_overbought"])
-            / (100 - self.parameters["rsi_overbought"]),
+            (rsi - self.parameters["rsi_overbought"]) / (100 - self.parameters["rsi_overbought"]),
             0.0,
         )
 
@@ -163,15 +152,9 @@ class MomentumStrategy(BaseStrategy):
             pos = data.index.get_loc(idx)
             if signals.loc[idx, "signal"] is not None:
                 signals.at[idx, "indicators"] = {
-                    f"ma{self.parameters['ma_short']}": (
-                        float(ma_short[pos]) if not np.isnan(ma_short[pos]) else None
-                    ),
-                    f"ma{self.parameters['ma_long']}": (
-                        float(ma_long[pos]) if not np.isnan(ma_long[pos]) else None
-                    ),
-                    f"rsi{self.parameters['rsi_period']}": (
-                        float(rsi[pos]) if not np.isnan(rsi[pos]) else None
-                    ),
+                    f"ma{self.parameters['ma_short']}": (float(ma_short[pos]) if not np.isnan(ma_short[pos]) else None),
+                    f"ma{self.parameters['ma_long']}": (float(ma_long[pos]) if not np.isnan(ma_long[pos]) else None),
+                    f"rsi{self.parameters['rsi_period']}": (float(rsi[pos]) if not np.isnan(rsi[pos]) else None),
                 }
 
         return signals

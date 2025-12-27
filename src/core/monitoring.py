@@ -82,39 +82,29 @@ class MetricsCollector:
         self.max_history = max_history
         self.counters: Dict[str, float] = defaultdict(float)
         self.gauges: Dict[str, float] = defaultdict(float)
-        self.histograms: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=max_history)
-        )
+        self.histograms: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_history))
         self.timers: Dict[str, List[float]] = defaultdict(list)
         self.lock = threading.RLock()
 
-    def increment(
-        self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None
-    ) -> None:
+    def increment(self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
         """增加计数器"""
         key = self._make_key(name, labels)
         with self.lock:
             self.counters[key] += value
 
-    def set_gauge(
-        self, name: str, value: float, labels: Optional[Dict[str, str]] = None
-    ) -> None:
+    def set_gauge(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         """设置仪表值"""
         key = self._make_key(name, labels)
         with self.lock:
             self.gauges[key] = value
 
-    def record_histogram(
-        self, name: str, value: float, labels: Optional[Dict[str, str]] = None
-    ) -> None:
+    def record_histogram(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         """记录直方图"""
         key = self._make_key(name, labels)
         with self.lock:
             self.histograms[key].append(value)
 
-    def record_timer(
-        self, name: str, duration: float, labels: Optional[Dict[str, str]] = None
-    ) -> None:
+    def record_timer(self, name: str, duration: float, labels: Optional[Dict[str, str]] = None) -> None:
         """记录计时器"""
         key = self._make_key(name, labels)
         with self.lock:
@@ -199,11 +189,7 @@ class AlertManager:
             if name in self.rules:
                 del self.rules[name]
             # 清理相关警报
-            alerts_to_remove = [
-                alert_id
-                for alert_id, alert in self.active_alerts.items()
-                if alert.rule_name == name
-            ]
+            alerts_to_remove = [alert_id for alert_id, alert in self.active_alerts.items() if alert.rule_name == name]
             for alert_id in alerts_to_remove:
                 del self.active_alerts[alert_id]
 
@@ -221,9 +207,7 @@ class AlertManager:
                 matching_metrics = [m for m in metrics.values() if m.name == rule_name]
 
                 for metric in matching_metrics:
-                    if self._evaluate_condition(
-                        metric.value, rule.condition, rule.threshold
-                    ):
+                    if self._evaluate_condition(metric.value, rule.condition, rule.threshold):
                         alert_id = f"{rule_name}_{metric.timestamp.timestamp()}"
 
                         if alert_id not in self.active_alerts:
@@ -249,9 +233,7 @@ class AlertManager:
 
         return new_alerts
 
-    def _evaluate_condition(
-        self, value: float, condition: str, threshold: float
-    ) -> bool:
+    def _evaluate_condition(self, value: float, condition: str, threshold: float) -> bool:
         """评估条件"""
         if condition == ">":
             return value > threshold
@@ -330,25 +312,17 @@ class SystemMonitor:
         # 内存使用率
         memory = psutil.virtual_memory()
         self.metrics_collector.set_gauge("system_memory_percent", memory.percent)
-        self.metrics_collector.set_gauge(
-            "system_memory_used_mb", memory.used / 1024 / 1024
-        )
+        self.metrics_collector.set_gauge("system_memory_used_mb", memory.used / 1024 / 1024)
 
         # 磁盘使用率
         disk = psutil.disk_usage("/")
         self.metrics_collector.set_gauge("system_disk_percent", disk.percent)
-        self.metrics_collector.set_gauge(
-            "system_disk_used_gb", disk.used / 1024 / 1024 / 1024
-        )
+        self.metrics_collector.set_gauge("system_disk_used_gb", disk.used / 1024 / 1024 / 1024)
 
         # 网络IO
         network = psutil.net_io_counters()
-        self.metrics_collector.increment(
-            "system_network_bytes_sent", network.bytes_sent
-        )
-        self.metrics_collector.increment(
-            "system_network_bytes_recv", network.bytes_recv
-        )
+        self.metrics_collector.increment("system_network_bytes_sent", network.bytes_sent)
+        self.metrics_collector.increment("system_network_bytes_recv", network.bytes_recv)
 
 
 class APIMonitor:
@@ -360,16 +334,12 @@ class APIMonitor:
         self.response_times: Dict[str, List[float]] = defaultdict(list)
         self.error_counts: Dict[str, int] = defaultdict(int)
 
-    def record_request(
-        self, endpoint: str, method: str, status_code: int, response_time: float
-    ) -> None:
+    def record_request(self, endpoint: str, method: str, status_code: int, response_time: float) -> None:
         """记录API请求"""
         endpoint_key = f"{method} {endpoint}"
 
         # 记录请求计数
-        self.metrics_collector.increment(
-            "api_requests_total", labels={"endpoint": endpoint, "method": method}
-        )
+        self.metrics_collector.increment("api_requests_total", labels={"endpoint": endpoint, "method": method})
         self.request_counts[endpoint_key] += 1
 
         # 记录响应时间
@@ -381,9 +351,7 @@ class APIMonitor:
         self.response_times[endpoint_key].append(response_time)
 
         # 记录状态码
-        self.metrics_collector.increment(
-            f"api_status_{status_code}", labels={"endpoint": endpoint, "method": method}
-        )
+        self.metrics_collector.increment(f"api_status_{status_code}", labels={"endpoint": endpoint, "method": method})
 
         # 记录错误
         if status_code >= 400:
@@ -411,9 +379,7 @@ class APIMonitor:
 
             response_times = self.response_times.get(endpoint, [])
             avg_response_time = statistics.mean(response_times) if response_times else 0
-            p95_response_time = (
-                self._percentile(response_times, 95) if response_times else 0
-            )
+            p95_response_time = self._percentile(response_times, 95) if response_times else 0
 
             summary["endpoints"][endpoint] = {
                 "request_count": count,

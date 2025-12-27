@@ -237,11 +237,7 @@ class KlineDataService(BaseTdxAdapter):
                 df = self.get_stock_daily(symbol, start_date, end_date, adjust)
             else:
                 # 对于周线和月线，可以通过调整日期范围来获取
-                end_date = (
-                    datetime.now()
-                    if not end_date
-                    else datetime.strptime(end_date, "%Y-%m-%d")
-                )
+                end_date = datetime.now() if not end_date else datetime.strptime(end_date, "%Y-%m-%d")
 
                 if period == "w1":  # 周线
                     start_date = (
@@ -272,12 +268,14 @@ class KlineDataService(BaseTdxAdapter):
                 "period_name": period_name,
                 "data": df.to_dict("records") if not df.empty else [],
                 "count": len(df) if not df.empty else 0,
-                "start_date": df["datetime"].min().strftime("%Y-%m-%d")
-                if not df.empty and "datetime" in df.columns
-                else start_date,
-                "end_date": df["datetime"].max().strftime("%Y-%m-%d")
-                if not df.empty and "datetime" in df.columns
-                else end_date,
+                "start_date": (
+                    df["datetime"].min().strftime("%Y-%m-%d")
+                    if not df.empty and "datetime" in df.columns
+                    else start_date
+                ),
+                "end_date": (
+                    df["datetime"].max().strftime("%Y-%m-%d") if not df.empty and "datetime" in df.columns else end_date
+                ),
                 "timestamp": datetime.now().isoformat(),
             }
 
@@ -324,11 +322,7 @@ class KlineDataService(BaseTdxAdapter):
                 df = self.get_index_daily(index_code, start_date, end_date)
             else:
                 # 对于周线和月线，可以通过调整日期范围来获取
-                end_date = (
-                    datetime.now()
-                    if not end_date
-                    else datetime.strptime(end_date, "%Y-%m-%d")
-                )
+                end_date = datetime.now() if not end_date else datetime.strptime(end_date, "%Y-%m-%d")
 
                 if period == "w1":  # 周线
                     start_date = (
@@ -358,12 +352,14 @@ class KlineDataService(BaseTdxAdapter):
                 "period_name": period_name,
                 "data": df.to_dict("records") if not df.empty else [],
                 "count": len(df) if not df.empty else 0,
-                "start_date": df["datetime"].min().strftime("%Y-%m-%d")
-                if not df.empty and "datetime" in df.columns
-                else start_date,
-                "end_date": df["datetime"].max().strftime("%Y-%m-%d")
-                if not df.empty and "datetime" in df.columns
-                else end_date,
+                "start_date": (
+                    df["datetime"].min().strftime("%Y-%m-%d")
+                    if not df.empty and "datetime" in df.columns
+                    else start_date
+                ),
+                "end_date": (
+                    df["datetime"].max().strftime("%Y-%m-%d") if not df.empty and "datetime" in df.columns else end_date
+                ),
                 "timestamp": datetime.now().isoformat(),
             }
 

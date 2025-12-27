@@ -65,8 +65,6 @@ class ColumnMapper:
         "change_amount": "change",
         "振幅": "amplitude",
         "换手率": "turnover_rate",
-        "turn": "turnover_rate",
-        "turnover": "turnover_rate",
         # 市值相关
         "总市值": "total_mv",
         "流通市值": "circ_mv",
@@ -171,17 +169,9 @@ class ColumnMapper:
                 rename_dict[old_col] = mapping[old_col.lower()]
             # 尝试去除空格和特殊字符后匹配
             else:
-                clean_col = (
-                    old_col.replace(" ", "").replace("_", "").replace("-", "").lower()
-                )
+                clean_col = old_col.replace(" ", "").replace("_", "").replace("-", "").lower()
                 for key, value in mapping.items():
-                    if (
-                        clean_col
-                        == key.replace(" ", "")
-                        .replace("_", "")
-                        .replace("-", "")
-                        .lower()
-                    ):
+                    if clean_col == key.replace(" ", "").replace("_", "").replace("-", "").lower():
                         rename_dict[old_col] = value
                         break
 
@@ -193,9 +183,7 @@ class ColumnMapper:
         return df_copy
 
     @classmethod
-    def to_english(
-        cls, df: pd.DataFrame, custom_mapping: Optional[Dict[str, str]] = None
-    ) -> pd.DataFrame:
+    def to_english(cls, df: pd.DataFrame, custom_mapping: Optional[Dict[str, str]] = None) -> pd.DataFrame:
         """
         将DataFrame列名转换为英文
 
@@ -206,14 +194,10 @@ class ColumnMapper:
         Returns:
             pd.DataFrame: 英文列名的DataFrame
         """
-        return cls.standardize_columns(
-            df, target_lang="en", custom_mapping=custom_mapping
-        )
+        return cls.standardize_columns(df, target_lang="en", custom_mapping=custom_mapping)
 
     @classmethod
-    def to_chinese(
-        cls, df: pd.DataFrame, custom_mapping: Optional[Dict[str, str]] = None
-    ) -> pd.DataFrame:
+    def to_chinese(cls, df: pd.DataFrame, custom_mapping: Optional[Dict[str, str]] = None) -> pd.DataFrame:
         """
         将DataFrame列名转换为中文
 
@@ -224,14 +208,10 @@ class ColumnMapper:
         Returns:
             pd.DataFrame: 中文列名的DataFrame
         """
-        return cls.standardize_columns(
-            df, target_lang="cn", custom_mapping=custom_mapping
-        )
+        return cls.standardize_columns(df, target_lang="cn", custom_mapping=custom_mapping)
 
     @classmethod
-    def get_standard_columns(
-        cls, data_type: str = "stock_daily", lang: str = "en"
-    ) -> List[str]:
+    def get_standard_columns(cls, data_type: str = "stock_daily", lang: str = "en") -> List[str]:
         """
         获取特定数据类型的标准列名
 
@@ -318,9 +298,7 @@ class ColumnMapper:
         return standard_columns.get(data_type, {}).get(lang, [])
 
     @classmethod
-    def validate_columns(
-        cls, df: pd.DataFrame, required_columns: list, strict: bool = False
-    ) -> tuple:
+    def validate_columns(cls, df: pd.DataFrame, required_columns: list, strict: bool = False) -> tuple:
         """
         验证DataFrame是否包含必需的列
 
@@ -343,9 +321,7 @@ class ColumnMapper:
         return is_valid, list(missing_columns), list(extra_columns)
 
     @classmethod
-    def add_custom_mapping(
-        cls, custom_mapping: Dict[str, str], target_lang: str = "en"
-    ):
+    def add_custom_mapping(cls, custom_mapping: Dict[str, str], target_lang: str = "en"):
         """
         添加自定义映射规则到默认映射表
 

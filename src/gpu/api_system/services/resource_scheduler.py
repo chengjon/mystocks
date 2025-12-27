@@ -6,7 +6,7 @@ Resource Scheduler
 import logging
 import time
 import threading
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
 from datetime import datetime, timedelta
 import queue
 from enum import Enum
@@ -94,9 +94,7 @@ class Task:
             "status": self.status.value,
             "created_at": self.created_at.isoformat(),
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat()
-            if self.completed_at
-            else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
             "gpu_id": self.gpu_id,
             "retry_count": self.retry_count,
             "max_retries": self.max_retries,
@@ -143,9 +141,7 @@ class ResourceScheduler:
 
         # 启动调度器线程
         self.running = True
-        self.scheduler_thread = threading.Thread(
-            target=self._scheduler_loop, daemon=True
-        )
+        self.scheduler_thread = threading.Thread(target=self._scheduler_loop, daemon=True)
         self.scheduler_thread.start()
 
         logger.info("资源调度器初始化完成")
@@ -215,9 +211,7 @@ class ResourceScheduler:
         """添加任务到调度器"""
         with self.lock:
             self.task_queue.put(task)
-            logger.info(
-                f"任务已添加到调度器: {task.task_id} (优先级: {task.priority.name})"
-            )
+            logger.info(f"任务已添加到调度器: {task.task_id} (优先级: {task.priority.name})")
 
     def _check_running_tasks(self):
         """检查运行中的任务"""
@@ -226,21 +220,14 @@ class ResourceScheduler:
 
             for task_id, task in self.running_tasks.items():
                 # 检查任务是否超时
-                if (
-                    task.started_at
-                    and (datetime.now() - task.started_at).total_seconds()
-                    > task.timeout
-                ):
+                if task.started_at and (datetime.now() - task.started_at).total_seconds() > task.timeout:
                     logger.warning(f"任务 {task_id} 超时，取消执行")
                     self._cancel_task(task_id)
                     tasks_to_remove.append(task_id)
                     continue
 
                 # 检查任务是否完成
-                if (
-                    task.status == TaskStatus.COMPLETED
-                    or task.status == TaskStatus.FAILED
-                ):
+                if task.status == TaskStatus.COMPLETED or task.status == TaskStatus.FAILED:
                     logger.info(f"任务 {task_id} 完成，状态: {task.status.value}")
                     self.completed_tasks.append(task)
                     tasks_to_remove.append(task_id)
@@ -259,9 +246,7 @@ class ResourceScheduler:
             # 清理超过1天的已完成任务
             cutoff_time = datetime.now() - timedelta(days=1)
             self.completed_tasks = [
-                task
-                for task in self.completed_tasks
-                if task.completed_at and task.completed_at > cutoff_time
+                task for task in self.completed_tasks if task.completed_at and task.completed_at > cutoff_time
             ]
 
     def _health_check(self):
@@ -285,9 +270,7 @@ class ResourceScheduler:
 
             # 如果运行中任务过多，发出警告
             if running_count > self.config["max_concurrent_tasks"] * 0.9:
-                logger.warning(
-                    f"运行中任务数量接近上限: {running_count}/{self.config['max_concurrent_tasks']}"
-                )
+                logger.warning(f"运行中任务数量接近上限: {running_count}/{self.config['max_concurrent_tasks']}")
 
         except Exception as e:
             logger.error(f"健康检查失败: {e}")
@@ -369,9 +352,7 @@ class ResourceScheduler:
 
                 # 延迟重试
                 retry_delay = self.config["retry_delay"]
-                logger.info(
-                    f"任务 {task.task_id} 将在 {retry_delay} 秒后重试 (第 {task.retry_count} 次)"
-                )
+                logger.info(f"任务 {task.task_id} 将在 {retry_delay} 秒后重试 (第 {task.retry_count} 次)")
 
                 # 重新加入队列
                 task.status = TaskStatus.PENDING
@@ -514,23 +495,11 @@ class ResourceScheduler:
                 "gpu_available": self.gpu_manager.get_available_gpu_count(),
                 "gpu_total": len(self.gpu_manager.gpu_ids),
                 "task_types": {
-                    task_type.value: len(
-                        [
-                            t
-                            for t in self.running_tasks.values()
-                            if t.task_type == task_type
-                        ]
-                    )
+                    task_type.value: len([t for t in self.running_tasks.values() if t.task_type == task_type])
                     for task_type in TaskType
                 },
                 "priorities": {
-                    priority.name: len(
-                        [
-                            t
-                            for t in self.running_tasks.values()
-                            if t.priority == priority
-                        ]
-                    )
+                    priority.name: len([t for t in self.running_tasks.values() if t.priority == priority])
                     for priority in TaskPriority
                 },
             }
@@ -557,14 +526,10 @@ class ResourceScheduler:
                 "total_queue_size": self.task_queue.qsize(),
                 "running_tasks_count": len(self.running_tasks),
                 "max_concurrent_tasks": self.config["max_concurrent_tasks"],
-                "queue_utilization": len(self.running_tasks)
-                / self.config["max_concurrent_tasks"]
-                * 100,
+                "queue_utilization": len(self.running_tasks) / self.config["max_concurrent_tasks"] * 100,
                 "task_distribution": {},
                 "priority_distribution": {},
-                "gpu_utilization": self.gpu_manager.get_gpu_stats().get(
-                    "utilization", 0
-                ),
+                "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
                 "estimated_wait_time": self._calculate_estimated_wait_time(),
                 "queue_health": self._assess_queue_health(),
             }
@@ -572,22 +537,16 @@ class ResourceScheduler:
             # 任务类型分布
             for task in self.running_tasks.values():
                 task_type = task.task_type.value
-                queue_viz["task_distribution"][task_type] = (
-                    queue_viz["task_distribution"].get(task_type, 0) + 1
-                )
+                queue_viz["task_distribution"][task_type] = queue_viz["task_distribution"].get(task_type, 0) + 1
 
             # 优先级分布
             for task in self.running_tasks.values():
                 priority = task.priority.name
-                queue_viz["priority_distribution"][priority] = (
-                    queue_viz["priority_distribution"].get(priority, 0) + 1
-                )
+                queue_viz["priority_distribution"][priority] = queue_viz["priority_distribution"].get(priority, 0) + 1
 
             return queue_viz
 
-    def get_detailed_task_info(
-        self, task_id: str = None
-    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    def get_detailed_task_info(self, task_id: str = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
         """获取详细任务信息"""
         with self.lock:
             if task_id:
@@ -600,18 +559,12 @@ class ResourceScheduler:
                         "priority": task.priority.name,
                         "status": task.status.value,
                         "created_at": task.created_at.isoformat(),
-                        "started_at": task.started_at.isoformat()
-                        if task.started_at
-                        else None,
+                        "started_at": task.started_at.isoformat() if task.started_at else None,
                         "gpu_id": task.gpu_id,
                         "required_memory": task.required_memory,
                         "required_gpu": task.required_gpu,
                         "retry_count": task.retry_count,
-                        "elapsed_time": (
-                            datetime.now() - task.created_at
-                        ).total_seconds()
-                        if task.started_at
-                        else None,
+                        "elapsed_time": (datetime.now() - task.created_at).total_seconds() if task.started_at else None,
                         "estimated_remaining_time": self._estimate_remaining_time(task),
                     }
                 else:
@@ -629,15 +582,11 @@ class ResourceScheduler:
                             "priority": task.priority.name,
                             "status": task.status.value,
                             "created_at": task.created_at.isoformat(),
-                            "started_at": task.started_at.isoformat()
-                            if task.started_at
-                            else None,
+                            "started_at": task.started_at.isoformat() if task.started_at else None,
                             "gpu_id": task.gpu_id,
                             "elapsed_time": (
-                                datetime.now() - task.created_at
-                            ).total_seconds()
-                            if task.started_at
-                            else None,
+                                (datetime.now() - task.created_at).total_seconds() if task.started_at else None
+                            ),
                         }
                     )
 
@@ -666,7 +615,7 @@ class ResourceScheduler:
         """获取性能指标"""
         with self.lock:
             gpu_stats = self.gpu_manager.get_gpu_stats()
-            queue_stats = self.redis_queue.get_queue_statistics()
+            self.redis_queue.get_queue_statistics()
 
             # 计算系统效率指标
             system_efficiency = self._calculate_system_efficiency()
@@ -738,9 +687,7 @@ class ResourceScheduler:
             return float("inf")  # 队列已满
 
         # 估算等待时间
-        wait_time = (self.task_queue.qsize() / available_slots) * (
-            avg_task_duration / 60
-        )
+        wait_time = (self.task_queue.qsize() / available_slots) * (avg_task_duration / 60)
         return round(wait_time, 2)
 
     def _assess_queue_health(self) -> str:
@@ -810,9 +757,7 @@ class ResourceScheduler:
 
     def _calculate_task_throughput(self) -> Dict[str, Any]:
         """计算任务吞吐量"""
-        completed_count = len(
-            [t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED]
-        )
+        completed_count = len([t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED])
         total_count = len(self.completed_tasks)
 
         # 计算最近1小时的吞吐量
@@ -821,21 +766,15 @@ class ResourceScheduler:
             [
                 t
                 for t in self.completed_tasks
-                if t.status == TaskStatus.COMPLETED
-                and t.completed_at
-                and t.completed_at > one_hour_ago
+                if t.status == TaskStatus.COMPLETED and t.completed_at and t.completed_at > one_hour_ago
             ]
         )
 
         throughput = {
             "total_completed": completed_count,
             "recent_hourly_throughput": recent_completed,
-            "success_rate": round(completed_count / total_count * 100, 2)
-            if total_count > 0
-            else 0,
-            "queue_efficiency": round(
-                self.task_queue.qsize() / self.config["max_concurrent_tasks"] * 100, 2
-            ),
+            "success_rate": round(completed_count / total_count * 100, 2) if total_count > 0 else 0,
+            "queue_efficiency": round(self.task_queue.qsize() / self.config["max_concurrent_tasks"] * 100, 2),
         }
 
         return throughput
@@ -853,9 +792,7 @@ class ResourceScheduler:
     def _calculate_average_task_duration(self) -> float:
         """计算平均任务执行时间"""
         completed_tasks = [
-            t
-            for t in self.completed_tasks
-            if t.status == TaskStatus.COMPLETED and t.started_at and t.completed_at
+            t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED and t.started_at and t.completed_at
         ]
 
         if not completed_tasks:
@@ -873,9 +810,7 @@ class ResourceScheduler:
         if not self.completed_tasks:
             return 0.0
 
-        successful_tasks = len(
-            [t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED]
-        )
+        successful_tasks = len([t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED])
         total_tasks = len(self.completed_tasks)
 
         return round(successful_tasks / total_tasks * 100, 2)
@@ -917,9 +852,7 @@ class ResourceScheduler:
 
     def _calculate_task_efficiency(self) -> float:
         """计算任务执行效率"""
-        completed_tasks = [
-            t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED
-        ]
+        completed_tasks = [t for t in self.completed_tasks if t.status == TaskStatus.COMPLETED]
 
         if not completed_tasks:
             return 0.0
@@ -937,8 +870,8 @@ class ResourceScheduler:
     def _calculate_resource_efficiency(self) -> float:
         """计算资源分配效率"""
         gpu_utilization = self.gpu_manager.get_gpu_stats().get("utilization", 0)
-        running_tasks = len(self.running_tasks)
-        max_concurrent = self.config["max_concurrent_tasks"]
+        len(self.running_tasks)
+        self.config["max_concurrent_tasks"]
 
         # 资源效率 = GPU利用率 * 任务执行效率
         task_efficiency = self._calculate_task_efficiency()
@@ -955,10 +888,7 @@ class ResourceScheduler:
 
         # 加权平均效率
         overall_efficiency = (
-            gpu_efficiency * 0.3
-            + queue_efficiency * 0.2
-            + task_efficiency * 0.3
-            + resource_efficiency * 0.2
+            gpu_efficiency * 0.3 + queue_efficiency * 0.2 + task_efficiency * 0.3 + resource_efficiency * 0.2
         )
 
         return round(overall_efficiency, 2)
@@ -1015,8 +945,7 @@ class ResourceScheduler:
                 "utilization": running_tasks / max_concurrent * 100,
             },
             "overall_capacity_utilization": round(
-                (gpu_stats.get("utilization", 0) + running_tasks / max_concurrent * 100)
-                / 2,
+                (gpu_stats.get("utilization", 0) + running_tasks / max_concurrent * 100) / 2,
                 2,
             ),
         }

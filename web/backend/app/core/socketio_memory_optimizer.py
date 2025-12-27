@@ -110,9 +110,7 @@ class WebSocketMemoryOptimizer:
             cleanup_interval=cleanup_interval,
         )
 
-    def register_pressure_callback(
-        self, pressure_level: MemoryPressureLevel, callback: callable
-    ) -> None:
+    def register_pressure_callback(self, pressure_level: MemoryPressureLevel, callback: callable) -> None:
         """
         注册内存压力回调
 
@@ -298,9 +296,7 @@ class WebSocketMemoryOptimizer:
         """获取优化器统计"""
         current_snapshot = self._get_memory_snapshot()
         avg_memory_percent = (
-            sum(s.percent for s in self.memory_snapshots) / len(self.memory_snapshots)
-            if self.memory_snapshots
-            else 0
+            sum(s.percent for s in self.memory_snapshots) / len(self.memory_snapshots) if self.memory_snapshots else 0
         )
 
         return {
@@ -314,11 +310,7 @@ class WebSocketMemoryOptimizer:
             "snapshots": {
                 "total": len(self.memory_snapshots),
                 "max_stored": self.max_snapshots,
-                "recent": (
-                    [s.to_dict() for s in self.memory_snapshots[-10:]]
-                    if self.memory_snapshots
-                    else []
-                ),
+                "recent": ([s.to_dict() for s in self.memory_snapshots[-10:]] if self.memory_snapshots else []),
             },
             "timestamp": datetime.utcnow().isoformat(),
         }

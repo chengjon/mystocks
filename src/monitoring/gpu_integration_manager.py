@@ -124,9 +124,7 @@ class GPUIntegratedMonitoring:
             original_save = self.unified_manager.save_data_by_classification
             original_load = self.unified_manager.load_data_by_classification
 
-            async def gpu_enhanced_save_data(
-                data, data_classification, *args, **kwargs
-            ):
+            async def gpu_enhanced_save_data(data, data_classification, *args, **kwargs):
                 """GPU增强的数据保存"""
                 # 首先进行GPU预处理
                 if self.gpu_optimizer and self.gpu_optimizer.gpu_available:
@@ -160,15 +158,9 @@ class GPUIntegratedMonitoring:
             self.unified_manager.load_data_by_classification = gpu_enhanced_load_data
 
             # 添加GPU特定方法
-            self.unified_manager.get_gpu_optimization_status = (
-                self.get_integration_status
-            )
-            self.unified_manager.run_gpu_performance_optimization = (
-                self.run_manual_optimization
-            )
-            self.unified_manager.get_gpu_performance_report = (
-                self.get_performance_report
-            )
+            self.unified_manager.get_gpu_optimization_status = self.get_integration_status
+            self.unified_manager.run_gpu_performance_optimization = self.run_manual_optimization
+            self.unified_manager.get_gpu_performance_report = self.get_performance_report
 
             self.integration_status["unified_manager_enhanced"] = True
             self.logger.info("✅ 统一管理器GPU增强完成")
@@ -201,9 +193,7 @@ class GPUIntegratedMonitoring:
             if self.gpu_optimizer:
                 # 启动GPU连续优化监控
                 monitoring_task = asyncio.create_task(
-                    self.gpu_optimizer.start_continuous_optimization(
-                        duration_minutes=60
-                    )
+                    self.gpu_optimizer.start_continuous_optimization(duration_minutes=60)
                 )
 
                 # 存储任务引用以便后续管理
@@ -262,12 +252,8 @@ class GPUIntegratedMonitoring:
         """获取集成状态"""
         return {
             "integration_timestamp": datetime.now().isoformat(),
-            "gpu_optimizer_initialized": self.integration_status[
-                "gpu_optimizer_initialized"
-            ],
-            "unified_manager_enhanced": self.integration_status[
-                "unified_manager_enhanced"
-            ],
+            "gpu_optimizer_initialized": self.integration_status["gpu_optimizer_initialized"],
+            "unified_manager_enhanced": self.integration_status["unified_manager_enhanced"],
             "monitoring_integrated": self.integration_status["monitoring_integrated"],
             "last_optimization": self.integration_status["last_optimization"],
             "total_optimizations": self.integration_status["total_optimizations"],
@@ -339,9 +325,7 @@ class GPUIntegratedMonitoring:
                     "temperature": metrics.gpu_temperature,
                     "efficiency_score": metrics.efficiency_score,
                 },
-                "recommendations": await self.gpu_optimizer._generate_performance_recommendations(
-                    metrics
-                ),
+                "recommendations": await self.gpu_optimizer._generate_performance_recommendations(metrics),
             }
 
         except Exception as e:
@@ -363,9 +347,7 @@ class GPUIntegratedMonitoring:
 
             # 保存优化状态
             if self.gpu_optimizer:
-                self.gpu_optimizer.save_optimization_state(
-                    "gpu_optimization_state.json"
-                )
+                self.gpu_optimizer.save_optimization_state("gpu_optimization_state.json")
 
             # 重置状态
             self.integration_status = {

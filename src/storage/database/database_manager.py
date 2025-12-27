@@ -77,9 +77,7 @@ else:
     logger.warning("TDengine client library not available")
 
 # 从环境变量获取监控数据库连接
-MONITOR_DB_URL = os.getenv(
-    "MONITOR_DB_URL", "mysql+pymysql://user:password@localhost/db_monitor"
-)
+MONITOR_DB_URL = os.getenv("MONITOR_DB_URL", "mysql+pymysql://user:password@localhost/db_monitor")
 
 Base: Any = declarative_base()
 
@@ -101,18 +99,14 @@ class TableCreationLog(Base):
     database_type = Column(String(20), nullable=False)
     database_name = Column(String(255), nullable=False)
     creation_time = Column(DateTime, default=datetime.utcnow)
-    modification_time = Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    modification_time = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     status = Column(String(10), nullable=False)
     table_parameters = Column(JSON, nullable=False)
     ddl_command = Column(Text, nullable=False)
     error_message = Column(Text)
 
     # 关系
-    columns = relationship(
-        "ColumnDefinitionLog", backref="table_log", cascade="all, delete-orphan"
-    )
+    columns = relationship("ColumnDefinitionLog", backref="table_log", cascade="all, delete-orphan")
 
 
 class ColumnDefinitionLog(Base):
@@ -138,13 +132,9 @@ class TableOperationLog(Base):
     table_name = Column(String(255), nullable=False)
     database_type = Column(String(20), nullable=False)
     database_name = Column(String(255), nullable=False)
-    operation_type: Any = Column(
-        SQLEnum("CREATE", "ALTER", "DROP", "VALIDATE"), nullable=False
-    )
+    operation_type: Any = Column(SQLEnum("CREATE", "ALTER", "DROP", "VALIDATE"), nullable=False)
     operation_time = Column(DateTime, default=datetime.utcnow)
-    operation_status: Any = Column(
-        SQLEnum("success", "failed", "processing"), nullable=False
-    )
+    operation_status: Any = Column(SQLEnum("success", "failed", "processing"), nullable=False)
     operation_details = Column(JSON, nullable=False)
     ddl_command = Column(Text)
     error_message = Column(Text)
@@ -225,17 +215,13 @@ class DatabaseTableManager:
 
         missing_params = [param for param in required_params if not config.get(param)]
         if missing_params:
-            raise ValueError(
-                f"{db_type.value} 连接参数不完整，缺少: {', '.join(missing_params)}。请检查.env文件配置"
-            )
+            raise ValueError(f"{db_type.value} 连接参数不完整，缺少: {', '.join(missing_params)}。请检查.env文件配置")
 
         try:
             if db_type == DatabaseType.TDENGINE:
                 # 检查TDengine是否可用
                 if not TAOS_AVAILABLE:
-                    raise ValueError(
-                        "TDengine client library is not available. Please install TDengine client."
-                    )
+                    raise ValueError("TDengine client library is not available. Please install TDengine client.")
 
                 # 根据不同模块类型使用不同连接方式
                 if TAOS_MODULE_TYPE == "taosws":
@@ -278,9 +264,7 @@ class DatabaseTableManager:
                     host=str(config.get("host", "localhost")),
                     port=int(redis_port) if redis_port is not None else 6379,
                     db=int(redis_db) if redis_db is not None else 0,
-                    password=str(config.get("password"))
-                    if config.get("password")
-                    else None,
+                    password=str(config.get("password")) if config.get("password") else None,
                     decode_responses=True,
                 )
             elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
@@ -300,9 +284,7 @@ class DatabaseTableManager:
             return conn
 
         except Exception as e:
-            logger.error(
-                f"Failed to connect to {db_type.value} database {db_name}: {str(e)}"
-            )
+            logger.error(f"Failed to connect to {db_type.value} database {db_name}: {str(e)}")
             raise
 
     def _log_operation(
@@ -341,7 +323,7 @@ class DatabaseTableManager:
     ) -> bool:
         """在指定数据库中创建表"""
         # 记录开始信息到监控表
-        operation_id = self._log_operation(
+        self._log_operation(
             table_name,
             db_type,
             db_name,
@@ -356,9 +338,7 @@ class DatabaseTableManager:
 
             # 生成DDL语句
             if db_type == DatabaseType.TDENGINE:
-                ddl = self._generate_tdengine_ddl(
-                    table_name, columns, kwargs.get("tags", []), **kwargs
-                )
+                ddl = self._generate_tdengine_ddl(table_name, columns, kwargs.get("tags", []), **kwargs)
                 cursor = conn.cursor()
                 cursor.execute(ddl)
             elif db_type == DatabaseType.POSTGRESQL:
@@ -455,7 +435,7 @@ class DatabaseTableManager:
     ) -> bool:
         """修改表结构"""
         # 记录开始信息
-        operation_id = self._log_operation(
+        self._log_operation(
             table_name,
             db_type,
             db_name,
@@ -521,12 +501,10 @@ class DatabaseTableManager:
 
             return False
 
-    def drop_table(
-        self, db_type: DatabaseType, db_name: str, table_name: str, **kwargs
-    ) -> bool:
+    def drop_table(self, db_type: DatabaseType, db_name: str, table_name: str, **kwargs) -> bool:
         """删除表"""
         # 记录开始信息
-        operation_id = self._log_operation(
+        self._log_operation(
             table_name,
             db_type,
             db_name,
@@ -561,9 +539,7 @@ class DatabaseTableManager:
                 conn.commit()
 
             # 更新操作日志
-            self._log_operation(
-                table_name, db_type, db_name, "DROP", {"kwargs": kwargs}, ddl, "success"
-            )
+            self._log_operation(table_name, db_type, db_name, "DROP", {"kwargs": kwargs}, ddl, "success")
 
             # 从监控表中删除相关记录
             table_log = (
@@ -619,23 +595,17 @@ class DatabaseTableManager:
 
         try:
             # 获取实际表结构
-            actual_structure = self.get_table_info(
-                db_type, db_name, table_name, **kwargs
-            )
+            actual_structure = self.get_table_info(db_type, db_name, table_name, **kwargs)
 
             if not actual_structure:
                 issues.append("Table does not exist or cannot be accessed")
                 validation_status = "fail"
             else:
-                validation_details["actual_columns"] = actual_structure.get(
-                    "columns", []
-                )
+                validation_details["actual_columns"] = actual_structure.get("columns", [])
 
                 # 验证列匹配
                 expected_cols = {col["name"]: col for col in expected_columns}
-                actual_cols = {
-                    col["name"]: col for col in actual_structure.get("columns", [])
-                }
+                actual_cols = {col["name"]: col for col in actual_structure.get("columns", [])}
 
                 # 检查缺失的列
                 for col_name in expected_cols:
@@ -708,9 +678,7 @@ class DatabaseTableManager:
                 # 获取kwargs，如果没有则使用空字典（将使用环境变量默认值）
                 kwargs = table_config.get("kwargs", {})
 
-                result = self.create_table(
-                    db_type, db_name, table_name, columns, **kwargs
-                )
+                result = self.create_table(db_type, db_name, table_name, columns, **kwargs)
                 results[table_name] = result
 
             return results
@@ -719,9 +687,7 @@ class DatabaseTableManager:
             logger.error(f"Failed to batch create tables: {str(e)}")
             return {"error": str(e)}
 
-    def _generate_alter_ddl(
-        self, db_type: DatabaseType, table_name: str, alterations: List[Dict]
-    ) -> str:
+    def _generate_alter_ddl(self, db_type: DatabaseType, table_name: str, alterations: List[Dict]) -> str:
         """生成ALTER TABLE语句"""
         ddl_parts = []
 
@@ -737,9 +703,7 @@ class DatabaseTableManager:
                 col_def = self._generate_column_definition(alteration)
                 ddl_parts.append(f"MODIFY COLUMN {col_def}")
             elif operation == "RENAME":
-                ddl_parts.append(
-                    f"RENAME COLUMN {alteration['old_name']} TO {alteration['new_name']}"
-                )
+                ddl_parts.append(f"RENAME COLUMN {alteration['old_name']} TO {alteration['new_name']}")
 
         return f"ALTER TABLE {table_name} {', '.join(ddl_parts)}"
 
@@ -774,9 +738,7 @@ class DatabaseTableManager:
     # 其他方法 (_generate_tdengine_ddl, _generate_postgresql_ddl, _generate_mysql_ddl,
     # _initialize_redis_structure, get_table_info, close_all_connections) 保持不变
     # 但需要更新以使用新的列名 (col_length, col_precision, col_scale)
-    def _generate_tdengine_ddl(
-        self, table_name: str, columns: List[Dict], tags: List[Dict], **kwargs
-    ) -> str:
+    def _generate_tdengine_ddl(self, table_name: str, columns: List[Dict], tags: List[Dict], **kwargs) -> str:
         """生成TDengine的DDL语句"""
         # 分离普通字段和标签字段
         normal_cols = [col for col in columns if not col.get("is_tag", False)]
@@ -814,9 +776,7 @@ class DatabaseTableManager:
 
         return ddl
 
-    def _generate_postgresql_ddl(
-        self, table_name: str, columns: List[Dict], **kwargs
-    ) -> str:
+    def _generate_postgresql_ddl(self, table_name: str, columns: List[Dict], **kwargs) -> str:
         """生成PostgreSQL的DDL语句"""
         col_defs = []
         primary_keys = []
@@ -858,9 +818,7 @@ class DatabaseTableManager:
 
         return ddl
 
-    def _generate_mysql_ddl(
-        self, table_name: str, columns: List[Dict], **kwargs
-    ) -> str:
+    def _generate_mysql_ddl(self, table_name: str, columns: List[Dict], **kwargs) -> str:
         """生成MySQL的DDL语句"""
         col_defs = []
         primary_keys = []
@@ -933,9 +891,7 @@ class DatabaseTableManager:
         index_key = f"{key_prefix}:index"
         conn.sadd(index_key, template_key)
 
-    def get_table_info(
-        self, db_type: DatabaseType, db_name: str, table_name: str, **kwargs
-    ) -> Optional[Dict]:
+    def get_table_info(self, db_type: DatabaseType, db_name: str, table_name: str, **kwargs) -> Optional[Dict]:
         """获取表结构信息"""
         try:
             conn = self.get_connection(db_type, db_name, **kwargs)

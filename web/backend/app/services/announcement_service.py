@@ -114,9 +114,7 @@ class AnnouncementService:
             # 保存到数据库
             saved_count, updated_count = self._save_announcements_to_db(df)
 
-            logger.info(
-                f"Saved {saved_count} new announcements, updated {updated_count}"
-            )
+            logger.info(f"Saved {saved_count} new announcements, updated {updated_count}")
 
             return {
                 "success": True,
@@ -153,8 +151,7 @@ class AnnouncementService:
                         and_(
                             Announcement.stock_code == row.get("stock_code"),
                             Announcement.source_id == row.get("announcement_id"),
-                            Announcement.data_source
-                            == row.get("data_source", "cninfo"),
+                            Announcement.data_source == row.get("data_source", "cninfo"),
                         )
                     )
                     .first()
@@ -162,12 +159,8 @@ class AnnouncementService:
 
                 if existing:
                     # 更新现有记录
-                    existing.announcement_title = row.get(
-                        "title", existing.announcement_title
-                    )
-                    existing.announcement_type = row.get(
-                        "type", existing.announcement_type
-                    )
+                    existing.announcement_title = row.get("title", existing.announcement_title)
+                    existing.announcement_type = row.get("type", existing.announcement_type)
                     existing.updated_at = datetime.now()
                     updated_count += 1
                 else:
@@ -182,9 +175,7 @@ class AnnouncementService:
                         url=row.get("pdf_url"),
                         data_source=row.get("data_source", "cninfo"),
                         source_id=row.get("announcement_id"),
-                        importance_level=self._calculate_importance(
-                            row.get("title", "")
-                        ),
+                        importance_level=self._calculate_importance(row.get("title", "")),
                         sentiment=self._analyze_sentiment(row.get("title", "")),
                     )
 
@@ -256,21 +247,13 @@ class AnnouncementService:
 
         try:
             # 获取所有活跃规则
-            rules = (
-                session.query(AnnouncementMonitorRule)
-                .filter(AnnouncementMonitorRule.is_active == True)
-                .all()
-            )
+            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
 
             logger.info(f"Evaluating {len(rules)} active monitor rules")
 
             # 获取今天的公告
             today = date.today()
-            announcements = (
-                session.query(Announcement)
-                .filter(Announcement.publish_date == today)
-                .all()
-            )
+            announcements = session.query(Announcement).filter(Announcement.publish_date == today).all()
 
             logger.info(f"Found {len(announcements)} announcements for today")
 
@@ -335,9 +318,7 @@ class AnnouncementService:
                 continue
 
             # 创建监控记录
-            matched_keywords = self._find_matched_keywords(
-                rule.keywords, announcement.announcement_title
-            )
+            matched_keywords = self._find_matched_keywords(rule.keywords, announcement.announcement_title)
 
             record = AnnouncementMonitorRecord(
                 rule_id=rule.id,
@@ -349,9 +330,7 @@ class AnnouncementService:
             session.add(record)
             triggered_count += 1
 
-            logger.info(
-                f"Rule '{rule.rule_name}' triggered for announcement {announcement.id}"
-            )
+            logger.info(f"Rule '{rule.rule_name}' triggered for announcement {announcement.id}")
 
             # 发送通知（如果启用）
             if rule.notify_enabled:
@@ -359,9 +338,7 @@ class AnnouncementService:
 
         return triggered_count
 
-    def _check_rule_conditions(
-        self, rule: AnnouncementMonitorRule, announcement: Announcement
-    ) -> bool:
+    def _check_rule_conditions(self, rule: AnnouncementMonitorRule, announcement: Announcement) -> bool:
         """
         检查规则条件是否满足
 
@@ -388,9 +365,7 @@ class AnnouncementService:
 
         # 检查关键词
         if rule.keywords:
-            matched_keywords = self._find_matched_keywords(
-                rule.keywords, announcement.announcement_title
-            )
+            matched_keywords = self._find_matched_keywords(rule.keywords, announcement.announcement_title)
             if not matched_keywords:
                 return False
 
@@ -479,9 +454,7 @@ class AnnouncementService:
                 query = query.filter(Announcement.publish_date <= end_date)
 
             if announcement_type:
-                query = query.filter(
-                    Announcement.announcement_type == announcement_type
-                )
+                query = query.filter(Announcement.announcement_type == announcement_type)
 
             if min_importance is not None:
                 query = query.filter(Announcement.importance_level >= min_importance)
@@ -491,10 +464,7 @@ class AnnouncementService:
 
             # 分页
             announcements = (
-                query.order_by(desc(Announcement.publish_date))
-                .offset((page - 1) * page_size)
-                .limit(page_size)
-                .all()
+                query.order_by(desc(Announcement.publish_date)).offset((page - 1) * page_size).limit(page_size).all()
             )
 
             return {
@@ -521,16 +491,8 @@ class AnnouncementService:
             "stock_name": announcement.stock_name,
             "title": announcement.announcement_title,
             "type": announcement.announcement_type,
-            "publish_date": (
-                announcement.publish_date.isoformat()
-                if announcement.publish_date
-                else None
-            ),
-            "publish_time": (
-                announcement.publish_time.isoformat()
-                if announcement.publish_time
-                else None
-            ),
+            "publish_date": (announcement.publish_date.isoformat() if announcement.publish_date else None),
+            "publish_time": (announcement.publish_time.isoformat() if announcement.publish_time else None),
             "url": announcement.url,
             "importance_level": announcement.importance_level,
             "sentiment": announcement.sentiment,

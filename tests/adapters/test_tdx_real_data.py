@@ -34,9 +34,7 @@ try:
                 print(f"  名称: {quote_data.get('name', 'N/A')}")
                 print(f"  价格: {quote_data.get('price', 0):.2f}")
                 print(f"  昨收: {quote_data.get('pre_close', 0):.2f}")
-                print(
-                    f"  涨跌: {quote_data.get('price', 0) - quote_data.get('pre_close', 0):.2f}"
-                )
+                print(f"  涨跌: {quote_data.get('price', 0) - quote_data.get('pre_close', 0):.2f}")
                 print(f"  成交量: {quote_data.get('volume', 0)}手")
             else:
                 print(f"❌ {symbol} 获取失败: {quote_data}")

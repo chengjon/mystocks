@@ -284,9 +284,7 @@ class TDengineManager:
             return True
 
         except Exception as e:
-            logger.error(
-                "❌ 写入缓存失败", symbol=symbol, data_type=data_type, error=str(e)
-            )
+            logger.error("❌ 写入缓存失败", symbol=symbol, data_type=data_type, error=str(e))
             return False
 
     def read_cache(
@@ -347,9 +345,7 @@ class TDengineManager:
                 return None
 
         except Exception as e:
-            logger.error(
-                "❌ 读取缓存失败", symbol=symbol, data_type=data_type, error=str(e)
-            )
+            logger.error("❌ 读取缓存失败", symbol=symbol, data_type=data_type, error=str(e))
             return None
 
     def clear_expired_cache(self, days: int = 7) -> int:
@@ -457,9 +453,7 @@ class TDengineManager:
                 cursor = conn.cursor()
 
                 # 如果SQL不是CREATE DATABASE，需要先USE数据库
-                if self._is_initialized and not sql.upper().startswith(
-                    "CREATE DATABASE"
-                ):
+                if self._is_initialized and not sql.upper().startswith("CREATE DATABASE"):
                     cursor.execute(f"USE {self.database}")
 
                 cursor.execute(sql)

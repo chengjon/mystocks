@@ -117,31 +117,17 @@ class BreakoutStrategy(BaseStrategy):
 
             if current_price >= breakout_price:
                 # 成交量确认
-                volume_confirmed = (
-                    current_volume >= avg_volume * self.parameters["volume_multiplier"]
-                )
+                volume_confirmed = current_volume >= avg_volume * self.parameters["volume_multiplier"]
 
                 if volume_confirmed:
-                    strength = min(
-                        1.0, (current_price - resistance) / resistance / 0.05
-                    )
+                    strength = min(1.0, (current_price - resistance) / resistance / 0.05)
 
                     # 计算止损止盈价位
                     stop_loss = None
                     take_profit = None
                     if atr_value:
-                        stop_loss = Decimal(
-                            str(
-                                current_price
-                                - atr_value * self.parameters["stop_loss_atr"]
-                            )
-                        )
-                        take_profit = Decimal(
-                            str(
-                                current_price
-                                + atr_value * self.parameters["take_profit_atr"]
-                            )
-                        )
+                        stop_loss = Decimal(str(current_price - atr_value * self.parameters["stop_loss_atr"]))
+                        take_profit = Decimal(str(current_price + atr_value * self.parameters["take_profit_atr"]))
 
                     return StrategySignal(
                         symbol=symbol,

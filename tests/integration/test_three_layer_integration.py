@@ -16,9 +16,7 @@ import pytest
 from datetime import date, timedelta
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 
@@ -48,9 +46,7 @@ class TestThreeLayerIntegration:
 
         # 1. 健康检查
         health = ts_source.health_check()
-        assert (
-            health["status"] == "healthy"
-        ), f"TDengine应该健康: {health.get('error', '')}"
+        assert health["status"] == "healthy", f"TDengine应该健康: {health.get('error', '')}"
 
         print("\n✅ TDengine健康检查通过")
         print(f"   版本: {health.get('version', 'unknown')}")
@@ -66,9 +62,7 @@ class TestThreeLayerIntegration:
 
         # 3. 数据质量检查
         try:
-            quality = ts_source.check_data_quality(
-                start_date=date.today() - timedelta(days=7), end_date=date.today()
-            )
+            quality = ts_source.check_data_quality(start_date=date.today() - timedelta(days=7), end_date=date.today())
             assert "completeness_rate" in quality, "质量检查应包含完整率"
             print("\n✅ 数据质量检查完成")
             print(f"   完整率: {quality.get('completeness_rate', 0):.2%}")
@@ -83,9 +77,7 @@ class TestThreeLayerIntegration:
 
         # 1. 健康检查
         health = rel_source.health_check()
-        assert (
-            health["status"] == "healthy"
-        ), f"PostgreSQL应该健康: {health.get('error', '')}"
+        assert health["status"] == "healthy", f"PostgreSQL应该健康: {health.get('error', '')}"
 
         print("\n✅ PostgreSQL健康检查通过")
         print(f"   版本: {health.get('version', 'unknown')}")
@@ -164,18 +156,14 @@ class TestThreeLayerIntegration:
         # 1. Layer 1: 获取市场数据
         try:
             market_data = ts_source.get_market_overview(limit=5)
-            print(
-                f"\n✅ Layer 1 (时序): 获取{len(market_data) if market_data else 0}条市场数据"
-            )
+            print(f"\n✅ Layer 1 (时序): 获取{len(market_data) if market_data else 0}条市场数据")
         except Exception as e:
             print(f"\n⚠️  Layer 1: {str(e)}")
             market_data = []
 
         # 2. Layer 2: 获取自选股 (使用测试用户ID)
         try:
-            watchlist = rel_source.get_watchlist(
-                user_id=1001, list_type="favorite", include_stock_info=False
-            )
+            watchlist = rel_source.get_watchlist(user_id=1001, list_type="favorite", include_stock_info=False)
             print(f"\n✅ Layer 2 (关系): 获取{len(watchlist)}条自选股")
         except Exception as e:
             print(f"\n⚠️  Layer 2: {str(e)}")
@@ -266,12 +254,8 @@ class TestThreeLayerIntegration:
         biz_health = biz_source.health_check()
 
         print("\n✅ 三层健康检查汇总:")
-        print(
-            f"   Layer 1 (TDengine):   {ts_health['status']:8s} - {ts_health.get('version', 'unknown')}"
-        )
-        print(
-            f"   Layer 2 (PostgreSQL): {rel_health['status']:8s} - {rel_health.get('version', 'unknown')}"
-        )
+        print(f"   Layer 1 (TDengine):   {ts_health['status']:8s} - {ts_health.get('version', 'unknown')}")
+        print(f"   Layer 2 (PostgreSQL): {rel_health['status']:8s} - {rel_health.get('version', 'unknown')}")
         print(f"   Layer 3 (Composite):  {biz_health['status']:8s}")
 
         # 所有层应该都是健康的

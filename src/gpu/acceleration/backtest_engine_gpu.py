@@ -45,15 +45,11 @@ class BacktestEngineGPU:
     ) -> Dict[str, Any]:
         """运行GPU加速回测"""
         try:
-            self.logger.info(
-                f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}"
-            )
+            self.logger.info(f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}")
 
             if not CUPY_AVAILABLE:
                 self.logger.warning("CuPy不可用，回退到CPU模式")
-                return self._run_cpu_fallback(
-                    stock_data, strategy_config, initial_capital
-                )
+                return self._run_cpu_fallback(stock_data, strategy_config, initial_capital)
 
             # 转换数据到GPU
             gpu_start = time.time()
@@ -109,9 +105,7 @@ class BacktestEngineGPU:
             required_mem = data.memory_usage(deep=True).sum() * 2  # 预估
 
             if required_mem > available_mem * self.gpu_memory_limit:
-                raise MemoryError(
-                    f"GPU内存不足: 需要 {required_mem / 1e6:.1f}MB, 可用 {available_mem / 1e6:.1f}MB"
-                )
+                raise MemoryError(f"GPU内存不足: 需要 {required_mem / 1e6:.1f}MB, 可用 {available_mem / 1e6:.1f}MB")
 
             # 转换到GPU
             gpu_df = cudf.DataFrame.from_pandas(data)
@@ -148,9 +142,7 @@ class BacktestEngineGPU:
             ema_26 = indicators["ema_26"]
             indicators["macd"] = ema_12 - ema_26
             indicators["macd_signal"] = indicators["macd"].rolling(9).mean()
-            indicators["macd_histogram"] = (
-                indicators["macd"] - indicators["macd_signal"]
-            )
+            indicators["macd_histogram"] = indicators["macd"] - indicators["macd_signal"]
 
             # RSI
             indicators["rsi"] = self._gpu_rsi(close, 14)
@@ -234,15 +226,11 @@ class BacktestEngineGPU:
             if strategy_type == "trend_following":
                 signals = self._trend_following_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "momentum":
-                signals = self._momentum_strategy_gpu(
-                    gpu_df, indicators, strategy_config
-                )
+                signals = self._momentum_strategy_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "mean_reversion":
                 signals = self._mean_reversion_gpu(gpu_df, indicators, strategy_config)
             elif strategy_type == "arbitrage":
-                signals = self._arbitrage_strategy_gpu(
-                    gpu_df, indicators, strategy_config
-                )
+                signals = self._arbitrage_strategy_gpu(gpu_df, indicators, strategy_config)
             else:
                 raise ValueError(f"未知策略类型: {strategy_type}")
 
@@ -261,7 +249,7 @@ class BacktestEngineGPU:
         # 获取参数
         fast_ma = config.get("fast_ma", 5)
         slow_ma = config.get("slow_ma", 20)
-        rsi_period = config.get("rsi_period", 14)
+        config.get("rsi_period", 14)
         rsi_overbought = config.get("rsi_overbought", 70)
         rsi_oversold = config.get("rsi_oversold", 30)
 
@@ -272,16 +260,12 @@ class BacktestEngineGPU:
 
         # 买入信号：快线上穿慢线且RSI未超买
         signals["buy"] = (
-            (fast_ma_line > slow_ma_line)
-            & (fast_ma_line.shift(1) <= slow_ma_line.shift(1))
-            & (rsi < rsi_overbought)
+            (fast_ma_line > slow_ma_line) & (fast_ma_line.shift(1) <= slow_ma_line.shift(1)) & (rsi < rsi_overbought)
         ).astype(int)
 
         # 卖出信号：快线下穿慢线且RSI未超卖
         signals["sell"] = (
-            (fast_ma_line < slow_ma_line)
-            & (fast_ma_line.shift(1) >= slow_ma_line.shift(1))
-            & (rsi > rsi_oversold)
+            (fast_ma_line < slow_ma_line) & (fast_ma_line.shift(1) >= slow_ma_line.shift(1)) & (rsi > rsi_oversold)
         ).astype(int)
 
         return signals.fillna(0)
@@ -302,9 +286,7 @@ class BacktestEngineGPU:
         volume_ratio = indicators["volume_ratio"]
 
         # 买入信号：正动量且成交量放大
-        signals["buy"] = (
-            (momentum > momentum_threshold) & (volume_ratio > volume_threshold)
-        ).astype(int)
+        signals["buy"] = ((momentum > momentum_threshold) & (volume_ratio > volume_threshold)).astype(int)
 
         # 卖出信号：负动量
         signals["sell"] = (momentum < -momentum_threshold).astype(int)
@@ -318,9 +300,9 @@ class BacktestEngineGPU:
         signals = cudf.DataFrame()
 
         # 获取参数
-        bb_period = config.get("bb_period", 20)
-        bb_std = config.get("bb_std", 2)
-        rsi_period = config.get("rsi_period", 14)
+        config.get("bb_period", 20)
+        config.get("bb_std", 2)
+        config.get("rsi_period", 14)
         rsi_threshold = config.get("rsi_threshold", 50)
 
         # 布林带信号
@@ -333,19 +315,13 @@ class BacktestEngineGPU:
         # 买入信号：价格接近下轨且RSI显示超卖
         signals["buy"] = (
             (current_price <= bb_lower)
-            | (
-                (current_price <= bb_middle - 0.5 * (bb_upper - bb_lower))
-                & (rsi < rsi_threshold)
-            )
+            | ((current_price <= bb_middle - 0.5 * (bb_upper - bb_lower)) & (rsi < rsi_threshold))
         ).astype(int)
 
         # 卖出信号：价格接近上轨且RSI显示超买
         signals["sell"] = (
             (current_price >= bb_upper)
-            | (
-                (current_price >= bb_middle + 0.5 * (bb_upper - bb_lower))
-                & (rsi > rsi_threshold)
-            )
+            | ((current_price >= bb_middle + 0.5 * (bb_upper - bb_lower)) & (rsi > rsi_threshold))
         ).astype(int)
 
         return signals.fillna(0)
@@ -358,28 +334,24 @@ class BacktestEngineGPU:
 
         # 获取参数
         spread_threshold = config.get("spread_threshold", 0.01)
-        reversion_speed = config.get("reversion_speed", 0.1)
+        config.get("reversion_speed", 0.1)
 
         # 简化的套利信号（基于价格偏离）
         price_deviation = indicators["price_change_abs"].rolling(20).mean()
 
         # 买入信号：价格偏离正向且预期回归
-        signals["buy"] = (
-            (price_deviation > spread_threshold)
-            & (price_deviation.shift(1) > price_deviation)
-        ).astype(int)
+        signals["buy"] = ((price_deviation > spread_threshold) & (price_deviation.shift(1) > price_deviation)).astype(
+            int
+        )
 
         # 卖出信号：价格偏离负向且预期回归
-        signals["sell"] = (
-            (price_deviation > spread_threshold)
-            & (price_deviation.shift(1) < price_deviation)
-        ).astype(int)
+        signals["sell"] = ((price_deviation > spread_threshold) & (price_deviation.shift(1) < price_deviation)).astype(
+            int
+        )
 
         return signals.fillna(0)
 
-    def _simulate_trading_gpu(
-        self, signals: "cudf.DataFrame", initial_capital: float
-    ) -> Dict[str, Any]:
+    def _simulate_trading_gpu(self, signals: "cudf.DataFrame", initial_capital: float) -> Dict[str, Any]:
         """模拟交易执行（GPU加速）"""
         try:
             portfolio = {
@@ -436,9 +408,7 @@ class BacktestEngineGPU:
             self.logger.error(f"GPU交易模拟失败: {e}")
             raise
 
-    def _calculate_performance_gpu(
-        self, portfolio: Dict, gpu_df: "cudf.DataFrame"
-    ) -> Dict[str, float]:
+    def _calculate_performance_gpu(self, portfolio: Dict, gpu_df: "cudf.DataFrame") -> Dict[str, float]:
         """计算性能指标（GPU加速）"""
         try:
             portfolio_values = portfolio["portfolio_value"]
@@ -453,9 +423,7 @@ class BacktestEngineGPU:
             returns = cp.diff(portfolio_values_gpu) / portfolio_values_gpu[:-1]
 
             # 基础指标
-            total_return = (
-                portfolio_values[-1] - portfolio_values[0]
-            ) / portfolio_values[0]
+            total_return = (portfolio_values[-1] - portfolio_values[0]) / portfolio_values[0]
             annual_return = total_return * 252 / len(portfolio_values)
 
             # 风险指标（GPU计算）
@@ -469,9 +437,7 @@ class BacktestEngineGPU:
 
             # 交易统计
             total_trades = len(portfolio["trades"])
-            winning_trades = sum(
-                1 for trade in portfolio["trades"] if trade["action"] == "SELL"
-            )
+            winning_trades = sum(1 for trade in portfolio["trades"] if trade["action"] == "SELL")
             win_rate = winning_trades / total_trades if total_trades > 0 else 0
 
             return {
@@ -490,9 +456,7 @@ class BacktestEngineGPU:
             self.logger.error(f"GPU性能计算失败: {e}")
             return self._empty_performance()
 
-    def _calculate_performance_cpu(
-        self, portfolio_values: List[float]
-    ) -> Dict[str, float]:
+    def _calculate_performance_cpu(self, portfolio_values: List[float]) -> Dict[str, float]:
         """CPU版本的性能计算"""
         try:
             if len(portfolio_values) < 2:
@@ -501,19 +465,14 @@ class BacktestEngineGPU:
             returns = []
             for i in range(1, len(portfolio_values)):
                 if portfolio_values[i - 1] != 0:
-                    returns.append(
-                        (portfolio_values[i] - portfolio_values[i - 1])
-                        / portfolio_values[i - 1]
-                    )
+                    returns.append((portfolio_values[i] - portfolio_values[i - 1]) / portfolio_values[i - 1])
                 else:
                     returns.append(0)
 
             portfolio_array = np.array(portfolio_values)
 
             # 基础指标
-            total_return = (portfolio_array[-1] - portfolio_array[0]) / portfolio_array[
-                0
-            ]
+            total_return = (portfolio_array[-1] - portfolio_array[0]) / portfolio_array[0]
             annual_return = total_return * 252 / len(portfolio_values)
 
             # 风险指标
@@ -526,11 +485,10 @@ class BacktestEngineGPU:
             calmar_ratio = annual_return / abs(max_drawdown) if max_drawdown != 0 else 0
 
             # 交易统计
-            total_trades = len(portfolio.get("trades", []))
-            winning_trades = sum(
-                1 for trade in portfolio.get("trades", []) if trade["action"] == "SELL"
-            )
-            win_rate = winning_trades / total_trades if total_trades > 0 else 0
+            # Note: 这些统计需要从回测引擎的trade_history获取
+            # 这里暂时设置为0，实际使用时应该传入完整的portfolio对象
+            total_trades = 0
+            win_rate = 0.0
 
             return {
                 "total_return": float(total_return),
@@ -618,7 +576,7 @@ class BacktestEngineGPU:
 
             # 简化的性能计算
             portfolio_values = [initial_capital] * len(stock_data)
-            returns = [0.01] * (len(portfolio_values) - 1)
+            [0.01] * (len(portfolio_values) - 1)
 
             total_return = 0.05  # 简化的收益率
             annual_return = total_return * 252 / len(portfolio_values)

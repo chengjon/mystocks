@@ -105,9 +105,7 @@ class TdxDayFileParser:
         return df
 
     @staticmethod
-    def convert_to_csv(
-        input_file: str, output_file: str, stock_code: str = None
-    ) -> str:
+    def convert_to_csv(input_file: str, output_file: str, stock_code: str = None) -> str:
         """
         将 .day 文件转换为 CSV 文件
 
@@ -144,9 +142,7 @@ class TdxDayFileParser:
         return df.tail(days)
 
     @staticmethod
-    def get_date_range_data(
-        file_path: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_date_range_data(file_path: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取指定日期范围的数据
 
@@ -181,9 +177,7 @@ class TdxDataService:
         self.data_dir = Path(data_dir)
         self.parser = TdxDayFileParser()
 
-    def get_stock_data(
-        self, stock_code: str, market: str = "sh"
-    ) -> Optional[pd.DataFrame]:
+    def get_stock_data(self, stock_code: str, market: str = "sh") -> Optional[pd.DataFrame]:
         """
         获取股票数据
 
@@ -196,17 +190,13 @@ class TdxDataService:
         """
         # 构建文件路径
         market_dir = "sh" if market.lower() == "sh" else "sz"
-        file_path = (
-            self.data_dir / market_dir / "lday" / f"{market_dir}{stock_code}.day"
-        )
+        file_path = self.data_dir / market_dir / "lday" / f"{market_dir}{stock_code}.day"
 
         if not file_path.exists():
             return None
 
         try:
-            return self.parser.read_tdx_day_file(
-                str(file_path), f"{market}{stock_code}"
-            )
+            return self.parser.read_tdx_day_file(str(file_path), f"{market}{stock_code}")
         except Exception as e:
             print(f"读取股票数据失败: {e}")
             return None
@@ -247,9 +237,7 @@ class TdxDataService:
 
         return sorted(stocks)
 
-    def export_to_csv(
-        self, stock_code: str, market: str, output_dir: str = "./exports"
-    ) -> Optional[str]:
+    def export_to_csv(self, stock_code: str, market: str, output_dir: str = "./exports") -> Optional[str]:
         """
         导出股票数据到 CSV
 

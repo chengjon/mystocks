@@ -82,9 +82,7 @@ def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:
             message = f"{stock_names[symbol_idx]}成交量激增{random.randint(2, 10)}倍"
         elif alert_type == "技术指标":
             indicators = ["RSI", "MACD", "KDJ"]
-            message = (
-                f"{stock_names[symbol_idx]}{random.choice(indicators)}指标出现信号"
-            )
+            message = f"{stock_names[symbol_idx]}{random.choice(indicators)}指标出现信号"
         elif alert_type == "资金流向":
             direction = "流入" if random.choice([True, False]) else "流出"
             amount = random.randint(1000, 10000)
@@ -93,9 +91,7 @@ def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:
             message = f"{stock_names[symbol_idx]}登上龙虎榜"
 
         # 生成时间戳（最近24小时内）
-        timestamp = datetime.datetime.now() - datetime.timedelta(
-            minutes=random.randint(0, 1440)
-        )
+        timestamp = datetime.datetime.now() - datetime.timedelta(minutes=random.randint(0, 1440))
 
         alerts.append(
             {
@@ -167,9 +163,7 @@ def get_monitoring_status() -> Dict:
     """
     return {
         "is_running": True,
-        "start_time": (datetime.datetime.now() - datetime.timedelta(hours=8)).strftime(
-            "%Y-%m-%d %H:%M:%S"
-        ),
+        "start_time": (datetime.datetime.now() - datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S"),
         "last_update": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "monitored_symbols": 100,
         "active_alerts": random.randint(10, 25),
@@ -177,9 +171,7 @@ def get_monitoring_status() -> Dict:
     }
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

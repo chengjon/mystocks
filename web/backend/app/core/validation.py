@@ -140,9 +140,7 @@ def validate_input(
     if not value:
         if allow_empty:
             return ""
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="输入不能为空"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="输入不能为空")
 
     # 检查长度
     if len(value) > max_length:
@@ -167,21 +165,15 @@ def validate_input(
     elif input_type == "symbol":
         # 股票代码验证：只允许字母、数字、点、横线
         if not re.match(r"^[A-Za-z0-9.-]+$", value):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="股票代码格式无效"
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="股票代码格式无效")
 
     # 检查SQL注入
     if SQLInjectionPattern.contains_patterns(value):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="输入包含非法字符或攻击模式"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="输入包含非法字符或攻击模式")
 
     # 检查XSS攻击
     if XSSPattern.contains_patterns(value):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="输入包含潜在的XSS攻击代码"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="输入包含潜在的XSS攻击代码")
 
     # 返回清理后的输入
     return sanitize_input(value)
@@ -203,9 +195,7 @@ class SecureQueryParams:
         return {"page": page, "size": size}
 
     @staticmethod
-    def validate_date_range(
-        start_date: Optional[str], end_date: Optional[str]
-    ) -> Dict[str, str]:
+    def validate_date_range(start_date: Optional[str], end_date: Optional[str]) -> Dict[str, str]:
         """验证日期范围参数"""
         import re
         from datetime import datetime
@@ -235,9 +225,7 @@ class SecureQueryParams:
                         detail="开始日期不能晚于结束日期",
                     )
             except ValueError:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="日期格式无效"
-                )
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="日期格式无效")
 
         return {"start_date": start_date, "end_date": end_date}
 
@@ -254,19 +242,13 @@ async def request_middleware(request: Request, call_next):
     # 检查请求头中的潜在攻击
     headers = dict(request.headers)
     for key, value in headers.items():
-        if SQLInjectionPattern.contains_patterns(
-            str(value)
-        ) or XSSPattern.contains_patterns(str(value)):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="请求头包含非法内容"
-            )
+        if SQLInjectionPattern.contains_patterns(str(value)) or XSSPattern.contains_patterns(str(value)):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="请求头包含非法内容")
 
     # 检查查询参数
     query_params = dict(request.query_params)
     for key, value in query_params.items():
-        if SQLInjectionPattern.contains_patterns(
-            str(value)
-        ) or XSSPattern.contains_patterns(str(value)):
+        if SQLInjectionPattern.contains_patterns(str(value)) or XSSPattern.contains_patterns(str(value)):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"查询参数 '{key}' 包含非法内容",

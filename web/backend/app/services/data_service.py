@@ -15,9 +15,7 @@ import sys
 import os
 
 # Add project root to path to import unified_manager
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "src"))
 
@@ -44,9 +42,7 @@ try:
     import sys
     import os
 
-    parent_dir = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    )
+    parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     if parent_dir not in sys.path:
         sys.path.insert(0, parent_dir)
 
@@ -139,9 +135,7 @@ class DataService:
         """
         # Validate date range
         if start_date >= end_date:
-            raise InvalidDateRangeError(
-                f"开始日期 ({start_date.date()}) 必须早于结束日期 ({end_date.date()})"
-            )
+            raise InvalidDateRangeError(f"开始日期 ({start_date.date()}) 必须早于结束日期 ({end_date.date()})")
 
         if end_date > datetime.now():
             raise InvalidDateRangeError(f"结束日期 ({end_date.date()}) 不能是未来日期")
@@ -157,23 +151,16 @@ class DataService:
 
             # If data not found and auto_fetch enabled, fetch from Akshare
             if df.empty and self.auto_fetch:
-                logger.info(
-                    f"Data not found in database, fetching from Akshare for {symbol}"
-                )
+                logger.info(f"Data not found in database, fetching from Akshare for {symbol}")
                 df = self._fetch_and_save_from_akshare(symbol, start_date, end_date)
 
             if df.empty:
-                raise StockDataNotFoundError(
-                    f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据"
-                )
+                raise StockDataNotFoundError(f"未找到股票 {symbol} 在 {start_date.date()} 到 {end_date.date()} 的数据")
 
             # Convert to TA-Lib format
             ohlcv_data = self._dataframe_to_ohlcv_arrays(df)
 
-            logger.info(
-                f"Loaded {len(df)} records for {symbol} "
-                f"from {start_date.date()} to {end_date.date()}"
-            )
+            logger.info(f"Loaded {len(df)} records for {symbol} " f"from {start_date.date()} to {end_date.date()}")
 
             return df, ohlcv_data
 
@@ -183,9 +170,7 @@ class DataService:
             logger.error(f"Failed to load daily OHLCV data: {e}")
             raise RuntimeError(f"加载股票数据失败: {str(e)}")
 
-    def _fetch_and_save_from_akshare(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """
         从Akshare获取数据并保存到数据库
 
@@ -203,9 +188,7 @@ class DataService:
                 return pd.DataFrame()
 
             # Call Akshare adapter to fetch data
-            logger.info(
-                f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}"
-            )
+            logger.info(f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}")
 
             df = self.akshare_adapter.get_stock_daily(
                 symbol=symbol,
@@ -223,19 +206,13 @@ class DataService:
             df_save = pd.DataFrame(
                 {
                     "symbol": symbol,
-                    "trade_date": (
-                        pd.to_datetime(df["date"])
-                        if "date" in df.columns
-                        else pd.to_datetime(df.index)
-                    ),
+                    "trade_date": (pd.to_datetime(df["date"]) if "date" in df.columns else pd.to_datetime(df.index)),
                     "open": df["open"],
                     "high": df["high"],
                     "low": df["low"],
                     "close": df["close"],
                     "volume": df["volume"],
-                    "amount": df.get(
-                        "amount", df["volume"] * df["close"]
-                    ),  # Calculate if missing
+                    "amount": df.get("amount", df["volume"] * df["close"]),  # Calculate if missing
                 }
             )
 
@@ -261,9 +238,7 @@ class DataService:
             traceback.print_exc()
             return pd.DataFrame()
 
-    def _load_from_unified_manager(
-        self, symbol: str, start_date: datetime, end_date: datetime
-    ) -> pd.DataFrame:
+    def _load_from_unified_manager(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """
         从UnifiedManager加载数据
 
@@ -337,21 +312,15 @@ class DataService:
         np.random.seed(hash(symbol) % 2**32)  # Consistent seed per symbol
 
         # Generate returns
-        returns = np.random.normal(
-            0.001, 0.02, len(dates)
-        )  # 0.1% daily return, 2% volatility
+        returns = np.random.normal(0.001, 0.02, len(dates))  # 0.1% daily return, 2% volatility
         prices = base_price * np.exp(np.cumsum(returns))
 
         # Generate OHLC from close prices
         volatility = 0.01  # 1% intraday volatility
 
         opens = prices * (1 + np.random.normal(0, volatility, len(dates)))
-        highs = np.maximum(opens, prices) * (
-            1 + np.abs(np.random.normal(0, volatility, len(dates)))
-        )
-        lows = np.minimum(opens, prices) * (
-            1 - np.abs(np.random.normal(0, volatility, len(dates)))
-        )
+        highs = np.maximum(opens, prices) * (1 + np.abs(np.random.normal(0, volatility, len(dates))))
+        lows = np.minimum(opens, prices) * (1 - np.abs(np.random.normal(0, volatility, len(dates))))
         closes = prices
 
         # Generate volume
@@ -458,9 +427,7 @@ class DataService:
 
         return False
 
-    def get_available_date_range(
-        self, symbol: str
-    ) -> Optional[Tuple[datetime, datetime]]:
+    def get_available_date_range(self, symbol: str) -> Optional[Tuple[datetime, datetime]]:
         """
         获取股票可用的数据日期范围
 

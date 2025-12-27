@@ -294,9 +294,7 @@ class TestPoolPerformance:
             mock_conn.close = Mock()
             mock_connect.return_value = mock_conn
 
-            pool = TDengineConnectionPool(
-                min_size=5, max_size=20, max_idle_time=60, health_check_interval=30
-            )
+            pool = TDengineConnectionPool(min_size=5, max_size=20, max_idle_time=60, health_check_interval=30)
             yield pool
             pool.close_all()
 

@@ -103,9 +103,7 @@ class TDXIntegrationClient:
 
         return False
 
-    def get_tdx_stock_data(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> Dict[str, Any]:
+    def get_tdx_stock_data(self, symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """
         获取通达信股票数据
 
@@ -131,9 +129,7 @@ class TDXIntegrationClient:
             logger.error(f"Failed to get stock data: {str(e)}")
             raise
 
-    def get_tdx_index_data(
-        self, index_code: str, start_date: str, end_date: str
-    ) -> Dict[str, Any]:
+    def get_tdx_index_data(self, index_code: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """
         获取通达信指数数据
 
@@ -192,9 +188,7 @@ class TDXIntegrationClient:
         else:
             raise ConnectionError(f"Cannot connect to {self.host}:{self.port}")
 
-    def _simulate_stock_data(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> Dict[str, Any]:
+    def _simulate_stock_data(self, symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """模拟股票数据"""
         return {
             "symbol": symbol,
@@ -205,9 +199,7 @@ class TDXIntegrationClient:
             "data": [],  # 实际数据会在这里
         }
 
-    def _simulate_index_data(
-        self, index_code: str, start_date: str, end_date: str
-    ) -> Dict[str, Any]:
+    def _simulate_index_data(self, index_code: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """模拟指数数据"""
         return {
             "index_code": index_code,

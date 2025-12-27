@@ -226,9 +226,7 @@ class TestCircuitBreakerManager:
         assert cb is not None
         assert cb.name == "market_data"
 
-    def test_manager_get_circuit_breaker_unknown_service_falls_back(
-        self, circuit_breaker_manager
-    ):
+    def test_manager_get_circuit_breaker_unknown_service_falls_back(self, circuit_breaker_manager):
         """测试获取未知服务时回退到external_api"""
         manager = circuit_breaker_manager
         cb = manager.get_circuit_breaker("unknown_service")

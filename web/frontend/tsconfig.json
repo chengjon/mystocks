@@ -1,0 +1,71 @@
+{
+  "compilerOptions": {
+    // Language and Environment
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+
+    // Type Checking
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    // Module Resolution
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    // Vue Support
+    "types": ["vite/client", "element-plus/global"],
+
+    // Additional Options
+    "incremental": true,
+    "sourceMap": true
+  },
+
+  // File Includes
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ],
+
+  // File Excludes
+  "exclude": [
+    "dist",
+    "node_modules",
+    "reports",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+
+  // Vue-specific compiler options (via vue-tsc)
+  "vueCompilerOptions": {
+    "target": 3.3
+  }
+}

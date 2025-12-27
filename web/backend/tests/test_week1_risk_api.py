@@ -29,9 +29,7 @@ class TestRiskMetricsCalculation:
         # Should require portfolio data
         assert response.status_code in [400, 422, 500]
 
-    def test_calculate_var_cvar_with_params(
-        self, test_client, sample_portfolio_positions
-    ):
+    def test_calculate_var_cvar_with_params(self, test_client, sample_portfolio_positions):
         """
         Test GET /api/v1/risk/var-cvar with valid portfolio data
         Expected: 200 OK with VaR/CVaR values
@@ -156,9 +154,7 @@ class TestRiskAlertManagement:
         Test PUT /api/v1/risk/alerts/{alert_id}
         Expected: 404 Not Found for non-existent alert
         """
-        response = test_client.put(
-            "/api/v1/risk/alerts/99999", json=sample_risk_alert_data
-        )
+        response = test_client.put("/api/v1/risk/alerts/99999", json=sample_risk_alert_data)
 
         assert response.status_code in [404, 500]
 
@@ -198,9 +194,7 @@ class TestRiskNotifications:
         """
         invalid_data = {"channel": "invalid_channel", "recipient": "test@example.com"}
 
-        response = test_client.post(
-            "/api/v1/risk/notifications/test", json=invalid_data
-        )
+        response = test_client.post("/api/v1/risk/notifications/test", json=invalid_data)
 
         assert response.status_code in [400, 422, 500]
 
@@ -215,9 +209,7 @@ class TestRiskAPIIntegration:
         Note: Requires database connectivity
         """
         # Step 1: Create alert
-        create_response = test_client.post(
-            "/api/v1/risk/alerts", json=sample_risk_alert_data
-        )
+        create_response = test_client.post("/api/v1/risk/alerts", json=sample_risk_alert_data)
 
         # Skip if database not available
         if create_response.status_code != 201:
@@ -229,9 +221,7 @@ class TestRiskAPIIntegration:
         updated_data = sample_risk_alert_data.copy()
         updated_data["threshold"] = 0.08  # Change threshold
 
-        update_response = test_client.put(
-            f"/api/v1/risk/alerts/{alert_id}", json=updated_data
-        )
+        update_response = test_client.put(f"/api/v1/risk/alerts/{alert_id}", json=updated_data)
 
         assert update_response.status_code in [200, 500]
 
@@ -262,9 +252,7 @@ class TestRiskAPIIntegration:
         dashboard_response = test_client.get("/api/v1/risk/dashboard")
 
         if dashboard_response.status_code not in [200, 422]:
-            pytest.skip(
-                f"Dashboard not available (status: {dashboard_response.status_code})"
-            )
+            pytest.skip(f"Dashboard not available (status: {dashboard_response.status_code})")
 
         # Step 2: Get metrics history
         params = {
@@ -272,9 +260,7 @@ class TestRiskAPIIntegration:
             "end_date": datetime.now().strftime("%Y-%m-%d"),
         }
 
-        history_response = test_client.get(
-            "/api/v1/risk/metrics/history", params=params
-        )
+        history_response = test_client.get("/api/v1/risk/metrics/history", params=params)
 
         assert history_response.status_code in [200, 422, 500]
 

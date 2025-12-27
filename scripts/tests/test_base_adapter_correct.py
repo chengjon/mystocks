@@ -6,21 +6,20 @@ BaseDataSourceAdapter Phase 6 测试套件 - 正确版
 """
 
 import sys
-import os
 import time
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
-from src.adapters.base_adapter import BaseDataSourceAdapter, QualityMixin
+from src.adapters.base_adapter import BaseDataSourceAdapter
 
 
 class MockDataSourceAdapter(BaseDataSourceAdapter):

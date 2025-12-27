@@ -48,9 +48,7 @@ class PriceDataAdapter:
 
         return SimpleValidator()
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -98,9 +96,7 @@ class PriceDataAdapter:
 
         return data
 
-    def _generate_mock_data(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def _generate_mock_data(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """生成模拟价格数据（仅用于测试）"""
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")

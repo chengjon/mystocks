@@ -337,7 +337,7 @@ URL: https://www.figma.com/community/search?model_type=files&q=element%20plus
 **底部: 指标网格**
 ```
 1. 创建 3 列网格:
-   Column 1: "涨跌额" + 
+   Column 1: "涨跌额" +
    Column 2: "成交量" + "123.45万"
    Column 3: "换手率" + "1.23%"
 

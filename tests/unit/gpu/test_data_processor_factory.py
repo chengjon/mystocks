@@ -44,9 +44,7 @@ class TestDataProcessorFactory:
     def test_get_processor_default_cpu(self):
         """测试默认获取CPU处理器"""
         # 模拟依赖
-        with patch(
-            "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-        ):
+        with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
             from gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
@@ -58,9 +56,7 @@ class TestDataProcessorFactory:
     def test_get_processor_env_gpu_enabled(self):
         """测试通过环境变量启用GPU处理器"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -86,9 +82,7 @@ class TestDataProcessorFactory:
     def test_get_processor_gpu_fallback_to_cpu(self):
         """测试GPU不可用时回退到CPU"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch("builtins.print") as mock_print,
             patch("builtins.__import__") as mock_import,
         ):
@@ -105,15 +99,11 @@ class TestDataProcessorFactory:
             processor = DataProcessorFactory.get_processor()
 
             assert processor.processor_type == "cpu"
-            mock_print.assert_called_with(
-                "GPU加速环境（cuDF/cuPy）未就绪，回退到CPU处理器。"
-            )
+            mock_print.assert_called_with("GPU加速环境（cuDF/cuPy）未就绪，回退到CPU处理器。")
 
     def test_get_processor_explicit_cpu(self):
         """测试显式指定CPU处理器"""
-        with patch(
-            "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-        ):
+        with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
             from gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor(gpu_enabled=False)
@@ -123,9 +113,7 @@ class TestDataProcessorFactory:
     def test_get_processor_explicit_gpu_success(self):
         """测试显式指定GPU处理器且成功"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -150,9 +138,7 @@ class TestDataProcessorFactory:
     def test_get_processor_explicit_gpu_fallback(self):
         """测试显式指定GPU处理器但失败回退"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch("builtins.print") as mock_print,
             patch("builtins.__import__") as mock_import,
         ):
@@ -169,16 +155,12 @@ class TestDataProcessorFactory:
             processor = DataProcessorFactory.get_processor(gpu_enabled=True)
 
             assert processor.processor_type == "cpu"
-            mock_print.assert_called_with(
-                "GPU加速环境（cuDF/cuPy）未就绪，回退到CPU处理器。"
-            )
+            mock_print.assert_called_with("GPU加速环境（cuDF/cuPy）未就绪，回退到CPU处理器。")
 
     def test_get_processor_type_cpu(self):
         """测试通过字符串获取CPU处理器类型"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -193,9 +175,7 @@ class TestDataProcessorFactory:
     def test_get_processor_type_gpu(self):
         """测试通过字符串获取GPU处理器类型"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -210,9 +190,7 @@ class TestDataProcessorFactory:
     def test_get_processor_type_cpu_uppercase(self):
         """测试通过大写字符串获取CPU处理器类型"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -227,9 +205,7 @@ class TestDataProcessorFactory:
     def test_get_processor_type_gpu_uppercase(self):
         """测试通过大写字符串获取GPU处理器类型"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -265,9 +241,7 @@ class TestDataProcessorFactory:
     @patch.dict(os.environ, {"ENABLE_GPU_ACCELERATION": "invalid_value"})
     def test_get_processor_invalid_env_value(self):
         """测试无效环境变量值"""
-        with patch(
-            "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-        ):
+        with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
             from gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
@@ -278,9 +252,7 @@ class TestDataProcessorFactory:
     @patch.dict(os.environ, {}, clear=True)
     def test_get_processor_no_env_variable(self):
         """测试没有环境变量时的默认行为"""
-        with patch(
-            "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-        ):
+        with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
             from gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
@@ -296,9 +268,7 @@ class TestDataProcessorFactoryIntegration:
     def test_gpu_detection_and_creation_flow(self):
         """测试GPU检测和创建的完整流程"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -326,9 +296,7 @@ class TestDataProcessorFactoryIntegration:
     def test_gpu_unavailable_handling(self):
         """测试GPU不可用时的处理流程"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch("builtins.print") as mock_print,
             patch("builtins.__import__") as mock_import,
         ):
@@ -352,9 +320,7 @@ class TestDataProcessorFactoryIntegration:
     def test_processor_type_consistency(self):
         """测试处理器类型的一致性"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,
@@ -377,9 +343,7 @@ class TestDataProcessorFactoryIntegration:
     def test_factory_method_vs_type_method(self):
         """测试工厂方法和类型方法的一致性"""
         with (
-            patch(
-                "src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor
-            ),
+            patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor),
             patch(
                 "src.gpu.data_processor_factory.GPUDataProcessorFixed",
                 MockGPUDataProcessorFixed,

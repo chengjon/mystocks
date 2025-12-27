@@ -13,7 +13,7 @@
 import logging
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -33,9 +33,7 @@ class UnifiedMockDataManager:
             use_mock_data: 是否使用Mock数据，如果为None则从环境变量读取
         """
         # 从环境变量获取数据源配置
-        self.use_mock_data = (
-            use_mock_data or os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-        )
+        self.use_mock_data = use_mock_data or os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
         # Mock数据目录
         self.mock_data_dir = Path(__file__).parent
@@ -113,15 +111,13 @@ class UnifiedMockDataManager:
                 }
 
             elif data_type == "stocks":
-                from src.mock.mock_Stocks import get_real_time_quote, get_stock_list
+                from src.mock.mock_Stocks import get_stock_list
 
                 page = kwargs.get("page", 1)
                 page_size = kwargs.get("page_size", 20)
                 exchange = kwargs.get("exchange", "all")
 
-                stocks = get_stock_list(
-                    params={"page": page, "page_size": page_size, "exchange": exchange}
-                )
+                stocks = get_stock_list(params={"page": page, "page_size": page_size, "exchange": exchange})
 
                 return {
                     "stocks": stocks,
@@ -140,7 +136,6 @@ class UnifiedMockDataManager:
                     from src.mock.mock_TechnicalAnalysis import (
                         get_all_indicators,
                         get_momentum_indicators,
-                        get_technical_indicators,
                         get_trading_signals,
                         get_trend_indicators,
                         get_volatility_indicators,
@@ -210,9 +205,7 @@ class UnifiedMockDataManager:
                         "timestamp": datetime.now().isoformat(),
                     }
                 else:
-                    query_result = get_query_results(
-                        query_name=query_name, limit=20, offset=0
-                    )
+                    query_result = get_query_results(query_name=query_name, limit=20, offset=0)
                     return {
                         "query_result": query_result,
                         "timestamp": datetime.now().isoformat(),
@@ -240,9 +233,6 @@ class UnifiedMockDataManager:
                         "strategies": strategies.get("strategies", []),
                         "timestamp": datetime.now().isoformat(),
                     }
-                elif action == "list":
-                    strategies = get_strategy_definitions()
-                    return {"strategies": strategies.get("strategies", []), "timestamp": datetime.now().isoformat()}
                 elif action == "run":
                     strategy_name = kwargs.get("strategy_name")
                     symbols = kwargs.get("symbols", [])
@@ -263,7 +253,6 @@ class UnifiedMockDataManager:
             elif data_type == "monitoring":
                 from src.mock.mock_Dashboard import (
                     get_leading_sectors,
-                    get_market_stats,
                 )
 
                 alert_type = kwargs.get("alert_type", "all")
@@ -285,11 +274,7 @@ class UnifiedMockDataManager:
                     else []
                 )
 
-                dragon_tiger = (
-                    get_leading_sectors()
-                    if alert_type in ["all", "dragon_tiger"]
-                    else []
-                )
+                dragon_tiger = get_leading_sectors() if alert_type in ["all", "dragon_tiger"] else []
 
                 return {
                     "alerts": alerts,
@@ -420,9 +405,7 @@ class UnifiedMockDataManager:
                     market = kwargs.get("market", "")
                     limit = kwargs.get("limit", 20)
 
-                    data = search_stocks(
-                        keyword=keyword, industry=industry, market=market, limit=limit
-                    )
+                    data = search_stocks(keyword=keyword, industry=industry, market=market, limit=limit)
                     return {
                         "data": data,
                         "total": len(data),
@@ -523,11 +506,8 @@ class UnifiedMockDataManager:
                     }
 
             elif data_type == "stock_news":
-                from src.mock.mock_StockSearch import get_stock_concept
-
                 symbol = kwargs.get("symbol")
                 market = kwargs.get("market", "cn")
-                days = kwargs.get("days", 7)
 
                 # 生成模拟新闻数据
                 news = [
@@ -611,9 +591,7 @@ class UnifiedMockDataManager:
                     # 返回模拟配置
                     return {
                         "config": {
-                            "container_id": kwargs.get(
-                                "container_id", "tradingview_chart"
-                            ),
+                            "container_id": kwargs.get("container_id", "tradingview_chart"),
                             "symbol": kwargs.get("symbol", "AAPL"),
                             "theme": kwargs.get("theme", "dark"),
                             "locale": kwargs.get("locale", "zh_CN"),
@@ -652,9 +630,7 @@ class UnifiedMockDataManager:
                     # 返回模拟配置
                     return {
                         "config": {
-                            "container_id": kwargs.get(
-                                "container_id", "tradingview_mini_chart"
-                            ),
+                            "container_id": kwargs.get("container_id", "tradingview_mini_chart"),
                             "symbol": kwargs.get("symbol", "AAPL"),
                             "theme": kwargs.get("theme", "dark"),
                             "locale": kwargs.get("locale", "zh_CN"),
@@ -729,9 +705,7 @@ class UnifiedMockDataManager:
                     # 检查股票是否在自选股中
                     symbol = kwargs.get("symbol", "")
                     watchlist_data = self._generate_watchlist_data(user_id)
-                    is_in_watchlist = any(
-                        item["symbol"] == symbol for item in watchlist_data
-                    )
+                    is_in_watchlist = any(item["symbol"] == symbol for item in watchlist_data)
                     return {
                         "success": True,
                         "data": {"symbol": symbol, "is_in_watchlist": is_in_watchlist},
@@ -766,6 +740,9 @@ class UnifiedMockDataManager:
             elif data_type == "fund-flow":
                 return self._generate_mock_fund_flow(**kwargs)
 
+            elif data_type == "backtest":
+                return self._generate_mock_backtest_data(**kwargs)
+
             else:
                 raise ValueError(f"不支持的数据类型: {data_type}")
 
@@ -778,10 +755,115 @@ class UnifiedMockDataManager:
             # 返回默认数据而不是抛出异常
             return self._get_default_data(data_type, **kwargs)
 
+    @staticmethod
+    def _generate_watchlist_data(user_id: int = 1) -> List[Dict[str, Any]]:
+        """生成自选股Mock数据"""
+        import random
+        from datetime import datetime
+
+        # 模拟自选股数据
+        stocks = [
+            {"symbol": "600519", "name": "贵州茅台", "exchange": "SSE", "market": "CN"},
+            {"symbol": "000001", "name": "平安银行", "exchange": "SZSE", "market": "CN"},
+            {"symbol": "000858", "name": "五粮液", "exchange": "SZSE", "market": "CN"},
+            {"symbol": "601318", "name": "中国平安", "exchange": "SSE", "market": "CN"},
+            {"symbol": "600276", "name": "恒瑞医药", "exchange": "SSE", "market": "CN"},
+        ]
+
+        # 模拟分组
+        groups = [
+            {"id": 1, "name": "默认分组", "created_at": "2024-01-01", "is_default": True},
+            {"id": 2, "name": "核心持仓", "created_at": "2024-01-15", "is_default": False},
+            {"id": 3, "name": "技术股", "created_at": "2024-02-01", "is_default": False},
+        ]
+
+        watchlist_data = []
+        for i, stock in enumerate(stocks):
+            # 随机分配到不同分组
+            group_id = random.choice([1, 2, 3])
+            added_date = datetime.now() - timedelta(days=random.randint(1, 90))
+
+            watchlist_data.append(
+                {
+                    "id": i + 1,
+                    "symbol": stock["symbol"],
+                    "display_name": stock["name"],
+                    "exchange": stock["exchange"],
+                    "market": stock["market"],
+                    "notes": f"备注信息 {random.randint(1, 5)}",
+                    "group_id": group_id,
+                    "group_name": next(g["name"] for g in groups if g["id"] == group_id),
+                    "added_at": added_date.isoformat(),
+                    "price": round(random.uniform(10, 500), 2),
+                    "change": round(random.uniform(-10, 10), 2),
+                    "change_percent": round(random.uniform(-5, 5), 2),
+                }
+            )
+
+        return watchlist_data
+
+    def _generate_mock_backtest_data(self, **kwargs) -> Dict[str, Any]:
+        """
+        Generate mock backtest data.
+        """
+        task_id = kwargs.get("task_id", "mock-task-123")
+
+        # Mock Trades
+        trades = [
+            {
+                "symbol": "AAPL",
+                "entry_date": "2024-01-05T10:00:00",
+                "exit_date": "2024-01-10T14:00:00",
+                "entry_price": 150.0,
+                "exit_price": 155.0,
+                "quantity": 100,
+                "pnl": 500.0,
+                "return_pct": 0.033,
+            },
+            {
+                "symbol": "GOOGL",
+                "entry_date": "2024-02-01T11:00:00",
+                "exit_date": "2024-02-05T15:00:00",
+                "entry_price": 2800.0,
+                "exit_price": 2750.0,
+                "quantity": 10,
+                "pnl": -500.0,
+                "return_pct": -0.018,
+            },
+        ]
+
+        # Mock Equity Curve
+        equity_curve = [
+            {"date": "2024-01-01", "equity": 100000.0},
+            {"date": "2024-01-02", "equity": 100100.0},
+            {"date": "2024-01-03", "equity": 100200.0},
+            {"date": "2024-01-04", "equity": 100150.0},
+            {"date": "2024-01-05", "equity": 100500.0},
+        ]
+
+        # Mock Summary
+        summary = {
+            "total_return": 0.15,
+            "annualized_return": 0.18,
+            "max_drawdown": -0.10,
+            "sharpe_ratio": 1.5,
+            "win_rate": 0.6,
+            "total_trades": 50,
+        }
+
+        return {
+            "task_id": task_id,
+            "status": "completed",
+            "summary": summary,
+            "equity_curve": equity_curve,
+            "trades": trades,
+            "error_message": None,
+            "timestamp": datetime.now().isoformat(),
+        }
+
     def _get_default_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
         """获取默认数据"""
         if data_type == "technical":
-            symbol = kwargs.get("symbol", "000001")
             return {
                 "indicators": {
                     "trend": {"ma5": 10.5, "ma10": 10.8, "ma20": 11.2},
@@ -859,9 +941,7 @@ class UnifiedMockDataManager:
         # 缓存大小限制
         if len(self._data_cache) > 1000:
             # 清理最旧的缓存
-            oldest_key = min(
-                self._cache_timestamp.keys(), key=lambda k: self._cache_timestamp[k]
-            )
+            oldest_key = min(self._cache_timestamp.keys(), key=lambda k: self._cache_timestamp[k])
             del self._data_cache[oldest_key]
             del self._cache_timestamp[oldest_key]
 
@@ -984,9 +1064,7 @@ class UnifiedMockDataManager:
         # 切换模式时清除缓存
         self.clear_cache()
 
-    def _generate_mock_fund_flow(
-        self, symbol: str = "600519", timeframe: str = "1", **kwargs
-    ) -> Dict[str, Any]:
+    def _generate_mock_fund_flow(self, symbol: str = "600519", timeframe: str = "1", **kwargs) -> Dict[str, Any]:
         """
         生成模拟资金流向数据
 
@@ -1028,9 +1106,7 @@ class UnifiedMockDataManager:
                     dates.append(current_dt.strftime("%Y-%m-%d"))
                     current_dt += timedelta(days=1)
 
-                logger.info(
-                    f"使用指定日期范围: {start_date} 到 {end_date}, 共 {len(dates)} 天"
-                )
+                logger.info(f"使用指定日期范围: {start_date} 到 {end_date}, 共 {len(dates)} 天")
 
             except ValueError as e:
                 logger.warning(f"日期格式错误，使用默认时间维度: {e}")
@@ -1055,20 +1131,12 @@ class UnifiedMockDataManager:
 
         for i, date in enumerate(dates):
             # 主力资金（万元）
-            main_inflow = (
-                random.uniform(5000, 50000) if i == 0 else random.uniform(-10000, 30000)
-            )
-            main_outflow = (
-                random.uniform(3000, 40000) if i == 0 else random.uniform(-5000, 25000)
-            )
+            main_inflow = random.uniform(5000, 50000) if i == 0 else random.uniform(-10000, 30000)
+            main_outflow = random.uniform(3000, 40000) if i == 0 else random.uniform(-5000, 25000)
 
             # 散户资金（万元）
-            retain_inflow = (
-                random.uniform(2000, 20000) if i == 0 else random.uniform(-5000, 15000)
-            )
-            retain_outflow = (
-                random.uniform(1500, 18000) if i == 0 else random.uniform(-3000, 12000)
-            )
+            retain_inflow = random.uniform(2000, 20000) if i == 0 else random.uniform(-5000, 15000)
+            retain_outflow = random.uniform(1500, 18000) if i == 0 else random.uniform(-3000, 12000)
 
             # 计算净流入
             main_net = main_inflow - main_outflow
@@ -1100,11 +1168,7 @@ class UnifiedMockDataManager:
 
         # 获取股票基本信息
         stock_name = "贵州茅台" if symbol == "600519" else f"股票{symbol}"
-        current_price = (
-            random.uniform(1500, 1800)
-            if symbol == "600519"
-            else random.uniform(10, 200)
-        )
+        current_price = random.uniform(1500, 1800) if symbol == "600519" else random.uniform(10, 200)
 
         return {
             "success": True,
@@ -1113,9 +1177,7 @@ class UnifiedMockDataManager:
                 "stock_name": stock_name,
                 "current_price": round(current_price, 2),
                 "timeframe": timeframe,
-                "timeframe_desc": f"{timeframe_days}日"
-                if timeframe_days > 1
-                else "今日",
+                "timeframe_desc": f"{timeframe_days}日" if timeframe_days > 1 else "今日",
                 "update_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "summary": {
                     "total_main_inflow": round(total_main_inflow, 2),
@@ -1158,13 +1220,9 @@ def get_dashboard_data() -> Dict[str, Any]:
     return mock_data_manager.get_data("dashboard")
 
 
-def get_stocks_data(
-    page: int = 1, page_size: int = 20, exchange: str = "all"
-) -> Dict[str, Any]:
+def get_stocks_data(page: int = 1, page_size: int = 20, exchange: str = "all") -> Dict[str, Any]:
     """获取股票数据"""
-    return mock_data_manager.get_data(
-        "stocks", page=page, page_size=page_size, exchange=exchange
-    )
+    return mock_data_manager.get_data("stocks", page=page, page_size=page_size, exchange=exchange)
 
 
 def get_technical_data(symbol: str = None, symbols: List[str] = None) -> Dict[str, Any]:
@@ -1187,6 +1245,11 @@ def get_monitoring_data(alert_type: str = "all") -> Dict[str, Any]:
     return mock_data_manager.get_data("monitoring", alert_type=alert_type)
 
 
+def get_backtest_data(**kwargs) -> Dict[str, Any]:
+    """Get mock backtest data"""
+    return mock_data_manager.get_data("backtest", **kwargs)
+
+
 # 数据源切换装饰器
 def data_source_toggle(func):
     """数据源切换装饰器"""
@@ -1207,57 +1270,6 @@ def data_source_toggle(func):
     return wrapper
 
 
-def _generate_watchlist_data(user_id: int = 1) -> List[Dict[str, Any]]:
-    """生成自选股Mock数据"""
-    import random
-    from datetime import datetime
-
-    # 模拟自选股数据
-    stocks = [
-        {"symbol": "600519", "name": "贵州茅台", "exchange": "SSE", "market": "CN"},
-        {"symbol": "000001", "name": "平安银行", "exchange": "SZSE", "market": "CN"},
-        {"symbol": "000858", "name": "五粮液", "exchange": "SZSE", "market": "CN"},
-        {"symbol": "601318", "name": "中国平安", "exchange": "SSE", "market": "CN"},
-        {"symbol": "600276", "name": "恒瑞医药", "exchange": "SSE", "market": "CN"},
-    ]
-
-    # 模拟分组
-    groups = [
-        {"id": 1, "name": "默认分组", "created_at": "2024-01-01", "is_default": True},
-        {"id": 2, "name": "核心持仓", "created_at": "2024-01-15", "is_default": False},
-        {"id": 3, "name": "技术股", "created_at": "2024-02-01", "is_default": False},
-    ]
-
-    watchlist_data = []
-    for i, stock in enumerate(stocks):
-        # 随机分配到不同分组
-        group_id = random.choice([1, 2, 3])
-        added_date = datetime.now() - timedelta(days=random.randint(1, 90))
-
-        watchlist_data.append(
-            {
-                "id": i + 1,
-                "symbol": stock["symbol"],
-                "display_name": stock["name"],
-                "exchange": stock["exchange"],
-                "market": stock["market"],
-                "notes": f"备注信息 {random.randint(1, 5)}",
-                "group_id": group_id,
-                "group_name": next(g["name"] for g in groups if g["id"] == group_id),
-                "added_at": added_date.isoformat(),
-                "price": round(random.uniform(10, 500), 2),
-                "change": round(random.uniform(-10, 10), 2),
-                "change_percent": round(random.uniform(-5, 5), 2),
-            }
-        )
-
-    return watchlist_data
-
-
-# 添加watchlist数据生成器到UnifiedMockDataManager中
-UnifiedMockDataManager._generate_watchlist_data = staticmethod(_generate_watchlist_data)
-
-
 if __name__ == "__main__":
     # 测试代码
     manager = UnifiedMockDataManager(use_mock_data=True)
@@ -1270,9 +1282,7 @@ if __name__ == "__main__":
 
     # 测试获取股票数据
     stocks_data = manager.get_data("stocks", page=1, page_size=5)
-    print(
-        f"\n股票数据测试: 页面 {stocks_data['page']}, 总计 {stocks_data['total']} 条记录"
-    )
+    print(f"\n股票数据测试: 页面 {stocks_data['page']}, 总计 {stocks_data['total']} 条记录")
 
     # 测试获取自选股数据
     watchlist_data = manager.get_data("watchlist", user_id=1)

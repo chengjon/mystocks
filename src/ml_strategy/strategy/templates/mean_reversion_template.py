@@ -24,9 +24,7 @@ import sys
 import os
 
 # 添加父目录到路径
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from strategy.base_strategy import BaseStrategy
 from indicators.tdx_functions import BOLL, RSI
@@ -89,22 +87,14 @@ class MeanReversionStrategy(BaseStrategy):
         super().validate_parameters()
 
         # 验证RSI阈值
-        if not (
-            0
-            < self.parameters["rsi_oversold"]
-            < self.parameters["rsi_overbought"]
-            < 100
-        ):
+        if not (0 < self.parameters["rsi_oversold"] < self.parameters["rsi_overbought"] < 100):
             raise ValueError("RSI阈值设置不合理")
 
         # 验证布林带参数
         if self.parameters["boll_std_dev"] <= 0:
             raise ValueError("布林带标准差倍数必须大于0")
 
-        if (
-            self.parameters["price_touch_threshold"] <= 0
-            or self.parameters["price_touch_threshold"] > 0.1
-        ):
+        if self.parameters["price_touch_threshold"] <= 0 or self.parameters["price_touch_threshold"] > 0.1:
             raise ValueError("价格触及阈值必须在(0, 0.1]范围内")
 
         return True
@@ -130,9 +120,7 @@ class MeanReversionStrategy(BaseStrategy):
         close = data["close"].values
 
         # 计算技术指标
-        upper, middle, lower = BOLL(
-            close, self.parameters["boll_period"], self.parameters["boll_std_dev"]
-        )
+        upper, middle, lower = BOLL(close, self.parameters["boll_period"], self.parameters["boll_std_dev"])
         rsi = RSI(close, self.parameters["rsi_period"])
 
         # 计算价格与布林带的距离比例
@@ -156,18 +144,14 @@ class MeanReversionStrategy(BaseStrategy):
         # 买入强度: 价格越接近下轨、RSI越低，强度越高
         buy_strength = np.where(
             buy_condition,
-            (1.0 - rsi / self.parameters["rsi_oversold"])
-            * (1.0 - np.maximum(lower_distance, 0) / threshold),
+            (1.0 - rsi / self.parameters["rsi_oversold"]) * (1.0 - np.maximum(lower_distance, 0) / threshold),
             0.0,
         )
 
         # 卖出强度: 价格越接近上轨、RSI越高，强度越高
         sell_strength = np.where(
             sell_condition,
-            (
-                (rsi - self.parameters["rsi_overbought"])
-                / (100 - self.parameters["rsi_overbought"])
-            )
+            ((rsi - self.parameters["rsi_overbought"]) / (100 - self.parameters["rsi_overbought"]))
             * (1.0 - np.maximum(upper_distance, 0) / threshold),
             0.0,
         )
@@ -184,18 +168,10 @@ class MeanReversionStrategy(BaseStrategy):
             pos = data.index.get_loc(idx)
             if signals.loc[idx, "signal"] is not None:
                 signals.at[idx, "indicators"] = {
-                    "boll_upper": (
-                        float(upper[pos]) if not np.isnan(upper[pos]) else None
-                    ),
-                    "boll_middle": (
-                        float(middle[pos]) if not np.isnan(middle[pos]) else None
-                    ),
-                    "boll_lower": (
-                        float(lower[pos]) if not np.isnan(lower[pos]) else None
-                    ),
-                    f"rsi{self.parameters['rsi_period']}": (
-                        float(rsi[pos]) if not np.isnan(rsi[pos]) else None
-                    ),
+                    "boll_upper": (float(upper[pos]) if not np.isnan(upper[pos]) else None),
+                    "boll_middle": (float(middle[pos]) if not np.isnan(middle[pos]) else None),
+                    "boll_lower": (float(lower[pos]) if not np.isnan(lower[pos]) else None),
+                    f"rsi{self.parameters['rsi_period']}": (float(rsi[pos]) if not np.isnan(rsi[pos]) else None),
                     "lower_distance_pct": float(lower_distance[pos] * 100),
                     "upper_distance_pct": float(upper_distance[pos] * 100),
                 }

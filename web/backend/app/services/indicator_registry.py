@@ -132,8 +132,7 @@ class IndicatorRegistry:
                     {"name": "signal", "description": "信号线"},
                     {"name": "hist", "description": "柱状图"},
                 ],
-                "min_data_points": lambda p: p.get("slowperiod", 26)
-                + p.get("signalperiod", 9),
+                "min_data_points": lambda p: p.get("slowperiod", 26) + p.get("signalperiod", 9),
                 "min_data_points_formula": "slowperiod + signalperiod",
                 "reference_lines": [0],
                 "description": "MACD指标,显示快慢均线的差值",
@@ -277,8 +276,7 @@ class IndicatorRegistry:
                     {"name": "slowk", "description": "K值"},
                     {"name": "slowd", "description": "D值"},
                 ],
-                "min_data_points": lambda p: p.get("fastk_period", 9)
-                + p.get("slowk_period", 3),
+                "min_data_points": lambda p: p.get("fastk_period", 9) + p.get("slowk_period", 3),
                 "min_data_points_formula": "fastk_period + slowk_period",
                 "reference_lines": [20, 80],
                 "description": "随机指标(KD值),显示价格动量",
@@ -553,9 +551,7 @@ class IndicatorRegistry:
         """获取所有指标的元数据"""
         return self._registry.copy()
 
-    def get_indicators_by_category(
-        self, category: IndicatorCategory
-    ) -> Dict[str, Dict[str, Any]]:
+    def get_indicators_by_category(self, category: IndicatorCategory) -> Dict[str, Dict[str, Any]]:
         """
         按分类获取指标
 
@@ -565,15 +561,9 @@ class IndicatorRegistry:
         Returns:
             该分类下的所有指标
         """
-        return {
-            abbr: meta
-            for abbr, meta in self._registry.items()
-            if meta["category"] == category
-        }
+        return {abbr: meta for abbr, meta in self._registry.items() if meta["category"] == category}
 
-    def validate_indicator(
-        self, abbreviation: str, parameters: Dict[str, Any]
-    ) -> tuple[bool, Optional[str]]:
+    def validate_indicator(self, abbreviation: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         """
         验证指标及其参数
 
@@ -604,9 +594,7 @@ class IndicatorRegistry:
             # 类型检查
             if param_def["type"] == "int" and not isinstance(param_value, int):
                 return False, f"参数 '{param_name}' 应为整数"
-            elif param_def["type"] == "float" and not isinstance(
-                param_value, (int, float)
-            ):
+            elif param_def["type"] == "float" and not isinstance(param_value, (int, float)):
                 return False, f"参数 '{param_name}' 应为数值"
 
             # 范围检查

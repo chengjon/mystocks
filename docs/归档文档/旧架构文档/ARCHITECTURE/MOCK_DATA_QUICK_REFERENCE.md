@@ -66,8 +66,8 @@ manager.get_data('stock_recommendation', symbol='000001')
 ### TradingView (tradingview_*)
 ```python
 # TradingView图表配置
-manager.get_data('tradingview_chart', 
-                symbol='000001', 
+manager.get_data('tradingview_chart',
+                symbol='000001',
                 market='CN',
                 interval='D',
                 theme='dark',
@@ -101,7 +101,7 @@ async def get_market_heatmap(
     current_user: User = Depends(get_current_user)
 ):
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         from app.mock.unified_mock_data import get_mock_data_manager
         mock_manager = get_mock_data_manager()
@@ -127,7 +127,7 @@ async def search_stocks(
     current_user: User = Depends(get_current_user)
 ):
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         from app.mock.unified_mock_data import get_mock_data_manager
         mock_manager = get_mock_data_manager()
@@ -288,7 +288,7 @@ curl -H "Authorization: Bearer <token>" \
    # 检查环境变量
    import os
    print(f"USE_MOCK_DATA: {os.getenv('USE_MOCK_DATA')}")
-   
+
    # 检查模块导入
    try:
        from app.mock.unified_mock_data import get_mock_data_manager
@@ -303,7 +303,7 @@ curl -H "Authorization: Bearer <token>" \
    manager = get_mock_data_manager()
    print(f"Mock模式: {manager.use_mock_data}")
    print(f"缓存大小: {len(manager._data_cache)}")
-   
+
    # 清除缓存后重试
    manager.clear_cache()
    ```
@@ -344,10 +344,10 @@ def generate_realistic_data(count: int = 100) -> list:
     """生成更真实的Mock数据"""
     import random
     import numpy as np
-    
+
     # 使用正态分布生成更真实的价格数据
     prices = np.random.normal(50, 15, count)
-    
+
     return [
         {
             "symbol": f"{i:06d}",
@@ -361,6 +361,6 @@ def generate_realistic_data(count: int = 100) -> list:
 
 ---
 
-**Mock数据系统版本**: v2.0.0  
-**最后更新**: 2025-11-13  
-**覆盖范围**: 100% 前端页面数据需求  
+**Mock数据系统版本**: v2.0.0
+**最后更新**: 2025-11-13
+**覆盖范围**: 100% 前端页面数据需求

@@ -109,9 +109,7 @@ class ContractTestEngine:
         self.test_results = []
 
         logger.info("🚀 Starting contract tests...")
-        logger.info(
-            f"📋 Testing {len(self.spec_validator.get_all_endpoints())} endpoints"
-        )
+        logger.info(f"📋 Testing {len(self.spec_validator.get_all_endpoints())} endpoints")
 
         # Run before-all hooks
         context = HookContext(
@@ -131,9 +129,7 @@ class ContractTestEngine:
                 result = self._run_endpoint_test(endpoint)
                 self.test_results.append(result)
             except Exception as e:
-                logger.error(
-                    f"❌ Test failed for {endpoint.method.value.upper()} {endpoint.path}: {e}"
-                )
+                logger.error(f"❌ Test failed for {endpoint.method.value.upper()} {endpoint.path}: {e}")
                 result = TestResult(
                     test_id=f"{endpoint.method.value.upper()}_{endpoint.path.replace('/', '_')}",
                     endpoint_method=endpoint.method.value.upper(),
@@ -158,9 +154,7 @@ class ContractTestEngine:
         self.end_time = datetime.now()
 
         summary = self._get_test_summary()
-        logger.info(
-            f"✅ Tests completed: {summary['passed']}/{summary['total']} passed"
-        )
+        logger.info(f"✅ Tests completed: {summary['passed']}/{summary['total']} passed")
 
         return summary
 
@@ -245,11 +239,7 @@ class ContractTestEngine:
         failed = sum(1 for r in self.test_results if r.status == "failed")
         skipped = sum(1 for r in self.test_results if r.status == "skipped")
 
-        total_duration = (
-            (self.end_time - self.start_time).total_seconds() * 1000
-            if self.end_time
-            else 0
-        )
+        total_duration = (self.end_time - self.start_time).total_seconds() * 1000 if self.end_time else 0
 
         return {
             "total": total,

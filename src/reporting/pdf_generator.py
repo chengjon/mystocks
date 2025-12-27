@@ -25,7 +25,7 @@ import logging
 
 # 尝试导入ReportLab
 try:
-    from reportlab.lib.pagesizes import A4, letter
+    from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import inch, cm
     from reportlab.lib import colors
@@ -37,9 +37,8 @@ try:
         TableStyle,
         PageBreak,
         Image,
-        KeepTogether,
     )
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+    from reportlab.lib.enums import TA_CENTER
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 
@@ -216,9 +215,7 @@ class PDFReportGenerator:
         elements = []
 
         # 标题
-        title = Paragraph(
-            f"Strategy Backtest Report<br/>{strategy_name}", self.styles["CustomTitle"]
-        )
+        title = Paragraph(f"Strategy Backtest Report<br/>{strategy_name}", self.styles["CustomTitle"])
         elements.append(Spacer(1, 2 * inch))
         elements.append(title)
         elements.append(Spacer(1, 0.5 * inch))
@@ -268,7 +265,7 @@ class PDFReportGenerator:
         elements.append(Paragraph("Executive Summary", self.styles["SectionTitle"]))
 
         metrics = result.get("performance", {})
-        risk = result.get("risk", {})
+        result.get("risk", {})
 
         summary_text = f"""
         The strategy achieved a total return of {metrics.get("total_return", 0) * 100:.2f}%
@@ -365,18 +362,12 @@ class PDFReportGenerator:
         """构建图表部分"""
         elements = []
 
-        elements.append(
-            Paragraph("Charts and Visualizations", self.styles["SectionTitle"])
-        )
+        elements.append(Paragraph("Charts and Visualizations", self.styles["SectionTitle"]))
 
         for chart_name, chart_path in chart_paths.items():
             if os.path.exists(chart_path):
                 # 添加图表标题
-                elements.append(
-                    Paragraph(
-                        chart_name.replace("_", " ").title(), self.styles["Heading3"]
-                    )
-                )
+                elements.append(Paragraph(chart_name.replace("_", " ").title(), self.styles["Heading3"]))
 
                 # 添加图表图片
                 try:
@@ -484,9 +475,7 @@ if __name__ == "__main__":
         exit(1)
 
     # 设置日志
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # 创建生成器
     generator = PDFReportGenerator()

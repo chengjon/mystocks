@@ -48,9 +48,7 @@ class TestFailureRecoveryQueue:
         with patch("os.makedirs") as mock_makedirs:
             queue = FailureRecoveryQueue(db_path=temp_db_path)
             assert queue.db_path == temp_db_path
-            mock_makedirs.assert_called_once_with(
-                os.path.dirname(temp_db_path), exist_ok=True
-            )
+            mock_makedirs.assert_called_once_with(os.path.dirname(temp_db_path), exist_ok=True)
 
     def test_init_db_table_creation(self, temp_db_path):
         """测试数据库表初始化"""
@@ -97,9 +95,7 @@ class TestFailureRecoveryQueue:
         conn = sqlite3.connect(queue.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT classification, target_database, data_json FROM outbox_queue"
-        )
+        cursor.execute("SELECT classification, target_database, data_json FROM outbox_queue")
         result = cursor.fetchone()
 
         assert result is not None
@@ -133,9 +129,7 @@ class TestFailureRecoveryQueue:
         assert count == 3
 
         # 验证数据顺序和内容
-        cursor.execute(
-            "SELECT classification, target_database, data_json FROM outbox_queue ORDER BY created_at"
-        )
+        cursor.execute("SELECT classification, target_database, data_json FROM outbox_queue ORDER BY created_at")
         results = cursor.fetchall()
 
         for i, (classification, target_db, data) in enumerate(items):
@@ -274,10 +268,7 @@ class TestFailureRecoveryQueue:
         """测试大数据的JSON序列化"""
         # 创建一个较大的数据对象
         large_data = {
-            "market_data": [
-                {"symbol": f"60000{i}", "price": i * 0.1, "volume": i * 1000}
-                for i in range(1000)
-            ]
+            "market_data": [{"symbol": f"60000{i}", "price": i * 0.1, "volume": i * 1000} for i in range(1000)]
         }
 
         # 这应该能够正常序列化
@@ -319,9 +310,7 @@ class TestFailureRecoveryQueue:
             thread.join()
 
         # 允许一些并发冲突（SQLite锁问题）
-        print(
-            f"Concurrent enqueue results: {len(results)} successful, {len(errors)} errors"
-        )
+        print(f"Concurrent enqueue results: {len(results)} successful, {len(errors)} errors")
 
         # 验证至少有一些数据成功入队
         assert len(results) >= 5, f"Too few successful operations: {len(results)}"

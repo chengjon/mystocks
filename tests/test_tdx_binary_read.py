@@ -29,9 +29,7 @@ class TestTdxBinaryRead:
     @pytest.fixture
     def test_day_file(self):
         """测试文件路径"""
-        return os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "temp/pyprof/data/sh000001.day"
-        )
+        return os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp/pyprof/data/sh000001.day")
 
     def test_read_day_file_basic(self, tdx_adapter, test_day_file):
         """测试基本读取功能"""
@@ -59,9 +57,7 @@ class TestTdxBinaryRead:
             "amount",
             "vol",
         ]
-        assert (
-            list(df.columns) == expected_columns
-        ), f"列名不匹配,期望{expected_columns}"
+        assert list(df.columns) == expected_columns, f"列名不匹配,期望{expected_columns}"
 
         print(f"✅ 测试通过: 读取了 {len(df)} 条记录")
         print(f"   列名: {list(df.columns)}")

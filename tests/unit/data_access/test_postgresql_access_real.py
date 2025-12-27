@@ -33,9 +33,7 @@ class TestPostgreSQLDataAccessReal:
         self.mock_conn.encoding = "UTF8"
         self.mock_cursor.connection = self.mock_conn
 
-        with patch(
-            "src.data_access.postgresql_access.get_connection_manager"
-        ) as mock_get_cm:
+        with patch("src.data_access.postgresql_access.get_connection_manager") as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.postgresql_access import PostgreSQLDataAccess
 
@@ -87,9 +85,7 @@ class TestPostgreSQLDataAccessReal:
         )
 
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch(
-            "src.data_access.postgresql_access.execute_values"
-        ) as mock_execute_values:
+        with patch("src.data_access.postgresql_access.execute_values") as mock_execute_values:
             result = self.db.insert_dataframe("stocks", df)
 
             mock_execute_values.assert_called_once()
@@ -135,14 +131,10 @@ class TestPostgreSQLDataAccessReal:
 
     def test_upsert_dataframe(self):
         """测试upsert操作"""
-        df = pd.DataFrame(
-            {"symbol": ["600519"], "price": [1800.00], "date": ["2024-01-01"]}
-        )
+        df = pd.DataFrame({"symbol": ["600519"], "price": [1800.00], "date": ["2024-01-01"]})
 
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch(
-            "src.data_access.postgresql_access.execute_values"
-        ) as mock_execute_values:
+        with patch("src.data_access.postgresql_access.execute_values") as mock_execute_values:
             self.db.upsert_dataframe("stocks", df, conflict_columns=["symbol", "date"])
 
             mock_execute_values.assert_called_once()
@@ -174,9 +166,7 @@ class TestPostgreSQLDataAccessReal:
 
         # save_data signature: (data, classification, table_name, **kwargs)
         # Mock execute_values as it requires complex psycopg2 internals
-        with patch(
-            "src.data_access.postgresql_access.execute_values"
-        ) as mock_execute_values:
+        with patch("src.data_access.postgresql_access.execute_values") as mock_execute_values:
             result = self.db.save_data(df, None, "stocks")
 
             mock_execute_values.assert_called_once()
@@ -223,9 +213,7 @@ class TestPostgreSQLDataAccessEdgeCases:
         self.mock_conn.encoding = "UTF8"
         self.mock_cursor.connection = self.mock_conn
 
-        with patch(
-            "src.data_access.postgresql_access.get_connection_manager"
-        ) as mock_get_cm:
+        with patch("src.data_access.postgresql_access.get_connection_manager") as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.postgresql_access import PostgreSQLDataAccess
 

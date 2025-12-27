@@ -90,11 +90,7 @@ class TestVolumeDataProcessor:
         processor = VolumeDataProcessor()
 
         # 创建包含异常值的测试数据
-        data = pd.DataFrame(
-            {
-                "volume": [100, 110, 120, 130, 1000]  # 最后一个值明显异常
-            }
-        )
+        data = pd.DataFrame({"volume": [100, 110, 120, 130, 1000]})  # 最后一个值明显异常
 
         result = processor.detect_volume_anomaly(data, threshold=3.0)
 
@@ -219,9 +215,7 @@ class TestVolumeDataProcessor:
 
         data = pd.DataFrame({"volume": [100, 200, 300]})
 
-        with pytest.raises(
-            ValueError, match="DataFrame must contain 'close' and 'volume' columns"
-        ):
+        with pytest.raises(ValueError, match="DataFrame must contain 'close' and 'volume' columns"):
             processor.get_volume_profile(data)
 
     def test_get_volume_profile_missing_volume_column(self):
@@ -230,9 +224,7 @@ class TestVolumeDataProcessor:
 
         data = pd.DataFrame({"close": [10.0, 11.0, 12.0]})
 
-        with pytest.raises(
-            ValueError, match="DataFrame must contain 'close' and 'volume' columns"
-        ):
+        with pytest.raises(ValueError, match="DataFrame must contain 'close' and 'volume' columns"):
             processor.get_volume_profile(data)
 
     def test_get_volume_profile_single_price(self):
@@ -369,19 +361,13 @@ class TestVolumeDataProcessorAdvanced:
             result = processor.calculate_volume_ma(data, window=window)
             assert len(result) == len(data)
             # 窗口后的值不应该为NaN
-            assert (
-                not result.iloc[window - 1 :].isna().any()
-            )  # 使用any()来检查是否有NaN值
+            assert not result.iloc[window - 1 :].isna().any()  # 使用any()来检查是否有NaN值
 
     def test_detect_volume_anomaly_different_thresholds(self):
         """测试不同阈值的异常检测"""
         processor = VolumeDataProcessor()
 
-        data = pd.DataFrame(
-            {
-                "volume": [100, 105, 110, 115, 120, 500]  # 最后一个异常
-            }
-        )
+        data = pd.DataFrame({"volume": [100, 105, 110, 115, 120, 500]})  # 最后一个异常
 
         # 不同阈值应该产生不同结果
         low_threshold = processor.detect_volume_anomaly(data, threshold=1.0)

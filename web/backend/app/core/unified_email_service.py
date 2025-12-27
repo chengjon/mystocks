@@ -115,8 +115,7 @@ class UnifiedEmailService:
         self._is_configured = bool(self.username and self.password)
         if not self._is_configured:
             logger.warning(
-                "⚠️  Email service not configured: "
-                "Set SMTP_USERNAME and SMTP_PASSWORD environment variables"
+                "⚠️  Email service not configured: " "Set SMTP_USERNAME and SMTP_PASSWORD environment variables"
             )
 
     def is_configured(self) -> bool:
@@ -358,9 +357,7 @@ class UnifiedEmailService:
             server = smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=self.timeout)
             server.starttls()
         else:
-            server = smtplib.SMTP_SSL(
-                self.smtp_host, self.smtp_port, timeout=self.timeout
-            )
+            server = smtplib.SMTP_SSL(self.smtp_host, self.smtp_port, timeout=self.timeout)
 
         try:
             server.login(self.username, self.password)

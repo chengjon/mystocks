@@ -131,9 +131,7 @@ def get_auth_token() -> Optional[str]:
     return None
 
 
-def test_api_endpoint(
-    endpoint: Dict, token: Optional[str]
-) -> Tuple[bool, str, Optional[int]]:
+def test_api_endpoint(endpoint: Dict, token: Optional[str]) -> Tuple[bool, str, Optional[int]]:
     """
     测试单个API端点
 
@@ -153,9 +151,7 @@ def test_api_endpoint(
             resp = requests.get(url, headers=headers, timeout=TIMEOUT)
         elif endpoint["method"] == "POST":
             headers["Content-Type"] = "application/json"
-            resp = requests.post(
-                url, json=endpoint["data"], headers=headers, timeout=TIMEOUT
-            )
+            resp = requests.post(url, json=endpoint["data"], headers=headers, timeout=TIMEOUT)
         else:
             return False, f"不支持的方法: {endpoint['method']}", None
 
@@ -233,9 +229,7 @@ def main():
         icon = "✅" if success else "❌"
         status_str = f"({status_code})" if status_code else ""
 
-        print(
-            f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}"
-        )
+        print(f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}")
         print(f"    页面: {endpoint['page']}")
         print(f"    URL: {endpoint['method']} {endpoint['url']}")
 
@@ -269,12 +263,8 @@ def main():
         r = results[priority]
         if r["total"] > 0:
             priority_rate = r["passed"] / r["total"] * 100
-            icon = (
-                "✅" if r["passed"] == r["total"] else "⚠️" if r["passed"] > 0 else "❌"
-            )
-            print(
-                f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)"
-            )
+            icon = "✅" if r["passed"] == r["total"] else "⚠️" if r["passed"] > 0 else "❌"
+            print(f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)")
 
     # Step 5: 失败项详情
     failed_all = [item for r in results.values() for item in r["failed"]]

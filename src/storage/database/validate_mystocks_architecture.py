@@ -45,9 +45,7 @@ def test_data_classification_strategy():
     logger.info("=== 数据分类策略验证 ===")
 
     # 验证实时数据的路由
-    realtime_target = DataManager().get_target_database(
-        DataClassification.REALTIME_POSITIONS
-    )
+    realtime_target = DataManager().get_target_database(DataClassification.REALTIME_POSITIONS)
     tick_target = DataManager().get_target_database(DataClassification.TICK_DATA)
     daily_target = DataManager().get_target_database(DataClassification.DAILY_KLINE)
     symbols_target = DataManager().get_target_database(DataClassification.SYMBOLS_INFO)
@@ -122,9 +120,7 @@ def test_unified_manager_initialization():
             status = unified_manager.get_system_status()
             monitoring = status.get("monitoring", {})
             op_stats = monitoring.get("operation_statistics", {})
-            logger.info(
-                f"📊 系统操作统计: {op_stats.get('total_operations', 0)} 次操作"
-            )
+            logger.info(f"📊 系统操作统计: {op_stats.get('total_operations', 0)} 次操作")
         except Exception as e:
             logger.warning(f"⚠️ 无法获取系统状态: {e}")
 
@@ -190,9 +186,7 @@ def test_unified_interface_save(unified_manager, sample_data):
         test_data = sample_data.head(3).copy()
         test_data["test_timestamp"] = datetime.now()
 
-        success = unified_manager.save_data_by_classification(
-            test_data, DataClassification.REALTIME_POSITIONS
-        )
+        success = unified_manager.save_data_by_classification(test_data, DataClassification.REALTIME_POSITIONS)
 
         if success:
             logger.info("✅ 实时数据保存测试通过 → Redis")
@@ -202,9 +196,7 @@ def test_unified_interface_save(unified_manager, sample_data):
         # 测试2: 尝试查询刚保存的数据
         logger.info("🔍 测试查询实时数据...")
         try:
-            loaded_data = unified_manager.load_data_by_classification(
-                DataClassification.REALTIME_POSITIONS, limit=5
-            )
+            loaded_data = unified_manager.load_data_by_classification(DataClassification.REALTIME_POSITIONS, limit=5)
 
             if not loaded_data.empty:
                 logger.info(f"✅ 实时数据查询成功: {len(loaded_data)} 条记录")
@@ -308,9 +300,7 @@ def main():
 
     # 4. 统一接口保存验证
     if unified_manager and sample_data is not None:
-        test_results["unified_interface"] = test_unified_interface_save(
-            unified_manager, sample_data
-        )
+        test_results["unified_interface"] = test_unified_interface_save(unified_manager, sample_data)
     else:
         test_results["unified_interface"] = False
         logger.warning("⚠️ 跳过统一接口保存验证（前置条件未满足）")

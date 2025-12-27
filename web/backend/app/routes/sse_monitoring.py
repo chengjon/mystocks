@@ -37,9 +37,7 @@ async def get_performance_stats():
 
 @router.get("/performance/connections", summary="获取连接指标")
 async def get_connection_metrics(
-    client_id: Optional[str] = Query(
-        None, description="特定客户端ID，不提供则返回所有连接"
-    ),
+    client_id: Optional[str] = Query(None, description="特定客户端ID，不提供则返回所有连接"),
 ):
     """
     获取SSE连接的详细指标
@@ -227,11 +225,7 @@ async def get_optimizer_stats():
         # 获取优化器统计
         if hasattr(manager, "performance_optimizer"):
             optimizer = manager.performance_optimizer
-            optimizer_stats = (
-                optimizer.get_performance_stats()
-                if hasattr(optimizer, "get_performance_stats")
-                else {}
-            )
+            optimizer_stats = optimizer.get_performance_stats() if hasattr(optimizer, "get_performance_stats") else {}
 
             return {
                 "success": True,

@@ -34,7 +34,7 @@ import memory_manager
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(memory_manager, 'target_function'):
                     memory_manager.target_function(unsafe_input)
-            
+
 
 
     def test_memory_manager_bug_prevention_sql_injection(self):
@@ -55,7 +55,7 @@ import memory_manager
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(memory_manager, 'target_function'):
                     memory_manager.target_function(unsafe_input)
-            
+
 
 
     def test_memory_manager_basic_functionality(self):
@@ -67,7 +67,7 @@ import memory_manager
         # 测试是否有公共函数
         public_funcs = [f for f in dir(memory_manager) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

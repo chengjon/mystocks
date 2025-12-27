@@ -6,12 +6,9 @@
 """
 
 import sys
-import os
 import time
-import tempfile
-import shutil
 from pathlib import Path
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, MagicMock
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -25,7 +22,6 @@ sys.modules["src.core.config"] = unittest.mock.MagicMock()
 sys.modules["src.core.config_driven_table_manager"] = unittest.mock.MagicMock()
 
 import pytest
-import structlog
 
 # 导入被测试的模块
 from src.utils.db_connection_retry import (

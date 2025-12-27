@@ -69,9 +69,7 @@ class TDengineDataAccess(IDataAccessLayer):
 
         try:
             # 确定表名
-            actual_table_name = table_name or self._get_default_table_name(
-                classification
-            )
+            actual_table_name = table_name or self._get_default_table_name(classification)
             database_name = DataManager().get_database_name(classification)
 
             # 数据预处理
@@ -101,25 +99,17 @@ class TDengineDataAccess(IDataAccessLayer):
             if classification == DataClassification.TICK_DATA:
                 success = self._insert_tick_data(cursor, final_data, actual_table_name)
             elif classification == DataClassification.MINUTE_KLINE:
-                success = self._insert_minute_kline(
-                    cursor, final_data, actual_table_name
-                )
+                success = self._insert_minute_kline(cursor, final_data, actual_table_name)
             else:
-                success = self._insert_generic_timeseries(
-                    cursor, final_data, actual_table_name
-                )
+                success = self._insert_generic_timeseries(cursor, final_data, actual_table_name)
 
             if success:
-                self.monitoring_db.log_operation_result(
-                    operation_id, True, len(final_data)
-                )
+                self.monitoring_db.log_operation_result(operation_id, True, len(final_data))
                 logger.info(
                     f"TDengine保存成功: {actual_table_name}, {len(final_data)}条记录，去重策略: {dedup_strategy.value}"
                 )
             else:
-                self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, "插入失败"
-                )
+                self.monitoring_db.log_operation_result(operation_id, False, 0, "插入失败")
 
             return success
 
@@ -161,9 +151,7 @@ class TDengineDataAccess(IDataAccessLayer):
             database_name = DataManager().get_database_name(classification)
 
             # 构建查询语句
-            query = self._build_timeseries_query(
-                classification, actual_table_name, filters, **kwargs
-            )
+            query = self._build_timeseries_query(classification, actual_table_name, filters, **kwargs)
 
             # 执行查询
             conn = self.db_manager.get_connection(self.db_type, database_name)
@@ -172,12 +160,8 @@ class TDengineDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_timeseries_data(data, classification)
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"TDengine加载成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"TDengine加载成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return processed_data
 
@@ -240,13 +224,9 @@ class TDengineDataAccess(IDataAccessLayer):
         """
         try:
             if strategy == DeduplicationStrategy.LATEST_WINS:
-                return self._handle_tdengine_latest_wins(
-                    data, table_name, classification
-                )
+                return self._handle_tdengine_latest_wins(data, table_name, classification)
             elif strategy == DeduplicationStrategy.FIRST_WINS:
-                return self._handle_tdengine_first_wins(
-                    data, table_name, classification
-                )
+                return self._handle_tdengine_first_wins(data, table_name, classification)
             elif strategy == DeduplicationStrategy.MERGE:
                 return self._handle_tdengine_merge(data, table_name, classification)
             elif strategy == DeduplicationStrategy.REJECT:
@@ -279,15 +259,11 @@ class TDengineDataAccess(IDataAccessLayer):
                     subset=["symbol", time_column], keep="last"
                 )
             else:
-                deduped_data = data.sort_values([time_column]).drop_duplicates(
-                    subset=[time_column], keep="last"
-                )
+                deduped_data = data.sort_values([time_column]).drop_duplicates(subset=[time_column], keep="last")
 
             removed_count = len(data) - len(deduped_data)
             if removed_count > 0:
-                logger.info(
-                    f"TDengine LATEST_WINS去重：移除 {removed_count} 条重复记录"
-                )
+                logger.info(f"TDengine LATEST_WINS去重：移除 {removed_count} 条重复记录")
 
             return deduped_data
 
@@ -340,18 +316,12 @@ class TDengineDataAccess(IDataAccessLayer):
             else:
                 merge_columns = [time_column]
 
-            filtered_data = data.merge(
-                existing_data, on=merge_columns, how="left", indicator=True
-            )
-            new_data = filtered_data[filtered_data["_merge"] == "left_only"].drop(
-                "_merge", axis=1
-            )
+            filtered_data = data.merge(existing_data, on=merge_columns, how="left", indicator=True)
+            new_data = filtered_data[filtered_data["_merge"] == "left_only"].drop("_merge", axis=1)
 
             removed_count = len(data) - len(new_data)
             if removed_count > 0:
-                logger.info(
-                    f"TDengine FIRST_WINS去重：过滤 {removed_count} 条已存在记录"
-                )
+                logger.info(f"TDengine FIRST_WINS去重：过滤 {removed_count} 条已存在记录")
 
             return new_data
 
@@ -384,9 +354,7 @@ class TDengineDataAccess(IDataAccessLayer):
 
             if duplicates.any():
                 dup_count = duplicates.sum()
-                logger.warning(
-                    f"TDengine REJECT策略：发现 {dup_count} 条内部重复记录，拒绝保存"
-                )
+                logger.warning(f"TDengine REJECT策略：发现 {dup_count} 条内部重复记录，拒绝保存")
                 return pd.DataFrame()  # 返回空DataFrame，拒绝所有数据
 
             # 简化实现：如果没有内部重复，允许保存
@@ -396,17 +364,12 @@ class TDengineDataAccess(IDataAccessLayer):
             logger.error(f"TDengine REJECT处理失败: {e}")
             return data
 
-    def _preprocess_timeseries_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _preprocess_timeseries_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """预处理时序数据"""
         processed_data = normalize_dataframe(data)
 
         # 确保时间戳列存在
-        if (
-            "timestamp" not in processed_data.columns
-            and "ts" not in processed_data.columns
-        ):
+        if "timestamp" not in processed_data.columns and "ts" not in processed_data.columns:
             processed_data["ts"] = datetime.now()
         elif "timestamp" in processed_data.columns:
             processed_data["ts"] = pd.to_datetime(processed_data["timestamp"])
@@ -429,17 +392,13 @@ class TDengineDataAccess(IDataAccessLayer):
             required_columns = ["ts", "symbol"]
 
         # 检查必要列
-        missing_columns = [
-            col for col in required_columns if col not in processed_data.columns
-        ]
+        missing_columns = [col for col in required_columns if col not in processed_data.columns]
         if missing_columns:
             logger.warning(f"缺少必要列: {missing_columns}")
 
         return processed_data
 
-    def _postprocess_timeseries_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _postprocess_timeseries_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """后处理时序数据"""
         if data.empty:
             return data
@@ -516,9 +475,7 @@ class TDengineDataAccess(IDataAccessLayer):
             logger.error(f"插入分钟K线数据失败: {e}")
             return False
 
-    def _insert_generic_timeseries(
-        self, cursor, data: pd.DataFrame, table_name: str
-    ) -> bool:
+    def _insert_generic_timeseries(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
         """插入通用时序数据"""
         try:
             # 动态构建插入语句
@@ -564,9 +521,7 @@ class TDengineDataAccess(IDataAccessLayer):
                     conditions.append(f"ts <= '{value}'")
                 elif key == "date_range":
                     if isinstance(value, dict) and "start" in value and "end" in value:
-                        conditions.append(
-                            f"ts >= '{value['start']}' AND ts <= '{value['end']}'"
-                        )
+                        conditions.append(f"ts >= '{value['start']}' AND ts <= '{value['end']}'")
 
         # 添加kwargs中的条件
         if "start_time" in kwargs:

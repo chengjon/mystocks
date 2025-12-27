@@ -37,9 +37,7 @@ class BaseDataSourceAdapter(ABC):
 
         self.logger.info(f"✅ {source_name} 适配器基类初始化完成")
 
-    def _apply_quality_check(
-        self, df: pd.DataFrame, symbol: str, data_type: str = "daily"
-    ) -> pd.DataFrame:
+    def _apply_quality_check(self, df: pd.DataFrame, symbol: str, data_type: str = "daily") -> pd.DataFrame:
         """
         应用数据质量检查
 
@@ -56,9 +54,7 @@ class BaseDataSourceAdapter(ABC):
             return df
 
         try:
-            quality_result = self.quality_validator.validate_stock_data(
-                df, symbol, data_type
-            )
+            quality_result = self.quality_validator.validate_stock_data(df, symbol, data_type)
 
             if not quality_result["is_valid"]:
                 self.logger.warning(
@@ -68,27 +64,18 @@ class BaseDataSourceAdapter(ABC):
                 )
 
                 # 记录严重问题
-                critical_issues = [
-                    issue
-                    for issue in quality_result["issues"]
-                    if issue.get("severity") == "critical"
-                ]
+                critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
                         self.logger.error(f"  - {issue['type']}: {issue['message']}")
                 else:
                     # 只记录警告级别的问题
-                    warning_issues = [
-                        issue
-                        for issue in quality_result["issues"]
-                        if issue.get("severity") == "warning"
-                    ]
+                    warning_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "warning"]
                     for issue in warning_issues:
                         self.logger.warning(f"  - {issue['type']}: {issue['message']}")
             else:
                 self.logger.info(
-                    f"数据质量检查通过: {symbol} {data_type} - "
-                    f"得分: {quality_result['quality_score']:.1f}"
+                    f"数据质量检查通过: {symbol} {data_type} - " f"得分: {quality_result['quality_score']:.1f}"
                 )
 
         except Exception as e:
@@ -97,9 +84,7 @@ class BaseDataSourceAdapter(ABC):
 
         return df
 
-    def _apply_quality_check_realtime(
-        self, data: Dict[str, Any], symbol: str
-    ) -> Dict[str, Any]:
+    def _apply_quality_check_realtime(self, data: Dict[str, Any], symbol: str) -> Dict[str, Any]:
         """
         应用实时数据质量检查
 
@@ -124,22 +109,13 @@ class BaseDataSourceAdapter(ABC):
 
                 df["timestamp"] = datetime.now().isoformat()
 
-            quality_result = self.quality_validator.validate_stock_data(
-                df, symbol, "realtime"
-            )
+            quality_result = self.quality_validator.validate_stock_data(df, symbol, "realtime")
 
             if not quality_result["is_valid"]:
-                self.logger.warning(
-                    f"实时数据质量检查失败: {symbol} - "
-                    f"得分: {quality_result['quality_score']:.1f}"
-                )
+                self.logger.warning(f"实时数据质量检查失败: {symbol} - " f"得分: {quality_result['quality_score']:.1f}")
 
                 # 记录严重问题
-                critical_issues = [
-                    issue
-                    for issue in quality_result["issues"]
-                    if issue.get("severity") == "critical"
-                ]
+                critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
                         self.logger.error(f"  - {issue['type']}: {issue['message']}")
@@ -172,9 +148,7 @@ class BaseDataSourceAdapter(ABC):
         if columns:
             self.logger.debug(f"数据列: {columns}")
 
-    def _handle_empty_data(
-        self, symbol: str, data_type: str, fallback_data: Any = None
-    ):
+    def _handle_empty_data(self, symbol: str, data_type: str, fallback_data: Any = None):
         """
         处理空数据情况
 
@@ -281,18 +255,14 @@ class QualityMixin:
         if hasattr(self, "source_name"):
             self.quality_validator = DataQualityValidator(self.source_name)
 
-    def apply_quality_check(
-        self, df: pd.DataFrame, symbol: str, data_type: str = "daily"
-    ) -> pd.DataFrame:
+    def apply_quality_check(self, df: pd.DataFrame, symbol: str, data_type: str = "daily") -> pd.DataFrame:
         """应用数据质量检查的便捷方法"""
         if hasattr(self, "_apply_quality_check"):
             return self._apply_quality_check(df, symbol, data_type)
         else:
             return df
 
-    def apply_quality_check_realtime(
-        self, data: Dict[str, Any], symbol: str
-    ) -> Dict[str, Any]:
+    def apply_quality_check_realtime(self, data: Dict[str, Any], symbol: str) -> Dict[str, Any]:
         """应用实时数据质量检查的便捷方法"""
         if hasattr(self, "_apply_quality_check_realtime"):
             return self._apply_quality_check_realtime(data, symbol)

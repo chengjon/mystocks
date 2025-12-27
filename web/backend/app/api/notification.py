@@ -13,17 +13,16 @@ Phase 4C Enhanced - 企业级通知服务
 
 import asyncio
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import structlog
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 from app.api.auth import User, get_current_active_user, get_current_user
-from app.core.config import settings
-from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
+from app.core.responses import create_success_response
 from app.services.email_service import get_email_service
 
 logger = structlog.get_logger()
@@ -229,7 +228,7 @@ class ConnectionManager:
             self.active_connections[user_id] = []
 
         self.active_connections[user_id].append(websocket)
-        logger.info(f"WebSocket连接建立", user_id=user_id)
+        logger.info("WebSocket连接建立", user_id=user_id)
 
     def disconnect(self, websocket: WebSocket, user_id: int):
         """断开WebSocket连接"""
@@ -241,7 +240,7 @@ class ConnectionManager:
             if not self.active_connections[user_id]:
                 del self.active_connections[user_id]
 
-        logger.info(f"WebSocket连接断开", user_id=user_id)
+        logger.info("WebSocket连接断开", user_id=user_id)
 
     async def send_personal_notification(self, notification: RealTimeNotification):
         """发送个人实时通知"""
@@ -520,7 +519,7 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
                     logger.warning("收到无效的WebSocket消息", user_id=user.id, message=data[:100])
 
         except WebSocketDisconnect:
-            logger.info(f"WebSocket客户端断开连接", user_id=user.id)
+            logger.info("WebSocket客户端断开连接", user_id=user.id)
             connection_manager.disconnect(websocket, user.id)
 
         except Exception as e:

@@ -127,9 +127,7 @@ class TestMonitoringDatabase:
         """测试使用URL初始化监控数据库"""
         test_url = "mysql+pymysql://user:pass@host:3306/db_monitor"
 
-        with patch(
-            "monitoring.monitoring_service.DatabaseTableManager"
-        ) as mock_db_manager:
+        with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
             with patch("monitoring.monitoring_service.load_dotenv"):
                 db = MonitoringDatabase(monitor_db_url=test_url)
 
@@ -138,22 +136,15 @@ class TestMonitoringDatabase:
 
     def test_monitoring_database_initialization_without_url(self):
         """测试不使用URL初始化监控数据库"""
-        with patch(
-            "monitoring.monitoring_service.DatabaseTableManager"
-        ) as mock_db_manager:
+        with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
             with patch("monitoring.monitoring_service.load_dotenv"):
                 with patch.dict(
                     os.environ,
-                    {
-                        "MONITOR_DB_URL": "mysql+pymysql://test:test@localhost:3306/monitor"
-                    },
+                    {"MONITOR_DB_URL": "mysql+pymysql://test:test@localhost:3306/monitor"},
                 ):
                     db = MonitoringDatabase()
 
-                    assert (
-                        db.monitor_db_url
-                        == "mysql+pymysql://test:test@localhost:3306/monitor"
-                    )
+                    assert db.monitor_db_url == "mysql+pymysql://test:test@localhost:3306/monitor"
                     mock_db_manager.assert_called_once()
 
     @patch("monitoring.monitoring_service.pymysql.connect")
@@ -225,9 +216,7 @@ class TestMonitoringDatabase:
                 db = MonitoringDatabase()
                 db._update_operation_log = Mock()
 
-                db.log_operation_result(
-                    operation_id="test_op_001", success=True, data_count=100
-                )
+                db.log_operation_result(operation_id="test_op_001", success=True, data_count=100)
 
                 db._update_operation_log.assert_called_once()
 
@@ -372,9 +361,7 @@ class TestDataQualityMonitor:
             }
         )
 
-        result = monitor.check_data_accuracy(
-            DataClassification.DAILY_KLINE, sample_size=1000
-        )
+        result = monitor.check_data_accuracy(DataClassification.DAILY_KLINE, sample_size=1000)
 
         assert result["classification"] == "daily_kline"
         assert "sample_size" in result
@@ -399,9 +386,7 @@ class TestDataQualityMonitor:
                 "check_time": datetime.now().isoformat(),
             }
         )
-        monitor.check_data_freshness = Mock(
-            return_value={"stale_data": [], "warnings": []}
-        )
+        monitor.check_data_freshness = Mock(return_value={"stale_data": [], "warnings": []})
 
         result = monitor.generate_quality_report()
 
@@ -688,12 +673,8 @@ class TestAlertManager:
 
         # 创建一些告警
         alert1 = manager.create_alert(AlertLevel.INFO, "Info 1", "Info message", "test")
-        alert2 = manager.create_alert(
-            AlertLevel.WARNING, "Warning 1", "Warning message", "test"
-        )
-        alert3 = manager.create_alert(
-            AlertLevel.ERROR, "Error 1", "Error message", "test"
-        )
+        alert2 = manager.create_alert(AlertLevel.WARNING, "Warning 1", "Warning message", "test")
+        alert3 = manager.create_alert(AlertLevel.ERROR, "Error 1", "Error message", "test")
 
         # 解决一个告警
         manager.resolve_alert(alert2.alert_id)
@@ -732,18 +713,14 @@ class TestAlertManager:
         with patch("monitoring.monitoring_service.datetime") as mock_datetime:
             # 模拟创建旧告警
             mock_datetime.now.return_value = old_time
-            old_alert = manager.create_alert(
-                AlertLevel.INFO, "Old Alert", "This is old", "test"
-            )
+            old_alert = manager.create_alert(AlertLevel.INFO, "Old Alert", "This is old", "test")
 
             # 解决旧告警
             manager.resolve_alert(old_alert.alert_id)
 
             # 模拟创建新告警
             mock_datetime.now.return_value = recent_time
-            new_alert = manager.create_alert(
-                AlertLevel.WARNING, "New Alert", "This is new", "test"
-            )
+            new_alert = manager.create_alert(AlertLevel.WARNING, "New Alert", "This is new", "test")
 
             # 应该有1个活跃告警
             assert len(manager.active_alerts) == 2
@@ -762,9 +739,7 @@ class TestAlertManager:
         config = {"channels": [{"type": "log", "level": "ERROR"}]}
         manager = AlertManager(config)
 
-        alert = manager.create_alert(
-            AlertLevel.ERROR, "Test Error", "Test error message", "test_module"
-        )
+        alert = manager.create_alert(AlertLevel.ERROR, "Test Error", "Test error message", "test_module")
 
         # 验证日志渠道配置
         assert "log" in manager.alert_channels
@@ -989,9 +964,7 @@ class TestAlertChannels:
         with patch("monitoring.monitoring.service.logger") as mock_logger:
             channel.send_alert(alert)
 
-            mock_logger.info.assert_called_with(
-                "Webhook告警发送至: https://hooks.example.com/test"
-            )
+            mock_logger.info.assert_called_with("Webhook告警发送至: https://hooks.example.com/test")
 
 
 if __name__ == "__main__":

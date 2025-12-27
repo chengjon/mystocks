@@ -29,9 +29,7 @@ class NewMarketDataAdapter:
             print(f"连接失败: {e}")
             return False
 
-    def fetch_market_data(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> Optional[pd.DataFrame]:
+    def fetch_market_data(self, symbol: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
         """获取市场数据"""
         if not self.is_connected:
             raise ConnectionError("未连接到数据源")

@@ -1,8 +1,8 @@
 # Task 2: TDengine 缓存集成 - 实现计划
 
-**任务**: TDengine 缓存集成  
-**周期**: Week 2  
-**优先级**: CRITICAL (P0-架构)  
+**任务**: TDengine 缓存集成
+**周期**: Week 2
+**优先级**: CRITICAL (P0-架构)
 **预计时长**: 3-4 周
 
 ---

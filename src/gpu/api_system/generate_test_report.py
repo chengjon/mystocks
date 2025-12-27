@@ -84,16 +84,12 @@ class TestReportGenerator:
         # 集成测试
         integration_xml = self.report_dir / "integration_tests.xml"
         if integration_xml.exists():
-            self.report_data["integration_tests"] = self.parse_junit_xml(
-                integration_xml
-            )
+            self.report_data["integration_tests"] = self.parse_junit_xml(integration_xml)
 
         # 性能测试
         performance_xml = self.report_dir / "performance_tests.xml"
         if performance_xml.exists():
-            self.report_data["performance_tests"] = self.parse_junit_xml(
-                performance_xml
-            )
+            self.report_data["performance_tests"] = self.parse_junit_xml(performance_xml)
 
         # 覆盖率
         coverage_xml = self.report_dir / "coverage" / "coverage.xml"
@@ -119,9 +115,7 @@ class TestReportGenerator:
             "passed": total_passed,
             "failed": total_failed,
             "errors": total_errors,
-            "success_rate": (
-                (total_passed / total_tests * 100) if total_tests > 0 else 0
-            ),
+            "success_rate": ((total_passed / total_tests * 100) if total_tests > 0 else 0),
         }
 
     def generate_markdown_report(self):
@@ -172,12 +166,8 @@ class TestReportGenerator:
             report.append("## 📈 代码覆盖率\n")
             coverage = self.report_data["coverage"]
             report.append(f"- **行覆盖率**: {coverage.get('line_coverage', 0):.2f}%\n")
-            report.append(
-                f"- **分支覆盖率**: {coverage.get('branch_coverage', 0):.2f}%\n"
-            )
-            report.append(
-                f"- **总体覆盖率**: {coverage.get('overall_coverage', 0):.2f}%\n\n"
-            )
+            report.append(f"- **分支覆盖率**: {coverage.get('branch_coverage', 0):.2f}%\n")
+            report.append(f"- **总体覆盖率**: {coverage.get('overall_coverage', 0):.2f}%\n\n")
 
             # 覆盖率评级
             overall = coverage.get("overall_coverage", 0)
@@ -194,10 +184,7 @@ class TestReportGenerator:
         report.append("## 💡 建议\n")
         if summary.get("success_rate", 0) < 100:
             report.append("- ⚠️ 存在失败的测试用例，请及时修复\n")
-        if (
-            self.report_data["coverage"]
-            and self.report_data["coverage"].get("overall_coverage", 0) < 80
-        ):
+        if self.report_data["coverage"] and self.report_data["coverage"].get("overall_coverage", 0) < 80:
             report.append("- 📈 代码覆盖率低于80%，建议补充测试用例\n")
         if summary.get("success_rate", 0) >= 100:
             report.append("- ✅ 所有测试通过，代码质量良好\n")

@@ -30,9 +30,7 @@ logger = logging.getLogger(__name__)
 class TestRunConfig:
     """测试运行配置"""
 
-    test_types: List[str] = field(
-        default_factory=lambda: ["unit", "integration", "e2e"]
-    )
+    test_types: List[str] = field(default_factory=lambda: ["unit", "integration", "e2e"])
     max_workers: int = 4
     timeout_seconds: int = 300
     enable_ai_enhancement: bool = True
@@ -91,9 +89,7 @@ class EnhancedTestRunner:
             )
             self.contract_executor = ContractTestExecutor(self.contract_config)
 
-    async def run_all_tests(
-        self, project_context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def run_all_tests(self, project_context: Dict[str, Any] = None) -> Dict[str, Any]:
         """运行所有测试"""
         print("🚀 启动增强测试运行器...")
         self.start_time = datetime.now()
@@ -151,9 +147,7 @@ class EnhancedTestRunner:
         except Exception as e:
             logger.warning(f"数据优化跳过: {e}")
 
-    async def _run_ai_tests(
-        self, project_context: Dict[str, Any]
-    ) -> TestExecutionResult:
+    async def _run_ai_tests(self, project_context: Dict[str, Any]) -> TestExecutionResult:
         """运行AI辅助测试"""
         try:
             # 使用MyStocks默认上下文
@@ -208,9 +202,7 @@ class EnhancedTestRunner:
 
             # 执行测试
             async with self.contract_executor:
-                execution_results = await self.contract_executor.execute_suite(
-                    test_suite
-                )
+                execution_results = await self.contract_executor.execute_suite(test_suite)
 
             # 统计结果
             total = len(execution_results)
@@ -235,9 +227,7 @@ class EnhancedTestRunner:
             )
 
         except Exception as e:
-            return TestExecutionResult(
-                test_type="contract", status="error", duration=0, error_message=str(e)
-            )
+            return TestExecutionResult(test_type="contract", status="error", duration=0, error_message=str(e))
 
     def _create_basic_test_case(self, method: str, endpoint: str):
         """创建基础测试用例"""
@@ -286,9 +276,7 @@ class EnhancedTestRunner:
                 details={"modules_tested": 8, "coverage": 85.5},
             )
         except Exception as e:
-            return TestExecutionResult(
-                test_type="unit", status="error", duration=0, error_message=str(e)
-            )
+            return TestExecutionResult(test_type="unit", status="error", duration=0, error_message=str(e))
 
     async def _run_integration_tests(self) -> TestExecutionResult:
         """运行集成测试"""
@@ -329,9 +317,7 @@ class EnhancedTestRunner:
                 details={"scenarios": 4, "browsers": ["chrome"]},
             )
         except Exception as e:
-            return TestExecutionResult(
-                test_type="e2e", status="error", duration=0, error_message=str(e)
-            )
+            return TestExecutionResult(test_type="e2e", status="error", duration=0, error_message=str(e))
 
     async def _run_unit_tests_with_ai(self) -> Dict[str, Any]:
         """AI辅助单元测试"""

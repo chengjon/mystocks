@@ -29,9 +29,7 @@ def test_tdengine_import():
         try:
             module = __import__(module_name)
             logger.info(f"✓ TDengine Python库导入成功 ({description})")
-            logger.info(
-                f"TDengine客户端版本: {getattr(module, '__version__', '未知版本')}"
-            )
+            logger.info(f"TDengine客户端版本: {getattr(module, '__version__', '未知版本')}")
             return module, module_name
         except ImportError:
             logger.debug(f"未找到{module_name}模块")
@@ -149,17 +147,13 @@ def main():
     if taos is None:
         print("\n" + "=" * 60)
         print("诊断信息:")
-        print(
-            f"- 当前Python版本: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-        )
+        print(f"- 当前Python版本: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
         print(f"- Python可执行文件: {sys.executable}")
         print("\n解决方案:")
         print("1. 下载并安装TDengine客户端:")
         print("   https://docs.taosdata.com/get-started/")
         print("2. 下载安装TDengine-client:")
-        print(
-            "   https://www.taosdata.com/assets-download/3.0/TDengine-client-3.3.6.13-Windows-x64.exe"
-        )
+        print("   https://www.taosdata.com/assets-download/3.0/TDengine-client-3.3.6.13-Windows-x64.exe")
         print("3. 在当前Python环境中安装Python库 (推荐WebSocket方式):")
         print(f'   "{sys.executable}" -m pip install taos-ws-py')
         print("   或者使用原生连接方式:")

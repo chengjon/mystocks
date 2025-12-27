@@ -117,9 +117,7 @@ class TestDataOptimizer:
                         data.append(
                             {
                                 "symbol": symbol,
-                                "timestamp": current.replace(
-                                    hour=hour, minute=minute, second=0
-                                ).isoformat(),
+                                "timestamp": current.replace(hour=hour, minute=minute, second=0).isoformat(),
                                 "price": round(random.uniform(50, 200), 2),
                                 "volume": random.randint(1000, 10000),
                                 "created_at": current.isoformat(),
@@ -138,9 +136,7 @@ class TestDataOptimizer:
         self.datasets[dataset.name] = dataset
         return dataset
 
-    def generate_trading_portfolio(
-        self, initial_value: float = 1000000.0, position_count: int = 10
-    ) -> TestDataset:
+    def generate_trading_portfolio(self, initial_value: float = 1000000.0, position_count: int = 10) -> TestDataset:
         """生成交易组合数据"""
         symbols = [
             "AAPL",
@@ -182,9 +178,7 @@ class TestDataOptimizer:
 
         data = {
             "cash": cash,
-            "total_value": initial_value
-            - cash
-            + sum(p["current_price"] * p["quantity"] for p in positions),
+            "total_value": initial_value - cash + sum(p["current_price"] * p["quantity"] for p in positions),
             "positions": positions,
             "created_at": datetime.now().isoformat(),
         }
@@ -231,9 +225,7 @@ class TestDataOptimizer:
         self.datasets[dataset.name] = dataset
         return dataset
 
-    def generate_performance_test_data(
-        self, scenario: str, data_size: int = 10000
-    ) -> TestDataset:
+    def generate_performance_test_data(self, scenario: str, data_size: int = 10000) -> TestDataset:
         """生成性能测试数据"""
         if scenario == "large_dataset":
             # 大数据集测试
@@ -400,36 +392,27 @@ class TestDataOptimizer:
         self.stats["total_datasets"] = len(self.datasets)
 
         # 清理过期缓存
-        expired_cache = [
-            k
-            for k, v in self.cache.items()
-            if "updated_at" in v and v["updated_at"] < cutoff_time
-        ]
+        expired_cache = [k for k, v in self.cache.items() if "updated_at" in v and v["updated_at"] < cutoff_time]
         for key in expired_cache:
             del self.cache[key]
 
     def get_dataset_statistics(self) -> Dict[str, Any]:
         """获取数据集统计信息"""
         total_size = sum(d.size for d in self.datasets.values())
-        avg_quality = (
-            sum(d.quality_score for d in self.datasets.values()) / len(self.datasets)
-            if self.datasets
-            else 0
-        )
+        avg_quality = sum(d.quality_score for d in self.datasets.values()) / len(self.datasets) if self.datasets else 0
 
         return {
             "total_datasets": len(self.datasets),
-            "active_datasets": len(
-                [d for d in self.datasets.values() if d.quality_score > 50]
-            ),
+            "active_datasets": len([d for d in self.datasets.values() if d.quality_score > 50]),
             "total_data_size": total_size,
             "average_quality_score": avg_quality,
             "cache_hits": self.stats["cache_hits"],
             "cache_misses": self.stats["cache_misses"],
-            "cache_hit_rate": self.stats["cache_hits"]
-            / (self.stats["cache_hits"] + self.stats["cache_misses"])
-            if (self.stats["cache_hits"] + self.stats["cache_misses"]) > 0
-            else 0,
+            "cache_hit_rate": (
+                self.stats["cache_hits"] / (self.stats["cache_hits"] + self.stats["cache_misses"])
+                if (self.stats["cache_hits"] + self.stats["cache_misses"]) > 0
+                else 0
+            ),
         }
 
     def export_dataset(self, dataset_name: str, output_path: str, format: str = "json"):
@@ -455,9 +438,7 @@ class TestDataOptimizer:
         print(f"✓ 导出数据集: {dataset_name} -> {output_path}")
         return True
 
-    def load_dataset(
-        self, file_path: str, dataset_name: Optional[str] = None
-    ) -> Optional[TestDataset]:
+    def load_dataset(self, file_path: str, dataset_name: Optional[str] = None) -> Optional[TestDataset]:
         """从文件加载数据集"""
         file_path = Path(file_path)
         if not file_path.exists():
@@ -469,11 +450,7 @@ class TestDataOptimizer:
                 with open(file_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
             elif file_path.suffix.lower() in [".csv", ".parquet"]:
-                df = (
-                    pd.read_csv(file_path)
-                    if file_path.suffix.lower() == ".csv"
-                    else pd.read_parquet(file_path)
-                )
+                df = pd.read_csv(file_path) if file_path.suffix.lower() == ".csv" else pd.read_parquet(file_path)
                 data = df.to_dict("records")
             else:
                 return None
@@ -595,9 +572,7 @@ class TestDataLifecycleManager:
         """检查数据保留期限"""
         age_days = (datetime.now() - dataset.created_at).days
         if age_days > retention_days:
-            print(
-                f"⚠️  数据集 {dataset.name} 已过期 {age_days} 天，超过保留期限 {retention_days} 天"
-            )
+            print(f"⚠️  数据集 {dataset.name} 已过期 {age_days} 天，超过保留期限 {retention_days} 天")
 
 
 # 使用示例
@@ -612,9 +587,7 @@ def demo_test_data_manager():
     lifecycle_manager = TestDataLifecycleManager(optimizer)
 
     # 添加数据源
-    market_source = DataSource(
-        name="market_api", type="api", priority=1, quality=DataQuality.HIGH
-    )
+    market_source = DataSource(name="market_api", type="api", priority=1, quality=DataQuality.HIGH)
     optimizer.add_data_source(market_source)
 
     # 生成测试数据

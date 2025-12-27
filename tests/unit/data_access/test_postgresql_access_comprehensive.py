@@ -202,12 +202,9 @@ class TestPostgreSQLDataAccessTable:
 
         # 验证SQL内容
         calls = [call[0][0] for call in mock_cursor.execute.call_args_list]
+        assert any("CREATE EXTENSION IF NOT EXISTS timescaledb" in call for call in calls)
         assert any(
-            "CREATE EXTENSION IF NOT EXISTS timescaledb" in call for call in calls
-        )
-        assert any(
-            "SELECT create_hypertable('test_table', 'time', chunk_time_interval => INTERVAL '7 days')"
-            in call
+            "SELECT create_hypertable('test_table', 'time', chunk_time_interval => INTERVAL '7 days')" in call
             for call in calls
         )
 
@@ -274,13 +271,9 @@ class TestPostgreSQLDataAccessDataframe:
 
         access = PostgreSQLDataAccess()
 
-        df = pd.DataFrame(
-            {"symbol": ["AAPL"], "date": ["2024-01-01"], "close": [150.0]}
-        )
+        df = pd.DataFrame({"symbol": ["AAPL"], "date": ["2024-01-01"], "close": [150.0]})
 
-        access.upsert_dataframe(
-            df=df, table_name="test_table", conflict_columns=["symbol", "date"]
-        )
+        access.upsert_dataframe(df=df, table_name="test_table", conflict_columns=["symbol", "date"])
 
         # 验证SQL执行
         mock_cursor.execute.assert_called()

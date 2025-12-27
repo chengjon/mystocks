@@ -105,7 +105,7 @@ def handle_auto_command(args):
                     success_count += 1
                     print(f"  ✅ 成功 - 覆盖率: {result.current_coverage:.1f}%")
                 else:
-                    print(f"  ❌ 覆盖率分析失败")
+                    print("  ❌ 覆盖率分析失败")
             except Exception as e:
                 print(f"  ⚠️  异常 - {e}")
         else:

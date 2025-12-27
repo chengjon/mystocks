@@ -152,9 +152,7 @@ def get_realtime_alerts() -> Dict:
             message = f"{stock_names[symbol_idx]}成交量激增{random.randint(2, 10)}倍"
         elif alert_type == "技术指标":
             indicators = ["RSI", "MACD", "KDJ"]
-            message = (
-                f"{stock_names[symbol_idx]}{random.choice(indicators)}指标出现信号"
-            )
+            message = f"{stock_names[symbol_idx]}{random.choice(indicators)}指标出现信号"
         elif alert_type == "资金流向":
             direction = "流入" if random.choice([True, False]) else "流出"
             amount = random.randint(1000, 10000)
@@ -163,9 +161,7 @@ def get_realtime_alerts() -> Dict:
             message = f"{stock_names[symbol_idx]}登上龙虎榜"
 
         # 生成时间戳（最近24小时内）
-        timestamp = datetime.datetime.now() - datetime.timedelta(
-            minutes=random.randint(0, 1440)
-        )
+        timestamp = datetime.datetime.now() - datetime.timedelta(minutes=random.randint(0, 1440))
 
         alerts.append(
             {
@@ -243,10 +239,7 @@ def get_leading_sectors() -> List[Dict]:
         List[Dict]: 各板块的涨幅数据
     """
     sectors = ["人工智能", "芯片", "新能源", "医疗", "5G", "军工", "消费", "金融"]
-    return [
-        {"name": sector, "change": round(random.uniform(2.0, 8.5), 2)}
-        for sector in sectors
-    ]
+    return [{"name": sector, "change": round(random.uniform(2.0, 8.5), 2)} for sector in sectors]
 
 
 def get_price_distribution() -> List[Dict]:
@@ -358,149 +351,7 @@ def get_industry_fund_flow(standard: str = "csrc") -> Dict:
     }
 
 
-def get_strategy_stocks() -> List[Dict]:
-    """获取策略选股板块表现数据（表格数据）
-
-    Returns:
-        List[Dict]: 策略选股列表及评分数据
-    """
-    strategies = [
-        {"symbol": "688981", "name": "中芯国际", "strategy": "突破策略", "score": 88},
-        {"symbol": "002475", "name": "立讯精密", "strategy": "趋势跟踪", "score": 85},
-        {"symbol": "300059", "name": "东方财富", "strategy": "均线策略", "score": 82},
-        {"symbol": "600036", "name": "招商银行", "strategy": "价值投资", "score": 78},
-        {"symbol": "000001", "name": "平安银行", "strategy": "价值投资", "score": 65},
-    ]
-
-    return [
-        {
-            "symbol": stock["symbol"],
-            "name": stock["name"],
-            "price": round(random.uniform(10, 100), 2),
-            "change": round(random.uniform(-2, 6), 2),
-            "strategy": stock["strategy"],
-            "score": stock["score"],
-            "signal": "买入"
-            if stock["score"] > 80
-            else ("卖出" if stock["score"] < 70 else "持有"),
-        }
-        for stock in strategies
-    ]
-
-
-def get_industry_stocks() -> List[Dict]:
-    """获取行业选股板块表现数据（表格数据）
-
-    Returns:
-        List[Dict]: 行业龙头股票数据
-    """
-    industries = [
-        {
-            "symbol": "600519",
-            "name": "贵州茅台",
-            "industry": "白酒",
-            "rank": 1,
-            "market_cap": 21056,
-        },
-        {
-            "symbol": "000858",
-            "name": "五粮液",
-            "industry": "白酒",
-            "rank": 2,
-            "market_cap": 6125,
-        },
-        {
-            "symbol": "000568",
-            "name": "泸州老窖",
-            "industry": "白酒",
-            "rank": 3,
-            "market_cap": 2089,
-        },
-        {
-            "symbol": "002304",
-            "name": "洋河股份",
-            "industry": "白酒",
-            "rank": 4,
-            "market_cap": 1516,
-        },
-        {
-            "symbol": "600809",
-            "name": "山西汾酒",
-            "industry": "白酒",
-            "rank": 5,
-            "market_cap": 2268,
-        },
-    ]
-
-    return [
-        {
-            "symbol": stock["symbol"],
-            "name": stock["name"],
-            "price": round(random.uniform(50, 2000), 2),
-            "change": round(random.uniform(-1, 3), 2),
-            "industry": stock["industry"],
-            "industry_rank": stock["rank"],
-            "market_cap": stock["market_cap"],
-        }
-        for stock in industries
-    ]
-
-
-def get_concept_stocks() -> List[Dict]:
-    """获取概念选股板块表现数据（表格数据）
-
-    Returns:
-        List[Dict]: 热门概念股票数据
-    """
-    concepts = [
-        {
-            "symbol": "300750",
-            "name": "宁德时代",
-            "concepts": ["新能源", "电池", "MSCI"],
-            "heat": 98,
-        },
-        {
-            "symbol": "688981",
-            "name": "中芯国际",
-            "concepts": ["芯片", "半导体", "华为概念"],
-            "heat": 95,
-        },
-        {
-            "symbol": "600276",
-            "name": "恒瑞医药",
-            "concepts": ["医药", "创新药", "抗癌"],
-            "heat": 88,
-        },
-        {
-            "symbol": "300122",
-            "name": "智飞生物",
-            "concepts": ["疫苗", "医药", "生物制品"],
-            "heat": 92,
-        },
-        {
-            "symbol": "002230",
-            "name": "科大讯飞",
-            "concepts": ["AI", "人工智能", "语音识别"],
-            "heat": 96,
-        },
-    ]
-
-    return [
-        {
-            "symbol": stock["symbol"],
-            "name": stock["name"],
-            "price": round(random.uniform(20, 200), 2),
-            "change": round(random.uniform(1, 7), 2),
-            "concepts": stock["concepts"],
-            "concept_heat": stock["heat"],
-        }
-        for stock in concepts
-    ]
-
-
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:
@@ -590,9 +441,7 @@ def get_strategy_stocks() -> List[Dict]:
             "change": round(random.uniform(-2, 6), 2),
             "strategy": stock["strategy"],
             "score": stock["score"],
-            "signal": "买入"
-            if stock["score"] > 80
-            else ("卖出" if stock["score"] < 70 else "持有"),
+            "signal": "买入" if stock["score"] > 80 else ("卖出" if stock["score"] < 70 else "持有"),
         }
         for stock in strategies
     ]

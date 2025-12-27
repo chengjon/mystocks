@@ -183,9 +183,7 @@ class DatabaseCapabilityDetector:
         self._capability_cache[cache_key] = profile
         return profile
 
-    async def _detect_postgresql_capabilities(
-        self, data_access: IDataAccess, db_info
-    ) -> CapabilityProfile:
+    async def _detect_postgresql_capabilities(self, data_access: IDataAccess, db_info) -> CapabilityProfile:
         """检测PostgreSQL能力"""
         supported_features = {
             FeatureType.TRANSACTIONS: ["ACID", "Savepoints", "Nested Transactions"],
@@ -242,9 +240,7 @@ class DatabaseCapabilityDetector:
             },
         )
 
-    async def _detect_tdengine_capabilities(
-        self, data_access: IDataAccess, db_info
-    ) -> CapabilityProfile:
+    async def _detect_tdengine_capabilities(self, data_access: IDataAccess, db_info) -> CapabilityProfile:
         """检测TDengine能力"""
         supported_features = {
             FeatureType.TRANSACTIONS: ["Limited", "Single Table"],
@@ -307,10 +303,6 @@ class DatabaseCapabilityDetector:
     async def _check_postgresql_extensions(self, data_access: IDataAccess) -> Set[str]:
         """检查PostgreSQL扩展"""
         try:
-            query = """
-            SELECT extname FROM pg_extension
-            WHERE extnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
-            """
 
             # 这里需要使用 data_access 的 raw query 方法
             # 实际实现时需要根据具体的 IDataAccess 实现调整
@@ -336,9 +328,7 @@ class DatabaseCapabilityDetector:
         """列出所有注册的特性"""
         return self._feature_registry.copy()
 
-    def is_feature_supported(
-        self, profile: CapabilityProfile, feature_name: str
-    ) -> bool:
+    def is_feature_supported(self, profile: CapabilityProfile, feature_name: str) -> bool:
         """检查特性是否支持"""
         if feature_name not in self._feature_registry:
             return False
@@ -346,9 +336,7 @@ class DatabaseCapabilityDetector:
         feature = self._feature_registry[feature_name]
         return feature.name in profile.supported_features.get(feature.feature_type, [])
 
-    def get_recommendations(
-        self, profile: CapabilityProfile, operation_type: str
-    ) -> List[str]:
+    def get_recommendations(self, profile: CapabilityProfile, operation_type: str) -> List[str]:
         """获取操作建议"""
         recommendations = []
 
@@ -372,13 +360,9 @@ class DatabaseCapabilityDetector:
 
         elif profile.database_type == DatabaseType.TDENGINE:
             if operation_type == "time_series_write":
-                recommendations.extend(
-                    ["使用批量插入", "合理设计超级表的标签", "利用数据压缩特性"]
-                )
+                recommendations.extend(["使用批量插入", "合理设计超级表的标签", "利用数据压缩特性"])
             elif operation_type == "time_series_query":
-                recommendations.extend(
-                    ["利用超级表标签过滤", "使用连续查询进行预计算", "考虑数据保留策略"]
-                )
+                recommendations.extend(["利用超级表标签过滤", "使用连续查询进行预计算", "考虑数据保留策略"])
 
         return recommendations
 
@@ -401,9 +385,7 @@ class FeatureCompatibilityChecker:
     def __init__(self, detector: DatabaseCapabilityDetector):
         self.detector = detector
 
-    async def check_query_compatibility(
-        self, query, target_databases: List[DatabaseType]
-    ) -> Dict[DatabaseType, bool]:
+    async def check_query_compatibility(self, query, target_databases: List[DatabaseType]) -> Dict[DatabaseType, bool]:
         """检查查询兼容性"""
         compatibility = {}
 
@@ -435,18 +417,12 @@ class FeatureCompatibilityChecker:
 
         # 检查特性支持差异
         for feature_type in FeatureType:
-            source_features = set(
-                source_profile.supported_features.get(feature_type, [])
-            )
-            target_features = set(
-                target_profile.supported_features.get(feature_type, [])
-            )
+            source_features = set(source_profile.supported_features.get(feature_type, []))
+            target_features = set(target_profile.supported_features.get(feature_type, []))
 
             missing_features = source_features - target_features
             if missing_features:
-                issues.append(
-                    f"目标数据库不支持特性: {feature_type.value}: {missing_features}"
-                )
+                issues.append(f"目标数据库不支持特性: {feature_type.value}: {missing_features}")
 
         return issues
 

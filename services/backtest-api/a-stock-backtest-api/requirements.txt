@@ -1,0 +1,12 @@
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.10.0
+pandas==2.2.0
+numpy==1.26.4
+
+# GPU acceleration (optional - will use CPU fallback if unavailable)
+cupy-cuda12x>=13.0.0
+cudf>=25.10.0
+
+# Main project dependencies (for importing GPU modules)
+# These should already be installed in /opt/claude/mystocks_spec

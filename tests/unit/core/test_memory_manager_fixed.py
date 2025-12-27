@@ -93,9 +93,7 @@ class TestMemoryLimit:
     def test_is_over_limit_true(self, mock_process):
         """测试超过内存限制 - 真"""
         mock_process_instance = Mock()
-        mock_process_instance.memory_info.return_value.rss = (
-            1024 * 1024 * 1200
-        )  # 1200MB
+        mock_process_instance.memory_info.return_value.rss = 1024 * 1024 * 1200  # 1200MB
         mock_process.return_value = mock_process_instance
 
         limit = MemoryLimit(max_memory_mb=1024)
@@ -246,9 +244,7 @@ class TestMemoryMonitor:
         mock_get_objects.return_value = ["obj1", "obj2", "obj3", None]
 
         # 模拟系统内存
-        with patch(
-            "src.core.memory_manager.psutil.virtual_memory"
-        ) as mock_virtual_memory:
+        with patch("src.core.memory_manager.psutil.virtual_memory") as mock_virtual_memory:
             mock_virtual_memory.return_value.percent = 75.0
 
             monitor = MemoryMonitor()
@@ -321,9 +317,7 @@ class TestMemoryMonitor:
         mock_gc_collect.return_value = 50
 
         # 模拟全局resource_manager
-        with patch(
-            "src.core.memory_manager._resource_manager"
-        ) as mock_resource_manager:
+        with patch("src.core.memory_manager._resource_manager") as mock_resource_manager:
             mock_resource_manager.cleanup_all = Mock()
 
             monitor = MemoryMonitor()
@@ -406,9 +400,7 @@ class TestMemoryManagementLifecycle:
         monitor = Mock()
         manager = Mock()
         with patch("src.core.memory_manager.get_memory_monitor", return_value=monitor):
-            with patch(
-                "src.core.memory_manager.get_resource_manager", return_value=manager
-            ):
+            with patch("src.core.memory_manager.get_resource_manager", return_value=manager):
                 with patch("src.core.memory_manager.gc.collect") as mock_gc_collect:
                     shutdown_memory_management()
 

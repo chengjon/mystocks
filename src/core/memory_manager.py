@@ -130,9 +130,7 @@ class ResourceManager:
                 self._cleanup_callbacks[resource_id] = cleanup_callback
 
             if weak_ref:
-                self._weak_refs[resource_id] = weakref.ref(
-                    resource, lambda ref: self._auto_cleanup(resource_id)
-                )
+                self._weak_refs[resource_id] = weakref.ref(resource, lambda ref: self._auto_cleanup(resource_id))
 
     def unregister_resource(self, resource_id: str):
         """注销资源"""
@@ -290,15 +288,11 @@ class MemoryMonitor:
         """检查内存限制"""
         # 检查是否超过警告阈值
         if self._memory_limit.is_approaching_limit():
-            logger.warning(
-                f"内存使用接近限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB"
-            )
+            logger.warning(f"内存使用接近限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB")
 
         # 检查是否超过限制
         if self._memory_limit.is_over_limit():
-            logger.error(
-                f"内存使用超过限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB"
-            )
+            logger.error(f"内存使用超过限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB")
 
             # 触发紧急清理
             self._emergency_cleanup()

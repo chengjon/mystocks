@@ -291,9 +291,7 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            data_access.query_by_time_range(
-                "test_table", start_time, end_time, columns=["ts", "price"]
-            )
+            data_access.query_by_time_range("test_table", start_time, end_time, columns=["ts", "price"])
 
             # 验证SQL语句包含指定列
             sql_call = mock_cursor.execute.call_args[0][0]
@@ -314,9 +312,7 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            data_access.query_by_time_range(
-                "test_table", start_time, end_time, limit=1000
-            )
+            data_access.query_by_time_range("test_table", start_time, end_time, limit=1000)
 
             # 验证SQL语句包含LIMIT
             sql_call = mock_cursor.execute.call_args[0][0]
@@ -461,9 +457,7 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.delete_by_time_range(
-                "test_table", start_time, end_time
-            )
+            result = data_access.delete_by_time_range("test_table", start_time, end_time)
 
             assert result == 1500
 
@@ -487,9 +481,7 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.delete_by_time_range(
-                "test_table", start_time, end_time
-            )
+            result = data_access.delete_by_time_range("test_table", start_time, end_time)
 
             assert result == 0
 
@@ -553,14 +545,10 @@ class TestTDengineDataAccessBasic:
 
             data_access = TDengineDataAccess()
 
-            result = data_access.save_data(
-                test_df, "test_classification", "test_table", timestamp_col="ts"
-            )
+            result = data_access.save_data(test_df, "test_classification", "test_table", timestamp_col="ts")
 
             assert result == True
-            mock_insert.assert_called_once_with(
-                "test_table", test_df, timestamp_col="ts"
-            )
+            mock_insert.assert_called_once_with("test_table", test_df, timestamp_col="ts")
 
     def test_save_data_method_failure(self):
         """测试保存数据方法（失败情况）"""
@@ -594,9 +582,7 @@ class TestTDengineDataAccessBasic:
 
             assert result is not None
             assert len(result) == 2
-            mock_query.assert_called_once_with(
-                "test_table", start_time, end_time, columns=["ts", "price"]
-            )
+            mock_query.assert_called_once_with("test_table", start_time, end_time, columns=["ts", "price"])
 
     def test_load_data_method_without_time_range(self):
         """测试加载数据方法（无时间范围）"""
@@ -691,12 +677,8 @@ class TestTDengineDataAccessBasic:
 
         # 测试不同的DataFrame格式
         test_dfs = [
-            pd.DataFrame(
-                {"ts": pd.date_range("2025-01-01", periods=2), "price": [10.0, 20.0]}
-            ),
-            pd.DataFrame(
-                {"timestamp": pd.date_range("2025-01-01", periods=2), "bid": [0.5, 0.8]}
-            ),
+            pd.DataFrame({"ts": pd.date_range("2025-01-01", periods=2), "price": [10.0, 20.0]}),
+            pd.DataFrame({"timestamp": pd.date_range("2025-01-01", periods=2), "bid": [0.5, 0.8]}),
             pd.DataFrame({"ts": ["2025-01-01", "2025-01-02"], "value": [1, 2]}),
         ]
 

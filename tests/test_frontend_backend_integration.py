@@ -39,9 +39,7 @@ class IntegrationTester:
             }
         )
 
-    def log_test(
-        self, test_name: str, status: str, details: str = "", response_time: float = 0
-    ):
+    def log_test(self, test_name: str, status: str, details: str = "", response_time: float = 0):
         """记录测试结果"""
         result = {
             "test_name": test_name,
@@ -78,9 +76,7 @@ class IntegrationTester:
             if method.upper() == "GET":
                 response = self.session.get(url, headers=headers, timeout=30)
             elif method.upper() == "POST":
-                response = self.session.post(
-                    url, json=data, headers=headers, timeout=30
-                )
+                response = self.session.post(url, json=data, headers=headers, timeout=30)
             elif method.upper() == "PUT":
                 response = self.session.put(url, json=data, headers=headers, timeout=30)
             elif method.upper() == "DELETE":
@@ -121,16 +117,10 @@ class IntegrationTester:
         print("🔍 测试基础API端点...")
 
         # 测试认证端点
-        auth_result = self.test_api_endpoint(
-            "POST", "/auth/login", {"username": "test", "password": "test"}
-        )
+        auth_result = self.test_api_endpoint("POST", "/auth/login", {"username": "test", "password": "test"})
 
-        if (
-            auth_result["success"] or auth_result["status_code"] == 422
-        ):  # 422表示验证失败，但端点存在
-            self.log_test(
-                "用户认证API", "PASS", "认证端点可访问", auth_result["response_time"]
-            )
+        if auth_result["success"] or auth_result["status_code"] == 422:  # 422表示验证失败，但端点存在
+            self.log_test("用户认证API", "PASS", "认证端点可访问", auth_result["response_time"])
             token = None
         else:
             self.log_test(
@@ -144,9 +134,7 @@ class IntegrationTester:
         stocks_result = self.test_api_endpoint("GET", "/data/stocks/basic")
         if stocks_result["success"]:
             data_count = (
-                len(stocks_result["data"].get("data", []))
-                if isinstance(stocks_result["data"].get("data"), list)
-                else 0
+                len(stocks_result["data"].get("data", [])) if isinstance(stocks_result["data"].get("data"), list) else 0
             )
             self.log_test(
                 "股票基本信息API",
@@ -224,14 +212,10 @@ class IntegrationTester:
             )
 
         # 测试股票搜索API
-        search_result = self.test_api_endpoint(
-            "GET", "/data/stocks/search?keyword=平安"
-        )
+        search_result = self.test_api_endpoint("GET", "/data/stocks/search?keyword=平安")
         if search_result["success"]:
             data_count = (
-                len(search_result["data"].get("data", []))
-                if isinstance(search_result["data"].get("data"), list)
-                else 0
+                len(search_result["data"].get("data", [])) if isinstance(search_result["data"].get("data"), list) else 0
             )
             self.log_test(
                 "股票搜索API",
@@ -269,14 +253,10 @@ class IntegrationTester:
             )
 
         # 测试K线数据API
-        kline_result = self.test_api_endpoint(
-            "GET", "/market/kline?stock_code=000001&period=daily"
-        )
+        kline_result = self.test_api_endpoint("GET", "/market/kline?stock_code=000001&period=daily")
         if kline_result["success"]:
             data_count = (
-                len(kline_result["data"].get("data", []))
-                if isinstance(kline_result["data"].get("data"), list)
-                else 0
+                len(kline_result["data"].get("data", [])) if isinstance(kline_result["data"].get("data"), list) else 0
             )
             self.log_test(
                 "K线数据API",
@@ -333,9 +313,7 @@ class IntegrationTester:
             )
 
         # 测试行业成分股API
-        industry_stocks_result = self.test_api_endpoint(
-            "GET", "/analysis/industry/stocks?industry_code=IND_001"
-        )
+        industry_stocks_result = self.test_api_endpoint("GET", "/analysis/industry/stocks?industry_code=IND_001")
         if industry_stocks_result["success"]:
             data_count = len(industry_stocks_result["data"].get("stocks", []))
             self.log_test(
@@ -374,13 +352,9 @@ class IntegrationTester:
             )
 
         # 测试分时数据API
-        intraday_result = self.test_api_endpoint(
-            "GET", "/data/stocks/intraday?symbol=000001"
-        )
+        intraday_result = self.test_api_endpoint("GET", "/data/stocks/intraday?symbol=000001")
         if intraday_result["success"]:
-            self.log_test(
-                "分时数据API", "PASS", "分时数据正常", intraday_result["response_time"]
-            )
+            self.log_test("分时数据API", "PASS", "分时数据正常", intraday_result["response_time"])
         else:
             self.log_test(
                 "分时数据API",
@@ -390,9 +364,7 @@ class IntegrationTester:
             )
 
         # 测试交易摘要API
-        summary_result = self.test_api_endpoint(
-            "GET", "/data/stocks/000001/trading-summary"
-        )
+        summary_result = self.test_api_endpoint("GET", "/data/stocks/000001/trading-summary")
         if summary_result["success"]:
             self.log_test(
                 "交易摘要API",
@@ -427,9 +399,7 @@ class IntegrationTester:
                 response_time = time.time() - start_time
 
                 if response.status_code == 200:
-                    self.log_test(
-                        f"前端页面 - {name}", "PASS", "页面正常加载", response_time
-                    )
+                    self.log_test(f"前端页面 - {name}", "PASS", "页面正常加载", response_time)
                 else:
                     self.log_test(
                         f"前端页面 - {name}",
@@ -453,9 +423,7 @@ class IntegrationTester:
             data2 = stocks_result2["data"]
 
             # 检查响应结构一致性
-            if data1.get("success") == data2.get("success") and type(
-                data1.get("data")
-            ) == type(data2.get("data")):
+            if data1.get("success") == data2.get("success") and type(data1.get("data")) == type(data2.get("data")):
                 self.log_test("数据一致性", "PASS", "数据结构一致")
             else:
                 self.log_test("数据一致性", "FAIL", "数据结构不一致")

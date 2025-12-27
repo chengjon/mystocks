@@ -43,9 +43,7 @@ def test_frontend_pages():
             if response.status_code == 200:
                 data = response.json()
                 if data.get("success"):
-                    print(
-                        f"✅ {endpoint} - API调用成功，返回{len(data.get('data', []))}条记录"
-                    )
+                    print(f"✅ {endpoint} - API调用成功，返回{len(data.get('data', []))}条记录")
                 else:
                     print(f"❌ {endpoint} - API返回错误: {data}")
             else:

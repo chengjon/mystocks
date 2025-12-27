@@ -117,9 +117,7 @@ class SchemaValidator:
     def __init__(self):
         self.compiled_schemas = {}
 
-    def validate_request_schema(
-        self, request_data: Dict[str, Any], schema: Dict[str, Any]
-    ) -> List[ContractViolation]:
+    def validate_request_schema(self, request_data: Dict[str, Any], schema: Dict[str, Any]) -> List[ContractViolation]:
         """验证请求模式"""
         violations = []
         try:
@@ -157,9 +155,7 @@ class SchemaValidator:
 
         return violations
 
-    def validate_response_schema(
-        self, response_data: Any, schema: Dict[str, Any]
-    ) -> List[ContractViolation]:
+    def validate_response_schema(self, response_data: Any, schema: Dict[str, Any]) -> List[ContractViolation]:
         """验证响应模式"""
         violations = []
         try:
@@ -281,9 +277,7 @@ class RequestValidator:
         self.timeout = timeout
         self.session = httpx.Client(timeout=timeout)
 
-    def validate_endpoint_exists(
-        self, base_url: str, endpoint: str, method: str
-    ) -> List[ContractViolation]:
+    def validate_endpoint_exists(self, base_url: str, endpoint: str, method: str) -> List[ContractViolation]:
         """验证端点是否存在"""
         violations = []
 
@@ -386,9 +380,7 @@ class RequestValidator:
             )
             return None, violations
 
-    def validate_content_type(
-        self, response: requests.Response, expected_content_type: str
-    ) -> List[ContractViolation]:
+    def validate_content_type(self, response: requests.Response, expected_content_type: str) -> List[ContractViolation]:
         """验证内容类型"""
         violations = []
 
@@ -444,16 +436,12 @@ class DeprecationValidator:
     def __init__(self):
         self.deprecation_annotations = {}
 
-    def mark_endpoint_deprecated(
-        self, endpoint: str, method: str, deprecation_info: Dict[str, Any]
-    ):
+    def mark_endpoint_deprecated(self, endpoint: str, method: str, deprecation_info: Dict[str, Any]):
         """标记端点为弃用"""
         key = f"{method.upper()} {endpoint}"
         self.deprecation_annotations[key] = deprecation_info
 
-    def validate_deprecation_usage(
-        self, endpoint: str, method: str
-    ) -> List[ContractViolation]:
+    def validate_deprecation_usage(self, endpoint: str, method: str) -> List[ContractViolation]:
         """验证弃用使用"""
         violations = []
 
@@ -520,9 +508,7 @@ class ContractValidator:
             # 缓存编译后的模式
             self._cache_schemas(spec)
 
-            logger.info(
-                f"成功加载OpenAPI规范: {self.contract_spec.name} v{self.contract_spec.version}"
-            )
+            logger.info(f"成功加载OpenAPI规范: {self.contract_spec.name} v{self.contract_spec.version}")
 
         except Exception as e:
             logger.error(f"加载OpenAPI规范失败: {e}")
@@ -547,9 +533,7 @@ class ContractValidator:
             for method, operation in path_item.items():
                 if method.lower() in ["get", "post", "put", "delete", "patch"]:
                     # 为每个操作生成测试用例
-                    test_cases = self._generate_test_cases_for_operation(
-                        path, method, operation
-                    )
+                    test_cases = self._generate_test_cases_for_operation(path, method, operation)
                     tests.extend(test_cases)
 
         logger.info(f"生成了 {len(tests)} 个契约测试用例")
@@ -567,15 +551,9 @@ class ContractValidator:
             name=f"Test {method.upper()} {path}",
             endpoint=path,
             method=method.upper(),
-            expected_status=operation.get("responses", {})
-            .get("default", {})
-            .get("statusCode", 200),
-            expected_headers=operation.get("responses", {})
-            .get("200", {})
-            .get("headers"),
-            priority="high"
-            if method.upper() in ["POST", "PUT", "DELETE"]
-            else "medium",
+            expected_status=operation.get("responses", {}).get("default", {}).get("statusCode", 200),
+            expected_headers=operation.get("responses", {}).get("200", {}).get("headers"),
+            priority="high" if method.upper() in ["POST", "PUT", "DELETE"] else "medium",
             tags=operation.get("tags", ["default"]),
             metadata={
                 "operation_id": operation.get("operationId"),
@@ -601,9 +579,7 @@ class ContractValidator:
 
         return tests
 
-    def _generate_request_test_data(
-        self, request_body: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_request_test_data(self, request_body: Dict[str, Any]) -> Dict[str, Any]:
         """生成请求测试数据"""
         # 简化实现，实际应该根据schema生成测试数据
         content = request_body.get("content", {})
@@ -635,9 +611,7 @@ class ContractValidator:
 
         return test_data
 
-    def _generate_parameter_tests(
-        self, path: str, method: str, operation: Dict[str, Any]
-    ) -> List[ContractTest]:
+    def _generate_parameter_tests(self, path: str, method: str, operation: Dict[str, Any]) -> List[ContractTest]:
         """生成参数化测试"""
         tests = []
         parameters = operation.get("parameters", [])
@@ -662,9 +636,7 @@ class ContractValidator:
 
         return tests
 
-    def _generate_boundary_tests(
-        self, path: str, method: str, operation: Dict[str, Any]
-    ) -> List[ContractTest]:
+    def _generate_boundary_tests(self, path: str, method: str, operation: Dict[str, Any]) -> List[ContractTest]:
         """生成边界值测试"""
         tests = []
 
@@ -710,13 +682,7 @@ class ContractValidator:
         spec = self.contract_spec.openapi_spec
         coverage_metrics["total_endpoints"] = len(spec.get("paths", {}))
         coverage_metrics["total_operations"] = sum(
-            len(
-                [
-                    m
-                    for m in path.keys()
-                    if m.lower() in ["get", "post", "put", "delete", "patch"]
-                ]
-            )
+            len([m for m in path.keys() if m.lower() in ["get", "post", "put", "delete", "patch"]])
             for path in spec.get("paths", {}).values()
         )
 
@@ -749,9 +715,7 @@ class ContractValidator:
             timestamp=datetime.now(),
         )
 
-    def _run_single_test(
-        self, test: ContractTest, validation_level: ValidationLevel
-    ) -> Dict[str, Any]:
+    def _run_single_test(self, test: ContractTest, validation_level: ValidationLevel) -> Dict[str, Any]:
         """执行单个测试"""
         result = {
             "test_id": test.id,
@@ -776,9 +740,7 @@ class ContractValidator:
 
             if endpoint_violations:
                 result["end_time"] = datetime.now()
-                result["duration"] = (
-                    result["end_time"] - result["start_time"]
-                ).total_seconds()
+                result["duration"] = (result["end_time"] - result["start_time"]).total_seconds()
                 return result
 
             # 构建URL
@@ -797,21 +759,15 @@ class ContractValidator:
             if response is None:
                 result["error"] = "Request failed"
                 result["end_time"] = datetime.now()
-                result["duration"] = (
-                    result["end_time"] - result["start_time"]
-                ).total_seconds()
+                result["duration"] = (result["end_time"] - result["start_time"]).total_seconds()
                 return result
 
             # 验证响应
-            response_violations = self._validate_response(
-                response, test, validation_level
-            )
+            response_violations = self._validate_response(response, test, validation_level)
             result["violations"].extend(response_violations)
 
             # 检查是否通过
-            has_critical_violations = any(
-                v.severity == "error" for v in result["violations"]
-            )
+            has_critical_violations = any(v.severity == "error" for v in result["violations"])
             result["passed"] = not has_critical_violations
             result["executed"] = True
 
@@ -821,9 +777,7 @@ class ContractValidator:
 
         finally:
             result["end_time"] = datetime.now()
-            result["duration"] = (
-                result["end_time"] - result["start_time"]
-            ).total_seconds()
+            result["duration"] = (result["end_time"] - result["start_time"]).total_seconds()
 
         return result
 
@@ -837,22 +791,16 @@ class ContractValidator:
         violations = []
 
         # 验证状态码
-        status_violations = self.schema_validator.validate_response_status(
-            response.status_code, test.expected_status
-        )
+        status_violations = self.schema_validator.validate_response_status(response.status_code, test.expected_status)
         violations.extend(status_violations)
 
         # 验证响应头
         if test.expected_headers:
-            header_violations = self.schema_validator.validate_headers(
-                response.headers, test.expected_headers
-            )
+            header_violations = self.schema_validator.validate_headers(response.headers, test.expected_headers)
             violations.extend(header_violations)
 
         # 验证内容类型
-        content_type_violations = self.request_validator.validate_content_type(
-            response, "application/json"
-        )
+        content_type_violations = self.request_validator.validate_content_type(response, "application/json")
         violations.extend(content_type_violations)
 
         # 验证模式（如果定义了）
@@ -867,13 +815,8 @@ class ContractValidator:
             if "responses" in operation:
                 for status_code, response_spec in operation["responses"].items():
                     if str(response.status_code) == str(status_code):
-                        if (
-                            "content" in response_spec
-                            and "application/json" in response_spec["content"]
-                        ):
-                            schema = response_spec["content"]["application/json"].get(
-                                "schema", {}
-                            )
+                        if "content" in response_spec and "application/json" in response_spec["content"]:
+                            schema = response_spec["content"]["application/json"].get("schema", {})
                             if schema:
                                 try:
                                     validate(instance=response.json(), schema=schema)
@@ -923,10 +866,9 @@ class ContractValidator:
             "total_violations": len(violations),
             "violation_counts": dict(violation_counts),
             "severity_counts": dict(severity_counts),
-            "avg_test_duration": sum(r.get("duration", 0) for r in test_results)
-            / executed_tests
-            if executed_tests > 0
-            else 0,
+            "avg_test_duration": (
+                sum(r.get("duration", 0) for r in test_results) / executed_tests if executed_tests > 0 else 0
+            ),
         }
 
     def generate_validation_report(
@@ -948,9 +890,7 @@ class ContractValidator:
 
         logger.info(f"验证报告已生成: {output_path}")
 
-    def _generate_html_report(
-        self, validation_result: ValidationResult, output_path: Path
-    ):
+    def _generate_html_report(self, validation_result: ValidationResult, output_path: Path):
         """生成HTML报告"""
         html_template = """
 <!DOCTYPE html>
@@ -1056,9 +996,7 @@ class ContractValidator:
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-    def _generate_json_report(
-        self, validation_result: ValidationResult, output_path: Path
-    ):
+    def _generate_json_report(self, validation_result: ValidationResult, output_path: Path):
         """生成JSON报告"""
         report = {
             "metadata": {
@@ -1087,9 +1025,7 @@ class ContractValidator:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
-    def _generate_markdown_report(
-        self, validation_result: ValidationResult, output_path: Path
-    ):
+    def _generate_markdown_report(self, validation_result: ValidationResult, output_path: Path):
         """生成Markdown报告"""
         md_content = f"""# API契约验证报告
 
@@ -1123,9 +1059,7 @@ class ContractValidator:
 ### 按类型统计
 """
 
-        for violation_type, count in validation_result.summary[
-            "violation_counts"
-        ].items():
+        for violation_type, count in validation_result.summary["violation_counts"].items():
             md_content += f"- {violation_type}: {count}\\n"
 
         md_content += "\\n### 按严重程度统计\\n"
@@ -1229,9 +1163,7 @@ def demo_contract_validator():
 
     # 运行验证
     print("开始运行契约验证...")
-    validation_result = validator.run_contract_validation(
-        tests=tests, validation_level=ValidationLevel.STRICT
-    )
+    validation_result = validator.run_contract_validation(tests=tests, validation_level=ValidationLevel.STRICT)
 
     # 显示结果
     summary = validation_result.summary
@@ -1255,15 +1187,9 @@ def demo_contract_validator():
         print(f"  - {violation.violation_type.value}: {violation.message}")
 
     # 生成报告
-    validator.generate_validation_report(
-        validation_result, "contract_validation_report.html", "html"
-    )
-    validator.generate_validation_report(
-        validation_result, "contract_validation_report.json", "json"
-    )
-    validator.generate_validation_report(
-        validation_result, "contract_validation_report.md", "markdown"
-    )
+    validator.generate_validation_report(validation_result, "contract_validation_report.html", "html")
+    validator.generate_validation_report(validation_result, "contract_validation_report.json", "json")
+    validator.generate_validation_report(validation_result, "contract_validation_report.md", "markdown")
 
     print("\\n📄 报告已生成:")
     print("  - contract_validation_report.html")

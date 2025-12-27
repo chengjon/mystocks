@@ -13,14 +13,14 @@ Phase: 4.1 - Comprehensive Testing
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, AsyncMock, patch
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
 
 
 @pytest.fixture
 def client():
     """提供测试客户端"""
     from app.main import app
+
     return TestClient(app)
 
 
@@ -39,18 +39,10 @@ class TestUserWorkflowLoginSearchWatchlist:
         4. 验证自选列表包含该股票
         """
         # 步骤1: 模拟用户登录
-        mock_user.return_value = Mock(
-            id="test_user_001",
-            username="testuser",
-            email="test@example.com",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_001", username="testuser", email="test@example.com", is_active=True)
 
         # 登录请求
-        login_response = client.post(
-            "/api/v1/auth/login",
-            json={"username": "testuser", "password": "testpass"}
-        )
+        login_response = client.post("/api/v1/auth/login", json={"username": "testuser", "password": "testpass"})
 
         # 验证登录成功（统一响应格式）
         assert login_response.status_code in [200, 201]
@@ -71,12 +63,10 @@ class TestUserWorkflowLoginSearchWatchlist:
         # 步骤3: 添加到自选列表
         watchlist_response = client.post(
             "/api/watchlist/add",
-            json={
-                "symbol": "600519",
-                "name": "贵州茅台",
-                "notes": "长期关注"
+            json={"symbol": "600519", "name": "贵州茅台", "notes": "长期关注"},
+            headers={
+                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"
             },
-            headers={"Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"}
         )
 
         # 验证添加成功
@@ -87,7 +77,9 @@ class TestUserWorkflowLoginSearchWatchlist:
         # 步骤4: 验证自选列表包含该股票
         my_watchlist_response = client.get(
             "/api/watchlist/my",
-            headers={"Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"}
+            headers={
+                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"
+            },
         )
 
         assert my_watchlist_response.status_code == 200
@@ -99,15 +91,10 @@ class TestUserWorkflowLoginSearchWatchlist:
         symbols = [item.get("symbol") for item in watchlist_data["data"]]
         assert "600519" in symbols
 
-
     @patch("app.api.auth.get_current_user")
     def test_search_stock_with_pagination(self, mock_user, client):
         """测试股票搜索分页功能"""
-        mock_user.return_value = Mock(
-            id="test_user_002",
-            username="testuser2",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_002", username="testuser2", is_active=True)
 
         # 第一页
         page1_response = client.get("/api/market/stocks/search?query=600&page=1&size=10")
@@ -120,28 +107,17 @@ class TestUserWorkflowLoginSearchWatchlist:
             assert page1_data["data"]["pagination"]["page"] == 1
             assert page1_data["data"]["pagination"]["size"] == 10
 
-
     @patch("app.api.auth.get_current_user")
     def test_add_duplicate_stock_to_watchlist(self, mock_user, client):
         """测试添加重复股票到自选列表"""
-        mock_user.return_value = Mock(
-            id="test_user_003",
-            username="testuser3",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_003", username="testuser3", is_active=True)
 
         # 第一次添加
-        first_add = client.post(
-            "/api/watchlist/add",
-            json={"symbol": "000858", "name": "五粮液"}
-        )
+        first_add = client.post("/api/watchlist/add", json={"symbol": "000858", "name": "五粮液"})
         assert first_add.status_code in [200, 201]
 
         # 第二次添加相同股票
-        second_add = client.post(
-            "/api/watchlist/add",
-            json={"symbol": "000858", "name": "五粮液"}
-        )
+        second_add = client.post("/api/watchlist/add", json={"symbol": "000858", "name": "五粮液"})
 
         # 应该返回错误或成功（取决于业务逻辑）
         # 这里验证响应格式统一
@@ -167,11 +143,7 @@ class TestUserWorkflowStrategyBacktest:
         4. 查看回测结果
         5. 分析性能指标
         """
-        mock_user.return_value = Mock(
-            id="test_user_004",
-            username="quantuser",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_004", username="quantuser", is_active=True)
 
         # Mock回测结果
         mock_backtest.return_value = {
@@ -182,8 +154,8 @@ class TestUserWorkflowStrategyBacktest:
                 "sharpe_ratio": 1.8,
                 "max_drawdown": -12.3,
                 "win_rate": 0.65,
-                "trades_count": 150
-            }
+                "trades_count": 150,
+            },
         }
 
         # 步骤1-2: 配置并提交策略
@@ -193,16 +165,10 @@ class TestUserWorkflowStrategyBacktest:
             "symbols": ["600519", "000858"],
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "parameters": {
-                "volume_threshold": 1.5,
-                "holding_period": 5
-            }
+            "parameters": {"volume_threshold": 1.5, "holding_period": 5},
         }
 
-        submit_response = client.post(
-            "/api/strategy/backtest",
-            json=strategy_config
-        )
+        submit_response = client.post("/api/strategy/backtest", json=strategy_config)
 
         # 验证提交成功
         assert submit_response.status_code in [200, 201, 202]  # 202=Accepted
@@ -235,15 +201,10 @@ class TestUserWorkflowStrategyBacktest:
         for key in expected_keys:
             assert key in results or key in results.get("performance_metrics", {})
 
-
     @patch("app.api.auth.get_current_user")
     def test_strategy_validation_invalid_parameters(self, mock_user, client):
         """测试策略参数验证"""
-        mock_user.return_value = Mock(
-            id="test_user_005",
-            username="testuser5",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_005", username="testuser5", is_active=True)
 
         # 提交无效参数
         invalid_config = {
@@ -252,10 +213,7 @@ class TestUserWorkflowStrategyBacktest:
             "start_date": "2024-13-01",  # 无效日期
         }
 
-        response = client.post(
-            "/api/strategy/backtest",
-            json=invalid_config
-        )
+        response = client.post("/api/strategy/backtest", json=invalid_config)
 
         # 应该返回验证错误
         assert response.status_code in [400, 422]
@@ -264,15 +222,10 @@ class TestUserWorkflowStrategyBacktest:
         assert data["code"] in [400, 422]
         assert "message" in data
 
-
     @patch("app.api.auth.get_current_user")
     def test_multiple_strategies_comparison(self, mock_user, client):
         """测试多策略对比"""
-        mock_user.return_value = Mock(
-            id="test_user_006",
-            username="analyst",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_006", username="analyst", is_active=True)
 
         # 提交多个策略
         strategies = [
@@ -284,18 +237,14 @@ class TestUserWorkflowStrategyBacktest:
         backtest_ids = []
         for strategy in strategies:
             response = client.post(
-                "/api/strategy/backtest",
-                json={**strategy, "start_date": "2024-01-01", "end_date": "2024-12-31"}
+                "/api/strategy/backtest", json={**strategy, "start_date": "2024-01-01", "end_date": "2024-12-31"}
             )
             if response.status_code in [200, 201]:
                 backtest_ids.append(response.json()["data"].get("backtest_id"))
 
         # 对比结果（如果有成功提交的策略）
         if backtest_ids:
-            comparison_response = client.post(
-                "/api/strategy/compare",
-                json={"backtest_ids": backtest_ids}
-            )
+            comparison_response = client.post("/api/strategy/compare", json={"backtest_ids": backtest_ids})
 
             # 验证对比结果
             assert comparison_response.status_code == 200
@@ -321,11 +270,7 @@ class TestUserWorkflowOrderPlacement:
         4. 验证持仓更新
         5. 查询交易历史
         """
-        mock_user.return_value = Mock(
-            id="test_user_007",
-            username="trader",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_007", username="trader", is_active=True)
 
         # Mock账户信息
         mock_account.return_value = {
@@ -333,7 +278,7 @@ class TestUserWorkflowOrderPlacement:
             "cash": 100000.0,
             "market_value": 50000.0,
             "total_asset": 150000.0,
-            "buying_power": 100000.0
+            "buying_power": 100000.0,
         }
 
         # Mock下单响应
@@ -341,7 +286,7 @@ class TestUserWorkflowOrderPlacement:
             "order_id": "order_20251225_001",
             "status": "submitted",
             "price": 1850.0,
-            "quantity": 100
+            "quantity": 100,
         }
 
         # 步骤1: 查询账户信息
@@ -353,18 +298,9 @@ class TestUserWorkflowOrderPlacement:
         assert account_data["data"]["buying_power"] > 0
 
         # 步骤2: 下单
-        order_request = {
-            "symbol": "600519",
-            "side": "buy",
-            "type": "limit",
-            "quantity": 100,
-            "price": 1850.0
-        }
+        order_request = {"symbol": "600519", "side": "buy", "type": "limit", "quantity": 100, "price": 1850.0}
 
-        order_response = client.post(
-            "/api/trade/orders",
-            json=order_request
-        )
+        order_response = client.post("/api/trade/orders", json=order_request)
 
         # 验证下单成功
         assert order_response.status_code in [200, 201]
@@ -407,15 +343,10 @@ class TestUserWorkflowOrderPlacement:
         assert "data" in history_data
         assert isinstance(history_data["data"], list)
 
-
     @patch("app.api.auth.get_current_user")
     def test_order_validation_insufficient_funds(self, mock_user, client):
         """测试资金不足验证"""
-        mock_user.return_value = Mock(
-            id="test_user_008",
-            username="poor_trader",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_008", username="poor_trader", is_active=True)
 
         # 尝试下单超过购买力
         large_order = {
@@ -423,7 +354,7 @@ class TestUserWorkflowOrderPlacement:
             "side": "buy",
             "type": "limit",
             "quantity": 100000,  # 超大数量
-            "price": 1850.0
+            "price": 1850.0,
         }
 
         response = client.post("/api/trade/orders", json=large_order)
@@ -434,15 +365,10 @@ class TestUserWorkflowOrderPlacement:
         assert data["success"] is False
         assert "insufficient" in data.get("message", "").lower() or "资金" in data.get("message", "")
 
-
     @patch("app.api.auth.get_current_user")
     def test_order_cancellation(self, mock_user, client):
         """测试订单取消"""
-        mock_user.return_value = Mock(
-            id="test_user_009",
-            username="trader2",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_009", username="trader2", is_active=True)
 
         # 假设已经有一个订单
         order_id = "order_cancel_test_001"
@@ -462,11 +388,7 @@ class TestUserWorkflowErrorRecovery:
     @patch("app.api.auth.get_current_user")
     def test_network_timeout_retry(self, mock_user, client):
         """测试网络超时重试机制"""
-        mock_user.return_value = Mock(
-            id="test_user_010",
-            username="network_user",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_010", username="network_user", is_active=True)
 
         # 模拟网络超时场景
         # 实际E2E测试可能需要使用不稳定网络模拟器
@@ -482,15 +404,11 @@ class TestUserWorkflowErrorRecovery:
             assert "success" in data
             assert "code" in data
 
-
     @patch("app.api.auth.get_current_user")
     def test_session_expiry_handling(self, mock_user, client):
         """测试会话过期处理"""
         # 第一次调用返回用户，第二次调用模拟会话过期
-        mock_user.side_effect = [
-            Mock(id="test_user_011", username="session_user"),
-            None  # 模拟会话过期
-        ]
+        mock_user.side_effect = [Mock(id="test_user_011", username="session_user"), None]  # 模拟会话过期
 
         # 第一次请求成功
         response1 = client.get("/api/watchlist/my")
@@ -510,20 +428,12 @@ class TestUserWorkflowPerformance:
     @patch("app.api.auth.get_current_user")
     def test_response_time_tracking(self, mock_user, client):
         """测试响应时间追踪"""
-        mock_user.return_value = Mock(
-            id="test_user_012",
-            username="perf_user",
-            is_active=True
-        )
+        mock_user.return_value = Mock(id="test_user_012", username="perf_user", is_active=True)
 
         import time
 
         # 测试多个端点的响应时间
-        endpoints = [
-            "/api/market/overview",
-            "/api/market/health",
-            "/health"
-        ]
+        endpoints = ["/api/market/overview", "/api/market/health", "/health"]
 
         for endpoint in endpoints:
             start_time = time.time()

@@ -40,9 +40,7 @@ class StockDataService(BaseDatabaseService):
             # 默认参数
             params = params or {}
             exchange = params.get("exchange")
-            limit, offset = self._validate_pagination_params(
-                params.get("limit"), params.get("offset")
-            )
+            limit, offset = self._validate_pagination_params(params.get("limit"), params.get("offset"))
 
             # 构建查询条件
             filters = {}
@@ -126,14 +124,10 @@ class StockDataService(BaseDatabaseService):
                 raise ValueError("股票代码不能为空")
 
             # 查询股票详细信息
-            df = self._execute_query(
-                table_name="symbols_info", filters={"symbol": stock_code}
-            )
+            df = self._execute_query(table_name="symbols_info", filters={"symbol": stock_code})
 
             if df.empty:
-                return self._handle_database_error(
-                    ValueError(f"未找到股票 {stock_code} 的信息"), "获取股票详情"
-                )
+                return self._handle_database_error(ValueError(f"未找到股票 {stock_code} 的信息"), "获取股票详情")
 
             row = df.iloc[0]
             result = {
@@ -167,9 +161,7 @@ class StockDataService(BaseDatabaseService):
                 "per_bv": row.get("per_bv", 0),
             }
 
-            return self._build_success_response(
-                data=result, operation="get_stock_detail"
-            )
+            return self._build_success_response(data=result, operation="get_stock_detail")
 
         except Exception as e:
             return self._handle_database_error(e, "获取股票详情")
@@ -188,10 +180,8 @@ class StockDataService(BaseDatabaseService):
                 raise ValueError("股票代码列表不能为空")
 
             # 查询实时行情数据
-            symbols_str = "','".join(symbols)
-            df = self._execute_query(
-                table_name="realtime_quotes", filters={"symbol": symbols}
-            )
+            "','".join(symbols)
+            df = self._execute_query(table_name="realtime_quotes", filters={"symbol": symbols})
 
             result = []
             for _, row in df.iterrows():
@@ -211,9 +201,7 @@ class StockDataService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_realtime_quotes"
-            )
+            return self._build_success_response(data=result, operation="get_realtime_quotes")
 
         except Exception as e:
             return self._handle_database_error(e, "获取实时行情")
@@ -237,9 +225,7 @@ class StockDataService(BaseDatabaseService):
             symbol = params.get("symbol")
             start_date = params.get("start_date")
             end_date = params.get("end_date")
-            limit, offset = self._validate_pagination_params(
-                params.get("limit", 100), params.get("offset")
-            )
+            limit, offset = self._validate_pagination_params(params.get("limit", 100), params.get("offset"))
 
             if not symbol:
                 raise ValueError("股票代码不能为空")
@@ -318,9 +304,7 @@ class StockDataService(BaseDatabaseService):
                 symbols = symbols[:100]
 
             # 查询股票指标
-            df = self._execute_query(
-                table_name="stock_indicators", filters={"symbol": symbols}
-            )
+            df = self._execute_query(table_name="stock_indicators", filters={"symbol": symbols})
 
             # 按股票代码分组数据
             result = {}
@@ -338,9 +322,7 @@ class StockDataService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_batch_indicators"
-            )
+            return self._build_success_response(data=result, operation="get_batch_indicators")
 
         except Exception as e:
             return self._handle_database_error(e, "批量获取股票指标")

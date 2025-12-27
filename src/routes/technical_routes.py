@@ -604,9 +604,7 @@ async def get_pattern_recognition(stock_code: str):
 
                 # Add pattern recognition specific data
                 if result:
-                    result["patterns"] = [
-                        "未实现形态识别功能"
-                    ]  # Placeholder for actual pattern recognition
+                    result["patterns"] = ["未实现形态识别功能"]  # Placeholder for actual pattern recognition
 
                 return {
                     "success": True,
@@ -779,15 +777,11 @@ async def get_support_resistance_levels(stock_code: str):
 
                 # 调用真实数据服务，参数与Mock接口一致
                 # For support/resistance levels, we'll use technical indicators as a proxy
-                tech_indicators = db_service.get_technical_indicators(
-                    {"symbol": stock_code}
-                )
+                tech_indicators = db_service.get_technical_indicators({"symbol": stock_code})
 
                 # Calculate support/resistance levels from technical indicators
                 support_resistance_data = {
-                    "current_price": tech_indicators.get("trend", {}).get("ma5", 100.0)
-                    if tech_indicators
-                    else 100.0,
+                    "current_price": tech_indicators.get("trend", {}).get("ma5", 100.0) if tech_indicators else 100.0,
                     "support_levels": [95.0, 98.0, 101.0],  # Placeholder values
                     "resistance_levels": [105.0, 108.0, 112.0],  # Placeholder values
                     "pivot_point": 100.0,  # Placeholder value

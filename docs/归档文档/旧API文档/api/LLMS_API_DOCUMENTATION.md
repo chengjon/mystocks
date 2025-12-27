@@ -476,7 +476,7 @@ Authorization: Bearer {{auth_token}}
       },
       {
         "type": "rsi_oversold",
-        "signal": "buy", 
+        "signal": "buy",
         "strength": 0.7
       }
     ]
@@ -526,7 +526,7 @@ Authorization: Bearer {{auth_token}}
     },
     {
       "source_type": "tushare",
-      "status": "healthy", 
+      "status": "healthy",
       "enabled": true,
       "priority": 2,
       "success_rate": 95.2,
@@ -1056,18 +1056,18 @@ try {
       'X-CSRF-Token': csrfToken
     }
   });
-  
+
   const data = await response.json();
-  
+
   if (!data.success) {
     console.error('API Error:', data.error);
     // 处理业务逻辑错误
     return;
   }
-  
+
   // 处理成功响应
   console.log('Market data:', data.data);
-  
+
 } catch (error) {
   console.error('Network Error:', error);
   // 处理网络错误
@@ -1156,7 +1156,7 @@ class MyStocksAPI {
 
     const loginData = await loginResponse.json();
     this.token = loginData.data.access_token;
-    
+
     return loginData;
   }
 
@@ -1209,7 +1209,7 @@ class MyStocksAPI:
 
         login_data = login_response.json()
         self.token = login_data['data']['access_token']
-        
+
         return login_data
 
     def get_realtime_data(self, symbol):

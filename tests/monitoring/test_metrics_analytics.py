@@ -58,9 +58,7 @@ class MetricCollector:
 
     def __init__(self, max_points_per_metric: int = 10000):
         self.max_points_per_metric = max_points_per_metric
-        self.time_series: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=max_points_per_metric)
-        )
+        self.time_series: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_points_per_metric))
         self.counter_values: Dict[str, float] = defaultdict(float)
         self.histogram_buckets: Dict[str, List[float]] = defaultdict(list)
         self.definitions: Dict[str, MetricDefinition] = {}
@@ -97,9 +95,7 @@ class MetricCollector:
                 name=name, description=f"Gauge metric: {name}", type=MetricType.GAUGE
             )
 
-        self.time_series[name].append(
-            TimeSeriesPoint(timestamp=datetime.now(), value=value, tags=tags or {})
-        )
+        self.time_series[name].append(TimeSeriesPoint(timestamp=datetime.now(), value=value, tags=tags or {}))
 
     def record_histogram(self, name: str, value: float, tags: Dict[str, str] = None):
         """记录直方图指标"""
@@ -118,9 +114,7 @@ class MetricCollector:
             self.histogram_buckets[name] = self.histogram_buckets[name][-max_buckets:]
 
         # 同时记录时间序列
-        self.time_series[name].append(
-            TimeSeriesPoint(timestamp=datetime.now(), value=value, tags=tags or {})
-        )
+        self.time_series[name].append(TimeSeriesPoint(timestamp=datetime.now(), value=value, tags=tags or {}))
 
     def get_metric_data(
         self,
@@ -164,9 +158,7 @@ class MetricCollector:
             "std": statistics.stdev(values) if len(values) > 1 else 0,
         }
 
-    def get_aggregated_value(
-        self, name: str, aggregation: str = "avg", window_minutes: int = 5
-    ) -> Optional[float]:
+    def get_aggregated_value(self, name: str, aggregation: str = "avg", window_minutes: int = 5) -> Optional[float]:
         """获取聚合值"""
         if name not in self.time_series:
             return None
@@ -250,14 +242,10 @@ class TestMetricsAnalyzer:
             "slope": slope,
             "start_value": values[0] if values else 0,
             "end_value": values[-1] if values else 0,
-            "change_percent": ((values[-1] - values[0]) / values[0] * 100)
-            if values and values[0] != 0
-            else 0,
+            "change_percent": ((values[-1] - values[0]) / values[0] * 100) if values and values[0] != 0 else 0,
         }
 
-    def detect_anomalies(
-        self, name: str, window_minutes: int = 60, threshold_std: float = 3.0
-    ) -> List[Dict[str, Any]]:
+    def detect_anomalies(self, name: str, window_minutes: int = 60, threshold_std: float = 3.0) -> List[Dict[str, Any]]:
         """检测异常值"""
         end_time = datetime.now()
         start_time = end_time - timedelta(minutes=window_minutes)
@@ -291,9 +279,7 @@ class TestMetricsAnalyzer:
     def calculate_performance_metrics(self, test_name: str) -> Dict[str, Any]:
         """计算性能指标"""
         # 获取执行时间数据
-        execution_times = self.collector.get_metric_data(
-            f"test_execution_time_{test_name}"
-        )
+        execution_times = self.collector.get_metric_data(f"test_execution_time_{test_name}")
 
         if not execution_times:
             return {}
@@ -327,16 +313,12 @@ class TestMetricsAnalyzer:
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=1)  # 最近1小时
 
-        executions = self.collector.get_metric_data(
-            f"test_result_{test_name}", start_time, end_time
-        )
+        executions = self.collector.get_metric_data(f"test_result_{test_name}", start_time, end_time)
         total_minutes = 60.0
 
         return len(executions) / total_minutes
 
-    def generate_test_report(
-        self, test_names: List[str], output_path: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def generate_test_report(self, test_names: List[str], output_path: Optional[str] = None) -> Dict[str, Any]:
         """生成测试报告"""
         report = {"generated_at": datetime.now().isoformat(), "tests": {}}
 
@@ -401,23 +383,14 @@ class TestVisualization:
     def __init__(self, analyzer: TestMetricsAnalyzer):
         self.analyzer = analyzer
 
-    def create_execution_time_chart(
-        self, test_name: str, output_path: Optional[str] = None
-    ) -> str:
+    def create_execution_time_chart(self, test_name: str, output_path: Optional[str] = None) -> str:
         """创建执行时间图表"""
-        points = self.analyzer.collector.get_metric_data(
-            f"test_execution_time_{test_name}"
-        )
+        points = self.analyzer.collector.get_metric_data(f"test_execution_time_{test_name}")
 
         if not points:
             return ""
 
-        df = pd.DataFrame(
-            [
-                {"timestamp": p.timestamp, "value": p.value, "test_name": test_name}
-                for p in points
-            ]
-        )
+        df = pd.DataFrame([{"timestamp": p.timestamp, "value": p.value, "test_name": test_name} for p in points])
 
         fig = px.line(
             df,
@@ -447,9 +420,7 @@ class TestVisualization:
 
         return fig.to_html()
 
-    def create_performance_dashboard(
-        self, test_names: List[str], output_path: Optional[str] = None
-    ) -> str:
+    def create_performance_dashboard(self, test_names: List[str], output_path: Optional[str] = None) -> str:
         """创建性能仪表板"""
         fig = make_subplots(
             rows=2,
@@ -465,16 +436,9 @@ class TestVisualization:
 
         for i, test_name in enumerate(test_names[:5]):  # 最多显示5个测试
             # 执行时间趋势
-            points = self.analyzer.collector.get_metric_data(
-                f"test_execution_time_{test_name}"
-            )
+            points = self.analyzer.collector.get_metric_data(f"test_execution_time_{test_name}")
             if points:
-                df = pd.DataFrame(
-                    [
-                        {"timestamp": p.timestamp, "value": p.value}
-                        for p in points[-100:]  # 最近100个点
-                    ]
-                )
+                df = pd.DataFrame([{"timestamp": p.timestamp, "value": p.value} for p in points[-100:]])  # 最近100个点
 
                 fig.add_trace(
                     go.Scatter(
@@ -541,9 +505,7 @@ class TestVisualization:
 
         return fig.to_html()
 
-    def create_anomaly_report(
-        self, test_name: str, output_path: Optional[str] = None
-    ) -> str:
+    def create_anomaly_report(self, test_name: str, output_path: Optional[str] = None) -> str:
         """创建异常报告"""
         anomalies = self.analyzer.detect_anomalies(f"test_execution_time_{test_name}")
 
@@ -560,13 +522,9 @@ class TestVisualization:
         )
 
         # 时间序列图，标记异常点
-        all_points = self.analyzer.collector.get_metric_data(
-            f"test_execution_time_{test_name}"
-        )
+        all_points = self.analyzer.collector.get_metric_data(f"test_execution_time_{test_name}")
         if all_points:
-            df_all = pd.DataFrame(
-                [{"timestamp": p.timestamp, "value": p.value} for p in all_points]
-            )
+            df_all = pd.DataFrame([{"timestamp": p.timestamp, "value": p.value} for p in all_points])
 
             fig.add_trace(
                 go.Scatter(
@@ -600,9 +558,7 @@ class TestVisualization:
                 col=1,
             )
 
-        fig.update_layout(
-            height=600, showlegend=True, title_text=f"{test_name} 异常检测报告"
-        )
+        fig.update_layout(height=600, showlegend=True, title_text=f"{test_name} 异常检测报告")
 
         if output_path:
             fig.write_html(output_path)
@@ -663,9 +619,7 @@ def demo_metrics_analytics():
     print(f"🚨 检测到 {len(anomalies)} 个异常")
 
     # 生成报告
-    report = analyzer.generate_test_report(
-        ["test_1", "test_2"], "test_metrics_report.json"
-    )
+    report = analyzer.generate_test_report(["test_1", "test_2"], "test_metrics_report.json")
     print(f"\n📄 已生成测试报告: {report['generated_at']}")
 
     # 创建可视化
@@ -676,9 +630,7 @@ def demo_metrics_analytics():
     print("📊 已创建执行时间图表: chart_html")
 
     # 创建性能仪表板
-    dashboard_html = viz.create_performance_dashboard(
-        ["test_1", "test_2", "test_3"], "performance_dashboard.html"
-    )
+    dashboard_html = viz.create_performance_dashboard(["test_1", "test_2", "test_3"], "performance_dashboard.html")
     print("📈 已创建性能仪表板: dashboard_html")
 
     # 创建异常报告

@@ -6,7 +6,6 @@
 """
 
 import sys
-import os
 import subprocess
 import json
 from pathlib import Path
@@ -93,7 +92,7 @@ class CoverageChecker:
                 with open(coverage_path, "r") as f:
                     data = json.load(f)
                     return data["totals"]["percent_covered"]
-        except Exception as e:
+        except Exception:
             # 尝试其他可能的文件位置
             alternative_paths = [
                 project_root / "coverage.json",

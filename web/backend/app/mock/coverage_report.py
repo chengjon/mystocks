@@ -58,9 +58,7 @@ def scan_api_files() -> Dict[str, List[str]]:
 
 def scan_frontend_api_calls() -> Set[str]:
     """扫描前端Vue文件中的API调用"""
-    frontend_dir = (
-        Path(__file__).parent.parent.parent.parent / "web" / "frontend" / "src"
-    )
+    frontend_dir = Path(__file__).parent.parent.parent.parent / "web" / "frontend" / "src"
     api_calls = set()
 
     for vue_file in frontend_dir.rglob("*.vue"):
@@ -113,9 +111,7 @@ def check_mock_support() -> Dict[str, bool]:
                 "mock_manager",
             ]
 
-            has_mock_support = any(
-                indicator in content for indicator in mock_indicators
-            )
+            has_mock_support = any(indicator in content for indicator in mock_indicators)
             mock_support[py_file.stem] = has_mock_support
 
         except Exception as e:
@@ -164,9 +160,7 @@ def generate_coverage_report():
             supported_count += 1
 
     print()
-    print(
-        f"📈 Mock数据覆盖率: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)"
-    )
+    print(f"📈 Mock数据覆盖率: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
     print()
 
     # 列出缺失Mock数据的API
@@ -248,9 +242,7 @@ def generate_coverage_report():
     print()
     print("=" * 80)
     print("🎯 覆盖率目标: 100% Mock数据支持")
-    print(
-        f"📊 当前进度: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)"
-    )
+    print(f"📊 当前进度: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
 
     return {
         "total_apis": total_count,

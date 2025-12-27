@@ -283,9 +283,7 @@ class SubscriptionStorage:
 
         try:
             cursor = self.connection.cursor()
-            cursor.execute(
-                "DELETE FROM subscriptions WHERE id = %s", (subscription_id,)
-            )
+            cursor.execute("DELETE FROM subscriptions WHERE id = %s", (subscription_id,))
             self.connection.commit()
             self.subscriptions_deleted += 1
             logger.info("✅ Subscription deleted", subscription_id=subscription_id)
@@ -304,9 +302,7 @@ class SubscriptionStorage:
 
         try:
             cursor = self.connection.cursor()
-            cursor.execute(
-                "SELECT * FROM subscriptions WHERE id = %s", (subscription_id,)
-            )
+            cursor.execute("SELECT * FROM subscriptions WHERE id = %s", (subscription_id,))
             row = cursor.fetchone()
 
             if not row:

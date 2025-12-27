@@ -100,9 +100,7 @@ class ServiceFactory(Generic[T]):
     @staticmethod
     def reset_all() -> None:
         """Reset all service instances (useful for testing)"""
-        logger.info(
-            f"🔄 Resetting all {len(ServiceFactory._instances)} service instances"
-        )
+        logger.info(f"🔄 Resetting all {len(ServiceFactory._instances)} service instances")
         ServiceFactory._instances.clear()
 
     @staticmethod

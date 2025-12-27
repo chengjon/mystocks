@@ -37,9 +37,7 @@ class RecoveryManager:
         self.tdengine_backup_dir.mkdir(parents=True, exist_ok=True)
         self.postgresql_backup_dir.mkdir(parents=True, exist_ok=True)
 
-    def restore_backup(
-        self, backup_file: Path, recovery_id: str = None
-    ) -> Tuple[bool, str]:
+    def restore_backup(self, backup_file: Path, recovery_id: str = None) -> Tuple[bool, str]:
         """
         恢复备份
 
@@ -81,9 +79,7 @@ class RecoveryManager:
                         # 规范化路径
                         normalized_path = os.path.normpath(path)
                         # 检查是否包含"../"或"..\"
-                        if ".." in normalized_path.split(
-                            os.sep
-                        ) or ".." in normalized_path.split("/"):
+                        if ".." in normalized_path.split(os.sep) or ".." in normalized_path.split("/"):
                             return False
                         # 检查规范化后的路径是否以基础路径开头
                         full_path = os.path.join(base_path, normalized_path)
@@ -117,16 +113,12 @@ class RecoveryManager:
                         # 恢复到PostgreSQL
                         success = self._restore_to_postgresql(parquet_file, table_name)
                     else:
-                        self._log_recovery(
-                            log_file, f"Unsupported database type: {db_type}"
-                        )
+                        self._log_recovery(log_file, f"Unsupported database type: {db_type}")
                         continue
 
                     if success:
                         restored_count += 1
-                        self._log_recovery(
-                            log_file, f"Successfully restored: {table_name}"
-                        )
+                        self._log_recovery(log_file, f"Successfully restored: {table_name}")
                     else:
                         self._log_recovery(log_file, f"Failed to restore: {table_name}")
 

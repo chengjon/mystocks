@@ -114,8 +114,7 @@ class GPUPerformanceBenchmark:
             tracemalloc.stop()
 
             self.logger.info(
-                f"内存使用 - 初始: {initial_memory:.2f}MB, "
-                f"最终: {final_memory:.2f}MB, 峰值: {peak_memory:.2f}MB"
+                f"内存使用 - 初始: {initial_memory:.2f}MB, " f"最终: {final_memory:.2f}MB, 峰值: {peak_memory:.2f}MB"
             )
 
     def _generate_test_data(self, size: int) -> pd.DataFrame:
@@ -138,12 +137,8 @@ class GPUPerformanceBenchmark:
         )
 
         # 确保high >= low, high >= open/close, low <= open/close
-        data["high"] = np.maximum(
-            data["high"], data[["open", "high", "low", "close"]].max(axis=1)
-        )
-        data["low"] = np.minimum(
-            data["low"], data[["open", "high", "low", "close"]].min(axis=1)
-        )
+        data["high"] = np.maximum(data["high"], data[["open", "high", "low", "close"]].max(axis=1))
+        data["low"] = np.minimum(data["low"], data[["open", "high", "low", "close"]].min(axis=1))
 
         # 添加一些缺失值测试数据质量处理
         if size > 1000:
@@ -177,7 +172,7 @@ class GPUPerformanceBenchmark:
                     with self._memory_profiler():
                         start_time = time.time()
                         gpu_processor = GPUDataProcessor(gpu_enabled=True)
-                        result = gpu_processor.preprocess(data)
+                        gpu_processor.preprocess(data)
                         gpu_times.append(time.time() - start_time)
                 times["gpu"] = gpu_times
             except Exception as e:
@@ -189,7 +184,7 @@ class GPUPerformanceBenchmark:
             with self._memory_profiler():
                 start_time = time.time()
                 cpu_processor = DataProcessorCPU(gpu_enabled=False)
-                result = cpu_processor.preprocess(data)
+                cpu_processor.preprocess(data)
                 cpu_times.append(time.time() - start_time)
         times["cpu"] = cpu_times
 
@@ -225,7 +220,7 @@ class GPUPerformanceBenchmark:
                     with self._memory_profiler():
                         start_time = time.time()
                         gpu_generator = GPUFeatureGenerator(gpu_enabled=True)
-                        result = gpu_generator.generate_features(data)
+                        gpu_generator.generate_features(data)
                         gpu_times.append(time.time() - start_time)
                 times["gpu"] = gpu_times
             except Exception as e:
@@ -237,7 +232,7 @@ class GPUPerformanceBenchmark:
             with self._memory_profiler():
                 start_time = time.time()
                 cpu_generator = FeatureGeneratorCPU(gpu_enabled=False)
-                result = cpu_generator.generate_features(data)
+                cpu_generator.generate_features(data)
                 cpu_times.append(time.time() - start_time)
         times["cpu"] = cpu_times
 
@@ -248,9 +243,7 @@ class GPUPerformanceBenchmark:
             "cpu_memory": psutil.Process().memory_info().rss / 1024 / 1024,
         }
 
-    def _benchmark_price_prediction(
-        self, data: pd.DataFrame, model_type: str
-    ) -> Dict[str, float]:
+    def _benchmark_price_prediction(self, data: pd.DataFrame, model_type: str) -> Dict[str, float]:
         """基准测试价格预测器"""
         times = {"gpu": [], "cpu": []}
         accuracies = {"gpu": [], "cpu": []}
@@ -341,11 +334,7 @@ class GPUPerformanceBenchmark:
                 print("🔧 数据处理性能测试:")
                 result = self._benchmark_data_processing(test_data)
 
-                speedup = (
-                    result["cpu_time"] / result["gpu_time"]
-                    if result["gpu_time"] > 0
-                    else 0
-                )
+                speedup = result["cpu_time"] / result["gpu_time"] if result["gpu_time"] > 0 else 0
                 self._update_stats(speedup)
 
                 self._print_benchmark_result(
@@ -380,11 +369,7 @@ class GPUPerformanceBenchmark:
                 print("\n🎯 特征生成性能测试:")
                 result = self._benchmark_feature_generation(test_data)
 
-                speedup = (
-                    result["cpu_time"] / result["gpu_time"]
-                    if result["gpu_time"] > 0
-                    else 0
-                )
+                speedup = result["cpu_time"] / result["gpu_time"] if result["gpu_time"] > 0 else 0
                 self._update_stats(speedup)
 
                 self._print_benchmark_result(
@@ -421,11 +406,7 @@ class GPUPerformanceBenchmark:
                     print(f"  模型类型: {model_type}")
                     result = self._benchmark_price_prediction(test_data, model_type)
 
-                    speedup = (
-                        result["cpu_time"] / result["gpu_time"]
-                        if result["gpu_time"] > 0
-                        else 0
-                    )
+                    speedup = result["cpu_time"] / result["gpu_time"] if result["gpu_time"] > 0 else 0
                     self._update_stats(speedup)
 
                     self._print_benchmark_result(
@@ -475,9 +456,7 @@ class GPUPerformanceBenchmark:
         """打印基准测试结果"""
         status = "✅" if speedup > 1 else "❌"
         print(f"  {status} {test_name}:")
-        print(
-            f"    GPU时间: {gpu_time:.4f}s | CPU时间: {cpu_time:.4f}s | 加速比: {speedup:.2f}x"
-        )
+        print(f"    GPU时间: {gpu_time:.4f}s | CPU时间: {cpu_time:.4f}s | 加速比: {speedup:.2f}x")
         print(f"    GPU内存: {gpu_mem:.2f}MB | CPU内存: {cpu_mem:.2f}MB")
 
         if gpu_acc > 0 and cpu_acc > 0:
@@ -614,9 +593,7 @@ MyStocks GPU加速性能报告
     CPU内存: {result.cpu_memory_mb:.2f}MB"""
 
         # 添加GPU环境信息
-        gpu_status = (
-            "可用" if self.component_selector.check_gpu_availability() else "不可用"
-        )
+        gpu_status = "可用" if self.component_selector.check_gpu_availability() else "不可用"
         report += f"""
 🖥️  GPU环境状态: {gpu_status}
 """

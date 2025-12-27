@@ -115,9 +115,7 @@ class TestNotificationManager:
         config = NotificationConfig(channels=[NotificationChannel.LOG])
         manager = NotificationManager(config)
 
-        result = manager.send_notification(
-            title="Test", message="Test message", level=NotificationLevel.INFO
-        )
+        result = manager.send_notification(title="Test", message="Test message", level=NotificationLevel.INFO)
 
         assert result == True
         assert len(manager.notifications) == 1
@@ -125,14 +123,10 @@ class TestNotificationManager:
 
     def test_multiple_channels(self):
         """测试多渠道通知"""
-        config = NotificationConfig(
-            channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE]
-        )
+        config = NotificationConfig(channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE])
         manager = NotificationManager(config)
 
-        result = manager.send_notification(
-            title="Multi-channel", message="Test", level=NotificationLevel.INFO
-        )
+        result = manager.send_notification(title="Multi-channel", message="Test", level=NotificationLevel.INFO)
 
         assert result == True
         assert manager.stats["log_sent"] == 1
@@ -147,15 +141,11 @@ class TestNotificationManager:
         manager = NotificationManager(config)
 
         # 第一次发送应该成功
-        result1 = manager.send_notification(
-            title="Same", message="Same", level=NotificationLevel.INFO
-        )
+        result1 = manager.send_notification(title="Same", message="Same", level=NotificationLevel.INFO)
         assert result1 == True
 
         # 立即再次发送应该被限制
-        result2 = manager.send_notification(
-            title="Same", message="Same", level=NotificationLevel.INFO
-        )
+        result2 = manager.send_notification(title="Same", message="Same", level=NotificationLevel.INFO)
         assert result2 == False
         assert manager.stats["rate_limited"] == 1
 
@@ -164,9 +154,7 @@ class TestNotificationManager:
         config = NotificationConfig(channels=[NotificationChannel.LOG])
         manager = NotificationManager(config)
 
-        manager.send_success_notification(
-            task_name="test_task", execution_time=12.5, result="success"
-        )
+        manager.send_success_notification(task_name="test_task", execution_time=12.5, result="success")
 
         assert len(manager.notifications) == 1
         assert manager.notifications[0].level == NotificationLevel.INFO
@@ -176,9 +164,7 @@ class TestNotificationManager:
         config = NotificationConfig(channels=[NotificationChannel.LOG])
         manager = NotificationManager(config)
 
-        manager.send_failure_notification(
-            task_name="test_task", error_message="Test error", retry_count=2
-        )
+        manager.send_failure_notification(task_name="test_task", error_message="Test error", retry_count=2)
 
         assert len(manager.notifications) == 1
         assert manager.notifications[0].level == NotificationLevel.ERROR
@@ -188,9 +174,7 @@ class TestNotificationManager:
         config = NotificationConfig(channels=[NotificationChannel.LOG])
         manager = NotificationManager(config)
 
-        manager.send_signal_notification(
-            strategy_name="momentum", symbol="sh600000", signal="buy", price=10.52
-        )
+        manager.send_signal_notification(strategy_name="momentum", symbol="sh600000", signal="buy", price=10.52)
 
         assert len(manager.notifications) == 1
         assert manager.notifications[0].level == NotificationLevel.WARNING
@@ -202,9 +186,7 @@ class TestNotificationManager:
 
         # 发送多条通知
         for i in range(5):
-            manager.send_notification(
-                title=f"Test {i}", message="Test", level=NotificationLevel.INFO
-            )
+            manager.send_notification(title=f"Test {i}", message="Test", level=NotificationLevel.INFO)
 
         history = manager.get_notification_history(limit=3)
         assert len(history) == 3
@@ -369,9 +351,7 @@ class TestPredefinedTasks:
 
     def test_create_strategy_execution_task(self):
         """测试创建策略执行任务配置"""
-        task = create_strategy_execution_task(
-            strategy_name="momentum", hour=9, minute=30
-        )
+        task = create_strategy_execution_task(strategy_name="momentum", hour=9, minute=30)
 
         assert task.name == "execute_momentum"
         assert task.trigger_type == "cron"

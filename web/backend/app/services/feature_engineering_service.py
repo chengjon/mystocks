@@ -157,9 +157,7 @@ class FeatureEngineeringService:
         df = pd.read_csv(input_file)
 
         # 生成特征
-        X, y = FeatureEngineeringService.generate_rolling_features(
-            df, step, feature_columns
-        )
+        X, y = FeatureEngineeringService.generate_rolling_features(df, step, feature_columns)
 
         # 保存特征
         output_path = FeatureEngineeringService.save_features_to_csv(X, y, output_file)
@@ -169,8 +167,7 @@ class FeatureEngineeringService:
             "total_samples": len(X),
             "feature_dim": X.shape[1],
             "step": step,
-            "feature_columns": feature_columns
-            or ["open", "high", "low", "close", "amount", "volume"],
+            "feature_columns": feature_columns or ["open", "high", "low", "close", "amount", "volume"],
             "target_mean": float(y.mean()),
             "target_std": float(y.std()),
             "target_min": float(y.min()),
@@ -204,9 +201,7 @@ class FeatureEngineeringService:
         df["volatility"] = df["close"].rolling(window=10).std()
 
         # 相对强弱指标（简化版）
-        df["price_position"] = (df["close"] - df["low"]) / (
-            df["high"] - df["low"] + 1e-6
-        )
+        df["price_position"] = (df["close"] - df["low"]) / (df["high"] - df["low"] + 1e-6)
 
         # 成交量变化
         df["volume_change"] = df["volume"].pct_change()
@@ -253,9 +248,7 @@ class FeatureEngineeringService:
         df = df.dropna()
 
         # 生成滚动窗口特征
-        X, y = FeatureEngineeringService.generate_rolling_features(
-            df, step, feature_columns
-        )
+        X, y = FeatureEngineeringService.generate_rolling_features(df, step, feature_columns)
 
         # 元数据
         metadata = {
@@ -265,12 +258,8 @@ class FeatureEngineeringService:
             "feature_dim": X.shape[1],
             "include_indicators": include_indicators,
             "date_range": {
-                "start": (
-                    df.iloc[0]["tradeDate"] if "tradeDate" in df.columns else "unknown"
-                ),
-                "end": (
-                    df.iloc[-1]["tradeDate"] if "tradeDate" in df.columns else "unknown"
-                ),
+                "start": (df.iloc[0]["tradeDate"] if "tradeDate" in df.columns else "unknown"),
+                "end": (df.iloc[-1]["tradeDate"] if "tradeDate" in df.columns else "unknown"),
             },
         }
 

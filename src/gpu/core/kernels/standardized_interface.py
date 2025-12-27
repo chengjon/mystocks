@@ -134,16 +134,12 @@ class StandardizedKernelInterface(ABC):
         pass
 
     @abstractmethod
-    async def execute_transform_operation(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def execute_transform_operation(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """执行数据变换"""
         pass
 
     @abstractmethod
-    async def execute_inference_operation(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def execute_inference_operation(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行机器学习推理"""
         pass
 
@@ -171,9 +167,7 @@ class StandardizedKernelInterface(ABC):
         """根据数据大小优化内核配置"""
         pass
 
-    def validate_matrix_input(
-        self, data: np.ndarray, operation: MatrixOperationType
-    ) -> bool:
+    def validate_matrix_input(self, data: np.ndarray, operation: MatrixOperationType) -> bool:
         """验证矩阵输入"""
         if not isinstance(data, np.ndarray):
             return False
@@ -186,9 +180,7 @@ class StandardizedKernelInterface(ABC):
 
         return True
 
-    def validate_transform_input(
-        self, data: np.ndarray, operation: TransformOperationType
-    ) -> bool:
+    def validate_transform_input(self, data: np.ndarray, operation: TransformOperationType) -> bool:
         """验证变换输入"""
         if not isinstance(data, np.ndarray):
             return False
@@ -206,9 +198,7 @@ class StandardizedKernelInterface(ABC):
 
         return True
 
-    def estimate_execution_time(
-        self, data_shape: Tuple[int, ...], operation: str
-    ) -> float:
+    def estimate_execution_time(self, data_shape: Tuple[int, ...], operation: str) -> float:
         """估算执行时间（毫秒）"""
         # 基于数据大小和操作类型的简单估算
         data_size = np.prod(data_shape)
@@ -229,7 +219,6 @@ class StandardizedKernelInterface(ABC):
     def optimize_block_size(self, data_size: int, device_memory_mb: int) -> int:
         """优化块大小"""
         # 基于数据大小和设备内存选择最优块大小
-        standard_block_sizes = [32, 64, 128, 256, 512, 1024]
 
         # 根据数据大小选择
         if data_size < 1024:
@@ -253,9 +242,7 @@ class StandardizedKernelInterface(ABC):
             "data_transfers": [],
         }
 
-    def log_performance_metrics(
-        self, result: KernelExecutionResult, profiler: Dict[str, Any]
-    ):
+    def log_performance_metrics(self, result: KernelExecutionResult, profiler: Dict[str, Any]):
         """记录性能指标"""
         if not result.success:
             return
@@ -267,9 +254,7 @@ class StandardizedKernelInterface(ABC):
             result.performance_metrics["throughput_bytes_per_sec"] = throughput
 
         # 记录内存使用
-        result.performance_metrics["memory_used_mb"] = result.memory_used_bytes / (
-            1024 * 1024
-        )
+        result.performance_metrics["memory_used_mb"] = result.memory_used_bytes / (1024 * 1024)
 
         # 记录执行时间分解
         if profiler:
@@ -297,9 +282,7 @@ class KernelRegistry:
         """列出所有已注册的内核"""
         return list(self._kernels.keys())
 
-    def get_kernel_for_operation(
-        self, operation_type: str, operation_name: str
-    ) -> Optional[str]:
+    def get_kernel_for_operation(self, operation_type: str, operation_name: str) -> Optional[str]:
         """根据操作类型获取内核名称"""
         key = f"{operation_type}_{operation_name}"
         return self._operation_mappings.get(key)

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .header .meta {
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .card .label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .card.success .value { color: var(--success-color); }
+        .card.danger .value { color: var(--danger-color); }
+        .card.warning .value { color: var(--warning-color); }
+
+        .suite {
+            background: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .suite-header {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suite-header:hover {
+            background: #f1f3f5;
+        }
+
+        .suite-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .suite-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+        }
+
+        .stat {
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #eee;
+        }
+
+        .stat.passed { background: #d4edda; color: #155724; }
+        .stat.failed { background: #f8d7da; color: #721c24; }
+        .stat.skipped { background: #fff3cd; color: #856404; }
+
+        .suite-details {
+            display: none;
+            padding: 15px 20px;
+        }
+
+        .suite-details.show {
+            display: block;
+        }
+
+        .test-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item:last-child {
+            border-bottom: none;
+        }
+
+        .test-name {
+            flex: 1;
+        }
+
+        .test-meta {
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .status-badge.passed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.skipped {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .error-details {
+            background: #fff5f5;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), #2ecc71);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Report</h1>
+            <div class="meta">
+                Generated at: 2025-12-27 00:41:38
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="label">Total Tests</div>
+                <div class="value">4</div>
+            </div>
+            <div class="card success">
+                <div class="label">Passed</div>
+                <div class="value">3</div>
+            </div>
+            <div class="card danger">
+                <div class="label">Failed</div>
+                <div class="value">1</div>
+            </div>
+            <div class="card warning">
+                <div class="label">Skipped</div>
+                <div class="value">0</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">Success Rate</div>
+            <div class="value">75.0%</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75.0%"></div>
+            </div>
+        </div>
+
+        <div class="suite">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <div class="suite-title">ai_tests</div>
+                <div class="suite-stats">
+                    <span class="stat passed">2 passed</span>
+                    <span class="stat failed">0 failed</span>
+                    <span class="stat skipped">0 skipped</span>
+                </div>
+            </div>
+            <div class="suite-details">
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <div>test_ai_assisted_testing</div>
+                        <div class="test-meta">tests.ai.test_ai_assisted_testing • 1.23s</div>
+                        
+                    </div>
+                    <span class="status-badge passed">passed</span>
+                </div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <div>test_data_analyzer</div>
+                        <div class="test-meta">tests.ai.test_data_analyzer • 0.88s</div>
+                        
+                    </div>
+                    <span class="status-badge passed">passed</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="suite">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <div class="suite-title">contract_tests</div>
+                <div class="suite-stats">
+                    <span class="stat passed">1 passed</span>
+                    <span class="stat failed">0 failed</span>
+                    <span class="stat skipped">0 skipped</span>
+                </div>
+            </div>
+            <div class="suite-details">
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <div>test_contract_validator</div>
+                        <div class="test-meta">tests.contract.test_contract_validator • 2.35s</div>
+                        
+                    </div>
+                    <span class="status-badge passed">passed</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="suite">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <div class="suite-title">performance_tests</div>
+                <div class="suite-stats">
+                    <span class="stat passed">0 passed</span>
+                    <span class="stat failed">1 failed</span>
+                    <span class="stat skipped">0 skipped</span>
+                </div>
+            </div>
+            <div class="suite-details">
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <div>test_benchmark</div>
+                        <div class="test-meta">tests.performance.test_benchmark • 0.12s</div>
+                        
+                <div class="error-details">
+                    <strong>Error:</strong> AssertionError: throughput too low
+                    <pre>AssertionError: 100 ops/s < 1000 ops/s expected</pre>
+                </div>
+
+                    </div>
+                    <span class="status-badge failed">failed</span>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            function toggleSuite(header) {
+                const details = header.nextElementSibling;
+                details.classList.toggle('show');
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -48,19 +48,13 @@ class TestIDataAccessLayer:
             def save_data(self, data, classification, table_name=None, **kwargs):
                 return True
 
-            def load_data(
-                self, classification, table_name=None, filters=None, **kwargs
-            ):
+            def load_data(self, classification, table_name=None, filters=None, **kwargs):
                 return pd.DataFrame()
 
-            def update_data(
-                self, data, classification, table_name=None, key_columns=None, **kwargs
-            ):
+            def update_data(self, data, classification, table_name=None, key_columns=None, **kwargs):
                 return True
 
-            def delete_data(
-                self, classification, table_name=None, filters=None, **kwargs
-            ):
+            def delete_data(self, classification, table_name=None, filters=None, **kwargs):
                 return True
 
         # 测试可以实例化具体实现
@@ -70,9 +64,7 @@ class TestIDataAccessLayer:
         # 测试所有方法都能正常调用
         test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         assert data_access.save_data(test_df, DataClassification.MARKET_DATA)
-        assert isinstance(
-            data_access.load_data(DataClassification.REFERENCE_DATA), pd.DataFrame
-        )
+        assert isinstance(data_access.load_data(DataClassification.REFERENCE_DATA), pd.DataFrame)
         assert data_access.update_data(test_df, DataClassification.TRANSACTION_DATA)
         assert data_access.delete_data(DataClassification.DERIVED_DATA)
 
@@ -219,9 +211,7 @@ class TestValidateTimeSeriesData:
 
     def test_validate_time_series_data_no_time_columns(self):
         """测试无时间列的DataFrame"""
-        df_no_time = pd.DataFrame(
-            {"symbol": ["AAPL", "GOOG", "MSFT"], "price": [150.0, 2800.0, 380.0]}
-        )
+        df_no_time = pd.DataFrame({"symbol": ["AAPL", "GOOG", "MSFT"], "price": [150.0, 2800.0, 380.0]})
 
         result = validate_time_series_data(df_no_time)
         assert result is False
@@ -310,35 +300,25 @@ class TestGetDatabaseNameFromClassification:
         result = get_database_name_from_classification(DataClassification.MARKET_DATA)
 
         assert result == "mystocks_market"
-        mock_data_manager.get_database_name.assert_called_once_with(
-            DataClassification.MARKET_DATA
-        )
+        mock_data_manager.get_database_name.assert_called_once_with(DataClassification.MARKET_DATA)
 
     def test_get_database_name_reference_data(self, mock_data_manager):
         """测试参考数据分类获取数据库名"""
         mock_data_manager.get_database_name.return_value = "mystocks_reference"
 
-        result = get_database_name_from_classification(
-            DataClassification.REFERENCE_DATA
-        )
+        result = get_database_name_from_classification(DataClassification.REFERENCE_DATA)
 
         assert result == "mystocks_reference"
-        mock_data_manager.get_database_name.assert_called_once_with(
-            DataClassification.REFERENCE_DATA
-        )
+        mock_data_manager.get_database_name.assert_called_once_with(DataClassification.REFERENCE_DATA)
 
     def test_get_database_name_transaction_data(self, mock_data_manager):
         """测试交易数据分类获取数据库名"""
         mock_data_manager.get_database_name.return_value = "mystocks_transaction"
 
-        result = get_database_name_from_classification(
-            DataClassification.TRANSACTION_DATA
-        )
+        result = get_database_name_from_classification(DataClassification.TRANSACTION_DATA)
 
         assert result == "mystocks_transaction"
-        mock_data_manager.get_database_name.assert_called_once_with(
-            DataClassification.TRANSACTION_DATA
-        )
+        mock_data_manager.get_database_name.assert_called_once_with(DataClassification.TRANSACTION_DATA)
 
     def test_get_database_name_derived_data(self, mock_data_manager):
         """测试衍生数据分类获取数据库名"""
@@ -347,9 +327,7 @@ class TestGetDatabaseNameFromClassification:
         result = get_database_name_from_classification(DataClassification.DERIVED_DATA)
 
         assert result == "mystocks_derived"
-        mock_data_manager.get_database_name.assert_called_once_with(
-            DataClassification.DERIVED_DATA
-        )
+        mock_data_manager.get_database_name.assert_called_once_with(DataClassification.DERIVED_DATA)
 
     def test_get_database_name_metadata(self, mock_data_manager):
         """测试元数据分类获取数据库名"""
@@ -358,9 +336,7 @@ class TestGetDatabaseNameFromClassification:
         result = get_database_name_from_classification(DataClassification.METADATA)
 
         assert result == "mystocks_metadata"
-        mock_data_manager.get_database_name.assert_called_once_with(
-            DataClassification.METADATA
-        )
+        mock_data_manager.get_database_name.assert_called_once_with(DataClassification.METADATA)
 
 
 class TestDataAccessModuleIntegration:

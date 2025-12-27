@@ -79,28 +79,19 @@ class TestSocketIOStreamingEventHandlers:
         """Test market stream subscription event handler"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
-            await socketio_namespace.on_subscribe_market_stream(
-                "sid_001", {"symbol": "600519"}
-            )
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
+            await socketio_namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
 
             # Check that success response was emitted
             mock_emit.assert_called()
             calls = mock_emit.call_args_list
-            assert any(
-                call[1].get("to") == "sid_001" and "stream_subscribed" in str(call)
-                for call in calls
-            )
+            assert any(call[1].get("to") == "sid_001" and "stream_subscribed" in str(call) for call in calls)
 
     async def test_on_subscribe_market_stream_with_fields(self, socketio_namespace):
         """Test market stream subscription with field filter"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_subscribe_market_stream(
                 "sid_001", {"symbol": "600519", "fields": ["price", "volume"]}
             )
@@ -117,9 +108,7 @@ class TestSocketIOStreamingEventHandlers:
         """Test market stream subscription with missing symbol"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_subscribe_market_stream("sid_001", {})
 
             # Check that error response was emitted
@@ -134,12 +123,8 @@ class TestSocketIOStreamingEventHandlers:
         streaming_service = get_streaming_service()
         streaming_service.subscribe("sid_001", "600519", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
-            await socketio_namespace.on_unsubscribe_market_stream(
-                "sid_001", {"symbol": "600519"}
-            )
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
+            await socketio_namespace.on_unsubscribe_market_stream("sid_001", {"symbol": "600519"})
 
             # Check that success response was emitted
             calls = mock_emit.call_args_list
@@ -149,15 +134,11 @@ class TestSocketIOStreamingEventHandlers:
             stream = streaming_service.get_stream("600519")
             assert stream is None
 
-    async def test_on_unsubscribe_market_stream_invalid_symbol(
-        self, socketio_namespace
-    ):
+    async def test_on_unsubscribe_market_stream_invalid_symbol(self, socketio_namespace):
         """Test market stream unsubscription with missing symbol"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_unsubscribe_market_stream("sid_001", {})
 
             # Check that error response was emitted
@@ -172,9 +153,7 @@ class TestSocketIOStreamingEventHandlers:
         streaming_service = get_streaming_service()
         streaming_service.subscribe("sid_001", "600519", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_stream_filter_update(
                 "sid_001", {"symbol": "600519", "fields": ["price", "bid", "ask"]}
             )
@@ -192,12 +171,8 @@ class TestSocketIOStreamingEventHandlers:
         """Test stream filter update when stream not found"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(
-            socketio_namespace, "emit", new_callable=AsyncMock
-        ) as mock_emit:
-            await socketio_namespace.on_stream_filter_update(
-                "sid_001", {"symbol": "600519", "fields": ["price"]}
-            )
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
+            await socketio_namespace.on_stream_filter_update("sid_001", {"symbol": "600519", "fields": ["price"]})
 
             # Check that error response was emitted
             calls = mock_emit.call_args_list
@@ -352,9 +327,7 @@ class TestStreamingEventIntegration:
             # Subscribe to multiple symbols
             symbols = ["600519", "000001", "600000"]
             for symbol in symbols:
-                await namespace.on_subscribe_market_stream(
-                    "sid_001", {"symbol": symbol}
-                )
+                await namespace.on_subscribe_market_stream("sid_001", {"symbol": symbol})
 
             active_symbols = streaming_service.get_active_symbols()
             assert len(active_symbols) == 3
@@ -375,9 +348,7 @@ class TestStreamingEventIntegration:
             await namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
             assert "600519" in streaming_service.get_active_symbols()
 
-            await namespace.on_unsubscribe_market_stream(
-                "sid_001", {"symbol": "600519"}
-            )
+            await namespace.on_unsubscribe_market_stream("sid_001", {"symbol": "600519"})
             assert "600519" not in streaming_service.get_active_symbols()
 
 
@@ -397,9 +368,7 @@ class TestStreamingErrorHandling:
 
         with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
             # Don't add connection, just try to subscribe
-            await namespace.on_subscribe_market_stream(
-                "nonexistent_sid", {"symbol": "600519"}
-            )
+            await namespace.on_subscribe_market_stream("nonexistent_sid", {"symbol": "600519"})
 
             # Should still work (get_connection returns None gracefully)
             streaming_service = get_streaming_service()
@@ -420,9 +389,7 @@ class TestStreamingErrorHandling:
                 "app.core.socketio_manager.get_streaming_service",
                 side_effect=Exception("Service error"),
             ):
-                await namespace.on_subscribe_market_stream(
-                    "sid_001", {"symbol": "600519"}
-                )
+                await namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
 
                 # Should emit error response
                 calls = mock_emit.call_args_list

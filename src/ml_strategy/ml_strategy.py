@@ -104,9 +104,7 @@ class FeatureEngineering:
         bb_std = df["close"].rolling(20).std()
         df["bb_upper"] = df["bb_middle"] + 2 * bb_std
         df["bb_lower"] = df["bb_middle"] - 2 * bb_std
-        df["bb_position"] = (df["close"] - df["bb_lower"]) / (
-            df["bb_upper"] - df["bb_lower"]
-        )
+        df["bb_position"] = (df["close"] - df["bb_lower"]) / (df["bb_upper"] - df["bb_lower"])
 
         # 7. 成交量特征
         df["volume_ma_20"] = df["volume"].rolling(20).mean()
@@ -122,9 +120,7 @@ class FeatureEngineering:
         return df
 
     @staticmethod
-    def create_target(
-        data: pd.DataFrame, forward_days: int = 1, threshold: float = 0.0
-    ) -> pd.Series:
+    def create_target(data: pd.DataFrame, forward_days: int = 1, threshold: float = 0.0) -> pd.Series:
         """
         创建目标变量（分类）
 
@@ -204,15 +200,11 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
                 random_state=42,
             )
         elif self.model_type == "gradient_boosting":
-            return GradientBoostingClassifier(
-                n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42
-            )
+            return GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
         else:
             raise ValueError(f"不支持的模型类型: {self.model_type}")
 
-    def train(
-        self, data: pd.DataFrame, test_size: float = 0.2, cross_validate: bool = True
-    ) -> Dict:
+    def train(self, data: pd.DataFrame, test_size: float = 0.2, cross_validate: bool = True) -> Dict:
         """
         训练模型
 
@@ -233,9 +225,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
         df = self.feature_engineer.create_features(data)
 
         # 2. 创建目标变量
-        target = self.feature_engineer.create_target(
-            df, forward_days=self.forward_days, threshold=self.threshold
-        )
+        target = self.feature_engineer.create_target(df, forward_days=self.forward_days, threshold=self.threshold)
 
         # 对齐数据
         df = df.iloc[: -self.forward_days]
@@ -290,9 +280,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
         cv_score = None
         if cross_validate:
             self.logger.info("\n6. 交叉验证")
-            cv_scores = cross_val_score(
-                self.model, X_scaled, y, cv=5, scoring="accuracy"
-            )
+            cv_scores = cross_val_score(self.model, X_scaled, y, cv=5, scoring="accuracy")
             cv_score = cv_scores.mean()
             self.logger.info(f"  CV准确率: {cv_score:.4f} (+/- {cv_scores.std():.4f})")
 
@@ -303,9 +291,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
             indices = np.argsort(importances)[::-1][:10]
 
             for i, idx in enumerate(indices):
-                self.logger.info(
-                    f"  {i + 1}. {self.feature_columns[idx]}: {importances[idx]:.4f}"
-                )
+                self.logger.info(f"  {i + 1}. {self.feature_columns[idx]}: {importances[idx]:.4f}")
 
         self.is_trained = True
 
@@ -441,9 +427,7 @@ if __name__ == "__main__":
         exit(1)
 
     # 设置日志
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # 生成测试数据
     print("\n生成测试数据...")

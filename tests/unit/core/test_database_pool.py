@@ -218,9 +218,7 @@ class TestDatabaseConnectionPool:
 
             assert result == expected_result
             assert pool._stats["total_queries"] == 1
-            mock_connection.fetch.assert_called_once_with(
-                "SELECT * FROM test_table", None
-            )
+            mock_connection.fetch.assert_called_once_with("SELECT * FROM test_table", None)
 
     @pytest.mark.asyncio
     async def test_execute_query_with_params(self):
@@ -582,9 +580,7 @@ class TestModuleFunctions:
 
     def test_get_db_manager(self):
         """测试获取数据库管理器函数"""
-        with patch(
-            "src.core.database_pool.DatabaseConnectionManager"
-        ) as mock_manager_class:
+        with patch("src.core.database_pool.DatabaseConnectionManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
 

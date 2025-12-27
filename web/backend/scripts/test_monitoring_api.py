@@ -40,9 +40,7 @@ def test_get_alert_rules():
     print(f"规则数量: {len(data)}")
     print("\n前3个规则:")
     for rule in data[:3]:
-        print(
-            f"  - {rule['rule_name']} ({rule['rule_type']}) - 优先级: {rule['priority']}"
-        )
+        print(f"  - {rule['rule_name']} ({rule['rule_type']}) - 优先级: {rule['priority']}")
 
 
 def test_create_alert_rule():
@@ -60,9 +58,7 @@ def test_create_alert_rule():
         "is_active": True,
     }
 
-    response = requests.post(
-        f"{BASE_URL}/api/monitoring/alert-rules", json=new_rule, headers=headers
-    )
+    response = requests.post(f"{BASE_URL}/api/monitoring/alert-rules", json=new_rule, headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -100,9 +96,7 @@ def test_fetch_realtime_data():
     test_symbols = ["600519", "000001", "600000"]
     payload = {"symbols": test_symbols}
 
-    response = requests.post(
-        f"{BASE_URL}/api/monitoring/realtime/fetch", json=payload, headers=headers
-    )
+    response = requests.post(f"{BASE_URL}/api/monitoring/realtime/fetch", json=payload, headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -115,9 +109,7 @@ def test_get_realtime_monitoring():
     print_section("测试 6: 查询实时监控数据")
 
     # 查询贵州茅台的实时数据
-    response = requests.get(
-        f"{BASE_URL}/api/monitoring/realtime/600519", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/monitoring/realtime/600519", headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -133,17 +125,14 @@ def test_get_realtime_list():
     """测试查询实时监控列表"""
     print_section("测试 7: 查询实时监控列表")
 
-    response = requests.get(
-        f"{BASE_URL}/api/monitoring/realtime?limit=10", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/monitoring/realtime?limit=10", headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"获取到 {len(data)} 条记录")
         for record in data[:3]:
             print(
-                f"  - {record['stock_name']} ({record['symbol']}): "
-                f"{record['price']} ({record['change_percent']}%)"
+                f"  - {record['stock_name']} ({record['symbol']}): " f"{record['price']} ({record['change_percent']}%)"
             )
 
 
@@ -151,9 +140,7 @@ def test_get_alerts():
     """测试查询告警记录"""
     print_section("测试 8: 查询告警记录")
 
-    response = requests.get(
-        f"{BASE_URL}/api/monitoring/alerts?limit=20", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/monitoring/alerts?limit=20", headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -163,9 +150,7 @@ def test_get_alerts():
         if data["data"]:
             print("\n最近3条告警:")
             for alert in data["data"][:3]:
-                print(
-                    f"  - [{alert['alert_level']}] {alert['alert_title']}: {alert['alert_message']}"
-                )
+                print(f"  - [{alert['alert_level']}] {alert['alert_title']}: {alert['alert_message']}")
                 print(f"    时间: {alert['alert_time']}, 已读: {alert['is_read']}")
 
 
@@ -209,9 +194,7 @@ def test_get_dragon_tiger_list():
     """测试查询龙虎榜列表"""
     print_section("测试 12: 查询龙虎榜列表")
 
-    response = requests.get(
-        f"{BASE_URL}/api/monitoring/dragon-tiger?limit=10", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/monitoring/dragon-tiger?limit=10", headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -226,9 +209,7 @@ def test_delete_alert_rule(rule_id):
     """测试删除告警规则"""
     print_section(f"测试 13: 删除告警规则 (ID: {rule_id})")
 
-    response = requests.delete(
-        f"{BASE_URL}/api/monitoring/alert-rules/{rule_id}", headers=headers
-    )
+    response = requests.delete(f"{BASE_URL}/api/monitoring/alert-rules/{rule_id}", headers=headers)
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
         data = response.json()

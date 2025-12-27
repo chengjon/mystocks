@@ -27,31 +27,27 @@ class FinancialReportAdapter(BaseFinancialAdapter):
 
     def _check_dependency_availability(self) -> None:
         """检查依赖库的可用性"""
-        try:
-            import akshare as ak
+        import importlib.util
 
+        # 检查 akshare 可用性
+        if importlib.util.find_spec("akshare"):
             self._akshare_available = True
             logger.info("akshare 库可用")
-        except ImportError:
+        else:
             logger.warning("akshare 库不可用")
 
-        try:
-            import tushare as ts
-
+        # 检查 tushare 可用性
+        if importlib.util.find_spec("tushare"):
             self._tushare_available = True
             logger.info("tushare 库可用")
-        except ImportError:
+        else:
             logger.warning("tushare 库不可用")
 
-    def get_financial_report(
-        self, symbol: str, report_type: str = "利润表", period: str = "年报"
-    ) -> Dict:
+    def get_financial_report(self, symbol: str, report_type: str = "利润表", period: str = "年报") -> Dict:
         """获取财务报告"""
         symbol = self._validate_financial_report_params(symbol, report_type, period)
 
-        cache_key = self._get_cache_key(
-            symbol, "financial_report", report_type=report_type, period=period
-        )
+        cache_key = self._get_cache_key(symbol, "financial_report", report_type=report_type, period=period)
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
             logger.info(f"从缓存获取财务报告: {symbol} {report_type} {period}")
@@ -76,9 +72,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
 
         raise Exception(f"所有数据源都无法获取股票 {symbol} 的财务报告")
 
-    def _validate_financial_report_params(
-        self, symbol: str, report_type: str, period: str
-    ) -> str:
+    def _validate_financial_report_params(self, symbol: str, report_type: str, period: str) -> str:
         """验证财务报告参数"""
         if not symbol:
             raise ValueError("股票代码不能为空")
@@ -89,9 +83,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
         # 验证报告类型
         valid_report_types = ["资产负债表", "利润表", "现金流量表", "财务指标"]
         if report_type not in valid_report_types:
-            raise ValueError(
-                f"无效的报告类型: {report_type}，支持的类型: {valid_report_types}"
-            )
+            raise ValueError(f"无效的报告类型: {report_type}，支持的类型: {valid_report_types}")
 
         # 验证报告期
         valid_periods = ["年报", "半年报", "季报", "中报", "一季报", "三季报"]
@@ -100,9 +92,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
 
         return symbol
 
-    def _fetch_financial_report_from_akshare(
-        self, symbol: str, report_type: str, period: str
-    ) -> Dict:
+    def _fetch_financial_report_from_akshare(self, symbol: str, report_type: str, period: str) -> Dict:
         """通过 akshare 获取财务报告"""
         if not self._akshare_available:
             raise Exception("akshare 库不可用")
@@ -119,14 +109,6 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             }
 
             # 映射报告期到akshare的格式
-            period_mapping = {
-                "年报": "year",
-                "半年报": "half_year",
-                "季报": "quarter",
-                "中报": "half_year",
-                "一季报": "quarter",
-                "三季报": "quarter",
-            }
 
             if report_type not in report_type_mapping:
                 raise ValueError(f"akshare 不支持的报告类型: {report_type}")
@@ -146,9 +128,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             logger.error(f"akshare 获取财务报告失败: {e}")
             raise
 
-    def _fetch_financial_report_from_tushare(
-        self, symbol: str, report_type: str, period: str
-    ) -> Dict:
+    def _fetch_financial_report_from_tushare(self, symbol: str, report_type: str, period: str) -> Dict:
         """通过 tushare 获取财务报告"""
         if not self._tushare_available:
             raise Exception("tushare 库不可用")
@@ -167,14 +147,21 @@ class FinancialReportAdapter(BaseFinancialAdapter):
                 "财务指标": "fina_indicator",
             }
 
+            # 周期映射
+            period_mapping = {
+                "一季度": "Q1",
+                "二季度": "Q2",
+                "三季度": "Q3",
+                "四季度": "Q4",
+                "年度": "annual",
+            }
+
             if report_type not in report_type_mapping:
                 raise ValueError(f"tushare 不支持的报告类型: {report_type}")
 
             # 获取财务数据
             pro = ts.pro_api()
-            data = pro.income(
-                ts_code=symbol, period_type=period_mapping.get(period, "annual")
-            )
+            data = pro.income(ts_code=symbol, period_type=period_mapping.get(period, "annual"))
 
             if data is None or data.empty:
                 return {}
@@ -188,9 +175,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             logger.error(f"tushare 获取财务报告失败: {e}")
             raise
 
-    def _extract_financial_data_by_type(
-        self, data: pd.DataFrame, report_type: str, period: str
-    ) -> Dict:
+    def _extract_financial_data_by_type(self, data: pd.DataFrame, report_type: str, period: str) -> Dict:
         """根据报告类型提取相关数据"""
         try:
             if data.empty:
@@ -251,9 +236,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             logger.error(f"提取财务数据失败: {e}")
             return {}
 
-    def _convert_tushare_data_to_dict(
-        self, data: pd.DataFrame, report_type: str
-    ) -> Dict:
+    def _convert_tushare_data_to_dict(self, data: pd.DataFrame, report_type: str) -> Dict:
         """将tushare数据转换为字典格式"""
         try:
             if data.empty:
@@ -279,9 +262,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             logger.error(f"转换tushare数据失败: {e}")
             return {}
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据 - 此适配器不实现日线数据功能"""
         raise NotImplementedError("FinancialReportAdapter 不支持日线数据获取")
 

@@ -2,10 +2,10 @@
 
 ## 文档概览
 
-**项目**: MyStocks量化交易数据管理系统 Web端功能优化  
-**目标**: 基于原NiceGUI设计方案，结合当前Vue+FastAPI架构，补充优化缺失功能  
-**时间**: 分四个阶段实施（8-12周）  
-**架构**: Vue 3 + Element Plus + FastAPI + PostgreSQL + TDengine  
+**项目**: MyStocks量化交易数据管理系统 Web端功能优化
+**目标**: 基于原NiceGUI设计方案，结合当前Vue+FastAPI架构，补充优化缺失功能
+**时间**: 分四个阶段实施（8-12周）
+**架构**: Vue 3 + Element Plus + FastAPI + PostgreSQL + TDengine
 
 ## 现状分析
 
@@ -52,7 +52,7 @@
 
 ### 1.1 Klinechart专业K线图集成 ⭐⭐⭐
 
-**现状分析**: 当前使用基础ECharts K线图，缺乏专业K线功能  
+**现状分析**: 当前使用基础ECharts K线图，缺乏专业K线功能
 **原设计要求**: Klinechart专业K线库，支持多周期、技术指标叠加
 
 **优化前**:
@@ -64,8 +64,8 @@
 **优化后**:
 ```javascript
 // Klinechart专业K线图实现
-<ProKLineChart 
-  :symbol="currentStock" 
+<ProKLineChart
+  :symbol="currentStock"
   :periods="['1m', '5m', '15m', '1h', '1d', '1w']"
   :indicators="['MA', 'MACD', 'RSI', 'KDJ']"
   :onCrosshair="handleCrosshair"
@@ -86,7 +86,7 @@
    # 安装依赖
    npm install lightweight-charts
    npm install @types/lightweight-charts
-   
+
    # 技术指标计算集成
    npm install talib
    # 或使用原生JavaScript指标库
@@ -100,8 +100,8 @@
      <div class="pro-kline-chart">
        <div class="chart-toolbar">
          <el-button-group>
-           <el-button 
-             v-for="period in periods" 
+           <el-button
+             v-for="period in periods"
              :key="period"
              :type="currentPeriod === period ? 'primary' : 'default'"
              @click="switchPeriod(period)"
@@ -109,7 +109,7 @@
              {{ period }}
            </el-button>
          </el-button-group>
-         
+
          <el-dropdown @command="addIndicator">
            <el-button>
              技术指标 <el-icon><arrow-down /></el-icon>
@@ -124,7 +124,7 @@
            </template>
          </el-dropdown>
        </div>
-       
+
        <div ref="chartContainer" class="chart-container"></div>
      </div>
    </template>
@@ -132,7 +132,7 @@
 
 ### 1.2 TA-Lib技术指标库完整集成 ⭐⭐⭐
 
-**现状分析**: 当前有部分技术指标实现，但不完整  
+**现状分析**: 当前有部分技术指标实现，但不完整
 **原设计要求**: 70+技术指标，标准TA-Lib算法
 
 **优化前**:
@@ -151,7 +151,7 @@ import { SMA, EMA, MACD, RSI, KDJ, BOLL, CCI, ATR, OBV, ADX } from 'technicalind
 class TALibIndicatorManager {
   async calculateIndicators(symbol, data, indicators = []) {
     const results = {}
-    
+
     for (const indicator of indicators) {
       switch (indicator) {
         case 'SMA':
@@ -159,12 +159,12 @@ class TALibIndicatorManager {
           results.SMA10 = SMA.calculate({ period: 10, values: data.close })
           results.SMA20 = SMA.calculate({ period: 20, values: data.close })
           break
-          
+
         case 'EMA':
           results.EMA12 = EMA.calculate({ period: 12, values: data.close })
           results.EMA26 = EMA.calculate({ period: 26, values: data.close })
           break
-          
+
         case 'MACD':
           results.MACD = MACD.calculate({
             fastPeriod: 12,
@@ -173,11 +173,11 @@ class TALibIndicatorManager {
             values: data.close
           })
           break
-          
+
         case 'RSI':
           results.RSI = RSI.calculate({ period: 14, values: data.close })
           break
-          
+
         case 'KDJ':
           results.KDJ = KDJ.calculate({
             high: data.high,
@@ -187,11 +187,11 @@ class TALibIndicatorManager {
             signalPeriod: 3
           })
           break
-          
+
         // ... 更多指标
       }
     }
-    
+
     return results
   }
 }
@@ -205,7 +205,7 @@ class TALibIndicatorManager {
 
 ### 1.3 A股交易规则完整适配 ⭐⭐
 
-**现状分析**: 当前有基础A股功能，但规则不完整  
+**现状分析**: 当前有基础A股功能，但规则不完整
 **原设计要求**: T+1、涨跌停10±10%、20±20%、100股整数倍、手续费计算
 
 **技术实现**:
@@ -220,18 +220,18 @@ class ChinaStockRuleEngine {
       lower: basePrice * (1 - limitRate)
     }
   }
-  
+
   // T+1规则验证
   validateTradingDate(tradeDate, lastTradeDate) {
     const diffDays = this.getBusinessDays(lastTradeDate, tradeDate)
     return diffDays >= 1 // T+1至少间隔1个交易日
   }
-  
+
   // 最小交易单位验证
   validateMinQuantity(quantity) {
     return quantity % 100 === 0 && quantity >= 100 // 100股整数倍
   }
-  
+
   // 完整手续费计算
   calculateTradingFee(price, quantity, isBuy = true) {
     const amount = price * quantity
@@ -239,14 +239,14 @@ class ChinaStockRuleEngine {
     const stampTax = isBuy ? 0 : amount * 0.001 // 印花税（仅卖出）
     const transferFee = amount * 0.00002 // 过户费
     const totalFee = commission + stampTax + transferFee
-    
+
     return {
       commission,
       stampTax,
       transferFee,
       totalFee,
-      effectivePrice: isBuy ? 
-        price + totalFee/quantity : 
+      effectivePrice: isBuy ?
+        price + totalFee/quantity :
         price - totalFee/quantity
     }
   }
@@ -265,15 +265,15 @@ class ChinaStockRuleEngine {
 
 ### 2.1 智能问财筛选器升级 ⭐⭐⭐
 
-**现状分析**: 当前有基础问财功能，功能简单  
+**现状分析**: 当前有基础问财功能，功能简单
 **原设计要求**: 自然语言股票筛选，类似同花顺问财
 
 **优化前**:
 ```javascript
 // 简单的条件筛选
 const filterStocks = (conditions) => {
-  return stocks.filter(stock => 
-    stock.price > conditions.minPrice && 
+  return stocks.filter(stock =>
+    stock.price > conditions.minPrice &&
     stock.volume > conditions.minVolume
   )
 }
@@ -286,7 +286,7 @@ class WencaiQueryEngine {
   async parseNaturalLanguage(query) {
     // 自然语言解析
     const patterns = [
-      { 
+      {
         pattern: /涨停股票|涨停/,
         sql: "SELECT * FROM stocks WHERE change_pct >= 9.8"
       },
@@ -299,17 +299,17 @@ class WencaiQueryEngine {
         sql: (indicator, signal) => this.buildTechnicalSignalSQL(indicator, signal)
       }
     ]
-    
+
     for (const pattern of patterns) {
       if (pattern.pattern.test(query)) {
         return await this.executePattern(pattern, query)
       }
     }
-    
+
     // 智能推荐
     return this.getSmartRecommendations(query)
   }
-  
+
   // 语义理解增强
   understandIntent(query) {
     const intents = {
@@ -318,7 +318,7 @@ class WencaiQueryEngine {
       'technical': ['金叉', '死叉', '突破', '回调'],
       'fundamental': ['市盈率', '市净率', 'ROE', '负债率']
     }
-    
+
     return Object.entries(intents).map(([intent, keywords]) => ({
       intent,
       confidence: this.calculateConfidence(query, keywords)
@@ -347,9 +347,9 @@ class WencaiQueryEngine {
         </template>
       </el-input>
     </div>
-    
+
     <div class="quick-templates">
-      <el-tag 
+      <el-tag
         v-for="template in quickTemplates"
         :key="template.text"
         @click="selectTemplate(template)"
@@ -358,13 +358,13 @@ class WencaiQueryEngine {
         {{ template.text }}
       </el-tag>
     </div>
-    
+
     <div class="results" v-if="results">
       <div class="result-stats">
         找到 {{ results.length }} 只股票
         <el-button @click="exportResults" size="small">导出</el-button>
       </div>
-      
+
       <StockTable :data="results" :columns="resultColumns" />
     </div>
   </div>
@@ -373,7 +373,7 @@ class WencaiQueryEngine {
 
 ### 2.2 智能交易信号识别系统 ⭐⭐
 
-**现状分析**: 当前有基础信号，但不够智能化  
+**现状分析**: 当前有基础信号，但不够智能化
 **原设计要求**: AI驱动的交易信号识别
 
 **技术实现**:
@@ -388,26 +388,26 @@ class SignalRecognitionEngine {
       fundamental: new FundamentalSignalModel()
     }
   }
-  
+
   async analyzeStockSignals(symbol, data) {
     const signals = []
-    
+
     // 价格形态识别
     const priceSignals = await this.models.pricePattern.predict(data)
     signals.push(...priceSignals)
-    
+
     // 量价关系分析
     const volumeSignals = await this.models.volumeAnalysis.predict(data)
     signals.push(...volumeSignals)
-    
+
     // 技术指标信号
     const technicalSignals = await this.models.technical.predict(data)
     signals.push(...technicalSignals)
-    
+
     // 融合信号生成
     return this.fuseSignals(signals)
   }
-  
+
   // 信号融合算法
   fuseSignals(signals) {
     const signalWeights = {
@@ -417,13 +417,13 @@ class SignalRecognitionEngine {
       'strong_sell': -2.0,
       'hold': 0.0
     }
-    
+
     const signalScores = signals.reduce((acc, signal) => {
       const weight = signalWeights[signal.type] || 0
       acc[signal.symbol] = (acc[signal.symbol] || 0) + weight * signal.confidence
       return acc
     }, {})
-    
+
     // 生成综合信号
     return Object.entries(signalScores).map(([symbol, score]) => ({
       symbol,
@@ -438,7 +438,7 @@ class SignalRecognitionEngine {
 
 ### 2.3 四大股票池智能管理 ⭐⭐
 
-**现状分析**: 当前有基础股票池功能  
+**现状分析**: 当前有基础股票池功能
 **原设计要求**: 智能股票池管理，支持策略自动筛选
 
 **系统设计**:
@@ -448,12 +448,12 @@ class StockPoolManager {
   constructor() {
     this.pools = {
       watchlist: '自选股池',
-      strategy: '策略股池', 
+      strategy: '策略股池',
       industry: '行业股池',
       concept: '概念股池'
     }
   }
-  
+
   // 智能股票推荐
   async recommendStocks(poolType, criteria) {
     const algorithms = {
@@ -462,16 +462,16 @@ class StockPoolManager {
       industry: this.recommendIndustry,
       concept: this.recommendConcept
     }
-    
+
     return await algorithms[poolType](criteria)
   }
-  
+
   // 自选股智能推荐
   async recommendWatchlist(preferences) {
     const userBehavior = await this.getUserBehavior()
     const marketHot = await this.getMarketHotStocks()
     const similarUsers = await this.findSimilarUsers(userBehavior)
-    
+
     return this.rankStocks({
       userPreferences: preferences,
       userBehavior,
@@ -479,15 +479,15 @@ class StockPoolManager {
       similarUsers
     })
   }
-  
+
   // 策略股池自动维护
   async autoMaintainStrategyPool(strategies) {
     const results = []
-    
+
     for (const strategy of strategies) {
       const stocks = await this.runStrategy(strategy)
       const performance = await this.calculateStrategyPerformance(stocks)
-      
+
       results.push({
         strategy: strategy.name,
         stocks,
@@ -495,7 +495,7 @@ class StockPoolManager {
         recommendation: this.getStrategyRecommendation(performance)
       })
     }
-    
+
     return results
   }
 }
@@ -509,7 +509,7 @@ class StockPoolManager {
 
 ### 3.1 GPU加速回测系统 ⭐⭐⭐
 
-**现状分析**: 当前有基础回测功能  
+**现状分析**: 当前有基础回测功能
 **原设计要求**: RAPIDS GPU加速，15-20倍性能提升
 
 **技术架构**:
@@ -524,7 +524,7 @@ class GPUBacktestEngine:
     def __init__(self):
         self.device = 'cuda'
         self.batch_size = 10000
-        
+
     async def run_backtest(self, strategy, data, initial_capital=1000000):
         """
         GPU加速回测引擎
@@ -532,58 +532,58 @@ class GPUBacktestEngine:
         try:
             # 数据预处理
             processed_data = await self.preprocess_data_gpu(data)
-            
+
             # 策略计算（GPU并行）
             signals = await self.calculate_strategy_gpu(strategy, processed_data)
-            
+
             # 交易执行模拟
             trades = await self.simulate_trades_gpu(
                 processed_data, signals, initial_capital
             )
-            
+
             # 性能指标计算（GPU加速）
             metrics = await self.calculate_metrics_gpu(trades)
-            
+
             return {
                 'trades': trades,
                 'metrics': metrics,
                 'performance': await self.generate_performance_report(trades),
                 'gpu_acceleration': True
             }
-            
+
         except Exception as e:
             logger.error(f"GPU backtest failed: {e}")
             # 回退到CPU
             return await self.run_backtest_cpu(strategy, data, initial_capital)
-    
+
     async def preprocess_data_gpu(self, data):
         """GPU数据预处理"""
         # 转换为GPU DataFrame
         gdf = cudf.from_pandas(data)
-        
+
         # 特征工程（GPU加速）
         features = self.extract_features_gpu(gdf)
-        
+
         # 数据标准化
         scaler = StandardScaler()
         scaled_features = scaler.fit_transform(features)
-        
+
         return scaled_features
-    
+
     async def calculate_strategy_gpu(self, strategy, data):
         """GPU并行策略计算"""
         # 将策略转换为GPU计算
         strategy_kernel = self.compile_strategy_kernel(strategy)
-        
+
         # 并行执行
         signals = strategy_kernel(data)
-        
+
         return signals
 ```
 
 ### 3.2 专业风险管理系统 ⭐⭐
 
-**现状分析**: 当前有基础风险监控  
+**现状分析**: 当前有基础风险监控
 **原设计要求**: VaR计算、压力测试、预警系统
 
 **风险模型实现**:
@@ -600,29 +600,29 @@ class RiskManagementEngine:
         self.var_confidence_levels = [0.95, 0.99]
         self.stress_scenarios = [
             'financial_crisis',
-            'market_crash', 
+            'market_crash',
             'sector_rotation',
             'inflation_surge'
         ]
-    
+
     async def calculate_var(self, portfolio_returns, confidence_level=0.95):
         """
         Value at Risk计算
         """
         var_percentiles = (1 - confidence_level) * 100
         var = np.percentile(portfolio_returns, var_percentiles)
-        
+
         # 历史模拟法
         historical_var = np.percentile(portfolio_returns, var_percentiles)
-        
+
         # 参数法（正态分布假设）
         mean = np.mean(portfolio_returns)
         std = np.std(portfolio_returns)
         parametric_var = stats.norm.ppf(1 - confidence_level, mean, std)
-        
+
         # Monte Carlo方法
         monte_carlo_var = self.monte_carlo_var(portfolio_returns, confidence_level)
-        
+
         return {
             'historical_var': historical_var,
             'parametric_var': parametric_var,
@@ -630,13 +630,13 @@ class RiskManagementEngine:
             'confidence_level': confidence_level,
             'expected_shortfall': np.mean(portfolio_returns[portfolio_returns <= var])
         }
-    
+
     async def stress_test(self, portfolio, scenarios):
         """
         压力测试
         """
         results = {}
-        
+
         for scenario in scenarios:
             if scenario == 'market_crash':
                 # 市场崩盘：-30%冲击
@@ -645,21 +645,21 @@ class RiskManagementEngine:
                 # 金融危机：流动性危机，波动率增加3倍
                 shocked_returns = portfolio.returns * np.random.normal(0, portfolio.returns.std() * 3)
             # ... 更多压力测试场景
-            
+
             results[scenario] = {
                 'worst_case_loss': shocked_returns.min(),
                 'portfolio_value_change': shocked_returns.sum(),
                 'probability': self.calculate_scenario_probability(scenario)
             }
-        
+
         return results
-    
+
     async def generate_risk_alerts(self, portfolio):
         """
         风险预警系统
         """
         alerts = []
-        
+
         # VaR预警
         var_95 = await self.calculate_var(portfolio.returns, 0.95)
         if var_95['historical_var'] < -0.05:  # 日损失超过5%
@@ -669,7 +669,7 @@ class RiskManagementEngine:
                 'message': f'VaR超过限制: {var_95["historical_var"]:.2%}',
                 'recommendation': '建议降低仓位或增加对冲'
             })
-        
+
         # 相关性风险预警
         corr_matrix = portfolio.returns.corr()
         if corr_matrix.abs().max().max() > 0.9:
@@ -679,13 +679,13 @@ class RiskManagementEngine:
                 'message': '投资组合相关性过高',
                 'recommendation': '建议分散化投资'
             })
-        
+
         return alerts
 ```
 
 ### 3.3 高级数据分析看板 ⭐⭐
 
-**现状分析**: 当前有基础数据展示  
+**现状分析**: 当前有基础数据展示
 **原设计要求**: 多维度分析、IC分析、归因分析
 
 **分析组件**:
@@ -697,15 +697,15 @@ class RiskManagementEngine:
       <el-tab-pane label="IC分析" name="ic">
         <ICAnalysis :data="factorData" :factors="factors" />
       </el-tab-pane>
-      
+
       <el-tab-pane label="归因分析" name="attribution">
         <AttributionAnalysis :portfolio="portfolio" />
       </el-tab-pane>
-      
+
       <el-tab-pane label="因子研究" name="factor">
         <FactorResearch :factors="factors" />
       </el-tab-pane>
-      
+
       <el-tab-pane label="风险归因" name="risk">
         <RiskAttribution :portfolio="portfolio" />
       </el-tab-pane>
@@ -726,7 +726,7 @@ export default {
     FactorResearch,
     RiskAttribution
   },
-  
+
   data() {
     return {
       activeTab: 'ic',
@@ -735,11 +735,11 @@ export default {
       portfolio: {}
     }
   },
-  
+
   async mounted() {
     await this.loadAnalysisData()
   },
-  
+
   methods: {
     async loadAnalysisData() {
       try {
@@ -764,7 +764,7 @@ export default {
 
 ### 4.1 性能优化与缓存升级 ⭐⭐⭐
 
-**现状分析**: 当前有基础缓存功能  
+**现状分析**: 当前有基础缓存功能
 **原设计要求**: 缓存命中率>90%、响应时间<2秒
 
 **缓存架构升级**:
@@ -779,8 +779,8 @@ import asyncio
 class CacheManager:
     def __init__(self):
         self.redis_client = redis.Redis(
-            host='localhost', 
-            port=6379, 
+            host='localhost',
+            port=6379,
             db=0,
             decode_responses=True
         )
@@ -790,7 +790,7 @@ class CacheManager:
             'misses': 0,
             'total_requests': 0
         }
-    
+
     async def get(self, key: str) -> Optional[Any]:
         """
         三级缓存策略
@@ -799,51 +799,51 @@ class CacheManager:
         L3: 数据库 (最慢)
         """
         self.cache_stats['total_requests'] += 1
-        
+
         # L1 内存缓存
         if key in self.memory_cache:
             self.cache_stats['hits'] += 1
             return self.memory_cache[key]
-        
+
         # L2 Redis缓存
         redis_value = self.redis_client.get(key)
         if redis_value:
             self.cache_stats['hits'] += 1
             data = json.loads(redis_value)
-            
+
             # 回写到L1内存缓存
             self.memory_cache[key] = data
             return data
-        
+
         # L3 缓存未命中
         self.cache_stats['misses'] += 1
         return None
-    
+
     async def set(self, key: str, value: Any, ttl: int = 3600):
         """设置缓存"""
         # L1内存缓存
         self.memory_cache[key] = value
-        
+
         # L2 Redis缓存
         self.redis_client.setex(
-            key, 
-            ttl, 
+            key,
+            ttl,
             json.dumps(value, default=str)
         )
-    
+
     def get_cache_hit_rate(self) -> float:
         """获取缓存命中率"""
         if self.cache_stats['total_requests'] == 0:
             return 0
         return self.cache_stats['hits'] / self.cache_stats['total_requests']
-    
+
     async def invalidate_pattern(self, pattern: str):
         """缓存失效（模式匹配）"""
         # 清除内存缓存
         keys_to_remove = [k for k in self.memory_cache.keys() if pattern in k]
         for key in keys_to_remove:
             del self.memory_cache[key]
-        
+
         # 清除Redis缓存
         redis_keys = self.redis_client.keys(f"*{pattern}*")
         if redis_keys:
@@ -859,7 +859,7 @@ import { debounce } from 'lodash-es'
 export function usePerformanceOptimization() {
   const loading = ref(false)
   const cacheStats = ref({ hits: 0, misses: 0, hitRate: 0 })
-  
+
   // 防抖搜索
   const debouncedSearch = debounce(async (query, callback) => {
     loading.value = true
@@ -870,13 +870,13 @@ export function usePerformanceOptimization() {
       loading.value = false
     }
   }, 300)
-  
+
   // 虚拟滚动
   const virtualScroll = {
     itemHeight: 50,
     visibleItems: ref(20),
     totalItems: ref(1000),
-    
+
     get visibleRange() {
       return {
         start: Math.floor(this.scrollTop / this.itemHeight),
@@ -887,11 +887,11 @@ export function usePerformanceOptimization() {
       }
     }
   }
-  
+
   // 懒加载
   const lazyLoad = {
     observer: null,
-    
+
     setupIntersectionObserver(element, callback) {
       this.observer = new IntersectionObserver(
         (entries) => {
@@ -904,11 +904,11 @@ export function usePerformanceOptimization() {
         },
         { threshold: 0.1 }
       )
-      
+
       this.observer.observe(element)
     }
   }
-  
+
   return {
     loading,
     cacheStats,
@@ -921,7 +921,7 @@ export function usePerformanceOptimization() {
 
 ### 4.2 实时数据推送优化 ⭐⭐
 
-**现状分析**: 当前有Socket.IO和SSE实现  
+**现状分析**: 当前有Socket.IO和SSE实现
 **原设计要求**: 3秒数据刷新、实时性优化
 
 **WebSocket优化**:
@@ -936,49 +936,49 @@ class RealtimeDataManager {
     this.batchInterval = 1000 // 1秒批处理
     this.setupBatchProcessor()
   }
-  
+
   // 连接管理
   connect(userId) {
     const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`)
-    
+
     ws.onopen = () => {
       console.log(`WebSocket连接建立: ${userId}`)
       this.connections.set(userId, ws)
     }
-    
+
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data)
       this.handleMessage(userId, message)
     }
-    
+
     ws.onclose = () => {
       console.log(`WebSocket连接关闭: ${userId}`)
       this.connections.delete(userId)
       // 自动重连
       setTimeout(() => this.connect(userId), 3000)
     }
-    
+
     return ws
   }
-  
+
   // 订阅管理
   subscribe(userId, symbols, callback) {
     if (!this.subscriptions.has(userId)) {
       this.subscriptions.set(userId, new Map())
     }
-    
+
     const userSubs = this.subscriptions.get(userId)
     symbols.forEach(symbol => {
       userSubs.set(symbol, callback)
     })
-    
+
     // 发送订阅请求
     this.sendMessage(userId, {
       type: 'subscribe',
       symbols
     })
   }
-  
+
   // 批量数据处理
   setupBatchProcessor() {
     setInterval(() => {
@@ -987,10 +987,10 @@ class RealtimeDataManager {
       }
     }, this.batchInterval)
   }
-  
+
   processBatch() {
     const batch = this.messageQueue.splice(0, this.batchSize)
-    
+
     // 按用户分组
     const userMessages = new Map()
     batch.forEach(msg => {
@@ -999,7 +999,7 @@ class RealtimeDataManager {
       }
       userMessages.get(msg.userId).push(msg.data)
     })
-    
+
     // 批量发送
     userMessages.forEach((messages, userId) => {
       const ws = this.connections.get(userId)
@@ -1017,7 +1017,7 @@ class RealtimeDataManager {
 
 ### 4.3 用户体验全面提升 ⭐⭐
 
-**现状分析**: 当前有基础UI界面  
+**现状分析**: 当前有基础UI界面
 **原设计要求**: 现代化交互、响应式设计、个性化体验
 
 **UI/UX优化**:
@@ -1034,7 +1034,7 @@ class RealtimeDataManager {
           <span class="last-update">最后更新: {{ lastUpdateTime }}</span>
         </div>
       </div>
-      
+
       <div class="quick-actions">
         <el-button @click="quickAddStock" type="primary" size="small">
           <el-icon><Plus /></el-icon>
@@ -1046,12 +1046,12 @@ class RealtimeDataManager {
         </el-button>
       </div>
     </div>
-    
+
     <!-- 响应式网格布局 -->
     <div class="dashboard-grid" :class="layoutClass">
       <!-- 可拖拽卡片 -->
-      <el-card 
-        v-for="widget in widgets" 
+      <el-card
+        v-for="widget in widgets"
         :key="widget.id"
         :draggable="true"
         @dragstart="onDragStart(widget)"
@@ -1072,15 +1072,15 @@ class RealtimeDataManager {
             </div>
           </div>
         </template>
-        
-        <component 
-          :is="widget.component" 
+
+        <component
+          :is="widget.component"
           :config="widget.config"
           @update="onWidgetUpdate"
         />
       </el-card>
     </div>
-    
+
     <!-- 快速访问侧边栏 -->
     <el-affix position="right" :offset="100">
       <div class="quick-sidebar">
@@ -1089,9 +1089,9 @@ class RealtimeDataManager {
         </el-button>
       </div>
     </el-affix>
-    
+
     <!-- 智能助手 -->
-    <SmartAssistant 
+    <SmartAssistant
       :context="dashboardContext"
       @suggest="onAssistantSuggest"
     />
@@ -1104,34 +1104,34 @@ import SmartAssistant from './SmartAssistant.vue'
 
 export default {
   components: { SmartAssistant },
-  
+
   setup() {
     const userName = ref('投资者')
     const widgets = ref([])
     const layoutClass = ref('grid-3-col')
     const draggingWidget = ref(null)
-    
+
     // 响应式检测
     const isMobile = computed(() => {
       return window.innerWidth < 768
     })
-    
+
     onMounted(async () => {
       await loadUserPreferences()
       await loadPersonalizedWidgets()
     })
-    
+
     // 加载用户偏好
     const loadUserPreferences = async () => {
       // 加载布局偏好、主题、语言等
     }
-    
+
     // 智能布局推荐
     const getSmartLayout = () => {
       // 根据用户行为推荐布局
       return 'grid-2-col' // 根据分析结果返回
     }
-    
+
     return {
       userName,
       widgets,

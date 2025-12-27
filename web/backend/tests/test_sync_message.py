@@ -426,16 +426,12 @@ class TestSyncDatabaseManager:
             record_identifier={"id": 2},
             payload={"data": "test2"},
         )
-        manager.update_message_status(
-            message_id=message2.id, status=MessageStatus.SUCCESS
-        )
+        manager.update_message_status(message_id=message2.id, status=MessageStatus.SUCCESS)
 
         # 手动将next_retry_at设置为过去，使其立即可重试
         session = manager.get_session()
         try:
-            msg = (
-                session.query(SyncMessage).filter(SyncMessage.id == message1.id).first()
-            )
+            msg = session.query(SyncMessage).filter(SyncMessage.id == message1.id).first()
             msg.next_retry_at = datetime.utcnow() - timedelta(seconds=1)
             session.commit()
         finally:
@@ -445,10 +441,7 @@ class TestSyncDatabaseManager:
         retryable = manager.get_retryable_messages(limit=10)
 
         assert len(retryable) >= 1
-        assert all(
-            msg.status in [MessageStatus.RETRY, MessageStatus.FAILED]
-            for msg in retryable
-        )
+        assert all(msg.status in [MessageStatus.RETRY, MessageStatus.FAILED] for msg in retryable)
 
     def test_get_dead_letter_messages(self, setup_teardown):
         """测试查询死信队列消息"""
@@ -468,12 +461,8 @@ class TestSyncDatabaseManager:
         )
 
         # 失败2次进入死信队列
-        manager.update_message_status(
-            message.id, MessageStatus.FAILED, error_message="Error"
-        )
-        manager.update_message_status(
-            message.id, MessageStatus.FAILED, error_message="Error"
-        )
+        manager.update_message_status(message.id, MessageStatus.FAILED, error_message="Error")
+        manager.update_message_status(message.id, MessageStatus.FAILED, error_message="Error")
 
         # 查询死信消息
         dead_letters = manager.get_dead_letter_messages(limit=10)
@@ -502,9 +491,7 @@ class TestSyncDatabaseManager:
         messages = manager.get_pending_messages(limit=10)
         if len(messages) >= 2:
             manager.update_message_status(messages[0].id, MessageStatus.SUCCESS)
-            manager.update_message_status(
-                messages[1].id, MessageStatus.FAILED, error_message="Error"
-            )
+            manager.update_message_status(messages[1].id, MessageStatus.FAILED, error_message="Error")
 
         # 查询统计
         counts = manager.get_message_counts_by_status()
@@ -565,9 +552,7 @@ class TestSyncDatabaseManager:
         # 手动修改完成时间为8天前
         session = manager.get_session()
         try:
-            msg = (
-                session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
-            )
+            msg = session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
             msg.completed_at = datetime.utcnow() - timedelta(days=8)
             session.commit()
         finally:

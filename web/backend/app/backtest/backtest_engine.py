@@ -62,9 +62,7 @@ class BacktestEngine:
         self.start_date = backtest_config["start_date"]
         self.end_date = backtest_config["end_date"]
         self.initial_capital = Decimal(str(backtest_config["initial_capital"]))
-        self.commission_rate = Decimal(
-            str(backtest_config.get("commission_rate", 0.0003))
-        )
+        self.commission_rate = Decimal(str(backtest_config.get("commission_rate", 0.0003)))
         self.slippage_rate = Decimal(str(backtest_config.get("slippage_rate", 0.001)))
         self.benchmark = backtest_config.get("benchmark", "sh000001")  # 默认上证指数
 
@@ -87,9 +85,7 @@ class BacktestEngine:
             take_profit_pct=self.take_profit_pct,
         )
 
-        self.execution = ExecutionHandler(
-            commission_rate=self.commission_rate, slippage_rate=self.slippage_rate
-        )
+        self.execution = ExecutionHandler(commission_rate=self.commission_rate, slippage_rate=self.slippage_rate)
 
         self.performance = PerformanceMetrics()
 
@@ -105,9 +101,7 @@ class BacktestEngine:
         self.total_days = 0
         self.current_day_index = 0
 
-        logger.info(
-            f"回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}"
-        )
+        logger.info(f"回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}")
 
     def run(self) -> Dict[str, Any]:
         """
@@ -136,9 +130,7 @@ class BacktestEngine:
 
         except Exception as e:
             logger.error(f"回测过程中发生错误: {str(e)}", exc_info=True)
-            self._send_progress(
-                0.0, self.current_date or self.start_date, f"回测失败: {str(e)}"
-            )
+            self._send_progress(0.0, self.current_date or self.start_date, f"回测失败: {str(e)}")
             raise
 
         finally:
@@ -174,15 +166,11 @@ class BacktestEngine:
                         low_price=Decimal(str(row.get("low", 0))),
                         close_price=Decimal(str(row.get("close", 0))),
                         volume=int(row.get("volume", 0)),
-                        adj_close=Decimal(
-                            str(row.get("adj_close", row.get("close", 0)))
-                        ),
+                        adj_close=Decimal(str(row.get("adj_close", row.get("close", 0)))),
                     )
                     self.market_data[symbol][trade_date] = market_event
 
-                logger.info(
-                    f"加载 {symbol} 数据: {len(self.market_data[symbol])} 条记录"
-                )
+                logger.info(f"加载 {symbol} 数据: {len(self.market_data[symbol])} 条记录")
 
             except Exception as e:
                 logger.error(f"加载 {symbol} 数据失败: {str(e)}")
@@ -197,9 +185,7 @@ class BacktestEngine:
             all_dates.update(symbol_data.keys())
         self.total_days = len(sorted(all_dates))
 
-        logger.info(
-            f"市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日"
-        )
+        logger.info(f"市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日")
 
     def _run_backtest_loop(self):
         """执行回测主循环"""
@@ -217,9 +203,7 @@ class BacktestEngine:
 
             # 发送进度更新
             progress = (day_index / len(trading_dates)) * 100
-            self._send_progress(
-                progress, trade_date, f"处理第 {day_index + 1}/{len(trading_dates)} 天"
-            )
+            self._send_progress(progress, trade_date, f"处理第 {day_index + 1}/{len(trading_dates)} 天")
 
             # 1. 生成市场数据事件
             self._generate_market_events(trade_date)
@@ -399,14 +383,10 @@ class BacktestEngine:
             return
 
         # 风险检查
-        is_valid, reject_reason = self.risk_manager.validate_order(
-            event, self.portfolio, current_price
-        )
+        is_valid, reject_reason = self.risk_manager.validate_order(event, self.portfolio, current_price)
 
         if not is_valid:
-            logger.info(
-                f"订单被拒绝: {symbol} {event.action} {event.quantity} - {reject_reason}"
-            )
+            logger.info(f"订单被拒绝: {symbol} {event.action} {event.quantity} - {reject_reason}")
             return
 
         # 执行订单
@@ -423,9 +403,7 @@ class BacktestEngine:
         """
         success = self.portfolio.process_fill(event)
         if success:
-            logger.info(
-                f"成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}"
-            )
+            logger.info(f"成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}")
         else:
             logger.warning(f"成交失败: {event}")
 
@@ -440,9 +418,7 @@ class BacktestEngine:
                 continue
 
             # 检查是否需要强制平仓
-            should_close, reason = self.risk_manager.should_force_close_position(
-                symbol, position, current_price
-            )
+            should_close, reason = self.risk_manager.should_force_close_position(symbol, position, current_price)
 
             if should_close:
                 logger.info(f"强制平仓: {symbol} - {reason}")

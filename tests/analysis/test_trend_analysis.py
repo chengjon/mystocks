@@ -114,9 +114,7 @@ class TrendAnalyzer:
         timestamps = [point.timestamp for point in data]
 
         # 准备回归分析数据
-        x_values = np.array(
-            [(t - timestamps[0]).total_seconds() / 3600 for t in timestamps]
-        ).reshape(-1, 1)
+        x_values = np.array([(t - timestamps[0]).total_seconds() / 3600 for t in timestamps]).reshape(-1, 1)
         y_values = np.array(values)
 
         # 线性回归分析
@@ -161,9 +159,7 @@ class TrendAnalyzer:
         forecast = None
         if len(data) >= 10:  # 至少需要10个数据点进行预测
             last_timestamp = timestamps[-1]
-            prediction = self._predict_next_value(
-                model, last_timestamp, x_values[-1][0]
-            )
+            prediction = self._predict_next_value(model, last_timestamp, x_values[-1][0])
             forecast = self._generate_forecast(model, last_timestamp, x_values[-1][0])
 
         # 创建分析结果
@@ -187,9 +183,7 @@ class TrendAnalyzer:
 
         return result
 
-    def _calculate_p_value(
-        self, x: np.ndarray, y: np.ndarray, y_pred: np.ndarray
-    ) -> float:
+    def _calculate_p_value(self, x: np.ndarray, y: np.ndarray, y_pred: np.ndarray) -> float:
         """计算p值"""
         n = len(x)
         if n <= 2:
@@ -213,9 +207,7 @@ class TrendAnalyzer:
         p_value = 1 - stats.f.cdf(f_statistic, 1, n - 2)
         return p_value
 
-    def _determine_direction(
-        self, slope: float, r_squared: float, p_value: float
-    ) -> TrendDirection:
+    def _determine_direction(self, slope: float, r_squared: float, p_value: float) -> TrendDirection:
         """确定趋势方向"""
         if p_value > 0.05:  # 不显著
             return TrendDirection.STABLE
@@ -231,9 +223,7 @@ class TrendAnalyzer:
         else:
             return TrendDirection.DECREASING
 
-    def _determine_confidence(
-        self, r_squared: float, p_value: float
-    ) -> TrendConfidence:
+    def _determine_confidence(self, r_squared: float, p_value: float) -> TrendConfidence:
         """确定趋势置信度"""
         if p_value > 0.05 or r_squared < 0.3:
             return TrendConfidence.VERY_LOW
@@ -299,9 +289,7 @@ class TrendAnalyzer:
         except:
             return 0.0
 
-    def _detect_anomalies(
-        self, values: List[float], timestamps: List[datetime]
-    ) -> List[Dict[str, Any]]:
+    def _detect_anomalies(self, values: List[float], timestamps: List[datetime]) -> List[Dict[str, Any]]:
         """检测异常值"""
         if len(values) < 10:
             return []
@@ -324,17 +312,13 @@ class TrendAnalyzer:
                         "timestamp": timestamp.isoformat(),
                         "value": value,
                         "type": anomaly_type,
-                        "severity": "high"
-                        if abs(value - (q1 + q3) / 2) > 2 * iqr
-                        else "medium",
+                        "severity": "high" if abs(value - (q1 + q3) / 2) > 2 * iqr else "medium",
                     }
                 )
 
         return anomalies
 
-    def _identify_patterns(
-        self, data: List[TimeSeriesPoint], values: List[float]
-    ) -> List[Dict[str, Any]]:
+    def _identify_patterns(self, data: List[TimeSeriesPoint], values: List[float]) -> List[Dict[str, Any]]:
         """识别数据模式"""
         patterns = []
 
@@ -400,9 +384,7 @@ class TrendAnalyzer:
                             "period": period,
                             "frequency": frequencies[idx],
                             "power": power_spectrum[idx],
-                            "confidence": min(
-                                power_spectrum[idx] / np.max(power_spectrum), 1.0
-                            ),
+                            "confidence": min(power_spectrum[idx] / np.max(power_spectrum), 1.0),
                         }
                     )
 
@@ -473,9 +455,7 @@ class TrendAnalyzer:
         cyclic_patterns = [p for p in patterns if p["type"] == "cyclic"]
         if cyclic_patterns:
             main_pattern = max(cyclic_patterns, key=lambda p: p["confidence"])
-            insights.append(
-                f"发现周期性模式，周期: {main_pattern['period']:.1f}个数据点"
-            )
+            insights.append(f"发现周期性模式，周期: {main_pattern['period']:.1f}个数据点")
 
         # 季节性洞察
         if seasonality != SeasonalityType.NONE:
@@ -483,18 +463,14 @@ class TrendAnalyzer:
 
         return insights
 
-    def _predict_next_value(
-        self, model, last_timestamp: datetime, last_x: float
-    ) -> float:
+    def _predict_next_value(self, model, last_timestamp: datetime, last_x: float) -> float:
         """预测下一个值"""
         # 预测下一个时间点
         next_x = last_x + 1  # 1小时后
         prediction = model.predict([[next_x]])[0]
         return float(prediction)
 
-    def _generate_forecast(
-        self, model, last_timestamp: datetime, last_x: float
-    ) -> List[float]:
+    def _generate_forecast(self, model, last_timestamp: datetime, last_x: float) -> List[float]:
         """生成未来预测"""
         forecast = []
 
@@ -691,9 +667,7 @@ class TrendAnalyzer:
 
         # 高置信度指标比例
         high_confidence_count = sum(1 for c in confidences if c.value >= 0.66)
-        confidence_ratio = (
-            high_confidence_count / len(confidences) if confidences else 0
-        )
+        confidence_ratio = high_confidence_count / len(confidences) if confidences else 0
         summary["confidence_ratio"] = confidence_ratio
 
         if confidence_ratio > 0.7:
@@ -728,8 +702,7 @@ def demo_trend_analysis():
 
     # 创建时间序列数据
     test_success_data = [
-        TimeSeriesPoint(timestamp=t, value=v, category="test_success")
-        for t, v in zip(timestamps, success_rates)
+        TimeSeriesPoint(timestamp=t, value=v, category="test_success") for t, v in zip(timestamps, success_rates)
     ]
 
     # 添加数据到分析器
@@ -749,8 +722,7 @@ def demo_trend_analysis():
         timestamps.append(timestamp)
 
     api_response_data = [
-        TimeSeriesPoint(timestamp=t, value=v, category="api_response")
-        for t, v in zip(timestamps[:80], response_times)
+        TimeSeriesPoint(timestamp=t, value=v, category="api_response") for t, v in zip(timestamps[:80], response_times)
     ]
     analyzer.add_historical_data("api_response_time", api_response_data)
 
@@ -785,14 +757,10 @@ def demo_trend_analysis():
     print("\n🎨 创建可视化图表:")
     try:
         success_chart = analyzer.create_visualization("test_success_rate")
-        print(
-            f"  ✅ 测试成功率图表已生成 (包含 {len(success_chart.get('data', []))} 个数据系列)"
-        )
+        print(f"  ✅ 测试成功率图表已生成 (包含 {len(success_chart.get('data', []))} 个数据系列)")
 
         api_chart = analyzer.create_visualization("api_response_time")
-        print(
-            f"  ✅ API响应时间图表已生成 (包含 {len(api_chart.get('data', []))} 个数据系列)"
-        )
+        print(f"  ✅ API响应时间图表已生成 (包含 {len(api_chart.get('data', []))} 个数据系列)")
     except Exception as e:
         print(f"  ❌ 图表生成失败: {e}")
 

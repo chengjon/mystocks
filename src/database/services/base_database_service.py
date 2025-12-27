@@ -29,9 +29,7 @@ class BaseDatabaseService(ABC):
         """初始化基础数据库服务"""
         self.postgresql_access = PostgreSQLDataAccess()
 
-    def _build_where_clause(
-        self, filters: Dict[str, Union[str, List[str]]]
-    ) -> Optional[str]:
+    def _build_where_clause(self, filters: Dict[str, Union[str, List[str]]]) -> Optional[str]:
         """构建WHERE子句"""
         if not filters:
             return None
@@ -104,11 +102,9 @@ class BaseDatabaseService(ABC):
         """记录数量统计"""
         try:
             where_clause = self._build_where_clause(filters) if filters else None
-            params = self._get_filter_params(filters) if filters else None
+            self._get_filter_params(filters) if filters else None
 
-            df = self.postgresql_access.query(
-                table_name=table_name, columns=["COUNT(*) as total"], where=where_clause
-            )
+            df = self.postgresql_access.query(table_name=table_name, columns=["COUNT(*) as total"], where=where_clause)
 
             return df.iloc[0]["total"] if not df.empty else 0
 
@@ -116,9 +112,7 @@ class BaseDatabaseService(ABC):
             logger.error(f"统计记录数量失败: {e}")
             return 0
 
-    def _validate_pagination_params(
-        self, limit: Optional[int], offset: Optional[int]
-    ) -> tuple:
+    def _validate_pagination_params(self, limit: Optional[int], offset: Optional[int]) -> tuple:
         """验证分页参数"""
         limit = max(1, limit or 20)  # 最少1条
         limit = min(1000, limit)  # 最多1000条
@@ -127,9 +121,7 @@ class BaseDatabaseService(ABC):
 
         return limit, offset
 
-    def _apply_pagination(
-        self, df: pd.DataFrame, limit: int, offset: int
-    ) -> pd.DataFrame:
+    def _apply_pagination(self, df: pd.DataFrame, limit: int, offset: int) -> pd.DataFrame:
         """应用分页"""
         if offset >= len(df):
             return pd.DataFrame()

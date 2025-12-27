@@ -160,9 +160,7 @@ class EmailAlertHandler(IAlertHandler):
             msg = MIMEMultipart()
             msg["From"] = self.username
             msg["To"] = ", ".join(self.recipients)
-            msg["Subject"] = (
-                f"[{alert.severity.value.upper()}] MyStocks AI告警: {alert.rule_name}"
-            )
+            msg["Subject"] = f"[{alert.severity.value.upper()}] MyStocks AI告警: {alert.rule_name}"
 
             # 邮件正文
             body = f"""
@@ -307,9 +305,7 @@ class LogAlertHandler(IAlertHandler):
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
         file_handler.setLevel(logging.INFO)
 
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(formatter)
 
         if not any(isinstance(h, logging.FileHandler) for h in self.logger.handlers):
@@ -483,18 +479,12 @@ class AIAlertManager:
             except Exception as e:
                 logger.error(f"❌ 告警规则 {rule.name} 检查失败: {e}")
 
-    def _get_metric_value(
-        self, metrics: SystemMetrics, alert_type: AlertType
-    ) -> Optional[float]:
+    def _get_metric_value(self, metrics: SystemMetrics, alert_type: AlertType) -> Optional[float]:
         """获取指标值"""
         if alert_type == AlertType.SYSTEM_RESOURCE_HIGH:
             return metrics.cpu_usage
         elif alert_type == AlertType.GPU_MEMORY_HIGH:
-            return (
-                (metrics.gpu_memory_used / metrics.gpu_memory_total * 100)
-                if metrics.gpu_memory_total > 0
-                else 0
-            )
+            return (metrics.gpu_memory_used / metrics.gpu_memory_total * 100) if metrics.gpu_memory_total > 0 else 0
         elif alert_type == AlertType.STRATEGY_ANOMALY:
             return metrics.ai_strategy_metrics.get("win_rate", 0)
         elif alert_type == AlertType.DATA_QUALITY_ISSUE:
@@ -523,9 +513,7 @@ class AIAlertManager:
 
         return False
 
-    async def _trigger_alert(
-        self, rule: AlertRule, metrics: SystemMetrics, metric_value: float
-    ):
+    async def _trigger_alert(self, rule: AlertRule, metrics: SystemMetrics, metric_value: float):
         """触发告警"""
         alert_id = f"{rule.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -718,9 +706,7 @@ if __name__ == "__main__":
 
     sys.path.insert(0, ".")
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     print("\n测试AIAlertManager...\n")
 
@@ -746,9 +732,7 @@ if __name__ == "__main__":
         ai_strategy_metrics={"win_rate": 0.25, "active_strategies": 3},  # 触发策略告警
         trading_metrics={"sharpe_ratio": 0.45, "data_quality_score": 0.75},
     )
-    print(
-        f"   创建完成: CPU={metrics.cpu_usage}%, AI胜率={metrics.ai_strategy_metrics['win_rate']:.1%}\n"
-    )
+    print(f"   创建完成: CPU={metrics.cpu_usage}%, AI胜率={metrics.ai_strategy_metrics['win_rate']:.1%}\n")
 
     # 测试3: 检查告警条件
     print("3. 检查告警条件...")

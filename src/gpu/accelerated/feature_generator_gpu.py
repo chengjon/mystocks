@@ -102,9 +102,7 @@ class GPUFeatureGenerator:
         df_gpu["bb_upper"] = sma_20 + (std_20 * 2)
         df_gpu["bb_lower"] = sma_20 - (std_20 * 2)
         df_gpu["bb_width"] = df_gpu["bb_upper"] - df_gpu["bb_lower"]
-        df_gpu["bb_position"] = (prices - df_gpu["bb_lower"]) / (
-            df_gpu["bb_upper"] - df_gpu["bb_lower"]
-        )
+        df_gpu["bb_position"] = (prices - df_gpu["bb_lower"]) / (df_gpu["bb_upper"] - df_gpu["bb_lower"])
 
         # Stochastic指标
         low_14 = low.rolling(window=14).min()
@@ -150,9 +148,7 @@ class GPUFeatureGenerator:
 
         # 百分位排名
         for window in [20, 50]:
-            df_gpu[f"percentile_{window}"] = prices.rolling(window=window).rank(
-                pct=True
-            )
+            df_gpu[f"percentile_{window}"] = prices.rolling(window=window).rank(pct=True)
 
         # 偏度和峰度
         for window in [20, 50]:
@@ -222,22 +218,14 @@ class GPUFeatureGenerator:
         tr1 = high - low
         tr2 = abs(high - df_gpu["close"].shift(1))
         tr3 = abs(low - df_gpu["close"].shift(1))
-        tr = (
-            cp.maximum([tr1, tr2, tr3], axis=0)
-            if self.gpu_enabled
-            else pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-        )
+        tr = cp.maximum([tr1, tr2, tr3], axis=0) if self.gpu_enabled else pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
         df_gpu["atr"] = (
-            cudf.Series(tr).rolling(window=14).mean()
-            if self.gpu_enabled
-            else pd.Series(tr).rolling(window=14).mean()
+            cudf.Series(tr).rolling(window=14).mean() if self.gpu_enabled else pd.Series(tr).rolling(window=14).mean()
         )
 
         # 标准差波动率
         for window in [10, 20, 30]:
-            df_gpu[f"volatility_{window}"] = (
-                prices.pct_change().rolling(window=window).std()
-            )
+            df_gpu[f"volatility_{window}"] = prices.pct_change().rolling(window=window).std()
 
         # 波动率比率
         df_gpu["volatility_ratio"] = df_gpu["volatility_10"] / df_gpu["volatility_20"]
@@ -299,26 +287,20 @@ class GPUFeatureGenerator:
 
         return result
 
-    def _detect_doji(
-        self, prices: cudf.Series, high: cudf.Series, low: cudf.Series
-    ) -> cudf.Series:
+    def _detect_doji(self, prices: cudf.Series, high: cudf.Series, low: cudf.Series) -> cudf.Series:
         """识别十字星形态"""
         body_size = abs(prices - prices.shift(1))
         total_range = high - low
         return (body_size / total_range) < 0.1
 
-    def _detect_hammer(
-        self, prices: cudf.Series, high: cudf.Series, low: cudf.Series
-    ) -> cudf.Series:
+    def _detect_hammer(self, prices: cudf.Series, high: cudf.Series, low: cudf.Series) -> cudf.Series:
         """识别锤子形态"""
         body_size = abs(prices - prices.shift(1))
         upper_shadow = high - prices
         lower_shadow = prices - low
         return (lower_shadow > 2 * body_size) & (upper_shadow < body_size)
 
-    def _detect_shooting_star(
-        self, prices: cudf.Series, high: cudf.Series, low: cudf.Series
-    ) -> cudf.Series:
+    def _detect_shooting_star(self, prices: cudf.Series, high: cudf.Series, low: cudf.Series) -> cudf.Series:
         """识别射击之星形态"""
         body_size = abs(prices - prices.shift(1))
         upper_shadow = high - prices
@@ -395,9 +377,7 @@ class GPUFeatureGenerator:
 
         return quality_metrics
 
-    def batch_feature_generation(
-        self, data_list: List[pd.DataFrame]
-    ) -> BatchFeatureResult:
+    def batch_feature_generation(self, data_list: List[pd.DataFrame]) -> BatchFeatureResult:
         """批量特征生成"""
         start_time = time.time()
 
@@ -420,9 +400,7 @@ class GPUFeatureGenerator:
         avg_features_per_stock = total_features / len(results) if results else 0
 
         # 估算GPU内存利用率
-        gpu_memory_utilization = (
-            total_memory / (8 * 1024 * 1024 * 1024) if self.gpu_enabled else 0
-        )  # 假设8GB GPU内存
+        gpu_memory_utilization = total_memory / (8 * 1024 * 1024 * 1024) if self.gpu_enabled else 0  # 假设8GB GPU内存
 
         return BatchFeatureResult(
             results=results,
@@ -431,9 +409,7 @@ class GPUFeatureGenerator:
             gpu_memory_utilization=gpu_memory_utilization,
         )
 
-    def parallel_feature_generation(
-        self, data_list: List[pdDataFrame], batch_size: int = 10
-    ) -> BatchFeatureResult:
+    def parallel_feature_generation(self, data_list: List[pd.DataFrame], batch_size: int = 10) -> BatchFeatureResult:
         """并行特征生成"""
         if not self.gpu_enabled or self.n_jobs == 1:
             return self.batch_feature_generation(data_list)
@@ -444,10 +420,7 @@ class GPUFeatureGenerator:
         # 使用多进程并行处理
         with ProcessPoolExecutor(max_workers=self.n_jobs) as executor:
             # 将数据分成批次
-            batches = [
-                data_list[i : i + batch_size]
-                for i in range(0, len(data_list), batch_size)
-            ]
+            batches = [data_list[i : i + batch_size] for i in range(0, len(data_list), batch_size)]
 
             # 并行处理每个批次
             future_to_batch = {
@@ -467,15 +440,11 @@ class GPUFeatureGenerator:
         return BatchFeatureResult(
             results=results,
             total_time=total_time,
-            avg_features_per_stock=(
-                np.mean([len(r.feature_names) for r in results]) if results else 0
-            ),
+            avg_features_per_stock=(np.mean([len(r.feature_names) for r in results]) if results else 0),
             gpu_memory_utilization=0.0,  # 简化处理
         )
 
-    def select_features(
-        self, data: pd.DataFrame, method: str = "variance", top_k: int = 100
-    ) -> List[str]:
+    def select_features(self, data: pd.DataFrame, method: str = "variance", top_k: int = 100) -> List[str]:
         """特征选择"""
         if method == "variance":
             # 基于方差的特征选择
@@ -493,9 +462,7 @@ class GPUFeatureGenerator:
             # 基于互信息的特征选择
             from cuml.feature_selection import mutual_info_regression
 
-            X = data.select_dtypes(include=[np.number]).drop(
-                columns=["close"], errors="ignore"
-            )
+            X = data.select_dtypes(include=[np.number]).drop(columns=["close"], errors="ignore")
             y = data["close"]
 
             if self.gpu_enabled:
@@ -516,9 +483,7 @@ class GPUFeatureGenerator:
 
         return top_features
 
-    def normalize_features(
-        self, data: pd.DataFrame, method: str = "standard"
-    ) -> pd.DataFrame:
+    def normalize_features(self, data: pd.DataFrame, method: str = "standard") -> pd.DataFrame:
         """特征标准化"""
         numeric_columns = data.select_dtypes(include=[np.number]).columns
         feature_data = data[numeric_columns]
@@ -533,17 +498,13 @@ class GPUFeatureGenerator:
         if self.gpu_enabled:
             feature_gpu = cudf.DataFrame(feature_data)
             normalized_features = scaler.fit_transform(feature_gpu)
-            normalized_df = cudf.DataFrame(
-                normalized_features, columns=feature_gpu.columns
-            )
+            normalized_df = cudf.DataFrame(normalized_features, columns=feature_gpu.columns)
             result = data.copy()
             for col in normalized_df.columns:
                 result[f"{col}_normalized"] = normalized_df[col].to_numpy()
         else:
             normalized_features = scaler.fit_transform(feature_data)
-            normalized_df = pd.DataFrame(
-                normalized_features, columns=feature_data.columns
-            )
+            normalized_df = pd.DataFrame(normalized_features, columns=feature_data.columns)
             result = data.copy()
             for col in normalized_df.columns:
                 result[f"{col}_normalized"] = normalized_df[col].values
@@ -579,9 +540,7 @@ class MultiStockFeatureGenerator:
         self.max_stocks = max_stocks
         self.base_generator = GPUFeatureGenerator(gpu_enabled)
 
-    def generate_market_features(
-        self, stock_data: Dict[str, pd.DataFrame]
-    ) -> Dict[str, FeatureResult]:
+    def generate_market_features(self, stock_data: Dict[str, pd.DataFrame]) -> Dict[str, FeatureResult]:
         """为多只股票生成特征"""
         results = {}
 
@@ -603,9 +562,7 @@ class MultiStockFeatureGenerator:
 
         return results
 
-    def generate_cross_sectional_features(
-        self, market_data: Dict[str, pd.DataFrame]
-    ) -> pd.DataFrame:
+    def generate_cross_sectional_features(self, market_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
         """生成横截面特征"""
         start_time = time.time()
 
@@ -623,21 +580,15 @@ class MultiStockFeatureGenerator:
 
         # 市值排名
         if "market_cap" in cross_sectional_df.columns:
-            features["market_cap_rank"] = cross_sectional_df["market_cap"].rank(
-                ascending=False
-            )
+            features["market_cap_rank"] = cross_sectional_df["market_cap"].rank(ascending=False)
 
         # 收益率排名
-        return_columns = [
-            col for col in cross_sectional_df.columns if "return" in col.lower()
-        ]
+        return_columns = [col for col in cross_sectional_df.columns if "return" in col.lower()]
         for col in return_columns:
             features[f"{col}_rank"] = cross_sectional_df[col].rank(ascending=False)
 
         # 波动率排名
-        vol_columns = [
-            col for col in cross_sectional_df.columns if "volatility" in col.lower()
-        ]
+        vol_columns = [col for col in cross_sectional_df.columns if "volatility" in col.lower()]
         for col in vol_columns:
             features[f"{col}_rank"] = cross_sectional_df[col].rank(ascending=True)
 
@@ -674,9 +625,7 @@ def benchmark_feature_generation(data: pd.DataFrame, gpu_enabled: bool = True):
     print(f"加速比: {cpu_time / gpu_time:.2f}x")
     print(f"GPU生成特征数: {len(gpu_result.feature_names)}")
     print(f"CPU生成特征数: {len(cpu_result.feature_names)}")
-    print(
-        f"GPU内存使用: {gpu_result.memory_usage['total_memory'] / 1024 / 1024:.2f} MB"
-    )
+    print(f"GPU内存使用: {gpu_result.memory_usage['total_memory'] / 1024 / 1024:.2f} MB")
 
     return {
         "gpu_time": gpu_time,

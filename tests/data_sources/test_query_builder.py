@@ -9,9 +9,7 @@ import os
 from unittest.mock import Mock
 
 # 添加项目根路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.insert(0, project_root)
 
 try:
@@ -55,9 +53,7 @@ class TestQueryBuilder:
 
     def test_select_basic(self):
         """测试基础SELECT查询构建"""
-        sql, params = (
-            self.query_builder.select("id", "name").from_table("users").build()
-        )
+        sql, params = self.query_builder.select("id", "name").from_table("users").build()
 
         expected_sql = "SELECT id, name FROM users"
         assert sql == expected_sql
@@ -65,12 +61,7 @@ class TestQueryBuilder:
 
     def test_select_with_where(self):
         """测试带WHERE条件的SELECT查询"""
-        sql, params = (
-            self.query_builder.select("id", "name")
-            .from_table("users")
-            .where("age > %s", 18)
-            .build()
-        )
+        sql, params = self.query_builder.select("id", "name").from_table("users").where("age > %s", 18).build()
 
         expected_sql = "SELECT id, name FROM users WHERE age > %s"
         assert sql == expected_sql
@@ -132,12 +123,7 @@ class TestQueryBuilder:
     def test_select_with_where_in(self):
         """测试WHERE IN条件"""
         ids = [1, 2, 3, 4, 5]
-        sql, params = (
-            self.query_builder.select("*")
-            .from_table("users")
-            .where_in("id", ids)
-            .build()
-        )
+        sql, params = self.query_builder.select("*").from_table("users").where_in("id", ids).build()
 
         expected_sql = "SELECT * FROM users WHERE id IN (%s,%s,%s,%s,%s)"
         assert sql == expected_sql
@@ -168,44 +154,25 @@ class TestQueryBuilder:
     def test_insert_with_returning(self):
         """测试带RETURNING的INSERT查询"""
         data = {"name": "John", "email": "john@example.com"}
-        sql, params = (
-            self.query_builder.insert_into("users")
-            .values(data)
-            .returning("id", "created_at")
-            .build()
-        )
+        sql, params = self.query_builder.insert_into("users").values(data).returning("id", "created_at").build()
 
-        expected_sql = (
-            "INSERT INTO users (name, email) VALUES (%s, %s) RETURNING id, created_at"
-        )
+        expected_sql = "INSERT INTO users (name, email) VALUES (%s, %s) RETURNING id, created_at"
         assert sql == expected_sql
         assert params == ["John", "john@example.com"]
 
     def test_insert_with_conflict_do_nothing(self):
         """测试冲突时不做操作的INSERT查询"""
         data = {"name": "John", "email": "john@example.com"}
-        sql, params = (
-            self.query_builder.insert_into("users")
-            .values(data)
-            .on_conflict_do_nothing()
-            .build()
-        )
+        sql, params = self.query_builder.insert_into("users").values(data).on_conflict_do_nothing().build()
 
-        expected_sql = (
-            "INSERT INTO users (name, email) VALUES (%s, %s) ON CONFLICT DO NOTHING"
-        )
+        expected_sql = "INSERT INTO users (name, email) VALUES (%s, %s) ON CONFLICT DO NOTHING"
         assert sql == expected_sql
 
     def test_insert_with_conflict_update(self):
         """测试冲突时更新的INSERT查询"""
         data = {"name": "John", "email": "john@example.com"}
         update_data = {"updated_at": "2023-12-01"}
-        sql, params = (
-            self.query_builder.insert_into("users")
-            .values(data)
-            .on_conflict_update(update_data)
-            .build()
-        )
+        sql, params = self.query_builder.insert_into("users").values(data).on_conflict_update(update_data).build()
 
         expected_sql = "INSERT INTO users (name, email) VALUES (%s, %s) ON CONFLICT DO UPDATE SET updated_at = %s"
         assert sql == expected_sql
@@ -214,12 +181,7 @@ class TestQueryBuilder:
     def test_update_basic(self):
         """测试基础UPDATE查询"""
         update_data = {"name": "Jane", "age": 25}
-        sql, params = (
-            self.query_builder.update("users")
-            .set(update_data)
-            .where("id = %s", 1)
-            .build()
-        )
+        sql, params = self.query_builder.update("users").set(update_data).where("id = %s", 1).build()
 
         expected_sql = "UPDATE users SET name = %s, age = %s WHERE id = %s"
         assert sql == expected_sql
@@ -227,9 +189,7 @@ class TestQueryBuilder:
 
     def test_delete_basic(self):
         """测试基础DELETE查询"""
-        sql, params = (
-            self.query_builder.delete_from("users").where("id = %s", 1).build()
-        )
+        sql, params = self.query_builder.delete_from("users").where("id = %s", 1).build()
 
         expected_sql = "DELETE FROM users WHERE id = %s"
         assert sql == expected_sql
@@ -246,7 +206,9 @@ class TestQueryBuilder:
             .build()
         )
 
-        expected_sql = "SELECT category, COUNT(*) as count FROM products WHERE price > %s GROUP BY category HAVING COUNT(*) > %s"
+        expected_sql = (
+            "SELECT category, COUNT(*) as count FROM products WHERE price > %s GROUP BY category HAVING COUNT(*) > %s"
+        )
         assert sql == expected_sql
         assert params == [100, 5]
 
@@ -272,12 +234,7 @@ class TestQueryBuilder:
 
         # 重置并构建第二个查询
         self.query_builder.reset()
-        sql2, params2 = (
-            self.query_builder.select("name")
-            .from_table("users")
-            .where("status = %s", "active")
-            .build()
-        )
+        sql2, params2 = self.query_builder.select("name").from_table("users").where("status = %s", "active").build()
 
         # 验证两个查询不同
         assert sql1 != sql2
@@ -410,10 +367,7 @@ class TestQueryBuilderIntegration:
             .build()
         )
 
-        assert (
-            "WHERE user_id = %s AND alert_type = %s AND status = %s AND created_at > %s"
-            in sql
-        )
+        assert "WHERE user_id = %s AND alert_type = %s AND status = %s AND created_at > %s" in sql
         assert params == [user_id, alert_type, "pending", "2023-01-01"]
 
 

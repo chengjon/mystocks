@@ -126,41 +126,30 @@ class APIMonitor:
         stats.min_response_time = min(stats.min_response_time, metric.response_time)
 
         # 重新计算平均响应时间
-        total_time = sum(
-            m.response_time
-            for m in self.metrics
-            if f"{m.method} {m.endpoint}" == endpoint
-        )
+        total_time = sum(m.response_time for m in self.metrics if f"{m.method} {m.endpoint}" == endpoint)
         count = sum(1 for m in self.metrics if f"{m.method} {m.endpoint}" == endpoint)
         stats.avg_response_time = total_time / count if count > 0 else 0
 
         # 计算错误率
-        stats.error_rate = (
-            stats.error_count / stats.total_requests if stats.total_requests > 0 else 0
-        )
+        stats.error_rate = stats.error_count / stats.total_requests if stats.total_requests > 0 else 0
 
         # 更新数据质量评分
         quality_scores = [
             m.data_quality_score
             for m in self.metrics
-            if f"{m.method} {m.endpoint}" == endpoint
-            and m.data_quality_score is not None
+            if f"{m.method} {m.endpoint}" == endpoint and m.data_quality_score is not None
         ]
         if quality_scores:
             stats.avg_data_quality_score = sum(quality_scores) / len(quality_scores)
 
-    def get_endpoint_stats(
-        self, endpoint: Optional[str] = None
-    ) -> Dict[str, EndpointStats]:
+    def get_endpoint_stats(self, endpoint: Optional[str] = None) -> Dict[str, EndpointStats]:
         """获取端点统计"""
         with self.lock:
             if endpoint:
                 return {endpoint: self.endpoint_stats.get(endpoint)}
             return dict(self.endpoint_stats)
 
-    def get_metrics(
-        self, endpoint: Optional[str] = None, limit: int = 100
-    ) -> List[APIMetric]:
+    def get_metrics(self, endpoint: Optional[str] = None, limit: int = 100) -> List[APIMetric]:
         """获取最近的指标记录"""
         with self.lock:
             if endpoint:
@@ -188,9 +177,7 @@ class APIMonitor:
             success_count = sum(1 for m in self.metrics if m.status_code < 400)
             success_rate = success_count / total_requests if total_requests > 0 else 0
 
-            avg_response_time = (
-                sum(m.response_time for m in self.metrics) / total_requests
-            )
+            avg_response_time = sum(m.response_time for m in self.metrics) / total_requests
 
             # 获取最近的错误
             recent_errors = [
@@ -202,7 +189,9 @@ class APIMonitor:
                 }
                 for m in self.metrics
                 if m.status_code >= 400
-            ][-10:]  # 最多10条
+            ][
+                -10:
+            ]  # 最多10条
 
             # 构建端点统计
             endpoint_data = {}
@@ -217,9 +206,7 @@ class APIMonitor:
                     "max_response_time_ms": round(stats.max_response_time, 2),
                     "avg_data_quality_score": round(stats.avg_data_quality_score, 2),
                     "last_error": stats.last_error,
-                    "last_error_time": stats.last_error_time.isoformat()
-                    if stats.last_error_time
-                    else None,
+                    "last_error_time": stats.last_error_time.isoformat() if stats.last_error_time else None,
                 }
 
             return {
@@ -256,9 +243,7 @@ class APIMonitor:
             recent_error_rate = recent_errors / len(recent_metrics)
 
             # 检查响应时间
-            avg_response_time = sum(m.response_time for m in recent_metrics) / len(
-                recent_metrics
-            )
+            avg_response_time = sum(m.response_time for m in recent_metrics) / len(recent_metrics)
 
             issues = []
 
@@ -269,19 +254,13 @@ class APIMonitor:
                 issues.append(f"响应缓慢: {avg_response_time:.0f}ms")
 
             # 检查数据质量
-            quality_scores = [
-                m.data_quality_score
-                for m in recent_metrics
-                if m.data_quality_score is not None
-            ]
+            quality_scores = [m.data_quality_score for m in recent_metrics if m.data_quality_score is not None]
             if quality_scores:
                 avg_quality = sum(quality_scores) / len(quality_scores)
                 if avg_quality < 70:
                     issues.append(f"数据质量低: {avg_quality:.1f}/100")
 
-            status = (
-                "unhealthy" if len(issues) > 1 else ("warning" if issues else "healthy")
-            )
+            status = "unhealthy" if len(issues) > 1 else ("warning" if issues else "healthy")
             message = "; ".join(issues) if issues else "系统运行正常"
 
             return {

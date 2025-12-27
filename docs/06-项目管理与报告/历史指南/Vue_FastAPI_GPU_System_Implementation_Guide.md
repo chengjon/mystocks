@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的GPU加速系统实施指导，结合mystocks_spec项目的RAPIDS GPU加速系统，针对Vue.js前端和FastAPI后端的架构特点进行专门优化。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支), src/gpu/api_system/  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支), src/gpu/api_system/
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -74,37 +74,37 @@ import json
 
 class GPUService:
     """GPU服务类"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.gpu_manager = None
         self.accelerator = None
         self.cache_manager = None
         self.is_initialized = False
-    
+
     async def initialize(self):
         """初始化GPU服务"""
         try:
             # 导入GPU管理器
             from gpu_ai_integration import GPUAIIntegrationManager
             self.gpu_manager = GPUAIIntegrationManager()
-            
+
             # 初始化加速器
             self.accelerator = self.gpu_manager.get_accelerator()
-            
+
             # 初始化缓存管理器
             self.cache_manager = self.gpu_manager.get_cache_manager()
-            
+
             self.is_initialized = True
             self.logger.info("✅ GPU服务初始化完成")
-            
+
         except ImportError as e:
             self.logger.warning(f"⚠️ GPU加速未启用: {e}")
             self.is_initialized = False
         except Exception as e:
             self.logger.error(f"❌ GPU服务初始化失败: {e}")
             self.is_initialized = False
-    
+
     async def get_gpu_status(self) -> Dict[str, Any]:
         """获取GPU状态"""
         if not self.is_initialized:
@@ -112,10 +112,10 @@ class GPUService:
                 "gpu_available": False,
                 "error": "GPU服务未初始化或不可用"
             }
-        
+
         try:
             status = self.gpu_manager.get_gpu_status()
-            
+
             # 添加额外的监控指标
             extended_status = {
                 **status,
@@ -125,7 +125,7 @@ class GPUService:
                 "cache_hit_rate": status.get("cache_hit_rate", 0.0),
                 "active_tasks": status.get("active_tasks", 0)
             }
-            
+
             return extended_status
         except Exception as e:
             self.logger.error(f"获取GPU状态失败: {e}")
@@ -134,22 +134,22 @@ class GPUService:
                 "error": str(e),
                 "timestamp": datetime.now().isoformat()
             }
-    
+
     async def get_gpu_detailed_info(self) -> Dict[str, Any]:
         """获取GPU详细信息"""
         if not self.is_initialized:
             return {"error": "GPU服务未初始化"}
-        
+
         try:
             # 从系统获取GPU详细信息
             gpu_info = self.gpu_manager.get_gpu_detailed_info()
-            
+
             # 获取RAPIDS版本信息
             rapids_info = self._get_rapids_info()
-            
+
             # 获取缓存状态
             cache_info = self._get_cache_info()
-            
+
             return {
                 "gpu_info": gpu_info,
                 "rapids_info": rapids_info,
@@ -159,14 +159,14 @@ class GPUService:
         except Exception as e:
             self.logger.error(f"获取GPU详细信息失败: {e}")
             return {"error": str(e)}
-    
+
     def _get_rapids_info(self) -> Dict[str, str]:
         """获取RAPIDS库信息"""
         try:
             import cudf
             import cuml
             import cupy as cp
-            
+
             return {
                 "cudf_version": cudf.__version__,
                 "cuml_version": cuml.__version__,
@@ -178,7 +178,7 @@ class GPUService:
                 "rapids_available": False,
                 "error": "RAPIDS库未安装"
             }
-    
+
     def _get_cache_info(self) -> Dict[str, Any]:
         """获取缓存信息"""
         if self.cache_manager:
@@ -189,16 +189,16 @@ class GPUService:
                 return {"error": str(e)}
         else:
             return {"cache_enabled": False}
-    
+
     async def accelerate_backtest(self, strategy_data: Dict[str, Any]) -> Dict[str, Any]:
         """加速回测"""
         if not self.is_initialized:
             return {"error": "GPU加速不可用"}
-        
+
         try:
             # 使用GPU加速器执行回测
             result = await self.accelerator.accelerate_backtest(strategy_data)
-            
+
             # 添加加速性能指标
             acceleration_stats = {
                 **result,
@@ -206,21 +206,21 @@ class GPUService:
                 "performance_improvement": result.get("speedup_ratio", 1.0),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             return acceleration_stats
         except Exception as e:
             self.logger.error(f"GPU加速回测失败: {e}")
             return {"error": str(e)}
-    
+
     async def accelerate_ml_training(self, model_data: Dict[str, Any]) -> Dict[str, Any]:
         """加速机器学习训练"""
         if not self.is_initialized:
             return {"error": "GPU加速不可用"}
-        
+
         try:
             # 使用GPU加速器执行机器学习训练
             result = await self.accelerator.accelerate_ml_training(model_data)
-            
+
             return {
                 **result,
                 "gpu_accelerated": True,
@@ -230,16 +230,16 @@ class GPUService:
         except Exception as e:
             self.logger.error(f"GPU加速机器学习训练失败: {e}")
             return {"error": str(e)}
-    
+
     async def run_gpu_benchmark(self) -> Dict[str, Any]:
         """运行GPU基准测试"""
         if not self.is_initialized:
             return {"error": "GPU加速不可用"}
-        
+
         try:
             # 运行GPU基准测试
             benchmark_result = await self.gpu_manager.run_benchmark()
-            
+
             return {
                 **benchmark_result,
                 "benchmark_completed": True,
@@ -248,16 +248,16 @@ class GPUService:
         except Exception as e:
             self.logger.error(f"GPU基准测试失败: {e}")
             return {"error": str(e)}
-    
+
     async def get_acceleration_metrics(self) -> Dict[str, Any]:
         """获取加速指标"""
         if not self.is_initialized:
             return {"error": "GPU加速不可用"}
-        
+
         try:
             # 获取加速指标
             metrics = await self.gpu_manager.get_acceleration_metrics()
-            
+
             return {
                 **metrics,
                 "metrics_timestamp": datetime.now().isoformat()
@@ -355,16 +355,16 @@ async def gpu_health_check():
     """GPU健康检查"""
     try:
         gpu_service = await get_gpu_service()
-        
+
         if not gpu_service.is_initialized:
             return {
                 "status": "unhealthy",
                 "gpu_available": False,
                 "message": "GPU服务未初始化或不可用"
             }
-        
+
         status = await gpu_service.get_gpu_status()
-        
+
         return {
             "status": "healthy" if status.get("gpu_available", False) else "unhealthy",
             "gpu_available": status.get("gpu_available", False),
@@ -405,7 +405,7 @@ async def get_cache_status():
         GPU加速状态监控
       </h1>
       <div class="header-controls">
-        <el-button 
+        <el-button
           :type="gpuHealth.status === 'healthy' ? 'success' : 'danger'"
           :icon="gpuHealth.status === 'healthy' ? CircleCheck : CircleClose"
           @click="refreshStatus"
@@ -449,8 +449,8 @@ async def get_cache_status():
               <h3>GPU使用情况</h3>
               <div class="chart-controls">
                 <el-button-group>
-                  <el-button 
-                    v-for="view in ['usage', 'memory', 'temp']" 
+                  <el-button
+                    v-for="view in ['usage', 'memory', 'temp']"
                     :key="view"
                     :type="activeView === view ? 'primary' : 'default'"
                     @click="activeView = view"
@@ -462,10 +462,10 @@ async def get_cache_status():
               </div>
             </div>
           </template>
-          
+
           <div class="chart-container">
-            <GPUUsageChart 
-              :data="gpuMetrics" 
+            <GPUUsageChart
+              :data="gpuMetrics"
               :view-type="activeView"
               :loading="chartLoading"
             />
@@ -477,7 +477,7 @@ async def get_cache_status():
           <template #header>
             <h3>RAPIDS生态系统信息</h3>
           </template>
-          
+
           <div class="rapids-info-content">
             <div class="rapids-module" v-for="module in rapidsModules" :key="module.name">
               <el-tag :type="module.available ? 'success' : 'danger'">
@@ -494,7 +494,7 @@ async def get_cache_status():
           <template #header>
             <h3>加速性能指标</h3>
           </template>
-          
+
           <AccelerationMetricsTable :metrics="accelerationMetrics" />
         </el-card>
       </el-col>
@@ -505,7 +505,7 @@ async def get_cache_status():
           <template #header>
             <h3>GPU详细信息</h3>
           </template>
-          
+
           <div class="gpu-details-content">
             <div class="detail-item" v-for="detail in gpuDetails" :key="detail.key">
               <span class="detail-label">{{ detail.label }}:</span>
@@ -519,11 +519,11 @@ async def get_cache_status():
           <template #header>
             <h3>缓存状态</h3>
           </template>
-          
+
           <div class="cache-status-content">
             <div class="cache-item" v-for="cache in cacheStatus" :key="cache.level">
               <div class="cache-level">L{{ cache.level }}</div>
-              <el-progress 
+              <el-progress
                 :percentage="cache.hitRate * 100"
                 :status="cache.hitRate > 0.8 ? 'success' : cache.hitRate > 0.5 ? 'warning' : 'exception'"
               />
@@ -540,10 +540,10 @@ async def get_cache_status():
           <template #header>
             <h3>加速任务控制</h3>
           </template>
-          
+
           <div class="acceleration-controls">
-            <el-button 
-              type="primary" 
+            <el-button
+              type="primary"
               @click="runBenchmark"
               :loading="benchmarkLoading"
               :disabled="!gpuAvailable"
@@ -552,9 +552,9 @@ async def get_cache_status():
               <i class="el-icon-microphone"></i>
               运行GPU基准测试
             </el-button>
-            
-            <el-button 
-              type="success" 
+
+            <el-button
+              type="success"
               @click="showAccelerationDialog = true"
               :disabled="!gpuAvailable"
               style="width: 100%;"
@@ -570,10 +570,10 @@ async def get_cache_status():
           <template #header>
             <h3>加速任务历史</h3>
           </template>
-          
+
           <div class="history-list">
-            <div 
-              v-for="task in accelerationHistory" 
+            <div
+              v-for="task in accelerationHistory"
               :key="task.id"
               class="history-item"
             >
@@ -600,32 +600,32 @@ async def get_cache_status():
             <el-option label="机器学习训练" value="ml_training" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="数据集大小">
-          <el-slider 
-            v-model="accelerationForm.datasetSize" 
-            :min="1" 
-            :max="1000000" 
+          <el-slider
+            v-model="accelerationForm.datasetSize"
+            :min="1"
+            :max="1000000"
             :step="1000"
             show-input
           />
         </el-form-item>
-        
+
         <el-form-item label="加速参数">
-          <el-input 
-            v-model="accelerationForm.params" 
-            type="textarea" 
+          <el-input
+            v-model="accelerationForm.params"
+            type="textarea"
             :rows="3"
             placeholder="输入加速参数(JSON格式)"
           />
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <el-button @click="showAccelerationDialog = false">取消</el-button>
-        <el-button 
-          type="primary" 
-          @click="startAccelerationTask" 
+        <el-button
+          type="primary"
+          @click="startAccelerationTask"
           :loading="accelerationLoading"
         >
           开始加速
@@ -643,8 +643,8 @@ async def get_cache_status():
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
-import { 
-  Refresh, Setting, CircleCheck, CircleClose, Cpu 
+import {
+  Refresh, Setting, CircleCheck, CircleClose, Cpu
 } from '@element-plus/icons-vue'
 import { useGPUStore } from '@/stores/gpu'
 import GPUUsageChart from '@/components/GPU/GPUUsageChart.vue'
@@ -753,7 +753,7 @@ const refreshStatus = async () => {
     // 获取GPU健康状态
     const health = await gpuStore.getHealth()
     gpuHealth.value = health
-    
+
     // 获取GPU详细信息
     const info = await gpuStore.getDetailedInfo()
     gpuDetails.value = Object.entries(info.gpu_info || {}).map(([key, value]) => ({
@@ -761,17 +761,17 @@ const refreshStatus = async () => {
       label: formatLabel(key),
       value: formatValue(key, value)
     }))
-    
+
     // 获取缓存状态
     cacheStatus.value = [
       { level: 1, hitRate: info.cache_info?.l1_hit_rate || 0, size: formatBytes(info.cache_info?.l1_size || 0) },
       { level: 2, hitRate: info.cache_info?.l2_hit_rate || 0, size: formatBytes(info.cache_info?.l2_size || 0) },
       { level: 3, hitRate: info.cache_info?.l3_hit_rate || 0, size: formatBytes(info.cache_info?.l3_size || 0) }
     ]
-    
+
     // 获取加速指标
     accelerationMetrics.value = await gpuStore.getAccelerationMetrics()
-    
+
     // 获取GPU指标用于图表
     const status = await gpuStore.getStatus()
     gpuMetrics.value = {
@@ -779,7 +779,7 @@ const refreshStatus = async () => {
       memory: [status.gpu_memory_utilization || 0],
       temperature: [status.gpu_temperature || 0]
     }
-    
+
     ElMessage.success('GPU状态刷新成功')
   } catch (error) {
     ElMessage.error('GPU状态刷新失败')
@@ -822,12 +822,12 @@ const startAccelerationTask = async () => {
         parameters: JSON.parse(accelerationForm.params)
       })
     }
-    
+
     ElNotification.success({
       title: '加速任务启动成功',
       message: `任务ID: ${result.task_id}`
     })
-    
+
     showAccelerationDialog.value = false
   } catch (error) {
     ElNotification.error({
@@ -1240,13 +1240,13 @@ from gpu_ai_integration import GPUAIIntegrationManager
 
 class GPUAccelerationService:
     """GPU加速服务"""
-    
+
     def __init__(self):
         self.gpu_manager = None
         self.accelerator = None
         self.logger = logging.getLogger(__name__)
         self._initialize_gpu_manager()
-    
+
     def _initialize_gpu_manager(self):
         """初始化GPU管理器"""
         try:
@@ -1257,20 +1257,20 @@ class GPUAccelerationService:
             self.logger.error(f"❌ GPU加速管理器初始化失败: {e}")
             self.gpu_manager = None
             self.accelerator = None
-    
+
     async def accelerate_backtest_comprehensive(self, backtest_data: Dict[str, Any]) -> Dict[str, Any]:
         """综合GPU加速回测"""
         if not self.accelerator:
             return {"error": "GPU加速器不可用"}
-        
+
         start_time = time.time()
-        
+
         try:
             # 使用GPU加速器执行综合回测
             result = await self.accelerator.accelerate_comprehensive_backtest(backtest_data)
-            
+
             execution_time = time.time() - start_time
-            
+
             # 添加性能指标
             performance_metrics = {
                 **result,
@@ -1279,25 +1279,25 @@ class GPUAccelerationService:
                 "speedup_ratio": result.get("original_time", execution_time) / execution_time,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             return performance_metrics
         except Exception as e:
             self.logger.error(f"综合GPU加速回测失败: {e}")
             return {"error": str(e)}
-    
+
     async def accelerate_strategy_optimization(self, strategy_data: Dict[str, Any]) -> Dict[str, Any]:
         """GPU加速策略优化"""
         if not self.accelerator:
             return {"error": "GPU加速器不可用"}
-        
+
         start_time = time.time()
-        
+
         try:
             # 使用GPU加速策略参数优化
             result = await self.accelerator.accelerate_strategy_optimization(strategy_data)
-            
+
             execution_time = time.time() - start_time
-            
+
             return {
                 **result,
                 "gpu_accelerated": True,
@@ -1308,20 +1308,20 @@ class GPUAccelerationService:
         except Exception as e:
             self.logger.error(f"GPU加速策略优化失败: {e}")
             return {"error": str(e)}
-    
+
     async def accelerate_ml_model_training(self, model_data: Dict[str, Any]) -> Dict[str, Any]:
         """GPU加速机器学习模型训练"""
         if not self.accelerator:
             return {"error": "GPU加速器不可用"}
-        
+
         start_time = time.time()
-        
+
         try:
             # 使用GPU加速机器学习模型训练
             result = await self.accelerator.accelerate_ml_model_training(model_data)
-            
+
             execution_time = time.time() - start_time
-            
+
             return {
                 **result,
                 "gpu_accelerated": True,
@@ -1332,12 +1332,12 @@ class GPUAccelerationService:
         except Exception as e:
             self.logger.error(f"GPU加速机器学习模型训练失败: {e}")
             return {"error": str(e)}
-    
+
     async def get_gpu_performance_report(self) -> Dict[str, Any]:
         """获取GPU性能报告"""
         if not self.gpu_manager:
             return {"error": "GPU管理器不可用"}
-        
+
         try:
             # 获取GPU性能报告
             report = {
@@ -1348,19 +1348,19 @@ class GPUAccelerationService:
                 "resource_usage": self.gpu_manager.get_resource_usage(),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             return report
         except Exception as e:
             self.logger.error(f"获取GPU性能报告失败: {e}")
             return {"error": str(e)}
-    
+
     async def run_gpu_intensive_task(self, task_type: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
         """运行GPU密集型任务"""
         if not self.accelerator:
             return {"error": "GPU加速器不可用"}
-        
+
         start_time = time.time()
-        
+
         try:
             if task_type == "data_processing":
                 result = await self.accelerator.accelerate_data_processing(task_data)
@@ -1372,9 +1372,9 @@ class GPUAccelerationService:
                 result = await self.accelerator.accelerate_portfolio_optimization(task_data)
             else:
                 return {"error": f"不支持的任务类型: {task_type}"}
-            
+
             execution_time = time.time() - start_time
-            
+
             return {
                 **result,
                 "task_type": task_type,
@@ -1433,7 +1433,7 @@ async def run_gpu_intensive_task(request_data: Dict[str, Any]):
     try:
         task_type = request_data.get("task_type")
         task_data = request_data.get("task_data", {})
-        
+
         gpu_service = await get_gpu_service()
         result = await gpu_service.run_gpu_intensive_task(task_type, task_data)
         return {"success": True, "data": result}
@@ -1456,7 +1456,7 @@ import logging
 
 class GPUResourceManager:
     """GPU资源管理器"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.gpu_devices = []
@@ -1469,30 +1469,30 @@ class GPUResourceManager:
         self.monitoring_interval = 5  # 监控间隔5秒
         self.is_monitoring = False
         self.monitoring_thread = None
-    
+
     async def initialize(self):
         """初始化GPU资源管理器"""
         try:
             import GPUtil
             self.gpu_devices = GPUtil.getGPUs()
-            
+
             self.logger.info(f"✅ 发现 {len(self.gpu_devices)} 个GPU设备")
-            
+
             # 启动资源监控
             self.start_monitoring()
-            
+
         except ImportError:
             self.logger.warning("⚠️ GPUtil未安装，无法监控GPU资源")
         except Exception as e:
             self.logger.error(f"❌ GPU资源管理器初始化失败: {e}")
-    
+
     def start_monitoring(self):
         """启动资源监控"""
         if not self.is_monitoring:
             self.is_monitoring = True
             self.monitoring_thread = threading.Thread(target=self._monitoring_loop, daemon=True)
             self.monitoring_thread.start()
-    
+
     def _monitoring_loop(self):
         """监控循环"""
         while self.is_monitoring:
@@ -1502,53 +1502,53 @@ class GPUResourceManager:
             except Exception as e:
                 self.logger.error(f"GPU资源监控异常: {e}")
                 time.sleep(self.monitoring_interval)
-    
+
     def _update_resource_status(self):
         """更新资源状态"""
         try:
             import GPUtil
             gpus = GPUtil.getGPUs()
-            
+
             for gpu in gpus:
                 # 检查资源使用情况
                 if gpu.memoryUtil > self.resource_limits["max_memory_usage"]:
                     self.logger.warning(f"⚠️ GPU {gpu.id} 内存使用率过高: {gpu.memoryUtil:.2%}")
-                
+
                 if gpu.load > self.resource_limits["max_utilization"]:
                     self.logger.warning(f"⚠️ GPU {gpu.id} 利用率过高: {gpu.load:.2%}")
-                
+
                 # 更新活跃任务统计
-                active_count = len([task_id for task_id, task_info in self.active_tasks.items() 
+                active_count = len([task_id for task_id, task_info in self.active_tasks.items()
                                   if task_info['gpu_id'] == gpu.id])
-                
+
                 self.logger.debug(f"GPU {gpu.id}: 内存 {gpu.memoryUtil:.2%}, "
                                 f"利用率 {gpu.load:.2%}, 活跃任务 {active_count}")
-                
+
         except Exception as e:
             self.logger.error(f"更新GPU资源状态失败: {e}")
-    
+
     async def request_gpu_resources(self, task_id: str, requirements: Dict[str, Any]) -> Optional[int]:
         """请求GPU资源"""
         try:
             import GPUtil
             gpus = GPUtil.getGPUs()
-            
+
             # 寻找满足要求的GPU
             for gpu in gpus:
                 # 检查内存要求
                 memory_required = requirements.get("min_memory_gb", 0)
                 available_memory_gb = gpu.memoryTotal * (1 - gpu.memoryUtil)
-                
+
                 if available_memory_gb < memory_required:
                     continue
-                
+
                 # 检查任务数量限制
-                active_count = len([task_id for tid, tinfo in self.active_tasks.items() 
+                active_count = len([task_id for tid, tinfo in self.active_tasks.items()
                                   if tinfo['gpu_id'] == gpu.id])
-                
+
                 if active_count >= self.resource_limits["max_concurrent_tasks"]:
                     continue
-                
+
                 # 分配资源
                 self.active_tasks[task_id] = {
                     "gpu_id": gpu.id,
@@ -1556,44 +1556,44 @@ class GPUResourceManager:
                     "requirements": requirements,
                     "status": "allocated"
                 }
-                
+
                 self.logger.info(f"✅ 为任务 {task_id} 分配GPU {gpu.id}")
                 return gpu.id
-            
+
             self.logger.warning(f"❌ 无法为任务 {task_id} 分配GPU资源")
             return None
-            
+
         except Exception as e:
             self.logger.error(f"请求GPU资源失败: {e}")
             return None
-    
+
     async def release_gpu_resources(self, task_id: str):
         """释放GPU资源"""
         if task_id in self.active_tasks:
             task_info = self.active_tasks[task_id]
             gpu_id = task_info['gpu_id']
-            
+
             del self.active_tasks[task_id]
             self.logger.info(f"✅ 释放GPU {gpu_id} 资源，任务 {task_id} 完成")
-    
+
     async def get_resource_status(self) -> Dict[str, Any]:
         """获取资源状态"""
         try:
             import GPUtil
             gpus = GPUtil.getGPUs()
-            
+
             status = {
                 "devices": [],
                 "total_active_tasks": len(self.active_tasks),
                 "resource_limits": self.resource_limits,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             for gpu in gpus:
                 # 计算该GPU上的活跃任务数
-                active_tasks_count = len([task_id for task_id, task_info in self.active_tasks.items() 
+                active_tasks_count = len([task_id for task_id, task_info in self.active_tasks.items()
                                         if task_info['gpu_id'] == gpu.id])
-                
+
                 status["devices"].append({
                     "id": gpu.id,
                     "name": gpu.name,
@@ -1604,12 +1604,12 @@ class GPUResourceManager:
                     "memory_free": gpu.memoryFree,
                     "temperature": gpu.temperature,
                     "active_tasks": active_tasks_count,
-                    "available": gpu.memoryUtil < self.resource_limits["max_memory_usage"] and 
+                    "available": gpu.memoryUtil < self.resource_limits["max_memory_usage"] and
                                 gpu.load < self.resource_limits["max_utilization"]
                 })
-            
+
             return status
-            
+
         except Exception as e:
             self.logger.error(f"获取GPU资源状态失败: {e}")
             return {"error": str(e)}
@@ -1617,24 +1617,24 @@ class GPUResourceManager:
 # 在GPU服务中集成资源管理器
 class EnhancedGPUService(GPUService):
     """增强版GPU服务，包含资源管理"""
-    
+
     def __init__(self):
         super().__init__()
         self.resource_manager = GPUResourceManager()
-    
+
     async def initialize(self):
         """初始化增强版GPU服务"""
         await super().initialize()
         await self.resource_manager.initialize()
-    
+
     async def request_gpu_resources(self, task_id: str, requirements: Dict[str, Any]) -> Optional[int]:
         """请求GPU资源"""
         return await self.resource_manager.request_gpu_resources(task_id, requirements)
-    
+
     async def release_gpu_resources(self, task_id: str):
         """释放GPU资源"""
         await self.resource_manager.release_gpu_resources(task_id)
-    
+
     async def get_resource_status(self) -> Dict[str, Any]:
         """获取资源状态"""
         return await self.resource_manager.get_resource_status()
@@ -1767,7 +1767,7 @@ from contextlib import contextmanager
 
 class GPUResourceManager:
     """GPU内存资源管理器"""
-    
+
     @contextmanager
     def gpu_memory_context(self, required_memory_gb: float):
         """GPU内存上下文管理器"""
@@ -1775,14 +1775,14 @@ class GPUResourceManager:
             # 检查可用内存
             memory_info = cp.cuda.Device().mem_info
             available_memory_gb = (memory_info[1] - memory_info[0]) / (1024**3)
-            
+
             if available_memory_gb < required_memory_gb:
                 # 尝试释放缓存
                 cp.get_default_memory_pool().free_all_blocks()
                 cp.get_default_pinned_memory_pool().free_all_blocks()
-            
+
             yield
-            
+
         except Exception as e:
             # 发生错误时清理GPU内存
             cp.get_default_memory_pool().free_all_blocks()
@@ -1797,26 +1797,26 @@ class GPUResourceManager:
 # 三级缓存系统
 class GPUCacheManager:
     """GPU三级缓存管理器"""
-    
+
     def __init__(self):
         self.l1_cache = {}  # 应用级缓存
         self.l2_cache = {}  # GPU内存缓存
         self.l3_cache = {}  # Redis缓存
         self.cache_stats = {"hits": 0, "misses": 0}
-    
+
     async def get_with_cache(self, key: str, compute_func, *args, **kwargs):
         """带缓存的数据获取"""
         # L1缓存检查
         if key in self.l1_cache:
             self.cache_stats["hits"] += 1
             return self.l1_cache[key]
-        
+
         # L2缓存检查（GPU内存）
         if key in self.l2_cache:
             self.cache_stats["hits"] += 1
             self.l1_cache[key] = self.l2_cache[key]  # 提升到L1
             return self.l2_cache[key]
-        
+
         # L3缓存检查（Redis）
         try:
             import redis
@@ -1831,24 +1831,24 @@ class GPUCacheManager:
                 return data
         except:
             pass  # Redis不可用时忽略
-        
+
         # 缓存未命中，执行计算
         self.cache_stats["misses"] += 1
         data = await compute_func(*args, **kwargs)
-        
+
         # 更新所有层级缓存
         self.l1_cache[key] = data
         self.l2_cache[key] = data
-        
+
         try:
             import redis
             r = redis.Redis(host='localhost', port=6379, db=0)
             r.setex(key, 3600, pickle.dumps(data))  # 1小时过期
         except:
             pass  # Redis不可用时忽略
-        
+
         return data
-    
+
     def get_cache_hit_rate(self):
         """获取缓存命中率"""
         total = self.cache_stats["hits"] + self.cache_stats["misses"]
@@ -1918,6 +1918,6 @@ gpu_acceleration_histogram = Histogram(
 - 前端界面: http://localhost:3000/gpu
 - 技术支持: 查看GPU状态面板
 
-**版本**: v1.0  
-**最后更新**: 2025-11-16  
+**版本**: v1.0
+**最后更新**: 2025-11-16
 **维护者**: MyStocks GPU加速团队

@@ -80,13 +80,9 @@ class SSEConnectionManager:
 
         self.max_queue_size = max_queue_size
 
-        logger.info(
-            f"✅ SSEConnectionManager initialized (max_queue_size={max_queue_size})"
-        )
+        logger.info(f"✅ SSEConnectionManager initialized (max_queue_size={max_queue_size})")
 
-    async def connect(
-        self, channel: str, client_id: Optional[str] = None
-    ) -> tuple[str, asyncio.Queue]:
+    async def connect(self, channel: str, client_id: Optional[str] = None) -> tuple[str, asyncio.Queue]:
         """
         Register a new SSE connection
 
@@ -186,9 +182,7 @@ class SSEConnectionManager:
             await self.disconnect(channel, client_id)
 
         if client_count > 0:
-            logger.debug(
-                f"📡 Broadcasted {event.event} to {client_count} clients on {channel} channel"
-            )
+            logger.debug(f"📡 Broadcasted {event.event} to {client_count} clients on {channel} channel")
 
     async def send_to_client(self, channel: str, client_id: str, event: SSEEvent):
         """

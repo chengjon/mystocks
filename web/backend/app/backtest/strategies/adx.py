@@ -164,20 +164,12 @@ class ADXStrategy(BaseStrategy):
 
             # 继续平滑后续值
             for i in range(period, len(tr_list)):
-                self.smoothed_tr[symbol] = (
-                    self.smoothed_tr[symbol]
-                    - (self.smoothed_tr[symbol] / period)
-                    + tr_list[i]
-                )
+                self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr_list[i]
                 self.smoothed_plus_dm[symbol] = (
-                    self.smoothed_plus_dm[symbol]
-                    - (self.smoothed_plus_dm[symbol] / period)
-                    + plus_dm_list[i]
+                    self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm_list[i]
                 )
                 self.smoothed_minus_dm[symbol] = (
-                    self.smoothed_minus_dm[symbol]
-                    - (self.smoothed_minus_dm[symbol] / period)
-                    + minus_dm_list[i]
+                    self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm_list[i]
                 )
 
             # 计算DI
@@ -221,18 +213,12 @@ class ADXStrategy(BaseStrategy):
             minus_dm = down_move if (down_move > up_move and down_move > 0) else 0
 
             # 更新平滑值
-            self.smoothed_tr[symbol] = (
-                self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
-            )
+            self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
             self.smoothed_plus_dm[symbol] = (
-                self.smoothed_plus_dm[symbol]
-                - (self.smoothed_plus_dm[symbol] / period)
-                + plus_dm
+                self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm
             )
             self.smoothed_minus_dm[symbol] = (
-                self.smoothed_minus_dm[symbol]
-                - (self.smoothed_minus_dm[symbol] / period)
-                + minus_dm
+                self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm
             )
 
             # 计算DI
@@ -291,9 +277,7 @@ class ADXStrategy(BaseStrategy):
         self.smoothed_minus_dm.pop(symbol, None)
         self.adx_values.pop(symbol, None)
 
-        prev_adx, prev_plus_di, prev_minus_di = self._calculate_adx(
-            history[:-1], symbol
-        )
+        prev_adx, prev_plus_di, prev_minus_di = self._calculate_adx(history[:-1], symbol)
 
         # 恢复缓存
         if temp_tr is not None:
@@ -348,9 +332,7 @@ class ADXStrategy(BaseStrategy):
                             "plus_di": plus_di,
                             "minus_di": minus_di,
                             "adx_rising": adx_rising,
-                            "trend_strength": "strong"
-                            if is_strong_trend
-                            else "moderate",
+                            "trend_strength": "strong" if is_strong_trend else "moderate",
                         },
                     )
 

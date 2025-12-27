@@ -191,9 +191,7 @@ class TestSetupLogging:
             assert len(root_logger.handlers) == 2
 
             # 检查文件handler
-            file_handlers = [
-                h for h in root_logger.handlers if isinstance(h, logging.FileHandler)
-            ]
+            file_handlers = [h for h in root_logger.handlers if isinstance(h, logging.FileHandler)]
             assert len(file_handlers) == 1
 
             file_handler = file_handlers[0]
@@ -290,9 +288,7 @@ class TestSetupLogging:
             setup_logging(log_file=log_file)
 
             root_logger = logging.getLogger()
-            file_handler = next(
-                h for h in root_logger.handlers if isinstance(h, logging.FileHandler)
-            )
+            file_handler = next(h for h in root_logger.handlers if isinstance(h, logging.FileHandler))
             formatter = file_handler.formatter
 
             # 测试文件格式包含函数名和行号
@@ -513,12 +509,8 @@ class TestLoggingConfigIntegration:
             # 应该有控制台和文件两个handler
             assert len(root_logger.handlers) == 2
 
-            console_handler = next(
-                h for h in root_logger.handlers if isinstance(h, logging.StreamHandler)
-            )
-            file_handler = next(
-                h for h in root_logger.handlers if isinstance(h, logging.FileHandler)
-            )
+            console_handler = next(h for h in root_logger.handlers if isinstance(h, logging.StreamHandler))
+            file_handler = next(h for h in root_logger.handlers if isinstance(h, logging.FileHandler))
 
             # 测试两个handler都工作
             test_message = "Integration test message"

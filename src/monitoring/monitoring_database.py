@@ -609,15 +609,11 @@ class MonitoringDatabase:
         }
 
         if self._total_writes > 0:
-            stats["write_success_rate"] = (
-                (self._total_writes - self._write_failures) / self._total_writes * 100
-            )
+            stats["write_success_rate"] = (self._total_writes - self._write_failures) / self._total_writes * 100
 
         return stats
 
-    def cleanup_old_records(
-        self, days_to_keep: Optional[Dict[str, int]] = None
-    ) -> Dict[str, int]:
+    def cleanup_old_records(self, days_to_keep: Optional[Dict[str, int]] = None) -> Dict[str, int]:
         """
         清理过期记录
 
@@ -661,9 +657,7 @@ class MonitoringDatabase:
                     )
 
                     deleted_counts[table_name] = cursor.rowcount
-                    logger.info(
-                        f"清理 {table_name}: 删除 {cursor.rowcount} 条记录 (>{days}天)"
-                    )
+                    logger.info(f"清理 {table_name}: 删除 {cursor.rowcount} 条记录 (>{days}天)")
 
                 cursor.close()
 
@@ -688,9 +682,7 @@ def get_monitoring_database(enable_monitoring: bool = True) -> MonitoringDatabas
 
 if __name__ == "__main__":
     """测试监控数据库"""
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     print("\n测试MonitoringDatabase...")
 

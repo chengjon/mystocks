@@ -168,10 +168,7 @@ class TestSimplifiedPermissions:
         ]
 
         # Check all permissions for user
-        results = [
-            check_permission(resource, action, "user")
-            for resource, action in permissions
-        ]
+        results = [check_permission(resource, action, "user") for resource, action in permissions]
 
         assert results == [True, True, False]  # indicator, dashboard OK, alert denied
 
@@ -247,15 +244,9 @@ class TestRoleBasedScenarios:
         ]
 
         # Check what each role can do
-        guest_access = [
-            check_permission(resource, action, "guest") for resource, action in features
-        ]
-        user_access = [
-            check_permission(resource, action, "user") for resource, action in features
-        ]
-        admin_access = [
-            check_permission(resource, action, "admin") for resource, action in features
-        ]
+        guest_access = [check_permission(resource, action, "guest") for resource, action in features]
+        user_access = [check_permission(resource, action, "user") for resource, action in features]
+        admin_access = [check_permission(resource, action, "admin") for resource, action in features]
 
         assert guest_access == [True, False, False, False]
         assert user_access == [True, False, False, False]

@@ -9,14 +9,11 @@ from datetime import date, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Path, Query
-from pydantic import BaseModel
 
 from app.models.announcement import (
     AnnouncementMonitorRuleCreate,
     AnnouncementMonitorRuleResponse,
     AnnouncementMonitorRuleUpdate,
-    AnnouncementResponse,
-    AnnouncementStatsResponse,
 )
 from app.services.announcement_service import get_announcement_service
 

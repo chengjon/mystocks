@@ -5,17 +5,13 @@
 from datetime import date, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Query
 
 try:
     from app.models.announcement import (
         Announcement,
         AnnouncementMonitorRecord,
         AnnouncementMonitorRule,
-        AnnouncementMonitorRuleCreate,
-        AnnouncementMonitorRuleResponse,
-        AnnouncementMonitorRuleUpdate,
     )
     from app.services.announcement_service import get_announcement_service
 

@@ -12,7 +12,7 @@
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
+from typing import Optional
 from datetime import date, datetime
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
@@ -117,18 +117,14 @@ async def get_lhb_detail(
     """
     try:
         service = get_market_data_service_v2()
-        results = service.query_lhb_detail(
-            symbol, start_date, end_date, min_net_amount, limit
-        )
+        results = service.query_lhb_detail(symbol, start_date, end_date, min_net_amount, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/lhb/refresh", summary="刷新龙虎榜数据")
-async def refresh_lhb_detail(
-    trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")
-):
+async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")):
     """
     从东方财富刷新指定日期的龙虎榜数据
     """
@@ -242,9 +238,7 @@ async def get_stock_blocktrade(
 
 @router.post("/blocktrade/refresh", summary="刷新股票大宗交易数据")
 async def refresh_stock_blocktrade(
-    trade_date: Optional[str] = Query(
-        None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"
-    )
+    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新")
 ):
     """
     从东方财富刷新大宗交易数据
@@ -284,14 +278,10 @@ async def refresh_all_market_data():
         results["etf"] = service.fetch_and_save_etf_spot()
 
         # 3. 刷新行业资金流向
-        results["sector_industry"] = service.fetch_and_save_sector_fund_flow(
-            "行业", "今日"
-        )
+        results["sector_industry"] = service.fetch_and_save_sector_fund_flow("行业", "今日")
 
         # 4. 刷新概念资金流向
-        results["sector_concept"] = service.fetch_and_save_sector_fund_flow(
-            "概念", "今日"
-        )
+        results["sector_concept"] = service.fetch_and_save_sector_fund_flow("概念", "今日")
 
         # 5. 刷新龙虎榜（最近交易日）
         today_str = datetime.now().strftime("%Y-%m-%d")

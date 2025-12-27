@@ -20,22 +20,23 @@ from src.storage.access.base import DataClassification
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent.parent / "src"))
 
 
-
 # 导入目标模块和类
 from src.data_access.postgresql_access import PostgreSQLDataAccess
 from src.monitoring.monitoring_database import MonitoringDatabase
 
+
 # 模拟环境变量
 @pytest.fixture(autouse=True)
 def mock_os_getenv():
-    with patch('os.getenv') as mock_getenv:
+    with patch("os.getenv") as mock_getenv:
         mock_getenv.side_effect = lambda key, default=None: {
             "POSTGRESQL_HOST": "test_host",
             "POSTGRESQL_USER": "test_user",
             "POSTGRESQL_PASSWORD": "test_password",
-            "POSTGRESQL_PORT": "5432"
+            "POSTGRESQL_PORT": "5432",
         }.get(key, default)
         yield mock_getenv
+
 
 class TestPostgreSQLDataAccessRegression:
     """PostgreSQLDataAccess._build_analytical_query 方法的回归测试类"""
@@ -46,7 +47,7 @@ class TestPostgreSQLDataAccessRegression:
         mock_monitoring_db = Mock(spec=MonitoringDatabase)
 
         # Mock DatabaseTableManager which is called in PostgreSQLDataAccess __init__
-        with patch('src.storage.database.database_manager.DatabaseTableManager') as mock_db_manager_class:
+        with patch("src.storage.database.database_manager.DatabaseTableManager") as mock_db_manager_class:
             mock_db_manager_instance = Mock()
             mock_db_manager_class.return_value = mock_db_manager_instance
             instance = PostgreSQLDataAccess(mock_monitoring_db)
@@ -55,9 +56,7 @@ class TestPostgreSQLDataAccessRegression:
 
     def test_basic_query(self, data_access_instance):
         """测试基本查询语句生成"""
-        sql, params = data_access_instance._build_analytical_query(
-            DataClassification.DAILY_KLINE, "daily_kline"
-        )
+        sql, params = data_access_instance._build_analytical_query(DataClassification.DAILY_KLINE, "daily_kline")
         assert sql == "SELECT * FROM daily_kline ORDER BY trade_date DESC"
         assert params == ()
 
@@ -124,9 +123,7 @@ class TestPostgreSQLDataAccessRegression:
     def test_query_invalid_table_name_raises_error(self, data_access_instance):
         """测试非法表名引发错误"""
         with pytest.raises(ValueError, match="Invalid table name"):
-            data_access_instance._build_analytical_query(
-                DataClassification.DAILY_KLINE, "drop_table"
-            )
+            data_access_instance._build_analytical_query(DataClassification.DAILY_KLINE, "drop_table")
 
     def test_query_invalid_order_by_column_uses_default(self, data_access_instance):
         """测试非法排序列名使用默认排序"""
@@ -136,7 +133,7 @@ class TestPostgreSQLDataAccessRegression:
         assert sql == "SELECT * FROM daily_kline ORDER BY trade_date DESC"
         assert params == ()
 
-    @patch('src.data_access.postgresql_access.logger') # patch logger to capture warnings
+    @patch("src.data_access.postgresql_access.logger")  # patch logger to capture warnings
     def test_query_invalid_order_by_column_logs_warning(self, mock_logger, data_access_instance):
         """测试非法排序列名记录警告日志"""
         data_access_instance._build_analytical_query(

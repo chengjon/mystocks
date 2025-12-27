@@ -169,9 +169,7 @@ class TestDataProcessorFactorySimple:
         import inspect
 
         # 验证是静态方法
-        assert isinstance(
-            inspect.getattr_static(DataProcessorFactory, "get_processor"), staticmethod
-        )
+        assert isinstance(inspect.getattr_static(DataProcessorFactory, "get_processor"), staticmethod)
         assert isinstance(
             inspect.getattr_static(DataProcessorFactory, "get_processor_type"),
             staticmethod,

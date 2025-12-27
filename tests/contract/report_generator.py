@@ -67,9 +67,7 @@ class ContractTestReportGenerator:
         report.skipped_tests = sum(1 for r in results if r.status == TestStatus.SKIPPED)
         report.error_tests = sum(1 for r in results if r.status == TestStatus.ERROR)
         report.success_rate = round(
-            (report.passed_tests / report.total_tests * 100)
-            if report.total_tests > 0
-            else 0,
+            (report.passed_tests / report.total_tests * 100) if report.total_tests > 0 else 0,
             2,
         )
 
@@ -82,9 +80,7 @@ class ContractTestReportGenerator:
         # 生成建议
         report.recommendations = self._generate_recommendations(results)
 
-    def _calculate_category_statistics(
-        self, results: List[TestExecutionResult]
-    ) -> Dict[str, Dict[str, int]]:
+    def _calculate_category_statistics(self, results: List[TestExecutionResult]) -> Dict[str, Dict[str, int]]:
         """计算按类别的统计信息"""
         category_stats = {}
 
@@ -112,18 +108,12 @@ class ContractTestReportGenerator:
 
         return category_stats
 
-    def _calculate_performance_statistics(
-        self, results: List[TestExecutionResult]
-    ) -> Dict[str, Dict[str, float]]:
+    def _calculate_performance_statistics(self, results: List[TestExecutionResult]) -> Dict[str, Dict[str, float]]:
         """计算性能统计信息"""
         performance_stats = {}
 
         # 响应时间统计
-        response_times = [
-            r.performance_metrics.get("response_time_ms", 0)
-            for r in results
-            if r.performance_metrics
-        ]
+        response_times = [r.performance_metrics.get("response_time_ms", 0) for r in results if r.performance_metrics]
 
         if response_times:
             performance_stats["response_time"] = {
@@ -168,60 +158,36 @@ class ContractTestReportGenerator:
         upper = lower + 1
         if upper >= len(sorted_values):
             return sorted_values[lower]
-        return sorted_values[lower] + (index - lower) * (
-            sorted_values[upper] - sorted_values[lower]
-        )
+        return sorted_values[lower] + (index - lower) * (sorted_values[upper] - sorted_values[lower])
 
-    def _generate_recommendations(
-        self, results: List[TestExecutionResult]
-    ) -> List[str]:
+    def _generate_recommendations(self, results: List[TestExecutionResult]) -> List[str]:
         """生成优化建议"""
         recommendations = []
 
         # 失败测试建议
         failed_results = [r for r in results if r.status == TestStatus.FAILED]
         if failed_results:
-            recommendations.append(
-                f"有 {len(failed_results)} 个测试失败，建议检查相关功能的实现"
-            )
+            recommendations.append(f"有 {len(failed_results)} 个测试失败，建议检查相关功能的实现")
 
         # 性能建议
-        slow_tests = [
-            r
-            for r in results
-            if r.performance_metrics.get("response_time_ms", 0) > 2000
-        ]
+        slow_tests = [r for r in results if r.performance_metrics.get("response_time_ms", 0) > 2000]
         if slow_tests:
-            recommendations.append(
-                f"有 {len(slow_tests)} 个测试响应时间超过2秒，建议优化性能"
-            )
+            recommendations.append(f"有 {len(slow_tests)} 个测试响应时间超过2秒，建议优化性能")
 
         # 错误建议
         error_results = [r for r in results if r.status == TestStatus.ERROR]
         if error_results:
-            recommendations.append(
-                f"有 {len(error_results)} 个测试执行时发生错误，建议检查日志"
-            )
+            recommendations.append(f"有 {len(error_results)} 个测试执行时发生错误，建议检查日志")
 
         # 跳过测试建议
         skipped_results = [r for r in results if r.status == TestStatus.SKIPPED]
         if skipped_results:
-            recommendations.append(
-                f"有 {len(skipped_results)} 个测试被跳过，建议检查前置条件"
-            )
+            recommendations.append(f"有 {len(skipped_results)} 个测试被跳过，建议检查前置条件")
 
         # 成功率建议
-        success_rate = (
-            sum(1 for r in results if r.status == TestStatus.PASSED)
-            / len(results)
-            * 100
-            if results
-            else 0
-        )
+        success_rate = sum(1 for r in results if r.status == TestStatus.PASSED) / len(results) * 100 if results else 0
         if success_rate < 90:
-            recommendations.append(
-                f"测试成功率 {success_rate:.1f}% 较低，建议提高测试质量"
-            )
+            recommendations.append(f"测试成功率 {success_rate:.1f}% 较低，建议提高测试质量")
         elif success_rate >= 95:
             recommendations.append(f"测试成功率 {success_rate:.1f}% 优秀，继续保持")
 
@@ -324,11 +290,7 @@ class ContractTestReportGenerator:
                 <div class="category-grid">
             """
             for category, stats in report.category_stats.items():
-                success_rate = (
-                    (stats["passed"] / stats["total"] * 100)
-                    if stats["total"] > 0
-                    else 0
-                )
+                success_rate = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
                 category_html += f"""
                 <div class="category-item">
                     <h3>{category.replace("_", " ").title()}</h3>
@@ -736,9 +698,7 @@ class ContractTestReportGenerator:
 """
 
         for category, stats in report.category_stats.items():
-            success_rate = (
-                (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
-            )
+            success_rate = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
             md_content += f"""
 ### {category.replace("_", " ").title()}
 
@@ -762,19 +722,13 @@ class ContractTestReportGenerator:
                 md_content += "|------|------|\n"
                 for key, value in values.items():
                     unit = "ms" if "ms" in key else ""
-                    md_content += (
-                        f"| {key.replace('_', ' ').title()} | {value}{unit} |\n"
-                    )
+                    md_content += f"| {key.replace('_', ' ').title()} | {value}{unit} |\n"
                 md_content += "\n"
 
         # 测试结果详情
         md_content += "## 测试结果详情\n\n"
-        md_content += (
-            "| 测试用例 | 端点 | 类别 | 状态 | 耗时(ms) | 响应时间(ms) | 详情 |\n"
-        )
-        md_content += (
-            "|----------|------|------|------|----------|--------------|------|\n"
-        )
+        md_content += "| 测试用例 | 端点 | 类别 | 状态 | 耗时(ms) | 响应时间(ms) | 详情 |\n"
+        md_content += "|----------|------|------|------|----------|--------------|------|\n"
 
         for result in report.results:
             status_badge = result.status.value.replace("_", " ").title()
@@ -791,9 +745,7 @@ class ContractTestReportGenerator:
                 details += f"验证: {valid_count}/{total_count}"
 
             md_content += f"| {result.test_case.name} | {result.test_case.endpoint} | "
-            md_content += (
-                f"{result.test_case.category.value.replace('_', ' ').title()} | "
-            )
+            md_content += f"{result.test_case.category.value.replace('_', ' ').title()} | "
             md_content += f"{status_badge} | {result.duration:.2f} | "
             md_content += f"{result.performance_metrics.get('response_time_ms', 0):.2f} | {details} |\n"
 
@@ -803,9 +755,7 @@ class ContractTestReportGenerator:
             for i, rec in enumerate(report.recommendations, 1):
                 md_content += f"{i}. {rec}\n"
 
-        md_content += (
-            f"\n---\n*报告生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*"
-        )
+        md_content += f"\n---\n*报告生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*"
 
         return md_content
 
@@ -824,10 +774,7 @@ class ContractTestReportGenerator:
             "total_skipped": sum(r.get("skipped_tests", 0) for r in all_reports),
             "total_error": sum(r.get("error_tests", 0) for r in all_reports),
             "overall_success_rate": round(
-                (
-                    sum(r.get("passed_tests", 0) for r in all_reports)
-                    / sum(r.get("total_tests", 1) for r in all_reports)
-                )
+                (sum(r.get("passed_tests", 0) for r in all_reports) / sum(r.get("total_tests", 1) for r in all_reports))
                 * 100,
                 2,
             ),

@@ -8,6 +8,7 @@ import pandas as pd
 import logging
 import sys
 import os
+import psutil
 
 # 延迟导入GPU模块，只有在需要时才导入
 try:
@@ -33,9 +34,7 @@ except ImportError:
     PCA = None
 
 # 添加内存管理模块
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.gpu.accelerated.memory_management_fix import (
     memory_cleanup_decorator,
     optimize_dataframe_memory,
@@ -77,20 +76,16 @@ class GPUDataProcessorFixed(IDataProcessor):
                 cp.cuda.set_allocator(cp.cuda.MemoryPool())
                 self.processing_stats["mode"] = "gpu"
                 self.logger.info(
-                    f"GPUDataProcessorFixed initialized with GPU enabled, "
-                    f"memory_threshold={memory_threshold_mb}MB"
+                    f"GPUDataProcessorFixed initialized with GPU enabled, " f"memory_threshold={memory_threshold_mb}MB"
                 )
             except Exception as e:
-                self.logger.warning(
-                    f"GPU initialization failed, falling back to CPU: {e}"
-                )
+                self.logger.warning(f"GPU initialization failed, falling back to CPU: {e}")
                 self.gpu_enabled = False
                 self.processing_stats["mode"] = "cpu"
         else:
             self.processing_stats["mode"] = "cpu"
             self.logger.info(
-                f"GPUDataProcessorFixed initialized with CPU mode, "
-                f"memory_threshold={memory_threshold_mb}MB"
+                f"GPUDataProcessorFixed initialized with CPU mode, " f"memory_threshold={memory_threshold_mb}MB"
             )
 
     def _check_gpu_availability(self) -> bool:
@@ -162,10 +157,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             # 更新统计信息
             self.processing_stats["total_processed"] += 1
             if "original_memory_cpu" in memory_usage:
-                freed_memory = (
-                    memory_usage["original_memory_cpu"]
-                    - memory_usage["processed_memory_cpu"]
-                )
+                freed_memory = memory_usage["original_memory_cpu"] - memory_usage["processed_memory_cpu"]
                 self.processing_stats["total_memory_freed"] += freed_memory
 
             # 清理临时变量
@@ -208,9 +200,7 @@ class GPUDataProcessorFixed(IDataProcessor):
 
                 # 简化版: 假设volume_ma可以直接在当前批次内计算
                 if "volume" in df.columns and len(df) >= 20:
-                    df["volume_ma"] = (
-                        df["volume"].rolling(window=20, min_periods=1).mean()
-                    )
+                    df["volume_ma"] = df["volume"].rolling(window=20, min_periods=1).mean()
                 else:
                     df["volume_ma"] = 0.0
 
@@ -224,12 +214,8 @@ class GPUDataProcessorFixed(IDataProcessor):
                             "price": row.get("price"),
                             "volume": row.get("volume"),
                             "timestamp": row.get("timestamp"),
-                            "price_change": row["price_change"]
-                            if pd.notna(row["price_change"])
-                            else 0.0,
-                            "volume_ma": row["volume_ma"]
-                            if pd.notna(row["volume_ma"])
-                            else 0.0,
+                            "price_change": row["price_change"] if pd.notna(row["price_change"]) else 0.0,
+                            "volume_ma": row["volume_ma"] if pd.notna(row["volume_ma"]) else 0.0,
                         }
                     )
 
@@ -241,9 +227,7 @@ class GPUDataProcessorFixed(IDataProcessor):
                 df = pd.DataFrame(batch_data)
                 df["price_change"] = df["price"].pct_change()
                 if "volume" in df.columns and len(df) >= 20:
-                    df["volume_ma"] = (
-                        df["volume"].rolling(window=20, min_periods=1).mean()
-                    )
+                    df["volume_ma"] = df["volume"].rolling(window=20, min_periods=1).mean()
                 else:
                     df["volume_ma"] = 0.0
 
@@ -260,9 +244,7 @@ class GPUDataProcessorFixed(IDataProcessor):
                 del df
 
     @memory_cleanup_decorator(threshold_mb=400)
-    def compute_features(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """
         GPU计算技术特征 - 带内存管理
         """
@@ -272,9 +254,7 @@ class GPUDataProcessorFixed(IDataProcessor):
         try:
             df = pd.DataFrame(historical_data)
             if df.empty or "price" not in df.columns or len(df) < 20:
-                self.logger.warning(
-                    "Historical data is insufficient or empty for feature calculation."
-                )
+                self.logger.warning("Historical data is insufficient or empty for feature calculation.")
                 return {}
 
             # 内存优化
@@ -286,22 +266,14 @@ class GPUDataProcessorFixed(IDataProcessor):
             if self.gpu_enabled:
                 df_gpu = cudf.DataFrame(df)
                 prices = df_gpu["price"]
-                volumes = (
-                    df_gpu["volume"]
-                    if "volume" in df_gpu.columns
-                    else cudf.Series(0, index=df_gpu.index)
-                )
+                volumes = df_gpu["volume"] if "volume" in df_gpu.columns else cudf.Series(0, index=df_gpu.index)
 
                 for feature_type in feature_types:
                     if feature_type == "sma_20":
-                        features["sma_20"] = float(
-                            prices.rolling(window=20).mean().iloc[-1]
-                        )
+                        features["sma_20"] = float(prices.rolling(window=20).mean().iloc[-1])
                     elif feature_type == "sma_50":
                         if len(df_gpu) >= 50:
-                            features["sma_50"] = float(
-                                prices.rolling(window=50).mean().iloc[-1]
-                            )
+                            features["sma_50"] = float(prices.rolling(window=50).mean().iloc[-1])
                         else:
                             features["sma_50"] = 0.0
                     elif feature_type == "rsi":
@@ -315,9 +287,7 @@ class GPUDataProcessorFixed(IDataProcessor):
                     elif feature_type == "volume_ratio":
                         volume_ma = volumes.rolling(window=20).mean().iloc[-1]
                         current_volume = volumes.iloc[-1]
-                        features["volume_ratio"] = (
-                            float(current_volume / volume_ma) if volume_ma > 0 else 0.0
-                        )
+                        features["volume_ratio"] = float(current_volume / volume_ma) if volume_ma > 0 else 0.0
             else:
                 # CPU fallback
                 features = self._compute_features_cpu(df, feature_types)
@@ -356,16 +326,13 @@ class GPUDataProcessorFixed(IDataProcessor):
 
     # --- 辅助方法 ---
 
-    def _calculate_memory_usage(
-        self, original: pd.DataFrame, processed: pd.DataFrame
-    ) -> Dict[str, Any]:
+    def _calculate_memory_usage(self, original: pd.DataFrame, processed: pd.DataFrame) -> Dict[str, Any]:
         """计算内存使用情况"""
         return {
             "original_memory_cpu": original.memory_usage(deep=True).sum() / 1024**2,
             "processed_memory_cpu": processed.memory_usage(deep=True).sum() / 1024**2,
             "compression_ratio": (
-                original.memory_usage(deep=True).sum()
-                / processed.memory_usage(deep=True).sum()
+                original.memory_usage(deep=True).sum() / processed.memory_usage(deep=True).sum()
                 if processed.memory_usage(deep=True).sum() > 0
                 else 1.0
             ),
@@ -377,7 +344,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             if cp.cuda.is_available():
                 return cp.cuda.mem_get_info()[1] / 1024**2  # 总内存
             return 0.0
-        except:
+        except Exception:
             return 0.0
 
     def _cpu_preprocess(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -415,34 +382,21 @@ class GPUDataProcessorFixed(IDataProcessor):
         missing_values = data.isnull().sum()
         total_cells = data.shape[0] * data.shape[1]
         missing_ratio = missing_values.sum() / total_cells
-        quality_metrics["missing_ratio"] = (
-            missing_ratio.item() if hasattr(missing_ratio, "item") else missing_ratio
-        )
+        quality_metrics["missing_ratio"] = missing_ratio.item() if hasattr(missing_ratio, "item") else missing_ratio
 
         duplicate_ratio = data.duplicated().sum() / len(data)
         quality_metrics["duplicate_ratio"] = (
-            duplicate_ratio.item()
-            if hasattr(duplicate_ratio, "item")
-            else duplicate_ratio
+            duplicate_ratio.item() if hasattr(duplicate_ratio, "item") else duplicate_ratio
         )
 
         numeric_columns = data.select_dtypes(include=["float", "int"]).columns
         if len(numeric_columns) > 0:
-            inf_count = (
-                data[numeric_columns]
-                .applymap(lambda x: x == cp.inf or x == -cp.inf)
-                .sum()
-                .sum()
-            )
+            inf_count = data[numeric_columns].applymap(lambda x: x == cp.inf or x == -cp.inf).sum().sum()
             inf_ratio = inf_count / total_cells
-            quality_metrics["inf_ratio"] = (
-                inf_ratio.item() if hasattr(inf_ratio, "item") else inf_ratio
-            )
+            quality_metrics["inf_ratio"] = inf_ratio.item() if hasattr(inf_ratio, "item") else inf_ratio
 
         dtype_counts = data.dtypes.value_counts()
-        quality_metrics["dtype_distribution"] = {
-            str(k): int(v) for k, v in dtype_counts.items()
-        }
+        quality_metrics["dtype_distribution"] = {str(k): int(v) for k, v in dtype_counts.items()}
 
         return quality_metrics
 
@@ -515,9 +469,7 @@ class GPUDataProcessorFixed(IDataProcessor):
         df = data.copy()
 
         # 数值列标准化
-        numeric_cols = df.select_dtypes(
-            include=["float32", "float64", "int32", "int64"]
-        ).columns
+        numeric_cols = df.select_dtypes(include=["float32", "float64", "int32", "int64"]).columns
 
         for col in numeric_cols:
             if df[col].std() > 0:  # 只有标准差大于0才进行标准化
@@ -553,9 +505,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             "macd_histogram": float(histogram.iloc[-1]),
         }
 
-    def _calculate_bollinger_gpu(
-        self, prices: cudf.Series, period: int = 20, std_dev: int = 2
-    ) -> Dict[str, float]:
+    def _calculate_bollinger_gpu(self, prices: cudf.Series, period: int = 20, std_dev: int = 2) -> Dict[str, float]:
         """计算布林带指标"""
         sma = prices.rolling(window=period).mean()
         std = prices.rolling(window=period).std()
@@ -568,9 +518,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             "bb_lower": float(lower_band.iloc[-1]),
         }
 
-    def _compute_features_cpu(
-        self, df: pd.DataFrame, feature_types: List[str]
-    ) -> Dict[str, float]:
+    def _compute_features_cpu(self, df: pd.DataFrame, feature_types: List[str]) -> Dict[str, float]:
         """CPU特征计算回退方案"""
         features = {}
 
@@ -595,9 +543,7 @@ class GPUDataProcessorFixed(IDataProcessor):
                 if len(df) >= 20:
                     volume_ma = volumes.rolling(window=20).mean().iloc[-1]
                     current_volume = volumes.iloc[-1]
-                    features["volume_ratio"] = (
-                        float(current_volume / volume_ma) if volume_ma > 0 else 0.0
-                    )
+                    features["volume_ratio"] = float(current_volume / volume_ma) if volume_ma > 0 else 0.0
                 else:
                     features["volume_ratio"] = 0.0
 

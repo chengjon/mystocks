@@ -10,25 +10,20 @@ import asyncio
 import json
 import random
 import time
-import threading
-import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Any, Optional, Callable, Generator
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import psutil
-import numpy as np
 from collections import defaultdict
 
-from tests.config.test_config import (
-    test_env, test_strategy, performance_baseline,
-    validate_test_environment
-)
+from tests.config.test_config import test_env
 
 
 class FaultType(Enum):
     """故障类型枚举"""
+
     NETWORK_DELAY = "network_delay"
     NETWORK_PACKET_LOSS = "network_packet_loss"
     NETWORK_PARTITION = "network_partition"
@@ -53,15 +48,17 @@ class FaultType(Enum):
 
 class FaultSeverity(Enum):
     """故障严重程度"""
-    LOW = "low"           # 轻微影响，系统应正常处理
-    MEDIUM = "medium"     # 中等影响，系统可能有短暂问题
-    HIGH = "high"         # 严重影响，系统功能受限
-    CRITICAL = "critical" # 关键影响，系统核心功能受损
+
+    LOW = "low"  # 轻微影响，系统应正常处理
+    MEDIUM = "medium"  # 中等影响，系统可能有短暂问题
+    HIGH = "high"  # 严重影响，系统功能受限
+    CRITICAL = "critical"  # 关键影响，系统核心功能受损
 
 
 @dataclass
 class FaultInjectionConfig:
     """故障注入配置"""
+
     fault_type: FaultType
     severity: FaultSeverity
     injection_method: str = "direct"
@@ -77,6 +74,7 @@ class FaultInjectionConfig:
 @dataclass
 class FaultInjectionResult:
     """故障注入结果"""
+
     fault_id: str
     fault_type: FaultType
     start_time: datetime
@@ -113,7 +111,7 @@ class FaultInjector:
             "successful_faults": 0,
             "failed_faults": 0,
             "average_recovery_time": 0.0,
-            "system_resilience_score": 0.0
+            "system_resilience_score": 0.0,
         }
 
     def add_fault_config(self, config: FaultInjectionConfig):
@@ -123,12 +121,12 @@ class FaultInjector:
 
     async def run_comprehensive_fault_injection(self):
         """运行全面的故障注入测试"""
-        print(f"\n🎭 开始故障注入测试")
+        print("\n🎭 开始故障注入测试")
         print(f"📊 配置的故障类型数量: {len(self.configs)}")
 
         # 收集基线指标
         baseline_metrics = self.metrics_collector.collect_system_metrics()
-        print(f"📈 基线系统指标已收集")
+        print("📈 基线系统指标已收集")
 
         results = []
 
@@ -151,19 +149,21 @@ class FaultInjector:
                     fault_id=f"failed_{int(time.time())}",
                     fault_type=config.fault_type,
                     start_time=datetime.now(),
-                    error_message=str(e)
+                    error_message=str(e),
                 )
                 results.append(error_result)
                 self.stats["failed_faults"] += 1
 
         # 生成报告
         report = self._generate_fault_injection_report(results)
-        print(f"\n🎭 故障注入测试完成")
+        print("\n🎭 故障注入测试完成")
         print(f"📊 完整报告: {report}")
 
         return report
 
-    async def _inject_fault(self, config: FaultInjectionConfig, baseline_metrics: Dict[str, Any]) -> FaultInjectionResult:
+    async def _inject_fault(
+        self, config: FaultInjectionConfig, baseline_metrics: Dict[str, Any]
+    ) -> FaultInjectionResult:
         """执行单个故障注入"""
         fault_id = f"fault_{int(time.time())}_{config.fault_type.value}"
         start_time = datetime.now()
@@ -173,7 +173,7 @@ class FaultInjector:
             fault_id=fault_id,
             fault_type=config.fault_type,
             start_time=start_time,
-            system_metrics_before=baseline_metrics
+            system_metrics_before=baseline_metrics,
         )
 
         try:
@@ -193,7 +193,7 @@ class FaultInjector:
             await asyncio.sleep(config.duration_seconds)
 
             # 开始恢复
-            print(f"  🔄 开始恢复系统...")
+            print("  🔄 开始恢复系统...")
             recovery_start = datetime.now()
 
             await self._execute_fault_recovery(config)
@@ -310,7 +310,7 @@ class FaultInjector:
 
         async def delayed_request(*args, **kwargs):
             await asyncio.sleep(delay_factor)
-            return *args, **kwargs
+            return args, kwargs
 
         # 注册延迟处理器
         self.control_plane.register_delay_handler(delayed_request)
@@ -428,82 +428,77 @@ class FaultInjector:
     # 恢复方法
     async def _recover_network_delay(self):
         """恢复网络延迟"""
-        print(f"    🌐 恢复网络延迟")
+        print("    🌐 恢复网络延迟")
         self.control_plane.unregister_delay_handler()
 
     async def _recover_network_packet_loss(self):
         """恢复网络丢包"""
-        print(f"    📡 恢复网络丢包")
+        print("    📡 恢复网络丢包")
         self.control_plane.unregister_packet_loss_handler()
 
     async def _recover_network_partition(self):
         """恢复网络分区"""
-        print(f"    🔗 恢复网络分区")
+        print("    🔗 恢复网络分区")
         self.control_plane.recover_network_partition()
 
     async def _recover_database_timeout(self):
         """恢复数据库超时"""
-        print(f"    🗄️  恢复数据库超时")
+        print("    🗄️  恢复数据库超时")
         self.control_plane.recover_database_timeout()
 
     async def _recover_database_error(self):
         """恢复数据库错误"""
-        print(f"    🗄️  恢复数据库错误")
+        print("    🗄️  恢复数据库错误")
         self.control_plane.recover_database_error()
 
     async def _recover_api_error(self):
         """恢复API错误"""
-        print(f"    🚫 恢复API错误")
+        print("    🚫 恢复API错误")
         self.control_plane.recover_api_error()
 
     async def _recover_memory_pressure(self):
         """恢复内存压力"""
-        print(f"    💾 恢复内存压力")
+        print("    💾 恢复内存压力")
         self.control_plane.recover_memory_pressure()
 
     async def _recover_cpu_pressure(self):
         """恢复CPU压力"""
-        print(f"    ⚡ 恢复CPU压力")
+        print("    ⚡ 恢复CPU压力")
         self.control_plane.recover_cpu_pressure()
 
     async def _recover_disk_io_error(self):
         """恢复磁盘I/O错误"""
-        print(f" 💽 恢复磁盘I/O错误")
+        print(" 💽 恢复磁盘I/O错误")
         self.control_plane.recover_disk_io_error()
 
     async def _recover_time_drift(self):
         """恢复时间漂移"""
-        print(f"🕐 恢复时间漂移")
+        print("🕐 恢复时间漂移")
         self.control_plane.recover_time_drift()
 
     async def _recover_config_error(self):
         """恢复配置错误"""
-        print(f"⚙️  恢复配置错误")
+        print("⚙️  恢复配置错误")
         self.control_plane.recover_config_error()
 
     async def _recover_auth_failure(self):
         """恢复认证失败"""
-        print(f"🔐 恢复认证失败")
+        print("🔐 恢复认证失败")
         self.control_plane.recover_auth_failure()
 
     async def _recover_rate_limiting(self):
         """恢复限流"""
-        print(f"⏱️  恢复限流")
+        print("⏱️  恢复限流")
         self.control_plane.recover_rate_limiting()
 
     def _get_severity_weight(self, severity: FaultSeverity) -> int:
         """获取故障严重程度权重"""
-        weights = {
-            FaultSeverity.LOW: 1,
-            FaultSeverity.MEDIUM: 2,
-            FaultSeverity.HIGH: 3,
-            FaultSeverity.CRITICAL: 4
-        }
+        weights = {FaultSeverity.LOW: 1, FaultSeverity.MEDIUM: 2, FaultSeverity.HIGH: 3, FaultSeverity.CRITICAL: 4}
         return weights.get(severity, 1)
 
-    def _assess_customer_impact(self, config: FaultInjectionConfig,
-                              before_metrics: Dict[str, Any],
-                              after_metrics: Dict[str, Any]) -> str:
+    def _assess_customer_impact(
+        self, config: FaultInjectionConfig, before_metrics: Dict[str, Any], after_metrics: Dict[str, Any]
+    ) -> str:
         """评估客户影响"""
         # 基于指标变化评估影响
         response_time_change = after_metrics.get("avg_response_time", 0) - before_metrics.get("avg_response_time", 0)
@@ -526,7 +521,9 @@ class FaultInjector:
         if successful_count == 1:
             self.stats["average_recovery_time"] = recovery_time
         else:
-            self.stats["average_recovery_time"] = (current_avg * (successful_count - 1) + recovery_time) / successful_count
+            self.stats["average_recovery_time"] = (
+                current_avg * (successful_count - 1) + recovery_time
+            ) / successful_count
 
     def _generate_fault_injection_report(self, results: List[FaultInjectionResult]) -> str:
         """生成故障注入测试报告"""
@@ -537,36 +534,42 @@ class FaultInjector:
                 "total_faults": len(results),
                 "successful_faults": len([r for r in results if r.success]),
                 "failed_faults": len([r for r in results if not r.success]),
-                "test_duration_seconds": max(
-                    [(r.end_time - r.start_time).total_seconds() for r in results if r.end_time]
-                ) if results else 0
+                "test_duration_seconds": (
+                    max([(r.end_time - r.start_time).total_seconds() for r in results if r.end_time]) if results else 0
+                ),
             },
             "fault_details": [],
             "recovery_analysis": {
                 "average_recovery_time": self.stats["average_recovery_time"],
-                "fastest_recovery": min(
-                    [r.recovery_time_seconds for r in results if r.recovery_time_seconds]
-                ) if any(r.recovery_time_seconds for r in results) else 0,
-                "slowest_recovery": max(
-                    [r.recovery_time_seconds for r in results if r.recovery_time_seconds]
-                ) if any(r.recovery_time_seconds for r in results) else 0
+                "fastest_recovery": (
+                    min([r.recovery_time_seconds for r in results if r.recovery_time_seconds])
+                    if any(r.recovery_time_seconds for r in results)
+                    else 0
+                ),
+                "slowest_recovery": (
+                    max([r.recovery_time_seconds for r in results if r.recovery_time_seconds])
+                    if any(r.recovery_time_seconds for r in results)
+                    else 0
+                ),
             },
             "resilience_assessment": self._calculate_resilience_score(results),
-            "recommendations": self._generate_fault_injection_recommendations(results)
+            "recommendations": self._generate_fault_injection_recommendations(results),
         }
 
         # 添加详细的故障信息
         for result in results:
-            report["fault_details"].append({
-                "fault_id": result.fault_id,
-                "fault_type": result.fault_type.value,
-                "severity": result.severity.value if hasattr(result, 'severity') else "unknown",
-                "success": result.success,
-                "duration_seconds": result.duration_seconds,
-                "recovery_time_seconds": result.recovery_time_seconds,
-                "customer_impact": result.customer_impact,
-                "error_message": result.error_message
-            })
+            report["fault_details"].append(
+                {
+                    "fault_id": result.fault_id,
+                    "fault_type": result.fault_type.value,
+                    "severity": result.severity.value if hasattr(result, "severity") else "unknown",
+                    "success": result.success,
+                    "duration_seconds": result.duration_seconds,
+                    "recovery_time_seconds": result.recovery_time_seconds,
+                    "customer_impact": result.customer_impact,
+                    "error_message": result.error_message,
+                }
+            )
 
         # 保存报告
         with open(report_path, "w", encoding="utf-8") as f:
@@ -611,7 +614,7 @@ class FaultInjector:
             "overall_score": overall_score,
             "reliability": round(reliability, 2),
             "recovery_speed": round(recovery_speed, 2),
-            "stability": round(stability, 2)
+            "stability": round(stability, 2),
         }
 
     def _generate_fault_injection_recommendations(self, results: List[FaultInjectionResult]) -> List[str]:
@@ -671,7 +674,7 @@ class MetricsCollector:
             memory = psutil.virtual_memory()
 
             # 磁盘指标
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
 
             # 网络指标
             network = psutil.net_io_counters()
@@ -685,36 +688,32 @@ class MetricsCollector:
                 "avg_response_time": random.uniform(50, 500),
                 "error_rate": random.uniform(0, 0.05),
                 "active_connections": random.randint(10, 100),
-                "request_count": random.randint(100, 1000)
+                "request_count": random.randint(100, 1000),
             }
 
             return {
                 "timestamp": datetime.now().isoformat(),
-                "cpu": {
-                    "percent": cpu_percent,
-                    "count": cpu_count,
-                    "process_percent": process_cpu
-                },
+                "cpu": {"percent": cpu_percent, "count": cpu_count, "process_percent": process_cpu},
                 "memory": {
                     "total_mb": memory.total / 1024 / 1024,
                     "available_mb": memory.available / 1024 / 1024,
                     "percent": memory.percent,
                     "used_mb": memory.used / 1024 / 1024,
-                    "process_rss_mb": process_memory.rss / 1024 / 1024
+                    "process_rss_mb": process_memory.rss / 1024 / 1024,
                 },
                 "disk": {
                     "total_gb": disk.total / 1024 / 1024 / 1024,
                     "used_gb": disk.used / 1024 / 1024 / 1024,
                     "free_gb": disk.free / 1024 / 1024 / 1024,
-                    "percent": disk.percent
+                    "percent": disk.percent,
                 },
                 "network": {
                     "bytes_sent": network.bytes_sent,
                     "bytes_recv": network.bytes_recv,
                     "packets_sent": network.packets_sent,
-                    "packets_recv": network.packets_recv
+                    "packets_recv": network.packets_recv,
                 },
-                "application": app_metrics
+                "application": app_metrics,
             }
 
         except Exception as e:
@@ -737,15 +736,17 @@ class RecoveryMonitor:
             # 检查系统健康状态
             health_status = await self._check_system_health()
 
-            self.recovery_events.append({
-                "fault_id": fault_id,
-                "timestamp": datetime.now().isoformat(),
-                "health_status": health_status,
-                "recovery_duration": (datetime.now() - start_time).total_seconds()
-            })
+            self.recovery_events.append(
+                {
+                    "fault_id": fault_id,
+                    "timestamp": datetime.now().isoformat(),
+                    "health_status": health_status,
+                    "recovery_duration": (datetime.now() - start_time).total_seconds(),
+                }
+            )
 
             if health_status == "healthy":
-                print(f"    ✅ 系统已恢复正常")
+                print("    ✅ 系统已恢复正常")
                 break
 
             await asyncio.sleep(2)  # 每2秒检查一次
@@ -826,31 +827,19 @@ class FaultGenerator:
 
     def __init__(self):
         self.fault_templates = [
-            {
-                "type": FaultType.NETWORK_DELAY,
-                "severity": FaultSeverity.MEDIUM,
-                "parameters": {"delay_ms": 1000}
-            },
-            {
-                "type": FaultType.NETWORK_PACKET_LOSS,
-                "severity": FaultSeverity.MEDIUM,
-                "parameters": {"loss_rate": 0.1}
-            },
-            {
-                "type": FaultType.DATABASE_TIMEOUT,
-                "severity": FaultSeverity.HIGH,
-                "parameters": {"timeout_seconds": 5}
-            },
+            {"type": FaultType.NETWORK_DELAY, "severity": FaultSeverity.MEDIUM, "parameters": {"delay_ms": 1000}},
+            {"type": FaultType.NETWORK_PACKET_LOSS, "severity": FaultSeverity.MEDIUM, "parameters": {"loss_rate": 0.1}},
+            {"type": FaultType.DATABASE_TIMEOUT, "severity": FaultSeverity.HIGH, "parameters": {"timeout_seconds": 5}},
             {
                 "type": FaultType.API_ERROR,
                 "severity": FaultSeverity.MEDIUM,
-                "parameters": {"error_code": 500, "error_rate": 0.2}
+                "parameters": {"error_code": 500, "error_rate": 0.2},
             },
             {
                 "type": FaultType.MEMORY_PRESSURE,
                 "severity": FaultSeverity.HIGH,
-                "parameters": {"memory_usage_mb": 2048}
-            }
+                "parameters": {"memory_usage_mb": 2048},
+            },
         ]
 
     def generate_random_fault(self) -> FaultInjectionConfig:
@@ -862,7 +851,7 @@ class FaultGenerator:
             severity=template["severity"],
             parameters=template["parameters"],
             duration_seconds=random.randint(10, 60),
-            recovery_time_seconds=random.randint(5, 20)
+            recovery_time_seconds=random.randint(5, 20),
         )
 
     def generate_chaos_scenario(self, fault_count: int = 5) -> List[FaultInjectionConfig]:
@@ -892,26 +881,26 @@ def demo_fault_injection():
             fault_type=FaultType.NETWORK_DELAY,
             severity=FaultSeverity.MEDIUM,
             parameters={"delay_ms": 500},
-            duration_seconds=30
+            duration_seconds=30,
         ),
         FaultInjectionConfig(
             fault_type=FaultType.DATABASE_TIMEOUT,
             severity=FaultSeverity.HIGH,
             parameters={"timeout_seconds": 3},
-            duration_seconds=20
+            duration_seconds=20,
         ),
         FaultInjectionConfig(
             fault_type=FaultType.API_ERROR,
             severity=FaultSeverity.MEDIUM,
             parameters={"error_code": 500, "error_rate": 0.3},
-            duration_seconds=15
+            duration_seconds=15,
         ),
         FaultInjectionConfig(
             fault_type=FaultType.MEMORY_PRESSURE,
             severity=FaultSeverity.HIGH,
             parameters={"memory_usage_mb": 1024},
-            duration_seconds=25
-        )
+            duration_seconds=25,
+        ),
     ]
 
     # 添加配置
@@ -931,10 +920,7 @@ async def test_fault_injection_basic():
 
     # 添加一个简单故障配置
     config = FaultInjectionConfig(
-        fault_type=FaultType.NETWORK_DELAY,
-        severity=FaultSeverity.LOW,
-        parameters={"delay_ms": 100},
-        duration_seconds=5
+        fault_type=FaultType.NETWORK_DELAY, severity=FaultSeverity.LOW, parameters={"delay_ms": 100}, duration_seconds=5
     )
 
     injector.add_fault_config(config)
@@ -958,7 +944,7 @@ async def test_fault_injection_recovery():
         fault_type=FaultType.API_ERROR,
         severity=FaultSeverity.MEDIUM,
         parameters={"error_code": 500, "error_rate": 0.5},
-        duration_seconds=10
+        duration_seconds=10,
     )
 
     injector.add_fault_config(config)

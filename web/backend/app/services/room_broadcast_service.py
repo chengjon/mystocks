@@ -198,9 +198,7 @@ class RoomBroadcaster:
 
         logger.info("✅ Room Broadcaster initialized")
 
-    def register_delivery_callback(
-        self, callback: Callable[[str, RoomMessage], bool]
-    ) -> None:
+    def register_delivery_callback(self, callback: Callable[[str, RoomMessage], bool]) -> None:
         """注册消息传递回调
 
         Args:
@@ -354,9 +352,7 @@ class RoomBroadcaster:
         self._record_broadcast(task)
         return success
 
-    def broadcast_to_users(
-        self, message: RoomMessage, target_user_ids: List[str]
-    ) -> bool:
+    def broadcast_to_users(self, message: RoomMessage, target_user_ids: List[str]) -> bool:
         """广播消息给用户列表
 
         Args:
@@ -442,9 +438,7 @@ class RoomBroadcaster:
         """
         return self.offline_queue.dequeue(user_id, count)
 
-    def get_broadcast_history(
-        self, room_id: str, limit: int = 100
-    ) -> List[BroadcastTask]:
+    def get_broadcast_history(self, room_id: str, limit: int = 100) -> List[BroadcastTask]:
         """获取房间的广播历史
 
         Args:

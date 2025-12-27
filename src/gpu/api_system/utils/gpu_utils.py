@@ -6,6 +6,7 @@ GPU Utility Module
 import logging
 import time
 from typing import Dict, List, Optional, Any
+import importlib.util
 
 try:
     import pynvml
@@ -15,19 +16,19 @@ except ImportError:
     NVIDIA_AVAILABLE = False
     logging.warning("NVIDIA ML library not available")
 
-try:
-    import cupy as cp
+# 检查 CuPy 可用性
+CUPY_AVAILABLE = bool(importlib.util.find_spec("cupy"))
+if CUPY_AVAILABLE:
+    logging.info("CuPy library available")
+else:
+    logging.warning("CuPy library not available")
 
-    CUPY_AVAILABLE = True
-except ImportError:
-    CUPY_AVAILABLE = False
-
-try:
-    import cudf
-
-    CUDF_AVAILABLE = True
-except ImportError:
-    CUDF_AVAILABLE = False
+# 检查 cuDF 可用性
+CUDF_AVAILABLE = bool(importlib.util.find_spec("cudf"))
+if CUDF_AVAILABLE:
+    logging.info("cuDF library available")
+else:
+    logging.warning("cuDF library not available")
 
 logger = logging.getLogger(__name__)
 
@@ -176,9 +177,7 @@ class GPUResourceManager:
         try:
             handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
             # 获取当前PCIe带宽
-            total = pynvml.nvmlDeviceGetPcieThroughput(
-                handle, pynvml.NVML_PCIE_UTIL_COUNT
-            )
+            total = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_COUNT)
             return total / 1024.0  # 转换为GB/s
         except Exception:
             return 0
@@ -215,12 +214,8 @@ class GPUResourceManager:
         if not self.gpu_states:
             return {}
 
-        total_utilization = sum(
-            state["utilization"] for state in self.gpu_states.values()
-        ) / len(self.gpu_states)
-        total_memory_usage = sum(
-            state["memory_usage"] for state in self.gpu_states.values()
-        ) / len(self.gpu_states)
+        total_utilization = sum(state["utilization"] for state in self.gpu_states.values()) / len(self.gpu_states)
+        total_memory_usage = sum(state["memory_usage"] for state in self.gpu_states.values()) / len(self.gpu_states)
 
         return {
             "utilization": total_utilization,
@@ -229,13 +224,9 @@ class GPUResourceManager:
             "timestamp": time.time(),
         }
 
-    def allocate_gpu(
-        self, task_id: str, priority: str = "medium", memory_required: int = 0
-    ) -> Optional[int]:
+    def allocate_gpu(self, task_id: str, priority: str = "medium", memory_required: int = 0) -> Optional[int]:
         """分配GPU资源"""
-        logger.info(
-            f"为任务 {task_id} 分配GPU，优先级: {priority}, 内存需求: {memory_required}MB"
-        )
+        logger.info(f"为任务 {task_id} 分配GPU，优先级: {priority}, 内存需求: {memory_required}MB")
 
         # 根据优先级选择GPU
         gpu_ids = self.gpu_priority.get(priority, [])
@@ -250,15 +241,11 @@ class GPUResourceManager:
         for gpu_id in gpu_ids:
             if not self.gpu_lock[gpu_id]:
                 # 检查内存是否足够
-                available_memory = self.get_gpu_memory_free(
-                    gpu_id
-                ) - self.reserved_memory.get(gpu_id, 0)
+                available_memory = self.get_gpu_memory_free(gpu_id) - self.reserved_memory.get(gpu_id, 0)
                 if memory_required == 0 or available_memory >= memory_required:
                     # 锁定GPU
                     self.gpu_lock[gpu_id] = True
-                    self.reserved_memory[gpu_id] = (
-                        self.reserved_memory.get(gpu_id, 0) + memory_required
-                    )
+                    self.reserved_memory[gpu_id] = self.reserved_memory.get(gpu_id, 0) + memory_required
                     self.active_tasks[gpu_id] = task_id
 
                     logger.info(f"已为任务 {task_id} 分配GPU {gpu_id}")
@@ -287,9 +274,7 @@ class GPUResourceManager:
                     memory_released = self.reserved_memory.get(gpu_id, 0)
                     self.reserved_memory[gpu_id] = 0
                     del self.active_tasks[gpu_id]
-                    logger.info(
-                        f"已为任务 {task_id} 释放GPU {gpu_id}，释放内存: {memory_released}MB"
-                    )
+                    logger.info(f"已为任务 {task_id} 释放GPU {gpu_id}，释放内存: {memory_released}MB")
                     break
 
     def update_gpu_status(self):
@@ -322,25 +307,13 @@ class GPUResourceManager:
         active_tasks = len(self.active_tasks)
 
         # 计算平均使用率
-        total_utilization = sum(
-            state["utilization"] for state in self.gpu_states.values()
-        )
-        avg_utilization = (
-            total_utilization / len(self.gpu_states) if self.gpu_states else 0
-        )
+        total_utilization = sum(state["utilization"] for state in self.gpu_states.values())
+        avg_utilization = total_utilization / len(self.gpu_states) if self.gpu_states else 0
 
         # 计算平均内存使用率
-        total_memory_usage = sum(
-            state["memory_usage"] for state in self.gpu_states.values()
-        )
-        total_memory_total = sum(
-            state["memory_total"] for state in self.gpu_states.values()
-        )
-        avg_memory_usage = (
-            (total_memory_usage / total_memory_total * 100)
-            if total_memory_total > 0
-            else 0
-        )
+        total_memory_usage = sum(state["memory_usage"] for state in self.gpu_states.values())
+        total_memory_total = sum(state["memory_total"] for state in self.gpu_states.values())
+        avg_memory_usage = (total_memory_usage / total_memory_total * 100) if total_memory_total > 0 else 0
 
         return {
             "total_gpus": total_gpus,
