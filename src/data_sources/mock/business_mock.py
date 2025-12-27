@@ -58,9 +58,7 @@ class MockBusinessDataSource(IBusinessDataSource):
         # 内存存储回测结果
         self._backtest_results: Dict[str, Dict] = {}
 
-    def get_dashboard_summary(
-        self, user_id: int, include_sections: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def get_dashboard_summary(self, user_id: int, include_sections: Optional[List[str]] = None) -> Dict[str, Any]:
         """获取仪表盘汇总数据"""
         # 获取市场概览
         market_overview = self.ts.get_market_overview()
@@ -153,12 +151,8 @@ class MockBusinessDataSource(IBusinessDataSource):
             "sector_type": sector_type,
             "sectors": sector_performance,
             "summary": {
-                "up_sectors": sum(
-                    1 for s in sector_performance if s["avg_change_percent"] > 0
-                ),
-                "down_sectors": sum(
-                    1 for s in sector_performance if s["avg_change_percent"] < 0
-                ),
+                "up_sectors": sum(1 for s in sector_performance if s["avg_change_percent"] > 0),
+                "down_sectors": sum(1 for s in sector_performance if s["avg_change_percent"] < 0),
             },
         }
 
@@ -173,9 +167,7 @@ class MockBusinessDataSource(IBusinessDataSource):
     ) -> Dict[str, Any]:
         """执行策略回测"""
         # 生成回测ID
-        backtest_id = (
-            f"BT_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}"
-        )
+        backtest_id = f"BT_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}"
 
         # 简化的回测模拟
         days = (end_date - start_date).days
@@ -223,9 +215,7 @@ class MockBusinessDataSource(IBusinessDataSource):
                 {
                     "date": date_point.isoformat(),
                     "equity": round(current_equity, 2),
-                    "cumulative_return": round(
-                        ((current_equity / initial_capital) - 1) * 100, 2
-                    ),
+                    "cumulative_return": round(((current_equity / initial_capital) - 1) * 100, 2),
                 }
             )
 
@@ -268,9 +258,7 @@ class MockBusinessDataSource(IBusinessDataSource):
             return [result] if result and result["user_id"] == user_id else []
 
         # 返回用户的所有回测结果
-        user_results = [
-            r for r in self._backtest_results.values() if r["user_id"] == user_id
-        ]
+        user_results = [r for r in self._backtest_results.values() if r["user_id"] == user_id]
 
         # 按创建时间排序
         user_results.sort(key=lambda x: x["create_time"], reverse=True)
@@ -315,9 +303,7 @@ class MockBusinessDataSource(IBusinessDataSource):
 
         return risk_metrics
 
-    def check_risk_alerts(
-        self, user_id: int, portfolio: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+    def check_risk_alerts(self, user_id: int, portfolio: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """检查风险预警"""
         # 获取用户配置的预警
         alerts = self.rel.get_risk_alerts(user_id, is_active=True)
@@ -364,11 +350,7 @@ class MockBusinessDataSource(IBusinessDataSource):
             # 为每个策略生成几个信号
             num_signals = random.randint(0, 5)
             for _ in range(num_signals):
-                symbol = (
-                    random.choice(symbols)
-                    if symbols
-                    else f"60{random.randint(0, 9999):04d}"
-                )
+                symbol = random.choice(symbols) if symbols else f"60{random.randint(0, 9999):04d}"
                 signals.append(
                     {
                         "signal_id": f"SIG_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}",
@@ -408,13 +390,9 @@ class MockBusinessDataSource(IBusinessDataSource):
                     **p,
                     "value": round(value, 2),
                     "cost": round(cost, 2),
-                    "weight": round((value / total_value) * 100, 2)
-                    if total_value > 0
-                    else 0,
+                    "weight": round((value / total_value) * 100, 2) if total_value > 0 else 0,
                     "profit_loss": round(value - cost, 2),
-                    "profit_loss_percent": round(((value / cost) - 1) * 100, 2)
-                    if cost > 0
-                    else 0,
+                    "profit_loss_percent": round(((value / cost) - 1) * 100, 2) if cost > 0 else 0,
                 }
             )
 
@@ -527,9 +505,9 @@ class MockBusinessDataSource(IBusinessDataSource):
         rel_health = self.rel.health_check()
 
         return {
-            "status": "healthy"
-            if ts_health["status"] == "healthy" and rel_health["status"] == "healthy"
-            else "degraded",
+            "status": (
+                "healthy" if ts_health["status"] == "healthy" and rel_health["status"] == "healthy" else "degraded"
+            ),
             "data_source_type": "mock_composite",
             "components": {"timeseries": ts_health, "relational": rel_health},
             "business_metrics": {"total_backtests": len(self._backtest_results)},

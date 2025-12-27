@@ -47,9 +47,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
         # 股票名称缓存，提高查询性能
         self._stock_name_cache: Dict[str, str] = {}
 
-    def get_realtime_quotes(
-        self, symbols: List[str], fields: Optional[List[str]] = None
-    ) -> List[Dict[str, Any]]:
+    def get_realtime_quotes(self, symbols: List[str], fields: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """
         获取实时行情
 
@@ -115,9 +113,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                     "change_percent": float(change_pct),
                     "volume": int(row["volume"]),
                     "amount": float(row["amount"]),
-                    "timestamp": row["ts"].isoformat()
-                    if isinstance(row["ts"], datetime)
-                    else str(row["ts"]),
+                    "timestamp": row["ts"].isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
                 }
 
                 quotes.append(quote)
@@ -189,9 +185,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             klines = []
             for _, row in df.iterrows():
                 kline = {
-                    "date": row["ts"].date().isoformat()
-                    if isinstance(row["ts"], datetime)
-                    else str(row["ts"]),
+                    "date": row["ts"].date().isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
                     "open": float(row["open"]),
                     "high": float(row["high"]),
                     "low": float(row["low"]),
@@ -223,9 +217,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 },
             )
 
-    def get_intraday_chart(
-        self, symbol: str, trade_date: Optional[date] = None
-    ) -> List[Dict[str, Any]]:
+    def get_intraday_chart(self, symbol: str, trade_date: Optional[date] = None) -> List[Dict[str, Any]]:
         """
         获取分时图数据
 
@@ -246,18 +238,12 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 trade_date = date.today()
 
             # 构建时间范围 (9:30-15:00)
-            start_time = datetime.combine(
-                trade_date, datetime.min.time().replace(hour=9, minute=30)
-            )
-            end_time = datetime.combine(
-                trade_date, datetime.min.time().replace(hour=15, minute=0)
-            )
+            start_time = datetime.combine(trade_date, datetime.min.time().replace(hour=9, minute=30))
+            end_time = datetime.combine(trade_date, datetime.min.time().replace(hour=15, minute=0))
 
             table_name = self._get_table_name("minute_kline", symbol)
 
-            df = self.td_access.query_by_time_range(
-                table_name=table_name, start_time=start_time, end_time=end_time
-            )
+            df = self.td_access.query_by_time_range(table_name=table_name, start_time=start_time, end_time=end_time)
 
             if df.empty:
                 return []
@@ -269,23 +255,15 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             intraday = []
             for _, row in df.iterrows():
                 # 计算均价（使用成交额/成交量）
-                avg_price = (
-                    row["amount"] / row["volume"] if row["volume"] > 0 else row["close"]
-                )
+                avg_price = row["amount"] / row["volume"] if row["volume"] > 0 else row["close"]
 
                 intraday.append(
                     {
-                        "time": row["ts"].strftime("%H:%M")
-                        if isinstance(row["ts"], datetime)
-                        else str(row["ts"]),
+                        "time": row["ts"].strftime("%H:%M") if isinstance(row["ts"], datetime) else str(row["ts"]),
                         "price": float(row["close"]),
                         "avg_price": float(avg_price),
                         "volume": int(row["volume"]),
-                        "change_percent": float(
-                            (row["close"] - pre_close) / pre_close * 100
-                        )
-                        if pre_close > 0
-                        else 0.0,
+                        "change_percent": float((row["close"] - pre_close) / pre_close * 100) if pre_close > 0 else 0.0,
                     }
                 )
 
@@ -299,9 +277,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 query_params={"symbol": symbol, "trade_date": str(trade_date)},
             )
 
-    def get_fund_flow(
-        self, symbol: str, trade_date: Optional[date] = None
-    ) -> Dict[str, Any]:
+    def get_fund_flow(self, symbol: str, trade_date: Optional[date] = None) -> Dict[str, Any]:
         """
         获取资金流向
 
@@ -347,9 +323,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
             return {
                 "symbol": symbol,
-                "trade_date": row["ts"].date().isoformat()
-                if isinstance(row["ts"], datetime)
-                else str(row["ts"]),
+                "trade_date": row["ts"].date().isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
                 "main_net_inflow": float(row["main_net_inflow"]),
                 "main_inflow": float(row["main_inflow"]),
                 "main_outflow": float(row["main_outflow"]),
@@ -500,9 +474,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             limit_down_count = sum(1 for row in rows if row[2] <= -9.9)
 
             # 获取主要指数
-            indices = self.get_index_realtime(
-                index_codes=["sh000001", "sz399001", "sz399006", "sz399300"]
-            )
+            indices = self.get_index_realtime(index_codes=["sh000001", "sz399001", "sz399006", "sz399300"])
 
             return {
                 "total_stocks": len(rows),
@@ -541,9 +513,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             indices = []
 
             for index_code in index_codes:
-                table_name = self._get_table_name(
-                    "index_realtime", index_code, is_index=True
-                )
+                table_name = self._get_table_name("index_realtime", index_code, is_index=True)
 
                 df = self.td_access.query_latest(table_name=table_name, limit=1)
 
@@ -566,9 +536,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                         "amount": float(row["amount"]),
                         "up_count": int(row.get("up_count", 0)),
                         "down_count": int(row.get("down_count", 0)),
-                        "timestamp": row["ts"].isoformat()
-                        if isinstance(row["ts"], datetime)
-                        else str(row["ts"]),
+                        "timestamp": row["ts"].isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
                     }
                 )
 
@@ -671,26 +639,16 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             # 确定竞价时间范围
             if auction_type == "open":
                 # 开盘竞价: 9:15-9:25
-                start_time = datetime.combine(
-                    trade_date, datetime.min.time().replace(hour=9, minute=15)
-                )
-                end_time = datetime.combine(
-                    trade_date, datetime.min.time().replace(hour=9, minute=25)
-                )
+                start_time = datetime.combine(trade_date, datetime.min.time().replace(hour=9, minute=15))
+                end_time = datetime.combine(trade_date, datetime.min.time().replace(hour=9, minute=25))
             else:
                 # 收盘竞价: 14:57-15:00
-                start_time = datetime.combine(
-                    trade_date, datetime.min.time().replace(hour=14, minute=57)
-                )
-                end_time = datetime.combine(
-                    trade_date, datetime.min.time().replace(hour=15, minute=0)
-                )
+                start_time = datetime.combine(trade_date, datetime.min.time().replace(hour=14, minute=57))
+                end_time = datetime.combine(trade_date, datetime.min.time().replace(hour=15, minute=0))
 
             table_name = self._get_table_name("market_snapshot", symbol)
 
-            df = self.td_access.query_by_time_range(
-                table_name=table_name, start_time=start_time, end_time=end_time
-            )
+            df = self.td_access.query_by_time_range(table_name=table_name, start_time=start_time, end_time=end_time)
 
             if df.empty:
                 raise DataSourceDataNotFound(
@@ -711,9 +669,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 "volume": int(row.get("bid1_volume", 0) + row.get("ask1_volume", 0)),
                 "bid_volumes": [int(row.get(f"bid{i}_volume", 0)) for i in range(1, 6)],
                 "ask_volumes": [int(row.get(f"ask{i}_volume", 0)) for i in range(1, 6)],
-                "timestamp": row["ts"].isoformat()
-                if isinstance(row["ts"], datetime)
-                else str(row["ts"]),
+                "timestamp": row["ts"].isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
             }
 
         except DataSourceDataNotFound:
@@ -726,9 +682,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 query_params={"symbol": symbol},
             )
 
-    def check_data_quality(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> Dict[str, Any]:
+    def check_data_quality(self, symbol: str, start_date: date, end_date: date) -> Dict[str, Any]:
         """
         检查时序数据质量
 
@@ -752,9 +706,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             start_time = datetime.combine(start_date, datetime.min.time())
             end_time = datetime.combine(end_date, datetime.max.time())
 
-            df = self.td_access.query_by_time_range(
-                table_name=table_name, start_time=start_time, end_time=end_time
-            )
+            df = self.td_access.query_by_time_range(table_name=table_name, start_time=start_time, end_time=end_time)
 
             # 计算交易日数量（简化：按5天一周，去掉周末）
             total_days = (end_date - start_date).days + 1
@@ -762,18 +714,12 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
             actual_records = len(df)
             missing_records = max(0, expected_records - actual_records)
-            completeness_rate = (
-                (actual_records / expected_records * 100) if expected_records > 0 else 0
-            )
+            completeness_rate = (actual_records / expected_records * 100) if expected_records > 0 else 0
 
             # 检查数据新鲜度
             if not df.empty:
                 latest_ts = df["ts"].max()
-                data_freshness = (
-                    latest_ts.isoformat()
-                    if isinstance(latest_ts, datetime)
-                    else str(latest_ts)
-                )
+                data_freshness = latest_ts.isoformat() if isinstance(latest_ts, datetime) else str(latest_ts)
             else:
                 data_freshness = None
 
@@ -785,9 +731,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 for _, row in zero_volume.iterrows():
                     issues.append(
                         {
-                            "date": row["ts"].date().isoformat()
-                            if isinstance(row["ts"], datetime)
-                            else str(row["ts"]),
+                            "date": row["ts"].date().isoformat() if isinstance(row["ts"], datetime) else str(row["ts"]),
                             "issue": "zero_volume",
                         }
                     )
@@ -798,9 +742,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                     for _, row in abnormal_change.iterrows():
                         issues.append(
                             {
-                                "date": row["ts"].date().isoformat()
-                                if isinstance(row["ts"], datetime)
-                                else str(row["ts"]),
+                                "date": (
+                                    row["ts"].date().isoformat() if isinstance(row["ts"], datetime) else str(row["ts"])
+                                ),
                                 "issue": f"abnormal_change_{row['change_pct']:.2f}%",
                             }
                         )
@@ -809,9 +753,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             quality_score = completeness_rate * 0.7  # 完整性占70%
             if data_freshness:
                 quality_score += 20  # 有数据加20分
-            quality_score = min(
-                100, max(0, quality_score - len(issues) * 2)
-            )  # 每个问题扣2分
+            quality_score = min(100, max(0, quality_score - len(issues) * 2))  # 每个问题扣2分
 
             return {
                 "symbol": symbol,
@@ -878,9 +820,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
     # ========== 辅助方法 ==========
 
-    def _get_table_name(
-        self, stable_name: str, symbol: str, is_index: bool = False
-    ) -> str:
+    def _get_table_name(self, stable_name: str, symbol: str, is_index: bool = False) -> str:
         """
         获取子表名称
 
@@ -1048,25 +988,17 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
         ema_slow = self._calculate_ema(data, slow)
 
         # 计算MACD = EMA(fast) - EMA(slow)
-        macd_line = [
-            f - s if f is not None and s is not None else None
-            for f, s in zip(ema_fast, ema_slow)
-        ]
+        macd_line = [f - s if f is not None and s is not None else None for f, s in zip(ema_fast, ema_slow)]
 
         # 计算Signal = EMA(MACD, signal)
         macd_values = [v for v in macd_line if v is not None]
         signal_line_values = self._calculate_ema(macd_values, signal)
 
         # 对齐Signal线
-        signal_line = [None] * (
-            len(macd_line) - len(signal_line_values)
-        ) + signal_line_values
+        signal_line = [None] * (len(macd_line) - len(signal_line_values)) + signal_line_values
 
         # 计算柱状图 = MACD - Signal
-        hist = [
-            m - s if m is not None and s is not None else None
-            for m, s in zip(macd_line, signal_line)
-        ]
+        hist = [m - s if m is not None and s is not None else None for m, s in zip(macd_line, signal_line)]
 
         return {"macd": macd_line, "signal": signal_line, "hist": hist}
 

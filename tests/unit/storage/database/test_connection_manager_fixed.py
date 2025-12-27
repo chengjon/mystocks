@@ -264,9 +264,7 @@ class TestDatabaseConnectionManagerFixed:
                 try:
                     manager._return_postgresql_connection(mock_connection)
                 except Exception:
-                    pytest.fail(
-                        "_return_postgresql_connection should not raise exceptions when no pool exists"
-                    )
+                    pytest.fail("_return_postgresql_connection should not raise exceptions when no pool exists")
 
         except ImportError:
             pytest.skip("DatabaseConnectionManager not available")
@@ -281,9 +279,7 @@ class TestDatabaseConnectionManagerFixed:
             from src.storage.database.connection_manager import get_connection_manager
 
             # Mock DatabaseConnectionManager以避免实际初始化
-            with patch(
-                "src.storage.database.connection_manager.DatabaseConnectionManager"
-            ) as mock_manager_class:
+            with patch("src.storage.database.connection_manager.DatabaseConnectionManager") as mock_manager_class:
                 mock_instance = Mock()
                 mock_manager_class.return_value = mock_instance
 
@@ -331,9 +327,7 @@ class TestDatabaseConnectionManagerFixed:
             ]
 
             for method_name in expected_methods:
-                assert hasattr(DatabaseConnectionManager, method_name), (
-                    f"Missing method: {method_name}"
-                )
+                assert hasattr(DatabaseConnectionManager, method_name), f"Missing method: {method_name}"
 
         except ImportError:
             pytest.skip("Module structure test failed")
@@ -405,9 +399,7 @@ class TestConnectionManagerIntegration:
             conn_module._connection_manager = None
 
             # Mock DatabaseConnectionManager
-            with patch(
-                "src.storage.database.connection_manager.DatabaseConnectionManager"
-            ) as mock_class:
+            with patch("src.storage.database.connection_manager.DatabaseConnectionManager") as mock_class:
                 mock_instance = Mock()
                 mock_class.return_value = mock_instance
 

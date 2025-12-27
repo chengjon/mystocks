@@ -195,9 +195,7 @@ class TestCircuitBreaker:
         def success_func():
             return "success"
 
-        config = CircuitBreakerConfig(
-            failure_threshold=1, success_threshold=2, timeout_seconds=0
-        )
+        config = CircuitBreakerConfig(failure_threshold=1, success_threshold=2, timeout_seconds=0)
         cb = CircuitBreaker("test", config)
 
         # Open the circuit
@@ -320,9 +318,7 @@ class TestRequestRouter:
         router = RequestRouter()
 
         router.register_route(RouteConfig(path="/users", methods=["GET"], version="v1"))
-        router.register_route(
-            RouteConfig(path="/posts", methods=["POST"], version="v2")
-        )
+        router.register_route(RouteConfig(path="/posts", methods=["POST"], version="v2"))
 
         summary = router.get_routes_summary()
 

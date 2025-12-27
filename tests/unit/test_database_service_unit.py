@@ -16,9 +16,7 @@ class TestDatabaseServiceUnit:
     def setup_with_mock(self):
         """使用fixture设置测试环境确保mock正确应用"""
         self.mock_postgresql_access = MagicMock()
-        with patch(
-            "src.database.database_service.PostgreSQLDataAccess"
-        ) as MockPostgreSQLAccess:
+        with patch("src.database.database_service.PostgreSQLDataAccess") as MockPostgreSQLAccess:
             MockPostgreSQLAccess.return_value = self.mock_postgresql_access
             self.db_service = DatabaseService()
             # 确保mock被注入
@@ -28,9 +26,7 @@ class TestDatabaseServiceUnit:
     def test_get_stock_list_empty_params(self):
         """测试获取股票列表 - 空参数"""
         # 模拟数据库返回空DataFrame
-        mock_df_empty = pd.DataFrame(
-            columns=["symbol", "name", "industry", "area", "market", "list_date"]
-        )
+        mock_df_empty = pd.DataFrame(columns=["symbol", "name", "industry", "area", "market", "list_date"])
         mock_total_df = pd.DataFrame({"total": [0]})
 
         def side_effect(table_name, **kwargs):

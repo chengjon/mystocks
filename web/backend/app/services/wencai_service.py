@@ -83,9 +83,7 @@ class WencaiService:
         """
         table_name = ALLOWED_QUERY_TABLES.get(query_name)
         if not table_name:
-            raise ValueError(
-                f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}"
-            )
+            raise ValueError(f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}")
         return table_name
 
     def get_all_queries(self) -> List[Dict[str, Any]]:
@@ -113,11 +111,7 @@ class WencaiService:
             查询信息，不存在返回None
         """
         try:
-            query = (
-                self.db.query(WencaiQuery)
-                .filter(WencaiQuery.query_name == query_name)
-                .first()
-            )
+            query = self.db.query(WencaiQuery).filter(WencaiQuery.query_name == query_name).first()
             return query.to_dict() if query else None
         except Exception as e:
             logger.error(f"Failed to get query {query_name}: {str(e)}")
@@ -224,24 +218,19 @@ class WencaiService:
                 try:
                     # 读取现有数据（排除fetch_time列）
                     existing_data = pd.read_sql_table(table_name, self.engine)
-                    existing_data = existing_data.drop(
-                        columns=["fetch_time"], errors="ignore"
-                    )
+                    existing_data = existing_data.drop(columns=["fetch_time"], errors="ignore")
 
                     # 准备新数据（排除fetch_time列进行比较）
                     new_data = data.drop(columns=["fetch_time"], errors="ignore")
 
                     # 找出唯一记录
-                    merged = pd.merge(
-                        new_data, existing_data, how="left", indicator=True
-                    )
+                    merged = pd.merge(new_data, existing_data, how="left", indicator=True)
                     unique_rows = merged["_merge"] == "left_only"
                     data_to_save = data[unique_rows].copy()
 
                     duplicate_count = len(data) - len(data_to_save)
                     logger.info(
-                        f"Deduplication: {len(data)} total, "
-                        f"{len(data_to_save)} new, {duplicate_count} duplicates"
+                        f"Deduplication: {len(data)} total, " f"{len(data_to_save)} new, {duplicate_count} duplicates"
                     )
 
                 except Exception as e:
@@ -279,9 +268,7 @@ class WencaiService:
             logger.error(f"Unexpected error while saving: {str(e)}")
             raise
 
-    def get_query_results(
-        self, query_name: str, limit: int = 100, offset: int = 0
-    ) -> Dict[str, Any]:
+    def get_query_results(self, query_name: str, limit: int = 100, offset: int = 0) -> Dict[str, Any]:
         """
         获取查询结果
 
@@ -295,9 +282,7 @@ class WencaiService:
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
-        logger.info(
-            f"Getting results from {table_name}, limit={limit}, offset={offset}"
-        )
+        logger.info(f"Getting results from {table_name}, limit={limit}, offset={offset}")
 
         try:
             inspector = inspect(self.engine)
@@ -317,9 +302,7 @@ class WencaiService:
 
                 # 查询数据（按fetch_time降序）
                 data_query = text(
-                    f"SELECT * FROM {table_name} "
-                    f"ORDER BY fetch_time DESC "
-                    f"LIMIT :limit OFFSET :offset"
+                    f"SELECT * FROM {table_name} " f"ORDER BY fetch_time DESC " f"LIMIT :limit OFFSET :offset"
                 )
                 result = conn.execute(data_query, {"limit": limit, "offset": offset})
 
@@ -328,9 +311,7 @@ class WencaiService:
                 rows = [dict(zip(columns, row)) for row in result]
 
                 # 获取最新fetch_time
-                latest_query = text(
-                    f"SELECT MAX(fetch_time) as latest FROM {table_name}"
-                )
+                latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {table_name}")
                 latest_fetch_time = conn.execute(latest_query).scalar()
 
             return {

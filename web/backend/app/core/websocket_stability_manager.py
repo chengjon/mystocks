@@ -120,9 +120,7 @@ class CircuitBreaker:
         """检查是否应该尝试重置"""
         if self.last_failure_time is None:
             return True
-        return (
-            datetime.utcnow() - self.last_failure_time
-        ).total_seconds() >= self.recovery_timeout
+        return (datetime.utcnow() - self.last_failure_time).total_seconds() >= self.recovery_timeout
 
     def _on_success(self):
         """成功时的处理"""
@@ -296,18 +294,11 @@ class ConnectionPool:
         with self.lock:
             idle_connections = []
             for conn_id, conn_info in self.connections.items():
-                if (
-                    conn_id in self.available_connections
-                    and current_time - conn_info["last_used"] > self.idle_timeout
-                ):
+                if conn_id in self.available_connections and current_time - conn_info["last_used"] > self.idle_timeout:
                     idle_connections.append(conn_id)
 
             # 保持最小连接数
-            while (
-                len(idle_connections) > 0
-                and len(self.connections) - len(idle_connections)
-                >= self.min_connections
-            ):
+            while len(idle_connections) > 0 and len(self.connections) - len(idle_connections) >= self.min_connections:
                 conn_id = idle_connections.pop()
                 await self._close_connection(conn_id)
 
@@ -419,9 +410,7 @@ class WebSocketStabilityManager:
 
         try:
             # 通过断路器发送
-            success = await circuit_breaker.call(
-                self._send_message_protected, connection_id, message, priority
-            )
+            success = await circuit_breaker.call(self._send_message_protected, connection_id, message, priority)
 
             if success:
                 self.connections[connection_id].total_messages_sent += 1
@@ -435,9 +424,7 @@ class WebSocketStabilityManager:
             logger.error(f"发送消息失败: {connection_id} - {e}")
             return False
 
-    async def _send_message_protected(
-        self, connection_id: str, message: Dict[str, Any], priority: int
-    ) -> bool:
+    async def _send_message_protected(self, connection_id: str, message: Dict[str, Any], priority: int) -> bool:
         """受保护的消息发送"""
         message_queue = self.message_queues[connection_id]
         return await message_queue.enqueue(message, priority)
@@ -457,12 +444,8 @@ class WebSocketStabilityManager:
         current_time = datetime.utcnow()
 
         # 计算各项指标
-        time_since_last_activity = (
-            current_time - metrics.last_activity
-        ).total_seconds()
-        error_rate = metrics.error_count / max(
-            1, metrics.total_messages_sent + metrics.total_messages_received
-        )
+        time_since_last_activity = (current_time - metrics.last_activity).total_seconds()
+        error_rate = metrics.error_count / max(1, metrics.total_messages_sent + metrics.total_messages_received)
 
         # 健康检查逻辑
         issues = []
@@ -488,9 +471,7 @@ class WebSocketStabilityManager:
 
         # 计算消息速率
         time_elapsed = (current_time - metrics.created_at).total_seconds()
-        message_rate = (
-            metrics.total_messages_sent + metrics.total_messages_received
-        ) / max(1, time_elapsed)
+        message_rate = (metrics.total_messages_sent + metrics.total_messages_received) / max(1, time_elapsed)
 
         result = HealthCheckResult(
             is_healthy=is_healthy,
@@ -503,19 +484,13 @@ class WebSocketStabilityManager:
         self.health_check_results[connection_id] = result
         return result
 
-    async def get_connection_stats(
-        self, connection_id: str
-    ) -> Optional[Dict[str, Any]]:
+    async def get_connection_stats(self, connection_id: str) -> Optional[Dict[str, Any]]:
         """获取连接统计"""
         if connection_id not in self.connections:
             return None
 
         metrics = self.connections[connection_id]
-        queue_stats = (
-            self.message_queues[connection_id].get_stats()
-            if connection_id in self.message_queues
-            else {}
-        )
+        queue_stats = self.message_queues[connection_id].get_stats() if connection_id in self.message_queues else {}
         health_result = self.health_check_results.get(connection_id)
 
         return {
@@ -531,32 +506,26 @@ class WebSocketStabilityManager:
                 "last_error": metrics.last_error,
             },
             "queue": queue_stats,
-            "health": {
-                "is_healthy": health_result.is_healthy if health_result else False,
-                "latency_ms": health_result.latency_ms
+            "health": (
+                {
+                    "is_healthy": health_result.is_healthy if health_result else False,
+                    "latency_ms": health_result.latency_ms if health_result else float("inf"),
+                    "message_rate": health_result.message_rate if health_result else 0.0,
+                    "error_rate": health_result.error_rate if health_result else 1.0,
+                    "issues": health_result.issues if health_result else [],
+                }
                 if health_result
-                else float("inf"),
-                "message_rate": health_result.message_rate if health_result else 0.0,
-                "error_rate": health_result.error_rate if health_result else 1.0,
-                "issues": health_result.issues if health_result else [],
-            }
-            if health_result
-            else None,
+                else None
+            ),
         }
 
     def get_global_stats(self) -> Dict[str, Any]:
         """获取全局统计"""
         total_connections = len(self.connections)
-        healthy_connections = sum(
-            1 for result in self.health_check_results.values() if result.is_healthy
-        )
+        healthy_connections = sum(1 for result in self.health_check_results.values() if result.is_healthy)
 
-        total_messages_sent = sum(
-            metrics.total_messages_sent for metrics in self.connections.values()
-        )
-        total_messages_received = sum(
-            metrics.total_messages_received for metrics in self.connections.values()
-        )
+        total_messages_sent = sum(metrics.total_messages_sent for metrics in self.connections.values())
+        total_messages_received = sum(metrics.total_messages_received for metrics in self.connections.values())
         total_errors = sum(metrics.error_count for metrics in self.connections.values())
 
         return {
@@ -567,8 +536,7 @@ class WebSocketStabilityManager:
             "total_messages_sent": total_messages_sent,
             "total_messages_received": total_messages_received,
             "total_errors": total_errors,
-            "error_rate": total_errors
-            / max(1, total_messages_sent + total_messages_received),
+            "error_rate": total_errors / max(1, total_messages_sent + total_messages_received),
             "config": self.config,
         }
 
@@ -608,9 +576,7 @@ class WebSocketStabilityManager:
                 # 清理长时间无活动的连接
                 inactive_connections = []
                 for connection_id, metrics in self.connections.items():
-                    inactive_time = (
-                        current_time - metrics.last_activity
-                    ).total_seconds()
+                    inactive_time = (current_time - metrics.last_activity).total_seconds()
                     if inactive_time > 600:  # 10分钟无活动
                         inactive_connections.append(connection_id)
 

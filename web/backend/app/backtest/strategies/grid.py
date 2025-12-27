@@ -147,9 +147,7 @@ class GridStrategy(BaseStrategy):
         if True:  # 网格策略可以一直买卖
             buy_level = self._find_nearest_grid_level(current_price, "below")
 
-            if (
-                buy_level and abs(current_price - buy_level) / buy_level < 0.005
-            ):  # 允许0.5%偏差
+            if buy_level and abs(current_price - buy_level) / buy_level < 0.005:  # 允许0.5%偏差
                 # 检查是否已在该价位买入
                 if buy_level not in self.grid_positions:
                     return StrategySignal(
@@ -180,14 +178,10 @@ class GridStrategy(BaseStrategy):
         price_level = round(price, 2)
 
         if action == "BUY":
-            self.grid_positions[price_level] = (
-                self.grid_positions.get(price_level, 0) + quantity
-            )
+            self.grid_positions[price_level] = self.grid_positions.get(price_level, 0) + quantity
         elif action == "SELL":
             # 从最近的买入价位减去
             if price_level in self.grid_positions:
-                self.grid_positions[price_level] = max(
-                    0, self.grid_positions[price_level] - quantity
-                )
+                self.grid_positions[price_level] = max(0, self.grid_positions[price_level] - quantity)
                 if self.grid_positions[price_level] == 0:
                     del self.grid_positions[price_level]

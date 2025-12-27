@@ -69,9 +69,7 @@ class MarketDataService:
 
     # ==================== 资金流向 (Fund Flow) ====================
 
-    def fetch_and_save_fund_flow_cached(
-        self, symbol: str, timeframe: str = "1"
-    ) -> Dict[str, Any]:
+    def fetch_and_save_fund_flow_cached(self, symbol: str, timeframe: str = "1") -> Dict[str, Any]:
         """
         获取并保存资金流向数据 (带缓存支持)
 
@@ -156,9 +154,7 @@ class MarketDataService:
             logger.error(f"获取资金流向失败: {e}")
             return {"success": False, "message": str(e)}
 
-    def fetch_and_save_fund_flow(
-        self, symbol: str, timeframe: str = "1"
-    ) -> Dict[str, Any]:
+    def fetch_and_save_fund_flow(self, symbol: str, timeframe: str = "1") -> Dict[str, Any]:
         """
         获取并保存资金流向数据
 
@@ -248,9 +244,7 @@ class MarketDataService:
         """
         db = self.SessionLocal()
         try:
-            query = db.query(FundFlow).filter(
-                and_(FundFlow.symbol == symbol, FundFlow.timeframe == timeframe)
-            )
+            query = db.query(FundFlow).filter(and_(FundFlow.symbol == symbol, FundFlow.timeframe == timeframe))
 
             if start_date:
                 query = query.filter(FundFlow.trade_date >= start_date)
@@ -336,9 +330,7 @@ class MarketDataService:
                             prev_close=safe_float(row.get("prev_close"), 0),
                             turnover_rate=safe_float(row.get("turnover_rate"), 0),
                             total_market_cap=safe_float(row.get("total_market_cap"), 0),
-                            circulating_market_cap=safe_float(
-                                row.get("circulating_market_cap"), 0
-                            ),
+                            circulating_market_cap=safe_float(row.get("circulating_market_cap"), 0),
                         )
 
                         existing = (
@@ -427,9 +419,7 @@ class MarketDataService:
                         prev_close=safe_float(row.get("prev_close"), 0),
                         turnover_rate=safe_float(row.get("turnover_rate"), 0),
                         total_market_cap=safe_float(row.get("total_market_cap"), 0),
-                        circulating_market_cap=safe_float(
-                            row.get("circulating_market_cap"), 0
-                        ),
+                        circulating_market_cap=safe_float(row.get("circulating_market_cap"), 0),
                     )
 
                     # 检查是否已存在
@@ -615,9 +605,7 @@ class MarketDataService:
             logger.error(f"获取抢筹数据失败: {e}")
             return {"success": False, "message": str(e)}
 
-    def fetch_and_save_chip_race(
-        self, race_type: str = "open", trade_date: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def fetch_and_save_chip_race(self, race_type: str = "open", trade_date: Optional[str] = None) -> Dict[str, Any]:
         """
         获取并保存竞价抢筹数据
 
@@ -719,9 +707,7 @@ class MarketDataService:
                 from sqlalchemy import func
 
                 latest_date = (
-                    db.query(func.max(ChipRaceData.trade_date))
-                    .filter(ChipRaceData.race_type == race_type)
-                    .scalar()
+                    db.query(func.max(ChipRaceData.trade_date)).filter(ChipRaceData.race_type == race_type).scalar()
                 )
                 if latest_date:
                     query = query.filter(ChipRaceData.trade_date == latest_date)

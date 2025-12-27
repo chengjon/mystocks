@@ -84,11 +84,7 @@ class TestPostgreSQLTableCreation:
         """测试3: 统计PostgreSQL表定义数量"""
         print("\n📍 测试3: 统计PostgreSQL表定义")
 
-        pg_tables = [
-            t
-            for t in self.manager.config["tables"]
-            if t["database_type"] == "PostgreSQL"
-        ]
+        pg_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "PostgreSQL"]
 
         print(f"  PostgreSQL表数量: {len(pg_tables)}")
 
@@ -99,9 +95,7 @@ class TestPostgreSQLTableCreation:
         print(f"  其中Hypertable: {len(hypertables)}")
 
         for table in pg_tables[:5]:  # 只显示前5个
-            is_hyper = (
-                "Hypertable" if table.get("is_timescale_hypertable") else "普通表"
-            )
+            is_hyper = "Hypertable" if table.get("is_timescale_hypertable") else "普通表"
             print(f"    - {table['table_name']} ({is_hyper})")
 
         print("  ✅ PostgreSQL表定义验证通过")
@@ -112,18 +106,12 @@ class TestPostgreSQLTableCreation:
 
         # 查找daily_kline表定义
         daily_kline = next(
-            (
-                t
-                for t in self.manager.config["tables"]
-                if t["table_name"] == "daily_kline"
-            ),
+            (t for t in self.manager.config["tables"] if t["table_name"] == "daily_kline"),
             None,
         )
 
         assert daily_kline is not None, "未找到daily_kline表定义"
-        assert daily_kline.get(
-            "is_timescale_hypertable", False
-        ), "daily_kline应该是Hypertable"
+        assert daily_kline.get("is_timescale_hypertable", False), "daily_kline应该是Hypertable"
 
         # 验证时间列
         time_column = daily_kline.get("time_column")
@@ -153,11 +141,7 @@ class TestPostgreSQLTableCreation:
         print("\n📍 测试5: 创建PostgreSQL表")
 
         try:
-            pg_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "PostgreSQL"
-            ]
+            pg_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "PostgreSQL"]
 
             created_count = 0
             skipped_count = 0
@@ -169,11 +153,7 @@ class TestPostgreSQLTableCreation:
                     created = self.manager._create_table(table_def)
                     if created:
                         created_count += 1
-                        is_hyper = (
-                            "Hypertable"
-                            if table_def.get("is_timescale_hypertable")
-                            else "表"
-                        )
+                        is_hyper = "Hypertable" if table_def.get("is_timescale_hypertable") else "表"
                         print(f"  ✅ 创建: {table_def['table_name']} ({is_hyper})")
                     else:
                         skipped_count += 1
@@ -182,9 +162,7 @@ class TestPostgreSQLTableCreation:
                     error_count += 1
                     print(f"  ⚠️  失败: {table_def['table_name']} - {str(e)[:50]}")
 
-            print(
-                f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个"
-            )
+            print(f"\n  总计: 创建{created_count}个, 跳过{skipped_count}个, 错误{error_count}个")
             print("  ✅ PostgreSQL表创建测试完成")
 
         except Exception as e:
@@ -196,11 +174,7 @@ class TestPostgreSQLTableCreation:
         print("\n📍 测试6: 验证表存在性")
 
         try:
-            pg_tables = [
-                t
-                for t in self.manager.config["tables"]
-                if t["database_type"] == "PostgreSQL"
-            ]
+            pg_tables = [t for t in self.manager.config["tables"] if t["database_type"] == "PostgreSQL"]
 
             for table_def in pg_tables[:3]:  # 只检查前3个
                 table_name = table_def["table_name"]
@@ -226,9 +200,7 @@ class TestPostgreSQLTableCreation:
 
         print(f"  共有 {len(hypertables)} 个Hypertable")
 
-        with_compression = [
-            t for t in hypertables if t.get("compression", {}).get("enabled")
-        ]
+        with_compression = [t for t in hypertables if t.get("compression", {}).get("enabled")]
 
         print(f"  其中 {len(with_compression)} 个配置了压缩策略")
 

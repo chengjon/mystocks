@@ -89,9 +89,7 @@ class ProjectContextAnalyzer:
     """项目上下文分析器"""
 
     def __init__(self, project_root: str = None):
-        self.project_root = (
-            Path(project_root) if project_root else Path(__file__).parent.parent.parent
-        )
+        self.project_root = Path(project_root) if project_root else Path(__file__).parent.parent.parent
         self.context_cache = {}
 
     def get_project_structure(self) -> Dict[str, Any]:
@@ -112,11 +110,7 @@ class ProjectContextAnalyzer:
             root_path = Path(root)
 
             # 排除特定目录
-            dirs[:] = [
-                d
-                for d in dirs
-                if not d.startswith(".") and d not in ["__pycache__", "node_modules"]
-            ]
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ["__pycache__", "node_modules"]]
 
             # 分析模块
             if "__init__.py" in files:
@@ -158,9 +152,7 @@ class ProjectContextAnalyzer:
 
             # 检测API处理器
             elif isinstance(node, ast.FunctionDef) and (
-                "api" in node.name.lower()
-                or "endpoint" in node.name.lower()
-                or "route" in node.name.lower()
+                "api" in node.name.lower() or "endpoint" in node.name.lower() or "route" in node.name.lower()
             ):
                 patterns["api_handlers"].append(node.name)
 
@@ -180,10 +172,7 @@ class ProjectContextAnalyzer:
 
             # 检测外部调用
             elif isinstance(node, ast.Call):
-                if (
-                    isinstance(node.func, ast.Attribute)
-                    and node.func.attr == "requests"
-                ):
+                if isinstance(node.func, ast.Attribute) and node.func.attr == "requests":
                     patterns["external_calls"].append("HTTP requests detected")
                 elif isinstance(node.func, ast.Attribute) and node.func.attr == "fetch":
                     patterns["external_calls"].append("Data fetch detected")
@@ -235,9 +224,7 @@ class AITestGenerator:
             },
         }
 
-    async def generate_test_cases_from_source(
-        self, source_code: str, method_name: str
-    ) -> List[TestCase]:
+    async def generate_test_cases_from_source(self, source_code: str, method_name: str) -> List[TestCase]:
         """从源代码生成测试用例 - 增强版"""
         print(f"🤖 AI正在生成测试用例: {method_name}")
 
@@ -280,9 +267,7 @@ class AITestGenerator:
             print(f"❌ 测试用例生成失败: {str(e)}")
             return []
 
-    async def _analyze_method_structure_enhanced(
-        self, method_node: ast.FunctionDef
-    ) -> AnalysisResult:
+    async def _analyze_method_structure_enhanced(self, method_node: ast.FunctionDef) -> AnalysisResult:
         """增强的方法结构分析"""
         # 基础分析
         args = []
@@ -350,9 +335,7 @@ class AITestGenerator:
         # 提取参数信息
         for arg in method_node.args.args:
             analysis["arguments"].append(arg.arg)
-            analysis["parameters"].append(
-                {"name": arg.arg, "type": self._get_annotation_type(arg.annotation)}
-            )
+            analysis["parameters"].append({"name": arg.arg, "type": self._get_annotation_type(arg.annotation)})
 
         # 分析控制流
         for node in method_node.body:
@@ -486,9 +469,7 @@ class AITestGenerator:
         # 检查SQL注入风险
         for child in ast.walk(node):
             if isinstance(child, ast.BinOp) and isinstance(child.op, ast.Mod):
-                if isinstance(child.left, ast.Constant) and "SELECT" in str(
-                    child.left.value
-                ):
+                if isinstance(child.left, ast.Constant) and "SELECT" in str(child.left.value):
                     security_issues.append("潜在的SQL注入风险")
 
         # 检查命令注入风险
@@ -508,10 +489,7 @@ class AITestGenerator:
                     "logger",
                     "log",
                 ]:
-                    if (
-                        isinstance(child.args[0], ast.Constant)
-                        and "password" in str(child.args[0]).lower()
-                    ):
+                    if isinstance(child.args[0], ast.Constant) and "password" in str(child.args[0]).lower():
                         security_issues.append("敏感数据可能被记录")
 
         return security_issues
@@ -536,9 +514,7 @@ class AITestGenerator:
         # 检查重复计算
         calculations = []
         for child in ast.walk(node):
-            if isinstance(child, ast.BinOp) and isinstance(
-                child.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
-            ):
+            if isinstance(child, ast.BinOp) and isinstance(child.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)):
                 calculations.append(child)
 
         # 简单的重复检测
@@ -567,15 +543,11 @@ class AITestGenerator:
         cohesion_score = cohesion
 
         # 加权平均
-        overall_score = (
-            complexity_score * 0.4 + coupling_score * 0.3 + cohesion_score * 0.3
-        )
+        overall_score = complexity_score * 0.4 + coupling_score * 0.3 + cohesion_score * 0.3
 
         return round(overall_score, 2)
 
-    def _assess_risk_level(
-        self, cyclomatic_complexity: int, coupling_score: float
-    ) -> str:
+    def _assess_risk_level(self, cyclomatic_complexity: int, coupling_score: float) -> str:
         """评估风险等级"""
         if cyclomatic_complexity > 20 or coupling_score > 0.8:
             return "high"
@@ -596,53 +568,37 @@ class AITestGenerator:
         test_cases = []
 
         # 基于项目结构确定测试类别
-        category = self._determine_test_category(
-            method_name, patterns, project_structure
-        )
+        category = self._determine_test_category(method_name, patterns, project_structure)
 
         # 基于分析结果确定优先级
         priority = self._determine_test_priority(analysis)
 
         # 1. 基础功能测试
-        normal_cases = self._create_normal_cases_enhanced(
-            method_name, analysis, category, priority
-        )
+        normal_cases = self._create_normal_cases_enhanced(method_name, analysis, category, priority)
         test_cases.extend(normal_cases)
 
         # 2. 边界条件测试
-        boundary_cases = self._create_boundary_cases_enhanced(
-            method_name, analysis, category, priority
-        )
+        boundary_cases = self._create_boundary_cases_enhanced(method_name, analysis, category, priority)
         test_cases.extend(boundary_cases)
 
         # 3. 异常处理测试
-        exception_cases = self._create_exception_cases_enhanced(
-            method_name, analysis, category, priority
-        )
+        exception_cases = self._create_exception_cases_enhanced(method_name, analysis, category, priority)
         test_cases.extend(exception_cases)
 
         # 4. 参数验证测试
-        validation_cases = self._create_validation_cases_enhanced(
-            method_name, analysis, category, priority
-        )
+        validation_cases = self._create_validation_cases_enhanced(method_name, analysis, category, priority)
         test_cases.extend(validation_cases)
 
         # 5. 安全测试
-        security_cases = self._create_security_test_cases(
-            method_name, analysis, category, priority
-        )
+        security_cases = self._create_security_test_cases(method_name, analysis, category, priority)
         test_cases.extend(security_cases)
 
         # 6. 性能测试
-        performance_cases = self._create_performance_test_cases(
-            method_name, analysis, category, priority
-        )
+        performance_cases = self._create_performance_test_cases(method_name, analysis, category, priority)
         test_cases.extend(performance_cases)
 
         # 7. 模式特定的测试用例
-        pattern_cases = self._create_pattern_specific_tests(
-            method_name, patterns, category, priority
-        )
+        pattern_cases = self._create_pattern_specific_tests(method_name, patterns, category, priority)
         test_cases.extend(pattern_cases)
 
         return test_cases
@@ -657,31 +613,19 @@ class AITestGenerator:
         method_lower = method_name.lower()
 
         # API处理函数
-        if any(
-            pattern in method_lower
-            for pattern in ["get_", "post_", "put_", "delete_", "api_", "endpoint"]
-        ):
+        if any(pattern in method_lower for pattern in ["get_", "post_", "put_", "delete_", "api_", "endpoint"]):
             return TestCategory.INTEGRATION
 
         # 数据处理函数
-        elif any(
-            pattern in method_lower
-            for pattern in ["calculate_", "process_", "analyze_", "transform_"]
-        ):
+        elif any(pattern in method_lower for pattern in ["calculate_", "process_", "analyze_", "transform_"]):
             return TestCategory.PERFORMANCE
 
         # 业务逻辑函数
-        elif any(
-            pattern in method_lower
-            for pattern in ["get_", "set_", "update_", "save_", "delete_"]
-        ):
+        elif any(pattern in method_lower for pattern in ["get_", "set_", "update_", "save_", "delete_"]):
             return TestCategory.UNIT
 
         # 安全相关函数
-        elif any(
-            pattern in method_lower
-            for pattern in ["auth_", "validate_", "encrypt_", "decrypt_"]
-        ):
+        elif any(pattern in method_lower for pattern in ["auth_", "validate_", "encrypt_", "decrypt_"]):
             return TestCategory.SECURITY
 
         else:
@@ -880,9 +824,7 @@ class AITestGenerator:
         test_cases.append(error_propagation_case)
 
         # 资源清理测试
-        if analysis.performance_issues and any(
-            "resource" in issue for issue in analysis.performance_issues
-        ):
+        if analysis.performance_issues and any("resource" in issue for issue in analysis.performance_issues):
             cleanup_case = TestCase(
                 name=f"test_{method_name}_resource_cleanup",
                 description=f"资源清理测试: {method_name}",
@@ -966,9 +908,7 @@ class AITestGenerator:
         test_cases = []
 
         # SQL注入测试
-        if analysis.security_issues and any(
-            "sql" in issue.lower() for issue in analysis.security_issues
-        ):
+        if analysis.security_issues and any("sql" in issue.lower() for issue in analysis.security_issues):
             sql_injection_case = TestCase(
                 name=f"test_{method_name}_sql_injection",
                 description=f"SQL注入防护测试: {method_name}",
@@ -1467,10 +1407,7 @@ def test_{method_name}_transaction():
             test_case.flakiness_score = self._calculate_flakiness_score(test_case)
 
             # 根据优先级和复杂度过滤
-            if (
-                test_case.priority != TestPriority.LOW
-                or test_case.complexity_score < 2.0
-            ):
+            if test_case.priority != TestPriority.LOW or test_case.complexity_score < 2.0:
                 optimized.append(test_case)
 
         # 去重
@@ -1588,9 +1525,7 @@ def test_{method_name}_transaction():
 
         return test_cases
 
-    def _create_normal_case(
-        self, method_name: str, analysis: Dict[str, Any]
-    ) -> TestCase:
+    def _create_normal_case(self, method_name: str, analysis: Dict[str, Any]) -> TestCase:
         """创建正常情况测试用例"""
         test_code = f"""
 def test_{method_name}_normal_case():
@@ -1612,9 +1547,7 @@ def test_{method_name}_normal_case():
             metadata={"test_type": "normal", "priority": "high"},
         )
 
-    def _create_boundary_cases(
-        self, method_name: str, analysis: Dict[str, Any]
-    ) -> List[TestCase]:
+    def _create_boundary_cases(self, method_name: str, analysis: Dict[str, Any]) -> List[TestCase]:
         """创建边界条件测试用例"""
         cases = []
 
@@ -1647,9 +1580,7 @@ def test_{method_name}_boundary_cases():
 
         return cases
 
-    def _create_exception_cases(
-        self, method_name: str, analysis: Dict[str, Any]
-    ) -> List[TestCase]:
+    def _create_exception_cases(self, method_name: str, analysis: Dict[str, Any]) -> List[TestCase]:
         """创建异常情况测试用例"""
         exception_code = f"""
 def test_{method_name}_exception_cases():
@@ -1678,9 +1609,7 @@ def test_{method_name}_exception_cases():
             )
         ]
 
-    def _create_validation_cases(
-        self, method_name: str, analysis: Dict[str, Any]
-    ) -> List[TestCase]:
+    def _create_validation_cases(self, method_name: str, analysis: Dict[str, Any]) -> List[TestCase]:
         """创建参数验证测试用例"""
         validation_code = f"""
 def test_{method_name}_parameter_validation():
@@ -1765,9 +1694,7 @@ def test_{method_name}_parameter_validation():
                     test_methods.append(
                         {
                             "name": node.name,
-                            "lines": node.end_lineno - node.lineno + 1
-                            if node.end_lineno
-                            else 0,
+                            "lines": node.end_lineno - node.lineno + 1 if node.end_lineno else 0,
                             "complexity": self._calculate_complexity(node),
                         }
                     )
@@ -1777,21 +1704,14 @@ def test_{method_name}_parameter_validation():
                 "total_lines": total_lines,
                 "test_count": len(test_methods),
                 "test_methods": test_methods,
-                "avg_complexity": sum(m["complexity"] for m in test_methods)
-                / len(test_methods)
-                if test_methods
-                else 0,
-                "max_complexity": max(m["complexity"] for m in test_methods)
-                if test_methods
-                else 0,
+                "avg_complexity": sum(m["complexity"] for m in test_methods) / len(test_methods) if test_methods else 0,
+                "max_complexity": max(m["complexity"] for m in test_methods) if test_methods else 0,
             }
 
         except Exception as e:
             return {"error": str(e)}
 
-    async def _generate_optimization_suggestions(
-        self, analysis: Dict[str, Any]
-    ) -> List[str]:
+    async def _generate_optimization_suggestions(self, analysis: Dict[str, Any]) -> List[str]:
         """生成优化建议"""
         suggestions = []
 
@@ -1855,29 +1775,17 @@ class IntelligentTestOptimizer:
         generated_tests = []
         for method in testable_methods:
             if not self._has_test_case(method["name"], module_path):
-                test_cases = self.ai_generator.generate_test_cases_from_source(
-                    source_code, method["name"]
-                )
+                test_cases = self.ai_generator.generate_test_cases_from_source(source_code, method["name"])
                 generated_tests.extend(test_cases)
 
         # 生成优化报告
         report = {
             "module_path": module_path,
             "total_methods": len(testable_methods),
-            "tested_methods": len(
-                [
-                    m
-                    for m in testable_methods
-                    if self._has_test_case(m["name"], module_path)
-                ]
-            ),
-            "coverage_percentage": self._calculate_coverage(
-                testable_methods, module_path
-            ),
+            "tested_methods": len([m for m in testable_methods if self._has_test_case(m["name"], module_path)]),
+            "coverage_percentage": self._calculate_coverage(testable_methods, module_path),
             "generated_tests": len(generated_tests),
-            "suggestions": self._generate_coverage_suggestions(
-                testable_methods, module_path
-            ),
+            "suggestions": self._generate_coverage_suggestions(testable_methods, module_path),
         }
 
         return report
@@ -1900,19 +1808,14 @@ class IntelligentTestOptimizer:
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     # 跳过测试方法和私有方法
-                    if not node.name.startswith("_") and not node.name.startswith(
-                        "test_"
-                    ):
+                    if not node.name.startswith("_") and not node.name.startswith("test_"):
                         methods.append(
                             {
                                 "name": node.name,
                                 "line": node.lineno,
-                                "complexity": self.ai_generator._calculate_complexity(
-                                    node
-                                ),
+                                "complexity": self.ai_generator._calculate_complexity(node),
                                 "args": [arg.arg for arg in node.args.args],
-                                "has_return": len(node.body) > 0
-                                and isinstance(node.body[-1], ast.Return),
+                                "has_return": len(node.body) > 0 and isinstance(node.body[-1], ast.Return),
                             }
                         )
 
@@ -1941,39 +1844,27 @@ class IntelligentTestOptimizer:
 
         return False
 
-    def _calculate_coverage(
-        self, methods: List[Dict[str, Any]], module_path: str
-    ) -> float:
+    def _calculate_coverage(self, methods: List[Dict[str, Any]], module_path: str) -> float:
         """计算测试覆盖率"""
-        tested_count = len(
-            [m for m in methods if self._has_test_case(m["name"], module_path)]
-        )
+        tested_count = len([m for m in methods if self._has_test_case(m["name"], module_path)])
         total_count = len(methods)
         return (tested_count / total_count * 100) if total_count > 0 else 0
 
-    def _generate_coverage_suggestions(
-        self, methods: List[Dict[str, Any]], module_path: str
-    ) -> List[str]:
+    def _generate_coverage_suggestions(self, methods: List[Dict[str, Any]], module_path: str) -> List[str]:
         """生成覆盖率优化建议"""
         suggestions = []
 
         # 分析未测试的方法
-        untested_methods = [
-            m for m in methods if not self._has_test_case(m["name"], module_path)
-        ]
+        untested_methods = [m for m in methods if not self._has_test_case(m["name"], module_path)]
 
         if len(untested_methods) > 0:
             # 按复杂度排序
             untested_methods.sort(key=lambda x: x["complexity"], reverse=True)
 
             # 为高复杂度方法生成优先级建议
-            high_complexity_untested = [
-                m for m in untested_methods if m["complexity"] > 10
-            ]
+            high_complexity_untested = [m for m in untested_methods if m["complexity"] > 10]
             if high_complexity_untested:
-                suggestions.append(
-                    f"优先测试高复杂度方法: {[m['name'] for m in high_complexity_untested[:3]]}"
-                )
+                suggestions.append(f"优先测试高复杂度方法: {[m['name'] for m in high_complexity_untested[:3]]}")
 
             # 测试覆盖率低的建议
             coverage = self._calculate_coverage(methods, module_path)
@@ -1982,14 +1873,10 @@ class IntelligentTestOptimizer:
 
             # 业务关键功能建议
             critical_methods = [
-                m
-                for m in untested_methods
-                if "get" in m["name"].lower() or "calculate" in m["name"].lower()
+                m for m in untested_methods if "get" in m["name"].lower() or "calculate" in m["name"].lower()
             ]
             if critical_methods:
-                suggestions.append(
-                    f"建议为业务核心方法添加测试: {[m['name'] for m in critical_methods[:3]]}"
-                )
+                suggestions.append(f"建议为业务核心方法添加测试: {[m['name'] for m in critical_methods[:3]]}")
 
         return suggestions
 
@@ -2002,9 +1889,7 @@ class AITestAssistant:
         self.generator = AITestGenerator()
         self.optimizer = IntelligentTestOptimizer()
 
-    async def generate_comprehensive_test_suite(
-        self, target_module: str
-    ) -> Dict[str, Any]:
+    async def generate_comprehensive_test_suite(self, target_module: str) -> Dict[str, Any]:
         """生成全面的测试套件"""
         print(f"🤖 AI正在为 {target_module} 生成全面测试套件...")
 
@@ -2016,37 +1901,28 @@ class AITestAssistant:
 
         # 为每个方法生成测试用例
         for method in methods:
-            test_cases = self.generator.generate_test_cases_from_source(
-                source_code, method["name"]
-            )
+            test_cases = self.generator.generate_test_cases_from_source(source_code, method["name"])
             comprehensive_tests.extend(test_cases)
 
         # 生成测试套件文件
-        test_suite_file = self._generate_test_suite_file(
-            target_module, comprehensive_tests
-        )
+        test_suite_file = self._generate_test_suite_file(target_module, comprehensive_tests)
 
         return {
             "target_module": target_module,
             "generated_tests": len(comprehensive_tests),
             "test_file": test_suite_file,
-            "coverage_analysis": await self.optimizer.optimize_test_coverage(
-                target_module
-            ),
-            "ai_recommendations": self._generate_ai_recommendations(
-                methods, comprehensive_tests
-            ),
+            "coverage_analysis": await self.optimizer.optimize_test_coverage(target_module),
+            "ai_recommendations": self._generate_ai_recommendations(methods, comprehensive_tests),
         }
 
-    def _generate_test_suite_file(
-        self, target_module: str, test_cases: List[TestCase]
-    ) -> str:
+    def _generate_test_suite_file(self, target_module: str, test_cases: List[TestCase]) -> str:
         """生成测试套件文件"""
         module_name = Path(target_module).stem
         test_file = f"tests/{module_name}_comprehensive_test.py"
 
         with open(test_file, "w", encoding="utf-8") as f:
-            f.write(f"""#!/usr/bin/env python3
+            f.write(
+                f"""#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 \"\"\"
 {module_name} 综合测试套件
@@ -2072,20 +1948,21 @@ except ImportError:
     except ImportError:
         pass
 
-""")
+"""
+            )
 
             for test_case in test_cases:
-                f.write(f"""
+                f.write(
+                    f"""
 {test_case.code}
 
-""")
+"""
+                )
 
                 # 添加辅助方法
-                if (
-                    "test_type" in test_case.metadata
-                    and test_case.metadata["test_type"] == "boundary"
-                ):
-                    f.write("""
+                if "test_type" in test_case.metadata and test_case.metadata["test_type"] == "boundary":
+                    f.write(
+                        """
     def _generate_normal_args(self, args):
         \"\"\"生成正常参数值\"\"\"
         return ["normal_value"] * len(args)
@@ -2100,24 +1977,21 @@ except ImportError:
         }
         return invalid_values.get(param_type, None)
 
-""")
+"""
+                    )
 
                 f.write("\n")
 
         return test_file
 
-    def _generate_ai_recommendations(
-        self, methods: List[Dict[str, Any]], test_cases: List[TestCase]
-    ) -> List[str]:
+    def _generate_ai_recommendations(self, methods: List[Dict[str, Any]], test_cases: List[TestCase]) -> List[str]:
         """生成AI建议"""
         recommendations = []
 
         # 复杂度分析建议
         high_complexity = [m for m in methods if m["complexity"] > 10]
         if high_complexity:
-            recommendations.append(
-                f"检测到 {len(high_complexity)} 个高复杂度方法，建议重构或拆分"
-            )
+            recommendations.append(f"检测到 {len(high_complexity)} 个高复杂度方法，建议重构或拆分")
 
         # 覆盖率建议
         covered_methods = len([tc for tc in test_cases if tc.complexity_score < 1.5])
@@ -2125,18 +1999,14 @@ except ImportError:
         if total_generated > 0:
             coverage_ratio = covered_methods / total_generated
             if coverage_ratio < 0.8:
-                recommendations.append(
-                    f"建议增加边界和异常测试用例，当前基础用例占比: {coverage_ratio:.1%}"
-                )
+                recommendations.append(f"建议增加边界和异常测试用例，当前基础用例占比: {coverage_ratio:.1%}")
 
         # 性能建议
         if len(test_cases) > 20:
             recommendations.append("测试用例数量较多，建议考虑使用测试分组或并行执行")
 
         # 维护性建议
-        avg_test_complexity = sum(tc.complexity_score for tc in test_cases) / len(
-            test_cases
-        )
+        avg_test_complexity = sum(tc.complexity_score for tc in test_cases) / len(test_cases)
         if avg_test_complexity > 1.3:
             recommendations.append("测试用例复杂度较高，建议保持测试简单明了")
 
@@ -2197,9 +2067,7 @@ async def test_comprehensive_test_generation():
     ai_assistant = AITestAssistant()
 
     # 为financial_adapter生成综合测试套件
-    result = await ai_assistant.generate_comprehensive_test_suite(
-        "src/adapters/financial_adapter.py"
-    )
+    result = await ai_assistant.generate_comprehensive_test_suite("src/adapters/financial_adapter.py")
 
     assert "target_module" in result
     assert "generated_tests" in result
@@ -2236,16 +2104,12 @@ def get_stock_price(symbol):
         print(f"✅ 生成了 {len(test_cases)} 个测试用例")
 
         # 生成综合测试套件
-        result = await ai_assistant.generate_comprehensive_test_suite(
-            "src/adapters/financial_adapter.py"
-        )
+        result = await ai_assistant.generate_comprehensive_test_suite("src/adapters/financial_adapter.py")
 
         print("📊 测试套件生成结果:")
         print(f"  - 目标模块: {result['target_module']}")
         print(f"  - 生成的测试用例数: {result['generated_tests']}")
-        print(
-            f"  - 覆盖率分析: {result['coverage_analysis']['coverage_percentage']:.1f}%"
-        )
+        print(f"  - 覆盖率分析: {result['coverage_analysis']['coverage_percentage']:.1f}%")
         print(f"  - 测试文件: {result['test_file']}")
         print(f"  - AI建议: {len(result['ai_recommendations'])} 条")
 

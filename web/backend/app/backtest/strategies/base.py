@@ -161,9 +161,7 @@ class BaseStrategy(ABC):
         rs = avg_gain / avg_loss
         return 100 - (100 / (1 + rs))
 
-    def bollinger_bands(
-        self, prices: List[float], period: int = 20, std_dev: float = 2.0
-    ) -> Optional[tuple]:
+    def bollinger_bands(self, prices: List[float], period: int = 20, std_dev: float = 2.0) -> Optional[tuple]:
         """布林带"""
         if len(prices) < period:
             return None

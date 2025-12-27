@@ -115,8 +115,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="postgresql_join_reordering",
                     optimization_type=OptimizationType.JOIN_OPTIMIZATION,
                     priority=OptimizationPriority.MEDIUM,
-                    condition=lambda q, db: db == DatabaseType.POSTGRESQL
-                    and q.join_clauses,
+                    condition=lambda q, db: db == DatabaseType.POSTGRESQL and q.join_clauses,
                     apply_optimization=self._optimize_postgresql_joins,
                     description="PostgreSQL JOIN顺序优化",
                     estimated_improvement=0.15,
@@ -134,8 +133,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="postgresql_cte_optimization",
                     optimization_type=OptimizationType.QUERY_REWRITE,
                     priority=OptimizationPriority.MEDIUM,
-                    condition=lambda q, db: db == DatabaseType.POSTGRESQL
-                    and self._has_complex_subqueries(q),
+                    condition=lambda q, db: db == DatabaseType.POSTGRESQL and self._has_complex_subqueries(q),
                     apply_optimization=self._optimize_postgresql_cte,
                     description="PostgreSQL CTE优化",
                     estimated_improvement=0.20,
@@ -144,8 +142,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="postgresql_partition_pruning",
                     optimization_type=OptimizationType.PARTITION_OPTIMIZATION,
                     priority=OptimizationPriority.HIGH,
-                    condition=lambda q, db: db == DatabaseType.POSTGRESQL
-                    and self._has_time_filter(q),
+                    condition=lambda q, db: db == DatabaseType.POSTGRESQL and self._has_time_filter(q),
                     apply_optimization=self._optimize_postgresql_partition_pruning,
                     description="PostgreSQL分区裁剪优化",
                     estimated_improvement=0.30,
@@ -160,8 +157,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="tdengine_super_table_optimization",
                     optimization_type=OptimizationType.QUERY_REWRITE,
                     priority=OptimizationPriority.CRITICAL,
-                    condition=lambda q, db: db == DatabaseType.TDENGINE
-                    and self._is_time_series_query(q),
+                    condition=lambda q, db: db == DatabaseType.TDENGINE and self._is_time_series_query(q),
                     apply_optimization=self._optimize_tdengine_super_tables,
                     description="TDengine超级表优化",
                     estimated_improvement=0.40,
@@ -179,8 +175,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="tdengine_time_range_optimization",
                     optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
                     priority=OptimizationPriority.CRITICAL,
-                    condition=lambda q, db: db == DatabaseType.TDENGINE
-                    and self._has_time_filter(q),
+                    condition=lambda q, db: db == DatabaseType.TDENGINE and self._has_time_filter(q),
                     apply_optimization=self._optimize_tdengine_time_range,
                     description="TDengine时间范围优化",
                     estimated_improvement=0.50,
@@ -190,8 +185,7 @@ class QueryOptimizer(IQueryOptimizer):
                     optimization_type=OptimizationType.BATCH_OPTIMIZATION,
                     priority=OptimizationPriority.MEDIUM,
                     condition=lambda q, db: db == DatabaseType.TDENGINE
-                    and q.operation
-                    in [QueryOperation.BATCH_INSERT, QueryOperation.BATCH_UPDATE],
+                    and q.operation in [QueryOperation.BATCH_INSERT, QueryOperation.BATCH_UPDATE],
                     apply_optimization=self._optimize_tdengine_batch_size,
                     description="TDengine批处理大小优化",
                     estimated_improvement=0.20,
@@ -206,8 +200,7 @@ class QueryOptimizer(IQueryOptimizer):
                     name="limit_optimization",
                     optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
                     priority=OptimizationPriority.MEDIUM,
-                    condition=lambda q, db: q.limit is None
-                    and self._is_large_dataset_query(q),
+                    condition=lambda q, db: q.limit is None and self._is_large_dataset_query(q),
                     apply_optimization=self._add_limit_clause,
                     description="添加LIMIT子句优化",
                     estimated_improvement=0.15,
@@ -233,9 +226,7 @@ class QueryOptimizer(IQueryOptimizer):
             ]
         )
 
-    async def optimize_query(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> DataQuery:
+    async def optimize_query(self, query: DataQuery, target_database: DatabaseType) -> DataQuery:
         """优化查询"""
         start_time = datetime.now()
         current_query = query
@@ -253,20 +244,14 @@ class QueryOptimizer(IQueryOptimizer):
             logger.warning("无法获取数据库能力信息，使用通用优化策略")
 
         # 应用适用的优化规则
-        applicable_rules = [
-            rule
-            for rule in self.optimization_rules
-            if rule.condition(current_query, target_database)
-        ]
+        applicable_rules = [rule for rule in self.optimization_rules if rule.condition(current_query, target_database)]
 
         # 按优先级排序
         applicable_rules.sort(key=lambda x: x.priority.value, reverse=True)
 
         for rule in applicable_rules:
             try:
-                optimized_query = rule.apply_optimization(
-                    current_query, target_database
-                )
+                optimized_query = rule.apply_optimization(current_query, target_database)
                 if optimized_query != current_query:
                     current_query = optimized_query
                     applied_optimizations.append(rule.name)
@@ -300,15 +285,11 @@ class QueryOptimizer(IQueryOptimizer):
         if len(self.optimization_history) > 1000:
             self.optimization_history = self.optimization_history[-1000:]
 
-        logger.info(
-            f"查询优化完成: 应用了 {len(applied_optimizations)} 个优化规则，预估提升 {total_improvement:.1%}"
-        )
+        logger.info(f"查询优化完成: 应用了 {len(applied_optimizations)} 个优化规则，预估提升 {total_improvement:.1%}")
 
         return current_query
 
-    async def analyze_query_plan(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> Dict[str, Any]:
+    async def analyze_query_plan(self, query: DataQuery, target_database: DatabaseType) -> Dict[str, Any]:
         """分析查询执行计划"""
         # 这里需要实际执行 EXPLAIN 或类似命令
         # 简化实现，返回模拟的计划分析
@@ -327,19 +308,14 @@ class QueryOptimizer(IQueryOptimizer):
             plan_details.update(
                 {
                     "index_usage": self._analyze_postgresql_index_usage(query),
-                    "join_order": [
-                        join.get("table", "unknown")
-                        for join in (query.join_clauses or [])
-                    ],
+                    "join_order": [join.get("table", "unknown") for join in (query.join_clauses or [])],
                     "parallel_possible": len(query.join_clauses or []) > 1,
                 }
             )
         elif target_database == DatabaseType.TDENGINE:
             plan_details.update(
                 {
-                    "super_table_usage": self._analyze_tdengine_super_table_usage(
-                        query
-                    ),
+                    "super_table_usage": self._analyze_tdengine_super_table_usage(query),
                     "tag_filtering": self._analyze_tdengine_tag_filtering(query),
                     "time_range_optimization": self._analyze_tdengine_time_range(query),
                 }
@@ -347,9 +323,7 @@ class QueryOptimizer(IQueryOptimizer):
 
         return plan_details
 
-    async def suggest_indexes(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> List[IndexRecommendation]:
+    async def suggest_indexes(self, query: DataQuery, target_database: DatabaseType) -> List[IndexRecommendation]:
         """建议索引"""
         cache_key = f"{target_database.value}_{query.table_name}_{hash(str(query.filters or {}))}"
 
@@ -368,9 +342,7 @@ class QueryOptimizer(IQueryOptimizer):
 
         return recommendations
 
-    async def estimate_query_cost(
-        self, query: DataQuery, target_database: DatabaseType
-    ) -> float:
+    async def estimate_query_cost(self, query: DataQuery, target_database: DatabaseType) -> float:
         """估算查询成本"""
         base_cost = 1.0
 
@@ -436,9 +408,7 @@ class QueryOptimizer(IQueryOptimizer):
         ]
 
         table_name = query.table_name.lower()
-        is_large_table = any(
-            re.match(pattern, table_name) for pattern in large_table_patterns
-        )
+        is_large_table = any(re.match(pattern, table_name) for pattern in large_table_patterns)
         no_limit = query.limit is None
 
         return is_large_table and no_limit
@@ -460,11 +430,7 @@ class QueryOptimizer(IQueryOptimizer):
             return False
 
         time_keys = ["time", "timestamp", "date", "created_at", "updated_at"]
-        return any(
-            key in str(filter_key).lower()
-            for filter_key in query.filters.keys()
-            for key in time_keys
-        )
+        return any(key in str(filter_key).lower() for filter_key in query.filters.keys() for key in time_keys)
 
     def _estimate_result_rows(self, query: DataQuery) -> int:
         """估算结果行数"""
@@ -481,42 +447,32 @@ class QueryOptimizer(IQueryOptimizer):
         return max(base_estimate, 1)
 
     # PostgreSQL 特定优化方法
-    def _optimize_postgresql_joins(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_postgresql_joins(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化PostgreSQL JOIN"""
         # 简化实现：添加JOIN顺序提示
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会重新排序JOIN子句
         return optimized_query
 
-    def _add_postgresql_index_hints(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _add_postgresql_index_hints(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """添加PostgreSQL索引提示"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会添加索引提示
         return optimized_query
 
-    def _optimize_postgresql_cte(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_postgresql_cte(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化PostgreSQL CTE"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会优化CTE结构
         return optimized_query
 
-    def _optimize_postgresql_partition_pruning(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_postgresql_partition_pruning(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化PostgreSQL分区裁剪"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会添加分区裁剪提示
         return optimized_query
 
-    def _suggest_postgresql_indexes(
-        self, query: DataQuery
-    ) -> List[IndexRecommendation]:
+    def _suggest_postgresql_indexes(self, query: DataQuery) -> List[IndexRecommendation]:
         """建议PostgreSQL索引"""
         recommendations = []
 
@@ -538,33 +494,25 @@ class QueryOptimizer(IQueryOptimizer):
         return recommendations
 
     # TDengine 特定优化方法
-    def _optimize_tdengine_super_tables(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_tdengine_super_tables(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化TDengine超级表"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会优化超级表查询
         return optimized_query
 
-    def _optimize_tdengine_tag_filtering(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_tdengine_tag_filtering(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化TDengine标签过滤"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会优化标签过滤
         return optimized_query
 
-    def _optimize_tdengine_time_range(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_tdengine_time_range(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化TDengine时间范围"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会优化时间范围查询
         return optimized_query
 
-    def _optimize_tdengine_batch_size(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _optimize_tdengine_batch_size(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """优化TDengine批处理大小"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会调整批处理大小
@@ -576,11 +524,7 @@ class QueryOptimizer(IQueryOptimizer):
 
         # TDengine主要使用标签和列索引
         if query.filters:
-            tag_columns = [
-                col
-                for col in query.filters.keys()
-                if col in ["symbol", "exchange", "market"]
-            ]
+            tag_columns = [col for col in query.filters.keys() if col in ["symbol", "exchange", "market"]]
             if tag_columns:
                 recommendations.append(
                     IndexRecommendation(
@@ -614,9 +558,7 @@ class QueryOptimizer(IQueryOptimizer):
             return optimized_query
         return query
 
-    def _push_down_predicates(
-        self, query: DataQuery, db_type: DatabaseType
-    ) -> DataQuery:
+    def _push_down_predicates(self, query: DataQuery, db_type: DatabaseType) -> DataQuery:
         """谓词下推"""
         optimized_query = DataQuery(**query.__dict__)
         # 在实际实现中，这里会将过滤条件尽可能下推到JOIN之前
@@ -624,11 +566,7 @@ class QueryOptimizer(IQueryOptimizer):
 
     def _analyze_postgresql_index_usage(self, query: DataQuery) -> List[str]:
         """分析PostgreSQL索引使用"""
-        return (
-            ["index_scan", "bitmap_index_scan"]
-            if query.filters
-            else ["sequential_scan"]
-        )
+        return ["index_scan", "bitmap_index_scan"] if query.filters else ["sequential_scan"]
 
     def _analyze_tdengine_super_table_usage(self, query: DataQuery) -> bool:
         """分析TDengine超级表使用"""
@@ -637,11 +575,7 @@ class QueryOptimizer(IQueryOptimizer):
     def _analyze_tdengine_tag_filtering(self, query: DataQuery) -> List[str]:
         """分析TDengine标签过滤"""
         if query.filters:
-            return [
-                col
-                for col in query.filters.keys()
-                if col in ["symbol", "exchange", "market"]
-            ]
+            return [col for col in query.filters.keys() if col in ["symbol", "exchange", "market"]]
         return []
 
     def _analyze_tdengine_time_range(self, query: DataQuery) -> bool:
@@ -654,14 +588,8 @@ class QueryOptimizer(IQueryOptimizer):
             return {"message": "暂无优化历史"}
 
         total_optimizations = len(self.optimization_history)
-        avg_improvement = (
-            sum(r.estimated_improvement for r in self.optimization_history)
-            / total_optimizations
-        )
-        avg_time = (
-            sum(r.optimization_time for r in self.optimization_history)
-            / total_optimizations
-        )
+        avg_improvement = sum(r.estimated_improvement for r in self.optimization_history) / total_optimizations
+        avg_time = sum(r.optimization_time for r in self.optimization_history) / total_optimizations
 
         # 最常用的优化规则
         rule_usage = {}
@@ -673,9 +601,7 @@ class QueryOptimizer(IQueryOptimizer):
             "total_optimizations": total_optimizations,
             "average_improvement": avg_improvement,
             "average_optimization_time": avg_time,
-            "most_used_rules": sorted(
-                rule_usage.items(), key=lambda x: x[1], reverse=True
-            )[:5],
+            "most_used_rules": sorted(rule_usage.items(), key=lambda x: x[1], reverse=True)[:5],
             "cache_size": {
                 "index_cache": len(self.index_cache),
                 "plan_cache": len(self.plan_cache),

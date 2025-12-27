@@ -24,9 +24,7 @@ class DataProcessorFactory:
         """
         if gpu_enabled is None:
             # 尝试从环境变量判断是否启用GPU
-            gpu_enabled = (
-                os.getenv("ENABLE_GPU_ACCELERATION", "false").lower() == "true"
-            )
+            gpu_enabled = os.getenv("ENABLE_GPU_ACCELERATION", "false").lower() == "true"
             # 也可以在这里添加更复杂的GPU检测逻辑，例如检查CUDA设备
 
         if gpu_enabled:
@@ -58,6 +56,4 @@ class DataProcessorFactory:
         elif processor_type.lower() == "gpu":
             return GPUDataProcessorFixed
         else:
-            raise ValueError(
-                f"Unsupported processor type: {processor_type}. Choose 'cpu' or 'gpu'."
-            )
+            raise ValueError(f"Unsupported processor type: {processor_type}. Choose 'cpu' or 'gpu'.")

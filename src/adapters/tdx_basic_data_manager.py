@@ -70,9 +70,7 @@ class TdxBasicDataManager:
 
         return components
 
-    def get_market_calendar(
-        self, start_date: str, end_date: str
-    ) -> List[Dict[str, Any]]:
+    def get_market_calendar(self, start_date: str, end_date: str) -> List[Dict[str, Any]]:
         """
         获取交易日历
 
@@ -230,9 +228,7 @@ class TdxBasicDataManager:
 
         return index_components_db.get(index_code, [])
 
-    def _fetch_trading_calendar(
-        self, start_date: str, end_date: str
-    ) -> List[Dict[str, Any]]:
+    def _fetch_trading_calendar(self, start_date: str, end_date: str) -> List[Dict[str, Any]]:
         """
         获取交易日历（内部方法）
 

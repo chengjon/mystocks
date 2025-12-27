@@ -195,9 +195,7 @@ class TestUS3Monitoring(unittest.TestCase):
         print("\n  质量报告:")
         for dimension, result in results.items():
             if "error" not in result:
-                print(
-                    f"    {dimension}: {result.get('check_status', 'UNKNOWN')} - {result.get('message', 'N/A')}"
-                )
+                print(f"    {dimension}: {result.get('check_status', 'UNKNOWN')} - {result.get('message', 'N/A')}")
 
         self.assertTrue(len(results) == 3, "应该包含3个维度的检查")
         print("\n  ✅ 质量报告包含完整性、新鲜度、准确性3个维度")
@@ -235,9 +233,7 @@ class TestUS3Monitoring(unittest.TestCase):
 
         # Then: 验证告警生成
         if "error" not in result:
-            self.assertEqual(
-                result.get("check_status"), "WARNING", "缺失率6%应该WARNING"
-            )
+            self.assertEqual(result.get("check_status"), "WARNING", "缺失率6%应该WARNING")
             print("  ✅ 自动告警已生成")
             print("     - 告警类型: DATA_QUALITY")
             print(f"     - 缺失率: {result.get('missing_rate', 0):.1f}%")
@@ -266,9 +262,7 @@ class TestUS3Monitoring(unittest.TestCase):
         manager_no_monitor = MyStocksUnifiedManager(enable_monitoring=False)
 
         # When: 执行保存操作
-        test_data = pd.DataFrame(
-            {"symbol": ["600000.SH"], "position": [1000], "cost": [10.5]}
-        )
+        test_data = pd.DataFrame({"symbol": ["600000.SH"], "position": [1000], "cost": [10.5]})
 
         print("  执行保存操作...")
         success = manager_no_monitor.save_data_by_classification(
@@ -340,9 +334,7 @@ class TestUS3Monitoring(unittest.TestCase):
             if stats.get("enabled"):
                 print(f"  告警统计: {stats.get('alerts', {})}")
                 print(f"  性能统计: {stats.get('performance', {})}")
-                print(
-                    f"  监控数据库: {'已连接' if stats.get('monitoring_db', {}).get('connected') else '未连接'}"
-                )
+                print(f"  监控数据库: {'已连接' if stats.get('monitoring_db', {}).get('connected') else '未连接'}")
 
         # 关闭连接
         cls.manager.close_all_connections()

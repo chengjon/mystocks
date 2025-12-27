@@ -179,9 +179,7 @@ class EmailNotificationService:
         # 构建新闻内容
         news_content = ""
         for news in news_data[:10]:  # 限制最多10条新闻
-            news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime(
-                "%Y-%m-%d %H:%M"
-            )
+            news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime("%Y-%m-%d %H:%M")
             news_content += f"""
             <div style="margin-bottom: 20px; padding: 15px; background-color: white; border-left: 4px solid #2563eb;">
                 <h3 style="margin: 0 0 10px 0;">
@@ -245,9 +243,7 @@ class EmailNotificationService:
 
         return self.send_email([user_email], subject, content, "html")
 
-    def send_alert_email(
-        self, user_email: str, alert_type: str, alert_message: str
-    ) -> bool:
+    def send_alert_email(self, user_email: str, alert_type: str, alert_message: str) -> bool:
         """
         发送告警邮件
 

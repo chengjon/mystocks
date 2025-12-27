@@ -107,9 +107,9 @@ class DatabaseService:
                             "industry": row.get("industry", ""),
                             "area": row.get("area", ""),
                             "market": row.get("market", ""),
-                            "list_date": row.get("list_date", "").strftime("%Y-%m-%d")
-                            if pd.notna(row.get("list_date"))
-                            else "",
+                            "list_date": (
+                                row.get("list_date", "").strftime("%Y-%m-%d") if pd.notna(row.get("list_date")) else ""
+                            ),
                             "total": total_count,  # 用于分页的总数量
                         }
                     )
@@ -136,9 +136,7 @@ class DatabaseService:
             # 查询股票基本信息表
             where_clause = f"symbol = '{stock_code}'"
 
-            df = self.postgresql_access.query(
-                table_name="symbols_info", where=where_clause, limit=1
-            )
+            df = self.postgresql_access.query(table_name="symbols_info", where=where_clause, limit=1)
 
             # 转换为与Mock数据一致的格式
             if not df.empty:
@@ -149,9 +147,9 @@ class DatabaseService:
                     "industry": row.get("industry", ""),
                     "area": row.get("area", ""),
                     "market": row.get("market", ""),
-                    "list_date": row.get("list_date", "").strftime("%Y-%m-%d")
-                    if pd.notna(row.get("list_date"))
-                    else "",
+                    "list_date": (
+                        row.get("list_date", "").strftime("%Y-%m-%d") if pd.notna(row.get("list_date")) else ""
+                    ),
                 }
 
             return {}
@@ -188,9 +186,7 @@ class DatabaseService:
                         where_conditions.append(f"{key} = '{value}'")
                 where_clause = " AND ".join(where_conditions)
 
-            df = self.postgresql_access.query(
-                table_name="realtime_quotes", where=where_clause
-            )
+            df = self.postgresql_access.query(table_name="realtime_quotes", where=where_clause)
 
             # 转换为与Mock数据一致的格式
             result = []
@@ -209,11 +205,11 @@ class DatabaseService:
                             "high": float(row.get("high", 0.0)),
                             "low": float(row.get("low", 0.0)),
                             "pre_close": float(row.get("pre_close", 0.0)),
-                            "timestamp": row.get("timestamp", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("timestamp"))
-                            else "",
+                            "timestamp": (
+                                row.get("timestamp", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("timestamp"))
+                                else ""
+                            ),
                         }
                     )
 
@@ -262,9 +258,7 @@ class DatabaseService:
                             "change_percent": float(row.get("change_percent", 0.0)),
                             "volume": int(row.get("volume", 0)),
                             "market_value": float(row.get("market_value", 0.0)),
-                            "pe_ratio": float(row.get("pe_ratio", 0.0))
-                            if pd.notna(row.get("pe_ratio"))
-                            else None,
+                            "pe_ratio": float(row.get("pe_ratio", 0.0)) if pd.notna(row.get("pe_ratio")) else None,
                         }
                     )
 
@@ -338,16 +332,10 @@ class DatabaseService:
                 # 按日期分组整理数据
                 grouped_data = {}
                 for _, row in df.iterrows():
-                    date_str = (
-                        row.get("calc_date", "").strftime("%Y-%m-%d")
-                        if pd.notna(row.get("calc_date"))
-                        else ""
-                    )
+                    date_str = row.get("calc_date", "").strftime("%Y-%m-%d") if pd.notna(row.get("calc_date")) else ""
                     indicator_name = row.get("indicator_name", "")
                     indicator_value = (
-                        float(row.get("indicator_value", 0.0))
-                        if pd.notna(row.get("indicator_value"))
-                        else None
+                        float(row.get("indicator_value", 0.0)) if pd.notna(row.get("indicator_value")) else None
                     )
 
                     if date_str not in grouped_data:
@@ -361,26 +349,14 @@ class DatabaseService:
                         }
 
                     # 根据指标名称分类
-                    if indicator_name.startswith("MA") or indicator_name.startswith(
-                        "MACD"
-                    ):
-                        grouped_data[date_str]["trend"][indicator_name.lower()] = (
-                            indicator_value
-                        )
-                    elif indicator_name.startswith("RSI") or indicator_name.startswith(
-                        "KDJ"
-                    ):
-                        grouped_data[date_str]["momentum"][indicator_name.lower()] = (
-                            indicator_value
-                        )
+                    if indicator_name.startswith("MA") or indicator_name.startswith("MACD"):
+                        grouped_data[date_str]["trend"][indicator_name.lower()] = indicator_value
+                    elif indicator_name.startswith("RSI") or indicator_name.startswith("KDJ"):
+                        grouped_data[date_str]["momentum"][indicator_name.lower()] = indicator_value
                     elif indicator_name.startswith("ATR"):
-                        grouped_data[date_str]["volatility"][indicator_name.lower()] = (
-                            indicator_value
-                        )
+                        grouped_data[date_str]["volatility"][indicator_name.lower()] = indicator_value
                     elif indicator_name.startswith("OBV"):
-                        grouped_data[date_str]["volume"][indicator_name.lower()] = (
-                            indicator_value
-                        )
+                        grouped_data[date_str]["volume"][indicator_name.lower()] = indicator_value
 
                 # 转换为列表格式
                 result = list(grouped_data.values())
@@ -449,11 +425,11 @@ class DatabaseService:
                             "alert_type": row.get("alert_type", ""),
                             "level": row.get("level", ""),
                             "message": row.get("message", ""),
-                            "timestamp": row.get("timestamp", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("timestamp"))
-                            else "",
+                            "timestamp": (
+                                row.get("timestamp", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("timestamp"))
+                                else ""
+                            ),
                             "is_read": bool(row.get("is_read", False)),
                         }
                     )
@@ -679,11 +655,11 @@ class DatabaseService:
                             "target_price": float(row.get("target_price", 0.0)),
                             "stop_loss": float(row.get("stop_loss", 0.0)),
                             "signal": row.get("signal", ""),
-                            "created_at": row.get("created_at", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("created_at"))
-                            else "",
+                            "created_at": (
+                                row.get("created_at", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("created_at"))
+                                else ""
+                            ),
                         }
                     )
 
@@ -727,11 +703,11 @@ class DatabaseService:
                     "signal_type": row.get("signal_type", ""),
                     "signal": row.get("signal", ""),
                     "strength": float(row.get("strength", 0.0)),
-                    "created_at": row.get("created_at", "").strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                    if pd.notna(row.get("created_at"))
-                    else "",
+                    "created_at": (
+                        row.get("created_at", "").strftime("%Y-%m-%d %H:%M:%S")
+                        if pd.notna(row.get("created_at"))
+                        else ""
+                    ),
                     "indicator": row.get("indicator", ""),
                 }
 
@@ -761,9 +737,7 @@ class DatabaseService:
                 return {}
 
             # 查询历史数据表（根据周期选择表名）
-            table_name = (
-                f"stock_history_{period}" if period != "daily" else "daily_kline"
-            )
+            table_name = f"stock_history_{period}" if period != "daily" else "daily_kline"
 
             where_clause = f"symbol = '{symbol}'"
             df = self.postgresql_access.query(
@@ -779,19 +753,13 @@ class DatabaseService:
                     "symbol": symbol,
                     "period": period,
                     "count": len(df),
-                    "dates": [
-                        row["date"].strftime("%Y-%m-%d") for _, row in df.iterrows()
-                    ],
-                    "data": df[["open", "close", "high", "low", "volume"]].to_dict(
-                        "records"
-                    ),
+                    "dates": [row["date"].strftime("%Y-%m-%d") for _, row in df.iterrows()],
+                    "data": df[["open", "close", "high", "low", "volume"]].to_dict("records"),
                 }
 
                 # 如果有涨跌幅数据，也包含进去
                 if "change_percent" in df.columns:
-                    result["change_percent"] = [
-                        float(x) for x in df["change_percent"].tolist()
-                    ]
+                    result["change_percent"] = [float(x) for x in df["change_percent"].tolist()]
 
                 return result
 
@@ -834,9 +802,7 @@ class DatabaseService:
         """
         try:
             # 示例实现（需要根据实际表结构调整）
-            df = self.postgresql_access.query(
-                table_name="strategy_definitions", limit=100
-            )
+            df = self.postgresql_access.query(table_name="strategy_definitions", limit=100)
 
             # 转换为与Mock数据一致的格式
             result = []
@@ -850,16 +816,16 @@ class DatabaseService:
                             "description": row.get("description", ""),
                             "category": row.get("category", ""),
                             "parameters": row.get("parameters", {}),
-                            "created_at": row.get("created_at", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("created_at"))
-                            else "",
-                            "updated_at": row.get("updated_at", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("updated_at"))
-                            else "",
+                            "created_at": (
+                                row.get("created_at", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("created_at"))
+                                else ""
+                            ),
+                            "updated_at": (
+                                row.get("updated_at", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("updated_at"))
+                                else ""
+                            ),
                             "is_active": bool(row.get("is_active", True)),
                         }
                     )
@@ -887,12 +853,8 @@ class DatabaseService:
             offset = params.get("offset", 0)
 
             # 示例实现（需要根据实际表结构调整）
-            where_clause = (
-                f"strategy_code = '{strategy_code}'" if strategy_code else None
-            )
-            df = self.postgresql_access.query(
-                table_name="strategy_results", where=where_clause, limit=limit
-            )
+            where_clause = f"strategy_code = '{strategy_code}'" if strategy_code else None
+            df = self.postgresql_access.query(table_name="strategy_results", where=where_clause, limit=limit)
 
             # 手动处理offset
             if offset and offset > 0:
@@ -908,11 +870,11 @@ class DatabaseService:
                             "symbol": row.get("symbol", ""),
                             "name": row.get("name", ""),
                             "match_score": float(row.get("match_score", 0.0)),
-                            "created_at": row.get("created_at", "").strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                            if pd.notna(row.get("created_at"))
-                            else "",
+                            "created_at": (
+                                row.get("created_at", "").strftime("%Y-%m-%d %H:%M:%S")
+                                if pd.notna(row.get("created_at"))
+                                else ""
+                            ),
                             "strategy_code": row.get("strategy_code", ""),
                         }
                     )
@@ -937,9 +899,7 @@ class DatabaseService:
         try:
             # 示例实现（需要根据实际表结构调整）
             # 查询策略性能表
-            df = self.postgresql_access.query(
-                table_name="strategy_performance", limit=100
-            )
+            df = self.postgresql_access.query(table_name="strategy_performance", limit=100)
 
             # 转换为与Mock数据一致的格式
             if not df.empty:
@@ -947,19 +907,15 @@ class DatabaseService:
                 latest_row = df.iloc[0]
                 return {
                     "total_runs": int(latest_row.get("total_runs", 0)),
-                    "avg_execution_time": float(
-                        latest_row.get("avg_execution_time", 0.0)
-                    ),
+                    "avg_execution_time": float(latest_row.get("avg_execution_time", 0.0)),
                     "success_rate": float(latest_row.get("success_rate", 0.0)),
                     "total_matches": int(latest_row.get("total_matches", 0)),
-                    "avg_matches_per_run": float(
-                        latest_row.get("avg_matches_per_run", 0.0)
+                    "avg_matches_per_run": float(latest_row.get("avg_matches_per_run", 0.0)),
+                    "last_updated": (
+                        latest_row.get("last_updated", "").strftime("%Y-%m-%d %H:%M:%S")
+                        if pd.notna(latest_row.get("last_updated"))
+                        else ""
                     ),
-                    "last_updated": latest_row.get("last_updated", "").strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                    if pd.notna(latest_row.get("last_updated"))
-                    else "",
                 }
 
             return {}
@@ -984,18 +940,16 @@ class DatabaseService:
                 row = df.iloc[0]
                 return {
                     "is_running": bool(row.get("is_running", True)),
-                    "start_time": row.get("start_time", "").strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                    if pd.notna(row.get("start_time"))
-                    else (datetime.now() - pd.Timedelta(hours=8)).strftime(
-                        "%Y-%m-%d %H:%M:%S"
+                    "start_time": (
+                        row.get("start_time", "").strftime("%Y-%m-%d %H:%M:%S")
+                        if pd.notna(row.get("start_time"))
+                        else (datetime.now() - pd.Timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
                     ),
-                    "last_update": row.get("last_update", "").strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                    if pd.notna(row.get("last_update"))
-                    else datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "last_update": (
+                        row.get("last_update", "").strftime("%Y-%m-%d %H:%M:%S")
+                        if pd.notna(row.get("last_update"))
+                        else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    ),
                     "monitored_symbols": int(row.get("monitored_symbols", 100)),
                     "active_alerts": int(row.get("active_alerts", 15)),
                     "status": row.get("status", "healthy"),
@@ -1006,9 +960,7 @@ class DatabaseService:
 
             return {
                 "is_running": True,
-                "start_time": (datetime.now() - pd.Timedelta(hours=8)).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "start_time": (datetime.now() - pd.Timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S"),
                 "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "monitored_symbols": 100,
                 "active_alerts": 15,
@@ -1022,9 +974,7 @@ class DatabaseService:
 
             return {
                 "is_running": True,
-                "start_time": (datetime.now() - pd.Timedelta(hours=8)).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "start_time": (datetime.now() - pd.Timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S"),
                 "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "monitored_symbols": 100,
                 "active_alerts": 15,
@@ -1039,9 +989,7 @@ class DatabaseService:
         """
         try:
             # 查询监控日志表，获取最新的市场监控数据
-            df = self.postgresql_access.query(
-                table_name="monitoring_logs", limit=100, order_by="log_time DESC"
-            )
+            df = self.postgresql_access.query(table_name="monitoring_logs", limit=100, order_by="log_time DESC")
 
             # 转换为与Mock数据一致的格式
             if not df.empty:
@@ -1075,9 +1023,7 @@ class DatabaseService:
                 "latest_logs": [],
             }
 
-    def get_data_from_adapter(
-        self, adapter_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_from_adapter(self, adapter_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """从指定适配器获取数据
 
         Args:
@@ -1141,9 +1087,7 @@ class DatabaseService:
             else:
                 return {}
 
-    def get_data_with_failover(
-        self, data_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_with_failover(self, data_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """使用故障转移机制获取数据
 
         Args:
@@ -1183,9 +1127,7 @@ class DatabaseService:
                 }
 
             # 获取指定数据类型的适配器优先级，如果没有则使用默认优先级
-            adapter_priority = config.get(
-                data_type, config.get("default", config["default"])
-            )
+            adapter_priority = config.get(data_type, config.get("default", config["default"]))
 
             # 按优先级顺序尝试适配器
             for adapter_type in adapter_priority:
@@ -1195,17 +1137,13 @@ class DatabaseService:
 
                     # 检查结果是否有效
                     if self._is_valid_result(result):
-                        logger.info(
-                            f"成功使用适配器 {adapter_type} 获取 {data_type} 数据"
-                        )
+                        logger.info(f"成功使用适配器 {adapter_type} 获取 {data_type} 数据")
                         return result
                     else:
                         logger.warning(f"适配器 {adapter_type} 返回空数据")
 
                 except Exception as e:
-                    logger.warning(
-                        f"适配器 {adapter_type} 获取 {data_type} 数据失败: {e}"
-                    )
+                    logger.warning(f"适配器 {adapter_type} 获取 {data_type} 数据失败: {e}")
                     continue
 
             # 所有适配器都失败
@@ -1244,9 +1182,7 @@ class DatabaseService:
         else:
             return result is not None
 
-    def get_indicator_data(
-        self, indicator_id: str, symbol: str, days: int = 30
-    ) -> pd.DataFrame:
+    def get_indicator_data(self, indicator_id: str, symbol: str, days: int = 30) -> pd.DataFrame:
         """获取指标数据表格
 
         Args:
@@ -1279,9 +1215,7 @@ class DatabaseService:
             logger.error(f"获取指标数据失败: {e}")
             return pd.DataFrame()
 
-    def get_minute_kline(
-        self, symbol: str, period: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取分钟K线数据
 
         Args:
@@ -1298,14 +1232,10 @@ class DatabaseService:
             table_name = f"minute_kline_{period.replace('m', 'min')}"
 
             # 构造查询条件
-            where_clause = (
-                f"symbol = '{symbol}' AND ts >= '{start_date}' AND ts <= '{end_date}'"
-            )
+            where_clause = f"symbol = '{symbol}' AND ts >= '{start_date}' AND ts <= '{end_date}'"
 
             # 查询TDengine数据库
-            df = self.postgresql_access.query(
-                table_name=table_name, where=where_clause, order_by="ts ASC"
-            )
+            df = self.postgresql_access.query(table_name=table_name, where=where_clause, order_by="ts ASC")
 
             # 转换为与Mock数据一致的格式
             if not df.empty:
@@ -1336,9 +1266,7 @@ class DatabaseService:
         """
         try:
             # 查询行业分类表
-            df = self.postgresql_access.query(
-                table_name="industry_classifications", order_by="industry_code ASC"
-            )
+            df = self.postgresql_access.query(table_name="industry_classifications", order_by="industry_code ASC")
 
             # 转换为与Mock数据一致的格式
             if not df.empty:
@@ -1376,9 +1304,7 @@ class DatabaseService:
         """
         try:
             # 查询概念分类表
-            df = self.postgresql_access.query(
-                table_name="concept_classifications", order_by="concept_code ASC"
-            )
+            df = self.postgresql_access.query(table_name="concept_classifications", order_by="concept_code ASC")
 
             # 转换为与Mock数据一致的格式
             if not df.empty:

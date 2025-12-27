@@ -35,12 +35,8 @@ def create_sql_cmd(df, table_name, primary_key=None):
         elif pd.api.types.is_datetime64_any_dtype(dtype):
             create_table_query += f"{col} DATETIME, "  # 使用DATETIME而不是DATE
         elif pd.api.types.is_float_dtype(dtype):
-            max_decimals = (
-                df[col].apply(lambda x: len(str(x).split(".")[-1])).max()
-            )  # 获取浮点数小数点后的最大位数
-            float_length = min(
-                max_decimals + 4, 38
-            )  # 限制FLOAT小数点后数据长度最大为38
+            max_decimals = df[col].apply(lambda x: len(str(x).split(".")[-1])).max()  # 获取浮点数小数点后的最大位数
+            float_length = min(max_decimals + 4, 38)  # 限制FLOAT小数点后数据长度最大为38
             create_table_query += f"{col} FLOAT({float_length}), "
         elif pd.api.types.is_integer_dtype(dtype):
             # 检查整数的范围，如果超过INT范围则使用BIGINT

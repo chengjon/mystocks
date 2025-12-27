@@ -16,9 +16,7 @@ import sys
 import os
 
 # 将当前目录的父目录的父目录添加到模块搜索路径中
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # 临时简化导入以支持测试
 try:
@@ -94,9 +92,7 @@ class BaostockDataSource(IDataSource):
         if hasattr(self, "bs"):
             self.bs.logout()
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据-Baostock实现"""
         try:
             # 使用专门的格式化函数处理股票代码
@@ -146,9 +142,7 @@ class BaostockDataSource(IDataSource):
             print(f"Baostock获取股票日线数据失败: {e}")
             return pd.DataFrame()
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取指数日线数据-Baostock实现"""
         try:
             # 使用专门的格式化函数处理指数代码
@@ -243,9 +237,7 @@ class BaostockDataSource(IDataSource):
         try:
             # 获取指数成分股
             # pylint: disable=no-member
-            rs = self.bs.query_index_weight(
-                code=symbol, start_date=normalize_date(datetime.datetime.now())
-            )
+            rs = self.bs.query_index_weight(code=symbol, start_date=normalize_date(datetime.datetime.now()))
             if rs.error_code != "0":
                 print(f"Baostock查询错误: {rs.error_msg}")
                 return []

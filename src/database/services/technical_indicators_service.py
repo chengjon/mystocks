@@ -145,9 +145,7 @@ class TechnicalIndicatorsService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_trend_indicators"
-            )
+            return self._build_success_response(data=result, operation="get_trend_indicators")
 
         except Exception as e:
             return self._handle_database_error(e, "获取趋势指标")
@@ -200,9 +198,7 @@ class TechnicalIndicatorsService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_momentum_indicators"
-            )
+            return self._build_success_response(data=result, operation="get_momentum_indicators")
 
         except Exception as e:
             return self._handle_database_error(e, "获取动量指标")
@@ -251,9 +247,7 @@ class TechnicalIndicatorsService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_volatility_indicators"
-            )
+            return self._build_success_response(data=result, operation="get_volatility_indicators")
 
         except Exception as e:
             return self._handle_database_error(e, "获取波动率指标")
@@ -301,9 +295,7 @@ class TechnicalIndicatorsService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_volume_indicators"
-            )
+            return self._build_success_response(data=result, operation="get_volume_indicators")
 
         except Exception as e:
             return self._handle_database_error(e, "获取成交量指标")
@@ -403,9 +395,7 @@ class TechnicalIndicatorsService(BaseDatabaseService):
                     }
                 )
 
-            return self._build_success_response(
-                data=result, operation="get_pattern_recognition"
-            )
+            return self._build_success_response(data=result, operation="get_pattern_recognition")
 
         except Exception as e:
             return self._handle_database_error(e, "获取模式识别")

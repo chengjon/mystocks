@@ -20,9 +20,12 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 from datetime import date, datetime
 import logging
+
+if TYPE_CHECKING:
+    from .scheduler import TaskConfig
 
 
 logger = logging.getLogger(__name__)
@@ -36,9 +39,7 @@ class PredefinedTasks:
     """
 
     @staticmethod
-    def daily_data_update(
-        market: str = "sh", lookback_days: int = 3, unified_manager=None
-    ) -> Dict:
+    def daily_data_update(market: str = "sh", lookback_days: int = 3, unified_manager=None) -> Dict:
         """
         每日数据更新任务
 
@@ -62,9 +63,7 @@ class PredefinedTasks:
             importer = TdxImporter(unified_manager=unified_manager)
 
             # 增量导入
-            result = importer.import_incremental(
-                market=market, lookback_days=lookback_days
-            )
+            result = importer.import_incremental(market=market, lookback_days=lookback_days)
 
             logger.info("✓ 数据更新完成")
             logger.info(f"  成功: {result['success_count']} 只股票")
@@ -111,9 +110,7 @@ class PredefinedTasks:
                 raise ValueError("未提供策略执行器")
 
             # 执行策略
-            result = strategy_executor.execute(
-                strategy_name=strategy_name, symbols=universe
-            )
+            result = strategy_executor.execute(strategy_name=strategy_name, symbols=universe)
 
             # 统计信号
             signals = result.get("signals", [])
@@ -239,9 +236,7 @@ class PredefinedTasks:
             raise
 
     @staticmethod
-    def generate_daily_report(
-        date: Optional[date] = None, unified_manager=None, notification_manager=None
-    ) -> Dict:
+    def generate_daily_report(date: Optional[date] = None, unified_manager=None, notification_manager=None) -> Dict:
         """
         生成每日报告任务
 
@@ -261,13 +256,6 @@ class PredefinedTasks:
 
         try:
             # 收集统计数据
-            report_data = {
-                "date": report_date,
-                "market_summary": {},  # TODO: 市场概况
-                "strategy_performance": {},  # TODO: 策略表现
-                "signal_summary": {},  # TODO: 信号汇总
-                "data_quality": {},  # TODO: 数据质量
-            }
 
             # 生成报告文本
             report_text = f"""
@@ -371,9 +359,7 @@ class PredefinedTasks:
 
 
 # 任务工厂函数 - 方便创建TaskConfig
-def create_daily_update_task(
-    market: str = "sh", hour: int = 16, minute: int = 0
-) -> "TaskConfig":
+def create_daily_update_task(market: str = "sh", hour: int = 16, minute: int = 0) -> "TaskConfig":
     """
     创建每日数据更新任务配置
 
@@ -399,9 +385,7 @@ def create_daily_update_task(
     )
 
 
-def create_strategy_execution_task(
-    strategy_name: str, hour: int = 9, minute: int = 30
-) -> "TaskConfig":
+def create_strategy_execution_task(strategy_name: str, hour: int = 9, minute: int = 30) -> "TaskConfig":
     """
     创建策略执行任务配置
 
@@ -458,9 +442,7 @@ if __name__ == "__main__":
     print("=" * 70)
 
     # 设置日志
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # 测试1: 健康检查
     print("\n测试1: 系统健康检查")
@@ -475,9 +457,7 @@ if __name__ == "__main__":
     print(f"  触发器: {daily_update.trigger_type}")
     print(f"  优先级: {daily_update.priority.name}")
 
-    strategy_exec = create_strategy_execution_task(
-        strategy_name="momentum", hour=9, minute=30
-    )
+    strategy_exec = create_strategy_execution_task(strategy_name="momentum", hour=9, minute=30)
     print(f"\n策略执行任务: {strategy_exec.name}")
     print(f"  触发器: {strategy_exec.trigger_type}")
     print(f"  依赖: {strategy_exec.depends_on}")

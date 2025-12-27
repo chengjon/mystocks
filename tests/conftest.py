@@ -401,12 +401,12 @@ def test_ai_assisted_tools():
         def predict_test_outcome(self, test_history: list) -> Dict[str, float]:
             # 模拟预测测试结果
             return {
-                "pass_rate": sum(1 for t in test_history if t.get("passed", False))
-                / len(test_history),
-                "failure_trend": "increasing"
-                if len(test_history) > 10
-                and test_history[-5:].count(False) > test_history[-10:-5].count(False)
-                else "stable",
+                "pass_rate": sum(1 for t in test_history if t.get("passed", False)) / len(test_history),
+                "failure_trend": (
+                    "increasing"
+                    if len(test_history) > 10 and test_history[-5:].count(False) > test_history[-10:-5].count(False)
+                    else "stable"
+                ),
             }
 
     return AIAssistedTools()
@@ -420,19 +420,11 @@ def contract_test_validator():
         def __init__(self):
             self.contracts = {}
 
-        def validate_api_contract(
-            self, endpoint: str, request: Dict, response: Dict
-        ) -> bool:
+        def validate_api_contract(self, endpoint: str, request: Dict, response: Dict) -> bool:
             # 模拟契约验证
-            return (
-                "status" in response
-                and isinstance(response["status"], int)
-                and 200 <= response["status"] < 300
-            )
+            return "status" in response and isinstance(response["status"], int) and 200 <= response["status"] < 300
 
-        def validate_response_schema(
-            self, response: Dict, schema: Dict
-        ) -> Dict[str, Any]:
+        def validate_response_schema(self, response: Dict, schema: Dict) -> Dict[str, Any]:
             # 模拟响应模式验证
             errors = []
 
@@ -464,9 +456,7 @@ def test_execution_context():
             self.start_time = time.time()
 
         def log_event(self, event: str, **kwargs):
-            self.execution_log.append(
-                {"timestamp": time.time(), "event": event, **kwargs}
-            )
+            self.execution_log.append({"timestamp": time.time(), "event": event, **kwargs})
 
         def get_execution_summary(self) -> Dict[str, Any]:
             duration = time.time() - self.start_time
@@ -552,25 +542,19 @@ def test_data_generator():
             self.sequences[name] = sequence
             return sequence
 
-        def generate_random_data(
-            self, size: int, min_val: float = 0.0, max_val: float = 100.0
-        ) -> list:
+        def generate_random_data(self, size: int, min_val: float = 0.0, max_val: float = 100.0) -> list:
             import random
 
             return [random.uniform(min_val, max_val) for _ in range(size)]
 
-        def generate_time_series(
-            self, start_time: str, end_time: str, interval_minutes: int = 60
-        ) -> list:
+        def generate_time_series(self, start_time: str, end_time: str, interval_minutes: int = 60) -> list:
             start = datetime.fromisoformat(start_time)
             end = datetime.fromisoformat(end_time)
 
             series = []
             current = start
             while current <= end:
-                series.append(
-                    {"timestamp": current.isoformat(), "value": float(len(series))}
-                )
+                series.append({"timestamp": current.isoformat(), "value": float(len(series))})
                 current += timedelta(minutes=interval_minutes)
 
             return series
@@ -582,18 +566,10 @@ def test_data_generator():
 # 自定义命令行参数支持
 def pytest_addoption(parser):
     """添加自定义命令行参数"""
-    parser.addoption(
-        "--run-ai", action="store_true", default=False, help="运行AI辅助测试"
-    )
-    parser.addoption(
-        "--run-performance", action="store_true", default=False, help="运行性能测试"
-    )
-    parser.addoption(
-        "--run-security", action="store_true", default=False, help="运行安全测试"
-    )
-    parser.addoption(
-        "--run-chaos", action="store_true", default=False, help="运行混沌工程测试"
-    )
+    parser.addoption("--run-ai", action="store_true", default=False, help="运行AI辅助测试")
+    parser.addoption("--run-performance", action="store_true", default=False, help="运行性能测试")
+    parser.addoption("--run-security", action="store_true", default=False, help="运行安全测试")
+    parser.addoption("--run-chaos", action="store_true", default=False, help="运行混沌工程测试")
 
 
 def pytest_configure(config):
@@ -614,9 +590,7 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(skip_ai)
 
     if not config.getoption("--run-performance"):
-        skip_performance = pytest.mark.skip(
-            reason="需要 --run-performance 参数运行性能测试"
-        )
+        skip_performance = pytest.mark.skip(reason="需要 --run-performance 参数运行性能测试")
         for item in items:
             if "performance" in item.keywords:
                 item.add_marker(skip_performance)

@@ -87,12 +87,8 @@ class SimpleRealtimeDataSaver:
             "redis_db": int(os.getenv("REDIS_DB", "0")),
             "cache_expire_seconds": int(os.getenv("CACHE_EXPIRE_SECONDS", "300")),
             # 数据处理配置
-            "add_timestamp_column": os.getenv("ADD_TIMESTAMP_COLUMN", "true").lower()
-            == "true",
-            "enable_data_validation": os.getenv(
-                "ENABLE_DATA_VALIDATION", "true"
-            ).lower()
-            == "true",
+            "add_timestamp_column": os.getenv("ADD_TIMESTAMP_COLUMN", "true").lower() == "true",
+            "enable_data_validation": os.getenv("ENABLE_DATA_VALIDATION", "true").lower() == "true",
             "max_retry_attempts": int(os.getenv("MAX_RETRY_ATTEMPTS", "3")),
             # 备份配置
             "save_to_csv": os.getenv("SAVE_TO_CSV", "true").lower() == "true",
@@ -107,9 +103,7 @@ class SimpleRealtimeDataSaver:
 
         self.logger.info("✅ 配置参数加载完成")
         self.logger.info(f"📊 市场代码: {self.config['market_symbol']}")
-        self.logger.info(
-            f"💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']}"
-        )
+        self.logger.info(f"💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']}")
         self.logger.info(f"📁 CSV备份: {self.config['save_to_csv']}")
 
     def initialize_redis(self) -> bool:
@@ -163,9 +157,7 @@ class SimpleRealtimeDataSaver:
                 if data is not None:
                     data = data[data["股票代码"].str.startswith(("0", "3"))]
             else:
-                self.logger.error(
-                    f"❌ 不支持的市场代码: {self.config['market_symbol']}"
-                )
+                self.logger.error(f"❌ 不支持的市场代码: {self.config['market_symbol']}")
                 return None
 
             if isinstance(data, pd.DataFrame) and not data.empty:
@@ -201,9 +193,7 @@ class SimpleRealtimeDataSaver:
 
             # 检查关键列
             expected_columns = ["股票代码", "股票名称"]
-            missing_columns = [
-                col for col in expected_columns if col not in data.columns
-            ]
+            missing_columns = [col for col in expected_columns if col not in data.columns]
 
             if missing_columns:
                 self.logger.warning(f"⚠️ 缺少关键列: {missing_columns}")
@@ -211,9 +201,7 @@ class SimpleRealtimeDataSaver:
             # 检查空值
             null_counts = data.isnull().sum()
             if null_counts.any():
-                self.logger.info(
-                    f"📊 数据包含空值统计: {null_counts[null_counts > 0].head().to_dict()}"
-                )
+                self.logger.info(f"📊 数据包含空值统计: {null_counts[null_counts > 0].head().to_dict()}")
 
             return True
 
@@ -238,9 +226,7 @@ class SimpleRealtimeDataSaver:
             data_json = data.to_json(orient="records", date_format="iso")
 
             # 保存到Redis并设置过期时间
-            self.redis_client.setex(
-                redis_key, self.config["cache_expire_seconds"], data_json
-            )
+            self.redis_client.setex(redis_key, self.config["cache_expire_seconds"], data_json)
 
             # 设置最新数据键（不过期）
             latest_key = f"realtime_positions:{self.config['market_symbol']}:latest"
@@ -345,7 +331,7 @@ class SimpleRealtimeDataSaver:
             self.logger.info("=" * 60)
 
             # 1. 初始化Redis连接（可选）
-            redis_available = self.initialize_redis()
+            self.initialize_redis()
 
             # 2. 执行强制更新或正常更新
             if force_update:
@@ -400,9 +386,7 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="沪深市场A股实时数据保存系统 - 简化版")
     parser.add_argument("--config", default=None, help="配置文件路径")
-    parser.add_argument(
-        "--force-update", action="store_true", help="强制更新，跳过缓存"
-    )
+    parser.add_argument("--force-update", action="store_true", help="强制更新，跳过缓存")
     parser.add_argument(
         "--market",
         choices=["hs", "sh", "sz"],

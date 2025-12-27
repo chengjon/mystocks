@@ -108,9 +108,7 @@ class IndicatorCalculator:
         sma = sum(prices[-period:]) / period
         return round(sma, 2)
 
-    def calculate_ema(
-        self, prices: List[float], period: int = 20, alpha: Optional[float] = None
-    ) -> float:
+    def calculate_ema(self, prices: List[float], period: int = 20, alpha: Optional[float] = None) -> float:
         """
         计算指数移动平均 (EMA)
 
@@ -316,9 +314,7 @@ class IndicatorFilter:
         rsi = self.calculator.calculate_rsi(self.price_cache[symbol])
         return self._compare(rsi, operator, threshold)
 
-    def evaluate_sma(
-        self, symbol: str, period: int, operator: str, threshold: float
-    ) -> bool:
+    def evaluate_sma(self, symbol: str, period: int, operator: str, threshold: float) -> bool:
         """
         评估SMA条件
 
@@ -376,9 +372,7 @@ class IndicatorFilter:
         """获取过滤器统计"""
         return {
             "symbols_cached": len(self.price_cache),
-            "total_prices_cached": sum(
-                len(prices) for prices in self.price_cache.values()
-            ),
+            "total_prices_cached": sum(len(prices) for prices in self.price_cache.values()),
             "calculator_stats": self.calculator.get_stats(),
         }
 

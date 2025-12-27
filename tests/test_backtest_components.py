@@ -50,9 +50,7 @@ class TestBacktestConfig:
 
     def test_config_custom_values(self):
         """测试配置自定义值"""
-        config = BacktestConfig(
-            initial_capital=200000.0, commission_rate=0.0005, max_position_size=0.5
-        )
+        config = BacktestConfig(initial_capital=200000.0, commission_rate=0.0005, max_position_size=0.5)
 
         assert config.initial_capital == 200000.0
         assert config.commission_rate == 0.0005
@@ -64,9 +62,7 @@ class TestVectorizedBacktester:
 
     def setup_method(self):
         """测试前准备"""
-        self.config = BacktestConfig(
-            initial_capital=100000, commission_rate=0.0003, slippage_rate=0.0001
-        )
+        self.config = BacktestConfig(initial_capital=100000, commission_rate=0.0003, slippage_rate=0.0001)
         self.backtester = VectorizedBacktester(self.config)
 
     def test_backtester_initialization(self):
@@ -84,9 +80,7 @@ class TestVectorizedBacktester:
     def test_validate_data_missing_columns(self):
         """测试数据验证缺失列"""
         # 缺少必需列
-        invalid_price_data = pd.DataFrame(
-            {"close": [100, 101, 102], "volume": [1000, 1100, 1200]}
-        )
+        invalid_price_data = pd.DataFrame({"close": [100, 101, 102], "volume": [1000, 1100, 1200]})
 
         signals = pd.DataFrame({"signal": ["buy", None, "sell"]})
 
@@ -196,9 +190,7 @@ class TestVectorizedBacktester:
         ]
 
         self.backtester.trades = trades
-        self.backtester.equity_curve = pd.DataFrame(
-            {"equity": [100000, 100500, 100300]}
-        )
+        self.backtester.equity_curve = pd.DataFrame({"equity": [100000, 100500, 100300]})
         self.backtester.config.initial_capital = 100000
 
         summary = self.backtester._calculate_summary()
@@ -323,9 +315,7 @@ class TestPerformanceMetrics:
     def test_max_drawdown(self):
         """测试最大回撤计算"""
         # 创建有明显回撤的权益曲线
-        equity_curve = pd.DataFrame(
-            {"equity": [100000, 110000, 105000, 108000, 95000, 100000]}
-        )
+        equity_curve = pd.DataFrame({"equity": [100000, 110000, 105000, 108000, 95000, 100000]})
 
         max_dd = self.metrics.max_drawdown(equity_curve)
 
@@ -344,9 +334,7 @@ class TestPerformanceMetrics:
     def test_max_drawdown_duration(self):
         """测试最大回撤持续时间"""
         # 创建有回撤的权益曲线
-        equity_curve = pd.DataFrame(
-            {"equity": [100000, 110000, 105000, 100000, 95000, 100000, 110000]}
-        )
+        equity_curve = pd.DataFrame({"equity": [100000, 110000, 105000, 100000, 95000, 100000, 110000]})
 
         duration = self.metrics.max_drawdown_duration(equity_curve)
 
@@ -567,9 +555,7 @@ class TestRiskMetrics:
         returns = pd.Series([0.001] * 252)
         equity_curve = pd.DataFrame({"equity": 100000 * (1 + returns).cumprod()})
 
-        burke = self.risk_metrics.burke_ratio(
-            returns, equity_curve, risk_free_rate=0.03
-        )
+        burke = self.risk_metrics.burke_ratio(returns, equity_curve, risk_free_rate=0.03)
 
         # Burke比率可以为正或负
         assert isinstance(burke, float)
@@ -583,18 +569,14 @@ class TestRiskMetrics:
 
     def test_recovery_factor(self):
         """测试恢复因子"""
-        recovery = self.risk_metrics.recovery_factor(
-            total_return=0.20, max_drawdown=0.10
-        )
+        recovery = self.risk_metrics.recovery_factor(total_return=0.20, max_drawdown=0.10)
 
         # 恢复因子 = 0.20 / 0.10 = 2.0
         assert recovery == 2.0
 
     def test_recovery_factor_zero_drawdown(self):
         """测试恢复因子（零回撤）"""
-        recovery = self.risk_metrics.recovery_factor(
-            total_return=0.20, max_drawdown=0.0
-        )
+        recovery = self.risk_metrics.recovery_factor(total_return=0.20, max_drawdown=0.0)
 
         # 零回撤应该返回0
         assert recovery == 0.0
@@ -744,9 +726,7 @@ class TestBacktestEngine:
             index=sample_price_data.index,
         )
 
-        result = self.engine.run(
-            sample_price_data, sample_signals, benchmark_returns=benchmark_returns
-        )
+        result = self.engine.run(sample_price_data, sample_signals, benchmark_returns=benchmark_returns)
 
         # 应该包含基准比较指标
         assert "alpha" in result["performance"]

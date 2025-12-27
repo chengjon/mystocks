@@ -24,9 +24,7 @@ import docker
 from pydantic import BaseModel, Field
 
 # 设置日志
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -74,9 +72,7 @@ class PipelineStep(BaseModel):
     environment: Dict[str, str] = Field(default_factory=dict, description="环境变量")
     working_directory: Optional[str] = Field(None, description="工作目录")
 
-    status: PipelineStatus = Field(
-        default=PipelineStatus.PENDING, description="步骤状态"
-    )
+    status: PipelineStatus = Field(default=PipelineStatus.PENDING, description="步骤状态")
     start_time: Optional[datetime] = Field(None, description="开始时间")
     end_time: Optional[datetime] = Field(None, description="结束时间")
     output: str = Field("", description="输出内容")
@@ -142,15 +138,11 @@ class PipelineConfig(BaseModel):
     id: str = Field(..., description="配置ID")
     name: str = Field(..., description="流水线名称")
     description: str = Field("", description="描述")
-    trigger_on: List[str] = Field(
-        default=["push", "pull_request"], description="触发条件"
-    )
+    trigger_on: List[str] = Field(default=["push", "pull_request"], description="触发条件")
     branches: List[str] = Field(default=["main", "develop"], description="目标分支")
     steps: List[PipelineStep] = Field(default=[], description="步骤列表")
     test_suites: List[TestSuite] = Field(default=[], description="测试套件")
-    environment: EnvironmentType = Field(
-        default=EnvironmentType.DEVELOPMENT, description="环境类型"
-    )
+    environment: EnvironmentType = Field(default=EnvironmentType.DEVELOPMENT, description="环境类型")
     variables: Dict[str, str] = Field(default_factory=dict, description="变量")
     artifacts: List[str] = Field(default_factory=list, description="产物路径")
     notifications: Dict[str, Any] = Field(default_factory=dict, description="通知配置")
@@ -223,9 +215,7 @@ class ContinuousIntegrationManager:
             },
         )
 
-    async def run_pipeline(
-        self, pipeline_id: str, config: PipelineConfig
-    ) -> Dict[str, Any]:
+    async def run_pipeline(self, pipeline_id: str, config: PipelineConfig) -> Dict[str, Any]:
         """运行流水线"""
         pipeline_info = {
             "id": pipeline_id,
@@ -250,10 +240,7 @@ class ContinuousIntegrationManager:
                 pipeline_info["steps"] = await self._run_pipeline_sequential(config)
 
             # 检查整体状态
-            all_success = all(
-                step["status"] == PipelineStatus.SUCCESS.value
-                for step in pipeline_info["steps"]
-            )
+            all_success = all(step["status"] == PipelineStatus.SUCCESS.value for step in pipeline_info["steps"])
 
             if all_success:
                 pipeline_info["status"] = PipelineStatus.SUCCESS.value
@@ -261,9 +248,7 @@ class ContinuousIntegrationManager:
                 pipeline_info["status"] = PipelineStatus.FAILED.value
 
             # 生成报告
-            pipeline_info["reports"] = await self._generate_pipeline_reports(
-                pipeline_id, config
-            )
+            pipeline_info["reports"] = await self._generate_pipeline_reports(pipeline_id, config)
 
         except Exception as e:
             logger.error(f"流水线执行失败: {e}")
@@ -276,9 +261,7 @@ class ContinuousIntegrationManager:
         logger.info(f"流水线执行完成: {pipeline_id} - {pipeline_info['status']}")
         return pipeline_info
 
-    async def _run_pipeline_parallel(
-        self, config: PipelineConfig
-    ) -> List[Dict[str, Any]]:
+    async def _run_pipeline_parallel(self, config: PipelineConfig) -> List[Dict[str, Any]]:
         """并行执行流水线步骤"""
         steps = []
 
@@ -291,8 +274,7 @@ class ContinuousIntegrationManager:
             executable_steps = []
             for step in config.steps:
                 if not step.dependencies or all(
-                    dep_step.id in [s["id"] for s in steps]
-                    for dep_step in step.dependencies
+                    dep_step.id in [s["id"] for s in steps] for dep_step in step.dependencies
                 ):
                     executable_steps.append(step)
 
@@ -310,9 +292,7 @@ class ContinuousIntegrationManager:
 
             for i, step_result in enumerate(step_results):
                 if isinstance(step_result, Exception):
-                    logger.error(
-                        f"步骤 {executable_steps[i].name} 执行失败: {step_result}"
-                    )
+                    logger.error(f"步骤 {executable_steps[i].name} 执行失败: {step_result}")
                     steps.append(
                         {
                             "id": executable_steps[i].id,
@@ -328,15 +308,11 @@ class ContinuousIntegrationManager:
                     steps.append(step_result)
 
             # 从剩余步骤中移除已执行的步骤
-            config.steps = [
-                step for step in config.steps if step.id not in [s["id"] for s in steps]
-            ]
+            config.steps = [step for step in config.steps if step.id not in [s["id"] for s in steps]]
 
         return steps
 
-    async def _run_pipeline_sequential(
-        self, config: PipelineConfig
-    ) -> List[Dict[str, Any]]:
+    async def _run_pipeline_sequential(self, config: PipelineConfig) -> List[Dict[str, Any]]:
         """顺序执行流水线步骤"""
         steps = []
 
@@ -380,9 +356,7 @@ class ContinuousIntegrationManager:
 
             # 等待进程完成或超时
             try:
-                stdout, stderr = await asyncio.wait_for(
-                    process.communicate(), timeout=step.timeout
-                )
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=step.timeout)
 
                 if process.returncode == 0:
                     step_info["status"] = PipelineStatus.SUCCESS.value
@@ -392,9 +366,7 @@ class ContinuousIntegrationManager:
                     step_info["status"] = PipelineStatus.FAILED.value
                     step_info["output"] = stdout.decode("utf-8", errors="ignore")
                     step_info["error"] = stderr.decode("utf-8", errors="ignore")
-                    logger.error(
-                        f"步骤执行失败: {step.name} - {stderr.decode('utf-8', errors='ignore')}"
-                    )
+                    logger.error(f"步骤执行失败: {step.name} - {stderr.decode('utf-8', errors='ignore')}")
 
             except asyncio.TimeoutError:
                 process.kill()
@@ -411,9 +383,7 @@ class ContinuousIntegrationManager:
         step_info["end_time"] = datetime.now().isoformat()
         return step_info
 
-    async def _generate_pipeline_reports(
-        self, pipeline_id: str, config: PipelineConfig
-    ) -> List[TestReport]:
+    async def _generate_pipeline_reports(self, pipeline_id: str, config: PipelineConfig) -> List[TestReport]:
         """生成流水线报告"""
         reports = []
 
@@ -485,9 +455,7 @@ class ContinuousIntegrationManager:
             error_tests=error_tests,
             duration=(datetime.now() - start_time).total_seconds(),
             coverage=85.0,  # 模拟覆盖率
-            status=PipelineStatus.SUCCESS.value
-            if error_tests == 0
-            else PipelineStatus.FAILED.value,
+            status=PipelineStatus.SUCCESS.value if error_tests == 0 else PipelineStatus.FAILED.value,
             results=results,
             artifacts=[],
         )
@@ -616,9 +584,7 @@ class ContinuousIntegrationManager:
 
             # 部署应用
             if result["build_success"]:
-                deploy_result = await self._run_command(
-                    "./scripts/automation/deploy.sh --check"
-                )
+                deploy_result = await self._run_command("./scripts/automation/deploy.sh --check")
                 result["deploy_success"] = deploy_result["success"]
 
                 # 构建产物
@@ -651,35 +617,23 @@ class ContinuousIntegrationManager:
 
         # 计算进度
         steps = pipeline.get("steps", [])
-        completed_steps = [
-            step for step in steps if step.get("status") != PipelineStatus.RUNNING.value
-        ]
+        completed_steps = [step for step in steps if step.get("status") != PipelineStatus.RUNNING.value]
         status_info["steps_completed"] = len(completed_steps)
-        status_info["progress"] = (
-            (len(completed_steps) / len(steps)) * 100 if steps else 0
-        )
+        status_info["progress"] = (len(completed_steps) / len(steps)) * 100 if steps else 0
 
         # 获取当前步骤
-        running_steps = [
-            step for step in steps if step.get("status") == PipelineStatus.RUNNING.value
-        ]
+        running_steps = [step for step in steps if step.get("status") == PipelineStatus.RUNNING.value]
         if running_steps:
             status_info["current_step"] = running_steps[0]["name"]
 
         # 计算时间
-        start_time = datetime.fromisoformat(
-            pipeline.get("start_time", datetime.now().isoformat())
-        )
+        start_time = datetime.fromisoformat(pipeline.get("start_time", datetime.now().isoformat()))
         status_info["elapsed_time"] = (datetime.now() - start_time).total_seconds()
 
         # 估算剩余时间
         if status_info["progress"] > 0:
-            estimated_total = (
-                status_info["elapsed_time"] / status_info["progress"] * 100
-            )
-            status_info["estimated_remaining_time"] = (
-                estimated_total - status_info["elapsed_time"]
-            )
+            estimated_total = status_info["elapsed_time"] / status_info["progress"] * 100
+            status_info["estimated_remaining_time"] = estimated_total - status_info["elapsed_time"]
 
         return status_info
 
@@ -705,9 +659,7 @@ class ContinuousIntegrationManager:
 
     async def get_pipeline_history(self, limit: int = 10) -> List[Dict[str, Any]]:
         """获取流水线历史"""
-        sorted_pipelines = sorted(
-            self.pipelines.values(), key=lambda x: x.get("start_time", ""), reverse=True
-        )
+        sorted_pipelines = sorted(self.pipelines.values(), key=lambda x: x.get("start_time", ""), reverse=True)
 
         return sorted_pipelines[:limit]
 
@@ -727,23 +679,13 @@ class ContinuousIntegrationManager:
             "status": pipeline.get("status"),
             "start_time": pipeline.get("start_time"),
             "end_time": pipeline.get("end_time"),
-            "duration": self._calculate_duration(
-                pipeline.get("start_time"), pipeline.get("end_time")
-            ),
+            "duration": self._calculate_duration(pipeline.get("start_time"), pipeline.get("end_time")),
             "total_steps": len(pipeline.get("steps", [])),
             "successful_steps": len(
-                [
-                    step
-                    for step in pipeline.get("steps", [])
-                    if step.get("status") == PipelineStatus.SUCCESS.value
-                ]
+                [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.SUCCESS.value]
             ),
             "failed_steps": len(
-                [
-                    step
-                    for step in pipeline.get("steps", [])
-                    if step.get("status") == PipelineStatus.FAILED.value
-                ]
+                [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.FAILED.value]
             ),
             "test_reports": [],
             "artifacts": pipeline.get("artifacts", []),
@@ -766,9 +708,7 @@ class ContinuousIntegrationManager:
 
         return report
 
-    def _calculate_duration(
-        self, start_time: Optional[str], end_time: Optional[str]
-    ) -> str:
+    def _calculate_duration(self, start_time: Optional[str], end_time: Optional[str]) -> str:
         """计算持续时间"""
         if not start_time:
             return "0s"
@@ -783,27 +723,19 @@ class ContinuousIntegrationManager:
 
         return f"{minutes}m {seconds}s"
 
-    def _generate_recommendations(
-        self, pipeline: Dict[str, Any], reports: List[TestReport]
-    ) -> List[str]:
+    def _generate_recommendations(self, pipeline: Dict[str, Any], reports: List[TestReport]) -> List[str]:
         """生成改进建议"""
         recommendations = []
 
         # 分析步骤失败情况
-        failed_steps = [
-            step
-            for step in pipeline.get("steps", [])
-            if step.get("status") == PipelineStatus.FAILED.value
-        ]
+        failed_steps = [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.FAILED.value]
         if failed_steps:
             recommendations.append(f"有 {len(failed_steps)} 个步骤失败，请检查错误详情")
 
         # 分析测试覆盖率
         for report in reports:
             if report.coverage < 80:
-                recommendations.append(
-                    f"测试覆盖率较低 ({report.coverage:.1f}%)，建议增加测试用例"
-                )
+                recommendations.append(f"测试覆盖率较低 ({report.coverage:.1f}%)，建议增加测试用例")
 
         # 分析性能
         total_duration = sum(report.duration for report in reports)
@@ -830,9 +762,7 @@ async def demo_ci_system():
         # 创建默认测试步骤
         if not config.steps:
             config.steps = [
-                PipelineStep(
-                    id="1", name="依赖检查", type=TestType.UNIT, command="pip list"
-                ),
+                PipelineStep(id="1", name="依赖检查", type=TestType.UNIT, command="pip list"),
                 PipelineStep(
                     id="2",
                     name="代码检查",
@@ -919,9 +849,7 @@ async def demo_ci_system():
         print(f"报告摘要: {report}")
 
         # 打印失败步骤的详细输出
-        failed_steps = [
-            s for s in pipeline_result.get("steps", []) if s.get("status") == "failed"
-        ]
+        failed_steps = [s for s in pipeline_result.get("steps", []) if s.get("status") == "failed"]
         if failed_steps:
             print("\n=== 失败步骤详情 ===")
             for step in failed_steps:

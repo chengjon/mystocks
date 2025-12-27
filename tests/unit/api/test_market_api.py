@@ -165,9 +165,7 @@ class TestMarketAPI:
 
             # 验证涨跌幅计算
             expected_change_pct = (quote["change"] / quote["prev_close"]) * 100
-            assert (
-                abs(quote["change_percent"] - expected_change_pct) < 0.1
-            ), "涨跌幅计算应该准确"
+            assert abs(quote["change_percent"] - expected_change_pct) < 0.1, "涨跌幅计算应该准确"
 
     def test_get_stock_daily_structure(self):
         """测试股票日线数据结构"""
@@ -269,9 +267,7 @@ class TestMarketAPI:
         """测试股票代码格式验证"""
         valid_symbols = ["600519", "000001", "300750"]
         for symbol in valid_symbols:
-            response = self.mock_data.get_stock_daily(
-                symbol, "2024-01-01", "2024-01-10"
-            )
+            response = self.mock_data.get_stock_daily(symbol, "2024-01-01", "2024-01-10")
             assert "success" in response
 
     def test_response_time_acceptable(self):

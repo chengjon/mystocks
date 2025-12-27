@@ -59,13 +59,7 @@ class TestDataClassificationEnum:
         transaction = DataClassification.get_transaction_data_classifications()
         metadata = DataClassification.get_metadata_classifications()
 
-        total = (
-            len(market)
-            + len(reference)
-            + len(derived)
-            + len(transaction)
-            + len(metadata)
-        )
+        total = len(market) + len(reference) + len(derived) + len(transaction) + len(metadata)
         all_classifications = DataClassification.get_all_classifications()
         assert total == len(all_classifications)
 
@@ -95,50 +89,32 @@ class TestDataClassificationMarketData:
     def test_tick_data_exists(self):
         """测试TICK_DATA分类存在"""
         assert DataClassification.TICK_DATA.value == "TICK_DATA"
-        assert (
-            DataClassification.TICK_DATA.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.TICK_DATA.value in DataClassification.get_market_data_classifications()
 
     def test_minute_kline_exists(self):
         """测试MINUTE_KLINE分类存在"""
         assert DataClassification.MINUTE_KLINE.value == "MINUTE_KLINE"
-        assert (
-            DataClassification.MINUTE_KLINE.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.MINUTE_KLINE.value in DataClassification.get_market_data_classifications()
 
     def test_daily_kline_exists(self):
         """测试DAILY_KLINE分类存在"""
         assert DataClassification.DAILY_KLINE.value == "DAILY_KLINE"
-        assert (
-            DataClassification.DAILY_KLINE.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.DAILY_KLINE.value in DataClassification.get_market_data_classifications()
 
     def test_order_book_depth_exists(self):
         """测试ORDER_BOOK_DEPTH分类存在"""
         assert DataClassification.ORDER_BOOK_DEPTH.value == "ORDER_BOOK_DEPTH"
-        assert (
-            DataClassification.ORDER_BOOK_DEPTH.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.ORDER_BOOK_DEPTH.value in DataClassification.get_market_data_classifications()
 
     def test_level2_snapshot_exists(self):
         """测试LEVEL2_SNAPSHOT分类存在"""
         assert DataClassification.LEVEL2_SNAPSHOT.value == "LEVEL2_SNAPSHOT"
-        assert (
-            DataClassification.LEVEL2_SNAPSHOT.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.LEVEL2_SNAPSHOT.value in DataClassification.get_market_data_classifications()
 
     def test_index_quotes_exists(self):
         """测试INDEX_QUOTES分类存在"""
         assert DataClassification.INDEX_QUOTES.value == "INDEX_QUOTES"
-        assert (
-            DataClassification.INDEX_QUOTES.value
-            in DataClassification.get_market_data_classifications()
-        )
+        assert DataClassification.INDEX_QUOTES.value in DataClassification.get_market_data_classifications()
 
 
 class TestDataClassificationReferenceData:
@@ -147,42 +123,27 @@ class TestDataClassificationReferenceData:
     def test_symbols_info_exists(self):
         """测试SYMBOLS_INFO分类存在"""
         assert DataClassification.SYMBOLS_INFO.value == "SYMBOLS_INFO"
-        assert (
-            DataClassification.SYMBOLS_INFO.value
-            in DataClassification.get_reference_data_classifications()
-        )
+        assert DataClassification.SYMBOLS_INFO.value in DataClassification.get_reference_data_classifications()
 
     def test_industry_class_exists(self):
         """测试INDUSTRY_CLASS分类存在"""
         assert DataClassification.INDUSTRY_CLASS.value == "INDUSTRY_CLASS"
-        assert (
-            DataClassification.INDUSTRY_CLASS.value
-            in DataClassification.get_reference_data_classifications()
-        )
+        assert DataClassification.INDUSTRY_CLASS.value in DataClassification.get_reference_data_classifications()
 
     def test_concept_class_exists(self):
         """测试CONCEPT_CLASS分类存在"""
         assert DataClassification.CONCEPT_CLASS.value == "CONCEPT_CLASS"
-        assert (
-            DataClassification.CONCEPT_CLASS.value
-            in DataClassification.get_reference_data_classifications()
-        )
+        assert DataClassification.CONCEPT_CLASS.value in DataClassification.get_reference_data_classifications()
 
     def test_index_constituents_exists(self):
         """测试INDEX_CONSTITUENTS分类存在"""
         assert DataClassification.INDEX_CONSTITUENTS.value == "INDEX_CONSTITUENTS"
-        assert (
-            DataClassification.INDEX_CONSTITUENTS.value
-            in DataClassification.get_reference_data_classifications()
-        )
+        assert DataClassification.INDEX_CONSTITUENTS.value in DataClassification.get_reference_data_classifications()
 
     def test_trade_calendar_exists(self):
         """测试TRADE_CALENDAR分类存在"""
         assert DataClassification.TRADE_CALENDAR.value == "TRADE_CALENDAR"
-        assert (
-            DataClassification.TRADE_CALENDAR.value
-            in DataClassification.get_reference_data_classifications()
-        )
+        assert DataClassification.TRADE_CALENDAR.value in DataClassification.get_reference_data_classifications()
 
 
 class TestDataClassificationDerivedData:
@@ -191,50 +152,32 @@ class TestDataClassificationDerivedData:
     def test_technical_indicators_exists(self):
         """测试TECHNICAL_INDICATORS分类存在"""
         assert DataClassification.TECHNICAL_INDICATORS.value == "TECHNICAL_INDICATORS"
-        assert (
-            DataClassification.TECHNICAL_INDICATORS.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.TECHNICAL_INDICATORS.value in DataClassification.get_derived_data_classifications()
 
     def test_quant_factors_exists(self):
         """测试QUANT_FACTORS分类存在"""
         assert DataClassification.QUANT_FACTORS.value == "QUANT_FACTORS"
-        assert (
-            DataClassification.QUANT_FACTORS.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.QUANT_FACTORS.value in DataClassification.get_derived_data_classifications()
 
     def test_model_output_exists(self):
         """测试MODEL_OUTPUT分类存在"""
         assert DataClassification.MODEL_OUTPUT.value == "MODEL_OUTPUT"
-        assert (
-            DataClassification.MODEL_OUTPUT.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.MODEL_OUTPUT.value in DataClassification.get_derived_data_classifications()
 
     def test_trade_signals_exists(self):
         """测试TRADE_SIGNALS分类存在"""
         assert DataClassification.TRADE_SIGNALS.value == "TRADE_SIGNALS"
-        assert (
-            DataClassification.TRADE_SIGNALS.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.TRADE_SIGNALS.value in DataClassification.get_derived_data_classifications()
 
     def test_backtest_results_exists(self):
         """测试BACKTEST_RESULTS分类存在"""
         assert DataClassification.BACKTEST_RESULTS.value == "BACKTEST_RESULTS"
-        assert (
-            DataClassification.BACKTEST_RESULTS.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.BACKTEST_RESULTS.value in DataClassification.get_derived_data_classifications()
 
     def test_risk_metrics_exists(self):
         """测试RISK_METRICS分类存在"""
         assert DataClassification.RISK_METRICS.value == "RISK_METRICS"
-        assert (
-            DataClassification.RISK_METRICS.value
-            in DataClassification.get_derived_data_classifications()
-        )
+        assert DataClassification.RISK_METRICS.value in DataClassification.get_derived_data_classifications()
 
 
 class TestDataClassificationTransactionData:
@@ -243,34 +186,22 @@ class TestDataClassificationTransactionData:
     def test_order_records_exists(self):
         """测试ORDER_RECORDS分类存在"""
         assert DataClassification.ORDER_RECORDS.value == "ORDER_RECORDS"
-        assert (
-            DataClassification.ORDER_RECORDS.value
-            in DataClassification.get_transaction_data_classifications()
-        )
+        assert DataClassification.ORDER_RECORDS.value in DataClassification.get_transaction_data_classifications()
 
     def test_trade_records_exists(self):
         """测试TRADE_RECORDS分类存在"""
         assert DataClassification.TRADE_RECORDS.value == "TRADE_RECORDS"
-        assert (
-            DataClassification.TRADE_RECORDS.value
-            in DataClassification.get_transaction_data_classifications()
-        )
+        assert DataClassification.TRADE_RECORDS.value in DataClassification.get_transaction_data_classifications()
 
     def test_realtime_positions_exists(self):
         """测试REALTIME_POSITIONS分类存在"""
         assert DataClassification.REALTIME_POSITIONS.value == "REALTIME_POSITIONS"
-        assert (
-            DataClassification.REALTIME_POSITIONS.value
-            in DataClassification.get_transaction_data_classifications()
-        )
+        assert DataClassification.REALTIME_POSITIONS.value in DataClassification.get_transaction_data_classifications()
 
     def test_realtime_account_exists(self):
         """测试REALTIME_ACCOUNT分类存在"""
         assert DataClassification.REALTIME_ACCOUNT.value == "REALTIME_ACCOUNT"
-        assert (
-            DataClassification.REALTIME_ACCOUNT.value
-            in DataClassification.get_transaction_data_classifications()
-        )
+        assert DataClassification.REALTIME_ACCOUNT.value in DataClassification.get_transaction_data_classifications()
 
 
 class TestDataClassificationMetadata:
@@ -279,50 +210,32 @@ class TestDataClassificationMetadata:
     def test_data_source_status_exists(self):
         """测试DATA_SOURCE_STATUS分类存在"""
         assert DataClassification.DATA_SOURCE_STATUS.value == "DATA_SOURCE_STATUS"
-        assert (
-            DataClassification.DATA_SOURCE_STATUS.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.DATA_SOURCE_STATUS.value in DataClassification.get_metadata_classifications()
 
     def test_task_schedule_exists(self):
         """测试TASK_SCHEDULE分类存在"""
         assert DataClassification.TASK_SCHEDULE.value == "TASK_SCHEDULE"
-        assert (
-            DataClassification.TASK_SCHEDULE.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.TASK_SCHEDULE.value in DataClassification.get_metadata_classifications()
 
     def test_strategy_params_exists(self):
         """测试STRATEGY_PARAMS分类存在"""
         assert DataClassification.STRATEGY_PARAMS.value == "STRATEGY_PARAMS"
-        assert (
-            DataClassification.STRATEGY_PARAMS.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.STRATEGY_PARAMS.value in DataClassification.get_metadata_classifications()
 
     def test_system_config_exists(self):
         """测试SYSTEM_CONFIG分类存在"""
         assert DataClassification.SYSTEM_CONFIG.value == "SYSTEM_CONFIG"
-        assert (
-            DataClassification.SYSTEM_CONFIG.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.SYSTEM_CONFIG.value in DataClassification.get_metadata_classifications()
 
     def test_data_quality_metrics_exists(self):
         """测试DATA_QUALITY_METRICS分类存在"""
         assert DataClassification.DATA_QUALITY_METRICS.value == "DATA_QUALITY_METRICS"
-        assert (
-            DataClassification.DATA_QUALITY_METRICS.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.DATA_QUALITY_METRICS.value in DataClassification.get_metadata_classifications()
 
     def test_user_config_exists(self):
         """测试USER_CONFIG分类存在"""
         assert DataClassification.USER_CONFIG.value == "USER_CONFIG"
-        assert (
-            DataClassification.USER_CONFIG.value
-            in DataClassification.get_metadata_classifications()
-        )
+        assert DataClassification.USER_CONFIG.value in DataClassification.get_metadata_classifications()
 
 
 class TestDatabaseTargetEnum:

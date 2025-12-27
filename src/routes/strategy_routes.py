@@ -176,9 +176,7 @@ async def run_single_strategy(request: Dict):
                 from src.database.database_service import db_service
 
                 # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_strategy_results(
-                    {"strategy_id": request.get("strategy_id")}
-                )
+                result = db_service.get_strategy_results({"strategy_id": request.get("strategy_id")})
 
                 logger.info("真实数据库查询成功: 单个策略执行")
 
@@ -253,9 +251,7 @@ async def run_batch_strategies(request: Dict):
                 from src.database.database_service import db_service
 
                 # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_strategy_results(
-                    {"strategy_id": request.get("strategy_id")}
-                )
+                result = db_service.get_strategy_results({"strategy_id": request.get("strategy_id")})
 
                 logger.info("真实数据库查询成功: 批量策略执行")
 
@@ -529,9 +525,7 @@ async def get_strategy_performance(strategy_code: str):
             for i in range(30):
                 performance_data["performance_history"].append(
                     {
-                        "date": (datetime.now() - datetime.timedelta(days=i)).strftime(
-                            "%Y-%m-%d"
-                        ),
+                        "date": (datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d"),
                         "matches": 5 + i,
                         "success": True if i % 7 != 0 else False,
                     }

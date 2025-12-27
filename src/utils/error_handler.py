@@ -20,9 +20,7 @@ class UnifiedErrorHandler:
     """
 
     @staticmethod
-    def log_error(
-        error: Exception, context: str = "", level: int = logging.ERROR
-    ) -> None:
+    def log_error(error: Exception, context: str = "", level: int = logging.ERROR) -> None:
         """
         统一日志记录
 
@@ -98,17 +96,13 @@ class UnifiedErrorHandler:
                         return func(*args, **kwargs)
                     except exceptions as e:
                         last_exception = e
-                        UnifiedErrorHandler.log_error(
-                            e, f"{context} - 第{attempt}次尝试失败"
-                        )
+                        UnifiedErrorHandler.log_error(e, f"{context} - 第{attempt}次尝试失败")
 
                         if attempt < max_retries:
                             time.sleep(current_delay)
                             current_delay *= backoff
                         else:
-                            UnifiedErrorHandler.log_error(
-                                e, f"{context} - 所有重试均已失败"
-                            )
+                            UnifiedErrorHandler.log_error(e, f"{context} - 所有重试均已失败")
 
                 # 所有重试都失败，重新抛出最后一个异常
                 raise last_exception
@@ -119,10 +113,7 @@ class UnifiedErrorHandler:
 
 
 # 便捷函数
-def safe_execute(
-        func: Callable,
-        context: str = "",
-        default_return: Any = None):
+def safe_execute(func: Callable, context: str = "", default_return: Any = None):
     """安全执行函数的便捷函数"""
     return UnifiedErrorHandler.safe_execute(func, context, default_return)
 
@@ -135,9 +126,7 @@ def retry_on_failure(
     context: str = "",
 ):
     """重试装饰器的便捷函数"""
-    return UnifiedErrorHandler.retry_on_failure(
-        max_retries, delay, backoff, exceptions, context
-    )
+    return UnifiedErrorHandler.retry_on_failure(max_retries, delay, backoff, exceptions, context)
 
 
 # 统一错误类型

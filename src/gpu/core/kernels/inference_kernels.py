@@ -73,9 +73,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
                 await self._warmup_pytorch()
 
             self.is_initialized = True
-            logger.info(
-                f"InferenceKernelEngine initialized on device {self.config.device_id}"
-            )
+            logger.info(f"InferenceKernelEngine initialized on device {self.config.device_id}")
             return True
 
         except Exception as e:
@@ -130,9 +128,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             error_message="Inference kernels do not support matrix operations",
         )
 
-    async def execute_transform_operation(
-        self, data: np.ndarray, config: Any
-    ) -> KernelExecutionResult:
+    async def execute_transform_operation(self, data: np.ndarray, config: Any) -> KernelExecutionResult:
         """推理内核不支持数据变换"""
         return KernelExecutionResult(
             success=False,
@@ -140,9 +136,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             error_message="Inference kernels do not support transform operations",
         )
 
-    async def execute_inference_operation(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def execute_inference_operation(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行机器学习推理"""
         if not self.is_initialized:
             await self.initialize()
@@ -166,9 +160,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             elif config.operation_type == InferenceOperationType.PCA:
                 result = await self._execute_pca(data, config)
             else:
-                raise ValueError(
-                    f"Unsupported inference operation: {config.operation_type}"
-                )
+                raise ValueError(f"Unsupported inference operation: {config.operation_type}")
 
             execution_time = (time.time() - start_time) * 1000
             self.stats["total_inferences"] += 1
@@ -176,8 +168,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Inference operation {config.operation_type.value} "
-                    f"completed in {execution_time:.2f}ms"
+                    f"Inference operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -187,15 +178,11 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             logger.error(f"Error executing inference operation: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=execution_time, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
-    async def _execute_linear_regression(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_linear_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行线性回归推理"""
-        start_time = time.time()
+        time.time()
 
         try:
             if CUPY_AVAILABLE and not self._should_use_cpu_fallback(data, config):
@@ -207,14 +194,11 @@ class InferenceKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             logger.error(f"Linear regression execution failed: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=0.0, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
-    async def _gpu_linear_regression(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _gpu_linear_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """GPU线性回归推理"""
+        start_time = time.time()
         # 模拟线性回归推理
         weights = np.random.random((data.shape[1], 1)).astype(np.float32)
         bias = np.random.random((1,)).astype(np.float32)
@@ -257,10 +241,9 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _cpu_linear_regression(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _cpu_linear_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """CPU线性回归推理"""
+        start_time = time.time()
         # 模拟线性回归推理
         weights = np.random.random((data.shape[1], 1)).astype(np.float32)
         bias = np.random.random((1,)).astype(np.float32)
@@ -286,18 +269,14 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _execute_neural_network(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_neural_network(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行神经网络推理"""
         if TORCH_AVAILABLE:
             return await self._torch_neural_network(data, config)
         else:
             return await self._numpy_neural_network(data, config)
 
-    async def _torch_neural_network(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _torch_neural_network(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """PyTorch神经网络推理"""
         start_time = time.time()
 
@@ -354,9 +333,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _numpy_neural_network(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _numpy_neural_network(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """NumPy神经网络推理"""
         start_time = time.time()
 
@@ -396,16 +373,12 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _execute_logistic_regression(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_logistic_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行逻辑回归推理"""
         # 使用Sigmoid激活函数的简单逻辑回归
         return await self._execute_neural_network(data, config)
 
-    async def _execute_decision_tree(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_decision_tree(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行决策树推理"""
         # 简化的决策树：基于特征值进行分类
         start_time = time.time()
@@ -438,9 +411,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _execute_random_forest(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_random_forest(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行随机森林推理"""
         # 简化的随机森林：多个决策树的平均
         num_trees = 10
@@ -451,9 +422,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         try:
             for _ in range(num_trees):
                 # 每个树使用不同的随机特征
-                feature_indices = np.random.choice(
-                    data.shape[-1], size=min(5, data.shape[-1]), replace=False
-                )
+                feature_indices = np.random.choice(data.shape[-1], size=min(5, data.shape[-1]), replace=False)
                 tree_data = data[:, feature_indices]
 
                 # 简单的树预测
@@ -483,17 +452,13 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _execute_clustering(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_clustering(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行聚类推理"""
         start_time = time.time()
 
         try:
             # 简化的K-means聚类
-            n_clusters = (
-                config.model_params.get("n_clusters", 5) if config.model_params else 5
-            )
+            n_clusters = config.model_params.get("n_clusters", 5) if config.model_params else 5
 
             # 随机初始化聚类中心
             centers = data[np.random.choice(data.shape[0], n_clusters, replace=False)]
@@ -533,9 +498,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             raise e
 
-    async def _execute_pca(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def _execute_pca(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行PCA降维"""
         start_time = time.time()
 
@@ -557,21 +520,14 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             eigenvectors = eigenvectors[:, idx]
 
             # 选择前n个主成分
-            n_components = min(
-                config.model_params.get("n_components", data.shape[1]), data.shape[1]
-            )
+            n_components = min(config.model_params.get("n_components", data.shape[1]), data.shape[1])
             top_eigenvectors = eigenvectors[:, :n_components]
 
             # 投影到主成分空间
             result = np.dot(normalized_data, top_eigenvectors)
 
             execution_time = (time.time() - start_time) * 1000
-            memory_used = (
-                data.nbytes
-                + cov_matrix.nbytes
-                + eigenvalues.nbytes
-                + eigenvectors.nbytes
-            )
+            memory_used = data.nbytes + cov_matrix.nbytes + eigenvalues.nbytes + eigenvectors.nbytes
 
             return KernelExecutionResult(
                 success=True,
@@ -583,17 +539,14 @@ class InferenceKernelEngine(StandardizedKernelInterface):
                     "n_components": n_components,
                     "input_shape": data.shape,
                     "output_shape": result.shape,
-                    "explained_variance_ratio": np.sum(eigenvalues[:n_components])
-                    / np.sum(eigenvalues),
+                    "explained_variance_ratio": np.sum(eigenvalues[:n_components]) / np.sum(eigenvalues),
                 },
             )
 
         except Exception as e:
             raise e
 
-    def _should_use_cpu_fallback(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> bool:
+    def _should_use_cpu_fallback(self, data: np.ndarray, config: InferenceConfig) -> bool:
         """判断是否应该使用CPU回退"""
         # 小数据集使用CPU可能更快
         if data.size < 1000:
@@ -601,17 +554,14 @@ class InferenceKernelEngine(StandardizedKernelInterface):
 
         # 某些操作可能CPU更高效
         if (
-            config.operation_type
-            in [InferenceOperationType.CLUSTERING, InferenceOperationType.PCA]
+            config.operation_type in [InferenceOperationType.CLUSTERING, InferenceOperationType.PCA]
             and data.size < 10000
         ):
             return True
 
         return False
 
-    async def batch_execute(
-        self, operations: list, config: Optional[KernelConfig] = None
-    ) -> list:
+    async def batch_execute(self, operations: list, config: Optional[KernelConfig] = None) -> list:
         """批量执行推理"""
         results = []
         for op_data in operations:
@@ -620,9 +570,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
                 result = await self.execute_inference_operation(data, op_config)
             else:
                 # 使用默认配置
-                default_config = InferenceConfig(
-                    operation_type=InferenceOperationType.NEURAL_NETWORK
-                )
+                default_config = InferenceConfig(operation_type=InferenceOperationType.NEURAL_NETWORK)
                 result = await self.execute_inference_operation(data, default_config)
             results.append(result)
         return results
@@ -655,9 +603,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             "performance_characteristics": self._get_operation_characteristics(op_type),
         }
 
-    def _get_operation_characteristics(
-        self, operation_type: Optional[InferenceOperationType]
-    ) -> Dict[str, Any]:
+    def _get_operation_characteristics(self, operation_type: Optional[InferenceOperationType]) -> Dict[str, Any]:
         """获取操作性能特征"""
         if operation_type is None:
             return {}
@@ -737,8 +683,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             "total_execution_time_ms": self.stats["total_execution_time"],
             "average_execution_time_ms": avg_time,
             "cache_hits": self.stats["cache_hits"],
-            "cpu_fallback_rate": self.stats["fallback_to_cpu"]
-            / max(1, self.stats["total_inferences"]),
+            "cpu_fallback_rate": self.stats["fallback_to_cpu"] / max(1, self.stats["total_inferences"]),
             "gpu_acceleration_available": CUPY_AVAILABLE,
             "frameworks_available": {
                 "CuPy": CUPY_AVAILABLE,

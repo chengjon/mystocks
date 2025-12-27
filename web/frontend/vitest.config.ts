@@ -25,6 +25,7 @@ export default defineConfig({
         'src/composables/**/*.{js,ts}',
         'src/adapters/**/*.{js,ts}',
         'src/services/**/*.{js,ts}',
+        'src/utils/**/*.{js,ts}', // 添加 utils 目录
       ],
       exclude: [
         'src/api/types/**',
@@ -33,6 +34,10 @@ export default defineConfig({
         '**/*.spec.{js,ts}',
         '**/types/**',
       ],
+      statements: 80,      // 目标语句覆盖率 80%
+      branches: 75,        // 目标分支覆盖率 75%
+      functions: 80,       // 目标函数覆盖率 80%
+      lines: 80,           // 目标行覆盖率 80%
     },
     setupFiles: [],
   },

@@ -45,9 +45,7 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                         ]
                     ):
                         if retries < max_retries:
-                            print(
-                                f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})"
-                            )
+                            print(f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})")
                             time.sleep(current_delay)
                             current_delay *= backoff
                         else:

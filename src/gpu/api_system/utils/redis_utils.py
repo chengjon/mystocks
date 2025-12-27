@@ -80,9 +80,7 @@ class RedisQueue:
         queue_key = self.task_queues[queue_type]
 
         # 添加任务ID和时间戳
-        task_id = (
-            f"{queue_type}_{int(time.time())}_{hash(task_data.get('task_name', ''))}"
-        )
+        task_id = f"{queue_type}_{int(time.time())}_{hash(task_data.get('task_name', ''))}"
         task_data["task_id"] = task_id
         task_data["created_at"] = datetime.now().isoformat()
         task_data["status"] = "pending"
@@ -114,9 +112,7 @@ class RedisQueue:
             logger.error(f"添加任务失败: {e}")
             raise
 
-    def dequeue_task(
-        self, queue_type: str, timeout: int = 30
-    ) -> Optional[Dict[str, Any]]:
+    def dequeue_task(self, queue_type: str, timeout: int = 30) -> Optional[Dict[str, Any]]:
         """从队列中获取任务"""
         if queue_type not in self.task_queues:
             raise ValueError(f"不支持的队列类型: {queue_type}")
@@ -187,9 +183,7 @@ class RedisQueue:
         except Exception as e:
             logger.error(f"更新任务状态失败: {e}")
 
-    def get_task_status(
-        self, queue_type: str, task_id: str
-    ) -> Optional[Dict[str, Any]]:
+    def get_task_status(self, queue_type: str, task_id: str) -> Optional[Dict[str, Any]]:
         """获取任务状态"""
         if queue_type not in self.task_queues:
             raise ValueError(f"不支持的队列类型: {queue_type}")
@@ -205,9 +199,7 @@ class RedisQueue:
             logger.error(f"获取任务状态失败: {e}")
             return None
 
-    def get_queue_length(
-        self, queue_type: Optional[str] = None
-    ) -> Union[int, Dict[str, int]]:
+    def get_queue_length(self, queue_type: Optional[str] = None) -> Union[int, Dict[str, int]]:
         """获取队列长度"""
         try:
             if queue_type:
@@ -225,9 +217,7 @@ class RedisQueue:
             logger.error(f"获取队列长度失败: {e}")
             return {} if queue_type is None else 0
 
-    def get_pending_tasks(
-        self, queue_type: str, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_pending_tasks(self, queue_type: str, limit: int = 10) -> List[Dict[str, Any]]:
         """获取待处理任务列表"""
         if queue_type not in self.task_queues:
             raise ValueError(f"不支持的队列类型: {queue_type}")
@@ -251,9 +241,7 @@ class RedisQueue:
             logger.error(f"获取待处理任务失败: {e}")
             return []
 
-    def get_task_results(
-        self, queue_type: str, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_task_results(self, queue_type: str, limit: int = 10) -> List[Dict[str, Any]]:
         """获取任务结果"""
         if queue_type not in self.result_queues:
             raise ValueError(f"不支持的队列类型: {queue_type}")
@@ -374,9 +362,7 @@ class RedisQueue:
 
                 # 检查队列长度是否异常
                 if queue_length > 1000:
-                    health["issues"].append(
-                        f"{queue_type}队列积压严重: {queue_length}个任务"
-                    )
+                    health["issues"].append(f"{queue_type}队列积压严重: {queue_length}个任务")
                     health["overall_status"] = "warning"
 
                 # 检查处理中的任务数量

@@ -54,9 +54,7 @@ class MarketDataServiceV2:
 
     # ==================== 资金流向 (Fund Flow) ====================
 
-    def fetch_and_save_fund_flow(
-        self, symbol: Optional[str] = None, timeframe: str = "今日"
-    ) -> Dict[str, Any]:
+    def fetch_and_save_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> Dict[str, Any]:
         """
         获取并保存资金流向数据
 
@@ -90,12 +88,8 @@ class MarketDataServiceV2:
                         trade_date=today,
                         timeframe=tf_value,
                         main_net_inflow=row.get(f"{timeframe}主力净流入-净额", 0),
-                        main_net_inflow_rate=row.get(
-                            f"{timeframe}主力净流入-净占比", 0
-                        ),
-                        super_large_net_inflow=row.get(
-                            f"{timeframe}超大单净流入-净额", 0
-                        ),
+                        main_net_inflow_rate=row.get(f"{timeframe}主力净流入-净占比", 0),
+                        super_large_net_inflow=row.get(f"{timeframe}超大单净流入-净额", 0),
                         large_net_inflow=row.get(f"{timeframe}大单净流入-净额", 0),
                         medium_net_inflow=row.get(f"{timeframe}中单净流入-净额", 0),
                         small_net_inflow=row.get(f"{timeframe}小单净流入-净额", 0),
@@ -144,9 +138,7 @@ class MarketDataServiceV2:
         """查询资金流向历史数据"""
         db = self.SessionLocal()
         try:
-            query = db.query(FundFlow).filter(
-                and_(FundFlow.symbol == symbol, FundFlow.timeframe == timeframe)
-            )
+            query = db.query(FundFlow).filter(and_(FundFlow.symbol == symbol, FundFlow.timeframe == timeframe))
 
             if start_date:
                 query = query.filter(FundFlow.trade_date >= start_date)
@@ -348,9 +340,7 @@ class MarketDataServiceV2:
             if min_net_amount:
                 query = query.filter(LongHuBangData.net_amount >= min_net_amount)
 
-            results = (
-                query.order_by(LongHuBangData.trade_date.desc()).limit(limit).all()
-            )
+            results = query.order_by(LongHuBangData.trade_date.desc()).limit(limit).all()
             return [r.to_dict() for r in results]
 
         finally:
@@ -358,9 +348,7 @@ class MarketDataServiceV2:
 
     # ==================== 行业/概念资金流向 ====================
 
-    def fetch_and_save_sector_fund_flow(
-        self, sector_type: str = "行业", timeframe: str = "今日"
-    ) -> Dict[str, Any]:
+    def fetch_and_save_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> Dict[str, Any]:
         """获取并保存行业/概念资金流向"""
         try:
             # 1. 从东方财富获取数据
@@ -457,9 +445,7 @@ class MarketDataServiceV2:
                 )
             )
 
-            results = (
-                query.order_by(SectorFundFlow.main_net_inflow.desc()).limit(limit).all()
-            )
+            results = query.order_by(SectorFundFlow.main_net_inflow.desc()).limit(limit).all()
             return [r.to_dict() for r in results]
 
         finally:
@@ -486,24 +472,16 @@ class MarketDataServiceV2:
                         symbol=symbol,
                         stock_name=row.get("股票名称"),
                         announce_date=(
-                            pd.to_datetime(row.get("公告日期")).date()
-                            if pd.notna(row.get("公告日期"))
-                            else None
+                            pd.to_datetime(row.get("公告日期")).date() if pd.notna(row.get("公告日期")) else None
                         ),
                         ex_dividend_date=(
-                            pd.to_datetime(row.get("除权除息日")).date()
-                            if pd.notna(row.get("除权除息日"))
-                            else None
+                            pd.to_datetime(row.get("除权除息日")).date() if pd.notna(row.get("除权除息日")) else None
                         ),
                         record_date=(
-                            pd.to_datetime(row.get("股权登记日")).date()
-                            if pd.notna(row.get("股权登记日"))
-                            else None
+                            pd.to_datetime(row.get("股权登记日")).date() if pd.notna(row.get("股权登记日")) else None
                         ),
                         payment_date=(
-                            pd.to_datetime(row.get("派息日")).date()
-                            if pd.notna(row.get("派息日"))
-                            else None
+                            pd.to_datetime(row.get("派息日")).date() if pd.notna(row.get("派息日")) else None
                         ),
                         dividend_year=row.get("分红年度"),
                         plan_profile=row.get("分红方案"),
@@ -547,9 +525,7 @@ class MarketDataServiceV2:
 
     # ==================== 股票大宗交易 ====================
 
-    def fetch_and_save_blocktrade(
-        self, trade_date: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def fetch_and_save_blocktrade(self, trade_date: Optional[str] = None) -> Dict[str, Any]:
         """获取并保存大宗交易数据"""
         try:
             # 1. 从东方财富获取数据
@@ -614,9 +590,7 @@ class MarketDataServiceV2:
             if end_date:
                 query = query.filter(StockBlockTrade.trade_date <= end_date)
 
-            results = (
-                query.order_by(StockBlockTrade.trade_date.desc()).limit(limit).all()
-            )
+            results = query.order_by(StockBlockTrade.trade_date.desc()).limit(limit).all()
             return [r.to_dict() for r in results]
 
         finally:

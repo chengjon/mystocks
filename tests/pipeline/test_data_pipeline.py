@@ -19,9 +19,7 @@ import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -340,9 +338,7 @@ class DataTransformer:
 
         return new_batch
 
-    def _normalize_data(
-        self, data: List[Dict[str, Any]], metadata: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _normalize_data(self, data: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
         """标准化数据格式"""
         normalized = []
 
@@ -371,9 +367,7 @@ class DataTransformer:
 
         return normalized
 
-    def _aggregate_data(
-        self, data: List[Dict[str, Any]], metadata: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _aggregate_data(self, data: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
         """聚合数据"""
         if not data:
             return []
@@ -419,9 +413,7 @@ class DataTransformer:
 
         return aggregated
 
-    def _filter_data(
-        self, data: List[Dict[str, Any]], metadata: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _filter_data(self, data: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
         """过滤数据"""
         filtered = []
 
@@ -446,9 +438,7 @@ class DataTransformer:
 
         return filtered
 
-    def _enrich_data(
-        self, data: List[Dict[str, Any]], metadata: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _enrich_data(self, data: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
         """丰富数据"""
         enriched = []
 
@@ -468,9 +458,7 @@ class DataTransformer:
 
         return enriched
 
-    def _optimize_data(
-        self, data: List[Dict[str, Any]], metadata: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _optimize_data(self, data: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
         """优化数据结构"""
         optimized = []
 
@@ -478,9 +466,7 @@ class DataTransformer:
             optimized_record = {}
 
             # 只保留必要字段
-            essential_fields = metadata.get(
-                "essential_fields", ["id", "symbol", "timestamp"]
-            )
+            essential_fields = metadata.get("essential_fields", ["id", "symbol", "timestamp"])
             for field in essential_fields:
                 if field in record:
                     optimized_record[field] = record[field]
@@ -533,9 +519,7 @@ class TestDataPipeline:
             }
         )
 
-        batch = DataBatch(
-            id=batch_id, source=source, data=data, metadata=batch_metadata
-        )
+        batch = DataBatch(id=batch_id, source=source, data=data, metadata=batch_metadata)
 
         # 将批次加入处理队列
         await self.processing_queue.put(batch)
@@ -570,9 +554,7 @@ class TestDataPipeline:
 
         # 计算总体指标
         if self.metrics.batches_processed > 0:
-            self.metrics.avg_processing_time = (
-                self.metrics.total_duration / self.metrics.batches_processed
-            )
+            self.metrics.avg_processing_time = self.metrics.total_duration / self.metrics.batches_processed
 
         return processed_batches
 
@@ -654,13 +636,9 @@ class TestDataPipeline:
                     repaired_record[field] = None
 
             # 修复数据类型
-            if "volume" in repaired_record and isinstance(
-                repaired_record["volume"], str
-            ):
+            if "volume" in repaired_record and isinstance(repaired_record["volume"], str):
                 try:
-                    repaired_record["volume"] = int(
-                        repaired_record["volume"].replace(",", "")
-                    )
+                    repaired_record["volume"] = int(repaired_record["volume"].replace(",", ""))
                 except:
                     repaired_record["volume"] = 0
 
@@ -674,9 +652,7 @@ class TestDataPipeline:
             quality_score=batch.quality_score,
         )
 
-        logger.info(
-            f"自动修复批次: {batch.id} ({len(batch.data)} -> {len(repaired_data)})"
-        )
+        logger.info(f"自动修复批次: {batch.id} ({len(batch.data)} -> {len(repaired_data)})")
         return repaired_batch
 
     def _optimize_batch(self, batch: DataBatch):
@@ -714,9 +690,7 @@ class TestDataPipeline:
         except Exception as e:
             logger.error(f"批次存储失败 {batch.id}: {str(e)}")
 
-    async def export_data(
-        self, batch_ids: List[str], output_path: str, format: str = "json"
-    ) -> bool:
+    async def export_data(self, batch_ids: List[str], output_path: str, format: str = "json") -> bool:
         """导出数据"""
         try:
             export_data = []
@@ -898,9 +872,7 @@ async def demo_data_pipeline():
     print(f"📊 管道指标: {metrics.to_dict()}")
 
     # 导出数据
-    await market_pipeline.export_data(
-        processed_batches, "exported_market_data.json", "json"
-    )
+    await market_pipeline.export_data(processed_batches, "exported_market_data.json", "json")
     print("✓ 数据导出完成")
 
     # 清理

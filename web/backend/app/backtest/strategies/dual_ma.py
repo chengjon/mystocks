@@ -127,14 +127,9 @@ class DualMAStrategy(BaseStrategy):
         if self.parameters.get("volume_filter"):
             volumes = self.get_volumes(symbol)
             if len(volumes) >= self.parameters["volume_ma_period"]:
-                avg_volume = (
-                    sum(volumes[-self.parameters["volume_ma_period"] :])
-                    / self.parameters["volume_ma_period"]
-                )
+                avg_volume = sum(volumes[-self.parameters["volume_ma_period"] :]) / self.parameters["volume_ma_period"]
                 current_volume = int(current_data.get("volume", 0))
-                volume_confirmed = (
-                    current_volume >= avg_volume * self.parameters["volume_ratio"]
-                )
+                volume_confirmed = current_volume >= avg_volume * self.parameters["volume_ratio"]
 
         # 趋势过滤（可选）
         trend_confirmed = True

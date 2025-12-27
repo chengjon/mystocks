@@ -194,14 +194,10 @@ class StrategyExecutor:
         try:
             if self.config.parallel and len(stock_pool) > 1:
                 # 并行执行
-                all_signals, errors = self._execute_parallel(
-                    stock_pool, start_date, end_date, **kwargs
-                )
+                all_signals, errors = self._execute_parallel(stock_pool, start_date, end_date, **kwargs)
             else:
                 # 串行执行
-                all_signals, errors = self._execute_serial(
-                    stock_pool, start_date, end_date, **kwargs
-                )
+                all_signals, errors = self._execute_serial(stock_pool, start_date, end_date, **kwargs)
 
         except Exception as e:
             self.logger.error(f"策略执行过程中发生严重错误: {e}")
@@ -229,11 +225,7 @@ class StrategyExecutor:
         self.progress.signals_found = len(signals_df)
 
         # 保存信号到数据库
-        if (
-            self.config.save_signals
-            and not signals_df.empty
-            and self.strategy.strategy_id
-        ):
+        if self.config.save_signals and not signals_df.empty and self.strategy.strategy_id:
             try:
                 save_result = self.signal_manager.save_signals(
                     signals=signals_df,
@@ -241,8 +233,7 @@ class StrategyExecutor:
                     batch_insert=True,
                 )
                 self.logger.info(
-                    f"信号保存完成: 成功={save_result['saved_count']}, "
-                    f"失败={save_result['failed_count']}"
+                    f"信号保存完成: 成功={save_result['saved_count']}, " f"失败={save_result['failed_count']}"
                 )
             except Exception as e:
                 self.logger.error(f"保存信号时出错: {e}")
@@ -269,23 +260,11 @@ class StrategyExecutor:
                 "progress_pct": self.progress.get_progress_pct(),
             },
             "statistics": {
-                "buy_signals": (
-                    len(signals_df[signals_df["signal"] == "buy"])
-                    if not signals_df.empty
-                    else 0
-                ),
-                "sell_signals": (
-                    len(signals_df[signals_df["signal"] == "sell"])
-                    if not signals_df.empty
-                    else 0
-                ),
-                "unique_symbols": (
-                    signals_df["symbol"].nunique() if not signals_df.empty else 0
-                ),
+                "buy_signals": (len(signals_df[signals_df["signal"] == "buy"]) if not signals_df.empty else 0),
+                "sell_signals": (len(signals_df[signals_df["signal"] == "sell"]) if not signals_df.empty else 0),
+                "unique_symbols": (signals_df["symbol"].nunique() if not signals_df.empty else 0),
                 "avg_strength": (
-                    signals_df["strength"].mean()
-                    if not signals_df.empty and "strength" in signals_df.columns
-                    else 0
+                    signals_df["strength"].mean() if not signals_df.empty and "strength" in signals_df.columns else 0
                 ),
                 "stocks_per_second": (
                     self.progress.processed_symbols / self.progress.elapsed_seconds
@@ -300,31 +279,23 @@ class StrategyExecutor:
         self.logger.info("=" * 60)
         self.logger.info("策略执行完成")
         self.logger.info(f"状态: {status}")
-        self.logger.info(
-            f"处理股票: {self.progress.processed_symbols}/{self.progress.total_symbols}"
-        )
+        self.logger.info(f"处理股票: {self.progress.processed_symbols}/{self.progress.total_symbols}")
         self.logger.info(f"失败股票: {self.progress.failed_symbols}")
         self.logger.info(f"生成信号: {self.progress.signals_found}")
         self.logger.info(f"执行时间: {self.progress.elapsed_seconds:.2f}秒")
-        self.logger.info(
-            f"处理速度: {result['statistics']['stocks_per_second']:.2f} 股票/秒"
-        )
+        self.logger.info(f"处理速度: {result['statistics']['stocks_per_second']:.2f} 股票/秒")
         self.logger.info("=" * 60)
 
         return result
 
-    def _execute_serial(
-        self, stock_pool: List[str], start_date: date, end_date: date, **kwargs
-    ) -> tuple:
+    def _execute_serial(self, stock_pool: List[str], start_date: date, end_date: date, **kwargs) -> tuple:
         """串行执行策略"""
         all_signals = []
         errors = []
 
         for i, symbol in enumerate(stock_pool):
             try:
-                signals = self._process_single_stock(
-                    symbol, start_date, end_date, **kwargs
-                )
+                signals = self._process_single_stock(symbol, start_date, end_date, **kwargs)
                 if signals is not None and not signals.empty:
                     all_signals.append(signals)
 
@@ -339,24 +310,19 @@ class StrategyExecutor:
 
             except Exception as e:
                 self.progress.failed_symbols += 1
-                errors.append(
-                    {"symbol": symbol, "error": str(e), "timestamp": datetime.now()}
-                )
+                errors.append({"symbol": symbol, "error": str(e), "timestamp": datetime.now()})
                 self.logger.error(f"处理股票 {symbol} 时出错: {e}")
 
         return all_signals, errors
 
-    def _execute_parallel(
-        self, stock_pool: List[str], start_date: date, end_date: date, **kwargs
-    ) -> tuple:
+    def _execute_parallel(self, stock_pool: List[str], start_date: date, end_date: date, **kwargs) -> tuple:
         """并行执行策略"""
         all_signals = []
         errors = []
 
         # 分批处理
         batches = [
-            stock_pool[i : i + self.config.batch_size]
-            for i in range(0, len(stock_pool), self.config.batch_size)
+            stock_pool[i : i + self.config.batch_size] for i in range(0, len(stock_pool), self.config.batch_size)
         ]
 
         self.logger.info(f"分{len(batches)}批处理，每批{self.config.batch_size}只股票")
@@ -364,9 +330,7 @@ class StrategyExecutor:
         with ProcessPoolExecutor(max_workers=self.config.max_workers) as executor:
             # 提交所有任务
             futures = {
-                executor.submit(
-                    self._process_batch, batch, start_date, end_date, **kwargs
-                ): batch_idx
+                executor.submit(self._process_batch, batch, start_date, end_date, **kwargs): batch_idx
                 for batch_idx, batch in enumerate(batches)
             }
 
@@ -398,31 +362,23 @@ class StrategyExecutor:
 
         return all_signals, errors
 
-    def _process_batch(
-        self, symbols: List[str], start_date: date, end_date: date, **kwargs
-    ) -> tuple:
+    def _process_batch(self, symbols: List[str], start_date: date, end_date: date, **kwargs) -> tuple:
         """处理一批股票"""
         batch_signals = []
         batch_errors = []
 
         for symbol in symbols:
             try:
-                signals = self._process_single_stock(
-                    symbol, start_date, end_date, **kwargs
-                )
+                signals = self._process_single_stock(symbol, start_date, end_date, **kwargs)
                 if signals is not None and not signals.empty:
                     batch_signals.append(signals)
 
             except Exception as e:
-                batch_errors.append(
-                    {"symbol": symbol, "error": str(e), "timestamp": datetime.now()}
-                )
+                batch_errors.append({"symbol": symbol, "error": str(e), "timestamp": datetime.now()})
 
         return batch_signals, batch_errors
 
-    def _process_single_stock(
-        self, symbol: str, start_date: date, end_date: date, **kwargs
-    ) -> Optional[pd.DataFrame]:
+    def _process_single_stock(self, symbol: str, start_date: date, end_date: date, **kwargs) -> Optional[pd.DataFrame]:
         """处理单只股票"""
         # 获取市场数据
         data = self.strategy.get_market_data(symbol, start_date, end_date)

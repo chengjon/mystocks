@@ -41,7 +41,8 @@ class MockDataStorage:
         cursor = self.conn.cursor()
 
         # 模拟技术指标表
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS technical_indicators (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             symbol TEXT NOT NULL,
@@ -52,10 +53,12 @@ class MockDataStorage:
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
+        """
+        )
 
         # 模拟实时行情表
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS realtime_quotes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             symbol TEXT NOT NULL,
@@ -75,10 +78,12 @@ class MockDataStorage:
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
+        """
+        )
 
         # 模拟股票信息表
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS stock_info (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             symbol TEXT UNIQUE NOT NULL,
@@ -96,7 +101,8 @@ class MockDataStorage:
             created_at TEXT,
             updated_at TEXT
         )
-        """)
+        """
+        )
 
         self.conn.commit()
 
@@ -222,12 +228,8 @@ class MockDataStorage:
                         item.get("circulating_market_cap"),
                         item.get("total_shares"),
                         item.get("circulating_shares"),
-                        item.get(
-                            "created_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        ),
-                        item.get(
-                            "updated_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        ),
+                        item.get("created_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                        item.get("updated_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
                     ),
                 )
 

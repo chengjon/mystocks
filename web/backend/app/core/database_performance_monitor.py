@@ -177,16 +177,12 @@ class DatabasePerformanceMonitor:
 
             # 清理指标
             initial_count = len(self.query_metrics)
-            self.query_metrics = [
-                m for m in self.query_metrics if m.timestamp > cutoff_metrics
-            ]
+            self.query_metrics = [m for m in self.query_metrics if m.timestamp > cutoff_metrics]
             removed_metrics = initial_count - len(self.query_metrics)
 
             # 清理告警
             alert_count = len(self.slow_query_alerts)
-            self.slow_query_alerts = [
-                a for a in self.slow_query_alerts if a.timestamp > cutoff_alerts
-            ]
+            self.slow_query_alerts = [a for a in self.slow_query_alerts if a.timestamp > cutoff_alerts]
             removed_alerts = alert_count - len(self.slow_query_alerts)
 
             if removed_metrics > 0 or removed_alerts > 0:
@@ -264,9 +260,7 @@ class DatabasePerformanceMonitor:
             stats = self.table_stats[table_name]
             stats["total_queries"] += 1
             stats["total_duration_ms"] += duration_ms
-            stats["avg_duration_ms"] = (
-                stats["total_duration_ms"] / stats["total_queries"]
-            )
+            stats["avg_duration_ms"] = stats["total_duration_ms"] / stats["total_queries"]
 
             # 如果是慢查询或错误，生成告警
             alert = None
@@ -274,11 +268,7 @@ class DatabasePerformanceMonitor:
                 self.total_slow_queries += 1
                 stats["slow_queries"] += 1
 
-                excess_percent = (
-                    (duration_ms - self.slow_query_threshold_ms)
-                    / self.slow_query_threshold_ms
-                    * 100
-                )
+                excess_percent = (duration_ms - self.slow_query_threshold_ms) / self.slow_query_threshold_ms * 100
 
                 alert = SlowQueryAlert(
                     alert_id=f"alert_{query_id}",
@@ -306,9 +296,7 @@ class DatabasePerformanceMonitor:
                 stats["critical_queries"] += 1
 
                 excess_percent = (
-                    (duration_ms - self.critical_query_threshold_ms)
-                    / self.critical_query_threshold_ms
-                    * 100
+                    (duration_ms - self.critical_query_threshold_ms) / self.critical_query_threshold_ms * 100
                 )
 
                 alert = SlowQueryAlert(
@@ -349,9 +337,7 @@ class DatabasePerformanceMonitor:
 
     def get_slow_queries(self, limit: int = 100) -> List[Dict[str, Any]]:
         """获取慢查询列表"""
-        slow_queries = [
-            m for m in self.query_metrics if m.severity != QuerySeverity.NORMAL
-        ]
+        slow_queries = [m for m in self.query_metrics if m.severity != QuerySeverity.NORMAL]
         # 按时间倒序排列
         slow_queries.sort(key=lambda x: x.timestamp, reverse=True)
         return [q.to_dict() for q in slow_queries[:limit]]
@@ -378,9 +364,7 @@ class DatabasePerformanceMonitor:
             "total_slow_queries": self.total_slow_queries,
             "total_critical_queries": self.total_critical_queries,
             "total_errors": self.total_errors,
-            "slow_query_rate": (
-                (self.total_slow_queries / max(1, self.total_queries)) * 100
-            ),
+            "slow_query_rate": ((self.total_slow_queries / max(1, self.total_queries)) * 100),
             "error_rate": (self.total_errors / max(1, self.total_queries)) * 100,
             "metrics_count": len(self.query_metrics),
             "alerts_count": len(self.slow_query_alerts),

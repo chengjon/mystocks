@@ -35,9 +35,7 @@ class TestWebE2E:
                 page.wait_for_timeout(2000)
 
                 # 检查API文档页面是否加载
-                assert (
-                    "Swagger" in page.title() or "FastAPI" in page.title() or page.url
-                )
+                assert "Swagger" in page.title() or "FastAPI" in page.title() or page.url
 
                 print("E2E测试：仪表板导航功能测试通过")
 
@@ -62,11 +60,7 @@ class TestWebE2E:
 
                 # 检查响应是否为JSON格式（基本检查）
                 content = page.content()
-                assert (
-                    "application/json" in page.content()
-                    or "symbol" in content
-                    or "data" in content
-                )
+                assert "application/json" in page.content() or "symbol" in content or "data" in content
 
                 print("E2E测试：API端点可访问性测试通过")
 

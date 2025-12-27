@@ -14,7 +14,6 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Any
 
 import pytest
 from pydantic import ValidationError

@@ -58,13 +58,9 @@ class WebSocketRequestMessage(BaseModel):
         ```
     """
 
-    type: WebSocketMessageType = Field(
-        default=WebSocketMessageType.REQUEST, description="消息类型 (固定为request)"
-    )
+    type: WebSocketMessageType = Field(default=WebSocketMessageType.REQUEST, description="消息类型 (固定为request)")
     request_id: str = Field(..., description="请求唯一标识符 (用于请求-响应匹配)")
-    action: str = Field(
-        ..., description="请求操作类型 (如: get_market_data, subscribe_room)"
-    )
+    action: str = Field(..., description="请求操作类型 (如: get_market_data, subscribe_room)")
     payload: Dict[str, Any] = Field(default_factory=dict, description="请求数据负载")
     user_id: Optional[str] = Field(None, description="用户ID (已认证用户)")
     timestamp: int = Field(
@@ -117,9 +113,7 @@ class WebSocketResponseMessage(BaseModel):
         ```
     """
 
-    type: WebSocketMessageType = Field(
-        default=WebSocketMessageType.RESPONSE, description="消息类型 (固定为response)"
-    )
+    type: WebSocketMessageType = Field(default=WebSocketMessageType.RESPONSE, description="消息类型 (固定为response)")
     request_id: str = Field(..., description="对应的请求ID")
     success: bool = Field(default=True, description="请求是否成功")
     data: Any = Field(None, description="响应数据负载")
@@ -173,13 +167,9 @@ class WebSocketErrorMessage(BaseModel):
         ```
     """
 
-    type: WebSocketMessageType = Field(
-        default=WebSocketMessageType.ERROR, description="消息类型 (固定为error)"
-    )
+    type: WebSocketMessageType = Field(default=WebSocketMessageType.ERROR, description="消息类型 (固定为error)")
     request_id: Optional[str] = Field(None, description="对应的请求ID (如果有)")
-    error_code: str = Field(
-        ..., description="错误代码 (如: INVALID_SYMBOL, AUTH_FAILED)"
-    )
+    error_code: str = Field(..., description="错误代码 (如: INVALID_SYMBOL, AUTH_FAILED)")
     error_message: str = Field(..., description="人类可读的错误描述")
     error_details: Optional[Dict[str, Any]] = Field(None, description="错误详细信息")
     timestamp: int = Field(
@@ -220,9 +210,7 @@ class WebSocketSubscribeMessage(BaseModel):
         ```
     """
 
-    type: WebSocketMessageType = Field(
-        default=WebSocketMessageType.SUBSCRIBE, description="消息类型 (固定为subscribe)"
-    )
+    type: WebSocketMessageType = Field(default=WebSocketMessageType.SUBSCRIBE, description="消息类型 (固定为subscribe)")
     request_id: str = Field(..., description="订阅请求ID")
     room: str = Field(..., description="房间名称 (如: market_600519, portfolio_001)")
     user_id: Optional[str] = Field(None, description="用户ID")
@@ -399,9 +387,7 @@ def create_response_message(
     trace_id: Optional[str] = None,
 ) -> WebSocketResponseMessage:
     """创建响应消息"""
-    return WebSocketResponseMessage(
-        request_id=request_id, success=True, data=data, trace_id=trace_id
-    )
+    return WebSocketResponseMessage(request_id=request_id, success=True, data=data, trace_id=trace_id)
 
 
 def create_error_message(

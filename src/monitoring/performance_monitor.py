@@ -80,13 +80,12 @@ class PerformanceMonitor:
         """
         start_time = time.time()
         error_occurred = False
-        error_message = None
 
         try:
             yield
         except Exception as e:
             error_occurred = True
-            error_message = str(e)
+            str(e)
             raise
         finally:
             # 计算执行时间
@@ -117,8 +116,7 @@ class PerformanceMonitor:
                 )
             elif auto_alert and execution_time_ms >= self.WARNING_THRESHOLD_MS:
                 logger.warning(
-                    f"⚠️  较慢查询: {operation_name} 耗时 {execution_time_ms}ms "
-                    f"({database_type}.{table_name})"
+                    f"⚠️  较慢查询: {operation_name} 耗时 {execution_time_ms}ms " f"({database_type}.{table_name})"
                 )
 
     def _record_metric(
@@ -217,9 +215,7 @@ class PerformanceMonitor:
 
         # 连接时间过长告警 (>1秒)
         if connection_time_ms > 1000:
-            logger.warning(
-                f"⚠️  数据库连接较慢: {database_type} 耗时 {connection_time_ms}ms"
-            )
+            logger.warning(f"⚠️  数据库连接较慢: {database_type} 耗时 {connection_time_ms}ms")
 
     def record_batch_operation(
         self,
@@ -417,9 +413,7 @@ if __name__ == "__main__":
 
     sys.path.insert(0, ".")
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     print("\n测试PerformanceMonitor...\n")
 
@@ -428,17 +422,13 @@ if __name__ == "__main__":
 
     # 测试1: 正常查询
     print("1. 测试正常查询跟踪...")
-    with monitor.track_operation(
-        "test_query_normal", "DAILY_KLINE", "PostgreSQL", "daily_kline"
-    ):
+    with monitor.track_operation("test_query_normal", "DAILY_KLINE", "PostgreSQL", "daily_kline"):
         time.sleep(0.1)  # 模拟100ms查询
     print("   ✅ 正常查询已记录\n")
 
     # 测试2: 较慢查询
     print("2. 测试较慢查询 (警告)...")
-    with monitor.track_operation(
-        "test_query_warning", "DAILY_KLINE", "PostgreSQL", "daily_kline"
-    ):
+    with monitor.track_operation("test_query_warning", "DAILY_KLINE", "PostgreSQL", "daily_kline"):
         time.sleep(2.5)  # 模拟2.5秒查询 (超过警告阈值)
     print("   ✅ 较慢查询已记录\n")
 

@@ -147,9 +147,7 @@ class BaseStrategy(ABC):
         # 基础验证: 确保所有参数值为数字或字符串
         for key, value in self.parameters.items():
             if not isinstance(value, (int, float, str, bool)):
-                raise ValueError(
-                    f"参数 '{key}' 的值必须是数字、字符串或布尔类型，当前类型: {type(value)}"
-                )
+                raise ValueError(f"参数 '{key}' 的值必须是数字、字符串或布尔类型，当前类型: {type(value)}")
 
         return True
 
@@ -171,9 +169,7 @@ class BaseStrategy(ABC):
         hash_input = f"{source_code}:{json.dumps(self.parameters, sort_keys=True)}"
         return hashlib.sha256(hash_input.encode()).hexdigest()
 
-    def get_market_data(
-        self, symbol: str, start_date: date, end_date: date, frequency: str = "daily"
-    ) -> pd.DataFrame:
+    def get_market_data(self, symbol: str, start_date: date, end_date: date, frequency: str = "daily") -> pd.DataFrame:
         """
         获取市场数据
 
@@ -192,9 +188,7 @@ class BaseStrategy(ABC):
         if self.unified_manager is None:
             raise ValueError("UnifiedDataManager未初始化，无法获取数据")
 
-        self.logger.info(
-            f"获取市场数据: {symbol}, {start_date} 至 {end_date}, 频率: {frequency}"
-        )
+        self.logger.info(f"获取市场数据: {symbol}, {start_date} 至 {end_date}, 频率: {frequency}")
 
         # 通过UnifiedDataManager获取数据
         # 注意: 实际实现需要根据UnifiedDataManager的具体接口调整
@@ -208,9 +202,7 @@ class BaseStrategy(ABC):
 
         return data
 
-    def execute(
-        self, symbols: List[str], start_date: date, end_date: date, **kwargs
-    ) -> Dict:
+    def execute(self, symbols: List[str], start_date: date, end_date: date, **kwargs) -> Dict:
         """
         执行策略对股票池进行筛选
 
@@ -274,9 +266,7 @@ class BaseStrategy(ABC):
             except Exception as e:
                 error_msg = f"处理股票 {symbol} 时出错: {str(e)}"
                 self.logger.error(error_msg)
-                errors.append(
-                    {"symbol": symbol, "error": str(e), "timestamp": datetime.now()}
-                )
+                errors.append({"symbol": symbol, "error": str(e), "timestamp": datetime.now()})
 
         # 合并所有信号
         if all_signals:
@@ -309,15 +299,11 @@ class BaseStrategy(ABC):
         # 执行后回调
         self.on_after_execute(result)
 
-        self.logger.info(
-            f"策略执行完成: 生成 {len(signals_df)} 个信号，耗时 {execution_time:.2f}秒"
-        )
+        self.logger.info(f"策略执行完成: 生成 {len(signals_df)} 个信号，耗时 {execution_time:.2f}秒")
 
         return result
 
-    def on_before_execute(
-        self, symbols: List[str], start_date: date, end_date: date, **kwargs
-    ):
+    def on_before_execute(self, symbols: List[str], start_date: date, end_date: date, **kwargs):
         """
         执行前回调 - 子类可重写
 
@@ -357,9 +343,7 @@ class BaseStrategy(ABC):
         }
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__}(name='{self.name}', version='{self.version}')>"
-        )
+        return f"<{self.__class__.__name__}(name='{self.name}', version='{self.version}')>"
 
 
 # ===================================

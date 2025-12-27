@@ -242,9 +242,7 @@ class TestRealtimeStreamingService:
     def test_broadcast_data(self):
         """测试广播数据"""
         self.service.subscribe("sid_001", "600519")
-        success = self.service.broadcast_data(
-            "600519", {"price": 100.5, "volume": 1000}
-        )
+        success = self.service.broadcast_data("600519", {"price": 100.5, "volume": 1000})
 
         assert success
         stream = self.service.get_stream("600519")
@@ -315,17 +313,13 @@ class TestStreamingEventHandlers:
 
     def test_register_event_handler(self):
         """测试注册事件处理器"""
-        self.service.register_event_handler(
-            StreamEventType.STREAM_STARTED, self.event_handler
-        )
+        self.service.register_event_handler(StreamEventType.STREAM_STARTED, self.event_handler)
 
         assert len(self.service.event_callbacks[StreamEventType.STREAM_STARTED]) > 0
 
     def test_stream_started_event(self):
         """测试流启动事件"""
-        self.service.register_event_handler(
-            StreamEventType.STREAM_STARTED, self.event_handler
-        )
+        self.service.register_event_handler(StreamEventType.STREAM_STARTED, self.event_handler)
 
         self.service.start_stream("600519")
 
@@ -335,9 +329,7 @@ class TestStreamingEventHandlers:
     def test_stream_stopped_event(self):
         """测试流停止事件"""
         self.service.start_stream("600519")
-        self.service.register_event_handler(
-            StreamEventType.STREAM_STOPPED, self.event_handler
-        )
+        self.service.register_event_handler(StreamEventType.STREAM_STOPPED, self.event_handler)
 
         self.service.stop_stream("600519")
 

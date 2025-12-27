@@ -311,9 +311,7 @@ class TestDataManagerRouting:
 
         for classification in tdengine_classifications:
             target = dm.get_target_database(classification)
-            assert (
-                target == DatabaseTarget.TDENGINE
-            ), f"{classification} should route to TDengine"
+            assert target == DatabaseTarget.TDENGINE, f"{classification} should route to TDengine"
 
 
 class TestDataManagerSaveData:
@@ -348,9 +346,7 @@ class TestDataManagerSaveData:
         dm = DataManager()
         test_df = pd.DataFrame({"symbol": ["600000"], "price": [10.5]})
 
-        result = dm.save_data(
-            DataClassification.DAILY_KLINE, test_df, "daily_kline_table"
-        )
+        result = dm.save_data(DataClassification.DAILY_KLINE, test_df, "daily_kline_table")
 
         assert result is True
         mock_pg_instance.save_data.assert_called_once()
@@ -403,9 +399,7 @@ class TestDataManagerLoadData:
 
         dm = DataManager()
 
-        result = dm.load_data(
-            DataClassification.TICK_DATA, "tick_table", symbol="600000"
-        )
+        result = dm.load_data(DataClassification.TICK_DATA, "tick_table", symbol="600000")
 
         assert result is not None
         assert len(result) == 2
@@ -423,9 +417,7 @@ class TestDataManagerLoadData:
 
         dm = DataManager()
 
-        result = dm.load_data(
-            DataClassification.DAILY_KLINE, "daily_kline", symbol="600000"
-        )
+        result = dm.load_data(DataClassification.DAILY_KLINE, "daily_kline", symbol="600000")
 
         assert result is not None
         assert len(result) == 1
@@ -509,9 +501,7 @@ class TestDataManagerStatistics:
         stats = dm.get_routing_stats()
 
         # 验证TDengine和PostgreSQL的数量加起来等于总数
-        assert (stats["tdengine_count"] + stats["postgresql_count"]) == stats[
-            "total_classifications"
-        ]
+        assert (stats["tdengine_count"] + stats["postgresql_count"]) == stats["total_classifications"]
 
 
 class TestDataManagerValidation:
@@ -685,9 +675,7 @@ class TestDataManagerMonitoringIntegration:
         from src.core.data_manager import DataManager, _NullMonitoring
 
         # Mock监控组件导入失败
-        mock_get_monitoring_db.side_effect = ImportError(
-            "No module named 'src.monitoring'"
-        )
+        mock_get_monitoring_db.side_effect = ImportError("No module named 'src.monitoring'")
 
         # 初始化DataManager，启用监控
         dm = DataManager(enable_monitoring=True)
@@ -721,14 +709,10 @@ class TestDataManagerMonitoringIntegration:
         dm = DataManager(enable_monitoring=True)
 
         # 准备测试数据
-        test_data = pd.DataFrame(
-            {"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]}
-        )
+        test_data = pd.DataFrame({"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]})
 
         # 保存数据
-        result = dm.save_data(
-            DataClassification.TICK_DATA, test_data, table_name="tick_data_test"
-        )
+        result = dm.save_data(DataClassification.TICK_DATA, test_data, table_name="tick_data_test")
 
         # 验证保存成功
         assert result is True
@@ -762,18 +746,14 @@ class TestDataManagerMonitoringIntegration:
 
         # Mock数据库访问返回数据 - TDengine的load_data方法
         mock_td_instance = mock_td.return_value
-        expected_data = pd.DataFrame(
-            {"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]}
-        )
+        expected_data = pd.DataFrame({"timestamp": [datetime.now()], "symbol": ["000001"], "price": [10.5]})
         mock_td_instance.load_data = Mock(return_value=expected_data)
 
         # 初始化DataManager，启用监控
         dm = DataManager(enable_monitoring=True)
 
         # 加载数据
-        result = dm.load_data(
-            DataClassification.TICK_DATA, table_name="tick_data_test", limit=100
-        )
+        result = dm.load_data(DataClassification.TICK_DATA, table_name="tick_data_test", limit=100)
 
         # 验证加载成功
         assert result is not None

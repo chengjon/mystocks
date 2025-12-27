@@ -60,9 +60,7 @@ class FinancialDataSource(IDataSource):
         except Exception as e:
             logger.error(f"财务数据源依赖检查失败: {e}")
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -80,18 +78,14 @@ class FinancialDataSource(IDataSource):
         logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
 
         try:
-            data = self._stock_daily_adapter.get_stock_daily(
-                symbol, start_date, end_date
-            )
+            data = self._stock_daily_adapter.get_stock_daily(symbol, start_date, end_date)
             logger.info(f"成功获取股票日线数据: {len(data)} 条记录")
             return data
         except Exception as e:
             logger.error(f"获取股票日线数据失败: {e}")
             raise
 
-    def get_financial_report(
-        self, symbol: str, report_type: str = "利润表", period: str = "年报"
-    ) -> Dict:
+    def get_financial_report(self, symbol: str, report_type: str = "利润表", period: str = "年报") -> Dict:
         """
         获取财务报告
 
@@ -109,9 +103,7 @@ class FinancialDataSource(IDataSource):
         logger.info(f"获取财务报告: {symbol} {report_type} {period}")
 
         try:
-            data = self._financial_report_adapter.get_financial_report(
-                symbol, report_type, period
-            )
+            data = self._financial_report_adapter.get_financial_report(symbol, report_type, period)
             logger.info(f"成功获取财务报告: {symbol}")
             return data
         except Exception as e:
@@ -130,9 +122,7 @@ class FinancialDataSource(IDataSource):
             List[Dict]: 财务指标列表
         """
         try:
-            indicators = self._financial_report_adapter.get_financial_indicators(
-                symbol, period
-            )
+            indicators = self._financial_report_adapter.get_financial_indicators(symbol, period)
             logger.info(f"成功获取财务指标: {symbol}")
             return indicators
         except Exception as e:
@@ -151,9 +141,7 @@ class FinancialDataSource(IDataSource):
             Dict: 资产负债表数据
         """
         try:
-            balance_sheet = self._financial_report_adapter.get_balance_sheet(
-                symbol, period
-            )
+            balance_sheet = self._financial_report_adapter.get_balance_sheet(symbol, period)
             logger.info(f"成功获取资产负债表: {symbol}")
             return balance_sheet
         except Exception as e:
@@ -172,9 +160,7 @@ class FinancialDataSource(IDataSource):
             Dict: 利润表数据
         """
         try:
-            income_statement = self._financial_report_adapter.get_income_statement(
-                symbol, period
-            )
+            income_statement = self._financial_report_adapter.get_income_statement(symbol, period)
             logger.info(f"成功获取利润表: {symbol}")
             return income_statement
         except Exception as e:
@@ -193,18 +179,14 @@ class FinancialDataSource(IDataSource):
             Dict: 现金流量表数据
         """
         try:
-            cash_flow = self._financial_report_adapter.get_cash_flow_statement(
-                symbol, period
-            )
+            cash_flow = self._financial_report_adapter.get_cash_flow_statement(symbol, period)
             logger.info(f"成功获取现金流量表: {symbol}")
             return cash_flow
         except Exception as e:
             logger.error(f"获取现金流量表失败: {e}")
             return {}
 
-    def get_comprehensive_financial_data(
-        self, symbol: str, period: str = "年报"
-    ) -> Dict:
+    def get_comprehensive_financial_data(self, symbol: str, period: str = "年报") -> Dict:
         """
         获取综合财务数据（包含所有报表类型）
 
@@ -293,34 +275,24 @@ class FinancialDataSource(IDataSource):
                 },
             }
 
-            # 检查各个依赖库的实际可用性
-            try:
-                import efinance
+            # 检查各个依赖库的实际可用性（使用 importlib 规范检查）
+            import importlib.util
 
+            # 检查 efinance
+            if importlib.util.find_spec("efinance"):
                 status["dependencies"]["efinance"] = True
-            except ImportError:
-                pass
 
-            try:
-                import akshare
-
+            # 检查 akshare
+            if importlib.util.find_spec("akshare"):
                 status["dependencies"]["akshare"] = True
-            except ImportError:
-                pass
 
-            try:
-                import tushare
-
+            # 检查 tushare
+            if importlib.util.find_spec("tushare"):
                 status["dependencies"]["tushare"] = True
-            except ImportError:
-                pass
 
-            try:
-                import easyquotation
-
+            # 检查 easyquotation
+            if importlib.util.find_spec("easyquotation"):
                 status["dependencies"]["easyquotation"] = True
-            except ImportError:
-                pass
 
             return status
 

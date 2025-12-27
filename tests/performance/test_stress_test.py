@@ -135,9 +135,7 @@ class StressTestSuite:
 
         # 断路器
         self.circuit_breaker = (
-            CircuitBreaker(threshold=config.circuit_breaker_threshold)
-            if config.enable_circuit_breaker
-            else None
+            CircuitBreaker(threshold=config.circuit_breaker_threshold) if config.enable_circuit_breaker else None
         )
 
         # 系统监控
@@ -250,9 +248,7 @@ class StressTestSuite:
             await asyncio.sleep(self.config.increment_interval)
 
             # 增加用户数
-            current_users = min(
-                current_users + self.config.increment_rate, self.config.max_users
-            )
+            current_users = min(current_users + self.config.increment_rate, self.config.max_users)
 
         # 保持当前负载一段时间
         await asyncio.sleep(60)
@@ -270,9 +266,7 @@ class StressTestSuite:
         burst_durations = [60, 30, 30]  # 三次突发压力
         recovery_times = [60, 45, 30]  # 恢复时间
 
-        for burst_num, (burst_duration, recovery_time) in enumerate(
-            zip(burst_durations, recovery_times), 1
-        ):
+        for burst_num, (burst_duration, recovery_time) in enumerate(zip(burst_durations, recovery_times), 1):
             print(f"\n💥 突发压力 #{burst_num}/{len(burst_durations)}")
 
             # 突发阶段
@@ -281,10 +275,7 @@ class StressTestSuite:
 
             # 监控突发阶段
             burst_start = time.time()
-            while (
-                time.time() - burst_start < burst_duration
-                and not self.stop_event.is_set()
-            ):
+            while time.time() - burst_start < burst_duration and not self.stop_event.is_set():
                 await asyncio.sleep(5)
                 if self._check_breaking_point():
                     print(f"🚫 突发压力 {burst_num} 达到断点")
@@ -339,18 +330,14 @@ class StressTestSuite:
         memory_intensive_tasks = []
 
         for i in range(50):  # 50个内存密集型任务
-            task = asyncio.create_task(
-                self._memory_intensive_operation(f"memory_task_{i}")
-            )
+            task = asyncio.create_task(self._memory_intensive_operation(f"memory_task_{i}"))
             memory_intensive_tasks.append(task)
 
         # 同时运行压力测试
         stress_task = asyncio.create_task(self._run_concurrent_stress())
 
         # 等待其中一项失败
-        done, pending = await asyncio.wait(
-            [stress_task, *memory_intensive_tasks], return_when=asyncio.FIRST_COMPLETED
-        )
+        done, pending = await asyncio.wait([stress_task, *memory_intensive_tasks], return_when=asyncio.FIRST_COMPLETED)
 
         # 取消所有任务
         for task in pending:
@@ -391,9 +378,7 @@ class StressTestSuite:
         stress_task = asyncio.create_task(self._run_concurrent_stress())
 
         # 等待其中一项失败
-        done, pending = await asyncio.wait(
-            [stress_task, *cpu_tasks], return_when=asyncio.FIRST_COMPLETED
-        )
+        done, pending = await asyncio.wait([stress_task, *cpu_tasks], return_when=asyncio.FIRST_COMPLETED)
 
         # 取消所有任务
         for task in pending:
@@ -597,9 +582,7 @@ class StressTestSuite:
 
         failure_rate = self.result.failed_requests / total
         avg_response_time = (
-            sum(self.result.response_times) / len(self.result.response_times)
-            if self.result.response_times
-            else 0
+            sum(self.result.response_times) / len(self.result.response_times) if self.result.response_times else 0
         )
 
         # 断点条件
@@ -665,18 +648,12 @@ class StressTestSuite:
             "cpu_percent": psutil.cpu_percent(interval=1),
             "memory_percent": psutil.virtual_memory().percent,
             "memory_rss_mb": process.memory_info().rss / 1024 / 1024,
-            "disk_io_read": psutil.disk_io_counters().read_bytes
-            if psutil.disk_io_counters()
-            else 0,
-            "disk_io_write": psutil.disk_io_counters().write_bytes
-            if psutil.disk_io_counters()
-            else 0,
-            "network_io": psutil.net_io_counters().bytes_sent
-            + psutil.net_io_counters().bytes_recv,
+            "disk_io_read": psutil.disk_io_counters().read_bytes if psutil.disk_io_counters() else 0,
+            "disk_io_write": psutil.disk_io_counters().write_bytes if psutil.disk_io_counters() else 0,
+            "network_io": psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv,
             "active_users": len(self.active_users),
             "total_requests": self.result.total_requests,
-            "success_rate": self.result.successful_requests
-            / max(self.result.total_requests, 1),
+            "success_rate": self.result.successful_requests / max(self.result.total_requests, 1),
         }
 
     async def _cleanup(self):
@@ -691,17 +668,13 @@ class StressTestSuite:
 
         # 计算统计指标
         if self.result.response_times:
-            avg_response_time = sum(self.result.response_times) / len(
-                self.result.response_times
-            )
+            avg_response_time = sum(self.result.response_times) / len(self.result.response_times)
             max_response_time = max(self.result.response_times)
             min_response_time = min(self.result.response_times)
             p95_response_time = np.percentile(self.result.response_times, 95)
             p99_response_time = np.percentile(self.result.response_times, 99)
         else:
-            avg_response_time = max_response_time = min_response_time = (
-                p95_response_time
-            ) = p99_response_time = 0
+            avg_response_time = max_response_time = min_response_time = p95_response_time = p99_response_time = 0
 
         # 计算TPS
         tps = self.result.total_requests / total_duration if total_duration > 0 else 0
@@ -722,11 +695,7 @@ class StressTestSuite:
             "performance_metrics": {
                 "tps": round(tps, 2),
                 "success_rate_percent": round(
-                    (
-                        self.result.successful_requests
-                        / max(self.result.total_requests, 1)
-                    )
-                    * 100,
+                    (self.result.successful_requests / max(self.result.total_requests, 1)) * 100,
                     2,
                 ),
                 "avg_response_time_ms": round(avg_response_time, 2),
@@ -745,9 +714,7 @@ class StressTestSuite:
         }
 
         # 保存报告
-        report_path = (
-            f"/tmp/stress_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
+        report_path = f"/tmp/stress_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, ensure_ascii=False, indent=2)
 
@@ -761,18 +728,14 @@ class StressTestSuite:
 
         return [
             {"error": error, "count": count}
-            for error, count in sorted(
-                error_counts.items(), key=lambda x: x[1], reverse=True
-            )[:5]
+            for error, count in sorted(error_counts.items(), key=lambda x: x[1], reverse=True)[:5]
         ]
 
     def _generate_test_conclusions(self) -> List[str]:
         """生成测试结论"""
         conclusions = []
 
-        success_rate = self.result.successful_requests / max(
-            self.result.total_requests, 1
-        )
+        success_rate = self.result.successful_requests / max(self.result.total_requests, 1)
 
         # 分析结果
         if success_rate >= 0.95:
@@ -821,14 +784,9 @@ class SystemMonitor:
             "timestamp": datetime.now().isoformat(),
             "cpu_percent": psutil.cpu_percent(interval=1),
             "memory_percent": psutil.virtual_memory().percent,
-            "disk_io_read": psutil.disk_io_counters().read_bytes
-            if psutil.disk_io_counters()
-            else 0,
-            "disk_io_write": psutil.disk_io_counters().write_bytes
-            if psutil.disk_io_counters()
-            else 0,
-            "network_io": psutil.net_io_counters().bytes_sent
-            + psutil.net_io_counters().bytes_recv,
+            "disk_io_read": psutil.disk_io_counters().read_bytes if psutil.disk_io_counters() else 0,
+            "disk_io_write": psutil.disk_io_counters().write_bytes if psutil.disk_io_counters() else 0,
+            "network_io": psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv,
         }
 
 
@@ -858,9 +816,7 @@ async def test_gradual_stress():
 @pytest.mark.performance
 async def test_burst_stress():
     """突发压力测试"""
-    config = StressTestConfig(
-        test_type=StressTestType.BURST, max_users=300, max_duration_minutes=5
-    )
+    config = StressTestConfig(test_type=StressTestType.BURST, max_users=300, max_duration_minutes=5)
 
     suite = StressTestSuite(config)
     report = await suite.run_stress_test()
@@ -874,9 +830,7 @@ async def test_burst_stress():
 @pytest.mark.performance
 async def test_extreme_stress():
     """极限压力测试"""
-    config = StressTestConfig(
-        test_type=StressTestType.EXTREME, max_users=500, max_duration_minutes=3
-    )
+    config = StressTestConfig(test_type=StressTestType.EXTREME, max_users=500, max_duration_minutes=3)
 
     suite = StressTestSuite(config)
     report = await suite.run_stress_test()

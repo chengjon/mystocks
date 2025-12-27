@@ -103,9 +103,7 @@ class ConnectionLifecycleManager:
             return
 
         self.connection_states[sid] = ConnectionState.DISCONNECTED
-        connected_duration = (
-            datetime.utcnow() - self.connection_times[sid]
-        ).total_seconds()
+        connected_duration = (datetime.utcnow() - self.connection_times[sid]).total_seconds()
 
         logger.info(
             "🛑 Connection closed",
@@ -203,35 +201,15 @@ class ConnectionLifecycleManager:
 
     def get_all_timeout_connections(self) -> list[str]:
         """获取所有超时连接"""
-        return [
-            sid
-            for sid in self.connection_states
-            if self.connection_states[sid] == ConnectionState.TIMEOUT
-        ]
+        return [sid for sid in self.connection_states if self.connection_states[sid] == ConnectionState.TIMEOUT]
 
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""
         total = len(self.connection_states)
-        connected = sum(
-            1
-            for state in self.connection_states.values()
-            if state == ConnectionState.CONNECTED
-        )
-        idle = sum(
-            1
-            for state in self.connection_states.values()
-            if state == ConnectionState.IDLE
-        )
-        timeout = sum(
-            1
-            for state in self.connection_states.values()
-            if state == ConnectionState.TIMEOUT
-        )
-        disconnected = sum(
-            1
-            for state in self.connection_states.values()
-            if state == ConnectionState.DISCONNECTED
-        )
+        connected = sum(1 for state in self.connection_states.values() if state == ConnectionState.CONNECTED)
+        idle = sum(1 for state in self.connection_states.values() if state == ConnectionState.IDLE)
+        timeout = sum(1 for state in self.connection_states.values() if state == ConnectionState.TIMEOUT)
+        disconnected = sum(1 for state in self.connection_states.values() if state == ConnectionState.DISCONNECTED)
 
         return {
             "total_connections": total,
@@ -320,9 +298,7 @@ class ConnectionHealthMonitor:
                 await asyncio.sleep(self.check_interval)
 
                 # 检查超时连接
-                timeout_connections = (
-                    self.lifecycle_manager.get_all_timeout_connections()
-                )
+                timeout_connections = self.lifecycle_manager.get_all_timeout_connections()
                 if timeout_connections:
                     logger.warning(
                         "⚠️ Timeout connections detected",

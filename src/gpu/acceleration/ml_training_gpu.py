@@ -195,9 +195,7 @@ class MLTrainingGPU:
                 "gpu_memory_used_mb": gpu_memory_used,
                 "gpu_mode": self.gpu_available,
                 "status": "success",
-                "performance_metrics": self._calculate_performance_metrics(
-                    model, X_val_scaled, y_val_gpu, y_train_gpu
-                ),
+                "performance_metrics": self._calculate_performance_metrics(model, X_val_scaled, y_val_gpu, y_train_gpu),
             }
 
             logger.info(f"GPU模型训练完成: {model_id} (验证得分: {val_score:.4f})")
@@ -233,9 +231,7 @@ class MLTrainingGPU:
             # 特征验证
             expected_features = model_info["features"]
             if list(X_test.columns) != expected_features:
-                logger.warning(
-                    f"特征不匹配，期望: {expected_features}, 实际: {list(X_test.columns)}"
-                )
+                logger.warning(f"特征不匹配，期望: {expected_features}, 实际: {list(X_test.columns)}")
                 # 重新排列特征
                 X_test = X_test[expected_features]
 
@@ -307,9 +303,7 @@ class MLTrainingGPU:
             logger.error(f"GPU概率预测失败: {e}")
             raise
 
-    def evaluate_model_gpu(
-        self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Dict[str, float]:
+    def evaluate_model_gpu(self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
         """GPU加速模型评估
 
         Args:
@@ -377,9 +371,7 @@ class MLTrainingGPU:
             "feature_count": len(model_info["features"]),
             "trained_at": model_info["trained_at"],
             "gpu_mode": self.gpu_available,
-            "has_feature_importance": hasattr(
-                model_info["model"], "feature_importances_"
-            ),
+            "has_feature_importance": hasattr(model_info["model"], "feature_importances_"),
             "supports_proba": hasattr(model_info["model"], "predict_proba"),
         }
 
@@ -487,9 +479,7 @@ class MLTrainingGPU:
         else:
             raise TypeError("不支持的数据类型")
 
-    def _calculate_performance_metrics(
-        self, model, X_val, y_val, y_train
-    ) -> Dict[str, Any]:
+    def _calculate_performance_metrics(self, model, X_val, y_val, y_train) -> Dict[str, Any]:
         """计算详细的性能指标"""
         try:
             # 预测
@@ -497,11 +487,7 @@ class MLTrainingGPU:
 
             if self.gpu_available:
                 y_val_cpu = y_val.to_pandas() if hasattr(y_val, "to_pandas") else y_val
-                predictions_cpu = (
-                    predictions.to_pandas()
-                    if hasattr(predictions, "to_pandas")
-                    else predictions
-                )
+                predictions_cpu = predictions.to_pandas() if hasattr(predictions, "to_pandas") else predictions
             else:
                 y_val_cpu = y_val
                 predictions_cpu = predictions
@@ -513,13 +499,10 @@ class MLTrainingGPU:
             mae = mean_absolute_error(y_val_cpu, predictions_cpu)
 
             # 计算MAPE (平均绝对百分比误差)
-            mape = (
-                np.mean(np.abs((y_val_cpu - predictions_cpu) / (y_val_cpu + 1e-8)))
-                * 100
-            )
+            mape = np.mean(np.abs((y_val_cpu - predictions_cpu) / (y_val_cpu + 1e-8))) * 100
 
             # 计算训练-验证过拟合指标
-            train_predictions = model.predict(X_val)  # 这里应该用训练集，简化处理
+            model.predict(X_val)  # 这里应该用训练集，简化处理
             overfitting_score = float(abs(mse - mse * 0.95))  # 简化的过拟合指标
 
             return {

@@ -20,9 +20,7 @@ import sys
 import os
 
 # 添加父目录到路径
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from strategy.base_strategy import BaseStrategy
 
@@ -127,9 +125,9 @@ class CustomStrategy(BaseStrategy):
 
         # 2. 提取价格数据
         close = data["close"].values
-        high = data["high"].values
-        low = data["low"].values
-        volume = data["volume"].values
+        data["high"].values
+        data["low"].values
+        data["volume"].values
 
         # 3. 计算技术指标
         # 示例: 计算移动平均线
@@ -158,9 +156,7 @@ class CustomStrategy(BaseStrategy):
             pos = data.index.get_loc(idx)
             if signals.loc[idx, "signal"] is not None:
                 signals.at[idx, "indicators"] = {
-                    "ma5": (
-                        float(ma_short[pos]) if not np.isnan(ma_short[pos]) else None
-                    ),
+                    "ma5": (float(ma_short[pos]) if not np.isnan(ma_short[pos]) else None),
                     "ma20": float(ma_long[pos]) if not np.isnan(ma_long[pos]) else None,
                     "rsi14": float(rsi[pos]) if not np.isnan(rsi[pos]) else None,
                 }

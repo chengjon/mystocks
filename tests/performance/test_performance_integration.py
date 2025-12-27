@@ -103,9 +103,7 @@ class PerformanceIntegrationSystem:
                 # 合并配置
                 for key, value in user_config.items():
                     if key in default_config:
-                        if isinstance(value, dict) and isinstance(
-                            default_config[key], dict
-                        ):
+                        if isinstance(value, dict) and isinstance(default_config[key], dict):
                             default_config[key].update(value)
                         else:
                             default_config[key] = value
@@ -204,9 +202,7 @@ class PerformanceIntegrationSystem:
         for profile in profiles:
             self.optimization_profiles[profile.name] = profile
 
-    async def run_performance_benchmark(
-        self, benchmark_name: str, test_functions: List[Callable]
-    ) -> Dict[str, Any]:
+    async def run_performance_benchmark(self, benchmark_name: str, test_functions: List[Callable]) -> Dict[str, Any]:
         """运行性能基准测试"""
         print(f"\n🚀 开始性能基准测试: {benchmark_name}")
 
@@ -235,9 +231,7 @@ class PerformanceIntegrationSystem:
             benchmark.current_metrics = optimized_results
 
             # 计算改进
-            improvement = self._calculate_improvement(
-                baseline_results, optimized_results
-            )
+            improvement = self._calculate_improvement(baseline_results, optimized_results)
             benchmark.improvement_targets = improvement
 
             benchmark.status = "completed"
@@ -270,9 +264,7 @@ class PerformanceIntegrationSystem:
             "improvement": improvement,
         }
 
-    async def _run_baseline_tests(
-        self, test_functions: List[Callable]
-    ) -> Dict[str, float]:
+    async def _run_baseline_tests(self, test_functions: List[Callable]) -> Dict[str, float]:
         """运行基准测试"""
         results = {}
 
@@ -306,9 +298,7 @@ class PerformanceIntegrationSystem:
 
         return results
 
-    async def _apply_optimizations(
-        self, test_functions: List[Callable]
-    ) -> Dict[str, float]:
+    async def _apply_optimizations(self, test_functions: List[Callable]) -> Dict[str, float]:
         """应用优化"""
         results = {}
 
@@ -317,20 +307,12 @@ class PerformanceIntegrationSystem:
 
             try:
                 # 使用优化器执行测试
-                optimization_result = await self.optimizer.optimize_test_performance(
-                    test_name, test_func
-                )
+                optimization_result = await self.optimizer.optimize_test_performance(test_name, test_func)
 
                 results[test_name] = {
-                    "execution_time": optimization_result["final_performance"][
-                        "execution_time"
-                    ],
-                    "memory_usage_mb": optimization_result["final_performance"][
-                        "memory_usage_mb"
-                    ],
-                    "cpu_usage_percent": optimization_result["final_performance"][
-                        "cpu_usage_percent"
-                    ],
+                    "execution_time": optimization_result["final_performance"]["execution_time"],
+                    "memory_usage_mb": optimization_result["final_performance"]["memory_usage_mb"],
+                    "cpu_usage_percent": optimization_result["final_performance"]["cpu_usage_percent"],
                 }
 
             except Exception as e:
@@ -343,9 +325,7 @@ class PerformanceIntegrationSystem:
 
         return results
 
-    def _calculate_improvement(
-        self, baseline: Dict[str, Dict], optimized: Dict[str, Dict]
-    ) -> Dict[str, float]:
+    def _calculate_improvement(self, baseline: Dict[str, Dict], optimized: Dict[str, Dict]) -> Dict[str, float]:
         """计算改进程度"""
         improvements = {}
 
@@ -387,8 +367,7 @@ class PerformanceIntegrationSystem:
                     optimized = benchmark.current_metrics[test_name]
 
                     time_improvement = (
-                        (baseline["execution_time"] - optimized["execution_time"])
-                        / baseline["execution_time"]
+                        (baseline["execution_time"] - optimized["execution_time"]) / baseline["execution_time"]
                         if baseline["execution_time"] > 0
                         else 0
                     )
@@ -442,9 +421,7 @@ class PerformanceIntegrationSystem:
         while datetime.now() < end_time:
             try:
                 # 运行性能分析
-                analysis_results = self.integration_manager.run_performance_analysis(
-                    duration=60
-                )
+                analysis_results = self.integration_manager.run_performance_analysis(duration=60)
 
                 # 获取优化建议
                 suggestions = self.analyzer.get_optimization_recommendations()
@@ -461,9 +438,7 @@ class PerformanceIntegrationSystem:
                     "timestamp": datetime.now().isoformat(),
                     "analysis_results": analysis_results,
                     "suggestions_applied": len(top_suggestions),
-                    "system_health": analysis_results.get(
-                        "performance_summary", {}
-                    ).get("system_health", "unknown"),
+                    "system_health": analysis_results.get("performance_summary", {}).get("system_health", "unknown"),
                 }
                 optimization_sessions.append(session)
 
@@ -514,11 +489,7 @@ class PerformanceIntegrationSystem:
 
         # 健康趋势
         if len(health_improvements) > 1:
-            trend = (
-                "improving"
-                if health_improvements[-1] > health_improvements[0]
-                else "stable"
-            )
+            trend = "improving" if health_improvements[-1] > health_improvements[0] else "stable"
             report += f"## 健康趋势: {trend}\n\n"
 
         # 建议
@@ -610,16 +581,12 @@ async def demo_performance_integration():
 
     # 运行基准测试
     test_functions = [test_database_operations, test_api_calls, test_file_operations]
-    benchmark_result = await system.run_performance_benchmark(
-        "comprehensive_performance_test", test_functions
-    )
+    benchmark_result = await system.run_performance_benchmark("comprehensive_performance_test", test_functions)
 
     print(f"📊 基准测试结果: {benchmark_result}")
 
     # 运行持续优化（短时间演示）
-    continuous_report = await system.run_continuous_optimization(
-        duration_hours=0.1
-    )  # 6分钟
+    continuous_report = await system.run_continuous_optimization(duration_hours=0.1)  # 6分钟
 
     # 获取系统健康状态
     health_summary = system.get_system_health_summary()

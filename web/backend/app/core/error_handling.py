@@ -89,9 +89,7 @@ class CircuitBreaker:
             if self.last_failure_time:
                 elapsed = time.time() - self.last_failure_time
                 if elapsed >= self.recovery_timeout:
-                    logger.info(
-                        f"🔄 Circuit breaker '{self.name}' transitioning to HALF_OPEN"
-                    )
+                    logger.info(f"🔄 Circuit breaker '{self.name}' transitioning to HALF_OPEN")
                     self.state = CircuitBreakerState.HALF_OPEN
                     self.success_count = 0
                     return False
@@ -110,9 +108,7 @@ class CircuitBreaker:
             self.failure_count = 0
         elif self.failure_count >= self.failure_threshold:
             # CLOSED中失败达到阈值，打开熔断器
-            logger.error(
-                f"🔴 Circuit breaker '{self.name}' opened (failures: {self.failure_count})"
-            )
+            logger.error(f"🔴 Circuit breaker '{self.name}' opened (failures: {self.failure_count})")
             self.state = CircuitBreakerState.OPEN
 
     def record_success(self):
@@ -164,11 +160,7 @@ class FallbackStrategy:
             @wraps(func)
             async def wrapper(*args, **kwargs):
                 try:
-                    return (
-                        await func(*args, **kwargs)
-                        if asyncio.iscoroutinefunction(func)
-                        else func(*args, **kwargs)
-                    )
+                    return await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
                 except Exception as e:
                     logger.warning(
                         f"⚠️ Function {func.__name__} failed, falling back to cache",
@@ -178,27 +170,18 @@ class FallbackStrategy:
                     # 从缓存中获取数据
                     if cache_key in cache_data:
                         cached_value = cache_data[cache_key]
-                        if (
-                            isinstance(cached_value, dict)
-                            and "timestamp" in cached_value
-                        ):
+                        if isinstance(cached_value, dict) and "timestamp" in cached_value:
                             age = time.time() - cached_value["timestamp"]
                             if age < cache_ttl:
-                                logger.info(
-                                    f"✅ Using cached data for {cache_key} (age: {int(age)}s)"
-                                )
+                                logger.info(f"✅ Using cached data for {cache_key} (age: {int(age)}s)")
                                 return cached_value.get("data")
 
-                        logger.warning(
-                            f"⚠️ Cached data for {cache_key} is stale (age: {int(age)}s > {cache_ttl}s)"
-                        )
+                        logger.warning(f"⚠️ Cached data for {cache_key} is stale (age: {int(age)}s > {cache_ttl}s)")
                         return cached_value
 
                     # 缓存中没有数据，返回空
                     logger.error(f"❌ No cached data available for {cache_key}")
-                    raise RuntimeError(
-                        f"Service failed and no cache available for {cache_key}"
-                    )
+                    raise RuntimeError(f"Service failed and no cache available for {cache_key}")
 
             return wrapper
 
@@ -217,11 +200,7 @@ class FallbackStrategy:
             @wraps(func)
             async def wrapper(*args, **kwargs):
                 try:
-                    return (
-                        await func(*args, **kwargs)
-                        if asyncio.iscoroutinefunction(func)
-                        else func(*args, **kwargs)
-                    )
+                    return await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
                 except Exception as e:
                     logger.warning(
                         f"⚠️ Function {func.__name__} failed, using mock data",
@@ -246,11 +225,7 @@ class FallbackStrategy:
             @wraps(func)
             async def wrapper(*args, **kwargs):
                 try:
-                    return (
-                        await func(*args, **kwargs)
-                        if asyncio.iscoroutinefunction(func)
-                        else func(*args, **kwargs)
-                    )
+                    return await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
                 except Exception as e:
                     logger.warning(
                         f"⚠️ Function {func.__name__} failed, returning default value",
@@ -300,9 +275,7 @@ class RetryPolicy:
         Returns:
             延迟时间（秒）
         """
-        delay = min(
-            self.initial_delay * (self.backoff_factor ** (attempt - 1)), self.max_delay
-        )
+        delay = min(self.initial_delay * (self.backoff_factor ** (attempt - 1)), self.max_delay)
 
         if self.jitter:
             import random
@@ -344,9 +317,7 @@ class RetryPolicy:
                     )
                     await asyncio.sleep(delay)
                 else:
-                    logger.error(
-                        f"❌ All {self.max_attempts} attempts failed", exc_info=e
-                    )
+                    logger.error(f"❌ All {self.max_attempts} attempts failed", exc_info=e)
 
         raise last_exception
 
@@ -380,9 +351,7 @@ class RetryPolicy:
                     )
                     time.sleep(delay)
                 else:
-                    logger.error(
-                        f"❌ All {self.max_attempts} attempts failed", exc_info=e
-                    )
+                    logger.error(f"❌ All {self.max_attempts} attempts failed", exc_info=e)
 
         raise last_exception
 
@@ -411,11 +380,7 @@ def with_circuit_breaker(circuit_breaker: CircuitBreaker):
                 raise RuntimeError(f"Circuit breaker '{circuit_breaker.name}' is open")
 
             try:
-                result = (
-                    await func(*args, **kwargs)
-                    if asyncio.iscoroutinefunction(func)
-                    else func(*args, **kwargs)
-                )
+                result = await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
                 circuit_breaker.record_success()
                 return result
             except Exception:

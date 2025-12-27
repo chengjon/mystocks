@@ -32,12 +32,8 @@ class TestUnifiedErrorHandlerBasic:
         static_methods = ["log_error", "safe_execute", "retry_on_failure"]
 
         for method_name in static_methods:
-            assert hasattr(
-                UnifiedErrorHandler, method_name
-            ), f"缺少静态方法: {method_name}"
-            assert callable(
-                getattr(UnifiedErrorHandler, method_name)
-            ), f"方法不可调用: {method_name}"
+            assert hasattr(UnifiedErrorHandler, method_name), f"缺少静态方法: {method_name}"
+            assert callable(getattr(UnifiedErrorHandler, method_name)), f"方法不可调用: {method_name}"
 
     def test_log_error_method(self):
         """测试log_error方法"""
@@ -96,9 +92,7 @@ class TestUnifiedErrorHandlerBasic:
             raise ValueError("函数失败")
 
         with patch.object(UnifiedErrorHandler, "log_error") as mock_log:
-            result = UnifiedErrorHandler.safe_execute(
-                failing_func, "测试上下文", default_return="默认值"
-            )
+            result = UnifiedErrorHandler.safe_execute(failing_func, "测试上下文", default_return="默认值")
 
             assert result == "默认值"
             mock_log.assert_called_once()

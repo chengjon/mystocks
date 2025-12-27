@@ -197,9 +197,7 @@ def pytest_configure(config):
     """pytest配置注册"""
     # 添加自定义标记
     config.addinivalue_line("markers", "unit: Unit tests for individual components")
-    config.addinivalue_line(
-        "markers", "integration: Integration tests for components interaction"
-    )
+    config.addinivalue_line("markers", "integration: Integration tests for components interaction")
     config.addinivalue_line("markers", "e2e: End-to-end tests for complete workflows")
     config.addinivalue_line("markers", "performance: Performance and load testing")
     config.addinivalue_line("markers", "security: Security and vulnerability testing")
@@ -219,9 +217,7 @@ def validate_test_environment():
     try:
         import socket
 
-        for port in range(
-            test_env.FRONTEND_PORT_RANGE[0], test_env.FRONTEND_PORT_RANGE[1] + 1
-        ):
+        for port in range(test_env.FRONTEND_PORT_RANGE[0], test_env.FRONTEND_PORT_RANGE[1] + 1):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             result = sock.connect_ex(("localhost", port))
             sock.close()

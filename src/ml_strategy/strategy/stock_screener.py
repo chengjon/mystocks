@@ -80,9 +80,7 @@ class StockScreener:
         - 自定义过滤函数支持
     """
 
-    def __init__(
-        self, unified_manager=None, criteria: Optional[ScreeningCriteria] = None
-    ):
+    def __init__(self, unified_manager=None, criteria: Optional[ScreeningCriteria] = None):
         """
         初始化股票筛选器
 
@@ -111,9 +109,7 @@ class StockScreener:
             "total_output": 0,
         }
 
-    def screen(
-        self, symbols: Optional[List[str]] = None, as_of_date: Optional[date] = None
-    ) -> List[str]:
+    def screen(self, symbols: Optional[List[str]] = None, as_of_date: Optional[date] = None) -> List[str]:
         """
         执行股票筛选
 
@@ -153,15 +149,11 @@ class StockScreener:
 
         # 2. 排除停牌股票
         if self.criteria.exclude_suspended:
-            filtered_symbols = self._filter_suspended_stocks(
-                filtered_symbols, stock_info
-            )
+            filtered_symbols = self._filter_suspended_stocks(filtered_symbols, stock_info)
 
         # 3. 排除次新股
         if self.criteria.exclude_new_stocks:
-            filtered_symbols = self._filter_new_stocks(
-                filtered_symbols, stock_info, as_of_date
-            )
+            filtered_symbols = self._filter_new_stocks(filtered_symbols, stock_info, as_of_date)
 
         # 4. 价格过滤
         if self.criteria.min_price or self.criteria.max_price:
@@ -266,13 +258,9 @@ class StockScreener:
 
         return stock_info
 
-    def _filter_st_stocks(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_st_stocks(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """过滤ST股票"""
-        st_stocks = stock_info[stock_info["name"].str.contains("ST", na=False)][
-            "symbol"
-        ].tolist()
+        st_stocks = stock_info[stock_info["name"].str.contains("ST", na=False)]["symbol"].tolist()
 
         excluded = symbols & set(st_stocks)
         self.stats["excluded_st"] = len(excluded)
@@ -281,14 +269,10 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _filter_suspended_stocks(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_suspended_stocks(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """过滤停牌股票"""
         # 通过成交量为0判断停牌
-        suspended = stock_info[
-            (stock_info["volume"].isna()) | (stock_info["volume"] == 0)
-        ]["symbol"].tolist()
+        suspended = stock_info[(stock_info["volume"].isna()) | (stock_info["volume"] == 0)]["symbol"].tolist()
 
         excluded = symbols & set(suspended)
         self.stats["excluded_suspended"] = len(excluded)
@@ -297,26 +281,18 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _filter_new_stocks(
-        self, symbols: Set[str], stock_info: pd.DataFrame, as_of_date: date
-    ) -> Set[str]:
+    def _filter_new_stocks(self, symbols: Set[str], stock_info: pd.DataFrame, as_of_date: date) -> Set[str]:
         """过滤次新股"""
         # 计算上市天数
         stock_info["list_date"] = pd.to_datetime(stock_info["list_date"])
-        stock_info["listing_days"] = (
-            pd.to_datetime(as_of_date) - stock_info["list_date"]
-        ).dt.days
+        stock_info["listing_days"] = (pd.to_datetime(as_of_date) - stock_info["list_date"]).dt.days
 
-        new_stocks = stock_info[
-            stock_info["listing_days"] < self.criteria.new_stock_days
-        ]["symbol"].tolist()
+        new_stocks = stock_info[stock_info["listing_days"] < self.criteria.new_stock_days]["symbol"].tolist()
 
         excluded = symbols & set(new_stocks)
         self.stats["excluded_new_stocks"] = len(excluded)
 
-        self.logger.info(
-            f"排除次新股({self.criteria.new_stock_days}天内): {len(excluded)}只"
-        )
+        self.logger.info(f"排除次新股({self.criteria.new_stock_days}天内): {len(excluded)}只")
 
         return symbols - excluded
 
@@ -325,43 +301,32 @@ class StockScreener:
         excluded = set()
 
         if self.criteria.min_price is not None:
-            below_min = stock_info[stock_info["close"] < self.criteria.min_price][
-                "symbol"
-            ].tolist()
+            below_min = stock_info[stock_info["close"] < self.criteria.min_price]["symbol"].tolist()
             excluded |= symbols & set(below_min)
 
         if self.criteria.max_price is not None:
-            above_max = stock_info[stock_info["close"] > self.criteria.max_price][
-                "symbol"
-            ].tolist()
+            above_max = stock_info[stock_info["close"] > self.criteria.max_price]["symbol"].tolist()
             excluded |= symbols & set(above_max)
 
         self.stats["excluded_price"] = len(excluded)
 
         if excluded:
             self.logger.info(
-                f"价格过滤: 排除{len(excluded)}只 "
-                f"(范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
+                f"价格过滤: 排除{len(excluded)}只 " f"(范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
             )
 
         return symbols - excluded
 
-    def _filter_by_volume(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_by_volume(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """按成交量/成交额过滤"""
         excluded = set()
 
         if self.criteria.min_volume is not None:
-            below_vol = stock_info[stock_info["volume"] < self.criteria.min_volume][
-                "symbol"
-            ].tolist()
+            below_vol = stock_info[stock_info["volume"] < self.criteria.min_volume]["symbol"].tolist()
             excluded |= symbols & set(below_vol)
 
         if self.criteria.min_amount is not None:
-            below_amt = stock_info[stock_info["amount"] < self.criteria.min_amount][
-                "symbol"
-            ].tolist()
+            below_amt = stock_info[stock_info["amount"] < self.criteria.min_amount]["symbol"].tolist()
             excluded |= symbols & set(below_amt)
 
         self.stats["excluded_volume"] = len(excluded)
@@ -371,30 +336,21 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _filter_by_market_cap(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_by_market_cap(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """按市值过滤"""
         excluded = set()
 
         # 计算市值 (如果stock_info中没有market_cap字段)
-        if (
-            "market_cap" not in stock_info.columns
-            and "total_shares" in stock_info.columns
-        ):
+        if "market_cap" not in stock_info.columns and "total_shares" in stock_info.columns:
             stock_info["market_cap"] = stock_info["close"] * stock_info["total_shares"]
 
         if "market_cap" in stock_info.columns:
             if self.criteria.min_market_cap is not None:
-                below_min = stock_info[
-                    stock_info["market_cap"] < self.criteria.min_market_cap
-                ]["symbol"].tolist()
+                below_min = stock_info[stock_info["market_cap"] < self.criteria.min_market_cap]["symbol"].tolist()
                 excluded |= symbols & set(below_min)
 
             if self.criteria.max_market_cap is not None:
-                above_max = stock_info[
-                    stock_info["market_cap"] > self.criteria.max_market_cap
-                ]["symbol"].tolist()
+                above_max = stock_info[stock_info["market_cap"] > self.criteria.max_market_cap]["symbol"].tolist()
                 excluded |= symbols & set(above_max)
 
         self.stats["excluded_market_cap"] = len(excluded)
@@ -404,24 +360,18 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _filter_by_industry(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_by_industry(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """按行业过滤"""
         excluded = set()
 
         # 排除指定行业
         if self.criteria.exclude_industries:
-            excluded_ind = stock_info[
-                stock_info["industry"].isin(self.criteria.exclude_industries)
-            ]["symbol"].tolist()
+            excluded_ind = stock_info[stock_info["industry"].isin(self.criteria.exclude_industries)]["symbol"].tolist()
             excluded |= symbols & set(excluded_ind)
 
         # 仅包含指定行业
         if self.criteria.include_industries:
-            not_included = stock_info[
-                ~stock_info["industry"].isin(self.criteria.include_industries)
-            ]["symbol"].tolist()
+            not_included = stock_info[~stock_info["industry"].isin(self.criteria.include_industries)]["symbol"].tolist()
             excluded |= symbols & set(not_included)
 
         self.stats["excluded_industry"] = len(excluded)
@@ -438,16 +388,12 @@ class StockScreener:
         if "board" in stock_info.columns:
             # 排除指定板块
             if self.criteria.exclude_boards:
-                excluded_boards = stock_info[
-                    stock_info["board"].isin(self.criteria.exclude_boards)
-                ]["symbol"].tolist()
+                excluded_boards = stock_info[stock_info["board"].isin(self.criteria.exclude_boards)]["symbol"].tolist()
                 excluded |= symbols & set(excluded_boards)
 
             # 仅包含指定板块
             if self.criteria.include_boards:
-                not_included = stock_info[
-                    ~stock_info["board"].isin(self.criteria.include_boards)
-                ]["symbol"].tolist()
+                not_included = stock_info[~stock_info["board"].isin(self.criteria.include_boards)]["symbol"].tolist()
                 excluded |= symbols & set(not_included)
 
         if excluded:
@@ -455,13 +401,9 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _filter_by_exchange(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _filter_by_exchange(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """按交易所过滤"""
-        not_in_exchanges = stock_info[
-            ~stock_info["exchange"].isin(self.criteria.exchanges)
-        ]["symbol"].tolist()
+        not_in_exchanges = stock_info[~stock_info["exchange"].isin(self.criteria.exchanges)]["symbol"].tolist()
 
         excluded = symbols & set(not_in_exchanges)
 
@@ -470,9 +412,7 @@ class StockScreener:
 
         return symbols - excluded
 
-    def _apply_custom_filters(
-        self, symbols: Set[str], stock_info: pd.DataFrame
-    ) -> Set[str]:
+    def _apply_custom_filters(self, symbols: Set[str], stock_info: pd.DataFrame) -> Set[str]:
         """应用自定义过滤函数"""
         excluded_total = set()
 
@@ -506,9 +446,7 @@ class StockScreener:
         self.logger.info(f"  - 行业过滤: {self.stats['excluded_industry']}")
         self.logger.info(f"  - 自定义过滤: {self.stats['excluded_custom']}")
         self.logger.info(f"输出股票数: {self.stats['total_output']}")
-        self.logger.info(
-            f"筛选通过率: {self.stats['total_output'] / self.stats['total_input'] * 100:.1f}%"
-        )
+        self.logger.info(f"筛选通过率: {self.stats['total_output'] / self.stats['total_input'] * 100:.1f}%")
         self.logger.info("=" * 60)
 
 

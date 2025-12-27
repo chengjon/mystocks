@@ -88,9 +88,7 @@ class CacheLayer:
                     self.metrics.total_accesses += 1  # 先增加访问计数
                     if self.metrics.total_accesses > 0:
                         self.metrics.avg_hit_time = (
-                            self.metrics.avg_hit_time
-                            * (self.metrics.total_accesses - 1)
-                            + current_time
+                            self.metrics.avg_hit_time * (self.metrics.total_accesses - 1) + current_time
                         ) / self.metrics.total_accesses
 
                     return entry.value
@@ -381,8 +379,7 @@ class MultiLevelCache:
             "l1_cache": self.l1_cache.get_stats(),
             "l2_cache": self.l2_cache.get_stats(),
             "redis_cache": "connected" if self.redis_client else "disconnected",
-            "total_memory_usage": self.l1_cache.metrics.memory_usage
-            + self.l2_cache.metrics.memory_usage,
+            "total_memory_usage": self.l1_cache.metrics.memory_usage + self.l2_cache.metrics.memory_usage,
         }
 
         # 计算整体命中率
@@ -443,25 +440,19 @@ class MultiLevelCache:
         l1_stats = self.l1_cache.get_stats()
         if l1_stats["hit_rate"] < 80:
             optimization_report["actions_taken"].append("Increase L1 cache size")
-            optimization_report["recommendations"].append(
-                "L1 cache hit rate is low, consider increasing max_size"
-            )
+            optimization_report["recommendations"].append("L1 cache hit rate is low, consider increasing max_size")
 
         # 分析L2缓存
         l2_stats = self.l2_cache.get_stats()
         if l2_stats["hit_rate"] < 60:
             optimization_report["actions_taken"].append("Review L2 cache TTL")
-            optimization_report["recommendations"].append(
-                "L2 cache hit rate is low, consider adjusting TTL"
-            )
+            optimization_report["recommendations"].append("L2 cache hit rate is low, consider adjusting TTL")
 
         # 检查内存使用
         total_memory = l1_stats["memory_usage"] + l2_stats["memory_usage"]
         if total_memory > psutil.virtual_memory().total * 0.5:
             optimization_report["actions_taken"].append("Reduce cache memory usage")
-            optimization_report["recommendations"].append(
-                "Cache memory usage is high, consider stricter limits"
-            )
+            optimization_report["recommendations"].append("Cache memory usage is high, consider stricter limits")
 
         return optimization_report
 
@@ -514,9 +505,7 @@ class CacheManager:
     def get_data(self, key: str, data_type: str = "general") -> Optional[Any]:
         """获取数据"""
         # 应用缓存策略
-        strategy = self.cache_strategies.get(
-            data_type, self.cache_strategies["general"]
-        )
+        strategy = self.cache_strategies.get(data_type, self.cache_strategies["general"])
 
         # 根据策略处理
         if strategy["strategy"] == "read_through":
@@ -527,9 +516,7 @@ class CacheManager:
     def set_data(self, key: str, value: Any, data_type: str = "general") -> bool:
         """设置数据"""
         # 应用缓存策略
-        strategy = self.cache_strategies.get(
-            data_type, self.cache_strategies["general"]
-        )
+        strategy = self.cache_strategies.get(data_type, self.cache_strategies["general"])
 
         # 根据策略处理
         if strategy["strategy"] == "write_through":
@@ -553,9 +540,7 @@ class CacheManager:
 
         # 写入缓存
         if value is not None:
-            strategy = self.cache_strategies.get(
-                data_type, self.cache_strategies["general"]
-            )
+            strategy = self.cache_strategies.get(data_type, self.cache_strategies["general"])
             self.multi_level_cache.put(key, value, strategy["ttl"])
 
         return value
@@ -563,9 +548,7 @@ class CacheManager:
     def write_through_set(self, key: str, value: Any, data_type: str) -> bool:
         """写穿透设置"""
         # 写入缓存
-        strategy = self.cache_strategies.get(
-            data_type, self.cache_strategies["general"]
-        )
+        strategy = self.cache_strategies.get(data_type, self.cache_strategies["general"])
         success = self.multi_level_cache.put(key, value, strategy["ttl"])
 
         if success:
@@ -578,9 +561,7 @@ class CacheManager:
     def write_behind_set(self, key: str, value: Any, data_type: str) -> bool:
         """写回设置"""
         # 仅写入缓存，异步写入数据源
-        strategy = self.cache_strategies.get(
-            data_type, self.cache_strategies["general"]
-        )
+        strategy = self.cache_strategies.get(data_type, self.cache_strategies["general"])
         return self.multi_level_cache.put(key, value, strategy["ttl"])
 
     def get_cache_performance_report(self) -> Dict[str, Any]:
@@ -622,17 +603,10 @@ class CacheManager:
 
         # 检查警告条件
         if stats["cache_stats"]["overall_hit_rate"] < 70:
-            logger.warning(
-                f"Cache hit rate low: {stats['cache_stats']['overall_hit_rate']}%"
-            )
+            logger.warning(f"Cache hit rate low: {stats['cache_stats']['overall_hit_rate']}%")
 
-        if (
-            stats["cache_stats"]["total_memory_usage"]
-            > psutil.virtual_memory().total * 0.7
-        ):
-            logger.warning(
-                f"Cache memory usage high: {stats['cache_stats']['total_memory_usage']} bytes"
-            )
+        if stats["cache_stats"]["total_memory_usage"] > psutil.virtual_memory().total * 0.7:
+            logger.warning(f"Cache memory usage high: {stats['cache_stats']['total_memory_usage']} bytes")
 
         return stats
 

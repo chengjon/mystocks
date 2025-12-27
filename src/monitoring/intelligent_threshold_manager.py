@@ -82,9 +82,7 @@ class OptimizationResult:
     """优化结果"""
 
     rule_name: str
-    optimization_type: (
-        str  # 'anomaly_detection', 'trend_analysis', 'clustering', 'statistical'
-    )
+    optimization_type: str  # 'anomaly_detection', 'trend_analysis', 'clustering', 'statistical'
     recommended_threshold: float
     confidence_score: float
     expected_improvement: float
@@ -103,9 +101,7 @@ class DataAnalyzer:
 
     def add_data_point(self, value: float, timestamp: datetime, rule_name: str):
         """添加数据点"""
-        self.data_buffer.append(
-            {"value": value, "timestamp": timestamp, "rule_name": rule_name}
-        )
+        self.data_buffer.append({"value": value, "timestamp": timestamp, "rule_name": rule_name})
 
     def calculate_statistics(self) -> Dict[str, float]:
         """计算基本统计信息"""
@@ -174,7 +170,7 @@ class DataAnalyzer:
             return {"trend": "insufficient_data"}
 
         values = [point["value"] for point in self.data_buffer]
-        timestamps = [point["timestamp"] for point in self.data_buffer]
+        [point["timestamp"] for point in self.data_buffer]
 
         # 简单线性趋势
         x = np.arange(len(values))
@@ -246,24 +242,18 @@ class StatisticalOptimizer:
                 k = 2.0
                 recommended_threshold = mean_val - k * std_val
             else:
-                recommended_threshold = q5 = np.percentile(values_array, 5)
+                recommended_threshold = np.percentile(values_array, 5)
 
-            recommended_threshold = max(
-                recommended_threshold, q1=np.percentile(values_array, 1)
-            )
+            recommended_threshold = max(recommended_threshold, q1=np.percentile(values_array, 1))
 
         else:  # range
             recommended_threshold = q75
 
         # 计算置信度
-        confidence = self._calculate_confidence(
-            values_array, recommended_threshold, threshold_type
-        )
+        confidence = self._calculate_confidence(values_array, recommended_threshold, threshold_type)
 
         # 计算预期改进
-        improvement = self._estimate_improvement(
-            values, current_threshold, recommended_threshold, threshold_type
-        )
+        improvement = self._estimate_improvement(values, current_threshold, recommended_threshold, threshold_type)
 
         return OptimizationResult(
             rule_name="statistical_optimizer",
@@ -287,9 +277,7 @@ class StatisticalOptimizer:
             },
         )
 
-    def _calculate_confidence(
-        self, values: np.ndarray, threshold: float, threshold_type: str
-    ) -> float:
+    def _calculate_confidence(self, values: np.ndarray, threshold: float, threshold_type: str) -> float:
         """计算阈值置信度"""
 
         # 基于阈值与数据分布的匹配度
@@ -320,12 +308,8 @@ class StatisticalOptimizer:
             return 0.0
 
         # 计算旧阈值和新阈值下的异常率
-        old_anomaly_count = sum(
-            1 for v in values if self._is_anomaly(v, old_threshold, threshold_type)
-        )
-        new_anomaly_count = sum(
-            1 for v in values if self._is_anomaly(v, new_threshold, threshold_type)
-        )
+        old_anomaly_count = sum(1 for v in values if self._is_anomaly(v, old_threshold, threshold_type))
+        new_anomaly_count = sum(1 for v in values if self._is_anomaly(v, new_threshold, threshold_type))
 
         old_rate = old_anomaly_count / len(values)
         new_rate = new_anomaly_count / len(values)
@@ -347,9 +331,7 @@ class StatisticalOptimizer:
         else:
             return False
 
-    def _create_insufficient_data_result(
-        self, current_threshold: float
-    ) -> OptimizationResult:
+    def _create_insufficient_data_result(self, current_threshold: float) -> OptimizationResult:
         """数据不足时的结果"""
         return OptimizationResult(
             rule_name="statistical_optimizer",
@@ -700,12 +682,7 @@ class IntelligentThresholdManager:
 
         try:
             # 记录到监控数据库
-            record = {
-                "rule_name": rule_name,
-                "value": value,
-                "timestamp": timestamp,
-                "is_anomaly": False,  # 后续由算法确定
-            }
+            pass
 
             # 这里可以调用具体的数据库写入方法
             # self.monitoring_db.record_intelligent_metric_data(record)
@@ -713,18 +690,14 @@ class IntelligentThresholdManager:
         except Exception as e:
             logger.warning(f"记录指标数据失败: {e}")
 
-    async def _handle_potential_false_positive(
-        self, rule_name: str, value: float, timestamp: datetime
-    ):
+    async def _handle_potential_false_positive(self, rule_name: str, value: float, timestamp: datetime):
         """处理可能的误报"""
 
         try:
             analyzer = self.data_analyzers[rule_name]
 
             # 检测异常值
-            anomalies = analyzer.detect_anomalies(
-                contamination=self.config["anomaly_detection_contamination"]
-            )
+            anomalies = analyzer.detect_anomalies(contamination=self.config["anomaly_detection_contamination"])
 
             # 如果当前值被标记为异常，可能是真正的告警
             if len(anomalies) > 0:
@@ -760,9 +733,7 @@ class IntelligentThresholdManager:
                 },
             )
 
-    def _flag_potential_false_positive(
-        self, rule_name: str, value: float, timestamp: datetime
-    ):
+    def _flag_potential_false_positive(self, rule_name: str, value: float, timestamp: datetime):
         """标记可能的误报"""
 
         if rule_name in self.threshold_rules:
@@ -773,9 +744,7 @@ class IntelligentThresholdManager:
 
             # 如果误报率过高，触发阈值调整
             if rule.false_positive_rate > self.config["false_positive_threshold"]:
-                logger.info(
-                    f"规则{rule_name}误报率过高({rule.false_positive_rate:.2f})，建议调整阈值"
-                )
+                logger.info(f"规则{rule_name}误报率过高({rule.false_positive_rate:.2f})，建议调整阈值")
 
             # 记录历史
             self._add_to_rule_history(
@@ -788,9 +757,7 @@ class IntelligentThresholdManager:
                 },
             )
 
-    def _update_rule_statistics(
-        self, rule_name: str, value: float, triggered: bool, timestamp: datetime
-    ):
+    def _update_rule_statistics(self, rule_name: str, value: float, triggered: bool, timestamp: datetime):
         """更新规则统计信息"""
 
         if rule_name not in self.threshold_rules:
@@ -830,9 +797,7 @@ class IntelligentThresholdManager:
         recent_history = rule.history[-50:]  # 最近50条记录
 
         # 计算各项指标
-        triggered_count = sum(
-            1 for entry in recent_history if entry.get("triggered", False)
-        )
+        triggered_count = sum(1 for entry in recent_history if entry.get("triggered", False))
         trigger_rate = triggered_count / len(recent_history)
 
         # 理想触发率应该在5-15%之间
@@ -849,9 +814,7 @@ class IntelligentThresholdManager:
 
         return confidence
 
-    async def optimize_thresholds(
-        self, rule_name: Optional[str] = None
-    ) -> Dict[str, OptimizationResult]:
+    async def optimize_thresholds(self, rule_name: Optional[str] = None) -> Dict[str, OptimizationResult]:
         """优化阈值"""
 
         if rule_name:
@@ -882,15 +845,11 @@ class IntelligentThresholdManager:
             raise ValueError(f"规则{rule_name}不存在")
 
         rule = self.threshold_rules[rule_name]
-        analyzer = self.data_analyzers[rule_name]
+        self.data_analyzers[rule_name]
 
         # 获取历史数据
         values = [entry["value"] for entry in rule.history if "value" in entry]
-        timestamps = [
-            datetime.fromisoformat(entry["timestamp"])
-            for entry in rule.history
-            if "timestamp" in entry
-        ]
+        timestamps = [datetime.fromisoformat(entry["timestamp"]) for entry in rule.history if "timestamp" in entry]
 
         if len(values) < self.config["min_data_points"]:
             return OptimizationResult(
@@ -900,9 +859,7 @@ class IntelligentThresholdManager:
                 confidence_score=0.1,
                 expected_improvement=0.0,
                 reasoning="数据不足，无法优化",
-                supporting_evidence=[
-                    f"需要至少{self.config['min_data_points']}个数据点"
-                ],
+                supporting_evidence=[f"需要至少{self.config['min_data_points']}个数据点"],
                 metadata={"data_insufficient": True},
             )
 
@@ -954,15 +911,11 @@ class IntelligentThresholdManager:
             key=lambda x: x.confidence_score * x.expected_improvement,
         )
 
-        logger.info(
-            f"规则{rule_name}优化完成: {rule.current_threshold:.2f} -> {best_result.recommended_threshold:.2f}"
-        )
+        logger.info(f"规则{rule_name}优化完成: {rule.current_threshold:.2f} -> {best_result.recommended_threshold:.2f}")
 
         return best_result
 
-    async def apply_optimization(
-        self, rule_name: str, optimization_result: OptimizationResult
-    ) -> bool:
+    async def apply_optimization(self, rule_name: str, optimization_result: OptimizationResult) -> bool:
         """应用优化结果"""
 
         if rule_name not in self.threshold_rules:
@@ -973,9 +926,7 @@ class IntelligentThresholdManager:
 
         # 验证置信度
         if optimization_result.confidence_score < self.config["confidence_threshold"]:
-            logger.info(
-                f"优化结果置信度过低({optimization_result.confidence_score:.2f})，跳过应用"
-            )
+            logger.info(f"优化结果置信度过低({optimization_result.confidence_score:.2f})，跳过应用")
             return False
 
         old_threshold = rule.current_threshold
@@ -1003,13 +954,9 @@ class IntelligentThresholdManager:
 
         # 限制调整历史大小
         if len(self.adjustment_history) > self.config["max_history_size"]:
-            self.adjustment_history = self.adjustment_history[
-                -self.config["max_history_size"] :
-            ]
+            self.adjustment_history = self.adjustment_history[-self.config["max_history_size"] :]
 
-        logger.info(
-            f"✅ 已应用阈值优化: {rule_name} {old_threshold:.2f} -> {new_threshold:.2f}"
-        )
+        logger.info(f"✅ 已应用阈值优化: {rule_name} {old_threshold:.2f} -> {new_threshold:.2f}")
         return True
 
     def get_threshold_status(self) -> Dict[str, Any]:
@@ -1032,24 +979,18 @@ class IntelligentThresholdManager:
                 "adjustment_count": rule.adjustment_count,
                 "false_positive_rate": rule.false_positive_rate,
                 "false_negative_rate": rule.false_negative_rate,
-                "last_adjustment": rule.last_adjustment.isoformat()
-                if rule.last_adjustment
-                else None,
+                "last_adjustment": rule.last_adjustment.isoformat() if rule.last_adjustment else None,
                 "data_points": len(rule.history),
             }
 
             # 计算阈值合理性
-            rule_status["threshold合理性"] = self._evaluate_threshold_reasonableness(
-                rule
-            )
+            rule_status["threshold合理性"] = self._evaluate_threshold_reasonableness(rule)
 
             status["rules_status"][rule_name] = rule_status
 
         # 获取最后优化时间
         if self.adjustment_history:
-            status["last_optimization"] = self.adjustment_history[
-                -1
-            ].timestamp.isoformat()
+            status["last_optimization"] = self.adjustment_history[-1].timestamp.isoformat()
 
         return status
 
@@ -1059,9 +1000,7 @@ class IntelligentThresholdManager:
         if not rule.history:
             return {"status": "insufficient_data", "score": 0.0}
 
-        recent_values = [
-            entry["value"] for entry in rule.history[-20:] if "value" in entry
-        ]
+        recent_values = [entry["value"] for entry in rule.history[-20:] if "value" in entry]
         if not recent_values:
             return {"status": "insufficient_data", "score": 0.0}
 
@@ -1070,9 +1009,7 @@ class IntelligentThresholdManager:
         recent_std = np.std(recent_values)
 
         # 计算触发率
-        triggered_count = sum(
-            1 for entry in rule.history[-20:] if entry.get("triggered", False)
-        )
+        triggered_count = sum(1 for entry in rule.history[-20:] if entry.get("triggered", False))
         trigger_rate = triggered_count / min(20, len(rule.history))
 
         # 评估合理性
@@ -1119,16 +1056,10 @@ class IntelligentThresholdManager:
             "recent_adjustments": len(recent_adjustments),
             "avg_confidence": np.mean([adj.confidence for adj in recent_adjustments]),
             "avg_effectiveness": np.mean(
-                [
-                    adj.predicted_effectiveness
-                    for adj in recent_adjustments
-                    if adj.predicted_effectiveness is not None
-                ]
+                [adj.predicted_effectiveness for adj in recent_adjustments if adj.predicted_effectiveness is not None]
             ),
             "most_adjusted_rule": self._get_most_adjusted_rule(),
-            "optimization_types": list(
-                set([adj.reason.split(":")[0] for adj in recent_adjustments])
-            ),
+            "optimization_types": list(set([adj.reason.split(":")[0] for adj in recent_adjustments])),
         }
 
     def _get_most_adjusted_rule(self) -> Optional[str]:
@@ -1151,12 +1082,8 @@ class IntelligentThresholdManager:
 
         config_data = {
             "timestamp": datetime.now().isoformat(),
-            "threshold_rules": {
-                name: asdict(rule) for name, rule in self.threshold_rules.items()
-            },
-            "adjustment_history": [
-                asdict(adj) for adj in self.adjustment_history[-100:]
-            ],  # 最近100条
+            "threshold_rules": {name: asdict(rule) for name, rule in self.threshold_rules.items()},
+            "adjustment_history": [asdict(adj) for adj in self.adjustment_history[-100:]],  # 最近100条
             "config": self.config,
         }
 
@@ -1219,9 +1146,7 @@ async def optimize_all_thresholds() -> Dict[str, OptimizationResult]:
     return await manager.optimize_thresholds()
 
 
-async def process_metric(
-    rule_name: str, value: float, timestamp: Optional[datetime] = None
-) -> Dict[str, Any]:
+async def process_metric(rule_name: str, value: float, timestamp: Optional[datetime] = None) -> Dict[str, Any]:
     """处理指标值"""
     manager = get_intelligent_threshold_manager()
     return await manager.process_metric_value(rule_name, value, timestamp)
@@ -1257,9 +1182,7 @@ if __name__ == "__main__":
 
         for rule_name, result in results.items():
             print(f"规则: {rule_name}")
-            print(
-                f"  当前阈值: {status['rules_status'][rule_name]['current_threshold']:.2f}"
-            )
+            print(f"  当前阈值: {status['rules_status'][rule_name]['current_threshold']:.2f}")
             print(f"  推荐阈值: {result.recommended_threshold:.2f}")
             print(f"  置信度: {result.confidence_score:.3f}")
             print(f"  预期改进: {result.expected_improvement:.3f}")

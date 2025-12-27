@@ -51,29 +51,17 @@ class TestMyStocksUnifiedManagerBasic:
         """测试带监控的初始化"""
         with patch("src.core.unified_manager.MONITORING_AVAILABLE", True):
             with patch("src.core.unified_manager.DataManager") as mock_dm:
-                with patch(
-                    "src.core.unified_manager.get_monitoring_database"
-                ) as mock_mon:
-                    with patch(
-                        "src.core.unified_manager.get_performance_monitor"
-                    ) as mock_perf:
-                        with patch(
-                            "src.core.unified_manager.get_quality_monitor"
-                        ) as mock_qual:
-                            with patch(
-                                "src.core.unified_manager.get_alert_manager"
-                            ) as mock_alert:
-                                with patch(
-                                    "src.core.unified_manager.FailureRecoveryQueue"
-                                ) as mock_queue:
+                with patch("src.core.unified_manager.get_monitoring_database") as mock_mon:
+                    with patch("src.core.unified_manager.get_performance_monitor") as mock_perf:
+                        with patch("src.core.unified_manager.get_quality_monitor") as mock_qual:
+                            with patch("src.core.unified_manager.get_alert_manager") as mock_alert:
+                                with patch("src.core.unified_manager.FailureRecoveryQueue") as mock_queue:
                                     mock_dm_instance = Mock()
                                     mock_dm.return_value = mock_dm_instance
                                     mock_queue_instance = Mock()
                                     mock_queue.return_value = mock_queue_instance
 
-                                    manager = MyStocksUnifiedManager(
-                                        enable_monitoring=True
-                                    )
+                                    manager = MyStocksUnifiedManager(enable_monitoring=True)
 
                                     assert manager.monitoring_db is not None
                                     assert manager.performance_monitor is not None
@@ -211,9 +199,7 @@ class TestMyStocksUnifiedManagerBasic:
         with patch.object(manager, "quality_monitor") as mock_quality:
             mock_quality.check_data_quality.return_value = quality_report
 
-            result = manager.check_data_quality(
-                classification="market_data.tick_data", table_name="test_table"
-            )
+            result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
 
             assert result == quality_report
             mock_quality.check_data_quality.assert_called_once()
@@ -222,9 +208,7 @@ class TestMyStocksUnifiedManagerBasic:
         """测试数据质量检查方法（无监控）"""
         manager = MyStocksUnifiedManager(enable_monitoring=False)
 
-        result = manager.check_data_quality(
-            classification="market_data.tick_data", table_name="test_table"
-        )
+        result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
 
         assert result is None
 
@@ -330,9 +314,7 @@ class TestMyStocksUnifiedManagerBasic:
 
             # 应该抛出异常
             with pytest.raises(Exception, match="Connection failed"):
-                manager.load_data_by_classification(
-                    classification="market_data.tick_data", table_name="test_table"
-                )
+                manager.load_data_by_classification(classification="market_data.tick_data", table_name="test_table")
 
     def test_method_parameter_validation(self):
         """测试方法参数验证"""
@@ -471,14 +453,10 @@ class TestMyStocksUnifiedManagerBasic:
         manager = MyStocksUnifiedManager(enable_monitoring=True)
 
         # 模拟监控组件错误
-        with patch.object(
-            manager.quality_monitor, "check_data_quality"
-        ) as mock_quality:
+        with patch.object(manager.quality_monitor, "check_data_quality") as mock_quality:
             mock_quality.side_effect = Exception("Monitoring error")
 
-            result = manager.check_data_quality(
-                classification="market_data.tick_data", table_name="test_table"
-            )
+            result = manager.check_data_quality(classification="market_data.tick_data", table_name="test_table")
 
             # 应该返回None而不是抛出异常
             assert result is None

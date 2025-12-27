@@ -112,12 +112,8 @@ class TestRoomMessage:
 
     def test_message_has_unique_id(self):
         """Test message gets unique ID"""
-        msg1 = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg1"
-        )
-        msg2 = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg2"
-        )
+        msg1 = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg1")
+        msg2 = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg2")
         assert msg1.id != msg2.id
 
 
@@ -132,9 +128,7 @@ class TestOfflineMessageQueue:
     def test_enqueue_message(self):
         """Test enqueue message"""
         queue = OfflineMessageQueue()
-        message = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg"
-        )
+        message = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg")
         result = queue.enqueue("user_2", message)
         assert result is True
         assert queue.get_queue_size("user_2") == 1
@@ -142,12 +136,8 @@ class TestOfflineMessageQueue:
     def test_dequeue_messages(self):
         """Test dequeue messages"""
         queue = OfflineMessageQueue()
-        msg1 = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg1"
-        )
-        msg2 = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg2"
-        )
+        msg1 = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg1")
+        msg2 = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg2")
         queue.enqueue("user_2", msg1)
         queue.enqueue("user_2", msg2)
 
@@ -189,9 +179,7 @@ class TestOfflineMessageQueue:
     def test_clear_queue(self):
         """Test clear queue"""
         queue = OfflineMessageQueue()
-        msg = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg"
-        )
+        msg = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg")
         queue.enqueue("user_2", msg)
         assert queue.get_queue_size("user_2") == 1
 
@@ -214,9 +202,7 @@ class TestOfflineMessageQueue:
     def test_queue_stats(self):
         """Test queue statistics"""
         queue = OfflineMessageQueue()
-        msg = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg"
-        )
+        msg = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg")
         queue.enqueue("user_1", msg)
         queue.enqueue("user_2", msg)
 
@@ -596,9 +582,7 @@ class TestBroadcastTask:
 
     def test_broadcast_task_creation(self):
         """Test creating broadcast task"""
-        message = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg"
-        )
+        message = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg")
         task = BroadcastTask(
             room_id="room_1",
             message=message,
@@ -609,9 +593,7 @@ class TestBroadcastTask:
 
     def test_broadcast_task_to_dict(self):
         """Test task serialization"""
-        message = RoomMessage(
-            room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg"
-        )
+        message = RoomMessage(room_id="room_1", sender_id="user_1", sender_name="Alice", content="msg")
         task = BroadcastTask(
             room_id="room_1",
             message=message,

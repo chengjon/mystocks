@@ -12,7 +12,7 @@
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -59,9 +59,7 @@ class APIResponse(BaseModel):
     success: bool = Field(True, description="操作是否成功")
     data: Optional[Dict[str, Any]] = Field(None, description="响应数据")
     message: Optional[str] = Field("操作成功", description="响应消息")
-    timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), description="响应时间戳"
-    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="响应时间戳")
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
 
 
@@ -75,9 +73,7 @@ class ErrorResponse(BaseModel):
     success: bool = Field(False, description="操作是否成功")
     error: Dict[str, Any] = Field(..., description="错误详情")
     message: str = Field(..., description="错误消息")
-    timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), description="响应时间戳"
-    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="响应时间戳")
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
 
 
@@ -286,9 +282,7 @@ def create_health_response(
     if details:
         health_data.update(details)
 
-    return create_success_response(
-        data=health_data, message=f"服务{service}状态检查", request_id=request_id
-    )
+    return create_success_response(data=health_data, message=f"服务{service}状态检查", request_id=request_id)
 
 
 def create_validation_error_response(
@@ -410,9 +404,7 @@ def bad_request(
     errors: Optional[List[ErrorDetail]] = None,
 ) -> UnifiedResponse:
     """快捷创建请求错误响应 (code=400)"""
-    return UnifiedResponse(
-        success=False, code=400, message=message, errors=errors
-    )
+    return UnifiedResponse(success=False, code=400, message=message, errors=errors)
 
 
 def unauthorized(message: str = ResponseMessages.UNAUTHORIZED) -> UnifiedResponse:
@@ -440,9 +432,7 @@ def validation_error(
     message: str = ResponseMessages.VALIDATION_ERROR,
 ) -> UnifiedResponse:
     """快捷创建验证错误响应 (code=422)"""
-    return UnifiedResponse(
-        success=False, code=422, message=message, errors=errors
-    )
+    return UnifiedResponse(success=False, code=422, message=message, errors=errors)
 
 
 def server_error(

@@ -42,9 +42,7 @@ class AlertManager:
 
     def __init__(self):
         """初始化简化告警管理器"""
-        logger.info(
-            "✅ AlertManager initialized (logging-only mode, Grafana for alerts)"
-        )
+        logger.info("✅ AlertManager initialized (logging-only mode, Grafana for alerts)")
 
     def alert(
         self,

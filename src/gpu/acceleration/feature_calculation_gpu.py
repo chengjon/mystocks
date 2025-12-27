@@ -55,9 +55,7 @@ class FeatureCalculationGPU:
         else:
             logger.info("GPU特征计算引擎初始化完成")
 
-    def calculate_features_gpu(
-        self, data: pd.DataFrame, feature_types: List[str] = None
-    ) -> Dict[str, Any]:
+    def calculate_features_gpu(self, data: pd.DataFrame, feature_types: List[str] = None) -> Dict[str, Any]:
         """GPU加速特征计算
 
         Args:
@@ -126,18 +124,14 @@ class FeatureCalculationGPU:
             # 缓存结果
             self.feature_cache[cache_key] = features
 
-            logger.info(
-                f"GPU特征计算完成: {len(features)} 类特征 ({calculation_time:.3f}s)"
-            )
+            logger.info(f"GPU特征计算完成: {len(features)} 类特征 ({calculation_time:.3f}s)")
             return features
 
         except Exception as e:
             logger.error(f"GPU特征计算失败: {e}")
             return {"error": str(e), "gpu_mode": self.gpu_available}
 
-    def _calculate_technical_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_technical_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算技术指标"""
         features = {}
 
@@ -151,7 +145,7 @@ class FeatureCalculationGPU:
             close = df["close"]
             high = df["high"]
             low = df["low"]
-            volume = df["volume"]
+            df["volume"]
 
             # 移动平均线
             windows = [5, 10, 20, 50]
@@ -170,9 +164,7 @@ class FeatureCalculationGPU:
             # MACD
             macd = features["ema_12"] - features["ema_26"]
             features["macd"] = macd
-            features["macd_signal"] = self._calculate_ema(
-                close, 9, base_values=[macd] * len(close)
-            )
+            features["macd_signal"] = self._calculate_ema(close, 9, base_values=[macd] * len(close))
             features["macd_histogram"] = macd - features["macd_signal"]
 
             # RSI
@@ -195,17 +187,11 @@ class FeatureCalculationGPU:
 
             # 布林带位置
             bb_width = features["bb_upper"] - features["bb_lower"]
-            bb_position = (
-                (close.iloc[-1] - features["bb_lower"]) / bb_width
-                if bb_width > 0
-                else 0.5
-            )
+            bb_position = (close.iloc[-1] - features["bb_lower"]) / bb_width if bb_width > 0 else 0.5
             features["bb_position"] = float(bb_position)
 
             # KDJ指标
-            features["kdj_k"], features["kdj_d"], features["kdj_j"] = (
-                self._calculate_kdj(high, low, close)
-            )
+            features["kdj_k"], features["kdj_d"], features["kdj_j"] = self._calculate_kdj(high, low, close)
 
             # Williams %R
             features["williams_r"] = self._calculate_williams_r(high, low, close, 14)
@@ -216,9 +202,7 @@ class FeatureCalculationGPU:
             logger.error(f"技术指标计算失败: {e}")
             return {}
 
-    def _calculate_statistical_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_statistical_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算统计特征"""
         features = {}
 
@@ -256,24 +240,14 @@ class FeatureCalculationGPU:
 
             # 价格范围
             features["price_range"] = features["max"] - features["min"]
-            features["price_range_ratio"] = (
-                features["price_range"] / features["mean"]
-                if features["mean"] > 0
-                else 0
-            )
+            features["price_range_ratio"] = features["price_range"] / features["mean"] if features["mean"] > 0 else 0
 
             # 变异系数
-            features["cv"] = (
-                features["std"] / features["mean"] if features["mean"] > 0 else 0
-            )
+            features["cv"] = features["std"] / features["mean"] if features["mean"] > 0 else 0
 
             # Z-score (最新价格)
             latest_price = float(close_values[-1]) if len(close_values) > 0 else 0
-            features["z_score"] = (
-                (latest_price - features["mean"]) / features["std"]
-                if features["std"] > 0
-                else 0
-            )
+            features["z_score"] = (latest_price - features["mean"]) / features["std"] if features["std"] > 0 else 0
 
             return features
 
@@ -281,9 +255,7 @@ class FeatureCalculationGPU:
             logger.error(f"统计特征计算失败: {e}")
             return {}
 
-    def _calculate_volatility_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_volatility_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算波动率特征"""
         features = {}
 
@@ -318,9 +290,7 @@ class FeatureCalculationGPU:
                 features["volatility_short"] = short_vol
 
             # 波动率聚类
-            features["volatility_clustering"] = self._calculate_volatility_clustering(
-                returns
-            )
+            features["volatility_clustering"] = self._calculate_volatility_clustering(returns)
 
             # GARCH特征（简化版）
             features["garch_effect"] = self._calculate_garch_effect(returns)
@@ -340,9 +310,7 @@ class FeatureCalculationGPU:
             logger.error(f"波动率特征计算失败: {e}")
             return {}
 
-    def _calculate_volume_price_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_volume_price_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算量价特征"""
         features = {}
 
@@ -366,9 +334,7 @@ class FeatureCalculationGPU:
                     price_change_valid = price_change[valid_mask]
                     volume_change_valid = volume_change[valid_mask]
                     if len(price_change_valid) > 1:
-                        corr_matrix = cp.corrcoef(
-                            price_change_valid, volume_change_valid
-                        )
+                        corr_matrix = cp.corrcoef(price_change_valid, volume_change_valid)
                         features["volume_price_correlation"] = float(corr_matrix[0, 1])
                     else:
                         features["volume_price_correlation"] = 0
@@ -388,20 +354,14 @@ class FeatureCalculationGPU:
 
             # VWAP偏离度
             latest_price = float(close.iloc[-1])
-            features["vwap_deviation"] = (latest_price - features["vwap"]) / features[
-                "vwap"
-            ]
+            features["vwap_deviation"] = (latest_price - features["vwap"]) / features["vwap"]
 
             # OBV (On Balance Volume)
             features["obv"] = self._calculate_obv(close, volume)
-            features["obv_sma"] = self._calculate_sma(
-                features["obv"], window=20, is_series=False
-            )
+            features["obv_sma"] = self._calculate_sma(features["obv"], window=20, is_series=False)
 
             # 价量背离指标
-            features["price_volume_divergence"] = (
-                self._calculate_price_volume_divergence(close, volume)
-            )
+            features["price_volume_divergence"] = self._calculate_price_volume_divergence(close, volume)
 
             # 成交量分布特征
             if self.gpu_available:
@@ -409,17 +369,13 @@ class FeatureCalculationGPU:
                 features["volume_mean"] = float(cp.mean(volume_gpu))
                 features["volume_std"] = float(cp.std(volume_gpu))
                 features["volume_cv"] = (
-                    features["volume_std"] / features["volume_mean"]
-                    if features["volume_mean"] > 0
-                    else 0
+                    features["volume_std"] / features["volume_mean"] if features["volume_mean"] > 0 else 0
                 )
             else:
                 features["volume_mean"] = float(volume.mean())
                 features["volume_std"] = float(volume.std())
                 features["volume_cv"] = (
-                    features["volume_std"] / features["volume_mean"]
-                    if features["volume_mean"] > 0
-                    else 0
+                    features["volume_std"] / features["volume_mean"] if features["volume_mean"] > 0 else 0
                 )
 
             return features
@@ -428,9 +384,7 @@ class FeatureCalculationGPU:
             logger.error(f"量价特征计算失败: {e}")
             return {}
 
-    def _calculate_momentum_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_momentum_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算动量特征"""
         features = {}
 
@@ -444,9 +398,7 @@ class FeatureCalculationGPU:
             periods = [5, 10, 20, 60]
             for period in periods:
                 if len(close) > period:
-                    momentum = (close.iloc[-1] - close.iloc[-period - 1]) / close.iloc[
-                        -period - 1
-                    ]
+                    momentum = (close.iloc[-1] - close.iloc[-period - 1]) / close.iloc[-period - 1]
                     features[f"momentum_{period}d"] = float(momentum)
 
             # 动量排名 (在N日内的表现)
@@ -454,9 +406,7 @@ class FeatureCalculationGPU:
             if len(close) > momentum_rank_period:
                 recent_returns = close.pct_change().tail(momentum_rank_period)
                 latest_return = recent_returns.iloc[-1]
-                features["momentum_rank"] = float(
-                    (recent_returns <= latest_return).sum() / len(recent_returns)
-                )
+                features["momentum_rank"] = float((recent_returns <= latest_return).sum() / len(recent_returns))
 
             # 加速度 (价格变化的变化率)
             if len(close) > 10:
@@ -488,9 +438,7 @@ class FeatureCalculationGPU:
             logger.error(f"动量特征计算失败: {e}")
             return {}
 
-    def _calculate_pattern_features(
-        self, df: Union[cudf.DataFrame, pd.DataFrame]
-    ) -> Dict[str, Any]:
+    def _calculate_pattern_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
         """计算图表模式特征"""
         features = {}
 
@@ -509,8 +457,8 @@ class FeatureCalculationGPU:
             close = df["close"]
 
             # 支撑和阻力位
-            features["support_level"], features["resistance_level"] = (
-                self._calculate_support_resistance(high, low, close)
+            features["support_level"], features["resistance_level"] = self._calculate_support_resistance(
+                high, low, close
             )
 
             # 趋势强度
@@ -556,9 +504,7 @@ class FeatureCalculationGPU:
             logger.error(f"EMA计算失败: {e}")
             return 0.0
 
-    def _calculate_rsi(
-        self, prices: Union[cudf.Series, pd.Series], period: int
-    ) -> float:
+    def _calculate_rsi(self, prices: Union[cudf.Series, pd.Series], period: int) -> float:
         """计算相对强弱指数"""
         try:
             if len(prices) < period + 1:
@@ -624,17 +570,9 @@ class FeatureCalculationGPU:
                 close_values = close.values
 
                 highest = cp.array(
-                    [
-                        cp.max(high_values[max(0, i - period + 1) : i + 1])
-                        for i in range(len(high_values))
-                    ]
+                    [cp.max(high_values[max(0, i - period + 1) : i + 1]) for i in range(len(high_values))]
                 )
-                lowest = cp.array(
-                    [
-                        cp.min(low_values[max(0, i - period + 1) : i + 1])
-                        for i in range(len(low_values))
-                    ]
-                )
+                lowest = cp.array([cp.min(low_values[max(0, i - period + 1) : i + 1]) for i in range(len(low_values))])
             else:
                 highest = high.rolling(period).max()
                 lowest = low.rolling(period).min()
@@ -694,9 +632,7 @@ class FeatureCalculationGPU:
             logger.error(f"Williams %R计算失败: {e}")
             return -50.0
 
-    def _calculate_volatility_clustering(
-        self, returns: Union[cudf.Series, pd.Series]
-    ) -> float:
+    def _calculate_volatility_clustering(self, returns: Union[cudf.Series, pd.Series]) -> float:
         """计算波动率聚类"""
         try:
             if len(returns) < 10:
@@ -729,9 +665,7 @@ class FeatureCalculationGPU:
             returns_squared = returns**2
             if self.gpu_available:
                 returns_squared_gpu = returns_squared.values
-                lag1_corr = cp.corrcoef(
-                    returns_squared_gpu[:-1], returns_squared_gpu[1:]
-                )[0, 1]
+                lag1_corr = cp.corrcoef(returns_squared_gpu[:-1], returns_squared_gpu[1:])[0, 1]
             else:
                 lag1_corr = returns_squared.autocorr(lag=1)
 
@@ -840,7 +774,7 @@ class FeatureCalculationGPU:
             # 简化的支撑阻力计算
             recent_high = float(high.tail(20).max())
             recent_low = float(low.tail(20).min())
-            current_price = float(close.iloc[-1])
+            float(close.iloc[-1])
 
             # 支撑位：近期低点
             support = recent_low
@@ -885,11 +819,7 @@ class FeatureCalculationGPU:
                 return "insufficient_data"
 
             # 简化的模式识别
-            recent_prices = (
-                close.tail(20).values.get()
-                if self.gpu_available
-                else close.tail(20).values
-            )
+            recent_prices = close.tail(20).values.get() if self.gpu_available else close.tail(20).values
 
             # 计算趋势
             x = np.arange(len(recent_prices))

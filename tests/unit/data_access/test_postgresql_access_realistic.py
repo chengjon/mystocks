@@ -113,12 +113,8 @@ class TestPostgreSQLDataAccessRealistic:
 
         # 验证SQL内容
         calls = [call[0][0] for call in mock_cursor.execute.call_args_list]
-        assert any(
-            "CREATE EXTENSION IF NOT EXISTS timescaledb" in call for call in calls
-        )
-        assert any(
-            "SELECT create_hypertable('stock_basic', 'time'" in call for call in calls
-        )
+        assert any("CREATE EXTENSION IF NOT EXISTS timescaledb" in call for call in calls)
+        assert any("SELECT create_hypertable('stock_basic', 'time'" in call for call in calls)
 
     @patch("src.data_access.postgresql_access.get_connection_manager")
     @patch("src.data_access.postgresql_access.execute_values")
@@ -364,13 +360,9 @@ class TestPostgreSQLDataAccessRealistic:
 
         access = PostgreSQLDataAccess()
 
-        df = pd.DataFrame(
-            {"symbol": ["AAPL"], "date": ["2024-01-01"], "close": [150.0]}
-        )
+        df = pd.DataFrame({"symbol": ["AAPL"], "date": ["2024-01-01"], "close": [150.0]})
 
-        access.upsert_dataframe(
-            df=df, table_name="stock_basic", conflict_columns=["symbol", "date"]
-        )
+        access.upsert_dataframe(df=df, table_name="stock_basic", conflict_columns=["symbol", "date"])
 
         # 验证SQL执行
         mock_cursor.execute.assert_called()

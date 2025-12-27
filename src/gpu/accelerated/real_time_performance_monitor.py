@@ -138,7 +138,7 @@ class RealTimePerformanceMonitor:
         # CPU指标
         cpu_util = psutil.cpu_percent()
         cpu_memory = psutil.virtual_memory().percent
-        cpu_freq = psutil.cpu_freq()
+        psutil.cpu_freq()
 
         # GPU指标
         gpu_util = 0.0
@@ -228,8 +228,7 @@ class RealTimePerformanceMonitor:
 
         # 更新平均处理时间
         self.stats["avg_processing_time"] = (
-            self.stats["avg_processing_time"] * (self.stats["total_operations"] - 1)
-            + metrics.processing_time
+            self.stats["avg_processing_time"] * (self.stats["total_operations"] - 1) + metrics.processing_time
         ) / self.stats["total_operations"]
 
         # 更新错误计数
@@ -314,13 +313,9 @@ class RealTimePerformanceMonitor:
 
         # GPU使用率分析
         if summary["gpu_utilization_avg"] > 80:
-            recommendations.append(
-                "⚠️ GPU使用率过高，考虑增加GPU任务批处理或使用分布式处理"
-            )
+            recommendations.append("⚠️ GPU使用率过高，考虑增加GPU任务批处理或使用分布式处理")
         elif summary["gpu_utilization_avg"] < 30:
-            recommendations.append(
-                "⚡ GPU利用率较低，建议增加GPU并行任务或优化任务分配"
-            )
+            recommendations.append("⚡ GPU利用率较低，建议增加GPU并行任务或优化任务分配")
 
         # CPU使用率分析
         if summary["cpu_utilization_avg"] > 80:
@@ -330,9 +325,7 @@ class RealTimePerformanceMonitor:
 
         # 内存使用分析
         if summary["gpu_memory_avg"] > 70:
-            recommendations.append(
-                "⚠️ GPU内存使用接近极限，建议减少数据批次或优化内存管理"
-            )
+            recommendations.append("⚠️ GPU内存使用接近极限，建议减少数据批次或优化内存管理")
         elif summary["gpu_memory_avg"] < 20:
             recommendations.append("⚡ GPU内存使用率较低，可以考虑处理更大的数据集")
 
@@ -383,18 +376,12 @@ class RealTimePerformanceMonitor:
         return {
             "predicted_gpu_time": predicted_gpu_time,
             "predicted_cpu_time": predicted_cpu_time,
-            "predicted_speedup": (
-                predicted_cpu_time / predicted_gpu_time
-                if predicted_gpu_time > 0
-                else 1.0
-            ),
+            "predicted_speedup": (predicted_cpu_time / predicted_gpu_time if predicted_gpu_time > 0 else 1.0),
             "gpu_load_factor": gpu_load_factor,
             "cpu_load_factor": cpu_load_factor,
         }
 
-    def get_optimal_allocation(
-        self, workloads: List[WorkloadInfo]
-    ) -> Dict[str, List[str]]:
+    def get_optimal_allocation(self, workloads: List[WorkloadInfo]) -> Dict[str, List[str]]:
         """获取最优的任务分配方案"""
         gpu_tasks = []
         cpu_tasks = []

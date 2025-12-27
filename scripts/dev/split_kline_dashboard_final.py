@@ -56,16 +56,16 @@ def write_file(file_path, content):
 def extract_class_methods(code, class_name):
     """提取特定类的所有方法"""
     import re
-    
+
     # 查找类定义
     class_pattern = rf"^class\s+{class_name}\s*\("
     class_start = None
-    
+
     for i, line in enumerate(code.split('\n')):
         if re.match(class_pattern, line):
             class_start = i
             break
-    
+
     if class_start is None:
         # 尝试使用更宽松的匹配模式
         class_pattern = rf"^class\s+{class_name}\s*[:\(]"
@@ -73,40 +73,40 @@ def extract_class_methods(code, class_name):
             if re.match(class_pattern, line):
                 class_start = i
                 break
-        
+
         if class_start is None:
             print(f"警告: 未找到类 {class_name} 的定义")
             return None
-    
+
     # 查找类结束位置
     # 使用缩进级别判断类结束位置
     lines = code.split('\n')
     class_content = []
     class_indent = None
     class_end = None
-    
+
     for i in range(class_start, len(lines)):
         line = lines[i]
-        
+
         # 如果是第一个非空行，记录缩进级别
         if class_indent is None and line.strip():
             class_indent = len(line) - len(line.lstrip())
-        
+
         # 跳过类定义行
         if i == class_start:
             class_content.append(line)
             continue
-        
+
         # 如果遇到缩进级别小于等于类缩进级别的非空行，则认为类结束
         if line.strip() and (len(line) - len(line.lstrip())) <= class_indent:
             class_end = i
             break
-        
+
         class_content.append(line)
-    
+
     if class_end is None:
         class_content = lines[class_start:]
-    
+
     # 确保返回正确的类内容
     return '\n'.join(class_content)
 
@@ -115,7 +115,7 @@ def extract_all_functions(code, keywords=None):
     """提取代码中的所有函数"""
     if keywords is None:
         keywords = []
-    
+
     lines = code.split('\n')
     functions = []
     current_function = []
@@ -123,11 +123,11 @@ def extract_all_functions(code, keywords=None):
     function_indent = None
     function_start = None
     function_name = None
-    
+
     for i, line in enumerate(lines):
         # 检查是否是函数定义行
         function_match = re.match(r'^\s*def\s+([A-Za-z_]\w*)\s*\(', line)
-        
+
         if function_match:
             # 保存之前的函数
             if in_function and current_function and function_name:
@@ -138,7 +138,7 @@ def extract_all_functions(code, keywords=None):
                         'content': '\n'.join(current_function),
                         'line_number': function_start
                     })
-            
+
             # 开始新函数
             in_function = True
             function_start = i
@@ -146,7 +146,7 @@ def extract_all_functions(code, keywords=None):
             function_name = function_match.group(1)
             current_function = [line]
             continue
-        
+
         # 如果在函数内部，添加当前行
         if in_function:
             # 如果遇到缩进级别小于等于函数缩进级别的非空行，则认为函数结束
@@ -165,7 +165,7 @@ def extract_all_functions(code, keywords=None):
                 # 不添加当前行，继续处理下一行
             else:
                 current_function.append(line)
-    
+
     # 保存最后一个函数
     if in_function and current_function and function_name:
         # 检查是否包含关键词（如果指定了）
@@ -175,7 +175,7 @@ def extract_all_functions(code, keywords=None):
                 'content': '\n'.join(current_function),
                 'line_number': function_start
             })
-    
+
     return functions
 
 
@@ -186,58 +186,58 @@ def split_file():
     if not source_code:
         print(f"错误: 无法读取源文件: {SOURCE_FILE}")
         return False
-    
+
     # 创建目标目录
     os.makedirs(TARGET_DIR, exist_ok=True)
     os.makedirs(COMPONENTS_DIR, exist_ok=True)
-    
+
     print(f"开始拆分文件: {SOURCE_FILE}")
-    
+
     # 提取核心类和功能
     print("提取类: EnhancedKlineMonitoringDashboard")
     enhanced_kline_dashboard_class = extract_class_methods(source_code, "EnhancedKlineMonitoringDashboard")
-    
+
     if not enhanced_kline_dashboard_class:
         print("错误: 无法提取核心类")
         return False
-    
+
     print(f"类提取成功，长度: {len(enhanced_kline_dashboard_class)} 字符")
-    
+
     # 提取各种功能的函数 - 使用更宽泛的关键词
     print("提取函数...")
-    
+
     # 提取K线相关函数
     kline_functions = extract_all_functions(source_code, ["kline", "chart"])
-    
+
     # 提取告警相关函数
     alert_functions = extract_all_functions(source_code, ["alert", "notification"])
-    
+
     # 提取控制相关函数
     control_functions = extract_all_functions(source_code, ["control", "toggle", "change"])
-    
+
     # 提取操作相关函数
     action_functions = extract_all_functions(source_code, ["action", "click"])
-    
+
     # 提取工具函数（私有函数或工具函数）
     utility_functions = extract_all_functions(source_code, ["_", "helper", "util", "setup", "create", "format"])
-    
+
     # 清理重复 - 如果一个函数已经分配到其他类别，则不要放入utility
     assigned_functions = set()
     for func_list in [kline_functions, alert_functions, control_functions, action_functions]:
         for func in func_list:
             assigned_functions.add(func['name'])
-    
+
     utility_functions = [f for f in utility_functions if f['name'] not in assigned_functions]
-    
+
     print(f"找到 {len(kline_functions)} 个K线/图表相关函数")
     print(f"找到 {len(alert_functions)} 个告警相关函数")
     print(f"找到 {len(control_functions)} 个控制相关函数")
     print(f"找到 {len(action_functions)} 个操作相关函数")
     print(f"找到 {len(utility_functions)} 个工具函数")
-    
+
     # 创建组件文件
     components = {}
-    
+
     # K线图表组件
     kline_content = """# K线图表相关功能
 
@@ -248,9 +248,9 @@ K线图表相关功能
 """
     for func in kline_functions:
         kline_content += f"\n\n{func['content']}\n"
-    
+
     components['kline_charts'] = kline_content
-    
+
     # 实时图表组件
     chart_content = """# 实时图表功能
 
@@ -262,9 +262,9 @@ K线图表相关功能
     for func in kline_functions:
         if 'chart' in func['name'].lower():
             chart_content += f"\n\n{func['content']}\n"
-    
+
     components['realtime_charts'] = chart_content
-    
+
     # 告警面板组件
     alert_content = """# 告警面板功能
 
@@ -275,9 +275,9 @@ K线图表相关功能
 """
     for func in alert_functions:
         alert_content += f"\n\n{func['content']}\n"
-    
+
     components['alert_panel'] = alert_content
-    
+
     # 控制面板组件
     control_content = """# 控制面板功能
 
@@ -288,9 +288,9 @@ K线图表相关功能
 """
     for func in control_functions:
         control_content += f"\n\n{func['content']}\n"
-    
+
     components['control_panel'] = control_content
-    
+
     # 浮动操作按钮组件
     action_content = """# 浮动操作按钮功能
 
@@ -301,9 +301,9 @@ K线图表相关功能
 """
     for func in action_functions:
         action_content += f"\n\n{func['content']}\n"
-    
+
     components['floating_actions'] = action_content
-    
+
     # 通用工具函数
     utility_content = """# 通用工具函数
 
@@ -314,9 +314,9 @@ K线图表相关功能
 """
     for func in utility_functions:
         utility_content += f"\n\n{func['content']}\n"
-    
+
     components['utility'] = utility_content
-    
+
     # 写入组件文件
     print("创建组件文件...")
     for component_name, component_content in components.items():
@@ -328,7 +328,7 @@ K线图表相关功能
                 print(f"  创建组件文件失败: {component_file}")
         else:
             print(f"  组件文件 {component_name} 无内容，跳过")
-    
+
     # 创建核心类和主入口文件
     print("创建核心文件...")
     core_content = f"""# 核心类和功能
@@ -344,13 +344,13 @@ K线图表相关功能
 # 注意：此文件是从原始文件模块化拆分而来，保持向后兼容性
 # 原始功能仍可通过导入此文件和原始类名使用
 """
-    
+
     core_file = os.path.join(TARGET_DIR, "core.py")
     if write_file(core_file, core_content):
         print(f"创建核心文件: {core_file} (大小: {len(core_content)} 字符)")
     else:
         print(f"创建核心文件失败: {core_file}")
-    
+
     # 提取导入部分
     import_section = []
     lines = source_code.split('\n')
@@ -358,13 +358,13 @@ K线图表相关功能
         if i < 20:  # 检查前20行的导入部分
             if line.startswith('import ') or line.startswith('from '):
                 import_section.append(line)
-    
+
     # 添加导入部分
     if import_section:
         main_imports = '\n'.join(import_section) + '\n\n'
     else:
         main_imports = ''
-    
+
     # 创建主入口文件
     print("创建主入口文件...")
     main_content = f"""#!/usr/bin/env python3
@@ -392,19 +392,19 @@ def create_and_run_monitoring_app():
     \"\"\"创建并运行监控应用\"\"\"
     from src.monitoring.ai_alert_manager import get_ai_alert_manager
     from src.monitoring.ai_realtime_monitor import get_ai_realtime_monitor
-    
+
     # 创建告警管理器和监控器
     alert_manager = get_ai_alert_manager()
     monitor = get_ai_realtime_monitor(alert_manager)
-    
+
     # 创建监控面板
     dashboard = EnhancedKlineMonitoringDashboard(alert_manager, monitor)
-    
+
     # 创建路由
     @ui.page('/')
     def index():
         dashboard.create_monitoring_page()
-    
+
     # 启动NiceGUI
     ui.run(
         title='MyStocks K线监控仪表板',
@@ -416,13 +416,13 @@ def create_and_run_monitoring_app():
 if __name__ == "__main__":
     create_and_run_monitoring_app()
 """
-    
+
     main_file = os.path.join(TARGET_DIR, os.path.basename(SOURCE_FILE))
     if write_file(main_file, main_content):
         print(f"创建主入口文件: {main_file} (大小: {len(main_content)} 字符)")
     else:
         print(f"创建主入口文件失败: {main_file}")
-    
+
     # 创建组件索引文件
     components_index = """# 组件索引文件
 
@@ -437,13 +437,13 @@ from .control_panel import *
 from .floating_actions import *
 from .utility import *
 """
-    
+
     components_index_file = os.path.join(COMPONENTS_DIR, "__init__.py")
     if write_file(components_index_file, components_index):
         print(f"创建组件索引文件: {components_index_file}")
     else:
         print(f"创建组件索引文件失败: {components_index_file}")
-    
+
     # 创建拆分说明文档
     print("创建说明文档...")
     doc_content = f"""# 模块化拆分说明
@@ -510,18 +510,18 @@ from web.frontend.nicegui_monitoring_dashboard.core import EnhancedKlineMonitori
 ### 通用工具函数
 {', '.join([f['name'] for f in utility_functions[:20]])}{'...' if len(utility_functions) > 20 else ''}
 """
-    
+
     doc_file = os.path.join(TARGET_DIR, 'MODULE_SPLIT_GUIDE.md')
     if write_file(doc_file, doc_content):
         print(f"创建说明文档: {doc_file} (大小: {len(doc_content)} 字符)")
     else:
         print(f"创建说明文档失败: {doc_file}")
-    
+
     # 备份原始文件
     backup_file = SOURCE_FILE + '.bak.' + datetime.now().strftime('%Y%m%d%H%M%S')
     shutil.copy2(SOURCE_FILE, backup_file)
     print(f"原始文件已备份至: {backup_file}")
-    
+
     print("\n✅ 拆分完成!")
     return True
 

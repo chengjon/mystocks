@@ -10,15 +10,25 @@ import numpy as np
 import pandas as pd
 import cupy as cp
 import cudf
-from cuml.preprocessing import StandardScaler
-from cuml.feature_selection import SelectKBest
-from cuml.decomposition import PCA
 from typing import Dict, List, Tuple, Callable
 from dataclasses import dataclass
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import dask.dataframe as dd
 from dask.distributed import Client
+
+# 尝试导入 cuML 库
+try:
+    from cuml.preprocessing import StandardScaler
+    from cuml.feature_selection import SelectKBest
+    from cuml.decomposition import PCA
+    CUML_AVAILABLE = True
+except ImportError:
+    CUML_AVAILABLE = False
+    # 使用 None 作为占位符
+    StandardScaler = None
+    SelectKBest = None
+    PCA = None
 
 
 @dataclass
@@ -47,9 +57,7 @@ class BatchProcessingResult:
 class GPUDataProcessor:
     """GPU加速的数据处理器"""
 
-    def __init__(
-        self, gpu_enabled: bool = True, n_jobs: int = 1, chunk_size: int = 10000
-    ):
+    def __init__(self, gpu_enabled: bool = True, n_jobs: int = 1, chunk_size: int = 10000):
         self.gpu_enabled = gpu_enabled
         self.n_jobs = n_jobs
         self.chunk_size = chunk_size
@@ -86,8 +94,7 @@ class GPUDataProcessor:
         memory_usage = {
             "original_memory": data.memory_usage(deep=True).sum(),
             "processed_memory": processed_data.memory_usage(deep=True).sum(),
-            "compression_ratio": data.memory_usage(deep=True).sum()
-            / processed_data.memory_usage(deep=True).sum(),
+            "compression_ratio": data.memory_usage(deep=True).sum() / processed_data.memory_usage(deep=True).sum(),
         }
 
         return ProcessingResult(
@@ -207,10 +214,8 @@ class GPUDataProcessor:
                 elif method == "zscore":
                     mean_val = df_gpu[col].mean()
                     std_val = df_gpu[col].std()
-                    z_scores = (df_gpu[col] - mean_val) / std_val
-                    df_gpu[col] = (
-                        df_gpu[col].abs().clip(3, upper=None)
-                    )  # 限制z-score在3以内
+                    (df_gpu[col] - mean_val) / std_val
+                    df_gpu[col] = df_gpu[col].abs().clip(3, upper=None)  # 限制z-score在3以内
 
             return df_gpu.to_pandas()
         else:
@@ -230,10 +235,8 @@ class GPUDataProcessor:
                 elif method == "zscore":
                     mean_val = data[col].mean()
                     std_val = data[col].std()
-                    z_scores = (data[col] - mean_val) / std_val
-                    data[col] = data[col].clip(
-                        mean_val - 3 * std_val, mean_val + 3 * std_val
-                    )
+                    (data[col] - mean_val) / std_val
+                    data[col] = data[col].clip(mean_val - 3 * std_val, mean_val + 3 * std_val)
 
             return data
 
@@ -257,9 +260,7 @@ class GPUDataProcessor:
         else:
             scaler = StandardScaler()
             normalized_features = scaler.fit_transform(feature_data)
-            normalized_df = pd.DataFrame(
-                normalized_features, columns=feature_data.columns
-            )
+            normalized_df = pd.DataFrame(normalized_features, columns=feature_data.columns)
 
             # 存储scaler用于后续使用
             self.scalers["standard_scaler"] = scaler
@@ -270,18 +271,14 @@ class GPUDataProcessor:
 
         return result
 
-    def parallel_processing(
-        self, data_list: List[pdDataFrame]
-    ) -> BatchProcessingResult:
+    def parallel_processing(self, data_list: List[pd.DataFrame]) -> BatchProcessingResult:
         """并行数据处理"""
         start_time = time.time()
         results = []
 
         # 使用线程池并行处理
         with ThreadPoolExecutor(max_workers=self.n_jobs) as executor:
-            futures = [
-                executor.submit(self.load_and_preprocess, data) for data in data_list
-            ]
+            futures = [executor.submit(self.load_and_preprocess, data) for data in data_list]
 
             for future in as_completed(futures):
                 try:
@@ -358,9 +355,7 @@ class GPUDataProcessor:
             data_shape=(0, 0),
         )
 
-    def process_real_time_batch(
-        self, batch_data: List[pd.DataFrame]
-    ) -> ProcessingResult:
+    def process_real_time_batch(self, batch_data: List[pd.DataFrame]) -> ProcessingResult:
         """处理实时数据批次"""
         start_time = time.time()
 
@@ -386,14 +381,10 @@ class GPUDataProcessor:
         selected_features = self.feature_selection(preprocessed_data)
 
         # 3. 降维处理
-        reduced_data = self.dimensionality_reduction(
-            preprocessed_data[selected_features]
-        )
+        reduced_data = self.dimensionality_reduction(preprocessed_data[selected_features])
 
         # 4. 特征重要性分析
-        importance_scores = self.feature_importance_analysis(
-            preprocessed_data[selected_features]
-        )
+        importance_scores = self.feature_importance_analysis(preprocessed_data[selected_features])
 
         processing_time = time.time() - start_time
 
@@ -408,44 +399,38 @@ class GPUDataProcessor:
 
     def feature_selection(self, data: pd.DataFrame, k: int = 50) -> List[str]:
         """特征选择"""
-        feature_columns = [
-            col for col in data.columns if col != "target" and "normalized" in col
-        ]
+        feature_columns = [col for col in data.columns if col != "target" and "normalized" in col]
 
         if len(feature_columns) == 0:
             return []
 
         X = data[feature_columns]
-        y = (
-            data["target"] if "target" in data.columns else data["close"]
-        )  # 默认使用收盘价作为目标
+        y = data["target"] if "target" in data.columns else data["close"]  # 默认使用收盘价作为目标
 
-        if self.gpu_enabled:
+        if self.gpu_enabled and CUML_AVAILABLE and SelectKBest is not None:
             X_gpu = cudf.DataFrame(X)
             y_gpu = cudf.Series(y)
 
             # 使用互信息进行特征选择
             selector = SelectKBest(k=k)
-            X_selected = selector.fit_transform(X_gpu, y_gpu)
+            selector.fit_transform(X_gpu, y_gpu)
 
             # 获取选中的特征索引
             selected_indices = selector.get_support(indices=True)
             selected_features = [feature_columns[i] for i in selected_indices]
         else:
-            from sklearn.feature_selection import SelectKBest
+            from sklearn.feature_selection import SelectKBest as SklearnSelectKBest
 
-            selector = SelectKBest(k=k)
-            X_selected = selector.fit_transform(X, y)
+            selector = SklearnSelectKBest(k=k)
+            selector.fit_transform(X, y)
             selected_indices = selector.get_support(indices=True)
             selected_features = [feature_columns[i] for i in selected_indices]
 
         return selected_features
 
-    def dimensionality_reduction(
-        self, data: pd.DataFrame, n_components: int = 20
-    ) -> pd.DataFrame:
+    def dimensionality_reduction(self, data: pd.DataFrame, n_components: int = 20) -> pd.DataFrame:
         """降维处理"""
-        if self.gpu_enabled:
+        if self.gpu_enabled and CUML_AVAILABLE and PCA is not None:
             df_gpu = cudf.DataFrame(data)
 
             # 使用PCA进行降维
@@ -460,9 +445,9 @@ class GPUDataProcessor:
 
             return reduced_df.to_pandas()
         else:
-            from sklearn.decomposition import PCA
+            from sklearn.decomposition import PCA as SklearnPCA
 
-            pca = PCA(n_components=min(n_components, len(data.columns)))
+            pca = SklearnPCA(n_components=min(n_components, len(data.columns)))
             reduced_features = pca.fit_transform(data)
 
             reduced_df = pd.DataFrame(
@@ -504,9 +489,7 @@ class GPUDataProcessor:
 
         return importance_dict
 
-    def time_series_processing(
-        self, data: pd.DataFrame, frequency: str = "D"
-    ) -> ProcessingResult:
+    def time_series_processing(self, data: pd.DataFrame, frequency: str = "D") -> ProcessingResult:
         """时间序列数据处理"""
         start_time = time.time()
 
@@ -553,16 +536,12 @@ class GPUDataProcessor:
             data_shape=resampled_data.shape,
         )
 
-    def anomaly_detection(
-        self, data: pd.DataFrame, method: str = "isolation_forest"
-    ) -> pd.DataFrame:
+    def anomaly_detection(self, data: pd.DataFrame, method: str = "isolation_forest") -> pd.DataFrame:
         """异常检测"""
         if self.gpu_enabled:
             from cuml.ensemble import IsolationForest
 
-            feature_columns = [
-                col for col in data.columns if col not in ["date", "target"]
-            ]
+            feature_columns = [col for col in data.columns if col not in ["date", "target"]]
             if len(feature_columns) == 0:
                 return data
 
@@ -580,9 +559,7 @@ class GPUDataProcessor:
         else:
             from sklearn.ensemble import IsolationForest
 
-            feature_columns = [
-                col for col in data.columns if col not in ["date", "target"]
-            ]
+            feature_columns = [col for col in data.columns if col not in ["date", "target"]]
             if len(feature_columns) == 0:
                 return data
 
@@ -603,9 +580,7 @@ class GPUDataProcessor:
             returns = data["close"].pct_change()
             volatility = returns.rolling(window=20).std()
 
-            features = cudf.DataFrame(
-                {"return": returns, "volatility": volatility}
-            ).dropna()
+            features = cudf.DataFrame({"return": returns, "volatility": volatility}).dropna()
 
             # 使用K-means聚类检测市场状态
             kmeans = KMeans(n_clusters=3)
@@ -621,9 +596,7 @@ class GPUDataProcessor:
             returns = data["close"].pct_change()
             volatility = returns.rolling(window=20).std()
 
-            features = pd.DataFrame(
-                {"return": returns, "volatility": volatility}
-            ).dropna()
+            features = pd.DataFrame({"return": returns, "volatility": volatility}).dropna()
 
             kmeans = KMeans(n_clusters=3)
             cluster_labels = kmeans.fit_predict(features)
@@ -666,9 +639,7 @@ class BatchDataProcessor:
         self.max_workers = max_workers
         self.base_processor = GPUDataProcessor(gpu_enabled, max_workers)
 
-    def process_large_dataset(
-        self, data_path: str, output_path: str, chunk_size: int = 100000
-    ) -> Dict:
+    def process_large_dataset(self, data_path: str, output_path: str, chunk_size: int = 100000) -> Dict:
         """处理大型数据集"""
         start_time = time.time()
 
@@ -701,6 +672,7 @@ class BatchDataProcessor:
 
     def distributed_processing(self, data_paths: List[str], output_path: str) -> Dict:
         """分布式数据处理"""
+        start_time = time.time()
         try:
             # 初始化Dask客户端
             client = Client(n_workers=self.max_workers)
@@ -714,9 +686,7 @@ class BatchDataProcessor:
             for i in range(len(dfs)):
                 processed_dfs.append(
                     combined_df.map_partitions(
-                        lambda df: self.base_processor.load_and_preprocess(
-                            df
-                        ).processed_data,
+                        lambda df: self.base_processor.load_and_preprocess(df).processed_data,
                         meta=combined_df._meta,
                     )
                 )

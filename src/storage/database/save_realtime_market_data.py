@@ -88,27 +88,16 @@ class RealtimeMarketDataSaver:
         # 读取配置参数
         self.config = {
             # 数据源配置
-            "market_symbol": os.getenv(
-                "MARKET_SYMBOL", "hs"
-            ),  # 'hs'=沪深, 'sh'=上海, 'sz'=深圳
+            "market_symbol": os.getenv("MARKET_SYMBOL", "hs"),  # 'hs'=沪深, 'sh'=上海, 'sz'=深圳
             "data_source_timeout": int(os.getenv("DATA_SOURCE_TIMEOUT", "30")),
             # 数据分类配置 - 双重保存策略
-            "save_as_realtime": os.getenv("SAVE_AS_REALTIME", "true").lower()
-            == "true",  # Redis热数据
-            "save_as_daily": os.getenv("SAVE_AS_DAILY", "true").lower()
-            == "true",  # PostgreSQL持久化
-            "save_as_tick": os.getenv("SAVE_AS_TICK", "false").lower()
-            == "true",  # TDengine时序(可选)
-            "cache_expire_seconds": int(
-                os.getenv("CACHE_EXPIRE_SECONDS", "300")
-            ),  # Redis缓存过期时间
+            "save_as_realtime": os.getenv("SAVE_AS_REALTIME", "true").lower() == "true",  # Redis热数据
+            "save_as_daily": os.getenv("SAVE_AS_DAILY", "true").lower() == "true",  # PostgreSQL持久化
+            "save_as_tick": os.getenv("SAVE_AS_TICK", "false").lower() == "true",  # TDengine时序(可选)
+            "cache_expire_seconds": int(os.getenv("CACHE_EXPIRE_SECONDS", "300")),  # Redis缓存过期时间
             # 数据处理配置
-            "add_timestamp_column": os.getenv("ADD_TIMESTAMP_COLUMN", "true").lower()
-            == "true",
-            "enable_data_validation": os.getenv(
-                "ENABLE_DATA_VALIDATION", "true"
-            ).lower()
-            == "true",
+            "add_timestamp_column": os.getenv("ADD_TIMESTAMP_COLUMN", "true").lower() == "true",
+            "enable_data_validation": os.getenv("ENABLE_DATA_VALIDATION", "true").lower() == "true",
             "max_retry_attempts": int(os.getenv("MAX_RETRY_ATTEMPTS", "3")),
             # 日志配置
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
@@ -122,9 +111,7 @@ class RealtimeMarketDataSaver:
         self.logger.info("✅ 配置参数加载完成")
         self.logger.info(f"📊 市场代码: {self.config['market_symbol']}")
         self.logger.info(f"🔥 保存为实时数据(Redis): {self.config['save_as_realtime']}")
-        self.logger.info(
-            f"💾 保存为日线数据(PostgreSQL): {self.config['save_as_daily']}"
-        )
+        self.logger.info(f"💾 保存为日线数据(PostgreSQL): {self.config['save_as_daily']}")
         self.logger.info(f"⏱️ 保存为Tick数据(TDengine): {self.config['save_as_tick']}")
 
     def initialize_unified_manager(self) -> bool:
@@ -146,9 +133,7 @@ class RealtimeMarketDataSaver:
                 monitoring = status.get("monitoring", {})
                 op_stats = monitoring.get("operation_statistics", {})
 
-                self.logger.info(
-                    f"📊 系统状态 - 总操作数: {op_stats.get('total_operations', 0)}"
-                )
+                self.logger.info(f"📊 系统状态 - 总操作数: {op_stats.get('total_operations', 0)}")
                 self.logger.info(f"🗄️ 监控系统: {'正常' if monitoring else '未初始化'}")
 
                 return True
@@ -181,9 +166,7 @@ class RealtimeMarketDataSaver:
 
     def get_realtime_market_data(self) -> Optional[pd.DataFrame]:
         """使用efinance获取沪深市场A股实时数据"""
-        self.logger.info(
-            f"使用efinance获取{self.config['market_symbol']}市场实时数据..."
-        )
+        self.logger.info(f"使用efinance获取{self.config['market_symbol']}市场实时数据...")
 
         try:
             if not self.customer_ds.efinance_available:
@@ -191,9 +174,7 @@ class RealtimeMarketDataSaver:
                 return None
 
             # 直接使用efinance获取沪深市场A股最新状况
-            self.logger.info(
-                "📡 正在调用 ef.stock.get_realtime_quotes() 获取沪深A股实时行情..."
-            )
+            self.logger.info("📡 正在调用 ef.stock.get_realtime_quotes() 获取沪深A股实时行情...")
             data = self.customer_ds.ef.stock.get_realtime_quotes()
 
             if isinstance(data, pd.DataFrame) and not data.empty:
@@ -210,9 +191,7 @@ class RealtimeMarketDataSaver:
                 # 添加数据获取时间戳
                 if self.config["add_timestamp_column"]:
                     data["data_update_time"] = datetime.now()
-                    data["trade_date"] = (
-                        datetime.now().date()
-                    )  # 添加交易日期用于PostgreSQL存储
+                    data["trade_date"] = datetime.now().date()  # 添加交易日期用于PostgreSQL存储
                     self.logger.info("✅ 已添加数据更新时间戳和交易日期列")
 
                 return data
@@ -240,17 +219,13 @@ class RealtimeMarketDataSaver:
             has_symbol_column = any(col in data.columns for col in expected_columns)
 
             if not has_symbol_column:
-                self.logger.warning(
-                    f"⚠️ 数据缺少股票代码列，可用列: {list(data.columns)}"
-                )
+                self.logger.warning(f"⚠️ 数据缺少股票代码列，可用列: {list(data.columns)}")
                 # 不算验证失败，可能列名不同
 
             # 检查数据类型合理性
             null_counts = data.isnull().sum()
             if null_counts.any():
-                self.logger.info(
-                    f"📊 数据包含空值: {null_counts[null_counts > 0].head().to_dict()}"
-                )
+                self.logger.info(f"📊 数据包含空值: {null_counts[null_counts > 0].head().to_dict()}")
 
             return True
 
@@ -301,9 +276,7 @@ class RealtimeMarketDataSaver:
                         )
 
                         if success:
-                            self.logger.info(
-                                "✅ 日线数据保存成功 → PostgreSQL+TimescaleDB (持久化存储)"
-                            )
+                            self.logger.info("✅ 日线数据保存成功 → PostgreSQL+TimescaleDB (持久化存储)")
                         else:
                             self.logger.error("❌ 日线数据保存失败")
 
@@ -331,9 +304,7 @@ class RealtimeMarketDataSaver:
                         )
 
                         if success:
-                            self.logger.info(
-                                "✅ Tick数据保存成功 → TDengine (时序存储)"
-                            )
+                            self.logger.info("✅ Tick数据保存成功 → TDengine (时序存储)")
                         else:
                             self.logger.error("❌ Tick数据保存失败")
 
@@ -380,7 +351,6 @@ class RealtimeMarketDataSaver:
                     daily_data[new_col] = daily_data[old_col]
 
             # 确保必要的列存在（符合DAILY_KLINE的表结构）
-            required_columns = ["symbol", "trade_date"]
 
             # 如果没有trade_date，使用当前日期
             if "trade_date" not in daily_data.columns:
@@ -403,9 +373,7 @@ class RealtimeMarketDataSaver:
             for col in numeric_columns:
                 if col in daily_data.columns:
                     # 将字符串 '-' 和空值转换为 None
-                    daily_data[col] = daily_data[col].replace(
-                        ["-", "---", "", " "], None
-                    )
+                    daily_data[col] = daily_data[col].replace(["-", "---", "", " "], None)
                     # 尝试转换为数值类型
                     daily_data[col] = pd.to_numeric(daily_data[col], errors="coerce")
 
@@ -433,9 +401,7 @@ class RealtimeMarketDataSaver:
             ]
 
             # 过滤存在的列
-            available_columns = [
-                col for col in postgres_columns if col in daily_data.columns
-            ]
+            available_columns = [col for col in postgres_columns if col in daily_data.columns]
             daily_data = daily_data[available_columns]
 
             self.logger.info(f"📊 日线数据格式化完成，共 {len(daily_data)} 条记录")
@@ -482,9 +448,7 @@ class RealtimeMarketDataSaver:
 
             # 确保必要的列存在
             required_columns = ["ts", "symbol", "price"]
-            missing_columns = [
-                col for col in required_columns if col not in tick_data.columns
-            ]
+            missing_columns = [col for col in required_columns if col not in tick_data.columns]
 
             if missing_columns:
                 self.logger.warning(f"⚠️ Tick数据缺少必要列: {missing_columns}")
@@ -549,9 +513,7 @@ class RealtimeMarketDataSaver:
                     if save_type == "realtime":
                         self.logger.info(f"🔥 实时数据 → Redis: {status}")
                     elif save_type == "daily":
-                        self.logger.info(
-                            f"💾 日线数据 → PostgreSQL+TimescaleDB: {status}"
-                        )
+                        self.logger.info(f"💾 日线数据 → PostgreSQL+TimescaleDB: {status}")
                     elif save_type == "tick":
                         self.logger.info(f"⏱️ Tick数据 → TDengine: {status}")
 
@@ -560,9 +522,7 @@ class RealtimeMarketDataSaver:
                     status = self.unified_manager.get_system_status()
                     monitoring = status.get("monitoring", {})
                     op_stats = monitoring.get("operation_statistics", {})
-                    self.logger.info(
-                        f"📈 系统总操作数: {op_stats.get('total_operations', 0)}"
-                    )
+                    self.logger.info(f"📈 系统总操作数: {op_stats.get('total_operations', 0)}")
                 except Exception:
                     pass
 
@@ -584,20 +544,14 @@ class RealtimeMarketDataSaver:
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(
-        description="沪深市场A股实时数据保存系统 - MyStocks统一接口版"
-    )
+    parser = argparse.ArgumentParser(description="沪深市场A股实时数据保存系统 - MyStocks统一接口版")
     parser.add_argument(
         "--config",
         default="realtime_market_config.env",
         help="配置文件路径 (默认: realtime_market_config.env)",
     )
-    parser.add_argument(
-        "--force-update", action="store_true", help="强制更新，跳过Redis缓存"
-    )
-    parser.add_argument(
-        "--enable-fixation", action="store_true", help="启用Redis数据自动固化"
-    )
+    parser.add_argument("--force-update", action="store_true", help="强制更新，跳过Redis缓存")
+    parser.add_argument("--enable-fixation", action="store_true", help="启用Redis数据自动固化")
 
     args = parser.parse_args()
 
@@ -605,9 +559,7 @@ def main():
     print("=" * 70)
     print(f"配置文件: {args.config}")
     print("使用MyStocks统一管理器进行自动路由保存")
-    print(
-        "数据分类: REALTIME_POSITIONS → Redis, DAILY_KLINE → PostgreSQL, TICK_DATA → TDengine(可选)"
-    )
+    print("数据分类: REALTIME_POSITIONS → Redis, DAILY_KLINE → PostgreSQL, TICK_DATA → TDengine(可选)")
     print("数据源: efinance.stock.get_realtime_quotes() - 沪深A股实时行情")
     if args.force_update:
         print("🔄 强制更新模式: 跳过Redis缓存")

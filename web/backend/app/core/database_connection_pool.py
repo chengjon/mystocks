@@ -300,9 +300,7 @@ class DatabaseConnectionPoolOptimizer:
             self.total_errors += 1
             raise
 
-    def return_connection(
-        self, conn_id: str, error: bool = False, latency_ms: float = 0.0
-    ) -> None:
+    def return_connection(self, conn_id: str, error: bool = False, latency_ms: float = 0.0) -> None:
         """
         归还连接
 
@@ -348,11 +346,7 @@ class DatabaseConnectionPoolOptimizer:
         idle_connections = list(self.idle_connections.values())
         in_use_connections = list(self.in_use_connections.values())
 
-        avg_latency = (
-            sum(c.latency_ms for c in idle_connections) / len(idle_connections)
-            if idle_connections
-            else 0
-        )
+        avg_latency = sum(c.latency_ms for c in idle_connections) / len(idle_connections) if idle_connections else 0
 
         total_queries = sum(c.query_count for c in self.all_connections.values())
         total_usage = sum(c.usage_count for c in self.all_connections.values())
@@ -371,15 +365,9 @@ class DatabaseConnectionPoolOptimizer:
             "performance": {
                 "avg_latency_ms": round(avg_latency, 2),
                 "connection_reuse_rate": (
-                    (self.total_released / max(1, self.total_acquired))
-                    if self.total_acquired > 0
-                    else 0
+                    (self.total_released / max(1, self.total_acquired)) if self.total_acquired > 0 else 0
                 ),
-                "error_rate": (
-                    (self.total_errors / max(1, self.total_acquired))
-                    if self.total_acquired > 0
-                    else 0
-                ),
+                "error_rate": ((self.total_errors / max(1, self.total_acquired)) if self.total_acquired > 0 else 0),
             },
             "connections": {
                 "idle": [c.to_dict() for c in idle_connections[:10]],

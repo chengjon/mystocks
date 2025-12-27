@@ -368,9 +368,7 @@ class PostgreSQLDataAccess:
                     where_lower = where.lower()
                     for pattern in dangerous_patterns:
                         if pattern in where_lower:
-                            raise ValueError(
-                                f"Potentially dangerous SQL pattern detected: {pattern}"
-                            )
+                            raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
                     sql += f" WHERE {where}"
 
             # SECURITY FIX: Validate ORDER BY to prevent injection
@@ -391,9 +389,7 @@ class PostgreSQLDataAccess:
                     "created_at",
                     "updated_at",
                 }
-                order_field = order_by.split()[
-                    0
-                ]  # Extract field name from "DESC" or "ASC"
+                order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
                 if order_field not in allowed_order_fields:
                     raise ValueError(f"Invalid order field: {order_field}")
                 sql += f" ORDER BY {order_by}"
@@ -478,9 +474,7 @@ class PostgreSQLDataAccess:
         finally:
             self._return_connection(conn)
 
-    def delete(
-        self, table_name: str, where: str, params: Optional[Tuple] = None
-    ) -> int:
+    def delete(self, table_name: str, where: str, params: Optional[Tuple] = None) -> int:
         """
         删除数据 (Security-enhanced version)
 
@@ -553,9 +547,7 @@ class PostgreSQLDataAccess:
                 where_lower = where.lower()
                 for pattern in dangerous_patterns:
                     if pattern in where_lower:
-                        raise ValueError(
-                            f"Potentially dangerous SQL pattern detected: {pattern}"
-                        )
+                        raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
                 sql = f"DELETE FROM {table_name} WHERE {where}"
                 cursor = conn.cursor()
                 cursor.execute(sql)

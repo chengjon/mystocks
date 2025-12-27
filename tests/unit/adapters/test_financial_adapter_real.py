@@ -92,9 +92,7 @@ class TestFinancialDataSourceReal:
         adapter = FinancialDataSource()
 
         # 调用方法
-        result = adapter.get_stock_daily(
-            "000001", start_date="20240101", end_date="20240102"
-        )
+        result = adapter.get_stock_daily("000001", start_date="20240101", end_date="20240102")
 
         # 验证结果
         assert isinstance(result, pd.DataFrame)
@@ -103,17 +101,13 @@ class TestFinancialDataSourceReal:
     def test_get_index_daily_method(self, mock_efinance):
         """测试获取指数日线数据方法"""
         # 设置模拟数据
-        mock_df = pd.DataFrame(
-            {"日期": ["2024-01-01", "2024-01-02"], "收盘": [3000.0, 3020.0]}
-        )
+        mock_df = pd.DataFrame({"日期": ["2024-01-01", "2024-01-02"], "收盘": [3000.0, 3020.0]})
         mock_efinance.stock.get_quote_history.return_value = mock_df
 
         adapter = FinancialDataSource()
 
         # 调用方法
-        result = adapter.get_index_daily(
-            "000001", start_date="20240101", end_date="20240102"
-        )
+        result = adapter.get_index_daily("000001", start_date="20240101", end_date="20240102")
 
         # 验证结果
         assert isinstance(result, pd.DataFrame)

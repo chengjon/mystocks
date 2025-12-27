@@ -100,9 +100,7 @@ class BatchOperationResult:
                 if self.failed_indices and len(self.failed_indices) > 10
                 else (self.failed_indices or [])
             ),
-            "error_sample": (
-                list(self.error_messages.values())[:3] if self.error_messages else []
-            ),
+            "error_sample": (list(self.error_messages.values())[:3] if self.error_messages else []),
         }
 
 
@@ -161,7 +159,7 @@ class BatchFailureHandler:
             print(f"成功率: {result.success_rate:.2%}")
         """
         start_time = time.time()
-        total_records = len(data)
+        len(data)
 
         # 根据策略选择处理方法
         if self.strategy == BatchFailureStrategy.ROLLBACK:
@@ -296,9 +294,7 @@ class BatchFailureHandler:
         3. 使用指数退避重试失败记录
         4. 重复直到成功或达到最大重试次数
         """
-        print(
-            f"📍 执行批量操作 [{operation_name}] - 策略: RETRY (最多{self.max_retries}次)"
-        )
+        print(f"📍 执行批量操作 [{operation_name}] - 策略: RETRY (最多{self.max_retries}次)")
 
         remaining_data = data.copy()
         successful_count = 0
@@ -312,9 +308,7 @@ class BatchFailureHandler:
 
             if attempt > 0:
                 # 指数退避
-                delay = self.retry_delay_base * (
-                    self.retry_delay_multiplier ** (attempt - 1)
-                )
+                delay = self.retry_delay_base * (self.retry_delay_multiplier ** (attempt - 1))
                 print(f"⏳ 重试 {attempt}/{self.max_retries}, 等待 {delay:.1f}秒...")
                 time.sleep(delay)
                 total_retries += 1
@@ -391,9 +385,7 @@ if __name__ == "__main__":
         print(f"{'=' * 80}\n")
 
         handler = BatchFailureHandler(strategy=strategy, max_retries=2)
-        result = handler.execute_batch(
-            test_data, mock_operation, f"test_{strategy.value}"
-        )
+        result = handler.execute_batch(test_data, mock_operation, f"test_{strategy.value}")
 
         print("\n结果统计:")
         for key, value in result.to_dict().items():

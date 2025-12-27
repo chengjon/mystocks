@@ -79,21 +79,18 @@ class OfflineRealtimeDataSaver:
         self.logger.info("检查依赖库...")
 
         missing_libs = []
+        import importlib.util
 
         # 检查efinance
-        try:
-            import efinance
-
+        if importlib.util.find_spec("efinance"):
             self.logger.info("✅ efinance 已安装")
-        except ImportError:
+        else:
             missing_libs.append("efinance")
 
         # 检查pandas（通常已安装）
-        try:
-            import pandas
-
+        if importlib.util.find_spec("pandas"):
             self.logger.info("✅ pandas 已安装")
-        except ImportError:
+        else:
             missing_libs.append("pandas")
 
         if missing_libs:

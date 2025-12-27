@@ -424,19 +424,13 @@ class TestRoomManagerIntegration:
         manager = RoomManager()
 
         # Public room
-        public_room = manager.create_room(
-            "public", "Public Room", "user_1", room_type=RoomType.PUBLIC
-        )
+        public_room = manager.create_room("public", "Public Room", "user_1", room_type=RoomType.PUBLIC)
         assert public_room.type == RoomType.PUBLIC
 
         # Private room
-        private_room = manager.create_room(
-            "private", "Private Room", "user_1", room_type=RoomType.PRIVATE
-        )
+        private_room = manager.create_room("private", "Private Room", "user_1", room_type=RoomType.PRIVATE)
         assert private_room.type == RoomType.PRIVATE
 
         # Protected room
-        protected_room = manager.create_room(
-            "protected", "Protected Room", "user_1", room_type=RoomType.PROTECTED
-        )
+        protected_room = manager.create_room("protected", "Protected Room", "user_1", room_type=RoomType.PROTECTED)
         assert protected_room.type == RoomType.PROTECTED

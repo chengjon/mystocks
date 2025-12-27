@@ -351,9 +351,7 @@ class OHLCVStorage:
             self.last_error = str(e)
             return []
 
-    def get_latest_bar(
-        self, symbol: str, timeframe: Timeframe
-    ) -> Optional[Dict[str, Any]]:
+    def get_latest_bar(self, symbol: str, timeframe: Timeframe) -> Optional[Dict[str, Any]]:
         """获取最新的OHLCV柱线"""
         if not self.connection:
             logger.warning("⚠️ Database not connected")
@@ -424,9 +422,7 @@ class OHLCVStorage:
             symbol_count = cursor.fetchone()[0]
 
             # 获取存储大小
-            cursor.execute(
-                "SELECT pg_size_pretty(pg_total_relation_size('ohlcv_bars'));"
-            )
+            cursor.execute("SELECT pg_size_pretty(pg_total_relation_size('ohlcv_bars'));")
             table_size = cursor.fetchone()[0]
 
             return {

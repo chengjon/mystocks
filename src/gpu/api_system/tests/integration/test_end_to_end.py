@@ -44,9 +44,7 @@ class TestBacktestEndToEnd:
         request.stock_codes = ["000001.SZ", "600000.SH"]
         request.start_time = "2024-01-01"
         request.end_time = "2024-12-31"
-        request.strategy_config = json.dumps(
-            {"strategy_type": "trend_following", "lookback_period": 20}
-        )
+        request.strategy_config = json.dumps({"strategy_type": "trend_following", "lookback_period": 20})
 
         submit_response = Mock()
         submit_response.backtest_id = "bt_integration_001"
@@ -234,9 +232,7 @@ class TestMLTrainingEndToEnd:
         # 3. 使用模型进行预测
         predict_request = Mock()
         predict_request.model_id = model_id
-        predict_request.input_data = json.dumps(
-            {"price": [11.5], "volume": [1400000], "sma_20": [10.7], "rsi": [65]}
-        )
+        predict_request.input_data = json.dumps({"price": [11.5], "volume": [1400000], "sma_20": [10.7], "rsi": [65]})
 
         predict_response = Mock()
         predict_response.predictions = [1]
@@ -313,9 +309,7 @@ class TestServiceResilience:
 
     def test_service_retry_on_failure(self):
         """测试服务失败重试"""
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
             service = MockService(None, None, None)
 
             # 第一次失败
@@ -338,9 +332,7 @@ class TestServiceResilience:
 
     def test_timeout_handling(self):
         """测试超时处理"""
-        with patch(
-            "services.integrated_backtest_service.IntegratedBacktestService"
-        ) as MockService:
+        with patch("services.integrated_backtest_service.IntegratedBacktestService") as MockService:
             service = MockService(None, None, None)
 
             # 模拟超时

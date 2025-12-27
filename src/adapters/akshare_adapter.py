@@ -43,9 +43,7 @@ logger = logging.getLogger(__name__)
 # 确保日志配置已设置
 if not logger.handlers:
     handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
@@ -59,9 +57,7 @@ class AkshareDataSource(IDataSource):
         max_retries (int): 最大重试次数
     """
 
-    def __init__(
-        self, api_timeout: int = REQUEST_TIMEOUT, max_retries: int = MAX_RETRIES
-    ):
+    def __init__(self, api_timeout: int = REQUEST_TIMEOUT, max_retries: int = MAX_RETRIES):
         """初始化Akshare数据源
 
         Args:
@@ -70,9 +66,7 @@ class AkshareDataSource(IDataSource):
         """
         self.api_timeout = api_timeout
         self.max_retries = max_retries
-        logger.info(
-            f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)"
-        )
+        logger.info(f"[Akshare] 数据源初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)")
 
     def _retry_api_call(self, func):
         """API调用重试装饰器 - 使用统一错误处理"""
@@ -91,9 +85,7 @@ class AkshareDataSource(IDataSource):
 
         return wrapper
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据-Akshare实现"""
         try:
             # 处理股票代码格式 - 使用专门的格式化函数
@@ -104,9 +96,7 @@ class AkshareDataSource(IDataSource):
             end_date = normalize_date(end_date)
 
             logger.info(
-                str(
-                    f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={start_date}, 结束日期={end_date}"
-                )
+                str(f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={start_date}, 结束日期={end_date}")
             )
 
             # 尝试多种API获取股票数据
@@ -163,9 +153,7 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"Akshare返回的数据为空")
                 return pd.DataFrame()
 
-            logger.info(
-                f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"Akshare获取到原始数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 使用统一列名映射器标准化列名
             df = ColumnMapper.to_english(df)
@@ -178,9 +166,7 @@ class AkshareDataSource(IDataSource):
             traceback.print_exc()
             return pd.DataFrame()
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取指数日线数据-Akshare实现
         使用优先级：
         1. 新浪接口(stock_zh_index_daily)
@@ -206,9 +192,9 @@ class AkshareDataSource(IDataSource):
                 if df is not None and not df.empty:
                     # 筛选日期范围
                     df["date"] = pd.to_datetime(df["date"])
-                    mask = (
-                        df["date"] >= pd.to_datetime(normalize_date(start_date))
-                    ) & (df["date"] <= pd.to_datetime(normalize_date(end_date)))
+                    mask = (df["date"] >= pd.to_datetime(normalize_date(start_date))) & (
+                        df["date"] <= pd.to_datetime(normalize_date(end_date))
+                    )
                     df = df[mask]
 
                     if not df.empty:
@@ -225,9 +211,9 @@ class AkshareDataSource(IDataSource):
                 if df is not None and not df.empty:
                     # 筛选日期范围
                     df["date"] = pd.to_datetime(df["date"])
-                    mask = (
-                        df["date"] >= pd.to_datetime(normalize_date(start_date))
-                    ) & (df["date"] <= pd.to_datetime(normalize_date(end_date)))
+                    mask = (df["date"] >= pd.to_datetime(normalize_date(start_date))) & (
+                        df["date"] <= pd.to_datetime(normalize_date(end_date))
+                    )
                     df = df[mask]
 
                     if not df.empty:
@@ -381,9 +367,7 @@ class AkshareDataSource(IDataSource):
             logger.error(f"Akshare获取财务数据失败: {e}")
             return pd.DataFrame()
 
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         """获取新闻数据-Akshare实现"""
         try:
             # 如果提供了股票代码，获取个股新闻；否则获取市场新闻
@@ -446,9 +430,7 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"[Akshare] 未能获取到同花顺行业一览表数据")
                 return pd.DataFrame()
 
-            logger.info(
-                f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取同花顺行业数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 使用统一列名映射器标准化列名(如果需要)
             # 注意：这里保留原始中文列名，因为这是行业数据的特殊格式
@@ -509,9 +491,7 @@ class AkshareDataSource(IDataSource):
                 logger.info(f"[Akshare] 未能获取到行业'{industry_name}'的成分股数据")
                 return pd.DataFrame()
 
-            logger.info(
-                f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 添加行业信息和数据获取时间戳
             df["所属行业"] = industry_name
@@ -556,9 +536,7 @@ class AkshareDataSource(IDataSource):
                 logger.info(r"[Akshare] 未能获取到同花顺行业名称列表")
                 return pd.DataFrame()
 
-            logger.info(
-                f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}"
-            )
+            logger.info(f"[Akshare] 成功获取同花顺行业名称列表: {len(df)}行, 列名={df.columns.tolist()}")
 
             # 添加数据获取时间戳
             df["数据获取时间"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -572,9 +550,7 @@ class AkshareDataSource(IDataSource):
             traceback.print_exc()
             return pd.DataFrame()
 
-    def get_minute_kline(
-        self, symbol: str, period: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取分钟K线数据（通过TDX适配器获取，AkShare本身不直接支持分钟K线）
 
@@ -750,9 +726,7 @@ class AkshareDataSource(IDataSource):
 
             # 查找行业和概念相关的行
             for _, row in df.iterrows():
-                if "行业" in str(row.get("item", "")) or "所属行业" in str(
-                    row.get("item", "")
-                ):
+                if "行业" in str(row.get("item", "")) or "所属行业" in str(row.get("item", "")):
                     industry = row.get("value", "")
                     if industry and industry != "--":
                         industries.append(industry)
@@ -760,9 +734,7 @@ class AkshareDataSource(IDataSource):
                     concept = row.get("value", "")
                     if concept and concept != "--":
                         # 概念可能包含多个，用逗号分隔
-                        concept_list = [
-                            c.strip() for c in str(concept).split(",") if c.strip()
-                        ]
+                        concept_list = [c.strip() for c in str(concept).split(",") if c.strip()]
                         concepts.extend(concept_list)
 
             return {

@@ -27,9 +27,7 @@ class TestSSEBasicConnection:
         """
         with test_client.stream("GET", "/api/v1/sse/training") as response:
             assert response.status_code == 200
-            assert (
-                response.headers["content-type"] == "text/event-stream; charset=utf-8"
-            )
+            assert response.headers["content-type"] == "text/event-stream; charset=utf-8"
             assert response.headers["cache-control"] == "no-cache"
 
             # Read first event (connection confirmation)

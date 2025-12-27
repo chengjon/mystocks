@@ -10,14 +10,13 @@ Prometheus监控指标端点
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 from app.api.auth import User, get_current_user
-from app.core.config import settings
-from app.core.responses import APIResponse, ErrorResponse
+from app.core.responses import APIResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

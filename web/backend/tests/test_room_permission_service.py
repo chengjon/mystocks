@@ -155,41 +155,31 @@ class TestPermissionChecking:
     def test_check_owner_permission(self):
         """Test checking owner permission"""
         manager = RoomPermissionManager(use_casbin=False)
-        result = manager.check_permission(
-            "user_1", "room_1", RoomPermission.DELETE_ROOM, RoomRole.OWNER
-        )
+        result = manager.check_permission("user_1", "room_1", RoomPermission.DELETE_ROOM, RoomRole.OWNER)
         assert result is True
 
     def test_check_guest_denied_permission(self):
         """Test guest denied permission"""
         manager = RoomPermissionManager(use_casbin=False)
-        result = manager.check_permission(
-            "user_2", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.GUEST
-        )
+        result = manager.check_permission("user_2", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.GUEST)
         assert result is False
 
     def test_check_member_send_message(self):
         """Test member can send message"""
         manager = RoomPermissionManager(use_casbin=False)
-        result = manager.check_permission(
-            "user_3", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
+        result = manager.check_permission("user_3", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
         assert result is True
 
     def test_check_member_cannot_delete_room(self):
         """Test member cannot delete room"""
         manager = RoomPermissionManager(use_casbin=False)
-        result = manager.check_permission(
-            "user_3", "room_1", RoomPermission.DELETE_ROOM, RoomRole.MEMBER
-        )
+        result = manager.check_permission("user_3", "room_1", RoomPermission.DELETE_ROOM, RoomRole.MEMBER)
         assert result is False
 
     def test_check_moderator_can_kick(self):
         """Test moderator can kick member"""
         manager = RoomPermissionManager(use_casbin=False)
-        result = manager.check_permission(
-            "user_4", "room_1", RoomPermission.KICK_MEMBER, RoomRole.MODERATOR
-        )
+        result = manager.check_permission("user_4", "room_1", RoomPermission.KICK_MEMBER, RoomRole.MODERATOR)
         assert result is True
 
 
@@ -200,29 +190,21 @@ class TestPermissionCache:
         """Test cache stores permission result"""
         manager = RoomPermissionManager(use_casbin=False)
         # First check populates cache
-        manager.check_permission(
-            "user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
+        manager.check_permission("user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
         cache_key = "user_1:room_1:send_message"
         assert cache_key in manager.permission_cache
 
     def test_cache_returns_cached_result(self):
         """Test cache returns same result"""
         manager = RoomPermissionManager(use_casbin=False)
-        result1 = manager.check_permission(
-            "user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
-        result2 = manager.check_permission(
-            "user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
+        result1 = manager.check_permission("user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
+        result2 = manager.check_permission("user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
         assert result1 == result2
 
     def test_cache_cleared_on_permission_change(self):
         """Test cache cleared when permissions change"""
         manager = RoomPermissionManager(use_casbin=False)
-        manager.check_permission(
-            "user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
+        manager.check_permission("user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
         assert len(manager.permission_cache) > 0
 
         # Change permissions
@@ -303,45 +285,35 @@ class TestAccessControl:
         """Test user can delete own message"""
         manager = RoomPermissionManager(use_casbin=False)
         control = RoomAccessControl(manager)
-        result = control.can_delete_message(
-            "user_1", "room_1", "user_1", RoomRole.GUEST
-        )
+        result = control.can_delete_message("user_1", "room_1", "user_1", RoomRole.GUEST)
         assert result is True
 
     def test_can_delete_others_message(self):
         """Test member cannot delete others' message"""
         manager = RoomPermissionManager(use_casbin=False)
         control = RoomAccessControl(manager)
-        result = control.can_delete_message(
-            "user_1", "room_1", "user_2", RoomRole.MEMBER
-        )
+        result = control.can_delete_message("user_1", "room_1", "user_2", RoomRole.MEMBER)
         assert result is False
 
     def test_moderator_can_delete_message(self):
         """Test moderator can delete message"""
         manager = RoomPermissionManager(use_casbin=False)
         control = RoomAccessControl(manager)
-        result = control.can_delete_message(
-            "user_1", "room_1", "user_2", RoomRole.MODERATOR
-        )
+        result = control.can_delete_message("user_1", "room_1", "user_2", RoomRole.MODERATOR)
         assert result is True
 
     def test_cannot_kick_self(self):
         """Test user cannot kick themselves"""
         manager = RoomPermissionManager(use_casbin=False)
         control = RoomAccessControl(manager)
-        result = control.can_kick_member(
-            "user_1", "room_1", "user_1", RoomRole.MODERATOR
-        )
+        result = control.can_kick_member("user_1", "room_1", "user_1", RoomRole.MODERATOR)
         assert result is False
 
     def test_moderator_can_kick(self):
         """Test moderator can kick member"""
         manager = RoomPermissionManager(use_casbin=False)
         control = RoomAccessControl(manager)
-        result = control.can_kick_member(
-            "user_1", "room_1", "user_2", RoomRole.MODERATOR
-        )
+        result = control.can_kick_member("user_1", "room_1", "user_2", RoomRole.MODERATOR)
         assert result is True
 
     def test_member_cannot_kick(self):
@@ -476,9 +448,7 @@ class TestPermissionManagerStats:
     def test_stats_cache_size(self):
         """Test cache size in stats"""
         manager = RoomPermissionManager(use_casbin=False)
-        manager.check_permission(
-            "user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER
-        )
+        manager.check_permission("user_1", "room_1", RoomPermission.SEND_MESSAGE, RoomRole.MEMBER)
         stats = manager.get_stats()
         assert stats["cache_size"] == 1
 
@@ -529,10 +499,7 @@ class TestIntegrationScenarios:
         assert control.can_send_message("user_2", "room_2", RoomRole.GUEST) is False
 
         # User 3 as moderator in room 3
-        assert (
-            control.can_kick_member("user_3", "room_3", "user_4", RoomRole.MODERATOR)
-            is True
-        )
+        assert control.can_kick_member("user_3", "room_3", "user_4", RoomRole.MODERATOR) is True
 
     def test_permission_changes_affect_access_control(self):
         """Test that permission changes affect access control checks"""

@@ -86,9 +86,7 @@ class TestE2EIndicatorCalculation:
             # 验证计算时间
             assert data["calculation_time_ms"] > 0
 
-            print(
-                f"✅ E2E Test Passed: Calculated {len(data['indicators'])} indicators"
-            )
+            print(f"✅ E2E Test Passed: Calculated {len(data['indicators'])} indicators")
             print(f"   Data points: {len(ohlcv['dates'])}")
             print(f"   Calculation time: {data['calculation_time_ms']:.2f}ms")
 
@@ -207,9 +205,7 @@ class TestDataServiceIntegration:
         start_date = end_date - timedelta(days=30)
 
         try:
-            df, ohlcv_data = data_service.get_daily_ohlcv(
-                symbol="000001.SZ", start_date=start_date, end_date=end_date
-            )
+            df, ohlcv_data = data_service.get_daily_ohlcv(symbol="000001.SZ", start_date=start_date, end_date=end_date)
 
             # 验证数据格式
             assert len(df) > 0, "DataFrame should not be empty"

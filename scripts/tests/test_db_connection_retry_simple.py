@@ -5,11 +5,10 @@
 """
 
 import sys
-import os
 import time
 import functools
 from pathlib import Path
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -27,11 +26,6 @@ import pytest
 # 导入被测试的模块 - 直接导入可以测试的部分
 from src.utils.db_connection_retry import (
     db_retry,
-    DatabaseConnectionHandler,
-    get_tdengine_connection_with_retry,
-    get_postgresql_connection_with_retry,
-    return_postgresql_connection,
-    init_connection_handler,
 )
 
 
@@ -387,7 +381,7 @@ class TestIntegrationScenarios:
                     result = func(*args, **kwargs)
                     wrapper.execution_time = time.time() - start
                     return result
-                except Exception as e:
+                except Exception:
                     wrapper.execution_time = time.time() - start
                     raise
 

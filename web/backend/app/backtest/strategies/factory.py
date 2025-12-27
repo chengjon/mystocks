@@ -47,9 +47,7 @@ class StrategyFactory:
         logger.info(f"策略已注册: {name} -> {strategy_class.__name__}")
 
     @classmethod
-    def create_strategy(
-        cls, strategy_type: str, parameters: Dict[str, Any] = None
-    ) -> BaseStrategy:
+    def create_strategy(cls, strategy_type: str, parameters: Dict[str, Any] = None) -> BaseStrategy:
         """
         创建策略实例
 
@@ -64,17 +62,12 @@ class StrategyFactory:
             ValueError: 如果策略类型不存在
         """
         if strategy_type not in cls._strategies:
-            raise ValueError(
-                f"未知的策略类型: {strategy_type}. "
-                f"可用策略: {list(cls._strategies.keys())}"
-            )
+            raise ValueError(f"未知的策略类型: {strategy_type}. " f"可用策略: {list(cls._strategies.keys())}")
 
         strategy_class = cls._strategies[strategy_type]
         strategy = strategy_class(parameters=parameters)
 
-        logger.info(
-            f"策略实例已创建: {strategy_type} with {len(parameters or {})} parameters"
-        )
+        logger.info(f"策略实例已创建: {strategy_type} with {len(parameters or {})} parameters")
         return strategy
 
     @classmethod
@@ -135,9 +128,7 @@ class StrategyFactory:
         return strategy_class.get_default_parameters()
 
     @classmethod
-    def validate_parameters(
-        cls, strategy_type: str, parameters: Dict[str, Any]
-    ) -> tuple[bool, Optional[str]]:
+    def validate_parameters(cls, strategy_type: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         """
         验证策略参数
 

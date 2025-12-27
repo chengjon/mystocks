@@ -16,14 +16,11 @@
 """
 
 import ast
-import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set, Any
-from dataclasses import dataclass, field
-from collections import defaultdict, Counter
+from typing import Dict, List, Tuple, Any
+from dataclasses import dataclass
 import logging
 
 # 设置日志
@@ -1374,7 +1371,7 @@ if __name__ == "__main__":
   - 置信度: {pattern.confidence:.2f}
 """)
 
-            f.write(f"""
+            f.write("""
 ## 🐛 潜在Bug预测
 
 ### 高风险Bug

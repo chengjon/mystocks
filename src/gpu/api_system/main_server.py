@@ -23,9 +23,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(
-            "/opt/claude/mystocks_spec/gpu_api_system/logs/gpu_api_server.log"
-        ),
+        logging.FileHandler("/opt/claude/mystocks_spec/gpu_api_system/logs/gpu_api_server.log"),
         logging.StreamHandler(),
     ],
 )
@@ -100,23 +98,17 @@ class GPUAPIServer:
         logger.info("初始化集成服务...")
 
         # 回测服务
-        self.backtest_service = IntegratedBacktestService(
-            self.gpu_manager, self.redis_queue, self.metrics_collector
-        )
+        self.backtest_service = IntegratedBacktestService(self.gpu_manager, self.redis_queue, self.metrics_collector)
         self.backtest_service.initialize()
         logger.info("集成回测服务初始化完成")
 
         # 实时数据处理服务
-        self.realtime_service = IntegratedRealTimeService(
-            self.gpu_manager, self.redis_queue, self.metrics_collector
-        )
+        self.realtime_service = IntegratedRealTimeService(self.gpu_manager, self.redis_queue, self.metrics_collector)
         self.realtime_service.initialize()
         logger.info("集成实时数据处理服务初始化完成")
 
         # ML训练服务
-        self.ml_service = IntegratedMLService(
-            self.gpu_manager, self.redis_queue, self.metrics_collector
-        )
+        self.ml_service = IntegratedMLService(self.gpu_manager, self.redis_queue, self.metrics_collector)
         self.ml_service.initialize()
         logger.info("集成ML训练服务初始化完成")
 
@@ -126,9 +118,7 @@ class GPUAPIServer:
 
         # 创建服务器
         self.server = grpc.server(
-            futures.ThreadPoolExecutor(
-                max_workers=self.config.grpc_config["max_workers"]
-            ),
+            futures.ThreadPoolExecutor(max_workers=self.config.grpc_config["max_workers"]),
             options=[
                 (
                     "grpc.max_send_message_length",
@@ -157,9 +147,7 @@ class GPUAPIServer:
         add_MLServiceServicer_to_server(self.ml_service, self.server)
 
         # 添加端口
-        server_address = (
-            f"{self.config.grpc_config['host']}:{self.config.grpc_config['port']}"
-        )
+        server_address = f"{self.config.grpc_config['host']}:{self.config.grpc_config['port']}"
         self.server.add_insecure_port(server_address)
 
         logger.info(f"gRPC服务器创建完成，监听地址: {server_address}")
@@ -171,9 +159,7 @@ class GPUAPIServer:
         try:
             # 启动gRPC服务器
             self.server.start()
-            logger.info(
-                f"GPU API服务器已启动，监听端口: {self.config.grpc_config['port']}"
-            )
+            logger.info(f"GPU API服务器已启动，监听端口: {self.config.grpc_config['port']}")
 
             # 注册信号处理
             signal.signal(signal.SIGINT, self._signal_handler)
@@ -219,9 +205,7 @@ class GPUAPIServer:
         logger.info("服务器配置:")
         logger.info(f"  - gRPC端口: {self.config.grpc_config['port']}")
         logger.info(f"  - 最大工作线程: {self.config.grpc_config['max_workers']}")
-        logger.info(
-            f"  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']}"
-        )
+        logger.info(f"  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']}")
 
         logger.info("=" * 80)
 

@@ -137,9 +137,7 @@ class TdxImporter:
             for symbol in batch_symbols:
                 try:
                     # 读取日线数据
-                    data = self.parser.read_day_data(
-                        symbol, start_date=start_date, end_date=end_date
-                    )
+                    data = self.parser.read_day_data(symbol, start_date=start_date, end_date=end_date)
 
                     if data.empty:
                         self.logger.debug(f"  跳过 {symbol}: 无数据")
@@ -147,9 +145,7 @@ class TdxImporter:
 
                     # 保存到数据库
                     if self.unified_manager:
-                        self._save_to_database(
-                            symbol=symbol, data=data, data_type="daily", market=market
-                        )
+                        self._save_to_database(symbol=symbol, data=data, data_type="daily", market=market)
 
                     self.stats["success_count"] += 1
                     self.stats["total_records"] += len(data)
@@ -181,13 +177,9 @@ class TdxImporter:
 
         self.logger.info(f"增量导入: {start_date} 至 {end_date}")
 
-        return self.import_market_daily(
-            market=market, start_date=start_date, end_date=end_date
-        )
+        return self.import_market_daily(market=market, start_date=start_date, end_date=end_date)
 
-    def _save_to_database(
-        self, symbol: str, data: pd.DataFrame, data_type: str, market: str
-    ):
+    def _save_to_database(self, symbol: str, data: pd.DataFrame, data_type: str, market: str):
         """
         保存数据到数据库（通过5-tier数据分类路由）
 

@@ -75,7 +75,8 @@ class AlertHistoryDatabase:
         cursor = self.connection.cursor()
 
         # Main alert history table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS alert_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 alert_name TEXT NOT NULL,
@@ -101,41 +102,55 @@ class AlertHistoryDatabase:
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
-        """)
+        """
+        )
 
         # Indices for common queries
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_alert_name
             ON alert_history(alert_name)
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_severity
             ON alert_history(severity)
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_service
             ON alert_history(service)
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_status
             ON alert_history(status)
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_start_time
             ON alert_history(start_time)
-        """)
+        """
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_alert_service_time
             ON alert_history(alert_name, service, start_time)
-        """)
+        """
+        )
 
         # Alert metrics summary table (for performance)
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS alert_metrics_daily (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 date DATE NOT NULL,
@@ -149,10 +164,12 @@ class AlertHistoryDatabase:
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(date, alert_name)
             )
-        """)
+        """
+        )
 
         # Alert correlation table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS alert_correlations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 alert1_id INTEGER NOT NULL,
@@ -163,10 +180,12 @@ class AlertHistoryDatabase:
                 FOREIGN KEY(alert1_id) REFERENCES alert_history(id),
                 FOREIGN KEY(alert2_id) REFERENCES alert_history(id)
             )
-        """)
+        """
+        )
 
         # Escalation history table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS escalation_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 alert_id INTEGER NOT NULL,
@@ -177,10 +196,12 @@ class AlertHistoryDatabase:
                 escalated_by TEXT,
                 FOREIGN KEY(alert_id) REFERENCES alert_history(id)
             )
-        """)
+        """
+        )
 
         # Acknowledgment history table
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS acknowledgments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 alert_id INTEGER NOT NULL,
@@ -190,7 +211,8 @@ class AlertHistoryDatabase:
                 resolved_at DATETIME,
                 FOREIGN KEY(alert_id) REFERENCES alert_history(id)
             )
-        """)
+        """
+        )
 
         self.connection.commit()
         logger.info("Alert history database initialized")
@@ -256,9 +278,7 @@ class AlertHistoryDatabase:
         self.connection.commit()
         return cursor.rowcount > 0
 
-    def resolve_alert(
-        self, alert_id: int, resolution_time_seconds: float = None
-    ) -> bool:
+    def resolve_alert(self, alert_id: int, resolution_time_seconds: float = None) -> bool:
         """Mark alert as resolved"""
         end_time = datetime.now()
         return self.update_alert(
@@ -268,9 +288,7 @@ class AlertHistoryDatabase:
             resolution_time_seconds=resolution_time_seconds,
         )
 
-    def acknowledge_alert(
-        self, alert_id: int, acknowledged_by: str, comment: str = None
-    ) -> int:
+    def acknowledge_alert(self, alert_id: int, acknowledged_by: str, comment: str = None) -> int:
         """Record alert acknowledgment"""
         cursor = self.connection.cursor()
 
@@ -301,9 +319,7 @@ class AlertHistoryDatabase:
         cursor = self.connection.cursor()
 
         # Get current level
-        current = cursor.execute(
-            "SELECT escalation_level FROM alert_history WHERE id = ?", (alert_id,)
-        ).fetchone()
+        current = cursor.execute("SELECT escalation_level FROM alert_history WHERE id = ?", (alert_id,)).fetchone()
 
         from_level = current["escalation_level"] if current else 1
 
@@ -318,9 +334,7 @@ class AlertHistoryDatabase:
         )
 
         # Update alert
-        self.update_alert(
-            alert_id, escalation_level=to_level, status=AlertStatus.ESCALATED.value
-        )
+        self.update_alert(alert_id, escalation_level=to_level, status=AlertStatus.ESCALATED.value)
 
         self.connection.commit()
         return cursor.lastrowid
@@ -328,9 +342,7 @@ class AlertHistoryDatabase:
     def get_alert(self, alert_id: int) -> Optional[Dict]:
         """Get alert history record by ID"""
         cursor = self.connection.cursor()
-        row = cursor.execute(
-            "SELECT * FROM alert_history WHERE id = ?", (alert_id,)
-        ).fetchone()
+        row = cursor.execute("SELECT * FROM alert_history WHERE id = ?", (alert_id,)).fetchone()
 
         return dict(row) if row else None
 
@@ -380,9 +392,7 @@ class AlertHistoryDatabase:
         rows = cursor.execute(query, params).fetchall()
         return [dict(row) for row in rows]
 
-    def get_alert_statistics(
-        self, alert_name: Optional[str] = None, days: int = 7
-    ) -> Dict[str, Any]:
+    def get_alert_statistics(self, alert_name: Optional[str] = None, days: int = 7) -> Dict[str, Any]:
         """Get alert statistics for time period"""
         start_time = datetime.now() - timedelta(days=days)
         cursor = self.connection.cursor()
@@ -553,9 +563,7 @@ class AlertHistoryDatabase:
         rows = cursor.execute(query, params).fetchall()
         return [dict(row) for row in rows]
 
-    def get_related_alerts(
-        self, alert_id: int, min_correlation: float = 0.5
-    ) -> List[Dict]:
+    def get_related_alerts(self, alert_id: int, min_correlation: float = 0.5) -> List[Dict]:
         """Get alerts correlated with given alert"""
         cursor = self.connection.cursor()
 
@@ -632,11 +640,7 @@ class AlertHistoryDatabase:
         # Calculate health score (0-100)
         # Based on: resolved rate, resolution time, severity distribution
         resolved_rate = (row["resolved_count"] / row["total_alerts"]) * 100
-        critical_weight = (
-            (row["critical_count"] / row["total_alerts"]) * 100
-            if row["total_alerts"] > 0
-            else 0
-        )
+        critical_weight = (row["critical_count"] / row["total_alerts"]) * 100 if row["total_alerts"] > 0 else 0
 
         health_score = (resolved_rate * 0.5) - (critical_weight * 0.3)
         health_score = max(0, min(100, health_score))

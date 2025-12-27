@@ -6,12 +6,11 @@ BaseDataSourceAdapter Phase 6 测试套件 - 简化有效版
 """
 
 import sys
-import os
 import time
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import pytest
 from datetime import datetime
 

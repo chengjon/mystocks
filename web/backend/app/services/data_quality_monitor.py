@@ -156,9 +156,7 @@ class DataSourceQualityMetrics:
                 description=desc,
             )
 
-    def update_metric(
-        self, metric_name: str, value: float
-    ) -> Optional[DataQualityAlert]:
+    def update_metric(self, metric_name: str, value: float) -> Optional[DataQualityAlert]:
         """更新指标并生成告警"""
         if metric_name not in self.metrics:
             logger.warning(f"Unknown metric: {metric_name}")
@@ -216,9 +214,7 @@ class DataSourceQualityMetrics:
 
                 # 对于响应时间和延迟等指标，值越小越好
                 if metric_name in ["response_time", "data_freshness", "error_rate"]:
-                    normalized_score = max(
-                        0, 100 - (metric.value / metric.threshold_critical) * 100
-                    )
+                    normalized_score = max(0, 100 - (metric.value / metric.threshold_critical) * 100)
                 else:
                     normalized_score = min(100, metric.value)
 
@@ -360,13 +356,7 @@ class DataFreshnessRule(IDataQualityRule):
                 score = 0.0
 
             passed = age_seconds <= self.max_age_seconds
-            issues = (
-                []
-                if passed
-                else [
-                    f"Data is {age_seconds:.1f}s old, exceeds threshold of {self.max_age_seconds}s"
-                ]
-            )
+            issues = [] if passed else [f"Data is {age_seconds:.1f}s old, exceeds threshold of {self.max_age_seconds}s"]
 
             return {
                 "passed": passed,
@@ -445,9 +435,7 @@ class DataQualityMonitor:
     def __init__(self):
         self.source_metrics: Dict[str, DataSourceQualityMetrics] = {}
         self.rules: List[IDataQualityRule] = []
-        self.evaluation_history: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=100)
-        )
+        self.evaluation_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
         self.alert_callbacks: List[Callable[[DataQualityAlert], None]] = []
         self.monitoring_enabled = True
 
@@ -465,21 +453,16 @@ class DataQualityMonitor:
         )
 
         # 数据新鲜度规则
-        self.rules.append(
-            DataFreshnessRule(timestamp_field="timestamp", max_age_seconds=300)
-        )
+        self.rules.append(DataFreshnessRule(timestamp_field="timestamp", max_age_seconds=300))
 
         # 数据一致性规则
         consistency_checks = [
-            lambda data: "status" in data
-            and data["status"] in ["success", "ok", "healthy"],
+            lambda data: "status" in data and data["status"] in ["success", "ok", "healthy"],
             lambda data: "timestamp" in data and len(data["timestamp"]) > 0,
         ]
         self.rules.append(DataConsistencyRule(consistency_checks))
 
-    def get_or_create_source_metrics(
-        self, source_name: str
-    ) -> DataSourceQualityMetrics:
+    def get_or_create_source_metrics(self, source_name: str) -> DataSourceQualityMetrics:
         """获取或创建数据源指标"""
         if source_name not in self.source_metrics:
             self.source_metrics[source_name] = DataSourceQualityMetrics(source_name)
@@ -668,27 +651,19 @@ class DataQualityMonitor:
 
             active_alerts = metrics.get_active_alerts()
             total_alerts += len(active_alerts)
-            critical_alerts += sum(
-                1 for a in active_alerts if a.severity == AlertSeverity.CRITICAL
-            )
+            critical_alerts += sum(1 for a in active_alerts if a.severity == AlertSeverity.CRITICAL)
 
         avg_quality_score = statistics.mean(quality_scores) if quality_scores else 0.0
 
         return {
             "total_sources": total_sources,
             "healthy_sources": healthy_sources,
-            "health_percentage": (healthy_sources / total_sources * 100)
-            if total_sources > 0
-            else 0,
+            "health_percentage": (healthy_sources / total_sources * 100) if total_sources > 0 else 0,
             "average_quality_score": avg_quality_score,
             "total_active_alerts": total_alerts,
             "critical_alerts": critical_alerts,
             "overall_health": (
-                "healthy"
-                if avg_quality_score >= 90
-                else "degraded"
-                if avg_quality_score >= 70
-                else "unhealthy"
+                "healthy" if avg_quality_score >= 90 else "degraded" if avg_quality_score >= 70 else "unhealthy"
             ),
         }
 

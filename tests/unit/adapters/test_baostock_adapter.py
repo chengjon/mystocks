@@ -170,9 +170,7 @@ class TestBaostockAdapter:
         assert isinstance(data, pd.DataFrame)
 
         # 测试开始日期晚于结束日期的情况
-        data_reverse = self.adapter.get_stock_daily(
-            "sh.600000", "2024-01-31", "2024-01-01"
-        )
+        data_reverse = self.adapter.get_stock_daily("sh.600000", "2024-01-31", "2024-01-01")
         # 应该返回空DataFrame或处理异常
         assert isinstance(data_reverse, pd.DataFrame)
 
@@ -206,9 +204,7 @@ class TestBaostockAdapter:
             numeric_cols = ["open", "high", "low", "close", "volume", "amount"]
             for col in numeric_cols:
                 if col in data.columns:
-                    assert pd.api.types.is_numeric_dtype(
-                        data[col]
-                    ), f"{col} should be numeric"
+                    assert pd.api.types.is_numeric_dtype(data[col]), f"{col} should be numeric"
 
     def test_empty_result_handling(self):
         """测试空结果处理"""

@@ -52,9 +52,7 @@ class MarkerFilter:
     @staticmethod
     def by_type(test_items, marker_type):
         """根据标记类型过滤测试"""
-        return [
-            item for item in test_items if MarkerChecker.has_marker(item, marker_type)
-        ]
+        return [item for item in test_items if MarkerChecker.has_marker(item, marker_type)]
 
     @staticmethod
     def by_priority(test_items, priority):
@@ -72,10 +70,7 @@ class MarkerFilter:
         return [
             item
             for item in test_items
-            if any(
-                MarkerChecker.has_marker(item, marker)
-                for marker in high_priority_markers
-            )
+            if any(MarkerChecker.has_marker(item, marker) for marker in high_priority_markers)
         ]
 
 

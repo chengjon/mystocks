@@ -15,9 +15,8 @@ Phase: 4.1 - Comprehensive Testing
 
 import pytest
 import time
-import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 
 
@@ -25,6 +24,7 @@ from fastapi.testclient import TestClient
 def client():
     """提供测试客户端"""
     from app.main import app
+
     return TestClient(app)
 
 
@@ -72,7 +72,6 @@ class TestCachePerformance:
         if "x-cache-status" in response1.headers:
             assert response1.headers["x-cache-status"] == "MISS"
 
-
     @patch("app.api.market.get_market_data_service")
     def test_cache_expiration(self, mock_service, client):
         """测试缓存过期机制"""
@@ -95,7 +94,6 @@ class TestCachePerformance:
             cache_control = response1.headers["cache-control"]
             assert "max-age" in cache_control or "no-cache" in cache_control
 
-
     @patch("app.api.market.get_market_data_service")
     def test_cache_invalidation_on_update(self, mock_service, client):
         """测试数据更新时缓存失效"""
@@ -116,13 +114,11 @@ class TestCachePerformance:
         # response2 = client.get("/api/market/overview")
         # 验证数据已更新
 
-
     @pytest.mark.skip("缓存是前端代码，不在后端测试范围内")
     def test_cache_memory_usage(self):
         """测试缓存内存使用（跳过：缓存是前端功能）"""
         # 前端缓存测试应在 web/frontend/tests/ 中进行
         pass
-
 
     @pytest.mark.skip("缓存是前端代码，不在后端测试范围内")
     def test_cache_performance_under_load(self):
@@ -154,7 +150,6 @@ class TestAPIResponseTime:
         if "x-process-time" in response.headers:
             process_time = float(response.headers["x-process-time"])
             assert process_time < 500
-
 
     @patch("app.api.market.get_market_data_service")
     def test_concurrent_requests_performance(self, mock_service, client):
@@ -189,7 +184,6 @@ class TestAPIResponseTime:
         avg_response_time = sum(r[1] for r in results) / len(results)
         assert avg_response_time < 1.0, f"平均响应时间过长: {avg_response_time}s"
 
-
     def test_health_check_response_time(self, client):
         """测试健康检查响应时间 < 100ms"""
         start_time = time.time()
@@ -198,7 +192,6 @@ class TestAPIResponseTime:
 
         assert response.status_code == 200
         assert elapsed_ms < 100, f"健康检查响应时间过长: {elapsed_ms}"
-
 
     def test_csrf_token_generation_time(self, client):
         """测试CSRF token生成时间 < 50ms"""
@@ -221,7 +214,6 @@ class TestDatabasePerformance:
         # 测试连接池收缩
         pass
 
-
     @pytest.mark.skipif(not True, reason="需要实际数据库查询")
     def test_query_performance_benchmarks(self):
         """测试查询性能基准"""
@@ -239,18 +231,16 @@ class TestMemoryEfficiency:
         from app.core.responses import create_success_response
 
         # 创建大型数据集
-        large_data = {
-            "items": [{"id": i, "data": "x" * 100} for i in range(10000)]
-        }
+        large_data = {"items": [{"id": i, "data": "x" * 100} for i in range(10000)]}
 
         # 测量内存使用
         import sys
+
         response = create_success_response(data=large_data)
         response_size = sys.getsizeof(response)
 
         # 响应对象应该高效（< 10MB for 10k items）
         assert response_size < 10 * 1024 * 1024, f"响应内存使用过多: {response_size / 1024 / 1024}MB"
-
 
     def test_json_serialization_performance(self):
         """测试JSON序列化性能"""
@@ -289,10 +279,7 @@ class TestThroughputBenchmark:
         start_time = time.time()
 
         with ThreadPoolExecutor(max_workers=20) as executor:
-            futures = [
-                executor.submit(client.get, "/api/market/overview")
-                for _ in range(num_requests)
-            ]
+            futures = [executor.submit(client.get, "/api/market/overview") for _ in range(num_requests)]
             results = [future.result() for future in as_completed(futures)]
 
         total_time = time.time() - start_time

@@ -3,10 +3,8 @@
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
-import json
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import psycopg2
@@ -245,7 +243,7 @@ async def test_database_connection(request: ConnectionTestRequest):
                         success=True,
                         message=f"PostgreSQL 连接成功 ({version})，但未发现 mystocks 相关数据库",
                     )
-            except psycopg2.Error as e:
+            except psycopg2.Error:
                 raise
             finally:
                 # 确保连接被关闭，防止连接泄漏

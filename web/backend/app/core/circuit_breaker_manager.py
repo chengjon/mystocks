@@ -104,9 +104,7 @@ class CircuitBreakerManager:
             ValueError: 如果服务名称不存在
         """
         if service_name not in self._circuit_breakers:
-            logger.warning(
-                f"⚠️ Circuit breaker for '{service_name}' not found, using external_api"
-            )
+            logger.warning(f"⚠️ Circuit breaker for '{service_name}' not found, using external_api")
             return self._circuit_breakers["external_api"]
 
         return self._circuit_breakers[service_name]

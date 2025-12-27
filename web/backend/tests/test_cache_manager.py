@@ -84,9 +84,7 @@ class TestSingleCacheOperations:
         """测试缓存写入成功"""
         data = {"main_inflow": 1000000, "retail_inflow": 500000}
 
-        result = self.manager.write_to_cache(
-            symbol="000001", data_type="fund_flow", timeframe="1d", data=data
-        )
+        result = self.manager.write_to_cache(symbol="000001", data_type="fund_flow", timeframe="1d", data=data)
 
         assert result is True
 
@@ -98,9 +96,7 @@ class TestSingleCacheOperations:
         }
 
         # 写入数据
-        self.manager.write_to_cache(
-            symbol="000001", data_type="fund_flow", timeframe="1d", data=write_data
-        )
+        self.manager.write_to_cache(symbol="000001", data_type="fund_flow", timeframe="1d", data=write_data)
 
         # 读取数据
         result = self.manager.fetch_from_cache(symbol="000001", data_type="fund_flow")
@@ -152,17 +148,13 @@ class TestSingleCacheOperations:
 
     def test_write_invalid_data(self):
         """测试写入无效数据"""
-        result = self.manager.write_to_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=None
-        )
+        result = self.manager.write_to_cache(symbol="000001", data_type="test", timeframe="1d", data=None)
 
         assert result is False
 
     def test_write_empty_dict(self):
         """测试写入空字典"""
-        result = self.manager.write_to_cache(
-            symbol="000001", data_type="test", timeframe="1d", data={}
-        )
+        result = self.manager.write_to_cache(symbol="000001", data_type="test", timeframe="1d", data={})
 
         # 空字典仍然是有效的字典
         assert result is True
@@ -391,20 +383,14 @@ class TestCacheValidation:
 
     def test_get_cache_key(self):
         """测试缓存键生成"""
-        key = self.manager.get_cache_key(
-            symbol="000001", data_type="fund_flow", timeframe="1d"
-        )
+        key = self.manager.get_cache_key(symbol="000001", data_type="fund_flow", timeframe="1d")
 
         assert key == "fund_flow:000001:1d"
 
     def test_cache_key_normalization(self):
         """测试缓存键的大小写规范化"""
-        key1 = self.manager.get_cache_key(
-            symbol="000001", data_type="FUND_FLOW", timeframe="1D"
-        )
-        key2 = self.manager.get_cache_key(
-            symbol="000001", data_type="fund_flow", timeframe="1d"
-        )
+        key1 = self.manager.get_cache_key(symbol="000001", data_type="FUND_FLOW", timeframe="1D")
+        key2 = self.manager.get_cache_key(symbol="000001", data_type="fund_flow", timeframe="1d")
 
         assert key1 == key2
 
@@ -541,9 +527,7 @@ class TestCacheAsidesPattern:
 
         # 2. 从源读取并写入缓存（模拟）
         source_data = {"main_inflow": 1000000}
-        self.manager.write_to_cache(
-            symbol=symbol, data_type=data_type, timeframe="1d", data=source_data
-        )
+        self.manager.write_to_cache(symbol=symbol, data_type=data_type, timeframe="1d", data=source_data)
 
         # 3. 第二次读取（命中）
         result2 = self.manager.fetch_from_cache(symbol=symbol, data_type=data_type)
@@ -580,9 +564,7 @@ class TestErrorHandling:
             "emoji": "🚀📈💰",
         }
 
-        result = self.manager.write_to_cache(
-            symbol="000001", data_type="test", timeframe="1d", data=data
-        )
+        result = self.manager.write_to_cache(symbol="000001", data_type="test", timeframe="1d", data=data)
 
         assert result is True
 
@@ -590,9 +572,7 @@ class TestErrorHandling:
         """测试写入大数据"""
         large_data = {f"key_{i}": f"value_{i}" * 100 for i in range(50)}
 
-        result = self.manager.write_to_cache(
-            symbol="000001", data_type="large", timeframe="1d", data=large_data
-        )
+        result = self.manager.write_to_cache(symbol="000001", data_type="large", timeframe="1d", data=large_data)
 
         assert isinstance(result, bool)
 
@@ -669,8 +649,7 @@ def setup_test_environment():
     temp_manager = CacheManager()
     if not temp_manager.health_check():
         pytest.skip(
-            "TDengine service is not running. "
-            "Start with: docker-compose -f docker-compose.tdengine.yml up -d"
+            "TDengine service is not running. " "Start with: docker-compose -f docker-compose.tdengine.yml up -d"
         )
     temp_manager.close()
 

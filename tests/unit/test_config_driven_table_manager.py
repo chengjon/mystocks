@@ -24,9 +24,7 @@ class TestConfigDrivenTableManager(unittest.TestCase):
     def setUp(self):
         """测试前准备"""
         # 创建临时配置文件
-        self.temp_config = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False
-        )
+        self.temp_config = tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False)
         config_data = {
             "version": "1.0.0",
             "tables": [
@@ -53,9 +51,7 @@ class TestConfigDrivenTableManager(unittest.TestCase):
                             "default": "CURRENT_TIMESTAMP",
                         },
                     ],
-                    "indexes": [
-                        {"name": "idx_name", "columns": ["name"], "unique": False}
-                    ],
+                    "indexes": [{"name": "idx_name", "columns": ["name"], "unique": False}],
                 }
             ],
         }
@@ -91,9 +87,7 @@ class TestConfigDrivenTableManager(unittest.TestCase):
         # 模拟数据库连接
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
-        mock_conn_manager.return_value.get_postgresql_connection.return_value = (
-            mock_conn
-        )
+        mock_conn_manager.return_value.get_postgresql_connection.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cursor
 
         # 执行表初始化
@@ -116,9 +110,7 @@ class TestConfigDrivenTableManager(unittest.TestCase):
         # 模拟数据库连接
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
-        mock_conn_manager.return_value.get_postgresql_connection.return_value = (
-            mock_conn
-        )
+        mock_conn_manager.return_value.get_postgresql_connection.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cursor
 
         # 定义测试表结构

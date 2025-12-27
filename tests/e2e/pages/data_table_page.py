@@ -69,9 +69,7 @@ class DataTablePage(BasePage):
 
     def get_row_text(self, row_index: int) -> List[str]:
         """获取行中的所有文本"""
-        cells = self.page.locator(
-            f"{self.TABLE_ROW}:nth-child({row_index + 1}) {self.TABLE_CELL}"
-        ).all()
+        cells = self.page.locator(f"{self.TABLE_ROW}:nth-child({row_index + 1}) {self.TABLE_CELL}").all()
         return [self.get_text_element(cell) for cell in cells]
 
     # ============ 单元格操作 ============

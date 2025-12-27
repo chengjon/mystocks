@@ -98,14 +98,10 @@ class MockIDataAccessLayer(ABC):
             raise ValueError("Data cannot be empty")
         return True
 
-    def log_operation(
-        self, operation, table_name, record_count, execution_time_ms=None, error=None
-    ):
+    def log_operation(self, operation, table_name, record_count, execution_time_ms=None, error=None):
         """记录操作日志"""
         if self.monitoring_db:
-            self.monitoring_db.log_operation(
-                operation, table_name, record_count, execution_time_ms, error
-            )
+            self.monitoring_db.log_operation(operation, table_name, record_count, execution_time_ms, error)
 
 
 # 实际被测试的函数
@@ -258,37 +254,27 @@ class TestDatabaseNameMapping:
 
     def test_get_database_name_timeseries(self):
         """测试时序数据库名称"""
-        result = get_database_name_from_classification(
-            MockDataClassification.TIMESERIES_DATA
-        )
+        result = get_database_name_from_classification(MockDataClassification.TIMESERIES_DATA)
         assert result == "market_data"
 
     def test_get_database_name_daily(self):
         """测试日线数据库名称"""
-        result = get_database_name_from_classification(
-            MockDataClassification.DAILY_DATA
-        )
+        result = get_database_name_from_classification(MockDataClassification.DAILY_DATA)
         assert result == "market_data"
 
     def test_get_database_name_reference(self):
         """测试参考数据库名称"""
-        result = get_database_name_from_classification(
-            MockDataClassification.REFERENCE_DATA
-        )
+        result = get_database_name_from_classification(MockDataClassification.REFERENCE_DATA)
         assert result == "mystocks"
 
     def test_get_database_name_derived(self):
         """测试衍生数据库名称"""
-        result = get_database_name_from_classification(
-            MockDataClassification.DERIVED_DATA
-        )
+        result = get_database_name_from_classification(MockDataClassification.DERIVED_DATA)
         assert result == "mystocks"
 
     def test_get_database_name_transaction(self):
         """测试交易数据库名称"""
-        result = get_database_name_from_classification(
-            MockDataClassification.TRANSACTION_DATA
-        )
+        result = get_database_name_from_classification(MockDataClassification.TRANSACTION_DATA)
         assert result == "mystocks"
 
     def test_get_database_name_metadata(self):
@@ -503,15 +489,9 @@ class TestIntegrationScenarios:
         )
 
         # 执行完整流程
-        save_result = accessor.save_data(
-            data, MockDataClassification.DAILY_DATA, "test_table"
-        )
-        load_result = accessor.load_data(
-            {"symbol": "AAPL"}, MockDataClassification.DAILY_DATA, "test_table"
-        )
-        delete_result = accessor.delete_data(
-            {"symbol": "AAPL"}, MockDataClassification.DAILY_DATA, "test_table"
-        )
+        save_result = accessor.save_data(data, MockDataClassification.DAILY_DATA, "test_table")
+        load_result = accessor.load_data({"symbol": "AAPL"}, MockDataClassification.DAILY_DATA, "test_table")
+        delete_result = accessor.delete_data({"symbol": "AAPL"}, MockDataClassification.DAILY_DATA, "test_table")
 
         # 验证结果
         assert save_result is True
@@ -531,14 +511,10 @@ class TestIntegrationScenarios:
             def save_data(self, data, classification, table_name=None):
                 try:
                     self.validate_dataframe(data)
-                    self.log_operation(
-                        "INSERT", table_name or "default_table", len(data)
-                    )
+                    self.log_operation("INSERT", table_name or "default_table", len(data))
                     return True
                 except Exception as e:
-                    self.log_operation(
-                        "INSERT", table_name or "default_table", 0, error=str(e)
-                    )
+                    self.log_operation("INSERT", table_name or "default_table", 0, error=str(e))
                     raise
 
             def load_data(self, query_params, classification, table_name=None):

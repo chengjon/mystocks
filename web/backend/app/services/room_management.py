@@ -91,9 +91,7 @@ class Room:
         if user_id in self.members:
             return False
 
-        self.members[user_id] = RoomMember(
-            user_id=user_id, username=username, is_admin=is_admin
-        )
+        self.members[user_id] = RoomMember(user_id=user_id, username=username, is_admin=is_admin)
         self.last_activity = datetime.utcnow()
         return True
 
@@ -302,9 +300,7 @@ class RoomManager:
 
     def get_active_rooms(self) -> List[Room]:
         """获取所有活跃房间"""
-        return [
-            room for room in self.rooms.values() if room.status == RoomStatus.ACTIVE
-        ]
+        return [room for room in self.rooms.values() if room.status == RoomStatus.ACTIVE]
 
     def increment_message_count(self, room_id: str) -> bool:
         """增加房间消息计数"""
@@ -332,9 +328,7 @@ class RoomManager:
         return {
             "total_rooms": len(self.rooms),
             "active_rooms": len(self.get_active_rooms()),
-            "total_members": sum(
-                room.get_member_count() for room in self.rooms.values()
-            ),
+            "total_members": sum(room.get_member_count() for room in self.rooms.values()),
             "total_users": len(self.user_rooms),
             "rooms_created": self.rooms_created,
             "rooms_deleted": self.rooms_deleted,

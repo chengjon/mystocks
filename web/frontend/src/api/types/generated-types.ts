@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-25T10:28:05.848724
+// Generated at: 2025-12-27T02:25:42.629223
 
 // API Response Types
 export interface APIResponse {
@@ -10,10 +10,60 @@ export interface APIResponse {
   timestamp?: string;
 }
 
+export interface ActiveAlert {
+
+  id?: number;
+  name?: string;
+  metricType?: string;
+  thresholdValue?: number;
+}
+
+export interface BacktestRequest {
+
+  strategyName?: string;
+  symbols?: string[];
+  startDate?: string;
+  endDate?: string;
+  initialCapital?: number;
+  parameters?: Record<string, any>;
+}
+
+export interface BacktestResponse {
+
+  taskId?: string;
+  status?: string;
+  summary?: BacktestResultSummary | null;
+  equityCurve?: Record<string, any>[];
+  trades?: BacktestTrade[];
+  errorMessage?: string | null;
+}
+
+export interface BacktestResultSummary {
+
+  totalReturn?: number;
+  annualizedReturn?: number;
+  maxDrawdown?: number;
+  sharpeRatio?: number;
+  winRate?: number;
+  totalTrades?: number;
+}
+
+export interface BacktestTrade {
+
+  symbol?: string;
+  entryDate?: string;
+  exitDate?: string;
+  entryPrice?: number;
+  exitPrice?: number;
+  quantity?: number;
+  pnl?: number;
+  returnPct?: number;
+}
+
 export interface BatchOperation {
 
   operation?: string;
-  data?: Record<(str, any)>;
+  data?: Record<string, any>;
   id?: string | null;
 }
 
@@ -28,6 +78,22 @@ export interface BatchOperationResult {
   success?: boolean;
   data?: any | null;
   error?: string | null;
+}
+
+export interface BetaRequest {
+
+  entityType?: string;
+  entityId?: number;
+  marketIndex?: string;
+}
+
+export interface BetaResult {
+
+  beta?: number | null;
+  correlation?: number | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  marketIndex?: string | null;
 }
 
 export interface ChipRaceItem {
@@ -72,7 +138,7 @@ export interface CurrencyField {
 
 export interface DateField {
 
-  date?: constr(pattern='^\\d{4}-\\d{2}-\\d{2}$');
+  date?: string;
 }
 
 export interface ETFDataRequest {
@@ -107,7 +173,7 @@ export interface ErrorDetail {
 
   errorCode?: string;
   errorMessage?: string;
-  details?: Record<(str, any) | null>;
+  details?: Record<string, any> | null;
 }
 
 export interface ErrorResponse {
@@ -132,13 +198,13 @@ export interface FeatureGenerationResponse {
   totalSamples?: number;
   featureDim?: number;
   step?: number;
-  featureColumns?: str[];
-  metadata?: Record<(str, any)>;
+  featureColumns?: string[];
+  metadata?: Record<string, any>;
 }
 
 export interface FilterRequest {
 
-  filters?: Record<(str, any) | null>;
+  filters?: Record<string, any> | null;
 }
 
 export interface FundFlowDataResponse {
@@ -204,17 +270,17 @@ export interface HyperparameterSearchRequest {
   market: string; // Default: 'sh'
   step: number; // Default: 10
   cv: number; // Default: 5
-  paramGrid?: Record<(str, any[ | null)>];
+  paramGrid?: Record<string, any[]> | null;
 }
 
 export interface HyperparameterSearchResponse {
 
   success?: boolean;
   message?: string;
-  bestParams?: Record<(str, any)>;
+  bestParams?: Record<string, any>;
   bestRmse?: number;
   bestMse?: number;
-  cvResults?: Record<(str, any)>;
+  cvResults?: Record<string, any>;
 }
 
 export interface IndexQuoteResponse {
@@ -271,7 +337,7 @@ export interface IndicatorConfigResponse {
   id?: number;
   userId?: number;
   name?: string;
-  indicators?: Record<(str, any)[>];
+  indicators?: Record<string, any>[];
   createdAt?: string;
   updatedAt?: string;
   lastUsedAt?: string | null;
@@ -280,7 +346,7 @@ export interface IndicatorConfigResponse {
 export interface IndicatorConfigUpdateRequest {
 
   name?: string | null;
-  indicators?: IndicatorSpec[ | null];
+  indicators?: IndicatorSpec[] | null;
 }
 
 export interface IndicatorMetadata {
@@ -291,39 +357,39 @@ export interface IndicatorMetadata {
   category?: string;
   description?: string;
   panelType?: string;
-  parameters?: Record<(str, any)[>];
-  outputs?: Record<(str, str)[>];
-  referenceLines?: float[ | null];
+  parameters?: Record<string, any>[];
+  outputs?: Record<string, string>[];
+  referenceLines?: number[] | null;
   minDataPointsFormula?: string;
 }
 
 export interface IndicatorRegistryResponse {
 
   totalCount?: number;
-  categories?: Record<(str, int)>;
+  categories?: Record<string, number>;
   indicators?: IndicatorMetadata[];
 }
 
 export interface IndicatorResult {
 
   abbreviation?: string;
-  parameters?: Record<(str, any)>;
+  parameters?: Record<string, any>;
   outputs?: IndicatorValueOutput[];
   panelType?: string;
-  referenceLines?: float[ | null];
+  referenceLines?: number[] | null;
   error?: string | null;
 }
 
 export interface IndicatorSpec {
 
   abbreviation?: string;
-  parameters?: Record<(str, any)>;
+  parameters?: Record<string, any>;
 }
 
 export interface IndicatorValueOutput {
 
   outputName?: string;
-  values?: float[ | null];
+  values?: number | null[];
   displayName?: string;
 }
 
@@ -437,9 +503,9 @@ export interface MillisecondTimestampField {
 export interface ModelDetailResponse {
 
   name?: string;
-  metadata?: Record<(str, any)>;
-  trainingHistory?: Record<(str, any)[>];
-  featureImportance?: Record<(str, any)[ | null>];
+  metadata?: Record<string, any>;
+  trainingHistory?: Record<string, any>[];
+  featureImportance?: Record<string, any>[] | null;
 }
 
 export interface ModelEvaluationRequest {
@@ -454,7 +520,7 @@ export interface ModelEvaluationResponse {
   success?: boolean;
   message?: string;
   modelName?: string;
-  metrics?: Record<(str, any)>;
+  metrics?: Record<string, any>;
 }
 
 export interface ModelInfo {
@@ -499,7 +565,7 @@ export interface ModelTrainRequest {
   step: number; // Default: 10
   testSize: number; // Default: 0.2
   modelName?: string;
-  modelParams?: Record<(str, any) | null>;
+  modelParams?: Record<string, any> | null;
 }
 
 export interface ModelTrainResponse {
@@ -507,18 +573,30 @@ export interface ModelTrainResponse {
   success?: boolean;
   message?: string;
   modelName?: string;
-  metrics?: Record<(str, any)>;
+  metrics?: Record<string, any>;
+}
+
+export interface NotificationTestRequest {
+
+  notificationType?: string;
+  configData?: Record<string, any>;
+}
+
+export interface NotificationTestResponse {
+
+  success?: boolean;
+  message?: string;
 }
 
 export interface OHLCVData {
 
-  dates?: str[];
-  open?: float[];
-  high?: float[];
-  low?: float[];
-  close?: float[];
-  volume?: float[];
-  turnover?: float[];
+  dates?: string[];
+  open?: number[];
+  high?: number[];
+  low?: number[];
+  close?: number[];
+  volume?: number[];
+  turnover?: number[];
 }
 
 export interface PaginatedResponse {
@@ -580,6 +658,77 @@ export interface RealTimeQuoteResponse {
   changePct?: number | null;
 }
 
+export interface RiskAlertCreate {
+
+  name?: string;
+  metricType?: string;
+  thresholdValue?: number;
+  condition?: string;
+  entityType?: string;
+  entityId?: number | null;
+  isActive?: boolean;
+  notificationChannels?: string[];
+}
+
+export interface RiskAlertListResponse {
+
+  alerts?: RiskAlertResponse[];
+}
+
+export interface RiskAlertResponse {
+
+  id?: number;
+  name?: string;
+  metricType?: string;
+  thresholdValue?: number;
+  condition?: string;
+  entityType?: string;
+  entityId?: number | null;
+  isActive?: boolean;
+  notificationChannels?: string[];
+  createdAt?: string;
+  updatedAt?: string | null;
+}
+
+export interface RiskAlertUpdate {
+
+  name?: string | null;
+  metricType?: string | null;
+  thresholdValue?: number | null;
+  condition?: string | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  isActive?: boolean | null;
+  notificationChannels?: string[] | null;
+}
+
+export interface RiskDashboardResponse {
+
+  metrics?: RiskMetricsSummary;
+  activeAlerts?: ActiveAlert[];
+  riskHistory?: RiskHistoryPoint[];
+}
+
+export interface RiskHistoryPoint {
+
+  date?: date_type;
+  var95Hist?: number | null;
+  cvar95?: number | null;
+  beta?: number | null;
+}
+
+export interface RiskMetricsHistoryResponse {
+
+  metricsHistory?: RiskHistoryPoint[];
+}
+
+export interface RiskMetricsSummary {
+
+  var95Hist?: number | null;
+  cvar95?: number | null;
+  beta?: number | null;
+}
+
 export interface SortRequest {
 
   sortBy?: string | null;
@@ -596,7 +745,7 @@ export interface StandardResponse {
 
 export interface StockSymbolField {
 
-  symbol?: constr(min_length=6, max_length=6);
+  symbol?: string;
 }
 
 export interface TdxDataRequest {
@@ -609,7 +758,7 @@ export interface TdxDataResponse {
 
   code?: string;
   market?: string;
-  data?: Record<(str, any)[>];
+  data?: Record<string, any>[];
   totalRecords?: number;
 }
 
@@ -642,6 +791,25 @@ export interface TopETFItem {
   volume?: number;
 }
 
+export interface VaRCVaRRequest {
+
+  entityType?: string;
+  entityId?: number;
+  confidenceLevel?: number;
+}
+
+export interface VaRCVaRResult {
+
+  var95Hist?: number | null;
+  var95Param?: number | null;
+  var99Hist?: number | null;
+  cvar95?: number | null;
+  cvar99?: number | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  confidenceLevel?: number | null;
+}
+
 export interface VolumeField {
 
   volume?: number;
@@ -659,8 +827,8 @@ export interface WencaiCustomQueryResponse {
   message?: string;
   queryText?: string;
   totalRecords?: number;
-  results?: Record<(str, any)[>];
-  columns?: str[];
+  results?: Record<string, any>[];
+  columns?: string[];
   fetchTime?: string;
 }
 
@@ -669,7 +837,7 @@ export interface WencaiErrorResponse {
   success?: boolean;
   error?: string;
   message?: string;
-  details?: Record<(str, any) | null>;
+  details?: Record<string, any> | null;
 }
 
 export interface WencaiHistoryItem {
@@ -682,7 +850,7 @@ export interface WencaiHistoryItem {
 export interface WencaiHistoryResponse {
 
   queryName?: string;
-  dateRange?: str[];
+  dateRange?: string[];
   history?: WencaiHistoryItem[];
   totalDays?: number;
 }
@@ -738,7 +906,7 @@ export interface WencaiRefreshResponse {
 
 export interface WencaiResultItem {
 
-  data?: Record<(str, any)>;
+  data?: Record<string, any>;
   fetchTime?: string;
 }
 
@@ -746,8 +914,8 @@ export interface WencaiResultsResponse {
 
   queryName?: string;
   total?: number;
-  results?: Record<(str, any)[>];
-  columns?: str[];
+  results?: Record<string, any>[];
+  columns?: string[];
   latestFetchTime?: string | null;
 }
 

@@ -328,9 +328,7 @@ def generate_wencai_results(count: int) -> List[Dict]:
     return results
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

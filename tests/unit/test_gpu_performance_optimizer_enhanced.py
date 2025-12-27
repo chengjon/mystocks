@@ -229,9 +229,7 @@ class TestGPUPerformanceOptimizer(unittest.TestCase):
                 {
                     "data_id": range(i * batch_size, (i + 1) * batch_size),
                     "value": np.random.rand(batch_size),
-                    "timestamp": pd.date_range(
-                        "2023-01-01", periods=batch_size, freq="1min"
-                    ),
+                    "timestamp": pd.date_range("2023-01-01", periods=batch_size, freq="1min"),
                 }
             )
             test_batches.append(batch)

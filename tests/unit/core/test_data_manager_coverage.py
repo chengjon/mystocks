@@ -94,25 +94,11 @@ class TestDataManagerCoverage:
 
         # 验证路由映射的正确性
         assert dm._ROUTING_MAP[DataClassification.TICK_DATA] == DatabaseTarget.TDENGINE
-        assert (
-            dm._ROUTING_MAP[DataClassification.DAILY_KLINE] == DatabaseTarget.POSTGRESQL
-        )
-        assert (
-            dm._ROUTING_MAP[DataClassification.SYMBOLS_INFO]
-            == DatabaseTarget.POSTGRESQL
-        )
-        assert (
-            dm._ROUTING_MAP[DataClassification.TECHNICAL_INDICATORS]
-            == DatabaseTarget.POSTGRESQL
-        )
-        assert (
-            dm._ROUTING_MAP[DataClassification.ORDER_RECORDS]
-            == DatabaseTarget.POSTGRESQL
-        )
-        assert (
-            dm._ROUTING_MAP[DataClassification.DATA_SOURCE_STATUS]
-            == DatabaseTarget.POSTGRESQL
-        )
+        assert dm._ROUTING_MAP[DataClassification.DAILY_KLINE] == DatabaseTarget.POSTGRESQL
+        assert dm._ROUTING_MAP[DataClassification.SYMBOLS_INFO] == DatabaseTarget.POSTGRESQL
+        assert dm._ROUTING_MAP[DataClassification.TECHNICAL_INDICATORS] == DatabaseTarget.POSTGRESQL
+        assert dm._ROUTING_MAP[DataClassification.ORDER_RECORDS] == DatabaseTarget.POSTGRESQL
+        assert dm._ROUTING_MAP[DataClassification.DATA_SOURCE_STATUS] == DatabaseTarget.POSTGRESQL
 
     def test_route_database_decision_time(self):
         """测试路由决策时间性能目标 (<5ms)"""
@@ -199,9 +185,10 @@ class TestDataManagerCoverage:
         for classification in DataClassification:
             if hasattr(classification, "value"):  # 只测试枚举值
                 target = dm._route_database(classification)
-                assert target in [DatabaseTarget.TDENGINE, DatabaseTarget.POSTGRESQL], (
-                    f"数据分类 {classification} 没有对应的数据库路由"
-                )
+                assert target in [
+                    DatabaseTarget.TDENGINE,
+                    DatabaseTarget.POSTGRESQL,
+                ], f"数据分类 {classification} 没有对应的数据库路由"
 
     def test_performance_metric_recording(self, mock_db_manager):
         """测试性能指标记录"""
@@ -255,9 +242,7 @@ class TestDataManagerIntegration:
         """集成测试设置"""
         with (
             patch("src.core.data_manager.get_data_access") as mock_get_access,
-            patch(
-                "src.core.data_manager.DatabaseTableManager"
-            ) as mock_db_manager_class,
+            patch("src.core.data_manager.DatabaseTableManager") as mock_db_manager_class,
         ):
             mock_access = MagicMock()
             mock_db_manager = MagicMock()

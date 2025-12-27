@@ -189,25 +189,88 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick, watch, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { VideoPlay, Refresh } from '@element-plus/icons-vue'
 import { strategyApi } from '@/api'
 import * as echarts from 'echarts'
+import type { ECharts } from 'echarts'
 
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 回测配置表单
+ */
+interface BacktestConfig {
+  strategy_code: string
+  symbol: string
+  dateRange: string[]
+  initial_capital: number
+  commission_rate: number
+}
+
+/**
+ * 策略定义
+ */
+interface StrategyDefinition {
+  code: string
+  name: string
+  description?: string
+}
+
+/**
+ * 回测结果
+ */
+interface BacktestResult {
+  backtest_id: string
+  strategy_code: string
+  symbol: string
+  start_date: string
+  end_date: string
+  total_return?: number
+  annual_return?: number
+  sharpe_ratio?: number
+  max_drawdown?: number
+  win_rate?: number
+  created_at?: string
+}
+
+/**
+ * 分页信息
+ */
+interface Pagination {
+  page: number
+  pageSize: number
+  total: number
+}
+
+/**
+ * 图表数据
+ */
+interface ChartData {
+  dates?: string[]
+  strategy_returns?: number[]
+  benchmark_returns?: number[]
+}
+
+// ============================================
 // 响应式数据
-const loading = ref(false)
-const running = ref(false)
-const strategies = ref([])
-const results = ref([])
-const detailVisible = ref(false)
-const selectedResult = ref(null)
-const chartData = ref(null)
+// ============================================
 
-let chartInstance = null
+const loading: Ref<boolean> = ref(false)
+const running: Ref<boolean> = ref(false)
+const strategies: Ref<StrategyDefinition[]> = ref([])
+const results: Ref<BacktestResult[]> = ref([])
+const detailVisible: Ref<boolean> = ref(false)
+const selectedResult: Ref<BacktestResult | null> = ref(null)
+const chartData: Ref<ChartData | null> = ref(null)
 
-const configForm = ref({
+let chartInstance: ECharts | null = null
+
+const configForm: Ref<BacktestConfig> = ref({
   strategy_code: '',
   symbol: '',
   dateRange: [],
@@ -215,14 +278,20 @@ const configForm = ref({
   commission_rate: 0.0003
 })
 
-const pagination = ref({
+const pagination: Ref<Pagination> = ref({
   page: 1,
   pageSize: 10,
   total: 0
 })
 
-// 加载策略列表
-const loadStrategies = async () => {
+// ============================================
+// 方法定义
+// ============================================
+
+/**
+ * 加载策略列表
+ */
+const loadStrategies = async (): Promise<void> => {
   try {
     const response = await strategyApi.getDefinitions()
     if (response.data.success) {
@@ -233,8 +302,10 @@ const loadStrategies = async () => {
   }
 }
 
-// 加载回测结果
-const loadResults = async () => {
+/**
+ * 加载回测结果
+ */
+const loadResults = async (): Promise<void> => {
   loading.value = true
   try {
     const params = {
@@ -254,8 +325,10 @@ const loadResults = async () => {
   }
 }
 
-// 运行回测
-const runBacktest = async () => {
+/**
+ * 运行回测
+ */
+const runBacktest = async (): Promise<void> => {
   if (!configForm.value.strategy_code) {
     ElMessage.warning('请选择策略')
     return
@@ -286,7 +359,7 @@ const runBacktest = async () => {
     } else {
       ElMessage.error(response.data.message || '回测失败')
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('运行回测失败:', error)
     ElMessage.error('运行回测失败: ' + (error.response?.data?.detail || error.message))
   } finally {
@@ -294,12 +367,13 @@ const runBacktest = async () => {
   }
 }
 
-// 查看详情
-const viewDetail = async (row) => {
+/**
+ * 查看详情
+ */
+const viewDetail = async (row: BacktestResult): Promise<void> => {
   selectedResult.value = row
   detailVisible.value = true
 
-  // 加载图表数据
   try {
     const response = await strategyApi.getBacktestChartData(row.backtest_id)
     if (response.data.success) {
@@ -312,8 +386,10 @@ const viewDetail = async (row) => {
   }
 }
 
-// 渲染图表
-const renderChart = () => {
+/**
+ * 渲染图表
+ */
+const renderChart = (): void => {
   if (!chartData.value) return
 
   const chartDom = document.getElementById('backtest-chart')
@@ -373,21 +449,32 @@ const renderChart = () => {
     ]
   }
 
-  chartInstance.setOption(option)
+  chartInstance?.setOption(option)
 }
 
-// 导出结果
-const exportResult = (row) => {
+/**
+ * 导出结果
+ */
+const exportResult = (row: BacktestResult): void => {
   ElMessage.info('导出功能开发中')
 }
 
+// ============================================
 // 格式化函数
-const formatPercent = (value) => {
+// ============================================
+
+/**
+ * 格式化百分比
+ */
+const formatPercent = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '-'
   return (value * 100).toFixed(2) + '%'
 }
 
-const formatMoney = (value) => {
+/**
+ * 格式化金额
+ */
+const formatMoney = (value: number): string => {
   if (!value) return '-'
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
@@ -395,21 +482,30 @@ const formatMoney = (value) => {
   }).format(value)
 }
 
-const getReturnClass = (value) => {
+/**
+ * 获取收益样式类
+ */
+const getReturnClass = (value: number | null | undefined): string => {
   if (!value) return ''
   return value > 0 ? 'positive' : value < 0 ? 'negative' : ''
 }
 
-// 监听对话框关闭
-watch(detailVisible, (val) => {
+// ============================================
+// 监听器
+// ============================================
+
+watch(detailVisible, (val: boolean) => {
   if (!val && chartInstance) {
     chartInstance.dispose()
     chartInstance = null
   }
 })
 
+// ============================================
 // 窗口resize处理
-const handleResize = () => {
+// ============================================
+
+const handleResize = (): void => {
   if (chartInstance) {
     chartInstance.resize()
   }

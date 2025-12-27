@@ -119,9 +119,7 @@ class DataQualityMonitor:
                 metrics={"missing_rate": missing_rate, "threshold": threshold},
             )
 
-        logger.info(
-            f"✓ 完整性检查: {table_name} - {check_status} ({missing_rate:.2f}%)"
-        )
+        logger.info(f"✓ 完整性检查: {table_name} - {check_status} ({missing_rate:.2f}%)")
 
         return {
             "check_status": check_status,
@@ -200,9 +198,7 @@ class DataQualityMonitor:
                 },
             )
 
-        logger.info(
-            f"✓ 新鲜度检查: {table_name} - {check_status} ({data_delay_seconds}秒)"
-        )
+        logger.info(f"✓ 新鲜度检查: {table_name} - {check_status} ({data_delay_seconds}秒)")
 
         return {
             "check_status": check_status,
@@ -239,21 +235,15 @@ class DataQualityMonitor:
             threshold = self.DEFAULT_INVALID_RATE_THRESHOLD
 
         # 计算无效率
-        invalid_rate = (
-            (invalid_records / total_records * 100) if total_records > 0 else 0
-        )
+        invalid_rate = (invalid_records / total_records * 100) if total_records > 0 else 0
 
         # 判断检查状态
         if invalid_rate > threshold * 2:
             check_status = "FAIL"
-            check_message = (
-                f"数据准确性严重问题: 无效率 {invalid_rate:.2f}% (阈值: {threshold}%)"
-            )
+            check_message = f"数据准确性严重问题: 无效率 {invalid_rate:.2f}% (阈值: {threshold}%)"
         elif invalid_rate > threshold:
             check_status = "WARNING"
-            check_message = (
-                f"数据准确性偏差: 无效率 {invalid_rate:.2f}% (阈值: {threshold}%)"
-            )
+            check_message = f"数据准确性偏差: 无效率 {invalid_rate:.2f}% (阈值: {threshold}%)"
         else:
             check_status = "PASS"
             check_message = f"数据准确性良好: 无效率 {invalid_rate:.2f}%"
@@ -285,9 +275,7 @@ class DataQualityMonitor:
                 metrics={"invalid_rate": invalid_rate, "threshold": threshold},
             )
 
-        logger.info(
-            f"✓ 准确性检查: {table_name} - {check_status} ({invalid_rate:.2f}%)"
-        )
+        logger.info(f"✓ 准确性检查: {table_name} - {check_status} ({invalid_rate:.2f}%)")
 
         return {
             "check_status": check_status,
@@ -321,13 +309,6 @@ class DataQualityMonitor:
 
             # 构建查询SQL
             # 注意: 这里需要根据实际的监控数据库表结构调整
-            query_sql = """
-            SELECT check_status, check_message, timestamp
-            FROM data_quality_checks
-            WHERE classification = %s AND database_type = %s AND table_name = %s AND check_type = %s
-            ORDER BY timestamp DESC
-            LIMIT 1
-            """
 
             # 执行查询 (这里需要根据实际的数据库访问方式调整)
             # 由于这是一个示例，我们返回模拟数据
@@ -348,9 +329,7 @@ class DataQualityMonitor:
             logger.warning(f"查询检查结果失败: {e}")
             return None
 
-    def generate_quality_report(
-        self, classification: str, database_type: str, table_name: str
-    ) -> Dict[str, Any]:
+    def generate_quality_report(self, classification: str, database_type: str, table_name: str) -> Dict[str, Any]:
         """
         生成数据质量报告
 
@@ -383,12 +362,8 @@ class DataQualityMonitor:
             completeness_result = self._get_latest_check_result(
                 classification, database_type, table_name, "COMPLETENESS"
             )
-            freshness_result = self._get_latest_check_result(
-                classification, database_type, table_name, "FRESHNESS"
-            )
-            accuracy_result = self._get_latest_check_result(
-                classification, database_type, table_name, "ACCURACY"
-            )
+            freshness_result = self._get_latest_check_result(classification, database_type, table_name, "FRESHNESS")
+            accuracy_result = self._get_latest_check_result(classification, database_type, table_name, "ACCURACY")
 
             report["checks"] = {
                 "completeness": completeness_result,
@@ -491,9 +466,7 @@ if __name__ == "__main__":
 
     sys.path.insert(0, ".")
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     print("\n测试DataQualityMonitor...\n")
 

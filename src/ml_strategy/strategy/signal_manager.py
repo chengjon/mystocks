@@ -60,9 +60,7 @@ class SignalManager:
             "last_query_time": None,
         }
 
-    def save_signals(
-        self, signals: pd.DataFrame, strategy_id: int, batch_insert: bool = True
-    ) -> Dict:
+    def save_signals(self, signals: pd.DataFrame, strategy_id: int, batch_insert: bool = True) -> Dict:
         """
         保存策略信号到数据库
 
@@ -104,9 +102,7 @@ class SignalManager:
                 "execution_time": 0,
             }
 
-        self.logger.info(
-            "开始保存信号: 策略ID=%d, 信号数量=%d", strategy_id, len(signals)
-        )
+        self.logger.info("开始保存信号: 策略ID=%d, 信号数量=%d", strategy_id, len(signals))
         start_time = datetime.now()
 
         # 验证必需列
@@ -173,9 +169,7 @@ class SignalManager:
                             len(batch),
                         )
                     except Exception as e:  # pylint: disable=broad-exception-caught
-                        self.logger.error(
-                            "批次 %d 保存失败: %s", i // self.batch_size + 1, e
-                        )
+                        self.logger.error("批次 %d 保存失败: %s", i // self.batch_size + 1, e)
                         failed_count += len(batch)
             else:
                 # 一次性保存
@@ -456,10 +450,7 @@ class SignalManager:
             return False, f"无效的信号类型: {signal['signal']}"
 
         # 验证价格
-        if (
-            not isinstance(signal["entry_price"], (int, float))
-            or signal["entry_price"] <= 0
-        ):
+        if not isinstance(signal["entry_price"], (int, float)) or signal["entry_price"] <= 0:
             return False, f"无效的入场价格: {signal['entry_price']}"
 
         # 验证信号强度

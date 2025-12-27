@@ -195,7 +195,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  
+
   // 多浏览器支持
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -204,7 +204,7 @@ export default defineConfig({
     { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
     { name: 'Mobile Safari', use: { ...devices['iPhone 12'] } },
   ],
-  
+
   // 报告配置
   reporter: [
     ['html'],
@@ -269,7 +269,7 @@ export class DashboardPage extends BasePage {
     const rows = this.favoriteStocksTable.locator('tbody tr');
     const count = await rows.count();
     const data = [];
-    
+
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
       data.push({
@@ -278,7 +278,7 @@ export class DashboardPage extends BasePage {
         change: await row.locator('td:nth-child(4)').textContent()
       });
     }
-    
+
     return data;
   }
 }
@@ -304,7 +304,7 @@ export class PerformanceTester {
     const startTime = Date.now();
     await page.goto(url);
     await page.waitForLoadState('networkidle');
-    
+
     return await page.evaluate(() => {
       const navigation = performance.getEntriesByType('navigation')[0];
       return {
@@ -346,11 +346,11 @@ export class PerformanceTester {
 test('用户登录成功', async ({ page }) => {
   await page.goto('/login');
   await UserAuth.login(page, { username: 'testuser', password: 'password123' });
-  
+
   // 验证登录成功
   await expect(page).toHaveURL('/dashboard');
   await expect(page.locator('[data-testid=welcome-message]')).toBeVisible();
-  
+
   // 截图保存
   await ScreenshotHelper.takeScreenshot(page, 'login-success');
 });

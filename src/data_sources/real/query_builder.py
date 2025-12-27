@@ -74,9 +74,7 @@ class QueryBuilder:
         self._table_name = f"{table} AS {alias}" if alias else table
         return self
 
-    def join(
-        self, table: str, on_condition: str, join_type: str = "INNER"
-    ) -> "QueryBuilder":
+    def join(self, table: str, on_condition: str, join_type: str = "INNER") -> "QueryBuilder":
         """
         添加JOIN
 
@@ -125,9 +123,7 @@ class QueryBuilder:
         condition = f"{field} IN ({placeholders})"
         return self.where(condition, *values)
 
-    def where_between(
-        self, field: str, start_value: Any, end_value: Any
-    ) -> "QueryBuilder":
+    def where_between(self, field: str, start_value: Any, end_value: Any) -> "QueryBuilder":
         """
         添加WHERE BETWEEN条件
 

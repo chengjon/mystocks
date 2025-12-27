@@ -20,15 +20,15 @@
 
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.responses import BaseResponse, ErrorCode, ErrorResponse, error_response, success_response
-from app.core.security import User, check_permission, get_current_user
+from app.core.responses import ErrorCode, error_response, success_response
+from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
     BackupListQueryParams,
     BackupMetadata,
@@ -697,7 +697,7 @@ async def get_recovery_objectives():
     try:
         objectives = recovery_manager.get_recovery_time_objective()
         return success_response(data=objectives, message="恢复目标查询成功")
-    except Exception as e:
+    except Exception:
         return error_response(message="恢复目标查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 

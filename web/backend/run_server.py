@@ -7,9 +7,7 @@ import sys
 import os
 
 # 添加根目录到 Python 路径
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
-)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 # 添加当前目录到 Python 路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,9 +35,7 @@ try:
     print("\n启动服务器...")
     import uvicorn
 
-    uvicorn.run(
-        app, host="0.0.0.0", port=8000, log_level="info"
-    )  # 使用8000端口，根据API文档规范
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")  # 使用8000端口，根据API文档规范
 except Exception as e:
     print(f"启动服务器失败: {e}")
     import traceback

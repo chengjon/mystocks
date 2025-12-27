@@ -58,18 +58,14 @@ class TALibIndicators:
             ValueError: 数据长度不足
         """
         if len(data) < min_length:
-            raise ValueError(
-                f"{name}长度不足: 需要至少{min_length}个数据点，当前仅有{len(data)}个"
-            )
+            raise ValueError(f"{name}长度不足: 需要至少{min_length}个数据点，当前仅有{len(data)}个")
 
     # ===================================
     # 趋势指标 (Trend Indicators)
     # ===================================
 
     @classmethod
-    def calculate_sma(
-        cls, close: Union[np.ndarray, pd.Series], period: int = 20
-    ) -> np.ndarray:
+    def calculate_sma(cls, close: Union[np.ndarray, pd.Series], period: int = 20) -> np.ndarray:
         """
         简单移动平均 (Simple Moving Average)
 
@@ -85,9 +81,7 @@ class TALibIndicators:
         return talib.SMA(close_arr, timeperiod=period)
 
     @classmethod
-    def calculate_ema(
-        cls, close: Union[np.ndarray, pd.Series], period: int = 20
-    ) -> np.ndarray:
+    def calculate_ema(cls, close: Union[np.ndarray, pd.Series], period: int = 20) -> np.ndarray:
         """
         指数移动平均 (Exponential Moving Average)
 
@@ -103,9 +97,7 @@ class TALibIndicators:
         return talib.EMA(close_arr, timeperiod=period)
 
     @classmethod
-    def calculate_wma(
-        cls, close: Union[np.ndarray, pd.Series], period: int = 20
-    ) -> np.ndarray:
+    def calculate_wma(cls, close: Union[np.ndarray, pd.Series], period: int = 20) -> np.ndarray:
         """
         加权移动平均 (Weighted Moving Average)
 
@@ -155,9 +147,7 @@ class TALibIndicators:
     # ===================================
 
     @classmethod
-    def calculate_rsi(
-        cls, close: Union[np.ndarray, pd.Series], period: int = 14
-    ) -> np.ndarray:
+    def calculate_rsi(cls, close: Union[np.ndarray, pd.Series], period: int = 14) -> np.ndarray:
         """
         相对强弱指标 (Relative Strength Index)
 
@@ -244,9 +234,7 @@ class TALibIndicators:
         return talib.CCI(high_arr, low_arr, close_arr, timeperiod=period)
 
     @classmethod
-    def calculate_mom(
-        cls, close: Union[np.ndarray, pd.Series], period: int = 10
-    ) -> np.ndarray:
+    def calculate_mom(cls, close: Union[np.ndarray, pd.Series], period: int = 10) -> np.ndarray:
         """
         动量指标 (Momentum)
 
@@ -290,9 +278,7 @@ class TALibIndicators:
         close_arr = cls._to_numpy(close)
         cls._validate_length(close_arr, period, "收盘价")
 
-        upper, middle, lower = talib.BBANDS(
-            close_arr, timeperiod=period, nbdevup=nbdevup, nbdevdn=nbdevdn, matype=0
-        )
+        upper, middle, lower = talib.BBANDS(close_arr, timeperiod=period, nbdevup=nbdevup, nbdevdn=nbdevdn, matype=0)
         return upper, middle, lower
 
     @classmethod
@@ -327,9 +313,7 @@ class TALibIndicators:
     # ===================================
 
     @classmethod
-    def calculate_obv(
-        cls, close: Union[np.ndarray, pd.Series], volume: Union[np.ndarray, pd.Series]
-    ) -> np.ndarray:
+    def calculate_obv(cls, close: Union[np.ndarray, pd.Series], volume: Union[np.ndarray, pd.Series]) -> np.ndarray:
         """
         能量潮 (On Balance Volume)
 
@@ -559,9 +543,7 @@ if __name__ == "__main__":
     print(f"   柱状图最后值: {test_hist[-1]:.4f}")
 
     print("\n4. 测试布林带")
-    test_upper, test_middle, test_lower = TALibIndicators.calculate_bbands(
-        test_df["close"], 20, 2, 2
-    )
+    test_upper, test_middle, test_lower = TALibIndicators.calculate_bbands(test_df["close"], 20, 2, 2)
     print(f"   上轨最后值: {test_upper[-1]:.2f}")
     print(f"   中轨最后值: {test_middle[-1]:.2f}")
     print(f"   下轨最后值: {test_lower[-1]:.2f}")

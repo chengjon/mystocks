@@ -141,9 +141,7 @@ class SearchPage(BasePage):
 
     def get_applied_filters(self) -> List[str]:
         """获取已应用的筛选"""
-        checkboxes = self.get_elements(
-            f"{self.FILTER_SIDEBAR} input[type='checkbox']:checked"
-        )
+        checkboxes = self.get_elements(f"{self.FILTER_SIDEBAR} input[type='checkbox']:checked")
         return [self.get_attribute(checkbox, "value") for checkbox in checkboxes]
 
     # ============ 排序操作 ============

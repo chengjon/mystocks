@@ -32,9 +32,7 @@ def test_get_all_indicators():
 
     # 测试贵州茅台
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/{symbol}/indicators", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/indicators", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -84,9 +82,7 @@ def test_get_momentum_indicators():
     print_section("测试 4: 获取动量指标")
 
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/{symbol}/momentum", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/momentum", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -110,9 +106,7 @@ def test_get_volatility_indicators():
     print_section("测试 5: 获取波动性指标")
 
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/{symbol}/volatility", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/volatility", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -136,9 +130,7 @@ def test_get_volume_indicators():
     print_section("测试 6: 获取成交量指标")
 
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/{symbol}/volume", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/volume", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -152,9 +144,7 @@ def test_get_trading_signals():
     print_section("测试 7: 获取交易信号")
 
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/{symbol}/signals", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/{symbol}/signals", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:
@@ -170,9 +160,7 @@ def test_get_trading_signals():
         if data["signals"]:
             print("\n具体信号:")
             for sig in data["signals"]:
-                print(
-                    f"  - [{sig['signal'].upper()}] {sig['type']}: 强度 {sig['strength']:.2f}"
-                )
+                print(f"  - [{sig['signal'].upper()}] {sig['type']}: 强度 {sig['strength']:.2f}")
         else:
             print("\n当前无明显交易信号")
 
@@ -225,9 +213,7 @@ def test_batch_indicators():
         print(f"成功获取: {data['count']}/{len(symbols)} 只股票")
 
         for stock in data["data"]:
-            print(
-                f"\n{stock['symbol']}: {stock['latest_price']:.2f} ({stock['latest_date']})"
-            )
+            print(f"\n{stock['symbol']}: {stock['latest_price']:.2f} ({stock['latest_date']})")
             print(f"  指标总数: {stock['total_indicators']}")
 
 
@@ -276,9 +262,7 @@ def test_pattern_detection():
     print_section("测试 12: 形态识别 (预留)")
 
     symbol = "600519"
-    response = requests.get(
-        f"{BASE_URL}/api/technical/patterns/{symbol}", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/technical/patterns/{symbol}", headers=headers)
 
     print(f"Status Code: {response.status_code}")
     if response.status_code == 200:

@@ -125,9 +125,7 @@ class TurtleStrategy(BaseStrategy):
 
         return self.atr(history, atr_period)
 
-    def _calculate_unit_size(
-        self, symbol: str, account_value: float, n_value: float
-    ) -> int:
+    def _calculate_unit_size(self, symbol: str, account_value: float, n_value: float) -> int:
         """
         计算单位大小
 
@@ -336,10 +334,7 @@ class TurtleStrategy(BaseStrategy):
                 # 如果有盈利, 移至保本
                 if current_price > avg_cost:
                     breakeven_stop = avg_cost
-                    self.units[symbol] = [
-                        (price, qty, max(stop, breakeven_stop))
-                        for price, qty, stop in current_units
-                    ]
+                    self.units[symbol] = [(price, qty, max(stop, breakeven_stop)) for price, qty, stop in current_units]
 
             unit_number = len(current_units)
             strength = unit_number * 0.25  # 每个单位25%

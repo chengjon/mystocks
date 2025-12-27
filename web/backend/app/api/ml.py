@@ -3,10 +3,9 @@
 提供模型训练、预测、评估等功能
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import Dict, Any, List
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
 import os
-from pathlib import Path
 
 from app.schemas.ml_schemas import (
     TdxDataRequest,
@@ -24,8 +23,6 @@ from app.schemas.ml_schemas import (
     HyperparameterSearchResponse,
     ModelEvaluationRequest,
     ModelEvaluationResponse,
-    MLResponse,
-    ErrorResponse,
 )
 from app.services.tdx_parser_service import TdxDataService
 from app.services.feature_engineering_service import FeatureEngineeringService
@@ -46,9 +43,7 @@ MODEL_DIR = os.getenv("ML_MODEL_DIR", "./models")
 
 
 @router.post("/tdx/data", response_model=TdxDataResponse)
-async def get_tdx_data(
-    request: TdxDataRequest, current_user: User = Depends(get_current_user)
-):
+async def get_tdx_data(request: TdxDataRequest, current_user: User = Depends(get_current_user)):
     """
     获取通达信股票数据
 
@@ -96,9 +91,7 @@ async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_
 
 
 @router.post("/features/generate", response_model=FeatureGenerationResponse)
-async def generate_features(
-    request: FeatureGenerationRequest, current_user: User = Depends(get_current_user)
-):
+async def generate_features(request: FeatureGenerationRequest, current_user: User = Depends(get_current_user)):
     """
     生成特征数据
 
@@ -140,9 +133,7 @@ async def generate_features(
 
 
 @router.post("/models/train", response_model=ModelTrainResponse)
-async def train_model(
-    request: ModelTrainRequest, current_user: User = Depends(get_current_user)
-):
+async def train_model(request: ModelTrainRequest, current_user: User = Depends(get_current_user)):
     """
     训练预测模型
 
@@ -170,9 +161,7 @@ async def train_model(
         ml_service = MLPredictionService(model_dir=MODEL_DIR)
 
         # 训练模型
-        metrics = ml_service.train(
-            X, y, test_size=request.test_size, model_params=request.model_params
-        )
+        metrics = ml_service.train(X, y, test_size=request.test_size, model_params=request.model_params)
 
         # 保存模型
         ml_service.save_model(request.model_name)
@@ -192,9 +181,7 @@ async def train_model(
 
 
 @router.post("/models/predict", response_model=ModelPredictResponse)
-async def predict_with_model(
-    request: ModelPredictRequest, current_user: User = Depends(get_current_user)
-):
+async def predict_with_model(request: ModelPredictRequest, current_user: User = Depends(get_current_user)):
     """
     使用模型进行预测
 
@@ -209,9 +196,7 @@ async def predict_with_model(
         loaded = ml_service.load_model(request.model_name)
 
         if not loaded:
-            raise HTTPException(
-                status_code=404, detail=f"模型不存在: {request.model_name}"
-            )
+            raise HTTPException(status_code=404, detail=f"模型不存在: {request.model_name}")
 
         # 获取数据
         df = tdx_service.get_stock_data(request.stock_code, request.market)
@@ -268,18 +253,14 @@ async def list_models(current_user: User = Depends(get_current_user)):
         ml_service = MLPredictionService(model_dir=MODEL_DIR)
         models = ml_service.list_saved_models()
 
-        return ModelListResponse(
-            total=len(models), models=[ModelInfo(**model) for model in models]
-        )
+        return ModelListResponse(total=len(models), models=[ModelInfo(**model) for model in models])
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/models/{model_name}", response_model=ModelDetailResponse)
-async def get_model_detail(
-    model_name: str, current_user: User = Depends(get_current_user)
-):
+async def get_model_detail(model_name: str, current_user: User = Depends(get_current_user)):
     """获取模型详情"""
     try:
         ml_service = MLPredictionService(model_dir=MODEL_DIR)
@@ -310,12 +291,8 @@ async def get_model_detail(
 # ==================== 超参数搜索 ====================
 
 
-@router.post(
-    "/models/hyperparameter-search", response_model=HyperparameterSearchResponse
-)
-async def hyperparameter_search(
-    request: HyperparameterSearchRequest, current_user: User = Depends(get_current_user)
-):
+@router.post("/models/hyperparameter-search", response_model=HyperparameterSearchResponse)
+async def hyperparameter_search(request: HyperparameterSearchRequest, current_user: User = Depends(get_current_user)):
     """
     超参数搜索
 
@@ -342,9 +319,7 @@ async def hyperparameter_search(
         ml_service = MLPredictionService(model_dir=MODEL_DIR)
 
         # 执行超参数搜索
-        result = ml_service.hyperparameter_search(
-            X, y, param_grid=request.param_grid, cv=request.cv
-        )
+        result = ml_service.hyperparameter_search(X, y, param_grid=request.param_grid, cv=request.cv)
 
         return HyperparameterSearchResponse(
             success=True,
@@ -363,9 +338,7 @@ async def hyperparameter_search(
 
 
 @router.post("/models/evaluate", response_model=ModelEvaluationResponse)
-async def evaluate_model(
-    request: ModelEvaluationRequest, current_user: User = Depends(get_current_user)
-):
+async def evaluate_model(request: ModelEvaluationRequest, current_user: User = Depends(get_current_user)):
     """
     评估模型性能
 
@@ -379,9 +352,7 @@ async def evaluate_model(
         loaded = ml_service.load_model(request.model_name)
 
         if not loaded:
-            raise HTTPException(
-                status_code=404, detail=f"模型不存在: {request.model_name}"
-            )
+            raise HTTPException(status_code=404, detail=f"模型不存在: {request.model_name}")
 
         # 获取数据
         df = tdx_service.get_stock_data(request.stock_code, request.market)

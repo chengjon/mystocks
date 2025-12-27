@@ -14,7 +14,7 @@ from .exceptions import DatabaseConnectionError, DatabaseOperationError
 
 # 导入内存管理
 try:
-    from .memory_manager import get_memory_monitor, get_memory_stats
+    from .memory_manager import get_memory_stats
 
     MEMORY_MANAGEMENT_AVAILABLE = True
 except ImportError:
@@ -212,9 +212,7 @@ class DatabaseConnectionPool:
                     active_connections=self._stats["active_connections"],
                 )
 
-    async def execute_query(
-        self, query: str, params: tuple = None, timeout: int = 30
-    ) -> list:
+    async def execute_query(self, query: str, params: tuple = None, timeout: int = 30) -> list:
         """
         执行查询语句
 
@@ -257,9 +255,7 @@ class DatabaseConnectionPool:
                     original_exception=e,
                 )
 
-    async def execute_command(
-        self, command: str, params: tuple = None, timeout: int = 30
-    ) -> str:
+    async def execute_command(self, command: str, params: tuple = None, timeout: int = 30) -> str:
         """
         执行命令语句
 
@@ -314,14 +310,13 @@ class DatabaseConnectionPool:
             "idle_connections": self.pool.get_idle_size() if self.pool else 0,
             "active_connections": self._stats["active_connections"],
             "pool_hit_rate": (
-                self._stats["pool_hits"]
-                / (self._stats["pool_hits"] + self._stats["pool_misses"])
-            )
-            if (self._stats["pool_hits"] + self._stats["pool_misses"]) > 0
-            else 0,
-            "error_rate": (self._stats["query_errors"] / self._stats["total_queries"])
-            if self._stats["total_queries"] > 0
-            else 0,
+                (self._stats["pool_hits"] / (self._stats["pool_hits"] + self._stats["pool_misses"]))
+                if (self._stats["pool_hits"] + self._stats["pool_misses"]) > 0
+                else 0
+            ),
+            "error_rate": (
+                (self._stats["query_errors"] / self._stats["total_queries"]) if self._stats["total_queries"] > 0 else 0
+            ),
         }
 
     async def health_check(self) -> bool:
@@ -354,9 +349,7 @@ class DatabaseConnectionPool:
                 "timestamp": time.time(),
                 "event_type": event_type,
                 "process_memory_mb": memory_stats["current"]["process_memory_mb"],
-                "system_memory_percent": memory_stats["current"][
-                    "system_memory_percent"
-                ],
+                "system_memory_percent": memory_stats["current"]["system_memory_percent"],
                 "active_objects": memory_stats["current"]["active_objects"],
                 "total_objects": memory_stats["current"]["total_objects"],
                 "resource_manager_stats": memory_stats["resource_manager"],
@@ -368,9 +361,7 @@ class DatabaseConnectionPool:
 
             # 保持快照数量在合理范围内
             if len(self._stats["memory_snapshots"]) > 1000:
-                self._stats["memory_snapshots"] = self._stats["memory_snapshots"][
-                    -1000:
-                ]
+                self._stats["memory_snapshots"] = self._stats["memory_snapshots"][-1000:]
 
             # 记录异常内存使用
             current_memory = snapshot["process_memory_mb"]
@@ -405,11 +396,7 @@ class DatabaseConnectionPool:
             if len(snapshots) > 1:
                 first_memory = snapshots[0]["process_memory_mb"]
                 last_memory = snapshots[-1]["process_memory_mb"]
-                memory_growth = (
-                    ((last_memory - first_memory) / first_memory) * 100
-                    if first_memory > 0
-                    else 0
-                )
+                memory_growth = ((last_memory - first_memory) / first_memory) * 100 if first_memory > 0 else 0
             else:
                 memory_growth = 0
 
@@ -417,9 +404,7 @@ class DatabaseConnectionPool:
             connection_correlation = []
             for snapshot in snapshots:
                 correlation = {
-                    "active_connections": snapshot.get("connection_pool_stats", {}).get(
-                        "active_connections", 0
-                    ),
+                    "active_connections": snapshot.get("connection_pool_stats", {}).get("active_connections", 0),
                     "memory_mb": snapshot["process_memory_mb"],
                     "timestamp": snapshot["timestamp"],
                 }
@@ -461,11 +446,7 @@ class DatabaseConnectionPool:
             sum_xy = sum(x * y for x, y in zip(x_values, memory_trend))
             sum_x2 = sum(x * x for x in x_values)
 
-            slope = (
-                (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
-                if n > 1
-                else 0
-            )
+            slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x) if n > 1 else 0
 
             # 检测异常
             indicators = {
@@ -483,22 +464,18 @@ class DatabaseConnectionPool:
 
             # 检测连接泄漏
             active_connections = [
-                s.get("connection_pool_stats", {}).get("active_connections", 0)
-                for s in recent_snapshots
+                s.get("connection_pool_stats", {}).get("active_connections", 0) for s in recent_snapshots
             ]
             if active_connections and len(active_connections) > 10:
                 # 如果连接数减少但内存仍在增加，可能是连接泄漏
                 recent_connections = active_connections[-10:]
                 decreasing_connections = all(
-                    recent_connections[i] >= recent_connections[i + 1]
-                    for i in range(len(recent_connections) - 1)
+                    recent_connections[i] >= recent_connections[i + 1] for i in range(len(recent_connections) - 1)
                 )
 
                 if decreasing_connections and slope > 0.05:
                     indicators["connection_leak_suspected"] = True
-                    indicators["recommendation"] = (
-                        "Investigate potential connection leak"
-                    )
+                    indicators["recommendation"] = "Investigate potential connection leak"
 
             return indicators
 
@@ -565,9 +542,7 @@ class DatabaseConnectionManager:
             await self.initialize()
         return self.pool.execute_query(query, params, timeout)
 
-    async def execute_command(
-        self, command: str, params: tuple = None, timeout: int = 30
-    ):
+    async def execute_command(self, command: str, params: tuple = None, timeout: int = 30):
         """执行命令"""
         if self.pool is None:
             await self.initialize()

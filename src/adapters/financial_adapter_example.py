@@ -85,9 +85,7 @@ def main():
 
     # 示例6: 获取指数成分股
     print("\n--- 示例6: 获取指数成分股 ---")
-    components = financial_ds.get_index_components(
-        index_symbol
-    )  # 也可以使用指数名称如"沪深300"
+    components = financial_ds.get_index_components(index_symbol)  # 也可以使用指数名称如"沪深300"
     if not components.empty:
         print(f"成功获取到{len(components)}个指数成分股")
         print("前10个成分股:")

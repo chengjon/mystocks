@@ -46,14 +46,10 @@ class SimpleMockDataSource:
             "source": self.name,
         }
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """模拟获取日线数据"""
         self.call_count += 1
-        self.last_call_args.update(
-            {"symbol": symbol, "start_date": start_date, "end_date": end_date}
-        )
+        self.last_call_args.update({"symbol": symbol, "start_date": start_date, "end_date": end_date})
 
         if self.should_fail:
             return pd.DataFrame()
@@ -70,16 +66,13 @@ class SimpleMockDataSource:
             "high": [base_price + 1.0 + i * 0.1 for i in range(len(date_range))],
             "low": [base_price - 0.5 + i * 0.1 for i in range(len(date_range))],
             "volume": [
-                1000000 + i * 10000 if self.name == "tdx" else 1500000 + i * 15000
-                for i in range(len(date_range))
+                1000000 + i * 10000 if self.name == "tdx" else 1500000 + i * 15000 for i in range(len(date_range))
             ],
             "source": self.name,
         }
         return pd.DataFrame(data)
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """模拟获取指数日线数据"""
         return self.get_stock_daily(symbol, start_date, end_date)
 
@@ -118,9 +111,7 @@ class SimpleMockDataSource:
             }
         )
 
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         """获取新闻数据"""
         return [
             {
@@ -311,9 +302,7 @@ class TestDataSourceManagerFixed:
         manager.register_source("tdx", tdx_source)
 
         # 使用指定数据源获取日线数据
-        result = manager.get_stock_daily(
-            "600519", "2024-01-01", "2024-01-05", source="tdx"
-        )
+        result = manager.get_stock_daily("600519", "2024-01-01", "2024-01-05", source="tdx")
 
         # 验证结果
         assert isinstance(result, pd.DataFrame)

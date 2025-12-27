@@ -6,7 +6,6 @@ Exceptions 简化但有效的Phase 6测试套件
 """
 
 import sys
-import os
 import time
 from pathlib import Path
 import pytest
@@ -316,7 +315,7 @@ class TestExceptionScenarios:
 
     def test_nested_exception_chain(self):
         """测试嵌套异常链"""
-        from src.core.exceptions import NetworkError, DataFetchError
+        from src.core.exceptions import DataFetchError
 
         try:
             try:

@@ -36,9 +36,7 @@ class MockDataProcessor:
 
         return result
 
-    def compute_features(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """模拟特征计算"""
         features = {}
 
@@ -48,9 +46,7 @@ class MockDataProcessor:
                 # 计算平均值
                 if historical_data:
                     values = [item.get("value", 0) for item in historical_data]
-                    features[feature_type] = (
-                        sum(values) / len(values) if values else 0.0
-                    )
+                    features[feature_type] = sum(values) / len(values) if values else 0.0
                 else:
                     features[feature_type] = 0.0
             elif feature_type == "count":
@@ -131,9 +127,7 @@ class TestIDataProcessingInterfaces:
 
         # 验证是抽象方法
         assert inspect.isfunction(IDataProcessor.load_and_preprocess)
-        assert getattr(
-            IDataProcessor.load_and_preprocess, "__isabstractmethod__", False
-        )
+        assert getattr(IDataProcessor.load_and_preprocess, "__isabstractmethod__", False)
 
     def test_mock_implementation_inheritance(self):
         """测试Mock实现继承接口"""
@@ -141,17 +135,11 @@ class TestIDataProcessingInterfaces:
 
         # 创建继承接口的实现类
         class TestProcessor(IDataProcessor):
-            def process_batch(
-                self, batch_data: List[Dict[str, Any]]
-            ) -> List[Dict[str, Any]]:
+            def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 return MockDataProcessor().process_batch(batch_data)
 
-            def compute_features(
-                self, historical_data: List[Dict], feature_types: List[str]
-            ) -> Dict[str, float]:
-                return MockDataProcessor().compute_features(
-                    historical_data, feature_types
-                )
+            def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
+                return MockDataProcessor().compute_features(historical_data, feature_types)
 
             def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
                 return MockDataProcessor().load_and_preprocess(data)
@@ -257,17 +245,11 @@ class TestMockDataProcessorImplementation:
 
         # 创建继承接口的实现类
         class TestProcessor(IDataProcessor):
-            def process_batch(
-                self, batch_data: List[Dict[str, Any]]
-            ) -> List[Dict[str, Any]]:
+            def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 return MockDataProcessor().process_batch(batch_data)
 
-            def compute_features(
-                self, historical_data: List[Dict], feature_types: List[str]
-            ) -> Dict[str, float]:
-                return MockDataProcessor().compute_features(
-                    historical_data, feature_types
-                )
+            def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
+                return MockDataProcessor().compute_features(historical_data, feature_types)
 
             def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
                 return MockDataProcessor().load_and_preprocess(data)
@@ -276,26 +258,18 @@ class TestMockDataProcessorImplementation:
 
         # 验证继承关系
         assert isinstance(processor, IDataProcessor)
-        assert (
-            isinstance(processor, MockDataProcessor) is False
-        )  # 不是MockDataProcessor的实例
+        assert isinstance(processor, MockDataProcessor) is False  # 不是MockDataProcessor的实例
 
     def test_process_batch_implementation(self):
         """测试process_batch实现"""
         from gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
-            def process_batch(
-                self, batch_data: List[Dict[str, Any]]
-            ) -> List[Dict[str, Any]]:
+            def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 return MockDataProcessor().process_batch(batch_data)
 
-            def compute_features(
-                self, historical_data: List[Dict], feature_types: List[str]
-            ) -> Dict[str, float]:
-                return MockDataProcessor().compute_features(
-                    historical_data, feature_types
-                )
+            def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
+                return MockDataProcessor().compute_features(historical_data, feature_types)
 
             def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
                 return MockDataProcessor().load_and_preprocess(data)
@@ -323,17 +297,11 @@ class TestMockDataProcessorImplementation:
         from gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
-            def process_batch(
-                self, batch_data: List[Dict[str, Any]]
-            ) -> List[Dict[str, Any]]:
+            def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 return MockDataProcessor().process_batch(batch_data)
 
-            def compute_features(
-                self, historical_data: List[Dict], feature_types: List[str]
-            ) -> Dict[str, float]:
-                return MockDataProcessor().compute_features(
-                    historical_data, feature_types
-                )
+            def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
+                return MockDataProcessor().compute_features(historical_data, feature_types)
 
             def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
                 return MockDataProcessor().load_and_preprocess(data)
@@ -368,17 +336,11 @@ class TestMockDataProcessorImplementation:
         import pandas as pd
 
         class TestProcessor(IDataProcessor):
-            def process_batch(
-                self, batch_data: List[Dict[str, Any]]
-            ) -> List[Dict[str, Any]]:
+            def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 return MockDataProcessor().process_batch(batch_data)
 
-            def compute_features(
-                self, historical_data: List[Dict], feature_types: List[str]
-            ) -> Dict[str, float]:
-                return MockDataProcessor().compute_features(
-                    historical_data, feature_types
-                )
+            def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
+                return MockDataProcessor().compute_features(historical_data, feature_types)
 
             def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
                 return MockDataProcessor().load_and_preprocess(data)
@@ -398,9 +360,7 @@ class TestMockDataProcessorImplementation:
         assert result["metadata"]["columns"] == 0
 
         # 测试有数据
-        test_df = pd.DataFrame(
-            {"id": [1, 2, 3], "name": ["A", "B", "C"], "value": [10, 20, 30]}
-        )
+        test_df = pd.DataFrame({"id": [1, 2, 3], "name": ["A", "B", "C"], "value": [10, 20, 30]})
         result = processor.load_and_preprocess(test_df)
 
         assert "data" in result

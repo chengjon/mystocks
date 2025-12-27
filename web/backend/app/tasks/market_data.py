@@ -144,9 +144,7 @@ def _fetch_stock_data_with_retry() -> int:
     Raises:
         DataFetchError: 所有数据源都失败
     """
-    last_exception: Union[
-        NetworkError, ServiceError, DataFetchError, DataValidationError, None
-    ] = None
+    last_exception: Union[NetworkError, ServiceError, DataFetchError, DataValidationError, None] = None
 
     for source in STOCK_DATA_SOURCES:
         for attempt in range(MAX_RETRIES):
@@ -174,9 +172,7 @@ def _fetch_stock_data_with_retry() -> int:
             except (DataFetchError, DataValidationError) as e:
                 # 数据错误，尝试下一个源而不重试
                 last_exception = e
-                logger.warning(
-                    f"Data error from {source}, trying next source: {str(e)}"
-                )
+                logger.warning(f"Data error from {source}, trying next source: {str(e)}")
                 break
 
     # 所有数据源和重试都失败
@@ -259,9 +255,7 @@ def _fetch_etf_data_with_retry() -> int:
     Raises:
         DataFetchError: 所有数据源都失败
     """
-    last_exception: Union[
-        NetworkError, ServiceError, DataFetchError, DataValidationError, None
-    ] = None
+    last_exception: Union[NetworkError, ServiceError, DataFetchError, DataValidationError, None] = None
 
     for source in ETF_DATA_SOURCES:
         for attempt in range(MAX_RETRIES):
@@ -285,9 +279,7 @@ def _fetch_etf_data_with_retry() -> int:
 
             except (DataFetchError, DataValidationError) as e:
                 last_exception = e
-                logger.warning(
-                    f"Data error from {source} for ETF, trying next source: {str(e)}"
-                )
+                logger.warning(f"Data error from {source} for ETF, trying next source: {str(e)}")
                 break
 
     if last_exception:
@@ -377,9 +369,7 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
         # 判断整体状态
         if result["errors"]:
             result["status"] = (
-                "partial_success"
-                if (result["stocks_fetched"] > 0 or result["etfs_fetched"] > 0)
-                else "failed"
+                "partial_success" if (result["stocks_fetched"] > 0 or result["etfs_fetched"] > 0) else "failed"
             )
         else:
             result["status"] = "success"

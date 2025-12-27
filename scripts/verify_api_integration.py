@@ -6,7 +6,6 @@ API集成验证脚本
 """
 
 import requests
-import json
 from datetime import datetime
 from typing import Dict, Any
 
@@ -129,14 +128,14 @@ def main():
         for name, endpoint, result in results:
             if name == "市场概览" and result['status'] == 'success':
                 data = result['data'].get('data', {})
-                print(f"市场统计:")
+                print("市场统计:")
                 print(f"  总股票数: {data.get('market_stats', {}).get('total_stocks', 'N/A')}")
                 print(f"  上涨股票: {data.get('market_stats', {}).get('rising_stocks', 'N/A')}")
                 print(f"  下跌股票: {data.get('market_stats', {}).get('falling_stocks', 'N/A')}")
 
                 top_etfs = data.get('top_etfs', [])
                 if top_etfs:
-                    print(f"\n  前3个ETF:")
+                    print("\n  前3个ETF:")
                     for i, etf in enumerate(top_etfs[:3], 1):
                         print(f"    {i}. {etf.get('name')} ({etf.get('symbol')})")
                         print(f"       价格: {etf.get('latest_price')} | 涨跌幅: {etf.get('change_percent')}%")

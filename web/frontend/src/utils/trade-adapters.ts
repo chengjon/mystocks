@@ -305,7 +305,7 @@ export class TradeAdapter {
       'cash': '#795548',
       'other': '#9E9E9E'
     }
-    return colors[category?.toLowerCase() || 'other'
+    return colors[category?.toLowerCase() || 'other']
   }
 
   /**

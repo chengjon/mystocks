@@ -135,9 +135,7 @@ try:
     )
 
     print(f"  数据量: {len(large_data)}条")
-    print(
-        f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB"
-    )
+    print(f"  数据大小: {large_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
     print(f"  唯一标的: {large_data['symbol'].nunique()}个")
 
     print("✅ 大批量数据准备成功\n")

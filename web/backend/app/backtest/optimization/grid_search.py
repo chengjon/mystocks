@@ -109,9 +109,7 @@ class GridSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info(
-            f"开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}"
-        )
+        logger.info(f"开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}")
 
         start_time = time.time()
 
@@ -144,15 +142,9 @@ class GridSearchOptimizer(BaseOptimizer):
             # 日志记录
             if (idx + 1) % 10 == 0 or idx == 0:
                 score = result.get_score(self.objective)
-                best_score = (
-                    self.best_result.get_score(self.objective)
-                    if self.best_result
-                    else 0
-                )
+                best_score = self.best_result.get_score(self.objective) if self.best_result else 0
                 logger.info(
-                    f"网格搜索进度: {idx + 1}/{total} "
-                    f"当前{self.objective}={score:.4f} "
-                    f"最佳={best_score:.4f}"
+                    f"网格搜索进度: {idx + 1}/{total} " f"当前{self.objective}={score:.4f} " f"最佳={best_score:.4f}"
                 )
 
             # 早停检查
@@ -160,14 +152,10 @@ class GridSearchOptimizer(BaseOptimizer):
                 if self.best_result:
                     best_score = self.best_result.get_score(self.objective)
                     if self.maximize and best_score >= early_stop_threshold:
-                        logger.info(
-                            f"早停触发: 已达到目标 {best_score:.4f} >= {early_stop_threshold}"
-                        )
+                        logger.info(f"早停触发: 已达到目标 {best_score:.4f} >= {early_stop_threshold}")
                         break
                     elif not self.maximize and best_score <= early_stop_threshold:
-                        logger.info(
-                            f"早停触发: 已达到目标 {best_score:.4f} <= {early_stop_threshold}"
-                        )
+                        logger.info(f"早停触发: 已达到目标 {best_score:.4f} <= {early_stop_threshold}")
                         break
 
         total_time = time.time() - start_time
@@ -209,10 +197,7 @@ class GridSearchOptimizer(BaseOptimizer):
                 value_scores[value].append(score)
 
             # 计算每个值的平均得分
-            sensitivity[param_name] = {
-                str(value): sum(scores) / len(scores)
-                for value, scores in value_scores.items()
-            }
+            sensitivity[param_name] = {str(value): sum(scores) / len(scores) for value, scores in value_scores.items()}
 
         return sensitivity
 
@@ -280,8 +265,6 @@ class GridSearchOptimizer(BaseOptimizer):
         distributions = {}
         for space in self.parameter_spaces:
             param_name = space.name
-            distributions[param_name] = [
-                r.parameters.get(param_name) for r in top_results
-            ]
+            distributions[param_name] = [r.parameters.get(param_name) for r in top_results]
 
         return distributions

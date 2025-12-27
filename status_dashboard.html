@@ -138,10 +138,10 @@
             const indicator = document.getElementById(`${service}-indicator`);
             const statusText = document.getElementById(`${service}-status`);
             const card = document.getElementById(`${service}-card`);
-            
+
             indicator.className = `status-indicator status-${status}`;
             statusText.textContent = text;
-            
+
             card.className = `service-card status-${status === 'running' ? 'good' : 'bad'}`;
         }
 
@@ -149,7 +149,7 @@
             try {
                 const response = await fetch('http://localhost:3101/status');
                 const data = await response.json();
-                
+
                 const metricsHtml = `
                     <div class="metric-item">
                         <span>CPU使用率</span>
@@ -172,7 +172,7 @@
                         <span>${new Date(data.timestamp).toLocaleString()}</span>
                     </div>
                 `;
-                
+
                 document.getElementById('metrics-content').innerHTML = metricsHtml;
             } catch (error) {
                 document.getElementById('metrics-content').innerHTML = '<p>无法加载指标数据</p>';
@@ -184,17 +184,17 @@
             await checkService('http://localhost:3000', 'frontend');
             await checkService('http://localhost:8000/health', 'backend');
             await checkService('http://localhost:3101/status', 'monitor');
-            
+
             // 检查数据库（简化版）
             updateServiceStatus('database', 'running', 'PostgreSQL连接正常');
-            
+
             // 加载系统指标
             await loadMetrics();
         }
 
         // 页面加载时自动刷新状态
         window.onload = refreshStatus;
-        
+
         // 每30秒自动刷新
         setInterval(refreshStatus, 30000);
     </script>

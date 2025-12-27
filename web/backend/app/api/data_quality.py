@@ -3,15 +3,12 @@
 提供数据源状态、健康检查、质量指标等监控信息
 """
 
-import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
-from statistics import mean
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException, Query
 
 from app.core.responses import create_error_response, create_success_response
 from app.services.data_quality_monitor import get_data_quality_monitor, monitor_data_quality

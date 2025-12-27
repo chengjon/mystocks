@@ -57,9 +57,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
                 await self._warmup_gpu()
 
                 self.is_initialized = True
-                logger.info(
-                    f"TransformKernelEngine initialized on device {self.config.device_id}"
-                )
+                logger.info(f"TransformKernelEngine initialized on device {self.config.device_id}")
                 return True
             else:
                 logger.warning("CuPy not available, falling back to NumPy")
@@ -100,9 +98,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             error_message="Transform kernels do not support matrix operations",
         )
 
-    async def execute_transform_operation(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def execute_transform_operation(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """执行数据变换"""
         if not self.is_initialized:
             await self.initialize()
@@ -143,8 +139,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Transform operation {config.operation_type.value} "
-                    f"completed in {execution_time:.2f}ms"
+                    f"Transform operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -154,13 +149,9 @@ class TransformKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             logger.error(f"Error executing transform operation: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=execution_time, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
-    async def _execute_transform_kernel(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def _execute_transform_kernel(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """执行数据变换内核"""
         try:
             if CUPY_AVAILABLE and not self._should_use_cpu_fallback(data, config):
@@ -172,13 +163,9 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             logger.error(f"Transform kernel execution failed: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=0.0, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
-    def _should_use_cpu_fallback(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> bool:
+    def _should_use_cpu_fallback(self, data: np.ndarray, config: TransformConfig) -> bool:
         """判断是否应该使用CPU回退"""
         # 小数据集使用CPU可能更快
         if data.size < 10000:  # 小于10k元素
@@ -186,17 +173,14 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
         # 某些操作可能CPU更高效
         if (
-            config.operation_type
-            in [TransformOperationType.DIFFERENCE, TransformOperationType.RETURN]
+            config.operation_type in [TransformOperationType.DIFFERENCE, TransformOperationType.RETURN]
             and data.size < 100000
         ):
             return True
 
         return False
 
-    async def _execute_gpu_transform_kernel(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def _execute_gpu_transform_kernel(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """使用GPU执行数据变换"""
         start_time = time.time()
 
@@ -232,9 +216,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             elif config.operation_type == TransformOperationType.FFT:
                 result_gpu = self._gpu_fft(gpu_data, config)
             else:
-                raise ValueError(
-                    f"Unsupported transform operation: {config.operation_type}"
-                )
+                raise ValueError(f"Unsupported transform operation: {config.operation_type}")
 
             # 等待GPU完成
             cp.cuda.Stream.null.synchronize()
@@ -247,7 +229,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             try:
                 if isinstance(result_gpu, cp.ndarray):
                     result_gpu = None  # 显式释放
-            except:
+            except Exception:
                 pass
             finally:
                 if isinstance(gpu_data, cp.ndarray):
@@ -274,9 +256,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             # 回退到CPU
             return await self._execute_cpu_transform_kernel(data, config)
 
-    async def _execute_cpu_transform_kernel(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def _execute_cpu_transform_kernel(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """使用CPU执行数据变换"""
         start_time = time.time()
 
@@ -305,9 +285,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             elif config.operation_type == TransformOperationType.FFT:
                 result = self._cpu_fft(data, config)
             else:
-                raise ValueError(
-                    f"Unsupported transform operation: {config.operation_type}"
-                )
+                raise ValueError(f"Unsupported transform operation: {config.operation_type}")
 
             execution_time = (time.time() - start_time) * 1000
 
@@ -327,9 +305,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             logger.error(f"CPU transform kernel execution failed: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=0.0, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     def _gpu_normalize(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """GPU数据归一化"""
@@ -343,9 +319,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
         std = cp.std(data, axis=0, keepdims=True)
         return (data - mean) / std
 
-    def _gpu_log_transform(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _gpu_log_transform(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """GPU对数变换"""
         return cp.log1p(cp.abs(data)) * cp.sign(data)
 
@@ -369,9 +343,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
         # 计算相关系数矩阵
         return cp.dot(normalized.T, normalized) / (data.shape[0] - 1)
 
-    def _gpu_rolling_mean(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _gpu_rolling_mean(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """GPU滚动平均"""
         return self._gpu_rolling_operation(data, config.window_size, cp.mean)
 
@@ -379,16 +351,12 @@ class TransformKernelEngine(StandardizedKernelInterface):
         """GPU滚动标准差"""
         return self._gpu_rolling_operation(data, config.window_size, cp.std)
 
-    def _gpu_exponential_ma(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _gpu_exponential_ma(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """GPU指数移动平均"""
         alpha = 2.0 / (config.window_size + 1) if config.window_size else 0.1
         return self._gpu_exponential_smoothing(data, alpha)
 
-    def _gpu_rolling_operation(
-        self, data: np.ndarray, window_size: int, operation
-    ) -> np.ndarray:
+    def _gpu_rolling_operation(self, data: np.ndarray, window_size: int, operation) -> np.ndarray:
         """GPU滚动操作"""
         result = cp.zeros(data.shape, dtype=data.dtype)
         for i in range(window_size, data.shape[0]):
@@ -417,9 +385,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
         std = np.std(data, axis=0, keepdims=True)
         return (data - mean) / std
 
-    def _cpu_log_transform(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _cpu_log_transform(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """CPU对数变换"""
         return np.log1p(np.abs(data)) * np.sign(data)
 
@@ -443,9 +409,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
         # 计算相关系数矩阵
         return np.dot(normalized.T, normalized) / (data.shape[0] - 1)
 
-    def _cpu_rolling_mean(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _cpu_rolling_mean(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """CPU滚动平均"""
         return self._cpu_rolling_operation(data, config.window_size, np.mean)
 
@@ -453,16 +417,12 @@ class TransformKernelEngine(StandardizedKernelInterface):
         """CPU滚动标准差"""
         return self._cpu_rolling_operation(data, config.window_size, np.std)
 
-    def _cpu_exponential_ma(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> np.ndarray:
+    def _cpu_exponential_ma(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:
         """CPU指数移动平均"""
         alpha = 2.0 / (config.window_size + 1) if config.window_size else 0.1
         return self._cpu_exponential_smoothing(data, alpha)
 
-    def _cpu_rolling_operation(
-        self, data: np.ndarray, window_size: int, operation
-    ) -> np.ndarray:
+    def _cpu_rolling_operation(self, data: np.ndarray, window_size: int, operation) -> np.ndarray:
         """CPU滚动操作"""
         result = np.zeros(data.shape, dtype=data.dtype)
         for i in range(window_size, data.shape[0]):
@@ -478,9 +438,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             result[i] = alpha * data[i] + (1 - alpha) * result[i - 1]
         return result
 
-    async def execute_inference_operation(
-        self, data: np.ndarray, config: Any
-    ) -> KernelExecutionResult:
+    async def execute_inference_operation(self, data: np.ndarray, config: Any) -> KernelExecutionResult:
         """数据变换内核不支持推理操作"""
         return KernelExecutionResult(
             success=False,
@@ -488,9 +446,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             error_message="Transform kernels do not support inference operations",
         )
 
-    async def batch_execute(
-        self, operations: list, config: Optional[KernelConfig] = None
-    ) -> list:
+    async def batch_execute(self, operations: list, config: Optional[KernelConfig] = None) -> list:
         """批量执行数据变换"""
         results = []
         for op_data in operations:
@@ -499,9 +455,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
                 result = await self.execute_transform_operation(data, op_config)
             else:
                 # 使用默认配置
-                default_config = TransformConfig(
-                    operation_type=TransformOperationType.NORMALIZE
-                )
+                default_config = TransformConfig(operation_type=TransformOperationType.NORMALIZE)
                 result = await self.execute_transform_operation(data, default_config)
             results.append(result)
         return results
@@ -533,9 +487,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             "performance_characteristics": self._get_operation_characteristics(op_type),
         }
 
-    def _get_operation_characteristics(
-        self, operation_type: Optional[TransformOperationType]
-    ) -> Dict[str, Any]:
+    def _get_operation_characteristics(self, operation_type: Optional[TransformOperationType]) -> Dict[str, Any]:
         """获取操作性能特征"""
         if operation_type is None:
             return {}
@@ -606,8 +558,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             "total_execution_time_ms": self.stats["total_execution_time"],
             "average_execution_time_ms": avg_time,
             "cache_hits": self.stats["cache_hits"],
-            "cpu_fallback_rate": self.stats["fallback_to_cpu"]
-            / max(1, self.stats["total_operations"]),
+            "cpu_fallback_rate": self.stats["fallback_to_cpu"] / max(1, self.stats["total_operations"]),
             "gpu_acceleration_available": CUPY_AVAILABLE,
         }
 

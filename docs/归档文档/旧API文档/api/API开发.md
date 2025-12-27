@@ -53,7 +53,7 @@ const UserTable = () => {
   const handlePageChange = (page) => fetchUsers({ page });
 
   return (
-    <Table 
+    <Table
       dataSource={users} // 直接用状态数据
       loading={loading}
       onPageChange={handlePageChange}
@@ -88,16 +88,16 @@ const CommonList = ({ apiFn, params, columns }) => {
 };
 
 // 使用时：用户列表
-<CommonList 
-  apiFn={getUsers} 
-  params={{ role: 'admin' }} 
-  columns={userColumns} 
+<CommonList
+  apiFn={getUsers}
+  params={{ role: 'admin' }}
+  columns={userColumns}
 />
 // 订单列表
-<CommonList 
-  apiFn={getOrders} 
-  params={{ status: 'paid' }} 
-  columns={orderColumns} 
+<CommonList
+  apiFn={getOrders}
+  params={{ status: 'paid' }}
+  columns={orderColumns}
 />
 状态联动与缓存：
 多个组件依赖同一 API 数据时（如 “用户列表” 和 “用户统计卡片”），通过状态库共享数据，避免重复请求。
@@ -229,7 +229,7 @@ jsx
 // 列表组件使用示例
 const UserList = () => {
   const [tableProps, setTableProps] = useState({});
-  
+
   useEffect(() => {
     // 请求时传入映射规则
     axios.get('/users', {
@@ -242,7 +242,7 @@ const UserList = () => {
       setTableProps(res.componentProps); // 直接用转换后的属性
     });
   }, []);
-  
+
   return <Table {...tableProps} />;
 };
 2. 交互→API 的映射引擎实现（事件处理器）
@@ -252,14 +252,14 @@ javascript
 // 事件处理器：解析规则，将组件事件转为API调用
 const handleComponentEvent = (eventName, componentState, eventRule) => {
   const { api, method, params: paramRules, onSuccess, onError } = eventRule;
-  
+
   // 按规则提取参数（从组件状态中取对应值）
   const params = {};
   Object.keys(paramRules).forEach(paramKey => {
     const statePath = paramRules[paramKey].replace(/{{|}}/g, '').trim(); // 如 "selectedGoods.id"
     params[paramKey] = getValueByPath(componentState, statePath);
   });
-  
+
   // 调用API
   axios({ url: api, method, params })
     .then(res => {
@@ -281,7 +281,7 @@ const SubmitButton = () => {
     selectedGoods: { id: 1 },
     countInput: { value: 2 }
   });
-  
+
   // 按钮点击事件绑定处理器，传入规则
   const handleClick = () => {
     handleComponentEvent('onClick', state, {
@@ -295,7 +295,7 @@ const SubmitButton = () => {
       onError: { message: '下单失败' }
     });
   };
-  
+
   return <Button onClick={handleClick}>提交</Button>;
 };
 三、第三步：落地实现（工具选择与场景适配）
@@ -308,20 +308,20 @@ javascript
 const useApiComponent = (apiConfig, mappingRules) => {
   const [props, setProps] = useState({});
   const [state, setState] = useState({});
-  
+
   // 初始化加载数据（数据→组件）
   useEffect(() => {
     axios.get(apiConfig.url, { mappingRule: mappingRules.data })
       .then(res => setProps(res.componentProps));
   }, []);
-  
+
   // 处理交互事件（交互→API）
   const handleEvent = (eventName, eventData) => {
     setState(prev => ({ ...prev, ...eventData })); // 更新组件状态
     const eventRule = mappingRules.events[eventName];
     handleComponentEvent(eventName, state, eventRule);
   };
-  
+
   return { props, handleEvent };
 };
 

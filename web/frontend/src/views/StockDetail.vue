@@ -36,7 +36,7 @@
             <div class="flex-between">
               <div class="chart-controls">
                 <el-segmented v-model="chartType" :options="chartOptions" @change="handleChartTypeChange" />
-                <el-select v-model="timeRange" size="small" @change="handleTimeRangeChange" style="margin-left: 16px;">
+                <el-select v-if="chartType === 'intraday'" v-model="timeRange" size="small" @change="handleTimeRangeChange" style="margin-left: 16px;">
                   <el-option label="近1周" value="1w" />
                   <el-option label="近1个月" value="1m" />
                   <el-option label="近3个月" value="3m" />
@@ -46,7 +46,19 @@
               </div>
             </div>
           </template>
-          <div ref="chartRef" style="height: 400px"></div>
+          <!-- Professional K-line Chart -->
+          <ProKLineChart
+            v-if="chartType === 'kline'"
+            :symbol="stockDetail.symbol"
+            :height="600"
+            :show-price-limits="true"
+            :forward-adjusted="false"
+            board-type="main"
+            @data-loaded="handleKLineDataLoaded"
+            @error="handleChartError"
+          />
+          <!-- ECharts Intraday Chart -->
+          <div v-else ref="chartRef" style="height: 400px"></div>
         </el-card>
       </el-col>
 
@@ -188,34 +200,125 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, nextTick } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
+import type { ECharts, EChartOption } from 'echarts'
 import { ElMessage } from 'element-plus'
+import ProKLineChart from '@/components/Market/ProKLineChart.vue'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 股票详情数据
+ */
+interface StockDetail {
+  symbol: string
+  name: string
+  price: string | number
+  change: string | number
+  change_pct: string | number
+  market: 'SH' | 'SZ'
+  industry: string
+  concepts: string[]
+  area: string
+  list_date: string
+}
+
+/**
+ * 技术指标数据
+ */
+interface TechnicalIndicators {
+  ma5: string | number
+  ma10: string | number
+  ma20: string | number
+  rsi: string | number
+  macd: string | number
+}
+
+/**
+ * 交易摘要数据
+ */
+interface TradingSummary {
+  price_change: number
+  price_change_pct: number
+  highest_price: number
+  lowest_price: number
+  total_volume: number
+  total_turnover: number
+  volatility: number
+  win_rate: number
+  sharpe_ratio: number
+  max_drawdown: number
+}
+
+/**
+ * 交易表单数据
+ */
+interface TradeForm {
+  type: 'buy' | 'sell'
+  price: string
+  quantity: string
+}
+
+/**
+ * K线数据项
+ */
+interface KlineDataItem {
+  date: string
+  open: number
+  close: number
+  low: number
+  high: number
+}
+
+/**
+ * 分时数据项
+ */
+interface IntradayDataItem {
+  time: string
+  price: number
+}
+
+/**
+ * 图表类型
+ */
+type ChartType = 'kline' | 'intraday'
+
+/**
+ * 时间范围
+ */
+type TimeRange = '1w' | '1m' | '3m' | '6m' | '1y'
+
+// ============================================
+// 响应式数据
+// ============================================
 
 const route = useRoute()
-const chartRef = ref(null)
-let chart = null
+const chartRef: Ref<HTMLDivElement | null> = ref(null)
+let chart: ECharts | null = null
 
 // 图表控制
-const chartType = ref('kline') // kline: K线图, intraday: 分时图
+const chartType: Ref<ChartType> = ref('kline')
 const chartOptions = [
   { label: 'K线图', value: 'kline' },
   { label: '分时图', value: 'intraday' }
 ]
-const timeRange = ref('3m')
-const summaryPeriod = ref('1m')
+const timeRange: Ref<TimeRange> = ref('3m')
+const summaryPeriod: Ref<TimeRange> = ref('1m')
 
 // 股票详情数据
-const stockDetail = ref({
+const stockDetail: Ref<StockDetail> = ref({
   symbol: '',
   name: '',
   price: 0,
   change: 0,
   change_pct: 0,
-  market: '',
+  market: 'SH',
   industry: '',
   concepts: [],
   area: '',
@@ -223,7 +326,7 @@ const stockDetail = ref({
 })
 
 // 技术指标数据
-const technicalIndicators = ref({
+const technicalIndicators: Ref<TechnicalIndicators> = ref({
   ma5: 0,
   ma10: 0,
   ma20: 0,
@@ -232,7 +335,7 @@ const technicalIndicators = ref({
 })
 
 // 交易摘要数据
-const tradingSummary = ref({
+const tradingSummary: Ref<TradingSummary> = ref({
   price_change: 0,
   price_change_pct: 0,
   highest_price: 0,
@@ -244,17 +347,23 @@ const tradingSummary = ref({
   sharpe_ratio: 0,
   max_drawdown: 0
 })
-const summaryLoading = ref(false)
+const summaryLoading: Ref<boolean> = ref(false)
 
 // 交易表单
-const tradeForm = ref({
+const tradeForm: Ref<TradeForm> = ref({
   type: 'buy',
   price: '',
   quantity: ''
 })
 
-// 初始化图表
-const initChart = async () => {
+// ============================================
+// 方法定义
+// ============================================
+
+/**
+ * 初始化图表
+ */
+const initChart = async (): Promise<void> => {
   if (!chartRef.value) return
 
   if (chart) {
@@ -275,8 +384,10 @@ const initChart = async () => {
   }
 }
 
-// 加载K线数据
-const loadKlineData = async () => {
+/**
+ * 加载K线数据
+ */
+const loadKlineData = async (): Promise<void> => {
   try {
     const symbol = stockDetail.value.symbol
     if (!symbol) return
@@ -284,7 +395,7 @@ const loadKlineData = async () => {
     // 计算日期范围
     const endDate = new Date().toISOString().split('T')[0]
     const startDate = new Date()
-    const daysMap = { '1w': 7, '1m': 30, '3m': 90, '6m': 180, '1y': 365 }
+    const daysMap: Record<TimeRange, number> = { '1w': 7, '1m': 30, '3m': 90, '6m': 180, '1y': 365 }
     startDate.setDate(startDate.getDate() - (daysMap[timeRange.value] || 30))
     const start = startDate.toISOString().split('T')[0]
 
@@ -296,15 +407,15 @@ const loadKlineData = async () => {
     })
 
     if (response.success && response.data && response.data.length > 0) {
-      const klineData = response.data
+      const klineData: KlineDataItem[] = response.data
 
-      const option = {
+      const option: EChartOption = {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
             type: 'cross'
           },
-          formatter: function(params) {
+          formatter: function(params: any) {
             const data = params[0]
             return `${data.name}<br/>` +
                    `开盘: ${data.value[1]}<br/>` +
@@ -360,7 +471,7 @@ const loadKlineData = async () => {
         ]
       }
 
-      chart.setOption(option)
+      chart?.setOption(option)
     } else {
       // 使用模拟数据
       await loadMockKlineData()
@@ -371,8 +482,10 @@ const loadKlineData = async () => {
   }
 }
 
-// 加载分时数据
-const loadIntradayData = async () => {
+/**
+ * 加载分时数据
+ */
+const loadIntradayData = async (): Promise<void> => {
   try {
     const symbol = stockDetail.value.symbol
     if (!symbol) return
@@ -381,9 +494,9 @@ const loadIntradayData = async () => {
     const response = await dataApi.getStockIntraday(symbol, today)
 
     if (response.success && response.data && response.data.length > 0) {
-      const intradayData = response.data
+      const intradayData: IntradayDataItem[] = response.data
 
-      const option = {
+      const option: EChartOption = {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
@@ -431,7 +544,7 @@ const loadIntradayData = async () => {
         ]
       }
 
-      chart.setOption(option)
+      chart?.setOption(option)
     } else {
       // 使用模拟数据
       await loadMockIntradayData()
@@ -442,11 +555,13 @@ const loadIntradayData = async () => {
   }
 }
 
-// 模拟K线数据（备用）
-const loadMockKlineData = async () => {
-  const mockData = []
+/**
+ * 模拟K线数据（备用）
+ */
+const loadMockKlineData = async (): Promise<void> => {
+  const mockData: KlineDataItem[] = []
   const baseDate = new Date()
-  let baseValue = parseFloat(stockDetail.value.price) || 100
+  let baseValue = parseFloat(stockDetail.value.price as string) || 100
 
   for (let i = 30; i >= 0; i--) {
     const date = new Date(baseDate)
@@ -469,7 +584,7 @@ const loadMockKlineData = async () => {
     baseValue = close
   }
 
-  const option = {
+  const option: EChartOption = {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -517,21 +632,23 @@ const loadMockKlineData = async () => {
     ]
   }
 
-  chart.setOption(option)
+  chart?.setOption(option)
 }
 
-// 模拟分时数据（备用）
-const loadMockIntradayData = async () => {
-  const mockData = []
-  const basePrice = parseFloat(stockDetail.value.price) || 100
+/**
+ * 模拟分时数据（备用）
+ */
+const loadMockIntradayData = async (): Promise<void> => {
+  const mockData: IntradayDataItem[] = []
+  const basePrice = parseFloat(stockDetail.value.price as string) || 100
 
-  for (let i = 0; i < 78; i++) { // 78个5分钟数据点
+  for (let i = 0; i < 78; i++) {
     const minuteCount = i * 5
     const hour = 9 + Math.floor(minuteCount / 60)
     const minute = (minuteCount % 60) + 30
 
     if (hour > 16 || (hour === 16 && minute > 0)) break
-    if (hour === 12) continue // 跳过午休
+    if (hour === 12) continue
 
     const price = basePrice + (Math.random() - 0.5) * basePrice * 0.02
 
@@ -541,7 +658,7 @@ const loadMockIntradayData = async () => {
     })
   }
 
-  const option = {
+  const option: EChartOption = {
     tooltip: {
       trigger: 'axis'
     },
@@ -586,13 +703,15 @@ const loadMockIntradayData = async () => {
     ]
   }
 
-  chart.setOption(option)
+  chart?.setOption(option)
 }
 
-// 加载股票详情信息
-const loadStockDetail = async () => {
+/**
+ * 加载股票详情信息
+ */
+const loadStockDetail = async (): Promise<void> => {
   try {
-    const symbol = route.params.symbol || route.query.symbol
+    const symbol = route.params.symbol as string || route.query.symbol as string
 
     if (!symbol) {
       ElMessage.error('未指定股票代码')
@@ -600,16 +719,14 @@ const loadStockDetail = async () => {
     }
 
     try {
-      // 尝试获取真实数据
       const response = await dataApi.getStockDetail(symbol)
       if (response.success && response.data) {
         stockDetail.value = response.data
 
-        // 模拟技术指标
         technicalIndicators.value = {
-          ma5: (parseFloat(stockDetail.value.price) + Math.random() * 2 - 1).toFixed(2),
-          ma10: (parseFloat(stockDetail.value.price) + Math.random() * 3 - 1.5).toFixed(2),
-          ma20: (parseFloat(stockDetail.value.price) + Math.random() * 4 - 2).toFixed(2),
+          ma5: (parseFloat(stockDetail.value.price as string) + Math.random() * 2 - 1).toFixed(2),
+          ma10: (parseFloat(stockDetail.value.price as string) + Math.random() * 3 - 1.5).toFixed(2),
+          ma20: (parseFloat(stockDetail.value.price as string) + Math.random() * 4 - 2).toFixed(2),
           rsi: (Math.random() * 100).toFixed(2),
           macd: (Math.random() * 4 - 2).toFixed(2)
         }
@@ -618,7 +735,6 @@ const loadStockDetail = async () => {
       }
     } catch (apiError) {
       console.warn('API获取失败，使用模拟数据:', apiError)
-      // 降级到模拟数据
       stockDetail.value = {
         symbol: symbol,
         name: symbol.startsWith('6') ? `浦发银行` : `平安银行`,
@@ -632,11 +748,10 @@ const loadStockDetail = async () => {
         area: '上海'
       }
 
-      // 模拟技术指标
       technicalIndicators.value = {
-        ma5: (parseFloat(stockDetail.value.price) + Math.random() * 2 - 1).toFixed(2),
-        ma10: (parseFloat(stockDetail.value.price) + Math.random() * 3 - 1.5).toFixed(2),
-        ma20: (parseFloat(stockDetail.value.price) + Math.random() * 4 - 2).toFixed(2),
+        ma5: (parseFloat(stockDetail.value.price as string) + Math.random() * 2 - 1).toFixed(2),
+        ma10: (parseFloat(stockDetail.value.price as string) + Math.random() * 3 - 1.5).toFixed(2),
+        ma20: (parseFloat(stockDetail.value.price as string) + Math.random() * 4 - 2).toFixed(2),
         rsi: (Math.random() * 100).toFixed(2),
         macd: (Math.random() * 4 - 2).toFixed(2)
       }
@@ -647,8 +762,10 @@ const loadStockDetail = async () => {
   }
 }
 
-// 加载交易摘要
-const loadTradingSummary = async () => {
+/**
+ * 加载交易摘要
+ */
+const loadTradingSummary = async (): Promise<void> => {
   summaryLoading.value = true
   try {
     const symbol = stockDetail.value.symbol
@@ -663,12 +780,11 @@ const loadTradingSummary = async () => {
       }
     } catch (apiError) {
       console.warn('交易摘要API获取失败，使用模拟数据:', apiError)
-      // 模拟交易摘要数据
       tradingSummary.value = {
         price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
         price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
-        highest_price: parseFloat((parseFloat(stockDetail.value.price) + Math.random() * 10).toFixed(2)),
-        lowest_price: parseFloat((parseFloat(stockDetail.value.price) - Math.random() * 10).toFixed(2)),
+        highest_price: parseFloat((parseFloat(stockDetail.value.price as string) + Math.random() * 10).toFixed(2)),
+        lowest_price: parseFloat((parseFloat(stockDetail.value.price as string) - Math.random() * 10).toFixed(2)),
         total_volume: Math.floor(Math.random() * 10000000 + 1000000),
         total_turnover: Math.floor(Math.random() * 100000000 + 10000000),
         volatility: parseFloat((Math.random() * 20 + 5).toFixed(2)),
@@ -685,14 +801,18 @@ const loadTradingSummary = async () => {
   }
 }
 
-// 图表类型切换处理
-const handleChartTypeChange = (value) => {
+/**
+ * 图表类型切换处理
+ */
+const handleChartTypeChange = (value: ChartType): void => {
   chartType.value = value
   initChart()
 }
 
-// 时间范围切换处理
-const handleTimeRangeChange = (value) => {
+/**
+ * 时间范围切换处理
+ */
+const handleTimeRangeChange = (value: TimeRange): void => {
   timeRange.value = value
   if (chartType.value === 'kline') {
     loadKlineData()
@@ -701,19 +821,25 @@ const handleTimeRangeChange = (value) => {
   }
 }
 
-// 加载股票基本信息
-const loadStockInfo = async () => {
+/**
+ * 加载股票基本信息
+ */
+const loadStockInfo = async (): Promise<void> => {
   await loadStockDetail()
   await loadTradingSummary()
 }
 
-// 初始化图表
-const initKlineChart = async () => {
+/**
+ * 初始化图表
+ */
+const initKlineChart = async (): Promise<void> => {
   await initChart()
 }
 
-// 格式化成交量
-const formatVolume = (volume) => {
+/**
+ * 格式化成交量
+ */
+const formatVolume = (volume: number | undefined): string => {
   if (!volume) return '--'
   if (volume >= 100000000) {
     return (volume / 100000000).toFixed(1) + '亿'
@@ -723,8 +849,10 @@ const formatVolume = (volume) => {
   return volume.toString()
 }
 
-// 格式化成交额
-const formatAmount = (amount) => {
+/**
+ * 格式化成交额
+ */
+const formatAmount = (amount: number | undefined): string => {
   if (!amount) return '--'
   if (amount >= 100000000) {
     return (amount / 100000000).toFixed(1) + '亿'
@@ -734,8 +862,10 @@ const formatAmount = (amount) => {
   return amount.toString()
 }
 
-// 执行交易
-const handleTrade = () => {
+/**
+ * 执行交易
+ */
+const handleTrade = (): void => {
   if (!tradeForm.value.quantity) {
     ElMessage.error('请输入交易数量')
     return
@@ -744,9 +874,24 @@ const handleTrade = () => {
   const action = tradeForm.value.type === 'buy' ? '买入' : '卖出'
   ElMessage.success(`${action}请求已提交：${tradeForm.value.quantity}股`)
 
-  // 清空表单
   tradeForm.value.price = ''
   tradeForm.value.quantity = ''
+}
+
+/**
+ * K线数据加载完成处理
+ */
+const handleKLineDataLoaded = (data: any[]): void => {
+  console.log('K线数据加载完成:', data.length, '条数据')
+  // 可以在这里更新技术指标面板
+}
+
+/**
+ * 图表错误处理
+ */
+const handleChartError = (error: Error): void => {
+  console.error('K线图表错误:', error)
+  ElMessage.error('K线图表加载失败，请稍后重试')
 }
 
 onMounted(async () => {
@@ -754,7 +899,6 @@ onMounted(async () => {
   await nextTick()
   await initKlineChart()
 
-  // 监听窗口大小变化
   window.addEventListener('resize', () => {
     chart?.resize()
   })

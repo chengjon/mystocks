@@ -63,9 +63,7 @@ class TestMyStocksUnifiedManager(unittest.TestCase):
         )
 
         # 调用保存方法
-        result = self.manager.save_data_by_classification(
-            DataClassification.TICK_DATA, test_data, "test_tick_table"
-        )
+        result = self.manager.save_data_by_classification(DataClassification.TICK_DATA, test_data, "test_tick_table")
 
         # 验证结果
         self.assertTrue(result)

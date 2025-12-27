@@ -50,9 +50,7 @@ class DualDataSourceTester:
             },
         ]
 
-    def log_test(
-        self, test_name: str, status: str, details: str = "", data_source: str = ""
-    ):
+    def log_test(self, test_name: str, status: str, details: str = "", data_source: str = ""):
         """记录测试结果"""
         result = {
             "test_name": test_name,
@@ -91,23 +89,17 @@ class DualDataSourceTester:
             print(f"  第 {i + 1} 次调用...")
             # 这里应该调用统一数据服务的Mock数据生成
             # 由于环境限制，我们只记录测试意图
-            self.log_test(
-                f"Mock数据一致性测试 {i + 1}", "PASS", "Mock数据生成逻辑一致", "Mock"
-            )
+            self.log_test(f"Mock数据一致性测试 {i + 1}", "PASS", "Mock数据生成逻辑一致", "Mock")
 
     async def test_fault_tolerance(self):
         """测试故障容错能力"""
         print("\n🛡️ 测试故障容错能力...")
 
         # 测试场景1：数据库连接失败时的故障转移
-        self.log_test(
-            "数据库故障转移测试", "PASS", "能够正确切换到Mock数据源", "Hybrid"
-        )
+        self.log_test("数据库故障转移测试", "PASS", "能够正确切换到Mock数据源", "Hybrid")
 
         # 测试场景2：API限流时的处理
-        self.log_test(
-            "API限流处理测试", "PASS", "能够使用缓存数据避免重复请求", "Cache"
-        )
+        self.log_test("API限流处理测试", "PASS", "能够使用缓存数据避免重复请求", "Cache")
 
         # 测试场景3：数据格式异常的恢复
         self.log_test(
@@ -199,9 +191,7 @@ class DualDataSourceTester:
                     os.environ.pop(key, None)
 
         except Exception as e:
-            self.log_test(
-                f"配置测试 - {config['name']}", "FAIL", f"测试失败: {str(e)}", "Error"
-            )
+            self.log_test(f"配置测试 - {config['name']}", "FAIL", f"测试失败: {str(e)}", "Error")
 
     async def test_performance_comparison(self):
         """测试性能对比"""
@@ -290,9 +280,7 @@ class DualDataSourceTester:
         print("\n📊 按数据源统计:")
         for source, stats in source_stats.items():
             success_rate = (stats["passed"] / stats["total"]) * 100
-            print(
-                f"  {source}: {stats['passed']}/{stats['total']} ({success_rate:.1f}%)"
-            )
+            print(f"  {source}: {stats['passed']}/{stats['total']} ({success_rate:.1f}%)")
 
         # 保存详细报告
         report_file = "/opt/claude/mystocks_spec/dual_data_source_test_report.json"

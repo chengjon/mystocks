@@ -171,9 +171,7 @@ class BaseDataSource(IDataSource):
         """初始化数据源"""
         if not self._session:
             timeout = aiohttp.ClientTimeout(total=self.config_obj.timeout)
-            self._session = aiohttp.ClientSession(
-                timeout=timeout, headers=self.config_obj.custom_headers
-            )
+            self._session = aiohttp.ClientSession(timeout=timeout, headers=self.config_obj.custom_headers)
 
     async def cleanup(self):
         """清理资源"""
@@ -192,9 +190,7 @@ class BaseDataSource(IDataSource):
                 self.metrics.response_time = response_time
             else:
                 alpha = 0.3  # 平滑因子
-                self.metrics.response_time = (
-                    alpha * response_time + (1 - alpha) * self.metrics.response_time
-                )
+                self.metrics.response_time = alpha * response_time + (1 - alpha) * self.metrics.response_time
         else:
             self.metrics.error_count += 1
             self.metrics.last_error = error
@@ -202,9 +198,7 @@ class BaseDataSource(IDataSource):
         # 计算成功率
         if self.metrics.total_requests > 0:
             self.metrics.success_rate = (
-                (self.metrics.total_requests - self.metrics.error_count)
-                / self.metrics.total_requests
-                * 100
+                (self.metrics.total_requests - self.metrics.error_count) / self.metrics.total_requests * 100
             )
 
         # 计算可用性 (基于最近的成功率)
@@ -216,9 +210,7 @@ class BaseDataSource(IDataSource):
             "total_requests": self.metrics.total_requests,
             "success_rate": self.metrics.success_rate,
             "error_count": self.metrics.error_count,
-            "last_check": self.metrics.last_check.isoformat()
-            if self.metrics.last_check
-            else None,
+            "last_check": self.metrics.last_check.isoformat() if self.metrics.last_check else None,
             "last_error": self.metrics.last_error,
             "response_time": self.metrics.response_time,
             "availability": self.metrics.availability,
@@ -271,9 +263,7 @@ class MockDataSource(BaseDataSource):
             "message": "Mock data generated successfully",
         }
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取Mock数据"""
         start_time = time.time()
 
@@ -337,9 +327,7 @@ class RealDataSource(BaseDataSource):
         if not config.base_url:
             raise ValueError(f"Real data source '{config.name}' requires base_url")
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """从真实API获取数据"""
         if not self._session:
             await self.initialize()
@@ -369,9 +357,7 @@ class RealDataSource(BaseDataSource):
                 error_msg = f"Request failed (attempt {attempt + 1}): {str(e)}"
 
                 if attempt < self.config_obj.retry_count:
-                    logger.warning(
-                        f"{error_msg}, retrying in {self.config_obj.retry_delay}s..."
-                    )
+                    logger.warning(f"{error_msg}, retrying in {self.config_obj.retry_delay}s...")
                     await asyncio.sleep(self.config_obj.retry_delay)
                 else:
                     self.update_metrics(False, response_time, error_msg)
@@ -433,9 +419,7 @@ class HybridDataSource(BaseDataSource):
         self._fallback_count = 0
         self._last_fallback_time: Optional[datetime] = None
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """混合数据获取：优先Real，失败时fallback到Mock"""
         start_time = time.time()
 
@@ -468,9 +452,7 @@ class HybridDataSource(BaseDataSource):
 
             # Fallback到Mock数据源
             try:
-                logger.debug(
-                    f"Falling back to mock data source for endpoint: {endpoint}"
-                )
+                logger.debug(f"Falling back to mock data source for endpoint: {endpoint}")
                 data = await self.mock_source.get_data(endpoint, params)
 
                 # 更新fallback统计
@@ -478,13 +460,9 @@ class HybridDataSource(BaseDataSource):
                 self._last_fallback_time = datetime.now()
 
                 response_time = (time.time() - start_time) * 1000
-                self.update_metrics(
-                    True, response_time, f"Fallback used: {str(real_error)}"
-                )
+                self.update_metrics(True, response_time, f"Fallback used: {str(real_error)}")
 
-                logger.info(
-                    f"Fallback successful for {endpoint} (fallback count: {self._fallback_count})"
-                )
+                logger.info(f"Fallback successful for {endpoint} (fallback count: {self._fallback_count})")
 
                 # 添加数据源标识
                 if isinstance(data, dict):
@@ -543,9 +521,7 @@ class HybridDataSource(BaseDataSource):
         """获取fallback统计信息"""
         return {
             "fallback_count": self._fallback_count,
-            "last_fallback_time": self._last_fallback_time.isoformat()
-            if self._last_fallback_time
-            else None,
+            "last_fallback_time": self._last_fallback_time.isoformat() if self._last_fallback_time else None,
             "real_metrics": self.real_source.get_metrics(),
             "mock_metrics": self.mock_source.get_metrics(),
         }
@@ -564,9 +540,7 @@ class DynamicConfigManager:
         """加载配置文件"""
         try:
             if not self.config_file.exists():
-                logger.warning(
-                    f"Config file {self.config_file} not found, creating default config"
-                )
+                logger.warning(f"Config file {self.config_file} not found, creating default config")
                 await self._create_default_config()
 
             async with aiofiles.open(self.config_file, "r", encoding="utf-8") as f:
@@ -600,9 +574,7 @@ class DynamicConfigManager:
                         # 通知所有监听器
                         for watcher in self._watchers:
                             try:
-                                await self._safe_call_watcher(
-                                    watcher, old_config, self._config_data
-                                )
+                                await self._safe_call_watcher(watcher, old_config, self._config_data)
                             except Exception as e:
                                 logger.error(f"Config change notification failed: {e}")
 
@@ -621,9 +593,7 @@ class DynamicConfigManager:
         if callback in self._watchers:
             self._watchers.remove(callback)
 
-    async def _safe_call_watcher(
-        self, watcher: Callable, old_config: Dict[str, Any], new_config: Dict[str, Any]
-    ):
+    async def _safe_call_watcher(self, watcher: Callable, old_config: Dict[str, Any], new_config: Dict[str, Any]):
         """安全调用监听器"""
         if asyncio.iscoroutinefunction(watcher):
             await watcher(old_config, new_config)
@@ -639,9 +609,7 @@ class DynamicConfigManager:
 
         async with aiofiles.open(self.config_file, "w", encoding="utf-8") as f:
             if self.config_file.suffix.lower() in [".yaml", ".yml"]:
-                yaml.dump(
-                    default_config, f, default_flow_style=False, allow_unicode=True
-                )
+                yaml.dump(default_config, f, default_flow_style=False, allow_unicode=True)
             else:
                 await f.write(json.dumps(default_config, indent=2, ensure_ascii=False))
 
@@ -659,8 +627,7 @@ class DynamicConfigManager:
                     "mode": os.getenv("USE_MOCK_DATA", "true").lower() == "true"
                     and DataSourceMode.MOCK
                     or DataSourceMode.REAL,
-                    "base_url": os.getenv("REAL_DATA_AVAILABLE", "false").lower()
-                    == "true"
+                    "base_url": os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
                     and "http://localhost:8000/api/market"
                     or None,
                     "timeout": 30.0,
@@ -738,9 +705,7 @@ class DataSourceFactory:
 
         # 启动配置监控
         self.config_manager.add_watcher(self._on_config_changed)
-        self._config_watch_task = asyncio.create_task(
-            self.config_manager.watch_config_changes()
-        )
+        self._config_watch_task = asyncio.create_task(self.config_manager.watch_config_changes())
 
         # 启动健康检查
         self._health_check_task = asyncio.create_task(self._health_check_loop())
@@ -765,9 +730,7 @@ class DataSourceFactory:
                 data_source = await self._create_single_data_source(config)
                 self._data_sources[source_name] = data_source
 
-                logger.info(
-                    f"Data source '{source_name}' created successfully (mode: {config.mode})"
-                )
+                logger.info(f"Data source '{source_name}' created successfully (mode: {config.mode})")
 
             except Exception as e:
                 logger.error(f"Failed to create data source '{source_name}': {e}")
@@ -824,9 +787,7 @@ class DataSourceFactory:
 
         return self._data_sources.get(source_name)
 
-    async def get_data(
-        self, source_name: str, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, source_name: str, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """通过数据源获取数据"""
         data_source = await self.get_data_source(source_name)
         if not data_source:
@@ -894,16 +855,12 @@ class DataSourceFactory:
                 # 记录不健康的数据源
                 for source_name, health in health_results.items():
                     if health.status != HealthStatusEnum.HEALTHY:
-                        logger.warning(
-                            f"Data source '{source_name}' is {health.status.value}: {health.message}"
-                        )
+                        logger.warning(f"Data source '{source_name}' is {health.status.value}: {health.message}")
 
             except Exception as e:
                 logger.error(f"Health check loop error: {e}")
 
-    async def _on_config_changed(
-        self, old_config: Dict[str, Any], new_config: Dict[str, Any]
-    ):
+    async def _on_config_changed(self, old_config: Dict[str, Any], new_config: Dict[str, Any]):
         """配置变化处理器"""
         logger.info("Configuration changed, recreating data sources...")
 
@@ -986,25 +943,19 @@ async def get_data_source(source_name: str) -> Optional[IDataSource]:
     return await factory.get_data_source(source_name)
 
 
-async def get_market_data(
-    endpoint: str, params: Dict[str, Any] = None
-) -> Dict[str, Any]:
+async def get_market_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取市场数据"""
     factory = await get_data_source_factory()
     return await factory.get_data("market", endpoint, params)
 
 
-async def get_dashboard_data(
-    endpoint: str, params: Dict[str, Any] = None
-) -> Dict[str, Any]:
+async def get_dashboard_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取仪表盘数据"""
     factory = await get_data_source_factory()
     return await factory.get_data("dashboard", endpoint, params)
 
 
-async def get_technical_analysis_data(
-    endpoint: str, params: Dict[str, Any] = None
-) -> Dict[str, Any]:
+async def get_technical_analysis_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取技术分析数据"""
     factory = await get_data_source_factory()
     return await factory.get_data("technical_analysis", endpoint, params)

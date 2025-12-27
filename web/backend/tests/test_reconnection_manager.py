@@ -158,9 +158,7 @@ class TestReconnectionManager:
         self.manager.register_connection("sid_001", user_id="user_001")
 
         assert "sid_001" in self.manager.reconnection_states
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
         assert self.manager.reconnection_attempts["sid_001"] == 0
 
     def test_mark_disconnected(self):
@@ -168,10 +166,7 @@ class TestReconnectionManager:
         self.manager.register_connection("sid_001")
         self.manager.mark_disconnected("sid_001")
 
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.DISCONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.DISCONNECTED
         assert self.manager.reconnection_attempts["sid_001"] == 0
 
     def test_buffer_message(self):
@@ -206,10 +201,7 @@ class TestReconnectionManager:
             self.manager.record_reconnect_attempt("sid_001")
 
         assert not self.manager.should_attempt_reconnect("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.RECONNECT_FAILED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.RECONNECT_FAILED
 
     def test_get_next_reconnect_interval_exponential_backoff(self):
         """测试指数退避计算"""
@@ -252,10 +244,7 @@ class TestReconnectionManager:
 
         assert self.manager.reconnection_attempts["sid_001"] == 1
         # 状态保持DISCONNECTED，直到成功重连或达到最大重试次数
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.DISCONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.DISCONNECTED
 
     def test_mark_reconnected(self):
         """测试标记已重连"""
@@ -265,9 +254,7 @@ class TestReconnectionManager:
 
         self.manager.mark_reconnected("sid_001")
 
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
         assert self.manager.reconnection_attempts["sid_001"] == 0
 
     def test_get_buffered_messages(self):
@@ -358,9 +345,7 @@ class TestReconnectionManager:
         """测试完整重连工作流"""
         # 1. 注册连接
         self.manager.register_connection("sid_001", user_id="user_001")
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
 
         # 2. 缓冲消息（模拟离线状态）
         self.manager.mark_disconnected("sid_001")
@@ -373,16 +358,11 @@ class TestReconnectionManager:
         # 4. 记录重连尝试
         self.manager.record_reconnect_attempt("sid_001")
         # 状态保持DISCONNECTED，直到成功重连或达到最大重试次数
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.DISCONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.DISCONNECTED
 
         # 5. 标记重连成功
         self.manager.mark_reconnected("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
 
         # 6. 获取缓冲消息进行补发
         buffered = self.manager.get_buffered_messages("sid_001")
@@ -446,22 +426,15 @@ class TestReconnectionScenarios:
     def test_rapid_disconnect_reconnect(self):
         """测试快速断开和重连"""
         self.manager.register_connection("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
 
         # 断开
         self.manager.mark_disconnected("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.DISCONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.DISCONNECTED
 
         # 重连
         self.manager.mark_reconnected("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.CONNECTED
 
     def test_message_buffering_across_reconnect(self):
         """测试跨重连的消息缓冲"""
@@ -493,7 +466,4 @@ class TestReconnectionScenarios:
 
         # 达到最大重试次数
         assert not self.manager.should_attempt_reconnect("sid_001")
-        assert (
-            self.manager.reconnection_states["sid_001"]
-            == ReconnectionState.RECONNECT_FAILED
-        )
+        assert self.manager.reconnection_states["sid_001"] == ReconnectionState.RECONNECT_FAILED

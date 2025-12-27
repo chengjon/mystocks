@@ -40,30 +40,20 @@ class StatisticalOptimizer:
             Dict[str, Any]: 优化结果
         """
         if len(data) < self.min_data_points:
-            return self._create_insufficient_data_result(
-                data, current_threshold, threshold_type
-            )
+            return self._create_insufficient_data_result(data, current_threshold, threshold_type)
 
         try:
             # 基于统计数据计算建议阈值
-            recommended_threshold = self._calculate_statistical_threshold(
-                data, threshold_type
-            )
+            recommended_threshold = self._calculate_statistical_threshold(data, threshold_type)
 
             # 计算置信度
-            confidence = self._calculate_confidence(
-                data, recommended_threshold, threshold_type
-            )
+            confidence = self._calculate_confidence(data, recommended_threshold, threshold_type)
 
             # 估算改善效果
-            improvement = self._estimate_improvement(
-                data, current_threshold, recommended_threshold, threshold_type
-            )
+            improvement = self._estimate_improvement(data, current_threshold, recommended_threshold, threshold_type)
 
             # 生成推理说明
-            reasoning = self._generate_statistical_reasoning(
-                data, recommended_threshold, threshold_type
-            )
+            reasoning = self._generate_statistical_reasoning(data, recommended_threshold, threshold_type)
 
             return {
                 "recommended_threshold": recommended_threshold,
@@ -86,9 +76,7 @@ class StatisticalOptimizer:
                 "error": str(e),
             }
 
-    def _calculate_statistical_threshold(
-        self, data: List[float], threshold_type: str
-    ) -> float:
+    def _calculate_statistical_threshold(self, data: List[float], threshold_type: str) -> float:
         """
         计算统计阈值
 
@@ -119,9 +107,7 @@ class StatisticalOptimizer:
             iqr = q75 - q25
             return float(median + 1.5 * iqr)
 
-    def _calculate_confidence(
-        self, data: List[float], threshold: float, threshold_type: str
-    ) -> float:
+    def _calculate_confidence(self, data: List[float], threshold: float, threshold_type: str) -> float:
         """
         计算置信度
 
@@ -140,11 +126,7 @@ class StatisticalOptimizer:
             data_array = np.array(data)
 
             # 数据分布的稳定性影响置信度
-            cv = (
-                np.std(data_array) / np.mean(data_array)
-                if np.mean(data_array) > 0
-                else 1.0
-            )
+            cv = np.std(data_array) / np.mean(data_array) if np.mean(data_array) > 0 else 1.0
 
             # 变异系数越小，置信度越高
             stability_score = max(0, 1 - cv / 2)
@@ -153,25 +135,17 @@ class StatisticalOptimizer:
             data_size_score = min(1, len(data) / 100)
 
             # 阈值合理性检查
-            threshold_reasonableness = self._check_threshold_reasonableness(
-                data_array, threshold, threshold_type
-            )
+            threshold_reasonableness = self._check_threshold_reasonableness(data_array, threshold, threshold_type)
 
             # 综合置信度
-            confidence = (
-                stability_score * 0.3
-                + data_size_score * 0.3
-                + threshold_reasonableness * 0.4
-            )
+            confidence = stability_score * 0.3 + data_size_score * 0.3 + threshold_reasonableness * 0.4
 
             return float(min(1.0, max(0.0, confidence)))
 
         except Exception:
             return 0.0
 
-    def _check_threshold_reasonableness(
-        self, data: np.ndarray, threshold: float, threshold_type: str
-    ) -> float:
+    def _check_threshold_reasonableness(self, data: np.ndarray, threshold: float, threshold_type: str) -> float:
         """
         检查阈值合理性
 
@@ -221,9 +195,7 @@ class StatisticalOptimizer:
         data_array = np.array(data)
 
         # 计算当前阈值下的异常率
-        current_anomalies = self._count_anomalies(
-            data_array, current_threshold, threshold_type
-        )
+        current_anomalies = self._count_anomalies(data_array, current_threshold, threshold_type)
         current_rate = current_anomalies / len(data_array)
 
         # 计算新阈值下的异常率
@@ -238,9 +210,7 @@ class StatisticalOptimizer:
 
         return float(min(1.0, max(0.0, improvement)))
 
-    def _count_anomalies(
-        self, data: np.ndarray, threshold: float, threshold_type: str
-    ) -> int:
+    def _count_anomalies(self, data: np.ndarray, threshold: float, threshold_type: str) -> int:
         """
         计算异常数据点数量
 
@@ -259,9 +229,7 @@ class StatisticalOptimizer:
         else:
             return 0
 
-    def _generate_statistical_reasoning(
-        self, data: List[float], threshold: float, threshold_type: str
-    ) -> str:
+    def _generate_statistical_reasoning(self, data: List[float], threshold: float, threshold_type: str) -> str:
         """
         生成统计推理说明
 

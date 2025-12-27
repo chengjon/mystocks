@@ -16,4 +16,8 @@ The MyStocks project has accumulated significant technical debt across performan
 - Timeline: 3 phases over 4-6 months
 - Risk: Medium to High (requires careful coordination to avoid breaking existing functionality)
 
-This remediation initiative is critical for ensuring the system's stability, security, and scalability as it moves toward production deployment.
+## Consolidation Note
+This initiative now includes all tasks from the deprecated `fix-current-tech-debt` change. The immediate focus (Phase 1) addresses the critical issues originally identified in that change.
+
+## Related
+- Deprecated: [fix-current-tech-debt/proposal.md](../fix-current-tech-debt/proposal.md) - Merged into this initiative

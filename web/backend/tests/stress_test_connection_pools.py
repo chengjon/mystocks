@@ -53,17 +53,11 @@ class StressTestResults:
             "successful_requests": self.successful_requests,
             "failed_requests": self.failed_requests,
             "success_rate": round(
-                (
-                    (self.successful_requests / self.total_requests * 100)
-                    if self.total_requests > 0
-                    else 0
-                ),
+                ((self.successful_requests / self.total_requests * 100) if self.total_requests > 0 else 0),
                 2,
             ),
             "total_duration_seconds": round(duration, 2),
-            "requests_per_second": round(
-                self.total_requests / duration if duration > 0 else 0, 2
-            ),
+            "requests_per_second": round(self.total_requests / duration if duration > 0 else 0, 2),
         }
 
         if self.response_times:
@@ -71,12 +65,8 @@ class StressTestResults:
                 {
                     "min_response_time_ms": round(min(self.response_times) * 1000, 2),
                     "max_response_time_ms": round(max(self.response_times) * 1000, 2),
-                    "avg_response_time_ms": round(
-                        statistics.mean(self.response_times) * 1000, 2
-                    ),
-                    "median_response_time_ms": round(
-                        statistics.median(self.response_times) * 1000, 2
-                    ),
+                    "avg_response_time_ms": round(statistics.mean(self.response_times) * 1000, 2),
+                    "median_response_time_ms": round(statistics.median(self.response_times) * 1000, 2),
                     "p95_response_time_ms": (
                         round(
                             statistics.quantiles(self.response_times, n=20)[18] * 1000,
@@ -113,9 +103,7 @@ class StressTestResults:
         print(f"压力测试结果: {summary['test_name']}")
         print(f"{'=' * 80}")
         print(f"总请求数: {summary['total_requests']}")
-        print(
-            f"成功请求: {summary['successful_requests']} ({summary['success_rate']}%)"
-        )
+        print(f"成功请求: {summary['successful_requests']} ({summary['success_rate']}%)")
         print(f"失败请求: {summary['failed_requests']}")
         print(f"总耗时: {summary['total_duration_seconds']} 秒")
         print(f"QPS (请求/秒): {summary['requests_per_second']}")
@@ -172,9 +160,7 @@ def tdengine_connection_test():
         return False, response_time, str(e)
 
 
-def run_concurrent_test(
-    test_func, num_requests: int, max_workers: int, test_name: str
-) -> StressTestResults:
+def run_concurrent_test(test_func, num_requests: int, max_workers: int, test_name: str) -> StressTestResults:
     """
     运行并发测试
 
@@ -203,9 +189,7 @@ def run_concurrent_test(
         for future in as_completed(futures):
             completed += 1
             if completed % 100 == 0:
-                print(
-                    f"  进度: {completed}/{num_requests} ({completed / num_requests * 100:.1f}%)"
-                )
+                print(f"  进度: {completed}/{num_requests} ({completed / num_requests * 100:.1f}%)")
 
             try:
                 success, response_time, error = future.result()

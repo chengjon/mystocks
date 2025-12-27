@@ -111,9 +111,7 @@ class AdapterLoader:
     def get_health_status(cls, adapter_name: Optional[str] = None) -> Dict:
         """获取适配器健康状态"""
         if adapter_name:
-            return cls._health_status.get(
-                adapter_name, {"healthy": False, "status": "unknown"}
-            )
+            return cls._health_status.get(adapter_name, {"healthy": False, "status": "unknown"})
         return cls._health_status
 
     @classmethod

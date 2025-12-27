@@ -31,7 +31,7 @@ import date_utils
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(date_utils, 'normalize_date'):
                     date_utils.normalize_date(malicious_input)
-            
+
 
 
     def test_date_utils_normalize_date_boundary(self):
@@ -54,7 +54,7 @@ import date_utils
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
+
 
 
     def test_date_utils_bug_prevention_off_by_one(self):
@@ -75,28 +75,7 @@ import date_utils
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(date_utils, 'target_function'):
                     date_utils.target_function(unsafe_input)
-            
 
-
-    def test_date_utils_bug_prevention_sql_injection(self):
-        """Bug防护测试 - 存在SQL注入风险"""
-        # 测试防护措施
-        safe_inputs = ["safe_input", 1, [1, 2, 3]]
-        unsafe_inputs = [None, "", "'; DROP TABLE users; --"]
-
-        for safe_input in safe_inputs:
-            try:
-                if hasattr(date_utils, 'target_function'):
-                    result = date_utils.target_function(safe_input)
-                    self.assertIsNotNone(result)
-            except Exception:
-                pass  # 安全输入也可能异常，这是可接受的
-
-        for unsafe_input in unsafe_inputs:
-            with self.assertRaises((ValueError, SecurityError)):
-                if hasattr(date_utils, 'target_function'):
-                    date_utils.target_function(unsafe_input)
-            
 
 
     def test_date_utils_bug_prevention_sql_injection(self):
@@ -117,7 +96,28 @@ import date_utils
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(date_utils, 'target_function'):
                     date_utils.target_function(unsafe_input)
-            
+
+
+
+    def test_date_utils_bug_prevention_sql_injection(self):
+        """Bug防护测试 - 存在SQL注入风险"""
+        # 测试防护措施
+        safe_inputs = ["safe_input", 1, [1, 2, 3]]
+        unsafe_inputs = [None, "", "'; DROP TABLE users; --"]
+
+        for safe_input in safe_inputs:
+            try:
+                if hasattr(date_utils, 'target_function'):
+                    result = date_utils.target_function(safe_input)
+                    self.assertIsNotNone(result)
+            except Exception:
+                pass  # 安全输入也可能异常，这是可接受的
+
+        for unsafe_input in unsafe_inputs:
+            with self.assertRaises((ValueError, SecurityError)):
+                if hasattr(date_utils, 'target_function'):
+                    date_utils.target_function(unsafe_input)
+
 
 
     def test_date_utils_basic_functionality(self):
@@ -129,7 +129,7 @@ import date_utils
         # 测试是否有公共函数
         public_funcs = [f for f in dir(date_utils) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

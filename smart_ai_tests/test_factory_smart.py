@@ -34,7 +34,7 @@ import factory
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(factory, 'target_function'):
                     factory.target_function(unsafe_input)
-            
+
 
 
     def test_factory_basic_functionality(self):
@@ -46,7 +46,7 @@ import factory
         # 测试是否有公共函数
         public_funcs = [f for f in dir(factory) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

@@ -86,9 +86,7 @@ class BaseFinancialAdapter(IDataSource, ABC):
         return data.rename(columns=column_mapping)
 
     @abstractmethod
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据 - 抽象方法"""
         pass
 

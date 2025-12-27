@@ -181,10 +181,7 @@ class TestIndexRecommendation:
         assert recommendation.index_type == "btree"
         assert recommendation.estimated_improvement == 0.35
         assert recommendation.creation_cost == 50.0
-        assert (
-            recommendation.recommendation_reason
-            == "Frequent filtering by user_id and timestamp"
-        )
+        assert recommendation.recommendation_reason == "Frequent filtering by user_id and timestamp"
 
 
 class TestQueryOptimizer:
@@ -212,9 +209,7 @@ class TestQueryOptimizer:
 
     def test_query_optimizer_initialization(self):
         """测试查询优化器初始化"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             assert optimizer.capability_detector is not None
@@ -226,9 +221,7 @@ class TestQueryOptimizer:
 
     def test_optimize_query_basic(self, mock_query, mock_database_type):
         """测试基本查询优化"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             result = optimizer.optimize_query(mock_query, mock_database_type)
@@ -243,9 +236,7 @@ class TestQueryOptimizer:
 
     def test_analyze_execution_plan(self, mock_query, mock_database_type):
         """测试执行计划分析"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Mock the analyze method
@@ -267,9 +258,7 @@ class TestQueryOptimizer:
 
     def test_get_index_recommendations(self, mock_query, mock_database_type):
         """测试获取索引建议"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Mock the recommendation logic
@@ -287,9 +276,7 @@ class TestQueryOptimizer:
                     )
                 ],
             ):
-                recommendations = optimizer.get_index_recommendations(
-                    mock_query, mock_database_type
-                )
+                recommendations = optimizer.get_index_recommendations(mock_query, mock_database_type)
 
                 assert len(recommendations) == 1
                 assert recommendations[0].table_name == "users"
@@ -298,9 +285,7 @@ class TestQueryOptimizer:
 
     def test_optimization_caching(self, mock_query, mock_database_type):
         """测试优化缓存机制"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # First optimization
@@ -314,9 +299,7 @@ class TestQueryOptimizer:
 
     def test_get_optimization_statistics(self):
         """测试获取优化统计信息"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Add some optimization history
@@ -341,9 +324,7 @@ class TestQueryOptimizer:
 
     def test_clear_cache(self, mock_query, mock_database_type):
         """测试清除缓存"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Add some cache entries
@@ -367,26 +348,21 @@ class TestQueryOptimizer:
 
     def test_rule_priority_application(self, mock_query, mock_database_type):
         """测试优化规则优先级应用"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Verify that high priority rules are applied first
             high_priority_rules = [
                 r
                 for r in optimizer.optimization_rules
-                if r.priority == OptimizationPriority.HIGH
-                or r.priority == OptimizationPriority.CRITICAL
+                if r.priority == OptimizationPriority.HIGH or r.priority == OptimizationPriority.CRITICAL
             ]
 
             assert len(high_priority_rules) > 0
 
     def test_estimated_improvement_calculation(self, mock_query, mock_database_type):
         """测试性能提升估算"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             result = optimizer.optimize_query(mock_query, mock_database_type)
@@ -398,9 +374,7 @@ class TestQueryOptimizer:
         """测试多数据库类型支持"""
         from src.data_access.interfaces.i_data_access import DatabaseType
 
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             database_types = [
@@ -412,11 +386,7 @@ class TestQueryOptimizer:
             for db_type in database_types:
                 result = optimizer.optimize_query(mock_query, db_type)
                 assert isinstance(result, OptimizationResult)
-                assert (
-                    result.database_type == db_type
-                    if hasattr(result, "database_type")
-                    else True
-                )
+                assert result.database_type == db_type if hasattr(result, "database_type") else True
 
 
 class TestQueryOptimizerEdgeCases:
@@ -424,9 +394,7 @@ class TestQueryOptimizerEdgeCases:
 
     def test_empty_query_optimization(self):
         """测试空查询优化"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Mock empty query
@@ -444,9 +412,7 @@ class TestQueryOptimizerEdgeCases:
 
     def test_complex_query_optimization(self):
         """测试复杂查询优化"""
-        with patch(
-            "src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"
-        ):
+        with patch("src.data_access.optimizers.query_optimizer.DatabaseCapabilityDetector"):
             optimizer = QueryOptimizer()
 
             # Mock complex query

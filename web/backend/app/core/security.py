@@ -157,9 +157,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         )
     except Exception as e:
         # 捕获其他意外异常
-        print(
-            f"Unexpected error during database authentication, using fallback: {str(e)}"
-        )
+        print(f"Unexpected error during database authentication, using fallback: {str(e)}")
 
     # 回退到模拟用户数据 - 使用环境变量配置的密码
     # 获取管理员初始密码
@@ -389,9 +387,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
         # 检查用户是否活跃
         if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
 
         return User(
             id=user.id,
@@ -424,7 +420,5 @@ async def get_current_active_user(
         HTTPException: 用户未激活时返回400错误
     """
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     return current_user

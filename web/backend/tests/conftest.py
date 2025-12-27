@@ -23,7 +23,7 @@ def test_env():
     """会话级环境配置"""
     # 注意：不硬编码Mock开关，使用项目的统一配置
     os.environ["TESTING"] = "true"
-    yield
+    return
 
 
 @pytest.fixture

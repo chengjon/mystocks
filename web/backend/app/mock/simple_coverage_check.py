@@ -37,9 +37,7 @@ def check_api_mock_support():
                 "mock_manager",
             ]
 
-            has_mock_support = any(
-                indicator in content for indicator in mock_indicators
-            )
+            has_mock_support = any(indicator in content for indicator in mock_indicators)
 
             if has_mock_support:
                 supported_apis.append(py_file.stem)
@@ -48,9 +46,7 @@ def check_api_mock_support():
                 unsupported_apis.append(py_file.stem)
                 status = "❌"
 
-            print(
-                f"{status} {py_file.stem:25} {'Mock数据支持' if has_mock_support else '缺少Mock支持'}"
-            )
+            print(f"{status} {py_file.stem:25} {'Mock数据支持' if has_mock_support else '缺少Mock支持'}")
 
         except Exception as e:
             print(f"⚠️  {py_file.stem:25} 读取错误: {e}")

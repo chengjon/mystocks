@@ -105,14 +105,14 @@ MyStocks 5窗格TMUX开发工具链是一个完整的开发环境解决方案，
     "max_restarts": 10,
     "max_memory_restart": "1G"
   },
-  
+
   // 数据采集服务
   "mystocks-data-collector": {
     "script": "python",
     "args": "-m src.scripts.data_collector",
     "max_memory_restart": "512M"
   },
-  
+
   // GPU API服务 (可选)
   "mystocks-gpu-api": {
     "script": "python",
@@ -405,7 +405,7 @@ lnav -d logs/backend.log
 create_5pane_session() {
   # 自定义窗格大小和位置
   tmux resize-pane -t "$SESSION_NAME":0.0 -x 150 -y 40
-  
+
   # 添加更多窗格
   tmux split-window -t "$SESSION_NAME" -v
 }
@@ -433,12 +433,12 @@ psql -h localhost -c "SELECT 1;" 2>/dev/null && echo "OK" || echo "FAIL"
 
 ```sql
 -- lnav中的SQL查询示例
-SELECT 
+SELECT
   path,
   AVG(duration) as avg_duration,
   COUNT(*) as request_count,
   MAX(duration) as max_duration
-FROM log 
+FROM log
 WHERE timestamp > datetime('now', '-1 hour')
 GROUP BY path
 ORDER BY avg_duration DESC
@@ -518,7 +518,7 @@ git push origin main
 
 ---
 
-**版本**: v2.0  
-**最后更新**: 2025-11-16  
-**维护者**: MyStocks开发团队  
+**版本**: v2.0
+**最后更新**: 2025-11-16
+**维护者**: MyStocks开发团队
 **文档地址**: `/opt/claude/mystocks_spec/docs/guides/DEV_TOOLCHAIN_GUIDE.md`

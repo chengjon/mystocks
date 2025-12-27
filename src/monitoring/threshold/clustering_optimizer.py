@@ -74,9 +74,7 @@ class ClusteringOptimizer:
             largest_cluster_size = cluster_sizes[largest_cluster_label]
 
             # 获取最大聚类的边界
-            largest_cluster_values = values_array[
-                cluster_labels == largest_cluster_label
-            ]
+            largest_cluster_values = values_array[cluster_labels == largest_cluster_label]
 
             if threshold_type == "upper":
                 # 上阈值设为最大聚类的上界
@@ -107,8 +105,7 @@ class ClusteringOptimizer:
                     f"边界值: {boundary:.2f}",
                 ],
                 metadata={
-                    "num_clusters": len(unique_labels)
-                    - (1 if -1 in cluster_labels else 0),
+                    "num_clusters": len(unique_labels) - (1 if -1 in cluster_labels else 0),
                     "largest_cluster_size": largest_cluster_size,
                     "noise_points": np.sum(cluster_labels == -1),
                     "boundary_value": boundary,
@@ -127,9 +124,7 @@ class ClusteringOptimizer:
                 metadata={"error": True, "error_message": str(e)},
             )
 
-    def analyze_cluster_quality(
-        self, values: List[float], cluster_labels: np.ndarray
-    ) -> dict:
+    def analyze_cluster_quality(self, values: List[float], cluster_labels: np.ndarray) -> dict:
         """分析聚类质量"""
         try:
             if not values or len(cluster_labels) != len(values):
@@ -185,9 +180,7 @@ class ClusteringOptimizer:
             cluster_labels = clustering.fit_predict(values_array)
 
             # 噪声点被认为是异常值
-            anomaly_indices = [
-                i for i, label in enumerate(cluster_labels) if label == -1
-            ]
+            anomaly_indices = [i for i, label in enumerate(cluster_labels) if label == -1]
 
             return anomaly_indices
         except Exception as e:
@@ -225,7 +218,7 @@ class ClusteringOptimizer:
                                 "num_clusters": quality["num_clusters"],
                                 "silhouette_score": quality["silhouette_score"],
                             }
-                    except:
+                    except Exception:
                         continue
 
             return best_params

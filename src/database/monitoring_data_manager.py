@@ -229,19 +229,13 @@ class MonitoringDataManager:
             filtered_alerts = alerts
 
             if "severity" in params:
-                filtered_alerts = [
-                    a for a in filtered_alerts if a["severity"] == params["severity"]
-                ]
+                filtered_alerts = [a for a in filtered_alerts if a["severity"] == params["severity"]]
 
             if "type" in params:
-                filtered_alerts = [
-                    a for a in filtered_alerts if a["type"] == params["type"]
-                ]
+                filtered_alerts = [a for a in filtered_alerts if a["type"] == params["type"]]
 
             if "status" in params:
-                filtered_alerts = [
-                    a for a in filtered_alerts if a["status"] == params["status"]
-                ]
+                filtered_alerts = [a for a in filtered_alerts if a["status"] == params["status"]]
 
             return filtered_alerts
 
@@ -296,9 +290,7 @@ class MonitoringDataManager:
         self.performance_stats["total_queries"] += 1
         total = self.performance_stats["total_queries"]
         current_avg = self.performance_stats["avg_response_time"]
-        self.performance_stats["avg_response_time"] = (
-            current_avg * (total - 1) + response_time
-        ) / total
+        self.performance_stats["avg_response_time"] = (current_avg * (total - 1) + response_time) / total
 
         # 模拟错误率（实际中应该基于真实错误计数）
         self.performance_stats["error_rate"] = 0.02  # 2%错误率

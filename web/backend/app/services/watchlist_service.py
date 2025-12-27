@@ -650,9 +650,7 @@ class WatchlistService:
             print(f"获取分组自选股时发生错误: {e}")
             return []
 
-    def move_stock_to_group(
-        self, user_id: int, symbol: str, from_group_id: int, to_group_id: int
-    ) -> bool:
+    def move_stock_to_group(self, user_id: int, symbol: str, from_group_id: int, to_group_id: int) -> bool:
         """
         将股票从一个分组移动到另一个分组
 
@@ -688,9 +686,7 @@ class WatchlistService:
                     SET group_id = %s
                     WHERE user_id = %s AND stock_code = %s AND group_id = %s
                     """
-                    cur.execute(
-                        update_sql, (to_group_id, user_id, stock_code, from_group_id)
-                    )
+                    cur.execute(update_sql, (to_group_id, user_id, stock_code, from_group_id))
                     updated_count = cur.rowcount
                 conn.commit()
                 return updated_count > 0

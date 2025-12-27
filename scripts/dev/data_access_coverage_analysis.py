@@ -4,9 +4,7 @@
 分析 PostgreSQL 和 TDengine 访问层的测试覆盖率现状
 """
 
-import os
 import subprocess
-import sys
 from pathlib import Path
 
 
@@ -126,7 +124,7 @@ def identify_test_gaps(module_path, current_coverage, target_coverage):
 
     gap = target_coverage - current_coverage
     if gap <= 0:
-        print(f"✅ 已达到目标覆盖率")
+        print("✅ 已达到目标覆盖率")
         return []
 
     print(f"📈 需要提升 {gap}% 的覆盖率")
@@ -192,7 +190,7 @@ def identify_test_gaps(module_path, current_coverage, target_coverage):
 
 def generate_test_plan(postgresql_coverage, tdengine_coverage):
     """生成测试改进计划"""
-    print(f"\n📋 测试覆盖率改进计划:")
+    print("\n📋 测试覆盖率改进计划:")
     print(f"🔹 PostgreSQL Access: {postgresql_coverage}% (目标: 67%)")
     print(f"🔹 TDengine Access: {tdengine_coverage}% (目标: 56%)")
 
@@ -250,7 +248,7 @@ def main():
     # 5. 生成改进计划
     plan = generate_test_plan(pg_coverage, td_coverage)
 
-    print(f"\n📋 测试覆盖率改进计划:")
+    print("\n📋 测试覆盖率改进计划:")
     for item in plan:
         print(
             f"  🎯 {item['module']}: {item['current']}% → {item['target']}% (优先级: {item['priority']})"
@@ -272,16 +270,16 @@ def main():
     with open("data_access_coverage_analysis.json", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    print(f"\n💾 分析结果已保存到: data_access_coverage_analysis.json")
+    print("\n💾 分析结果已保存到: data_access_coverage_analysis.json")
 
     # 7. 生成下一步行动计划
-    print(f"\n🚀 下一步行动计划:")
+    print("\n🚀 下一步行动计划:")
     if pg_coverage < 67:
         print(f"  1. 为 PostgreSQL Access 创建单元测试 (需要提升 {67 - pg_coverage}%)")
     if td_coverage < 56:
         print(f"  2. 为 TDengine Access 创建单元测试 (需要提升 {56 - td_coverage}%)")
-    print(f"  3. 运行覆盖率验证测试")
-    print(f"  4. 更新技术债务修复计划")
+    print("  3. 运行覆盖率验证测试")
+    print("  4. 更新技术债务修复计划")
 
 
 if __name__ == "__main__":

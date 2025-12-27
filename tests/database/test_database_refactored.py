@@ -195,9 +195,7 @@ class TestDatabaseQueryExecutor:
             end_time = time.time()
 
             total_time = end_time - start_time
-            assert total_time < 2.0, (
-                f"Query performance benchmark failed: {total_time:.2f}s > 2.0s"
-            )
+            assert total_time < 2.0, f"Query performance benchmark failed: {total_time:.2f}s > 2.0s"
 
 
 class TestTechnicalIndicatorCalculator:
@@ -355,9 +353,7 @@ class TestMonitoringDataManager:
             end_time = time.time()
 
             total_time = end_time - start_time
-            assert total_time < 1.0, (
-                f"Monitoring query performance failed: {total_time:.2f}s > 1.0s"
-            )
+            assert total_time < 1.0, f"Monitoring query performance failed: {total_time:.2f}s > 1.0s"
 
 
 if __name__ == "__main__":

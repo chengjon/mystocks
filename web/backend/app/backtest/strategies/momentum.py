@@ -131,9 +131,7 @@ class MomentumStrategy(BaseStrategy):
             if len(volumes) >= ma_period:
                 avg_volume = sum(volumes[-ma_period:]) / ma_period
                 current_volume = int(current_data.get("volume", 0))
-                volume_confirmed = (
-                    current_volume > avg_volume * self.parameters["volume_ratio"]
-                )
+                volume_confirmed = current_volume > avg_volume * self.parameters["volume_ratio"]
 
         # 买入信号
         if not has_position:
@@ -148,9 +146,7 @@ class MomentumStrategy(BaseStrategy):
                 if not volume_confirmed:
                     return None
 
-                strength = min(
-                    1.0, (current_price - breakout_price) / breakout_price / 0.05
-                )
+                strength = min(1.0, (current_price - breakout_price) / breakout_price / 0.05)
 
                 return StrategySignal(
                     symbol=symbol,

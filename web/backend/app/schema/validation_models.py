@@ -39,18 +39,10 @@ class StockSymbolModel(BaseModel):
 class DateRangeModel(BaseModel):
     """日期范围验证模型"""
 
-    start_date: datetime = Field(
-        ..., description="开始日期，格式: 2025-12-01或2025-12-01T00:00:00"
-    )
-    end_date: datetime = Field(
-        ..., description="结束日期，格式: 2025-12-31或2025-12-31T23:59:59"
-    )
+    start_date: datetime = Field(..., description="开始日期，格式: 2025-12-01或2025-12-01T00:00:00")
+    end_date: datetime = Field(..., description="结束日期，格式: 2025-12-31或2025-12-31T23:59:59")
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {"start_date": "2025-01-01", "end_date": "2025-12-31"}
-        }
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {"start_date": "2025-01-01", "end_date": "2025-12-31"}})
 
     @field_validator("end_date")
     @classmethod
@@ -121,25 +113,19 @@ class PaginationModel(BaseModel):
     page: int = Field(default=1, ge=1, le=10000, description="页码（从1开始）")
     page_size: int = Field(default=20, ge=1, le=500, description="每页数量（1-500）")
 
-    model_config = ConfigDict(
-        json_schema_extra={"example": {"page": 1, "page_size": 20}}
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {"page": 1, "page_size": 20}})
 
 
 class StockListQueryModel(PaginationModel):
     """股票列表查询模型"""
 
-    query: Optional[str] = Field(
-        default=None, max_length=100, description="搜索关键词（可选）"
-    )
+    query: Optional[str] = Field(default=None, max_length=100, description="搜索关键词（可选）")
     sort_by: Optional[str] = Field(
         default="symbol",
         pattern=r"^(symbol|name|price|change|volume)$",
         description="排序字段",
     )
-    sort_order: Optional[str] = Field(
-        default="asc", pattern=r"^(asc|desc)$", description="排序顺序"
-    )
+    sort_order: Optional[str] = Field(default="asc", pattern=r"^(asc|desc)$", description="排序顺序")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -158,15 +144,9 @@ class TradeOrderModel(BaseModel):
     """交易订单模型"""
 
     symbol: str = Field(..., min_length=1, max_length=20, description="股票代码")
-    order_type: str = Field(
-        ..., pattern=r"^(buy|sell)$", description="订单类型（buy/sell）"
-    )
-    price: float = Field(
-        ..., gt=0, le=1000000, description="价格（大于0，不超过100万）"
-    )
-    quantity: int = Field(
-        ..., gt=0, le=10000000, description="数量（大于0，不超过1000万）"
-    )
+    order_type: str = Field(..., pattern=r"^(buy|sell)$", description="订单类型（buy/sell）")
+    price: float = Field(..., gt=0, le=1000000, description="价格（大于0，不超过100万）")
+    quantity: int = Field(..., gt=0, le=10000000, description="数量（大于0，不超过1000万）")
     order_validity: Optional[str] = Field(
         default="gtc",
         pattern=r"^(gtc|gtd|ioc|fok)$",
@@ -212,9 +192,7 @@ class ResponseModel(BaseModel):
     code: str = Field(..., description="响应代码")
     message: str = Field(..., description="响应消息")
     data: Optional[Any] = Field(default=None, description="响应数据")
-    timestamp: float = Field(
-        default_factory=lambda: datetime.now().timestamp(), description="时间戳"
-    )
+    timestamp: float = Field(default_factory=lambda: datetime.now().timestamp(), description="时间戳")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -234,9 +212,7 @@ class ErrorResponseModel(BaseModel):
     code: str = Field(..., description="错误代码")
     message: str = Field(..., description="错误消息")
     details: Optional[Any] = Field(default=None, description="错误详情")
-    timestamp: float = Field(
-        default_factory=lambda: datetime.now().timestamp(), description="时间戳"
-    )
+    timestamp: float = Field(default_factory=lambda: datetime.now().timestamp(), description="时间戳")
 
     model_config = ConfigDict(
         json_schema_extra={

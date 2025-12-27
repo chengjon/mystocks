@@ -91,9 +91,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 )
             elif mode == "ignore":
                 # PostgreSQL的ignore逻辑需要特殊处理
-                self._upsert_data_with_engine(
-                    processed_data, actual_table_name, engine, classification
-                )
+                self._upsert_data_with_engine(processed_data, actual_table_name, engine, classification)
             else:  # append
                 processed_data.to_sql(
                     actual_table_name,
@@ -103,12 +101,8 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     method="multi",
                 )
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return True
 
@@ -150,9 +144,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             database_name = DataManager().get_database_name(classification)
 
             # 构建查询语句
-            query = self._build_analytical_query(
-                classification, actual_table_name, filters, **kwargs
-            )
+            query = self._build_analytical_query(classification, actual_table_name, filters, **kwargs)
 
             # 执行查询
             engine = self._get_postgresql_engine(database_name)
@@ -161,12 +153,8 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             # 后处理
             processed_data = self._postprocess_analytical_data(data, classification)
 
-            self.monitoring_db.log_operation_result(
-                operation_id, True, len(processed_data)
-            )
-            logger.info(
-                f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录"
-            )
+            self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
+            logger.info(f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
 
             return processed_data
 
@@ -288,24 +276,18 @@ class PostgreSQLDataAccess(IDataAccessLayer):
         # 创建引擎
         return create_engine(connection_string)
 
-    def _preprocess_analytical_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _preprocess_analytical_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """预处理分析数据"""
         processed_data = normalize_dataframe(data)
 
         # 确保日期时间列是正确的数据类型
         for col in processed_data.columns:
             if "date" in col.lower() or "time" in col.lower():
-                processed_data[col] = pd.to_datetime(
-                    processed_data[col], errors="coerce"
-                )
+                processed_data[col] = pd.to_datetime(processed_data[col], errors="coerce")
 
         return processed_data
 
-    def _postprocess_analytical_data(
-        self, data: pd.DataFrame, classification: DataClassification
-    ) -> pd.DataFrame:
+    def _postprocess_analytical_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
         """后处理分析数据"""
         if data.empty:
             return data

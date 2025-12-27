@@ -53,9 +53,7 @@ class MockDataSource(DataSourceInterface):
 
     def get_real_time_quote(self, stock_code: str) -> Dict:
         """获取实时行情"""
-        quotes = mock_Stocks.get_real_time_quote(
-            [stock_code] if isinstance(stock_code, str) else stock_code
-        )
+        quotes = mock_Stocks.get_real_time_quote([stock_code] if isinstance(stock_code, str) else stock_code)
         quote = quotes[0] if isinstance(quotes, list) and quotes else {}
         # 模拟数据落地
         if quote:
@@ -83,9 +81,7 @@ class MockDataSource(DataSourceInterface):
         """获取历史收益"""
         return mock_Stocks.get_history_profit(stock_code, days)
 
-    def get_technical_indicators(
-        self, stock_code: str, start_date: str, end_date: str
-    ) -> List[Dict]:
+    def get_technical_indicators(self, stock_code: str, start_date: str, end_date: str) -> List[Dict]:
         """获取技术指标"""
         # Mock TechnicalAnalysis模块可能没有完全匹配的函数，这里使用get_all_indicators作为替代
         all_indicators = mock_TechnicalAnalysis.get_all_indicators(stock_code)
@@ -116,9 +112,7 @@ class MockDataSource(DataSourceInterface):
                                         "symbol": stock_code,
                                         "calc_date": start_date,
                                         "indicator_name": f"{indicator_type}_{name}_{sub_name}",
-                                        "indicator_value": sub_value
-                                        if isinstance(sub_value, (int, float))
-                                        else 0.0,
+                                        "indicator_value": sub_value if isinstance(sub_value, (int, float)) else 0.0,
                                         "indicator_params": {},
                                     }
                                 )
@@ -129,9 +123,7 @@ class MockDataSource(DataSourceInterface):
                                     "symbol": stock_code,
                                     "calc_date": start_date,
                                     "indicator_name": f"{indicator_type}_{name}",
-                                    "indicator_value": value
-                                    if isinstance(value, (int, float))
-                                    else 0.0,
+                                    "indicator_value": value if isinstance(value, (int, float)) else 0.0,
                                     "indicator_params": {},
                                 }
                             )
@@ -202,9 +194,7 @@ class MockDataSource(DataSourceInterface):
         """执行自定义查询"""
         return mock_Wencai.execute_custom_query(request)
 
-    def get_query_results(
-        self, query_name: str, limit: int = 20, offset: int = 0
-    ) -> Dict:
+    def get_query_results(self, query_name: str, limit: int = 20, offset: int = 0) -> Dict:
         """获取查询结果"""
         return mock_Wencai.get_query_results(query_name, limit, offset)
 
@@ -240,15 +230,11 @@ class MockDataSource(DataSourceInterface):
         """获取指标详情"""
         return mock_IndicatorLibrary.get_indicator_detail(indicator_id)
 
-    def get_indicator_data(
-        self, indicator_id: str, symbol: str, days: int = 30
-    ) -> pd.DataFrame:
+    def get_indicator_data(self, indicator_id: str, symbol: str, days: int = 30) -> pd.DataFrame:
         """获取指标数据表格"""
         return mock_IndicatorLibrary.get_indicator_data(indicator_id, symbol, days)
 
-    def get_data_from_adapter(
-        self, adapter_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_from_adapter(self, adapter_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """从指定适配器获取数据（统一适配器调用入口）"""
         # Mock模式下返回模拟数据
         return {
@@ -258,9 +244,7 @@ class MockDataSource(DataSourceInterface):
             "data": "mock_data",
         }
 
-    def get_data_with_failover(
-        self, data_type: str, method: str, **kwargs
-    ) -> Union[Dict, List[Dict], pd.DataFrame]:
+    def get_data_with_failover(self, data_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
         """使用故障转移机制获取数据"""
         # Mock模式下返回模拟数据
         return {

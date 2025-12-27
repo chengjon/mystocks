@@ -5,10 +5,8 @@
 """
 
 import sys
-import os
 import time
 import pandas as pd
-from datetime import datetime, date
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -23,7 +21,6 @@ from src.utils.data_format_converter import (
     normalize_api_response_format,
     normalize_stock_list_format,
     normalize_indicator_data_format,
-    test_format_normalization,
 )
 
 
@@ -118,7 +115,6 @@ class TestNormalizeStockDataFormat:
         result = normalize_stock_data_format(df)
 
         # 验证异常处理：high字段应该被转为NaN因为errors='coerce'
-        import numpy as np
 
         assert pd.isna(result.iloc[0]["high"])
         # 其他正常字段应该被转换
@@ -935,7 +931,6 @@ class TestIntegrationScenarios:
     def test_concurrent_processing(self):
         """测试并发处理"""
         import concurrent.futures
-        import threading
 
         # 创建多个处理任务
         def create_test_data(batch_id):

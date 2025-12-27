@@ -69,9 +69,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
 
             # 根据数据类型调用相应的服务
             if data_type in ["daily", "weekly", "monthly"]:
-                return self.kline_service.get_stock_daily(
-                    symbol, start_date, end_date, params.get("adjust", "qfq")
-                )
+                return self.kline_service.get_stock_daily(symbol, start_date, end_date, params.get("adjust", "qfq"))
             elif data_type == "minute":
                 return self.kline_service.get_minute_kline(
                     symbol,
@@ -117,9 +115,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         try:
             # 尝试获取TDX连接
             connection = self._get_tdx_connection()
-            return (
-                connection and hasattr(connection, "connected") and connection.connected
-            )
+            return connection and hasattr(connection, "connected") and connection.connected
         except Exception as e:
             logger.error(f"TDX连接验证失败: {e}")
             return False
@@ -180,9 +176,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         adjust: str = "qfq",
     ) -> Dict:
         """获取股票K线数据（多种周期）"""
-        return self.kline_service.get_stock_kline(
-            symbol, period, start_date, end_date, adjust
-        )
+        return self.kline_service.get_stock_kline(symbol, period, start_date, end_date, adjust)
 
     def get_index_kline(
         self,
@@ -192,9 +186,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         end_date: Optional[str] = None,
     ) -> Dict:
         """获取指数K线数据（多种周期）"""
-        return self.kline_service.get_index_kline(
-            index_code, period, start_date, end_date
-        )
+        return self.kline_service.get_index_kline(index_code, period, start_date, end_date)
 
     def get_minute_kline(
         self, symbol: str, period: str = "1min", count: int = 240, adjust: str = "qfq"
@@ -329,10 +321,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             afternoon_start = datetime.strptime("13:00", "%H:%M").time()
             afternoon_end = datetime.strptime("15:00", "%H:%M").time()
 
-            return (
-                morning_start <= current_time <= morning_end
-                or afternoon_start <= current_time <= afternoon_end
-            )
+            return morning_start <= current_time <= morning_end or afternoon_start <= current_time <= afternoon_end
 
         except Exception as e:
             logger.error(f"判断交易时间失败: {e}")
@@ -346,9 +335,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             connection = self._get_tdx_connection()
 
             return {
-                "connected": connection
-                and hasattr(connection, "connected")
-                and connection.connected,
+                "connected": connection and hasattr(connection, "connected") and connection.connected,
                 "server": f"{self.tdx_host}:{self.tdx_port}",
                 "server_config": self.server_config is not None,
                 "services": {

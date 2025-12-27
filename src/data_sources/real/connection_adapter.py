@@ -51,9 +51,7 @@ class PostgreSQLConnectionAdapter:
         """初始化连接池"""
         try:
             # 获取PostgreSQL连接配置
-            db_config = self.database_manager.db_configs.get(
-                DatabaseType.POSTGRESQL, {}
-            )
+            db_config = self.database_manager.db_configs.get(DatabaseType.POSTGRESQL, {})
 
             # 构建DSN
             dsn_parts = []
@@ -71,9 +69,7 @@ class PostgreSQLConnectionAdapter:
             dsn = " ".join(dsn_parts)
 
             # 创建连接池
-            self._connection_pool = ConnectionPoolManager.get_pool(
-                dsn, self.pool_config
-            )
+            self._connection_pool = ConnectionPoolManager.get_pool(dsn, self.pool_config)
             self._initialized = True
 
             logger.info("PostgreSQL连接池初始化成功")
@@ -158,9 +154,7 @@ class PostgreSQLConnectionAdapter:
             pool = self._ensure_pool_initialized()
             return pool.execute_query(query, params, fetch)
 
-    def execute_transaction(
-        self, db_type: DatabaseType, db_name: str, queries: List[tuple], **kwargs
-    ) -> bool:
+    def execute_transaction(self, db_type: DatabaseType, db_name: str, queries: List[tuple], **kwargs) -> bool:
         """
         执行事务（连接池版本）
 
@@ -181,9 +175,7 @@ class PostgreSQLConnectionAdapter:
             pool = self._ensure_pool_initialized()
             return pool.execute_transaction(queries)
 
-    def _execute_transaction_legacy(
-        self, db_type: DatabaseType, db_name: str, queries: List[tuple], **kwargs
-    ) -> bool:
+    def _execute_transaction_legacy(self, db_type: DatabaseType, db_name: str, queries: List[tuple], **kwargs) -> bool:
         """传统事务执行方式"""
         conn = self.database_manager.get_connection(db_type, db_name, **kwargs)
         try:
@@ -261,9 +253,7 @@ class EnhancedPostgreSQLRelationalDataSource:
     使用连接池管理器提升性能和可靠性
     """
 
-    def __init__(
-        self, connection_pool_size: int = 20, pool_config: Optional[PoolConfig] = None
-    ):
+    def __init__(self, connection_pool_size: int = 20, pool_config: Optional[PoolConfig] = None):
         """
         初始化增强的PostgreSQL关系数据源
 
@@ -297,9 +287,7 @@ class EnhancedPostgreSQLRelationalDataSource:
         self.connection_adapter = PostgreSQLConnectionAdapter(db_manager, pool_config)
         self._connection_pool_size = connection_pool_size
 
-        logger.info(
-            f"增强PostgreSQL关系数据源初始化完成 (连接池: {connection_pool_size})"
-        )
+        logger.info(f"增强PostgreSQL关系数据源初始化完成 (连接池: {connection_pool_size})")
 
     # ==================== 连接池管理方法 ====================
 
@@ -330,9 +318,7 @@ class EnhancedPostgreSQLRelationalDataSource:
         health_status = self.connection_adapter.health_check()
         if health_status:
             return {
-                "overall_status": "healthy"
-                if health_status["status"] == "healthy"
-                else "degraded",
+                "overall_status": "healthy" if health_status["status"] == "healthy" else "degraded",
                 **health_status,
             }
         else:
@@ -381,9 +367,7 @@ class EnhancedPostgreSQLRelationalDataSource:
                 )
             else:
                 query = (
-                    query_builder.select(
-                        "id", "user_id", "symbol", "list_type", "note", "added_at"
-                    )
+                    query_builder.select("id", "user_id", "symbol", "list_type", "note", "added_at")
                     .from_table("watchlist", "w")
                     .where("w.user_id = %s", user_id)
                     .where("list_type = %s", list_type)
@@ -392,9 +376,7 @@ class EnhancedPostgreSQLRelationalDataSource:
 
             result = query.fetch_all()
 
-            logger.info(
-                f"使用连接池获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}"
-            )
+            logger.info(f"使用连接池获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}")
             return result
 
         except Exception as e:
@@ -416,9 +398,7 @@ class EnhancedPostgreSQLRelationalDataSource:
             queries = [(op["sql"], op.get("params")) for op in operations]
 
             # 使用连接池执行事务
-            success = self.connection_adapter.execute_transaction(
-                DatabaseType.POSTGRESQL, "mystocks", queries
-            )
+            success = self.connection_adapter.execute_transaction(DatabaseType.POSTGRESQL, "mystocks", queries)
 
             logger.info(f"批量操作执行成功: 操作数={len(operations)}, 成功={success}")
             return success
@@ -444,14 +424,10 @@ class EnhancedPostgreSQLRelationalDataSource:
             "performance_metrics": {
                 "average_wait_time_ms": pool_info.get("average_wait_time", 0) * 1000,
                 "failed_request_rate": (
-                    pool_info.get("failed_requests", 0)
-                    / max(pool_info.get("total_requests", 1), 1.0)
+                    pool_info.get("failed_requests", 0) / max(pool_info.get("total_requests", 1), 1.0)
                 )
                 * 100,
-                "connection_utilization": (
-                    pool_info.get("current_active", 0)
-                    / pool_info.get("max_connections", 1)
-                )
+                "connection_utilization": (pool_info.get("current_active", 0) / pool_info.get("max_connections", 1))
                 * 100,
             },
         }

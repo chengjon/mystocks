@@ -116,11 +116,7 @@ class IntegrityChecker:
                     msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.warning(msg)
 
-            is_valid = (
-                details["tables_failed"] == 0
-                and details["row_count_match"]
-                and len(details["errors"]) == 0
-            )
+            is_valid = details["tables_failed"] == 0 and details["row_count_match"] and len(details["errors"]) == 0
 
             return is_valid, details
 
@@ -207,11 +203,7 @@ class IntegrityChecker:
                     msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
                     logger.warning(msg)
 
-            is_valid = (
-                details["tables_failed"] == 0
-                and details["row_count_match"]
-                and len(details["errors"]) == 0
-            )
+            is_valid = details["tables_failed"] == 0 and details["row_count_match"] and len(details["errors"]) == 0
 
             return is_valid, details
 
@@ -221,9 +213,7 @@ class IntegrityChecker:
             details["errors"].append(error_msg)
             return False, details
 
-    def generate_integrity_report(
-        self, verification_result: Tuple[bool, Dict[str, Any]], output_path: str
-    ) -> bool:
+    def generate_integrity_report(self, verification_result: Tuple[bool, Dict[str, Any]], output_path: str) -> bool:
         """
         生成完整性验证报告
 
@@ -263,9 +253,7 @@ def main():
     backup_path = "path/to/backup"
     backup_metadata = {"tables_backed_up": ["table1", "table2"]}
 
-    result = checker.verify_backup_integrity(
-        backup_path, backup_metadata, expected_row_count=1000
-    )
+    result = checker.verify_backup_integrity(backup_path, backup_metadata, expected_row_count=1000)
 
     print(f"验证结果: {result[0]}")
     print(f"详细信息: {result[1]}")

@@ -105,9 +105,7 @@ class BollingerBreakoutStrategy(BaseStrategy):
             return 0
         return (upper - lower) / middle
 
-    def _calculate_band_position(
-        self, price: float, upper: float, lower: float
-    ) -> float:
+    def _calculate_band_position(self, price: float, upper: float, lower: float) -> float:
         """
         计算价格在布林带中的位置
 
@@ -145,9 +143,7 @@ class BollingerBreakoutStrategy(BaseStrategy):
 
         return True
 
-    def _check_reversal_signal(
-        self, symbol: str, current_price: float, lower: float, middle: float
-    ) -> bool:
+    def _check_reversal_signal(self, symbol: str, current_price: float, lower: float, middle: float) -> bool:
         """检查下轨反转信号"""
         # 价格触及下轨
         if current_price > lower * 1.02:  # 允许2%偏差
@@ -266,9 +262,7 @@ class BollingerBreakoutStrategy(BaseStrategy):
 
             # 突破型信号
             if strategy_mode in ["breakout", "mixed"]:
-                if self._check_breakout_signal(
-                    symbol, current_price, upper, middle, current_data
-                ):
+                if self._check_breakout_signal(symbol, current_price, upper, middle, current_data):
                     # 计算仓位大小
                     strength = self.parameters["base_position_size"]
                     if self.parameters["position_sizing"] == "bandwidth":
@@ -293,9 +287,7 @@ class BollingerBreakoutStrategy(BaseStrategy):
                             "upper": upper,
                             "middle": middle,
                             "lower": lower,
-                            "bandwidth": self._calculate_bandwidth(
-                                upper, lower, middle
-                            ),
+                            "bandwidth": self._calculate_bandwidth(upper, lower, middle),
                         },
                     )
 
@@ -325,9 +317,7 @@ class BollingerBreakoutStrategy(BaseStrategy):
                             "upper": upper,
                             "middle": middle,
                             "lower": lower,
-                            "bandwidth": self._calculate_bandwidth(
-                                upper, lower, middle
-                            ),
+                            "bandwidth": self._calculate_bandwidth(upper, lower, middle),
                         },
                     )
 

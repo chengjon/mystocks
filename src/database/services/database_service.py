@@ -148,11 +148,7 @@ class DatabaseService(BaseDatabaseService):
         """
         try:
             if not query_params:
-                return {
-                    "success": False,
-                    "error": "缺少查询参数",
-                    "data": None
-                }
+                return {"success": False, "error": "缺少查询参数", "data": None}
 
             # 导入问财相关功能
             from src.routes.wencai_routes import execute_custom_query, get_query_results
@@ -169,20 +165,10 @@ class DatabaseService(BaseDatabaseService):
                 # 执行预定义查询
                 result = get_query_results(query_name, query_params)
             else:
-                return {
-                    "success": False,
-                    "error": "缺少查询名称或查询文本",
-                    "data": None
-                }
+                return {"success": False, "error": "缺少查询名称或查询文本", "data": None}
 
             logger.info(f"问财查询执行成功: {query_name or query_text}")
-            return {
-                "success": True,
-                "data": result,
-                "query_name": query_name,
-                "query_text": query_text,
-                "pages": pages
-            }
+            return {"success": True, "data": result, "query_name": query_name, "query_text": query_text, "pages": pages}
 
         except Exception as e:
             return self._handle_database_error(e, "执行问财查询")
@@ -210,12 +196,7 @@ class DatabaseService(BaseDatabaseService):
             status = params.get("status") if params else None
 
             # 获取告警列表
-            alerts = alert_manager.get_alerts(
-                limit=limit,
-                offset=offset,
-                severity=severity,
-                status=status
-            )
+            alerts = alert_manager.get_alerts(limit=limit, offset=offset, severity=severity, status=status)
 
             logger.info(f"获取监控告警成功，返回{len(alerts)}条记录")
             return alerts
@@ -238,13 +219,14 @@ class DatabaseService(BaseDatabaseService):
 
                 # 获取当前时间戳
                 from datetime import datetime, timedelta
+
                 now = datetime.now()
-                last_24h = now - timedelta(hours=24)
+                now - timedelta(hours=24)
 
                 # 初始化监控管理器
                 alert_manager = AlertManager(monitoring_db)
-                perf_monitor = PerformanceMonitor(monitoring_db)
-                quality_monitor = DataQualityMonitor(monitoring_db)
+                PerformanceMonitor(monitoring_db)
+                DataQualityMonitor(monitoring_db)
 
                 # 获取告警统计
                 total_alerts = len(alert_manager.get_alerts(limit=10000))
@@ -253,7 +235,7 @@ class DatabaseService(BaseDatabaseService):
 
                 # 获取性能统计
                 avg_response_time = 0.0  # 简化实现，实际可从性能监控器获取
-                slow_queries_count = 0   # 简化实现
+                slow_queries_count = 0  # 简化实现
 
                 # 获取数据质量统计
                 quality_score = 95.0  # 简化实现，实际可从数据质量监控器获取
@@ -264,20 +246,20 @@ class DatabaseService(BaseDatabaseService):
                         "total_alerts": total_alerts,
                         "active_alerts": active_alerts,
                         "critical_alerts": critical_alerts,
-                        "resolved_today": 0  # 简化实现
+                        "resolved_today": 0,  # 简化实现
                     },
                     "performance_statistics": {
                         "avg_response_time_ms": avg_response_time,
                         "slow_queries_count": slow_queries_count,
-                        "uptime_percentage": 99.9  # 简化实现
+                        "uptime_percentage": 99.9,  # 简化实现
                     },
                     "data_quality_statistics": {
                         "overall_score": quality_score,
                         "completeness_score": 97.0,  # 简化实现
-                        "accuracy_score": 98.0,      # 简化实现
-                        "freshness_score": 95.0      # 简化实现
+                        "accuracy_score": 98.0,  # 简化实现
+                        "freshness_score": 95.0,  # 简化实现
                     },
-                    "system_health": "healthy" if critical_alerts == 0 else "warning"
+                    "system_health": "healthy" if critical_alerts == 0 else "warning",
                 }
 
                 logger.info("获取监控摘要成功")
@@ -293,6 +275,7 @@ class DatabaseService(BaseDatabaseService):
             # 简化的交易信号实现
             # 在实际系统中，这里应该从策略引擎获取实时信号
             from datetime import datetime
+
             signals = {
                 "symbol": symbol,
                 "timestamp": datetime.now().isoformat(),
@@ -302,17 +285,17 @@ class DatabaseService(BaseDatabaseService):
                         "action": "BUY",
                         "confidence": 0.75,
                         "price": 0.0,
-                        "reason": "5日均线上穿20日均线"
+                        "reason": "5日均线上穿20日均线",
                     },
                     {
                         "type": "RSI_OVERSOLD",
                         "action": "BUY",
                         "confidence": 0.65,
                         "price": 0.0,
-                        "reason": "RSI低于30，超卖信号"
-                    }
+                        "reason": "RSI低于30，超卖信号",
+                    },
                 ],
-                "overall_recommendation": "BUY"
+                "overall_recommendation": "BUY",
             }
 
             logger.info(f"获取交易信号成功: {symbol}")
@@ -329,23 +312,14 @@ class DatabaseService(BaseDatabaseService):
                 "turtle_trading": {
                     "name": "海龟交易策略",
                     "description": "基于唐奇安通道的趋势跟踪策略",
-                    "parameters": {
-                        "entry_period": 20,
-                        "exit_period": 10,
-                        "atr_period": 14,
-                        "risk_ratio": 2.0
-                    },
-                    "status": "active"
+                    "parameters": {"entry_period": 20, "exit_period": 10, "atr_period": 14, "risk_ratio": 2.0},
+                    "status": "active",
                 },
                 "ma_crossover": {
                     "name": "均线交叉策略",
                     "description": "基于移动平均线交叉的趋势策略",
-                    "parameters": {
-                        "short_period": 5,
-                        "long_period": 20,
-                        "signal_threshold": 0.02
-                    },
-                    "status": "active"
+                    "parameters": {"short_period": 5, "long_period": 20, "signal_threshold": 0.02},
+                    "status": "active",
                 },
                 "rsi_mean_reversion": {
                     "name": "RSI均值回归策略",
@@ -354,10 +328,10 @@ class DatabaseService(BaseDatabaseService):
                         "rsi_period": 14,
                         "oversold_threshold": 30,
                         "overbought_threshold": 70,
-                        "exit_threshold": 50
+                        "exit_threshold": 50,
                     },
-                    "status": "active"
-                }
+                    "status": "active",
+                },
             }
 
             logger.info(f"获取策略定义成功，共{len(strategies)}个策略")
@@ -376,7 +350,9 @@ class DatabaseService(BaseDatabaseService):
             # 解析参数
             strategy_name = params.get("strategy_name") if params else None
             symbol = params.get("symbol") if params else None
-            start_date = params.get("start_date") if params else (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+            start_date = (
+                params.get("start_date") if params else (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+            )
 
             # 模拟策略结果数据
             results = {
@@ -390,13 +366,9 @@ class DatabaseService(BaseDatabaseService):
                     "sharpe_ratio": 1.25,
                     "max_drawdown": 0.08,
                     "win_rate": 0.62,
-                    "total_trades": 45
+                    "total_trades": 45,
                 },
-                "metrics": {
-                    "profit_factor": 1.68,
-                    "avg_trade_return": 0.022,
-                    "volatility": 0.14
-                }
+                "metrics": {"profit_factor": 1.68, "avg_trade_return": 0.022, "volatility": 0.14},
             }
 
             logger.info(f"获取策略结果成功: {strategy_name or '默认策略'}")
@@ -412,14 +384,10 @@ class DatabaseService(BaseDatabaseService):
                 "services": {
                     "stock_service": self.stock_service is not None,
                     "technical_service": self.technical_service is not None,
-                    "database_connection": self.postgresql_access is not None
+                    "database_connection": self.postgresql_access is not None,
                 },
                 "version": "3.0.0 (重构版本)",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e),
-                "timestamp": datetime.now().isoformat()
-            }
+            return {"success": False, "error": str(e), "timestamp": datetime.now().isoformat()}

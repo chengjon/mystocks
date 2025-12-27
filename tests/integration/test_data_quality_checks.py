@@ -79,9 +79,7 @@ class TestDataQualityChecks(unittest.TestCase):
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  缺失率: {result.get('missing_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(
-                result.get("check_status"), "WARNING", "缺失率超阈值应该WARNING"
-            )
+            self.assertEqual(result.get("check_status"), "WARNING", "缺失率超阈值应该WARNING")
             print("  ✅ 完整性检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -151,9 +149,7 @@ class TestDataQualityChecks(unittest.TestCase):
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  数据延迟: {result.get('data_delay_seconds', 0)}秒")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(
-                result.get("check_status"), "WARNING", "延迟超阈值应该WARNING"
-            )
+            self.assertEqual(result.get("check_status"), "WARNING", "延迟超阈值应该WARNING")
             print("  ✅ 新鲜度检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")
@@ -199,9 +195,7 @@ class TestDataQualityChecks(unittest.TestCase):
             print(f"  检查状态: {result.get('check_status', 'UNKNOWN')}")
             print(f"  无效率: {result.get('invalid_rate', 0):.2f}%")
             print(f"  消息: {result.get('message', 'N/A')}")
-            self.assertEqual(
-                result.get("check_status"), "WARNING", "无效率超阈值应该WARNING"
-            )
+            self.assertEqual(result.get("check_status"), "WARNING", "无效率超阈值应该WARNING")
             print("  ✅ 准确性检查WARNING (已告警)")
         else:
             print(f"  ⚠️  {result['error']}")

@@ -17,9 +17,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("DatabaseFixer")
 
 
@@ -174,12 +172,8 @@ def create_databases():
             )
 
             cursor = conn.cursor()
-            cursor.execute(
-                f"CREATE DATABASE IF NOT EXISTS {os.getenv('MARIADB_DATABASE', 'quant_research')}"
-            )
-            print(
-                f"  ✓ MariaDB数据库 {os.getenv('MARIADB_DATABASE', 'quant_research')} 已确保存在"
-            )
+            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('MARIADB_DATABASE', 'quant_research')}")
+            print(f"  ✓ MariaDB数据库 {os.getenv('MARIADB_DATABASE', 'quant_research')} 已确保存在")
             conn.commit()
             cursor.close()
             conn.close()

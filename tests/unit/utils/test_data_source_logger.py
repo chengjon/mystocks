@@ -403,9 +403,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("TestAdapter", "test_method")
             def regular_function(self, *args, **kwargs):
@@ -424,9 +422,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.error = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("ErrorAdapter", "error_method")
             def error_function(self, should_fail=True):
@@ -447,17 +443,13 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("DataAdapter", "fetch_data")
             def get_data_from_adapter(self, adapter_type, method, **kwargs):
                 return f"data_{adapter_type}_{method}"
 
-            result = get_data_from_adapter(
-                None, "TestType", "TestMethod", param="value"
-            )
+            result = get_data_from_adapter(None, "TestType", "TestMethod", param="value")
 
             assert result == "data_TestType_TestMethod"
             mock_logger.logger.info.assert_called_once()
@@ -477,9 +469,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("FailAdapter", "test_fail")
             def failing_function(self):
@@ -501,9 +491,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("EmptyAdapter", "test_empty")
             def empty_function(self):
@@ -525,9 +513,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("IndicatorAdapter", "get_indicator_data")
             def empty_indicator_function(self):
@@ -549,9 +535,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("NoneAdapter", "test_none")
             def none_function(self):
@@ -573,9 +557,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("ChineseAdapter", "test_chinese")
             def chinese_error_function(self):
@@ -597,9 +579,7 @@ class TestLogDataSourceMethodDecorator:
         mock_logger_instance.logger = mock_logger.logger
         mock_logger.logger.info = MagicMock()
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_method("LongParamsAdapter", "test_long")
             def long_params_function(self, long_string):
@@ -648,9 +628,7 @@ class TestDataSourceLoggerIntegration:
         mock_logger_instance.log_call = mock_logger.log_call
         mock_logger_instance.log_error = mock_logger.log_error
 
-        with patch(
-            "src.utils.data_source_logger.data_source_logger", mock_logger_instance
-        ):
+        with patch("src.utils.data_source_logger.data_source_logger", mock_logger_instance):
 
             @log_data_source_call("OuterAdapter")
             @log_data_source_method("InnerAdapter", "nested_method")
@@ -673,9 +651,7 @@ class TestDataSourceLoggerIntegration:
 
         def logging_function(param):
             try:
-                with patch(
-                    "src.utils.data_source_logger.data_source_logger"
-                ) as mock_logger:
+                with patch("src.utils.data_source_logger.data_source_logger") as mock_logger:
                     mock_logger.log_call = MagicMock()
 
                     @log_data_source_call("ConcurrentAdapter")

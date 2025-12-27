@@ -63,16 +63,10 @@ def register_all_routers(app: FastAPI):
     app.include_router(wencai.router)
 
     # OpenStock Migration Routers
-    app.include_router(
-        stock_search.router, prefix="/api/stock-search", tags=["stock-search"]
-    )
+    app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])
     app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])
-    app.include_router(
-        tradingview.router, prefix="/api/tradingview", tags=["tradingview"]
-    )
-    app.include_router(
-        notification.router, prefix="/api/notification", tags=["notification"]
-    )
+    app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])
+    app.include_router(notification.router, prefix="/api/notification", tags=["notification"])
 
     # PyProfiling ML Routers
     app.include_router(ml.router, prefix="/api", tags=["machine-learning"])

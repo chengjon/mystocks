@@ -69,9 +69,7 @@ class DataValidator:
         Returns:
             bool: 验证结果
         """
-        if not self.validate_date_format(start_date) or not self.validate_date_format(
-            end_date
-        ):
+        if not self.validate_date_format(start_date) or not self.validate_date_format(end_date):
             return False
 
         try:
@@ -111,10 +109,7 @@ class DataValidator:
                 volume = float(row["volume"])
 
                 # 价格必须为正数
-                if any(
-                    price <= 0
-                    for price in [open_price, high_price, low_price, close_price]
-                ):
+                if any(price <= 0 for price in [open_price, high_price, low_price, close_price]):
                     return False
 
                 # 成交量必须为非负数
@@ -190,9 +185,7 @@ class DataValidator:
         except ValueError:
             return False
 
-    def validate_price_range(
-        self, data: pd.DataFrame, min_price: float = 0.01, max_price: float = 10000.0
-    ) -> bool:
+    def validate_price_range(self, data: pd.DataFrame, min_price: float = 0.01, max_price: float = 10000.0) -> bool:
         """
         验证价格范围
 
@@ -222,9 +215,7 @@ class DataValidator:
 
         return True
 
-    def check_data_completeness(
-        self, data: pd.DataFrame, required_columns: List[str] = None
-    ) -> bool:
+    def check_data_completeness(self, data: pd.DataFrame, required_columns: List[str] = None) -> bool:
         """
         检查数据完整性
 

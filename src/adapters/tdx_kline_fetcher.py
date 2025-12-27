@@ -21,9 +21,7 @@ class TdxKlineDataFetcher:
         self.cache = {}
         self.cache_ttl = 300  # 5分钟缓存
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票日线数据
 
@@ -50,9 +48,7 @@ class TdxKlineDataFetcher:
 
         return result
 
-    def get_index_daily(
-        self, index_code: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, index_code: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取指数日线数据
 
@@ -72,18 +68,14 @@ class TdxKlineDataFetcher:
             return cached_result
 
         # 获取数据
-        result = self._fetch_kline_data(
-            index_code, start_date, end_date, "daily", is_index=True
-        )
+        result = self._fetch_kline_data(index_code, start_date, end_date, "daily", is_index=True)
 
         # 缓存结果
         self._set_cache(cache_key, result)
 
         return result
 
-    def get_stock_kline(
-        self, symbol: str, period: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取股票K线数据
 
@@ -111,9 +103,7 @@ class TdxKlineDataFetcher:
 
         return result
 
-    def get_index_kline(
-        self, index_code: str, period: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_kline(self, index_code: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
         获取指数K线数据
 
@@ -134,9 +124,7 @@ class TdxKlineDataFetcher:
             return cached_result
 
         # 获取数据
-        result = self._fetch_kline_data(
-            index_code, start_date, end_date, period, is_index=True
-        )
+        result = self._fetch_kline_data(index_code, start_date, end_date, period, is_index=True)
 
         # 缓存结果
         self._set_cache(cache_key, result)
@@ -184,9 +172,7 @@ class TdxKlineDataFetcher:
         Returns:
             pd.DataFrame: K线数据
         """
-        logger.info(
-            f"Fetching kline data for {symbol} ({period}) from {start_date} to {end_date}"
-        )
+        logger.info(f"Fetching kline data for {symbol} ({period}) from {start_date} to {end_date}")
 
         # 模拟数据获取
         if is_index:
@@ -228,9 +214,7 @@ class TdxKlineDataFetcher:
         Returns:
             List[Dict]: 请求数据
         """
-        logger.info(
-            f"Making batch request for {symbol}, market={market}, count={count}"
-        )
+        logger.info(f"Making batch request for {symbol}, market={market}, count={count}")
 
         # 模拟批量数据
         result = []

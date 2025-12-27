@@ -124,9 +124,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info(
-            f"开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}"
-        )
+        logger.info(f"开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}")
 
         start_time = time.time()
 
@@ -166,9 +164,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
             # 日志
             current_score = result.get_score(self.objective)
-            best_score = (
-                self.best_result.get_score(self.objective) if self.best_result else 0
-            )
+            best_score = self.best_result.get_score(self.objective) if self.best_result else 0
 
             if (iteration + 1) % 10 == 0 or iteration == 0:
                 logger.info(
@@ -187,10 +183,7 @@ class RandomSearchOptimizer(BaseOptimizer):
                         no_improvement_count = 0
 
                     if no_improvement_count >= patience:
-                        logger.info(
-                            f"早停触发: 连续{patience}次无显著改进 "
-                            f"(阈值={min_improvement})"
-                        )
+                        logger.info(f"早停触发: 连续{patience}次无显著改进 " f"(阈值={min_improvement})")
                         break
 
                 prev_best_score = best_score
@@ -257,9 +250,7 @@ class RandomSearchOptimizer(BaseOptimizer):
                 else:
                     score = self.best_result.get_score(self.objective)
                     best_score = best_overall.get_score(self.objective)
-                    if (self.maximize and score > best_score) or (
-                        not self.maximize and score < best_score
-                    ):
+                    if (self.maximize and score > best_score) or (not self.maximize and score < best_score):
                         best_overall = self.best_result
 
             # 恢复迭代次数
@@ -321,10 +312,7 @@ class RandomSearchOptimizer(BaseOptimizer):
             "total_explored": len(self.results),
             "unique_combinations": len(self.results),  # 随机搜索都是唯一的
             "score_mean": sum(scores) / len(scores),
-            "score_std": (
-                sum((s - sum(scores) / len(scores)) ** 2 for s in scores) / len(scores)
-            )
-            ** 0.5,
+            "score_std": (sum((s - sum(scores) / len(scores)) ** 2 for s in scores) / len(scores)) ** 0.5,
             "score_min": min(scores),
             "score_max": max(scores),
             "convergence_iteration": self._find_convergence_point(),

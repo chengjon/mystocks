@@ -60,21 +60,15 @@ class MarketIndexItem(BaseModel):
 class MarketOverview(BaseModel):
     """市场概览"""
 
-    indices: List[MarketIndexItem] = Field(
-        default_factory=list, description="市场指数列表"
-    )
+    indices: List[MarketIndexItem] = Field(default_factory=list, description="市场指数列表")
     up_count: int = Field(0, description="上涨家数")
     down_count: int = Field(0, description="下跌家数")
     flat_count: int = Field(0, description="平盘家数")
     total_volume: Optional[float] = Field(None, description="总成交量")
     total_turnover: Optional[float] = Field(None, description="总成交额")
-    top_gainers: List[Dict[str, Any]] = Field(
-        default_factory=list, description="涨幅榜"
-    )
+    top_gainers: List[Dict[str, Any]] = Field(default_factory=list, description="涨幅榜")
     top_losers: List[Dict[str, Any]] = Field(default_factory=list, description="跌幅榜")
-    most_active: List[Dict[str, Any]] = Field(
-        default_factory=list, description="成交额榜"
-    )
+    most_active: List[Dict[str, Any]] = Field(default_factory=list, description="成交额榜")
 
 
 # ============================================================================

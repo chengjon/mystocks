@@ -121,9 +121,7 @@ class FilterCondition:
             return value != pattern
         return False
 
-    def _compare_numeric(
-        self, value: float, operator: FilterOperator, threshold: float
-    ) -> bool:
+    def _compare_numeric(self, value: float, operator: FilterOperator, threshold: float) -> bool:
         """数值比较"""
         if operator == FilterOperator.EQ:
             return value == threshold
@@ -221,9 +219,7 @@ class FilterEvaluator:
     def __init__(self):
         """初始化评估器"""
         self.subscriptions: Dict[str, Subscription] = {}
-        self.matched_subscriptions: Dict[
-            str, List[str]
-        ] = {}  # symbol -> subscription_ids
+        self.matched_subscriptions: Dict[str, List[str]] = {}  # symbol -> subscription_ids
 
         # 指标
         self.evaluations = 0
@@ -273,14 +269,10 @@ class FilterEvaluator:
         """获取评估统计"""
         return {
             "total_subscriptions": len(self.subscriptions),
-            "enabled_subscriptions": sum(
-                1 for s in self.subscriptions.values() if s.enabled
-            ),
+            "enabled_subscriptions": sum(1 for s in self.subscriptions.values() if s.enabled),
             "evaluations": self.evaluations,
             "total_matches": self.matches,
-            "match_rate": (
-                self.matches / self.evaluations if self.evaluations > 0 else 0
-            ),
+            "match_rate": (self.matches / self.evaluations if self.evaluations > 0 else 0),
             "uptime_seconds": (datetime.utcnow() - self.last_eval_time).total_seconds(),
         }
 
@@ -300,9 +292,7 @@ class AlertDispatcher:
 
         logger.info("✅ Alert Dispatcher initialized")
 
-    def register_delivery_handler(
-        self, method: AlertDeliveryMethod, handler: Callable[[Alert], bool]
-    ) -> None:
+    def register_delivery_handler(self, method: AlertDeliveryMethod, handler: Callable[[Alert], bool]) -> None:
         """注册交付处理器"""
         self.delivery_handlers[method] = handler
         logger.info("✅ Delivery handler registered", method=method.value)
@@ -373,11 +363,7 @@ class AlertDispatcher:
             "alerts_created": self.alerts_created,
             "alerts_delivered": self.alerts_delivered,
             "delivery_errors": self.delivery_errors,
-            "delivery_success_rate": (
-                self.alerts_delivered / self.alerts_created
-                if self.alerts_created > 0
-                else 0
-            ),
+            "delivery_success_rate": (self.alerts_delivered / self.alerts_created if self.alerts_created > 0 else 0),
         }
 
 
@@ -391,9 +377,7 @@ class SubscriptionManager:
     ):
         """初始化管理器"""
         self.subscriptions: Dict[str, Subscription] = {}
-        self.user_subscriptions: Dict[
-            str, List[str]
-        ] = {}  # user_id -> subscription_ids
+        self.user_subscriptions: Dict[str, List[str]] = {}  # user_id -> subscription_ids
         self.evaluator = evaluator or FilterEvaluator()
         self.dispatcher = dispatcher or AlertDispatcher()
 
@@ -499,9 +483,7 @@ class SubscriptionManager:
         """获取管理统计"""
         return {
             "total_subscriptions": len(self.subscriptions),
-            "enabled_subscriptions": sum(
-                1 for s in self.subscriptions.values() if s.enabled
-            ),
+            "enabled_subscriptions": sum(1 for s in self.subscriptions.values() if s.enabled),
             "total_users": len(self.user_subscriptions),
             "total_created": self.total_created,
             "total_deleted": self.total_deleted,
@@ -536,9 +518,7 @@ def get_subscription_manager() -> SubscriptionManager:
     """获取订阅管理器单例"""
     global _subscription_manager
     if _subscription_manager is None:
-        _subscription_manager = SubscriptionManager(
-            get_filter_evaluator(), get_alert_dispatcher()
-        )
+        _subscription_manager = SubscriptionManager(get_filter_evaluator(), get_alert_dispatcher())
     return _subscription_manager
 
 

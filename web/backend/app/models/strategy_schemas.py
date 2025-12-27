@@ -65,22 +65,16 @@ class StrategyConfig(BaseModel):
 
     strategy_id: Optional[int] = Field(None, description="策略ID (创建时为None)")
     user_id: int = Field(..., description="用户ID", ge=1)
-    strategy_name: str = Field(
-        ..., description="策略名称", min_length=1, max_length=100
-    )
+    strategy_name: str = Field(..., description="策略名称", min_length=1, max_length=100)
     strategy_type: StrategyType = Field(..., description="策略类型")
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
 
     # 策略参数
-    parameters: List[StrategyParameter] = Field(
-        default_factory=list, description="策略参数列表"
-    )
+    parameters: List[StrategyParameter] = Field(default_factory=list, description="策略参数列表")
 
     # 风险控制
     max_position_size: float = Field(0.1, description="最大仓位比例 (0-1)", ge=0, le=1)
-    stop_loss_percent: Optional[float] = Field(
-        None, description="止损百分比", ge=0, le=100
-    )
+    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
 
     # 状态和元数据
@@ -123,18 +117,12 @@ class StrategyCreateRequest(BaseModel):
     """创建策略请求"""
 
     user_id: int = Field(..., description="用户ID", ge=1)
-    strategy_name: str = Field(
-        ..., description="策略名称", min_length=1, max_length=100
-    )
+    strategy_name: str = Field(..., description="策略名称", min_length=1, max_length=100)
     strategy_type: StrategyType = Field(..., description="策略类型")
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
-    parameters: List[StrategyParameter] = Field(
-        default_factory=list, description="策略参数"
-    )
+    parameters: List[StrategyParameter] = Field(default_factory=list, description="策略参数")
     max_position_size: float = Field(0.1, description="最大仓位比例", ge=0, le=1)
-    stop_loss_percent: Optional[float] = Field(
-        None, description="止损百分比", ge=0, le=100
-    )
+    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
     tags: List[str] = Field(default_factory=list, description="标签列表")
 
@@ -142,17 +130,11 @@ class StrategyCreateRequest(BaseModel):
 class StrategyUpdateRequest(BaseModel):
     """更新策略请求"""
 
-    strategy_name: Optional[str] = Field(
-        None, description="策略名称", min_length=1, max_length=100
-    )
+    strategy_name: Optional[str] = Field(None, description="策略名称", min_length=1, max_length=100)
     description: Optional[str] = Field(None, description="策略描述", max_length=500)
     parameters: Optional[List[StrategyParameter]] = Field(None, description="策略参数")
-    max_position_size: Optional[float] = Field(
-        None, description="最大仓位比例", ge=0, le=1
-    )
-    stop_loss_percent: Optional[float] = Field(
-        None, description="止损百分比", ge=0, le=100
-    )
+    max_position_size: Optional[float] = Field(None, description="最大仓位比例", ge=0, le=1)
+    stop_loss_percent: Optional[float] = Field(None, description="止损百分比", ge=0, le=100)
     take_profit_percent: Optional[float] = Field(None, description="止盈百分比", ge=0)
     status: Optional[StrategyStatus] = Field(None, description="策略状态")
     tags: Optional[List[str]] = Field(None, description="标签列表")
@@ -305,9 +287,7 @@ class BacktestResult(BaseModel):
     # 回测结果
     final_capital: float = Field(..., description="最终资金", ge=0)
     performance: PerformanceMetrics = Field(..., description="绩效指标")
-    equity_curve: List[EquityCurvePoint] = Field(
-        default_factory=list, description="权益曲线"
-    )
+    equity_curve: List[EquityCurvePoint] = Field(default_factory=list, description="权益曲线")
     trades: List[TradeRecord] = Field(default_factory=list, description="交易记录")
 
     # 元数据

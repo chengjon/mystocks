@@ -47,9 +47,7 @@ class TestSQLInjectionVulnerabilities:
         # "stock_code = '1' OR '1'='1'"
         # Which is vulnerable to injection!
 
-        assert (
-            "OR" in vulnerable_condition
-        ), "SQL injection payload present in condition"
+        assert "OR" in vulnerable_condition, "SQL injection payload present in condition"
         assert (
             vulnerable_condition == "stock_code = '1' OR '1'='1'"
         ), "Vulnerable pattern detected - string concatenation without parameterization"
@@ -113,12 +111,8 @@ class TestSQLInjectionVulnerabilities:
 
         # The user input is never concatenated into the SQL string
         # Therefore, even with malicious input, the query is safe
-        assert ":user_id" in str(
-            safe_query
-        ), "Parameterized query uses named parameters"
-        assert user_input not in str(
-            safe_query
-        ), "User input not embedded in SQL string (safe)"
+        assert ":user_id" in str(safe_query), "Parameterized query uses named parameters"
+        assert user_input not in str(safe_query), "User input not embedded in SQL string (safe)"
 
     def test_psycopg2_parameterized_query_protection(self):
         """
@@ -187,9 +181,7 @@ class TestSQLInjectionVulnerabilities:
 
         # However, in the actual code, table_name seems to be internal
         # Still, best practice is to whitelist table names
-        assert (
-            ";" in vulnerable_query or "DROP" in vulnerable_query
-        ), "Potential table name injection"
+        assert ";" in vulnerable_query or "DROP" in vulnerable_query, "Potential table name injection"
 
 
 class TestDataAccessVulnerabilityPatterns:
@@ -257,9 +249,7 @@ class TestDataAccessVulnerabilityPatterns:
 
         # DANGEROUS: Could delete all rows
         assert "OR '1'='1" in query, "DELETE statement vulnerable to injection"
-        assert (
-            query.count("WHERE") == 1
-        ), "WHERE clause present (shows where injection is)"
+        assert query.count("WHERE") == 1, "WHERE clause present (shows where injection is)"
 
 
 class TestSecurityFixApproaches:
@@ -298,12 +288,8 @@ class TestSecurityFixApproaches:
         query, params = safe_build_query_sqlalchemy("daily_kline", filters)
 
         # The payload is in bind_params, NOT in the SQL string
-        assert "OR '1'='1" not in str(
-            query
-        ), "SQL injection payload NOT embedded in query string"
-        assert (
-            params["param_0"] == "600000' OR '1'='1"
-        ), "Payload safely stored in bind parameters"
+        assert "OR '1'='1" not in str(query), "SQL injection payload NOT embedded in query string"
+        assert params["param_0"] == "600000' OR '1'='1", "Payload safely stored in bind parameters"
 
     def test_fixed_psycopg2_parameterization(self):
         """

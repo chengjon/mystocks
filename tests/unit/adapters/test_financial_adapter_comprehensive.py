@@ -295,9 +295,7 @@ class TestFinancialDataSourceErrorHandling:
             mock_get.side_effect = ConnectionError("Network error")
 
             try:
-                result = source.get_income_statement(
-                    "000001", "2024-01-01", "2024-12-31"
-                )
+                result = source.get_income_statement("000001", "2024-01-01", "2024-12-31")
             except ConnectionError:
                 pass  # 预期的异常
 
@@ -368,9 +366,7 @@ class TestFinancialDataSourceIntegration:
     def test_multiple_symbols_handling(self, source):
         """测试多个股票符号处理"""
         with patch.object(source, "get_income_statement") as mock_get:
-            mock_get.return_value = pd.DataFrame(
-                {"report_date": ["2024-09-30"], "revenue": [1000000000]}
-            )
+            mock_get.return_value = pd.DataFrame({"report_date": ["2024-09-30"], "revenue": [1000000000]})
 
             symbols = ["000001", "000002", "600000"]
             results = []
@@ -410,16 +406,12 @@ class TestFinancialDataSourcePerformance:
     def test_concurrent_requests(self, source):
         """测试并发请求处理"""
         with patch.object(source, "get_income_statement") as mock_get:
-            mock_get.return_value = pd.DataFrame(
-                {"report_date": ["2024-09-30"], "revenue": [1000000000]}
-            )
+            mock_get.return_value = pd.DataFrame({"report_date": ["2024-09-30"], "revenue": [1000000000]})
 
             # 模拟多个并发请求
             results = []
             for i in range(5):
-                result = source.get_income_statement(
-                    f"00000{i}", "2024-01-01", "2024-12-31"
-                )
+                result = source.get_income_statement(f"00000{i}", "2024-01-01", "2024-12-31")
                 results.append(result)
 
             assert len(results) == 5

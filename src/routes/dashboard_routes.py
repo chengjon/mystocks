@@ -141,9 +141,7 @@ async def get_market_statistics():
     """
     try:
         stats = get_market_stats()
-        return JSONResponse(
-            content={"success": True, "data": stats, "message": "获取市场统计数据成功"}
-        )
+        return JSONResponse(content={"success": True, "data": stats, "message": "获取市场统计数据成功"})
     except Exception as e:
         logger.error(f"获取市场统计数据失败: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

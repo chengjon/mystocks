@@ -121,9 +121,7 @@ class DeduplicationStrategy(Enum):
             with open(self.config_file, "r", encoding="utf-8") as f:
                 self.config_data = yaml.safe_load(f)
 
-            logger.info(
-                "成功加载配置文件: %d 个表配置", len(self.config_data.get("tables", []))
-            )
+            logger.info("成功加载配置文件: %d 个表配置", len(self.config_data.get("tables", [])))
             return self.config_data
 
         except Exception as e:  # pylint: disable=broad-exception-caught
@@ -584,7 +582,9 @@ class DeduplicationStrategy(Enum):
 
         for table_config in self.config_data["tables"]:
             try:
-                table_key = f"{table_config['database_type']}.{table_config['database_name']}.{table_config['table_name']}"
+                table_key = (
+                    f"{table_config['database_type']}.{table_config['database_name']}.{table_config['table_name']}"
+                )
 
                 logger.info("正在创建表: %s", table_key)
                 success = self._create_table_from_config(table_config)
@@ -632,9 +632,7 @@ class DeduplicationStrategy(Enum):
                 logger.error("MySQL数据已迁移至PostgreSQL，Redis已由应用层缓存替代")
                 return False
             else:
-                logger.error(
-                    "不支持的数据库类型: %s，仅支持TDengine和PostgreSQL", db_type_str
-                )
+                logger.error("不支持的数据库类型: %s，仅支持TDengine和PostgreSQL", db_type_str)
                 return False
 
             # 转换列配置
@@ -746,7 +744,9 @@ class DeduplicationStrategy(Enum):
 
         for table_config in self.config_data["tables"]:
             try:
-                table_key = f"{table_config['database_type']}.{table_config['database_name']}.{table_config['table_name']}"
+                table_key = (
+                    f"{table_config['database_type']}.{table_config['database_name']}.{table_config['table_name']}"
+                )
 
                 # 执行表结构验证
                 is_valid = self._validate_single_table_structure(table_config)
@@ -806,10 +806,7 @@ class DeduplicationStrategy(Enum):
                     return False
 
             # 检查列配置
-            if (
-                not isinstance(table_config["columns"], list)
-                or len(table_config["columns"]) == 0
-            ):
+            if not isinstance(table_config["columns"], list) or len(table_config["columns"]) == 0:
                 logger.error("表配置缺少列定义")
                 return False
 
@@ -819,9 +816,7 @@ class DeduplicationStrategy(Enum):
             logger.error("验证表结构失败: %s", e)
             return False
 
-    def get_table_config_by_classification(
-        self, classification: DataClassification
-    ) -> Optional[Dict]:
+    def get_table_config_by_classification(self, classification: DataClassification) -> Optional[Dict]:
         """
         根据数据分类获取表配置
 

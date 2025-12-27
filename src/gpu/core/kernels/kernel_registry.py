@@ -96,9 +96,7 @@ class KernelRegistry:
                 self._update_existing_kernel(name, kernel_class, metadata)
             else:
                 # 创建新的注册
-                registration = KernelRegistration(
-                    kernel_class=kernel_class, metadata=metadata
-                )
+                registration = KernelRegistration(kernel_class=kernel_class, metadata=metadata)
                 self._kernels[name] = registration
 
                 logger.info(f"Registered kernel: {name} v{metadata.version}")
@@ -169,9 +167,7 @@ class KernelRegistry:
             return None
 
         if registration.metadata.status != KernelStatus.ACTIVE:
-            logger.warning(
-                f"Kernel {name} not active (status: {registration.metadata.status.value})"
-            )
+            logger.warning(f"Kernel {name} not active (status: {registration.metadata.status.value})")
             return None
 
         return registration.instance
@@ -186,10 +182,7 @@ class KernelRegistry:
         registration = self._kernels[name]
 
         # 如果实例已存在且活跃，直接返回
-        if (
-            registration.instance is not None
-            and registration.metadata.status == KernelStatus.ACTIVE
-        ):
+        if registration.instance is not None and registration.metadata.status == KernelStatus.ACTIVE:
             self.stats["cache_hits"] += 1
             return registration.instance
 
@@ -220,9 +213,7 @@ class KernelRegistry:
             logger.error(f"Failed to create kernel {name}: {e}")
             return None
 
-    def find_kernels_for_operation(
-        self, operation_type: str, operation_name: Optional[str] = None
-    ) -> List[str]:
+    def find_kernels_for_operation(self, operation_type: str, operation_name: Optional[str] = None) -> List[str]:
         """查找支持特定操作的内核"""
         matching_kernels = []
 
@@ -245,9 +236,7 @@ class KernelRegistry:
                 matching_kernels.append(name)
 
         # 按性能评分排序
-        matching_kernels.sort(
-            key=lambda k: self._kernels[k].metadata.performance_score, reverse=True
-        )
+        matching_kernels.sort(key=lambda k: self._kernels[k].metadata.performance_score, reverse=True)
 
         return matching_kernels
 
@@ -276,9 +265,7 @@ class KernelRegistry:
         best_kernel = self._select_kernel_by_performance(candidates)
         return best_kernel
 
-    def list_kernels(
-        self, status_filter: Optional[KernelStatus] = None
-    ) -> Dict[str, KernelMetadata]:
+    def list_kernels(self, status_filter: Optional[KernelStatus] = None) -> Dict[str, KernelMetadata]:
         """列出所有内核"""
         result = {}
 
@@ -321,9 +308,7 @@ class KernelRegistry:
 
         return info
 
-    def update_kernel_performance(
-        self, kernel_name: str, execution_time_ms: float, success: bool
-    ) -> None:
+    def update_kernel_performance(self, kernel_name: str, execution_time_ms: float, success: bool) -> None:
         """更新内核性能统计"""
         if kernel_name not in self._kernels:
             return
@@ -337,9 +322,7 @@ class KernelRegistry:
             registration.metadata.error_count += 1
 
         # 更新平均执行时间
-        total_executions = (
-            registration.metadata.success_count + registration.metadata.error_count
-        )
+        total_executions = registration.metadata.success_count + registration.metadata.error_count
         if total_executions > 0:
             current_avg = registration.metadata.average_execution_time_ms
             registration.metadata.average_execution_time_ms = (
@@ -347,9 +330,7 @@ class KernelRegistry:
             ) / total_executions
 
         # 更新性能评分
-        registration.metadata.performance_score = self._calculate_performance_score(
-            registration.metadata
-        )
+        registration.metadata.performance_score = self._calculate_performance_score(registration.metadata)
 
         # 更新性能缓存
         if kernel_name not in self._performance_cache:
@@ -423,23 +404,11 @@ class KernelRegistry:
             metadata = registration.metadata
 
             # 统计内核类型
-            if (
-                "matrix" in metadata.supported_operations[0]
-                if metadata.supported_operations
-                else False
-            ):
+            if "matrix" in metadata.supported_operations[0] if metadata.supported_operations else False:
                 kernel_counts["matrix"] += 1
-            elif (
-                "transform" in metadata.supported_operations[0]
-                if metadata.supported_operations
-                else False
-            ):
+            elif "transform" in metadata.supported_operations[0] if metadata.supported_operations else False:
                 kernel_counts["transform"] += 1
-            elif (
-                "inference" in metadata.supported_operations[0]
-                if metadata.supported_operations
-                else False
-            ):
+            elif "inference" in metadata.supported_operations[0] if metadata.supported_operations else False:
                 kernel_counts["inference"] += 1
             else:
                 kernel_counts["other"] += 1
@@ -450,9 +419,7 @@ class KernelRegistry:
             {
                 "kernel_type_counts": kernel_counts,
                 "total_memory_usage_mb": total_memory_mb,
-                "cache_hit_rate": (
-                    stats["cache_hits"] / max(1, stats["total_executions"]) * 100
-                ),
+                "cache_hit_rate": (stats["cache_hits"] / max(1, stats["total_executions"]) * 100),
             }
         )
 
@@ -469,10 +436,7 @@ class KernelRegistry:
 
                 # 查找内核类
                 for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if (
-                        issubclass(obj, StandardizedKernelInterface)
-                        and obj != StandardizedKernelInterface
-                    ):
+                    if issubclass(obj, StandardizedKernelInterface) and obj != StandardizedKernelInterface:
                         # 自动注册
                         success = self.register_kernel(obj)
                         if success:
@@ -485,9 +449,7 @@ class KernelRegistry:
         logger.info(f"Auto-discovered {discovered_count} kernels")
         return discovered_count
 
-    def _create_default_metadata(
-        self, kernel_class: Type[StandardizedKernelInterface]
-    ) -> KernelMetadata:
+    def _create_default_metadata(self, kernel_class: Type[StandardizedKernelInterface]) -> KernelMetadata:
         """创建默认元数据"""
         doc = kernel_class.__doc__ or f"{kernel_class.__name__} kernel"
 
@@ -505,30 +467,21 @@ class KernelRegistry:
                 pass
 
         return KernelMetadata(
-            name=kernel_class.__name__.replace("KernelEngine", "").replace(
-                "Kernel", ""
-            ),
+            name=kernel_class.__name__.replace("KernelEngine", "").replace("Kernel", ""),
             version="1.0.0",
-            description=doc.split("\n")[0]
-            if doc
-            else f"{kernel_class.__name__} kernel",
+            description=doc.split("\n")[0] if doc else f"{kernel_class.__name__} kernel",
             author="Auto-generated",
             supported_operations=supported_ops or ["unknown"],
-            gpu_required="gpu" in kernel_class.__name__.lower()
-            or "GPU" in kernel_class.__name__,
+            gpu_required="gpu" in kernel_class.__name__.lower() or "GPU" in kernel_class.__name__,
         )
 
-    def _update_existing_kernel(
-        self, name: str, kernel_class: Type, metadata: KernelMetadata
-    ) -> None:
+    def _update_existing_kernel(self, name: str, kernel_class: Type, metadata: KernelMetadata) -> None:
         """更新现有内核"""
         registration = self._kernels[name]
 
         # 检查版本是否更新
         if metadata.version != registration.metadata.version:
-            logger.info(
-                f"Updating kernel {name} from v{registration.metadata.version} to v{metadata.version}"
-            )
+            logger.info(f"Updating kernel {name} from v{registration.metadata.version} to v{metadata.version}")
 
         registration.kernel_class = kernel_class
         registration.metadata = metadata
@@ -538,9 +491,7 @@ class KernelRegistry:
         if registration.instance:
             registration.instance = None
 
-    def _update_operation_mappings(
-        self, kernel_name: str, operations: List[str]
-    ) -> None:
+    def _update_operation_mappings(self, kernel_name: str, operations: List[str]) -> None:
         """更新操作映射"""
         for operation in operations:
             if operation not in self._operation_mappings:
@@ -566,38 +517,26 @@ class KernelRegistry:
         """更新统计信息"""
         self.stats["total_kernels"] = len(self._kernels)
         self.stats["active_kernels"] = sum(
-            1
-            for reg in self._kernels.values()
-            if reg.metadata.status == KernelStatus.ACTIVE
+            1 for reg in self._kernels.values() if reg.metadata.status == KernelStatus.ACTIVE
         )
         self.stats["error_kernels"] = sum(
-            1
-            for reg in self._kernels.values()
-            if reg.metadata.status == KernelStatus.ERROR
+            1 for reg in self._kernels.values() if reg.metadata.status == KernelStatus.ERROR
         )
 
-    def _select_kernel_by_data_size(
-        self, candidates: List[str], data_shape: tuple
-    ) -> Optional[str]:
+    def _select_kernel_by_data_size(self, candidates: List[str], data_shape: tuple) -> Optional[str]:
         """根据数据大小选择内核"""
         data_size = data_shape[0] if data_shape else 1
 
         # 根据数据大小偏好选择
         if data_size < 1000:
             # 小数据：选择轻量级内核
-            lightweight_kernels = [
-                k
-                for k in candidates
-                if "lightweight" in k.lower() or "simple" in k.lower()
-            ]
+            lightweight_kernels = [k for k in candidates if "lightweight" in k.lower() or "simple" in k.lower()]
             if lightweight_kernels:
                 return lightweight_kernels[0]
 
         elif data_size > 100000:
             # 大数据：选择高性能内核
-            high_perf_kernels = [
-                k for k in candidates if "high" in k.lower() or "optimized" in k.lower()
-            ]
+            high_perf_kernels = [k for k in candidates if "high" in k.lower() or "optimized" in k.lower()]
             if high_perf_kernels:
                 return high_perf_kernels[0]
 

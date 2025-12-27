@@ -10,9 +10,7 @@ import sys
 import os
 
 # 添加项目根路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 
@@ -260,9 +258,7 @@ class TestTdxKlineDataFetcher:
         end_date = "2024-01-05"
 
         with patch.object(fetcher, "_fetch_kline_data") as mock_fetch:
-            mock_data = pd.DataFrame(
-                {"time": [1609459200, 1609459260], "close": [10.5, 11.0]}
-            )
+            mock_data = pd.DataFrame({"time": [1609459200, 1609459260], "close": [10.5, 11.0]})
             mock_fetch.return_value = mock_data
 
             result = fetcher.get_stock_daily(symbol, start_date, end_date)
@@ -280,9 +276,7 @@ class TestTdxKlineDataFetcher:
         end_date = "2024-01-05"
 
         with patch.object(fetcher, "_fetch_kline_data") as mock_fetch:
-            mock_data = pd.DataFrame(
-                {"time": [1609459200, 1609459260], "close": [3000.0, 3050.0]}
-            )
+            mock_data = pd.DataFrame({"time": [1609459200, 1609459260], "close": [3000.0, 3050.0]})
             mock_fetch.return_value = mock_data
 
             result = fetcher.get_index_daily(index_code, start_date, end_date)
@@ -325,9 +319,7 @@ class TestTdxKlineDataFetcher:
             end_time = time.time()
 
             total_time = end_time - start_time
-            assert total_time < 2.0, (
-                f"Kline data performance failed: {total_time:.2f}s > 2.0s"
-            )
+            assert total_time < 2.0, f"Kline data performance failed: {total_time:.2f}s > 2.0s"
 
 
 class TestTdxRealtimeManager:
@@ -407,9 +399,7 @@ class TestTdxRealtimeManager:
             end_time = time.time()
 
             total_time = end_time - start_time
-            assert total_time < 1.0, (
-                f"Realtime data performance failed: {total_time:.2f}s > 1.0s"
-            )
+            assert total_time < 1.0, f"Realtime data performance failed: {total_time:.2f}s > 1.0s"
 
 
 class TestTdxBasicDataManager:

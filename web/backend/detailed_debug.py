@@ -45,9 +45,7 @@ if __name__ == "__main__":
     test_field("debug", "bool", False, "true")
     test_field("host", "str", "0.0.0.0", "0.0.0.0")
     test_field("port", "int", 8000, "8000")
-    test_field(
-        "secret_key", "str", "your-secret-key-change-in-production", "dev-secret-key"
-    )
+    test_field("secret_key", "str", "your-secret-key-change-in-production", "dev-secret-key")
     test_field("algorithm", "str", "HS256", "HS256")
     test_field("access_token_expire_minutes", "int", 30, "1440")
 

@@ -159,9 +159,7 @@ class TestOperationLogging(unittest.TestCase):
 
         # 验证批量操作结果
         self.assertIsNotNone(result, "应该返回批量操作结果")
-        print(
-            f"  批量操作: 总数={result.total_records}, 成功={result.successful_records}"
-        )
+        print(f"  批量操作: 总数={result.total_records}, 成功={result.successful_records}")
 
         if self.manager.enable_monitoring:
             print("  ✅ 批量操作已记录到监控数据库")

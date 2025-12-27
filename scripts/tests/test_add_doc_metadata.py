@@ -10,8 +10,7 @@ import os
 import tempfile
 import shutil
 from pathlib import Path
-from unittest.mock import patch, mock_open
-from datetime import datetime
+from unittest.mock import patch
 import pytest
 
 # 添加项目根目录到路径
@@ -22,7 +21,6 @@ sys.path.insert(0, str(project_root))
 from src.utils.add_doc_metadata import (
     add_metadata,
     batch_add_metadata,
-    METADATA_TEMPLATE,
     main,
 )
 

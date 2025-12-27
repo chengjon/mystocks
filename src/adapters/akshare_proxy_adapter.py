@@ -27,9 +27,7 @@ from typing import Dict, List, Any, Union
 from functools import wraps
 
 # 添加项目路径
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from mystocks.interfaces.data_source import IDataSource
 
@@ -45,9 +43,7 @@ class AkshareProxyAdapter(IDataSource):
     可以动态调用任何akshare接口，提供统一的错误处理和数据标准化
     """
 
-    def __init__(
-        self, api_timeout: int = REQUEST_TIMEOUT, max_retries: int = MAX_RETRIES
-    ):
+    def __init__(self, api_timeout: int = REQUEST_TIMEOUT, max_retries: int = MAX_RETRIES):
         """初始化AkShare代理适配器
 
         Args:
@@ -57,12 +53,8 @@ class AkshareProxyAdapter(IDataSource):
         self.api_timeout = api_timeout
         self.max_retries = max_retries
         self._available_functions = self._discover_akshare_functions()
-        print(
-            f"[AkshareProxy] 代理适配器初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)"
-        )
-        print(
-            f"[AkshareProxy] 发现 {len(self._available_functions)} 个可用的akshare接口"
-        )
+        print(f"[AkshareProxy] 代理适配器初始化完成 (超时: {api_timeout}s, 重试: {max_retries}次)")
+        print(f"[AkshareProxy] 发现 {len(self._available_functions)} 个可用的akshare接口")
 
     def _discover_akshare_functions(self) -> Dict[str, callable]:
         """发现所有可用的akshare函数"""
@@ -72,7 +64,7 @@ class AkshareProxyAdapter(IDataSource):
             if callable(obj) and not name.startswith("_"):
                 try:
                     # 尝试获取函数签名以验证这是一个真正的API函数
-                    sig = inspect.signature(obj)
+                    _ = inspect.signature(obj)  # 验证可调用对象，不使用结果
                     functions[name] = obj
                 except (ValueError, TypeError):
                     # 跳过无法获取签名的对象
@@ -97,9 +89,7 @@ class AkshareProxyAdapter(IDataSource):
 
         return wrapper
 
-    def call_akshare_function(
-        self, function_name: str, **kwargs
-    ) -> Union[pd.DataFrame, Dict, List, Any]:
+    def call_akshare_function(self, function_name: str, **kwargs) -> Union[pd.DataFrame, Dict, List, Any]:
         """动态调用akshare函数
 
         Args:
@@ -116,14 +106,10 @@ class AkshareProxyAdapter(IDataSource):
             # 检查函数是否存在
             if function_name not in self._available_functions:
                 available_similar = [
-                    name
-                    for name in self._available_functions.keys()
-                    if function_name.lower() in name.lower()
+                    name for name in self._available_functions.keys() if function_name.lower() in name.lower()
                 ]
                 if available_similar:
-                    print(
-                        f"[AkshareProxy] 未找到函数 '{function_name}'，相似的函数有: {available_similar}"
-                    )
+                    print(f"[AkshareProxy] 未找到函数 '{function_name}'，相似的函数有: {available_similar}")
                 else:
                     print(f"[AkshareProxy] 未找到函数 '{function_name}'")
                 return None
@@ -139,13 +125,9 @@ class AkshareProxyAdapter(IDataSource):
 
             # 处理结果
             if isinstance(result, pd.DataFrame):
-                print(
-                    f"[AkshareProxy] 成功获取DataFrame数据: {len(result)}行, 列名={result.columns.tolist()}"
-                )
+                print(f"[AkshareProxy] 成功获取DataFrame数据: {len(result)}行, 列名={result.columns.tolist()}")
                 # 添加时间戳
-                result["数据获取时间"] = pd.Timestamp.now().strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
+                result["数据获取时间"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
                 result["数据来源"] = f"akshare.{function_name}"
             elif isinstance(result, (list, dict)):
                 print(f"[AkshareProxy] 成功获取{type(result).__name__}数据")
@@ -197,15 +179,9 @@ class AkshareProxyAdapter(IDataSource):
             匹配的函数名列表
         """
         keyword_lower = keyword.lower()
-        matches = [
-            name
-            for name in self._available_functions.keys()
-            if keyword_lower in name.lower()
-        ]
+        matches = [name for name in self._available_functions.keys() if keyword_lower in name.lower()]
 
-        print(
-            f"[AkshareProxy] 搜索关键词 '{keyword}' 找到 {len(matches)} 个匹配的函数:"
-        )
+        print(f"[AkshareProxy] 搜索关键词 '{keyword}' 找到 {len(matches)} 个匹配的函数:")
         for match in matches[:10]:  # 只显示前10个
             print(f"  - {match}")
         if len(matches) > 10:
@@ -238,9 +214,7 @@ class AkshareProxyAdapter(IDataSource):
         return sorted(industry_functions)
 
     # 实现IDataSource接口的必需方法
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取股票日线数据"""
         return self.call_akshare_function(
             "stock_zh_a_hist",
@@ -251,9 +225,7 @@ class AkshareProxyAdapter(IDataSource):
             adjust="qfq",
         )
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取指数日线数据"""
         return self.call_akshare_function("stock_zh_index_daily", symbol=symbol)
 
@@ -320,7 +292,7 @@ def demo_akshare_proxy():
 
     # 1. 搜索股票相关函数
     print("\n1️⃣ 搜索股票相关函数:")
-    stock_functions = proxy.search_functions("stock_zh_a")
+    _ = proxy.search_functions("stock_zh_a")  # 搜索结果未使用（演示代码）
 
     # 2. 动态调用同花顺行业一览表
     print("\n2️⃣ 调用同花顺行业一览表:")

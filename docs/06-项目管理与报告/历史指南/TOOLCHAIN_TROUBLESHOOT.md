@@ -14,7 +14,7 @@
    ```bash
    # 查看前端服务状态
    lsof -i :3001
-   
+
    # 如果未启动，重新启动前端服务
    cd /opt/claude/mystocks_spec/web/frontend
    npm run dev
@@ -31,10 +31,10 @@
    ```bash
    # 查看PM2服务状态
    pm2 status
-   
+
    # 查看后端日志
    pm2 logs mystocks-backend
-   
+
    # 重启后端服务
    pm2 restart mystocks-backend
    ```

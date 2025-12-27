@@ -50,9 +50,7 @@ class IDataSource(ABC):
         self.type = config.get("type", "unknown")
 
     @abstractmethod
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取数据"""
         pass
 

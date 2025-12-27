@@ -21,13 +21,11 @@ FastAPI全局异常处理器 (增强版 - 统一响应格式)
 
 import logging
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # 导入新的统一响应格式
@@ -37,8 +35,6 @@ from app.core.responses import (
     BusinessCode,
     ErrorCodes,
     ResponseMessages,
-    create_unified_error_response,
-    create_validation_error_response,
 )
 
 # 导入自定义异常类
@@ -121,9 +117,7 @@ def create_unified_exception_response(
 # ==================== MyStocks自定义异常处理器 ====================
 
 
-async def mystocks_exception_handler(
-    request: Request, exc: MyStocksException
-) -> JSONResponse:
+async def mystocks_exception_handler(request: Request, exc: MyStocksException) -> JSONResponse:
     """
     处理所有MyStocks自定义异常
 
@@ -213,9 +207,7 @@ async def mystocks_exception_handler(
 # ==================== FastAPI内置异常处理器 ====================
 
 
-async def request_validation_error_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
+async def request_validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     """
     处理请求参数验证错误
 
@@ -304,9 +296,7 @@ def _map_validation_error_code(error_type: str) -> str:
     return error_map.get(error_type, ErrorCodes.VALIDATION_ERROR)
 
 
-async def http_exception_handler(
-    request: Request, exc: StarletteHTTPException
-) -> JSONResponse:
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
     """
     处理HTTP异常
 

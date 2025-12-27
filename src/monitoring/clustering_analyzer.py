@@ -43,34 +43,26 @@ class ClusteringAnalyzer:
             Dict[str, Any]: 优化结果
         """
         if len(data) < self.min_cluster_size * 2:
-            return self._create_insufficient_data_result(
-                data, current_threshold, threshold_type
-            )
+            return self._create_insufficient_data_result(data, current_threshold, threshold_type)
 
         try:
             # 执行聚类分析
             clusters = self._identify_clusters(data)
 
             if clusters["num_clusters"] < 2:
-                return self._create_single_cluster_result(
-                    data, current_threshold, threshold_type
-                )
+                return self._create_single_cluster_result(data, current_threshold, threshold_type)
 
             # 分析聚类特征
             cluster_analysis = self._analyze_clusters(data, clusters)
 
             # 基于聚类结果计算推荐阈值
-            recommended_threshold = self._calculate_cluster_based_threshold(
-                cluster_analysis, threshold_type
-            )
+            recommended_threshold = self._calculate_cluster_based_threshold(cluster_analysis, threshold_type)
 
             # 计算置信度
             confidence = self._calculate_cluster_confidence(cluster_analysis, clusters)
 
             # 生成推理说明
-            reasoning = self._generate_clustering_reasoning(
-                cluster_analysis, recommended_threshold
-            )
+            reasoning = self._generate_clustering_reasoning(cluster_analysis, recommended_threshold)
 
             return {
                 "recommended_threshold": recommended_threshold,
@@ -139,9 +131,7 @@ class ClusteringAnalyzer:
                 "error": str(e),
             }
 
-    def _analyze_clusters(
-        self, data: List[float], clusters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _analyze_clusters(self, data: List[float], clusters: Dict[str, Any]) -> Dict[str, Any]:
         """
         分析聚类特征
 
@@ -183,15 +173,11 @@ class ClusteringAnalyzer:
 
         # 识别主要聚类（最大的）
         if cluster_info:
-            main_cluster = max(
-                cluster_info.keys(), key=lambda k: cluster_info[k]["size"]
-            )
+            main_cluster = max(cluster_info.keys(), key=lambda k: cluster_info[k]["size"])
             main_stats = cluster_info[main_cluster]
 
             # 计算与其他聚类的分离度
-            separation_analysis = self._calculate_cluster_separation(
-                cluster_info, main_cluster
-            )
+            separation_analysis = self._calculate_cluster_separation(cluster_info, main_cluster)
 
             return {
                 "clusters": cluster_info,
@@ -202,9 +188,7 @@ class ClusteringAnalyzer:
 
         return {"clusters": cluster_info}
 
-    def _calculate_cluster_separation(
-        self, cluster_info: Dict[str, Dict], main_cluster: int
-    ) -> Dict[str, Any]:
+    def _calculate_cluster_separation(self, cluster_info: Dict[str, Dict], main_cluster: int) -> Dict[str, Any]:
         """
         计算聚类分离度
 
@@ -235,9 +219,7 @@ class ClusteringAnalyzer:
             other_lower = stats["mean"] - stats["std"]
 
             # 计算重叠程度
-            overlap = max(
-                0, min(main_upper, other_upper) - max(main_lower, other_lower)
-            )
+            overlap = max(0, min(main_upper, other_upper) - max(main_lower, other_lower))
             total_range = max(main_upper, other_upper) - min(main_lower, other_lower)
             overlap_ratio = overlap / total_range if total_range > 0 else 0
 
@@ -249,9 +231,7 @@ class ClusteringAnalyzer:
 
         # 计算整体分离度
         if separations:
-            avg_separation = np.mean(
-                [s["separation_score"] for s in separations.values()]
-            )
+            avg_separation = np.mean([s["separation_score"] for s in separations.values()])
         else:
             avg_separation = 1.0  # 只有一个聚类，认为是完全分离的
 
@@ -261,9 +241,7 @@ class ClusteringAnalyzer:
             "separation_score": float(avg_separation),
         }
 
-    def _calculate_cluster_based_threshold(
-        self, cluster_analysis: Dict[str, Any], threshold_type: str
-    ) -> float:
+    def _calculate_cluster_based_threshold(self, cluster_analysis: Dict[str, Any], threshold_type: str) -> float:
         """
         基于聚类结果计算阈值
 
@@ -303,9 +281,7 @@ class ClusteringAnalyzer:
         # 默认使用主聚类均值
         return main_stats["mean"]
 
-    def _calculate_cluster_confidence(
-        self, cluster_analysis: Dict[str, Any], clusters: Dict[str, Any]
-    ) -> float:
+    def _calculate_cluster_confidence(self, cluster_analysis: Dict[str, Any], clusters: Dict[str, Any]) -> float:
         """
         计算聚类分析置信度
 
@@ -329,11 +305,7 @@ class ClusteringAnalyzer:
         # 噪声点比例影响置信度
         total_cluster_points = (
             sum(
-                len(
-                    cluster_analysis.get("clusters", {})
-                    .get(label, {})
-                    .get("points", [])
-                )
+                len(cluster_analysis.get("clusters", {}).get(label, {}).get("points", []))
                 for label in cluster_analysis.get("clusters", {}).keys()
             )
             if cluster_analysis.get("clusters")
@@ -341,25 +313,19 @@ class ClusteringAnalyzer:
         )
 
         total_points = total_cluster_points + clusters["noise_points"]
-        noise_ratio = (
-            clusters["noise_points"] / total_points if total_points > 0 else 0.0
-        )
+        noise_ratio = clusters["noise_points"] / total_points if total_points > 0 else 0.0
         noise_score = max(0, 1.0 - noise_ratio)
         confidence_factors.append(noise_score)
 
         # 分离度影响置信度
         if "separation_analysis" in cluster_analysis:
-            separation_score = cluster_analysis["separation_analysis"][
-                "separation_score"
-            ]
+            separation_score = cluster_analysis["separation_analysis"]["separation_score"]
             confidence_factors.append(separation_score)
 
         # 综合置信度
         return float(np.mean(confidence_factors))
 
-    def _generate_clustering_reasoning(
-        self, cluster_analysis: Dict[str, Any], recommended_threshold: float
-    ) -> str:
+    def _generate_clustering_reasoning(self, cluster_analysis: Dict[str, Any], recommended_threshold: float) -> str:
         """
         生成聚类推理说明
 
@@ -491,9 +457,6 @@ class ClusteringAnalyzer:
             elif len(unique_labels) == 1:
                 summary["cluster_quality"] = "single"
 
-            summary["cluster_sizes"] = [
-                int(np.sum(np.array(cluster_labels) == label))
-                for label in unique_labels
-            ]
+            summary["cluster_sizes"] = [int(np.sum(np.array(cluster_labels) == label)) for label in unique_labels]
 
         return summary

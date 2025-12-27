@@ -9,6 +9,7 @@ import time
 import numpy as np
 import pandas as pd
 import cupy as cp
+import cudf
 from cuml.linear_model import LinearRegression, Ridge, Lasso
 from cuml.ensemble import RandomForestRegressor
 from cuml.preprocessing import StandardScaler
@@ -71,9 +72,7 @@ class GPUPricePredictor:
             "model_scores": {},
         }
 
-    def _prepare_data_gpu(
-        self, data: pd.DataFrame, target_col: str = "close"
-    ) -> Tuple[cp.ndarray, cp.ndarray]:
+    def _prepare_data_gpu(self, data: pd.DataFrame, target_col: str = "close") -> Tuple[cp.ndarray, cp.ndarray]:
         """准备GPU数据"""
         # 转换为cuDF DataFrame
         df_gpu = cudf.DataFrame(data) if self.gpu_enabled else data
@@ -87,17 +86,11 @@ class GPUPricePredictor:
         y = df_gpu[target_col]
 
         # 数据标准化
-        X_scaled = (
-            self.scaler.fit_transform(X)
-            if self.gpu_enabled
-            else StandardScaler().fit_transform(X)
-        )
+        X_scaled = self.scaler.fit_transform(X) if self.gpu_enabled else StandardScaler().fit_transform(X)
 
         return X_scaled, y
 
-    def _create_lag_features(
-        self, data: pd.DataFrame, lags: List[int] = [1, 2, 3, 5, 10]
-    ) -> pd.DataFrame:
+    def _create_lag_features(self, data: pd.DataFrame, lags: List[int] = [1, 2, 3, 5, 10]) -> pd.DataFrame:
         """创建滞后特征"""
         df = data.copy()
 
@@ -137,9 +130,7 @@ class GPUPricePredictor:
         macd_signal = macd.ewm(span=signal).mean()
         return macd, macd_signal
 
-    def prepare_features(
-        self, data: pd.DataFrame, prediction_horizon: int = 1
-    ) -> pd.DataFrame:
+    def prepare_features(self, data: pd.DataFrame, prediction_horizon: int = 1) -> pd.DataFrame:
         """准备特征数据"""
         # 创建滞后特征
         feature_data = self._create_lag_features(data)
@@ -155,9 +146,7 @@ class GPUPricePredictor:
 
         return feature_data
 
-    def train_models(
-        self, data: pd.DataFrame, test_size: float = 0.2
-    ) -> Dict[str, ModelPerformance]:
+    def train_models(self, data: pd.DataFrame, test_size: float = 0.2) -> Dict[str, ModelPerformance]:
         """训练多个模型"""
         start_time = time.time()
 
@@ -166,9 +155,7 @@ class GPUPricePredictor:
 
         # 分割训练和测试数据
         X, y = self._prepare_data_gpu(feature_data)
-        X_train, X_test, y_train, y_test = gpu_train_test_split(
-            X, y, test_size=test_size, random_state=42
-        )
+        X_train, X_test, y_train, y_test = gpu_train_test_split(X, y, test_size=test_size, random_state=42)
 
         training_results = {}
 
@@ -193,10 +180,7 @@ class GPUPricePredictor:
 
             mse = np.mean((y_pred_cpu - y_test_cpu) ** 2)
             mae = np.mean(np.abs(y_pred_cpu - y_test_cpu))
-            r2_score = 1 - (
-                np.sum((y_test_cpu - y_pred_cpu) ** 2)
-                / np.sum((y_test_cpu - np.mean(y_test_cpu)) ** 2)
-            )
+            r2_score = 1 - (np.sum((y_test_cpu - y_pred_cpu) ** 2) / np.sum((y_test_cpu - np.mean(y_test_cpu)) ** 2))
             rmse = np.sqrt(mse)
 
             performance = ModelPerformance(
@@ -213,10 +197,7 @@ class GPUPricePredictor:
             self.performance_stats["model_scores"][model_name] = r2_score
 
             # 更新最佳模型
-            if (
-                self.performance_stats["best_model"] is None
-                or r2_score > self.performance_stats["best_model"][1]
-            ):
+            if self.performance_stats["best_model"] is None or r2_score > self.performance_stats["best_model"][1]:
                 self.performance_stats["best_model"] = (model_name, r2_score)
 
         self.is_fitted = True
@@ -266,9 +247,7 @@ class GPUPricePredictor:
         prediction_time = time.time() - start_time
 
         # 计算置信度
-        confidence_score = self._calculate_confidence_score(
-            model_name, prediction_horizon
-        )
+        confidence_score = self._calculate_confidence_score(model_name, prediction_horizon)
 
         # 创建预测结果
         result = PredictionResult(
@@ -291,9 +270,7 @@ class GPUPricePredictor:
 
         return result
 
-    def _calculate_confidence_score(
-        self, model_name: str, prediction_horizon: int
-    ) -> float:
+    def _calculate_confidence_score(self, model_name: str, prediction_horizon: int) -> float:
         """计算预测置信度"""
         base_confidence = self.performance_stats["model_scores"].get(model_name, 0.5)
 
@@ -301,13 +278,9 @@ class GPUPricePredictor:
         time_penalty = min(0.1 * prediction_horizon, 0.3)
 
         # 根据模型性能调整置信度
-        model_adjustment = (
-            0.1 if model_name == self.performance_stats["best_model"][0] else 0
-        )
+        model_adjustment = 0.1 if model_name == self.performance_stats["best_model"][0] else 0
 
-        confidence = max(
-            0.0, min(1.0, base_confidence - time_penalty + model_adjustment)
-        )
+        confidence = max(0.0, min(1.0, base_confidence - time_penalty + model_adjustment))
         return confidence
 
     def batch_predict(
@@ -345,9 +318,7 @@ class GPUPricePredictor:
             "is_fitted": self.is_fitted,
         }
 
-    def optimize_hyperparameters(
-        self, data: pd.DataFrame, model_type: str = "ridge"
-    ) -> Dict:
+    def optimize_hyperparameters(self, data: pd.DataFrame, model_type: str = "ridge") -> Dict:
         """优化超参数"""
         if self.gpu_enabled:
             from cuml.linear_model import Ridge
@@ -385,9 +356,7 @@ class GPUPricePredictor:
             feature_data = self.prepare_features(data)
             X, y = self._prepare_data_gpu(feature_data)
 
-            grid_search = GridSearchCV(
-                Ridge(), param_grid, cv=5, scoring="r2", n_jobs=-1
-            )
+            grid_search = GridSearchCV(Ridge(), param_grid, cv=5, scoring="r2", n_jobs=-1)
 
             grid_search.fit(X, y)
 
@@ -434,9 +403,7 @@ class GPUPredictionPipeline:
         self.predictor = GPUPricePredictor(gpu_enabled)
         self.data_preprocessor = DataPreprocessorGPU(gpu_enabled)
 
-    def run_full_pipeline(
-        self, raw_data: pd.DataFrame, prediction_horizon: int = 1
-    ) -> Dict:
+    def run_full_pipeline(self, raw_data: pd.DataFrame, prediction_horizon: int = 1) -> Dict:
         """运行完整的预测流水线"""
         # 数据预处理
         processed_data = self.data_preprocessor.preprocess(raw_data)
@@ -445,9 +412,7 @@ class GPUPredictionPipeline:
         training_results = self.predictor.train_models(processed_data)
 
         # 进行预测
-        prediction_result = self.predictor.predict_price(
-            processed_data, prediction_horizon=prediction_horizon
-        )
+        prediction_result = self.predictor.predict_price(processed_data, prediction_horizon=prediction_horizon)
 
         # 获取性能总结
         performance_summary = self.predictor.get_performance_summary()
@@ -518,14 +483,10 @@ class DataPreprocessorGPU:
         if self.gpu_enabled:
             feature_gpu = cudf.DataFrame(feature_data)
             normalized_features = self.scaler.fit_transform(feature_gpu)
-            normalized_df = cudf.DataFrame(
-                normalized_features, columns=feature_gpu.columns
-            )
+            normalized_df = cudf.DataFrame(normalized_features, columns=feature_gpu.columns)
         else:
             normalized_features = self.scaler.fit_transform(feature_data)
-            normalized_df = pd.DataFrame(
-                normalized_features, columns=feature_data.columns
-            )
+            normalized_df = pd.DataFrame(normalized_features, columns=feature_data.columns)
 
         # 合并回原始数据
         result = data.copy()
@@ -575,9 +536,7 @@ def benchmark_gpu_vs_cpu(data: pd.DataFrame, prediction_horizon: int = 1):
     print(f"加速比: {cpu_time / gpu_time:.2f}x")
     print(f"GPU预测结果: {gpu_results['prediction'].predicted_price:.2f}")
     print(f"CPU预测结果: {cpu_results['prediction'].predicted_price:.2f}")
-    print(
-        f"预测差异: {abs(gpu_results['prediction'].predicted_price - cpu_results['prediction'].predicted_price):.2f}"
-    )
+    print(f"预测差异: {abs(gpu_results['prediction'].predicted_price - cpu_results['prediction'].predicted_price):.2f}")
 
     return {
         "gpu_time": gpu_time,

@@ -194,9 +194,7 @@ class TestLoginFlow:
 
         logger.info("✅ Login page loaded successfully")
 
-    async def test_login_with_valid_credentials(
-        self, page, base_url, test_user_credentials, test_data_manager
-    ):
+    async def test_login_with_valid_credentials(self, page, base_url, test_user_credentials, test_data_manager):
         """
         6.2.2: Test successful login with valid credentials
         - Enter email and password
@@ -217,18 +215,14 @@ class TestLoginFlow:
 
         # Wait for navigation
         try:
-            await page.wait_for_url(
-                lambda url: "dashboard" in url or "home" in url, timeout=10000
-            )
+            await page.wait_for_url(lambda url: "dashboard" in url or "home" in url, timeout=10000)
 
             # Verify user is logged in (check for logout button or user menu)
             user_menu = await page.query_selector('[data-testid="user-menu"]')
             assert user_menu is not None, "User menu not found - login may have failed"
 
             # Track login event
-            test_data_manager.track_resource(
-                "login_session", test_user_credentials["email"]
-            )
+            test_data_manager.track_resource("login_session", test_user_credentials["email"])
 
             logger.info("✅ Login successful with valid credentials")
 
@@ -345,16 +339,12 @@ class TestSubscriptionFlow:
             await page.wait_for_timeout(500)  # Wait for search results
 
             # Click subscribe button for the symbol
-            subscribe_button = await page.query_selector(
-                f'[data-testid="subscribe-{symbol}"]'
-            )
+            subscribe_button = await page.query_selector(f'[data-testid="subscribe-{symbol}"]')
             if subscribe_button:
                 await subscribe_button.click()
 
                 # Verify subscription toast/confirmation
-                confirmation = await page.query_selector(
-                    '[data-testid="subscription-success"]'
-                )
+                confirmation = await page.query_selector('[data-testid="subscription-success"]')
                 if confirmation:
                     message = await confirmation.text_content()
                     assert "subscribed" in message.lower() or "added" in message.lower()
@@ -388,16 +378,12 @@ class TestSubscriptionFlow:
             await page.wait_for_timeout(300)
 
             # Click first symbol option
-            first_option = await page.query_selector(
-                f'[data-testid="option-{test_symbols[0]}"]'
-            )
+            first_option = await page.query_selector(f'[data-testid="option-{test_symbols[0]}"]')
             if first_option:
                 await first_option.click()
 
                 # Set date range (if applicable)
-                start_date_input = await page.query_selector(
-                    '[data-testid="start-date"]'
-                )
+                start_date_input = await page.query_selector('[data-testid="start-date"]')
                 if start_date_input:
                     await start_date_input.fill("2024-01-01")
 
@@ -523,9 +509,7 @@ class TestDataManagement:
 class TestCompleteWorkflows:
     """Complete end-to-end workflow tests"""
 
-    async def test_complete_user_journey(
-        self, page, base_url, test_user_credentials, test_symbols, test_data_manager
-    ):
+    async def test_complete_user_journey(self, page, base_url, test_user_credentials, test_symbols, test_data_manager):
         """
         6.3.5: Complete user journey test
         Login -> Subscribe -> Query Data -> View Results
@@ -543,9 +527,7 @@ class TestCompleteWorkflows:
             login_form = await page.query_selector("form")
             if login_form:
                 await page.fill('input[type="email"]', test_user_credentials["email"])
-                await page.fill(
-                    'input[type="password"]', test_user_credentials["password"]
-                )
+                await page.fill('input[type="password"]', test_user_credentials["password"])
                 await page.click('button[type="submit"]')
                 await page.wait_for_timeout(2000)
                 logger.info("Step 2: Logged in")

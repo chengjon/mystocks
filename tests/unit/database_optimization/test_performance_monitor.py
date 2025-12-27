@@ -349,9 +349,7 @@ class TestIndexPerformanceMonitor:
         assert len(analysis) == 4
 
         # 验证慢查询检测
-        slow_query_results = [
-            r for r in analysis.values() if r["slow_query_percentage"] > 0
-        ]
+        slow_query_results = [r for r in analysis.values() if r["slow_query_percentage"] > 0]
         assert len(slow_query_results) == 2  # slow_product_query 和 very_slow_log_query
 
         # 5. 验证性能指标

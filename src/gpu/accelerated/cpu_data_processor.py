@@ -57,8 +57,7 @@ class CPUDataProcessor(IDataProcessor):
             "original_memory": data.memory_usage(deep=True).sum(),
             "processed_memory": processed_data.memory_usage(deep=True).sum(),
             "compression_ratio": (
-                data.memory_usage(deep=True).sum()
-                / processed_data.memory_usage(deep=True).sum()
+                data.memory_usage(deep=True).sum() / processed_data.memory_usage(deep=True).sum()
                 if processed_data.memory_usage(deep=True).sum() > 0
                 else 1.0
             ),
@@ -97,9 +96,7 @@ class CPUDataProcessor(IDataProcessor):
             )
         return processed_results
 
-    def compute_features(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """
         CPU计算技术特征
         """
@@ -107,24 +104,18 @@ class CPUDataProcessor(IDataProcessor):
         features = {}
 
         if df.empty or "price" not in df.columns or len(df) < 20:  # 至少20个数据点
-            logger.warning(
-                "Historical data is insufficient or empty for feature calculation."
-            )
+            logger.warning("Historical data is insufficient or empty for feature calculation.")
             return features
 
         prices = df["price"]
-        volumes = (
-            df["volume"] if "volume" in df.columns else pd.Series(0, index=df.index)
-        )
+        volumes = df["volume"] if "volume" in df.columns else pd.Series(0, index=df.index)
 
         for feature_type in feature_types:
             if feature_type == "sma_20":
                 features["sma_20"] = float(prices.rolling(window=20).mean().iloc[-1])
             elif feature_type == "sma_50":
                 if len(df) >= 50:
-                    features["sma_50"] = float(
-                        prices.rolling(window=50).mean().iloc[-1]
-                    )
+                    features["sma_50"] = float(prices.rolling(window=50).mean().iloc[-1])
                 else:
                     features["sma_50"] = 0.0
             elif feature_type == "rsi":
@@ -138,9 +129,7 @@ class CPUDataProcessor(IDataProcessor):
             elif feature_type == "volume_ratio":
                 volume_ma = volumes.rolling(window=20).mean().iloc[-1]
                 current_volume = volumes.iloc[-1]
-                features["volume_ratio"] = (
-                    float(current_volume / volume_ma) if volume_ma > 0 else 0.0
-                )
+                features["volume_ratio"] = float(current_volume / volume_ma) if volume_ma > 0 else 0.0
         return features
 
     # --- 辅助方法 (从原 GPUDataProcessor 移植，并去除GPU相关逻辑) ---
@@ -207,9 +196,7 @@ class CPUDataProcessor(IDataProcessor):
             elif method == "zscore":
                 mean_val = data[col].mean()
                 std_val = data[col].std()
-                data[col] = data[col].clip(
-                    mean_val - 3 * std_val, mean_val + 3 * std_val
-                )
+                data[col] = data[col].clip(mean_val - 3 * std_val, mean_val + 3 * std_val)
         return data
 
     def _normalize_features(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -224,9 +211,7 @@ class CPUDataProcessor(IDataProcessor):
 
         scaler = StandardScaler()
         normalized_features = scaler.fit_transform(feature_data)
-        normalized_df = pd.DataFrame(
-            normalized_features, columns=feature_data.columns, index=data.index
-        )
+        normalized_df = pd.DataFrame(normalized_features, columns=feature_data.columns, index=data.index)
 
         self.scalers["standard_scaler"] = scaler
 
@@ -241,12 +226,8 @@ class CPUDataProcessor(IDataProcessor):
         gain = delta.where(delta > 0, 0)
         loss = -delta.where(delta < 0, 0)
 
-        avg_gain = (
-            gain.rolling(window=14, min_periods=1).mean().iloc[-1]
-        )  # Ensure min_periods
-        avg_loss = (
-            loss.rolling(window=14, min_periods=1).mean().iloc[-1]
-        )  # Ensure min_periods
+        avg_gain = gain.rolling(window=14, min_periods=1).mean().iloc[-1]  # Ensure min_periods
+        avg_loss = loss.rolling(window=14, min_periods=1).mean().iloc[-1]  # Ensure min_periods
 
         if avg_loss == 0:
             return 100.0

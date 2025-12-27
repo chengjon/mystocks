@@ -60,9 +60,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 await self._warmup_gpu()
 
                 self.is_initialized = True
-                logger.info(
-                    f"MatrixKernelEngine initialized on device {self.config.device_id}"
-                )
+                logger.info(f"MatrixKernelEngine initialized on device {self.config.device_id}")
                 return True
             else:
                 logger.warning("CuPy not available, falling back to NumPy")
@@ -101,15 +99,11 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             await self.initialize()
 
         start_time = time.time()
-        operation_config = config or MatrixOperationConfig(
-            operation_type=MatrixOperationType.MULTIPLY
-        )
+        operation_config = config or MatrixOperationConfig(operation_type=MatrixOperationType.MULTIPLY)
 
         try:
             # 验证输入
-            if not self.validate_matrix_input(
-                left_data, operation_config.operation_type
-            ):
+            if not self.validate_matrix_input(left_data, operation_config.operation_type):
                 return KernelExecutionResult(
                     success=False,
                     execution_time_ms=0.0,
@@ -117,9 +111,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 )
 
             # 检查维度兼容性
-            if not self._check_matrix_dimensions(
-                left_data, right_data, operation_config
-            ):
+            if not self._check_matrix_dimensions(left_data, right_data, operation_config):
                 return KernelExecutionResult(
                     success=False,
                     execution_time_ms=0.0,
@@ -127,9 +119,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 )
 
             # 执行矩阵运算
-            result = await self._execute_matrix_kernel(
-                left_data, right_data, operation_config
-            )
+            result = await self._execute_matrix_kernel(left_data, right_data, operation_config)
 
             execution_time = (time.time() - start_time) * 1000
             self.stats["total_operations"] += 1
@@ -137,8 +127,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Matrix operation {operation_config.operation_type.value} "
-                    f"completed in {execution_time:.2f}ms"
+                    f"Matrix operation {operation_config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -148,9 +137,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             logger.error(f"Error executing matrix operation: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=execution_time, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
     def _check_matrix_dimensions(
         self,
@@ -189,24 +176,16 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         try:
             if CUPY_AVAILABLE and not self._should_use_cpu_fallback(left_data, config):
                 # 使用GPU加速
-                return await self._execute_gpu_matrix_kernel(
-                    left_data, right_data, config
-                )
+                return await self._execute_gpu_matrix_kernel(left_data, right_data, config)
             else:
                 # 使用CPU
-                return await self._execute_cpu_matrix_kernel(
-                    left_data, right_data, config
-                )
+                return await self._execute_cpu_matrix_kernel(left_data, right_data, config)
 
         except Exception as e:
             logger.error(f"Matrix kernel execution failed: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=0.0, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
-    def _should_use_cpu_fallback(
-        self, data: np.ndarray, config: MatrixOperationConfig
-    ) -> bool:
+    def _should_use_cpu_fallback(self, data: np.ndarray, config: MatrixOperationConfig) -> bool:
         """判断是否应该使用CPU回退"""
         # 小矩阵使用CPU可能更快
         if data.size < 10000:  # 小于10k元素
@@ -233,11 +212,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         try:
             # 转换数据到GPU
             gpu_left = cp.asarray(left_data, dtype=cp.float32)
-            gpu_right = (
-                cp.asarray(right_data, dtype=cp.float32)
-                if right_data is not None
-                else None
-            )
+            gpu_right = cp.asarray(right_data, dtype=cp.float32) if right_data is not None else None
 
             memory_used = gpu_left.nbytes
             if gpu_right is not None:
@@ -247,42 +222,28 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             if config.operation_type == MatrixOperationType.MULTIPLY:
                 result_gpu = self._gpu_matrix_multiply(gpu_left, gpu_right, config)
             elif config.operation_type == MatrixOperationType.MULTIPLY_TRANSPOSE:
-                result_gpu = self._gpu_matrix_multiply_transpose(
-                    gpu_left, gpu_right, config
-                )
+                result_gpu = self._gpu_matrix_multiply_transpose(gpu_left, gpu_right, config)
             elif config.operation_type == MatrixOperationType.TRANSPOSE_MULTIPLY:
-                result_gpu = self._gpu_matrix_transpose_multiply(
-                    gpu_left, gpu_right, config
-                )
+                result_gpu = self._gpu_matrix_transpose_multiply(gpu_left, gpu_right, config)
             elif config.operation_type == MatrixOperationType.ELEMENT_WISE:
-                result_gpu = self._gpu_element_wise_operation(
-                    gpu_left, gpu_right, config
-                )
+                result_gpu = self._gpu_element_wise_operation(gpu_left, gpu_right, config)
             elif config.operation_type == MatrixOperationType.TRANSPOSE:
                 result_gpu = cp.transpose(gpu_left)
             elif config.operation_type == MatrixOperationType.DOT_PRODUCT:
                 result_gpu = cp.dot(
                     gpu_left.flatten(),
-                    gpu_right.flatten()
-                    if gpu_right is not None
-                    else gpu_left.flatten(),
+                    gpu_right.flatten() if gpu_right is not None else gpu_left.flatten(),
                 )
             elif config.operation_type == MatrixOperationType.NORM:
                 result_gpu = cp.linalg.norm(gpu_left)
             else:
-                raise ValueError(
-                    f"Unsupported matrix operation: {config.operation_type}"
-                )
+                raise ValueError(f"Unsupported matrix operation: {config.operation_type}")
 
             # 等待GPU完成
             cp.cuda.Stream.null.synchronize()
 
             # 转换结果回CPU
-            result = (
-                cp.asnumpy(result_gpu)
-                if isinstance(result_gpu, cp.ndarray)
-                else np.array([result_gpu])
-            )
+            result = cp.asnumpy(result_gpu) if isinstance(result_gpu, cp.ndarray) else np.array([result_gpu])
 
             # 清理GPU内存
             del gpu_left
@@ -343,16 +304,12 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             elif config.operation_type == MatrixOperationType.DOT_PRODUCT:
                 result = np.dot(
                     left_data.flatten(),
-                    right_data.flatten()
-                    if right_data is not None
-                    else left_data.flatten(),
+                    right_data.flatten() if right_data is not None else left_data.flatten(),
                 )
             elif config.operation_type == MatrixOperationType.NORM:
                 result = np.linalg.norm(left_data)
             else:
-                raise ValueError(
-                    f"Unsupported matrix operation: {config.operation_type}"
-                )
+                raise ValueError(f"Unsupported matrix operation: {config.operation_type}")
 
             execution_time = (time.time() - start_time) * 1000
 
@@ -360,8 +317,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 success=True,
                 execution_time_ms=execution_time,
                 result_data=result,
-                memory_used_bytes=left_data.nbytes
-                + (right_data.nbytes if right_data is not None else 0),
+                memory_used_bytes=left_data.nbytes + (right_data.nbytes if right_data is not None else 0),
                 performance_metrics={
                     "operation": config.operation_type.value,
                     "execution_backend": "CPU",
@@ -372,13 +328,9 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             logger.error(f"CPU matrix kernel execution failed: {e}")
-            return KernelExecutionResult(
-                success=False, execution_time_ms=0.0, error_message=str(e)
-            )
+            return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
-    def _gpu_matrix_multiply(
-        self, left: np.ndarray, right: np.ndarray, config: MatrixOperationConfig
-    ) -> np.ndarray:
+    def _gpu_matrix_multiply(self, left: np.ndarray, right: np.ndarray, config: MatrixOperationConfig) -> np.ndarray:
         """GPU矩阵乘法"""
         if config.alpha != 1.0:
             left = left * config.alpha
@@ -430,9 +382,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
         return result
 
-    async def execute_transform_operation(
-        self, data: np.ndarray, config: TransformConfig
-    ) -> KernelExecutionResult:
+    async def execute_transform_operation(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """矩阵内核不支持数据变换操作"""
         return KernelExecutionResult(
             success=False,
@@ -440,9 +390,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             error_message="Matrix kernels do not support transform operations",
         )
 
-    async def execute_inference_operation(
-        self, data: np.ndarray, config: InferenceConfig
-    ) -> KernelExecutionResult:
+    async def execute_inference_operation(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """矩阵内核不支持推理操作"""
         return KernelExecutionResult(
             success=False,
@@ -450,17 +398,13 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             error_message="Matrix kernels do not support inference operations",
         )
 
-    async def batch_execute(
-        self, operations: list, config: Optional[KernelConfig] = None
-    ) -> list:
+    async def batch_execute(self, operations: list, config: Optional[KernelConfig] = None) -> list:
         """批量执行矩阵运算"""
         results = []
         for op_data in operations:
             operation_type, left_data, right_data, op_config = op_data[:4]
             if isinstance(op_config, MatrixOperationConfig):
-                result = await self.execute_matrix_operation(
-                    left_data, right_data, op_config
-                )
+                result = await self.execute_matrix_operation(left_data, right_data, op_config)
             else:
                 result = await self.execute_matrix_operation(left_data, right_data)
             results.append(result)
@@ -493,9 +437,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             "performance_characteristics": self._get_operation_characteristics(op_type),
         }
 
-    def _get_operation_characteristics(
-        self, operation_type: Optional[MatrixOperationType]
-    ) -> Dict[str, Any]:
+    def _get_operation_characteristics(self, operation_type: Optional[MatrixOperationType]) -> Dict[str, Any]:
         """获取操作性能特征"""
         if operation_type is None:
             return {}
@@ -569,14 +511,11 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             "total_execution_time_ms": self.stats["total_execution_time"],
             "average_execution_time_ms": avg_time,
             "cache_hits": self.stats["cache_hits"],
-            "cpu_fallback_rate": self.stats["fallback_to_cpu"]
-            / max(1, self.stats["total_operations"]),
+            "cpu_fallback_rate": self.stats["fallback_to_cpu"] / max(1, self.stats["total_operations"]),
             "gpu_acceleration_available": CUPY_AVAILABLE,
         }
 
-    def _gpu_multiply_optimized(
-        self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig
-    ) -> cp.ndarray:
+    def _gpu_multiply_optimized(self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig) -> cp.ndarray:
         """优化的GPU矩阵乘法实现"""
         m, k = a.shape
         k2, n = b.shape
@@ -596,9 +535,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         else:  # 一般情况使用优化的矩阵乘法
             return cp.matmul(a, b)
 
-    def _gpu_blocked_multiply(
-        self, a: cp.ndarray, b: cp.ndarray, block_size: int = 128
-    ) -> cp.ndarray:
+    def _gpu_blocked_multiply(self, a: cp.ndarray, b: cp.ndarray, block_size: int = 128) -> cp.ndarray:
         """GPU分块矩阵乘法"""
         m, k = a.shape
         k2, n = b.shape
@@ -614,27 +551,17 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             for j in range(0, n, block_size):
                 for kk in range(0, k, block_size):
                     # 获取块
-                    a_block = a[
-                        i : min(i + block_size, m), kk : min(kk + block_size, k)
-                    ]
-                    b_block = b[
-                        kk : min(kk + block_size, k), j : min(j + block_size, n)
-                    ]
+                    a_block = a[i : min(i + block_size, m), kk : min(kk + block_size, k)]
+                    b_block = b[kk : min(kk + block_size, k), j : min(j + block_size, n)]
 
                     # 块乘法
-                    result_block = result[
-                        i : min(i + block_size, m), j : min(j + block_size, n)
-                    ]
+                    result_block = result[i : min(i + block_size, m), j : min(j + block_size, n)]
                     result_block += cp.matmul(a_block, b_block)
-                    result[i : min(i + block_size, m), j : min(j + block_size, n)] = (
-                        result_block
-                    )
+                    result[i : min(i + block_size, m), j : min(j + block_size, n)] = result_block
 
         return result
 
-    def _gpu_multiply_strassen(
-        self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig
-    ) -> cp.ndarray:
+    def _gpu_multiply_strassen(self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig) -> cp.ndarray:
         """Strassen算法实现（仅适用于2的幂次方矩阵）"""
         m, k = a.shape
         k2, n = b.shape
@@ -686,9 +613,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
         return c
 
-    def _gpu_multiply_parallel(
-        self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig
-    ) -> cp.ndarray:
+    def _gpu_multiply_parallel(self, a: cp.ndarray, b: cp.ndarray, config: MatrixConfig) -> cp.ndarray:
         """并行矩阵乘法优化"""
         m, k = a.shape
         k2, n = b.shape
@@ -711,7 +636,6 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
                 # 并行计算矩阵块
                 block_rows = (m + num_streams - 1) // num_streams
-                tasks = []
 
                 for i, stream in enumerate(streams):
                     start_row = i * block_rows
@@ -751,9 +675,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
         return data
 
-    def _gpu_transpose_optimized(
-        self, data: cp.ndarray, config: MatrixConfig
-    ) -> cp.ndarray:
+    def _gpu_transpose_optimized(self, data: cp.ndarray, config: MatrixConfig) -> cp.ndarray:
         """优化的矩阵转置"""
         # 优化内存访问
         data = self._optimize_memory_access(data)
@@ -764,9 +686,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         else:
             return cp.transpose(data)
 
-    def _gpu_blocked_transpose(
-        self, data: cp.ndarray, block_size: int = 1024
-    ) -> cp.ndarray:
+    def _gpu_blocked_transpose(self, data: cp.ndarray, block_size: int = 1024) -> cp.ndarray:
         """分块矩阵转置"""
         m, n = data.shape
         result = cp.zeros((n, m), dtype=data.dtype)
@@ -778,8 +698,6 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 # 转置块
                 result_block = cp.transpose(block)
                 # 放置到结果矩阵
-                result[j : min(j + block_size, n), i : min(i + block_size, m)] = (
-                    result_block
-                )
+                result[j : min(j + block_size, n), i : min(i + block_size, m)] = result_block
 
         return result

@@ -46,9 +46,7 @@ class TestStockSymbolModel:
         """测试空代码验证失败"""
         with pytest.raises(ValidationError) as exc_info:
             StockSymbolModel(symbol="")
-        assert "股票代码不能为空" in str(
-            exc_info.value
-        ) or "at least 1 character" in str(exc_info.value)
+        assert "股票代码不能为空" in str(exc_info.value) or "at least 1 character" in str(exc_info.value)
 
     def test_invalid_symbol_too_long(self, validation_test_data):
         """测试超长代码验证失败"""
@@ -207,9 +205,7 @@ class TestTechnicalIndicatorQueryModel:
 
     def test_valid_indicator_query(self):
         """测试有效的指标查询"""
-        model = TechnicalIndicatorQueryModel(
-            symbol="000001", indicators=["MA", "RSI", "MACD"], period=20
-        )
+        model = TechnicalIndicatorQueryModel(symbol="000001", indicators=["MA", "RSI", "MACD"], period=20)
         assert model.symbol == "000001"
         assert len(model.indicators) == 3
         assert model.period == 20
@@ -244,15 +240,11 @@ class TestTechnicalIndicatorQueryModel:
     def test_indicator_query_period_range(self):
         """测试周期范围验证"""
         # 最小周期
-        model = TechnicalIndicatorQueryModel(
-            symbol="000001", indicators=["MA"], period=1
-        )
+        model = TechnicalIndicatorQueryModel(symbol="000001", indicators=["MA"], period=1)
         assert model.period == 1
 
         # 最大周期
-        model = TechnicalIndicatorQueryModel(
-            symbol="000001", indicators=["MA"], period=500
-        )
+        model = TechnicalIndicatorQueryModel(symbol="000001", indicators=["MA"], period=500)
         assert model.period == 500
 
     def test_indicator_query_invalid_period(self):
@@ -282,9 +274,7 @@ class TestPaginationModel:
     def test_valid_pagination(self, validation_test_data):
         """测试有效的分页参数"""
         page_data = validation_test_data["pagination"]["valid"]
-        model = PaginationModel(
-            page=page_data["page"], page_size=page_data["page_size"]
-        )
+        model = PaginationModel(page=page_data["page"], page_size=page_data["page_size"])
         assert model.page == 1
         assert model.page_size == 20
 

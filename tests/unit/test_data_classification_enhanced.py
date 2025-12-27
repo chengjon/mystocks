@@ -41,9 +41,7 @@ class TestDataClassificationEnhanced(unittest.TestCase):
         """测试分类比较功能"""
         # 测试相等性
         self.assertEqual(DataClassification.TICK_DATA, DataClassification.TICK_DATA)
-        self.assertNotEqual(
-            DataClassification.TICK_DATA, DataClassification.MINUTE_KLINE
-        )
+        self.assertNotEqual(DataClassification.TICK_DATA, DataClassification.MINUTE_KLINE)
 
         # 测试与字符串的比较（枚举可以与字符串比较，但值不同）
         # DataClassification.TICK_DATA == "TICK_DATA" 在某些情况下可能为True
@@ -70,14 +68,10 @@ class TestDataClassificationEnhanced(unittest.TestCase):
         test_dict[DataClassification.MINUTE_KLINE] = "minute_kline_value"
 
         self.assertEqual(test_dict[DataClassification.TICK_DATA], "tick_data_value")
-        self.assertEqual(
-            test_dict[DataClassification.MINUTE_KLINE], "minute_kline_value"
-        )
+        self.assertEqual(test_dict[DataClassification.MINUTE_KLINE], "minute_kline_value")
 
         # 测试哈希值一致性
-        self.assertEqual(
-            hash(DataClassification.TICK_DATA), hash(DataClassification.TICK_DATA)
-        )
+        self.assertEqual(hash(DataClassification.TICK_DATA), hash(DataClassification.TICK_DATA))
 
     def test_classification_in_collection(self):
         """测试分类在集合中的使用"""
@@ -115,9 +109,7 @@ class TestDataClassificationEnhanced(unittest.TestCase):
         self.assertEqual(DataClassification.MINUTE_KLINE.name, "MINUTE_KLINE")
 
         # 确保name属性与value属性一致
-        self.assertEqual(
-            DataClassification.TICK_DATA.name, DataClassification.TICK_DATA.value
-        )
+        self.assertEqual(DataClassification.TICK_DATA.name, DataClassification.TICK_DATA.value)
 
     def test_market_data_classifications(self):
         """参数化测试：验证所有市场数据分类"""

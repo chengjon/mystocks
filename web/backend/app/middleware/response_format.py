@@ -20,11 +20,10 @@ import json
 import logging
 import time
 import uuid
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.responses import (
@@ -34,7 +33,6 @@ from app.core.responses import (
     ErrorDetail,
     UnifiedResponse,
     create_unified_error_response,
-    create_unified_success_response,
     create_validation_error_response,
 )
 
@@ -166,9 +164,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
         # 情况3: 包装成功响应
         return await self._wrap_success_response(response, request_id)
 
-    async def _wrap_success_response(
-        self, response: Response, request_id: str
-    ) -> Response:
+    async def _wrap_success_response(self, response: Response, request_id: str) -> Response:
         """包装成功响应"""
         status_code = getattr(response, "status_code", 200)
 
@@ -199,9 +195,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
         # 因此当无法解析时，我们信任原始响应而不是返回默认的空响应
         return response
 
-    async def _wrap_error_response(
-        self, response: Response, request_id: str, status_code: int
-    ) -> Response:
+    async def _wrap_error_response(self, response: Response, request_id: str, status_code: int) -> Response:
         """包装错误响应"""
         # 获取错误详情
         detail = getattr(response, "detail", ResponseMessages.INTERNAL_ERROR)
@@ -209,9 +203,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
         # 对于Pydantic验证错误，需要特殊处理
         if isinstance(detail, list):
             errors = self._parse_validation_errors(detail)
-            unified_response = create_validation_error_response(
-                errors=errors, request_id=request_id
-            )
+            unified_response = create_validation_error_response(errors=errors, request_id=request_id)
         else:
             # 普通错误
             message = str(detail) if detail else ResponseMessages.INTERNAL_ERROR
@@ -228,23 +220,13 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
     def _is_unified_response(self, data: Dict) -> bool:
         """检查是否已经是统一响应格式"""
-        return (
-            isinstance(data, dict)
-            and "success" in data
-            and "code" in data
-            and "message" in data
-        )
+        return isinstance(data, dict) and "success" in data and "code" in data and "message" in data
 
     def _is_old_api_response(self, data: Dict) -> bool:
         """检查是否是旧的API响应格式"""
-        return isinstance(data, dict) and (
-            ("success" in data and "data" in data)
-            or ("error" in data)
-        )
+        return isinstance(data, dict) and (("success" in data and "data" in data) or ("error" in data))
 
-    def _convert_to_unified(
-        self, data: Dict, request_id: str, status_code: int
-    ) -> JSONResponse:
+    def _convert_to_unified(self, data: Dict, request_id: str, status_code: int) -> JSONResponse:
         """将旧格式响应转换为统一格式"""
         success = data.get("success", True)
 
@@ -292,9 +274,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             status_code=status_code,
         )
 
-    def _wrap_as_unified(
-        self, data: Any, request_id: str, status_code: int
-    ) -> JSONResponse:
+    def _wrap_as_unified(self, data: Any, request_id: str, status_code: int) -> JSONResponse:
         """将任意数据包装为统一格式"""
         unified = UnifiedResponse(
             success=True,
@@ -309,9 +289,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             status_code=status_code,
         )
 
-    def _parse_validation_errors(
-        self, errors: list
-    ) -> list[ErrorDetail]:
+    def _parse_validation_errors(self, errors: list) -> list[ErrorDetail]:
         """
         解析Pydantic验证错误为ErrorDetail列表
 
@@ -379,9 +357,7 @@ class ProcessTimeMiddleware(BaseHTTPMiddleware):
         # 将处理时间添加到响应头
         if hasattr(response, "headers"):
             response.headers["X-Process-Time"] = f"{process_time:.3f}"
-            response.headers["X-Request-ID"] = getattr(
-                request.state, "request_id", "unknown"
-            )
+            response.headers["X-Request-ID"] = getattr(request.state, "request_id", "unknown")
 
         return response
 

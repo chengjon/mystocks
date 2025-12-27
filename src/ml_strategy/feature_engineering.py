@@ -105,18 +105,12 @@ class RollingFeatureGenerator:
         features["close_max"] = window["close"].max()
 
         # 2. 价格比率特征
-        features["high_low_ratio"] = window["high"].mean() / max(
-            window["low"].mean(), 1e-6
-        )
-        features["close_open_ratio"] = window["close"].mean() / max(
-            window["open"].mean(), 1e-6
-        )
+        features["high_low_ratio"] = window["high"].mean() / max(window["low"].mean(), 1e-6)
+        features["close_open_ratio"] = window["close"].mean() / max(window["open"].mean(), 1e-6)
 
         # 3. 价格动量特征
         if len(window) >= 2:
-            features["price_momentum"] = (
-                window["close"].iloc[-1] / max(window["close"].iloc[0], 1e-6)
-            ) - 1
+            features["price_momentum"] = (window["close"].iloc[-1] / max(window["close"].iloc[0], 1e-6)) - 1
             features["price_change_rate"] = window["close"].pct_change().mean()
         else:
             features["price_momentum"] = 0
@@ -155,15 +149,11 @@ class RollingFeatureGenerator:
             features["price_trend"] = 0
 
         # 7. 振幅特征
-        features["amplitude_mean"] = (
-            (window["high"] - window["low"]) / window["close"]
-        ).mean()
+        features["amplitude_mean"] = ((window["high"] - window["low"]) / window["close"]).mean()
 
         return features
 
-    def generate_rolling_raw_features(
-        self, df: pd.DataFrame, feature_cols: List[str] = None
-    ) -> pd.DataFrame:
+    def generate_rolling_raw_features(self, df: pd.DataFrame, feature_cols: List[str] = None) -> pd.DataFrame:
         """
         生成滚动原始特征（PyProf 原始方法）
 
@@ -215,9 +205,7 @@ class RollingFeatureGenerator:
 
         df_features = pd.DataFrame(feature_list, columns=column_names)
 
-        self.logger.info(
-            "生成滚动原始特征: %d条, %d列", len(df_features), len(column_names)
-        )
+        self.logger.info("生成滚动原始特征: %d条, %d列", len(df_features), len(column_names))
 
         return df_features
 
@@ -279,9 +267,7 @@ class RollingFeatureGenerator:
 
         # 验证
         if len(features_df) != len(target_series):
-            raise ValueError(
-                f"X 和 y 长度不匹配: {len(features_df)} vs {len(target_series)}"
-            )
+            raise ValueError(f"X 和 y 长度不匹配: {len(features_df)} vs {len(target_series)}")
 
         # 移除缺失值
         mask = ~target_series.isna()

@@ -109,9 +109,7 @@ class PasswordPolicy:
         if self.require_digit and not re.search(r"\d", password):
             errors.append("密码必须包含至少一个数字")
 
-        if self.require_special_char and not re.search(
-            r'[!@#$%^&*(),.?":{}|<>]', password
-        ):
+        if self.require_special_char and not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             errors.append('密码必须包含至少一个特殊字符 (!@#$%^&*(),.?":{}|<>)')
 
         # 检查常见密码
@@ -158,17 +156,11 @@ class PasswordPolicy:
         """检查是否有过多连续字符"""
         for i in range(len(password) - 2):
             # 检查升序连续
-            if (
-                ord(password[i + 1]) - ord(password[i]) == 1
-                and ord(password[i + 2]) - ord(password[i + 1]) == 1
-            ):
+            if ord(password[i + 1]) - ord(password[i]) == 1 and ord(password[i + 2]) - ord(password[i + 1]) == 1:
                 return True
 
             # 检查降序连续
-            if (
-                ord(password[i]) - ord(password[i + 1]) == 1
-                and ord(password[i + 1]) - ord(password[i + 2]) == 1
-            ):
+            if ord(password[i]) - ord(password[i + 1]) == 1 and ord(password[i + 1]) - ord(password[i + 2]) == 1:
                 return True
 
         return False
@@ -226,9 +218,7 @@ class PasswordValidator:
         """验证密码"""
         return self.policy.validate_password(password)
 
-    def validate_and_log(
-        self, password: str, context: str = ""
-    ) -> Tuple[bool, List[str]]:
+    def validate_and_log(self, password: str, context: str = "") -> Tuple[bool, List[str]]:
         """验证密码并记录日志"""
         is_valid, errors = self.validate(password)
 
@@ -266,9 +256,7 @@ def validate_password(password: str) -> Tuple[bool, List[str]]:
     return get_password_validator().validate(password)
 
 
-def validate_password_with_context(
-    password: str, context: str = ""
-) -> Tuple[bool, List[str]]:
+def validate_password_with_context(password: str, context: str = "") -> Tuple[bool, List[str]]:
     """验证密码并记录上下文信息的便捷函数"""
     return get_password_validator().validate_and_log(password, context)
 

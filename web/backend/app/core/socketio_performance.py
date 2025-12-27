@@ -100,9 +100,7 @@ class WebSocketPerformanceManager:
         )
 
         # 配置内存压力回调
-        self.memory_optimizer.register_pressure_callback(
-            MemoryPressureLevel.HIGH, self._on_high_memory_pressure
-        )
+        self.memory_optimizer.register_pressure_callback(MemoryPressureLevel.HIGH, self._on_high_memory_pressure)
         self.memory_optimizer.register_pressure_callback(
             MemoryPressureLevel.CRITICAL, self._on_critical_memory_pressure
         )
@@ -188,9 +186,7 @@ class WebSocketPerformanceManager:
 
     async def _on_critical_memory_pressure(self) -> None:
         """严重内存压力回调"""
-        logger.critical(
-            "❌ Critical memory pressure detected, aggressive cleanup initiated"
-        )
+        logger.critical("❌ Critical memory pressure detected, aggressive cleanup initiated")
         # 冲刷所有缓冲区
         await self.message_batcher.flush_all()
 
@@ -249,27 +245,18 @@ class WebSocketPerformanceManager:
 
         recent_metrics = self.metrics_history[-60:]  # 最近60个数据点
 
-        avg_active = sum(m.active_connections for m in recent_metrics) / len(
-            recent_metrics
-        )
+        avg_active = sum(m.active_connections for m in recent_metrics) / len(recent_metrics)
         avg_memory = sum(m.memory_percent for m in recent_metrics) / len(recent_metrics)
-        avg_batch_size = sum(m.avg_batch_size for m in recent_metrics) / len(
-            recent_metrics
-        )
+        avg_batch_size = sum(m.avg_batch_size for m in recent_metrics) / len(recent_metrics)
 
         return {
             "period": "last_60_measurements",
             "average_active_connections": round(avg_active, 2),
             "average_memory_percent": round(avg_memory, 2),
             "average_batch_size": round(avg_batch_size, 2),
-            "peak_active_connections": max(
-                m.active_connections for m in recent_metrics
-            ),
+            "peak_active_connections": max(m.active_connections for m in recent_metrics),
             "peak_memory_percent": max(m.memory_percent for m in recent_metrics),
-            "connection_reuse_rate": (
-                sum(m.connection_reuse_rate for m in recent_metrics)
-                / len(recent_metrics)
-            ),
+            "connection_reuse_rate": (sum(m.connection_reuse_rate for m in recent_metrics) / len(recent_metrics)),
             "timestamp": datetime.utcnow().isoformat(),
         }
 

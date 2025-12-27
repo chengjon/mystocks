@@ -321,7 +321,7 @@ lnav logs/backend.log
    # 查看端口占用
    lsof -i :8888
    lsof -i :5173
-   
+
    # 杀死进程
    kill -9 <PID>
    ```
@@ -330,7 +330,7 @@ lnav logs/backend.log
    ```bash
    # 检查 PostgreSQL 状态
    sudo systemctl status postgresql
-   
+
    # 检查配置文件
    cat config/.env.example
    ```
@@ -410,6 +410,6 @@ jobs:
 
 ---
 
-*报告生成时间: 2025-11-16*  
-*配置版本: v1.0*  
+*报告生成时间: 2025-11-16*
+*配置版本: v1.0*
 *兼容性: MyStocks 项目*

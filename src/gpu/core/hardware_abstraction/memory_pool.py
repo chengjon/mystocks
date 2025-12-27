@@ -70,12 +70,8 @@ class MemoryPool:
         # 配置参数
         self.max_pool_size = self.config.get("max_pool_size", 1024 * 1024 * 1024)  # 1GB
         self.min_block_size = self.config.get("min_block_size", 1024)  # 1KB
-        self.max_block_size = self.config.get(
-            "max_block_size", 100 * 1024 * 1024
-        )  # 100MB
-        self.cleanup_threshold = self.config.get(
-            "cleanup_threshold", 0.8
-        )  # 80%使用率触发清理
+        self.max_block_size = self.config.get("max_block_size", 100 * 1024 * 1024)  # 100MB
+        self.cleanup_threshold = self.config.get("cleanup_threshold", 0.8)  # 80%使用率触发清理
 
         # 线程安全
         self._lock = threading.RLock()
@@ -104,9 +100,7 @@ class MemoryPool:
                     self.free_blocks.append(block_id)
 
             self.is_initialized = True
-            logger.info(
-                f"Memory pool initialized with {len(self.free_blocks)} preallocated blocks"
-            )
+            logger.info(f"Memory pool initialized with {len(self.free_blocks)} preallocated blocks")
             return True
 
         except Exception as e:
@@ -168,9 +162,7 @@ class MemoryPool:
                             self.stats["pool_hits"] += 1
                         else:
                             # 内存不足
-                            logger.warning(
-                                f"Cannot allocate {size_bytes} bytes: memory pool exhausted"
-                            )
+                            logger.warning(f"Cannot allocate {size_bytes} bytes: memory pool exhausted")
                             return None
 
                 # 更新统计信息
@@ -302,15 +294,12 @@ class MemoryPool:
                 "total_blocks": len(self.memory_blocks),
                 "free_blocks": len(self.free_blocks),
                 "allocated_blocks": len(self.allocated_blocks),
-                "pool_efficiency": self.stats["pool_hits"]
-                / max(1, self.stats["total_allocations"]),
+                "pool_efficiency": self.stats["pool_hits"] / max(1, self.stats["total_allocations"]),
                 "average_allocation_time_ms": (
-                    self.stats["allocation_time_total"]
-                    / max(1, self.stats["total_allocations"])
+                    self.stats["allocation_time_total"] / max(1, self.stats["total_allocations"])
                 ),
                 "average_deallocation_time_ms": (
-                    self.stats["deallocation_time_total"]
-                    / max(1, self.stats["total_deallocations"])
+                    self.stats["deallocation_time_total"] / max(1, self.stats["total_deallocations"])
                 ),
             }
 

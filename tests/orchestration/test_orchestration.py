@@ -158,8 +158,7 @@ class DependencyResolver:
 
         # 拓扑排序
         in_degree = {
-            task_id: len(dep_graph[task_id]["dependencies"])
-            for task_id, dep_graph in dependency_graph.items()
+            task_id: len(dep_graph[task_id]["dependencies"]) for task_id, dep_graph in dependency_graph.items()
         }
 
         # 找出所有没有依赖的任务
@@ -214,10 +213,7 @@ class DependencyResolver:
                     for dep_id in current_task.dependencies:
                         if dep_id in self.tasks:
                             dep_task = self.tasks[dep_id]
-                            dependency_durations.append(
-                                dep_task.timeout
-                                + self._get_dependency_duration(dep_task)
-                            )
+                            dependency_durations.append(dep_task.timeout + self._get_dependency_duration(dep_task))
                     if dependency_durations:
                         path_duration += max(dependency_durations)
                     break
@@ -254,9 +250,7 @@ class DependencyResolver:
         for dep_id in task.dependencies:
             if dep_id in self.tasks:
                 dep_task = self.tasks[dep_id]
-                dep_duration = dep_task.timeout + self._get_dependency_duration(
-                    dep_task
-                )
+                dep_duration = dep_task.timeout + self._get_dependency_duration(dep_task)
                 if dep_duration > max_dep_duration:
                     max_dep_duration = dep_duration
 
@@ -289,9 +283,7 @@ class TaskExecutor:
 
     async def execute_task(self, task: TestTask) -> TestExecution:
         """执行单个任务"""
-        execution = TestExecution(
-            task_id=task.id, task_name=task.name, status="running"
-        )
+        execution = TestExecution(task_id=task.id, task_name=task.name, status="running")
 
         self.active_executions[task.id] = execution
 
@@ -301,9 +293,7 @@ class TaskExecutor:
             logger.info(f"开始执行任务: {task.name} ({task.id})")
 
             # 监控资源使用
-            resource_task = asyncio.create_task(
-                self.resource_monitor.monitor_resources(task.id, task.timeout)
-            )
+            resource_task = asyncio.create_task(self.resource_monitor.monitor_resources(task.id, task.timeout))
 
             # 执行任务
             if task.execution_mode == ExecutionStrategy.SEQUENTIAL:
@@ -325,9 +315,7 @@ class TaskExecutor:
 
             # 设置执行结果
             execution.end_time = datetime.now()
-            execution.duration = (
-                execution.end_time - execution.start_time
-            ).total_seconds()
+            execution.duration = (execution.end_time - execution.start_time).total_seconds()
             execution.status = "completed"
             execution.result = result
             execution.metrics = {
@@ -341,9 +329,7 @@ class TaskExecutor:
         except Exception as e:
             # 处理异常
             execution.end_time = datetime.now()
-            execution.duration = (
-                execution.end_time - execution.start_time
-            ).total_seconds()
+            execution.duration = (execution.end_time - execution.start_time).total_seconds()
             execution.status = "failed"
             execution.error_message = str(e)
 
@@ -584,9 +570,7 @@ class TestOrchestrator:
 
         return valid_executions
 
-    async def _execute_level_sequential(
-        self, task_ids: List[str]
-    ) -> List[TestExecution]:
+    async def _execute_level_sequential(self, task_ids: List[str]) -> List[TestExecution]:
         """顺序执行层级的任务"""
         executions = []
 
@@ -607,9 +591,7 @@ class TestOrchestrator:
             active_count = len(self.task_executor.active_executions)
             completed_count = len(self.task_executor.completed_executions)
 
-            logger.info(
-                f"执行统计 - 活跃任务: {active_count}, 已完成: {completed_count}"
-            )
+            logger.info(f"执行统计 - 活跃任务: {active_count}, 已完成: {completed_count}")
 
             # 检查是否有长时间运行的任务
             current_time = datetime.now()
@@ -621,18 +603,14 @@ class TestOrchestrator:
 
             await asyncio.sleep(self.config.task_timeout // 10)
 
-    def _generate_execution_report(
-        self, executions: List[TestExecution]
-    ) -> Dict[str, Any]:
+    def _generate_execution_report(self, executions: List[TestExecution]) -> Dict[str, Any]:
         """生成执行报告"""
         total_tasks = len(executions)
         completed_tasks = len([e for e in executions if e.status == "completed"])
         failed_tasks = len([e for e in executions if e.status == "failed"])
 
         # 计算平均执行时间
-        avg_duration = (
-            sum(e.duration for e in executions) / total_tasks if total_tasks > 0 else 0
-        )
+        avg_duration = sum(e.duration for e in executions) / total_tasks if total_tasks > 0 else 0
 
         # 按任务类型统计
         by_type = {}

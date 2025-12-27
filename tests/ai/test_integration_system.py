@@ -96,9 +96,7 @@ class IntelligentTestPlanner:
         print("🤖 AI正在创建测试计划...")
 
         plan_id = f"plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        plan_name = (
-            f"AI优化测试计划 - {project_context.get('project_name', 'MyStocks')}"
-        )
+        plan_name = f"AI优化测试计划 - {project_context.get('project_name', 'MyStocks')}"
 
         # 分析项目上下文
         analysis = self._analyze_project_context(project_context)
@@ -229,9 +227,7 @@ class IntelligentTestPlanner:
 
         return list(set(profiles))  # 去重
 
-    def _determine_execution_order(
-        self, test_suites: List[str], data_profiles: List[str]
-    ) -> List[str]:
+    def _determine_execution_order(self, test_suites: List[str], data_profiles: List[str]) -> List[str]:
         """确定执行顺序"""
         order = []
 
@@ -253,9 +249,7 @@ class IntelligentTestPlanner:
 
         return order
 
-    def _estimate_duration(
-        self, test_suites: List[str], data_profiles: List[str]
-    ) -> float:
+    def _estimate_duration(self, test_suites: List[str], data_profiles: List[str]) -> float:
         """预估执行时间"""
         base_times = {
             "unit_tests": 30,
@@ -321,9 +315,7 @@ class SmartTestExecutor:
 
     async def _execute_planning_phase(self, plan: TestExecutionPlan):
         """执行规划阶段"""
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.PLANNING, status="completed"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.PLANNING, status="completed")
         result.start_time = datetime.now()
         result.end_time = datetime.now()
         result.duration = 0.0
@@ -340,9 +332,7 @@ class SmartTestExecutor:
         """执行数据生成阶段"""
         print("🤖 AI正在生成测试数据...")
 
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.GENERATION, status="running"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.GENERATION, status="running")
         result.start_time = datetime.now()
 
         try:
@@ -381,15 +371,11 @@ class SmartTestExecutor:
         except Exception as e:
             logger.error(f"数据档案 {profile_name} 生成失败: {e}")
 
-    async def _execute_execution_phase(
-        self, plan: TestExecutionPlan, test_executors: Dict[str, Callable]
-    ):
+    async def _execute_execution_phase(self, plan: TestExecutionPlan, test_executors: Dict[str, Callable]):
         """执行测试阶段"""
         print("🤖 AI正在执行测试用例...")
 
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.EXECUTION, status="running"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.EXECUTION, status="running")
         result.start_time = datetime.now()
 
         try:
@@ -398,17 +384,13 @@ class SmartTestExecutor:
             for test_suite in plan.test_suites:
                 if test_suite in test_executors:
                     task = asyncio.create_task(
-                        self._execute_test_suite_with_semaphore(
-                            test_suite, test_executors[test_suite]
-                        ),
+                        self._execute_test_suite_with_semaphore(test_suite, test_executors[test_suite]),
                         name=f"execute_{test_suite}",
                     )
                     execution_tasks.append(task)
 
             # 等待所有测试执行完成
-            suite_results = await asyncio.gather(
-                *execution_tasks, return_exceptions=True
-            )
+            suite_results = await asyncio.gather(*execution_tasks, return_exceptions=True)
 
             # 汇总结果
             total_passed = 0
@@ -430,9 +412,7 @@ class SmartTestExecutor:
             result.test_cases_failed = total_failed
             result.test_cases_skipped = total_skipped
 
-            result.status = (
-                "completed" if total_failed == 0 else "completed_with_failures"
-            )
+            result.status = "completed" if total_failed == 0 else "completed_with_failures"
 
         except Exception as e:
             result.status = "failed"
@@ -444,9 +424,7 @@ class SmartTestExecutor:
 
         self.execution_results[TestPhase.EXECUTION.value] = result
 
-    async def _execute_test_suite_with_semaphore(
-        self, test_suite: str, executor: Callable
-    ):
+    async def _execute_test_suite_with_semaphore(self, test_suite: str, executor: Callable):
         """使用信号量执行测试套件"""
         async with self.semaphore:
             return await executor()
@@ -455,9 +433,7 @@ class SmartTestExecutor:
         """执行分析阶段"""
         print("🤖 AI正在分析测试结果...")
 
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.ANALYSIS, status="running"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.ANALYSIS, status="running")
         result.start_time = datetime.now()
 
         try:
@@ -484,9 +460,7 @@ class SmartTestExecutor:
 
         self.execution_results[TestPhase.ANALYSIS.value] = result
 
-    def _perform_ai_analysis(
-        self, execution_result: TestExecutionResult
-    ) -> Dict[str, Any]:
+    def _perform_ai_analysis(self, execution_result: TestExecutionResult) -> Dict[str, Any]:
         """执行AI分析"""
         analysis = {
             "test_quality_score": 0.0,
@@ -497,23 +471,16 @@ class SmartTestExecutor:
 
         # 计算测试质量分数
         if execution_result.test_cases_executed > 0:
-            pass_rate = (
-                execution_result.test_cases_passed
-                / execution_result.test_cases_executed
-            )
+            pass_rate = execution_result.test_cases_passed / execution_result.test_cases_executed
             analysis["test_quality_score"] = round(pass_rate * 100, 2)
 
         # 性能洞察
         if execution_result.duration > 60:  # 超过1分钟
-            analysis["performance_insights"].append(
-                "测试执行时间较长，建议优化测试用例"
-            )
+            analysis["performance_insights"].append("测试执行时间较长，建议优化测试用例")
 
         # 优化建议
         if execution_result.test_cases_failed > 0:
-            analysis["optimization_suggestions"].append(
-                f"修复 {execution_result.test_cases_failed} 个失败的测试用例"
-            )
+            analysis["optimization_suggestions"].append(f"修复 {execution_result.test_cases_failed} 个失败的测试用例")
 
         # 风险评估
         if analysis["test_quality_score"] < 80:
@@ -527,9 +494,7 @@ class SmartTestExecutor:
         """执行优化阶段"""
         print("🤖 AI正在优化测试配置...")
 
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.OPTIMIZATION, status="running"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.OPTIMIZATION, status="running")
         result.start_time = datetime.now()
 
         try:
@@ -588,9 +553,7 @@ class SmartTestExecutor:
         """执行报告阶段"""
         print("🤖 AI正在生成测试报告...")
 
-        result = TestExecutionResult(
-            plan_id=plan.id, phase=TestPhase.REPORTING, status="running"
-        )
+        result = TestExecutionResult(plan_id=plan.id, phase=TestPhase.REPORTING, status="running")
         result.start_time = datetime.now()
 
         try:
@@ -656,9 +619,7 @@ class SmartTestExecutor:
 
             # 收集AI洞察
             if phase_result.ai_insights:
-                report["ai_insights"][phase_result.phase.value] = (
-                    phase_result.ai_insights
-                )
+                report["ai_insights"][phase_result.phase.value] = phase_result.ai_insights
 
         # 计算总体统计
         report["summary"]["total_duration"] = round(total_duration, 2)
@@ -704,17 +665,13 @@ class AITestIntegrationSystem:
             test_plan = self.test_planner.create_test_plan(project_context)
 
             # 2. 执行测试计划
-            execution_results = await self.test_executor.execute_test_plan(
-                test_plan, test_executors
-            )
+            execution_results = await self.test_executor.execute_test_plan(test_plan, test_executors)
 
             # 3. 分析测试结果
             analysis_result = self.analyze_test_results(execution_results)
 
             # 4. 生成最终报告
-            final_report = self.generate_final_report(
-                test_plan, execution_results, analysis_result
-            )
+            final_report = self.generate_final_report(test_plan, execution_results, analysis_result)
 
             # 5. 保存结果
             self.save_test_results(test_plan, execution_results, final_report)
@@ -730,9 +687,7 @@ class AITestIntegrationSystem:
             logger.error(f"智能测试执行失败: {e}")
             return {"error": str(e), "status": "failed"}
 
-    def analyze_test_results(
-        self, execution_results: Dict[str, TestExecutionResult]
-    ) -> Dict[str, Any]:
+    def analyze_test_results(self, execution_results: Dict[str, TestExecutionResult]) -> Dict[str, Any]:
         """分析测试结果"""
         print("🤖 AI正在分析测试结果...")
 
@@ -761,9 +716,9 @@ class AITestIntegrationSystem:
             analysis["phase_analysis"][phase_key] = {
                 "status": result.status,
                 "duration": result.duration,
-                "efficiency": result.test_cases_passed / result.test_cases_executed
-                if result.test_cases_executed > 0
-                else 0,
+                "efficiency": (
+                    result.test_cases_passed / result.test_cases_executed if result.test_cases_executed > 0 else 0
+                ),
             }
 
             # AI洞察
@@ -776,9 +731,7 @@ class AITestIntegrationSystem:
             "total_tests": total_tests,
             "total_passed": total_passed,
             "total_failed": total_failed,
-            "success_rate": round(total_passed / total_tests * 100, 2)
-            if total_tests > 0
-            else 0,
+            "success_rate": round(total_passed / total_tests * 100, 2) if total_tests > 0 else 0,
         }
 
         # 趋势分析
@@ -866,9 +819,7 @@ class AITestIntegrationSystem:
         except Exception as e:
             logger.error(f"保存测试结果失败: {e}")
 
-    async def auto_optimize_testing(
-        self, execution_results: Dict[str, TestExecutionResult]
-    ):
+    async def auto_optimize_testing(self, execution_results: Dict[str, TestExecutionResult]):
         """自动优化测试"""
         print("🤖 AI正在自动优化测试...")
 

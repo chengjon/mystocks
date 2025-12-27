@@ -16,18 +16,17 @@ import hashlib
 import json
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
-from functools import lru_cache, wraps
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from functools import wraps
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import structlog
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
-from app.core.config import settings
-from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
+from app.core.responses import create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
     IndicatorCalculateRequest,
@@ -35,16 +34,10 @@ from app.schemas.indicator_request import (
     IndicatorConfigUpdateRequest,
 )
 from app.schemas.indicator_response import (
-    APIResponse,
-    ErrorDetail,
-    IndicatorCalculateResponse,
     IndicatorConfigListResponse,
     IndicatorConfigResponse,
     IndicatorMetadata,
     IndicatorRegistryResponse,
-    IndicatorResult,
-    IndicatorValueOutput,
-    OHLCVData,
 )
 from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service
 from app.services.indicator_calculator import IndicatorCalculationError, InsufficientDataError, get_indicator_calculator
@@ -864,7 +857,6 @@ async def create_indicator_config(
     user_id = current_user.id
 
     try:
-        from datetime import datetime
 
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration

@@ -342,9 +342,7 @@ class TestStrategyAPI:
 
         for stats in stats_list:
             # 验证匹配数量不大于总数
-            assert (
-                stats["matched_count"] <= stats["total_count"]
-            ), "匹配数量应小于等于总数"
+            assert stats["matched_count"] <= stats["total_count"], "匹配数量应小于等于总数"
 
             # 验证匹配率在0-1之间
             assert 0 <= stats["match_rate"] <= 1, "匹配率应在0-1之间"
@@ -353,11 +351,7 @@ class TestStrategyAPI:
             assert 0 <= stats["avg_score"] <= 100, "平均分数应在0-100之间"
 
             # 验证匹配率计算正确
-            expected_rate = (
-                stats["matched_count"] / stats["total_count"]
-                if stats["total_count"] > 0
-                else 0
-            )
+            expected_rate = stats["matched_count"] / stats["total_count"] if stats["total_count"] > 0 else 0
             assert abs(stats["match_rate"] - expected_rate) < 0.01, "匹配率计算应该准确"
 
     def test_strategy_code_validation(self):

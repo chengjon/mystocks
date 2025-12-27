@@ -18,9 +18,7 @@ from src.interfaces.data_source import IDataSource
 class MockDataSource(IDataSource):
     """模拟数据源实现，用于测试接口定义"""
 
-    def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         return pd.DataFrame(
             {
                 "date": pd.date_range(start_date, end_date),
@@ -32,9 +30,7 @@ class MockDataSource(IDataSource):
             }
         )
 
-    def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         return pd.DataFrame(
             {
                 "date": pd.date_range(start_date, end_date),
@@ -85,9 +81,7 @@ class MockDataSource(IDataSource):
             }
         )
 
-    def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         return [
             {
                 "title": f"Test News {i}",
@@ -366,15 +360,10 @@ class TestIDataSourceInterface:
         assert IDataSource.get_index_daily.__annotations__["return"] == pd.DataFrame
         assert IDataSource.get_stock_basic.__annotations__["return"] == Dict[str, Any]
         assert IDataSource.get_index_components.__annotations__["return"] == List[str]
-        assert (
-            IDataSource.get_real_time_data.__annotations__["return"]
-            == Optional[Dict[str, Any]]
-        )
+        assert IDataSource.get_real_time_data.__annotations__["return"] == Optional[Dict[str, Any]]
         assert IDataSource.get_market_calendar.__annotations__["return"] == pd.DataFrame
         assert IDataSource.get_financial_data.__annotations__["return"] == pd.DataFrame
-        assert (
-            IDataSource.get_news_data.__annotations__["return"] == List[Dict[str, Any]]
-        )
+        assert IDataSource.get_news_data.__annotations__["return"] == List[Dict[str, Any]]
 
     def test_interface_default_parameters(self):
         """测试接口默认参数"""

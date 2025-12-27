@@ -81,9 +81,7 @@ class MarketDataSourceAdapter(IDataSource):
                 raise RuntimeError(f"Failed to initialize mock manager: {e}")
         return self._mock_manager
 
-    async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         获取市场数据
 
@@ -110,9 +108,7 @@ class MarketDataSourceAdapter(IDataSource):
             self._update_metrics(success=True, response_time=response_time * 1000)
 
             # 触发数据质量监控
-            await self._trigger_quality_monitoring(
-                endpoint, result, response_time * 1000
-            )
+            await self._trigger_quality_monitoring(endpoint, result, response_time * 1000)
 
             return result
 
@@ -122,14 +118,10 @@ class MarketDataSourceAdapter(IDataSource):
             logger.error(f"Market data fetch failed for {endpoint}: {str(e)}")
 
             # 更新监控指标
-            self._update_metrics(
-                success=False, response_time=response_time * 1000, error=str(e)
-            )
+            self._update_metrics(success=False, response_time=response_time * 1000, error=str(e))
 
             # 记录失败的质量监控
-            await self._trigger_quality_monitoring(
-                endpoint, None, response_time * 1000, success=False
-            )
+            await self._trigger_quality_monitoring(endpoint, None, response_time * 1000, success=False)
 
             # 返回错误响应格式
             return {
@@ -141,9 +133,7 @@ class MarketDataSourceAdapter(IDataSource):
                 "endpoint": endpoint,
             }
 
-    async def _fetch_data(
-        self, endpoint: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         实际的数据获取逻辑
         """
@@ -164,9 +154,7 @@ class MarketDataSourceAdapter(IDataSource):
             else:
                 raise ValueError(f"Unsupported market endpoint: {endpoint}")
 
-    async def _fetch_mock_data(
-        self, endpoint: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _fetch_mock_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取mock数据"""
         try:
             mock_manager = self._get_mock_manager()
@@ -203,9 +191,7 @@ class MarketDataSourceAdapter(IDataSource):
 
         try:
             market_service = self._get_market_service()
-            results = market_service.query_fund_flow(
-                symbol, timeframe, start_date, end_date
-            )
+            results = market_service.query_fund_flow(symbol, timeframe, start_date, end_date)
 
             return {
                 "status": "success",
@@ -251,9 +237,7 @@ class MarketDataSourceAdapter(IDataSource):
 
         try:
             market_service = self._get_market_service()
-            results = market_service.query_lhb_detail(
-                trade_date=trade_date, limit=limit
-            )
+            results = market_service.query_lhb_detail(trade_date=trade_date, limit=limit)
 
             return {
                 "status": "success",
@@ -457,11 +441,7 @@ class MarketDataSourceAdapter(IDataSource):
 
     def get_metrics(self) -> Dict[str, Any]:
         """获取性能指标"""
-        success_rate = (
-            (self.successful_requests / self.total_requests * 100)
-            if self.total_requests > 0
-            else 0
-        )
+        success_rate = (self.successful_requests / self.total_requests * 100) if self.total_requests > 0 else 0
 
         return {
             "total_requests": self.total_requests,
@@ -486,9 +466,7 @@ class MarketDataSourceAdapter(IDataSource):
                 self.metrics.response_time = response_time
             else:
                 alpha = 0.3  # 平滑因子
-                self.metrics.response_time = (
-                    alpha * response_time + (1 - alpha) * self.metrics.response_time
-                )
+                self.metrics.response_time = alpha * response_time + (1 - alpha) * self.metrics.response_time
         else:
             self.metrics.error_count += 1
             self.metrics.last_error = error
@@ -496,9 +474,7 @@ class MarketDataSourceAdapter(IDataSource):
         # 计算成功率
         if self.metrics.total_requests > 0:
             self.metrics.success_rate = (
-                (self.metrics.total_requests - self.metrics.error_count)
-                / self.metrics.total_requests
-                * 100
+                (self.metrics.total_requests - self.metrics.error_count) / self.metrics.total_requests * 100
             )
 
         # 计算可用性 (基于最近的成功率)

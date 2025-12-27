@@ -158,9 +158,7 @@ class RealTimePerformanceMonitor:
 
         # 保持历史数据大小
         if len(self.metrics_history[metric_name]) > 1000:
-            self.metrics_history[metric_name] = self.metrics_history[metric_name][
-                -1000:
-            ]
+            self.metrics_history[metric_name] = self.metrics_history[metric_name][-1000:]
 
     def _analyze_metrics(self):
         """分析指标并生成告警"""
@@ -312,29 +310,19 @@ class IntelligentPerformanceAnalyzer:
         if "cpu_usage" in metrics_history:
             cpu_pattern = self._analyze_cpu_pattern(metrics_history["cpu_usage"])
             if cpu_pattern["has_pattern"]:
-                suggestions.append(
-                    self._create_cpu_optimization_suggestion(cpu_pattern)
-                )
+                suggestions.append(self._create_cpu_optimization_suggestion(cpu_pattern))
 
         # 分析内存使用模式
         if "memory_usage" in metrics_history:
-            memory_pattern = self._analyze_memory_pattern(
-                metrics_history["memory_usage"]
-            )
+            memory_pattern = self._analyze_memory_pattern(metrics_history["memory_usage"])
             if memory_pattern["has_pattern"]:
-                suggestions.append(
-                    self._create_memory_optimization_suggestion(memory_pattern)
-                )
+                suggestions.append(self._create_memory_optimization_suggestion(memory_pattern))
 
         # 分析测试执行模式
         if "test_execution_time" in metrics_history:
-            test_pattern = self._analyze_test_execution_pattern(
-                metrics_history["test_execution_time"]
-            )
+            test_pattern = self._analyze_test_execution_pattern(metrics_history["test_execution_time"])
             if test_pattern["has_pattern"]:
-                suggestions.append(
-                    self._create_test_optimization_suggestion(test_pattern)
-                )
+                suggestions.append(self._create_test_optimization_suggestion(test_pattern))
 
         # 按优先级排序
         suggestions.sort(key=lambda x: x.priority)
@@ -342,9 +330,7 @@ class IntelligentPerformanceAnalyzer:
         self.optimization_suggestions.extend(suggestions)
         return suggestions
 
-    def _analyze_cpu_pattern(
-        self, history: List[Tuple[float, datetime]]
-    ) -> Dict[str, Any]:
+    def _analyze_cpu_pattern(self, history: List[Tuple[float, datetime]]) -> Dict[str, Any]:
         """分析CPU使用模式"""
         if len(history) < 20:
             return {"has_pattern": False}
@@ -369,9 +355,7 @@ class IntelligentPerformanceAnalyzer:
 
         return pattern
 
-    def _analyze_memory_pattern(
-        self, history: List[Tuple[float, datetime]]
-    ) -> Dict[str, Any]:
+    def _analyze_memory_pattern(self, history: List[Tuple[float, datetime]]) -> Dict[str, Any]:
         """分析内存使用模式"""
         if len(history) < 20:
             return {"has_pattern": False}
@@ -390,9 +374,7 @@ class IntelligentPerformanceAnalyzer:
 
         return pattern
 
-    def _analyze_test_execution_pattern(
-        self, history: List[Tuple[float, datetime]]
-    ) -> Dict[str, Any]:
+    def _analyze_test_execution_pattern(self, history: List[Tuple[float, datetime]]) -> Dict[str, Any]:
         """分析测试执行模式"""
         if len(history) < 10:
             return {"has_pattern": False}
@@ -428,9 +410,7 @@ class IntelligentPerformanceAnalyzer:
         else:
             return "stable"
 
-    def _create_cpu_optimization_suggestion(
-        self, pattern: Dict[str, Any]
-    ) -> OptimizationSuggestion:
+    def _create_cpu_optimization_suggestion(self, pattern: Dict[str, Any]) -> OptimizationSuggestion:
         """创建CPU优化建议"""
         return OptimizationSuggestion(
             id="cpu_optimization_001",
@@ -445,9 +425,7 @@ class IntelligentPerformanceAnalyzer:
             references=["https://docs.python.org/3/library/concurrent.html"],
         )
 
-    def _create_memory_optimization_suggestion(
-        self, pattern: Dict[str, Any]
-    ) -> OptimizationSuggestion:
+    def _create_memory_optimization_suggestion(self, pattern: Dict[str, Any]) -> OptimizationSuggestion:
         """创建内存优化建议"""
         title = "内存泄漏修复" if pattern["memory_leak_suspected"] else "内存使用优化"
         description = f"检测到内存使用{pattern['trend']}，当前平均使用率 {pattern['avg_memory']:.1f}%"
@@ -465,9 +443,7 @@ class IntelligentPerformanceAnalyzer:
             references=["https://docs.python.org/3/library/gc.html"],
         )
 
-    def _create_test_optimization_suggestion(
-        self, pattern: Dict[str, Any]
-    ) -> OptimizationSuggestion:
+    def _create_test_optimization_suggestion(self, pattern: Dict[str, Any]) -> OptimizationSuggestion:
         """创建测试优化建议"""
         return OptimizationSuggestion(
             id="test_optimization_003",
@@ -615,9 +591,7 @@ class DynamicPerformanceOptimizer:
             analysis_results["performance_summary"] = summary
 
             # 分析模式
-            suggestions = self.analyzer.analyze_performance_patterns(
-                self.monitor.metrics_history
-            )
+            suggestions = self.analyzer.analyze_performance_patterns(self.monitor.metrics_history)
             analysis_results["optimization_suggestions"] = suggestions
 
             time.sleep(5)

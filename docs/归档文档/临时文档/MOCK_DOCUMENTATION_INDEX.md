@@ -534,4 +534,3 @@ from src.mock.mock_system_DatabaseMonitor import get_data_list
 - ✅ 严禁硬编码数据到UI组件
 - ✅ 股票价格保留2位小数
 - ✅ 百分比保留4位小数
-

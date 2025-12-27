@@ -127,9 +127,7 @@ class RedisDataAccess:
 
     def delete_realtime_data(self, key: str) -> bool:
         """从Redis删除数据"""
-        operation_id = self.monitoring_db.log_operation_start(
-            key, "Redis", "0", "DELETE"
-        )
+        operation_id = self.monitoring_db.log_operation_start(key, "Redis", "0", "DELETE")
 
         try:
             self.redis_client.delete(key)

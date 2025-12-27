@@ -31,7 +31,7 @@ import data_validator
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(data_validator, 'validate_price_data'):
                     data_validator.validate_price_data(malicious_input)
-            
+
 
 
     def test_data_validator_validate_price_data_boundary(self):
@@ -54,7 +54,7 @@ import data_validator
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
+
 
 
     def test_data_validator_bug_prevention_off_by_one(self):
@@ -75,7 +75,7 @@ import data_validator
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(data_validator, 'target_function'):
                     data_validator.target_function(unsafe_input)
-            
+
 
 
     def test_data_validator_basic_functionality(self):
@@ -87,7 +87,7 @@ import data_validator
         # 测试是否有公共函数
         public_funcs = [f for f in dir(data_validator) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

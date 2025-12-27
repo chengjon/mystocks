@@ -64,9 +64,7 @@ def create_ai_testing_session(config: dict = None) -> AITestIntegrationSystem:
     return AITestIntegrationSystem(orchestration_config)
 
 
-async def run_ai_test_suite(
-    project_context: dict, test_executors: dict = None, config: dict = None
-) -> dict:
+async def run_ai_test_suite(project_context: dict, test_executors: dict = None, config: dict = None) -> dict:
     """运行AI测试套件
 
     Args:
@@ -116,9 +114,7 @@ def quick_test_analysis(test_results: list) -> dict:
     }
 
 
-def generate_test_data(
-    profile_name: str, data_schema: dict, request_params: dict = None
-) -> dict:
+def generate_test_data(profile_name: str, data_schema: dict, request_params: dict = None) -> dict:
     """生成测试数据
 
     Args:
@@ -132,9 +128,7 @@ def generate_test_data(
     data_manager = AITestDataManager()
 
     try:
-        return data_manager.generate_test_data(
-            profile_name, data_schema, request_params
-        )
+        return data_manager.generate_test_data(profile_name, data_schema, request_params)
     except ValueError as e:
         print(f"错误: {e}")
         return {}

@@ -45,21 +45,15 @@ class KeyRotationCLI:
         Args:
             master_password: Master password (if None, reads from env)
         """
-        self.master_password = master_password or os.getenv(
-            "ENCRYPTION_MASTER_PASSWORD"
-        )
+        self.master_password = master_password or os.getenv("ENCRYPTION_MASTER_PASSWORD")
 
         if not self.master_password:
             print("❌ Error: ENCRYPTION_MASTER_PASSWORD not set")
-            print(
-                "Set it with: export ENCRYPTION_MASTER_PASSWORD='your-secure-password'"
-            )
+            print("Set it with: export ENCRYPTION_MASTER_PASSWORD='your-secure-password'")
             sys.exit(1)
 
         # Initialize managers
-        self.encryption_mgr = EncryptionManager(
-            master_password=self.master_password, key_version=1
-        )
+        self.encryption_mgr = EncryptionManager(master_password=self.master_password, key_version=1)
         self.secret_mgr = SecretManager(encryption_manager=self.encryption_mgr)
 
     def cmd_info(self):
@@ -104,14 +98,10 @@ class KeyRotationCLI:
                 percentage = (count / report["total_secrets"]) * 100
                 is_current = version == report["current_encryption_version"]
                 marker = "✅" if is_current else "⚠️ "
-                print(
-                    f"  {marker} Version {version}: {count} secrets ({percentage:.1f}%)"
-                )
+                print(f"  {marker} Version {version}: {count} secrets ({percentage:.1f}%)")
 
         if report["legacy_format_count"] > 0:
-            print(
-                f"\n🔒 Legacy Format: {report['legacy_format_count']} secrets (no version)"
-            )
+            print(f"\n🔒 Legacy Format: {report['legacy_format_count']} secrets (no version)")
 
         print("\n" + "=" * 70 + "\n")
 
@@ -124,9 +114,7 @@ class KeyRotationCLI:
             dry_run: If True, only show what would happen
         """
         print("\n" + "=" * 70)
-        print(
-            f"🔄 Key Rotation: Version {self.encryption_mgr.current_key_version} → {new_version}"
-        )
+        print(f"🔄 Key Rotation: Version {self.encryption_mgr.current_key_version} → {new_version}")
         print("=" * 70)
 
         # Validation
@@ -138,16 +126,12 @@ class KeyRotationCLI:
 
         if dry_run:
             print("\n🔍 DRY RUN MODE - No changes will be made\n")
-            print(
-                f"Would rotate from version {self.encryption_mgr.current_key_version} to version {new_version}"
-            )
+            print(f"Would rotate from version {self.encryption_mgr.current_key_version} to version {new_version}")
             print("✅ Validation passed")
             return True
 
         # Confirm
-        response = input(
-            f"\n⚠️  Are you sure you want to rotate to version {new_version}? (yes/no): "
-        )
+        response = input(f"\n⚠️  Are you sure you want to rotate to version {new_version}? (yes/no): ")
         if response.lower() != "yes":
             print("❌ Rotation cancelled")
             return False
@@ -159,17 +143,13 @@ class KeyRotationCLI:
         if success:
             print(f"✅ Successfully rotated to version {new_version}")
             print("\n⚠️  Note: Existing secrets are still encrypted with old versions.")
-            print(
-                f"   Run 'migrate --target-version {new_version}' to re-encrypt them."
-            )
+            print(f"   Run 'migrate --target-version {new_version}' to re-encrypt them.")
             return True
         else:
             print("❌ Rotation failed")
             return False
 
-    def cmd_migrate(
-        self, target_version: int, dry_run: bool = False, force: bool = False
-    ):
+    def cmd_migrate(self, target_version: int, dry_run: bool = False, force: bool = False):
         """
         Migrate secrets to target version
 
@@ -197,9 +177,7 @@ class KeyRotationCLI:
 
         if dry_run:
             print("\n🔍 DRY RUN MODE - No changes will be made\n")
-            print(
-                f"Would migrate {report['needs_migration']} secrets to version {target_version}"
-            )
+            print(f"Would migrate {report['needs_migration']} secrets to version {target_version}")
             return True
 
         # Confirm
@@ -320,9 +298,7 @@ class KeyRotationCLI:
         print(f"   📦 Total secrets: {report['total_secrets']}")
 
         if report["needs_migration"] == 0:
-            print(
-                f"   ✅ All secrets current (version {report['current_encryption_version']})"
-            )
+            print(f"   ✅ All secrets current (version {report['current_encryption_version']})")
         else:
             print(
                 f"   ⚠️  {report['needs_migration']} secrets need migration to version {report['current_encryption_version']}"
@@ -384,9 +360,7 @@ Examples:
 
     # Rotate command
     rotate_parser = subparsers.add_parser("rotate", help="Rotate to new key version")
-    rotate_parser.add_argument(
-        "--new-version", type=int, required=True, help="New version number"
-    )
+    rotate_parser.add_argument("--new-version", type=int, required=True, help="New version number")
     rotate_parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -394,28 +368,18 @@ Examples:
     )
 
     # Migrate command
-    migrate_parser = subparsers.add_parser(
-        "migrate", help="Migrate secrets to target version"
-    )
-    migrate_parser.add_argument(
-        "--target-version", type=int, required=True, help="Target version number"
-    )
+    migrate_parser = subparsers.add_parser("migrate", help="Migrate secrets to target version")
+    migrate_parser.add_argument("--target-version", type=int, required=True, help="Target version number")
     migrate_parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would happen without making changes",
     )
-    migrate_parser.add_argument(
-        "--force", action="store_true", help="Skip confirmation prompt"
-    )
+    migrate_parser.add_argument("--force", action="store_true", help="Skip confirmation prompt")
 
     # Full rotation command
-    full_parser = subparsers.add_parser(
-        "full-rotation", help="Perform full rotation workflow (rotate + migrate)"
-    )
-    full_parser.add_argument(
-        "--new-version", type=int, required=True, help="New version number"
-    )
+    full_parser = subparsers.add_parser("full-rotation", help="Perform full rotation workflow (rotate + migrate)")
+    full_parser.add_argument("--new-version", type=int, required=True, help="New version number")
     full_parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -423,9 +387,7 @@ Examples:
     )
 
     # Health check command
-    subparsers.add_parser(
-        "health-check", help="Perform health check on encryption system"
-    )
+    subparsers.add_parser("health-check", help="Perform health check on encryption system")
 
     args = parser.parse_args()
 
@@ -450,9 +412,7 @@ Examples:
             success = cli.cmd_rotate(args.new_version, dry_run=args.dry_run)
             sys.exit(0 if success else 1)
         elif args.command == "migrate":
-            success = cli.cmd_migrate(
-                args.target_version, dry_run=args.dry_run, force=args.force
-            )
+            success = cli.cmd_migrate(args.target_version, dry_run=args.dry_run, force=args.force)
             sys.exit(0 if success else 1)
         elif args.command == "full-rotation":
             success = cli.cmd_full_rotation(args.new_version, dry_run=args.dry_run)

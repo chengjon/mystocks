@@ -20,9 +20,7 @@ class DataQualityValidator:
     包括完整性、准确性和一致性验证。
     """
 
-    def __init__(
-        self, source_name: str, quality_monitor: Optional[DataQualityMonitor] = None
-    ):
+    def __init__(self, source_name: str, quality_monitor: Optional[DataQualityMonitor] = None):
         """
         初始化数据质量验证器
 
@@ -44,9 +42,7 @@ class DataQualityValidator:
 
         logger.info(f"✅ DataQualityValidator initialized for {source_name}")
 
-    def validate_stock_data(
-        self, df: pd.DataFrame, symbol: str, data_type: str = "daily"
-    ) -> Dict[str, Any]:
+    def validate_stock_data(self, df: pd.DataFrame, symbol: str, data_type: str = "daily") -> Dict[str, Any]:
         """
         验证股票数据质量
 
@@ -90,9 +86,7 @@ class DataQualityValidator:
         # 2. 检查数据完整性
         completeness_issues = self._check_completeness(df, required_columns)
         issues.extend(completeness_issues)
-        quality_score -= sum(
-            issue.get("score_penalty", 0) for issue in completeness_issues
-        )
+        quality_score -= sum(issue.get("score_penalty", 0) for issue in completeness_issues)
 
         # 3. 检查数据准确性
         accuracy_issues = self._check_accuracy(df, symbol)
@@ -102,16 +96,12 @@ class DataQualityValidator:
         # 4. 检查数据一致性
         consistency_issues = self._check_consistency(df, data_type)
         issues.extend(consistency_issues)
-        quality_score -= sum(
-            issue.get("score_penalty", 0) for issue in consistency_issues
-        )
+        quality_score -= sum(issue.get("score_penalty", 0) for issue in consistency_issues)
 
         # 5. 检查重复数据
         duplicate_issues = self._check_duplicates(df)
         issues.extend(duplicate_issues)
-        quality_score -= sum(
-            issue.get("score_penalty", 0) for issue in duplicate_issues
-        )
+        quality_score -= sum(issue.get("score_penalty", 0) for issue in duplicate_issues)
 
         # 6. 检查异常值
         outlier_issues = self._check_outliers(df)
@@ -122,14 +112,10 @@ class DataQualityValidator:
         statistics = self._calculate_statistics(df)
 
         # 确定最终有效性
-        is_valid = quality_score >= 70.0 and not any(
-            issue.get("severity") == "critical" for issue in issues
-        )
+        is_valid = quality_score >= 70.0 and not any(issue.get("severity") == "critical" for issue in issues)
 
         # 记录质量检查结果
-        self._log_quality_check(
-            symbol, data_type, is_valid, quality_score, issues, statistics
-        )
+        self._log_quality_check(symbol, data_type, is_valid, quality_score, issues, statistics)
 
         return {
             "is_valid": is_valid,
@@ -147,9 +133,7 @@ class DataQualityValidator:
         else:
             return ["date", "close"]
 
-    def _check_completeness(
-        self, df: pd.DataFrame, required_columns: List[str]
-    ) -> List[Dict]:
+    def _check_completeness(self, df: pd.DataFrame, required_columns: List[str]) -> List[Dict]:
         """检查数据完整性"""
         issues = []
 
@@ -341,11 +325,9 @@ class DataQualityValidator:
                     stats["date_range"] = {
                         "start": valid_dates.min().strftime("%Y-%m-%d"),
                         "end": valid_dates.max().strftime("%Y-%m-%d"),
-                        "days": int(date_diff.days)
-                        if hasattr(date_diff, "days")
-                        else 0,
+                        "days": int(date_diff.days) if hasattr(date_diff, "days") else 0,
                     }
-            except:
+            except Exception:
                 pass
 
         # 价格统计
@@ -362,9 +344,7 @@ class DataQualityValidator:
                         "min": float(valid_values.min()),
                         "max": float(valid_values.max()),
                         "mean": float(valid_values.mean()),
-                        "std": float(valid_values.std())
-                        if len(valid_values) > 1
-                        else 0.0,
+                        "std": float(valid_values.std()) if len(valid_values) > 1 else 0.0,
                     }
                 else:
                     stats["price_summary"][col] = {
@@ -391,9 +371,7 @@ class DataQualityValidator:
             table_name = f"{self.source_name}_{data_type}"
 
             # 计算问题统计
-            critical_issues = len(
-                [i for i in issues if i.get("severity") == "critical"]
-            )
+            critical_issues = len([i for i in issues if i.get("severity") == "critical"])
             warning_issues = len([i for i in issues if i.get("severity") == "warning"])
 
             # 记录到监控数据库
@@ -440,9 +418,7 @@ def create_validator(source_name: str) -> DataQualityValidator:
     return DataQualityValidator(source_name)
 
 
-def validate_dataframe(
-    df: pd.DataFrame, source_name: str, symbol: str, data_type: str = "daily"
-) -> Dict[str, Any]:
+def validate_dataframe(df: pd.DataFrame, source_name: str, symbol: str, data_type: str = "daily") -> Dict[str, Any]:
     """便捷的数据验证函数"""
     validator = create_validator(source_name)
     return validator.validate_stock_data(df, symbol, data_type)

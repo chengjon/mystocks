@@ -31,7 +31,7 @@ import volume_data_processor
             with self.assertRaises((ValueError, TypeError, SecurityError)):
                 if hasattr(volume_data_processor, 'detect_volume_anomaly'):
                     volume_data_processor.detect_volume_anomaly(malicious_input)
-            
+
 
 
     def test_volume_data_processor_detect_volume_anomaly_boundary(self):
@@ -54,7 +54,7 @@ import volume_data_processor
             except (ValueError, TypeError, IndexError):
                 # 期望的异常
                 pass
-            
+
 
 
     def test_volume_data_processor_basic_functionality(self):
@@ -66,7 +66,7 @@ import volume_data_processor
         # 测试是否有公共函数
         public_funcs = [f for f in dir(volume_data_processor) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

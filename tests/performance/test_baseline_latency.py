@@ -243,9 +243,7 @@ class PerformanceBaseline:
             for symbol in df["symbol"].unique():
                 # 为每个symbol创建子表
                 table_name = f"test_perf_{symbol}"
-                cursor.execute(
-                    f"CREATE TABLE IF NOT EXISTS {table_name} USING test_perf TAGS ('{symbol}')"
-                )
+                cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} USING test_perf TAGS ('{symbol}')")
 
                 # 插入数据
                 symbol_data = df[df["symbol"] == symbol]
@@ -304,9 +302,7 @@ class PerformanceBaseline:
         # PostgreSQL 测试
         pg_result = self.benchmark_postgresql_insert(1000)
         self.results["性能指标"]["PostgreSQL"] = pg_result
-        self.results["数据库连接"]["PostgreSQL"] = (
-            "成功" if pg_result.get("状态") == "成功" else "失败"
-        )
+        self.results["数据库连接"]["PostgreSQL"] = "成功" if pg_result.get("状态") == "成功" else "失败"
 
         # TDengine 测试
         td_result = self.benchmark_tdengine_insert(1000)

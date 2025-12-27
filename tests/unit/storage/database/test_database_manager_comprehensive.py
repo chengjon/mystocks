@@ -125,9 +125,7 @@ class TestDatabaseTableManagerTableOperations:
             {"name": "created_at", "type": "TIMESTAMP", "nullable": False},
         ]
 
-        result = self.manager.create_table(
-            db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=columns
-        )
+        result = self.manager.create_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=columns)
 
         assert result is True
         mock_cursor.execute.assert_called()
@@ -146,9 +144,7 @@ class TestDatabaseTableManagerTableOperations:
             {"name": "status", "type": "INT"},
         ]
 
-        result = self.manager.create_table(
-            db_type=DatabaseType.TDENGINE, table_name="test_table", columns=columns
-        )
+        result = self.manager.create_table(db_type=DatabaseType.TDENGINE, table_name="test_table", columns=columns)
 
         assert result is True
         mock_cursor.execute.assert_called()
@@ -183,9 +179,7 @@ class TestDatabaseTableManagerTableOperations:
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_connect.return_value = mock_conn
 
-        result = self.manager.drop_table(
-            db_type=DatabaseType.POSTGRESQL, table_name="test_table"
-        )
+        result = self.manager.drop_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table")
 
         assert result is True
         mock_cursor.execute.assert_called()
@@ -482,9 +476,7 @@ class TestDatabaseTableManagerEdgeCases:
             "src.storage.database.database_manager.psycopg2.connect",
             return_value=mock_conn,
         ):
-            result = self.manager.create_table(
-                db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=[]
-            )
+            result = self.manager.create_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=[])
 
             # 空列列表应该返回False或抛出异常
             assert isinstance(result, bool)

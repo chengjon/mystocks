@@ -30,9 +30,7 @@ class MockPostgreSQLAccess:
         }
         return True
 
-    def create_hypertable(
-        self, table_name, time_column="time", chunk_interval="7 days"
-    ):
+    def create_hypertable(self, table_name, time_column="time", chunk_interval="7 days"):
         """创建时序表"""
         if table_name not in self.tables:
             raise ValueError(f"Table {table_name} does not exist")
@@ -288,9 +286,7 @@ class TestPostgreSQLAccess:
         schema = {"id": "INT", "value": "FLOAT"}
         self.db.create_table("test_limit", schema)
 
-        self.db.insert_data(
-            "test_limit", [{"id": i, "value": i * 1.5} for i in range(10)]
-        )
+        self.db.insert_data("test_limit", [{"id": i, "value": i * 1.5} for i in range(10)])
 
         result = self.db.query("test_limit", limit=5)
         assert len(result) == 5
@@ -378,9 +374,7 @@ class TestPostgreSQLAccess:
             ],
         )
 
-        updated = self.db.update_data(
-            "stocks", {"symbol": "600519"}, {"price": 1800.00}
-        )
+        updated = self.db.update_data("stocks", {"symbol": "600519"}, {"price": 1800.00})
 
         assert updated == 1
         result = self.db.query("stocks", conditions={"symbol": "600519"})

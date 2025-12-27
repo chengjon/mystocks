@@ -6,6 +6,7 @@
 
 import logging
 from datetime import datetime
+import numpy as np
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 
@@ -145,9 +146,7 @@ class ThresholdRuleManager:
         # 保存调整记录
         self.adjustments.append(adjustment)
 
-        logger.info(
-            f"Adjusted threshold for rule {rule_name}: {old_threshold} -> {new_threshold}"
-        )
+        logger.info(f"Adjusted threshold for rule {rule_name}: {old_threshold} -> {new_threshold}")
 
         return adjustment
 
@@ -206,9 +205,7 @@ class ThresholdRuleManager:
         # 返回最近的调整历史
         return rule.history[-10:] if rule.history else []
 
-    def get_recent_adjustments(
-        self, count: int = 10, rule_name: Optional[str] = None
-    ) -> List[ThresholdAdjustment]:
+    def get_recent_adjustments(self, count: int = 10, rule_name: Optional[str] = None) -> List[ThresholdAdjustment]:
         """
         获取最近的调整记录
 
@@ -257,10 +254,7 @@ class ThresholdRuleManager:
             [
                 adj
                 for adj in self.adjustments
-                if (
-                    adj.rule_name == rule_name
-                    and (datetime.now() - adj.timestamp).days <= 30
-                )
+                if (adj.rule_name == rule_name and (datetime.now() - adj.timestamp).days <= 30)
             ]
         )
 
@@ -279,9 +273,7 @@ class ThresholdRuleManager:
             "recent_adjustments": recent_adjustments,
             "stability_score": stability_score,
             "confidence_score": rule.confidence_score,
-            "last_adjustment": rule.last_adjustment.isoformat()
-            if rule.last_adjustment
-            else None,
+            "last_adjustment": rule.last_adjustment.isoformat() if rule.last_adjustment else None,
         }
 
     def get_performance_summary(self) -> Dict[str, Any]:
@@ -329,8 +321,7 @@ class ThresholdRuleManager:
             "least_adjusted_rule": least_adjusted,
             "recent_activity": recent_activity,
             "rule_effectiveness": {
-                rule_name: self.calculate_rule_effectiveness(rule_name)
-                for rule_name in self.rules.keys()
+                rule_name: self.calculate_rule_effectiveness(rule_name) for rule_name in self.rules.keys()
             },
         }
 
@@ -362,9 +353,7 @@ class ThresholdRuleManager:
                     imported_count += 1
                     logger.info(f"Imported rule: {rule.name}")
             except Exception as e:
-                logger.error(
-                    f"Failed to import rule {rule_data.get('name', 'unknown')}: {str(e)}"
-                )
+                logger.error(f"Failed to import rule {rule_data.get('name', 'unknown')}: {str(e)}")
 
         return imported_count
 
@@ -391,10 +380,8 @@ class ThresholdRuleManager:
         if rule_name not in self.rules:
             return {"error": f"Rule {rule_name} not found"}
 
-        rule = self.rules[rule_name]
-        rule_adjustments = [
-            adj for adj in self.adjustments if adj.rule_name == rule_name
-        ]
+        self.rules[rule_name]
+        rule_adjustments = [adj for adj in self.adjustments if adj.rule_name == rule_name]
 
         if not rule_adjustments:
             return {
@@ -406,9 +393,7 @@ class ThresholdRuleManager:
             }
 
         # 计算调整变化
-        changes = [
-            abs(adj.new_threshold - adj.old_threshold) for adj in rule_adjustments
-        ]
+        changes = [abs(adj.new_threshold - adj.old_threshold) for adj in rule_adjustments]
 
         return {
             "rule_name": rule_name,

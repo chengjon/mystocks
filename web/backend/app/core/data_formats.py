@@ -107,18 +107,14 @@ def validate_price(value: Union[float, Decimal]) -> Decimal:
     return round_to_precision(value, PrecisionRules.PRICE)
 
 
-def validate_percentage(
-    value: Union[float, Decimal], high_precision: bool = False
-) -> Decimal:
+def validate_percentage(value: Union[float, Decimal], high_precision: bool = False) -> Decimal:
     """Validate and round percentage to standard precision"""
     if isinstance(value, str):
         value = Decimal(value)
     elif isinstance(value, float):
         value = Decimal(str(value))
 
-    precision = (
-        PrecisionRules.PERCENTAGE_HIGH if high_precision else PrecisionRules.PERCENTAGE
-    )
+    precision = PrecisionRules.PERCENTAGE_HIGH if high_precision else PrecisionRules.PERCENTAGE
     return round_to_precision(value, precision)
 
 
@@ -157,9 +153,7 @@ class StockSymbolFormat(str):
             raise TypeError(f"Stock symbol must be string, got {type(value)}")
 
         if not cls.PATTERN.match(value):
-            raise ValueError(
-                f"Invalid stock symbol format: {value}. Expected 6 digits."
-            )
+            raise ValueError(f"Invalid stock symbol format: {value}. Expected 6 digits.")
 
         return value
 
@@ -187,9 +181,7 @@ class DateFormat:
 class DurationFormat:
     """Duration format: ISO 8601 duration (e.g., "PT1H30M" for 1.5 hours)"""
 
-    PATTERN = re.compile(
-        r"^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$"
-    )
+    PATTERN = re.compile(r"^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$")
 
     @classmethod
     def validate(cls, value: str) -> str:
@@ -198,9 +190,7 @@ class DurationFormat:
             raise TypeError(f"Duration must be string, got {type(value)}")
 
         if not cls.PATTERN.match(value):
-            raise ValueError(
-                f"Invalid duration format: {value}. Expected ISO 8601 format (e.g., 'PT1H30M')."
-            )
+            raise ValueError(f"Invalid duration format: {value}. Expected ISO 8601 format (e.g., 'PT1H30M').")
 
         return value
 
@@ -389,9 +379,7 @@ class HTTPHeaderFormats:
     BEARER_TOKEN_PATTERN = re.compile(r"^Bearer\s+[A-Za-z0-9\-._~+/]+=*$")
 
     # CSRF token format (UUID)
-    CSRF_TOKEN_PATTERN = re.compile(
-        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-    )
+    CSRF_TOKEN_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
     @classmethod
     def validate_bearer_token(cls, token: str) -> bool:

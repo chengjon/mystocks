@@ -8,7 +8,7 @@ import re
 from datetime import date, datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response

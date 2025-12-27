@@ -274,9 +274,7 @@ class BacktestVisualizer:
             save_path: 保存路径
         """
         # 计算月度收益
-        monthly_returns = daily_returns.resample("ME").apply(
-            lambda x: (1 + x).prod() - 1
-        )
+        monthly_returns = daily_returns.resample("ME").apply(lambda x: (1 + x).prod() - 1)
 
         # 创建年月矩阵
         monthly_df = pd.DataFrame(
@@ -326,7 +324,7 @@ class BacktestVisualizer:
             for j in range(len(heatmap_data.columns)):
                 value = heatmap_data.iloc[i, j]
                 if not np.isnan(value):
-                    text = ax.text(
+                    ax.text(
                         j,
                         i,
                         f"{value:.1f}%",
@@ -454,9 +452,7 @@ class BacktestVisualizer:
 
         # 5. 月度收益（中下）
         ax5 = fig.add_subplot(gs[2, 1])
-        monthly_returns = (
-            daily_returns.resample("ME").apply(lambda x: (1 + x).prod() - 1) * 100
-        )
+        monthly_returns = daily_returns.resample("ME").apply(lambda x: (1 + x).prod() - 1) * 100
         colors = ["green" if x > 0 else "red" for x in monthly_returns]
         ax5.bar(range(len(monthly_returns)), monthly_returns, color=colors, alpha=0.7)
         ax5.axhline(0, color="black", linestyle="-", linewidth=1)
@@ -502,9 +498,7 @@ if __name__ == "__main__":
     returns = np.random.randn(n) * 0.015 + 0.0005
     equity = 100000 * (1 + returns).cumprod()
 
-    equity_curve = pd.DataFrame(
-        {"equity": equity, "cash": 50000, "position": 500, "price": 100}, index=dates
-    )
+    equity_curve = pd.DataFrame({"equity": equity, "cash": 50000, "position": 500, "price": 100}, index=dates)
 
     daily_returns = pd.Series(returns, index=dates)
 

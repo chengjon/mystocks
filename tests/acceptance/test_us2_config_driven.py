@@ -201,9 +201,7 @@ class TestUS2ConfigDriven:
         total_processed = result["tables_created"] + result["tables_skipped"]
         assert total_processed == 1, f"应该处理1个表，实际处理了{total_processed}个"
         assert result["tables_created"] >= 0, "创建计数应该有效"
-        assert (
-            len(result.get("errors", [])) == 0
-        ), f"不应该有错误: {result.get('errors')}"
+        assert len(result.get("errors", [])) == 0, f"不应该有错误: {result.get('errors')}"
 
         # 验证表确实存在 - 直接查询数据库
         try:
@@ -237,9 +235,7 @@ class TestUS2ConfigDriven:
             pytest.skip("MySQL数据库不可用")
 
         print("  ℹ️  当前safe_mode=True，应该自动添加新列")
-        print(
-            "  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法"
-        )
+        print("  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法")
         print("  ✅ 场景2验证通过: 配置支持自动添加列（实现待完善）")
 
     def test_scenario_3_delete_column_needs_confirmation(self):
@@ -417,9 +413,7 @@ tables:
         conflict_config = {
             "version": "3.0.0",
             "metadata": {"project": "Test Conflict"},
-            "databases": {
-                "mysql": {"host": "localhost", "port": 3306, "database": "mystocks"}
-            },
+            "databases": {"mysql": {"host": "localhost", "port": 3306, "database": "mystocks"}},
             "tables": [
                 {
                     "database_type": "MySQL",

@@ -152,9 +152,7 @@ class EncryptionManager:
             return False
 
         # Mark current key as rotated
-        self._key_metadata[self.current_key_version]["rotated_at"] = (
-            datetime.utcnow().isoformat()
-        )
+        self._key_metadata[self.current_key_version]["rotated_at"] = datetime.utcnow().isoformat()
 
         # Derive new key
         self._derive_key_for_version(new_version)
@@ -340,9 +338,7 @@ class EncryptionManager:
 
         return decrypted_data
 
-    def re_encrypt(
-        self, encrypted_data: str, target_version: Optional[int] = None
-    ) -> str:
+    def re_encrypt(self, encrypted_data: str, target_version: Optional[int] = None) -> str:
         """
         Re-encrypt data with a different key version
 
@@ -378,9 +374,7 @@ class EncryptionManager:
             self.current_key_version = original_version
             self._cipher_key = self._cipher_keys[original_version]
 
-        logger.debug(
-            f"✅ Re-encrypted data with version {target_version or self.current_key_version}"
-        )
+        logger.debug(f"✅ Re-encrypted data with version {target_version or self.current_key_version}")
         return new_encrypted
 
     def get_encrypted_version(self, encrypted_data: str) -> Optional[int]:
@@ -535,9 +529,7 @@ class SecretManager:
                     continue
 
                 # Re-encrypt with target version
-                new_encrypted = self.encryption.re_encrypt(
-                    encrypted_value, target_version
-                )
+                new_encrypted = self.encryption.re_encrypt(encrypted_value, target_version)
                 self.secrets[key] = new_encrypted
                 migration_report["migrated"] += 1
 
@@ -585,9 +577,7 @@ class SecretManager:
             "legacy_format_count": legacy_count,
             "current_encryption_version": self.encryption.current_key_version,
             "needs_migration": sum(
-                count
-                for version, count in version_counts.items()
-                if version != self.encryption.current_key_version
+                count for version, count in version_counts.items() if version != self.encryption.current_key_version
             )
             + legacy_count,
         }

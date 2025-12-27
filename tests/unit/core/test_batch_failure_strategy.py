@@ -409,9 +409,7 @@ class TestRetryStrategy:
 
     def test_retry_first_attempt_success(self):
         """测试 RETRY 策略 - 首次尝试成功"""
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=3
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=3)
         test_data = pd.DataFrame({"id": [1, 2, 3]})
 
         mock_operation = Mock(return_value=True)
@@ -431,9 +429,7 @@ class TestRetryStrategy:
         注意: 当前实现会累积失败索引,即使最后成功也会保留之前的失败记录
         这是源代码的一个已知问题
         """
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=3, retry_delay_base=0.1
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=3, retry_delay_base=0.1)
         test_data = pd.DataFrame({"id": [1, 2, 3]})
 
         # Mock操作: 前2次失败,第3次成功
@@ -460,9 +456,7 @@ class TestRetryStrategy:
         注意: 当前实现会累积失败索引,每次重试都会添加失败记录
         这是源代码的一个已知问题
         """
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=2, retry_delay_base=0.1
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=2, retry_delay_base=0.1)
         test_data = pd.DataFrame({"id": [1, 2, 3]})
 
         # Mock操作始终失败
@@ -570,9 +564,7 @@ class TestRetryStrategyExceptions:
     @patch("time.sleep")
     def test_retry_with_exceptions(self, mock_sleep):
         """测试 RETRY 策略 - 操作抛出异常"""
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=2, retry_delay_base=0.1
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=2, retry_delay_base=0.1)
         test_data = pd.DataFrame({"id": [1, 2, 3]})
 
         # Mock操作: 总是抛出异常
@@ -589,17 +581,12 @@ class TestRetryStrategyExceptions:
         assert result.retry_count == 2
         # 验证错误消息包含异常信息
         assert len(result.error_messages) > 0
-        assert any(
-            "Database connection failed" in str(msg)
-            for msg in result.error_messages.values()
-        )
+        assert any("Database connection failed" in str(msg) for msg in result.error_messages.values())
 
     @patch("time.sleep")
     def test_retry_with_partial_exceptions(self, mock_sleep):
         """测试 RETRY 策略 - 部分尝试抛出异常，最后成功"""
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=3, retry_delay_base=0.1
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=3, retry_delay_base=0.1)
         test_data = pd.DataFrame({"id": [1, 2, 3]})
 
         call_count = 0
@@ -622,9 +609,7 @@ class TestRetryStrategyExceptions:
 
     def test_retry_empty_dataframe_early_break(self):
         """测试 RETRY 策略 - 空DataFrame触发early break"""
-        handler = BatchFailureHandler(
-            strategy=BatchFailureStrategy.RETRY, max_retries=5
-        )
+        handler = BatchFailureHandler(strategy=BatchFailureStrategy.RETRY, max_retries=5)
         # 空DataFrame
         test_data = pd.DataFrame()
 

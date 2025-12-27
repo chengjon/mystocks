@@ -7,7 +7,7 @@ host: (null)
 user: root
 port: 0
 outpath: /opt/claude/mystocks_backup/20251019_171959/tdengine/
-inpath: 
+inpath:
 resultFile: ./dump_result.txt
 all_databases: true
 databases: false
@@ -23,10 +23,10 @@ loose_mode: false
 isDumpIn: false
 arg_list_len: 0
 debug_print: 0
-========== DUMP OUT ========== 
+========== DUMP OUT ==========
 # DumpOut start time: 2025-10-19 17:19:59
 
-============================== TOTAL STATISTICS ============================== 
+============================== TOTAL STATISTICS ==============================
 # total database count:     0
 # total super table count:  0
 # total child table count:  0
@@ -42,7 +42,7 @@ host: 192.168.123.104
 user: root
 port: 0
 outpath: /tdengine/
-inpath: 
+inpath:
 resultFile: ./dump_result.txt
 all_databases: true
 databases: false
@@ -58,7 +58,7 @@ loose_mode: false
 isDumpIn: false
 arg_list_len: 0
 debug_print: 0
-========== DUMP OUT ========== 
+========== DUMP OUT ==========
 # DumpOut start time: 2025-10-19 17:31:23
 
 #### database:                       stock
@@ -69,10 +69,9 @@ debug_print: 0
 
 #### database:                       db
 
-============================== TOTAL STATISTICS ============================== 
+============================== TOTAL STATISTICS ==============================
 # total database count:     4
 # total super table count:  0
 # total child table count:  0
 # total row count:          1107178
 end time: 2025-10-19 17:32:16
-

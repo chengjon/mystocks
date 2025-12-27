@@ -9,9 +9,7 @@ from src.interfaces.data_source_interface import DataSourceInterface
 from src.factories.data_source_factory import MockDataSource, RealDataSource
 
 
-def compare_data_structure(
-    mock_result: Any, real_result: Any, field_path: str = ""
-) -> List[str]:
+def compare_data_structure(mock_result: Any, real_result: Any, field_path: str = "") -> List[str]:
     """
     比较两个数据结构是否一致
 
@@ -26,10 +24,8 @@ def compare_data_structure(
     errors = []
 
     # 检查类型是否一致
-    if type(mock_result) != type(real_result):
-        errors.append(
-            f"类型不一致: {field_path} - Mock: {type(mock_result)}, Real: {type(real_result)}"
-        )
+    if type(mock_result) is not type(real_result):
+        errors.append(f"类型不一致: {field_path} - Mock: {type(mock_result)}, Real: {type(real_result)}")
         return errors
 
     # 如果是字典类型
@@ -60,24 +56,18 @@ def compare_data_structure(
     # 如果是列表类型
     elif isinstance(mock_result, list):
         if len(mock_result) != len(real_result):
-            errors.append(
-                f"列表长度不一致: {field_path} - Mock: {len(mock_result)}, Real: {len(real_result)}"
-            )
+            errors.append(f"列表长度不一致: {field_path} - Mock: {len(mock_result)}, Real: {len(real_result)}")
 
         # 检查列表中的元素
         min_len = min(len(mock_result), len(real_result))
         for i in range(min_len):
-            sub_errors = compare_data_structure(
-                mock_result[i], real_result[i], f"{field_path}[{i}]"
-            )
+            sub_errors = compare_data_structure(mock_result[i], real_result[i], f"{field_path}[{i}]")
             errors.extend(sub_errors)
 
     # 如果是pandas DataFrame
     elif isinstance(mock_result, pd.DataFrame):
         if not isinstance(real_result, pd.DataFrame):
-            errors.append(
-                f"类型不一致: {field_path} - Mock: DataFrame, Real: {type(real_result)}"
-            )
+            errors.append(f"类型不一致: {field_path} - Mock: DataFrame, Real: {type(real_result)}")
         else:
             mock_cols = set(mock_result.columns)
             real_cols = set(real_result.columns)
@@ -86,14 +76,10 @@ def compare_data_structure(
             missing_in_mock = real_cols - mock_cols
 
             if missing_in_real:
-                errors.append(
-                    f"真实DataFrame缺少列: {field_path} - {list(missing_in_real)}"
-                )
+                errors.append(f"真实DataFrame缺少列: {field_path} - {list(missing_in_real)}")
 
             if missing_in_mock:
-                errors.append(
-                    f"Mock DataFrame缺少列: {field_path} - {list(missing_in_mock)}"
-                )
+                errors.append(f"Mock DataFrame缺少列: {field_path} - {list(missing_in_mock)}")
 
     return errors
 
@@ -152,9 +138,7 @@ def validate_data_source_compatibility(
 
             if errors:
                 results["details"][method_name] = {"status": "failed", "errors": errors}
-                results["errors"].extend(
-                    [f"{method_name}: {error}" for error in errors]
-                )
+                results["errors"].extend([f"{method_name}: {error}" for error in errors])
                 results["overall_status"] = "failed"
             else:
                 results["details"][method_name] = {

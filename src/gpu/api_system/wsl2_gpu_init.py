@@ -69,9 +69,7 @@ def initialize_wsl2_gpu():
         # 简单的KMeans测试
         from cuml.cluster import KMeans
 
-        X = cudf.DataFrame(
-            {"x": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0], "y": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0]}
-        )
+        X = cudf.DataFrame({"x": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0], "y": [1.0, 2.0, 3.0, 8.0, 9.0, 10.0]})
 
         kmeans = KMeans(n_clusters=2, random_state=0)
         kmeans.fit(X)
@@ -96,13 +94,13 @@ def initialize_wsl2_gpu():
 
         cpu_data = pd.DataFrame({"x": range(n)})
         start = time.time()
-        cpu_result = cpu_data["x"].sum()
+        cpu_data["x"].sum()
         cpu_time = time.time() - start
 
         # GPU
         gpu_data = cudf.DataFrame({"x": range(n)})
         start = time.time()
-        gpu_result = gpu_data["x"].sum()
+        gpu_data["x"].sum()
         gpu_time = time.time() - start
 
         speedup = cpu_time / gpu_time

@@ -173,9 +173,7 @@ app.add_middleware(
 )
 
 # 配置响应压缩 (性能优化)
-app.add_middleware(
-    GZipMiddleware, minimum_size=1000, compresslevel=5
-)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
 # 配置统一响应格式中间件 (API标准化)
 app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
@@ -216,9 +214,7 @@ async def csrf_protection_middleware(request: Request, call_next):
             csrf_token = request.headers.get("x-csrf-token")
 
             if not csrf_token:
-                logger.warning(
-                    f"❌ CSRF token missing for {request.method} {request.url.path}"
-                )
+                logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -230,9 +226,7 @@ async def csrf_protection_middleware(request: Request, call_next):
 
             # 验证CSRF token
             if not csrf_manager.validate_token(csrf_token):
-                logger.warning(
-                    f"❌ Invalid CSRF token for {request.method} {request.url.path}"
-                )
+                logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -436,12 +430,8 @@ from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitori
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
-app.include_router(
-    data_quality.router, prefix="/api", tags=["data-quality"]
-)  # 数据质量监控
-app.include_router(
-    auth.router, prefix="/api/v1/auth", tags=["auth"]
-)  # 更新至v1标准版本
+app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(market.router, tags=["market"])  # market路由已包含prefix
@@ -480,9 +470,7 @@ app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理
 
 #  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
-app.include_router(
-    announcement.router, prefix="/api", tags=["announcement"]
-)  # 公告监控
+app.include_router(announcement.router, prefix="/api", tags=["announcement"])  # 公告监控
 
 # Week 1 Architecture-Compliant APIs (策略管理和风险管理)
 app.include_router(strategy_management.router)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
@@ -519,9 +507,7 @@ if __name__ == "__main__":
 
     try:
         # 在端口范围内查找可用端口
-        available_port = find_available_port(
-            settings.port_range_start, settings.port_range_end
-        )
+        available_port = find_available_port(settings.port_range_start, settings.port_range_end)
         logger.info(f"🚀 Starting server on port {available_port}")
         uvicorn.run(
             "main:app",

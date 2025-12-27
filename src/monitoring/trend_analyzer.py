@@ -58,9 +58,7 @@ class TrendAnalyzer:
             )
 
             # 计算置信度
-            confidence = self._calculate_trend_confidence(
-                data, trend_direction, trend_strength
-            )
+            confidence = self._calculate_trend_confidence(data, trend_direction, trend_strength)
 
             # 预测效果
             predicted_effectiveness = self._predict_trend_effectiveness(
@@ -74,9 +72,7 @@ class TrendAnalyzer:
                 "trend_direction": trend_direction,
                 "trend_strength": trend_strength,
                 "predicted_effectiveness": predicted_effectiveness,
-                "reasoning": self._generate_trend_reasoning(
-                    data, trend_direction, recommended_threshold
-                ),
+                "reasoning": self._generate_trend_reasoning(data, trend_direction, recommended_threshold),
                 "data_size": len(data),
                 "method": "trend_analysis",
             }
@@ -161,9 +157,7 @@ class TrendAnalyzer:
 
             # 趋势强度基于斜率和R²
             data_range = np.max(data) - np.min(data)
-            slope_strength = (
-                abs(slope) / (data_range / len(data)) if data_range > 0 else 0
-            )
+            slope_strength = abs(slope) / (data_range / len(data)) if data_range > 0 else 0
 
             return float(min(1.0, r_squared * slope_strength))
 
@@ -205,9 +199,7 @@ class TrendAnalyzer:
 
         return current_threshold * adjustment_factor
 
-    def _calculate_trend_confidence(
-        self, data: List[float], trend_direction: str, trend_strength: float
-    ) -> float:
+    def _calculate_trend_confidence(self, data: List[float], trend_direction: str, trend_strength: float) -> float:
         """
         计算趋势分析置信度
 
@@ -229,9 +221,7 @@ class TrendAnalyzer:
         stability_score = self._calculate_trend_stability(data)
 
         # 综合置信度
-        confidence = (
-            data_size_score * 0.3 + strength_score * 0.4 + stability_score * 0.3
-        )
+        confidence = data_size_score * 0.3 + strength_score * 0.4 + stability_score * 0.3
 
         return float(min(1.0, max(0.0, confidence)))
 
@@ -290,7 +280,7 @@ class TrendAnalyzer:
         if len(data) == 0:
             return 0.0
 
-        data_array = np.array(data)
+        np.array(data)
 
         # 根据趋势方向评估调整的合理性
         if trend_direction == "upward" and new_threshold > current_threshold:
@@ -302,9 +292,7 @@ class TrendAnalyzer:
         else:
             return 0.2  # 调整方向与趋势不符
 
-    def _generate_trend_reasoning(
-        self, data: List[float], trend_direction: str, recommended_threshold: float
-    ) -> str:
+    def _generate_trend_reasoning(self, data: List[float], trend_direction: str, recommended_threshold: float) -> str:
         """
         生成趋势推理说明
 
@@ -316,7 +304,7 @@ class TrendAnalyzer:
         Returns:
             str: 推理说明
         """
-        data_array = np.array(data)
+        np.array(data)
         trend_strength = self._calculate_trend_strength(data)
 
         if trend_direction == "upward":

@@ -69,9 +69,7 @@ def test_filter_errors_only():
 
             # 验证所有日志都是WARNING/ERROR/CRITICAL级别
             error_logs = data.get("data", [])
-            all_errors = all(
-                log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs
-            )
+            all_errors = all(log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs)
 
             if all_errors:
                 print("✅ 验证通过: 所有日志都是问题日志")

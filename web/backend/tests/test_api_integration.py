@@ -152,9 +152,7 @@ class TestCSRFProtection:
     def test_post_without_csrf_token_returns_403(self, client):
         """测试没有CSRF Token的POST请求返回403或422"""
         # 尝试没有CSRF token的POST请求
-        response = client.post(
-            "/api/v1/auth/login", json={"username": "test", "password": "test"}
-        )
+        response = client.post("/api/v1/auth/login", json={"username": "test", "password": "test"})
 
         # 应该返回403 Forbidden或422 Unprocessable Entity
         assert response.status_code in [403, 422]
@@ -219,9 +217,7 @@ class TestCORS:
 
     def test_options_request_allowed(self, client):
         """测试OPTIONS请求被允许或不被允许"""
-        response = client.options(
-            "/health", headers={"Origin": "http://localhost:3000"}
-        )
+        response = client.options("/health", headers={"Origin": "http://localhost:3000"})
 
         # OPTIONS请求可能返回200或204（如果被允许）或405（如果不被允许）
         assert response.status_code in [200, 204, 405]

@@ -27,9 +27,7 @@ class TestTDengineDataAccessReal:
         self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
 
-        with patch(
-            "src.data_access.tdengine_access.get_connection_manager"
-        ) as mock_get_cm:
+        with patch("src.data_access.tdengine_access.get_connection_manager") as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.tdengine_access import TDengineDataAccess
 
@@ -52,9 +50,7 @@ class TestTDengineDataAccessReal:
     def test_create_table(self):
         """测试创建子表"""
         # create_table signature: (table_name, stable_name, tag_values)
-        self.db.create_table(
-            "tick_600519", "tick_data", {"symbol": "600519", "exchange": "SH"}
-        )
+        self.db.create_table("tick_600519", "tick_data", {"symbol": "600519", "exchange": "SH"})
 
         self.mock_cursor.execute.assert_called()
 
@@ -152,9 +148,7 @@ class TestTDengineDataAccessReal:
 
     def test_save_data(self):
         """测试save_data方法"""
-        df = pd.DataFrame(
-            {"ts": [datetime.now()], "price": [1750.50], "volume": [1000]}
-        )
+        df = pd.DataFrame({"ts": [datetime.now()], "price": [1750.50], "volume": [1000]})
 
         # save_data signature: (data, classification, table_name, **kwargs)
         self.db.save_data(df, None, "tick_600519")
@@ -163,9 +157,7 @@ class TestTDengineDataAccessReal:
 
     def test_load_data(self):
         """测试load_data方法"""
-        self.mock_cursor.fetchall.return_value = [
-            (datetime(2024, 1, 1, 9, 30, 0), 1750.50, 1000)
-        ]
+        self.mock_cursor.fetchall.return_value = [(datetime(2024, 1, 1, 9, 30, 0), 1750.50, 1000)]
         self.mock_cursor.description = [("ts",), ("price",), ("volume",)]
 
         result = self.db.load_data("tick_600519")
@@ -190,9 +182,7 @@ class TestTDengineDataAccessEdgeCases:
         self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_conn
         self.mock_conn.cursor.return_value = self.mock_cursor
 
-        with patch(
-            "src.data_access.tdengine_access.get_connection_manager"
-        ) as mock_get_cm:
+        with patch("src.data_access.tdengine_access.get_connection_manager") as mock_get_cm:
             mock_get_cm.return_value = self.mock_conn_manager
             from src.data_access.tdengine_access import TDengineDataAccess
 
@@ -209,9 +199,7 @@ class TestTDengineDataAccessEdgeCases:
 
     def test_connection_error(self):
         """测试连接错误"""
-        self.mock_conn_manager.get_tdengine_connection.side_effect = Exception(
-            "Connection failed"
-        )
+        self.mock_conn_manager.get_tdengine_connection.side_effect = Exception("Connection failed")
 
         with pytest.raises(Exception):
             self.db._get_connection()

@@ -63,9 +63,7 @@ async def get_alert_history(
 
 
 @router.get("/history/{alert_id}")
-async def get_alert_by_id(
-    alert_id: int, db: AlertHistoryDatabase = Depends(get_alert_history_db)
-):
+async def get_alert_by_id(alert_id: int, db: AlertHistoryDatabase = Depends(get_alert_history_db)):
     """Get specific alert record by ID"""
     alert = db.get_alert(alert_id)
 
@@ -129,9 +127,7 @@ async def get_alert_trends(
     - day: Daily buckets
     - hour: Hourly buckets
     """
-    trends = db.get_alert_trends(
-        alert_name=alert_name, days=days, granularity=granularity
-    )
+    trends = db.get_alert_trends(alert_name=alert_name, days=days, granularity=granularity)
 
     return {
         "success": True,
@@ -163,9 +159,7 @@ async def get_service_health(
 
 
 @router.post("/history")
-async def save_alert_history(
-    alert_data: dict, db: AlertHistoryDatabase = Depends(get_alert_history_db)
-):
+async def save_alert_history(alert_data: dict, db: AlertHistoryDatabase = Depends(get_alert_history_db)):
     """
     Save new alert history record
 
@@ -193,9 +187,9 @@ async def save_alert_history(
             description=alert_data.get("description"),
             labels=alert_data.get("labels", {}),
             annotations=alert_data.get("annotations", {}),
-            start_time=datetime.fromisoformat(alert_data.get("start_time"))
-            if alert_data.get("start_time")
-            else datetime.now(),
+            start_time=(
+                datetime.fromisoformat(alert_data.get("start_time")) if alert_data.get("start_time") else datetime.now()
+            ),
         )
 
         alert_id = db.save_alert(record)
@@ -302,9 +296,7 @@ async def record_alert_correlation(
 ):
     """Record correlation between two alerts"""
     try:
-        correlation_id = db.record_correlation(
-            alert1_id, alert2_id, correlation_score, correlation_type
-        )
+        correlation_id = db.record_correlation(alert1_id, alert2_id, correlation_score, correlation_type)
 
         return {
             "success": True,
@@ -353,9 +345,7 @@ async def get_daily_report(
     stats = db.get_alert_statistics(days=days)
     top_alerts = db.get_top_alerts(limit=5, days=days)
 
-    services_to_check = (
-        [service] if service else ["api", "database", "cache", "notification"]
-    )
+    services_to_check = [service] if service else ["api", "database", "cache", "notification"]
     service_health = {}
     for svc in services_to_check:
         service_health[svc] = db.get_service_health(svc, days=days)

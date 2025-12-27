@@ -66,9 +66,7 @@ class DatabaseSetup:
                 print(f"✅ TimescaleDB已安装: {extname} v{extversion}")
 
                 # 获取TimescaleDB版本详细信息
-                cur.execute(
-                    "SELECT extversion FROM pg_extension WHERE extname='timescaledb';"
-                )
+                cur.execute("SELECT extversion FROM pg_extension WHERE extname='timescaledb';")
                 version = cur.fetchone()[0]
                 print(f"   版本: {version}")
 
@@ -204,11 +202,7 @@ class DatabaseSetup:
             # 逐条执行SQL(跳过USE和SELECT语句)
             for statement in sql_content.split(";"):
                 statement = statement.strip()
-                if (
-                    statement
-                    and not statement.startswith("USE")
-                    and not statement.startswith("SELECT")
-                ):
+                if statement and not statement.startswith("USE") and not statement.startswith("SELECT"):
                     cur.execute(statement)
 
             conn.commit()
@@ -261,9 +255,7 @@ class DatabaseSetup:
         print("=" * 60)
         print("\n下一步:")
         print("  1. 检查表结构: psql -d mystocks -c '\\dt'")
-        print(
-            '  2. 检查hypertable: psql -d mystocks -c "SELECT * FROM timescaledb_information.hypertables;"'
-        )
+        print('  2. 检查hypertable: psql -d mystocks -c "SELECT * FROM timescaledb_information.hypertables;"')
         print("  3. 检查MySQL表: mysql -e 'USE quant_research; SHOW TABLES;'")
 
         return True

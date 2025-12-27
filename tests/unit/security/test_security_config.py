@@ -27,9 +27,7 @@ class TestSecurityConfig:
         assert "security:" in content, "配置文件应包含 security 部分"
         assert "scanning:" in content, "配置文件应包含 scanning 部分"
         assert "code_security:" in content, "配置文件应包含 code_security 部分"
-        assert (
-            "dependency_security:" in content
-        ), "配置文件应包含 dependency_security 部分"
+        assert "dependency_security:" in content, "配置文件应包含 dependency_security 部分"
 
     def test_security_scanning_tools_configured(self):
         """测试安全扫描工具配置"""

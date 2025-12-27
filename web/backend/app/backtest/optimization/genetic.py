@@ -122,9 +122,7 @@ class GeneticOptimizer(BaseOptimizer):
             population.append(individual)
         return population
 
-    def _evaluate_individual(
-        self, individual: Individual, market_data: Dict[str, Any]
-    ) -> float:
+    def _evaluate_individual(self, individual: Individual, market_data: Dict[str, Any]) -> float:
         """
         评估个体适应度
 
@@ -143,9 +141,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         return fitness
 
-    def _evaluate_population(
-        self, population: List[Individual], market_data: Dict[str, Any]
-    ):
+    def _evaluate_population(self, population: List[Individual], market_data: Dict[str, Any]):
         """评估整个种群"""
         for individual in population:
             if individual.result is None:  # 跳过已评估的
@@ -161,9 +157,7 @@ class GeneticOptimizer(BaseOptimizer):
         Returns:
             获胜个体
         """
-        tournament = self.rng.sample(
-            population, min(self.tournament_size, len(population))
-        )
+        tournament = self.rng.sample(population, min(self.tournament_size, len(population)))
 
         if self.maximize:
             winner = max(tournament, key=lambda ind: ind.fitness)
@@ -198,9 +192,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         return population[-1]
 
-    def _crossover(
-        self, parent1: Individual, parent2: Individual
-    ) -> Tuple[Individual, Individual]:
+    def _crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
         """
         交叉操作 (均匀交叉)
 
@@ -330,9 +322,7 @@ class GeneticOptimizer(BaseOptimizer):
                         new_value = current + noise
 
                         # 限制范围
-                        new_value = max(
-                            space.min_value, min(space.max_value, new_value)
-                        )
+                        new_value = max(space.min_value, min(space.max_value, new_value))
 
                         if space.param_type == "int":
                             new_value = int(round(new_value))
@@ -349,13 +339,8 @@ class GeneticOptimizer(BaseOptimizer):
         Returns:
             精英个体列表
         """
-        sorted_pop = sorted(
-            population, key=lambda ind: ind.fitness, reverse=self.maximize
-        )
-        return [
-            Individual(copy.deepcopy(ind.genes))
-            for ind in sorted_pop[: self.elite_size]
-        ]
+        sorted_pop = sorted(population, key=lambda ind: ind.fitness, reverse=self.maximize)
+        return [Individual(copy.deepcopy(ind.genes)) for ind in sorted_pop[: self.elite_size]]
 
     def optimize(
         self,
@@ -412,9 +397,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         # 记录第0代
         best_ind = (
-            max(population, key=lambda i: i.fitness)
-            if self.maximize
-            else min(population, key=lambda i: i.fitness)
+            max(population, key=lambda i: i.fitness) if self.maximize else min(population, key=lambda i: i.fitness)
         )
         avg_fitness = sum(ind.fitness for ind in population) / len(population)
 
@@ -476,9 +459,7 @@ class GeneticOptimizer(BaseOptimizer):
 
             # 统计
             best_ind = (
-                max(population, key=lambda i: i.fitness)
-                if self.maximize
-                else min(population, key=lambda i: i.fitness)
+                max(population, key=lambda i: i.fitness) if self.maximize else min(population, key=lambda i: i.fitness)
             )
             avg_fitness = sum(ind.fitness for ind in population) / len(population)
 
@@ -496,9 +477,7 @@ class GeneticOptimizer(BaseOptimizer):
                 progress_callback(generation, self.n_generations, best_ind.result)
 
             # 日志
-            logger.info(
-                f"第{generation}代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}"
-            )
+            logger.info(f"第{generation}代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}")
 
             # 早停检查
             if early_stop:
@@ -572,10 +551,6 @@ class GeneticOptimizer(BaseOptimizer):
                 diversity_scores.append(min(1.0, normalized_std))
 
         return {
-            "avg_diversity": sum(diversity_scores) / len(diversity_scores)
-            if diversity_scores
-            else 0,
-            "per_parameter": dict(
-                zip([s.name for s in self.parameter_spaces], diversity_scores)
-            ),
+            "avg_diversity": sum(diversity_scores) / len(diversity_scores) if diversity_scores else 0,
+            "per_parameter": dict(zip([s.name for s in self.parameter_spaces], diversity_scores)),
         }

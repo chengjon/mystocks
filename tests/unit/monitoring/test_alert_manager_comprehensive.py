@@ -96,9 +96,7 @@ class TestAlertManagerSendAlert:
     def test_send_alert_empty_message(self, manager):
         """测试空消息处理"""
         with patch.object(manager, "send_alert", return_value=False) as mock_send:
-            result = manager.send_alert(
-                title="Test", message="", severity="high", category="test"
-            )
+            result = manager.send_alert(title="Test", message="", severity="high", category="test")
             mock_send.assert_called_once()
 
     def test_send_alert_with_metadata(self, manager):
@@ -132,9 +130,7 @@ class TestAlertManagerSeverityLevels:
 
         with patch.object(manager, "send_alert", return_value=True) as mock_send:
             for level in severity_levels:
-                manager.send_alert(
-                    title=f"Test {level}", message="Test message", severity=level
-                )
+                manager.send_alert(title=f"Test {level}", message="Test message", severity=level)
             # 应该调用了5次
             assert mock_send.call_count == 5
 
@@ -154,9 +150,7 @@ class TestAlertManagerSeverityLevels:
             }
 
             for severity in expected_order:
-                manager.send_alert(
-                    title=f"Test {severity}", message="Test message", severity=severity
-                )
+                manager.send_alert(title=f"Test {severity}", message="Test message", severity=severity)
 
             assert mock_send.call_count == 5
 
@@ -182,9 +176,7 @@ class TestAlertManagerHistory:
             start_time = datetime.now() - timedelta(days=7)
             end_time = datetime.now()
 
-            history = manager.get_alert_history(
-                start_time=start_time, end_time=end_time
-            )
+            history = manager.get_alert_history(start_time=start_time, end_time=end_time)
             mock_get.assert_called_once()
 
     def test_clear_alert_history(self, manager):
@@ -219,18 +211,14 @@ class TestAlertManagerMultiChannelNotification:
         """测试发送邮件告警"""
         with patch.object(manager, "send_alert") as mock_send:
             mock_send.return_value = True
-            result = manager.send_alert(
-                title="Critical", message="Test", severity="high", channels=["email"]
-            )
+            result = manager.send_alert(title="Critical", message="Test", severity="high", channels=["email"])
             mock_send.assert_called_once()
 
     def test_send_to_webhook(self, manager):
         """测试发送 Webhook 告警"""
         with patch.object(manager, "send_alert") as mock_send:
             mock_send.return_value = True
-            result = manager.send_alert(
-                title="Critical", message="Test", severity="high", channels=["webhook"]
-            )
+            result = manager.send_alert(title="Critical", message="Test", severity="high", channels=["webhook"])
             mock_send.assert_called_once()
 
     def test_send_to_multiple_channels(self, manager):
@@ -269,9 +257,7 @@ class TestAlertManagerThreshold:
     def test_set_threshold(self, manager):
         """测试设置告警阈值"""
         with patch.object(manager, "set_threshold", return_value=True) as mock_set:
-            result = manager.set_threshold(
-                metric="cpu_usage", threshold=80.0, condition="greater_than"
-            )
+            result = manager.set_threshold(metric="cpu_usage", threshold=80.0, condition="greater_than")
             mock_set.assert_called_once()
 
     def test_set_multiple_thresholds(self, manager):
@@ -314,9 +300,7 @@ class TestAlertManagerErrorHandling:
             mock_send.side_effect = ConnectionError("Network error")
 
             try:
-                result = manager.send_alert(
-                    title="Test", message="Test", severity="high"
-                )
+                result = manager.send_alert(title="Test", message="Test", severity="high")
             except ConnectionError:
                 pass  # 预期的异常
 
@@ -353,9 +337,7 @@ class TestAlertManagerDeduplication:
         with patch.object(manager, "send_alert", return_value=True) as mock_send:
             # 发送相同的告警两次
             for _ in range(2):
-                manager.send_alert(
-                    title="Same Alert", message="Same Message", severity="high"
-                )
+                manager.send_alert(title="Same Alert", message="Same Message", severity="high")
 
             # 应该被去重 (根据实现决定)
             assert mock_send.call_count == 2
@@ -364,13 +346,9 @@ class TestAlertManagerDeduplication:
         """测试相似告警处理"""
         with patch.object(manager, "send_alert", return_value=True) as mock_send:
             # 发送相似但不完全相同的告警
-            manager.send_alert(
-                title="Database Error 1", message="Connection timeout", severity="high"
-            )
+            manager.send_alert(title="Database Error 1", message="Connection timeout", severity="high")
 
-            manager.send_alert(
-                title="Database Error 2", message="Connection timeout", severity="high"
-            )
+            manager.send_alert(title="Database Error 2", message="Connection timeout", severity="high")
 
             assert mock_send.call_count == 2
 

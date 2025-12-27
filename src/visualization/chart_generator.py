@@ -32,9 +32,7 @@ class ChartStyle:
     SAS = "sas"  # SAS风格
 
     # 中国股市风格（红涨绿跌）
-    CHINA = mpf.make_marketcolors(
-        up="red", down="green", edge="inherit", wick="inherit", volume="in", alpha=0.9
-    )
+    CHINA = mpf.make_marketcolors(up="red", down="green", edge="inherit", wick="inherit", volume="in", alpha=0.9)
 
     @staticmethod
     def get_china_style():
@@ -239,14 +237,10 @@ class ChartGenerator:
             legend_elements = []
 
             if buy_markers:
-                legend_elements.append(
-                    mpatches.Patch(color="red", label=f"买入 ({len(buy_markers)})")
-                )
+                legend_elements.append(mpatches.Patch(color="red", label=f"买入 ({len(buy_markers)})"))
 
             if sell_markers:
-                legend_elements.append(
-                    mpatches.Patch(color="green", label=f"卖出 ({len(sell_markers)})")
-                )
+                legend_elements.append(mpatches.Patch(color="green", label=f"卖出 ({len(sell_markers)})"))
 
             ax.legend(handles=legend_elements, loc="upper left")
 
@@ -320,16 +314,12 @@ class ChartGenerator:
         colors = ["blue", "orange", "purple", "brown", "pink"]
         for idx, (name, series) in enumerate(main_indicators.items()):
             color = colors[idx % len(colors)]
-            apds.append(
-                mpf.make_addplot(series, panel=0, color=color, width=1.5, label=name)
-            )
+            apds.append(mpf.make_addplot(series, panel=0, color=color, width=1.5, label=name))
 
         # 副图指标
         panel_num = 2 if volume else 1  # volume占用panel 1
         for name, series in sub_indicators.items():
-            apds.append(
-                mpf.make_addplot(series, panel=panel_num, color="blue", ylabel=name)
-            )
+            apds.append(mpf.make_addplot(series, panel=panel_num, color="blue", ylabel=name))
             panel_num += 1
 
         # 绘制K线图
@@ -405,9 +395,7 @@ class ChartGenerator:
             sub_indicator_names = ["RSI", "KDJ", "CCI", "WR", "MACD"]
 
             for name, series in indicators.items():
-                is_sub = any(
-                    sub_name in name.upper() for sub_name in sub_indicator_names
-                )
+                is_sub = any(sub_name in name.upper() for sub_name in sub_indicator_names)
                 if is_sub:
                     sub_indicators[name] = series
                 else:
@@ -422,9 +410,7 @@ class ChartGenerator:
             # 副图指标
             panel_num = 2 if volume else 1
             for name, series in sub_indicators.items():
-                apds.append(
-                    mpf.make_addplot(series, panel=panel_num, color="blue", ylabel=name)
-                )
+                apds.append(mpf.make_addplot(series, panel=panel_num, color="blue", ylabel=name))
                 panel_num += 1
 
         # 2. 添加交易信号
@@ -434,9 +420,7 @@ class ChartGenerator:
 
             # 买入标记
             if not buy_signals.empty:
-                buy_df = pd.DataFrame(
-                    {"price": buy_signals["entry_price"]}, index=buy_signals.index
-                )
+                buy_df = pd.DataFrame({"price": buy_signals["entry_price"]}, index=buy_signals.index)
                 buy_df = buy_df.reindex(data.index)
 
                 apds.append(
@@ -452,9 +436,7 @@ class ChartGenerator:
 
             # 卖出标记
             if not sell_signals.empty:
-                sell_df = pd.DataFrame(
-                    {"price": sell_signals["entry_price"]}, index=sell_signals.index
-                )
+                sell_df = pd.DataFrame({"price": sell_signals["entry_price"]}, index=sell_signals.index)
                 sell_df = sell_df.reindex(data.index)
 
                 apds.append(
@@ -535,9 +517,7 @@ if __name__ == "__main__":
 
     # 测试1: 基础K线图
     print("\n测试1: 生成基础K线图")
-    generator.plot_kline(
-        price_data, title="测试股票 - K线图", save_path="temp/test_kline.png"
-    )
+    generator.plot_kline(price_data, title="测试股票 - K线图", save_path="temp/test_kline.png")
     print("✓ 基础K线图生成成功")
 
     # 测试2: 带信号的K线图

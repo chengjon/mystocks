@@ -191,9 +191,7 @@ def normalize_dataframe(data: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def validate_data_for_classification(
-    data: pd.DataFrame, classification: DataClassification
-) -> Tuple[bool, List[str]]:
+def validate_data_for_classification(data: pd.DataFrame, classification: DataClassification) -> Tuple[bool, List[str]]:
     """
     验证DataFrame是否符合特定数据分类的要求
 

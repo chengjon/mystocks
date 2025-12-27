@@ -82,53 +82,53 @@
    import os
    import sys
    import re
-   
+
    # 配置文件大小阈值
    MAX_FILE_LINES = 2000
    MIN_FILE_LINES = 50
-   
+
    def check_files(directory):
        """检查目录中的Python文件行数"""
        large_files = []
        small_files = []
-       
+
        for root, _, files in os.walk(directory):
            # 忽略特定目录
            if any(ignore_dir in root for ignore_dir in ['.git', '__pycache__', '.pytest_cache', 'node_modules']):
                continue
-           
+
            for file in files:
                if file.endswith('.py'):
                    file_path = os.path.join(root, file)
                    try:
                        with open(file_path, 'r', encoding='utf-8') as f:
                            lines = sum(1 for _ in f)
-                           
+
                        if lines > MAX_FILE_LINES:
                            large_files.append(f"{file_path}: {lines} lines")
                        elif lines < MIN_FILE_LINES:
                            small_files.append(f"{file_path}: {lines} lines")
                    except Exception as e:
                        print(f"Error reading {file_path}: {e}")
-       
+
        return large_files, small_files
-   
+
    if __name__ == "__main__":
        directory = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
        large_files, small_files = check_files(directory)
-       
+
        if large_files:
            print("❌ 以下文件超过行数限制:")
            for file in large_files:
                print(f"  {file}")
            sys.exit(1)
-       
+
        if small_files:
            print("⚠️ 以下文件少于最小行数限制:")
            for file in small_files:
                print(f"  {file}")
            # 小文件不影响检查结果，只给出警告
-       
+
        print("✅ 所有文件行数检查通过")
    ```
 
@@ -139,13 +139,13 @@
    import sys
    import json
    from datetime import datetime
-   
+
    # 配置文件数量阈值
    MAX_NEW_FILES = 10
-   
+
    # 记录每次提交的文件数量基线
    BASELINE_FILE = "file_count_baseline.json"
-   
+
    def count_python_files(directory):
        """统计目录中的Python文件数量"""
        count = 0
@@ -153,51 +153,51 @@
            # 忽略特定目录
            if any(ignore_dir in root for ignore_dir in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.mypy_cache']):
                continue
-           
+
            for file in files:
                if file.endswith('.py'):
                    count += 1
        return count
-   
+
    def update_baseline(count):
        """更新基线文件"""
        baseline = {}
        if os.path.exists(BASELINE_FILE):
            with open(BASELINE_FILE, 'r') as f:
                baseline = json.load(f)
-       
+
        baseline['last_count'] = count
        baseline['last_update'] = str(datetime.now())
-       
+
        with open(BASELINE_FILE, 'w') as f:
            json.dump(baseline, f)
-   
+
    def get_baseline():
        """获取基线数量"""
        if not os.path.exists(BASELINE_FILE):
            return None
-       
+
        with open(BASELINE_FILE, 'r') as f:
            baseline = json.load(f)
            return baseline.get('last_count')
-   
+
    if __name__ == "__main__":
        directory = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
        current_count = count_python_files(directory)
        baseline_count = get_baseline()
-       
+
        if baseline_count is None:
            print(f"📝 首次运行，保存当前文件数量为基线: {current_count}")
            update_baseline(current_count)
            sys.exit(0)
-       
+
        new_files = current_count - baseline_count
        if new_files > MAX_NEW_FILES:
            print(f"❌ 新增文件数量({new_files})超过限制({MAX_NEW_FILES})")
            print(f"当前文件总数: {current_count}")
            print(f"基线文件总数: {baseline_count}")
            sys.exit(1)
-       
+
        if new_files > 0:
            print(f"ℹ️ 本次提交新增 {new_files} 个Python文件")
            print(f"当前文件总数: {current_count}")
@@ -205,7 +205,7 @@
            update_baseline(current_count)
        else:
            print(f"✅ Python文件数量检查通过: {current_count}")
-   
+
    ```
 
 ### 2.2 CI/CD流水线集成
@@ -218,7 +218,7 @@
      - test
      - build
      - deploy
-   
+
    # 文件检查阶段
    file_check:
      stage: lint
@@ -237,9 +237,9 @@
    ```yaml
    # .github/workflows/code-quality.yml
    name: Code Quality Checks
-   
+
    on: [push, pull_request]
-   
+
    jobs:
      file-check:
        runs-on: ubuntu-latest

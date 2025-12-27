@@ -99,9 +99,7 @@ class CacheManager:
     def clear_cache(cls, prefix: Optional[str] = None):
         """清除缓存"""
         if prefix:
-            keys_to_delete = [
-                k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")
-            ]
+            keys_to_delete = [k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")]
             for key in keys_to_delete:
                 del _memory_cache[key]
             logger.info(f"🗑️  Cleared cache: {prefix}* ({len(keys_to_delete)} keys)")
@@ -126,15 +124,11 @@ class CacheManager:
             "total_keys": total_keys,
             "valid_keys": valid_keys,
             "expired_keys": expired_keys,
-            "cache_types": list(
-                set(k.split(":")[1] for k in _memory_cache.keys() if ":" in k)
-            ),
+            "cache_types": list(set(k.split(":")[1] for k in _memory_cache.keys() if ":" in k)),
         }
 
 
-def cache_response(
-    cache_type: str, ttl: Optional[int] = None, skip_cache: bool = False
-):
+def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool = False):
     """
     API响应缓存装饰器
 
@@ -156,11 +150,7 @@ def cache_response(
                 return await func(*args, **kwargs)
 
             # 生成缓存键（排除 current_user 等敏感参数 + 依赖注入对象）
-            cache_params = {
-                k: v
-                for k, v in kwargs.items()
-                if k not in ["current_user", "request", "service"]
-            }
+            cache_params = {k: v for k, v in kwargs.items() if k not in ["current_user", "request", "service"]}
             cache_key = CacheManager.generate_cache_key(cache_type, **cache_params)
 
             # 尝试获取缓存
@@ -172,11 +162,7 @@ def cache_response(
             result = await func(*args, **kwargs)
 
             # 缓存结果（只缓存成功的响应）
-            if (
-                result
-                and isinstance(result, dict)
-                and result.get("success") is not False
-            ):
+            if result and isinstance(result, dict) and result.get("success") is not False:
                 cache_ttl = ttl if ttl is not None else CacheManager.get_ttl(cache_type)
                 CacheManager.set_cache(cache_key, result, cache_ttl)
 
@@ -188,11 +174,7 @@ def cache_response(
             if skip_cache:
                 return func(*args, **kwargs)
 
-            cache_params = {
-                k: v
-                for k, v in kwargs.items()
-                if k not in ["current_user", "request", "service"]
-            }
+            cache_params = {k: v for k, v in kwargs.items() if k not in ["current_user", "request", "service"]}
             cache_key = CacheManager.generate_cache_key(cache_type, **cache_params)
 
             cached_data = CacheManager.get_cache(cache_key)
@@ -201,11 +183,7 @@ def cache_response(
 
             result = func(*args, **kwargs)
 
-            if (
-                result
-                and isinstance(result, dict)
-                and result.get("success") is not False
-            ):
+            if result and isinstance(result, dict) and result.get("success") is not False:
                 cache_ttl = ttl if ttl is not None else CacheManager.get_ttl(cache_type)
                 CacheManager.set_cache(cache_key, result, cache_ttl)
 

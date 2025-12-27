@@ -41,9 +41,7 @@ class VolumeDataProcessor:
 
         return volume_ma
 
-    def detect_volume_anomaly(
-        self, data: pd.DataFrame, threshold: float = 5.0
-    ) -> List[int]:
+    def detect_volume_anomaly(self, data: pd.DataFrame, threshold: float = 5.0) -> List[int]:
         """
         检测量量异常
 
@@ -79,9 +77,7 @@ class VolumeDataProcessor:
                         anomalies.append(i)
                 else:
                     # 如果MAD为0，使用简单的倍数检测
-                    if (
-                        median_volume > 0 and volume[i] / median_volume > 3.5
-                    ):  # 降低阈值以通过测试
+                    if median_volume > 0 and volume[i] / median_volume > 3.5:  # 降低阈值以通过测试
                         anomalies.append(i)
 
         return anomalies
@@ -134,9 +130,7 @@ class VolumeDataProcessor:
         data["price_bin"] = pd.cut(data["close"], bins=price_bins, include_lowest=True)
 
         # 计算每个价格区间的成交量
-        volume_profile = (
-            data.groupby("price_bin").agg({"volume": ["sum", "count"]}).reset_index()
-        )
+        volume_profile = data.groupby("price_bin").agg({"volume": ["sum", "count"]}).reset_index()
 
         # 重命名列
         volume_profile.columns = ["price_range", "total_volume", "count"]

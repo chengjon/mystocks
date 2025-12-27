@@ -49,9 +49,7 @@ class PerformanceSecurityValidator:
     def get_auth_token(self) -> str:
         """Get authentication token for testing"""
         if not self.auth_token:
-            response = self.client.post(
-                "/api/auth/login", data={"username": "admin", "password": "admin123"}
-            )
+            response = self.client.post("/api/auth/login", data={"username": "admin", "password": "admin123"})
             if response.status_code == 200:
                 self.auth_token = response.json().get("access_token")
         return self.auth_token
@@ -107,9 +105,7 @@ class PerformanceSecurityValidator:
                         }
                     )
                 elif response_time <= FAST_THRESHOLD:
-                    fast_endpoints.append(
-                        {"endpoint": f"{method} {url}", "response_time": response_time}
-                    )
+                    fast_endpoints.append({"endpoint": f"{method} {url}", "response_time": response_time})
 
             except Exception as e:
                 performance_results[f"{method} {url}"] = {
@@ -120,9 +116,7 @@ class PerformanceSecurityValidator:
 
         # Calculate average response time
         valid_times = [
-            result["response_time"]
-            for result in performance_results.values()
-            if result["response_time"] is not None
+            result["response_time"] for result in performance_results.values() if result["response_time"] is not None
         ]
         average_time = sum(valid_times) / len(valid_times) if valid_times else 0
 
@@ -168,14 +162,10 @@ class PerformanceSecurityValidator:
                 try:
                     if endpoint["method"] == "GET":
                         params = {endpoint["param"]: payload}
-                        response = self.client.get(
-                            endpoint["url"], params=params, headers=auth_headers
-                        )
+                        response = self.client.get(endpoint["url"], params=params, headers=auth_headers)
                     elif endpoint["method"] == "POST":
                         data = {endpoint["body_key"]: payload}
-                        response = self.client.post(
-                            endpoint["url"], json=data, headers=auth_headers
-                        )
+                        response = self.client.post(endpoint["url"], json=data, headers=auth_headers)
 
                     # Check if payload caused unexpected behavior
                     if response.status_code == 500:
@@ -254,22 +244,16 @@ class PerformanceSecurityValidator:
                 try:
                     if endpoint["method"] == "GET":
                         params = {endpoint["param"]: payload}
-                        response = self.client.get(
-                            endpoint["url"], params=params, headers=auth_headers
-                        )
+                        response = self.client.get(endpoint["url"], params=params, headers=auth_headers)
                     elif endpoint["method"] == "POST":
                         data = {endpoint["body_key"]: payload}
-                        response = self.client.post(
-                            endpoint["url"], json=data, headers=auth_headers
-                        )
+                        response = self.client.post(endpoint["url"], json=data, headers=auth_headers)
 
                     if response.status_code == 200:
                         response_text = response.text
 
                         # Check if XSS payload is reflected unescaped
-                        if payload in response_text and not self._is_escaped(
-                            response_text, payload
-                        ):
+                        if payload in response_text and not self._is_escaped(response_text, payload):
                             vulnerabilities.append(
                                 {
                                     "endpoint": endpoint["url"],
@@ -333,14 +317,10 @@ class PerformanceSecurityValidator:
                 try:
                     if endpoint["method"] == "GET":
                         params = {endpoint["param"]: payload["value"]}
-                        response = self.client.get(
-                            endpoint["url"], params=params, headers=auth_headers
-                        )
+                        response = self.client.get(endpoint["url"], params=params, headers=auth_headers)
                     elif endpoint["method"] == "POST":
                         data = {endpoint["body_key"]: payload["value"]}
-                        response = self.client.post(
-                            endpoint["url"], json=data, headers=auth_headers
-                        )
+                        response = self.client.post(endpoint["url"], json=data, headers=auth_headers)
 
                     # Check for proper validation (should return 400 for invalid input)
                     if response.status_code == 200:
@@ -349,9 +329,9 @@ class PerformanceSecurityValidator:
                                 "endpoint": endpoint["url"],
                                 "method": endpoint["method"],
                                 "payload_type": payload["name"],
-                                "payload_value": payload["value"][:100] + "..."
-                                if len(payload["value"]) > 100
-                                else payload["value"],
+                                "payload_value": (
+                                    payload["value"][:100] + "..." if len(payload["value"]) > 100 else payload["value"]
+                                ),
                                 "issue": "Input accepted without validation",
                                 "status_code": response.status_code,
                             }
@@ -365,9 +345,9 @@ class PerformanceSecurityValidator:
                                 "endpoint": endpoint["url"],
                                 "method": endpoint["method"],
                                 "payload_type": payload["name"],
-                                "payload_value": payload["value"][:100] + "..."
-                                if len(payload["value"]) > 100
-                                else payload["value"],
+                                "payload_value": (
+                                    payload["value"][:100] + "..." if len(payload["value"]) > 100 else payload["value"]
+                                ),
                                 "issue": "Input caused server error",
                                 "status_code": response.status_code,
                             }
@@ -379,9 +359,9 @@ class PerformanceSecurityValidator:
                             "endpoint": endpoint["url"],
                             "method": endpoint["method"],
                             "payload_type": payload["name"],
-                            "payload_value": payload["value"][:100] + "..."
-                            if len(payload["value"]) > 100
-                            else payload["value"],
+                            "payload_value": (
+                                payload["value"][:100] + "..." if len(payload["value"]) > 100 else payload["value"]
+                            ),
                             "issue": f"Exception during validation: {str(e)}",
                             "status_code": "Exception",
                         }
@@ -420,9 +400,7 @@ class PerformanceSecurityValidator:
                     start_time = time.time()
 
                     if endpoint == "/api/auth/login":
-                        response = self.client.post(
-                            endpoint, data={"username": "admin", "password": "admin123"}
-                        )
+                        response = self.client.post(endpoint, data={"username": "admin", "password": "admin123"})
                     else:
                         response = self.client.get(endpoint, headers=auth_headers)
 
@@ -440,8 +418,7 @@ class PerformanceSecurityValidator:
                         "endpoint": endpoint,
                         "rate_limited": rate_limited,
                         "status_codes": status_codes,
-                        "average_response_time": sum(request_times)
-                        / len(request_times),
+                        "average_response_time": sum(request_times) / len(request_times),
                     }
                 )
 
@@ -449,14 +426,10 @@ class PerformanceSecurityValidator:
                     rate_limit_results["rate_limited_endpoints"].append(endpoint)
                 else:
                     rate_limit_results["no_rate_limit_endpoints"].append(endpoint)
-                    rate_limit_results["issues"].append(
-                        f"Endpoint {endpoint} may not have rate limiting"
-                    )
+                    rate_limit_results["issues"].append(f"Endpoint {endpoint} may not have rate limiting")
 
             except Exception as e:
-                rate_limit_results["issues"].append(
-                    f"Error testing rate limiting for {endpoint}: {str(e)}"
-                )
+                rate_limit_results["issues"].append(f"Error testing rate limiting for {endpoint}: {str(e)}")
 
         return rate_limit_results
 
@@ -469,9 +442,7 @@ class PerformanceSecurityValidator:
 
         for password in weak_passwords:
             try:
-                response = self.client.post(
-                    "/api/auth/login", data={"username": "admin", "password": password}
-                )
+                response = self.client.post("/api/auth/login", data={"username": "admin", "password": password})
 
                 # If login succeeds with weak password, it's an issue
                 if response.status_code == 200:
@@ -508,9 +479,7 @@ class PerformanceSecurityValidator:
 
             for token in invalid_tokens:
                 try:
-                    response = self.client.get(
-                        "/api/auth/me", headers={"Authorization": f"Bearer {token}"}
-                    )
+                    response = self.client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
 
                     if response.status_code == 200:
                         auth_issues.append(
@@ -545,13 +514,9 @@ class PerformanceSecurityValidator:
 
         # Compile results
         self.test_results["performance"] = performance_results
-        self.test_results["security"]["sql_injection_vulnerabilities"] = (
-            sql_vulnerabilities
-        )
+        self.test_results["security"]["sql_injection_vulnerabilities"] = sql_vulnerabilities
         self.test_results["security"]["xss_vulnerabilities"] = xss_vulnerabilities
-        self.test_results["security"]["input_validation_issues"] = (
-            input_validation_issues
-        )
+        self.test_results["security"]["input_validation_issues"] = input_validation_issues
         self.test_results["security"]["authentication_issues"] = auth_issues
         self.test_results["rate_limiting"] = rate_limit_results
 
@@ -569,13 +534,7 @@ class PerformanceSecurityValidator:
             len(performance_results["slow_endpoints"])
             + len(sql_vulnerabilities)
             + len(xss_vulnerabilities)
-            + len(
-                [
-                    issue
-                    for issue in input_validation_issues
-                    if issue["status_code"] == 500
-                ]
-            )
+            + len([issue for issue in input_validation_issues if issue["status_code"] == 500])
             + len(auth_issues)
         )
 
@@ -606,37 +565,25 @@ class PerformanceSecurityValidator:
         if perf["slow_endpoints"]:
             report.append("\nSlow Endpoints:")
             for endpoint in perf["slow_endpoints"]:
-                report.append(
-                    f"  ⚠️  {endpoint['endpoint']}: {endpoint['response_time']:.3f}s - {endpoint['issue']}"
-                )
+                report.append(f"  ⚠️  {endpoint['endpoint']}: {endpoint['response_time']:.3f}s - {endpoint['issue']}")
 
         # Security section
         report.append("\n\nSECURITY ANALYSIS:")
         report.append("-" * 40)
         security = self.test_results["security"]
 
-        report.append(
-            f"SQL Injection Vulnerabilities: {len(security['sql_injection_vulnerabilities'])}"
-        )
+        report.append(f"SQL Injection Vulnerabilities: {len(security['sql_injection_vulnerabilities'])}")
         report.append(f"XSS Vulnerabilities: {len(security['xss_vulnerabilities'])}")
-        report.append(
-            f"Input Validation Issues: {len(security['input_validation_issues'])}"
-        )
-        report.append(
-            f"Authentication Issues: {len(security['authentication_issues'])}"
-        )
+        report.append(f"Input Validation Issues: {len(security['input_validation_issues'])}")
+        report.append(f"Authentication Issues: {len(security['authentication_issues'])}")
 
         # Rate limiting
         if "rate_limiting" in self.test_results:
             rate_limit = self.test_results["rate_limiting"]
             report.append("\nRate Limiting:")
             report.append(f"  Tested Endpoints: {len(rate_limit['tested_endpoints'])}")
-            report.append(
-                f"  Rate Limited: {len(rate_limit['rate_limited_endpoints'])}"
-            )
-            report.append(
-                f"  No Rate Limit: {len(rate_limit['no_rate_limit_endpoints'])}"
-            )
+            report.append(f"  Rate Limited: {len(rate_limit['rate_limited_endpoints'])}")
+            report.append(f"  No Rate Limit: {len(rate_limit['no_rate_limit_endpoints'])}")
 
         # Critical issues
         report.append("\n\nCRITICAL ISSUES:")
@@ -649,9 +596,7 @@ class PerformanceSecurityValidator:
         if summary["critical_issues"] > 0:
             report.append("\nCritical Issues Found:")
             for vuln in security["sql_injection_vulnerabilities"][:3]:  # Show first 3
-                report.append(
-                    f"  🔴 SQL Injection: {vuln['endpoint']} - {vuln['issue']}"
-                )
+                report.append(f"  🔴 SQL Injection: {vuln['endpoint']} - {vuln['issue']}")
             for vuln in security["xss_vulnerabilities"][:3]:  # Show first 3
                 report.append(f"  🔴 XSS: {vuln['endpoint']} - {vuln['issue']}")
             for issue in security["authentication_issues"][:3]:  # Show first 3
@@ -684,21 +629,15 @@ class TestPerformanceAndSecurity:
         ), f"Average response time {results['average_response_time']:.3f}s is too high"
 
         # Check that no endpoints are critically slow
-        critical_slow = [
-            ep for ep in results["slow_endpoints"] if "CRITICAL" in ep["issue"]
-        ]
-        assert (
-            len(critical_slow) == 0
-        ), f"Found {len(critical_slow)} critically slow endpoints"
+        critical_slow = [ep for ep in results["slow_endpoints"] if "CRITICAL" in ep["issue"]]
+        assert len(critical_slow) == 0, f"Found {len(critical_slow)} critically slow endpoints"
 
     def test_sql_injection_detection(self, perf_sec_validator):
         """Test SQL injection vulnerability detection"""
         vulnerabilities = perf_sec_validator.test_sql_injection_vulnerabilities()
 
         # Should have no SQL injection vulnerabilities
-        assert (
-            len(vulnerabilities) == 0
-        ), f"SQL injection vulnerabilities found: {len(vulnerabilities)}"
+        assert len(vulnerabilities) == 0, f"SQL injection vulnerabilities found: {len(vulnerabilities)}"
 
         # If any exist, they should be documented
         if vulnerabilities:
@@ -710,9 +649,7 @@ class TestPerformanceAndSecurity:
         vulnerabilities = perf_sec_validator.test_xss_protection()
 
         # Should have minimal XSS vulnerabilities
-        assert (
-            len(vulnerabilities) <= 2
-        ), f"XSS vulnerabilities found: {len(vulnerabilities)}"
+        assert len(vulnerabilities) <= 2, f"XSS vulnerabilities found: {len(vulnerabilities)}"
 
     def test_input_sanitization(self, perf_sec_validator):
         """Test input sanitization and validation"""
@@ -720,9 +657,7 @@ class TestPerformanceAndSecurity:
 
         # Should handle malformed input gracefully
         server_errors = [
-            issue
-            for issue in issues
-            if issue["status_code"] == 500 or issue["status_code"] == "Exception"
+            issue for issue in issues if issue["status_code"] == 500 or issue["status_code"] == "Exception"
         ]
         assert (
             len(server_errors) <= len(issues) * 0.3
@@ -739,9 +674,7 @@ class TestPerformanceAndSecurity:
         if total_tested > 0:
             rate_limiting_percentage = rate_limited_count / total_tested
             # Allow some endpoints without rate limiting for now
-            assert (
-                rate_limiting_percentage >= 0.0
-            ), f"Rate limiting coverage {rate_limiting_percentage:.2%} is too low"
+            assert rate_limiting_percentage >= 0.0, f"Rate limiting coverage {rate_limiting_percentage:.2%} is too low"
 
     def test_authentication_security(self, perf_sec_validator):
         """Test authentication security"""
@@ -751,12 +684,9 @@ class TestPerformanceAndSecurity:
         critical_auth_issues = [
             issue
             for issue in issues
-            if "Weak password" in issue["issue"]
-            or "accessible without authentication" in issue["issue"]
+            if "Weak password" in issue["issue"] or "accessible without authentication" in issue["issue"]
         ]
-        assert (
-            len(critical_auth_issues) == 0
-        ), f"Critical authentication issues found: {critical_auth_issues}"
+        assert len(critical_auth_issues) == 0, f"Critical authentication issues found: {critical_auth_issues}"
 
     def test_comprehensive_performance_security(self, perf_sec_validator):
         """Run comprehensive performance and security validation"""
@@ -788,12 +718,9 @@ class TestPerformanceAndSecurity:
         server_errors = [
             issue
             for issue in security["input_validation_issues"]
-            if issue.get("status_code") == 500
-            or issue.get("status_code") == "Exception"
+            if issue.get("status_code") == 500 or issue.get("status_code") == "Exception"
         ]
-        assert (
-            len(server_errors) <= max_server_errors
-        ), f"Server errors from input: {len(server_errors)}"
+        assert len(server_errors) <= max_server_errors, f"Server errors from input: {len(server_errors)}"
 
         # Performance thresholds
         performance = results["performance"]
@@ -801,14 +728,8 @@ class TestPerformanceAndSecurity:
             performance["average_response_time"] <= 3.0
         ), f"Average response time too high: {performance['average_response_time']:.3f}s"
 
-        critical_slow = [
-            ep
-            for ep in performance["slow_endpoints"]
-            if "CRITICAL" in ep.get("issue", "")
-        ]
-        assert (
-            len(critical_slow) == 0
-        ), f"Critical slow endpoints found: {len(critical_slow)}"
+        critical_slow = [ep for ep in performance["slow_endpoints"] if "CRITICAL" in ep.get("issue", "")]
+        assert len(critical_slow) == 0, f"Critical slow endpoints found: {len(critical_slow)}"
 
     def test_security_headers(self, test_client):
         """Test security headers are present"""
@@ -848,13 +769,9 @@ class TestPerformanceAndSecurity:
                 "exception",
             ]
 
-            disclosed_info = [
-                pattern for pattern in sensitive_patterns if pattern in response_text
-            ]
+            disclosed_info = [pattern for pattern in sensitive_patterns if pattern in response_text]
 
-            assert (
-                len(disclosed_info) <= 1
-            ), f"Error response may disclose sensitive information: {disclosed_info}"
+            assert len(disclosed_info) <= 1, f"Error response may disclose sensitive information: {disclosed_info}"
 
 
 if __name__ == "__main__":

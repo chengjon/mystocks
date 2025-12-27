@@ -92,9 +92,7 @@ class RequestRouter:
         for config in configs:
             self.register_route(config)
 
-    def find_route(
-        self, path: str, method: str, version: str = "v1"
-    ) -> Optional[RouteConfig]:
+    def find_route(self, path: str, method: str, version: str = "v1") -> Optional[RouteConfig]:
         """Find matching route for request
 
         Args:
@@ -295,9 +293,7 @@ class RequestRouterManager:
         router = self.get_router(config.version)
         router.register_route(config)
 
-    def find_route(
-        self, path: str, method: str, version: str = "v1"
-    ) -> Optional[RouteConfig]:
+    def find_route(self, path: str, method: str, version: str = "v1") -> Optional[RouteConfig]:
         """Find route across routers
 
         Args:
@@ -320,7 +316,4 @@ class RequestRouterManager:
         Returns:
             Dictionary of routes by version
         """
-        return {
-            version: router.get_routes_summary()
-            for version, router in self.routers.items()
-        }
+        return {version: router.get_routes_summary() for version, router in self.routers.items()}

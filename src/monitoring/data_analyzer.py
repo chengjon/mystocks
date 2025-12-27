@@ -140,9 +140,7 @@ class DataAnalyzer:
             # 返回异常点索引（-1表示异常）
             anomaly_indices = [i for i, pred in enumerate(predictions) if pred == -1]
 
-            logger.debug(
-                f"Detected {len(anomaly_indices)} anomalies out of {len(self.data_points)} points"
-            )
+            logger.debug(f"Detected {len(anomaly_indices)} anomalies out of {len(self.data_points)} points")
             return anomaly_indices
 
         except Exception as e:
@@ -174,7 +172,7 @@ class DataAnalyzer:
             y = np.array(values)
 
             # 计算斜率
-            n = len(x)
+            len(x)
             x_mean = np.mean(x)
             y_mean = np.mean(y)
 
@@ -259,9 +257,7 @@ class DataAnalyzer:
         return {
             "total_points": len(self.data_points),
             "rules": list(rules),
-            "time_range": min(timestamps).isoformat()
-            + " to "
-            + max(timestamps).isoformat(),
+            "time_range": min(timestamps).isoformat() + " to " + max(timestamps).isoformat(),
             "oldest_timestamp": min(timestamps).isoformat(),
             "newest_timestamp": max(timestamps).isoformat(),
         }

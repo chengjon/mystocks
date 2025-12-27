@@ -11,4 +11,3 @@ src/data_access.py:1205:4: R0912: Too many branches (21/15) (too-many-branches)
 
 ------------------------------------------------------------------
 Your code has been rated at 9.82/10 (previous run: 8.61/10, +1.21)
-

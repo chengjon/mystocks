@@ -159,15 +159,13 @@ class IntelligentThresholdManager:
 
         return results
 
-    async def optimize_threshold(
-        self, rule_name: str, optimization_methods: List[str] = None
-    ) -> OptimizationResult:
+    async def optimize_threshold(self, rule_name: str, optimization_methods: List[str] = None) -> OptimizationResult:
         """优化指定阈值"""
         if rule_name not in self.threshold_rules:
             raise ValueError(f"阈值规则 {rule_name} 不存在")
 
         rule = self.threshold_rules[rule_name]
-        analyzer = self.data_analyzers[rule_name]
+        self.data_analyzers[rule_name]
 
         # 获取历史数据
         values, timestamps = await self._get_metric_history(rule.metric_name)
@@ -180,9 +178,7 @@ class IntelligentThresholdManager:
                 confidence_score=0.1,
                 expected_improvement=0.0,
                 reasoning="历史数据不足，无法进行优化",
-                supporting_evidence=[
-                    f"需要至少{self.config['min_data_points']}个数据点"
-                ],
+                supporting_evidence=[f"需要至少{self.config['min_data_points']}个数据点"],
                 metadata={"data_points": len(values)},
             )
 
@@ -215,10 +211,8 @@ class IntelligentThresholdManager:
         # 聚类优化
         if "clustering" in optimization_methods:
             try:
-                cluster_result = (
-                    self.clustering_optimizer.optimize_threshold_clustering(
-                        values, rule.current_threshold, rule.threshold_type
-                    )
+                cluster_result = self.clustering_optimizer.optimize_threshold_clustering(
+                    values, rule.current_threshold, rule.threshold_type
                 )
                 results.append(cluster_result)
             except Exception as e:
@@ -237,9 +231,7 @@ class IntelligentThresholdManager:
             )
 
         # 选择最佳结果
-        best_result = max(
-            results, key=lambda r: r.confidence_score * r.expected_improvement
-        )
+        best_result = max(results, key=lambda r: r.confidence_score * r.expected_improvement)
 
         # 如果置信度足够高，应用新的阈值
         if best_result.confidence_score >= self.config["confidence_threshold"]:
@@ -247,9 +239,7 @@ class IntelligentThresholdManager:
 
         return best_result
 
-    async def _apply_threshold_optimization(
-        self, rule_name: str, optimization_result: OptimizationResult
-    ) -> None:
+    async def _apply_threshold_optimization(self, rule_name: str, optimization_result: OptimizationResult) -> None:
         """应用阈值优化结果"""
         if rule_name not in self.threshold_rules:
             return
@@ -283,9 +273,7 @@ class IntelligentThresholdManager:
 
         # 限制历史记录数量
         if len(self.adjustment_history) > self.config["max_history_size"]:
-            self.adjustment_history = self.adjustment_history[
-                -self.config["max_history_size"] :
-            ]
+            self.adjustment_history = self.adjustment_history[-self.config["max_history_size"] :]
 
         # 保存到数据库
         if self.monitoring_db:
@@ -299,9 +287,7 @@ class IntelligentThresholdManager:
             f"(置信度: {optimization_result.confidence_score:.2f})"
         )
 
-    async def _get_metric_history(
-        self, metric_name: str, hours_back: int = 24
-    ) -> tuple[List[float], List[datetime]]:
+    async def _get_metric_history(self, metric_name: str, hours_back: int = 24) -> tuple[List[float], List[datetime]]:
         """获取指标历史数据"""
         try:
             if self.monitoring_db:
@@ -309,9 +295,7 @@ class IntelligentThresholdManager:
                 end_time = datetime.now()
                 start_time = end_time - timedelta(hours=hours_back)
 
-                data = await self.monitoring_db.get_metrics_history(
-                    metric_name, start_time, end_time
-                )
+                data = await self.monitoring_db.get_metrics_history(metric_name, start_time, end_time)
 
                 if data:
                     values = [record["value"] for record in data]
@@ -343,9 +327,7 @@ class IntelligentThresholdManager:
         """获取所有阈值规则"""
         return self.threshold_rules.copy()
 
-    def get_adjustment_history(
-        self, rule_name: Optional[str] = None, limit: int = 100
-    ) -> List[ThresholdAdjustment]:
+    def get_adjustment_history(self, rule_name: Optional[str] = None, limit: int = 100) -> List[ThresholdAdjustment]:
         """获取调整历史"""
         history = self.adjustment_history
 
@@ -360,16 +342,10 @@ class IntelligentThresholdManager:
         """获取系统状态"""
         return {
             "total_rules": len(self.threshold_rules),
-            "active_rules": len(
-                [r for r in self.threshold_rules.values() if r.confidence_score > 0.5]
-            ),
+            "active_rules": len([r for r in self.threshold_rules.values() if r.confidence_score > 0.5]),
             "total_adjustments": len(self.adjustment_history),
             "recent_adjustments": len(
-                [
-                    adj
-                    for adj in self.adjustment_history
-                    if (datetime.now() - adj.timestamp).hours < 24
-                ]
+                [adj for adj in self.adjustment_history if (datetime.now() - adj.timestamp).hours < 24]
             ),
             "config": self.config,
             "database_connected": self.monitoring_db is not None,
@@ -384,14 +360,10 @@ class IntelligentThresholdManager:
                 results = await self.optimize_all_thresholds()
 
                 successful_optimizations = [
-                    r
-                    for r in results.values()
-                    if r.confidence_score >= self.config["confidence_threshold"]
+                    r for r in results.values() if r.confidence_score >= self.config["confidence_threshold"]
                 ]
 
-                logger.info(
-                    f"自动优化完成: {len(successful_optimizations)}/{len(results)} 个阈值被优化"
-                )
+                logger.info(f"自动优化完成: {len(successful_optimizations)}/{len(results)} 个阈值被优化")
 
             except Exception as e:
                 logger.error(f"自动优化循环出错: {e}")
@@ -399,9 +371,7 @@ class IntelligentThresholdManager:
             # 等待下一次优化
             await asyncio.sleep(self.config["optimization_interval"])
 
-    def analyze_metric_data(
-        self, metric_name: str, values: List[float]
-    ) -> Dict[str, Any]:
+    def analyze_metric_data(self, metric_name: str, values: List[float]) -> Dict[str, Any]:
         """分析指标数据"""
         if metric_name in self.data_analyzers:
             analyzer = self.data_analyzers[metric_name]

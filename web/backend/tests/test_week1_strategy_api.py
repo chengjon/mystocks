@@ -40,9 +40,7 @@ class TestStrategyCRUD:
         Test GET /api/v1/strategy/strategies?page=1&page_size=10
         Expected: 200 OK with pagination metadata
         """
-        response = test_client.get(
-            "/api/v1/strategy/strategies", params={"page": 1, "page_size": 10}
-        )
+        response = test_client.get("/api/v1/strategy/strategies", params={"page": 1, "page_size": 10})
 
         assert response.status_code == 200
         data = response.json()
@@ -55,9 +53,7 @@ class TestStrategyCRUD:
         Test GET /api/v1/strategy/strategies?status=active
         Expected: 200 OK with filtered results
         """
-        response = test_client.get(
-            "/api/v1/strategy/strategies", params={"status": "active"}
-        )
+        response = test_client.get("/api/v1/strategy/strategies", params={"status": "active"})
 
         assert response.status_code == 200
         data = response.json()
@@ -68,9 +64,7 @@ class TestStrategyCRUD:
         Test POST /api/v1/strategy/strategies
         Expected: 201 Created with strategy ID
         """
-        response = test_client.post(
-            "/api/v1/strategy/strategies", json=sample_strategy_data
-        )
+        response = test_client.post("/api/v1/strategy/strategies", json=sample_strategy_data)
 
         # Note: May return 201 (created) or error if database not available
         assert response.status_code in [
@@ -118,9 +112,7 @@ class TestStrategyCRUD:
         Test PUT /api/v1/strategy/strategies/{strategy_id}
         Expected: 404 Not Found for non-existent ID
         """
-        response = test_client.put(
-            "/api/v1/strategy/strategies/99999", json=sample_strategy_data
-        )
+        response = test_client.put("/api/v1/strategy/strategies/99999", json=sample_strategy_data)
 
         assert response.status_code in [404, 500]
 
@@ -160,9 +152,7 @@ class TestModelManagement:
             # Missing required fields
         }
 
-        response = test_client.post(
-            "/api/v1/strategy/models/train", json=incomplete_data
-        )
+        response = test_client.post("/api/v1/strategy/models/train", json=incomplete_data)
 
         assert response.status_code in [400, 422, 500]
 
@@ -171,9 +161,7 @@ class TestModelManagement:
         Test GET /api/v1/strategy/models/training/{task_id}/status
         Expected: 404 Not Found for invalid task ID
         """
-        response = test_client.get(
-            "/api/v1/strategy/models/training/invalid-task-id/status"
-        )
+        response = test_client.get("/api/v1/strategy/models/training/invalid-task-id/status")
 
         assert response.status_code in [404, 500]
 
@@ -204,9 +192,7 @@ class TestBacktestExecution:
             # Missing required fields like date range
         }
 
-        response = test_client.post(
-            "/api/v1/strategy/backtest/run", json=incomplete_data
-        )
+        response = test_client.post("/api/v1/strategy/backtest/run", json=incomplete_data)
 
         assert response.status_code in [400, 422, 500]
 
@@ -239,9 +225,7 @@ class TestStrategyAPIIntegration:
         Note: This test requires database connectivity
         """
         # Step 1: Create strategy
-        create_response = test_client.post(
-            "/api/v1/strategy/strategies", json=sample_strategy_data
-        )
+        create_response = test_client.post("/api/v1/strategy/strategies", json=sample_strategy_data)
 
         # Skip if database not available
         if create_response.status_code != 201:
@@ -253,9 +237,7 @@ class TestStrategyAPIIntegration:
         updated_data = sample_strategy_data.copy()
         updated_data["status"] = "active"
 
-        update_response = test_client.put(
-            f"/api/v1/strategy/strategies/{strategy_id}", json=updated_data
-        )
+        update_response = test_client.put(f"/api/v1/strategy/strategies/{strategy_id}", json=updated_data)
 
         assert update_response.status_code in [200, 500]
 
@@ -269,9 +251,7 @@ class TestStrategyAPIIntegration:
             assert data["id"] == strategy_id
 
         # Step 4: Delete strategy
-        delete_response = test_client.delete(
-            f"/api/v1/strategy/strategies/{strategy_id}"
-        )
+        delete_response = test_client.delete(f"/api/v1/strategy/strategies/{strategy_id}")
 
         assert delete_response.status_code in [200, 204, 500]
 

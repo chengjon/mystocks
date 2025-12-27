@@ -15,13 +15,11 @@
 """
 
 import ast
-import json
-import os
 import re
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 import logging
 
 # 设置日志
@@ -465,7 +463,7 @@ if __name__ == "__main__":
 - **潜在问题**: {", ".join(func.issues) if func.issues else "无"}
 """)
 
-            f.write(f"""
+            f.write("""
 ## 🐛 Bug预测
 
 ### 发现的问题

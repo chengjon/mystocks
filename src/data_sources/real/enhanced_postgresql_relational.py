@@ -70,9 +70,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         self._init_mappers()
 
         self._connection_pool_size = connection_pool_size
-        logger.info(
-            f"增强版PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})"
-        )
+        logger.info(f"增强版PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})")
 
     def _init_mappers(self):
         """初始化数据映射器"""
@@ -99,11 +97,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         """
         try:
             # 选择合适的映射器
-            mapper = (
-                self.mappers["watchlist"]
-                if include_stock_info
-                else self.mappers["watchlist_simple"]
-            )
+            mapper = self.mappers["watchlist"] if include_stock_info else self.mappers["watchlist_simple"]
 
             # 构建查询
             query = self.query_executor.create_query()
@@ -130,9 +124,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
                 )
             else:
                 query = (
-                    query.select(
-                        "id", "user_id", "symbol", "list_type", "note", "added_at"
-                    )
+                    query.select("id", "user_id", "symbol", "list_type", "note", "added_at")
                     .from_table("watchlist", "w")
                     .where("w.user_id = %s", user_id)
                     .where("w.list_type = %s", list_type)
@@ -155,9 +147,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"获取自选股失败: {e}")
             raise
 
-    def add_watchlist(
-        self, user_id: int, symbol: str, list_type: str = "favorite", note: str = ""
-    ) -> bool:
+    def add_watchlist(self, user_id: int, symbol: str, list_type: str = "favorite", note: str = "") -> bool:
         """添加自选股（增强版）"""
         try:
             # 构建插入查询
@@ -191,9 +181,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"添加自选股失败: {e}")
             return False
 
-    def update_watchlist(
-        self, user_id: int, symbol: str, note: str = None, list_type: str = None
-    ) -> bool:
+    def update_watchlist(self, user_id: int, symbol: str, note: str = None, list_type: str = None) -> bool:
         """更新自选股（增强版）"""
         try:
             query = self.query_executor.create_query()
@@ -206,10 +194,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
                 update_data["list_type"] = list_type
 
             query = (
-                query.update("watchlist")
-                .set(update_data)
-                .where("user_id = %s", user_id)
-                .where("symbol = %s", symbol)
+                query.update("watchlist").set(update_data).where("user_id = %s", user_id).where("symbol = %s", symbol)
             )
 
             # 执行更新
@@ -219,9 +204,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             if success:
                 logger.info(f"更新自选股成功: 用户{user_id}, 股票{symbol}")
             else:
-                logger.warning(
-                    f"更新自选股失败，记录不存在: 用户{user_id}, 股票{symbol}"
-                )
+                logger.warning(f"更新自选股失败，记录不存在: 用户{user_id}, 股票{symbol}")
 
             return success
 
@@ -233,11 +216,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         """删除自选股（增强版）"""
         try:
             query = self.query_executor.create_query()
-            query = (
-                query.delete_from("watchlist")
-                .where("user_id = %s", user_id)
-                .where("symbol = %s", symbol)
-            )
+            query = query.delete_from("watchlist").where("user_id = %s", user_id).where("symbol = %s", symbol)
 
             # 执行删除
             affected_rows = query.execute()
@@ -246,9 +225,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             if success:
                 logger.info(f"删除自选股成功: 用户{user_id}, 股票{symbol}")
             else:
-                logger.warning(
-                    f"删除自选股失败，记录不存在: 用户{user_id}, 股票{symbol}"
-                )
+                logger.warning(f"删除自选股失败，记录不存在: 用户{user_id}, 股票{symbol}")
 
             return success
 
@@ -269,11 +246,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapper = self.mappers["strategy_config"]
             query = self.query_executor.create_query()
 
-            query = (
-                query.select("*")
-                .from_table("strategy_configs")
-                .where("user_id = %s", user_id)
-            )
+            query = query.select("*").from_table("strategy_configs").where("user_id = %s", user_id)
 
             if strategy_type:
                 query = query.where("strategy_type = %s", strategy_type)
@@ -287,8 +260,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapped_results = mapper.map_rows(raw_results)
 
             logger.info(
-                f"获取策略配置成功: 用户{user_id}, 类型:{strategy_type}, "
-                f"状态:{status}, 数量:{len(mapped_results)}"
+                f"获取策略配置成功: 用户{user_id}, 类型:{strategy_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
             )
             return mapped_results
 
@@ -388,11 +360,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         """删除策略配置（增强版）"""
         try:
             query = self.query_executor.create_query()
-            query = (
-                query.delete_from("strategy_configs")
-                .where("id = %s", config_id)
-                .where("user_id = %s", user_id)
-            )
+            query = query.delete_from("strategy_configs").where("id = %s", config_id).where("user_id = %s", user_id)
 
             # 执行删除
             affected_rows = query.execute()
@@ -423,11 +391,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapper = self.mappers["risk_alert"]
             query = self.query_executor.create_query()
 
-            query = (
-                query.select("*")
-                .from_table("risk_alerts")
-                .where("user_id = %s", user_id)
-            )
+            query = query.select("*").from_table("risk_alerts").where("user_id = %s", user_id)
 
             if alert_type:
                 query = query.where("alert_type = %s", alert_type)
@@ -441,8 +405,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapped_results = mapper.map_rows(raw_results)
 
             logger.info(
-                f"获取风险预警成功: 用户{user_id}, 类型:{alert_type}, "
-                f"状态:{status}, 数量:{len(mapped_results)}"
+                f"获取风险预警成功: 用户{user_id}, 类型:{alert_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
             )
             return mapped_results
 
@@ -452,9 +415,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
 
     # ==================== 增强版用户配置管理 ====================
 
-    def get_user_config(
-        self, user_id: int, config_key: str
-    ) -> Optional[Dict[str, Any]]:
+    def get_user_config(self, user_id: int, config_key: str) -> Optional[Dict[str, Any]]:
         """获取用户配置（增强版）"""
         try:
             mapper = self.mappers["user_config"]
@@ -549,12 +510,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapper = self.mappers["stock_basic_info"]
             query = self.query_executor.create_query()
 
-            query = (
-                query.select("*")
-                .from_table("stock_basic_info")
-                .where("symbol = %s", symbol)
-                .limit(1)
-            )
+            query = query.select("*").from_table("stock_basic_info").where("symbol = %s", symbol).limit(1)
 
             # 执行查询并映射结果
             raw_results = query.fetch_all()
@@ -607,9 +563,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapper = self.mappers["industry_info"]
             query = self.query_executor.create_query()
 
-            query = (
-                query.select("*").from_table("industries").where("is_active = %s", True)
-            )
+            query = query.select("*").from_table("industries").where("is_active = %s", True)
 
             if parent_code:
                 query = query.where("parent_code = %s", parent_code)
@@ -620,9 +574,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             raw_results = query.fetch_all()
             mapped_results = mapper.map_rows(raw_results)
 
-            logger.info(
-                f"获取行业列表成功: 父级{parent_code}, 数量{len(mapped_results)}"
-            )
+            logger.info(f"获取行业列表成功: 父级{parent_code}, 数量{len(mapped_results)}")
             return mapped_results
 
         except Exception as e:
@@ -647,9 +599,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             raw_results = query.fetch_all()
             mapped_results = mapper.map_rows(raw_results)
 
-            logger.info(
-                f"获取概念板块成功: 最小热度{hot_level_min}, 数量{len(mapped_results)}"
-            )
+            logger.info(f"获取概念板块成功: 最小热度{hot_level_min}, 数量{len(mapped_results)}")
             return mapped_results
 
         except Exception as e:

@@ -110,9 +110,7 @@ class IntegratedMLService(MLServiceServicer):
     def _start_background_tasks(self):
         """启动后台任务"""
         # 训练任务监控线程
-        monitor_thread = threading.Thread(
-            target=self._monitor_training_tasks, daemon=True
-        )
+        monitor_thread = threading.Thread(target=self._monitor_training_tasks, daemon=True)
         monitor_thread.start()
 
         # 模型清理线程
@@ -139,9 +137,7 @@ class IntegratedMLService(MLServiceServicer):
                         # 检查任务超时
                         if task_info["status"] == "training":
                             start_time = datetime.fromisoformat(task_info["start_time"])
-                            if current_time - start_time > timedelta(
-                                seconds=self.config["training_timeout"]
-                            ):
+                            if current_time - start_time > timedelta(seconds=self.config["training_timeout"]):
                                 logger.warning(f"训练任务 {task_id} 超时")
                                 timeout_tasks.append(task_id)
 
@@ -159,9 +155,7 @@ class IntegratedMLService(MLServiceServicer):
             try:
                 time.sleep(3600)  # 每小时清理一次
 
-                cutoff_time = datetime.now() - timedelta(
-                    days=self.config["model_retention_days"]
-                )
+                cutoff_time = datetime.now() - timedelta(days=self.config["model_retention_days"])
 
                 with self.model_lock:
                     old_models = []
@@ -174,9 +168,7 @@ class IntegratedMLService(MLServiceServicer):
                     for model_id in old_models:
                         logger.info(f"删除过期模型: {model_id}")
                         # 删除模型文件
-                        model_path = (
-                            Path(self.config["model_save_path"]) / f"{model_id}.pkl"
-                        )
+                        model_path = Path(self.config["model_save_path"]) / f"{model_id}.pkl"
                         if model_path.exists():
                             model_path.unlink()
                         # 从内存中删除
@@ -195,22 +187,14 @@ class IntegratedMLService(MLServiceServicer):
                 time.sleep(60)  # 每分钟收集一次
 
                 # 记录统计信息
-                self.metrics_collector.record_custom_metric(
-                    "ml_models_trained", self.stats["total_models_trained"]
-                )
-                self.metrics_collector.record_custom_metric(
-                    "ml_predictions", self.stats["total_predictions"]
-                )
+                self.metrics_collector.record_custom_metric("ml_models_trained", self.stats["total_models_trained"])
+                self.metrics_collector.record_custom_metric("ml_predictions", self.stats["total_predictions"])
 
                 # GPU训练比例
-                total_training = (
-                    self.stats["gpu_training_count"] + self.stats["cpu_training_count"]
-                )
+                total_training = self.stats["gpu_training_count"] + self.stats["cpu_training_count"]
                 if total_training > 0:
                     gpu_ratio = self.stats["gpu_training_count"] / total_training * 100
-                    self.metrics_collector.record_custom_metric(
-                        "ml_gpu_training_ratio", gpu_ratio
-                    )
+                    self.metrics_collector.record_custom_metric("ml_gpu_training_ratio", gpu_ratio)
 
             except Exception as e:
                 logger.error(f"收集统计信息失败: {e}")
@@ -231,9 +215,7 @@ class IntegratedMLService(MLServiceServicer):
                         self.models[model_id] = {
                             "model": model_data["model"],
                             "metadata": model_data["metadata"],
-                            "created_at": model_data.get(
-                                "created_at", datetime.now().isoformat()
-                            ),
+                            "created_at": model_data.get("created_at", datetime.now().isoformat()),
                             "model_type": model_data.get("model_type", "unknown"),
                         }
 
@@ -247,9 +229,7 @@ class IntegratedMLService(MLServiceServicer):
         except Exception as e:
             logger.error(f"加载已保存模型失败: {e}")
 
-    def TrainModel(
-        self, request: TrainModelRequest, context: grpc.ServicerContext
-    ) -> TrainModelResponse:
+    def TrainModel(self, request: TrainModelRequest, context: grpc.ServicerContext) -> TrainModelResponse:
         """训练模型"""
         task_id = f"ml_train_{int(time.time())}_{hash(str(request))}"
 
@@ -269,11 +249,7 @@ class IntegratedMLService(MLServiceServicer):
 
             # 检查并发限制
             with self.task_lock:
-                active_training_count = sum(
-                    1
-                    for task in self.training_tasks.values()
-                    if task["status"] == "training"
-                )
+                active_training_count = sum(1 for task in self.training_tasks.values() if task["status"] == "training")
 
                 if active_training_count >= self.config["max_concurrent_training"]:
                     context.set_code(grpc.StatusCode.RESOURCE_EXHAUSTED)
@@ -294,7 +270,7 @@ class IntegratedMLService(MLServiceServicer):
                 }
 
             # 异步执行训练
-            future = self.executor.submit(self._execute_training, task_id, request)
+            self.executor.submit(self._execute_training, task_id, request)
 
             return TrainModelResponse(
                 task_id=task_id,
@@ -311,9 +287,7 @@ class IntegratedMLService(MLServiceServicer):
                 if task_id in self.training_tasks:
                     del self.training_tasks[task_id]
 
-            return TrainModelResponse(
-                task_id=task_id, status=TrainingStatus.FAILED, message=f"训练失败: {e}"
-            )
+            return TrainModelResponse(task_id=task_id, status=TrainingStatus.FAILED, message=f"训练失败: {e}")
 
     def _validate_training_request(self, request: TrainModelRequest) -> Dict[str, Any]:
         """验证训练请求"""
@@ -356,9 +330,7 @@ class IntegratedMLService(MLServiceServicer):
 
             # 分配GPU资源
             if self.config["enable_gpu_training"]:
-                gpu_id = self.gpu_manager.allocate_gpu(
-                    f"ml_train_{task_id}", priority="high", memory_required=2048
-                )
+                gpu_id = self.gpu_manager.allocate_gpu(f"ml_train_{task_id}", priority="high", memory_required=2048)
 
                 if gpu_id:
                     logger.info(f"训练任务 {task_id} 分配GPU: {gpu_id}")
@@ -390,9 +362,7 @@ class IntegratedMLService(MLServiceServicer):
                 self.training_tasks[task_id]["status"] = "completed"
                 self.training_tasks[task_id]["model_id"] = model_id
                 self.training_tasks[task_id]["metrics"] = metrics
-                self.training_tasks[task_id]["completed_at"] = (
-                    datetime.now().isoformat()
-                )
+                self.training_tasks[task_id]["completed_at"] = datetime.now().isoformat()
 
             self.stats["total_models_trained"] += 1
 
@@ -412,9 +382,7 @@ class IntegratedMLService(MLServiceServicer):
                 self.gpu_manager.release_gpu(f"ml_train_{task_id}", gpu_id)
                 logger.info(f"训练任务 {task_id} 释放GPU: {gpu_id}")
 
-    def _train_model_gpu(
-        self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict
-    ) -> Tuple[Any, Dict]:
+    def _train_model_gpu(self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict) -> Tuple[Any, Dict]:
         """GPU训练模型"""
         try:
             import cudf
@@ -489,9 +457,7 @@ class IntegratedMLService(MLServiceServicer):
             logger.error(f"GPU训练失败: {e}")
             raise e
 
-    def _train_model_cpu(
-        self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict
-    ) -> Tuple[Any, Dict]:
+    def _train_model_cpu(self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict) -> Tuple[Any, Dict]:
         """CPU训练模型"""
         try:
             from sklearn.linear_model import (
@@ -594,9 +560,7 @@ class IntegratedMLService(MLServiceServicer):
             logger.error(f"保存模型失败: {e}")
             raise e
 
-    def Predict(
-        self, request: PredictRequest, context: grpc.ServicerContext
-    ) -> PredictResponse:
+    def Predict(self, request: PredictRequest, context: grpc.ServicerContext) -> PredictResponse:
         """预测"""
         try:
             model_id = request.model_id
@@ -709,11 +673,7 @@ class IntegratedMLService(MLServiceServicer):
         """获取ML统计信息"""
         try:
             with self.task_lock:
-                active_training_count = sum(
-                    1
-                    for task in self.training_tasks.values()
-                    if task["status"] == "training"
-                )
+                active_training_count = sum(1 for task in self.training_tasks.values() if task["status"] == "training")
 
             stats = {
                 "timestamp": datetime.now().isoformat(),
@@ -723,21 +683,12 @@ class IntegratedMLService(MLServiceServicer):
                 "total_models": len(self.models),
                 "gpu_training_ratio": (
                     self.stats["gpu_training_count"]
-                    / (
-                        self.stats["gpu_training_count"]
-                        + self.stats["cpu_training_count"]
-                    )
+                    / (self.stats["gpu_training_count"] + self.stats["cpu_training_count"])
                     * 100
-                    if (
-                        self.stats["gpu_training_count"]
-                        + self.stats["cpu_training_count"]
-                    )
-                    > 0
+                    if (self.stats["gpu_training_count"] + self.stats["cpu_training_count"]) > 0
                     else 0
                 ),
-                "gpu_utilization": self.gpu_manager.get_gpu_stats().get(
-                    "utilization", 0
-                ),
+                "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
             }
 
             return json.dumps(stats, ensure_ascii=False)

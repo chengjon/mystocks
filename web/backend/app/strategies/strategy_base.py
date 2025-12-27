@@ -31,18 +31,14 @@ class StrategyBase(ABC):
     所有策略必须继承此类并实现execute()方法
     """
 
-    def __init__(
-        self, strategy_id: str, name: str, description: str, category: StrategyCategory
-    ):
+    def __init__(self, strategy_id: str, name: str, description: str, category: StrategyCategory):
         self.strategy_id = strategy_id
         self.name = name
         self.description = description
         self.category = category
 
     @abstractmethod
-    def execute(
-        self, symbol: str, start_date: str, end_date: str, parameters: Dict[str, Any]
-    ) -> pd.DataFrame:
+    def execute(self, symbol: str, start_date: str, end_date: str, parameters: Dict[str, Any]) -> pd.DataFrame:
         """
         执行策略生成交易信号
 
@@ -79,9 +75,7 @@ class StrategyRegistry:
         """注册策略"""
         strategy_instance = strategy_class()
         self._strategies[strategy_instance.strategy_id] = strategy_class
-        logger.info(
-            f"注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}"
-        )
+        logger.info(f"注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}")
 
     def get_strategy(self, strategy_id: str) -> Optional[StrategyBase]:
         """获取策略实例"""

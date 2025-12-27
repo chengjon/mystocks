@@ -190,28 +190,16 @@ class StrategyService:
 
             # 2. 获取股票历史数据
             days_needed = threshold + 300  # 多取一些数据以确保足够
-            start_date = (datetime.now() - timedelta(days=days_needed)).strftime(
-                "%Y%m%d"
-            )
-            end_date = (
-                datetime.now().strftime("%Y%m%d")
-                if check_date is None
-                else check_date.strftime("%Y%m%d")
-            )
+            start_date = (datetime.now() - timedelta(days=days_needed)).strftime("%Y%m%d")
+            end_date = datetime.now().strftime("%Y%m%d") if check_date is None else check_date.strftime("%Y%m%d")
 
-            df = self.get_stock_history(
-                symbol, start_date=start_date, end_date=end_date
-            )
+            df = self.get_stock_history(symbol, start_date=start_date, end_date=end_date)
 
             if df.empty:
                 return {"success": False, "message": f"未获取到股票{symbol}的历史数据"}
 
             # 3. 运行策略检查
-            check_datetime = (
-                datetime.combine(check_date, datetime.min.time())
-                if check_date
-                else None
-            )
+            check_datetime = datetime.combine(check_date, datetime.min.time()) if check_date else None
             match_result = strategy.check(symbol, df, check_datetime, threshold)
 
             # 4. 保存结果到数据库
@@ -221,11 +209,7 @@ class StrategyService:
 
                 # 获取最新价格和涨跌幅
                 latest_price = str(df.iloc[-1]["close"]) if not df.empty else None
-                change_percent = (
-                    str(df.iloc[-1]["p_change"])
-                    if "p_change" in df.columns and not df.empty
-                    else None
-                )
+                change_percent = str(df.iloc[-1]["p_change"]) if "p_change" in df.columns and not df.empty else None
 
                 # 检查是否已存在
                 existing = (
@@ -385,10 +369,7 @@ class StrategyService:
 
             # 排序和分页
             results = (
-                query.order_by(desc(StrategyResult.check_date), StrategyResult.symbol)
-                .limit(limit)
-                .offset(offset)
-                .all()
+                query.order_by(desc(StrategyResult.check_date), StrategyResult.symbol).limit(limit).offset(offset).all()
             )
 
             return [r.to_dict() for r in results]
@@ -400,18 +381,12 @@ class StrategyService:
         """获取所有策略定义"""
         db = self.SessionLocal()
         try:
-            strategies = (
-                db.query(StrategyDefinition)
-                .filter(StrategyDefinition.is_active == True)
-                .all()
-            )
+            strategies = db.query(StrategyDefinition).filter(StrategyDefinition.is_active == True).all()
             return [s.to_dict() for s in strategies]
         finally:
             db.close()
 
-    def get_matched_stocks(
-        self, strategy_code: str, check_date: date = None, limit: int = 100
-    ) -> List[Dict]:
+    def get_matched_stocks(self, strategy_code: str, check_date: date = None, limit: int = 100) -> List[Dict]:
         """
         获取匹配指定策略的股票列表
 

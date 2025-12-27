@@ -239,9 +239,7 @@ class TestColumnMapper:
             "custom_col2": "standard_col2",
         }
 
-        result = ColumnMapper.standardize_columns(
-            data, target_lang="en", custom_mapping=custom_mapping
-        )
+        result = ColumnMapper.standardize_columns(data, target_lang="en", custom_mapping=custom_mapping)
 
         # 测试自定义映射是否生效
         assert "standard_col1" in result.columns
@@ -249,9 +247,7 @@ class TestColumnMapper:
 
     def test_standardize_columns_custom_mapping_override(self):
         """测试自定义映射覆盖默认映射"""
-        data = pd.DataFrame(
-            {"日期": ["2023-01-01", "2023-01-02"], "股票代码": ["AAPL", "GOOGL"]}
-        )
+        data = pd.DataFrame({"日期": ["2023-01-01", "2023-01-02"], "股票代码": ["AAPL", "GOOGL"]})
 
         # 添加覆盖默认映射的自定义映射
         custom_mapping = {
@@ -259,9 +255,7 @@ class TestColumnMapper:
             "股票代码": "custom_symbol",
         }
 
-        result = ColumnMapper.standardize_columns(
-            data, target_lang="en", custom_mapping=custom_mapping
-        )
+        result = ColumnMapper.standardize_columns(data, target_lang="en", custom_mapping=custom_mapping)
 
         # 测试自定义映射是否覆盖默认映射
         assert "custom_date" in result.columns
@@ -497,9 +491,7 @@ class TestColumnMapperIntegration:
             ColumnMapper.standardize_columns(data, target_lang="invalid")
 
         # 测试空的自定义映射
-        result = ColumnMapper.standardize_columns(
-            data, target_lang="en", custom_mapping={}
-        )
+        result = ColumnMapper.standardize_columns(data, target_lang="en", custom_mapping={})
         assert "date" in result.columns
         assert "symbol" in result.columns
 

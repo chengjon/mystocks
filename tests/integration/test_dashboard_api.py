@@ -16,9 +16,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 # 添加项目根目录到Python路径
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 
@@ -84,9 +82,7 @@ class TestDashboardAPI:
     def test_get_dashboard_summary_with_date(self, client):
         """测试指定日期的仪表盘汇总"""
         trade_date = "2025-11-21"
-        response = client.get(
-            f"/api/dashboard/summary?user_id=1001&trade_date={trade_date}"
-        )
+        response = client.get(f"/api/dashboard/summary?user_id=1001&trade_date={trade_date}")
 
         assert response.status_code == 200
 

@@ -8,7 +8,7 @@
 """
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -16,15 +16,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from app.core.cache_manager import CacheManager
 from app.core.responses import (
     ErrorCodes,
-    ResponseMessages,
     create_error_response,
     create_health_response,
-    create_success_response,
 )
 from app.models.dashboard import (
-    DashboardRequest,
     DashboardResponse,
-    ErrorResponse,
     MarketIndexItem,
     MarketOverview,
     PortfolioSummary,

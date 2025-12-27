@@ -139,9 +139,7 @@ class MyStocksUnifiedManager:
 
         try:
             # 委托给DataManager
-            return self._data_manager.save_data(
-                classification, data, table_name, **kwargs
-            )
+            return self._data_manager.save_data(classification, data, table_name, **kwargs)
         except Exception as e:
             logger.error(f"保存数据失败: {classification} - {e}")
             # 故障恢复：加入队列
@@ -231,13 +229,9 @@ class MyStocksUnifiedManager:
         for i in range(0, total_rows, batch_size):
             batch_data = data.iloc[i : i + batch_size]
 
-            success = self.save_data_by_classification(
-                classification, batch_data, table_name, **kwargs
-            )
+            success = self.save_data_by_classification(classification, batch_data, table_name, **kwargs)
 
-            handler.record_batch_result(
-                batch_index=i // batch_size, success=success, row_count=len(batch_data)
-            )
+            handler.record_batch_result(batch_index=i // batch_size, success=success, row_count=len(batch_data))
 
             # 根据策略决定是否继续
             if not success and failure_strategy == BatchFailureStrategy.ROLLBACK:

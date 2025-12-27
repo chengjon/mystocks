@@ -69,9 +69,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
 
         # 日期范围：默认最近30天
         end_date = params.get("end_date", datetime.now().strftime("%Y-%m-%d"))
-        start_date = params.get(
-            "start_date", (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-        )
+        start_date = params.get("start_date", (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"))
 
         # 获取数据源和管理器
         data_source = _get_data_source(data_source_name)
@@ -90,9 +88,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
             logger.info("Fetching all A-share stock list...")
             try:
                 stock_list_df = data_source.get_stock_list()
-                symbols = stock_list_df["symbol"].tolist()[
-                    :100
-                ]  # 限制前100只股票避免超时
+                symbols = stock_list_df["symbol"].tolist()[:100]  # 限制前100只股票避免超时
                 logger.info(f"Found {len(symbols)} stocks to sync")
             except Exception as e:
                 logger.error(f"Failed to fetch stock list: {e}")
@@ -129,9 +125,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                 for symbol in symbols:
                     try:
                         # 获取日线数据
-                        kline_df = data_source.get_stock_daily(
-                            symbol, start_date, end_date
-                        )
+                        kline_df = data_source.get_stock_daily(symbol, start_date, end_date)
                         if not kline_df.empty:
                             # 保存到日线数据分类 → PostgreSQL (TimescaleDB hypertable)
                             manager.save_data_by_classification(
@@ -147,9 +141,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                 logger.error(f"K-line data sync error: {e}")
                 result["errors"].append(f"K-line sync error: {str(e)}")
 
-        logger.info(
-            f"Daily stock data sync completed: {result['records_synced']} records"
-        )
+        logger.info(f"Daily stock data sync completed: {result['records_synced']} records")
 
         # 如果有错误但成功同步了部分数据，标记为partial_success
         if result["errors"] and result["records_synced"] > 0:
@@ -211,9 +203,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
             if not stock_list_df.empty:
                 # 如果不包含退市股票，过滤掉退市的股票
                 if not include_delisted and "status" in stock_list_df.columns:
-                    stock_list_df = stock_list_df[
-                        stock_list_df["status"].str.contains("正常|上市", na=False)
-                    ]
+                    stock_list_df = stock_list_df[stock_list_df["status"].str.contains("正常|上市", na=False)]
 
                 # 保存股票列表到参考数据分类 → PostgreSQL
                 manager.save_data_by_classification(
@@ -227,9 +217,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
 
                 # 同步每只股票的详细信息（批量操作，限制数量避免超时）
                 symbols_to_sync = stock_list_df["symbol"].tolist()[:50]  # 限制50只
-                logger.info(
-                    f"Syncing detailed info for {len(symbols_to_sync)} stocks..."
-                )
+                logger.info(f"Syncing detailed info for {len(symbols_to_sync)} stocks...")
 
                 for symbol in symbols_to_sync:
                     try:
@@ -241,9 +229,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
                                 table_name="stock_info_detail",
                             )
                     except Exception as e:
-                        logger.warning(
-                            f"Failed to sync detailed info for {symbol}: {e}"
-                        )
+                        logger.warning(f"Failed to sync detailed info for {symbol}: {e}")
                         result["errors"].append(f"{symbol}: {str(e)}")
 
             else:
@@ -325,9 +311,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
 
         # 同步各类财务报表
         for report_type in report_types:
-            logger.info(
-                f"Syncing {report_type} statements for {len(symbols)} stocks..."
-            )
+            logger.info(f"Syncing {report_type} statements for {len(symbols)} stocks...")
 
             for symbol in symbols:
                 try:
@@ -336,21 +320,15 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                     # 根据报表类型调用不同的方法
                     if report_type == "income":
                         # 利润表
-                        financial_data = data_source.get_income_statement(
-                            symbol, report_date
-                        )
+                        financial_data = data_source.get_income_statement(symbol, report_date)
                         table_name = "income_statement"
                     elif report_type == "balance":
                         # 资产负债表
-                        financial_data = data_source.get_balance_sheet(
-                            symbol, report_date
-                        )
+                        financial_data = data_source.get_balance_sheet(symbol, report_date)
                         table_name = "balance_sheet"
                     elif report_type == "cashflow":
                         # 现金流量表
-                        financial_data = data_source.get_cashflow_statement(
-                            symbol, report_date
-                        )
+                        financial_data = data_source.get_cashflow_statement(symbol, report_date)
                         table_name = "cashflow_statement"
                     else:
                         logger.warning(f"Unknown report type: {report_type}")
@@ -368,19 +346,13 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
 
                 except AttributeError as e:
                     # 如果方法不存在，记录警告
-                    logger.warning(
-                        f"Financial adapter missing method for {report_type}: {e}"
-                    )
-                    result["errors"].append(
-                        f"{symbol} {report_type}: method not implemented"
-                    )
+                    logger.warning(f"Financial adapter missing method for {report_type}: {e}")
+                    result["errors"].append(f"{symbol} {report_type}: method not implemented")
                 except Exception as e:
                     logger.warning(f"Failed to sync {report_type} for {symbol}: {e}")
                     result["errors"].append(f"{symbol} {report_type}: {str(e)}")
 
-        logger.info(
-            f"Financial statements sync completed: {result['records_synced']} records"
-        )
+        logger.info(f"Financial statements sync completed: {result['records_synced']} records")
 
         # 如果有错误但成功同步了部分数据，标记为partial_success
         if result["errors"] and result["records_synced"] > 0:

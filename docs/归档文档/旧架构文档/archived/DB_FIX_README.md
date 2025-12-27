@@ -34,10 +34,10 @@ ERROR:DatabaseTableManager:Failed to create table daily_kline: function create_h
    # Ubuntu/Debian
    sudo apt-get update
    sudo apt-get install timescaledb-2-postgresql-17
-   
+
    # CentOS/RHEL
    sudo yum install timescaledb-2-postgresql-17
-   
+
    # 或者从源码安装
    git clone https://github.com/timescale/timescaledb.git
    cd timescaledb
@@ -50,7 +50,7 @@ ERROR:DatabaseTableManager:Failed to create table daily_kline: function create_h
    ```sql
    -- 连接到PostgreSQL
    psql -U your_username -d your_database
-   
+
    -- 启用TimescaleDB扩展
    CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
    ```

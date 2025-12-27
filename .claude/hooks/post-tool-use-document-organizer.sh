@@ -149,6 +149,68 @@ FILE_EXTENSION="${RELATIVE_PATH##*.}"
 FILE_BASENAME=$(basename "$RELATIVE_PATH")
 FILE_DIRNAME=$(dirname "$RELATIVE_PATH")
 
+# ===== 子模块和前端文件排除规则 =====
+# 排除目录关键字（路径包含这些关键字将被排除）
+EXCLUDED_DIR_KEYWORDS=("web" "css" "js" "frontend" "backend" "api" "services" "temp" "build" "dist" "node_modules")
+
+# 排除文件后缀（这些后缀的文件将被排除）
+EXCLUDED_FILE_EXTENSIONS=("html" "css" "js" "json" "xml" "yaml" "yml" "toml")
+
+# 特殊文件名排除（这些文件名将完全不被移动）
+EXCLUDED_FILE_NAMES=("README" "README.md" "readme" "readme.md" "Readme" "Readme.md")
+
+# 检查文件后缀是否在排除列表中
+IS_EXCLUDED_BY_EXTENSION=false
+for ext in "${EXCLUDED_FILE_EXTENSIONS[@]}"; do
+    if [ "$FILE_EXTENSION" = "$ext" ]; then
+        IS_EXCLUDED_BY_EXTENSION=true
+        debug_log "File excluded by extension: $FILE_EXTENSION"
+        break
+    fi
+done
+
+# 检查文件名是否在特殊排除列表中（README等）
+IS_EXCLUDED_BY_FILENAME=false
+if [ "$IS_EXCLUDED_BY_EXTENSION" = "false" ]; then
+    FILENAME_LOWER=$(echo "$FILE_BASENAME" | tr '[:upper:]' '[:lower:]')
+    for excluded_name in "${EXCLUDED_FILE_NAMES[@]}"; do
+        excluded_name_lower=$(echo "$excluded_name" | tr '[:upper:]' '[:lower:]')
+        if [ "$FILENAME_LOWER" = "$excluded_name_lower" ]; then
+            IS_EXCLUDED_BY_FILENAME=true
+            debug_log "File excluded by filename: $FILE_BASENAME (README files stay in place)"
+            break
+        fi
+    done
+fi
+
+# 检查路径是否包含排除目录关键字
+IS_EXCLUDED_BY_DIR_KEYWORD=false
+if [ "$IS_EXCLUDED_BY_EXTENSION" = "false" ]; then
+    # 转换为小写进行匹配（大小写不敏感）
+    RELATIVE_PATH_LOWER=$(echo "$RELATIVE_PATH" | tr '[:upper:]' '[:lower:]')
+    for keyword in "${EXCLUDED_DIR_KEYWORDS[@]}"; do
+        keyword_lower=$(echo "$keyword" | tr '[:upper:]' '[:lower:]')
+        if [[ "$RELATIVE_PATH_LOWER" == *"/$keyword_lower/"* ]] || [[ "$RELATIVE_PATH_LOWER" == "$keyword_lower/"* ]]; then
+            IS_EXCLUDED_BY_DIR_KEYWORD=true
+            debug_log "File excluded by directory keyword: $keyword in $RELATIVE_PATH"
+            break
+        fi
+    done
+fi
+
+# 如果文件被排除，直接返回空结果（不提供任何整理建议）
+if [ "$IS_EXCLUDED_BY_EXTENSION" = "true" ] || [ "$IS_EXCLUDED_BY_FILENAME" = "true" ] || [ "$IS_EXCLUDED_BY_DIR_KEYWORD" = "true" ]; then
+    debug_log "File excluded from document organization checks"
+    cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse"
+  }
+}
+EOF
+    exit 0
+fi
+
 # ===== 只检查文档文件 =====
 DOC_EXTENSIONS=("md" "txt" "rst" "adoc" "org")
 IS_DOC=false

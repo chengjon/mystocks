@@ -180,9 +180,7 @@ class BaseOptimizer(ABC):
         self._data_source = None
         self._market_data = None
 
-        logger.info(
-            f"优化器初始化: 策略={strategy_type}, 目标={objective}, 参数数={len(parameter_spaces)}"
-        )
+        logger.info(f"优化器初始化: 策略={strategy_type}, 目标={objective}, 参数数={len(parameter_spaces)}")
 
     def set_backtest_engine(self, engine):
         """设置回测引擎"""
@@ -327,9 +325,7 @@ class BaseOptimizer(ABC):
                     self.best_result = result
 
     @abstractmethod
-    def optimize(
-        self, market_data: Dict[str, Any] = None, **kwargs
-    ) -> List[OptimizationResult]:
+    def optimize(self, market_data: Dict[str, Any] = None, **kwargs) -> List[OptimizationResult]:
         """
         执行参数优化
 
@@ -378,9 +374,7 @@ class BaseOptimizer(ABC):
             "best_score": max(scores) if self.maximize else min(scores),
             "worst_score": min(scores) if self.maximize else max(scores),
             "avg_score": sum(scores) / len(scores),
-            "best_parameters": self.best_result.parameters
-            if self.best_result
-            else None,
+            "best_parameters": self.best_result.parameters if self.best_result else None,
             "total_time": sum(r.optimization_time for r in self.results),
         }
 

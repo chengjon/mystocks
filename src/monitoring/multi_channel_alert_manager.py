@@ -160,17 +160,13 @@ class AlertHandler:
         self.success_count = 0
         self.failure_count = 0
         self.last_sent_time: Optional[datetime] = None
-        self.rate_limiter = (
-            RateLimiter(config.rate_limit) if config.rate_limit > 0 else None
-        )
+        self.rate_limiter = RateLimiter(config.rate_limit) if config.rate_limit > 0 else None
 
     async def handle_alert(self, alert: Alert) -> bool:
         """处理告警"""
         try:
             # 检查严重级别过滤
-            if alert.severity.value.lower() not in [
-                s.lower() for s in self.config.severity_filter
-            ]:
+            if alert.severity.value.lower() not in [s.lower() for s in self.config.severity_filter]:
                 return False
 
             # 检查启用状态
@@ -216,12 +212,8 @@ class AlertHandler:
             "success_count": self.success_count,
             "failure_count": self.failure_count,
             "success_rate": f"{success_rate:.1f}%",
-            "last_sent": self.last_sent_time.isoformat()
-            if self.last_sent_time
-            else None,
-            "rate_limited": self.rate_limiter.is_limited()
-            if self.rate_limiter
-            else False,
+            "last_sent": self.last_sent_time.isoformat() if self.last_sent_time else None,
+            "rate_limited": self.rate_limiter.is_limited() if self.rate_limiter else False,
         }
 
     async def _send_alert(self, alert: Alert) -> bool:
@@ -361,13 +353,9 @@ class EmailAlertHandler(AlertHandler):
         def _send():
             try:
                 if self.email_config.use_ssl:
-                    server = smtplib.SMTP_SSL(
-                        self.email_config.smtp_server, self.email_config.smtp_port
-                    )
+                    server = smtplib.SMTP_SSL(self.email_config.smtp_server, self.email_config.smtp_port)
                 else:
-                    server = smtplib.SMTP(
-                        self.email_config.smtp_server, self.email_config.smtp_port
-                    )
+                    server = smtplib.SMTP(self.email_config.smtp_server, self.email_config.smtp_port)
                     if self.email_config.use_tls:
                         context = ssl.create_default_context()
                         server.starttls(context=context)
@@ -407,42 +395,30 @@ class WebhookAlertHandler(AlertHandler):
             # 发送请求
             async with aiohttp.ClientSession(
                 timeout=aiohttp.ClientTimeout(total=self.webhook_config.timeout),
-                connector=aiohttp.TCPConnector(
-                    verify_ssl=self.webhook_config.verify_ssl
-                ),
+                connector=aiohttp.TCPConnector(verify_ssl=self.webhook_config.verify_ssl),
             ) as session:
                 headers = self.webhook_config.headers.copy()
 
                 # 添加认证头
                 if self.webhook_config.auth_config:
                     if "bearer" in self.webhook_config.auth_config:
-                        headers["Authorization"] = (
-                            f"Bearer {self.webhook_config.auth_config['bearer']}"
-                        )
+                        headers["Authorization"] = f"Bearer {self.webhook_config.auth_config['bearer']}"
                     elif "api_key" in self.webhook_config.auth_config:
-                        headers["X-API-Key"] = self.webhook_config.auth_config[
-                            "api_key"
-                        ]
+                        headers["X-API-Key"] = self.webhook_config.auth_config["api_key"]
 
                 async with session.request(
                     method=self.webhook_config.method,
                     url=self.webhook_config.url,
                     headers=headers,
-                    json=payload_data
-                    if self.webhook_config.method.upper() == "POST"
-                    else None,
-                    data=payload_data
-                    if self.webhook_config.method.upper() != "POST"
-                    else None,
+                    json=payload_data if self.webhook_config.method.upper() == "POST" else None,
+                    data=payload_data if self.webhook_config.method.upper() != "POST" else None,
                 ) as response:
                     if response.status < 400:
                         logger.info(f"Webhook告警发送成功: {self.webhook_config.url}")
                         return True
                     else:
                         error_text = await response.text()
-                        logger.error(
-                            f"Webhook请求失败: HTTP {response.status} - {error_text}"
-                        )
+                        logger.error(f"Webhook请求失败: HTTP {response.status} - {error_text}")
                         return False
 
         except asyncio.TimeoutError:
@@ -512,17 +488,13 @@ class LogAlertHandler(AlertHandler):
                 encoding="utf-8",
             )
 
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 
         except ImportError:
             # 简单的文件处理器（无轮转）
-            file_handler = logging.FileHandler(
-                self.log_config.file_path, encoding="utf-8"
-            )
+            file_handler = logging.FileHandler(self.log_config.file_path, encoding="utf-8")
             self.logger.addHandler(file_handler)
 
         # 设置日志级别
@@ -596,9 +568,7 @@ class RateLimiter:
         """检查是否被限制"""
         now = datetime.now()
         hour_ago = now - timedelta(hours=1)
-        recent_requests = [
-            req_time for req_time in self.requests if req_time > hour_ago
-        ]
+        recent_requests = [req_time for req_time in self.requests if req_time > hour_ago]
         return len(recent_requests) >= self.max_requests
 
 
@@ -664,9 +634,7 @@ class MultiChannelAlertManager:
         results = {}
 
         # 按优先级排序处理器
-        sorted_handlers = sorted(
-            self.handlers.values(), key=lambda h: h.config.priority
-        )
+        sorted_handlers = sorted(self.handlers.values(), key=lambda h: h.config.priority)
 
         # 并发发送到所有处理器
         tasks = []
@@ -749,12 +717,8 @@ class MultiChannelAlertManager:
 
         # 整体统计
         total_alerts = len(self.alert_history)
-        successful_alerts = sum(
-            1 for entry in self.alert_history if entry["success_count"] > 0
-        )
-        failed_alerts = sum(
-            1 for entry in self.alert_history if entry["success_count"] == 0
-        )
+        successful_alerts = sum(1 for entry in self.alert_history if entry["success_count"] > 0)
+        failed_alerts = sum(1 for entry in self.alert_history if entry["success_count"] == 0)
 
         # 处理器统计
         handler_stats = {}
@@ -780,9 +744,7 @@ class MultiChannelAlertManager:
             "handler_statistics": handler_stats,
             "severity_distribution": severity_stats,
             "recent_alerts": recent_alerts,
-            "active_handlers": len(
-                [h for h in self.handlers.values() if h.config.enabled]
-            ),
+            "active_handlers": len([h for h in self.handlers.values() if h.config.enabled]),
             "total_handlers": len(self.handlers),
         }
 
@@ -987,9 +949,7 @@ if __name__ == "__main__":
             smtp_server="smtp.gmail.com",
             smtp_port=587,
             username="your_email@gmail.com",
-            password=os.getenv(
-                "SMTP_PASSWORD"
-            ),  # Should be set via environment variable
+            password=os.getenv("SMTP_PASSWORD"),  # Should be set via environment variable
             from_email="mystocks@system.com",
             to_emails=["admin@company.com", "ops@company.com"],
         )
@@ -997,9 +957,7 @@ if __name__ == "__main__":
         manager.add_email_handler("email_alerts", email_config, priority=1)
 
         # 添加Webhook处理器
-        webhook_config = WebhookConfig(
-            url="https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK", method="POST"
-        )
+        webhook_config = WebhookConfig(url="https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK", method="POST")
 
         manager.add_webhook_handler("slack_alerts", webhook_config, priority=2)
 

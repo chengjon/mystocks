@@ -42,15 +42,11 @@ def _get_safe_table_name(query_name: str) -> str:
     """
     table_name = ALLOWED_QUERY_TABLES.get(query_name)
     if not table_name:
-        raise ValueError(
-            f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}"
-        )
+        raise ValueError(f"Invalid query_name: {query_name}. Must be one of {list(ALLOWED_QUERY_TABLES.keys())}")
     return table_name
 
 
-@shared_task(
-    name="wencai.refresh_query", bind=True, max_retries=3, default_retry_delay=60
-)
+@shared_task(name="wencai.refresh_query", bind=True, max_retries=3, default_retry_delay=60)
 def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
     """
     刷新单个问财查询（后台任务）
@@ -87,9 +83,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
         }
 
     except Exception as e:
-        logger.error(
-            f"[Celery Task] Refresh failed for {query_name}: {str(e)}", exc_info=True
-        )
+        logger.error(f"[Celery Task] Refresh failed for {query_name}: {str(e)}", exc_info=True)
 
         # 重试机制
         if self.request.retries < self.max_retries:
@@ -108,9 +102,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
 
 
 @shared_task(name="wencai.scheduled_refresh_all")
-def scheduled_refresh_all_queries(
-    pages: int = 1, active_only: bool = True
-) -> Dict[str, Any]:
+def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> Dict[str, Any]:
     """
     定时刷新所有查询（每日任务）
 
@@ -121,10 +113,7 @@ def scheduled_refresh_all_queries(
     Returns:
         批量执行结果统计
     """
-    logger.info(
-        f"[Celery Task] Starting scheduled refresh all queries, "
-        f"pages={pages}, active_only={active_only}"
-    )
+    logger.info(f"[Celery Task] Starting scheduled refresh all queries, " f"pages={pages}, active_only={active_only}")
 
     db = SessionLocal()
     results = {
@@ -167,9 +156,7 @@ def scheduled_refresh_all_queries(
 
             except Exception as e:
                 results["failed"] += 1
-                results["details"].append(
-                    {"query_name": query_name, "success": False, "error": str(e)}
-                )
+                results["details"].append({"query_name": query_name, "success": False, "error": str(e)})
 
                 logger.error(f"❌ {query_name}: {str(e)}")
 
@@ -205,9 +192,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
     Returns:
         清理统计结果
     """
-    logger.info(
-        f"[Celery Task] Starting cleanup old data, days={days}, dry_run={dry_run}"
-    )
+    logger.info(f"[Celery Task] Starting cleanup old data, days={days}, dry_run={dry_run}")
 
     results = {
         "started_at": datetime.now().isoformat(),
@@ -241,37 +226,23 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
             try:
                 with engine.connect() as conn:
                     # 统计将被删除的记录数
-                    count_query = text(
-                        f"SELECT COUNT(*) as cnt FROM {table_name} "
-                        f"WHERE fetch_time < :cutoff_date"
-                    )
-                    count_result = conn.execute(
-                        count_query, {"cutoff_date": cutoff_date}
-                    )
+                    count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
+                    count_result = conn.execute(count_query, {"cutoff_date": cutoff_date})
                     delete_count = count_result.scalar()
 
                     if delete_count > 0:
                         if not dry_run:
                             # 实际删除
-                            delete_query = text(
-                                f"DELETE FROM {table_name} "
-                                f"WHERE fetch_time < :cutoff_date"
-                            )
+                            delete_query = text(f"DELETE FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
                             conn.execute(delete_query, {"cutoff_date": cutoff_date})
                             conn.commit()
 
-                            logger.info(
-                                f"✅ {table_name}: Deleted {delete_count} records"
-                            )
+                            logger.info(f"✅ {table_name}: Deleted {delete_count} records")
                         else:
-                            logger.info(
-                                f"[DRY RUN] {table_name}: Would delete {delete_count} records"
-                            )
+                            logger.info(f"[DRY RUN] {table_name}: Would delete {delete_count} records")
 
                         results["total_deleted"] += delete_count
-                        results["details"].append(
-                            {"table": table_name, "deleted": delete_count}
-                        )
+                        results["details"].append({"table": table_name, "deleted": delete_count})
 
             except Exception as e:
                 logger.error(f"Failed to cleanup {table_name}: {str(e)}")
@@ -341,10 +312,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                         "WHERE table_schema = DATABASE() "
                         "AND table_name = :table_name"
                     )
-                    exists = (
-                        conn.execute(check_query, {"table_name": table_name}).scalar()
-                        > 0
-                    )
+                    exists = conn.execute(check_query, {"table_name": table_name}).scalar() > 0
 
                     if exists:
                         # 统计记录数
@@ -352,9 +320,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                         record_count = conn.execute(count_query).scalar()
 
                         # 获取最新fetch_time
-                        latest_query = text(
-                            f"SELECT MAX(fetch_time) as latest FROM {table_name}"
-                        )
+                        latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {table_name}")
                         latest_fetch = conn.execute(latest_query).scalar()
 
                         stats["total_records"] += record_count
@@ -363,9 +329,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                                 "query_name": query_name,
                                 "table_name": table_name,
                                 "record_count": record_count,
-                                "latest_fetch": (
-                                    latest_fetch.isoformat() if latest_fetch else None
-                                ),
+                                "latest_fetch": (latest_fetch.isoformat() if latest_fetch else None),
                             }
                         )
 
@@ -374,9 +338,7 @@ def get_wencai_stats() -> Dict[str, Any]:
 
         engine.dispose()
 
-        logger.info(
-            f"[Celery Task] Stats completed: {stats['total_records']} total records"
-        )
+        logger.info(f"[Celery Task] Stats completed: {stats['total_records']} total records")
 
         return stats
 

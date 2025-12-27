@@ -110,9 +110,7 @@ class TestMetricsMonitor:
         code_files = ["src/main.py", "src/services.py", "src/utils.py"]
 
         # 计算质量指标
-        suite_metrics = self.quality_metrics.calculate_test_suite_metrics(
-            test_results, code_files
-        )
+        suite_metrics = self.quality_metrics.calculate_test_suite_metrics(test_results, code_files)
 
         if suite_metrics:
             # 生成可视化数据
@@ -153,27 +151,18 @@ class TestMetricsMonitor:
                 test_name=f"Monitoring Test {i + 1}",
                 status=status,
                 duration=duration,
-                timestamp=datetime.now()
-                - timedelta(seconds=np.random.randint(0, 3600)),
-                error_message=f"Monitor error {i}"
-                if status in ["failed", "error"]
-                else None,
+                timestamp=datetime.now() - timedelta(seconds=np.random.randint(0, 3600)),
+                error_message=f"Monitor error {i}" if status in ["failed", "error"] else None,
                 metadata={
-                    "error_type": np.random.choice(
-                        ["assertion", "timeout", "network", "unknown"]
-                    ),
-                    "category": np.random.choice(
-                        ["unit", "integration", "e2e", "performance"]
-                    ),
+                    "error_type": np.random.choice(["assertion", "timeout", "network", "unknown"]),
+                    "category": np.random.choice(["unit", "integration", "e2e", "performance"]),
                 },
             )
             test_results.append(test_result)
 
         return test_results
 
-    def _generate_visualizations(
-        self, suite_metrics: TestSuiteMetrics
-    ) -> Dict[str, MetricVisualization]:
+    def _generate_visualizations(self, suite_metrics: TestSuiteMetrics) -> Dict[str, MetricVisualization]:
         """生成可视化数据"""
         visualizations = {}
 
@@ -329,9 +318,7 @@ class TestMetricsMonitor:
         )
         alerts.append(alert)
 
-    def _check_anomaly_alerts(
-        self, suite_metrics: TestSuiteMetrics, alerts: List[QualityAlert]
-    ):
+    def _check_anomaly_alerts(self, suite_metrics: TestSuiteMetrics, alerts: List[QualityAlert]):
         """检查异常告警"""
         # 检查测试执行时间异常
         durations = [r.duration for r in suite_metrics.test_results]
@@ -340,11 +327,7 @@ class TestMetricsMonitor:
             std_duration = statistics.stdev(durations) if len(durations) > 1 else 0
 
             # 检查是否有异常慢的测试
-            slow_tests = [
-                r
-                for r in suite_metrics.test_results
-                if r.duration > avg_duration + 3 * std_duration
-            ]
+            slow_tests = [r for r in suite_metrics.test_results if r.duration > avg_duration + 3 * std_duration]
             if slow_tests:
                 slow_test_ids = [t.test_id for t in slow_tests[:3]]
                 alert = QualityAlert(
@@ -364,8 +347,7 @@ class TestMetricsMonitor:
         self.alerts = [
             alert
             for alert in self.alerts
-            if not alert.is_resolved
-            or (alert.is_resolved and (datetime.now() - alert.resolution_time).days < 7)
+            if not alert.is_resolved or (alert.is_resolved and (datetime.now() - alert.resolution_time).days < 7)
         ]
 
     def _record_monitoring_event(
@@ -381,9 +363,7 @@ class TestMetricsMonitor:
             "visualizations": {k: v.__dict__ for k, v in visualizations.items()},
             "alert_count": len(alerts),
             "alert_levels": {
-                alert.alert_level.value: len(
-                    [a for a in alerts if a.alert_level == alert.alert_level]
-                )
+                alert.alert_level.value: len([a for a in alerts if a.alert_level == alert.alert_level])
                 for alert in alerts
             },
         }
@@ -393,9 +373,7 @@ class TestMetricsMonitor:
         if len(self.monitoring_history) > 100:
             self.monitoring_history = self.monitoring_history[-100:]
 
-    def _print_monitoring_summary(
-        self, suite_metrics: TestSuiteMetrics, alerts: List[QualityAlert]
-    ):
+    def _print_monitoring_summary(self, suite_metrics: TestSuiteMetrics, alerts: List[QualityAlert]):
         """打印监控摘要"""
         print("\n📊 质量指标监控摘要")
         print(f"   ┌─ 综合质量得分: {suite_metrics.quality_score:.1f}")
@@ -430,34 +408,20 @@ class TestMetricsMonitor:
             "alerts": {
                 "total": len(self.alerts),
                 "by_level": {
-                    level.value: len([a for a in self.alerts if a.alert_level == level])
-                    for level in AlertLevel
+                    level.value: len([a for a in self.alerts if a.alert_level == level]) for level in AlertLevel
                 },
                 "active": len([a for a in self.alerts if not a.is_resolved]),
                 "recent_alerts": [a.__dict__ for a in self.alerts[-5:]],
             },
             "historical_trends": {
-                "timestamps": [
-                    e["timestamp"].strftime("%Y-%m-%d %H:%M")
-                    for e in self.monitoring_history[-20:]
-                ],
-                "quality_scores": [
-                    e["suite_metrics"]["quality_score"]
-                    for e in self.monitoring_history[-20:]
-                ],
-                "pass_rates": [
-                    e["suite_metrics"]["pass_rate"]
-                    for e in self.monitoring_history[-20:]
-                ],
+                "timestamps": [e["timestamp"].strftime("%Y-%m-%d %H:%M") for e in self.monitoring_history[-20:]],
+                "quality_scores": [e["suite_metrics"]["quality_score"] for e in self.monitoring_history[-20:]],
+                "pass_rates": [e["suite_metrics"]["pass_rate"] for e in self.monitoring_history[-20:]],
                 "coverage_percentages": [
-                    e["suite_metrics"]["coverage_percentage"]
-                    for e in self.monitoring_history[-20:]
+                    e["suite_metrics"]["coverage_percentage"] for e in self.monitoring_history[-20:]
                 ],
             },
-            "visualizations": {
-                name: viz.__dict__
-                for name, viz in latest_event.get("visualizations", {}).items()
-            },
+            "visualizations": {name: viz.__dict__ for name, viz in latest_event.get("visualizations", {}).items()},
             "system_health": self._assess_system_health(),
         }
 
@@ -469,47 +433,23 @@ class TestMetricsMonitor:
         # 基于最近的监控数据评估
         recent_events = self.monitoring_history[-10:]  # 最近10次检查
 
-        avg_quality = statistics.mean(
-            [e["suite_metrics"]["quality_score"] for e in recent_events]
-        )
-        avg_pass_rate = statistics.mean(
-            [e["suite_metrics"]["pass_rate"] for e in recent_events]
-        )
-        avg_coverage = statistics.mean(
-            [e["suite_metrics"]["coverage_percentage"] for e in recent_events]
-        )
+        avg_quality = statistics.mean([e["suite_metrics"]["quality_score"] for e in recent_events])
+        avg_pass_rate = statistics.mean([e["suite_metrics"]["pass_rate"] for e in recent_events])
+        avg_coverage = statistics.mean([e["suite_metrics"]["coverage_percentage"] for e in recent_events])
 
         # 计算稳定性
         quality_stability = (
-            100
-            - statistics.stdev(
-                [e["suite_metrics"]["quality_score"] for e in recent_events]
-            )
+            100 - statistics.stdev([e["suite_metrics"]["quality_score"] for e in recent_events])
             if len(recent_events) > 1
             else 100
         )
 
         # 确定健康状态
-        if (
-            avg_quality >= 90
-            and avg_pass_rate >= 95
-            and avg_coverage >= 85
-            and quality_stability >= 90
-        ):
+        if avg_quality >= 90 and avg_pass_rate >= 95 and avg_coverage >= 85 and quality_stability >= 90:
             health_status = "excellent"
-        elif (
-            avg_quality >= 80
-            and avg_pass_rate >= 90
-            and avg_coverage >= 80
-            and quality_stability >= 80
-        ):
+        elif avg_quality >= 80 and avg_pass_rate >= 90 and avg_coverage >= 80 and quality_stability >= 80:
             health_status = "good"
-        elif (
-            avg_quality >= 70
-            and avg_pass_rate >= 85
-            and avg_coverage >= 75
-            and quality_stability >= 70
-        ):
+        elif avg_quality >= 70 and avg_pass_rate >= 85 and avg_coverage >= 75 and quality_stability >= 70:
             health_status = "fair"
         else:
             health_status = "poor"
@@ -550,16 +490,12 @@ class TestMetricsMonitor:
 
         return recommendations
 
-    def export_monitoring_report(
-        self, format: str = "json", file_path: str = None
-    ) -> str:
+    def export_monitoring_report(self, format: str = "json", file_path: str = None) -> str:
         """导出监控报告"""
         dashboard_data = self.get_monitoring_dashboard()
 
         if format == "json":
-            output = json.dumps(
-                dashboard_data, ensure_ascii=False, indent=2, default=str
-            )
+            output = json.dumps(dashboard_data, ensure_ascii=False, indent=2, default=str)
         elif format == "html":
             output = self._generate_html_monitoring_report(dashboard_data)
         else:
@@ -660,9 +596,7 @@ class TestMetricsMonitor:
         # 生成告警表格
         alert_table = ""
         for level, count in alerts["by_level"].items():
-            active_count = len(
-                [a for a in alerts["recent_alerts"] if a.get("alert_level") == level]
-            )
+            active_count = len([a for a in alerts["recent_alerts"] if a.get("alert_level") == level])
             alert_table += f"<tr><td>{level.upper()}</td><td>{count}</td><td>{active_count}</td></tr>"
 
         # 生成最近告警
@@ -721,9 +655,7 @@ async def demo_metrics_dashboard():
     print(f"🔔 活跃告警数: {dashboard_data['alerts']['active']}")
 
     # 导出报告
-    html_file = monitor.export_monitoring_report(
-        "html", "/tmp/test_metrics_dashboard.html"
-    )
+    html_file = monitor.export_monitoring_report("html", "/tmp/test_metrics_dashboard.html")
     print(f"📄 监控报告已保存: {html_file}")
 
     # 启动实时监控（演示5秒后停止）

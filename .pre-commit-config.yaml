@@ -2,24 +2,23 @@
 # Install: pip install pre-commit && pre-commit install
 # Run manually: pre-commit run --all-files
 #
-# 优化策略：Ruff 优先 + Black 兜底 + 安全检查
-# 执行顺序：Ruff (fix) → Black (format) → Ruff (check) → MyPy → Bandit → Safety
+# 核心策略：Black 强制格式化 + Ruff 补充修复（避免格式冲突）
+# 执行顺序：Black (format) → Ruff (selective fix) → Ruff (final check) → MyPy → Bandit → Safety
+#
+# 关键避坑点：
+#   ⚠️  Ruff 不使用 --fix 做完整格式化（避免与 Black 冲突）
+#   ✅   Black 负责所有格式化工作（punctual formatter）
+#   ✅   Ruff 仅做 lint 检查和轻量级修复（如未使用的导入）
+#   ✅   顺序：Black 先行 → Ruff 补充（避免 Ruff 格式被 Black 覆盖）
 
 repos:
   # ============================================================================
-  # 第一步：Ruff 快速修复（优先处理错误型问题）
+  # 第一步：Black 强制格式化（解决所有格式问题）
   # ============================================================================
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
-    hooks:
-      - id: ruff
-        name: Ruff (Lint & Fix)
-        args: [--fix]
-        files: ^(src/|tests/|web/backend/)
-        # 仅处理源码和测试目录，提高速度
-
-  # ============================================================================
-  # 第二步：Black 兜底（统一风格，仅需1-2秒）
+  # Black 的优势：
+  #   - 非常固执的格式化规则（团队统一风格保证）
+  #   - 完全不可配置的格式（避免格式战争）
+  #   - 处理所有格式问题（缩进、空格、换行等）
   # ============================================================================
   - repo: https://github.com/psf/black
     rev: 24.8.0
@@ -27,19 +26,44 @@ repos:
       - id: black
         name: Black (Formatter)
         files: ^(src/|tests/|web/backend/)
-        # 与 Ruff 统一行长度，避免冲突
+        # 统一行长度为 120 字符
         args: [--line-length=120]
 
   # ============================================================================
-  # 第三步：Ruff 二次校验（确保 Black 格式化后无新问题）
+  # 第二步：Ruff 补充修复（只修复 lint 问题，不做格式化）
+  # ============================================================================
+  # Ruff 的优势：
+  #   - 快速的 linter（比 Flake8 快 30-100x）
+  #   - 可配置的规则（选择性修复）
+  #   - 轻量级修复（未使用的导入、简单的语法问题）
+  #
+  # 避坑点：
+  #   ❌ 不使用 ruff format（避免与 Black 冲突）
+  #   ❌ 不使用 --fix 无差别修复（可能回退 Black 的格式）
+  #   ✅ 使用 --select 选择性修复（只修复特定问题）
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.10
     hooks:
       - id: ruff
-        name: Ruff (Check only)
-        args: [check, --no-fix]
+        name: Ruff (Selective Fix)
         files: ^(src/|tests/|web/backend/)
+        # ⚠️  关键：只修复未使用的导入和变量，避免格式冲突
+        # F401: unused-import (未使用的导入)
+        # F841: unused-variable (未使用的变量)
+        args: [--select, F401,F841, --fix]
+
+  # ============================================================================
+  # 第三步：Ruff 最终检查（确保没有遗漏的 lint 问题）
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        name: Ruff (Final Check)
+        files: ^(src/|tests/|web/backend/)
+        # ✅ 只检查，不修复（避免在最终阶段修改代码）
+        args: [check, --no-fix]
 
   # ============================================================================
   # 第四步：类型检查

@@ -3,6 +3,10 @@
 为具体的业务实体提供预定义的数据映射配置
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from .data_mapper import (
     BaseDataMapper,
     FieldMapping,

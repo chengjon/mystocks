@@ -176,9 +176,7 @@ class TestDatabaseManagerMockOnly:
             {"name": "name", "type": "VARCHAR", "length": 100},
         ]
 
-        result = manager.create_table(
-            db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=columns
-        )
+        result = manager.create_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=columns)
 
         assert result is True
         mock_cursor.execute.assert_called()
@@ -219,9 +217,7 @@ class TestDatabaseManagerMockOnly:
 
         manager = DatabaseTableManager()
 
-        result = manager.drop_table(
-            db_type=DatabaseType.POSTGRESQL, table_name="test_table"
-        )
+        result = manager.drop_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table")
 
         assert result is True
         mock_cursor.execute.assert_called()
@@ -300,9 +296,7 @@ tables:
         """测试获取表信息（仅模拟）"""
         mock_conn = Mock()
         mock_cursor = Mock()
-        mock_cursor.fetchall.return_value = [
-            ("test_table", "public", "r", "test_user", False, None)
-        ]
+        mock_cursor.fetchall.return_value = [("test_table", "public", "r", "test_user", False, None)]
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_connect.return_value = mock_conn
 
@@ -354,27 +348,21 @@ class TestDatabaseManagerEdgeCases:
 
     def test_create_table_empty_columns(self):
         """测试空列列表"""
-        with patch(
-            "src.storage.database.database_manager.psycopg2.connect"
-        ) as mock_connect:
+        with patch("src.storage.database.database_manager.psycopg2.connect") as mock_connect:
             mock_conn = Mock()
             mock_cursor = Mock()
             mock_cursor.execute.return_value = None
             mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
             mock_connect.return_value = mock_conn
 
-            result = self.manager.create_table(
-                db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=[]
-            )
+            result = self.manager.create_table(db_type=DatabaseType.POSTGRESQL, table_name="test_table", columns=[])
 
             # 空列列表应该返回False
             assert result is False
 
     def test_validate_table_structure_mismatch(self):
         """测试表结构不匹配"""
-        with patch(
-            "src.storage.database.database_manager.psycopg2.connect"
-        ) as mock_connect:
+        with patch("src.storage.database.database_manager.psycopg2.connect") as mock_connect:
             mock_conn = Mock()
             mock_cursor = Mock()
             mock_cursor.fetchall.return_value = [("id", "integer", "NO")]

@@ -31,9 +31,7 @@ class RiskMetrics:
         self.logger = logging.getLogger(f"{__name__}.RiskMetrics")
         self.logger.setLevel(logging.INFO)
 
-    def downside_deviation(
-        self, returns: pd.Series, target_return: float = 0.0
-    ) -> float:
+    def downside_deviation(self, returns: pd.Series, target_return: float = 0.0) -> float:
         """
         下行偏差 (Downside Deviation)
 
@@ -378,9 +376,7 @@ class RiskMetrics:
         report.append("=" * 70)
 
         report.append("\n【波动性指标】")
-        report.append(
-            f"  下行偏差:          {metrics.get('downside_deviation', 0):>15.2%}"
-        )
+        report.append(f"  下行偏差:          {metrics.get('downside_deviation', 0):>15.2%}")
         report.append(f"  溃疡指数:          {metrics.get('ulcer_index', 0):>15.3f}")
         report.append(f"  痛苦指数:          {metrics.get('pain_index', 0):>15.2%}")
 
@@ -392,24 +388,14 @@ class RiskMetrics:
         report.append("\n【风险调整收益】")
         report.append(f"  Omega比率:         {metrics.get('omega_ratio', 0):>15.3f}")
         report.append(f"  Burke比率:         {metrics.get('burke_ratio', 0):>15.3f}")
-        report.append(
-            f"  恢复因子:          {metrics.get('recovery_factor', 0):>15.3f}"
-        )
+        report.append(f"  恢复因子:          {metrics.get('recovery_factor', 0):>15.3f}")
 
         if "payoff_ratio" in metrics:
             report.append("\n【交易风险】")
-            report.append(
-                f"  盈亏比:            {metrics.get('payoff_ratio', 0):>15.3f}"
-            )
-            report.append(
-                f"  交易期望值:        {metrics.get('trade_expectancy', 0):>15,.2f}"
-            )
-            report.append(
-                f"  最大连续亏损:      {metrics.get('max_consecutive_losses', 0):>12} 次"
-            )
-            report.append(
-                f"  最大连续亏损额:    {metrics.get('max_consecutive_loss_amount', 0):>15,.2f}"
-            )
+            report.append(f"  盈亏比:            {metrics.get('payoff_ratio', 0):>15.3f}")
+            report.append(f"  交易期望值:        {metrics.get('trade_expectancy', 0):>15,.2f}")
+            report.append(f"  最大连续亏损:      {metrics.get('max_consecutive_losses', 0):>12} 次")
+            report.append(f"  最大连续亏损额:    {metrics.get('max_consecutive_loss_amount', 0):>15,.2f}")
 
         report.append("\n" + "=" * 70)
 

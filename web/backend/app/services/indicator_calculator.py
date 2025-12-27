@@ -87,9 +87,7 @@ class IndicatorCalculator:
 
         try:
             # 根据指标类型调用对应的TA-Lib函数
-            result = self._call_talib_function(
-                abbreviation, ohlcv_data, parameters, indicator_meta
-            )
+            result = self._call_talib_function(abbreviation, ohlcv_data, parameters, indicator_meta)
             return result
 
         except Exception as e:
@@ -156,9 +154,7 @@ class IndicatorCalculator:
             return {"sar": result}
 
         elif abbreviation == "ADX":
-            result = talib.ADX(
-                high, low, close, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.ADX(high, low, close, timeperiod=parameters.get("timeperiod", 14))
             return {"adx": result}
 
         # 动量指标
@@ -178,21 +174,15 @@ class IndicatorCalculator:
             return {"slowk": slowk, "slowd": slowd}
 
         elif abbreviation == "CCI":
-            result = talib.CCI(
-                high, low, close, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.CCI(high, low, close, timeperiod=parameters.get("timeperiod", 14))
             return {"cci": result}
 
         elif abbreviation == "MFI":
-            result = talib.MFI(
-                high, low, close, volume, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.MFI(high, low, close, volume, timeperiod=parameters.get("timeperiod", 14))
             return {"mfi": result}
 
         elif abbreviation == "WILLR":
-            result = talib.WILLR(
-                high, low, close, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.WILLR(high, low, close, timeperiod=parameters.get("timeperiod", 14))
             return {"willr": result}
 
         elif abbreviation == "ROC":
@@ -205,15 +195,11 @@ class IndicatorCalculator:
 
         # 波动率指标
         elif abbreviation == "ATR":
-            result = talib.ATR(
-                high, low, close, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.ATR(high, low, close, timeperiod=parameters.get("timeperiod", 14))
             return {"atr": result}
 
         elif abbreviation == "NATR":
-            result = talib.NATR(
-                high, low, close, timeperiod=parameters.get("timeperiod", 14)
-            )
+            result = talib.NATR(high, low, close, timeperiod=parameters.get("timeperiod", 14))
             return {"natr": result}
 
         elif abbreviation == "TRANGE":
@@ -325,9 +311,7 @@ class IndicatorCalculator:
 
         return results
 
-    def validate_data_quality(
-        self, ohlcv_data: Dict[str, np.ndarray]
-    ) -> tuple[bool, Optional[str]]:
+    def validate_data_quality(self, ohlcv_data: Dict[str, np.ndarray]) -> tuple[bool, Optional[str]]:
         """
         验证OHLCV数据质量
 

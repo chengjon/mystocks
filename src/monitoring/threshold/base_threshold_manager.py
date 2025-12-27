@@ -62,9 +62,7 @@ class OptimizationResult:
     """优化结果"""
 
     rule_name: str
-    optimization_type: (
-        str  # 'anomaly_detection', 'trend_analysis', 'clustering', 'statistical'
-    )
+    optimization_type: str  # 'anomaly_detection', 'trend_analysis', 'clustering', 'statistical'
     recommended_threshold: float
     confidence_score: float
     expected_improvement: float
@@ -95,14 +93,10 @@ class DataAnalyzer:
                 "max": float(np.max(data_array)),
                 "q25": float(np.percentile(data_array, 25)),
                 "q75": float(np.percentile(data_array, 75)),
-                "iqr": float(
-                    np.percentile(data_array, 75) - np.percentile(data_array, 25)
-                ),
+                "iqr": float(np.percentile(data_array, 75) - np.percentile(data_array, 25)),
                 "skewness": float(self._calculate_skewness(data_array)),
                 "kurtosis": float(self._calculate_kurtosis(data_array)),
-                "cv": float(np.std(data_array) / np.mean(data_array))
-                if np.mean(data_array) != 0
-                else 0,
+                "cv": float(np.std(data_array) / np.mean(data_array)) if np.mean(data_array) != 0 else 0,
             }
         except Exception as e:
             self.logger.error(f"统计分析失败: {e}")
@@ -118,7 +112,7 @@ class DataAnalyzer:
             if std == 0:
                 return 0
             return float(np.mean(((data - mean) / std) ** 3))
-        except:
+        except Exception:
             return 0
 
     def _calculate_kurtosis(self, data: np.ndarray) -> float:
@@ -131,12 +125,10 @@ class DataAnalyzer:
             if std == 0:
                 return 0
             return float(np.mean(((data - mean) / std) ** 4) - 3)
-        except:
+        except Exception:
             return 0
 
-    def detect_outliers_iqr(
-        self, data: List[float], factor: float = 1.5
-    ) -> Dict[str, Any]:
+    def detect_outliers_iqr(self, data: List[float], factor: float = 1.5) -> Dict[str, Any]:
         """基于IQR的异常值检测"""
         if not data:
             return {"outliers": [], "outlier_indices": [], "outlier_count": 0}
@@ -164,9 +156,7 @@ class DataAnalyzer:
             self.logger.error(f"IQR异常值检测失败: {e}")
             return {"outliers": [], "outlier_indices": [], "outlier_count": 0}
 
-    def calculate_moving_statistics(
-        self, data: List[float], window: Optional[int] = None
-    ) -> Dict[str, List[float]]:
+    def calculate_moving_statistics(self, data: List[float], window: Optional[int] = None) -> Dict[str, List[float]]:
         """计算移动统计量"""
         if not data:
             return {"moving_mean": [], "moving_std": [], "moving_median": []}
@@ -227,9 +217,7 @@ class DataAnalyzer:
             # 上涨下跌比例
             up_moves = np.sum(valid_returns > 0)
             down_moves = np.sum(valid_returns < 0)
-            up_down_ratio = (
-                float(up_moves / down_moves) if down_moves > 0 else float("inf")
-            )
+            up_down_ratio = float(up_moves / down_moves) if down_moves > 0 else float("inf")
 
             return {
                 "volatility": volatility,

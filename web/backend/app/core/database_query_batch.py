@@ -168,9 +168,7 @@ class DatabaseQueryBatcher:
                 if task_key in self.batch_tasks:
                     self.batch_tasks[task_key].cancel()
 
-                self.batch_tasks[task_key] = asyncio.create_task(
-                    self._batch_timeout_handler(table_name, "insert")
-                )
+                self.batch_tasks[task_key] = asyncio.create_task(self._batch_timeout_handler(table_name, "insert"))
 
             return batch_query
 
@@ -211,9 +209,7 @@ class DatabaseQueryBatcher:
                 if task_key in self.batch_tasks:
                     self.batch_tasks[task_key].cancel()
 
-                self.batch_tasks[task_key] = asyncio.create_task(
-                    self._batch_timeout_handler(table_name, "update")
-                )
+                self.batch_tasks[task_key] = asyncio.create_task(self._batch_timeout_handler(table_name, "update"))
 
             return batch_query
 
@@ -254,9 +250,7 @@ class DatabaseQueryBatcher:
                 if task_key in self.batch_tasks:
                     self.batch_tasks[task_key].cancel()
 
-                self.batch_tasks[task_key] = asyncio.create_task(
-                    self._batch_timeout_handler(table_name, "delete")
-                )
+                self.batch_tasks[task_key] = asyncio.create_task(self._batch_timeout_handler(table_name, "delete"))
 
             return batch_query
 
@@ -302,9 +296,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(
-                f"❌ Error flushing insert buffer for {table_name}", error=str(e)
-            )
+            logger.error(f"❌ Error flushing insert buffer for {table_name}", error=str(e))
 
     async def _flush_update_buffer(self, table_name: str) -> None:
         """刷新UPDATE缓冲"""
@@ -324,9 +316,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(
-                f"❌ Error flushing update buffer for {table_name}", error=str(e)
-            )
+            logger.error(f"❌ Error flushing update buffer for {table_name}", error=str(e))
 
     async def _flush_delete_buffer(self, table_name: str) -> None:
         """刷新DELETE缓冲"""
@@ -346,9 +336,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(
-                f"❌ Error flushing delete buffer for {table_name}", error=str(e)
-            )
+            logger.error(f"❌ Error flushing delete buffer for {table_name}", error=str(e))
 
     async def _execute_batch(self, batch_query: BatchQuery) -> None:
         """执行批处理查询"""
@@ -422,9 +410,7 @@ class DatabaseQueryBatcher:
             },
             "performance": {
                 "avg_execution_time_ms": round(avg_execution_time, 2),
-                "rows_per_batch": (
-                    round(self.total_rows_batched / max(1, self.total_batches), 2)
-                ),
+                "rows_per_batch": (round(self.total_rows_batched / max(1, self.total_batches), 2)),
             },
             "buffers": {
                 "insert_tables": len(self.insert_buffers),

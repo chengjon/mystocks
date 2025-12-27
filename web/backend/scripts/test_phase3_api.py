@@ -71,9 +71,7 @@ def test_single_source_health():
 
     for source in ["eastmoney", "cninfo"]:
         print(f"\n--- {source.upper()} ---")
-        response = requests.get(
-            f"{BASE_URL}/api/multi-source/health/{source}", headers=headers
-        )
+        response = requests.get(f"{BASE_URL}/api/multi-source/health/{source}", headers=headers)
         print(f"Status Code: {response.status_code}")
 
         if response.status_code == 200:
@@ -85,9 +83,7 @@ def test_supported_categories():
     """测试3: 获取支持的数据类别"""
     print_section("测试 3: 获取支持的数据类别")
 
-    response = requests.get(
-        f"{BASE_URL}/api/multi-source/supported-categories", headers=headers
-    )
+    response = requests.get(f"{BASE_URL}/api/multi-source/supported-categories", headers=headers)
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -251,9 +247,7 @@ def test_get_important_announcements():
         if data.get("announcements"):
             print("\n重要公告列表:")
             for ann in data["announcements"][:10]:
-                print(
-                    f"\n  [{ann['importance_level']}] {ann['stock_code']} {ann.get('stock_name', '')}"
-                )
+                print(f"\n  [{ann['importance_level']}] {ann['stock_code']} {ann.get('stock_name', '')}")
                 print(f"  {ann['title']}")
                 print(f"  发布日期: {ann['publish_date']}")
 
@@ -282,9 +276,7 @@ def test_get_stock_announcements():
             print("\n公告列表:")
             for ann in data["announcements"][:10]:
                 print(f"\n  {ann['publish_date']}: {ann['title']}")
-                print(
-                    f"    类型: {ann.get('type', 'N/A')} | 重要性: {ann['importance_level']}"
-                )
+                print(f"    类型: {ann.get('type', 'N/A')} | 重要性: {ann['importance_level']}")
 
 
 def test_announcement_list():
@@ -326,9 +318,7 @@ def test_evaluate_monitor_rules():
     """测试14: 评估监控规则"""
     print_section("测试 14: 评估监控规则")
 
-    response = requests.post(
-        f"{BASE_URL}/api/announcement/monitor/evaluate", headers=headers
-    )
+    response = requests.post(f"{BASE_URL}/api/announcement/monitor/evaluate", headers=headers)
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -340,9 +330,7 @@ def test_refresh_health():
     """测试15: 刷新数据源健康状态"""
     print_section("测试 15: 刷新数据源健康状态")
 
-    response = requests.post(
-        f"{BASE_URL}/api/multi-source/refresh-health", headers=headers
-    )
+    response = requests.post(f"{BASE_URL}/api/multi-source/refresh-health", headers=headers)
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -355,9 +343,7 @@ def test_clear_cache():
     """测试16: 清空缓存"""
     print_section("测试 16: 清空缓存")
 
-    response = requests.post(
-        f"{BASE_URL}/api/multi-source/clear-cache", headers=headers
-    )
+    response = requests.post(f"{BASE_URL}/api/multi-source/clear-cache", headers=headers)
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:

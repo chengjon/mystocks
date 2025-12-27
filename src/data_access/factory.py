@@ -30,9 +30,7 @@ class DataAccessFactory:
         self._tdengine_access = None
         self._postgresql_access = None
 
-    def initialize(
-        self, db_manager: DatabaseTableManager, monitoring_db: MonitoringDatabase
-    ) -> None:
+    def initialize(self, db_manager: DatabaseTableManager, monitoring_db: MonitoringDatabase) -> None:
         """
         初始化工厂
 
@@ -47,9 +45,7 @@ class DataAccessFactory:
         self._tdengine_access = TDengineDataAccess(db_manager, monitoring_db)
         self._postgresql_access = PostgreSQLDataAccess(db_manager, monitoring_db)
 
-    def get_data_access(
-        self, database_type: DatabaseType, classification=None
-    ) -> IDataAccessLayer:
+    def get_data_access(self, database_type: DatabaseType, classification=None) -> IDataAccessLayer:
         """
         根据数据库类型获取数据访问器
 
@@ -88,9 +84,7 @@ class DataAccessFactory:
         """
         return self.get_data_access(DatabaseType.POSTGRESQL)
 
-    def smart_routing_access(
-        self, classification, symbol: str = None, data_volume: str = "small"
-    ) -> IDataAccessLayer:
+    def smart_routing_access(self, classification, symbol: str = None, data_volume: str = "small") -> IDataAccessLayer:
         """
         智能路由：根据数据特征选择最合适的数据库
 
@@ -129,10 +123,7 @@ class DataAccessFactory:
             return True
 
         # 时序数据使用TDengine
-        if (
-            hasattr(classification, "name")
-            and classification.name in timeseries_classifications
-        ):
+        if hasattr(classification, "name") and classification.name in timeseries_classifications:
             return True
 
         return False
@@ -174,9 +165,7 @@ class DataAccessFactory:
         """
         return self.check_all_connections()
 
-    def create_data_access_for_test(
-        self, database_type: DatabaseType
-    ) -> IDataAccessLayer:
+    def create_data_access_for_test(self, database_type: DatabaseType) -> IDataAccessLayer:
         """
         为测试创建数据访问器（简化版）
 
@@ -195,12 +184,8 @@ class DataAccessFactory:
             self._monitoring_db = MonitoringDatabase()
 
             # 重新初始化访问器
-            self._tdengine_access = TDengineDataAccess(
-                self._db_manager, self._monitoring_db
-            )
-            self._postgresql_access = PostgreSQLDataAccess(
-                self._db_manager, self._monitoring_db
-            )
+            self._tdengine_access = TDengineDataAccess(self._db_manager, self._monitoring_db)
+            self._postgresql_access = PostgreSQLDataAccess(self._db_manager, self._monitoring_db)
 
         return self.get_data_access(database_type)
 
@@ -219,9 +204,7 @@ def get_data_access_factory() -> DataAccessFactory:
     return _data_access_factory
 
 
-def initialize_data_access(
-    db_manager: DatabaseTableManager, monitoring_db: MonitoringDatabase
-) -> None:
+def initialize_data_access(db_manager: DatabaseTableManager, monitoring_db: MonitoringDatabase) -> None:
     """
     初始化全局数据访问工厂
 
@@ -232,9 +215,7 @@ def initialize_data_access(
     _data_access_factory.initialize(db_manager, monitoring_db)
 
 
-def get_data_access(
-    database_type: DatabaseType, classification=None
-) -> IDataAccessLayer:
+def get_data_access(database_type: DatabaseType, classification=None) -> IDataAccessLayer:
     """
     获取数据访问器（全局工厂）
 
@@ -248,9 +229,7 @@ def get_data_access(
     return _data_access_factory.get_data_access(database_type, classification)
 
 
-def smart_routing_access(
-    classification, symbol: str = None, data_volume: str = "small"
-) -> IDataAccessLayer:
+def smart_routing_access(classification, symbol: str = None, data_volume: str = "small") -> IDataAccessLayer:
     """
     智能路由获取数据访问器（全局工厂）
 
@@ -262,6 +241,4 @@ def smart_routing_access(
     Returns:
         IDataAccessLayer: 最合适的数据访问器
     """
-    return _data_access_factory.smart_routing_access(
-        classification, symbol, data_volume
-    )
+    return _data_access_factory.smart_routing_access(classification, symbol, data_volume)

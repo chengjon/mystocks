@@ -147,9 +147,7 @@ class SecurityVulnerabilityScanner:
                 test_params = params.copy()
                 for key in test_params:
                     if isinstance(test_params[key], str):
-                        test_params[key] = test_params[key].replace(
-                            "${payload}", payload
-                        )
+                        test_params[key] = test_params[key].replace("${payload}", payload)
 
                 try:
                     # 使用mock API客户端进行测试
@@ -386,14 +384,10 @@ class SecurityVulnerabilityScanner:
             for payload_data in idor_payloads:
                 # 构造测试参数
                 test_params = {
-                    k: v.replace("${id}", str(payload_data.get("user_id", "")))
-                    if k == "user_id"
-                    else v
+                    k: v.replace("${id}", str(payload_data.get("user_id", ""))) if k == "user_id" else v
                     for k, v in params.items()
                 }
-                test_params.update(
-                    {k: v for k, v in payload_data.items() if k not in params}
-                )
+                test_params.update({k: v for k, v in payload_data.items() if k not in params})
 
                 try:
                     # 以普通用户身份访问
@@ -481,9 +475,7 @@ class SecurityVulnerabilityScanner:
                     )
                 else:
                     # GET请求
-                    response = await mock_api_client.get(
-                        check["endpoint"], headers=check.get("headers", {})
-                    )
+                    response = await mock_api_client.get(check["endpoint"], headers=check.get("headers", {}))
 
                 # 检查响应中是否存在安全配置错误的迹象
                 response_text = str(response)
@@ -495,9 +487,7 @@ class SecurityVulnerabilityScanner:
                             "endpoint": check.get("endpoint"),
                             "severity": check["severity"],
                             "description": f"检测到安全配置错误: {check['check']}",
-                            "recommendation": self._get_misconfiguration_recommendation(
-                                check["check"]
-                            ),
+                            "recommendation": self._get_misconfiguration_recommendation(check["check"]),
                         }
                         results["vulnerabilities"].append(vuln)
                         break
@@ -505,9 +495,7 @@ class SecurityVulnerabilityScanner:
             except Exception as e:
                 # 某些安全错误（如403）反而是安全的
                 if "403" in str(e) or "401" in str(e):
-                    print(
-                        f"    ✅ {check.get('endpoint', check['check'])} - 安全配置正常"
-                    )
+                    print(f"    ✅ {check.get('endpoint', check['check'])} - 安全配置正常")
                 else:
                     print(f"    ⚠️  配置检查异常: {str(e)}")
 
@@ -552,14 +540,10 @@ class SecurityVulnerabilityScanner:
         for category, data in test_data.items():
             if isinstance(data, dict):
                 for key, value in data.items():
-                    self._check_sensitive_data(
-                        f"{category}.{key}", value, sensitive_patterns, results
-                    )
+                    self._check_sensitive_data(f"{category}.{key}", value, sensitive_patterns, results)
             elif isinstance(data, list):
                 for i, item in enumerate(data):
-                    self._check_sensitive_data(
-                        f"{category}[{i}]", str(item), sensitive_patterns, results
-                    )
+                    self._check_sensitive_data(f"{category}[{i}]", str(item), sensitive_patterns, results)
 
             results["tested_data"] += 1
 
@@ -595,18 +579,10 @@ class SecurityVulnerabilityScanner:
                 test_params = params.copy()
                 for key in test_params:
                     if isinstance(test_params[key], str):
-                        test_params[key] = test_params[key].replace(
-                            "${action}", payload.get("action", "")
-                        )
-                        test_params[key] = test_params[key].replace(
-                            "${permission}", payload.get("permission", "")
-                        )
-                        test_params[key] = test_params[key].replace(
-                            "${user_level}", payload.get("user_level", "")
-                        )
-                        test_params[key] = test_params[key].replace(
-                            "${bypass}", payload.get("bypass", "")
-                        )
+                        test_params[key] = test_params[key].replace("${action}", payload.get("action", ""))
+                        test_params[key] = test_params[key].replace("${permission}", payload.get("permission", ""))
+                        test_params[key] = test_params[key].replace("${user_level}", payload.get("user_level", ""))
+                        test_params[key] = test_params[key].replace("${bypass}", payload.get("bypass", ""))
 
                 test_params.update(payload)
 
@@ -763,9 +739,7 @@ class SecurityVulnerabilityScanner:
                     response = await mock_api_client.post(endpoint, files=files)
 
                     # 检测文件上传漏洞
-                    if self._detect_file_upload_vulnerability(
-                        response, file_info["name"]
-                    ):
+                    if self._detect_file_upload_vulnerability(response, file_info["name"]):
                         vuln = {
                             "type": "insecure_file_upload",
                             "endpoint": endpoint,
@@ -853,9 +827,7 @@ class SecurityVulnerabilityScanner:
                             "endpoint": check["endpoint"],
                             "severity": check["severity"],
                             "description": f"检测到API安全问题: {check['test']}",
-                            "recommendation": self._get_api_security_recommendation(
-                                check["test"]
-                            ),
+                            "recommendation": self._get_api_security_recommendation(check["test"]),
                         }
                         results["vulnerabilities"].append(vuln)
                         break
@@ -965,9 +937,7 @@ class SecurityVulnerabilityScanner:
 
         return any(indicator in response_text for indicator in auth_success_indicators)
 
-    def _detect_idor_vulnerability(
-        self, response: Dict[str, Any], params: Dict[str, Any]
-    ) -> bool:
+    def _detect_idor_vulnerability(self, response: Dict[str, Any], params: Dict[str, Any]) -> bool:
         """检测IDOR漏洞"""
         response_text = str(response).lower()
 
@@ -982,9 +952,7 @@ class SecurityVulnerabilityScanner:
 
         return any(indicator in response_text for indicator in idor_indicators)
 
-    def _check_sensitive_data(
-        self, key: str, value: str, patterns: List[str], results: Dict[str, Any]
-    ):
+    def _check_sensitive_data(self, key: str, value: str, patterns: List[str], results: Dict[str, Any]):
         """检查敏感数据"""
         for pattern in patterns:
             if re.search(pattern, str(value), re.IGNORECASE):
@@ -1015,9 +983,7 @@ class SecurityVulnerabilityScanner:
 
         return any(indicator in response_text for indicator in escalation_indicators)
 
-    def _detect_file_upload_vulnerability(
-        self, response: Dict[str, Any], filename: str
-    ) -> bool:
+    def _detect_file_upload_vulnerability(self, response: Dict[str, Any], filename: str) -> bool:
         """检测文件上传漏洞"""
         response_text = str(response).lower()
 
@@ -1029,9 +995,7 @@ class SecurityVulnerabilityScanner:
             filename.lower(),
         ]
 
-        return any(
-            indicator in response_text for indicator in upload_success_indicators
-        )
+        return any(indicator in response_text for indicator in upload_success_indicators)
 
     def _get_misconfiguration_recommendation(self, check_type: str) -> str:
         """获取配置错误的修复建议"""
@@ -1061,11 +1025,7 @@ class SecurityVulnerabilityScanner:
                 print(f"    ⚠️  {test_name}: 发现 {vuln_count} 个漏洞")
             else:
                 print(f"    ✅ {test_name}: 未发现漏洞")
-        elif (
-            isinstance(result, dict)
-            and "status" in result
-            and result["status"] == "failed"
-        ):
+        elif isinstance(result, dict) and "status" in result and result["status"] == "failed":
             print(f"    ❌ {test_name}: 测试失败 - {result.get('error', '未知错误')}")
         else:
             print(f"    ⚠️  {test_name}: 测试完成")
@@ -1095,27 +1055,19 @@ class SecurityVulnerabilityScanner:
         # 更新评估指标
         self.assessment_metrics["vulnerabilities_found"] = total_vulnerabilities
         self.assessment_metrics["risk_score"] = min(100.0, risk_score)
-        self.assessment_metrics["compliance_score"] = max(
-            0.0, 100.0 - (total_vulnerabilities * 5.0)
-        )
+        self.assessment_metrics["compliance_score"] = max(0.0, 100.0 - (total_vulnerabilities * 5.0))
 
     def _generate_security_report(self, results: Dict[str, Any]) -> str:
         """生成安全报告"""
-        report_path = (
-            f"/tmp/security_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
+        report_path = f"/tmp/security_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
         report = {
             "scan_summary": {
                 "scan_date": datetime.now().isoformat(),
                 "total_tests": len(results),
-                "total_vulnerabilities": self.assessment_metrics[
-                    "vulnerabilities_found"
-                ],
+                "total_vulnerabilities": self.assessment_metrics["vulnerabilities_found"],
                 "risk_score": round(self.assessment_metrics["risk_score"], 1),
-                "compliance_score": round(
-                    self.assessment_metrics["compliance_score"], 1
-                ),
+                "compliance_score": round(self.assessment_metrics["compliance_score"], 1),
             },
             "detailed_results": results,
             "vulnerability_statistics": self._analyze_vulnerability_statistics(results),
@@ -1128,9 +1080,7 @@ class SecurityVulnerabilityScanner:
 
         return report_path
 
-    def _analyze_vulnerability_statistics(
-        self, results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _analyze_vulnerability_statistics(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """分析漏洞统计"""
         stats = {
             "by_severity": {"critical": 0, "high": 0, "medium": 0, "low": 0},
@@ -1146,22 +1096,16 @@ class SecurityVulnerabilityScanner:
                     vuln_type = vuln.get("type", "unknown")
                     endpoint = vuln.get("endpoint", "unknown")
 
-                    stats["by_severity"][severity] = (
-                        stats["by_severity"].get(severity, 0) + 1
-                    )
+                    stats["by_severity"][severity] = stats["by_severity"].get(severity, 0) + 1
                     stats["by_type"][vuln_type] = stats["by_type"].get(vuln_type, 0) + 1
-                    stats["by_endpoint"][endpoint] = (
-                        stats["by_endpoint"].get(endpoint, 0) + 1
-                    )
+                    stats["by_endpoint"][endpoint] = stats["by_endpoint"].get(endpoint, 0) + 1
 
                     risk_weight = {"critical": 10, "high": 7, "medium": 4, "low": 1}
                     stats["total_risk_score"] += risk_weight.get(severity, 1)
 
         return stats
 
-    def _generate_security_recommendations(
-        self, results: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _generate_security_recommendations(self, results: Dict[str, Any]) -> List[Dict[str, Any]]:
         """生成安全建议"""
         recommendations = []
 

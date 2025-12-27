@@ -7,9 +7,8 @@ AI Test Optimizer Toolkit - 主CLI工具
 import argparse
 import json
 import sys
-import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 import subprocess
 import yaml
 

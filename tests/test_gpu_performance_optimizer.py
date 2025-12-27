@@ -165,9 +165,7 @@ class TestGPUPerformanceOptimizer:
         ]
 
         for gpu_util, memory_util, pool_used, pool_total, expected_range in test_cases:
-            score = gpu_optimizer._calculate_efficiency_score(
-                gpu_util, memory_util, pool_used, pool_total
-            )
+            score = gpu_optimizer._calculate_efficiency_score(gpu_util, memory_util, pool_used, pool_total)
             assert 0 <= score <= 1, f"效率评分应在0-1范围内，得到: {score}"
 
     @pytest.mark.asyncio
@@ -253,9 +251,7 @@ class TestGPUPerformanceOptimizer:
         ]
 
         for metrics in test_metrics:
-            recommendations = await gpu_optimizer._generate_performance_recommendations(
-                metrics
-            )
+            recommendations = await gpu_optimizer._generate_performance_recommendations(metrics)
             assert isinstance(recommendations, list)
             assert len(recommendations) > 0
 
@@ -456,9 +452,7 @@ class TestGPUIntegrationScenarios:
 
 
 # 辅助测试函数
-def create_test_gpu_metrics(
-    utilization: float = 50.0, memory_util: float = 50.0
-) -> GPUMetrics:
+def create_test_gpu_metrics(utilization: float = 50.0, memory_util: float = 50.0) -> GPUMetrics:
     """创建测试用的GPU指标"""
     return GPUMetrics(
         timestamp=datetime.now(),

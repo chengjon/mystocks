@@ -32,9 +32,7 @@ class BaoStockData:
         # 初始化日志
         self.logger = logging.getLogger("BaoStockData")
         self.logger.setLevel(log_level)
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         # 控制台输出
         ch = logging.StreamHandler()
@@ -139,9 +137,7 @@ class BaoStockData:
             return code  # 返回原始，baostock会报错
 
     @with_login
-    def query_history_k_data_plus(
-        self, symbol, timeframe, adj=None, start_date=None, end_date=None
-    ):
+    def query_history_k_data_plus(self, symbol, timeframe, adj=None, start_date=None, end_date=None):
         """
         获取K线数据
         :param symbol: 股票代码，支持 sh.600000、sz.000001、600000、000001、sh600000、sz300377 等格式，自动标准化
@@ -154,9 +150,7 @@ class BaoStockData:
         """
         valid_timeframes = {"5m", "15m", "30m", "1h", "1d", "1w", "1M"}
         if timeframe not in valid_timeframes:
-            self.logger.error(
-                f"无效的时间周期: {timeframe}，必须为 {valid_timeframes} 之一"
-            )
+            self.logger.error(f"无效的时间周期: {timeframe}，必须为 {valid_timeframes} 之一")
             return pd.DataFrame()
         frequency_map = {
             "5m": "5",
@@ -173,9 +167,7 @@ class BaoStockData:
         elif timeframe == "1d":
             fields = "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST"
         else:
-            fields = (
-                "date,code,open,high,low,close,volume,amount,adjustflag,turn,pctChg"
-            )
+            fields = "date,code,open,high,low,close,volume,amount,adjustflag,turn,pctChg"
         stock_name = self._normalize_code(symbol)
         if not (stock_name.startswith("sh.") or stock_name.startswith("sz.")):
             return pd.DataFrame()
@@ -362,9 +354,7 @@ class BaoStockData:
         示例: bao.query_performance_express_report('300377', start_date='2024-01-01', end_date='2024-06-30')
         """
         code = self._normalize_code(code)
-        rs = bs.query_performance_express_report(
-            code, start_date=start_date, end_date=end_date
-        )
+        rs = bs.query_performance_express_report(code, start_date=start_date, end_date=end_date)
         return self._rs_to_df(rs, "查询业绩快报失败")
 
     def query_forcast_report(self, code, start_date, end_date):
@@ -410,9 +400,7 @@ class BaoStockData:
         rs = bs.query_loan_rate_data(start_date=start_date, end_date=end_date)
         return self._rs_to_df(rs, "查询贷款利率失败")
 
-    def query_required_reserve_ratio_data(
-        self, start_date=None, end_date=None, yearType=None
-    ):
+    def query_required_reserve_ratio_data(self, start_date=None, end_date=None, yearType=None):
         """
         存款准备金率
         :param start_date: 开始日期，格式YYYY-MM-DD，为空时默认不限
@@ -426,9 +414,7 @@ class BaoStockData:
             end_date = datetime.now().strftime("%Y-%m-%d")
 
         yearType = yearType or "0"
-        rs = bs.query_required_reserve_ratio_data(
-            start_date=start_date, end_date=end_date, yearType=yearType
-        )
+        rs = bs.query_required_reserve_ratio_data(start_date=start_date, end_date=end_date, yearType=yearType)
         return self._rs_to_df(rs, "查询存款准备金率失败")
 
     def query_money_supply_data_month(self, start_date=None, end_date=None):

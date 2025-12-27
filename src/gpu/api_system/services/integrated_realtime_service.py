@@ -102,9 +102,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
         monitor_thread.start()
 
         # 特征缓存清理线程
-        cleanup_thread = threading.Thread(
-            target=self._cleanup_feature_cache, daemon=True
-        )
+        cleanup_thread = threading.Thread(target=self._cleanup_feature_cache, daemon=True)
         cleanup_thread.start()
 
         # 性能统计线程
@@ -125,12 +123,8 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
 
                     for stream_id, stream_info in self.active_streams.items():
                         # 检查流超时
-                        last_activity = datetime.fromisoformat(
-                            stream_info["last_activity"]
-                        )
-                        if current_time - last_activity > timedelta(
-                            seconds=self.config["stream_timeout"]
-                        ):
+                        last_activity = datetime.fromisoformat(stream_info["last_activity"])
+                        if current_time - last_activity > timedelta(seconds=self.config["stream_timeout"]):
                             logger.warning(f"数据流 {stream_id} 超时，关闭流")
                             expired_streams.append(stream_id)
 
@@ -157,10 +151,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     expired_keys = []
 
                     for cache_key, feature_data in self.feature_cache.items():
-                        if (
-                            current_time - feature_data.get("timestamp", 0)
-                            > self.config["feature_cache_ttl"]
-                        ):
+                        if current_time - feature_data.get("timestamp", 0) > self.config["feature_cache_ttl"]:
                             expired_keys.append(cache_key)
 
                     for key in expired_keys:
@@ -179,9 +170,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 time.sleep(60)  # 每分钟收集一次
 
                 # 记录统计信息
-                self.metrics_collector.record_custom_metric(
-                    "realtime_data_points", self.stats["total_data_points"]
-                )
+                self.metrics_collector.record_custom_metric("realtime_data_points", self.stats["total_data_points"])
                 self.metrics_collector.record_custom_metric(
                     "realtime_features_computed", self.stats["total_features_computed"]
                 )
@@ -190,19 +179,13 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 total_requests = self.stats["cache_hits"] + self.stats["cache_misses"]
                 if total_requests > 0:
                     hit_rate = self.stats["cache_hits"] / total_requests * 100
-                    self.metrics_collector.record_custom_metric(
-                        "feature_cache_hit_rate", hit_rate
-                    )
+                    self.metrics_collector.record_custom_metric("feature_cache_hit_rate", hit_rate)
 
                 # GPU使用统计
-                gpu_total = (
-                    self.stats["gpu_computations"] + self.stats["cpu_computations"]
-                )
+                gpu_total = self.stats["gpu_computations"] + self.stats["cpu_computations"]
                 if gpu_total > 0:
                     gpu_ratio = self.stats["gpu_computations"] / gpu_total * 100
-                    self.metrics_collector.record_custom_metric(
-                        "gpu_computation_ratio", gpu_ratio
-                    )
+                    self.metrics_collector.record_custom_metric("gpu_computation_ratio", gpu_ratio)
 
             except Exception as e:
                 logger.error(f"收集统计信息失败: {e}")
@@ -238,9 +221,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     # 更新流活动时间
                     with self.stream_lock:
                         if stream_id in self.active_streams:
-                            self.active_streams[stream_id]["last_activity"] = (
-                                datetime.now().isoformat()
-                            )
+                            self.active_streams[stream_id]["last_activity"] = datetime.now().isoformat()
                             self.active_streams[stream_id]["data_count"] += 1
 
                     # 添加到批量缓冲区
@@ -279,9 +260,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             # 清理数据流
             self._close_stream(stream_id)
 
-    def _process_data_batch(
-        self, batch: List[StreamDataRequest], stream_id: str
-    ) -> List[StreamDataResponse]:
+    def _process_data_batch(self, batch: List[StreamDataRequest], stream_id: str) -> List[StreamDataResponse]:
         """批量处理数据"""
         responses = []
 
@@ -298,15 +277,11 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             # GPU加速处理
             if self.config["enable_gpu_acceleration"]:
                 try:
-                    processed_data = self._gpu_process_batch(
-                        stock_codes, prices, volumes
-                    )
+                    processed_data = self._gpu_process_batch(stock_codes, prices, volumes)
                     self.stats["gpu_computations"] += len(batch)
                 except Exception as e:
                     logger.warning(f"GPU处理失败，回退到CPU: {e}")
-                    processed_data = self._cpu_process_batch(
-                        stock_codes, prices, volumes
-                    )
+                    processed_data = self._cpu_process_batch(stock_codes, prices, volumes)
                     self.stats["cpu_computations"] += len(batch)
             else:
                 processed_data = self._cpu_process_batch(stock_codes, prices, volumes)
@@ -336,17 +311,11 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
     ):
         """更新数据缓冲区"""
         with self.buffer_lock:
-            for stock_code, price, volume, timestamp in zip(
-                stock_codes, prices, volumes, timestamps
-            ):
+            for stock_code, price, volume, timestamp in zip(stock_codes, prices, volumes, timestamps):
                 if stock_code not in self.data_buffers:
-                    self.data_buffers[stock_code] = deque(
-                        maxlen=self.config["buffer_size"]
-                    )
+                    self.data_buffers[stock_code] = deque(maxlen=self.config["buffer_size"])
 
-                self.data_buffers[stock_code].append(
-                    {"price": price, "volume": volume, "timestamp": timestamp}
-                )
+                self.data_buffers[stock_code].append({"price": price, "volume": volume, "timestamp": timestamp})
 
     def _gpu_process_batch(
         self, stock_codes: List[str], prices: List[float], volumes: List[int]
@@ -356,18 +325,11 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             import cudf
 
             # 转换为cuDF DataFrame
-            df = cudf.DataFrame(
-                {"stock_code": stock_codes, "price": prices, "volume": volumes}
-            )
+            df = cudf.DataFrame({"stock_code": stock_codes, "price": prices, "volume": volumes})
 
             # GPU计算
             df["price_change"] = df["price"].pct_change()
-            df["volume_ma"] = (
-                df.groupby("stock_code")["volume"]
-                .rolling(window=5)
-                .mean()
-                .reset_index(0, drop=True)
-            )
+            df["volume_ma"] = df.groupby("stock_code")["volume"].rolling(window=5).mean().reset_index(0, drop=True)
 
             # 转回CPU
             result_df = df.to_pandas()
@@ -380,14 +342,8 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                         "stock_code": row["stock_code"],
                         "price": row["price"],
                         "volume": row["volume"],
-                        "price_change": (
-                            row["price_change"]
-                            if not pd.isna(row["price_change"])
-                            else 0.0
-                        ),
-                        "volume_ma": (
-                            row["volume_ma"] if not pd.isna(row["volume_ma"]) else 0.0
-                        ),
+                        "price_change": (row["price_change"] if not pd.isna(row["price_change"]) else 0.0),
+                        "volume_ma": (row["volume_ma"] if not pd.isna(row["volume_ma"]) else 0.0),
                     }
                 )
 
@@ -417,9 +373,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
 
         return processed_data
 
-    def ComputeFeatures(
-        self, request: FeatureRequest, context: grpc.ServicerContext
-    ) -> FeatureResponse:
+    def ComputeFeatures(self, request: FeatureRequest, context: grpc.ServicerContext) -> FeatureResponse:
         """计算技术特征"""
         try:
             stock_code = request.stock_code
@@ -432,10 +386,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             with self.feature_lock:
                 if cache_key in self.feature_cache:
                     cache_data = self.feature_cache[cache_key]
-                    if (
-                        time.time() - cache_data["timestamp"]
-                        < self.config["feature_cache_ttl"]
-                    ):
+                    if time.time() - cache_data["timestamp"] < self.config["feature_cache_ttl"]:
                         logger.info(f"使用缓存的特征: {stock_code}")
                         self.stats["cache_hits"] += 1
                         return cache_data["response"]
@@ -462,15 +413,11 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             # 计算特征
             if self.config["enable_gpu_acceleration"]:
                 try:
-                    features = self._compute_features_gpu(
-                        historical_data, feature_types
-                    )
+                    features = self._compute_features_gpu(historical_data, feature_types)
                     self.stats["gpu_computations"] += 1
                 except Exception as e:
                     logger.warning(f"GPU计算特征失败，回退到CPU: {e}")
-                    features = self._compute_features_cpu(
-                        historical_data, feature_types
-                    )
+                    features = self._compute_features_cpu(historical_data, feature_types)
                     self.stats["cpu_computations"] += 1
             else:
                 features = self._compute_features_cpu(historical_data, feature_types)
@@ -500,18 +447,14 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             context.set_details(f"内部错误: {e}")
             return FeatureResponse()
 
-    def _generate_feature_cache_key(
-        self, stock_code: str, feature_types: List[str]
-    ) -> str:
+    def _generate_feature_cache_key(self, stock_code: str, feature_types: List[str]) -> str:
         """生成特征缓存键"""
         import hashlib
 
         key_str = f"{stock_code}_{','.join(sorted(feature_types))}"
         return hashlib.md5(key_str.encode()).hexdigest()
 
-    def _compute_features_gpu(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def _compute_features_gpu(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """GPU计算技术特征"""
         try:
             import cudf
@@ -524,14 +467,10 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
 
             for feature_type in feature_types:
                 if feature_type == "sma_20":
-                    features["sma_20"] = float(
-                        df_gpu["price"].rolling(window=20).mean().iloc[-1]
-                    )
+                    features["sma_20"] = float(df_gpu["price"].rolling(window=20).mean().iloc[-1])
                 elif feature_type == "sma_50":
                     if len(df_gpu) >= 50:
-                        features["sma_50"] = float(
-                            df_gpu["price"].rolling(window=50).mean().iloc[-1]
-                        )
+                        features["sma_50"] = float(df_gpu["price"].rolling(window=50).mean().iloc[-1])
                     else:
                         features["sma_50"] = 0.0
                 elif feature_type == "rsi":
@@ -545,9 +484,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 elif feature_type == "volume_ratio":
                     volume_ma = df_gpu["volume"].rolling(window=20).mean().iloc[-1]
                     current_volume = df_gpu["volume"].iloc[-1]
-                    features["volume_ratio"] = (
-                        float(current_volume / volume_ma) if volume_ma > 0 else 0.0
-                    )
+                    features["volume_ratio"] = float(current_volume / volume_ma) if volume_ma > 0 else 0.0
 
             return features
 
@@ -555,23 +492,17 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             logger.error(f"GPU计算特征失败: {e}")
             raise e
 
-    def _compute_features_cpu(
-        self, historical_data: List[Dict], feature_types: List[str]
-    ) -> Dict[str, float]:
+    def _compute_features_cpu(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
         """CPU计算技术特征"""
         df = pd.DataFrame(historical_data)
         features = {}
 
         for feature_type in feature_types:
             if feature_type == "sma_20":
-                features["sma_20"] = float(
-                    df["price"].rolling(window=20).mean().iloc[-1]
-                )
+                features["sma_20"] = float(df["price"].rolling(window=20).mean().iloc[-1])
             elif feature_type == "sma_50":
                 if len(df) >= 50:
-                    features["sma_50"] = float(
-                        df["price"].rolling(window=50).mean().iloc[-1]
-                    )
+                    features["sma_50"] = float(df["price"].rolling(window=50).mean().iloc[-1])
                 else:
                     features["sma_50"] = 0.0
             elif feature_type == "rsi":
@@ -585,9 +516,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             elif feature_type == "volume_ratio":
                 volume_ma = df["volume"].rolling(window=20).mean().iloc[-1]
                 current_volume = df["volume"].iloc[-1]
-                features["volume_ratio"] = (
-                    float(current_volume / volume_ma) if volume_ma > 0 else 0.0
-                )
+                features["volume_ratio"] = float(current_volume / volume_ma) if volume_ma > 0 else 0.0
 
         return features
 
@@ -702,9 +631,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             with self.stream_lock:
                 if stream_id in self.active_streams:
                     stream_info = self.active_streams[stream_id]
-                    logger.info(
-                        f"关闭数据流 {stream_id}, 处理了 {stream_info['data_count']} 个数据点"
-                    )
+                    logger.info(f"关闭数据流 {stream_id}, 处理了 {stream_info['data_count']} 个数据点")
                     del self.active_streams[stream_id]
         except Exception as e:
             logger.error(f"关闭数据流失败: {e}")
@@ -714,9 +641,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
         try:
             with self.stream_lock:
                 active_stream_count = len(self.active_streams)
-                total_data_processed = sum(
-                    stream["data_count"] for stream in self.active_streams.values()
-                )
+                sum(stream["data_count"] for stream in self.active_streams.values())
 
             stats = {
                 "timestamp": datetime.now().isoformat(),
@@ -724,9 +649,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 "total_data_points": self.stats["total_data_points"],
                 "total_features_computed": self.stats["total_features_computed"],
                 "cache_hit_rate": (
-                    self.stats["cache_hits"]
-                    / (self.stats["cache_hits"] + self.stats["cache_misses"])
-                    * 100
+                    self.stats["cache_hits"] / (self.stats["cache_hits"] + self.stats["cache_misses"]) * 100
                     if (self.stats["cache_hits"] + self.stats["cache_misses"]) > 0
                     else 0
                 ),
@@ -734,8 +657,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     self.stats["gpu_computations"]
                     / (self.stats["gpu_computations"] + self.stats["cpu_computations"])
                     * 100
-                    if (self.stats["gpu_computations"] + self.stats["cpu_computations"])
-                    > 0
+                    if (self.stats["gpu_computations"] + self.stats["cpu_computations"]) > 0
                     else 0
                 ),
                 "data_buffer_count": len(self.data_buffers),

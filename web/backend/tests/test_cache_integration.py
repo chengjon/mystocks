@@ -336,9 +336,7 @@ class TestCacheInvalidationIntegration:
         self.cache_mgr.write_to_cache(symbol, data_type, "1d", {"value": 100})
 
         # 验证缓存新鲜
-        is_fresh = self.cache_integration.is_cache_fresh(
-            symbol, data_type, max_age_days=7
-        )
+        is_fresh = self.cache_integration.is_cache_fresh(symbol, data_type, max_age_days=7)
         assert is_fresh is True
 
     def test_invalidate_data_on_write(self):

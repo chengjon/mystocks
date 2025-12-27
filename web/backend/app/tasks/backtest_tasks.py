@@ -16,9 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True, name="app.tasks.backtest_tasks.run_backtest")
-def run_backtest_task(
-    self, backtest_id: int, strategy_config: dict, backtest_config: dict
-):
+def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_config: dict):
     """
     执行回测任务
 
@@ -45,13 +43,9 @@ def run_backtest_task(
 
         # 转换日期字符串为 datetime 对象
         if isinstance(backtest_config.get("start_date"), str):
-            backtest_config["start_date"] = datetime.strptime(
-                backtest_config["start_date"], "%Y-%m-%d"
-            )
+            backtest_config["start_date"] = datetime.strptime(backtest_config["start_date"], "%Y-%m-%d")
         if isinstance(backtest_config.get("end_date"), str):
-            backtest_config["end_date"] = datetime.strptime(
-                backtest_config["end_date"], "%Y-%m-%d"
-            )
+            backtest_config["end_date"] = datetime.strptime(backtest_config["end_date"], "%Y-%m-%d")
 
         # 添加 backtest_id 到配置
         backtest_config["backtest_id"] = backtest_id
@@ -154,17 +148,17 @@ def _save_backtest_results(backtest_id: int, results: dict):
                 trades = [
                     {
                         "symbol": trade["symbol"],
-                        "trade_date": trade["trade_date"]
-                        if isinstance(trade["trade_date"], datetime)
-                        else datetime.fromisoformat(trade["trade_date"]),
+                        "trade_date": (
+                            trade["trade_date"]
+                            if isinstance(trade["trade_date"], datetime)
+                            else datetime.fromisoformat(trade["trade_date"])
+                        ),
                         "action": trade["action"],
                         "price": Decimal(str(trade["price"])),
                         "quantity": trade["quantity"],
                         "amount": Decimal(str(trade["amount"])),
                         "commission": Decimal(str(trade["commission"])),
-                        "profit_loss": Decimal(str(trade.get("profit_loss", 0)))
-                        if trade.get("profit_loss")
-                        else None,
+                        "profit_loss": Decimal(str(trade.get("profit_loss", 0))) if trade.get("profit_loss") else None,
                     }
                     for trade in results["trades"]
                 ]

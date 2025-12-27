@@ -98,9 +98,7 @@ class MonitoringService:
         finally:
             session.close()
 
-    def get_alert_rules(
-        self, rule_type: Optional[str] = None, is_active: Optional[bool] = None
-    ) -> List[AlertRule]:
+    def get_alert_rules(self, rule_type: Optional[str] = None, is_active: Optional[bool] = None) -> List[AlertRule]:
         """获取告警规则列表"""
         session = self.get_session()
         try:
@@ -321,9 +319,7 @@ class MonitoringService:
 
         return alerts
 
-    def _check_price_change(
-        self, rule: AlertRule, df: pd.DataFrame, params: Dict
-    ) -> List[Dict]:
+    def _check_price_change(self, rule: AlertRule, df: pd.DataFrame, params: Dict) -> List[Dict]:
         """检查价格变动"""
         alerts = []
         threshold = params.get("change_percent", 5)
@@ -356,18 +352,14 @@ class MonitoringService:
 
         return alerts
 
-    def _check_volume_surge(
-        self, rule: AlertRule, df: pd.DataFrame, params: Dict
-    ) -> List[Dict]:
+    def _check_volume_surge(self, rule: AlertRule, df: pd.DataFrame, params: Dict) -> List[Dict]:
         """检查成交量激增"""
         alerts = []
         # 实际应该获取历史平均成交量对比,这里简化处理
         # TODO: 添加历史数据对比逻辑
         return alerts
 
-    def _check_limit_up(
-        self, rule: AlertRule, df: pd.DataFrame, params: Dict
-    ) -> List[Dict]:
+    def _check_limit_up(self, rule: AlertRule, df: pd.DataFrame, params: Dict) -> List[Dict]:
         """检查涨停"""
         alerts = []
         include_st = params.get("include_st", False)
@@ -377,9 +369,7 @@ class MonitoringService:
 
         if not include_st:
             # 排除ST股票
-            limit_up_df = limit_up_df[
-                ~limit_up_df["stock_name"].str.contains("ST", na=False)
-            ]
+            limit_up_df = limit_up_df[~limit_up_df["stock_name"].str.contains("ST", na=False)]
 
         for _, row in limit_up_df.iterrows():
             alerts.append(
@@ -397,9 +387,7 @@ class MonitoringService:
 
         return alerts
 
-    def _check_limit_down(
-        self, rule: AlertRule, df: pd.DataFrame, params: Dict
-    ) -> List[Dict]:
+    def _check_limit_down(self, rule: AlertRule, df: pd.DataFrame, params: Dict) -> List[Dict]:
         """检查跌停"""
         alerts = []
         include_st = params.get("include_st", False)
@@ -409,9 +397,7 @@ class MonitoringService:
 
         if not include_st:
             # 排除ST股票
-            limit_down_df = limit_down_df[
-                ~limit_down_df["stock_name"].str.contains("ST", na=False)
-            ]
+            limit_down_df = limit_down_df[~limit_down_df["stock_name"].str.contains("ST", na=False)]
 
         for _, row in limit_down_df.iterrows():
             alerts.append(
@@ -429,9 +415,7 @@ class MonitoringService:
 
         return alerts
 
-    def _check_technical_break(
-        self, rule: AlertRule, df: pd.DataFrame, params: Dict
-    ) -> List[Dict]:
+    def _check_technical_break(self, rule: AlertRule, df: pd.DataFrame, params: Dict) -> List[Dict]:
         """检查技术突破"""
         alerts = []
         # TODO: 实现技术指标突破检测
@@ -503,20 +487,13 @@ class MonitoringService:
             if start_date:
                 query = query.filter(AlertRecord.alert_time >= start_date)
             if end_date:
-                query = query.filter(
-                    AlertRecord.alert_time < end_date + timedelta(days=1)
-                )
+                query = query.filter(AlertRecord.alert_time < end_date + timedelta(days=1))
 
             # 获取总数
             total = query.count()
 
             # 分页和排序
-            records = (
-                query.order_by(desc(AlertRecord.alert_time))
-                .limit(limit)
-                .offset(offset)
-                .all()
-            )
+            records = query.order_by(desc(AlertRecord.alert_time)).limit(limit).offset(offset).all()
 
             return records, total
         finally:
@@ -526,9 +503,7 @@ class MonitoringService:
         """标记告警为已读"""
         session = self.get_session()
         try:
-            alert = (
-                session.query(AlertRecord).filter(AlertRecord.id == alert_id).first()
-            )
+            alert = session.query(AlertRecord).filter(AlertRecord.id == alert_id).first()
             if not alert:
                 return False
 
@@ -546,9 +521,7 @@ class MonitoringService:
     # 龙虎榜数据
     # ========================================================================
 
-    def fetch_dragon_tiger_list(
-        self, trade_date: Optional[date] = None
-    ) -> pd.DataFrame:
+    def fetch_dragon_tiger_list(self, trade_date: Optional[date] = None) -> pd.DataFrame:
         """获取龙虎榜数据"""
         try:
             if trade_date is None:
@@ -627,47 +600,28 @@ class MonitoringService:
             today = date.today()
 
             # 实时监控统计
-            realtime_stats = (
-                session.query(RealtimeMonitoring)
-                .filter(RealtimeMonitoring.trade_date == today)
-                .all()
-            )
+            realtime_stats = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == today).all()
 
             limit_up_count = sum(1 for r in realtime_stats if r.is_limit_up)
             limit_down_count = sum(1 for r in realtime_stats if r.is_limit_down)
-            strong_up_count = sum(
-                1 for r in realtime_stats if r.change_percent and r.change_percent > 5
-            )
-            strong_down_count = sum(
-                1 for r in realtime_stats if r.change_percent and r.change_percent < -5
-            )
+            strong_up_count = sum(1 for r in realtime_stats if r.change_percent and r.change_percent > 5)
+            strong_down_count = sum(1 for r in realtime_stats if r.change_percent and r.change_percent < -5)
 
             avg_change = (
-                sum(r.change_percent for r in realtime_stats if r.change_percent)
-                / len(realtime_stats)
+                sum(r.change_percent for r in realtime_stats if r.change_percent) / len(realtime_stats)
                 if realtime_stats
                 else 0
             )
-            total_amount = (
-                sum(r.amount for r in realtime_stats if r.amount)
-                if realtime_stats
-                else 0
-            )
+            total_amount = sum(r.amount for r in realtime_stats if r.amount) if realtime_stats else 0
 
             # 告警统计
             unread_alerts = (
                 session.query(AlertRecord)
-                .filter(
-                    and_(AlertRecord.alert_time >= today, AlertRecord.is_read == False)
-                )
+                .filter(and_(AlertRecord.alert_time >= today, AlertRecord.is_read == False))
                 .count()
             )
 
-            active_alerts = (
-                session.query(AlertRecord)
-                .filter(AlertRecord.alert_time >= today)
-                .count()
-            )
+            active_alerts = session.query(AlertRecord).filter(AlertRecord.alert_time >= today).count()
 
             return {
                 "total_stocks": len(realtime_stats),

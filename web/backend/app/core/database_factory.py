@@ -178,10 +178,7 @@ class DatabaseFactory:
             KeyError: If database type not initialized
         """
         if db_type not in DatabaseFactory._session_factories:
-            raise KeyError(
-                f"Database type '{db_type}' not initialized. "
-                f"Call create_{db_type}() first."
-            )
+            raise KeyError(f"Database type '{db_type}' not initialized. " f"Call create_{db_type}() first.")
 
         return DatabaseFactory._session_factories[db_type]()
 

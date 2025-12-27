@@ -283,12 +283,8 @@ class TestDatabaseConnectionHandler:
         self.mock_postgres_conn = MagicMock()
 
         # 配置mock返回值
-        self.mock_conn_manager.get_tdengine_connection.return_value = (
-            self.mock_tdengine_conn
-        )
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_tdengine_conn
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
     def test_init_connection_handler(self):
@@ -329,9 +325,7 @@ class TestDatabaseConnectionHandler:
     def test_return_postgresql_connection_failure(self):
         """测试归还PostgreSQL连接失败"""
         # 配置putconn抛出异常
-        self.mock_postgres_pool.putconn.side_effect = Exception(
-            "Connection return failed"
-        )
+        self.mock_postgres_pool.putconn.side_effect = Exception("Connection return failed")
 
         handler = DatabaseConnectionHandler(self.mock_conn_manager)
 
@@ -422,9 +416,7 @@ class TestGlobalConnectionFunctions:
         import src.utils.db_connection_retry
 
         assert src.utils.db_connection_retry.connection_handler is not None
-        assert isinstance(
-            src.utils.db_connection_retry.connection_handler, DatabaseConnectionHandler
-        )
+        assert isinstance(src.utils.db_connection_retry.connection_handler, DatabaseConnectionHandler)
 
     def test_get_tdengine_connection_with_retry_success(self):
         """测试全局TDengine连接获取成功"""

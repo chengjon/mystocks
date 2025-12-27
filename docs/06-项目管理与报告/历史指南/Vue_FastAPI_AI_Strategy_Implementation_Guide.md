@@ -4,9 +4,9 @@
 
 本文档为基于Vue.js + FastAPI架构的MyStocks项目提供完整的AI策略实施指导，结合mystocks_spec项目的成熟经验，针对Vue.js前端和FastAPI后端的架构特点进行专门优化。
 
-**适用架构**: Vue.js (前端) + FastAPI (后端)  
-**参考项目**: mystocks_spec (主分支)  
-**文档版本**: v1.0  
+**适用架构**: Vue.js (前端) + FastAPI (后端)
+**参考项目**: mystocks_spec (主分支)
+**文档版本**: v1.0
 **创建时间**: 2025-11-16
 
 ---
@@ -115,7 +115,7 @@ from .core.exceptions import setup_exception_handlers
 import sys
 sys.path.append('../mystocks_spec')
 from ai_strategy_analyzer import AIStrategyAnalyzer
-from gpu_ai_integration import GPUAIIntegrationManager  
+from gpu_ai_integration import GPUAIIntegrationManager
 from ai_monitoring_optimizer import AIRealtimeMonitor, AIAlertManager
 
 # 全局实例
@@ -129,26 +129,26 @@ async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时初始化
     global strategy_analyzer, gpu_manager, monitor, alert_manager
-    
+
     logging.info("🚀 初始化MyStocks AI后端...")
-    
+
     # 初始化AI策略分析器
     strategy_analyzer = AIStrategyAnalyzer()
     await strategy_analyzer.initialize()
-    
+
     # 初始化GPU管理器
     gpu_manager = GPUAIIntegrationManager()
     await gpu_manager.initialize()
-    
+
     # 初始化监控系统
     monitor = AIRealtimeMonitor()
     alert_manager = AIAlertManager()
     await monitor.initialize()
-    
+
     logging.info("✅ MyStocks AI后端初始化完成")
-    
+
     yield
-    
+
     # 关闭时清理
     logging.info("👋 MyStocks AI后端关闭中...")
     await strategy_analyzer.cleanup()
@@ -218,7 +218,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         'data': metrics,
                         'timestamp': datetime.now().isoformat()
                     })
-            
+
             await asyncio.sleep(5)  # 5秒推送一次
     except WebSocketDisconnect:
         manager.disconnect(websocket)
@@ -272,7 +272,7 @@ async def get_strategies():
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         strategies = await strategy_analyzer.get_available_strategies()
         return {
             "strategies": strategies,
@@ -290,10 +290,10 @@ async def run_strategy(strategy_name: str, request: StrategyRunRequest, backgrou
         valid_strategies = ["momentum", "mean_reversion", "ml_based"]
         if strategy_name not in valid_strategies:
             raise HTTPException(status_code=400, detail=f"无效策略: {strategy_name}")
-        
+
         # 后台执行策略
         background_tasks.add_task(execute_strategy, strategy_name, request.symbols, request.parameters)
-        
+
         return {
             "message": f"策略 {strategy_name} 已在后台开始执行",
             "strategy": strategy_name,
@@ -309,7 +309,7 @@ async def get_strategy_performance(strategy_name: str):
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         performance = await strategy_analyzer.get_strategy_performance(strategy_name)
         return {
             "strategy": strategy_name,
@@ -326,7 +326,7 @@ async def get_performance_summary():
         from main import strategy_analyzer
         if strategy_analyzer is None:
             raise HTTPException(status_code=503, detail="策略引擎未初始化")
-        
+
         summary = await strategy_analyzer.get_performance_summary()
         return {
             "summary": summary,
@@ -431,7 +431,7 @@ async def run_strategy_batch(
         raise HTTPException(status_code=500, detail=str(e))
 ```
 
-### Phase 2: Vue.js前端搭建 (Week 3-4)  
+### Phase 2: Vue.js前端搭建 (Week 3-4)
 **目标**: 构建现代化Vue.js前端界面
 
 #### 2.1 Vue项目初始化
@@ -459,17 +459,17 @@ npm install -D @types/node
         MyStocks AI策略面板
       </h1>
       <div class="header-actions">
-        <el-button 
-          type="primary" 
-          :icon="Refresh" 
+        <el-button
+          type="primary"
+          :icon="Refresh"
           @click="refreshData"
           :loading="loading"
         >
           刷新数据
         </el-button>
-        <el-button 
-          type="success" 
-          :icon="Plus" 
+        <el-button
+          type="success"
+          :icon="Plus"
           @click="showCreateDialog = true"
         >
           新建策略
@@ -509,8 +509,8 @@ npm install -D @types/node
               style="width: 200px; margin-right: 10px;"
             />
             <el-button-group>
-              <el-button 
-                v-for="status in strategyStatuses" 
+              <el-button
+                v-for="status in strategyStatuses"
                 :key="status.value"
                 :type="selectedStatus === status.value ? 'primary' : 'default'"
                 @click="selectedStatus = status.value"
@@ -523,8 +523,8 @@ npm install -D @types/node
         </div>
       </template>
 
-      <el-table 
-        :data="filteredStrategies" 
+      <el-table
+        :data="filteredStrategies"
         style="width: 100%"
         v-loading="loading"
         @sort-change="handleSortChange"
@@ -533,9 +533,9 @@ npm install -D @types/node
           <template #default="{ row }">
             <div class="strategy-name">
               <strong>{{ row.name }}</strong>
-              <el-tag 
-                v-if="row.isRecommended" 
-                type="success" 
+              <el-tag
+                v-if="row.isRecommended"
+                type="success"
                 size="small"
                 effect="dark"
               >
@@ -544,7 +544,7 @@ npm install -D @types/node
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="type" label="类型" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStrategyTypeColor(row.type)">
@@ -552,7 +552,7 @@ npm install -D @types/node
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="status" label="状态" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusColor(row.status)">
@@ -560,7 +560,7 @@ npm install -D @types/node
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="return" label="收益率" sortable="custom" min-width="100">
           <template #default="{ row }">
             <span :class="getReturnClass(row.return)">
@@ -568,57 +568,57 @@ npm install -D @types/node
             </span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="sharpe" label="夏普比率" sortable="custom" min-width="100">
           <template #default="{ row }">
             {{ row.sharpe }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="maxDrawdown" label="最大回撤" min-width="100">
           <template #default="{ row }">
             <span class="text-danger">{{ row.maxDrawdown }}</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="lastUpdated" label="更新时间" min-width="150">
           <template #default="{ row }">
             {{ formatDate(row.lastUpdated) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="{ row }">
             <el-button-group>
-              <el-button 
-                size="small" 
-                :icon="View" 
+              <el-button
+                size="small"
+                :icon="View"
                 @click="viewStrategyDetails(row)"
               >
                 查看
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'inactive'"
-                size="small" 
+                size="small"
                 type="success"
-                :icon="VideoPlay" 
+                :icon="VideoPlay"
                 @click="activateStrategy(row)"
               >
                 启用
               </el-button>
-              <el-button 
+              <el-button
                 v-if="row.status === 'active'"
-                size="small" 
+                size="small"
                 type="warning"
-                :icon="VideoPause" 
+                :icon="VideoPause"
                 @click="pauseStrategy(row)"
               >
                 暂停
               </el-button>
-              <el-button 
-                size="small" 
+              <el-button
+                size="small"
                 type="danger"
-                :icon="Delete" 
+                :icon="Delete"
                 @click="deleteStrategy(row)"
               >
                 删除
@@ -668,11 +668,11 @@ npm install -D @types/node
           </el-select>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input 
-            v-model="createForm.description" 
-            type="textarea" 
+          <el-input
+            v-model="createForm.description"
+            type="textarea"
             :rows="3"
-            placeholder="请输入策略描述" 
+            placeholder="请输入策略描述"
           />
         </el-form-item>
       </el-form>
@@ -698,8 +698,8 @@ npm install -D @types/node
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete 
+import {
+  Refresh, Plus, Search, View, VideoPlay, VideoPause, Delete
 } from '@element-plus/icons-vue'
 import { useStrategyStore } from '@/stores/strategy'
 import StrategyPerformanceChart from './charts/StrategyPerformanceChart.vue'
@@ -769,24 +769,24 @@ const overviewMetrics = computed(() => [
 // 过滤后的策略列表
 const filteredStrategies = computed(() => {
   let strategies = strategyStore.strategies
-  
+
   // 状态过滤
   if (selectedStatus.value) {
     strategies = strategies.filter(s => s.status === selectedStatus.value)
   }
-  
+
   // 搜索过滤
   if (searchQuery.value) {
-    strategies = strategies.filter(s => 
+    strategies = strategies.filter(s =>
       s.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
-  
+
   return strategies
 })
 
 // 选中的策略（用于图表）
-const selectedStrategies = computed(() => 
+const selectedStrategies = computed(() =>
   filteredStrategies.value.filter(s => s.status === 'active')
 )
 
@@ -837,7 +837,7 @@ const deleteStrategy = async (strategy: any) => {
         type: 'warning'
       }
     )
-    
+
     await strategyStore.deleteStrategy(strategy.id)
     ElMessage.success(`策略 ${strategy.name} 已删除`)
   } catch (error) {
@@ -852,7 +852,7 @@ const createStrategy = async () => {
     ElMessage.warning('请填写必要信息')
     return
   }
-  
+
   creating.value = true
   try {
     await strategyStore.createStrategy(createForm.value)
@@ -1077,28 +1077,28 @@ from app.models.backtest import BacktestResult, BacktestConfig
 
 class BacktestService:
     """回测服务"""
-    
+
     def __init__(self, db_session: Session):
         self.db = db_session
-    
+
     def run_backtest(self, config: BacktestConfig) -> Dict[str, Any]:
         """运行回测"""
         try:
             # 1. 获取策略实例
             strategy = self.load_strategy(config.strategy_code)
-            
+
             # 2. 获取历史数据
             data = self.get_historical_data(config.symbol, config.start_date, config.end_date)
-            
+
             # 3. 执行回测逻辑
             result = self.execute_backtest(strategy, data, config)
-            
+
             # 4. 计算性能指标
             performance = self.calculate_performance(result)
-            
+
             # 5. 保存结果
             backtest_id = self.save_backtest_result(config, result, performance)
-            
+
             return {
                 "success": True,
                 "backtest_id": backtest_id,
@@ -1106,13 +1106,13 @@ class BacktestService:
                 "result": result,
                 "data": data
             }
-            
+
         except Exception as e:
             return {
                 "success": False,
                 "error": str(e)
             }
-    
+
     def execute_backtest(self, strategy, data: pd.DataFrame, config: BacktestConfig) -> Dict[str, Any]:
         """执行回测逻辑"""
         # 初始化账户
@@ -1121,12 +1121,12 @@ class BacktestService:
         position_value = 0
         trades = []
         portfolio_values = []
-        
+
         # 遍历数据执行策略
         for i, row in data.iterrows():
             # 获取策略信号
             signal = strategy.generate_signal(row)
-            
+
             # 执行交易
             if signal == 'BUY' and position == 0 and cash > row['close']:
                 # 买入
@@ -1134,7 +1134,7 @@ class BacktestService:
                 cost = shares * row['close']
                 commission = cost * config.commission_rate
                 total_cost = cost + commission
-                
+
                 if cash >= total_cost:
                     position = shares
                     cash -= total_cost
@@ -1145,13 +1145,13 @@ class BacktestService:
                         'shares': shares,
                         'cost': total_cost
                     })
-            
+
             elif signal == 'SELL' and position > 0:
                 # 卖出
                 proceeds = position * row['close']
                 commission = proceeds * config.commission_rate
                 net_proceeds = proceeds - commission
-                
+
                 cash += net_proceeds
                 trades.append({
                     'date': row['date'],
@@ -1161,27 +1161,27 @@ class BacktestService:
                     'proceeds': net_proceeds
                 })
                 position = 0
-            
+
             # 记录组合价值
             if position > 0:
                 position_value = position * row['close']
             else:
                 position_value = 0
-            
+
             total_value = cash + position_value
             portfolio_values.append(total_value)
-        
+
         return {
             'trades': trades,
             'portfolio_values': portfolio_values,
             'final_cash': cash,
             'final_position': position
         }
-    
+
     def calculate_performance(self, result: Dict[str, Any]) -> Dict[str, float]:
         """计算性能指标"""
         portfolio_values = result['portfolio_values']
-        
+
         if len(portfolio_values) < 2:
             return {
                 'total_return': 0.0,
@@ -1190,21 +1190,21 @@ class BacktestService:
                 'win_rate': 0.0,
                 'total_trades': 0
             }
-        
+
         # 计算收益率
         initial_value = portfolio_values[0]
         final_value = portfolio_values[-1]
         total_return = (final_value - initial_value) / initial_value
-        
+
         # 计算日收益率
-        daily_returns = [portfolio_values[i] / portfolio_values[i-1] - 1 
+        daily_returns = [portfolio_values[i] / portfolio_values[i-1] - 1
                         for i in range(1, len(portfolio_values))]
-        
+
         # 计算夏普比率
         avg_daily_return = np.mean(daily_returns)
         std_daily_return = np.std(daily_returns)
         sharpe_ratio = avg_daily_return / std_daily_return * np.sqrt(252) if std_daily_return != 0 else 0.0
-        
+
         # 计算最大回撤
         peak = portfolio_values[0]
         max_drawdown = 0
@@ -1214,12 +1214,12 @@ class BacktestService:
             drawdown = (peak - value) / peak
             if drawdown > max_drawdown:
                 max_drawdown = drawdown
-        
+
         # 计算胜率
         trades = result['trades']
         winning_trades = 0
         total_trades = len([t for t in trades if t['action'] == 'SELL'])
-        
+
         for i, trade in enumerate(trades):
             if trade['action'] == 'SELL' and i > 0:
                 # 找到对应的买入交易
@@ -1228,14 +1228,14 @@ class BacktestService:
                     if trades[j]['action'] == 'BUY' and trades[j]['shares'] == trade['shares']:
                         buy_trade = trades[j]
                         break
-                
+
                 if buy_trade:
                     profit = trade['proceeds'] - buy_trade['cost']
                     if profit > 0:
                         winning_trades += 1
-        
+
         win_rate = winning_trades / total_trades if total_trades > 0 else 0.0
-        
+
         return {
             'total_return': total_return,
             'sharpe_ratio': sharpe_ratio,
@@ -1243,14 +1243,14 @@ class BacktestService:
             'win_rate': win_rate,
             'total_trades': len(trades)
         }
-    
+
     def load_strategy(self, strategy_code: str):
         """加载策略"""
         # 这里应该根据策略代码加载对应的策略类
         # 例如：从策略定义中获取策略实例
         from ai_strategy_analyzer import AITradingStrategy
         return AITradingStrategy(strategy_code)
-    
+
     def get_historical_data(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """获取历史数据"""
         # 这里应该从数据源获取股票历史数据
@@ -1278,7 +1278,7 @@ async def get_backtest_results(backtest_id: int):
         result = db_session.query(BacktestResult).filter(BacktestResult.id == backtest_id).first()
         if not result:
             raise HTTPException(status_code=404, detail="回测结果不存在")
-        
+
         return {
             "success": True,
             "data": result.to_dict()
@@ -1298,8 +1298,8 @@ async def get_backtest_results(backtest_id: int):
     <div class="monitoring-header">
       <h2>AI策略监控</h2>
       <div class="monitoring-controls">
-        <el-button 
-          :type="isMonitoringActive ? 'danger' : 'primary'" 
+        <el-button
+          :type="isMonitoringActive ? 'danger' : 'primary'"
           @click="toggleMonitoring"
           :icon="isMonitoringActive ? VideoPause : VideoPlay"
         >
@@ -1317,22 +1317,22 @@ async def get_backtest_results(backtest_id: int):
               <h3>策略性能实时监控</h3>
             </div>
           </template>
-          
+
           <div class="chart-container">
             <RealtimePerformanceChart :data="realtimeMetrics" />
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card class="alert-panel">
           <template #header>
             <h3>实时告警</h3>
           </template>
-          
+
           <div class="alerts-list">
-            <div 
-              v-for="alert in recentAlerts" 
+            <div
+              v-for="alert in recentAlerts"
               :key="alert.id"
               class="alert-item"
               :class="alert.level"
@@ -1355,7 +1355,7 @@ async def get_backtest_results(backtest_id: int):
       <template #header>
         <h3>策略性能概览</h3>
       </template>
-      
+
       <el-table :data="strategyPerformance" style="width: 100%">
         <el-table-column prop="name" label="策略名称" width="150" />
         <el-table-column prop="return" label="收益率" width="120">
@@ -1387,9 +1387,9 @@ async def get_backtest_results(backtest_id: int):
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" @click="viewDetails(row)">详情</el-button>
-              <el-button 
-                size="small" 
-                type="warning" 
+              <el-button
+                size="small"
+                type="warning"
                 @click="adjustStrategy(row)"
               >
                 调优
@@ -1455,7 +1455,7 @@ const refreshStatus = async () => {
     const response = await fetch('/api/v1/strategies/performance/summary')
     const data = await response.json()
     strategyPerformance.value = data.summary
-    
+
     ElMessage.success('数据刷新成功')
   } catch (error) {
     ElMessage.error('数据刷新失败')
@@ -1679,7 +1679,7 @@ import cupy as cp
 class GPUStrategyProcessor:
     def __init__(self):
         self.gpu_enabled = True
-    
+
     def process_large_dataset(self, df: pd.DataFrame) -> pd.DataFrame:
         if self.gpu_enabled:
             # 使用cudf进行GPU加速处理
@@ -1726,7 +1726,7 @@ Instrumentator().instrument(app).expose(app)
 from prometheus_client import Counter, Histogram
 
 strategy_execution_counter = Counter(
-    "strategy_executions_total", 
+    "strategy_executions_total",
     "Total number of strategy executions",
     ["strategy_name", "status"]
 )
@@ -1777,6 +1777,6 @@ strategy_execution_time = Histogram(
 - 前端界面: http://localhost:3000
 - 技术支持: 查看系统监控面板
 
-**版本**: v1.0  
-**最后更新**: 2025-11-16  
+**版本**: v1.0
+**最后更新**: 2025-11-16
 **维护者**: MyStocks AI开发团队

@@ -107,9 +107,7 @@ class NotificationProvider(ABC):
         self.timeout = config.timeout
 
     @abstractmethod
-    async def send(
-        self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
-    ) -> NotificationResult:
+    async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send notification via this channel"""
         pass
 
@@ -127,8 +125,7 @@ class NotificationProvider(ABC):
                 return result
             except asyncio.TimeoutError:
                 logger.warning(
-                    f"Timeout sending via {self.config.channel.value} "
-                    f"(attempt {attempt + 1}/{self.retry_count})"
+                    f"Timeout sending via {self.config.channel.value} " f"(attempt {attempt + 1}/{self.retry_count})"
                 )
                 if attempt < self.retry_count - 1:
                     await asyncio.sleep(self.retry_delay * (2**attempt))
@@ -150,9 +147,7 @@ class NotificationProvider(ABC):
 class EmailNotificationProvider(NotificationProvider):
     """Email notification via SMTP"""
 
-    async def send(
-        self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
-    ) -> NotificationResult:
+    async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send email notification"""
         start_time = datetime.now()
 
@@ -185,9 +180,7 @@ class EmailNotificationProvider(NotificationProvider):
 
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
-            logger.info(
-                f"✅ Email sent to {len(recipients)} recipients ({delivery_time:.0f}ms)"
-            )
+            logger.info(f"✅ Email sent to {len(recipients)} recipients ({delivery_time:.0f}ms)")
 
             return NotificationResult(
                 channel=NotificationChannel.EMAIL,
@@ -238,17 +231,13 @@ class EmailNotificationProvider(NotificationProvider):
 class SlackNotificationProvider(NotificationProvider):
     """Slack notification via Webhooks"""
 
-    async def send(
-        self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
-    ) -> NotificationResult:
+    async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send Slack notification"""
         start_time = datetime.now()
 
         try:
             webhook_urls = recipients  # Slack channels are passed as webhook URLs
-            slack_webhook = (
-                webhook_urls[0] if webhook_urls else os.getenv("SLACK_WEBHOOK_URL")
-            )
+            slack_webhook = webhook_urls[0] if webhook_urls else os.getenv("SLACK_WEBHOOK_URL")
 
             if not slack_webhook:
                 raise ValueError("Slack webhook URL not configured")
@@ -304,12 +293,8 @@ class SlackNotificationProvider(NotificationProvider):
                     timeout=aiohttp.ClientTimeout(total=self.timeout),
                 ) as response:
                     if response.status == 200:
-                        delivery_time = (
-                            datetime.now() - start_time
-                        ).total_seconds() * 1000
-                        logger.info(
-                            f"✅ Slack notification sent ({delivery_time:.0f}ms)"
-                        )
+                        delivery_time = (datetime.now() - start_time).total_seconds() * 1000
+                        logger.info(f"✅ Slack notification sent ({delivery_time:.0f}ms)")
                         return NotificationResult(
                             channel=NotificationChannel.SLACK,
                             alert_id=alert.alertname,
@@ -338,9 +323,7 @@ class SlackNotificationProvider(NotificationProvider):
 class SMSNotificationProvider(NotificationProvider):
     """SMS notification via Twilio"""
 
-    async def send(
-        self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
-    ) -> NotificationResult:
+    async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send SMS notification"""
         start_time = datetime.now()
 
@@ -354,9 +337,7 @@ class SMSNotificationProvider(NotificationProvider):
                 raise ValueError("Twilio credentials not configured")
 
             # Create SMS message (keep it short!)
-            sms_body = (
-                f"[{alert.severity.upper()}] {alert.alertname}: {alert.summary[:80]}"
-            )
+            sms_body = f"[{alert.severity.upper()}] {alert.alertname}: {alert.summary[:80]}"
 
             # Send to each recipient
             sent_count = 0
@@ -376,17 +357,12 @@ class SMSNotificationProvider(NotificationProvider):
                         if response.status == 201:
                             sent_count += 1
                         else:
-                            logger.warning(
-                                f"Failed to send SMS to {phone_number}: {response.status}"
-                            )
+                            logger.warning(f"Failed to send SMS to {phone_number}: {response.status}")
 
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info(
-                    f"✅ SMS sent to {sent_count}/{len(recipients)} recipients "
-                    f"({delivery_time:.0f}ms)"
-                )
+                logger.info(f"✅ SMS sent to {sent_count}/{len(recipients)} recipients " f"({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.SMS,
                     alert_id=alert.alertname,
@@ -406,9 +382,7 @@ class SMSNotificationProvider(NotificationProvider):
 class WebhookNotificationProvider(NotificationProvider):
     """Generic webhook notification"""
 
-    async def send(
-        self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
-    ) -> NotificationResult:
+    async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send webhook notification"""
         start_time = datetime.now()
 
@@ -437,9 +411,7 @@ class WebhookNotificationProvider(NotificationProvider):
                             if 200 <= response.status < 300:
                                 sent_count += 1
                             else:
-                                logger.warning(
-                                    f"Webhook returned {response.status}: {url}"
-                                )
+                                logger.warning(f"Webhook returned {response.status}: {url}")
                     except Exception as e:
                         logger.warning(f"Webhook failed ({url}): {e}")
 
@@ -447,8 +419,7 @@ class WebhookNotificationProvider(NotificationProvider):
 
             if sent_count > 0:
                 logger.info(
-                    f"✅ Webhook sent to {sent_count}/{len(webhook_urls)} endpoints "
-                    f"({delivery_time:.0f}ms)"
+                    f"✅ Webhook sent to {sent_count}/{len(webhook_urls)} endpoints " f"({delivery_time:.0f}ms)"
                 )
                 return NotificationResult(
                     channel=NotificationChannel.WEBHOOK,
@@ -497,7 +468,8 @@ class AlertNotificationManager:
         conn = sqlite3.connect(self.notification_history_db)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS notification_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 alert_name TEXT,
@@ -509,7 +481,8 @@ class AlertNotificationManager:
                 message TEXT,
                 retry_count INTEGER
             )
-        """)
+        """
+        )
 
         conn.commit()
         conn.close()
@@ -545,9 +518,7 @@ class AlertNotificationManager:
 
         # Webhook
         self.providers[NotificationChannel.WEBHOOK] = WebhookNotificationProvider(
-            NotificationConfig(
-                channel=NotificationChannel.WEBHOOK, enabled=True, retry_count=2
-            )
+            NotificationConfig(channel=NotificationChannel.WEBHOOK, enabled=True, retry_count=2)
         )
 
         logger.info(f"✅ Initialized {len(self.providers)} notification providers")
@@ -558,9 +529,7 @@ class AlertNotificationManager:
         """
         Send alert via multiple channels to specified recipients
         """
-        logger.info(
-            f"📨 Sending alert: {alert.alertname} via {len(recipients_map)} channels"
-        )
+        logger.info(f"📨 Sending alert: {alert.alertname} via {len(recipients_map)} channels")
 
         tasks = []
         for channel, recipients in recipients_map.items():
@@ -614,11 +583,7 @@ class AlertNotificationManager:
     def _get_dashboard_url(self, alert: Alert) -> str:
         """Generate dashboard URL for alert context"""
         base_url = os.getenv("GRAFANA_URL", "http://localhost:3000")
-        return (
-            f"{base_url}/d/mystocks-monitoring?"
-            f"var-service={alert.service}&"
-            f"var-severity={alert.severity}"
-        )
+        return f"{base_url}/d/mystocks-monitoring?" f"var-service={alert.service}&" f"var-severity={alert.severity}"
 
     def _save_notification_history(self, alert: Alert, result: NotificationResult):
         """Save notification delivery record"""
@@ -649,9 +614,7 @@ class AlertNotificationManager:
         except Exception as e:
             logger.error(f"Failed to save notification history: {e}")
 
-    def get_notification_history(
-        self, alert_name: Optional[str] = None, days: int = 7
-    ) -> List[Dict]:
+    def get_notification_history(self, alert_name: Optional[str] = None, days: int = 7) -> List[Dict]:
         """Retrieve notification history"""
         try:
             conn = sqlite3.connect(self.notification_history_db)

@@ -4,9 +4,9 @@
 
 根据Claude官方hooks文档，对MyStocks项目的所有hooks进行了规范化改进，确保完全符合官方最佳实践。
 
-**完成时间**: 2025-11-19  
-**改进hooks数量**: 6个  
-**修复hooks数量**: 2个  
+**完成时间**: 2025-11-19
+**改进hooks数量**: 6个
+**修复hooks数量**: 2个
 **参考文档**: /opt/mydoc/Anthropic/Claude-code/hooks.md
 
 ---
@@ -36,7 +36,7 @@
 - 改用systemMessage显示警告（低于阈值情况，非阻断）
 - 修正阻断情况的JSON格式（将decision和reason移到顶层）
 
-**修改位置**: 
+**修改位置**:
 - 文件: .claude/hooks/stop-python-quality-gate.sh
 - 关键函数: 所有JSON输出的cat <<EOF部分（约6处）
 
@@ -66,7 +66,7 @@ cat <<EOF
 EOF
 ```
 
-**修改位置**: 
+**修改位置**:
 - 文件: .claude/hooks/session-start-task-master-injector.sh
 - 关键函数: 输出部分（文件末尾）
 
@@ -120,8 +120,8 @@ EOF
 
 ```json
 {
-  "decision": "block",     
-  "reason": "错误描述",         
+  "decision": "block",
+  "reason": "错误描述",
   "hookSpecificOutput": {
     "hookEventName": "Stop",
     "errorDetails": {...}  // 可选的hook特定数据
@@ -246,15 +246,15 @@ curl -H "X-API-Key: sk_mystocks_2025" \
 
 本次规范化改进确保了MyStocks项目的所有hooks完全符合Claude官方规范：
 
-✅ **修复关键问题**: Stop hook的JSON格式错误  
-✅ **提升代码质量**: SessionStart hook使用标准JSON  
-✅ **验证现有实现**: 4个hooks已符合规范  
-✅ **完善文档**: 添加Context7概念说明  
+✅ **修复关键问题**: Stop hook的JSON格式错误
+✅ **提升代码质量**: SessionStart hook使用标准JSON
+✅ **验证现有实现**: 4个hooks已符合规范
+✅ **完善文档**: 添加Context7概念说明
 
 所有改进均已完成并上报到BUGer系统，hooks现在可以正确工作。
 
 ---
 
-**生成时间**: 2025-11-19  
-**报告版本**: 1.0  
+**生成时间**: 2025-11-19
+**报告版本**: 1.0
 **状态**: ✅ 规范化完成，已上报BUGer

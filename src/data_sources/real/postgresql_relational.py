@@ -52,9 +52,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         """
         self.pg_access = PostgreSQLDataAccess()
         self._connection_pool_size = connection_pool_size
-        logger.info(
-            f"PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})"
-        )
+        logger.info(f"PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})")
 
     # ==================== 自选股管理 ====================
 
@@ -100,9 +98,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                     "symbol": row[2],
                     "list_type": row[3],
                     "note": row[4],
-                    "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S")
-                    if row[5]
-                    else None,
+                    "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S") if row[5] else None,
                 }
 
                 if include_stock_info and len(row) > 6:
@@ -118,9 +114,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(
-                f"获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}"
-            )
+            logger.info(f"获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}")
             return result
 
         except Exception as e:
@@ -174,9 +168,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
-            logger.info(
-                f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}"
-            )
+            logger.info(f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}")
             return result
 
         except ValueError:
@@ -186,9 +178,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"添加自选股失败: {e}")
             raise
 
-    def remove_from_watchlist(
-        self, user_id: int, symbol: str, list_type: Optional[str] = None
-    ) -> bool:
+    def remove_from_watchlist(self, user_id: int, symbol: str, list_type: Optional[str] = None) -> bool:
         """
         从自选列表移除股票
 
@@ -216,9 +206,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(
-                f"删除自选股成功: user_id={user_id}, symbol={symbol}, deleted={deleted_count}"
-            )
+            logger.info(f"删除自选股成功: user_id={user_id}, symbol={symbol}, deleted={deleted_count}")
             return deleted_count > 0
 
         except Exception as e:
@@ -226,9 +214,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"删除自选股失败: {e}")
             raise
 
-    def update_watchlist_note(
-        self, user_id: int, symbol: str, list_type: str, note: str
-    ) -> bool:
+    def update_watchlist_note(self, user_id: int, symbol: str, list_type: str, note: str) -> bool:
         """
         更新自选股备注
         """
@@ -309,12 +295,8 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                         "status": row[4],
                         "parameters": row[5],  # JSONB字段自动转换为dict
                         "description": row[6],
-                        "created_at": row[7].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[7]
-                        else None,
-                        "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[8]
-                        else None,
+                        "created_at": row[7].strftime("%Y-%m-%d %H:%M:%S") if row[7] else None,
+                        "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S") if row[8] else None,
                     }
                 )
 
@@ -398,9 +380,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"保存策略配置失败: {e}")
             raise
 
-    def update_strategy_status(
-        self, strategy_id: int, user_id: int, status: str
-    ) -> bool:
+    def update_strategy_status(self, strategy_id: int, user_id: int, status: str) -> bool:
         """
         更新策略状态
 
@@ -537,15 +517,9 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                         "notification_methods": row[6],  # JSONB自动转换
                         "enabled": row[7],
                         "triggered_count": row[8],
-                        "last_triggered": row[9].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[9]
-                        else None,
-                        "created_at": row[10].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[10]
-                        else None,
-                        "updated_at": row[11].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[11]
-                        else None,
+                        "last_triggered": row[9].strftime("%Y-%m-%d %H:%M:%S") if row[9] else None,
+                        "created_at": row[10].strftime("%Y-%m-%d %H:%M:%S") if row[10] else None,
+                        "updated_at": row[11].strftime("%Y-%m-%d %H:%M:%S") if row[11] else None,
                     }
                 )
 
@@ -713,9 +687,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.error(f"获取用户偏好失败: {e}")
             raise
 
-    def update_user_preferences(
-        self, user_id: int, preferences: Dict[str, Any]
-    ) -> bool:
+    def update_user_preferences(self, user_id: int, preferences: Dict[str, Any]) -> bool:
         """
         更新用户偏好设置
 
@@ -736,9 +708,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 params.append(json.dumps(preferences["display_settings"]))
 
             if "notification_settings" in preferences:
-                set_clauses.append(
-                    "notification_settings = notification_settings || %s::jsonb"
-                )
+                set_clauses.append("notification_settings = notification_settings || %s::jsonb")
                 params.append(json.dumps(preferences["notification_settings"]))
 
             if "trading_settings" in preferences:
@@ -836,9 +806,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                         "total_shares": row[7],
                         "float_shares": row[8],
                         "status": row[9],
-                        "updated_at": row[10].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[10]
-                        else None,
+                        "updated_at": row[10].strftime("%Y-%m-%d %H:%M:%S") if row[10] else None,
                     }
                 )
 
@@ -954,18 +922,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                         "level": row[3],
                         "parent_code": row[4],
                         "stock_count": row[5],
-                        "updated_at": row[6].strftime("%Y-%m-%d %H:%M:%S")
-                        if row[6]
-                        else None,
+                        "updated_at": row[6].strftime("%Y-%m-%d %H:%M:%S") if row[6] else None,
                     }
                 )
 
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(
-                f"获取行业列表成功: classification={classification}, count={len(result)}"
-            )
+            logger.info(f"获取行业列表成功: classification={classification}, count={len(result)}")
             return result
 
         except Exception as e:
@@ -1037,9 +1001,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(
-                f"获取行业成分股成功: industry_code={industry_code}, count={len(result)}"
-            )
+            logger.info(f"获取行业成分股成功: industry_code={industry_code}, count={len(result)}")
             return result
 
         except Exception as e:
@@ -1072,9 +1034,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(
-                f"获取概念成分股成功: concept_code={concept_code}, count={len(result)}"
-            )
+            logger.info(f"获取概念成分股成功: concept_code={concept_code}, count={len(result)}")
             return result
 
         except Exception as e:

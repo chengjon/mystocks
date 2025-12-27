@@ -10,7 +10,6 @@
 版本: 1.0.0 - 内存管理集成版本
 """
 
-import os
 import asyncio
 from typing import Optional, Generator, Dict, Any
 from dotenv import load_dotenv
@@ -21,7 +20,7 @@ load_dotenv()
 
 # 导入内存管理
 try:
-    from src.core.memory_manager import get_memory_monitor, get_memory_stats
+    from src.core.memory_manager import get_memory_stats
 
     MEMORY_MANAGEMENT_AVAILABLE = True
 except ImportError:
@@ -29,17 +28,11 @@ except ImportError:
 
 # 导入连接管理器
 try:
-    # 避免循环导入问题
-    import sys
-    import os
-
-    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-
-    # 直接导入而不通过 core 模块
-    exec(open("src/storage/database/connection_manager.py").read())
+    from .connection_manager import get_connection_manager
     CONNECTION_MANAGER_AVAILABLE = True
 except ImportError:
     CONNECTION_MANAGER_AVAILABLE = False
+    get_connection_manager = None
 
 
 class DatabaseConnectionContext:
@@ -58,7 +51,7 @@ class DatabaseConnectionContext:
 
     async def __aenter__(self):
         """异步进入上下文"""
-        if not CONNECTION_MANAGER_AVAILABLE:
+        if not CONNECTION_MANAGER_AVAILABLE or get_connection_manager is None:
             raise RuntimeError("连接管理器不可用")
 
         self.manager = get_connection_manager()
@@ -66,9 +59,7 @@ class DatabaseConnectionContext:
         # 获取连接前的内存统计
         if MEMORY_MANAGEMENT_AVAILABLE:
             memory_before = get_memory_stats()
-            print(
-                f"获取{self.db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB"
-            )
+            print(f"获取{self.db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB")
 
         # 根据数据库类型获取连接
         if self.db_type == "tdengine":
@@ -89,9 +80,7 @@ class DatabaseConnectionContext:
         # 获取连接后的内存统计
         if MEMORY_MANAGEMENT_AVAILABLE and self.connection:
             memory_after = get_memory_stats()
-            print(
-                f"释放{self.db_type}连接后内存使用: {memory_after['current']['process_memory_mb']:.2f} MB"
-            )
+            print(f"释放{self.db_type}连接后内存使用: {memory_after['current']['process_memory_mb']:.2f} MB")
 
         # 清理连接
         self._cleanup_connection()
@@ -136,7 +125,7 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
     """
     connection = None
     try:
-        if not CONNECTION_MANAGER_AVAILABLE:
+        if not CONNECTION_MANAGER_AVAILABLE or get_connection_manager is None:
             raise RuntimeError("连接管理器不可用")
 
         manager = get_connection_manager()
@@ -144,9 +133,7 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
         # 记录内存使用
         if MEMORY_MANAGEMENT_AVAILABLE:
             memory_before = get_memory_stats()
-            print(
-                f"同步获取{db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB"
-            )
+            print(f"同步获取{db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB")
 
         # 获取连接
         if db_type == "tdengine":
@@ -166,9 +153,7 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
         # 记录内存使用
         if MEMORY_MANAGEMENT_AVAILABLE and connection:
             memory_after = get_memory_stats()
-            print(
-                f"同步释放{db_type}连接后内存使用: {memory_after['current']['process_memory_mb']:.2f} MB"
-            )
+            print(f"同步释放{db_type}连接后内存使用: {memory_after['current']['process_memory_mb']:.2f} MB")
 
         # 清理连接
         try:
@@ -194,7 +179,7 @@ async def database_connection_async(db_type: str) -> Any:
     Returns:
         数据库连接对象
     """
-    if not CONNECTION_MANAGER_AVAILABLE:
+    if not CONNECTION_MANAGER_AVAILABLE or get_connection_manager is None:
         raise RuntimeError("连接管理器不可用")
 
     manager = get_connection_manager()
@@ -202,9 +187,7 @@ async def database_connection_async(db_type: str) -> Any:
     # 记录内存使用
     if MEMORY_MANAGEMENT_AVAILABLE:
         memory_before = get_memory_stats()
-        print(
-            f"异步获取{db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB"
-        )
+        print(f"异步获取{db_type}连接前内存使用: {memory_before['current']['process_memory_mb']:.2f} MB")
 
     # 根据数据库类型获取连接
     if db_type == "tdengine":
@@ -253,9 +236,7 @@ class ConnectionPoolManager:
         stats = self._connection_stats[db_type]
         stats["total_requests"] += 1
         stats["active_connections"] += 1
-        stats["peak_connections"] = max(
-            stats["peak_connections"], stats["active_connections"]
-        )
+        stats["peak_connections"] = max(stats["peak_connections"], stats["active_connections"])
 
         # 获取连接
         connection = await database_connection_async(db_type)
@@ -264,9 +245,7 @@ class ConnectionPoolManager:
         if MEMORY_MANAGEMENT_AVAILABLE:
             memory_stats = get_memory_stats()
             stats["current_memory_mb"] = memory_stats["current"]["process_memory_mb"]
-            stats["resource_count"] = memory_stats["resource_manager"][
-                "total_resources"
-            ]
+            stats["resource_count"] = memory_stats["resource_manager"]["total_resources"]
         else:
             stats["current_memory_mb"] = 0
             stats["resource_count"] = 0
@@ -286,9 +265,7 @@ class ConnectionPoolManager:
         # 记录释放后的内存使用
         if MEMORY_MANAGEMENT_AVAILABLE:
             memory_after = get_memory_stats()
-            print(
-                f"释放{db_type}连接后总内存使用: {memory_after['current']['process_memory_mb']:.2f} MB"
-            )
+            print(f"释放{db_type}连接后总内存使用: {memory_after['current']['process_memory_mb']:.2f} MB")
 
     def get_pool_stats(self) -> Dict[str, Any]:
         """获取连接池统计信息"""
@@ -406,8 +383,6 @@ if __name__ == "__main__":
     print("连接池统计信息:")
     print(f"  活跃连接数: {stats['active_connections']}")
     for db_type, db_stats in stats["db_stats"].items():
-        print(
-            f"  {db_type}: 请求次数={db_stats['total_requests']}, 峰值连接={db_stats['peak_connections']}"
-        )
+        print(f"  {db_type}: 请求次数={db_stats['total_requests']}, 峰值连接={db_stats['peak_connections']}")
 
     print("\n✓ 所有测试完成")

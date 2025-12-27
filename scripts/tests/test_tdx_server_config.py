@@ -7,9 +7,8 @@ TDX服务器配置模块测试套件
 import sys
 import os
 import tempfile
-import configparser
 from pathlib import Path
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, mock_open
 import pytest
 
 # 添加项目根目录到路径
@@ -589,7 +588,7 @@ Port02=invalid_port
     def test_extremely_large_host_num(self):
         """测试极大的HostNum值"""
         config_file = os.path.join(self.temp_dir, "large_host_num.cfg")
-        config_content = f"""[HQHOST]
+        config_content = """[HQHOST]
 HostNum=99999
 PrimaryHost=1
 HostName01=唯一服务器

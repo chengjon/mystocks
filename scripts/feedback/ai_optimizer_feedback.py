@@ -22,7 +22,7 @@ import platform
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 import argparse
 import logging
 
@@ -411,7 +411,7 @@ class FeedbackCollector:
         else:
             report += "- 暂无评分数据\n"
 
-        report += f"""
+        report += """
 ## 💡 建议行动
 
 ### 高优先级改进

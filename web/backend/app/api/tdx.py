@@ -13,13 +13,12 @@ TDX数据API路由
 
 from fastapi import APIRouter, HTTPException, Query, Depends, status
 from typing import Optional
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from app.schemas.tdx_schemas import (
     RealTimeQuoteResponse,
     KlineResponse,
     IndexQuoteResponse,
-    ErrorResponse,
     TdxHealthResponse,
 )
 from app.services.tdx_service import get_tdx_service, TdxService
@@ -155,9 +154,7 @@ async def get_stock_kline(
             start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
         # 调用服务获取K线
-        kline_data = service.get_stock_kline(
-            symbol=symbol, start_date=start_date, end_date=end_date, period=period
-        )
+        kline_data = service.get_stock_kline(symbol=symbol, start_date=start_date, end_date=end_date, period=period)
 
         return KlineResponse(**kline_data)
 
@@ -286,9 +283,7 @@ async def get_index_kline(
             start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
         # 调用服务获取指数K线
-        kline_data = service.get_index_kline(
-            symbol=symbol, start_date=start_date, end_date=end_date, period=period
-        )
+        kline_data = service.get_index_kline(symbol=symbol, start_date=start_date, end_date=end_date, period=period)
 
         return KlineResponse(**kline_data)
 

@@ -4,7 +4,7 @@
 
 ### 🚀 从这里开始
 
-**第一次接触本项目?** 
+**第一次接触本项目?**
 → 先读 [`MONITORING_SYSTEM_SUMMARY.md`](./MONITORING_SYSTEM_SUMMARY.md)
 
 **想要完整的技术细节?**
@@ -324,4 +324,3 @@ from src.monitoring import (
 2. `MONITORING_SYSTEM_SUMMARY.md`（5分钟快速了解）
 3. `docs/monitoring/README.md`（架构和导航）
 4. 根据具体需求查看详细文档
-

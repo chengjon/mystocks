@@ -209,12 +209,8 @@ class DatabaseService:
             if postgresql_access:
                 # 使用 PostgreSQLDataAccess
                 result = postgresql_access.query("symbols_info", limit=limit)
-                if result is None or (
-                    isinstance(result, pd.DataFrame) and result.empty
-                ):
-                    logger.warning(
-                        "Empty result from PostgreSQL access, symbol count=0"
-                    )
+                if result is None or (isinstance(result, pd.DataFrame) and result.empty):
+                    logger.warning("Empty result from PostgreSQL access, symbol count=0")
                     return pd.DataFrame()
                 return result
             else:
@@ -232,13 +228,9 @@ class DatabaseService:
                     result = session.execute(query, {"limit": limit})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning(
-                            f"Empty stocks_basic result from database, limit={limit}"
-                        )
+                        logger.warning(f"Empty stocks_basic result from database, limit={limit}")
                     else:
-                        logger.info(
-                            f"Successfully fetched {len(df)} stocks from database"
-                        )
+                        logger.info(f"Successfully fetched {len(df)} stocks from database")
                     return df
                 except Exception as e:
                     logger.error(

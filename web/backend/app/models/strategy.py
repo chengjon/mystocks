@@ -37,9 +37,7 @@ class StrategyDefinition(Base):
     parameters = Column(JSON, comment="策略参数(JSON格式)")
     is_active = Column(Boolean, default=True, comment="是否启用")
     created_at = Column(TIMESTAMP, default=datetime.utcnow, comment="创建时间")
-    updated_at = Column(
-        TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间"
-    )
+    updated_at = Column(TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间")
 
     __table_args__ = (
         Index("idx_strategy_code", "strategy_code"),

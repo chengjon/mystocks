@@ -133,9 +133,7 @@ class FeatureExtractor:
                 )
 
             if "memory_usage" in data_point:
-                features.extend(
-                    [data_point["memory_usage"], data_point["memory_usage"] ** 2]
-                )
+                features.extend([data_point["memory_usage"], data_point["memory_usage"] ** 2])
 
             if "cpu_usage" in data_point:
                 features.extend([data_point["cpu_usage"], data_point["cpu_usage"] ** 2])
@@ -173,9 +171,7 @@ class FeatureExtractor:
             # 标准化特征
             feature_array = np.array(feature_matrix)
             if len(self.feature_names) == 0:
-                self.feature_names = [
-                    f"feature_{i}" for i in range(feature_array.shape[1])
-                ]
+                self.feature_names = [f"feature_{i}" for i in range(feature_array.shape[1])]
                 self.scaler.fit(feature_array)
 
             return self.scaler.transform(feature_array)
@@ -221,9 +217,7 @@ class TimeSeriesPredictor:
         elif self.model_type == PredictionModel.SVR:
             self.model = SVR(kernel="rbf", C=100, gamma=0.1, epsilon=0.1)
         elif self.model_type == PredictionModel.MLP:
-            self.model = MLPRegressor(
-                hidden_layer_sizes=(100, 50), max_iter=1000, random_state=42
-            )
+            self.model = MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=1000, random_state=42)
         elif self.model_type == PredictionModel.LSTM:
             self.model = self._create_lstm_model(X.shape[1])
         else:
@@ -240,9 +234,7 @@ class TimeSeriesPredictor:
                 verbose=0,
                 callbacks=[EarlyStopping(patience=10, restore_best_weights=True)],
             )
-            training_loss = (
-                history.history["loss"][-1] if history.history["loss"] else float("inf")
-            )
+            training_loss = history.history["loss"][-1] if history.history["loss"] else float("inf")
         else:
             self.model.fit(X, y)
             training_loss = 0
@@ -267,9 +259,7 @@ class TimeSeriesPredictor:
 
         return {"mse": mse, "mae": mae, "r2": r2, "training_loss": training_loss}
 
-    def _prepare_time_series_data(
-        self, time_series: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _prepare_time_series_data(self, time_series: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """准备时间序列数据"""
         # 创建滑动窗口
         window_size = 5
@@ -370,14 +360,10 @@ class RiskAssessor:
             complexity = test_data["complexity_metrics"]
             if complexity.get("cyclomatic_complexity", 0) > 20:
                 risk_score += 0.15
-                risk_factors.append(
-                    f"圈复杂度过高: {complexity['cyclomatic_complexity']}"
-                )
+                risk_factors.append(f"圈复杂度过高: {complexity['cyclomatic_complexity']}")
             if complexity.get("cognitive_complexity", 0) > 15:
                 risk_score += 0.15
-                risk_factors.append(
-                    f"认知复杂度过高: {complexity['cognitive_complexity']}"
-                )
+                risk_factors.append(f"认知复杂度过高: {complexity['cognitive_complexity']}")
 
         # 基于依赖关系
         if "dependencies" in test_data:
@@ -401,9 +387,7 @@ class RiskAssessor:
             "timestamp": datetime.now(),
         }
 
-    def predict_future_risks(
-        self, historical_risks: List[Dict]
-    ) -> List[Dict[str, Any]]:
+    def predict_future_risks(self, historical_risks: List[Dict]) -> List[Dict[str, Any]]:
         """预测未来风险"""
         predictions = []
 
@@ -422,9 +406,7 @@ class RiskAssessor:
             for i in range(1, future_steps + 1):
                 future_index = len(risk_scores) + i
                 # 基于趋势和随机性预测
-                predicted_score = max(
-                    0, min(1, risk_scores[-1] + trend * i + np.random.normal(0, 0.1))
-                )
+                predicted_score = max(0, min(1, risk_scores[-1] + trend * i + np.random.normal(0, 0.1)))
 
                 # 确定风险等级
                 risk_level = "low"
@@ -438,9 +420,7 @@ class RiskAssessor:
                         "step": i,
                         "predicted_risk_score": predicted_score,
                         "risk_level": risk_level,
-                        "confidence": "medium"
-                        if abs(trend) < 0.1
-                        else ("low" if abs(trend) > 0.2 else "high"),
+                        "confidence": "medium" if abs(trend) < 0.1 else ("low" if abs(trend) > 0.2 else "high"),
                         "timestamp": datetime.now() + timedelta(days=i),
                     }
                 )
@@ -455,9 +435,7 @@ class RiskAssessor:
         risk_factors = risk_assessment["risk_factors"]
 
         if risk_level == "critical":
-            mitigation_plan.extend(
-                ["立即暂停相关测试", "进行全面代码审查", "增加监控频率", "准备回滚计划"]
-            )
+            mitigation_plan.extend(["立即暂停相关测试", "进行全面代码审查", "增加监控频率", "准备回滚计划"])
 
         for factor in risk_factors:
             if "失败率" in factor:
@@ -472,9 +450,7 @@ class RiskAssessor:
                 mitigation_plan.append("更新或替换不稳定依赖")
 
         # 通用缓解措施
-        mitigation_plan.extend(
-            ["增加测试覆盖率", "添加自动化监控", "建立预警机制", "定期风险评审"]
-        )
+        mitigation_plan.extend(["增加测试覆盖率", "添加自动化监控", "建立预警机制", "定期风险评审"])
 
         return list(set(mitigation_plan))  # 去重
 
@@ -507,9 +483,7 @@ class PredictionAnalyzer:
 
     def make_prediction(self, request: PredictionRequest) -> PredictionResult:
         """执行预测"""
-        logger.info(
-            f"开始预测任务: {request.task.value} 使用模型: {request.model_type.value}"
-        )
+        logger.info(f"开始预测任务: {request.task.value} 使用模型: {request.model_type.value}")
 
         try:
             # 验证输入数据
@@ -529,9 +503,7 @@ class PredictionAnalyzer:
             predictor = self.predictors[predictor_key]
 
             # 准备目标变量
-            target_values = self._extract_target_values(
-                request.historical_data, request.task
-            )
+            target_values = self._extract_target_values(request.historical_data, request.task)
             if len(target_values) < 10:
                 raise ValueError(f"用于{request.task.value}的数据不足")
 
@@ -545,14 +517,10 @@ class PredictionAnalyzer:
             confidence = self._calculate_confidence(predictions, training_metrics)
 
             # 计算预测区间
-            prediction_interval = self._calculate_prediction_interval(
-                predictions, confidence
-            )
+            prediction_interval = self._calculate_prediction_interval(predictions, confidence)
 
             # 特征重要性分析
-            feature_importance = self._analyze_feature_importance(
-                features, target_values
-            )
+            feature_importance = self._analyze_feature_importance(features, target_values)
 
             # 评估模型性能
             model_performance = {
@@ -600,9 +568,7 @@ class PredictionAnalyzer:
                 error_message=str(e),
             )
 
-    def _extract_target_values(
-        self, historical_data: List[Dict[str, Any]], task: PredictionTask
-    ) -> List[float]:
+    def _extract_target_values(self, historical_data: List[Dict[str, Any]], task: PredictionTask) -> List[float]:
         """提取目标值"""
         target_values = []
 
@@ -614,16 +580,12 @@ class PredictionAnalyzer:
             elif task == PredictionTask.FAILURE_RATE:
                 value = data_point.get("failure_rate", 0.0)
             elif task == PredictionTask.RESOURCE_USAGE:
-                value = data_point.get("memory_usage", 0) + data_point.get(
-                    "cpu_usage", 0
-                )
+                value = data_point.get("memory_usage", 0) + data_point.get("cpu_usage", 0)
             elif task == PredictionTask.COVERAGE_SCORE:
                 value = data_point.get("coverage_score", 0.0)
             elif task == PredictionTask.MAINTENANCE_BURDEN:
                 # 维护负担的简化计算
-                complexity = data_point.get("complexity_metrics", {}).get(
-                    "cyclomatic_complexity", 1
-                )
+                complexity = data_point.get("complexity_metrics", {}).get("cyclomatic_complexity", 1)
                 dependencies = len(data_point.get("dependencies", []))
                 value = complexity * 0.5 + dependencies * 0.3
             elif task == PredictionTask.FLAKINESS_PREDICTION:
@@ -635,9 +597,7 @@ class PredictionAnalyzer:
 
         return target_values
 
-    def _calculate_confidence(
-        self, predictions: List[float], training_metrics: Dict
-    ) -> PredictionConfidence:
+    def _calculate_confidence(self, predictions: List[float], training_metrics: Dict) -> PredictionConfidence:
         """计算预测置信度"""
         # 基于多个因素计算置信度
         confidence_score = 0.5  # 基础分数
@@ -699,9 +659,7 @@ class PredictionAnalyzer:
 
         return (max(0, lower_bound), upper_bound)
 
-    def _analyze_feature_importance(
-        self, features: np.ndarray, target_values: List[float]
-    ) -> Dict[str, float]:
+    def _analyze_feature_importance(self, features: np.ndarray, target_values: List[float]) -> Dict[str, float]:
         """分析特征重要性"""
         if len(features) < 10:
             return {}
@@ -717,10 +675,7 @@ class PredictionAnalyzer:
                 return importance_dict
             else:
                 # 如果没有特征名称，返回重要性指数
-                return {
-                    f"feature_{i}": importance
-                    for i, importance in enumerate(rf.feature_importances_)
-                }
+                return {f"feature_{i}": importance for i, importance in enumerate(rf.feature_importances_)}
         except Exception as e:
             logger.error(f"特征重要性分析失败: {e}")
             return {}
@@ -754,18 +709,14 @@ class PredictionAnalyzer:
                     PredictionModel.GRADIENT_BOOSTING,
                 ]:
                     mlflow.sklearn.log_model(
-                        self.predictors.get(
-                            f"{result.request.task.value}_{result.request.model_type.value}"
-                        ).model,
+                        self.predictors.get(f"{result.request.task.value}_{result.request.model_type.value}").model,
                         "prediction_model",
                     )
 
         except Exception as e:
             logger.warning(f"MLflow记录失败: {e}")
 
-    def batch_predict(
-        self, requests: List[PredictionRequest]
-    ) -> List[PredictionResult]:
+    def batch_predict(self, requests: List[PredictionRequest]) -> List[PredictionResult]:
         """批量预测"""
         results = []
 
@@ -795,9 +746,7 @@ class PredictionAnalyzer:
 
         return results
 
-    def generate_prediction_report(
-        self, results: List[PredictionResult]
-    ) -> Dict[str, Any]:
+    def generate_prediction_report(self, results: List[PredictionResult]) -> Dict[str, Any]:
         """生成预测报告"""
         if not results:
             return {}
@@ -820,11 +769,8 @@ class PredictionAnalyzer:
             task_summary = {
                 "predictions_count": len(task_results),
                 "average_confidence": self._calculate_average_confidence(task_results),
-                "success_rate": sum(1 for r in task_results if not r.error_message)
-                / len(task_results),
-                "average_prediction": np.mean(
-                    [r.predictions[0] for r in task_results if r.predictions]
-                ),
+                "success_rate": sum(1 for r in task_results if not r.error_message) / len(task_results),
+                "average_prediction": np.mean([r.predictions[0] for r in task_results if r.predictions]),
                 "trend": self._analyze_prediction_trend(task_results),
             }
 
@@ -833,23 +779,15 @@ class PredictionAnalyzer:
         # 总体总结
         all_confidences = [r.confidence for r in results]
         confidence_distribution = {
-            "very_high": sum(
-                1 for c in all_confidences if c == PredictionConfidence.VERY_HIGH
-            ),
+            "very_high": sum(1 for c in all_confidences if c == PredictionConfidence.VERY_HIGH),
             "high": sum(1 for c in all_confidences if c == PredictionConfidence.HIGH),
-            "medium": sum(
-                1 for c in all_confidences if c == PredictionConfidence.MEDIUM
-            ),
+            "medium": sum(1 for c in all_confidences if c == PredictionConfidence.MEDIUM),
             "low": sum(1 for c in all_confidences if c == PredictionConfidence.LOW),
-            "very_low": sum(
-                1 for c in all_confidences if c == PredictionConfidence.VERY_LOW
-            ),
+            "very_low": sum(1 for c in all_confidences if c == PredictionConfidence.VERY_LOW),
         }
 
         report["summary"]["confidence_distribution"] = confidence_distribution
-        report["summary"]["overall_success_rate"] = sum(
-            1 for r in results if not r.error_message
-        ) / len(results)
+        report["summary"]["overall_success_rate"] = sum(1 for r in results if not r.error_message) / len(results)
 
         # 生成建议
         report["recommendations"] = self._generate_prediction_recommendations(results)
@@ -887,29 +825,21 @@ class PredictionAnalyzer:
         else:
             return "stable"
 
-    def _generate_prediction_recommendations(
-        self, results: List[PredictionResult]
-    ) -> List[str]:
+    def _generate_prediction_recommendations(self, results: List[PredictionResult]) -> List[str]:
         """生成预测建议"""
         recommendations = []
 
         # 分析置信度
         low_confidence = [
-            r
-            for r in results
-            if r.confidence in [PredictionConfidence.LOW, PredictionConfidence.VERY_LOW]
+            r for r in results if r.confidence in [PredictionConfidence.LOW, PredictionConfidence.VERY_LOW]
         ]
         if low_confidence:
-            recommendations.append(
-                f"有 {len(low_confidence)} 个预测置信度较低，建议增加历史数据或选择更合适的模型"
-            )
+            recommendations.append(f"有 {len(low_confidence)} 个预测置信度较低，建议增加历史数据或选择更合适的模型")
 
         # 分析错误
         error_predictions = [r for r in results if r.error_message]
         if error_predictions:
-            recommendations.append(
-                f"有 {len(error_predictions)} 个预测失败，请检查输入数据"
-            )
+            recommendations.append(f"有 {len(error_predictions)} 个预测失败，请检查输入数据")
 
         # 模型建议
         model_usage = defaultdict(int)
@@ -921,9 +851,7 @@ class PredictionAnalyzer:
 
         return recommendations
 
-    def export_predictions(
-        self, results: List[PredictionResult], output_path: str, format: str = "json"
-    ):
+    def export_predictions(self, results: List[PredictionResult], output_path: str, format: str = "json"):
         """导出预测结果"""
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1039,9 +967,7 @@ def demo_prediction_analyzer():
         print(f"  任务: {result.request.task.value}")
         print(f"  模型: {result.request.model_type.value}")
         print(f"  置信度: {result.confidence.value}")
-        print(
-            f"  预测区间: {result.prediction_interval[0]:.2f} - {result.prediction_interval[1]:.2f}"
-        )
+        print(f"  预测区间: {result.prediction_interval[0]:.2f} - {result.prediction_interval[1]:.2f}")
         print(f"  未来7天预测: {result.predictions[:7]}")
 
         if result.error_message:

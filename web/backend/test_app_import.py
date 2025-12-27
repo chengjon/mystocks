@@ -32,9 +32,7 @@ try:
         print(f"  - {r}")
 
     print("\n✅ Week 2 FastAPI setup complete!")
-    print(
-        f"✅ Total API endpoints: {len([r for r in routes if hasattr(r, 'methods')])}"
-    )
+    print(f"✅ Total API endpoints: {len([r for r in routes if hasattr(r, 'methods')])}")
 
 except Exception as e:
     print(f"❌ Error importing app: {e}")

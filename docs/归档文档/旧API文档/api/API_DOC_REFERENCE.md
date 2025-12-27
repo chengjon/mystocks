@@ -187,7 +187,7 @@
 #### GET /api/technical/{symbol}/trend
 获取趋势指标
 
-#### GET /api/technical/{symbol}/momentum  
+#### GET /api/technical/{symbol}/momentum
 获取动量指标
 
 #### GET /api/technical/{symbol}/volatility
@@ -213,7 +213,7 @@
       "strength": 0.8
     },
     {
-      "type": "rsi_oversold", 
+      "type": "rsi_oversold",
       "signal": "buy",
       "strength": 0.7
     }
@@ -229,14 +229,14 @@
 **查询参数：**
 - `period` (string, 可选): 周期 (daily/weekly/monthly)
 - `start_date` (string, 可选): 开始日期
-- `end_date` (string, 可选): 结束日期  
+- `end_date` (string, 可选): 结束日期
 - `limit` (integer, 可选): 返回数据点数量，默认100
 
 **响应示例：**
 ```json
 {
   "symbol": "600519",
-  "period": "daily", 
+  "period": "daily",
   "count": 100,
   "dates": ["2025-10-01", "2025-10-02", ...],
   "data": [
@@ -289,7 +289,7 @@
 #### GET /api/multi-source/realtime-quote
 获取实时行情（多数据源）
 
-#### GET /api/multi-source/fund-flow  
+#### GET /api/multi-source/fund-flow
 获取资金流向（多数据源）
 
 ---
@@ -399,7 +399,7 @@
 - `200`: 成功
 - `400`: 请求参数错误
 - `401`: 未授权
-- `404`: 资源不存在  
+- `404`: 资源不存在
 - `500`: 服务器内部错误
 
 ---

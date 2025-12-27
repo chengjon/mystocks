@@ -277,9 +277,7 @@ def create_calculator() -> SimpleCalculator:
     return SimpleCalculator()
 
 
-def perform_calculation_sequence(
-    calculator: SimpleCalculator, operations: List[Dict[str, Any]]
-) -> List[Number]:
+def perform_calculation_sequence(calculator: SimpleCalculator, operations: List[Dict[str, Any]]) -> List[Number]:
     """
     执行一系列计算操作
 

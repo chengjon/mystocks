@@ -230,9 +230,7 @@ class LoadGenerator:
                 if len(self.active_users) < current_users:
                     new_users = current_users - len(self.active_users)
                     for i in range(new_users):
-                        task = asyncio.create_task(
-                            self._simulate_user(f"user_ramp_{i}")
-                        )
+                        task = asyncio.create_task(self._simulate_user(f"user_ramp_{i}"))
                         self.active_users.add(task)
 
             else:
@@ -240,9 +238,7 @@ class LoadGenerator:
                 if len(self.active_users) < self.config.target_users:
                     missing_users = self.config.target_users - len(self.active_users)
                     for i in range(missing_users):
-                        task = asyncio.create_task(
-                            self._simulate_user(f"user_const_{i}")
-                        )
+                        task = asyncio.create_task(self._simulate_user(f"user_const_{i}"))
                         self.active_users.add(task)
 
             await asyncio.sleep(1)
@@ -264,9 +260,7 @@ class LoadGenerator:
 
             # 峰值阶段
             for i in range(self.config.target_users):
-                task = asyncio.create_task(
-                    self._simulate_user(f"user_spike_{i}_{cycle}")
-                )
+                task = asyncio.create_task(self._simulate_user(f"user_spike_{i}_{cycle}"))
                 self.active_users.add(task)
 
             await asyncio.sleep(spike_duration)
@@ -398,9 +392,7 @@ class LoadGenerator:
 
     def _select_user_action(self) -> Dict[str, Any]:
         """根据权重选择用户动作"""
-        actions_with_weights = [
-            (action, action["weight"]) for action in self.config.user_actions
-        ]
+        actions_with_weights = [(action, action["weight"]) for action in self.config.user_actions]
         total_weight = sum(weight for _, weight in actions_with_weights)
 
         rand = random.uniform(0, total_weight)
@@ -413,9 +405,7 @@ class LoadGenerator:
 
         return actions_with_weights[0][0]  # 默认返回第一个动作
 
-    async def _execute_user_action(
-        self, action: Dict[str, Any], user_id: str
-    ) -> Dict[str, Any]:
+    async def _execute_user_action(self, action: Dict[str, Any], user_id: str) -> Dict[str, Any]:
         """执行用户动作"""
         start_time = time.time()
         success = False
@@ -477,9 +467,7 @@ class LoadGenerator:
             try:
                 # 收集系统指标
                 metrics = self._collect_system_metrics()
-                self.system_metrics.append(
-                    {"timestamp": datetime.now().isoformat(), **metrics}
-                )
+                self.system_metrics.append({"timestamp": datetime.now().isoformat(), **metrics})
 
                 await asyncio.sleep(self.config.monitor_interval)
 
@@ -529,14 +517,8 @@ class LoadGenerator:
 
         # 计算统计指标
         if successful_requests:
-            response_times = [
-                r["response_time_ms"]
-                for r in successful_requests
-                if "response_time_ms" in r
-            ]
-            avg_response_time = (
-                sum(response_times) / len(response_times) if response_times else 0
-            )
+            response_times = [r["response_time_ms"] for r in successful_requests if "response_time_ms" in r]
+            avg_response_time = sum(response_times) / len(response_times) if response_times else 0
             max_response_time = max(response_times) if response_times else 0
             min_response_time = min(response_times) if response_times else 0
         else:
@@ -574,27 +556,20 @@ class LoadGenerator:
             },
             "system_metrics": self.system_metrics,
             "threshold_check": {
-                "response_time_ok": avg_response_time
-                <= self.config.response_time_threshold * 1000,
+                "response_time_ok": avg_response_time <= self.config.response_time_threshold * 1000,
                 "error_rate_ok": error_rate <= self.config.error_threshold,
             },
-            "recommendations": self._generate_load_test_recommendations(
-                avg_response_time, error_rate, tps
-            ),
+            "recommendations": self._generate_load_test_recommendations(avg_response_time, error_rate, tps),
         }
 
         # 保存报告
-        report_path = (
-            f"/tmp/load_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
+        report_path = f"/tmp/load_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, ensure_ascii=False, indent=2)
 
         return report_path
 
-    def _generate_load_test_recommendations(
-        self, avg_response_time: float, error_rate: float, tps: float
-    ) -> List[str]:
+    def _generate_load_test_recommendations(self, avg_response_time: float, error_rate: float, tps: float) -> List[str]:
         """生成负载测试优化建议"""
         recommendations = []
 
@@ -616,13 +591,9 @@ class LoadGenerator:
 
         # 系统资源建议
         if self.system_metrics:
-            avg_cpu = sum(m["cpu_percent"] for m in self.system_metrics) / len(
-                self.system_metrics
-            )
+            avg_cpu = sum(m["cpu_percent"] for m in self.system_metrics) / len(self.system_metrics)
             if avg_cpu > 80:
-                recommendations.append(
-                    f"平均CPU使用率 {avg_cpu:.1f}% 较高，考虑扩容或优化性能"
-                )
+                recommendations.append(f"平均CPU使用率 {avg_cpu:.1f}% 较高，考虑扩容或优化性能")
 
         return recommendations
 
@@ -653,12 +624,8 @@ class SystemMonitor:
             "timestamp": datetime.now().isoformat(),
             "cpu_percent": psutil.cpu_percent(interval=1),
             "memory_percent": psutil.virtual_memory().percent,
-            "disk_io_read": psutil.disk_io_counters().read_bytes
-            if psutil.disk_io_counters()
-            else 0,
-            "disk_io_write": psutil.disk_io_counters().write_bytes
-            if psutil.disk_io_counters()
-            else 0,
+            "disk_io_read": psutil.disk_io_counters().read_bytes if psutil.disk_io_counters() else 0,
+            "disk_io_write": psutil.disk_io_counters().write_bytes if psutil.disk_io_counters() else 0,
             "network_io_sent": psutil.net_io_counters().bytes_sent,
             "network_io_recv": psutil.net_io_counters().bytes_recv,
         }
@@ -668,9 +635,7 @@ class SystemMonitor:
 @pytest.mark.performance
 async def test_constant_load():
     """恒定负载测试"""
-    config = LoadTestConfig(
-        test_type=LoadTestType.CONSTANT, target_users=50, duration_minutes=1
-    )
+    config = LoadTestConfig(test_type=LoadTestType.CONSTANT, target_users=50, duration_minutes=1)
 
     generator = LoadGenerator(config)
     report = await generator.run_load_test()
@@ -705,9 +670,7 @@ async def test_ramp_up_load():
 @pytest.mark.performance
 async def test_spike_load():
     """峰值负载测试"""
-    config = LoadTestConfig(
-        test_type=LoadTestType.SPIKE, target_users=200, duration_minutes=3
-    )
+    config = LoadTestConfig(test_type=LoadTestType.SPIKE, target_users=200, duration_minutes=3)
 
     generator = LoadGenerator(config)
     report = await generator.run_load_test()
@@ -722,9 +685,7 @@ async def test_spike_load():
 @pytest.mark.performance
 async def test_wave_load():
     """波浪负载测试"""
-    config = LoadTestConfig(
-        test_type=LoadTestType.WAVE, target_users=80, duration_minutes=2
-    )
+    config = LoadTestConfig(test_type=LoadTestType.WAVE, target_users=80, duration_minutes=2)
 
     generator = LoadGenerator(config)
     report = await generator.run_load_test()

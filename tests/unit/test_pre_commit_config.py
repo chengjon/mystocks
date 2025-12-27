@@ -19,9 +19,7 @@ class TestPreCommitConfig:
     def setup_class(cls):
         """测试类初始化：读取并解析.pre-commit-config.yaml文件"""
         cls.pre_commit_config_path = ".pre-commit-config.yaml"
-        assert os.path.exists(
-            cls.pre_commit_config_path
-        ), f"Pre-commit配置文件不存在: {cls.pre_commit_config_path}"
+        assert os.path.exists(cls.pre_commit_config_path), f"Pre-commit配置文件不存在: {cls.pre_commit_config_path}"
 
         with open(cls.pre_commit_config_path, "r", encoding="utf-8") as f:
             cls.config = yaml.safe_load(f)
@@ -50,15 +48,11 @@ class TestPreCommitConfig:
 
         hooks = ruff_repo.get("hooks", [])
         assert any(hook.get("id") == "ruff" for hook in hooks), "未找到'ruff'钩子"
-        assert any(
-            hook.get("id") == "ruff-format" for hook in hooks
-        ), "未找到'ruff-format'钩子"
+        assert any(hook.get("id") == "ruff-format" for hook in hooks), "未找到'ruff-format'钩子"
 
         # 验证ruff钩子的args
         ruff_hook = next((hook for hook in hooks if hook.get("id") == "ruff"), None)
-        assert ruff_hook is not None and ruff_hook.get("args") == [
-            "--fix"
-        ], "'ruff'钩子参数不正确"
+        assert ruff_hook is not None and ruff_hook.get("args") == ["--fix"], "'ruff'钩子参数不正确"
 
         print("  ✅ Ruff仓库及其钩子配置验证通过")
 
@@ -66,11 +60,7 @@ class TestPreCommitConfig:
         """测试3: 验证MyPy仓库及其钩子配置"""
         print("\n📍 测试3: 验证MyPy仓库及其钩子配置")
         mypy_repo = next(
-            (
-                repo
-                for repo in self.config["repos"]
-                if repo.get("repo") == "https://github.com/pre-commit/mirrors-mypy"
-            ),
+            (repo for repo in self.config["repos"] if repo.get("repo") == "https://github.com/pre-commit/mirrors-mypy"),
             None,
         )
 
@@ -91,11 +81,7 @@ class TestPreCommitConfig:
         """测试4: 验证Bandit仓库及其钩子配置"""
         print("\n📍 测试4: 验证Bandit仓库及其钩子配置")
         bandit_repo = next(
-            (
-                repo
-                for repo in self.config["repos"]
-                if repo.get("repo") == "https://github.com/PyCQA/bandit"
-            ),
+            (repo for repo in self.config["repos"] if repo.get("repo") == "https://github.com/PyCQA/bandit"),
             None,
         )
 
@@ -108,9 +94,7 @@ class TestPreCommitConfig:
 
         expected_args = ["-c", "config/.security.yml", "-ll"]
         assert bandit_hook.get("args") == expected_args, "'bandit'钩子参数不正确"
-        assert (
-            "exclude" in bandit_hook and bandit_hook["exclude"]
-        ), "'bandit'钩子缺少排除规则"
+        assert "exclude" in bandit_hook and bandit_hook["exclude"], "'bandit'钩子缺少排除规则"
 
         print("  ✅ Bandit仓库及其钩子配置验证通过")
 
@@ -141,14 +125,10 @@ class TestPreCommitConfig:
         ]
 
         for hook_id in expected_hooks_ids:
-            assert any(
-                hook.get("id") == hook_id for hook in hooks
-            ), f"未找到'{hook_id}'钩子"
+            assert any(hook.get("id") == hook_id for hook in hooks), f"未找到'{hook_id}'钩子"
 
         # 验证detect-private-key的exclude
-        detect_private_key_hook = next(
-            (hook for hook in hooks if hook.get("id") == "detect-private-key"), None
-        )
+        detect_private_key_hook = next((hook for hook in hooks if hook.get("id") == "detect-private-key"), None)
         assert (
             detect_private_key_hook is not None
             and "exclude" in detect_private_key_hook
@@ -161,27 +141,17 @@ class TestPreCommitConfig:
         """测试6: 验证Detect Secrets仓库及其钩子配置"""
         print("\n📍 测试6: 验证Detect Secrets仓库及其钩子配置")
         detect_secrets_repo = next(
-            (
-                repo
-                for repo in self.config["repos"]
-                if repo.get("repo") == "https://github.com/Yelp/detect-secrets"
-            ),
+            (repo for repo in self.config["repos"] if repo.get("repo") == "https://github.com/Yelp/detect-secrets"),
             None,
         )
 
         assert detect_secrets_repo is not None, "未找到'detect-secrets'仓库配置"
-        assert (
-            detect_secrets_repo.get("rev") == "v1.5.0"
-        ), "Detect Secrets仓库版本不正确"
+        assert detect_secrets_repo.get("rev") == "v1.5.0", "Detect Secrets仓库版本不正确"
 
         hooks = detect_secrets_repo.get("hooks", [])
-        detect_secrets_hook = next(
-            (hook for hook in hooks if hook.get("id") == "detect-secrets"), None
-        )
+        detect_secrets_hook = next((hook for hook in hooks if hook.get("id") == "detect-secrets"), None)
         assert detect_secrets_hook is not None, "未找到'detect-secrets'钩子"
-        assert (
-            "exclude" in detect_secrets_hook and detect_secrets_hook["exclude"]
-        ), "'detect-secrets'钩子缺少排除规则"
+        assert "exclude" in detect_secrets_hook and detect_secrets_hook["exclude"], "'detect-secrets'钩子缺少排除规则"
 
         print("  ✅ Detect Secrets仓库及其钩子配置验证通过")
 
@@ -189,11 +159,7 @@ class TestPreCommitConfig:
         """测试7: 验证Pygrep Hooks仓库及其钩子配置"""
         print("\n📍 测试7: 验证Pygrep Hooks仓库及其钩子配置")
         pygrep_repo = next(
-            (
-                repo
-                for repo in self.config["repos"]
-                if repo.get("repo") == "https://github.com/pre-commit/pygrep-hooks"
-            ),
+            (repo for repo in self.config["repos"] if repo.get("repo") == "https://github.com/pre-commit/pygrep-hooks"),
             None,
         )
 
@@ -209,9 +175,7 @@ class TestPreCommitConfig:
         ]
 
         for hook_id in expected_hooks_ids:
-            assert any(
-                hook.get("id") == hook_id for hook in hooks
-            ), f"未找到'{hook_id}'钩子"
+            assert any(hook.get("id") == hook_id for hook in hooks), f"未找到'{hook_id}'钩子"
 
         print("  ✅ Pygrep Hooks仓库及其钩子配置验证通过")
 

@@ -93,9 +93,7 @@ class TestCoverageAnalyzer:
         self.coverage_data = {}
         self.metrics = {}
 
-    def analyze_code_coverage(
-        self, test_results: List[TestResult], code_files: List[str]
-    ) -> Dict[str, Any]:
+    def analyze_code_coverage(self, test_results: List[TestResult], code_files: List[str]) -> Dict[str, Any]:
         """分析代码覆盖率"""
         print("🔍 分析代码覆盖率...")
 
@@ -111,11 +109,7 @@ class TestCoverageAnalyzer:
 
         # 测试覆盖率
         test_coverage_rate = (
-            len([r for r in test_results if r.status == "passed"])
-            / len(test_results)
-            * 100
-            if test_results
-            else 0
+            len([r for r in test_results if r.status == "passed"]) / len(test_results) * 100 if test_results else 0
         )
 
         coverage_metrics = {
@@ -125,9 +119,7 @@ class TestCoverageAnalyzer:
             "test_coverage_rate": round(test_coverage_rate, 2),
             "coverage_by_file": coverage_by_file,
             "coverage_trend": self._calculate_coverage_trend(),
-            "missing_coverage_areas": self._identify_missing_coverage(
-                test_results, code_files
-            ),
+            "missing_coverage_areas": self._identify_missing_coverage(test_results, code_files),
         }
 
         return coverage_metrics
@@ -141,15 +133,11 @@ class TestCoverageAnalyzer:
         return {
             "dates": [d.strftime("%Y-%m-%d") for d in dates],
             "coverage_rates": coverage_rates,
-            "trend_direction": "improving"
-            if coverage_rates[-1] > coverage_rates[0]
-            else "declining",
+            "trend_direction": "improving" if coverage_rates[-1] > coverage_rates[0] else "declining",
             "average_coverage": round(statistics.mean(coverage_rates), 2),
         }
 
-    def _identify_missing_coverage(
-        self, test_results: List[TestResult], code_files: List[str]
-    ) -> List[Dict[str, Any]]:
+    def _identify_missing_coverage(self, test_results: List[TestResult], code_files: List[str]) -> List[Dict[str, Any]]:
         """识别覆盖率不足的区域"""
         missing_areas = []
 
@@ -158,13 +146,9 @@ class TestCoverageAnalyzer:
             missing_areas.append(
                 {
                     "file": file_path,
-                    "uncovered_functions": [
-                        f"function_{j}" for j in range(np.random.randint(1, 4))
-                    ],
+                    "uncovered_functions": [f"function_{j}" for j in range(np.random.randint(1, 4))],
                     "uncovered_branches": np.random.randint(5, 15),
-                    "suggested_tests": [
-                        f"Test_{file_path.split('/')[-1]}_{j}" for j in range(1, 3)
-                    ],
+                    "suggested_tests": [f"Test_{file_path.split('/')[-1]}_{j}" for j in range(1, 3)],
                 }
             )
 
@@ -205,9 +189,7 @@ class TestReliabilityAnalyzer:
             "pass_rate": round(pass_rate, 2),
             "stability_score": round(stability_score, 2),
             "consistency_score": round(consistency_score, 2),
-            "reliability_score": round(
-                (pass_rate + stability_score + consistency_score) / 3, 2
-            ),
+            "reliability_score": round((pass_rate + stability_score + consistency_score) / 3, 2),
             "error_distribution": error_distribution,
             "reliability_trend": reliability_trend,
             "failure_analysis": self._analyze_failures(test_results),
@@ -238,15 +220,9 @@ class TestReliabilityAnalyzer:
         """计算一致性得分"""
         # 基于测试通过率的一致性
         # 这里可以添加更复杂的分析
-        return (
-            len([r for r in test_results if r.status == "passed"])
-            / len(test_results)
-            * 100
-        )
+        return len([r for r in test_results if r.status == "passed"]) / len(test_results) * 100
 
-    def _analyze_error_distribution(
-        self, test_results: List[TestResult]
-    ) -> Dict[str, Any]:
+    def _analyze_error_distribution(self, test_results: List[TestResult]) -> Dict[str, Any]:
         """分析错误分布"""
         errors = [r for r in test_results if r.status in ["failed", "error"]]
 
@@ -258,14 +234,10 @@ class TestReliabilityAnalyzer:
         return {
             "total_errors": len(errors),
             "error_types": error_types,
-            "error_rate": round(len(errors) / len(test_results) * 100, 2)
-            if test_results
-            else 0,
+            "error_rate": round(len(errors) / len(test_results) * 100, 2) if test_results else 0,
         }
 
-    def _calculate_reliability_trend(
-        self, test_results: List[TestResult]
-    ) -> Dict[str, Any]:
+    def _calculate_reliability_trend(self, test_results: List[TestResult]) -> Dict[str, Any]:
         """计算可靠性趋势"""
         # 模拟趋势数据
         dates = [datetime.now() - timedelta(hours=i) for i in range(24)]
@@ -274,9 +246,7 @@ class TestReliabilityAnalyzer:
         return {
             "dates": [d.strftime("%Y-%m-%d %H:%M") for d in dates],
             "reliability_rates": reliability_rates,
-            "trend_direction": "improving"
-            if reliability_rates[-1] > reliability_rates[0]
-            else "declining",
+            "trend_direction": "improving" if reliability_rates[-1] > reliability_rates[0] else "declining",
             "average_reliability": round(statistics.mean(reliability_rates), 2),
         }
 
@@ -305,19 +275,13 @@ class TestReliabilityAnalyzer:
         recommendations = []
 
         if pass_rate < 90:
-            recommendations.append(
-                f"测试通过率较低 ({pass_rate:.1f}%)，建议修复失败的测试用例"
-            )
+            recommendations.append(f"测试通过率较低 ({pass_rate:.1f}%)，建议修复失败的测试用例")
 
         if stability_score < 85:
-            recommendations.append(
-                f"测试执行不稳定 (稳定性得分: {stability_score:.1f})，建议优化测试性能"
-            )
+            recommendations.append(f"测试执行不稳定 (稳定性得分: {stability_score:.1f})，建议优化测试性能")
 
         if consistency_score < 90:
-            recommendations.append(
-                f"测试一致性较差 (一致性得分: {consistency_score:.1f})，建议统一测试标准"
-            )
+            recommendations.append(f"测试一致性较差 (一致性得分: {consistency_score:.1f})，建议统一测试标准")
 
         if pass_rate >= 95 and stability_score >= 90 and consistency_score >= 95:
             recommendations.append("测试可靠性良好，继续保持")
@@ -373,9 +337,7 @@ class TestPerformanceAnalyzer:
 
         return performance_metrics
 
-    def _analyze_performance_distribution(
-        self, durations: List[float]
-    ) -> Dict[str, Any]:
+    def _analyze_performance_distribution(self, durations: List[float]) -> Dict[str, Any]:
         """分析性能分布"""
         if not durations:
             return {}
@@ -393,9 +355,7 @@ class TestPerformanceAnalyzer:
         # 转换为毫秒
         return {k: round(v * 1000, 2) for k, v in percentiles.items()}
 
-    def _calculate_performance_trend(
-        self, test_results: List[TestResult]
-    ) -> Dict[str, Any]:
+    def _calculate_performance_trend(self, test_results: List[TestResult]) -> Dict[str, Any]:
         """计算性能趋势"""
         # 按时间排序
         sorted_results = sorted(test_results, key=lambda x: x.timestamp)
@@ -420,9 +380,7 @@ class TestPerformanceAnalyzer:
         return {
             "dates": dates,
             "performance_rates": performance_rates,
-            "trend_direction": "improving"
-            if performance_rates[-1] < performance_rates[0]
-            else "declining",
+            "trend_direction": "improving" if performance_rates[-1] < performance_rates[0] else "declining",
             "average_performance": round(statistics.mean(performance_rates), 3),
         }
 
@@ -437,9 +395,7 @@ class TestPerformanceAnalyzer:
             "resource_efficiency": round(np.random.uniform(70, 95), 1),
         }
 
-    def _identify_performance_bottlenecks(
-        self, test_results: List[TestResult]
-    ) -> List[Dict[str, Any]]:
+    def _identify_performance_bottlenecks(self, test_results: List[TestResult]) -> List[Dict[str, Any]]:
         """识别性能瓶颈"""
         # 找出执行时间最长的测试
         sorted_results = sorted(test_results, key=lambda x: x.duration, reverse=True)
@@ -450,9 +406,7 @@ class TestPerformanceAnalyzer:
                 "test_id": result.test_id,
                 "test_name": result.test_name,
                 "duration_ms": round(result.duration * 1000, 2),
-                "duration_percentage": round(
-                    result.duration / sum(r.duration for r in test_results) * 100, 2
-                ),
+                "duration_percentage": round(result.duration / sum(r.duration for r in test_results) * 100, 2),
                 "suggested_optimization": self._suggest_optimization(result),
             }
             bottlenecks.append(bottleneck)
@@ -482,16 +436,12 @@ class TestPerformanceAnalyzer:
         else:
             return max(0, 50 - (avg_duration - 10) * 5)
 
-    def _generate_performance_recommendations(
-        self, avg_duration: float, distribution: Dict[str, Any]
-    ) -> List[str]:
+    def _generate_performance_recommendations(self, avg_duration: float, distribution: Dict[str, Any]) -> List[str]:
         """生成性能改进建议"""
         recommendations = []
 
         if avg_duration > 3:
-            recommendations.append(
-                f"平均执行时间较长 ({avg_duration:.2f}s)，建议优化测试逻辑"
-            )
+            recommendations.append(f"平均执行时间较长 ({avg_duration:.2f}s)，建议优化测试逻辑")
 
         if distribution.get("p95", 0) > 10:
             recommendations.append("95%分位数执行时间过长，建议优化极端情况")
@@ -655,27 +605,19 @@ class TestQualityMetrics:
         total_duration = sum([r.duration for r in test_results])
 
         # 分析覆盖率
-        coverage_metrics = self.coverage_analyzer.analyze_code_coverage(
-            test_results, code_files or []
-        )
+        coverage_metrics = self.coverage_analyzer.analyze_code_coverage(test_results, code_files or [])
         coverage_percentage = coverage_metrics.get("overall_coverage_percentage", 0)
 
         # 分析可靠性
-        reliability_metrics = self.reliability_analyzer.analyze_reliability(
-            test_results
-        )
+        reliability_metrics = self.reliability_analyzer.analyze_reliability(test_results)
         reliability_score = reliability_metrics.get("reliability_score", 0)
 
         # 分析性能
-        performance_metrics = self.performance_analyzer.analyze_performance(
-            test_results
-        )
+        performance_metrics = self.performance_analyzer.analyze_performance(test_results)
         performance_score = performance_metrics.get("performance_score", 0)
 
         # 计算综合质量得分
-        quality_score = self._calculate_quality_score(
-            coverage_percentage, reliability_score, performance_score
-        )
+        quality_score = self._calculate_quality_score(coverage_percentage, reliability_score, performance_score)
 
         # 创建测试套件指标
         suite_metrics = TestSuiteMetrics(
@@ -701,24 +643,18 @@ class TestQualityMetrics:
 
         return suite_metrics
 
-    def _calculate_quality_score(
-        self, coverage: float, reliability: float, performance: float
-    ) -> float:
+    def _calculate_quality_score(self, coverage: float, reliability: float, performance: float) -> float:
         """计算综合质量得分"""
         # 使用加权平均
         weights = {"coverage": 0.3, "reliability": 0.4, "performance": 0.3}
 
         quality_score = (
-            coverage * weights["coverage"]
-            + reliability * weights["reliability"]
-            + performance * weights["performance"]
+            coverage * weights["coverage"] + reliability * weights["reliability"] + performance * weights["performance"]
         )
 
         return round(quality_score, 2)
 
-    def generate_quality_report(
-        self, suite_metrics: TestSuiteMetrics
-    ) -> Dict[str, Any]:
+    def generate_quality_report(self, suite_metrics: TestSuiteMetrics) -> Dict[str, Any]:
         """生成质量报告"""
         print("📊 生成质量报告...")
 
@@ -726,12 +662,8 @@ class TestQualityMetrics:
         coverage_analysis = self.coverage_analyzer.analyze_code_coverage(
             suite_metrics.test_results, ["sample_file1.py", "sample_file2.py"]
         )
-        reliability_analysis = self.reliability_analyzer.analyze_reliability(
-            suite_metrics.test_results
-        )
-        performance_analysis = self.performance_analyzer.analyze_performance(
-            suite_metrics.test_results
-        )
+        reliability_analysis = self.reliability_analyzer.analyze_reliability(suite_metrics.test_results)
+        performance_analysis = self.performance_analyzer.analyze_performance(suite_metrics.test_results)
 
         # 生成建议
         quality_recommendations = self._generate_quality_recommendations(suite_metrics)
@@ -775,17 +707,13 @@ class TestQualityMetrics:
             "quality_recommendations": quality_recommendations,
             "improvement_opportunities": improvement_opportunities,
             "quality_trend": quality_trend,
-            "metric_definitions": {
-                name: metric.__dict__ for name, metric in self.metrics_registry.items()
-            },
+            "metric_definitions": {name: metric.__dict__ for name, metric in self.metrics_registry.items()},
             "benchmark_comparison": self._compare_with_benchmarks(suite_metrics),
         }
 
         return quality_report
 
-    def _generate_quality_recommendations(
-        self, suite_metrics: TestSuiteMetrics
-    ) -> List[Dict[str, Any]]:
+    def _generate_quality_recommendations(self, suite_metrics: TestSuiteMetrics) -> List[Dict[str, Any]]:
         """生成质量改进建议"""
         recommendations = []
 
@@ -850,8 +778,7 @@ class TestQualityMetrics:
             opportunities.append(
                 {
                     "area": "coverage",
-                    "potential_improvement": 90
-                    - coverage.get("overall_coverage_percentage", 0),
+                    "potential_improvement": 90 - coverage.get("overall_coverage_percentage", 0),
                     "priority": "medium",
                     "description": "提高代码覆盖率",
                     "estimated_effort": "medium",
@@ -875,8 +802,7 @@ class TestQualityMetrics:
             opportunities.append(
                 {
                     "area": "performance",
-                    "potential_improvement": performance.get("average_duration_ms", 0)
-                    - 2000,
+                    "potential_improvement": performance.get("average_duration_ms", 0) - 2000,
                     "priority": "low",
                     "description": "优化测试执行性能",
                     "estimated_effort": "low",
@@ -896,9 +822,7 @@ class TestQualityMetrics:
         dates = [m.timestamp.strftime("%Y-%m-%d") for m in recent_history]
         quality_scores = [m.quality_score for m in recent_history]
 
-        trend_direction = (
-            "improving" if quality_scores[-1] > quality_scores[0] else "declining"
-        )
+        trend_direction = "improving" if quality_scores[-1] > quality_scores[0] else "declining"
 
         return {
             "dates": dates,
@@ -906,9 +830,7 @@ class TestQualityMetrics:
             "trend_direction": trend_direction,
             "average_score": round(statistics.mean(quality_scores), 2),
             "score_change": round(quality_scores[-1] - quality_scores[0], 2),
-            "volatility": round(
-                statistics.stdev(quality_scores) if len(quality_scores) > 1 else 0, 2
-            ),
+            "volatility": round(statistics.stdev(quality_scores) if len(quality_scores) > 1 else 0, 2),
         }
 
     def _get_quality_rating(self, quality_score: float) -> str:
@@ -924,9 +846,7 @@ class TestQualityMetrics:
         else:
             return "critical"
 
-    def _compare_with_benchmarks(
-        self, suite_metrics: TestSuiteMetrics
-    ) -> Dict[str, Any]:
+    def _compare_with_benchmarks(self, suite_metrics: TestSuiteMetrics) -> Dict[str, Any]:
         """与行业标准基准对比"""
         # 模拟行业标准数据
         industry_benchmarks = {
@@ -951,9 +871,7 @@ class TestQualityMetrics:
                 "actual": round(actual, 2),
                 "benchmark": benchmark,
                 "difference": round(actual - benchmark, 2),
-                "status": "above"
-                if actual > benchmark
-                else ("below" if actual < benchmark else "meets"),
+                "status": "above" if actual > benchmark else ("below" if actual < benchmark else "meets"),
             }
 
         return comparison
@@ -970,9 +888,7 @@ class TestQualityMetrics:
         quality_report = self.generate_quality_report(suite_metrics)
 
         if format == "json":
-            output = json.dumps(
-                quality_report, ensure_ascii=False, indent=2, default=str
-            )
+            output = json.dumps(quality_report, ensure_ascii=False, indent=2, default=str)
         elif format == "html":
             output = self._generate_html_report(quality_report)
         else:
@@ -1060,9 +976,7 @@ class TestQualityMetrics:
             failed_tests=quality_report["detailed_metrics"]["test_results"]["failed"],
             skipped_tests=quality_report["detailed_metrics"]["test_results"]["skipped"],
             error_tests=quality_report["detailed_metrics"]["test_results"]["errors"],
-            coverage_percentage=quality_report["detailed_metrics"]["coverage"][
-                "percentage"
-            ],
+            coverage_percentage=quality_report["detailed_metrics"]["coverage"]["percentage"],
             recommendations=recommendations_html,
         )
 
@@ -1083,26 +997,15 @@ class TestQualityMetrics:
                 "timestamp": latest_metrics.timestamp.isoformat(),
             },
             "trend_data": {
-                "dates": [
-                    m.timestamp.strftime("%Y-%m-%d %H:%M")
-                    for m in self.quality_history[-20:]
-                ],
+                "dates": [m.timestamp.strftime("%Y-%m-%d %H:%M") for m in self.quality_history[-20:]],
                 "quality_scores": [m.quality_score for m in self.quality_history[-20:]],
                 "pass_rates": [m.pass_rate for m in self.quality_history[-20:]],
-                "coverage_percentages": [
-                    m.coverage_percentage for m in self.quality_history[-20:]
-                ],
+                "coverage_percentages": [m.coverage_percentage for m in self.quality_history[-20:]],
             },
             "alert_summary": {
-                "critical_issues": len(
-                    [m for m in self.quality_history if m.quality_score < 60]
-                ),
-                "warning_issues": len(
-                    [m for m in self.quality_history if 60 <= m.quality_score < 80]
-                ),
-                "healthy_executions": len(
-                    [m for m in self.quality_history if m.quality_score >= 85]
-                ),
+                "critical_issues": len([m for m in self.quality_history if m.quality_score < 60]),
+                "warning_issues": len([m for m in self.quality_history if 60 <= m.quality_score < 80]),
+                "healthy_executions": len([m for m in self.quality_history if m.quality_score >= 85]),
             },
         }
 
@@ -1118,14 +1021,8 @@ def demo_test_quality_metrics():
     # 生成模拟测试结果
     test_results = []
     for i in range(100):
-        status = np.random.choice(
-            ["passed", "failed", "skipped", "error"], p=[0.92, 0.05, 0.02, 0.01]
-        )
-        duration = (
-            np.random.uniform(0.1, 8.0)
-            if status == "passed"
-            else np.random.uniform(0.5, 3.0)
-        )
+        status = np.random.choice(["passed", "failed", "skipped", "error"], p=[0.92, 0.05, 0.02, 0.01])
+        duration = np.random.uniform(0.1, 8.0) if status == "passed" else np.random.uniform(0.5, 3.0)
 
         test_result = TestResult(
             test_id=f"test_{i + 1:03d}",
@@ -1133,22 +1030,16 @@ def demo_test_quality_metrics():
             status=status,
             duration=duration,
             timestamp=datetime.now() - timedelta(hours=np.random.randint(0, 24)),
-            error_message=f"Error message {i}"
-            if status in ["failed", "error"]
-            else None,
+            error_message=f"Error message {i}" if status in ["failed", "error"] else None,
             metadata={
-                "error_type": np.random.choice(
-                    ["assertion", "timeout", "network", "unknown"]
-                ),
+                "error_type": np.random.choice(["assertion", "timeout", "network", "unknown"]),
                 "failure_count": np.random.randint(1, 5) if status != "passed" else 0,
             },
         )
         test_results.append(test_result)
 
     # 计算质量指标
-    suite_metrics = quality_system.calculate_test_suite_metrics(
-        test_results, ["src/main.py", "src/utils.py"]
-    )
+    suite_metrics = quality_system.calculate_test_suite_metrics(test_results, ["src/main.py", "src/utils.py"])
 
     if suite_metrics:
         print("\n📊 测试套件质量指标:")
@@ -1164,9 +1055,7 @@ def demo_test_quality_metrics():
         print(f"\n📈 质量评级: {quality_report['report_summary']['overall_rating']}")
 
         # 导出质量指标
-        json_file = quality_system.export_metrics(
-            suite_metrics, "json", "/tmp/test_quality_report.json"
-        )
+        json_file = quality_system.export_metrics(suite_metrics, "json", "/tmp/test_quality_report.json")
         print(f"📄 JSON报告已保存: {json_file}")
 
         # 获取仪表盘数据

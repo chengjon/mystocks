@@ -135,9 +135,7 @@ class SARStrategy(BaseStrategy):
 
         self.af_values[symbol] = self.parameters["initial_af"]
 
-    def _calculate_sar(
-        self, current_data: Dict[str, Any], symbol: str
-    ) -> Optional[float]:
+    def _calculate_sar(self, current_data: Dict[str, Any], symbol: str) -> Optional[float]:
         """
         计算下一个SAR值
 
@@ -277,9 +275,7 @@ class SARStrategy(BaseStrategy):
             if len(volumes) >= 20:
                 avg_volume = sum(volumes[-20:]) / 20
                 current_volume = int(current_data.get("volume", 0))
-                volume_confirmed = (
-                    current_volume >= avg_volume * self.parameters["volume_ratio"]
-                )
+                volume_confirmed = current_volume >= avg_volume * self.parameters["volume_ratio"]
 
         # === 买入信号 ===
         if not has_position:

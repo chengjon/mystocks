@@ -84,9 +84,7 @@ class ContractTestEngine:
             for path, path_item in paths.items():
                 for method, operation in path_item.items():
                     if method.upper() in ["GET", "POST", "PUT", "DELETE", "PATCH"]:
-                        test_case = self._create_test_case_from_operation(
-                            path, method, operation
-                        )
+                        test_case = self._create_test_case_from_operation(path, method, operation)
                         if test_case:
                             test_cases.append(test_case)
 
@@ -96,9 +94,7 @@ class ContractTestEngine:
 
         return test_cases
 
-    def _create_test_case_from_operation(
-        self, path: str, method: str, operation: Dict
-    ) -> Optional[ContractTestCase]:
+    def _create_test_case_from_operation(self, path: str, method: str, operation: Dict) -> Optional[ContractTestCase]:
         """从 OpenAPI 操作创建测试用例"""
         try:
             # 基本信息
@@ -134,14 +130,10 @@ class ContractTestEngine:
                 content = success_response.get("content", {})
                 if "application/json" in content:
                     schema = content["application/json"].get("schema", {})
-                    test_case.expected_response = self._generate_mock_data_from_schema(
-                        schema
-                    )
+                    test_case.expected_response = self._generate_mock_data_from_schema(schema)
 
             # 设置验证规则
-            test_case.validation_rules = [
-                self._create_validation_rule_from_spec(path, method)
-            ]
+            test_case.validation_rules = [self._create_validation_rule_from_spec(path, method)]
 
             return test_case
 
@@ -160,9 +152,7 @@ class ContractTestEngine:
         else:
             return TestCategory.VALIDATION
 
-    def _create_validation_rule_from_spec(
-        self, path: str, method: str
-    ) -> Dict[str, Any]:
+    def _create_validation_rule_from_spec(self, path: str, method: str) -> Dict[str, Any]:
         """从规范创建验证规则"""
         from .models import ValidationRuleFactory
 
@@ -178,9 +168,7 @@ class ContractTestEngine:
             rules.append(ValidationRuleFactory.create_response_time_rule(1000))
 
         # JWT 验证（如果是受保护的端点）
-        if self.config.enable_auth_tests and any(
-            auth_path in path for auth_path in ["/api/", "/auth/", "/admin/"]
-        ):
+        if self.config.enable_auth_tests and any(auth_path in path for auth_path in ["/api/", "/auth/", "/admin/"]):
             rules.append(ValidationRuleFactory.create_jwt_validation_rule())
 
         return {"type": "composite", "rules": rules}
@@ -258,9 +246,7 @@ class ContractTestEngine:
                     endpoint=case_data.get("endpoint", ""),
                     method=case_data.get("method", "GET"),
                     category=TestCategory(case_data.get("category", "validation")),
-                    contract_type=ContractType(
-                        case_data.get("contract_type", "openapi")
-                    ),
+                    contract_type=ContractType(case_data.get("contract_type", "openapi")),
                     expected_status=case_data.get("expected_status", 200),
                     headers=case_data.get("headers", {}),
                     params=case_data.get("params", {}),
@@ -273,9 +259,7 @@ class ContractTestEngine:
                 )
                 suite.test_cases.append(test_case)
 
-            logger.info(
-                f"成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)"
-            )
+            logger.info(f"成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)")
             return suite
 
         except Exception as e:
@@ -298,9 +282,7 @@ class ContractTestEngine:
                 if path.suffix.lower() == ".json":
                     json.dump(suite_dict, f, ensure_ascii=False, indent=2)
                 else:
-                    yaml.dump(
-                        suite_dict, f, default_flow_style=False, allow_unicode=True
-                    )
+                    yaml.dump(suite_dict, f, default_flow_style=False, allow_unicode=True)
 
             logger.info(f"保存测试套件成功: {file_path}")
 
@@ -341,9 +323,7 @@ class ContractTestEngine:
             validation_rules=[
                 {
                     "type": "composite",
-                    "rules": [
-                        self._create_validation_rule_from_spec("/api/health", "GET")
-                    ],
+                    "rules": [self._create_validation_rule_from_spec("/api/health", "GET")],
                 }
             ],
         )
@@ -442,15 +422,9 @@ class ContractTestEngine:
             suite.total_duration = (suite.end_time - suite.start_time).total_seconds()
 
             # 统计结果
-            suite.passed_cases = sum(
-                1 for r in results if r.status == TestStatus.PASSED
-            )
-            suite.failed_cases = sum(
-                1 for r in results if r.status == TestStatus.FAILED
-            )
-            suite.skipped_cases = sum(
-                1 for r in results if r.status == TestStatus.SKIPPED
-            )
+            suite.passed_cases = sum(1 for r in results if r.status == TestStatus.PASSED)
+            suite.failed_cases = sum(1 for r in results if r.status == TestStatus.FAILED)
+            suite.skipped_cases = sum(1 for r in results if r.status == TestStatus.SKIPPED)
             suite.error_cases = sum(1 for r in results if r.status == TestStatus.ERROR)
 
             if suite.failed_cases == 0 and suite.error_cases == 0:
@@ -495,9 +469,7 @@ class ContractTestEngine:
 
         # 3. 加载文件中的测试套件
         test_files = Path(self.config.test_data_path).glob("*.yaml")
-        test_files = list(test_files) + list(
-            Path(self.config.test_data_path).glob("*.json")
-        )
+        test_files = list(test_files) + list(Path(self.config.test_data_path).glob("*.json"))
 
         for test_file in test_files:
             suite = self.load_test_suite_from_file(str(test_file))

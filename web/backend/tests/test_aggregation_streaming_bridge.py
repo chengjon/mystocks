@@ -171,9 +171,7 @@ class TestBridgePersistence:
 
     def test_persistence_enabled(self):
         """Test bar persistence when enabled"""
-        with patch(
-            "app.services.aggregation_streaming_bridge.OHLCVStorage"
-        ) as mock_storage:
+        with patch("app.services.aggregation_streaming_bridge.OHLCVStorage") as mock_storage:
             mock_instance = MagicMock()
             mock_instance.insert_bars_batch.return_value = 1
             mock_storage.return_value = mock_instance
@@ -376,9 +374,7 @@ class TestBridgeErrorHandling:
 
     def test_handle_persistence_error(self):
         """Test handling persistence errors"""
-        with patch(
-            "app.services.aggregation_streaming_bridge.OHLCVStorage"
-        ) as mock_storage:
+        with patch("app.services.aggregation_streaming_bridge.OHLCVStorage") as mock_storage:
             mock_instance = MagicMock()
             mock_instance.insert_bars_batch.side_effect = Exception("DB error")
             mock_storage.return_value = mock_instance

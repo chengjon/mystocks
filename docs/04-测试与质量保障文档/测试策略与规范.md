@@ -83,7 +83,7 @@ testpaths = tests
 python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
-addopts = 
+addopts =
     --strict-markers
     --tb=short
     --maxfail=1
@@ -104,7 +104,7 @@ markers =
 ### 6.2 覆盖率配置
 ```ini
 [tool:pytest]
-addopts = 
+addopts =
     --cov=src
     --cov-report=term-missing
     --cov-report=html:htmlcov
@@ -217,7 +217,7 @@ def mock_database_connection():
 
 ---
 
-**文档版本**: v1.0  
-**创建日期**: 2025年11月15日  
-**最后更新**: 2025年11月15日  
+**文档版本**: v1.0
+**创建日期**: 2025年11月15日
+**最后更新**: 2025年11月15日
 **负责人**: MyStocks开发团队

@@ -67,9 +67,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
     # ==================== 仪表盘相关 ====================
 
-    def get_dashboard_summary(
-        self, user_id: int, trade_date: Optional[date] = None
-    ) -> Dict[str, Any]:
+    def get_dashboard_summary(self, user_id: int, trade_date: Optional[date] = None) -> Dict[str, Any]:
         """
         获取仪表盘汇总数据
 
@@ -91,9 +89,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             futures = {}
 
             # 任务1: 市场概览
-            futures["market_overview"] = self.executor.submit(
-                self.timeseries_source.get_market_overview
-            )
+            futures["market_overview"] = self.executor.submit(self.timeseries_source.get_market_overview)
 
             # 任务2: 自选股列表
             futures["watchlist"] = self.executor.submit(
@@ -162,9 +158,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if trade_date is None:
                 trade_date = date.today()
 
-            logger.info(
-                f"获取板块表现: sector_type={sector_type}, trade_date={trade_date}"
-            )
+            logger.info(f"获取板块表现: sector_type={sector_type}, trade_date={trade_date}")
 
             if sector_type == "industry":
                 # 获取行业列表
@@ -223,9 +217,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             logger.info(f"开始回测: strategy_id={strategy_id}, user_id={user_id}")
 
             # 1. 获取策略配置
-            strategies = self.relational_source.get_strategy_configs(
-                user_id=user_id, strategy_type=None, status=None
-            )
+            strategies = self.relational_source.get_strategy_configs(user_id=user_id, strategy_type=None, status=None)
 
             strategy_config = None
             for s in strategies:
@@ -315,9 +307,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
     # ==================== 风险管理相关 ====================
 
-    def calculate_risk_metrics(
-        self, user_id: int, portfolio: Optional[Dict[str, float]] = None
-    ) -> Dict[str, Any]:
+    def calculate_risk_metrics(self, user_id: int, portfolio: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """
         计算风险指标
 
@@ -378,9 +368,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             logger.info(f"检查风险预警: user_id={user_id}")
 
             # 1. 获取用户的所有启用预警
-            alerts = self.relational_source.get_risk_alerts(
-                user_id=user_id, enabled_only=True
-            )
+            alerts = self.relational_source.get_risk_alerts(user_id=user_id, enabled_only=True)
 
             triggered = []
 
@@ -407,9 +395,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                             "condition": condition,
                             "threshold": threshold,
                             "current_value": threshold * 1.05,  # Mock当前值
-                            "triggered_at": datetime.now().strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            ),
+                            "triggered_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "message": f"{symbol} {alert_type}触发预警（阈值{threshold}）",
                         }
                     )
@@ -443,16 +429,12 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             # 1. 获取策略配置
             if strategy_ids:
                 strategies = []
-                all_strategies = self.relational_source.get_strategy_configs(
-                    user_id=user_id, status="active"
-                )
+                all_strategies = self.relational_source.get_strategy_configs(user_id=user_id, status="active")
                 for s in all_strategies:
                     if s["id"] in strategy_ids:
                         strategies.append(s)
             else:
-                strategies = self.relational_source.get_strategy_configs(
-                    user_id=user_id, status="active"
-                )
+                strategies = self.relational_source.get_strategy_configs(user_id=user_id, status="active")
 
             # 2. 对每个策略生成交易信号（简化版）
             # 生产版本应该:
@@ -477,9 +459,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                             "price": 10.0 + i,
                             "recommended_quantity": 1000,
                             "reason": "技术指标触发",
-                            "generated_at": datetime.now().strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            ),
+                            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         }
                     )
 
@@ -490,9 +470,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             logger.error(f"分析交易信号失败: {e}")
             raise
 
-    def get_portfolio_analysis(
-        self, user_id: int, include_history: bool = False
-    ) -> Dict[str, Any]:
+    def get_portfolio_analysis(self, user_id: int, include_history: bool = False) -> Dict[str, Any]:
         """
         获取持仓分析
 
@@ -542,9 +520,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             logger.error(f"获取持仓分析失败: {e}")
             raise
 
-    def perform_attribution_analysis(
-        self, user_id: int, start_date: date, end_date: date
-    ) -> Dict[str, Any]:
+    def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
         """
         执行归因分析
 
@@ -678,9 +654,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     }
 
             # 判断整体状态
-            all_healthy = all(
-                dep["status"] == "healthy" for dep in dependencies.values()
-            )
+            all_healthy = all(dep["status"] == "healthy" for dep in dependencies.values())
 
             return {
                 "status": "healthy" if all_healthy else "degraded",

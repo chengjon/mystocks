@@ -258,8 +258,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   TrendCharts,
@@ -271,31 +271,130 @@ import {
 } from '@element-plus/icons-vue'
 import { riskApi } from '@/api'
 import * as echarts from 'echarts'
+import type { ECharts } from 'echarts'
 
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 风险仪表板数据
+ */
+interface RiskDashboard {
+  var_95: number
+  cvar_95: number
+  beta: number
+  alert_count: number
+}
+
+/**
+ * 历史指标数据点
+ */
+interface MetricsHistoryPoint {
+  date: string
+  var_95: number
+  cvar_95: number
+  beta: number
+}
+
+/**
+ * 告警级别
+ */
+type AlertLevel = 'low' | 'medium' | 'high' | 'critical'
+
+/**
+ * 告警数据
+ */
+interface Alert {
+  id: number
+  title: string
+  metric_type: string
+  threshold: number
+  level: AlertLevel
+  description: string
+  created_at?: string
+  triggered_at?: string
+}
+
+/**
+ * VaR/CVaR数据
+ */
+interface VarCvarData {
+  symbol: string
+  var_95: number
+  cvar_95: number
+  date: string
+}
+
+/**
+ * Beta数据
+ */
+interface BetaData {
+  symbol: string
+  beta: number
+  date: string
+}
+
+/**
+ * 告警表单
+ */
+interface AlertForm {
+  title: string
+  metric_type: string
+  threshold: number
+  level: AlertLevel
+  description: string
+}
+
+/**
+ * ECharts 选项类型
+ */
+interface EChartOption {
+  tooltip?: any
+  legend?: any
+  grid?: any
+  xAxis?: any
+  yAxis?: any
+  series?: any[]
+}
+
+/**
+ * Element Plus 标签类型
+ */
+type TagType = 'info' | 'warning' | 'danger' | 'success' | ''
+
+/**
+ * 风险等级
+ */
+type RiskLevel = '低' | '中' | '高' | '极高' | '未知'
+
+// ============================================
 // 响应式数据
-const dashboard = ref({
+// ============================================
+
+const dashboard: Ref<RiskDashboard> = ref({
   var_95: 0,
   cvar_95: 0,
   beta: 0,
   alert_count: 0
 })
 
-const historyPeriod = ref('30d')
-const historyLoading = ref(false)
-const metricsHistory = ref([])
+const historyPeriod: Ref<string> = ref('30d')
+const historyLoading: Ref<boolean> = ref(false)
+const metricsHistory: Ref<MetricsHistoryPoint[]> = ref([])
 
-const alertsLoading = ref(false)
-const alerts = ref([])
+const alertsLoading: Ref<boolean> = ref(false)
+const alerts: Ref<Alert[]> = ref([])
 
-const varLoading = ref(false)
-const varData = ref([])
+const varLoading: Ref<boolean> = ref(false)
+const varData: Ref<VarCvarData[]> = ref([])
 
-const betaLoading = ref(false)
-const betaData = ref([])
+const betaLoading: Ref<boolean> = ref(false)
+const betaData: Ref<BetaData[]> = ref([])
 
-const createAlertVisible = ref(false)
-const createAlertLoading = ref(false)
-const alertForm = ref({
+const createAlertVisible: Ref<boolean> = ref(false)
+const createAlertLoading: Ref<boolean> = ref(false)
+const alertForm: Ref<AlertForm> = ref({
   title: '',
   metric_type: 'var_95',
   threshold: 5.0,
@@ -303,22 +402,30 @@ const alertForm = ref({
   description: ''
 })
 
-let chartInstance = null
+let chartInstance: ECharts | null = null
 
-// 加载仪表板数据
-const loadDashboard = async () => {
+// ============================================
+// 数据加载方法
+// ============================================
+
+/**
+ * 加载仪表板数据
+ */
+const loadDashboard = async (): Promise<void> => {
   try {
     const response = await riskApi.getDashboard()
     if (response.data.success) {
       dashboard.value = response.data.data
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载仪表板失败:', error)
   }
 }
 
-// 加载指标历史
-const loadMetricsHistory = async () => {
+/**
+ * 加载指标历史
+ */
+const loadMetricsHistory = async (): Promise<void> => {
   historyLoading.value = true
   try {
     const response = await riskApi.getMetricsHistory({
@@ -328,7 +435,7 @@ const loadMetricsHistory = async () => {
       metricsHistory.value = response.data.data
       renderChart()
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载历史数据失败:', error)
     ElMessage.error('加载历史数据失败')
   } finally {
@@ -336,53 +443,65 @@ const loadMetricsHistory = async () => {
   }
 }
 
-// 加载告警列表
-const loadAlerts = async () => {
+/**
+ * 加载告警列表
+ */
+const loadAlerts = async (): Promise<void> => {
   alertsLoading.value = true
   try {
     const response = await riskApi.getAlerts({ limit: 10 })
     if (response.data.success) {
       alerts.value = response.data.data
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载告警失败:', error)
   } finally {
     alertsLoading.value = false
   }
 }
 
-// 加载VaR/CVaR数据
-const loadVarCvar = async () => {
+/**
+ * 加载VaR/CVaR数据
+ */
+const loadVarCvar = async (): Promise<void> => {
   varLoading.value = true
   try {
     const response = await riskApi.getVarCvar()
     if (response.data.success) {
       varData.value = response.data.data
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载VaR/CVaR失败:', error)
   } finally {
     varLoading.value = false
   }
 }
 
-// 加载Beta数据
-const loadBeta = async () => {
+/**
+ * 加载Beta数据
+ */
+const loadBeta = async (): Promise<void> => {
   betaLoading.value = true
   try {
     const response = await riskApi.getBeta()
     if (response.data.success) {
       betaData.value = response.data.data
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载Beta失败:', error)
   } finally {
     betaLoading.value = false
   }
 }
 
-// 渲染图表
-const renderChart = () => {
+// ============================================
+// 图表渲染
+// ============================================
+
+/**
+ * 渲染图表
+ */
+const renderChart = (): void => {
   if (!metricsHistory.value || metricsHistory.value.length === 0) return
 
   const chartDom = document.getElementById('risk-chart')
@@ -397,7 +516,7 @@ const renderChart = () => {
   const cvarValues = metricsHistory.value.map(item => item.cvar_95)
   const betaValues = metricsHistory.value.map(item => item.beta * 10) // 放大10倍以便显示
 
-  const option = {
+  const option: EChartOption = {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -447,11 +566,17 @@ const renderChart = () => {
     ]
   }
 
-  chartInstance.setOption(option)
+  chartInstance?.setOption(option)
 }
 
-// 显示创建告警对话框
-const showCreateAlertDialog = () => {
+// ============================================
+// 告警管理
+// ============================================
+
+/**
+ * 显示创建告警对话框
+ */
+const showCreateAlertDialog = (): void => {
   alertForm.value = {
     title: '',
     metric_type: 'var_95',
@@ -462,8 +587,10 @@ const showCreateAlertDialog = () => {
   createAlertVisible.value = true
 }
 
-// 创建告警
-const handleCreateAlert = async () => {
+/**
+ * 创建告警
+ */
+const handleCreateAlert = async (): Promise<void> => {
   if (!alertForm.value.title) {
     ElMessage.warning('请输入告警名称')
     return
@@ -479,7 +606,7 @@ const handleCreateAlert = async () => {
     } else {
       ElMessage.error(response.data.message || '创建失败')
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('创建告警失败:', error)
     ElMessage.error('创建告警失败')
   } finally {
@@ -487,14 +614,18 @@ const handleCreateAlert = async () => {
   }
 }
 
-// 查看告警详情
-const viewAlertDetail = (alert) => {
+/**
+ * 查看告警详情
+ */
+const viewAlertDetail = (alert: Alert): void => {
   ElMessage.info(`查看告警详情: ${alert.title}`)
 }
 
-// 获取告警类型
-const getAlertType = (level) => {
-  const typeMap = {
+/**
+ * 获取告警类型
+ */
+const getAlertType = (level: AlertLevel): TagType => {
+  const typeMap: Record<AlertLevel, TagType> = {
     low: 'info',
     medium: 'warning',
     high: 'danger',
@@ -503,15 +634,23 @@ const getAlertType = (level) => {
   return typeMap[level] || 'info'
 }
 
-// 格式化时间
-const formatTime = (time) => {
+// ============================================
+// 工具函数
+// ============================================
+
+/**
+ * 格式化时间
+ */
+const formatTime = (time: string | Date): string => {
   if (!time) return '-'
   const date = new Date(time)
   return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
-// 获取风险等级
-const getRiskLevel = (var95) => {
+/**
+ * 获取风险等级
+ */
+const getRiskLevel = (var95: number | null): RiskLevel => {
   if (!var95) return '未知'
   if (var95 > 10) return '极高'
   if (var95 > 7) return '高'
@@ -519,7 +658,10 @@ const getRiskLevel = (var95) => {
   return '低'
 }
 
-const getRiskLevelType = (var95) => {
+/**
+ * 获取风险等级标签类型
+ */
+const getRiskLevelType = (var95: number | null): TagType => {
   if (!var95) return 'info'
   if (var95 > 10) return 'danger'
   if (var95 > 7) return 'warning'
@@ -527,7 +669,10 @@ const getRiskLevelType = (var95) => {
   return 'success'
 }
 
-const getRiskClass = (value) => {
+/**
+ * 获取风险样式类
+ */
+const getRiskClass = (value: number | null): string => {
   if (!value) return ''
   if (value > 10) return 'risk-critical'
   if (value > 7) return 'risk-high'
@@ -535,15 +680,20 @@ const getRiskClass = (value) => {
   return 'risk-low'
 }
 
-// Beta相关辅助函数
-const getBetaClass = (beta) => {
+/**
+ * Beta相关辅助函数 - 获取Beta样式类
+ */
+const getBetaClass = (beta: number | null): string => {
   if (!beta) return ''
   if (beta > 1.5) return 'beta-high'
   if (beta < 0.5) return 'beta-low'
   return 'beta-normal'
 }
 
-const getBetaType = (beta) => {
+/**
+ * 获取Beta标签类型
+ */
+const getBetaType = (beta: number | null): TagType => {
   if (!beta) return 'info'
   if (beta > 1.5) return 'danger'
   if (beta > 1.2) return 'warning'
@@ -551,7 +701,10 @@ const getBetaType = (beta) => {
   return ''
 }
 
-const getBetaDescription = (beta) => {
+/**
+ * 获取Beta描述
+ */
+const getBetaDescription = (beta: number | null): string => {
   if (!beta) return '未知'
   if (beta > 1.5) return '高波动'
   if (beta > 1.2) return '较高波动'
@@ -560,8 +713,14 @@ const getBetaDescription = (beta) => {
   return '极低波动'
 }
 
-// 组件挂载
-onMounted(() => {
+// ============================================
+// 生命周期
+// ============================================
+
+/**
+ * 组件挂载
+ */
+onMounted((): void => {
   loadDashboard()
   loadMetricsHistory()
   loadAlerts()
@@ -569,15 +728,17 @@ onMounted(() => {
   loadBeta()
 
   // 监听窗口大小变化
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', (): void => {
     if (chartInstance) {
       chartInstance.resize()
     }
   })
 })
 
-// 组件卸载
-onUnmounted(() => {
+/**
+ * 组件卸载
+ */
+onUnmounted((): void => {
   if (chartInstance) {
     chartInstance.dispose()
     chartInstance = null

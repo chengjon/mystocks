@@ -182,9 +182,7 @@ class ErrorHandler:
         # 记录分类
         category = getattr(error, "category", "unknown")
 
-        log_message = (
-            f"[{timestamp}] ERROR [{severity}] [{category}] {error_type}: {str(error)}"
-        )
+        log_message = f"[{timestamp}] ERROR [{severity}] [{category}] {error_type}: {str(error)}"
 
         if attempt is not None:
             log_message += f" (attempt {attempt})"
@@ -254,13 +252,11 @@ def handle_errors(
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             error_handler = get_error_handler()
-            last_error = None
 
             for attempt in range(max_attempts):
                 try:
                     return func(*args, **kwargs)
                 except catch_exceptions as e:
-                    last_error = e
 
                     # 记录错误
                     error_handler.log_error(e, context, attempt + 1)
@@ -282,9 +278,7 @@ def handle_errors(
                         elif reraise:
                             raise
                         else:
-                            logger.error(
-                                f"Failed to execute {func.__name__} after {max_attempts} attempts"
-                            )
+                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
                             return None
 
             return None
@@ -292,13 +286,11 @@ def handle_errors(
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             error_handler = get_error_handler()
-            last_error = None
 
             for attempt in range(max_attempts):
                 try:
                     return await func(*args, **kwargs)
                 except catch_exceptions as e:
-                    last_error = e
 
                     # 记录错误
                     error_handler.log_error(e, context, attempt + 1)
@@ -320,9 +312,7 @@ def handle_errors(
                         elif reraise:
                             raise
                         else:
-                            logger.error(
-                                f"Failed to execute {func.__name__} after {max_attempts} attempts"
-                            )
+                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
                             return None
 
             return None
@@ -373,10 +363,7 @@ class CircuitBreaker:
         return wrapper
 
     def _should_attempt_reset(self) -> bool:
-        return (
-            self.last_failure_time
-            and time.time() - self.last_failure_time >= self.recovery_timeout
-        )
+        return self.last_failure_time and time.time() - self.last_failure_time >= self.recovery_timeout
 
     def _on_success(self) -> None:
         self.failure_count = 0
@@ -430,16 +417,12 @@ def validate_dataframe(
         empty_ratio = empty_cells / total_cells if total_cells > 0 else 1.0
 
         if empty_ratio > max_empty_ratio:
-            raise ValidationError(
-                f"DataFrame空值比例({empty_ratio:.2f})超过限制({max_empty_ratio:.2f})"
-            )
+            raise ValidationError(f"DataFrame空值比例({empty_ratio:.2f})超过限制({max_empty_ratio:.2f})")
 
     return True
 
 
-def safe_execute(
-    func: Callable, *args, default_return: Any = None, log_errors: bool = True, **kwargs
-) -> Any:
+def safe_execute(func: Callable, *args, default_return: Any = None, log_errors: bool = True, **kwargs) -> Any:
     """
     安全执行函数
 
@@ -458,9 +441,7 @@ def safe_execute(
     except Exception as e:
         if log_errors:
             error_handler = get_error_handler()
-            error_handler.log_error(
-                e, {"function": func.__name__, "args": args, "kwargs": kwargs}
-            )
+            error_handler.log_error(e, {"function": func.__name__, "args": args, "kwargs": kwargs})
         return default_return
 
 

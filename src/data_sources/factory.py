@@ -59,10 +59,7 @@ class UnsupportedDataSourceType(DataSourceFactoryException):
     """不支持的数据源类型异常"""
 
     def __init__(self, source_type: str, supported_types: list):
-        message = (
-            f"Unsupported data source type: '{source_type}'. "
-            f"Supported types: {', '.join(supported_types)}"
-        )
+        message = f"Unsupported data source type: '{source_type}'. " f"Supported types: {', '.join(supported_types)}"
         super().__init__(message, error_code="UNSUPPORTED_TYPE")
 
 
@@ -150,9 +147,7 @@ class DataSourceFactory:
 
     # ==================== 数据源注册 ====================
 
-    def register_timeseries_source(
-        self, source_type: str, source_class: Type[ITimeSeriesDataSource]
-    ) -> None:
+    def register_timeseries_source(self, source_type: str, source_class: Type[ITimeSeriesDataSource]) -> None:
         """
         注册时序数据源实现
 
@@ -164,16 +159,12 @@ class DataSourceFactory:
             TypeError: source_class未实现ITimeSeriesDataSource接口
         """
         if not issubclass(source_class, ITimeSeriesDataSource):
-            raise TypeError(
-                f"{source_class.__name__} must implement ITimeSeriesDataSource"
-            )
+            raise TypeError(f"{source_class.__name__} must implement ITimeSeriesDataSource")
 
         with self._lock:
             self._timeseries_registry[source_type.lower()] = source_class
 
-    def register_relational_source(
-        self, source_type: str, source_class: Type[IRelationalDataSource]
-    ) -> None:
+    def register_relational_source(self, source_type: str, source_class: Type[IRelationalDataSource]) -> None:
         """
         注册关系数据源实现
 
@@ -185,16 +176,12 @@ class DataSourceFactory:
             TypeError: source_class未实现IRelationalDataSource接口
         """
         if not issubclass(source_class, IRelationalDataSource):
-            raise TypeError(
-                f"{source_class.__name__} must implement IRelationalDataSource"
-            )
+            raise TypeError(f"{source_class.__name__} must implement IRelationalDataSource")
 
         with self._lock:
             self._relational_registry[source_type.lower()] = source_class
 
-    def register_business_source(
-        self, source_type: str, source_class: Type[IBusinessDataSource]
-    ) -> None:
+    def register_business_source(self, source_type: str, source_class: Type[IBusinessDataSource]) -> None:
         """
         注册业务数据源实现
 
@@ -206,18 +193,14 @@ class DataSourceFactory:
             TypeError: source_class未实现IBusinessDataSource接口
         """
         if not issubclass(source_class, IBusinessDataSource):
-            raise TypeError(
-                f"{source_class.__name__} must implement IBusinessDataSource"
-            )
+            raise TypeError(f"{source_class.__name__} must implement IBusinessDataSource")
 
         with self._lock:
             self._business_registry[source_type.lower()] = source_class
 
     # ==================== 数据源获取 ====================
 
-    def get_timeseries_source(
-        self, source_type: Optional[str] = None, **kwargs
-    ) -> ITimeSeriesDataSource:
+    def get_timeseries_source(self, source_type: Optional[str] = None, **kwargs) -> ITimeSeriesDataSource:
         """
         获取时序数据源实例
 
@@ -249,9 +232,7 @@ class DataSourceFactory:
         """
         # 确定数据源类型
         if source_type is None:
-            source_type = os.getenv(
-                ENV_TIMESERIES_SOURCE, DEFAULT_TIMESERIES_SOURCE
-            ).lower()
+            source_type = os.getenv(ENV_TIMESERIES_SOURCE, DEFAULT_TIMESERIES_SOURCE).lower()
         else:
             source_type = source_type.lower()
 
@@ -275,9 +256,7 @@ class DataSourceFactory:
             self._timeseries_instances[cache_key] = instance
             return instance
 
-    def get_relational_source(
-        self, source_type: Optional[str] = None, **kwargs
-    ) -> IRelationalDataSource:
+    def get_relational_source(self, source_type: Optional[str] = None, **kwargs) -> IRelationalDataSource:
         """
         获取关系数据源实例
 
@@ -302,9 +281,7 @@ class DataSourceFactory:
         """
         # 确定数据源类型
         if source_type is None:
-            source_type = os.getenv(
-                ENV_RELATIONAL_SOURCE, DEFAULT_RELATIONAL_SOURCE
-            ).lower()
+            source_type = os.getenv(ENV_RELATIONAL_SOURCE, DEFAULT_RELATIONAL_SOURCE).lower()
         else:
             source_type = source_type.lower()
 
@@ -328,9 +305,7 @@ class DataSourceFactory:
             self._relational_instances[cache_key] = instance
             return instance
 
-    def get_business_source(
-        self, source_type: Optional[str] = None, **kwargs
-    ) -> IBusinessDataSource:
+    def get_business_source(self, source_type: Optional[str] = None, **kwargs) -> IBusinessDataSource:
         """
         获取业务数据源实例
 
@@ -355,9 +330,7 @@ class DataSourceFactory:
         """
         # 确定数据源类型
         if source_type is None:
-            source_type = os.getenv(
-                ENV_BUSINESS_SOURCE, DEFAULT_BUSINESS_SOURCE
-            ).lower()
+            source_type = os.getenv(ENV_BUSINESS_SOURCE, DEFAULT_BUSINESS_SOURCE).lower()
         else:
             source_type = source_type.lower()
 
@@ -498,9 +471,7 @@ class DataSourceFactory:
                 PostgreSQLRelationalDataSource,
             )
 
-            self.register_relational_source(
-                "postgresql", PostgreSQLRelationalDataSource
-            )
+            self.register_relational_source("postgresql", PostgreSQLRelationalDataSource)
         except ImportError:
             pass
 

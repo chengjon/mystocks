@@ -60,9 +60,7 @@ class PricePredictorCPU:
             "model_scores": {},
         }
 
-    def _prepare_data_cpu(
-        self, data: pd.DataFrame, target_col: str = "close"
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _prepare_data_cpu(self, data: pd.DataFrame, target_col: str = "close") -> Tuple[np.ndarray, np.ndarray]:
         """准备CPU数据"""
         # 选择特征列（排除目标列）
         feature_cols = [col for col in data.columns if col != target_col]
@@ -77,9 +75,7 @@ class PricePredictorCPU:
 
         return X_scaled, y
 
-    def _create_lag_features(
-        self, data: pd.DataFrame, lags: List[int] = [1, 2, 3, 5, 10]
-    ) -> pd.DataFrame:
+    def _create_lag_features(self, data: pd.DataFrame, lags: List[int] = [1, 2, 3, 5, 10]) -> pd.DataFrame:
         """创建滞后特征"""
         df = data.copy()
 
@@ -119,9 +115,7 @@ class PricePredictorCPU:
         macd_signal = macd.ewm(span=signal).mean()
         return macd, macd_signal
 
-    def prepare_features(
-        self, data: pd.DataFrame, prediction_horizon: int = 1
-    ) -> pd.DataFrame:
+    def prepare_features(self, data: pd.DataFrame, prediction_horizon: int = 1) -> pd.DataFrame:
         """准备特征数据"""
         # 创建滞后特征
         feature_data = self._create_lag_features(data)
@@ -137,9 +131,7 @@ class PricePredictorCPU:
 
         return feature_data
 
-    def train_models(
-        self, data: pd.DataFrame, test_size: float = 0.2
-    ) -> Dict[str, ModelPerformance]:
+    def train_models(self, data: pd.DataFrame, test_size: float = 0.2) -> Dict[str, ModelPerformance]:
         """训练多个模型"""
         start_time = time.time()
 
@@ -148,9 +140,7 @@ class PricePredictorCPU:
 
         # 分割训练和测试数据
         X, y = self._prepare_data_cpu(feature_data)
-        X_train, X_test, y_train, y_test = sklearn_train_test_split(
-            X, y, test_size=test_size, random_state=42
-        )
+        X_train, X_test, y_train, y_test = sklearn_train_test_split(X, y, test_size=test_size, random_state=42)
 
         training_results = {}
 
@@ -185,10 +175,7 @@ class PricePredictorCPU:
             self.performance_stats["model_scores"][model_name] = r2_score_val
 
             # 更新最佳模型
-            if (
-                self.performance_stats["best_model"] is None
-                or r2_score_val > self.performance_stats["best_model"][1]
-            ):
+            if self.performance_stats["best_model"] is None or r2_score_val > self.performance_stats["best_model"][1]:
                 self.performance_stats["best_model"] = (model_name, r2_score_val)
 
         self.is_fitted = True
@@ -233,9 +220,7 @@ class PricePredictorCPU:
         prediction_time = time.time() - start_time
 
         # 计算置信度
-        confidence_score = self._calculate_confidence_score(
-            model_name, prediction_horizon
-        )
+        confidence_score = self._calculate_confidence_score(model_name, prediction_horizon)
 
         # 创建预测结果
         result = PredictionResult(
@@ -258,9 +243,7 @@ class PricePredictorCPU:
 
         return result
 
-    def _calculate_confidence_score(
-        self, model_name: str, prediction_horizon: int
-    ) -> float:
+    def _calculate_confidence_score(self, model_name: str, prediction_horizon: int) -> float:
         """计算预测置信度"""
         base_confidence = self.performance_stats["model_scores"].get(model_name, 0.5)
 
@@ -268,13 +251,9 @@ class PricePredictorCPU:
         time_penalty = min(0.1 * prediction_horizon, 0.3)
 
         # 根据模型性能调整置信度
-        model_adjustment = (
-            0.1 if model_name == self.performance_stats["best_model"][0] else 0
-        )
+        model_adjustment = 0.1 if model_name == self.performance_stats["best_model"][0] else 0
 
-        confidence = max(
-            0.0, min(1.0, base_confidence - time_penalty + model_adjustment)
-        )
+        confidence = max(0.0, min(1.0, base_confidence - time_penalty + model_adjustment))
         return confidence
 
     def batch_predict(
@@ -312,9 +291,7 @@ class PricePredictorCPU:
             "is_fitted": self.is_fitted,
         }
 
-    def optimize_hyperparameters(
-        self, data: pd.DataFrame, model_type: str = "ridge"
-    ) -> Dict:
+    def optimize_hyperparameters(self, data: pd.DataFrame, model_type: str = "ridge") -> Dict:
         """优化超参数"""
         from sklearn.model_selection import GridSearchCV
 
@@ -367,9 +344,7 @@ class PricePredictorCPU:
 class DataProcessorCPU:
     """CPU版本的数据处理器 - GPU版本的完整回退实现"""
 
-    def __init__(
-        self, gpu_enabled: bool = False, n_jobs: int = 1, chunk_size: int = 10000
-    ):
+    def __init__(self, gpu_enabled: bool = False, n_jobs: int = 1, chunk_size: int = 10000):
         self.gpu_enabled = gpu_enabled
         self.n_jobs = n_jobs
         self.chunk_size = chunk_size
@@ -380,9 +355,7 @@ class DataProcessorCPU:
         self.chunks_processed = 0
         self.total_data_processed = 0
 
-    def preprocess(
-        self, data: pd.DataFrame, config: Optional[ProcessingConfig] = None
-    ) -> pd.DataFrame:
+    def preprocess(self, data: pd.DataFrame, config: Optional[ProcessingConfig] = None) -> pd.DataFrame:
         """数据预处理"""
         config = config or ProcessingConfig()
         processed_data = data.copy()
@@ -452,12 +425,8 @@ class DataProcessorCPU:
 
         # 布林带
         data["bb_middle"] = data["close"].rolling(window=20).mean()
-        data["bb_upper"] = data["bb_middle"] + (
-            data["close"].rolling(window=20).std() * 2
-        )
-        data["bb_lower"] = data["bb_middle"] - (
-            data["close"].rolling(window=20).std() * 2
-        )
+        data["bb_upper"] = data["bb_middle"] + (data["close"].rolling(window=20).std() * 2)
+        data["bb_lower"] = data["bb_middle"] - (data["close"].rolling(window=20).std() * 2)
 
         return data
 
@@ -531,9 +500,7 @@ class FeatureGeneratorCPU:
         self.logger = logging.getLogger(__name__)
         self.features_generated = 0
 
-    def generate_features(
-        self, data: pd.DataFrame, feature_types: List[str] = None
-    ) -> pd.DataFrame:
+    def generate_features(self, data: pd.DataFrame, feature_types: List[str] = None) -> pd.DataFrame:
         """生成特征"""
         feature_types = feature_types or [
             "technical",
@@ -567,12 +534,8 @@ class FeatureGeneratorCPU:
 
         # 布林带
         data["bb_middle"] = data["close"].rolling(window=20).mean()
-        data["bb_upper"] = data["bb_middle"] + (
-            data["close"].rolling(window=20).std() * 2
-        )
-        data["bb_lower"] = data["bb_middle"] - (
-            data["close"].rolling(window=20).std() * 2
-        )
+        data["bb_upper"] = data["bb_middle"] + (data["close"].rolling(window=20).std() * 2)
+        data["bb_lower"] = data["bb_middle"] - (data["close"].rolling(window=20).std() * 2)
 
         return data
 
@@ -755,7 +718,7 @@ def main():
 
     # 训练模型
     print("训练模型...")
-    training_results = predictor.train_models(test_data[:200])  # 使用小样本
+    predictor.train_models(test_data[:200])  # 使用小样本
     print(f"训练完成，最佳模型: {predictor.performance_stats['best_model'][0]}")
 
     # 进行预测

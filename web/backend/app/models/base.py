@@ -81,9 +81,7 @@ class BaseResponse(BaseModel, Generic[T]):
     success: bool = Field(..., description="请求是否成功")
     message: str = Field("", description="响应消息")
     data: Optional[T] = Field(None, description="响应数据")
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="响应时间戳"
-    )
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="响应时间戳")
     request_id: Optional[str] = Field(None, description="请求追踪ID")
 
     class Config:
@@ -139,9 +137,7 @@ class PagedResponse(BaseModel, Generic[T]):
     total_pages: int = Field(0, description="总页数")
     has_next: bool = Field(False, description="是否有下一页")
     has_prev: bool = Field(False, description="是否有上一页")
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="响应时间戳"
-    )
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="响应时间戳")
 
     def __init__(self, **data):
         """初始化时自动计算分页元数据"""
@@ -229,9 +225,7 @@ class ErrorResponse(BaseModel):
     message: str = Field(..., description="错误消息（用户友好）")
     error_code: str = Field(..., description="错误代码")
     details: Optional[Dict[str, Any]] = Field(None, description="错误详细信息")
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="错误发生时间"
-    )
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="错误发生时间")
     path: Optional[str] = Field(None, description="请求路径")
     request_id: Optional[str] = Field(None, description="请求追踪ID")
 
@@ -278,9 +272,7 @@ class HealthCheckResponse(BaseModel):
     status: str = Field(..., description="健康状态: healthy, degraded, unhealthy")
     version: str = Field(..., description="系统版本")
     uptime: float = Field(..., description="运行时长（秒）")
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow, description="检查时间戳"
-    )
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="检查时间戳")
     services: Optional[Dict[str, Any]] = Field(None, description="各服务状态详情")
 
     class Config:
@@ -304,9 +296,7 @@ class HealthCheckResponse(BaseModel):
 # ============================================================================
 
 
-def success_response(
-    data: Any = None, message: str = "操作成功", request_id: Optional[str] = None
-) -> Dict[str, Any]:
+def success_response(data: Any = None, message: str = "操作成功", request_id: Optional[str] = None) -> Dict[str, Any]:
     """
     快速创建成功响应
 
@@ -324,9 +314,7 @@ def success_response(
             message="查询成功"
         )
     """
-    return BaseResponse(
-        success=True, message=message, data=data, request_id=request_id
-    ).model_dump()
+    return BaseResponse(success=True, message=message, data=data, request_id=request_id).model_dump()
 
 
 def error_response(

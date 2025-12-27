@@ -20,9 +20,7 @@ from typing import Dict, List, Optional
 import aiohttp
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -59,9 +57,7 @@ class SecurityTester:
         """Login as admin user"""
         login_data = {"username": "admin", "password": "admin123"}
 
-        async with self.session.post(
-            f"{self.config.base_url}/api/auth/login", data=login_data
-        ) as response:
+        async with self.session.post(f"{self.config.base_url}/api/auth/login", data=login_data) as response:
             if response.status == 200:
                 data = await response.json()
                 token = data.get("access_token")
@@ -76,9 +72,7 @@ class SecurityTester:
         """Login as regular user"""
         login_data = {"username": "user", "password": "user123"}
 
-        async with self.session.post(
-            f"{self.config.base_url}/api/auth/login", data=login_data
-        ) as response:
+        async with self.session.post(f"{self.config.base_url}/api/auth/login", data=login_data) as response:
             if response.status == 200:
                 data = await response.json()
                 token = data.get("access_token")
@@ -110,30 +104,18 @@ class SecurityTester:
     async def test_metrics_public_endpoints(self):
         """Test public metrics endpoints (no auth required)"""
         # Test health check (should be accessible without auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/health"
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/health") as response:
             if response.status == 200:
-                self.record_test(
-                    "Metrics Health Check (Public)", True, "Public endpoint accessible"
-                )
+                self.record_test("Metrics Health Check (Public)", True, "Public endpoint accessible")
             else:
-                self.record_test(
-                    "Metrics Health Check (Public)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Health Check (Public)", False, f"Status {response.status}")
 
         # Test basic status (should be accessible without auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/status"
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/status") as response:
             if response.status == 200:
-                self.record_test(
-                    "Metrics Status (Public)", True, "Public endpoint accessible"
-                )
+                self.record_test("Metrics Status (Public)", True, "Public endpoint accessible")
             else:
-                self.record_test(
-                    "Metrics Status (Public)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Status (Public)", False, f"Status {response.status}")
 
     async def test_metrics_user_endpoints(self):
         """Test user-level metrics endpoints"""
@@ -143,22 +125,14 @@ class SecurityTester:
         headers = self.get_headers(self.config.user_token)
 
         # Test basic metrics (should be accessible with user auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/basic", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/basic", headers=headers) as response:
             if response.status == 200:
-                self.record_test(
-                    "Metrics Basic (User)", True, "User can access basic metrics"
-                )
+                self.record_test("Metrics Basic (User)", True, "User can access basic metrics")
             else:
-                self.record_test(
-                    "Metrics Basic (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Basic (User)", False, f"Status {response.status}")
 
         # Test performance metrics (should be accessible with user auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/performance", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/performance", headers=headers) as response:
             if response.status == 200:
                 self.record_test(
                     "Metrics Performance (User)",
@@ -166,9 +140,7 @@ class SecurityTester:
                     "User can access performance metrics",
                 )
             else:
-                self.record_test(
-                    "Metrics Performance (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Performance (User)", False, f"Status {response.status}")
 
     async def test_metrics_admin_endpoints(self):
         """Test admin-level metrics endpoints"""
@@ -178,9 +150,7 @@ class SecurityTester:
         headers = self.get_headers(self.config.admin_token)
 
         # Test prometheus metrics (should require admin auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/metrics", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/metrics", headers=headers) as response:
             if response.status == 200:
                 self.record_test(
                     "Metrics Prometheus (Admin)",
@@ -188,14 +158,10 @@ class SecurityTester:
                     "Admin can access prometheus metrics",
                 )
             else:
-                self.record_test(
-                    "Metrics Prometheus (Admin)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Prometheus (Admin)", False, f"Status {response.status}")
 
         # Test detailed metrics (should require admin auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/detailed", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/metrics/detailed", headers=headers) as response:
             if response.status == 200:
                 self.record_test(
                     "Metrics Detailed (Admin)",
@@ -203,17 +169,11 @@ class SecurityTester:
                     "Admin can access detailed metrics",
                 )
             else:
-                self.record_test(
-                    "Metrics Detailed (Admin)", False, f"Status {response.status}"
-                )
+                self.record_test("Metrics Detailed (Admin)", False, f"Status {response.status}")
 
         # Test that user cannot access admin endpoints
-        user_headers = (
-            self.get_headers(self.config.user_token) if self.config.user_token else {}
-        )
-        async with self.session.get(
-            f"{self.config.base_url}/api/metrics/detailed", headers=user_headers
-        ) as response:
+        user_headers = self.get_headers(self.config.user_token) if self.config.user_token else {}
+        async with self.session.get(f"{self.config.base_url}/api/metrics/detailed", headers=user_headers) as response:
             if response.status == 403:
                 self.record_test(
                     "Metrics Admin Access Denied (User)",
@@ -237,9 +197,7 @@ class SecurityTester:
         # Make rapid requests to trigger rate limiting
         rate_limited = False
         for i in range(35):  # Try to exceed the 30 requests/minute limit
-            async with self.session.get(
-                f"{self.config.base_url}/api/metrics/basic", headers=headers
-            ) as response:
+            async with self.session.get(f"{self.config.base_url}/api/metrics/basic", headers=headers) as response:
                 if response.status == 429:
                     rate_limited = True
                     break
@@ -255,17 +213,11 @@ class SecurityTester:
     async def test_tasks_public_endpoints(self):
         """Test public tasks endpoints"""
         # Test health check (should be accessible without auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/tasks/health"
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/tasks/health") as response:
             if response.status == 200:
-                self.record_test(
-                    "Tasks Health Check (Public)", True, "Public endpoint accessible"
-                )
+                self.record_test("Tasks Health Check (Public)", True, "Public endpoint accessible")
             else:
-                self.record_test(
-                    "Tasks Health Check (Public)", False, f"Status {response.status}"
-                )
+                self.record_test("Tasks Health Check (Public)", False, f"Status {response.status}")
 
     async def test_tasks_user_endpoints(self):
         """Test user-level tasks endpoints"""
@@ -275,15 +227,11 @@ class SecurityTester:
         headers = self.get_headers(self.config.user_token)
 
         # Test list tasks (should be accessible with user auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/tasks/", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/tasks/", headers=headers) as response:
             if response.status == 200:
                 self.record_test("Tasks List (User)", True, "User can list tasks")
             else:
-                self.record_test(
-                    "Tasks List (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Tasks List (User)", False, f"Status {response.status}")
 
         # Test register task (should be accessible with user auth)
         task_data = {
@@ -300,13 +248,9 @@ class SecurityTester:
             json=task_data,
         ) as response:
             if response.status in [200, 201]:
-                self.record_test(
-                    "Tasks Register (User)", True, "User can register tasks"
-                )
+                self.record_test("Tasks Register (User)", True, "User can register tasks")
             else:
-                self.record_test(
-                    "Tasks Register (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Tasks Register (User)", False, f"Status {response.status}")
 
     async def test_tasks_validation(self):
         """Test task input validation"""
@@ -377,25 +321,15 @@ class SecurityTester:
         headers = self.get_headers(self.config.admin_token)
 
         # Test audit logs (should require admin auth)
-        async with self.session.get(
-            f"{self.config.base_url}/api/tasks/audit/logs", headers=headers
-        ) as response:
+        async with self.session.get(f"{self.config.base_url}/api/tasks/audit/logs", headers=headers) as response:
             if response.status == 200:
-                self.record_test(
-                    "Tasks Audit Logs (Admin)", True, "Admin can access audit logs"
-                )
+                self.record_test("Tasks Audit Logs (Admin)", True, "Admin can access audit logs")
             else:
-                self.record_test(
-                    "Tasks Audit Logs (Admin)", False, f"Status {response.status}"
-                )
+                self.record_test("Tasks Audit Logs (Admin)", False, f"Status {response.status}")
 
         # Test that user cannot access admin endpoints
-        user_headers = (
-            self.get_headers(self.config.user_token) if self.config.user_token else {}
-        )
-        async with self.session.get(
-            f"{self.config.base_url}/api/tasks/audit/logs", headers=user_headers
-        ) as response:
+        user_headers = self.get_headers(self.config.user_token) if self.config.user_token else {}
+        async with self.session.get(f"{self.config.base_url}/api/tasks/audit/logs", headers=user_headers) as response:
             if response.status == 403:
                 self.record_test(
                     "Tasks Admin Access Denied (User)",
@@ -427,9 +361,7 @@ class SecurityTester:
             if response.status == 200:
                 self.record_test("Stock Search (User)", True, "User can search stocks")
             else:
-                self.record_test(
-                    "Stock Search (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Stock Search (User)", False, f"Status {response.status}")
 
         # Test stock quote (should be accessible with user auth)
         async with self.session.get(
@@ -438,13 +370,9 @@ class SecurityTester:
             params={"market": "hk"},
         ) as response:
             if response.status == 200:
-                self.record_test(
-                    "Stock Quote (User)", True, "User can get stock quotes"
-                )
+                self.record_test("Stock Quote (User)", True, "User can get stock quotes")
             else:
-                self.record_test(
-                    "Stock Quote (User)", False, f"Status {response.status}"
-                )
+                self.record_test("Stock Quote (User)", False, f"Status {response.status}")
 
     async def test_stock_search_validation(self):
         """Test stock search input validation"""
@@ -467,9 +395,7 @@ class SecurityTester:
                     "Dangerous query cleaned successfully",
                 )
             else:
-                self.record_test(
-                    "Stock Search XSS Protection", False, f"Status {response.status}"
-                )
+                self.record_test("Stock Search XSS Protection", False, f"Status {response.status}")
 
         # Test invalid stock symbol (should be rejected)
         async with self.session.get(
@@ -508,9 +434,7 @@ class SecurityTester:
                     "Admin can access search analytics",
                 )
             else:
-                self.record_test(
-                    "Stock Search Analytics (Admin)", False, f"Status {response.status}"
-                )
+                self.record_test("Stock Search Analytics (Admin)", False, f"Status {response.status}")
 
         # Test rate limits status (should require admin auth)
         async with self.session.get(
@@ -530,9 +454,7 @@ class SecurityTester:
                 )
 
         # Test that user cannot access admin endpoints
-        user_headers = (
-            self.get_headers(self.config.user_token) if self.config.user_token else {}
-        )
+        user_headers = self.get_headers(self.config.user_token) if self.config.user_token else {}
         async with self.session.get(
             f"{self.config.base_url}/api/stock/analytics/searches", headers=user_headers
         ) as response:
@@ -654,9 +576,7 @@ class SecurityTester:
         if pass_rate >= 90:
             print("  🟢 EXCELLENT - Security improvements successfully implemented")
         elif pass_rate >= 75:
-            print(
-                "  🟡 GOOD - Most security improvements working, minor issues to address"
-            )
+            print("  🟡 GOOD - Most security improvements working, minor issues to address")
         else:
             print("  🔴 NEEDS ATTENTION - Significant security issues found")
 

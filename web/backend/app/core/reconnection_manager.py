@@ -141,9 +141,7 @@ class MessageBuffer:
             "unsent_messages": unsent,
             "sent_messages": total - unsent,
             "max_size": self.max_size,
-            "buffer_usage_percent": (
-                (total / self.max_size * 100) if self.max_size > 0 else 0
-            ),
+            "buffer_usage_percent": ((total / self.max_size * 100) if self.max_size > 0 else 0),
         }
 
 
@@ -314,9 +312,7 @@ class ReconnectionManager:
         if sid not in self.reconnection_states:
             return {}
 
-        buffer_stats = (
-            self.message_buffers[sid].get_stats() if sid in self.message_buffers else {}
-        )
+        buffer_stats = self.message_buffers[sid].get_stats() if sid in self.message_buffers else {}
 
         return {
             "sid": sid,
@@ -324,37 +320,17 @@ class ReconnectionManager:
             "attempts": self.reconnection_attempts.get(sid, 0),
             "max_retries": self.max_retries,
             "next_interval_seconds": self.get_next_reconnect_interval(sid),
-            "last_reconnect": (
-                self.last_reconnect_time[sid].isoformat()
-                if sid in self.last_reconnect_time
-                else None
-            ),
+            "last_reconnect": (self.last_reconnect_time[sid].isoformat() if sid in self.last_reconnect_time else None),
             "message_buffer": buffer_stats,
         }
 
     def get_all_stats(self) -> Dict[str, Any]:
         """获取所有连接的统计信息"""
         total_connections = len(self.reconnection_states)
-        connected = sum(
-            1
-            for state in self.reconnection_states.values()
-            if state == ReconnectionState.CONNECTED
-        )
-        disconnected = sum(
-            1
-            for state in self.reconnection_states.values()
-            if state == ReconnectionState.DISCONNECTED
-        )
-        reconnecting = sum(
-            1
-            for state in self.reconnection_states.values()
-            if state == ReconnectionState.RECONNECTING
-        )
-        failed = sum(
-            1
-            for state in self.reconnection_states.values()
-            if state == ReconnectionState.RECONNECT_FAILED
-        )
+        connected = sum(1 for state in self.reconnection_states.values() if state == ReconnectionState.CONNECTED)
+        disconnected = sum(1 for state in self.reconnection_states.values() if state == ReconnectionState.DISCONNECTED)
+        reconnecting = sum(1 for state in self.reconnection_states.values() if state == ReconnectionState.RECONNECTING)
+        failed = sum(1 for state in self.reconnection_states.values() if state == ReconnectionState.RECONNECT_FAILED)
 
         total_buffered = sum(len(buf.messages) for buf in self.message_buffers.values())
 

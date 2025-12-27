@@ -51,9 +51,7 @@ class TDengineFullBackupRequest(BackupRequestBase):
 class TDengineIncrementalBackupRequest(BackupRequestBase):
     """TDengine 增量备份请求模型"""
 
-    since_backup_id: str = Field(
-        ..., description="基准备份ID", min_length=3, max_length=100
-    )
+    since_backup_id: str = Field(..., description="基准备份ID", min_length=3, max_length=100)
 
     description: Optional[str] = Field(None, description="备份描述信息", max_length=500)
 
@@ -67,13 +65,9 @@ class TDengineIncrementalBackupRequest(BackupRequestBase):
 class PostgreSQLFullBackupRequest(BackupRequestBase):
     """PostgreSQL 全量备份请求模型"""
 
-    exclude_tables: Optional[List[str]] = Field(
-        None, description="要排除的表名列表", max_items=50
-    )
+    exclude_tables: Optional[List[str]] = Field(None, description="要排除的表名列表", max_items=50)
 
-    include_tables: Optional[List[str]] = Field(
-        None, description="要包含的表名列表（空则备份所有表）", max_items=200
-    )
+    include_tables: Optional[List[str]] = Field(None, description="要包含的表名列表（空则备份所有表）", max_items=200)
 
     compression_level: int = Field(6, description="压缩级别 (1-9)", ge=1, le=9)
 
@@ -111,13 +105,9 @@ class RecoveryRequestBase(BaseModel):
 class TDengineFullRecoveryRequest(RecoveryRequestBase):
     """TDengine 全量恢复请求模型"""
 
-    target_tables: Optional[List[str]] = Field(
-        None, description="要恢复的指定表列表", max_items=200
-    )
+    target_tables: Optional[List[str]] = Field(None, description="要恢复的指定表列表", max_items=200)
 
-    restore_to_database: Optional[str] = Field(
-        None, description="恢复到目标数据库名", min_length=1, max_length=63
-    )
+    restore_to_database: Optional[str] = Field(None, description="恢复到目标数据库名", min_length=1, max_length=63)
 
     @validator("target_tables")
     def validate_table_names(cls, v):
@@ -135,13 +125,9 @@ class TDengineFullRecoveryRequest(RecoveryRequestBase):
 class PostgreSQLFullRecoveryRequest(RecoveryRequestBase):
     """PostgreSQL 全量恢复请求模型"""
 
-    target_tables: Optional[List[str]] = Field(
-        None, description="要恢复的指定表列表", max_items=200
-    )
+    target_tables: Optional[List[str]] = Field(None, description="要恢复的指定表列表", max_items=200)
 
-    restore_to_database: Optional[str] = Field(
-        None, description="恢复到目标数据库名", min_length=1, max_length=63
-    )
+    restore_to_database: Optional[str] = Field(None, description="恢复到目标数据库名", min_length=1, max_length=63)
 
     drop_existing: bool = Field(False, description="恢复前删除现有表/数据库")
 
@@ -163,13 +149,9 @@ class TDenginePITRRequest(BaseModel):
 
     target_time: str = Field(..., description="目标恢复时间 (ISO 8601格式)")
 
-    target_tables: Optional[List[str]] = Field(
-        None, description="要恢复的指定表列表", max_items=200
-    )
+    target_tables: Optional[List[str]] = Field(None, description="要恢复的指定表列表", max_items=200)
 
-    restore_to_database: Optional[str] = Field(
-        None, description="恢复到目标数据库名", min_length=1, max_length=63
-    )
+    restore_to_database: Optional[str] = Field(None, description="恢复到目标数据库名", min_length=1, max_length=63)
 
     @validator("target_time")
     def validate_target_time(cls, v):
@@ -177,9 +159,7 @@ class TDenginePITRRequest(BaseModel):
             # 验证 ISO 8601 格式
             datetime.fromisoformat(v.replace("Z", "+00:00"))
         except ValueError:
-            raise ValueError(
-                "时间格式无效，请使用ISO 8601格式 (如: 2025-01-01T12:00:00)"
-            )
+            raise ValueError("时间格式无效，请使用ISO 8601格式 (如: 2025-01-01T12:00:00)")
         return v
 
     @validator("target_tables")
@@ -198,9 +178,7 @@ class TDenginePITRRequest(BaseModel):
 class BackupListQueryParams(BaseModel):
     """备份列表查询参数模型"""
 
-    database: Optional[str] = Field(
-        None, description="数据库类型 (tdengine/postgresql)"
-    )
+    database: Optional[str] = Field(None, description="数据库类型 (tdengine/postgresql)")
 
     backup_type: Optional[str] = Field(None, description="备份类型 (full/incremental)")
 
@@ -245,17 +223,11 @@ class BackupListQueryParams(BaseModel):
 class CleanupBackupsRequest(BaseModel):
     """清理过期备份请求模型"""
 
-    retention_days: int = Field(
-        30, description="备份保留天数", ge=1, le=3650
-    )  # 最大10年
+    retention_days: int = Field(30, description="备份保留天数", ge=1, le=3650)  # 最大10年
 
-    database: Optional[str] = Field(
-        None, description="指定数据库类型 (tdengine/postgresql)"
-    )
+    database: Optional[str] = Field(None, description="指定数据库类型 (tdengine/postgresql)")
 
-    backup_type: Optional[str] = Field(
-        None, description="指定备份类型 (full/incremental)"
-    )
+    backup_type: Optional[str] = Field(None, description="指定备份类型 (full/incremental)")
 
     dry_run: bool = Field(False, description="测试运行，不实际删除文件")
 
@@ -277,9 +249,7 @@ class CleanupBackupsRequest(BaseModel):
 class SchedulerControlRequest(BaseModel):
     """调度器控制请求模型"""
 
-    action: Literal["start", "stop", "restart", "status"] = Field(
-        ..., description="调度器操作"
-    )
+    action: Literal["start", "stop", "restart", "status"] = Field(..., description="调度器操作")
 
     force: bool = Field(False, description="强制执行操作")
 

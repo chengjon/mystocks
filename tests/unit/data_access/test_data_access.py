@@ -53,9 +53,7 @@ class MockPostgreSQLDataAccess:
         """模拟插入数据"""
         if not self.connected:
             raise Exception("Not connected to database")
-        return {
-            "rows_affected": len(data) if isinstance(data, (list, pd.DataFrame)) else 1
-        }
+        return {"rows_affected": len(data) if isinstance(data, (list, pd.DataFrame)) else 1}
 
     def update_data(self, table, data, condition):
         """模拟更新数据"""
@@ -104,9 +102,7 @@ class MockTDengineDataAccess:
         # 返回模拟的时序数据
         return pd.DataFrame(
             {
-                "timestamp": pd.date_range(
-                    "2024-01-01 09:30:00", periods=100, freq="1min"
-                ),
+                "timestamp": pd.date_range("2024-01-01 09:30:00", periods=100, freq="1min"),
                 "price": [10.0 + i * 0.1 for i in range(100)],
                 "volume": [1000 + i * 10 for i in range(100)],
                 "symbol": [symbol] * 100,
@@ -224,9 +220,7 @@ class TestTDengineDataAccess:
         """测试查询时序数据"""
         self.tdengine.connect()
 
-        result = self.tdengine.query_timeseries(
-            "SELECT * FROM prices WHERE symbol='000001'"
-        )
+        result = self.tdengine.query_timeseries("SELECT * FROM prices WHERE symbol='000001'")
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 100
         assert "timestamp" in result.columns
@@ -264,16 +258,12 @@ class TestDataAccessIntegration:
         tdengine.connect()
 
         # 从PostgreSQL获取股票列表
-        stocks = pg_access.execute_query(
-            "SELECT DISTINCT stock_code FROM stocks WHERE status='active'"
-        )
+        stocks = pg_access.execute_query("SELECT DISTINCT stock_code FROM stocks WHERE status='active'")
 
         # 为每只股票查询TDengine的时序数据
         for _, stock in stocks.iterrows():
             symbol = stock["stock_code"]
-            ts_data = tdengine.query_timeseries(
-                f"SELECT * FROM prices WHERE symbol='{symbol}'"
-            )
+            ts_data = tdengine.query_timeseries(f"SELECT * FROM prices WHERE symbol='{symbol}'")
 
             # 验证时序数据
             assert isinstance(ts_data, pd.DataFrame)
@@ -287,9 +277,7 @@ class TestDataAccessIntegration:
         pg_access.connect()
 
         # 获取最新的股票价格信息
-        current_data = pg_access.execute_query(
-            "SELECT stock_code, price FROM stocks ORDER BY timestamp DESC LIMIT 1"
-        )
+        current_data = pg_access.execute_query("SELECT stock_code, price FROM stocks ORDER BY timestamp DESC LIMIT 1")
 
         if not current_data.empty:
             stock_code = current_data.iloc[0]["stock_code"]

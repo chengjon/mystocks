@@ -209,19 +209,11 @@ def get_trading_signals(stock_code: str) -> Dict:
         "symbol": stock_code,
         "latest_date": datetime.datetime.now().strftime("%Y-%m-%d"),
         "signals": {
-            "signal_type": "买入"
-            if hash(stock_code) % 3 == 0
-            else ("卖出" if hash(stock_code) % 3 == 1 else "持有"),
+            "signal_type": "买入" if hash(stock_code) % 3 == 0 else ("卖出" if hash(stock_code) % 3 == 1 else "持有"),
             "signal": (
                 "MA金叉"
                 if hash(stock_code) % 4 == 0
-                else (
-                    "RSI超卖"
-                    if hash(stock_code) % 4 == 1
-                    else "MACD金叉"
-                    if hash(stock_code) % 4 == 2
-                    else "无信号"
-                )
+                else ("RSI超卖" if hash(stock_code) % 4 == 1 else "MACD金叉" if hash(stock_code) % 4 == 2 else "无信号")
             ),
             "strength": round(0.6 + (hash(stock_code) % 0.4), 2),
             "confidence": round(0.7 + (hash(stock_code) % 0.3), 2),
@@ -275,9 +267,7 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
         "count": len(dates),
         "dates": dates,
         "data": data,
-        "change_percent": [
-            round(-2 + (hash(stock_code + str(i)) % 4), 2) for i in range(len(dates))
-        ],
+        "change_percent": [round(-2 + (hash(stock_code + str(i)) % 4), 2) for i in range(len(dates))],
     }
 
     return result
@@ -309,29 +299,16 @@ def calculate_indicators(request: Dict) -> Dict:
         if indicator in ["ma5", "ma10", "ma20"]:
             # 模拟均线
             calculated_indicators[indicator] = [
-                round(random.uniform(90, 110), 2)
-                for _ in range(len(kline_data["dates"]))
+                round(random.uniform(90, 110), 2) for _ in range(len(kline_data["dates"]))
             ]
         elif indicator == "macd":
             calculated_indicators["macd"] = {
-                "macd": [
-                    round(random.uniform(-5, 5), 3)
-                    for _ in range(len(kline_data["dates"]))
-                ],
-                "signal": [
-                    round(random.uniform(-5, 5), 3)
-                    for _ in range(len(kline_data["dates"]))
-                ],
-                "hist": [
-                    round(random.uniform(-5, 5), 3)
-                    for _ in range(len(kline_data["dates"]))
-                ],
+                "macd": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+                "signal": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
+                "hist": [round(random.uniform(-5, 5), 3) for _ in range(len(kline_data["dates"]))],
             }
         elif indicator == "rsi":
-            calculated_indicators["rsi"] = [
-                round(random.uniform(30, 70), 2)
-                for _ in range(len(kline_data["dates"]))
-            ]
+            calculated_indicators["rsi"] = [round(random.uniform(30, 70), 2) for _ in range(len(kline_data["dates"]))]
         # 可以添加更多指标的模拟计算
 
     return {
@@ -392,9 +369,7 @@ def get_pattern_recognition(stock_code: str) -> Dict:
     return result
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:

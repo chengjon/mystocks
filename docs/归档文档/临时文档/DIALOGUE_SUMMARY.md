@@ -2,9 +2,9 @@
 
 ## 项目概述
 
-**对话日期**: 2025年11月13日  
-**项目名称**: MyStocks - A股量化交易分析软件Mock数据系统  
-**项目类型**: 后端API开发 + Mock数据系统设计  
+**对话日期**: 2025年11月13日
+**项目名称**: MyStocks - A股量化交易分析软件Mock数据系统
+**项目类型**: 后端API开发 + Mock数据系统设计
 **核心目标**: 建立完整的数据源切换系统，支持Mock数据与真实数据库的灵活切换
 
 ---
@@ -155,7 +155,7 @@ else:
 @router.get("/dashboard/stats")
 async def get_dashboard_stats():
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         # 使用Mock数据
         from src.mock.mock_Dashboard import get_market_stats
@@ -421,7 +421,7 @@ pydantic>=2.0.0,<3.0.0
 
 ---
 
-**报告生成时间**: 2025-11-13  
-**报告作者**: Claude Code  
-**项目状态**: 开发中 ⏳  
+**报告生成时间**: 2025-11-13
+**报告作者**: Claude Code
+**项目状态**: 开发中 ⏳
 **下次更新**: 完成统一Mock数据管理器后

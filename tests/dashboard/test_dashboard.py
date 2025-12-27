@@ -150,9 +150,7 @@ class TestDashboard:
         def get_test_execution(test_id: str):
             """获取特定测试执行状态"""
             if test_id in self.test_executions:
-                return jsonify(
-                    self._serialize_test_execution(self.test_executions[test_id])
-                )
+                return jsonify(self._serialize_test_execution(self.test_executions[test_id]))
             return jsonify({"error": "Test execution not found"}), 404
 
         @self.app.route("/api/alerts")
@@ -191,13 +189,7 @@ class TestDashboard:
                     "status": "healthy",
                     "timestamp": datetime.now().isoformat(),
                     "metrics_count": len(self.metrics),
-                    "active_executions": len(
-                        [
-                            t
-                            for t in self.test_executions.values()
-                            if t.status == "running"
-                        ]
-                    ),
+                    "active_executions": len([t for t in self.test_executions.values() if t.status == "running"]),
                 }
             )
 
@@ -402,9 +394,7 @@ class TestDashboard:
             "available_gb": round(memory.available / (1024**3), 2),
             "used_gb": round(memory.used / (1024**3), 2),
             "usage_percent": memory.percent,
-            "cached_gb": round(memory.cached / (1024**3), 2)
-            if hasattr(memory, "cached")
-            else 0,
+            "cached_gb": round(memory.cached / (1024**3), 2) if hasattr(memory, "cached") else 0,
         }
 
     def get_disk_usage(self) -> Dict[str, Any]:
@@ -435,11 +425,7 @@ class TestDashboard:
 
         for metric_name, data in self.history_data.items():
             if cutoff_time:
-                filtered_data = [
-                    item
-                    for item in data
-                    if datetime.fromisoformat(item["timestamp"]) >= cutoff_time
-                ]
+                filtered_data = [item for item in data if datetime.fromisoformat(item["timestamp"]) >= cutoff_time]
             else:
                 filtered_data = data
 
@@ -467,23 +453,16 @@ class TestDashboard:
 
     def _serialize_test_executions(self) -> List[Dict[str, Any]]:
         """序列化测试执行数据"""
-        return [
-            self._serialize_test_execution(execution)
-            for execution in self.test_executions.values()
-        ]
+        return [self._serialize_test_execution(execution) for execution in self.test_executions.values()]
 
-    def _serialize_test_execution(
-        self, execution: TestExecutionStatus
-    ) -> Dict[str, Any]:
+    def _serialize_test_execution(self, execution: TestExecutionStatus) -> Dict[str, Any]:
         """序列化单个测试执行"""
         return {
             "test_id": execution.test_id,
             "name": execution.name,
             "status": execution.status,
             "progress": execution.progress,
-            "start_time": execution.start_time.isoformat()
-            if execution.start_time
-            else None,
+            "start_time": execution.start_time.isoformat() if execution.start_time else None,
             "duration": execution.duration,
             "error_message": execution.error_message,
             "current_step": execution.current_step,
@@ -526,9 +505,7 @@ class TestDashboard:
                     )
                 ]
             )
-            charts["test_status_pie"].update_layout(
-                title="测试执行状态分布", title_x=0.5
-            )
+            charts["test_status_pie"].update_layout(title="测试执行状态分布", title_x=0.5)
 
         # CPU使用率趋势图
         if "cpu_usage" in self.history_data:

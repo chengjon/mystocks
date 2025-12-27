@@ -79,9 +79,7 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
 
     # Validate 6-digit code without suffix
     if not re.match(r"^\d{6}$", code):
-        raise ValueError(
-            f"Invalid stock code format: {code}. Expected 6 digits optionally followed by .SH/.SZ/.HK"
-        )
+        raise ValueError(f"Invalid stock code format: {code}. Expected 6 digits optionally followed by .SH/.SZ/.HK")
 
     # Auto-detect exchange for A-share
     if market in ["cn", "auto"]:
@@ -250,9 +248,7 @@ class StockSearchService:
             print(f"获取公司信息时发生错误: {e}")
             return None
 
-    def get_company_news(
-        self, symbol: str, from_date: str = None, to_date: str = None
-    ) -> List[Dict]:
+    def get_company_news(self, symbol: str, from_date: str = None, to_date: str = None) -> List[Dict]:
         """
         获取公司新闻
 
@@ -271,9 +267,7 @@ class StockSearchService:
             from_date = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
 
         try:
-            data = self._make_request(
-                "company-news", {"symbol": symbol, "from": from_date, "to": to_date}
-            )
+            data = self._make_request("company-news", {"symbol": symbol, "from": from_date, "to": to_date})
 
             # 提取相关新闻信息
             news_list = []
@@ -621,9 +615,7 @@ class StockSearchService:
             for _, row in news_df.head(30).iterrows():  # 限制返回前30条
                 news_info = {
                     "headline": row.get("新闻标题", ""),
-                    "summary": (
-                        row.get("新闻内容", "")[:200] if "新闻内容" in row else ""
-                    ),
+                    "summary": (row.get("新闻内容", "")[:200] if "新闻内容" in row else ""),
                     "source": row.get("新闻来源", "东方财富"),
                     "datetime": parse_datetime_to_timestamp(row.get("发布时间")),
                     "url": row.get("新闻链接", ""),
@@ -689,9 +681,7 @@ class StockSearchService:
                 # Default to 60 days ago
                 from datetime import datetime, timedelta
 
-                start_date_formatted = (datetime.now() - timedelta(days=90)).strftime(
-                    "%Y%m%d"
-                )
+                start_date_formatted = (datetime.now() - timedelta(days=90)).strftime("%Y%m%d")
 
             if end_date:
                 end_date_formatted = end_date.replace("-", "")
@@ -714,9 +704,7 @@ class StockSearchService:
                 return None
 
             # Get stock name from first row
-            stock_name = (
-                df["股票名称"].iloc[0] if "股票名称" in df.columns else code_for_query
-            )
+            stock_name = df["股票名称"].iloc[0] if "股票名称" in df.columns else code_for_query
 
             # Convert DataFrame to list of data points
             data_points = []
@@ -745,9 +733,7 @@ class StockSearchService:
                 # Calculate amplitude
                 if previous_close and previous_close > 0:
                     amplitude = ((high_price - low_price) / previous_close) * 100
-                    change_percent = (
-                        (close_price - previous_close) / previous_close
-                    ) * 100
+                    change_percent = ((close_price - previous_close) / previous_close) * 100
                 else:
                     amplitude = 0.0
                     change_percent = 0.0

@@ -132,9 +132,7 @@ class BackupManager:
                         tar.write(file, arcname=file.name)
 
                 compressed_size = compressed_file.stat().st_size
-                compression_ratio = (
-                    original_size / compressed_size if compressed_size > 0 else 0
-                )
+                compression_ratio = original_size / compressed_size if compressed_size > 0 else 0
 
                 # 删除未压缩的文件
                 shutil.rmtree(backup_dir)
@@ -211,9 +209,7 @@ class BackupManager:
             # 获取上次备份的时间戳
             since_metadata = self._load_metadata(since_backup_id)
             if not since_metadata:
-                logger.warning(
-                    f"Previous backup {since_backup_id} not found, doing full backup instead"
-                )
+                logger.warning(f"Previous backup {since_backup_id} not found, doing full backup instead")
                 return self.backup_tdengine_full()
 
             since_time = datetime.fromisoformat(since_metadata["end_time"])
@@ -231,9 +227,7 @@ class BackupManager:
                 logger.info(f"Backing up TDengine incremental data from {table}")
 
                 # 查询增量数据
-                df = self.tdengine_access.query_by_time_range(
-                    table, since_time, datetime.now()
-                )
+                df = self.tdengine_access.query_by_time_range(table, since_time, datetime.now())
 
                 if df is not None and len(df) > 0:
                     total_rows += len(df)
@@ -257,9 +251,7 @@ class BackupManager:
                         tar.write(file, arcname=file.name)
 
                 compressed_size = compressed_file.stat().st_size
-                compression_ratio = (
-                    original_size / compressed_size if compressed_size > 0 else 0
-                )
+                compression_ratio = original_size / compressed_size if compressed_size > 0 else 0
 
                 shutil.rmtree(backup_dir)
                 backup_size = compressed_size
@@ -328,7 +320,7 @@ class BackupManager:
             logger.info(f"Starting PostgreSQL full backup: {backup_id}")
 
             # 获取数据库连接信息
-            pg_conn = self.conn_manager.get_postgresql_connection()
+            self.conn_manager.get_postgresql_connection()
 
             # 使用 pg_dump 进行备份
             backup_file = self.postgresql_backup_dir / f"{backup_id}.sql"
@@ -345,9 +337,7 @@ class BackupManager:
             )
 
             # 执行备份
-            result = os.system(
-                f"PGPASSWORD={os.getenv('POSTGRESQL_PASSWORD')} {pg_dump_cmd}"
-            )
+            result = os.system(f"PGPASSWORD={os.getenv('POSTGRESQL_PASSWORD')} {pg_dump_cmd}")
 
             if result != 0:
                 raise Exception(f"pg_dump failed with exit code {result}")
@@ -363,9 +353,7 @@ class BackupManager:
                         f_out.writelines(f_in)
 
                 compressed_size = compressed_file.stat().st_size
-                compression_ratio = (
-                    original_size / compressed_size if compressed_size > 0 else 0
-                )
+                compression_ratio = original_size / compressed_size if compressed_size > 0 else 0
 
                 # 删除未压缩的文件
                 backup_file.unlink()
@@ -531,18 +519,12 @@ class BackupManager:
 
         return sorted(backups, key=lambda x: x.start_time, reverse=True)
 
-    def get_latest_backup(
-        self, database: str, backup_type: str = "full"
-    ) -> Optional[BackupMetadata]:
+    def get_latest_backup(self, database: str, backup_type: str = "full") -> Optional[BackupMetadata]:
         """获取最新的备份"""
         backups = self.get_backup_list()
 
         for backup in backups:
-            if (
-                backup.database == database
-                and backup.backup_type == backup_type
-                and backup.status == "success"
-            ):
+            if backup.database == database and backup.backup_type == backup_type and backup.status == "success":
                 return backup
 
         return None

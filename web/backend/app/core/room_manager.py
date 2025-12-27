@@ -155,9 +155,7 @@ class RoomManager:
         """初始化房间管理器"""
         self.rooms: Dict[str, Room] = {}
         self.member_to_room: Dict[str, str] = {}  # sid -> room_name
-        self.event_callbacks: Dict[RoomEventType, List[Callable]] = {
-            event_type: [] for event_type in RoomEventType
-        }
+        self.event_callbacks: Dict[RoomEventType, List[Callable]] = {event_type: [] for event_type in RoomEventType}
 
     def create_room(self, name: str) -> Room:
         """创建房间"""
@@ -196,9 +194,7 @@ class RoomManager:
 
         return True
 
-    def add_member_to_room(
-        self, room_name: str, sid: str, user_id: Optional[str] = None
-    ) -> bool:
+    def add_member_to_room(self, room_name: str, sid: str, user_id: Optional[str] = None) -> bool:
         """将成员添加到房间"""
         # 如果成员已在另一个房间，先移除
         if sid in self.member_to_room:
@@ -297,9 +293,7 @@ class RoomManager:
         member.record_message()
         return True
 
-    def register_event_handler(
-        self, event_type: RoomEventType, handler: Callable
-    ) -> None:
+    def register_event_handler(self, event_type: RoomEventType, handler: Callable) -> None:
         """注册事件处理器"""
         if event_type not in self.event_callbacks:
             self.event_callbacks[event_type] = []

@@ -134,11 +134,7 @@ class MockMarketDataService:
         data = self.fetch_etf_spot(symbol)
 
         if keyword:
-            data = [
-                item
-                for item in data
-                if keyword in item["name"] or keyword in item["symbol"]
-            ]
+            data = [item for item in data if keyword in item["name"] or keyword in item["symbol"]]
 
         return data[:limit]
 

@@ -223,10 +223,27 @@
   </el-container>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * 面包屑导航项
+ */
+interface BreadcrumbItem {
+  path: string
+  title: string
+}
+
+/**
+ * 用户命令类型
+ */
+type UserCommand = 'profile' | 'settings' | 'logout'
 
 // ============================================
 // Composables
@@ -237,43 +254,43 @@ const router = useRouter()
 // ============================================
 // State
 // ============================================
-const isCollapsed = ref(false)
-const notificationCount = ref(0)
-const username = ref('Admin')
+const isCollapsed: Ref<boolean> = ref(false)
+const notificationCount: Ref<number> = ref(0)
+const username: Ref<string> = ref('Admin')
 
 // ============================================
 // Computed Properties
 // ============================================
-const sidebarWidth = computed(() => {
+const sidebarWidth: ComputedRef<string> = computed((): string => {
   return isCollapsed.value ? '64px' : '220px'
 })
 
-const activeMenu = computed(() => {
+const activeMenu: ComputedRef<string> = computed((): string => {
   return route.path
 })
 
-const breadcrumbs = computed(() => {
+const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[] => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
     path: item.path,
-    title: item.meta.title
+    title: item.meta.title as string
   }))
 })
 
 // ============================================
 // Methods
 // ============================================
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string): void => {
   if (index && index.startsWith('/')) {
     router.push(index)
   }
 }
 
-const handleUserCommand = async (command) => {
+const handleUserCommand = async (command: UserCommand): Promise<void> => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人信息功能开发中...')
@@ -305,7 +322,7 @@ const handleUserCommand = async (command) => {
 // Lifecycle
 // ============================================
 // Watch for route changes to update active menu
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>

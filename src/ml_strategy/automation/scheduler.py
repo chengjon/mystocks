@@ -179,9 +179,7 @@ class TaskScheduler:
         # 初始化调度器
         if APSCHEDULER_AVAILABLE:
             self.scheduler = BackgroundScheduler()
-            self.scheduler.add_listener(
-                self._job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR
-            )
+            self.scheduler.add_listener(self._job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
         else:
             self.scheduler = None
             self.logger.warning("APScheduler不可用，使用简化模式")
@@ -221,15 +219,11 @@ class TaskScheduler:
         self.tasks[task_config.name] = task_config
 
         if not APSCHEDULER_AVAILABLE:
-            self.logger.warning(
-                f"APScheduler不可用，任务仅保存配置: {task_config.name}"
-            )
+            self.logger.warning(f"APScheduler不可用，任务仅保存配置: {task_config.name}")
             return task_config.name
 
         # 创建触发器
-        trigger = self._create_trigger(
-            task_config.trigger_type, task_config.trigger_args
-        )
+        trigger = self._create_trigger(task_config.trigger_type, task_config.trigger_args)
 
         # 包装任务函数（添加锁和重试逻辑）
         wrapped_func = self._wrap_task_function(task_config)
@@ -265,9 +259,7 @@ class TaskScheduler:
         """
 
         def wrapped_func(**kwargs):
-            execution_id = (
-                f"{task_config.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            )
+            execution_id = f"{task_config.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
             # 尝试获取锁
             if not self.job_lock.acquire(task_config.name, timeout=task_config.timeout):
@@ -298,14 +290,10 @@ class TaskScheduler:
                 execution.status = TaskStatus.SUCCESS
                 execution.result = result
                 execution.end_time = datetime.now()
-                execution.duration = (
-                    execution.end_time - execution.start_time
-                ).total_seconds()
+                execution.duration = (execution.end_time - execution.start_time).total_seconds()
 
                 self.stats["successful_executions"] += 1
-                self.logger.info(
-                    f"✓ 任务执行成功: {task_config.name} (耗时: {execution.duration:.2f}秒)"
-                )
+                self.logger.info(f"✓ 任务执行成功: {task_config.name} (耗时: {execution.duration:.2f}秒)")
 
                 # 成功通知
                 if task_config.notify_on_success and self.notification_manager:
@@ -323,9 +311,7 @@ class TaskScheduler:
                 execution.status = TaskStatus.FAILED
                 execution.error_message = str(e)
                 execution.end_time = datetime.now()
-                execution.duration = (
-                    execution.end_time - execution.start_time
-                ).total_seconds()
+                execution.duration = (execution.end_time - execution.start_time).total_seconds()
 
                 self.stats["failed_executions"] += 1
                 self.logger.error(f"✗ 任务执行失败: {task_config.name}")
@@ -385,9 +371,7 @@ class TaskScheduler:
                     delay = retry_delay * (2**attempt)
                     execution.status = TaskStatus.RETRYING
 
-                    self.logger.warning(
-                        f"  任务失败，{delay}秒后重试 (第{attempt + 1}/{max_retries}次)"
-                    )
+                    self.logger.warning(f"  任务失败，{delay}秒后重试 (第{attempt + 1}/{max_retries}次)")
                     self.stats["total_retries"] += 1
 
                     time.sleep(delay)
@@ -462,9 +446,7 @@ class TaskScheduler:
                 return execution.status
         return None
 
-    def get_execution_history(
-        self, task_name: Optional[str] = None, limit: int = 100
-    ) -> List[TaskExecution]:
+    def get_execution_history(self, task_name: Optional[str] = None, limit: int = 100) -> List[TaskExecution]:
         """
         获取执行历史
 
@@ -488,9 +470,7 @@ class TaskScheduler:
             **self.stats,
             "total_tasks": len(self.tasks),
             "active_tasks": sum(1 for t in self.tasks.values() if t.enabled),
-            "locked_tasks": sum(
-                1 for locked in self.job_lock._locks.values() if locked
-            ),
+            "locked_tasks": sum(1 for locked in self.job_lock._locks.values() if locked),
         }
 
     def pause_task(self, task_name: str):

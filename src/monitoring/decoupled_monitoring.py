@@ -65,9 +65,7 @@ class EventBus:
     """事件总线 - 统一的事件分发机制"""
 
     def __init__(self):
-        self._listeners: Dict[MonitoringEvent, List[MonitoringEventListener]] = (
-            defaultdict(list)
-        )
+        self._listeners: Dict[MonitoringEvent, List[MonitoringEventListener]] = defaultdict(list)
         self._lock = threading.RLock()
 
     def subscribe(self, event_type: MonitoringEvent, listener: MonitoringEventListener):
@@ -75,9 +73,7 @@ class EventBus:
         with self._lock:
             self._listeners[event_type].append(listener)
 
-    def unsubscribe(
-        self, event_type: MonitoringEvent, listener: MonitoringEventListener
-    ):
+    def unsubscribe(self, event_type: MonitoringEvent, listener: MonitoringEventListener):
         """取消订阅"""
         with self._lock:
             if listener in self._listeners[event_type]:
@@ -208,23 +204,15 @@ class LoggingMonitoringListener(MonitoringEventListener):
     def on_event(self, event: MonitoringEventData):
         """记录监控事件到日志"""
         if event.event_type == MonitoringEvent.OPERATION_START:
-            self.logger.info(
-                f"操作开始: {event.data.get('operation_name')} - ID: {event.data.get('operation_id')}"
-            )
+            self.logger.info(f"操作开始: {event.data.get('operation_name')} - ID: {event.data.get('operation_id')}")
         elif event.event_type == MonitoringEvent.OPERATION_END:
             duration = event.data.get("duration", 0)
-            self.logger.info(
-                f"操作完成: {event.data.get('operation_name')} - 耗时: {duration:.3f}s"
-            )
+            self.logger.info(f"操作完成: {event.data.get('operation_name')} - 耗时: {duration:.3f}s")
         elif event.event_type == MonitoringEvent.OPERATION_ERROR:
-            self.logger.error(
-                f"操作失败: {event.data.get('operation_name')} - 错误: {event.data.get('error_message')}"
-            )
+            self.logger.error(f"操作失败: {event.data.get('operation_name')} - 错误: {event.data.get('error_message')}")
         elif event.event_type == MonitoringEvent.PERFORMANCE_SLOW:
             duration = event.data.get("duration", 0)
-            self.logger.warning(
-                f"慢操作: {event.data.get('operation_name')} - 耗时: {duration:.3f}s"
-            )
+            self.logger.warning(f"慢操作: {event.data.get('operation_name')} - 耗时: {duration:.3f}s")
 
 
 class PerformanceMonitoringListener(MonitoringEventListener):
@@ -338,9 +326,7 @@ class operation_monitor(BaseMonitoringDecorator):
             operation_id = f"{func.__name__}_{int(time.time() * 1000)}"
             operation_name = self.operation_name or func.__name__
 
-            context = OperationContext(
-                operation_id=operation_id, operation_name=operation_name
-            )
+            context = OperationContext(operation_id=operation_id, operation_name=operation_name)
 
             # 设置监控上下文
             MonitoringContext.set_current_context(context.to_dict())
@@ -378,9 +364,7 @@ class operation_monitor(BaseMonitoringDecorator):
                             "operation_name": operation_name,
                             "duration": duration,
                             "success": True,
-                            "data_count": len(result)
-                            if hasattr(result, "__len__")
-                            else 0,
+                            "data_count": len(result) if hasattr(result, "__len__") else 0,
                         },
                         context=MonitoringContext.get_current_context(),
                     )
@@ -482,9 +466,7 @@ class data_quality_monitor(BaseMonitoringDecorator):
 
         return wrapper
 
-    def _check_data_quality(
-        self, data: Any, operation_name: str, table_name: Optional[str]
-    ):
+    def _check_data_quality(self, data: Any, operation_name: str, table_name: Optional[str]):
         """检查数据质量"""
         import pandas as pd
 
@@ -497,9 +479,7 @@ class data_quality_monitor(BaseMonitoringDecorator):
         duplicate_count = data.duplicated().sum() if len(data) > 0 else 0
 
         # 计算质量分数 (简化版)
-        null_ratio = (
-            null_count / (record_count * len(data.columns)) if record_count > 0 else 0
-        )
+        null_ratio = null_count / (record_count * len(data.columns)) if record_count > 0 else 0
         duplicate_ratio = duplicate_count / record_count if record_count > 0 else 0
         quality_score = max(0, 1 - null_ratio - duplicate_ratio)
 
@@ -560,9 +540,7 @@ class MonitoringConfig:
 
         if self.config.get("listeners", {}).get("performance", True):
             perf_listener = PerformanceMonitoringListener(
-                slow_operation_threshold=self.config.get(
-                    "slow_operation_threshold", 5.0
-                )
+                slow_operation_threshold=self.config.get("slow_operation_threshold", 5.0)
             )
             _event_bus.subscribe(MonitoringEvent.OPERATION_END, perf_listener)
             _event_bus.subscribe(MonitoringEvent.PERFORMANCE_SLOW, perf_listener)

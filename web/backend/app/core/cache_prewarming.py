@@ -137,9 +137,7 @@ class CachePrewarmingStrategy:
         hot_data = self.eviction_strategy.get_hot_data(top_n=top_n)
         return hot_data
 
-    def prewarm_cache(
-        self, data_sources: Optional[Dict[str, Callable]] = None
-    ) -> Dict[str, Any]:
+    def prewarm_cache(self, data_sources: Optional[Dict[str, Callable]] = None) -> Dict[str, Any]:
         """
         执行缓存预热
 
@@ -264,11 +262,7 @@ class CachePrewarmingStrategy:
     def get_prewarming_status(self) -> Dict[str, Any]:
         """获取预热状态"""
         return {
-            "last_prewarming": (
-                self.prewarming_history.get("_last_full_prewarm")
-                if self.prewarming_history
-                else None
-            ),
+            "last_prewarming": (self.prewarming_history.get("_last_full_prewarm") if self.prewarming_history else None),
             "prewarmed_keys_count": len(self.prewarming_history),
             "timestamp": datetime.utcnow().isoformat(),
         }

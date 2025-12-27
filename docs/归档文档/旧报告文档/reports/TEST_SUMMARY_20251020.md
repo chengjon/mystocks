@@ -26,7 +26,7 @@
 
 ### 3. 项目整合文档
 - ✅ PyProfiling项目文档
-- ✅ OpenStock项目文档  
+- ✅ OpenStock项目文档
 - ✅ 整合状态跟踪
 - ✅ 优先级建议
 

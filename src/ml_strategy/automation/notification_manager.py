@@ -223,9 +223,7 @@ class NotificationManager:
 
         return all_success
 
-    def send_success_notification(
-        self, task_name: str, execution_time: float, result: Any = None
-    ):
+    def send_success_notification(self, task_name: str, execution_time: float, result: Any = None):
         """发送任务成功通知"""
         title = f"✓ 任务成功: {task_name}"
         message = f"任务 '{task_name}' 执行成功\n执行时间: {execution_time:.2f} 秒"
@@ -240,9 +238,7 @@ class NotificationManager:
             context={"task_name": task_name, "execution_time": execution_time},
         )
 
-    def send_failure_notification(
-        self, task_name: str, error_message: str, retry_count: int = 0
-    ):
+    def send_failure_notification(self, task_name: str, error_message: str, retry_count: int = 0):
         """发送任务失败通知"""
         title = f"✗ 任务失败: {task_name}"
         message = f"任务 '{task_name}' 执行失败\n"
@@ -468,8 +464,7 @@ class NotificationManager:
         return {
             **self.stats,
             "total_notifications": len(self.notifications),
-            "success_rate": (self.stats["total_sent"] / max(len(self.notifications), 1))
-            * 100,
+            "success_rate": (self.stats["total_sent"] / max(len(self.notifications), 1)) * 100,
         }
 
     def clear_history(self, days: int = 30):
@@ -485,34 +480,24 @@ if __name__ == "__main__":
     print("=" * 70)
 
     # 设置日志
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # 创建通知管理器（仅使用日志和控制台）
-    config = NotificationConfig(
-        channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE]
-    )
+    config = NotificationConfig(channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE])
 
     manager = NotificationManager(config)
 
     # 测试1: 基本通知
     print("\n测试1: 发送基本通知")
-    manager.send_notification(
-        title="测试通知", message="这是一条测试通知", level=NotificationLevel.INFO
-    )
+    manager.send_notification(title="测试通知", message="这是一条测试通知", level=NotificationLevel.INFO)
 
     # 测试2: 任务成功通知
     print("\n测试2: 任务成功通知")
-    manager.send_success_notification(
-        task_name="数据更新", execution_time=12.5, result="导入1000条记录"
-    )
+    manager.send_success_notification(task_name="数据更新", execution_time=12.5, result="导入1000条记录")
 
     # 测试3: 任务失败通知
     print("\n测试3: 任务失败通知")
-    manager.send_failure_notification(
-        task_name="策略执行", error_message="数据库连接失败", retry_count=2
-    )
+    manager.send_failure_notification(task_name="策略执行", error_message="数据库连接失败", retry_count=2)
 
     # 测试4: 交易信号通知
     print("\n测试4: 交易信号通知")
@@ -527,9 +512,7 @@ if __name__ == "__main__":
     # 测试5: 频率限制
     print("\n测试5: 频率限制测试")
     for i in range(3):
-        success = manager.send_notification(
-            title="重复通知", message="测试频率限制", level=NotificationLevel.INFO
-        )
+        success = manager.send_notification(title="重复通知", message="测试频率限制", level=NotificationLevel.INFO)
         print(f"  第{i + 1}次发送: {'成功' if success else '被限制'}")
 
     # 获取统计
@@ -542,9 +525,7 @@ if __name__ == "__main__":
     print("\n测试7: 通知历史")
     history = manager.get_notification_history(limit=5)
     for notification in history:
-        print(
-            f"  [{notification.level.value}] {notification.title} - {notification.timestamp}"
-        )
+        print(f"  [{notification.level.value}] {notification.title} - {notification.timestamp}")
 
     print("\n" + "=" * 70)
     print("测试完成")

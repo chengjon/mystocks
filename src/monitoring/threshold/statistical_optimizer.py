@@ -60,24 +60,18 @@ class StatisticalOptimizer:
                     k = 2.0
                     recommended_threshold = mean_val - k * std_val
                 else:
-                    recommended_threshold = q5 = np.percentile(values_array, 5)
+                    recommended_threshold = np.percentile(values_array, 5)
 
-                recommended_threshold = max(
-                    recommended_threshold, q1=np.percentile(values_array, 1)
-                )
+                recommended_threshold = max(recommended_threshold, q1=np.percentile(values_array, 1))
 
             else:  # range
                 recommended_threshold = q75
 
             # 计算置信度
-            confidence = self._calculate_confidence(
-                values_array, recommended_threshold, threshold_type
-            )
+            confidence = self._calculate_confidence(values_array, recommended_threshold, threshold_type)
 
             # 计算预期改进
-            improvement = self._estimate_improvement(
-                values, current_threshold, recommended_threshold, threshold_type
-            )
+            improvement = self._estimate_improvement(values, current_threshold, recommended_threshold, threshold_type)
 
             return OptimizationResult(
                 rule_name="statistical_optimizer",
@@ -104,9 +98,7 @@ class StatisticalOptimizer:
             self.logger.error(f"统计优化失败: {e}")
             return self._create_error_result(current_threshold, str(e))
 
-    def _calculate_confidence(
-        self, values: np.ndarray, threshold: float, threshold_type: str
-    ) -> float:
+    def _calculate_confidence(self, values: np.ndarray, threshold: float, threshold_type: str) -> float:
         """计算阈值置信度"""
 
         try:
@@ -142,12 +134,8 @@ class StatisticalOptimizer:
 
         try:
             # 计算旧阈值和新阈值下的异常率
-            old_anomaly_count = sum(
-                1 for v in values if self._is_anomaly(v, old_threshold, threshold_type)
-            )
-            new_anomaly_count = sum(
-                1 for v in values if self._is_anomaly(v, new_threshold, threshold_type)
-            )
+            old_anomaly_count = sum(1 for v in values if self._is_anomaly(v, old_threshold, threshold_type))
+            new_anomaly_count = sum(1 for v in values if self._is_anomaly(v, new_threshold, threshold_type))
 
             old_rate = old_anomaly_count / len(values)
             new_rate = new_anomaly_count / len(values)
@@ -172,9 +160,7 @@ class StatisticalOptimizer:
         else:
             return False
 
-    def _create_insufficient_data_result(
-        self, current_threshold: float
-    ) -> OptimizationResult:
+    def _create_insufficient_data_result(self, current_threshold: float) -> OptimizationResult:
         """数据不足时的结果"""
         return OptimizationResult(
             rule_name="statistical_optimizer",
@@ -187,9 +173,7 @@ class StatisticalOptimizer:
             metadata={"data_insufficient": True},
         )
 
-    def _create_error_result(
-        self, current_threshold: float, error_message: str
-    ) -> OptimizationResult:
+    def _create_error_result(self, current_threshold: float, error_message: str) -> OptimizationResult:
         """错误情况下的结果"""
         return OptimizationResult(
             rule_name="statistical_optimizer",

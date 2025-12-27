@@ -237,7 +237,7 @@ def run_strategy_batch(request: Dict) -> Dict:
         Dict: 批量策略运行结果
     """
     strategy_codes = request.get("strategy_codes", ["STR001", "STR002"])
-    parameters = request.get("parameters", {})
+    request.get("parameters", {})
 
     # 模拟批量运行时间
     execution_time = random.uniform(5, 20)
@@ -443,9 +443,7 @@ def generate_matched_stocks(count: int) -> List[Dict]:
     return stocks
 
 
-def generate_realistic_price(
-    base_price: float = 100.0, volatility: float = 0.02
-) -> float:
+def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
     """生成真实感的价格数据
 
     Args:
@@ -471,6 +469,18 @@ def generate_realistic_volume() -> int:
 
 if __name__ == "__main__":
     # 测试函数
+    def get_data_list():
+        """获取数据列表（测试占位函数）"""
+        return ["mock_data_1", "mock_data_2"]
+
+    def get_data_detail():
+        """获取数据详情（测试占位函数）"""
+        return {"id": 1, "name": "测试数据", "value": 100.0}
+
+    def get_data_table():
+        """获取数据表（测试占位函数）"""
+        return {"headers": ["id", "name", "value"], "rows": [[1, "测试", 100.0]]}
+
     print("Mock文件模板测试")
     print("=" * 50)
     print("get_data_list() 调用测试:")

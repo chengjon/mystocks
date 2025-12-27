@@ -133,9 +133,7 @@ class WebSocketConnectionPool:
             stale_timeout=stale_timeout,
         )
 
-    async def acquire_connection(
-        self, user_id: Optional[str] = None
-    ) -> PooledConnection:
+    async def acquire_connection(self, user_id: Optional[str] = None) -> PooledConnection:
         """
         获取一个连接
         - 优先从空闲队列获取
@@ -153,9 +151,7 @@ class WebSocketConnectionPool:
             try:
                 connection = self.idle_connections.get_nowait()
                 # 验证连接健康状态
-                if connection.is_healthy() and not connection.is_stale(
-                    self.stale_timeout
-                ):
+                if connection.is_healthy() and not connection.is_stale(self.stale_timeout):
                     connection.state = ConnectionState.ACTIVE
                     connection.record_activity()
                     connection.reuse_count += 1
@@ -202,9 +198,7 @@ class WebSocketConnectionPool:
                 idle=self.idle_connections.qsize(),
                 max_size=self.max_size,
             )
-            connection = await asyncio.wait_for(
-                self.idle_connections.get(), timeout=3.0
-            )
+            connection = await asyncio.wait_for(self.idle_connections.get(), timeout=3.0)
             connection.state = ConnectionState.ACTIVE
             connection.record_activity()
             self.active_connections[connection.sid] = connection
@@ -313,9 +307,7 @@ class WebSocketConnectionPool:
             连接列表
         """
         sids = self.user_connections.get(user_id, set())
-        return [
-            self.all_connections[sid] for sid in sids if sid in self.all_connections
-        ]
+        return [self.all_connections[sid] for sid in sids if sid in self.all_connections]
 
     async def start_cleanup(self) -> None:
         """启动定期清理任务"""
@@ -366,11 +358,7 @@ class WebSocketConnectionPool:
 
     async def _cleanup_broken_connections(self) -> None:
         """清理损坏的连接"""
-        broken_sids = [
-            sid
-            for sid, conn in self.all_connections.items()
-            if conn.state == ConnectionState.BROKEN
-        ]
+        broken_sids = [sid for sid, conn in self.all_connections.items() if conn.state == ConnectionState.BROKEN]
 
         if broken_sids:
             logger.info("🧹 Cleaning broken connections", count=len(broken_sids))
@@ -411,16 +399,10 @@ class WebSocketConnectionPool:
                 "total_acquired": self.total_acquired,
                 "total_released": self.total_released,
                 "total_recycled": self.total_recycled,
-                "reuse_rate": (
-                    self.total_released / max(1, self.total_acquired)
-                    if self.total_acquired > 0
-                    else 0
-                ),
+                "reuse_rate": (self.total_released / max(1, self.total_acquired) if self.total_acquired > 0 else 0),
             },
             "users": len(self.user_connections),
-            "utilization": (
-                active_count / self.max_size * 100 if self.max_size > 0 else 0
-            ),
+            "utilization": (active_count / self.max_size * 100 if self.max_size > 0 else 0),
             "timestamp": datetime.utcnow().isoformat(),
         }
 

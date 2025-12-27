@@ -197,43 +197,76 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, nextTick, watch, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
+import type { ECharts, EChartOption } from 'echarts'
 import { ElMessage } from 'element-plus'
 import SmartDataIndicator from '@/components/common/SmartDataIndicator.vue'
+import type { StockList, MarketOverview } from '@/types'
 
-const loading = ref(false)
-const activeMarketTab = ref('heat')
-const activeSectorTab = ref('favorites')
-const industryStandard = ref('csrc')
-const marketHeatChartRef = ref(null)
-const leadingSectorChartRef = ref(null)
-const priceDistributionChartRef = ref(null)
-const capitalFlowChartRef = ref(null)
-const industryChartRef = ref(null)
+// 统计数据类型
+interface StatItem {
+  title: string
+  value: string
+  icon: string
+  color: string
+  trend: string
+  trendClass: 'up' | 'down' | 'neutral'
+}
+
+// 股票表格数据类型
+interface StockTableRow {
+  symbol: string
+  name: string
+  price: string
+  change: number
+  volume?: string
+  turnover?: string
+  industry?: string
+  strategy?: string
+  score?: number
+  signal?: string
+  industryRank?: number
+  marketCap?: number
+  concepts?: string[]
+  conceptHeat?: number
+}
+
+// 图表引用类型
+type ChartRef = Ref<HTMLDivElement | null>
+
+const loading: Ref<boolean> = ref(false)
+const activeMarketTab: Ref<string> = ref('heat')
+const activeSectorTab: Ref<string> = ref('favorites')
+const industryStandard: Ref<string> = ref('csrc')
+const marketHeatChartRef: ChartRef = ref(null)
+const leadingSectorChartRef: ChartRef = ref(null)
+const priceDistributionChartRef: ChartRef = ref(null)
+const capitalFlowChartRef: ChartRef = ref(null)
+const industryChartRef: ChartRef = ref(null)
 
 // 初始化数据为空
-const favoriteStocks = ref([])
-const strategyStocks = ref([])
-const industryStocks = ref([])
-const conceptStocks = ref([])
-const stats = ref([
+const favoriteStocks: Ref<StockTableRow[]> = ref([])
+const strategyStocks: Ref<StockTableRow[]> = ref([])
+const industryStocks: Ref<StockTableRow[]> = ref([])
+const conceptStocks: Ref<StockTableRow[]> = ref([])
+const stats: Ref<StatItem[]> = ref([
   { title: '总股票数', value: '0', icon: 'Document', color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
   { title: '总市值', value: '0', icon: 'Money', color: '#67C23A', trend: '+0%', trendClass: 'up' },
   { title: '市场分布', value: '0', icon: 'PieChart', color: '#E6A23C', trend: '+0%', trendClass: 'up' },
   { title: '行业分布', value: '0', icon: 'Grid', color: '#F56C6C', trend: '+0%', trendClass: 'down' }
 ])
 
-let marketHeatChart = null
-let leadingSectorChart = null
-let priceDistributionChart = null
-let capitalFlowChart = null
-let industryChart = null
+let marketHeatChart: ECharts | null = null
+let leadingSectorChart: ECharts | null = null
+let priceDistributionChart: ECharts | null = null
+let capitalFlowChart: ECharts | null = null
+let industryChart: ECharts | null = null
 
 // 更新行业资金流向图表
-const updateIndustryChart = async () => {
+const updateIndustryChart = async (): Promise<void> => {
   if (!industryChartRef.value) return
 
   // 如果图表已存在，销毁重新创建
@@ -251,13 +284,13 @@ const updateIndustryChart = async () => {
       values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
     }
 
-    const option = {
+    const option: EChartOption = {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
           type: 'shadow'
         },
-        formatter: (params) => {
+        formatter: (params: any) => {
           const value = params[0].value
           return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
         }
@@ -273,7 +306,7 @@ const updateIndustryChart = async () => {
         type: 'value',
         name: '资金流向(亿元)',
         axisLabel: {
-          formatter: (value) => value > 0 ? `+${value}` : value
+          formatter: (value: number) => value > 0 ? `+${value}` : value
         }
       },
       yAxis: {
@@ -290,14 +323,14 @@ const updateIndustryChart = async () => {
           type: 'bar',
           data: mockData.values,
           itemStyle: {
-            color: (params) => {
+            color: (params: any) => {
               return params.value > 0 ? '#f56c6c' : '#67c23a'
             }
           },
           label: {
             show: true,
             position: 'right',
-            formatter: (params) => {
+            formatter: (params: any) => {
               const value = params.value
               return value > 0 ? `+${value}亿` : `${value}亿`
             },
@@ -314,16 +347,16 @@ const updateIndustryChart = async () => {
 }
 
 // 更新市场分布图表
-const updateMarketDistributionChart = (marketData) => {
+const updateMarketDistributionChart = (marketData: MarketOverview): void => {
   // 注意：这个图表现在在"市场分布"tab中，使用priceDistributionChartRef
   if (!priceDistributionChartRef.value) return
 
   // 创建专用的市场分布图表实例
-  if (window.marketDistributionChartInstance) {
-    window.marketDistributionChartInstance.dispose()
+  if ((window as any).marketDistributionChartInstance) {
+    (window as any).marketDistributionChartInstance.dispose()
   }
 
-  window.marketDistributionChartInstance = echarts.init(priceDistributionChartRef.value)
+  (window as any).marketDistributionChartInstance = echarts.init(priceDistributionChartRef.value)
 
   // 准备市场分布数据
   const marketDistribution = marketData.by_market || {}
@@ -332,7 +365,7 @@ const updateMarketDistributionChart = (marketData) => {
 
   // 如果没有市场数据，显示提示信息
   if (marketNames.length === 0) {
-    window.marketDistributionChartInstance.setOption({
+    ((window as any).marketDistributionChartInstance as ECharts).setOption({
       title: {
         text: '暂无市场分布数据',
         left: 'center',
@@ -342,7 +375,7 @@ const updateMarketDistributionChart = (marketData) => {
     return
   }
 
-  const option = {
+  const option: EChartOption = {
     title: {
       text: 'A股市场分布',
       left: 'center',
@@ -363,7 +396,7 @@ const updateMarketDistributionChart = (marketData) => {
         type: 'pie',
         radius: ['30%', '70%'],
         center: ['60%', '50%'],
-        data: marketNames.map((name, index) => ({
+        data: marketNames.map((name: string, index: number) => ({
           value: marketValues[index],
           name: name === 'SH' ? '上海证券交易所' : name === 'SZ' ? '深圳证券交易所' : name
         })),
@@ -382,17 +415,17 @@ const updateMarketDistributionChart = (marketData) => {
     ]
   }
 
-  window.marketDistributionChartInstance.setOption(option)
+  ((window as any).marketDistributionChartInstance as ECharts).setOption(option)
 }
 
 // 更新行业分布图表
-const updateIndustryDistributionChart = (marketData) => {
+const updateIndustryDistributionChart = (marketData: MarketOverview): void => {
   // 这里可以更新其他图表，比如行业分布柱状图
   // 由于当前只有一个资金流向图表，我们暂时不实现这个功能
   // 后续可以添加更多图表展示行业分布数据
 }
 
-const initMarketHeatChart = async () => {
+const initMarketHeatChart = async (): Promise<void> => {
   if (!marketHeatChartRef.value) return
 
   marketHeatChart = echarts.init(marketHeatChartRef.value)
@@ -411,7 +444,7 @@ const initMarketHeatChart = async () => {
       { name: '新三板', value: 65 }
     ]
 
-    const option = {
+    const option: EChartOption = {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -430,13 +463,13 @@ const initMarketHeatChart = async () => {
       },
       yAxis: {
         type: 'category',
-        data: heatData.map(item => item.name)
+        data: heatData.map((item) => item.name)
       },
       series: [
         {
           name: '市场热度',
           type: 'bar',
-          data: heatData.map(item => item.value),
+          data: heatData.map((item) => item.value),
           itemStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
               { offset: 0, color: '#83bff6' },
@@ -457,7 +490,7 @@ const initMarketHeatChart = async () => {
   }
 }
 
-const initLeadingSectorChart = async () => {
+const initLeadingSectorChart = async (): Promise<void> => {
   if (!leadingSectorChartRef.value) return
 
   leadingSectorChart = echarts.init(leadingSectorChartRef.value)
@@ -476,7 +509,7 @@ const initLeadingSectorChart = async () => {
       { name: '证券', change: 2.1 }
     ]
 
-    const option = {
+    const option: EChartOption = {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -499,15 +532,15 @@ const initLeadingSectorChart = async () => {
       },
       yAxis: {
         type: 'category',
-        data: sectorData.map(item => item.name)
+        data: sectorData.map((item) => item.name)
       },
       series: [
         {
           name: '涨幅',
           type: 'bar',
-          data: sectorData.map(item => item.change),
+          data: sectorData.map((item) => item.change),
           itemStyle: {
-            color: (params) => {
+            color: (params: any) => {
               return params.value > 0 ? '#f56c6c' : '#67c23a'
             }
           }
@@ -521,7 +554,7 @@ const initLeadingSectorChart = async () => {
   }
 }
 
-const initPriceDistributionChart = async () => {
+const initPriceDistributionChart = async (): Promise<void> => {
   if (!priceDistributionChartRef.value) return
 
   priceDistributionChart = echarts.init(priceDistributionChartRef.value)
@@ -537,7 +570,7 @@ const initPriceDistributionChart = async () => {
       { name: '下跌>5%', value: 180 }
     ]
 
-    const option = {
+    const option: EChartOption = {
       tooltip: {
         trigger: 'item',
         formatter: '{b}: {c}只 ({d}%)'
@@ -580,7 +613,7 @@ const initPriceDistributionChart = async () => {
   }
 }
 
-const initCapitalFlowChart = async () => {
+const initCapitalFlowChart = async (): Promise<void> => {
   if (!capitalFlowChartRef.value) return
 
   capitalFlowChart = echarts.init(capitalFlowChartRef.value)
@@ -597,13 +630,13 @@ const initCapitalFlowChart = async () => {
       { name: '融资融券', value: 40 }
     ]
 
-    const option = {
+    const option: EChartOption = {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
           type: 'shadow'
         },
-        formatter: (params) => {
+        formatter: (params: any) => {
           const value = params[0].value
           const absValue = Math.abs(value)
           return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
@@ -619,20 +652,20 @@ const initCapitalFlowChart = async () => {
         type: 'value',
         name: '资金流向(亿元)',
         axisLabel: {
-          formatter: (value) => value > 0 ? `+${value}` : value
+          formatter: (value: number) => value > 0 ? `+${value}` : value
         }
       },
       yAxis: {
         type: 'category',
-        data: flowData.map(item => item.name)
+        data: flowData.map((item) => item.name)
       },
       series: [
         {
           name: '资金流向',
           type: 'bar',
-          data: flowData.map(item => item.value),
+          data: flowData.map((item) => item.value),
           itemStyle: {
-            color: (params) => {
+            color: (params: any) => {
               return params.value > 0 ? '#f56c6c' : '#67c23a'
             }
           }
@@ -646,7 +679,7 @@ const initCapitalFlowChart = async () => {
   }
 }
 
-const initCharts = async () => {
+const initCharts = async (): Promise<void> => {
   await nextTick()
 
   // 初始化市场热度中心的各个图表
@@ -667,7 +700,7 @@ const initCharts = async () => {
     priceDistributionChart?.resize()
     capitalFlowChart?.resize()
     industryChart?.resize()
-    window.marketDistributionChartInstance?.resize()
+    ;(window as any).marketDistributionChartInstance?.resize()
   })
 }
 
@@ -683,7 +716,7 @@ watch(activeMarketTab, async () => {
       break
     case 'distribution':
       // 对于市场分布图表，需要调整专用实例的大小
-      window.marketDistributionChartInstance?.resize()
+      ;(window as any).marketDistributionChartInstance?.resize()
       break
     case 'capital':
       capitalFlowChart?.resize()
@@ -696,7 +729,7 @@ watch(industryStandard, async () => {
   await updateIndustryChart()
 })
 
-const loadData = async () => {
+const loadData = async (): Promise<void> => {
   loading.value = true
   try {
     // 获取股票基本信息
@@ -748,12 +781,15 @@ const loadData = async () => {
   } catch (error) {
     console.error('加载数据失败:', error)
     // 提供更友好的错误信息
-    if (error.response) {
-      ElMessage.error(`加载数据失败: ${error.response.data?.msg || error.response.data?.detail || '服务器错误'}`)
-    } else if (error.request) {
-      ElMessage.error('网络连接失败，请检查服务是否正常运行')
-    } else {
-      ElMessage.error(`加载数据失败: ${error.message}`)
+    if (error instanceof Error) {
+      if ('response' in error) {
+        const err = error as any
+        ElMessage.error(`加载数据失败: ${err.response?.data?.msg || err.response?.data?.detail || '服务器错误'}`)
+      } else if ('request' in error) {
+        ElMessage.error('网络连接失败，请检查服务是否正常运行')
+      } else {
+        ElMessage.error(`加载数据失败: ${error.message}`)
+      }
     }
   } finally {
     loading.value = false
@@ -761,7 +797,7 @@ const loadData = async () => {
 }
 
 // 添加重试机制
-const handleRetry = async () => {
+const handleRetry = async (): Promise<void> => {
   try {
     await loadData()
     ElMessage.success('数据已刷新')
@@ -770,7 +806,7 @@ const handleRetry = async () => {
   }
 }
 
-const handleRefresh = () => {
+const handleRefresh = (): void => {
   ElMessage.success('数据已刷新')
   loadData()
 }

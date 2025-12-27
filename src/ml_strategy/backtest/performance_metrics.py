@@ -83,9 +83,7 @@ class PerformanceMetrics:
         if benchmark_returns is not None:
             metrics["alpha"] = self.alpha(daily_returns, benchmark_returns)
             metrics["beta"] = self.beta(daily_returns, benchmark_returns)
-            metrics["information_ratio"] = self.information_ratio(
-                daily_returns, benchmark_returns
-            )
+            metrics["information_ratio"] = self.information_ratio(daily_returns, benchmark_returns)
 
         # 其他指标
         metrics["volatility"] = self.volatility(daily_returns)
@@ -235,9 +233,7 @@ class PerformanceMetrics:
 
         return max_duration
 
-    def calmar_ratio(
-        self, daily_returns: pd.Series, equity_curve: pd.DataFrame
-    ) -> float:
+    def calmar_ratio(self, daily_returns: pd.Series, equity_curve: pd.DataFrame) -> float:
         """
         卡尔玛比率 (Calmar Ratio)
 
@@ -270,9 +266,7 @@ class PerformanceMetrics:
         """
         return daily_returns.std() * np.sqrt(252)
 
-    def value_at_risk(
-        self, daily_returns: pd.Series, confidence: float = 0.95
-    ) -> float:
+    def value_at_risk(self, daily_returns: pd.Series, confidence: float = 0.95) -> float:
         """
         风险价值 (Value at Risk, VaR)
 
@@ -287,9 +281,7 @@ class PerformanceMetrics:
         """
         return daily_returns.quantile(1 - confidence)
 
-    def conditional_var(
-        self, daily_returns: pd.Series, confidence: float = 0.95
-    ) -> float:
+    def conditional_var(self, daily_returns: pd.Series, confidence: float = 0.95) -> float:
         """
         条件风险价值 (Conditional VaR, CVaR)
 
@@ -317,9 +309,7 @@ class PerformanceMetrics:
             float: Alpha值（年化）
         """
         # 对齐数据
-        aligned = pd.DataFrame(
-            {"strategy": strategy_returns, "benchmark": benchmark_returns}
-        ).dropna()
+        aligned = pd.DataFrame({"strategy": strategy_returns, "benchmark": benchmark_returns}).dropna()
 
         if len(aligned) == 0:
             return 0.0
@@ -342,9 +332,7 @@ class PerformanceMetrics:
             float: Beta值
         """
         # 对齐数据
-        aligned = pd.DataFrame(
-            {"strategy": strategy_returns, "benchmark": benchmark_returns}
-        ).dropna()
+        aligned = pd.DataFrame({"strategy": strategy_returns, "benchmark": benchmark_returns}).dropna()
 
         if len(aligned) < 2:
             return 0.0
@@ -358,9 +346,7 @@ class PerformanceMetrics:
 
         return covariance / variance
 
-    def information_ratio(
-        self, strategy_returns: pd.Series, benchmark_returns: pd.Series
-    ) -> float:
+    def information_ratio(self, strategy_returns: pd.Series, benchmark_returns: pd.Series) -> float:
         """
         信息比率 (Information Ratio)
 
@@ -374,9 +360,7 @@ class PerformanceMetrics:
             float: 信息比率
         """
         # 对齐数据
-        aligned = pd.DataFrame(
-            {"strategy": strategy_returns, "benchmark": benchmark_returns}
-        ).dropna()
+        aligned = pd.DataFrame({"strategy": strategy_returns, "benchmark": benchmark_returns}).dropna()
 
         if len(aligned) == 0:
             return 0.0
@@ -407,13 +391,9 @@ class PerformanceMetrics:
             "losing_trades": len(losing_trades),
             "win_rate": len(winning_trades) / len(trades) if trades else 0,
             "avg_trade_return": np.mean([t.pnl_pct for t in trades]),
-            "avg_win": (
-                np.mean([t.pnl for t in winning_trades]) if winning_trades else 0
-            ),
+            "avg_win": (np.mean([t.pnl for t in winning_trades]) if winning_trades else 0),
             "avg_loss": np.mean([t.pnl for t in losing_trades]) if losing_trades else 0,
-            "largest_win": (
-                max([t.pnl for t in winning_trades]) if winning_trades else 0
-            ),
+            "largest_win": (max([t.pnl for t in winning_trades]) if winning_trades else 0),
             "largest_loss": min([t.pnl for t in losing_trades]) if losing_trades else 0,
             "avg_holding_days": np.mean([t.holding_days for t in trades]),
             "max_holding_days": max([t.holding_days for t in trades]),
@@ -426,10 +406,7 @@ class PerformanceMetrics:
         stats["profit_factor"] = total_wins / total_losses if total_losses > 0 else 0
 
         # 期望值
-        stats["expectancy"] = (
-            stats["win_rate"] * stats["avg_win"]
-            + (1 - stats["win_rate"]) * stats["avg_loss"]
-        )
+        stats["expectancy"] = stats["win_rate"] * stats["avg_win"] + (1 - stats["win_rate"]) * stats["avg_loss"]
 
         return stats
 
@@ -449,21 +426,15 @@ class PerformanceMetrics:
         report.append("=" * 70)
 
         report.append("\n【收益指标】")
-        report.append(
-            f"  初始资金:          {metrics.get('initial_capital', 0):>15,.2f}"
-        )
+        report.append(f"  初始资金:          {metrics.get('initial_capital', 0):>15,.2f}")
         report.append(f"  最终资金:          {metrics.get('final_capital', 0):>15,.2f}")
         report.append(f"  总收益率:          {metrics.get('total_return', 0):>15.2%}")
-        report.append(
-            f"  年化收益率:        {metrics.get('annualized_return', 0):>15.2%}"
-        )
+        report.append(f"  年化收益率:        {metrics.get('annualized_return', 0):>15.2%}")
 
         report.append("\n【风险指标】")
         report.append(f"  波动率(年化):      {metrics.get('volatility', 0):>15.2%}")
         report.append(f"  最大回撤:          {metrics.get('max_drawdown', 0):>15.2%}")
-        report.append(
-            f"  最大回撤持续:      {metrics.get('max_drawdown_duration', 0):>12} 天"
-        )
+        report.append(f"  最大回撤持续:      {metrics.get('max_drawdown_duration', 0):>12} 天")
 
         report.append("\n【风险调整收益】")
         report.append(f"  夏普比率:          {metrics.get('sharpe_ratio', 0):>15.3f}")
@@ -476,9 +447,7 @@ class PerformanceMetrics:
         report.append(f"  亏损次数:          {metrics.get('losing_trades', 0):>15}")
         report.append(f"  胜率:              {metrics.get('win_rate', 0):>15.2%}")
         report.append(f"  盈亏比:            {metrics.get('profit_factor', 0):>15.2f}")
-        report.append(
-            f"  平均持仓天数:      {metrics.get('avg_holding_days', 0):>15.1f}"
-        )
+        report.append(f"  平均持仓天数:      {metrics.get('avg_holding_days', 0):>15.1f}")
 
         if "alpha" in metrics:
             report.append("\n【基准比较】")
@@ -505,9 +474,7 @@ if __name__ == "__main__":
     returns = np.random.randn(n) * 0.01 + 0.0005  # 日收益率
     equity = 100000 * (1 + returns).cumprod()
 
-    equity_curve = pd.DataFrame(
-        {"equity": equity, "cash": 50000, "position": 500, "price": 100}, index=dates
-    )
+    equity_curve = pd.DataFrame({"equity": equity, "cash": 50000, "position": 500, "price": 100}, index=dates)
 
     daily_returns = pd.Series(returns, index=dates)
 

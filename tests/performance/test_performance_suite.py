@@ -100,14 +100,10 @@ class PerformanceTestSuite:
             for i in range(10):
                 start_time = time.time()
                 try:
-                    async with session.get(
-                        f"{self.base_url}{path}", params=params
-                    ) as response:
+                    async with session.get(f"{self.base_url}{path}", params=params) as response:
                         await response.text()  # 读取响应
                         end_time = time.time()
-                        response_times.append(
-                            (end_time - start_time) * 1000
-                        )  # 转换为毫秒
+                        response_times.append((end_time - start_time) * 1000)  # 转换为毫秒
                 except Exception as e:
                     print(f"    ⚠️  请求失败: {str(e)}")
                     response_times.append(-1)
@@ -126,13 +122,8 @@ class PerformanceTestSuite:
                     "min_time_ms": round(min_time, 2),
                     "median_time_ms": round(median_time, 2),
                     "requests": len(valid_times),
-                    "threshold": performance_baseline.API_RESPONSE_TIME_THRESHOLD.get(
-                        endpoint_name, 5000
-                    ),
-                    "passed": avg_time
-                    <= performance_baseline.API_RESPONSE_TIME_THRESHOLD.get(
-                        endpoint_name, 5000
-                    ),
+                    "threshold": performance_baseline.API_RESPONSE_TIME_THRESHOLD.get(endpoint_name, 5000),
+                    "passed": avg_time <= performance_baseline.API_RESPONSE_TIME_THRESHOLD.get(endpoint_name, 5000),
                 }
             else:
                 results[endpoint_name] = {
@@ -242,13 +233,8 @@ class PerformanceTestSuite:
                         "max_time_ms": round(max(valid_times), 2),
                         "min_time_ms": round(min(valid_times), 2),
                         "requests": len(valid_times),
-                        "threshold": performance_baseline.DB_QUERY_TIME_THRESHOLD.get(
-                            query_name, 1000
-                        ),
-                        "passed": avg_time
-                        <= performance_baseline.DB_QUERY_TIME_THRESHOLD.get(
-                            query_name, 1000
-                        ),
+                        "threshold": performance_baseline.DB_QUERY_TIME_THRESHOLD.get(query_name, 1000),
+                        "passed": avg_time <= performance_baseline.DB_QUERY_TIME_THRESHOLD.get(query_name, 1000),
                     }
                 else:
                     results[query_name] = {
@@ -290,9 +276,7 @@ class PerformanceTestSuite:
 
                 for action_name, path, params in actions:
                     try:
-                        async with session.get(
-                            f"{self.base_url}{path}", params=params
-                        ) as response:
+                        async with session.get(f"{self.base_url}{path}", params=params) as response:
                             await response.text()
                     except:
                         pass  # 忽略单个请求失败
@@ -336,9 +320,7 @@ class PerformanceTestSuite:
             "rss_memory_mb": round(memory_info.rss / 1024 / 1024, 2),
             "vms_memory_mb": round(memory_info.vms / 1024 / 1024, 2),
             "memory_percent": process.memory_percent(),
-            "available_memory_mb": round(
-                psutil.virtual_memory().available / 1024 / 1024, 2
-            ),
+            "available_memory_mb": round(psutil.virtual_memory().available / 1024 / 1024, 2),
             "total_memory_mb": round(psutil.virtual_memory().total / 1024 / 1024, 2),
         }
 
@@ -401,22 +383,14 @@ class PerformanceTestSuite:
 
     def _print_test_summary(self, test_name: str, result: Dict[str, Any]):
         """打印测试摘要"""
-        if (
-            isinstance(result, dict)
-            and "status" in result
-            and result["status"] == "failed"
-        ):
+        if isinstance(result, dict) and "status" in result and result["status"] == "failed":
             print(f"    ❌ {test_name} 测试失败: {result.get('error', '未知错误')}")
-        elif isinstance(result, dict) and any(
-            key in result for key in ["passed", "avg_time_ms", "avg_cpu_percent"]
-        ):
+        elif isinstance(result, dict) and any(key in result for key in ["passed", "avg_time_ms", "avg_cpu_percent"]):
             if "avg_time_ms" in result:
                 avg_time = result["avg_time_ms"]
                 threshold = result.get("threshold", 5000)
                 status = "✅" if result.get("passed", False) else "❌"
-                print(
-                    f"    {status} {test_name}: {avg_time:.2f}ms (阈值: {threshold}ms)"
-                )
+                print(f"    {status} {test_name}: {avg_time:.2f}ms (阈值: {threshold}ms)")
             elif "avg_cpu_percent" in result:
                 cpu_percent = result["avg_cpu_percent"]
                 print(f"    ✅ {test_name}: {cpu_percent:.1f}%")
@@ -443,9 +417,7 @@ class PerformanceTestSuite:
         }
 
         # 保存报告
-        report_path = (
-            f"/tmp/performance_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
+        report_path = f"/tmp/performance_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
@@ -513,17 +485,12 @@ class PerformanceTestSuite:
             if isinstance(db_results, dict):
                 for query, result in db_results.items():
                     if isinstance(result, dict) and not result.get("passed", True):
-                        recommendations.append(
-                            f"优化查询 {query}，考虑添加索引或优化SQL语句"
-                        )
+                        recommendations.append(f"优化查询 {query}，考虑添加索引或优化SQL语句")
 
         # 系统建议
         if "test_memory_usage" in self.results:
             mem_results = self.results["test_memory_usage"]
-            if (
-                isinstance(mem_results, dict)
-                and mem_results.get("memory_percent", 0) > 80
-            ):
+            if isinstance(mem_results, dict) and mem_results.get("memory_percent", 0) > 80:
                 recommendations.append("内存使用率过高，考虑增加内存或优化内存使用")
 
         return recommendations

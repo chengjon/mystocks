@@ -61,8 +61,7 @@ class MarketEvent(Event):
 
     def __repr__(self):
         return (
-            f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, "
-            f"close={self.close}, volume={self.volume})"
+            f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, " f"close={self.close}, volume={self.volume})"
         )
 
 

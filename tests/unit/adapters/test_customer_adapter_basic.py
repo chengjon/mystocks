@@ -89,9 +89,7 @@ class TestCustomerDataSourceBasic:
         adapter = CustomerDataSource()
 
         # 创建非标准列名的DataFrame
-        non_standard_df = pd.DataFrame(
-            {"code": ["000001"], "name": ["测试股票"], "price": [10.0]}
-        )
+        non_standard_df = pd.DataFrame({"code": ["000001"], "name": ["测试股票"], "price": [10.0]})
 
         # 调用标准化
         result = adapter._standardize_dataframe(non_standard_df)

@@ -80,9 +80,7 @@ class EmailService:
         try:
             # 创建邮件对象
             msg = MIMEMultipart()
-            msg["From"] = (
-                f"{from_name} <{self.username}>" if from_name else self.username
-            )
+            msg["From"] = f"{from_name} <{self.username}>" if from_name else self.username
             msg["To"] = ", ".join(to_addresses)
             msg["Subject"] = Header(subject, "utf-8")
 
@@ -179,9 +177,7 @@ class EmailService:
         if news_data and len(news_data) > 0:
             news_content = ""
             for news in news_data[:10]:  # 最多10条新闻
-                news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime(
-                    "%Y-%m-%d %H:%M"
-                )
+                news_time = datetime.fromtimestamp(news.get("datetime", 0)).strftime("%Y-%m-%d %H:%M")
                 news_content += f"""
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
                     <h3 style="margin: 0 0 10px 0;">
@@ -199,11 +195,7 @@ class EmailService:
             news_content = "<p style='color: #999;'>今日暂无新闻更新</p>"
 
         # 构建自选股列表
-        watchlist_html = (
-            ", ".join(watchlist_symbols[:10])
-            if watchlist_symbols
-            else "您还没有添加自选股"
-        )
+        watchlist_html = ", ".join(watchlist_symbols[:10]) if watchlist_symbols else "您还没有添加自选股"
         if len(watchlist_symbols) > 10:
             watchlist_html += f" 等 {len(watchlist_symbols)} 只"
 

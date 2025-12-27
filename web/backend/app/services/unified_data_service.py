@@ -152,9 +152,7 @@ class MockDataGenerator:
             # 生成价格数据
             base_price = self.random.uniform(5.0, 200.0)
             change = self.random.uniform(-10.0, 10.0)
-            change_pct = (
-                (change / (base_price - change)) * 100 if base_price != change else 0
-            )
+            change_pct = (change / (base_price - change)) * 100 if base_price != change else 0
 
             stock = {
                 "symbol": symbol,
@@ -200,8 +198,7 @@ class MockDataGenerator:
         ]
 
         return [
-            {"industry_name": industry, "industry_code": f"IND_{i + 1:03d}"}
-            for i, industry in enumerate(industries)
+            {"industry_name": industry, "industry_code": f"IND_{i + 1:03d}"} for i, industry in enumerate(industries)
         ]
 
     def generate_concepts(self) -> List[Dict]:
@@ -226,10 +223,7 @@ class MockDataGenerator:
             "无人机",
         ]
 
-        return [
-            {"concept_name": concept, "concept_code": f"CON_{i + 1:03d}"}
-            for i, concept in enumerate(concepts)
-        ]
+        return [{"concept_name": concept, "concept_code": f"CON_{i + 1:03d}"} for i, concept in enumerate(concepts)]
 
     def generate_market_overview(self) -> Dict:
         """生成模拟市场概览"""
@@ -275,9 +269,7 @@ class MockDataGenerator:
         stocks = self.generate_stocks_basic(20)
         # 简单筛选包含关键词的股票
         filtered_stocks = [
-            stock
-            for stock in stocks
-            if keyword.lower() in stock["symbol"].lower() or keyword in stock["name"]
+            stock for stock in stocks if keyword.lower() in stock["symbol"].lower() or keyword in stock["name"]
         ]
         return filtered_stocks[:10]
 
@@ -291,9 +283,7 @@ class UnifiedDataService:
         self.mock_generator = MockDataGenerator()
         self.cache = get_cache_integration() if self.config.enable_cache else None
 
-        logger.info(
-            f"初始化统一数据服务 - 主数据源: {self.config.primary_source.value}"
-        )
+        logger.info(f"初始化统一数据服务 - 主数据源: {self.config.primary_source.value}")
 
     async def get_stocks_basic(self, **params) -> Dict[str, Any]:
         """获取股票基本信息"""
@@ -314,9 +304,7 @@ class UnifiedDataService:
 
         # 缓存结果
         if self.cache and data:
-            await self.cache.set(
-                cache_key, data, ttl=self.config.cache_ttl["stocks_basic"]
-            )
+            await self.cache.set(cache_key, data, ttl=self.config.cache_ttl["stocks_basic"])
 
         return data
 
@@ -338,9 +326,7 @@ class UnifiedDataService:
 
         # 缓存结果
         if self.cache and data:
-            await self.cache.set(
-                cache_key, data, ttl=self.config.cache_ttl["stocks_industries"]
-            )
+            await self.cache.set(cache_key, data, ttl=self.config.cache_ttl["stocks_industries"])
 
         return data
 
@@ -362,9 +348,7 @@ class UnifiedDataService:
 
         # 缓存结果
         if self.cache and data:
-            await self.cache.set(
-                cache_key, data, ttl=self.config.cache_ttl["stocks_concepts"]
-            )
+            await self.cache.set(cache_key, data, ttl=self.config.cache_ttl["stocks_concepts"])
 
         return data
 
@@ -386,9 +370,7 @@ class UnifiedDataService:
 
         # 缓存结果
         if self.cache and data:
-            await self.cache.set(
-                cache_key, data, ttl=self.config.cache_ttl["markets_overview"]
-            )
+            await self.cache.set(cache_key, data, ttl=self.config.cache_ttl["markets_overview"])
 
         return data
 
@@ -410,9 +392,7 @@ class UnifiedDataService:
 
         # 缓存结果
         if self.cache and data:
-            await self.cache.set(
-                cache_key, data, ttl=self.config.cache_ttl["stocks_search"]
-            )
+            await self.cache.set(cache_key, data, ttl=self.config.cache_ttl["stocks_search"])
 
         return data
 
@@ -438,20 +418,12 @@ class UnifiedDataService:
             random.seed(42 + len(df))
 
             if not df.empty:
-                df["price"] = [
-                    round(random.uniform(5.0, 200.0), 2) for _ in range(len(df))
-                ]
-                df["change"] = [
-                    round(random.uniform(-10.0, 10.0), 2) for _ in range(len(df))
-                ]
+                df["price"] = [round(random.uniform(5.0, 200.0), 2) for _ in range(len(df))]
+                df["change"] = [round(random.uniform(-10.0, 10.0), 2) for _ in range(len(df))]
                 df["change_pct"] = df["change"] / (df["price"] - df["change"]) * 100
                 df["change_pct"] = df["change_pct"].round(2)
-                df["volume"] = [
-                    random.randint(100000, 10000000) for _ in range(len(df))
-                ]
-                df["turnover"] = [
-                    round(random.uniform(0.1, 10.0), 2) for _ in range(len(df))
-                ]
+                df["volume"] = [random.randint(100000, 10000000) for _ in range(len(df))]
+                df["turnover"] = [round(random.uniform(0.1, 10.0), 2) for _ in range(len(df))]
 
             return {
                 "success": True,
@@ -477,9 +449,7 @@ class UnifiedDataService:
                 }
 
             industries = df["industry"].dropna().unique().tolist()
-            industries = sorted(
-                [industry for industry in industries if industry.strip()]
-            )
+            industries = sorted([industry for industry in industries if industry.strip()])
 
             industry_list = [
                 {"industry_name": industry, "industry_code": f"IND_{i + 1:03d}"}
@@ -546,9 +516,9 @@ class UnifiedDataService:
                 }
 
             # 搜索筛选
-            search_mask = df["symbol"].str.contains(keyword, case=False, na=False) | df[
-                "name"
-            ].str.contains(keyword, case=False, na=False)
+            search_mask = df["symbol"].str.contains(keyword, case=False, na=False) | df["name"].str.contains(
+                keyword, case=False, na=False
+            )
             filtered_df = df[search_mask]
 
             return {
@@ -562,9 +532,7 @@ class UnifiedDataService:
             raise
 
     # 数据源故障转移方法
-    async def _fetch_data_with_fallback(
-        self, primary_func, fallback_func, *args, **kwargs
-    ) -> Dict[str, Any]:
+    async def _fetch_data_with_fallback(self, primary_func, fallback_func, *args, **kwargs) -> Dict[str, Any]:
         """带故障转移的数据获取"""
         try:
             # 尝试主要数据源

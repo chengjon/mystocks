@@ -1,8 +1,8 @@
 # MyStocks Mock Data System Implementation - Technical Summary
 
-**Document Version**: 1.0.0  
-**Created**: 2025-11-13  
-**Author**: MyStocks Development Team  
+**Document Version**: 1.0.0
+**Created**: 2025-11-13
+**Author**: MyStocks Development Team
 **Status**: Complete Implementation ✅
 
 ## Executive Summary
@@ -78,12 +78,12 @@ class UnifiedMockDataManager:
     def __init__(self, use_mock_data: bool = None):
         # Environment variable configuration
         self.use_mock_data = use_mock_data or os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-        
+
         # Caching infrastructure
         self._data_cache = {}
         self._cache_timestamp = {}
         self._cache_ttl = 300  # 5-minute TTL
-        
+
         # Data source directory
         self.mock_data_dir = Path(__file__).parent
 ```
@@ -149,11 +149,11 @@ def get_technical_indicators(symbol: str, indicators: List[str]) -> Dict:
     """Generate realistic technical indicators"""
     # Use consistent seed for reproducibility
     random.seed(hash(symbol) % 2**32)
-    
+
     # Generate base OHLCV data
     base_price = random.uniform(10, 200)
     ohlcv = generate_ohlcv_series(base_price, days=244)  # ~1 year
-    
+
     # Calculate indicators
     indicators_data = {
         "symbol": symbol,
@@ -164,7 +164,7 @@ def get_technical_indicators(symbol: str, indicators: List[str]) -> Dict:
         "macd": calculate_macd(ohlcv),
         # ... additional indicators
     }
-    
+
     return indicators_data
 ```
 
@@ -217,7 +217,7 @@ export default defineConfig({
 
 **Integration Flow:**
 ```
-Frontend (Port 3000) 
+Frontend (Port 3000)
     ↓ Vite Proxy (/api/* → http://localhost:8888/api/*)
 Mock Backend (Port 8888)
     ↓ UnifiedMockDataManager
@@ -284,7 +284,7 @@ VITE_LOG_LEVEL=debug
 
 **Data Generation Strategy:**
 ```python
-def generate_realistic_price(base_price: float = 100.0, 
+def generate_realistic_price(base_price: float = 100.0,
                            volatility: float = 0.02) -> float:
     """Generate realistic price with statistical modeling"""
     # Use symbol-based seed for consistency
@@ -393,15 +393,15 @@ WENCAI_QUERIES = {
 def execute_query(query_request: Dict) -> Dict:
     """Execute Wencai-style natural language query"""
     query_name = query_request.get("query_name")
-    
+
     # Get query template
     query_template = WENCAI_QUERIES.get(query_name)
     if not query_template:
         raise ValueError(f"Query not found: {query_name}")
-    
+
     # Generate realistic results
     results = generate_query_results(query_template["sql"])
-    
+
     return {
         "success": True,
         "query_name": query_name,
@@ -445,11 +445,11 @@ def run_strategy(strategy_config: Dict, symbols: List[str]) -> Dict:
     """Execute trading strategy on given symbols"""
     strategy_code = strategy_config["strategy_code"]
     results = []
-    
+
     for symbol in symbols:
         # Generate strategy-specific signals
         signal = generate_strategy_signal(strategy_code, symbol)
-        
+
         if signal["action"] != "hold":
             results.append({
                 "symbol": symbol,
@@ -458,7 +458,7 @@ def run_strategy(strategy_config: Dict, symbols: List[str]) -> Dict:
                 "score": signal["score"],
                 "reason": signal["reason"]
             })
-    
+
     return {
         "strategy_name": strategy_code,
         "total_symbols": len(symbols),
@@ -483,11 +483,11 @@ The system provides comprehensive API coverage with Mock data support:
 async def get_monitoring_summary():
     """Get market monitoring summary with Mock data support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
         return mock_manager.get_data("monitoring", alert_type="summary")
-    
+
     # Real data logic
     return await get_real_monitoring_summary()
 ```
@@ -515,11 +515,11 @@ async def get_monitoring_summary():
 async def get_wencai_queries():
     """Get Wencai query templates with Mock support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
         return mock_manager.get_data("wencai", query_name="all")
-    
+
     # Real data logic
     return await get_real_wencai_queries()
 
@@ -527,12 +527,12 @@ async def get_wencai_queries():
 async def execute_wencai_query(request: Dict):
     """Execute Wencai query with Mock support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
-        return mock_manager.get_data("wencai", 
+        return mock_manager.get_data("wencai",
                                    query_name=request.get("query_name"))
-    
+
     # Real data logic
     return await execute_real_wencai_query(request)
 ```
@@ -544,11 +544,11 @@ async def execute_wencai_query(request: Dict):
 async def get_technical_indicators(symbol: str):
     """Get technical indicators with Mock support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
         return mock_manager.get_data("technical", symbol=symbol)
-    
+
     # Real data logic
     return await calculate_real_indicators(symbol)
 ```
@@ -585,12 +585,12 @@ export const api = {
         const response = await fetch(`${API_BASE_URL}/api/monitoring/summary`)
         return response.json()
     },
-    
+
     async getWencaiQueries() {
         const response = await fetch(`${API_BASE_URL}/api/market/wencai/queries`)
         return response.json()
     },
-    
+
     async executeQuery(queryName) {
         const response = await fetch(`${API_BASE_URL}/api/market/wencai/query`, {
             method: 'POST',
@@ -611,25 +611,25 @@ The system employs a comprehensive testing strategy:
 def test_mock_data_generation():
     """Test Mock data generation consistency"""
     from src.mock.mock_Stocks import get_real_time_quote
-    
+
     # Same symbol should produce consistent data
     quote1 = get_real_time_quote("600519")
     quote2 = get_real_time_quote("600519")
-    
+
     assert quote1["symbol"] == quote2["symbol"]
     assert quote1["price"] != quote2["price"]  # Should vary with time
-    
+
 def test_data_format_compliance():
     """Test Mock data matches real API format"""
     from src.mock.mock_Dashboard import get_market_stats
-    
+
     stats = get_market_stats()
-    
+
     # Check required fields
     required_fields = ["total_stocks", "active_stocks", "data_update", "system_status"]
     for field in required_fields:
         assert field in stats
-    
+
     # Check nested structure
     assert "value" in stats["total_stocks"]
     assert "trend" in stats["total_stocks"]
@@ -640,13 +640,13 @@ def test_data_format_compliance():
 def test_api_endpoint_integration():
     """Test API endpoints with Mock data"""
     import requests
-    
+
     # Test with Mock enabled
     os.environ['USE_MOCK_DATA'] = 'true'
-    
+
     response = requests.get('http://localhost:8888/api/monitoring/summary')
     assert response.status_code == 200
-    
+
     data = response.json()
     assert "total_stocks" in data
     assert isinstance(data["total_stocks"], int)
@@ -656,19 +656,19 @@ def test_api_endpoint_integration():
 ```python
 def test_complete_workflow():
     """Test complete user workflow with Mock data"""
-    
+
     # 1. Get market overview
     dashboard_data = get_dashboard_data()
     assert dashboard_data["market_stats"]["total_stocks"] > 0
-    
+
     # 2. Search for stocks
     stocks_data = get_stocks_data(page=1, page_size=20)
     assert len(stocks_data["stocks"]) > 0
-    
+
     # 3. Get technical analysis
     technical_data = get_technical_data(symbol="600519")
     assert "trend" in technical_data
-    
+
     # 4. Execute query
     wencai_data = get_wencai_data(query_name="qs_1")
     assert wencai_data["queries"]
@@ -793,11 +793,11 @@ mock_manager = get_mock_data_manager()
 async def mock_mode_middleware(request: Request, call_next):
     """Add mock mode headers to responses"""
     response = await call_next(request)
-    
+
     if USE_MOCK_DATA:
         response.headers["X-Mock-Mode"] = "enabled"
         response.headers["X-Data-Source"] = "mock"
-    
+
     return response
 ```
 
@@ -830,16 +830,16 @@ import datetime
 
 def get_new_module_data(params: Dict[str, Any] = None) -> Dict[str, Any]:
     """Generate Mock data for new module
-    
+
     Args:
         params: Query parameters (page, filters, etc.)
-        
+
     Returns:
         Formatted data matching real API specification
     """
     # Use consistent random seed for reproducibility
     random.seed(datetime.datetime.now().toordinal())
-    
+
     return {
         "status": "success",
         "data": [
@@ -876,7 +876,7 @@ def get_new_module_detail(item_id: str) -> Dict[str, Any]:
 # web/backend/app/mock/unified_mock_data.py
 elif data_type == "new_module":
     from src.mock.mock_NewModule import get_new_module_data
-    
+
     params = kwargs
     return {
         "new_module_data": get_new_module_data(params),
@@ -899,13 +899,13 @@ async def get_new_module_data(
 ):
     """Get new module data with Mock support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
-        return mock_manager.get_data("new_module", 
-                                   page=page, 
+        return mock_manager.get_data("new_module",
+                                   page=page,
                                    page_size=page_size)
-    
+
     # Real data implementation
     return await get_real_new_module_data(page=page, page_size=page_size)
 
@@ -913,12 +913,12 @@ async def get_new_module_data(
 async def get_new_module_detail(item_id: str):
     """Get detailed item data with Mock support"""
     use_mock = os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
-    
+
     if use_mock:
         mock_manager = get_mock_data_manager()
         # You'd need to extend the Mock system for detail endpoints
         return {"item_id": item_id, "mock": True}
-    
+
     # Real data implementation
     return await get_real_new_module_detail(item_id)
 ```
@@ -933,7 +933,7 @@ export const newModuleApi = {
         )
         return response.json()
     },
-    
+
     async getDetail(itemId) {
         const response = await fetch(`/api/new-module/detail/${itemId}`)
         return response.json()
@@ -970,40 +970,40 @@ from src.mock.mock_NewModule import get_new_module_data
 
 class TestNewModuleMock:
     """Test cases for new module Mock data"""
-    
+
     def test_data_generation(self):
         """Test basic data generation"""
         data = get_new_module_data()
-        
+
         assert data["status"] == "success"
         assert "data" in data
         assert "total" in data
         assert len(data["data"]) > 0
-    
+
     def test_parameter_handling(self):
         """Test parameter handling"""
         params = {"page": 2, "page_size": 10}
         data = get_new_module_data(params)
-        
+
         assert data["page"] == 2
         # Verify pagination logic
-    
+
     def test_data_consistency(self):
         """Test data consistency across calls"""
         data1 = get_new_module_data()
         data2 = get_new_module_data()
-        
+
         # Same structure, different content
         assert list(data1.keys()) == list(data2.keys())
         assert data1["total"] == data2["total"]
         assert data1["data"] != data2["data"]  # Should be different
-    
+
     def test_edge_cases(self):
         """Test edge cases and error conditions"""
         # Empty parameters
         data = get_new_module_data({})
         assert data["status"] == "success"
-        
+
         # Invalid parameters
         data = get_new_module_data({"invalid": "param"})
         assert data["status"] == "success"
@@ -1018,12 +1018,12 @@ import pytest
 def test_mock_response_time():
     """Test Mock data response time"""
     start_time = time.time()
-    
+
     data = get_new_module_data()
-    
+
     end_time = time.time()
     response_time = (end_time - start_time) * 1000  # ms
-    
+
     # Should respond within 100ms
     assert response_time < 100
 
@@ -1031,14 +1031,14 @@ def test_memory_usage():
     """Test memory usage of Mock modules"""
     process = psutil.Process()
     initial_memory = process.memory_info().rss
-    
+
     # Generate large dataset
     for _ in range(100):
         get_new_module_data({"page_size": 1000})
-    
+
     final_memory = process.memory_info().rss
     memory_increase = final_memory - initial_memory
-    
+
     # Memory increase should be less than 10MB
     assert memory_increase < 10 * 1024 * 1024
 ```
@@ -1055,7 +1055,7 @@ class MockDataCache:
         self.ttl = ttl
         self.hits = 0
         self.misses = 0
-    
+
     def get(self, key):
         if key in self.cache:
             if self._is_valid(key):
@@ -1065,18 +1065,18 @@ class MockDataCache:
                 # Cache expired
                 del self.cache[key]
                 del self.timestamps[key]
-        
+
         self.misses += 1
         return None
-    
+
     def set(self, key, value):
         # Implement LRU eviction if cache is full
         if len(self.cache) >= self.max_size:
             self._evict_lru()
-        
+
         self.cache[key] = value
         self.timestamps[key] = time.time()
-    
+
     def get_hit_rate(self):
         total = self.hits + self.misses
         return self.hits / total if total > 0 else 0
@@ -1098,14 +1098,14 @@ def generate_stock_price_base(symbol: str) -> float:
 def generate_realistic_ohlcv(symbol: str, days: int = 244):
     """Generate realistic OHLCV data efficiently"""
     base_price = generate_stock_price_base(symbol)
-    
+
     # Generate price series with realistic volatility
     returns = np.random.normal(0.0005, 0.02, days)  # Daily returns
     prices = [base_price]
-    
+
     for ret in returns[1:]:
         prices.append(prices[-1] * (1 + ret))
-    
+
     # Convert to OHLCV
     ohlcv = []
     for i, close in enumerate(prices):
@@ -1113,7 +1113,7 @@ def generate_realistic_ohlcv(symbol: str, days: int = 244):
         low = close * (1 - abs(np.random.normal(0, 0.01)))
         open_price = prices[i-1] if i > 0 else close
         volume = int(np.random.lognormal(15, 1.5))
-        
+
         ohlcv.append({
             "date": f"2024-{i+1:03d}",
             "open": round(open_price, 2),
@@ -1122,7 +1122,7 @@ def generate_realistic_ohlcv(symbol: str, days: int = 244):
             "close": round(close, 2),
             "volume": volume
         })
-    
+
     return ohlcv
 ```
 
@@ -1152,20 +1152,20 @@ def _get_mock_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
             # Import at function level to avoid circular imports
             from src.mock.mock_Dashboard import get_market_stats, get_market_heat_data
             from src.mock.mock_Stocks import get_real_time_quote
-            
+
             # Use imported functions
             return {
                 "market_stats": get_market_stats(),
                 "market_heat": get_market_heat_data(),
                 "timestamp": datetime.now().isoformat()
             }
-        
+
         elif data_type == "technical":
             # Similar lazy import pattern
             from src.mock.mock_TechnicalAnalysis import calculate_indicators
-            
+
             return calculate_indicators(**kwargs)
-            
+
     except ImportError as e:
         logger.error(f"Failed to import Mock module for {data_type}: {e}")
         raise ValueError(f"Mock data type not supported: {data_type}")
@@ -1176,11 +1176,11 @@ def _get_mock_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
 # Plugin registration system
 class MockDataPluginRegistry:
     _plugins = {}
-    
+
     @classmethod
     def register(cls, data_type: str, plugin_func):
         cls._plugins[data_type] = plugin_func
-    
+
     @classmethod
     def get_plugin(cls, data_type: str):
         return cls._plugins.get(data_type)
@@ -1271,7 +1271,7 @@ def validate_mock_data(data_type: str, data: Dict[str, Any]) -> bool:
     if not schema:
         logger.warning(f"No schema defined for {data_type}")
         return True  # Skip validation if no schema
-    
+
     try:
         jsonschema.validate(data, schema)
         return True
@@ -1292,18 +1292,18 @@ def get_mock_stocks_data(page: int = 1, page_size: int = 20) -> Dict[str, Any]:
             "change": round(random.uniform(-5, 5), 2),
             "change_percent": round(random.uniform(-3, 3), 2)
         })
-    
+
     response = {
         "data": stocks,
         "total": 4526,
         "page": page,
         "page_size": page_size
     }
-    
+
     # Validate before returning
     if not validate_mock_data("stocks_list", response):
         raise ValueError(f"Generated Mock data for stocks_list failed validation")
-    
+
     return response
 ```
 
@@ -1312,7 +1312,7 @@ def get_mock_stocks_data(page: int = 1, page_size: int = 20) -> Dict[str, Any]:
 # src/utils/field_mapper.py
 class FieldMapper:
     """Map between different field naming conventions"""
-    
+
     # Mapping from Mock format to API format
     MOCK_TO_API_MAPPING = {
         "stocks": "data",  # key name mapping
@@ -1321,12 +1321,12 @@ class FieldMapper:
         "changeAmount": "change",
         "changePct": "change_percent"
     }
-    
+
     @staticmethod
     def map_fields(data: Dict[str, Any], mapping: Dict[str, str]) -> Dict[str, Any]:
         """Apply field mapping to data structure"""
         mapped_data = {}
-        
+
         for key, value in data.items():
             if isinstance(value, dict):
                 # Recursively map nested objects
@@ -1341,9 +1341,9 @@ class FieldMapper:
                 # Map field name using provided mapping
                 mapped_key = mapping.get(key, key)
                 mapped_data[mapped_key] = value
-        
+
         return mapped_data
-    
+
     @staticmethod
     def ensure_api_compliance(data: Dict[str, Any]) -> Dict[str, Any]:
         """Ensure data complies with API format"""
@@ -1383,10 +1383,10 @@ from unittest.mock import patch
 
 class APIContractTests:
     """Ensure Mock and real APIs have identical contracts"""
-    
+
     BASE_URL = "http://localhost:8888"  # Mock API
     REAL_BASE_URL = "http://localhost:8000"  # Real API
-    
+
     @pytest.fixture
     def mock_env_setup(self):
         """Setup test environment"""
@@ -1395,22 +1395,22 @@ class APIContractTests:
         yield
         # Cleanup
         del os.environ['USE_MOCK_DATA']
-    
+
     def test_monitoring_summary_contract(self, mock_env_setup):
         """Test monitoring summary API contract consistency"""
-        
+
         # Get Mock response
         mock_response = requests.get(f"{self.BASE_URL}/api/monitoring/summary")
         mock_data = mock_response.json()
-        
+
         # Get real response (if available)
         try:
             real_response = requests.get(f"{self.REAL_BASE_URL}/api/monitoring/summary")
             real_data = real_response.json()
-            
+
             # Compare contracts (not values)
             assert set(mock_data.keys()) == set(real_data.keys())
-            
+
             for key in mock_data:
                 if isinstance(mock_data[key], dict):
                     assert set(mock_data[key].keys()) == set(real_data[key].keys())
@@ -1418,36 +1418,36 @@ class APIContractTests:
                     # For lists, check if elements have same structure
                     if mock_data[key] and real_data[key]:
                         assert set(mock_data[key][0].keys()) == set(real_data[key][0].keys())
-        
+
         except requests.exceptions.RequestException:
             # Real API not available, just validate Mock contract
             pytest.skip("Real API not available for comparison")
-    
+
     def test_wencai_query_contract(self, mock_env_setup):
         """Test Wencai query API contract consistency"""
-        
+
         # Test query execution
         query_data = {"query_name": "qs_1"}
-        
+
         # Mock response
         mock_response = requests.post(
             f"{self.BASE_URL}/api/market/wencai/query",
             json=query_data
         )
         mock_result = mock_response.json()
-        
+
         # Validate expected fields
         expected_fields = ["success", "query_name", "query_text", "results", "total_records"]
         for field in expected_fields:
             assert field in mock_result, f"Missing field {field} in Mock response"
-        
+
         # Validate result structure if results exist
         if mock_result["results"]:
             result_item = mock_result["results"][0] if mock_result["results"] else {}
             expected_result_fields = ["symbol", "name", "price", "change_pct"]
             for field in expected_result_fields:
                 assert field in result_item, f"Missing field {field} in query results"
-    
+
     @pytest.mark.parametrize("endpoint", [
         "/api/monitoring/summary",
         "/api/market/wencai/queries",
@@ -1458,7 +1458,7 @@ class APIContractTests:
         """Test all API endpoints are available with Mock data"""
         response = requests.get(f"{self.BASE_URL}{endpoint}")
         assert response.status_code == 200
-        
+
         data = response.json()
         assert data is not None
 ```
@@ -1521,7 +1521,7 @@ graph TD
     F -->|No| H[Generate Mock Data]
     H --> I[Update Cache]
     I --> G
-    
+
     J[25+ Mock Modules] --> D
     K[L1: In-Memory Cache] --> D
     L[Environment Config] --> C
@@ -1529,7 +1529,7 @@ graph TD
 
 **Reliability**
 - **Fault Tolerance**: Graceful fallback mechanisms
-- **Data Integrity**: Schema validation and consistency checks  
+- **Data Integrity**: Schema validation and consistency checks
 - **Error Handling**: Comprehensive exception management
 - **Monitoring**: Built-in performance and error tracking
 
@@ -1599,11 +1599,11 @@ def monitor_technical_debt():
         "dependency_vulnerabilities": check_dependency_security(),
         "documentation_coverage": check_documentation_coverage()
     }
-    
+
     for metric, value in indicators.items():
         if value > THRESHOLDS[metric]:
             alert_technical_debt_risk(metric, value)
-    
+
     return indicators
 ```
 
@@ -1793,7 +1793,7 @@ GET  /api/strategy/results            # Get strategy results
    # Check port usage
    lsof -i :8888
    lsof -i :3000
-   
+
    # Kill existing processes
    pkill -f uvicorn
    pkill -f "npm run dev"
@@ -1803,10 +1803,10 @@ GET  /api/strategy/results            # Get strategy results
    ```bash
    # Verify environment variable
    echo $USE_MOCK_DATA
-   
+
    # Check Mock manager status
    curl http://localhost:8888/api/admin/status
-   
+
    # Restart with explicit Mock mode
    USE_MOCK_DATA=true python -m uvicorn app.main:app --port 8888
    ```
@@ -1815,7 +1815,7 @@ GET  /api/strategy/results            # Get strategy results
    ```bash
    # Run contract tests
    python -m pytest tests/contracts/ -v
-   
+
    # Validate specific endpoint
    curl http://localhost:8888/api/monitoring/summary | jq .
    ```
@@ -1824,10 +1824,10 @@ GET  /api/strategy/results            # Get strategy results
    ```bash
    # Monitor cache performance
    curl http://localhost:8888/api/admin/cache-stats
-   
+
    # Clear cache and restart
    curl -X POST http://localhost:8888/api/admin/clear-cache
-   
+
    # Check memory usage
    ps aux | grep uvicorn
    ```

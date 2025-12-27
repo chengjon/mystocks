@@ -48,22 +48,14 @@ def normalize_stock_code(code: Union[str, int, float]) -> str:
             market_candidate = parts[0] if len(parts[0]) == 2 else parts[1]
             num_candidate = parts[1] if len(parts[0]) == 2 else parts[0]
 
-            if (
-                market_candidate in ["SH", "SZ", "BJ"]
-                and num_candidate.isdigit()
-                and len(num_candidate) == 6
-            ):
+            if market_candidate in ["SH", "SZ", "BJ"] and num_candidate.isdigit() and len(num_candidate) == 6:
                 return num_candidate
 
     # 2. 处理无分隔符的格式 (sz000001)
     if len(code_str) >= 8:
         market_part = code_str[:2]
         num_part = code_str[2:]
-        if (
-            market_part in ["SH", "SZ", "BJ"]
-            and num_part.isdigit()
-            and len(num_part) == 6
-        ):
+        if market_part in ["SH", "SZ", "BJ"] and num_part.isdigit() and len(num_part) == 6:
             return num_part
 
     # 3. 处理纯数字格式 (600000)
@@ -74,11 +66,7 @@ def normalize_stock_code(code: Union[str, int, float]) -> str:
             return code_str[-6:]  # 取最后6位
 
     # 4. 处理特殊情况 (如指数代码)
-    if (
-        code_str.startswith(("SH", "SZ"))
-        and len(code_str) == 8
-        and code_str[2:].isdigit()
-    ):
+    if code_str.startswith(("SH", "SZ")) and len(code_str) == 8 and code_str[2:].isdigit():
         return code_str[2:]
 
     # 尝试提取纯数字部分
@@ -123,9 +111,7 @@ def get_stock_exchange(code: Union[str, int, float]) -> str:
         return "SH"  # 默认
 
 
-def format_stock_code_for_source(
-    code: Union[str, int, float], source_type: str = "akshare"
-) -> str:
+def format_stock_code_for_source(code: Union[str, int, float], source_type: str = "akshare") -> str:
     """
     根据数据源类型格式化股票代码
 
@@ -155,9 +141,7 @@ def format_stock_code_for_source(
         raise ValueError(f"不支持的数据源类型: {source_type}")
 
 
-def format_stock_code(
-    code: Union[str, int, float], format_type: str = "numeric"
-) -> str:
+def format_stock_code(code: Union[str, int, float], format_type: str = "numeric") -> str:
     """
     根据指定格式格式化股票代码（保持向后兼容）
 
@@ -211,9 +195,7 @@ def is_valid_stock_code(code: Union[str, int, float]) -> bool:
         return False
 
 
-def format_index_code_for_source(
-    code: Union[str, int, float], source_type: str = "akshare"
-) -> str:
+def format_index_code_for_source(code: Union[str, int, float], source_type: str = "akshare") -> str:
     """
     根据数据源类型格式化指数代码
 
@@ -290,11 +272,7 @@ def normalize_index_code(code: Union[str, int, float]) -> str:
             market_candidate = parts[0] if len(parts[0]) == 2 else parts[1]
             num_candidate = parts[1] if len(parts[0]) == 2 else parts[0]
 
-            if (
-                market_candidate in ["SH", "SZ"]
-                and num_candidate.isdigit()
-                and len(num_candidate) == 6
-            ):
+            if market_candidate in ["SH", "SZ"] and num_candidate.isdigit() and len(num_candidate) == 6:
                 return num_candidate
 
     # 2. 处理无分隔符的格式 (sh000001)
@@ -321,7 +299,9 @@ def normalize_index_code(code: Union[str, int, float]) -> str:
 - 基本格式: '000001', '399001'
 - 后缀格式: '000001.SH', '399001.SZ'
 - 前缀格式: 'sh000001', 'SZ399001'
-- 点分隔格式: 'sh.000001', 'sz.399001'""".format(code_str)
+- 点分隔格式: 'sh.000001', 'sz.399001'""".format(
+        code_str
+    )
     raise ValueError(error_msg)
 
 
@@ -355,9 +335,7 @@ if __name__ == "__main__":
         try:
             print(f"原始代码: {stock}")
             print(f"  -> AKShare格式: {format_stock_code_for_source(stock, 'akshare')}")
-            print(
-                f"  -> Baostock格式: {format_stock_code_for_source(stock, 'baostock')}"
-            )
+            print(f"  -> Baostock格式: {format_stock_code_for_source(stock, 'baostock')}")
             print()
         except ValueError as e:
             print(f"  -> 错误: {str(e)}")
@@ -369,9 +347,7 @@ if __name__ == "__main__":
         try:
             print(f"原始指数: {index}")
             print(f"  -> AKShare格式: {format_index_code_for_source(index, 'akshare')}")
-            print(
-                f"  -> Baostock格式: {format_index_code_for_source(index, 'baostock')}"
-            )
+            print(f"  -> Baostock格式: {format_index_code_for_source(index, 'baostock')}")
             print()
         except ValueError as e:
             print(f"  -> 错误: {str(e)}")

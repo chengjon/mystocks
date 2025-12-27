@@ -56,24 +56,12 @@ class FundFlow(Base):
             "symbol": self.symbol,
             "trade_date": self.trade_date.isoformat() if self.trade_date else None,
             "timeframe": self.timeframe,
-            "main_net_inflow": (
-                float(self.main_net_inflow) if self.main_net_inflow else 0
-            ),
-            "main_net_inflow_rate": (
-                float(self.main_net_inflow_rate) if self.main_net_inflow_rate else 0
-            ),
-            "super_large_net_inflow": (
-                float(self.super_large_net_inflow) if self.super_large_net_inflow else 0
-            ),
-            "large_net_inflow": (
-                float(self.large_net_inflow) if self.large_net_inflow else 0
-            ),
-            "medium_net_inflow": (
-                float(self.medium_net_inflow) if self.medium_net_inflow else 0
-            ),
-            "small_net_inflow": (
-                float(self.small_net_inflow) if self.small_net_inflow else 0
-            ),
+            "main_net_inflow": (float(self.main_net_inflow) if self.main_net_inflow else 0),
+            "main_net_inflow_rate": (float(self.main_net_inflow_rate) if self.main_net_inflow_rate else 0),
+            "super_large_net_inflow": (float(self.super_large_net_inflow) if self.super_large_net_inflow else 0),
+            "large_net_inflow": (float(self.large_net_inflow) if self.large_net_inflow else 0),
+            "medium_net_inflow": (float(self.medium_net_inflow) if self.medium_net_inflow else 0),
+            "small_net_inflow": (float(self.small_net_inflow) if self.small_net_inflow else 0),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -123,12 +111,8 @@ class ETFData(Base):
             "low_price": float(self.low_price) if self.low_price else 0,
             "prev_close": float(self.prev_close) if self.prev_close else 0,
             "turnover_rate": float(self.turnover_rate) if self.turnover_rate else 0,
-            "total_market_cap": (
-                float(self.total_market_cap) if self.total_market_cap else 0
-            ),
-            "circulating_market_cap": (
-                float(self.circulating_market_cap) if self.circulating_market_cap else 0
-            ),
+            "total_market_cap": (float(self.total_market_cap) if self.total_market_cap else 0),
+            "circulating_market_cap": (float(self.circulating_market_cap) if self.circulating_market_cap else 0),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -173,12 +157,8 @@ class ChipRaceData(Base):
             "open_price": float(self.open_price) if self.open_price else 0,
             "race_amount": float(self.race_amount) if self.race_amount else 0,
             "race_amplitude": float(self.race_amplitude) if self.race_amplitude else 0,
-            "race_commission": (
-                float(self.race_commission) if self.race_commission else 0
-            ),
-            "race_transaction": (
-                float(self.race_transaction) if self.race_transaction else 0
-            ),
+            "race_commission": (float(self.race_commission) if self.race_commission else 0),
+            "race_transaction": (float(self.race_transaction) if self.race_transaction else 0),
             "race_ratio": float(self.race_ratio) if self.race_ratio else 0,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
@@ -219,12 +199,8 @@ class LongHuBangData(Base):
             "sell_amount": float(self.sell_amount) if self.sell_amount else 0,
             "net_amount": float(self.net_amount) if self.net_amount else 0,
             "turnover_rate": float(self.turnover_rate) if self.turnover_rate else 0,
-            "institution_buy": (
-                float(self.institution_buy) if self.institution_buy else 0
-            ),
-            "institution_sell": (
-                float(self.institution_sell) if self.institution_sell else 0
-            ),
+            "institution_buy": (float(self.institution_buy) if self.institution_buy else 0),
+            "institution_sell": (float(self.institution_sell) if self.institution_sell else 0),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -239,9 +215,7 @@ class SectorFundFlow(Base):
     sector_name = Column(String(100), nullable=False, comment="板块名称")
     sector_type = Column(String(20), nullable=False, comment="板块类型(行业/概念/地域)")
     trade_date = Column(Date, primary_key=True, nullable=False, comment="交易日期")
-    timeframe = Column(
-        String(10), nullable=False, comment="时间维度(今日/3日/5日/10日)"
-    )
+    timeframe = Column(String(10), nullable=False, comment="时间维度(今日/3日/5日/10日)")
     latest_price = Column(DECIMAL(10, 3), comment="最新指数")
     change_percent = Column(DECIMAL(10, 4), comment="涨跌幅")
     main_net_inflow = Column(DECIMAL(20, 2), comment="主力净流入额")
@@ -275,43 +249,21 @@ class SectorFundFlow(Base):
             "timeframe": self.timeframe,
             "latest_price": float(self.latest_price) if self.latest_price else 0,
             "change_percent": float(self.change_percent) if self.change_percent else 0,
-            "main_net_inflow": (
-                float(self.main_net_inflow) if self.main_net_inflow else 0
-            ),
-            "main_net_inflow_rate": (
-                float(self.main_net_inflow_rate) if self.main_net_inflow_rate else 0
-            ),
-            "super_large_net_inflow": (
-                float(self.super_large_net_inflow) if self.super_large_net_inflow else 0
-            ),
+            "main_net_inflow": (float(self.main_net_inflow) if self.main_net_inflow else 0),
+            "main_net_inflow_rate": (float(self.main_net_inflow_rate) if self.main_net_inflow_rate else 0),
+            "super_large_net_inflow": (float(self.super_large_net_inflow) if self.super_large_net_inflow else 0),
             "super_large_net_inflow_rate": (
-                float(self.super_large_net_inflow_rate)
-                if self.super_large_net_inflow_rate
-                else 0
+                float(self.super_large_net_inflow_rate) if self.super_large_net_inflow_rate else 0
             ),
-            "large_net_inflow": (
-                float(self.large_net_inflow) if self.large_net_inflow else 0
-            ),
-            "large_net_inflow_rate": (
-                float(self.large_net_inflow_rate) if self.large_net_inflow_rate else 0
-            ),
-            "medium_net_inflow": (
-                float(self.medium_net_inflow) if self.medium_net_inflow else 0
-            ),
-            "medium_net_inflow_rate": (
-                float(self.medium_net_inflow_rate) if self.medium_net_inflow_rate else 0
-            ),
-            "small_net_inflow": (
-                float(self.small_net_inflow) if self.small_net_inflow else 0
-            ),
-            "small_net_inflow_rate": (
-                float(self.small_net_inflow_rate) if self.small_net_inflow_rate else 0
-            ),
+            "large_net_inflow": (float(self.large_net_inflow) if self.large_net_inflow else 0),
+            "large_net_inflow_rate": (float(self.large_net_inflow_rate) if self.large_net_inflow_rate else 0),
+            "medium_net_inflow": (float(self.medium_net_inflow) if self.medium_net_inflow else 0),
+            "medium_net_inflow_rate": (float(self.medium_net_inflow_rate) if self.medium_net_inflow_rate else 0),
+            "small_net_inflow": (float(self.small_net_inflow) if self.small_net_inflow else 0),
+            "small_net_inflow_rate": (float(self.small_net_inflow_rate) if self.small_net_inflow_rate else 0),
             "leading_stock": self.leading_stock,
             "leading_stock_change_percent": (
-                float(self.leading_stock_change_percent)
-                if self.leading_stock_change_percent
-                else 0
+                float(self.leading_stock_change_percent) if self.leading_stock_change_percent else 0
             ),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
@@ -351,29 +303,17 @@ class StockDividend(Base):
             "id": self.id,
             "symbol": self.symbol,
             "stock_name": self.stock_name,
-            "announce_date": (
-                self.announce_date.isoformat() if self.announce_date else None
-            ),
-            "ex_dividend_date": (
-                self.ex_dividend_date.isoformat() if self.ex_dividend_date else None
-            ),
+            "announce_date": (self.announce_date.isoformat() if self.announce_date else None),
+            "ex_dividend_date": (self.ex_dividend_date.isoformat() if self.ex_dividend_date else None),
             "record_date": self.record_date.isoformat() if self.record_date else None,
-            "payment_date": (
-                self.payment_date.isoformat() if self.payment_date else None
-            ),
+            "payment_date": (self.payment_date.isoformat() if self.payment_date else None),
             "dividend_year": self.dividend_year,
             "plan_profile": self.plan_profile,
             "dividend_ratio": float(self.dividend_ratio) if self.dividend_ratio else 0,
-            "bonus_share_ratio": (
-                float(self.bonus_share_ratio) if self.bonus_share_ratio else 0
-            ),
+            "bonus_share_ratio": (float(self.bonus_share_ratio) if self.bonus_share_ratio else 0),
             "transfer_ratio": float(self.transfer_ratio) if self.transfer_ratio else 0,
-            "allotment_ratio": (
-                float(self.allotment_ratio) if self.allotment_ratio else 0
-            ),
-            "allotment_price": (
-                float(self.allotment_price) if self.allotment_price else 0
-            ),
+            "allotment_ratio": (float(self.allotment_ratio) if self.allotment_ratio else 0),
+            "allotment_price": (float(self.allotment_price) if self.allotment_price else 0),
             "plan_progress": self.plan_progress,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

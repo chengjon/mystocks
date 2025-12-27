@@ -113,12 +113,8 @@ class TestTushareDataSourceBasic:
             ]
 
             for method_name in required_methods:
-                assert hasattr(
-                    TushareDataSource, method_name
-                ), f"缺少接口方法: {method_name}"
-                assert callable(
-                    getattr(TushareDataSource, method_name)
-                ), f"方法不可调用: {method_name}"
+                assert hasattr(TushareDataSource, method_name), f"缺少接口方法: {method_name}"
+                assert callable(getattr(TushareDataSource, method_name)), f"方法不可调用: {method_name}"
 
         except Exception as e:
             pytest.fail(f"接口兼容性测试失败: {e}")

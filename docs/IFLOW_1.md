@@ -238,7 +238,7 @@ Phase 6: 技术债务修复 ████████░░░░░░░░░�
 - **TDengine 专用**: Tick 数据、分钟 K 线、深度数据
 - **PostgreSQL**: 日线数据、实时行情快照
 
-#### 2. 参考数据 (Reference Data) 
+#### 2. 参考数据 (Reference Data)
 - **PostgreSQL**: 股票信息、成分股信息、交易日历
 
 #### 3. 衍生数据 (Derived Data)
@@ -276,13 +276,13 @@ manager.save_data_by_classification(
 
 # 加载数据 - 统一语法，自动优化
 data = manager.load_data_by_classification(
-    DataClassification.DAILY_KLINE, 'daily_kline', 
+    DataClassification.DAILY_KLINE, 'daily_kline',
     filters={'symbol': '600000'}
 )
 
 # 智能批处理 - 自动故障转移和重试
 results = manager.batch_process_with_failover(
-    data_sources=['akshare', 'tdx'], 
+    data_sources=['akshare', 'tdx'],
     operation='get_stock_daily',
     symbols=['600000', '000001']
 )
@@ -293,7 +293,7 @@ results = manager.batch_process_with_failover(
 每个数据源都有专门的适配器实现统一接口，支持优先级路由和故障转移：
 
 - **tdx_adapter.py**: 通达信直连，无限流，多周期 K 线 (1058行)
-- **financial_adapter.py**: 双数据源(efinance+easyquotation)，财务数据全能 (1078行) 
+- **financial_adapter.py**: 双数据源(efinance+easyquotation)，财务数据全能 (1078行)
 - **akshare_adapter.py**: 免费全面，历史数据研究首选 (510行)
 - **byapi_adapter.py**: REST API，涨跌停股池，技术指标 (625行)
 - **customer_adapter.py**: 实时行情专用 (378行)
@@ -381,7 +381,7 @@ predictions = gpu_server.predict_batch(data_gpu, model='transformer')
 - **RAPIDS深度集成**: cuDF/cuML一体化GPU加速
 - **智能三级缓存**: 命中率从80%提升至90%+
   - L1: 应用层LRU缓存
-  - L2: GPU内存缓存  
+  - L2: GPU内存缓存
   - L3: 智能预加载缓存
 - **WSL2完整支持**: 解决WSL2环境下GPU访问问题
 - **160+测试用例**: 100%测试覆盖率
@@ -901,7 +901,7 @@ manager = MyStocksUnifiedManager()
 results = manager.initialize_system()
 if results['config_loaded']:
     print("✅ 系统初始化成功!")
-    
+
 # 运行系统演示
 python scripts/runtime/system_demo.py
 ```
@@ -1376,5 +1376,5 @@ python src/gpu/api_system/wsl2_gpu_init.py
 
 ---
 
-*本文档基于 MyStocks v3.1.0 生成，最后更新: 2025-11-24*  
+*本文档基于 MyStocks v3.1.0 生成，最后更新: 2025-11-24*
 *用于 iFlow CLI 交互指导，项目完整概览和快速入门参考*

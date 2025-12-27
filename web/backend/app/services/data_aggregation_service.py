@@ -180,9 +180,7 @@ class BarValidator:
         self.min_volume = min_volume
         self.max_volume = max_volume
 
-    def validate_ohlcv(
-        self, bar: OHLCV, prev_close: Optional[Decimal] = None
-    ) -> Tuple[bool, Optional[str]]:
+    def validate_ohlcv(self, bar: OHLCV, prev_close: Optional[Decimal] = None) -> Tuple[bool, Optional[str]]:
         """
         验证OHLCV柱线
 
@@ -216,12 +214,8 @@ class BarValidator:
 
         # 验证价格涨跌幅
         if prev_close is not None and prev_close > 0:
-            max_allowed_price = prev_close * (
-                Decimal(1) + Decimal(self.max_price_spike)
-            )
-            min_allowed_price = prev_close * (
-                Decimal(1) - Decimal(self.max_price_spike)
-            )
+            max_allowed_price = prev_close * (Decimal(1) + Decimal(self.max_price_spike))
+            min_allowed_price = prev_close * (Decimal(1) - Decimal(self.max_price_spike))
 
             if bar.high > max_allowed_price or bar.low < min_allowed_price:
                 return (
@@ -308,9 +302,7 @@ class AggregationEngine:
 
             # 获取或创建缓冲区
             if key not in self.buffers:
-                self.buffers[key] = TimeframeBuffer(
-                    symbol=tick.symbol, timeframe=timeframe
-                )
+                self.buffers[key] = TimeframeBuffer(symbol=tick.symbol, timeframe=timeframe)
 
             buffer = self.buffers[key]
             completed_bar = buffer.add_tick(tick)
@@ -318,9 +310,7 @@ class AggregationEngine:
             # 如果产生了完成的柱线，进行验证
             if completed_bar is not None:
                 prev_close = self.last_price.get(tick.symbol)
-                is_valid, error_msg = self.validator.validate_ohlcv(
-                    completed_bar, prev_close
-                )
+                is_valid, error_msg = self.validator.validate_ohlcv(completed_bar, prev_close)
 
                 if is_valid:
                     self.bars_completed += 1
@@ -377,9 +367,7 @@ class AggregationEngine:
 
     def get_stats(self) -> Dict[str, Any]:
         """获取聚合引擎统计信息"""
-        active_buffers = sum(
-            1 for buf in self.buffers.values() if buf.get_open_bar() is not None
-        )
+        active_buffers = sum(1 for buf in self.buffers.values() if buf.get_open_bar() is not None)
 
         return {
             "ticks_processed": self.ticks_processed,
@@ -387,9 +375,7 @@ class AggregationEngine:
             "validation_errors": self.validation_errors,
             "active_buffers": active_buffers,
             "total_symbols": len(set(buf.symbol for buf in self.buffers.values())),
-            "uptime_seconds": (
-                datetime.utcnow() - self.last_update_time
-            ).total_seconds(),
+            "uptime_seconds": (datetime.utcnow() - self.last_update_time).total_seconds(),
             "last_update": self.last_update_time.isoformat(),
         }
 

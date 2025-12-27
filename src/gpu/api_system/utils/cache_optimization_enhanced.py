@@ -94,9 +94,7 @@ class AccessPatternLearner:
 
             return predicted_time
 
-    def get_keys_to_preload(
-        self, current_time: float = None, threshold_seconds: int = 60
-    ) -> List[str]:
+    def get_keys_to_preload(self, current_time: float = None, threshold_seconds: int = 60) -> List[str]:
         """获取应该预加载的键(未来threshold_seconds秒内可能访问)"""
         if current_time is None:
             current_time = time.time()
@@ -105,10 +103,7 @@ class AccessPatternLearner:
         with self.lock:
             for key in self.access_sequences.keys():
                 predicted_time = self.predict_next_access(key)
-                if (
-                    predicted_time
-                    and (predicted_time - current_time) < threshold_seconds
-                ):
+                if predicted_time and (predicted_time - current_time) < threshold_seconds:
                     keys_to_load.append(key)
 
         return keys_to_load
@@ -127,12 +122,8 @@ class AccessPatternLearner:
         """获取最热门的键"""
         with self.lock:
             # 按访问频率排序
-            key_frequencies = {
-                key: len(seq) for key, seq in self.access_sequences.items()
-            }
-            sorted_keys = sorted(
-                key_frequencies.items(), key=lambda x: x[1], reverse=True
-            )
+            key_frequencies = {key: len(seq) for key, seq in self.access_sequences.items()}
+            sorted_keys = sorted(key_frequencies.items(), key=lambda x: x[1], reverse=True)
             return [k for k, _ in sorted_keys[:top_n]]
 
 
@@ -291,9 +282,7 @@ class AdaptiveTTLManager:
 class SmartCompressor:
     """智能压缩器 - 只对大对象且压缩率高的数据压缩"""
 
-    def __init__(
-        self, size_threshold: int = 10240, compression_ratio_threshold: float = 0.7
-    ):
+    def __init__(self, size_threshold: int = 10240, compression_ratio_threshold: float = 0.7):
         self.size_threshold = size_threshold  # 10KB
         self.compression_ratio_threshold = compression_ratio_threshold
         self.compression_stats = {"attempts": 0, "successes": 0, "total_saved_bytes": 0}
@@ -324,9 +313,7 @@ class SmartCompressor:
         # 压缩率达标才使用
         if compression_ratio < self.compression_ratio_threshold:
             self.compression_stats["successes"] += 1
-            self.compression_stats["total_saved_bytes"] += (
-                original_size - compressed_size
-            )
+            self.compression_stats["total_saved_bytes"] += original_size - compressed_size
 
             return (
                 compressed,
@@ -397,9 +384,7 @@ class PredictivePrefetcher:
         # 并发预加载
         futures = []
         for key in all_keys:
-            future = self.prefetch_executor.submit(
-                self._prefetch_single_key, key, fetch_func
-            )
+            future = self.prefetch_executor.submit(self._prefetch_single_key, key, fetch_func)
             futures.append(future)
 
         # 等待所有预加载完成
@@ -482,9 +467,7 @@ class EnhancedCacheManager:
         self.negative_cache = NegativeCache(self.multi_level_cache)
         self.ttl_manager = AdaptiveTTLManager()
         self.compressor = SmartCompressor()
-        self.prefetcher = PredictivePrefetcher(
-            self.multi_level_cache, self.pattern_learner
-        )
+        self.prefetcher = PredictivePrefetcher(self.multi_level_cache, self.pattern_learner)
 
         # 预热配置
         self.warmup_enabled = True
@@ -514,9 +497,7 @@ class EnhancedCacheManager:
         self.multi_level_cache.start_background_tasks()
 
         # 启动预测性预加载任务
-        self.background_thread = threading.Thread(
-            target=self._background_loop, daemon=True
-        )
+        self.background_thread = threading.Thread(target=self._background_loop, daemon=True)
         self.background_thread.start()
 
         logger.info("Enhanced cache background tasks started")
@@ -583,16 +564,12 @@ class EnhancedCacheManager:
         adaptive_ttl = self.ttl_manager.get_adaptive_ttl(key, ttl)
 
         # 2. 智能压缩
-        compressed_value, is_compressed, compression_info = self.compressor.compress(
-            value
-        )
+        compressed_value, is_compressed, compression_info = self.compressor.compress(value)
 
         # 3. 存储到多级缓存
         self.multi_level_cache.put(key, value, ttl=adaptive_ttl)
 
-        logger.debug(
-            f"Cache put: {key} (TTL={adaptive_ttl}s, compressed={is_compressed})"
-        )
+        logger.debug(f"Cache put: {key} (TTL={adaptive_ttl}s, compressed={is_compressed})")
 
     def cache_query_result(self, query_params: dict, result: Any, ttl: int = 300):
         """缓存查询结果"""
@@ -616,7 +593,7 @@ class EnhancedCacheManager:
         # 2. 预热常用查询
         for symbol in self.hot_symbols:
             for indicator in self.hot_indicators:
-                key = f"{symbol}:indicator:{indicator}"
+                pass
                 # 这里可以调用fetch_func获取数据
                 # self.get(key, fetch_func=lambda k: fetch_data(k))
 
@@ -688,11 +665,7 @@ class EnhancedCacheManager:
         total_improvement = sum(estimated_improvements.values())
         estimated_hit_rate = min(base_hit_rate + total_improvement, 98.0)  # 最高98%
 
-        improvement_pct = (
-            ((estimated_hit_rate - base_hit_rate) / base_hit_rate * 100)
-            if base_hit_rate > 0
-            else 0.0
-        )
+        improvement_pct = ((estimated_hit_rate - base_hit_rate) / base_hit_rate * 100) if base_hit_rate > 0 else 0.0
 
         return {
             "base_hit_rate": base_hit_rate,

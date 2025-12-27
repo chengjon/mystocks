@@ -70,9 +70,7 @@ class PermissionRule:
 class CasbinManager:
     """Casbin权限管理器"""
 
-    def __init__(
-        self, model_path: Optional[str] = None, policy_path: Optional[str] = None
-    ):
+    def __init__(self, model_path: Optional[str] = None, policy_path: Optional[str] = None):
         """初始化Casbin管理器
 
         Args:
@@ -95,15 +93,11 @@ class CasbinManager:
 
     def _get_default_model_path(self) -> str:
         """获取默认RBAC模型路径"""
-        return os.path.join(
-            os.path.dirname(__file__), "..", "..", "policies", "rbac_model.conf"
-        )
+        return os.path.join(os.path.dirname(__file__), "..", "..", "policies", "rbac_model.conf")
 
     def _get_default_policy_path(self) -> str:
         """获取默认权限策略路径"""
-        return os.path.join(
-            os.path.dirname(__file__), "..", "..", "policies", "rbac_policy.csv"
-        )
+        return os.path.join(os.path.dirname(__file__), "..", "..", "policies", "rbac_policy.csv")
 
     def _initialize_casbin(self) -> None:
         """初始化Casbin enforcer"""
@@ -382,9 +376,7 @@ g, guest_user, guest
             if self.add_role(perm.subject, perm.action, perm.object):
                 count += 1
 
-        logger.info(
-            "✅ Batch add permissions completed", count=count, total=len(permissions)
-        )
+        logger.info("✅ Batch add permissions completed", count=count, total=len(permissions))
         return count
 
     def batch_remove_permissions(self, permissions: List[PermissionRule]) -> int:
@@ -401,9 +393,7 @@ g, guest_user, guest
             if self.remove_role(perm.subject, perm.action, perm.object):
                 count += 1
 
-        logger.info(
-            "✅ Batch remove permissions completed", count=count, total=len(permissions)
-        )
+        logger.info("✅ Batch remove permissions completed", count=count, total=len(permissions))
         return count
 
     def get_policy(self) -> Optional[List[List[str]]]:

@@ -94,9 +94,7 @@ def sample_table_config():
                         "default": "CURRENT_TIMESTAMP",
                     },
                 ],
-                "indexes": [
-                    {"name": "idx_username", "columns": ["username"], "unique": True}
-                ],
+                "indexes": [{"name": "idx_username", "columns": ["username"], "unique": True}],
             },
             {
                 "table_name": "cache_data",
@@ -110,9 +108,7 @@ def sample_table_config():
 @pytest.fixture
 def temp_config_file(sample_table_config):
     """创建临时配置文件"""
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False, encoding="utf-8"
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False, encoding="utf-8") as f:
         yaml.dump(sample_table_config, f, allow_unicode=True)
         temp_path = f.name
 
@@ -127,9 +123,7 @@ class TestConfigDrivenTableManagerInitialization:
     """测试ConfigDrivenTableManager初始化"""
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_initialization_with_valid_config(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_initialization_with_valid_config(self, mock_conn_manager, temp_config_file):
         """测试使用有效配置文件初始化"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file, safe_mode=True)
 
@@ -147,13 +141,9 @@ class TestConfigDrivenTableManagerInitialization:
             ConfigDrivenTableManager(config_path="/nonexistent/config.yaml")
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_initialization_with_safe_mode_disabled(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_initialization_with_safe_mode_disabled(self, mock_conn_manager, temp_config_file):
         """测试关闭安全模式"""
-        manager = ConfigDrivenTableManager(
-            config_path=temp_config_file, safe_mode=False
-        )
+        manager = ConfigDrivenTableManager(config_path=temp_config_file, safe_mode=False)
         assert manager.safe_mode is False
 
 
@@ -172,9 +162,7 @@ class TestConfigDrivenTableManagerLoadConfig:
         assert "databases" in config
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_load_config_parses_yaml_correctly(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_load_config_parses_yaml_correctly(self, mock_conn_manager, temp_config_file):
         """测试YAML解析正确性"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
         config = manager.load_config()
@@ -188,9 +176,7 @@ class TestConfigDrivenTableManagerInitializeTables:
     """测试表初始化功能"""
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_initialize_tables_creates_all_tables(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_initialize_tables_creates_all_tables(self, mock_conn_manager, temp_config_file):
         """测试初始化所有表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -204,16 +190,12 @@ class TestConfigDrivenTableManagerInitializeTables:
             assert mock_create.call_count == 4
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_initialize_tables_skips_existing_tables(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_initialize_tables_skips_existing_tables(self, mock_conn_manager, temp_config_file):
         """测试跳过已存在的表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         # 前两个表已存在(返回False),后两个表不存在(返回True)
-        with patch.object(
-            manager, "_create_table", side_effect=[False, False, True, True]
-        ):
+        with patch.object(manager, "_create_table", side_effect=[False, False, True, True]):
             result = manager.initialize_tables()
 
             assert result["tables_created"] == 2
@@ -221,9 +203,7 @@ class TestConfigDrivenTableManagerInitializeTables:
             assert len(result["errors"]) == 0
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_initialize_tables_handles_errors(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_initialize_tables_handles_errors(self, mock_conn_manager, temp_config_file):
         """测试处理创建表时的错误"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -313,9 +293,7 @@ class TestConfigDrivenTableManagerTableExists:
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         # Mock连接抛出异常
-        manager.conn_manager.get_postgresql_connection = Mock(
-            side_effect=Exception("连接失败")
-        )
+        manager.conn_manager.get_postgresql_connection = Mock(side_effect=Exception("连接失败"))
 
         exists = manager._table_exists("PostgreSQL", "test_table")
         assert exists is False  # 错误时返回False
@@ -340,9 +318,7 @@ class TestConfigDrivenTableManagerValidateStructure:
     """测试表结构验证功能"""
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_validate_table_structure_success(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_validate_table_structure_success(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试表结构验证成功"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -365,9 +341,7 @@ class TestConfigDrivenTableManagerValidateStructure:
         assert result is True
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_validate_table_structure_table_not_exists(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_validate_table_structure_table_not_exists(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试验证不存在的表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -380,9 +354,7 @@ class TestConfigDrivenTableManagerValidateStructure:
         assert result is False
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_validate_table_structure_missing_columns(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_validate_table_structure_missing_columns(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试检测缺失的列"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -404,9 +376,7 @@ class TestConfigDrivenTableManagerValidateStructure:
         assert result is False
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_validate_table_structure_type_mismatch(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_validate_table_structure_type_mismatch(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试检测列类型不匹配"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -479,24 +449,18 @@ class TestConfigDrivenTableManagerGetTableStructure:
         assert structure[0]["name"] == "ts"
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_get_table_structure_handles_errors(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_get_table_structure_handles_errors(self, mock_conn_manager, temp_config_file):
         """测试获取表结构时的错误处理"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         # Mock连接抛出异常
-        manager.conn_manager.get_postgresql_connection = Mock(
-            side_effect=Exception("查询失败")
-        )
+        manager.conn_manager.get_postgresql_connection = Mock(side_effect=Exception("查询失败"))
 
         structure = manager._get_table_structure("PostgreSQL", "test_table")
         assert structure is None
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_get_table_structure_unsupported_db_type(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_get_table_structure_unsupported_db_type(self, mock_conn_manager, temp_config_file):
         """测试不支持的数据库类型"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -508,9 +472,7 @@ class TestConfigDrivenTableManagerCreateTable:
     """测试创建表功能"""
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_tdengine(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_create_table_tdengine(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试创建TDengine表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -525,9 +487,7 @@ class TestConfigDrivenTableManagerCreateTable:
         manager._create_tdengine_super_table.assert_called_once_with(table_def)
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_postgresql(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_create_table_postgresql(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试创建PostgreSQL表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -542,9 +502,7 @@ class TestConfigDrivenTableManagerCreateTable:
         manager._create_postgresql_table.assert_called_once_with(table_def)
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_mysql(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_create_table_mysql(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试创建MySQL表"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -559,9 +517,7 @@ class TestConfigDrivenTableManagerCreateTable:
         manager._create_mysql_table.assert_called_once_with(table_def)
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_redis_skip(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_create_table_redis_skip(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试Redis表跳过创建"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -574,9 +530,7 @@ class TestConfigDrivenTableManagerCreateTable:
         assert result is False  # Redis不需要创建表
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_already_exists(
-        self, mock_conn_manager, temp_config_file, sample_table_config
-    ):
+    def test_create_table_already_exists(self, mock_conn_manager, temp_config_file, sample_table_config):
         """测试表已存在时跳过创建"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
@@ -589,9 +543,7 @@ class TestConfigDrivenTableManagerCreateTable:
         assert result is False
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_unsupported_db_type(
-        self, mock_conn_manager, temp_config_file
-    ):
+    def test_create_table_unsupported_db_type(self, mock_conn_manager, temp_config_file):
         """测试不支持的数据库类型"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 

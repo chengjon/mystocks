@@ -14,33 +14,22 @@
 """
 
 import os
-import re
 from datetime import date, datetime
 from typing import List, Optional
 
-import pymysql
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from app.core.cache_utils import cache_response, clear_api_cache  # 导入缓存工具
+from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
-from app.core.security import User, get_current_user
+from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.schema import (  # 导入P0改进的验证模型
-    DateRangeModel,
-    ErrorResponseModel,
     MarketDataQueryModel,
-    ResponseModel,
-    StockSymbolModel,
 )
 from app.schemas.market_schemas import (
-    ChipRaceRequest,
     ChipRaceResponse,
-    ETFDataRequest,
     ETFDataResponse,
     FundFlowRequest,
-    FundFlowResponse,
-    LongHuBangRequest,
     LongHuBangResponse,
     MessageResponse,
 )
@@ -214,9 +203,9 @@ async def get_fund_flow(
 
         if circuit_breaker.is_open():
             # 熔断器打开，使用降级策略返回缓存数据
-            logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data")
+            logger.warning("⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data")
             return create_success_response(
-                data={"fund_flow": [], "total": 0}, message=f"市场数据服务暂不可用，请稍后重试"
+                data={"fund_flow": [], "total": 0}, message="市场数据服务暂不可用，请稍后重试"
             )
 
         # 使用数据源工厂获取市场数据
@@ -263,20 +252,21 @@ async def get_fund_flow(
                 "trade_date": detail.get("date", ""),
                 "main_net_inflow": detail.get("main_net", 0),
                 "super_large_net_inflow": detail.get("main_net", 0) * 0.4,  # 模拟超大单
-                "large_net_inflow": detail.get("main_net", 0) * 0.6,     # 模拟大单
-                "medium_net_inflow": detail.get("retain_net", 0) * 0.3,   # 模拟中单
-                "small_net_inflow": detail.get("retain_net", 0) * 0.7,    # 模拟小单
+                "large_net_inflow": detail.get("main_net", 0) * 0.6,  # 模拟大单
+                "medium_net_inflow": detail.get("retain_net", 0) * 0.3,  # 模拟中单
+                "small_net_inflow": detail.get("retain_net", 0) * 0.7,  # 模拟小单
             }
             fund_flow_data.append(transformed)
 
         return create_success_response(
-            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)},
-            message=f"获取{symbol}资金流向数据成功"
+            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)}, message=f"获取{symbol}资金流向数据成功"
         )
 
     except ValidationError as ve:
         # P0改进: 标准化验证错误响应
-        error_details = [{"field": err["loc"][0] if err["loc"] else "unknown", "message": err["msg"]} for err in ve.errors()]
+        error_details = [
+            {"field": err["loc"][0] if err["loc"] else "unknown", "message": err["msg"]} for err in ve.errors()
+        ]
         return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except Exception as e:
         raise HTTPException(
@@ -701,7 +691,7 @@ async def get_kline_data(
 
         if circuit_breaker.is_open():
             # 熔断器打开，使用降级策略
-            logger.warning(f"⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
+            logger.warning("⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
             raise HTTPException(status_code=503, detail="市场数据服务暂不可用，请稍后重试")
 
         service = get_stock_search_service()
@@ -732,7 +722,9 @@ async def get_kline_data(
 
     except ValidationError as ve:
         # P0改进: 标准化验证错误响应
-        error_details = [{"field": err["loc"][0] if err["loc"] else "unknown", "message": err["msg"]} for err in ve.errors()]
+        error_details = [
+            {"field": err["loc"][0] if err["loc"] else "unknown", "message": err["msg"]} for err in ve.errors()
+        ]
         return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except ValueError as e:
         # Invalid stock code format or parameters
@@ -809,7 +801,7 @@ async def get_market_heatmap(
                                 "market_cap": (float(row.get("总市值", 0)) if "总市值" in row else None),
                             }
                         )
-                    except Exception as e:
+                    except Exception:
                         continue
 
             elif market == "hk":
@@ -833,7 +825,7 @@ async def get_market_heatmap(
                                 "market_cap": (float(row.get("总市值", 0)) if "总市值" in row else None),
                             }
                         )
-                    except Exception as e:
+                    except Exception:
                         continue
             else:
                 raise HTTPException(status_code=400, detail=f"不支持的市场类型: {market}")

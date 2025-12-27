@@ -138,7 +138,7 @@ class MemoryManager:
             process = psutil.Process()
             memory_info = process.memory_info()
 
-            gc_stats = gc.get_stats()
+            gc.get_stats()
 
             return {
                 "current": {
@@ -203,9 +203,7 @@ def memory_cleanup_decorator(threshold_mb: int = 100):
             memory_mb = process.memory_info().rss / 1024**2
 
             if memory_mb > threshold_mb:
-                logger.debug(
-                    f"Memory cleanup before {func.__name__}: {memory_mb:.1f}MB"
-                )
+                logger.debug(f"Memory cleanup before {func.__name__}: {memory_mb:.1f}MB")
                 memory_manager.cleanup_memory()
 
             try:
@@ -215,9 +213,7 @@ def memory_cleanup_decorator(threshold_mb: int = 100):
                 # 函数执行后检查内存
                 post_memory_mb = process.memory_info().rss / 1024**2
                 if post_memory_mb > threshold_mb:
-                    logger.debug(
-                        f"Memory cleanup after {func.__name__}: {post_memory_mb:.1f}MB"
-                    )
+                    logger.debug(f"Memory cleanup after {func.__name__}: {post_memory_mb:.1f}MB")
                     memory_manager.cleanup_memory()
 
         return wrapper
@@ -262,9 +258,7 @@ def optimize_dataframe_memory(df: pd.DataFrame, inplace: bool = False) -> pd.Dat
             df[col] = df[col].astype("category")
 
     optimized_memory = df.memory_usage(deep=True).sum() / 1024**2
-    compression_ratio = (
-        original_memory / optimized_memory if optimized_memory > 0 else 1.0
-    )
+    compression_ratio = original_memory / optimized_memory if optimized_memory > 0 else 1.0
 
     logger.info(
         f"DataFrame memory optimization: {original_memory:.1f}MB -> {optimized_memory:.1f}MB "

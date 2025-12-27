@@ -32,22 +32,15 @@ import queue
 import time
 
 # WebSocket支持（可选）
-try:
-    import websocket
+import importlib.util
 
-    WEBSOCKET_AVAILABLE = True
-except ImportError:
-    WEBSOCKET_AVAILABLE = False
+WEBSOCKET_AVAILABLE = bool(importlib.util.find_spec("websocket"))
+if not WEBSOCKET_AVAILABLE:
     print("警告: websocket-client未安装，WebSocket功能不可用")
     print("安装: pip install websocket-client")
 
 # Redis支持（可选）
-try:
-    import redis
-
-    REDIS_AVAILABLE = True
-except ImportError:
-    REDIS_AVAILABLE = False
+REDIS_AVAILABLE = bool(importlib.util.find_spec("redis"))
 
 
 class DataSourceType(Enum):
@@ -89,9 +82,7 @@ class TickReceiver:
     - 线程安全
     """
 
-    def __init__(
-        self, cache_size: int = 1000, source_type: DataSourceType = DataSourceType.TDX
-    ):
+    def __init__(self, cache_size: int = 1000, source_type: DataSourceType = DataSourceType.TDX):
         """
         初始化接收器
 
@@ -168,9 +159,7 @@ class TickReceiver:
         self.receiver_thread.start()
 
         # 启动处理线程
-        self.processor_thread = threading.Thread(
-            target=self._processor_loop, daemon=True
-        )
+        self.processor_thread = threading.Thread(target=self._processor_loop, daemon=True)
         self.processor_thread.start()
 
         self.logger.info("=" * 70)
@@ -358,9 +347,7 @@ if __name__ == "__main__":
     print("=" * 70)
 
     # 设置日志
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # 创建接收器
     receiver = TickReceiver(source_type=DataSourceType.CUSTOM)
@@ -370,9 +357,7 @@ if __name__ == "__main__":
 
     # 注册回调函数
     def on_tick(tick: TickData):
-        print(
-            f"  收到数据: {tick.symbol} - {tick.last_price:.2f} @ {tick.timestamp.strftime('%H:%M:%S.%f')[:12]}"
-        )
+        print(f"  收到数据: {tick.symbol} - {tick.last_price:.2f} @ {tick.timestamp.strftime('%H:%M:%S.%f')[:12]}")
 
     receiver.register_callback(on_tick)
 

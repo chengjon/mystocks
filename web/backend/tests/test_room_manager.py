@@ -151,9 +151,7 @@ class TestRoomManager:
 
     def test_add_member_to_room(self):
         """测试添加成员到房间"""
-        success = self.manager.add_member_to_room(
-            "room_001", "sid_001", user_id="user_001"
-        )
+        success = self.manager.add_member_to_room("room_001", "sid_001", user_id="user_001")
 
         assert success
         assert self.manager.room_exists("room_001")
@@ -246,17 +244,13 @@ class TestRoomEvents:
 
     def test_register_event_handler(self):
         """测试注册事件处理器"""
-        self.manager.register_event_handler(
-            RoomEventType.MEMBER_JOINED, self.event_handler
-        )
+        self.manager.register_event_handler(RoomEventType.MEMBER_JOINED, self.event_handler)
 
         assert len(self.manager.event_callbacks[RoomEventType.MEMBER_JOINED]) > 0
 
     def test_member_joined_event(self):
         """测试成员加入事件"""
-        self.manager.register_event_handler(
-            RoomEventType.MEMBER_JOINED, self.event_handler
-        )
+        self.manager.register_event_handler(RoomEventType.MEMBER_JOINED, self.event_handler)
 
         self.manager.add_member_to_room("room_001", "sid_001", user_id="user_001")
 
@@ -267,9 +261,7 @@ class TestRoomEvents:
     def test_member_left_event(self):
         """测试成员离开事件"""
         self.manager.add_member_to_room("room_001", "sid_001")
-        self.manager.register_event_handler(
-            RoomEventType.MEMBER_LEFT, self.event_handler
-        )
+        self.manager.register_event_handler(RoomEventType.MEMBER_LEFT, self.event_handler)
 
         self.manager.remove_member_from_room("room_001", "sid_001")
 
@@ -279,9 +271,7 @@ class TestRoomEvents:
 
     def test_room_created_event(self):
         """测试房间创建事件"""
-        self.manager.register_event_handler(
-            RoomEventType.ROOM_CREATED, self.event_handler
-        )
+        self.manager.register_event_handler(RoomEventType.ROOM_CREATED, self.event_handler)
 
         self.manager.create_room("room_001")
 
@@ -291,9 +281,7 @@ class TestRoomEvents:
     def test_room_destroyed_event(self):
         """测试房间销毁事件"""
         self.manager.create_room("room_001")
-        self.manager.register_event_handler(
-            RoomEventType.ROOM_DESTROYED, self.event_handler
-        )
+        self.manager.register_event_handler(RoomEventType.ROOM_DESTROYED, self.event_handler)
 
         self.manager.destroy_room("room_001")
 
@@ -336,15 +324,11 @@ class TestMultiRoomScenarios:
         """测试多个房间和多个成员"""
         # 创建房间1：成员1、2、3
         for i in range(1, 4):
-            self.manager.add_member_to_room(
-                "stock_600519", f"sid_{i}", user_id=f"user_{i}"
-            )
+            self.manager.add_member_to_room("stock_600519", f"sid_{i}", user_id=f"user_{i}")
 
         # 创建房间2：成员4、5
         for i in range(4, 6):
-            self.manager.add_member_to_room(
-                "stock_600000", f"sid_{i}", user_id=f"user_{i}"
-            )
+            self.manager.add_member_to_room("stock_600000", f"sid_{i}", user_id=f"user_{i}")
 
         assert self.manager.get_stats()["total_rooms"] == 2
         assert self.manager.get_stats()["total_members"] == 5

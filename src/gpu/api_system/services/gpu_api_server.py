@@ -38,9 +38,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Prometheus指标
-REQUEST_COUNT = Counter(
-    "api_requests_total", "Total API requests", ["method", "status"]
-)
+REQUEST_COUNT = Counter("api_requests_total", "Total API requests", ["method", "status"])
 REQUEST_DURATION = Histogram("api_request_duration_seconds", "API request duration")
 ACTIVE_CONNECTIONS = Gauge("active_connections", "Number of active connections")
 GPU_UTILIZATION = Gauge("gpu_utilization", "GPU utilization percentage")
@@ -55,12 +53,8 @@ class GPUServer:
         self.redis_queue = RedisQueue()
         self.metrics_collector = MetricsCollector()
         self.resource_scheduler = ResourceScheduler()
-        self.realtime_service = RealTimeService(
-            self.gpu_manager, self.redis_queue, self.metrics_collector
-        )
-        self.backtest_service = BacktestService(
-            self.gpu_manager, self.redis_queue, self.metrics_collector
-        )
+        self.realtime_service = RealTimeService(self.gpu_manager, self.redis_queue, self.metrics_collector)
+        self.backtest_service = BacktestService(self.gpu_manager, self.redis_queue, self.metrics_collector)
         self.running = True
 
     def initialize(self):
@@ -100,12 +94,8 @@ class GPUServer:
         )
 
         # 添加服务
-        realtime_pb2_grpc.add_RealTimeServiceServicer_to_server(
-            self.realtime_service, self.server
-        )
-        backtest_pb2_grpc.add_BacktestServiceServicer_to_server(
-            self.backtest_service, self.server
-        )
+        realtime_pb2_grpc.add_RealTimeServiceServicer_to_server(self.realtime_service, self.server)
+        backtest_pb2_grpc.add_BacktestServiceServicer_to_server(self.backtest_service, self.server)
 
         # 添加监控指标
         prometheus_client.start_http_server(8000)

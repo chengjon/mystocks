@@ -148,16 +148,12 @@ class APIConsistencyChecker:
         # Check for response code mismatches
         self._check_response_code_consistency()
 
-        logger.info(
-            f"✅ Consistency check complete: {len(self.discrepancies)} discrepancies found"
-        )
+        logger.info(f"✅ Consistency check complete: {len(self.discrepancies)} discrepancies found")
         return self.discrepancies
 
     def _check_missing_spec_endpoints(self) -> None:
         """Check for endpoints in spec but not in API"""
-        spec_keys = {
-            f"{ep.method.value.upper()} {ep.path}" for ep in self.spec_endpoints
-        }
+        spec_keys = {f"{ep.method.value.upper()} {ep.path}" for ep in self.spec_endpoints}
         api_keys = set(self.api_endpoints.keys())
 
         missing = spec_keys - api_keys
@@ -179,9 +175,7 @@ class APIConsistencyChecker:
 
     def _check_extra_api_endpoints(self) -> None:
         """Check for endpoints in API but not in spec"""
-        spec_keys = {
-            f"{ep.method.value.upper()} {ep.path}" for ep in self.spec_endpoints
-        }
+        spec_keys = {f"{ep.method.value.upper()} {ep.path}" for ep in self.spec_endpoints}
         api_keys = set(self.api_endpoints.keys())
 
         extra = api_keys - spec_keys
@@ -216,9 +210,7 @@ class APIConsistencyChecker:
             # Check for missing parameters
             missing_params = spec_params - api_params
             for param in missing_params:
-                param_spec = next(
-                    (p for p in endpoint.parameters if p.name == param), None
-                )
+                param_spec = next((p for p in endpoint.parameters if p.name == param), None)
                 if param_spec and param_spec.required:
                     report = DiscrepancyReport(
                         type=DiscrepancyType.MISSING_PARAMETER,
@@ -327,7 +319,7 @@ class APIConsistencyChecker:
         if not self.spec_endpoints:
             return 0.0
 
-        total_checks = len(self.spec_endpoints)
+        len(self.spec_endpoints)
         critical = len(self.get_critical_issues())
         warnings = len(self.get_warnings())
 

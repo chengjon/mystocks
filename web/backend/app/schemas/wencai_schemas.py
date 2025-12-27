@@ -40,9 +40,7 @@ class WencaiQueryRequest(BaseModel):
     def validate_query_name(cls, v):
         """验证查询名称格式 - 只允许 qs_1 到 qs_9"""
         if not re.match(r"^qs_[1-9]$", v):
-            raise ValueError(
-                f"query_name must be in format 'qs_N' where N is 1-9. Got: {v}"
-            )
+            raise ValueError(f"query_name must be in format 'qs_N' where N is 1-9. Got: {v}")
         return v
 
     class Config:
@@ -66,9 +64,7 @@ class WencaiCustomQueryRequest(BaseModel):
     pages: int = Field(default=1, description="获取页数", ge=1, le=5, example=1)
 
     class Config:
-        schema_extra = {
-            "example": {"query_text": "请列出今天涨幅超过5%的股票", "pages": 1}
-        }
+        schema_extra = {"example": {"query_text": "请列出今天涨幅超过5%的股票", "pages": 1}}
 
 
 class WencaiRefreshRequest(BaseModel):
@@ -202,9 +198,7 @@ class WencaiCustomQueryResponse(BaseModel):
                 "message": "查询执行成功",
                 "query_text": "请列出今天涨幅超过5%的股票",
                 "total_records": 25,
-                "results": [
-                    {"股票代码": "000001", "股票简称": "平安银行", "涨跌幅": "6.5%"}
-                ],
+                "results": [{"股票代码": "000001", "股票简称": "平安银行", "涨跌幅": "6.5%"}],
                 "columns": ["股票代码", "股票简称", "涨跌幅"],
                 "fetch_time": "2025-10-18T10:00:00",
             }
@@ -299,9 +293,7 @@ class WencaiHistoryItem(BaseModel):
     fetch_count: int = Field(..., description="获取次数", ge=0)
 
     class Config:
-        schema_extra = {
-            "example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}
-        }
+        schema_extra = {"example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}}
 
 
 class WencaiHistoryResponse(BaseModel):
@@ -321,9 +313,7 @@ class WencaiHistoryResponse(BaseModel):
             "example": {
                 "query_name": "qs_9",
                 "date_range": ["2025-10-10", "2025-10-17"],
-                "history": [
-                    {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}
-                ],
+                "history": [{"date": "2025-10-17", "total_records": 45, "fetch_count": 3}],
                 "total_days": 7,
             }
         }

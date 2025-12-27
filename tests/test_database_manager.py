@@ -111,18 +111,14 @@ class TestDatabaseManager:
         mock_redis.return_value = mock_conn
 
         # 调用方法
-        with patch.dict(
-            "os.environ", {"REDIS_HOST": "localhost", "REDIS_PORT": "6379"}
-        ):
+        with patch.dict("os.environ", {"REDIS_HOST": "localhost", "REDIS_PORT": "6379"}):
             result = self.manager.get_redis_connection()
 
             # 验证
             if result is not None:
                 mock_redis.assert_called_once()
 
-    @patch(
-        "builtins.open", new_callable=mock_open, read_data="version: 2.0\ntables: []"
-    )
+    @patch("builtins.open", new_callable=mock_open, read_data="version: 2.0\ntables: []")
     @patch("src.storage.database.database_manager.yaml.safe_load")
     def test_load_table_config(self, mock_yaml, mock_file):
         """测试加载表配置"""

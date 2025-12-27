@@ -176,23 +176,17 @@ class TechnicalAnalysisService:
             ma_periods = [5, 10, 20, 30, 60, 120, 250]
             for period in ma_periods:
                 if len(close) >= period:
-                    indicators[f"ma{period}"] = float(
-                        talib.MA(close, timeperiod=period)[-1]
-                    )
+                    indicators[f"ma{period}"] = float(talib.MA(close, timeperiod=period)[-1])
 
             # 指数移动平均线 (EMA)
             ema_periods = [12, 26, 50]
             for period in ema_periods:
                 if len(close) >= period:
-                    indicators[f"ema{period}"] = float(
-                        talib.EMA(close, timeperiod=period)[-1]
-                    )
+                    indicators[f"ema{period}"] = float(talib.EMA(close, timeperiod=period)[-1])
 
             # MACD
             if len(close) >= 34:
-                macd, macd_signal, macd_hist = talib.MACD(
-                    close, fastperiod=12, slowperiod=26, signalperiod=9
-                )
+                macd, macd_signal, macd_hist = talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
                 indicators["macd"] = float(macd[-1])
                 indicators["macd_signal"] = float(macd_signal[-1])
                 indicators["macd_hist"] = float(macd_hist[-1])
@@ -322,15 +316,11 @@ class TechnicalAnalysisService:
         try:
             # Bollinger Bands
             if len(close) >= 20:
-                upper, middle, lower = talib.BBANDS(
-                    close, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0
-                )
+                upper, middle, lower = talib.BBANDS(close, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
                 indicators["bb_upper"] = float(upper[-1])
                 indicators["bb_middle"] = float(middle[-1])
                 indicators["bb_lower"] = float(lower[-1])
-                indicators["bb_width"] = float(
-                    (upper[-1] - lower[-1]) / middle[-1] * 100
-                )
+                indicators["bb_width"] = float((upper[-1] - lower[-1]) / middle[-1] * 100)
 
             # ATR (平均真实波幅)
             if len(close) >= 14:
@@ -470,10 +460,7 @@ class TechnicalAnalysisService:
 
             # 统计信息
             total_indicators = (
-                len(result["trend"])
-                + len(result["momentum"])
-                + len(result["volatility"])
-                + len(result["volume"])
+                len(result["trend"]) + len(result["momentum"]) + len(result["volatility"]) + len(result["volume"])
             )
             result["total_indicators"] = total_indicators
 
@@ -488,9 +475,7 @@ class TechnicalAnalysisService:
     # 时间序列数据（用于图表）
     # ========================================================================
 
-    def get_indicator_series(
-        self, symbol: str, indicator: str, period: str = "daily", length: int = 100
-    ) -> Dict:
+    def get_indicator_series(self, symbol: str, indicator: str, period: str = "daily", length: int = 100) -> Dict:
         """
         获取指标的时间序列数据（用于前端图表）
 
@@ -509,9 +494,7 @@ class TechnicalAnalysisService:
         """
         try:
             # 获取历史数据
-            df = self.get_stock_history(
-                symbol, period, length=length + 50
-            )  # 多取一些数据
+            df = self.get_stock_history(symbol, period, length=length + 50)  # 多取一些数据
 
             if df.empty:
                 return {"error": "No data available"}
@@ -565,13 +548,9 @@ class TechnicalAnalysisService:
             if len(close) >= 34:
                 macd, signal, hist = talib.MACD(close)
                 if hist[-1] > 0 and hist[-2] <= 0:
-                    signals.append(
-                        {"type": "macd_golden_cross", "signal": "buy", "strength": 0.7}
-                    )
+                    signals.append({"type": "macd_golden_cross", "signal": "buy", "strength": 0.7})
                 elif hist[-1] < 0 and hist[-2] >= 0:
-                    signals.append(
-                        {"type": "macd_death_cross", "signal": "sell", "strength": 0.7}
-                    )
+                    signals.append({"type": "macd_death_cross", "signal": "sell", "strength": 0.7})
 
             # RSI超买超卖
             if len(close) >= 14:
@@ -599,18 +578,10 @@ class TechnicalAnalysisService:
 
             if len(buy_signals) > len(sell_signals):
                 overall_signal = "buy"
-                signal_strength = (
-                    sum(s["strength"] for s in buy_signals) / len(buy_signals)
-                    if buy_signals
-                    else 0
-                )
+                signal_strength = sum(s["strength"] for s in buy_signals) / len(buy_signals) if buy_signals else 0
             elif len(sell_signals) > len(buy_signals):
                 overall_signal = "sell"
-                signal_strength = (
-                    sum(s["strength"] for s in sell_signals) / len(sell_signals)
-                    if sell_signals
-                    else 0
-                )
+                signal_strength = sum(s["strength"] for s in sell_signals) / len(sell_signals) if sell_signals else 0
             else:
                 overall_signal = "hold"
                 signal_strength = 0.5

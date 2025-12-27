@@ -6,11 +6,9 @@ API健康检查工具测试套件 v2.0
 """
 
 import sys
-import os
-import time
 import pytest
 import requests
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 from pathlib import Path
 
 # 添加项目根目录到路径

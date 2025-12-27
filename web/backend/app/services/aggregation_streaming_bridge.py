@@ -64,9 +64,7 @@ class AggregationStreamingBridge:
         """
         self.engine = aggregation_engine or get_aggregation_engine()
         self.streaming = streaming_service or get_streaming_service()
-        self.storage = (
-            ohlcv_storage or get_ohlcv_storage() if enable_persistence else None
-        )
+        self.storage = ohlcv_storage or get_ohlcv_storage() if enable_persistence else None
         self.publish_mode = publish_mode
         self.enable_persistence = enable_persistence
 
@@ -183,13 +181,9 @@ class AggregationStreamingBridge:
             "persistence_enabled": self.enable_persistence,
             "aggregation_stats": self.engine.get_stats(),
             "streaming_stats": self.streaming.get_stats(),
-            "storage_stats": (
-                self.storage.get_stats() if self.storage else {"enabled": False}
-            ),
+            "storage_stats": (self.storage.get_stats() if self.storage else {"enabled": False}),
             "last_error": self.last_error,
-            "uptime_seconds": (
-                datetime.utcnow() - self.last_update_time
-            ).total_seconds(),
+            "uptime_seconds": (datetime.utcnow() - self.last_update_time).total_seconds(),
         }
 
 

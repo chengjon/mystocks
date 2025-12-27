@@ -249,9 +249,7 @@ class TestUnifiedLoggerCatchContext:
 class TestUnifiedLoggerPerformanceDecorator:
     """测试UnifiedLogger的log_performance装饰器"""
 
-    @pytest.mark.skip(
-        reason="log_performance uses complex loguru.catch() internals that are difficult to mock"
-    )
+    @pytest.mark.skip(reason="log_performance uses complex loguru.catch() internals that are difficult to mock")
     @patch("src.core.logging.loguru_logger")
     @patch("time.time")
     def test_log_performance_success(self, mock_time, mock_logger):
@@ -289,9 +287,7 @@ class TestUnifiedLoggerPerformanceDecorator:
         # 验证info方法被调用来记录性能
         assert mock_opt.info.called
 
-    @pytest.mark.skip(
-        reason="log_performance uses complex loguru.catch() internals that are difficult to mock"
-    )
+    @pytest.mark.skip(reason="log_performance uses complex loguru.catch() internals that are difficult to mock")
     @patch("src.core.logging.loguru_logger")
     @patch("time.time")
     def test_log_performance_failure(self, mock_time, mock_logger):

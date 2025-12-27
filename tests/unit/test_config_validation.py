@@ -217,10 +217,7 @@ class TestConfigValidation:
         print(f"  配置压缩的表: {len(tables_with_compression)}")
 
         for table in tables_with_compression[:5]:
-            print(
-                f"    - {table['name']} ({table['db_type']}): "
-                f"{table['codec']} / {table['after_days']}天"
-            )
+            print(f"    - {table['name']} ({table['db_type']}): " f"{table['codec']} / {table['after_days']}天")
 
         assert len(tables_with_compression) > 0, "应该有表配置压缩策略"
         print("  ✅ 压缩配置验证通过")

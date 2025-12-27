@@ -92,18 +92,14 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         try:
             # 东方财富的资金流向API包含实时行情数据
             # 使用fund_flow作为实时行情的数据源
-            data = self._adapter.get_stock_fund_flow(
-                symbol=symbols[0] if symbols else None, timeframe="今日"
-            )
+            data = self._adapter.get_stock_fund_flow(symbol=symbols[0] if symbols else None, timeframe="今日")
 
             if not data.empty:
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
                 logger.warning("EastMoney returned empty realtime quote data")
-                self.update_health_status(
-                    DataSourceStatus.DEGRADED, "Returned empty data"
-                )
+                self.update_health_status(DataSourceStatus.DEGRADED, "Returned empty data")
 
         except Exception as e:
             logger.error(f"Failed to fetch realtime quote from EastMoney: {e}")
@@ -115,9 +111,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
 
         return data
 
-    def fetch_fund_flow(
-        self, symbol: Optional[str] = None, timeframe: str = "今日"
-    ) -> pd.DataFrame:
+    def fetch_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> pd.DataFrame:
         """
         获取资金流向
 
@@ -214,9 +208,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
 
         return data
 
-    def fetch_sector_fund_flow(
-        self, sector_type: str = "行业", timeframe: str = "今日"
-    ) -> pd.DataFrame:
+    def fetch_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> pd.DataFrame:
         """
         获取板块资金流向
 
@@ -232,17 +224,13 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         data = pd.DataFrame()
 
         try:
-            data = self._adapter.get_sector_fund_flow(
-                sector_type=sector_type, timeframe=timeframe
-            )
+            data = self._adapter.get_sector_fund_flow(sector_type=sector_type, timeframe=timeframe)
 
             if not data.empty:
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.warning(
-                    f"EastMoney returned empty sector data for {sector_type}"
-                )
+                logger.warning(f"EastMoney returned empty sector data for {sector_type}")
 
         except Exception as e:
             logger.error(f"Failed to fetch sector data from EastMoney: {e}")

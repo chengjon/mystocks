@@ -30,9 +30,7 @@ class EastMoneyAdapter:
 
     # ==================== 资金流向数据 ====================
 
-    def get_stock_fund_flow(
-        self, symbol: str = None, timeframe: str = "今日"
-    ) -> pd.DataFrame:
+    def get_stock_fund_flow(self, symbol: str = None, timeframe: str = "今日") -> pd.DataFrame:
         """
         获取个股资金流向数据
 
@@ -360,9 +358,7 @@ class EastMoneyAdapter:
 
     # ==================== 竞价抢筹数据 ====================
 
-    def get_chip_race(
-        self, race_type: str = "open", date_str: Optional[str] = None
-    ) -> pd.DataFrame:
+    def get_chip_race(self, race_type: str = "open", date_str: Optional[str] = None) -> pd.DataFrame:
         """
         获取竞价抢筹数据（早盘/尾盘）
         注意：此功能需要通达信或其他数据源支持，东方财富网暂不提供
@@ -380,9 +376,7 @@ class EastMoneyAdapter:
 
     # ==================== 行业/概念资金流向 ====================
 
-    def get_sector_fund_flow(
-        self, sector_type: str = "行业", timeframe: str = "今日"
-    ) -> pd.DataFrame:
+    def get_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> pd.DataFrame:
         """
         获取行业/概念板块资金流向
 
@@ -451,9 +445,7 @@ class EastMoneyAdapter:
 
             # 数据类型转换
             for col in temp_df.columns:
-                if any(
-                    keyword in col for keyword in ["净流入", "占比", "涨跌幅", "最新价"]
-                ):
+                if any(keyword in col for keyword in ["净流入", "占比", "涨跌幅", "最新价"]):
                     temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")
 
             return temp_df

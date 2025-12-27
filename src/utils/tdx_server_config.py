@@ -18,7 +18,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env
 
-load_dotenv() # Load environment variables from .env
+load_dotenv()  # Load environment variables from .env
+
 
 class TdxServerConfig:
     """
@@ -53,9 +54,7 @@ class TdxServerConfig:
             if tdx_path_from_env:
                 config_file = os.path.join(tdx_path_from_env, "connect.cfg")
             else:
-                project_root = os.path.dirname(
-                    os.path.dirname(os.path.abspath(__file__))
-                )
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 config_file = os.path.join(project_root, "temp", "connect.cfg")
 
         self.config_file = config_file
@@ -77,9 +76,7 @@ class TdxServerConfig:
         编码处理: connect.cfg使用GBK编码(中文Windows默认)
         """
         if not os.path.exists(self.config_file):
-            self.logger.warning(
-                f"TDX配置文件不存在: {self.config_file}, 使用默认服务器"
-            )
+            self.logger.warning(f"TDX配置文件不存在: {self.config_file}, 使用默认服务器")
             # 使用默认服务器
             self.servers = [("101.227.73.20", 7709, "默认服务器")]
             self.primary_index = 0
@@ -110,9 +107,7 @@ class TdxServerConfig:
             host_num = int(hq_section.get("HostNum", "0"))
             primary_host = int(hq_section.get("PrimaryHost", "1"))
 
-            self.logger.info(
-                f"TDX配置: 共{host_num}个服务器, 主服务器索引={primary_host}"
-            )
+            self.logger.info(f"TDX配置: 共{host_num}个服务器, 主服务器索引={primary_host}")
 
             # 解析每个服务器
             for i in range(1, host_num + 1):
@@ -248,9 +243,7 @@ class TdxServerConfig:
         # 2. 其他服务器(随机选择)
         if len(self.servers) > 1 and max_count > 1:
             # 排除主服务器后的其他服务器
-            other_servers = [
-                s for i, s in enumerate(self.servers) if i != self.primary_index
-            ]
+            other_servers = [s for i, s in enumerate(self.servers) if i != self.primary_index]
 
             # 随机打乱顺序
             random.shuffle(other_servers)
@@ -271,10 +264,7 @@ class TdxServerConfig:
             return "TdxServerConfig: 无可用服务器"
 
         primary = self.servers[self.primary_index]
-        return (
-            f"TdxServerConfig: {len(self.servers)}个服务器, "
-            f"主服务器={primary[2]}({primary[0]}:{primary[1]})"
-        )
+        return f"TdxServerConfig: {len(self.servers)}个服务器, " f"主服务器={primary[2]}({primary[0]}:{primary[1]})"
 
 
 # 全局单例(可选,避免重复解析配置文件)

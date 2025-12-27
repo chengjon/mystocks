@@ -216,9 +216,7 @@ class TestQueryCriteria:
                 "on": "products.category_id = categories.id",
             }
         ]
-        criteria = QueryCriteria(
-            table_name="products", filters={"price": {"$gt": 50}}, joins=joins
-        )
+        criteria = QueryCriteria(table_name="products", filters={"price": {"$gt": 50}}, joins=joins)
         assert len(criteria.joins) == 1
         assert criteria.joins[0]["type"] == "left"
 
@@ -350,9 +348,7 @@ class TestQueryResult:
 
     def test_query_result_failed(self):
         """测试失败查询结果"""
-        result = QueryResult(
-            success=False, data=[], error="Table 'users' doesn't exist"
-        )
+        result = QueryResult(success=False, data=[], error="Table 'users' doesn't exist")
         assert result.success is False
         assert len(result.data) == 0
         assert "doesn't exist" in result.error
@@ -382,9 +378,7 @@ class TestSaveResult:
 
     def test_save_result_successful_insert(self):
         """测试成功插入结果"""
-        result = SaveResult(
-            success=True, inserted_count=10, updated_count=0, failed_count=0
-        )
+        result = SaveResult(success=True, inserted_count=10, updated_count=0, failed_count=0)
         assert result.success is True
         assert result.inserted_count == 10
         assert result.updated_count == 0
@@ -392,9 +386,7 @@ class TestSaveResult:
 
     def test_save_result_mixed_result(self):
         """测试混合结果（插入和更新）"""
-        result = SaveResult(
-            success=True, inserted_count=5, updated_count=3, failed_count=2
-        )
+        result = SaveResult(success=True, inserted_count=5, updated_count=3, failed_count=2)
         assert result.success is True
         assert result.inserted_count == 5
         assert result.updated_count == 3
@@ -410,12 +402,8 @@ class TestSaveResult:
 
     def test_save_result_total_operations(self):
         """测试总操作数计算"""
-        result = SaveResult(
-            success=True, inserted_count=100, updated_count=50, failed_count=5
-        )
-        total_operations = (
-            result.inserted_count + result.updated_count + result.failed_count
-        )
+        result = SaveResult(success=True, inserted_count=100, updated_count=50, failed_count=5)
+        total_operations = result.inserted_count + result.updated_count + result.failed_count
         assert total_operations == 155
 
 
@@ -467,19 +455,13 @@ class TestIDataAccess:
             async def execute_query(self, query: DataQuery) -> QueryResult:
                 return QueryResult(success=True, data=[])
 
-            async def save_data(
-                self, record: DataRecord, options: SaveOptions = None
-            ) -> SaveResult:
+            async def save_data(self, record: DataRecord, options: SaveOptions = None) -> SaveResult:
                 return SaveResult(success=True, inserted_count=1)
 
-            async def save_batch_data(
-                self, records: list, options: SaveOptions = None
-            ) -> SaveResult:
+            async def save_batch_data(self, records: list, options: SaveOptions = None) -> SaveResult:
                 return SaveResult(success=True, inserted_count=len(records))
 
-            async def begin_transaction(
-                self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED
-            ):
+            async def begin_transaction(self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED):
                 pass
 
             async def commit_transaction(self):
@@ -515,19 +497,13 @@ class TestIDataAccess:
             async def execute_query(self, query: DataQuery) -> QueryResult:
                 return QueryResult(success=True, data=[{"test": "data"}])
 
-            async def save_data(
-                self, record: DataRecord, options: SaveOptions = None
-            ) -> SaveResult:
+            async def save_data(self, record: DataRecord, options: SaveOptions = None) -> SaveResult:
                 return SaveResult(success=True, inserted_count=1)
 
-            async def save_batch_data(
-                self, records: list, options: SaveOptions = None
-            ) -> SaveResult:
+            async def save_batch_data(self, records: list, options: SaveOptions = None) -> SaveResult:
                 return SaveResult(success=True, inserted_count=len(records))
 
-            async def begin_transaction(
-                self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED
-            ):
+            async def begin_transaction(self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED):
                 pass
 
             async def commit_transaction(self):

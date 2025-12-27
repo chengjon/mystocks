@@ -28,9 +28,7 @@ class TestMACalculation:
         calculator = get_indicator_calculator()
 
         # 准备测试数据: 10个简单的收盘价
-        close_prices = np.array(
-            [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0]
-        )
+        close_prices = np.array([10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0])
         ohlcv_data = {
             "open": close_prices - 0.5,
             "high": close_prices + 0.5,
@@ -40,9 +38,7 @@ class TestMACalculation:
         }
 
         # 计算MA(5)
-        result = calculator.calculate_indicator(
-            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 5}
-        )
+        result = calculator.calculate_indicator(abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 5})
 
         # 验证返回格式
         assert "sma" in result

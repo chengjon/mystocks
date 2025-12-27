@@ -4,10 +4,10 @@
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from fastapi import APIRouter, Depends, HTTPException, Path
+from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.services.data_source_factory import DataSourceFactory

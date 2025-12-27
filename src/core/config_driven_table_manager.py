@@ -21,9 +21,7 @@ logger = logging.getLogger(__name__)
 class ConfigDrivenTableManager:
     """配置驱动的表管理器"""
 
-    def __init__(
-        self, config_path: str = "config/table_config.yaml", safe_mode: bool = True
-    ) -> None:
+    def __init__(self, config_path: str = "config/table_config.yaml", safe_mode: bool = True) -> None:
         """
         初始化表管理器
 
@@ -41,9 +39,7 @@ class ConfigDrivenTableManager:
         # 加载配置
         self.config = self.load_config()
 
-        logger.info(
-            f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})"
-        )
+        logger.info(f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})")
 
     def load_config(self) -> Dict[str, Any]:
         """加载配置文件"""
@@ -72,9 +68,7 @@ class ConfigDrivenTableManager:
                 created = self._create_table(table_def)
                 if created:
                     result["tables_created"] += 1
-                    logger.info(
-                        f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})"
-                    )
+                    logger.info(f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
                 else:
                     result["tables_skipped"] += 1
                     logger.info(f"⏭️ 跳过表: {table_def['table_name']} (已存在)")
@@ -122,9 +116,7 @@ class ConfigDrivenTableManager:
         else:
             raise ValueError(f"不支持的数据库类型: {db_type}")
 
-    def _table_exists(
-        self, db_type: str, table_name: str, database_name: Optional[str] = None
-    ) -> bool:
+    def _table_exists(self, db_type: str, table_name: str, database_name: Optional[str] = None) -> bool:
         """检查表是否存在"""
         try:
             if db_type == "TDengine":
@@ -307,9 +299,7 @@ class ConfigDrivenTableManager:
             # 如果是TimescaleDB超表
             if is_hypertable:
                 try:
-                    cursor.execute(
-                        f"SELECT create_hypertable('{table_name}', '{time_column}')"
-                    )
+                    cursor.execute(f"SELECT create_hypertable('{table_name}', '{time_column}')")
                     logger.info(f"✅ 转换为Hypertable: {table_name}")
                 except Exception as e:
                     logger.warning(f"转换为Hypertable失败: {e}")
@@ -376,9 +366,7 @@ class ConfigDrivenTableManager:
 
                 auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
 
-                col_defs.append(
-                    f"{col['name']} {col_type}{nullable}{default}{auto_inc}"
-                )
+                col_defs.append(f"{col['name']} {col_type}{nullable}{default}{auto_inc}")
 
                 if col.get("primary_key"):
                     primary_keys.append(col["name"])
@@ -431,9 +419,7 @@ class ConfigDrivenTableManager:
 
         try:
             # 检查表是否存在
-            if not self._table_exists(
-                db_type, table_name, table_def.get("database_name")
-            ):
+            if not self._table_exists(db_type, table_name, table_def.get("database_name")):
                 logger.warning(f"表不存在: {table_name} ({db_type})")
                 return False
 
@@ -456,9 +442,7 @@ class ConfigDrivenTableManager:
             # 检查多余的列
             extra_columns = set(actual_columns.keys()) - set(expected_columns.keys())
             if extra_columns:
-                logger.info(
-                    f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}"
-                )
+                logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
 
             # 检查列类型
             for col_name, expected_col in expected_columns.items():
@@ -470,8 +454,7 @@ class ConfigDrivenTableManager:
                     # 简单类型匹配检查
                     if expected_type.lower() not in actual_type.lower():
                         logger.warning(
-                            f"表 {table_name} 列 {col_name} 类型不匹配: "
-                            f"期望 {expected_type}, 实际 {actual_type}"
+                            f"表 {table_name} 列 {col_name} 类型不匹配: " f"期望 {expected_type}, 实际 {actual_type}"
                         )
                         return False
 
@@ -482,9 +465,7 @@ class ConfigDrivenTableManager:
             logger.error(f"表结构验证失败 {table_name}: {e}")
             return False
 
-    def _get_table_structure(
-        self, db_type: str, table_name: str
-    ) -> Optional[List[Dict]]:
+    def _get_table_structure(self, db_type: str, table_name: str) -> Optional[List[Dict]]:
         """获取表结构信息"""
         try:
             if db_type == "PostgreSQL":

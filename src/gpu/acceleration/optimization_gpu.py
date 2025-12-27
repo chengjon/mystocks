@@ -9,6 +9,7 @@
 
 import time
 import logging
+import random
 from typing import Dict, Any, List, Callable
 import numpy as np
 import pandas as pd
@@ -90,21 +91,15 @@ class OptimizationGPU:
 
             # 根据方法选择优化策略
             if method == "grid_search":
-                result = self._grid_search_gpu(
-                    objective_func, param_space, maximize, early_stopping
-                )
+                result = self._grid_search_gpu(objective_func, param_space, maximize, early_stopping)
             elif method == "random_search":
-                result = self._random_search_gpu(
-                    objective_func, param_space, n_trials, maximize, early_stopping
-                )
+                result = self._random_search_gpu(objective_func, param_space, n_trials, maximize, early_stopping)
             elif method == "bayesian":
                 result = self._bayesian_optimization_gpu(
                     objective_func, param_space, n_trials, maximize, early_stopping
                 )
             elif method == "genetic":
-                result = self._genetic_optimization_gpu(
-                    objective_func, param_space, n_trials, maximize, early_stopping
-                )
+                result = self._genetic_optimization_gpu(objective_func, param_space, n_trials, maximize, early_stopping)
             else:
                 raise ValueError(f"不支持的优化方法: {method}")
 
@@ -114,9 +109,7 @@ class OptimizationGPU:
             result.update(
                 {
                     "optimization_time": optimization_time,
-                    "gpu_memory_used_mb": self.gpu_manager.get_gpu_memory_usage()
-                    if self.gpu_manager
-                    else 0,
+                    "gpu_memory_used_mb": self.gpu_manager.get_gpu_memory_usage() if self.gpu_manager else 0,
                     "method": method,
                     "gpu_mode": self.gpu_available,
                     "param_space_size": self._estimate_param_space_size(param_space),
@@ -135,9 +128,7 @@ class OptimizationGPU:
                 }
             )
 
-            logger.info(
-                f"GPU参数优化完成: {result['best_score']:.4f} ({optimization_time:.2f}s)"
-            )
+            logger.info(f"GPU参数优化完成: {result['best_score']:.4f} ({optimization_time:.2f}s)")
             return result
 
         except Exception as e:
@@ -172,7 +163,7 @@ class OptimizationGPU:
 
             # 早停相关
             patience = early_stopping.get("patience", 0)
-            min_improvement = early_stopping.get("min_improvement", 0.001)
+            early_stopping.get("min_improvement", 0.001)
             no_improvement_count = 0
 
             # 遍历参数组合
@@ -198,9 +189,7 @@ class OptimizationGPU:
                     best_score = score
                     best_params = params.copy()
                     no_improvement_count = 0
-                    logger.debug(
-                        f"找到更好的参数: {score:.4f} (改进: {improvement:.4f})"
-                    )
+                    logger.debug(f"找到更好的参数: {score:.4f} (改进: {improvement:.4f})")
                 else:
                     no_improvement_count += 1
 
@@ -212,9 +201,7 @@ class OptimizationGPU:
                 # 进度报告
                 if (i + 1) % max(1, total_combinations // 10) == 0:
                     progress = (i + 1) / total_combinations * 100
-                    logger.debug(
-                        f"网格搜索进度: {progress:.1f}% ({i + 1}/{total_combinations})"
-                    )
+                    logger.debug(f"网格搜索进度: {progress:.1f}% ({i + 1}/{total_combinations})")
 
             return {
                 "best_params": best_params,
@@ -222,9 +209,7 @@ class OptimizationGPU:
                 "total_evaluations": len(param_grid),
                 "method": "grid_search",
                 "scores": scores,
-                "convergence_achieved": no_improvement_count < patience
-                if patience > 0
-                else None,
+                "convergence_achieved": no_improvement_count < patience if patience > 0 else None,
             }
 
         except Exception as e:
@@ -249,7 +234,7 @@ class OptimizationGPU:
 
             # 早停相关
             patience = early_stopping.get("patience", n_trials // 4)
-            min_improvement = early_stopping.get("min_improvement", 0.001)
+            early_stopping.get("min_improvement", 0.001)
             no_improvement_count = 0
 
             for trial in range(n_trials):
@@ -269,7 +254,7 @@ class OptimizationGPU:
                 # 更新最佳结果
                 is_better = (score > best_score) if maximize else (score < best_score)
                 if is_better:
-                    improvement = (
+                    (
                         abs(score - best_score)
                         if best_score != float("inf") and best_score != float("-inf")
                         else float("inf")
@@ -289,9 +274,7 @@ class OptimizationGPU:
                 # 进度报告
                 if (trial + 1) % max(1, n_trials // 10) == 0:
                     progress = (trial + 1) / n_trials * 100
-                    logger.debug(
-                        f"随机搜索进度: {progress:.1f}% ({trial + 1}/{n_trials})"
-                    )
+                    logger.debug(f"随机搜索进度: {progress:.1f}% ({trial + 1}/{n_trials})")
 
             return {
                 "best_params": best_params,
@@ -299,9 +282,7 @@ class OptimizationGPU:
                 "total_evaluations": trial + 1,
                 "method": "random_search",
                 "scores": scores,
-                "convergence_achieved": no_improvement_count < patience
-                if patience > 0
-                else None,
+                "convergence_achieved": no_improvement_count < patience if patience > 0 else None,
             }
 
         except Exception as e:
@@ -354,9 +335,7 @@ class OptimizationGPU:
                     params = self._sample_random_params(param_space)
                 else:
                     # 使用高斯过程指导采样
-                    params = self._sample_from_gaussian_process(
-                        param_space, evaluated_params, scores, maximize
-                    )
+                    params = self._sample_from_gaussian_process(param_space, evaluated_params, scores, maximize)
 
                 score = self._evaluate_parameters(objective_func, params)
 
@@ -383,9 +362,7 @@ class OptimizationGPU:
                 "total_evaluations": len(evaluated_params),
                 "method": "bayesian",
                 "scores": scores,
-                "convergence_achieved": no_improvement_count < patience
-                if patience > 0
-                else None,
+                "convergence_achieved": no_improvement_count < patience if patience > 0 else None,
             }
 
         except Exception as e:
@@ -410,9 +387,7 @@ class OptimizationGPU:
             crossover_rate = 0.8
 
             # 初始化种群
-            population = [
-                self._sample_random_params(param_space) for _ in range(population_size)
-            ]
+            population = [self._sample_random_params(param_space) for _ in range(population_size)]
             best_params = None
             best_score = float("-inf") if maximize else float("inf")
             scores = []
@@ -429,9 +404,7 @@ class OptimizationGPU:
                     fitness_scores.append(score)
 
                     # 更新全局最佳
-                    is_better = (
-                        (score > best_score) if maximize else (score < best_score)
-                    )
+                    is_better = (score > best_score) if maximize else (score < best_score)
                     if is_better:
                         best_score = score
                         best_params = individual.copy()
@@ -461,9 +434,7 @@ class OptimizationGPU:
                 if (generation + 1) % max(1, n_trials // 10) == 0:
                     progress = (generation + 1) / n_trials * 100
                     avg_fitness = np.mean(fitness_scores)
-                    logger.debug(
-                        f"遗传算法进度: {progress:.1f}% (平均适应度: {avg_fitness:.4f})"
-                    )
+                    logger.debug(f"遗传算法进度: {progress:.1f}% (平均适应度: {avg_fitness:.4f})")
 
             return {
                 "best_params": best_params,
@@ -471,9 +442,7 @@ class OptimizationGPU:
                 "total_evaluations": len(scores),
                 "method": "genetic",
                 "scores": scores,
-                "convergence_achieved": no_improvement_count < patience
-                if patience > 0
-                else None,
+                "convergence_achieved": no_improvement_count < patience if patience > 0 else None,
                 "final_population": population,
             }
 
@@ -613,13 +582,9 @@ class OptimizationGPU:
                         mean = best_val
                         std = (param_range[1] - param_range[0]) / 6
                         sampled = np.random.normal(mean, std)
-                        params[param_name] = max(
-                            param_range[0], min(param_range[1], sampled)
-                        )
+                        params[param_name] = max(param_range[0], min(param_range[1], sampled))
                     else:
-                        params[param_name] = random.uniform(
-                            param_range[0], param_range[1]
-                        )
+                        params[param_name] = random.uniform(param_range[0], param_range[1])
 
             return params
 
@@ -641,10 +606,7 @@ class OptimizationGPU:
             # 选择操作（轮盘赌选择）
             if maximize:
                 # 确保适应度为正
-                adjusted_scores = [
-                    max(0, score - min(fitness_scores) + 1e-6)
-                    for score in fitness_scores
-                ]
+                adjusted_scores = [max(0, score - min(fitness_scores) + 1e-6) for score in fitness_scores]
             else:
                 # 对于最小化问题，转换适应度
                 max_score = max(fitness_scores)
@@ -657,20 +619,14 @@ class OptimizationGPU:
                 probabilities = [1 / len(population)] * len(population)
 
             # 选择父代
-            selected_indices = np.random.choice(
-                len(population), size=len(population), replace=True, p=probabilities
-            )
+            selected_indices = np.random.choice(len(population), size=len(population), replace=True, p=probabilities)
             selected_population = [population[i].copy() for i in selected_indices]
 
             # 交叉操作
             new_population = []
             for i in range(0, len(selected_population), 2):
                 parent1 = selected_population[i]
-                parent2 = (
-                    selected_population[i + 1]
-                    if i + 1 < len(selected_population)
-                    else selected_population[0]
-                )
+                parent2 = selected_population[i + 1] if i + 1 < len(selected_population) else selected_population[0]
 
                 if np.random.random() < crossover_rate:
                     child1, child2 = self._crossover(parent1, parent2, param_space)
@@ -721,9 +677,7 @@ class OptimizationGPU:
             current_val = individual[param_name]
             std = (param_range[1] - param_range[0]) * 0.1
             mutated_val = current_val + np.random.normal(0, std)
-            individual[param_name] = max(
-                param_range[0], min(param_range[1], mutated_val)
-            )
+            individual[param_name] = max(param_range[0], min(param_range[1], mutated_val))
 
     def _evaluate_parameters(self, objective_func: Callable, params: Dict) -> float:
         """评估参数（带缓存）"""
@@ -761,9 +715,7 @@ class OptimizationGPU:
 
         return [record["best_score"] for record in self.optimization_history[-10:]]
 
-    def _mean_variance_optimization_gpu(
-        self, returns: pd.DataFrame, risk_free_rate: float
-    ) -> Dict[str, Any]:
+    def _mean_variance_optimization_gpu(self, returns: pd.DataFrame, risk_free_rate: float) -> Dict[str, Any]:
         """GPU加速均值-方差优化"""
         try:
             if self.gpu_available:
@@ -791,11 +743,7 @@ class OptimizationGPU:
                 portfolio_variance = np.dot(np.dot(weights, cov_matrix), weights)
 
             portfolio_std = np.sqrt(portfolio_variance)
-            sharpe_ratio = (
-                (portfolio_return - risk_free_rate) / portfolio_std
-                if portfolio_std > 0
-                else 0
-            )
+            sharpe_ratio = (portfolio_return - risk_free_rate) / portfolio_std if portfolio_std > 0 else 0
 
             return {
                 "weights": weights.tolist(),
@@ -826,9 +774,7 @@ class OptimizationGPU:
                 volatilities = np.sqrt(np.diag(cov_matrix))
 
             # 风险平价权重
-            inv_vols = 1.0 / (
-                volatilities.get() if self.gpu_available else volatilities
-            )
+            inv_vols = 1.0 / (volatilities.get() if self.gpu_available else volatilities)
             weights = inv_vols / np.sum(inv_vols)
 
             # 计算组合统计量
@@ -851,9 +797,7 @@ class OptimizationGPU:
             logger.error(f"风险平价优化失败: {e}")
             return {"error": str(e)}
 
-    def _max_sharpe_optimization_gpu(
-        self, returns: pd.DataFrame, risk_free_rate: float
-    ) -> Dict[str, Any]:
+    def _max_sharpe_optimization_gpu(self, returns: pd.DataFrame, risk_free_rate: float) -> Dict[str, Any]:
         """GPU加速最大夏普比率优化"""
         # 简化实现：使用均值-方差结果
         result = self._mean_variance_optimization_gpu(returns, risk_free_rate)

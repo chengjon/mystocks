@@ -7,9 +7,7 @@ AI Test Optimizer Toolkit 安装脚本
 import os
 import sys
 import shutil
-import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 class ToolkitInstaller:

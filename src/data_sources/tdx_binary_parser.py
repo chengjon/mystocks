@@ -64,9 +64,7 @@ class TdxBinaryParser:
         self.logger.setLevel(logging.INFO)
 
         # 获取数据路径
-        self.data_path = data_path or os.getenv(
-            "TDX_DATA_PATH", "/mnt/d/ProgramData/tdx_new/vipdoc"
-        )
+        self.data_path = data_path or os.getenv("TDX_DATA_PATH", "/mnt/d/ProgramData/tdx_new/vipdoc")
 
         if not os.path.exists(self.data_path):
             self.logger.warning(f"TDX数据路径不存在: {self.data_path}")
@@ -169,9 +167,7 @@ class TdxBinaryParser:
             if start_date:
                 data = data[data["datetime"] >= pd.Timestamp(start_date)]
             if end_date:
-                data = data[
-                    data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)
-                ]
+                data = data[data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)]
 
             self.logger.info(f"读取 {symbol} 5分钟数据: {len(data)} 条记录")
             return data
@@ -214,9 +210,7 @@ class TdxBinaryParser:
             if start_date:
                 data = data[data["datetime"] >= pd.Timestamp(start_date)]
             if end_date:
-                data = data[
-                    data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)
-                ]
+                data = data[data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)]
 
             self.logger.info(f"读取 {symbol} 1分钟数据: {len(data)} 条记录")
             return data
@@ -419,9 +413,7 @@ class TdxBinaryParser:
                     hour = (minute_offset % (24 * 60)) // 60
                     minute = minute_offset % 60
 
-                    trade_datetime = datetime(year, 1, 1) + timedelta(
-                        days=days, hours=hour, minutes=minute
-                    )
+                    trade_datetime = datetime(year, 1, 1) + timedelta(days=days, hours=hour, minutes=minute)
                 except (ValueError, OverflowError):
                     continue
 

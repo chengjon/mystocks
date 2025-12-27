@@ -34,7 +34,7 @@ import price_data_adapter
             with self.assertRaises((ValueError, SecurityError)):
                 if hasattr(price_data_adapter, 'target_function'):
                     price_data_adapter.target_function(unsafe_input)
-            
+
 
 
     def test_price_data_adapter_basic_functionality(self):
@@ -46,7 +46,7 @@ import price_data_adapter
         # 测试是否有公共函数
         public_funcs = [f for f in dir(price_data_adapter) if not f.startswith('_')]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
-            
+
 
 
 if __name__ == "__main__":

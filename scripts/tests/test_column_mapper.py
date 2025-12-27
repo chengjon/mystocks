@@ -6,11 +6,8 @@
 """
 
 import sys
-import os
-import time
 import pandas as pd
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -723,7 +720,6 @@ class TestIntegrationScenarios:
 
         # 这个映射操作应该触发打印输出（第192行）
         import io
-        import sys
         from contextlib import redirect_stdout
 
         # 捕获标准输出

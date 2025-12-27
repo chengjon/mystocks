@@ -83,6 +83,3 @@
 - 当传入 URL 时，工具会尝试从 URL 中解析 `item-id` 参数并作为 `itemId` 使用。
 - 对于 `clientFrameworks`，该字段主要用于日志和适配提示，不会影响核心数据；不确定时建议使用 `html`。
 - `getExportImage` 的 `exportSettings` 通常必需，请参考具体实现（例如：宽度、高度、缩放、背景、格式）。
-
-
-

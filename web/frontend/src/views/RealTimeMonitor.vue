@@ -166,8 +166,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   Monitor, Refresh, Tools, TrendCharts,
@@ -181,25 +181,62 @@ import BacktestProgress from '@/components/sse/BacktestProgress.vue'
 import RiskAlerts from '@/components/sse/RiskAlerts.vue'
 import DashboardMetrics from '@/components/sse/DashboardMetrics.vue'
 
-// SSE status
-const sseStatus = ref(null)
-const testingTraining = ref(false)
-const testingBacktest = ref(false)
-const testingAlert = ref(false)
-const testingDashboard = ref(false)
+// ============================================
+// 类型定义
+// ============================================
+
+/**
+ * SSE通道连接数
+ */
+interface ChannelConnectionCount {
+  connection_count: number
+}
+
+/**
+ * SSE通道状态
+ */
+interface SSEChannels {
+  training?: ChannelConnectionCount
+  backtest?: ChannelConnectionCount
+  alerts?: ChannelConnectionCount
+  dashboard?: ChannelConnectionCount
+}
+
+/**
+ * SSE状态响应
+ */
+interface SSEStatus {
+  status: 'active' | 'inactive'
+  total_connections: number
+  channels?: SSEChannels
+}
+
+// ============================================
+// 状态管理
+// ============================================
+
+const sseStatus: Ref<SSEStatus | null> = ref(null)
+const testingTraining: Ref<boolean> = ref(false)
+const testingBacktest: Ref<boolean> = ref(false)
+const testingAlert: Ref<boolean> = ref(false)
+const testingDashboard: Ref<boolean> = ref(false)
 
 // Get API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
+// ============================================
+// 方法定义
+// ============================================
+
 /**
  * Fetch SSE status from backend
  */
-const refreshSSEStatus = async () => {
+const refreshSSEStatus = async (): Promise<void> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/sse/status`)
+    const response = await axios.get<SSEStatus>(`${API_BASE_URL}/api/v1/sse/status`)
     sseStatus.value = response.data
     ElMessage.success('SSE状态已更新')
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch SSE status:', error)
     ElMessage.error('获取SSE状态失败')
   }
@@ -208,13 +245,13 @@ const refreshSSEStatus = async () => {
 /**
  * Test training progress SSE
  */
-const testTrainingProgress = async () => {
+const testTrainingProgress = async (): Promise<void> => {
   testingTraining.value = true
   try {
     // This would call a backend API that triggers training progress events
     ElMessage.info('训练进度测试功能需要后端API支持')
     // await axios.post(`${API_BASE_URL}/api/test/training-progress`)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Test training progress failed:', error)
     ElMessage.error('测试训练进度失败')
   } finally {
@@ -225,12 +262,12 @@ const testTrainingProgress = async () => {
 /**
  * Test backtest progress SSE
  */
-const testBacktestProgress = async () => {
+const testBacktestProgress = async (): Promise<void> => {
   testingBacktest.value = true
   try {
     ElMessage.info('回测进度测试功能需要后端API支持')
     // await axios.post(`${API_BASE_URL}/api/test/backtest-progress`)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Test backtest progress failed:', error)
     ElMessage.error('测试回测进度失败')
   } finally {
@@ -241,12 +278,12 @@ const testBacktestProgress = async () => {
 /**
  * Test risk alert SSE
  */
-const testRiskAlert = async () => {
+const testRiskAlert = async (): Promise<void> => {
   testingAlert.value = true
   try {
     ElMessage.info('风险告警测试功能需要后端API支持')
     // await axios.post(`${API_BASE_URL}/api/test/risk-alert`)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Test risk alert failed:', error)
     ElMessage.error('测试风险告警失败')
   } finally {
@@ -257,12 +294,12 @@ const testRiskAlert = async () => {
 /**
  * Test dashboard update SSE
  */
-const testDashboardUpdate = async () => {
+const testDashboardUpdate = async (): Promise<void> => {
   testingDashboard.value = true
   try {
     ElMessage.info('指标更新测试功能需要后端API支持')
     // await axios.post(`${API_BASE_URL}/api/test/dashboard-update`)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Test dashboard update failed:', error)
     ElMessage.error('测试指标更新失败')
   } finally {
@@ -270,8 +307,14 @@ const testDashboardUpdate = async () => {
   }
 }
 
-// Load SSE status on mount
-onMounted(() => {
+// ============================================
+// 生命周期
+// ============================================
+
+/**
+ * Load SSE status on mount
+ */
+onMounted((): void => {
   refreshSSEStatus()
 })
 </script>

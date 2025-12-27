@@ -5,9 +5,6 @@
 """
 
 import subprocess
-import sys
-import os
-from pathlib import Path
 
 
 def run_command(cmd, description=""):
@@ -234,7 +231,7 @@ def main():
     # 2. 分类分析
     categories = categorize_modules(modules)
 
-    print(f"\n📈 覆盖率分类统计:")
+    print("\n📈 覆盖率分类统计:")
     print(f"  🟢 高覆盖率 (>70%): {len(categories['high_coverage'])} 个模块")
     print(f"  🟡 中等覆盖率 (30-70%): {len(categories['medium_coverage'])} 个模块")
     print(f"  🟠 低覆盖率 (10-30%): {len(categories['low_coverage'])} 个模块")
@@ -242,10 +239,10 @@ def main():
     print(f"  ⚫ 零覆盖率 (0%): {len(categories['no_coverage'])} 个模块")
 
     # 3. 识别优先改进目标（排除data_access）
-    print(f"\n🎯 识别优先改进目标（排除data_access）...")
+    print("\n🎯 识别优先改进目标（排除data_access）...")
     priority_modules = identify_priority_modules(modules)
 
-    print(f"\n🔝 Top 10 优先改进模块:")
+    print("\n🔝 Top 10 优先改进模块:")
     for i, module in enumerate(priority_modules[:10], 1):
         print(f"  {i}. {module['name']}")
         print(f"     📊 覆盖率: {module['coverage']}% ({module['statements']} 行语句)")
@@ -254,21 +251,21 @@ def main():
     # 4. 识别高价值目标
     high_value_targets = identify_high_value_targets(modules)
 
-    print(f"\n💎 高价值改进目标（有基础但需提升）:")
+    print("\n💎 高价值改进目标（有基础但需提升）:")
     for i, module in enumerate(high_value_targets[:5], 1):
         print(f"  {i}. {module['name']}")
         print(f"     📊 当前覆盖率: {module['coverage']}%")
-        print(f"     🎯 目标覆盖率: 85%")
+        print("     🎯 目标覆盖率: 85%")
 
     # 5. 生成改进建议
     recommendations = generate_recommendations(categories, priority_modules)
 
-    print(f"\n📋 改进建议:")
+    print("\n📋 改进建议:")
     for rec in recommendations:
         print(f"\n  🎯 优先级 {rec['priority']}: {rec['title']}")
         print(f"     📋 模块: {len(rec['modules'])} 个")
         print(f"     🔧 行动: {rec['action']}")
-        print(f"     📄 文件:")
+        print("     📄 文件:")
         for module in rec["modules"][:3]:  # 显示前3个
             print(f"       - {module['name']} ({module['coverage']}%)")
         if len(rec["modules"]) > 3:
@@ -277,7 +274,7 @@ def main():
     # 6. 分析TODO注释
     todos, todo_files = analyze_todo_comments()
 
-    print(f"\n📝 TODO注释分析 (Top 10文件):")
+    print("\n📝 TODO注释分析 (Top 10文件):")
     for i, (file_path, file_todos) in enumerate(todo_files, 1):
         print(f"  {i}. {file_path}")
         print(f"     📝 TODO数量: {len(file_todos)}")
@@ -300,14 +297,14 @@ def main():
     with open("overall_coverage_analysis.json", "w", encoding="utf-8") as f:
         json.dump(analysis_result, f, ensure_ascii=False, indent=2)
 
-    print(f"\n💾 分析结果已保存到: overall_coverage_analysis.json")
+    print("\n💾 分析结果已保存到: overall_coverage_analysis.json")
 
     # 8. 生成下一步行动计划
-    print(f"\n🚀 Phase 3 行动计划:")
-    print(f"  1. 🎯 优先改进前5个低覆盖率模块")
-    print(f"  2. 💎 为中等覆盖率模块补充测试")
-    print(f"  3. 📝 处理高优先级TODO注释")
-    print(f"  4. 📊 验证改进效果")
+    print("\n🚀 Phase 3 行动计划:")
+    print("  1. 🎯 优先改进前5个低覆盖率模块")
+    print("  2. 💎 为中等覆盖率模块补充测试")
+    print("  3. 📝 处理高优先级TODO注释")
+    print("  4. 📊 验证改进效果")
 
 
 if __name__ == "__main__":

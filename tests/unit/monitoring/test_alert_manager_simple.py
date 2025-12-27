@@ -186,9 +186,7 @@ class TestSimpleAlertManager:
             "System failure occurred",
         )
 
-        manager.logger.critical.assert_called_once_with(
-            "[SYSTEM_ERROR] Test Error: System failure occurred"
-        )
+        manager.logger.critical.assert_called_once_with("[SYSTEM_ERROR] Test Error: System failure occurred")
 
     def test_alert_method_warning_level(self):
         """测试告警方法 - 警告级别"""
@@ -200,9 +198,7 @@ class TestSimpleAlertManager:
             "Query took 5 seconds",
         )
 
-        manager.logger.warning.assert_called_once_with(
-            "[SLOW_QUERY] Slow Query: Query took 5 seconds"
-        )
+        manager.logger.warning.assert_called_once_with("[SLOW_QUERY] Slow Query: Query took 5 seconds")
 
     def test_alert_method_info_level(self):
         """测试告警方法 - 信息级别"""
@@ -214,9 +210,7 @@ class TestSimpleAlertManager:
             "Data quality check completed",
         )
 
-        manager.logger.info.assert_called_once_with(
-            "[DATA_QUALITY] Data Check: Data quality check completed"
-        )
+        manager.logger.info.assert_called_once_with("[DATA_QUALITY] Data Check: Data quality check completed")
 
     def test_alert_method_with_details(self):
         """测试带详情的告警方法"""
@@ -244,9 +238,7 @@ class TestSimpleAlertManager:
             None,
         )
 
-        manager.logger.info.assert_called_once_with(
-            "[DATA_QUALITY] No Details: Message without details"
-        )
+        manager.logger.info.assert_called_once_with("[DATA_QUALITY] No Details: Message without details")
 
     def test_send_alert_method_critical(self):
         """测试发送告警方法 - 严重级别"""
@@ -258,9 +250,7 @@ class TestSimpleAlertManager:
             alert_message="System critical failure",
         )
 
-        manager.logger.critical.assert_called_once_with(
-            "[SYSTEM_ERROR] Critical Error: System critical failure"
-        )
+        manager.logger.critical.assert_called_once_with("[SYSTEM_ERROR] Critical Error: System critical failure")
 
     def test_send_alert_method_warning(self):
         """测试发送告警方法 - 警告级别"""
@@ -272,9 +262,7 @@ class TestSimpleAlertManager:
             alert_message="Query running slow",
         )
 
-        manager.logger.warning.assert_called_once_with(
-            "[SLOW_QUERY] Performance Issue: Query running slow"
-        )
+        manager.logger.warning.assert_called_once_with("[SLOW_QUERY] Performance Issue: Query running slow")
 
     def test_send_alert_method_info(self):
         """测试发送告警方法 - 信息级别"""
@@ -286,9 +274,7 @@ class TestSimpleAlertManager:
             alert_message="Data validation complete",
         )
 
-        manager.logger.info.assert_called_once_with(
-            "[DATA_QUALITY] Quality Check: Data validation complete"
-        )
+        manager.logger.info.assert_called_once_with("[DATA_QUALITY] Quality Check: Data validation complete")
 
     def test_send_alert_method_case_insensitive_level(self):
         """测试发送告警方法 - 大小写不敏感级别"""
@@ -300,9 +286,7 @@ class TestSimpleAlertManager:
             alert_message="Testing case sensitivity",
         )
 
-        manager.logger.warning.assert_called_once_with(
-            "[SLOW_QUERY] Case Test: Testing case sensitivity"
-        )
+        manager.logger.warning.assert_called_once_with("[SLOW_QUERY] Case Test: Testing case sensitivity")
 
     def test_send_alert_method_case_insensitive_type(self):
         """测试发送告警方法 - 大小写不敏感类型"""
@@ -314,9 +298,7 @@ class TestSimpleAlertManager:
             alert_message="Testing type case sensitivity",
         )
 
-        manager.logger.warning.assert_called_once_with(
-            "[SLOW_QUERY] Case Test: Testing type case sensitivity"
-        )
+        manager.logger.warning.assert_called_once_with("[SLOW_QUERY] Case Test: Testing type case sensitivity")
 
     def test_send_alert_method_unknown_level_defaults_to_info(self):
         """测试发送告警方法 - 未知级别默认为INFO"""
@@ -328,9 +310,7 @@ class TestSimpleAlertManager:
             alert_message="Testing unknown level",
         )
 
-        manager.logger.info.assert_called_once_with(
-            "[SYSTEM_ERROR] Unknown Level: Testing unknown level"
-        )
+        manager.logger.info.assert_called_once_with("[SYSTEM_ERROR] Unknown Level: Testing unknown level")
 
     def test_send_alert_method_unknown_type_defaults_to_system_error(self):
         """测试发送告警方法 - 未知类型默认为SYSTEM_ERROR"""
@@ -342,9 +322,7 @@ class TestSimpleAlertManager:
             alert_message="Testing unknown type",
         )
 
-        manager.logger.warning.assert_called_once_with(
-            "[SYSTEM_ERROR] Unknown Type: Testing unknown type"
-        )
+        manager.logger.warning.assert_called_once_with("[SYSTEM_ERROR] Unknown Type: Testing unknown type")
 
     def test_send_alert_method_with_all_parameters(self):
         """测试发送告警方法 - 所有参数"""
@@ -409,12 +387,8 @@ class TestSimpleAlertManager:
         manager = SimpleAlertManager()
 
         # 发送不同级别的告警
-        manager.alert(
-            AlertLevel.CRITICAL, AlertType.SYSTEM_ERROR, "Critical", "Critical message"
-        )
-        manager.alert(
-            AlertLevel.WARNING, AlertType.SLOW_QUERY, "Warning", "Warning message"
-        )
+        manager.alert(AlertLevel.CRITICAL, AlertType.SYSTEM_ERROR, "Critical", "Critical message")
+        manager.alert(AlertLevel.WARNING, AlertType.SLOW_QUERY, "Warning", "Warning message")
         manager.alert(AlertLevel.INFO, AlertType.DATA_QUALITY, "Info", "Info message")
 
         # 验证调用次数

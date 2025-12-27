@@ -451,7 +451,7 @@ from injector import Injector, inject
 
 class ServiceContainer:
     @inject
-    def __init__(self, 
+    def __init__(self,
                  db_manager: 'DatabaseManager',
                  cache: 'CacheManager'):
         self.db_manager = db_manager
@@ -518,11 +518,11 @@ from .market_service import MarketDataService
 
 class ComplexService(BaseService):
     """组合多种服务的复杂服务"""
-    
+
     def __init__(self):
         self.market_service = MarketDataService()
         self.reference_service = ReferenceDataService()
-        
+
     def get_comprehensive_data(self):
         # 协调多个服务完成复杂操作
         pass
@@ -670,22 +670,22 @@ src/storage/database/
 # src/services/market_data_service.py
 class MarketDataService:
     """市场数据服务 - 处理跨库查询"""
-    
+
     def __init__(self):
         self.tdengine_service = TdengineMarketDataService()
         self.postgresql_service = PostgreSQLMarketDataService()
-    
+
     def get_combined_market_data(self, symbol: str, start_time: str, end_time: str):
         """获取综合市场数据 - 可能需要查询两个数据库"""
         # 实时数据从TDengine获取
         realtime_data = self.tdengine_service.get_realtime_data(symbol)
-        
+
         # 历史数据从PostgreSQL获取
         historical_data = self.postgresql_service.get_historical_data(symbol, start_time, end_time)
-        
+
         # 合并处理
         return self._merge_data(realtime_data, historical_data)
-    
+
     def _merge_data(self, realtime, historical):
         """合并实时和历史数据的逻辑"""
         # 具体合并逻辑
@@ -708,7 +708,7 @@ from typing import Dict, Any
 # 数据库配置类
 class DatabaseConfig:
     """数据库配置管理"""
-    
+
     @staticmethod
     def get_tdengine_config() -> Dict[str, Any]:
         return {
@@ -718,7 +718,7 @@ class DatabaseConfig:
             'password': os.getenv('TDENGINE_PASSWORD', 'taos'),
             'database': os.getenv('TDENGINE_DB', 'mystocks'),
         }
-    
+
     @staticmethod
     def get_postgresql_config() -> Dict[str, Any]:
         return {
@@ -735,22 +735,22 @@ from .config import DatabaseConfig
 
 class BaseDatabaseService(ABC):
     """数据库服务基类"""
-    
+
     def __init__(self):
         self.config = self._get_config()
         self._connection = None
-    
+
     @abstractmethod
     def _get_config(self) -> Dict[str, Any]:
         """获取数据库配置 - 子类实现"""
         pass
-    
+
     def get_connection(self):
         """获取数据库连接"""
         if self._connection is None:
             self._connection = self._create_connection()
         return self._connection
-    
+
     @abstractmethod
     def _create_connection(self):
         """创建数据库连接 - 子类实现"""
@@ -762,10 +762,10 @@ from ..config import DatabaseConfig
 
 class TdengineService(BaseDatabaseService):
     """TDengine数据库服务实现"""
-    
+
     def _get_config(self):
         return DatabaseConfig.get_tdengine_config()
-    
+
     def _create_connection(self):
         # 创建TDengine连接的逻辑
         pass
@@ -802,32 +802,32 @@ src/monitoring/realtime/
 # data_manager.py
 class RealtimeDataManager:
     """实时数据管理器 - 专注数据获取和处理"""
-    
+
     def __init__(self, source_manager):
         self.source_manager = source_manager
         self.subscribers = []  # 数据订阅者列表
-    
+
     def subscribe(self, symbol: str, callback):
         """订阅实时数据"""
         # 添加订阅者
         self.subscribers.append((symbol, callback))
-        
+
         # 启动数据流
         self.source_manager.start_stream(symbol, callback)
-    
+
     def unsubscribe(self, symbol: str, callback):
         """取消订阅"""
         # 移除订阅者
         self.subscribers = [(s, cb) for s, cb in self.subscribers if not (s == symbol and cb == callback)]
-        
+
         # 停止数据流
         self.source_manager.stop_stream(symbol)
-    
+
     def process_data(self, raw_data):
         """处理原始数据"""
         # 数据清洗和格式化
         formatted_data = self.data_models.format_data(raw_data)
-        
+
         # 通知所有订阅者
         for symbol, callback in self.subscribers:
             if formatted_data['symbol'] == symbol:
@@ -836,32 +836,32 @@ class RealtimeDataManager:
 # ui_update.py
 class UIUpdater:
     """UI更新器 - 专注UI渲染"""
-    
+
     def __init__(self, dashboard_components):
         self.dashboard_components = dashboard_components
         self.update_queue = []  # 更新队列
-    
+
     def update_realtime_chart(self, symbol: str, data: Dict):
         """更新实时图表"""
         chart = self.dashboard_components.get_chart(symbol)
         if chart:
             chart.add_data_point(data)
-    
+
     def update_alert_status(self, alert_id: str, status: str, message: str):
         """更新告警状态"""
         alert_component = self.dashboard_components.get_alert(alert_id)
         if alert_component:
             alert_component.update_status(status, message)
-    
+
     def process_data_update(self, data: Dict):
         """处理数据更新事件"""
         # 将数据更新添加到队列
         self.update_queue.append(data)
-        
+
         # 批量处理更新
         if len(self.update_queue) >= 10 or time.time() - self.last_update > 1.0:
             self.flush_updates()
-    
+
     def flush_updates(self):
         """批量处理所有挂起的更新"""
         for data in self.update_queue:
@@ -869,7 +869,7 @@ class UIUpdater:
                 self.update_realtime_chart(data['symbol'], data['content'])
             elif data['type'] == 'alert':
                 self.update_alert_status(data['alert_id'], data['status'], data['message'])
-        
+
         # 清空队列
         self.update_queue = []
         self.last_update = time.time()
@@ -897,11 +897,11 @@ from datetime import datetime, timedelta
 
 class UnifiedScheduler:
     """统一调度器 - 管理所有定时任务"""
-    
+
     def __init__(self):
         self.tasks: Dict[str, Dict] = {}  # 任务ID -> 任务信息
         self.running = False
-    
+
     def add_task(self, task_id: str, func: Callable, interval: int, args: tuple = ()):
         """添加定时任务"""
         self.tasks[task_id] = {
@@ -912,19 +912,19 @@ class UnifiedScheduler:
             'next_run': datetime.now() + timedelta(seconds=interval),
             'running': False
         }
-    
+
     def remove_task(self, task_id: str):
         """移除定时任务"""
         if task_id in self.tasks:
             del self.tasks[task_id]
-    
+
     async def start(self):
         """启动调度器"""
         self.running = True
         while self.running:
             await self._run_pending_tasks()
             await asyncio.sleep(1)  # 每秒检查一次
-    
+
     async def _run_pending_tasks(self):
         """执行待执行的任务"""
         now = datetime.now()
@@ -932,10 +932,10 @@ class UnifiedScheduler:
             if not task_info['running'] and now >= task_info['next_run']:
                 # 标记任务为运行中
                 task_info['running'] = True
-                
+
                 # 异步执行任务
                 asyncio.create_task(self._execute_task(task_id, task_info))
-    
+
     async def _execute_task(self, task_id: str, task_info: Dict):
         """执行单个任务"""
         try:
@@ -944,7 +944,7 @@ class UnifiedScheduler:
                 await task_info['func'](*task_info['args'])
             else:
                 task_info['func'](*task_info['args'])
-            
+
             # 更新任务状态
             task_info['last_run'] = datetime.now()
             task_info['next_run'] = task_info['last_run'] + timedelta(seconds=task_info['interval'])
@@ -954,7 +954,7 @@ class UnifiedScheduler:
         finally:
             # 标记任务为已完成
             task_info['running'] = False
-    
+
     def stop(self):
         """停止调度器"""
         self.running = False
@@ -1066,21 +1066,21 @@ from .error_handler import handle_data_exceptions, ConnectionException, TimeoutE
 
 class MarketDataService:
     """市场数据服务 - 数据处理和异常处理"""
-    
+
     def __init__(self, data_provider):
         self.data_provider = data_provider
-    
+
     @handle_data_exceptions
     def get_realtime_price(self, symbol: str) -> Dict:
         """获取实时价格"""
         try:
             # 尝试从数据提供商获取数据
             raw_data = self.data_provider.get_realtime_data(symbol)
-            
+
             # 验证数据
             if not self._validate_data(raw_data):
                 raise DataValidationException(f"Invalid data for {symbol}")
-            
+
             # 返回格式化后的数据
             return self._format_data(raw_data)
         except ConnectionException:
@@ -1089,13 +1089,13 @@ class MarketDataService:
         except TimeoutException:
             # 返回上次获取的数据
             return self._get_last_known_data(symbol)
-    
+
     def _validate_data(self, data: Dict) -> bool:
         """验证数据有效性"""
         # 验证逻辑
         required_fields = ['symbol', 'price', 'timestamp']
         return all(field in data for field in required_fields)
-    
+
     def _format_data(self, data: Dict) -> Dict:
         """格式化数据"""
         # 数据格式化逻辑
@@ -1107,12 +1107,12 @@ class MarketDataService:
             'change_percent': float(data.get('change_percent', 0))
         }
         return formatted
-    
+
     def _get_cached_data(self, symbol: str) -> Dict:
         """从缓存获取数据"""
         # 缓存获取逻辑
         pass
-    
+
     def _get_last_known_data(self, symbol: str) -> Dict:
         """获取上次已知数据"""
         # 上次已知数据逻辑
@@ -1122,16 +1122,16 @@ class MarketDataService:
 # src/monitoring/ui_components.py
 class PriceDisplayWidget:
     """价格显示组件 - UI层异常处理"""
-    
+
     def __init__(self, data_service):
         self.data_service = data_service
-    
+
     def update_price(self, symbol: str):
         """更新价格显示"""
         try:
             # 调用数据服务
             price_data = self.data_service.get_realtime_price(symbol)
-            
+
             # 更新UI显示
             self._update_display(price_data)
         except ConnectionException:
@@ -1140,17 +1140,17 @@ class PriceDisplayWidget:
         except Exception as e:
             # UI层处理其他异常
             self._show_generic_error(str(e))
-    
+
     def _update_display(self, data: Dict):
         """更新显示内容"""
         # UI更新逻辑
         pass
-    
+
     def _show_connection_error(self):
         """显示连接错误提示"""
         # UI显示逻辑
         pass
-    
+
     def _show_generic_error(self, error_message: str):
         """显示通用错误提示"""
         # UI显示逻辑
@@ -1264,7 +1264,7 @@ class PriceDisplayWidget:
 ```python
 # 获取模块依赖关系（使用pyreverse或自定义脚本）
 # 假设我们有以下依赖关系图：
-# 
+#
 # module_a
 #   └─> depends_on module_b
 #   └─> depends_on module_c
@@ -1290,19 +1290,19 @@ def calculate_dependency_density():
         'module_g': ['module_e'],
         'module_h': ['module_a', 'module_g']
     }
-    
+
     # 计算总依赖关系数
     total_deps = sum(len(deps) for deps in dependencies.values())
-    
+
     # 计算模块依赖密度
     dependency_density = total_deps / len(modules)
-    
+
     # 检测循环依赖
     find_circular_dependencies(modules, dependencies)
-    
+
     # 建议优化策略
     suggest_optimization(modules, dependencies)
-    
+
     return dependency_density
 
 # 优化建议：
@@ -1337,15 +1337,15 @@ from app.services.reference_service import ReferenceDataService
 def test_get_realtime_data_performance(benchmark):
     """测试实时数据获取性能"""
     service = MarketDataService()
-    
+
     # 使用benchmark工具测试函数性能
     result = benchmark(service.get_realtime_data, '600000')
-    
+
     # 验证结果正确性
     assert result is not None
     assert 'symbol' in result
     assert 'price' in result
-    
+
     # 输出基准测试报告
     print(f"平均值: {benchmark.stats['mean']:.3f}ms")
     print(f"中位数: {benchmark.stats['median']:.3f}ms")
@@ -1368,24 +1368,24 @@ from monitoring.realtime.connection import WebSocketManager
 async def test_websocket_connection_stability():
     """测试WebSocket连接的稳定性"""
     manager = WebSocketManager()
-    
+
     # 测试连接建立
     connection = await manager.connect('ws://example.com/realtime')
     assert connection.is_connected()
-    
+
     # 测试数据传输
     await connection.send({'action': 'subscribe', 'symbol': '600000'})
     response = await connection.receive()
     assert response['symbol'] == '600000'
-    
+
     # 测试连接中断处理
     connection.simulate_disconnection()  # 模拟连接中断
     assert not connection.is_connected()
-    
+
     # 测试自动重连
     reconnected = await manager.reconnect_with_retry(connection, max_retries=3)
     assert reconnected.is_connected()
-    
+
     # 清理
     await manager.disconnect_all()
 
@@ -1431,12 +1431,12 @@ WEBSOCKET_MONITORING_DASHBOARD = {
 
 class CodeReadabilityAnalyzer:
     """代码可读性分析器"""
-    
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.content = self._read_file(file_path)
         self.metrics = {}
-    
+
     def analyze(self):
         """分析代码可读性"""
         self.metrics['avg_function_length'] = self._calculate_avg_function_length()
@@ -1444,18 +1444,18 @@ class CodeReadabilityAnalyzer:
         self.metrics['max_nesting_depth'] = self._calculate_max_nesting_depth()
         self.metrics['comment_ratio'] = self._calculate_comment_ratio()
         self.metrics['naming_consistency'] = self._calculate_naming_consistency()
-        
+
         # 综合评分
         self.metrics['readability_score'] = self._calculate_readability_score()
-        
+
         return self.metrics
-    
+
     def _calculate_avg_function_length(self):
         """计算平均函数长度"""
         # 统计函数数量和总行数
         # 实施细节略...
         return 45  # 示例返回值
-    
+
     def _calculate_readability_score(self):
         """计算代码可读性综合评分"""
         # 基于各项指标加权计算
@@ -1466,7 +1466,7 @@ class CodeReadabilityAnalyzer:
             'comment_ratio': 0.2,
             'naming_consistency': 0.3
         }
-        
+
         score = 0
         for metric, weight in weights.items():
             if metric == 'avg_function_length':
@@ -1478,9 +1478,9 @@ class CodeReadabilityAnalyzer:
             else:
                 # 其他指标直接标准化
                 metric_score = self.metrics[metric]
-            
+
             score += metric_score * weight
-        
+
         return round(score, 1)
 ```
 
@@ -1503,7 +1503,7 @@ class CodeReadabilityAnalyzer:
 # 新人上手时间评估脚本
 def measure_onboarding_time():
     """评估新员工上手时间"""
-    
+
     # 假设我们有以下任务清单，每个任务都有一个预期完成时间
     tasks = [
         {'name': '环境配置', 'estimated_time': 0.5},  # 天
@@ -1513,31 +1513,31 @@ def measure_onboarding_time():
         {'name': '修改小问题', 'estimated_time': 3.0},
         {'name': '添加新功能', 'estimated_time': 5.0},
     ]
-    
+
     # 计算总预期时间
     total_estimated_time = sum(task['estimated_time'] for task in tasks)
-    
+
     # 记录实际完成时间
     actual_times = {}
-    
+
     # 模拟三次新员工入职评估
     for i in range(3):
         employee_id = f"employee_{i+1}"
         employee_time = {}
-        
+
         # 实际时间通常会受代码可读性、文档质量等因素影响
         # 这里我们使用一个简单的随机模拟
         for task in tasks:
             # 实际时间 = 预期时间 * 随机系数（0.8-1.5）
             actual_time = task['estimated_time'] * (0.8 + 0.7 * random.random())
             employee_time[task['name']] = actual_time
-        
+
         actual_times[employee_id] = employee_time
-    
+
     # 计算平均实际上手时间
     total_actual_time = sum(sum(times.values()) for times in actual_times.values())
     avg_actual_time = total_actual_time / len(actual_times)
-    
+
     # 分析影响上手时间的关键因素
     factors = {
         '代码可读性': 0.3,    # 权重
@@ -1546,22 +1546,22 @@ def measure_onboarding_time():
         '测试覆盖': 0.15,
         '开发工具支持': 0.1
     }
-    
+
     # 输出评估报告
     print(f"预期上手时间: {total_estimated_time}天")
     print(f"实际上手时间: {avg_actual_time:.1f}天")
-    
+
     # 分析每个任务的时间分布
     for task in tasks:
         task_times = [times[task['name']] for times in actual_times.values()]
         avg_time = sum(task_times) / len(task_times)
         print(f"{task['name']}: 预期{task['estimated_time']}天, 实际平均{avg_time:.1f}天")
-    
+
     return {
         'estimated_time': total_estimated_time,
         'actual_time': avg_actual_time,
-        'tasks_breakdown': {task['name']: {'estimated': task['estimated_time'], 
-                                           'actual': sum(times[task['name']] for times in actual_times.values()) / len(actual_times)} 
+        'tasks_breakdown': {task['name']: {'estimated': task['estimated_time'],
+                                           'actual': sum(times[task['name']] for times in actual_times.values()) / len(actual_times)}
                            for task in tasks}
     }
 ```
@@ -1584,33 +1584,33 @@ from typing import Dict, List
 
 class MetricsCollector:
     """指标收集器"""
-    
+
     def __init__(self, metrics_storage_path='./metrics'):
         self.storage_path = metrics_storage_path
         if not os.path.exists(self.storage_path):
             os.makedirs(self.storage_path)
-    
+
     def store_metrics(self, category: str, metrics: Dict, stage: str):
         """存储指标"""
         date_str = datetime.now().strftime('%Y-%m-%d')
         filename = f"{category}_{date_str}.json"
         filepath = os.path.join(self.storage_path, filename)
-        
+
         # 读取现有数据
         if os.path.exists(filepath):
             with open(filepath, 'r') as f:
                 data = json.load(f)
         else:
             data = {'metrics': [], 'stages': []}
-        
+
         # 添加新指标
         data['metrics'].append(metrics)
         data['stages'].append(stage)
-        
+
         # 存储更新后的数据
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
-    
+
     def get_metrics(self, category: str, start_date: str, end_date: str) -> List[Dict]:
         """获取指定时间范围内的指标"""
         # 实现日期范围查询逻辑
@@ -1618,7 +1618,7 @@ class MetricsCollector:
         date_str = datetime.now().strftime('%Y-%m-%d')
         filename = f"{category}_{date_str}.json"
         filepath = os.path.join(self.storage_path, filename)
-        
+
         if os.path.exists(filepath):
             with open(filepath, 'r') as f:
                 data = json.load(f)
@@ -1681,22 +1681,22 @@ collector.store_metrics('project_management', project_management_metrics, 'optim
 
 class OptimizationRetro:
     """代码优化复盘类"""
-    
+
     def __init__(self, collector):
         self.collector = collector
-    
+
     def run_retro(self, category: str, stage: str):
         """运行复盘分析"""
         # 获取当前阶段和上一阶段的指标
         current_metrics = self.collector.get_metrics(category, stage)
         previous_metrics = self.collector.get_metrics(category, self._get_previous_stage(stage))
-        
+
         # 计算指标变化
         changes = self._calculate_changes(current_metrics, previous_metrics)
-        
+
         # 生成复盘报告
         retro_report = self._generate_report(category, stage, changes)
-        
+
         # 输出报告
         print(f"=== {category.capitalize()} 指标复盘报告 ===")
         print(f"阶段: {stage}")
@@ -1704,27 +1704,27 @@ class OptimizationRetro:
         print("\n=== 关键变化 ===")
         for key, value in changes.items():
             print(f"{key}: {value['previous']} → {value['current']} ({value['change_percent']:+.1f}%)")
-        
+
         print("\n=== 复盘结论 ===")
         print(retro_report['conclusion'])
-        
+
         print("\n=== 改进建议 ===")
         for suggestion in retro_report['suggestions']:
             print(f"- {suggestion}")
-        
+
         return retro_report
-    
+
     def _get_previous_stage(self, stage):
         """获取上一个阶段标识"""
         stages = ['optimization_start', 'phase1_complete', 'phase2_complete', 'phase3_complete']
         stage_index = stages.index(stage) if stage in stages else -1
         return stages[stage_index - 1] if stage_index > 0 else stages[0]
-    
+
     def _calculate_changes(self, current, previous):
         """计算指标变化"""
         if not previous:
             return {}
-        
+
         changes = {}
         for key in current.keys():
             if key in previous:
@@ -1744,7 +1744,7 @@ class OptimizationRetro:
                         'change_percent': 'N/A'
                     }
         return changes
-    
+
     def _generate_report(self, category, stage, changes):
         """生成复盘报告"""
         # 基于指标变化生成报告
@@ -1752,7 +1752,7 @@ class OptimizationRetro:
             'conclusion': '',
             'suggestions': []
         }
-        
+
         # 根据不同类别生成不同的报告
         if category == 'quantitative':
             # 量化指标复盘
@@ -1786,7 +1786,7 @@ class OptimizationRetro:
                 "完善代码审查流程，减少审查时间",
                 "增加重构频率，减小技术债务"
             ])
-        
+
         return report
 
 # 运行复盘示例
@@ -1803,7 +1803,7 @@ retro.run_retro('quantitative', 'phase1_complete')
 
 def evaluate_optimization_goals():
     """评估优化目标达成情况"""
-    
+
     # 定义优化目标
     optimization_goals = {
         'quantitative': {
@@ -1831,14 +1831,14 @@ def evaluate_optimization_goals():
             'refactoring_success_rate': {'target': 95, 'status': 'in_progress', 'current': 93}
         }
     }
-    
+
     # 计算每个类别的完成度
     category_completion = {}
     for category, goals in optimization_goals.items():
         completed = sum(1 for goal in goals.values() if goal['status'] == 'achieved')
         in_progress = sum(1 for goal in goals.values() if goal['status'] == 'in_progress')
         total = len(goals)
-        
+
         completion_rate = (completed + in_progress * 0.5) / total * 100
         category_completion[category] = {
             'completed': completed,
@@ -1846,14 +1846,14 @@ def evaluate_optimization_goals():
             'total': total,
             'completion_rate': completion_rate
         }
-    
+
     # 计算总体完成度
     total_completed = sum(cat['completed'] for cat in category_completion.values())
     total_in_progress = sum(cat['in_progress'] for cat in category_completion.values())
     total_goals = sum(cat['total'] for cat in category_completion.values())
-    
+
     overall_completion_rate = (total_completed + total_in_progress * 0.5) / total_goals * 100
-    
+
     # 输出评估报告
     print("=== 优化目标达成评估报告 ===")
     print(f"总体完成度: {overall_completion_rate:.1f}%")
@@ -1862,7 +1862,7 @@ def evaluate_optimization_goals():
         print(f"{category.capitalize()}: {completion['completed']}/{completion['total']} 已完成, "
               f"{completion['in_progress']}/{completion['total']} 进行中, "
               f"完成率: {completion['completion_rate']:.1f}%")
-    
+
     print("\n未完成的关键目标:")
     for category, goals in optimization_goals.items():
         for goal_name, goal_data in goals.items():
@@ -1870,7 +1870,7 @@ def evaluate_optimization_goals():
                 progress = (goal_data['current'] / goal_data['target']) * 100 if goal_data['target'] != 0 else 100
                 status = "已完成" if goal_data['status'] == 'achieved' else "进行中"
                 print(f"- {category}.{goal_name}: {status}, 当前: {goal_data['current']}, 目标: {goal_data['target']}, 进度: {progress:.1f}%")
-    
+
     print("\n下一步行动计划:")
     next_actions = [
         "完成剩余超长文件的拆分，重点关注数据访问层优化",
@@ -1878,10 +1878,10 @@ def evaluate_optimization_goals():
         "优化数据库查询效率，解决慢查询问题",
         "完善文档体系，特别是公共API文档"
     ]
-    
+
     for i, action in enumerate(next_actions, 1):
         print(f"{i}. {action}")
-    
+
     return {
         'overall_completion_rate': overall_completion_rate,
         'category_completion': category_completion,

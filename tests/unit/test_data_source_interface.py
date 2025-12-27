@@ -43,9 +43,7 @@ class TestIDataSource(unittest.TestCase):
 
         # 验证每个必需的方法都存在于接口中
         for method_name in required_methods:
-            self.assertTrue(
-                hasattr(IDataSource, method_name), f"接口缺少必需的方法: {method_name}"
-            )
+            self.assertTrue(hasattr(IDataSource, method_name), f"接口缺少必需的方法: {method_name}")
 
             # 验证方法是否为抽象方法
             method = getattr(IDataSource, method_name)
@@ -82,9 +80,7 @@ class TestIDataSource(unittest.TestCase):
         get_real_time_data_sig = inspect.signature(IDataSource.get_real_time_data)
         params = list(get_real_time_data_sig.parameters.keys())
         self.assertEqual(params, ["self", "symbol"])
-        self.assertEqual(
-            get_real_time_data_sig.return_annotation, Optional[Dict[str, Any]]
-        )
+        self.assertEqual(get_real_time_data_sig.return_annotation, Optional[Dict[str, Any]])
 
         # 检查get_market_calendar方法签名
         get_market_calendar_sig = inspect.signature(IDataSource.get_market_calendar)

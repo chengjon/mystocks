@@ -223,9 +223,7 @@ async def main():
             test_results[test_name] = result
 
             if result:
-                logger.info(
-                    f"✅ {test_name} 测试通过 (耗时: {time.time() - start_time:.2f}s)"
-                )
+                logger.info(f"✅ {test_name} 测试通过 (耗时: {time.time() - start_time:.2f}s)")
             else:
                 logger.error(f"❌ {test_name} 测试失败")
 

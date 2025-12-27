@@ -21,9 +21,7 @@ def test_string_operations():
     assert " " in text
 
 
-@pytest.mark.parametrize(
-    "input_value,expected", [(1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
-)
+@pytest.mark.parametrize("input_value,expected", [(1, 1), (2, 4), (3, 9), (4, 16), (5, 25)])
 def test_square_function(input_value, expected):
     """测试平方函数"""
     result = input_value**2

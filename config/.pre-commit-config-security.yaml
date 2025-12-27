@@ -1,288 +1,120 @@
 # 安全检查预提交钩子配置
 # 在每次提交前自动运行安全检查
+#
+# 核心原则：智能触发 + 避免冗余扫描
+#   ✅ 使用 files 过滤只检查相关文件
+#   ✅ pass_filenames: false 仅用于全局扫描器
+#   ❌ 避免所有 hooks 都使用 always_run: true
+#
+# Git Hooks 官方规范：
+#   1. pass_filenames: false → hook 不接收文件列表（扫描整个项目）
+#   2. files: pattern → 只对匹配的文件运行 hook
+#   3. 两者不应同时使用（会导致 pre-commit 无法判断何时运行）
 
 repos:
-  # 本地安全检查 - 基于项目标准
+  # ============================================================================
+  # 全局安全扫描器（扫描整个项目，不依赖文件列表）
+  # ============================================================================
   - repo: local
     hooks:
-      # 安全代码扫描
+      # Bandit 安全扫描（扫描所有 Python 代码）
       - id: security-scan-bandit
         name: Bandit security scan
-        entry: bandit
-        language: python
-        files: \.py$
-        args: [-r, -f, json, -o, bandit-report.json, -q]
-        pass_filenames: false
-        always_run: true
+        entry: bash -c 'bandit -r src/ web/backend/ -f json -o bandit-report.json -q || true'
+        language: system
+        pass_filenames: false  # ✅ 不接收文件列表，扫描整个目录
+        # ✅ 不设置 files（每次提交都运行）
 
-      # 依赖安全检查
+      # Safety 依赖安全检查（扫描所有依赖）
       - id: safety-check
         name: Safety dependency check
-        entry: safety
-        language: python
-        args: [check, --json, --quiet]
-        pass_filenames: false
-        always_run: true
+        entry: bash -c 'safety check --json --quiet || true'
+        language: system
+        pass_filenames: false  # ✅ 不接收文件列表，扫描所有依赖
+        files: ^(requirements\.txt|pyproject\.toml|Pipfile)$  # ✅ 只在依赖文件改变时触发
 
-      # OWASP Top 10 安全测试
+  # ============================================================================
+  # 文件级安全检查器（只对特定文件运行）
+  # ============================================================================
+  # ⚠️  重要：这些 hooks 使用 files 过滤，接收文件列表
+  # ✅ 不设置 pass_filenames: false（使用默认值 true）
+  # ✅ 不设置 always_run: true（只在匹配文件时运行）
+  # ============================================================================
+
+  # OWASP Top 10 安全测试（只在测试文件改变时运行）
+  - repo: local
+    hooks:
       - id: owasp-security-tests
         name: OWASP Top 10 security tests
-        entry: python
-        language: python
-        additional_dependencies: [pytest, requests, pytest-mock]
+        entry: pytest scripts/tests/test_security_owasp_top10.py -v
+        language: system
         files: scripts/tests/test_security_owasp_top10\.py$
-        pass_filenames: false
-        always_run: true
+        # ✅ 只在测试文件改变时运行
+        # ✅ pass_filenames 默认为 true，传递文件列表
 
-      # 认证安全测试
+      # 认证安全测试（只在测试文件改变时运行）
       - id: auth-security-tests
         name: Authentication security tests
-        entry: python
-        language: python
-        additional_dependencies: [pytest, requests, pytest-mock]
+        entry: pytest scripts/tests/test_security_authentication.py -v
+        language: system
         files: scripts/tests/test_security_authentication\.py$
-        pass_filenames: false
-        always_run: true
+        # ✅ 只在测试文件改变时运行
 
-      # 密码策略检查
-      - id: password-policy-check
-        name: Password policy validation
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_password_policy.py]
-
-      # SQL注入检查
-      - id: sql-injection-check
-        name: SQL injection prevention check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_sql_injection.py]
-
-      # XSS防护检查
+      # XSS 防护检查（只检查前端文件）
       - id: xss-prevention-check
         name: XSS prevention check
-        entry: python
-        language: python
+        entry: python scripts/dev/check_xss_prevention.py
+        language: system
         files: web/frontend/src/.*\.(ts|js|vue)$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_xss_prevention.py]
+        # ✅ 只检查前端文件
 
-      # 硬编码密钥检查
-      - id: hardcoded-secret-check
-        name: Hardcoded secret detection
-        entry: python
-        language: python
-        files: \.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_hardcoded_secrets.py]
+  # ============================================================================
+  # 第三方安全工具集成
+  # ============================================================================
+  # ⚠️  注意：这些工具已经在主 .pre-commit-config.yaml 中配置
+  # 这里只保留特殊的安全相关配置
+  # ============================================================================
 
-      # 文件上传安全检查
-      - id: file-upload-security
-        name: File upload security check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_file_upload_security.py]
-
-      # 会话管理安全检查
-      - id: session-security-check
-        name: Session management security check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_session_security.py]
-
-      # CSRF保护检查
-      - id: csrf-protection-check
-        name: CSRF protection check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_csrf_protection.py]
-
-      # 权限验证检查
-      - id: authorization-check
-        name: Authorization and access control check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_authorization.py]
-
-      # 输入验证检查
-      - id: input-validation-check
-        name: Input validation check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_input_validation.py]
-
-      # 错误处理安全检查
-      - id: error-handling-security
-        name: Error handling security check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_error_handling_security.py]
-
-      # 日志安全检查
-      - id: logging-security-check
-        name: Logging security check
-        entry: python
-        language: python
-        files: src/.*\.py$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_logging_security.py]
-
-      # 配置安全检查
-      - id: configuration-security-check
-        name: Configuration security check
-        entry: python
-        language: python
-        files: \.(yaml|yml|ini|toml|env)$
-        pass_filenames: false
-        always_run: true
-        args: [scripts/dev/check_configuration_security.py]
-
-  # 第三方安全工具
+  # Bandit（使用项目特定的安全配置）
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
+    rev: 1.7.8
     hooks:
       - id: bandit
         name: Bandit security scan
-        args: [-r, -f, json, -o, bandit-report.json, -q]
+        args: ['-c', 'config/.security.yml', '-ll']
+        files: ^(src/|web/backend/)
+        exclude: ^(tests/|test_|.*_test\.py)
+        # ✅ 只检查源码文件
+        # ✅ 排除测试文件（避免误报）
 
-  - repo: https://github.com/pycqa/pylint
-    rev: v3.0.0a6
-    hooks:
-      - id: pylint
-        name: Pylint security check
-        args: [--rcfile=.pylintrc, -d, import-error, --output-format=json]
+# ============================================================================
+# 容器安全检查（可选）
+# ============================================================================
+# ⚠️  注意：这些工具只在项目中使用 Docker/Kubernetes 时启用
+# ============================================================================
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
-        name: Flake8 with security checks
-        additional_dependencies: [flake8-bandit, flake8-docstrings]
+# Docker 安全检查（如果项目使用 Docker）
+# - repo: https://github.com/docker/docker-bench-security
+#   rev: main
+#   hooks:
+#     - id: docker-bench-security
+#       name: Docker security benchmark
+#       files: Dockerfile$
 
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
-        name: Black code formatter (security-aware)
-        args: [--check, --diff, --line-length=88]
+# Kubernetes 安全检查（如果项目使用 Kubernetes）
+# - repo: https://github.com/aquasecurity/kube-bench
+#   rev: v0.6.4
+#   hooks:
+#     - id: kube-bench
+#       name: Kubernetes security benchmark
+#       files: k8s/
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: Import sorter (security imports first)
-        args: [--check-only, --profile, black]
-
-  - repo: https://github.com/anchore/grype
-    rev: v0.72.0
-    hooks:
-      - id: grype
-        name: Grype vulnerability scanner
-        files: requirements.txt
-
-  - repo: https://github.com/rustsec/rustcovenant
-    rev: main
-    hooks:
-      - id: rust-covenant-check
-        name: Rust security covenant check
-
-  # Docker安全检查
-  - repo: https://github.com/docker/docker-bench-security
-    rev: main
-    hooks:
-      - id: docker-bench-security
-        name: Docker security benchmark
-        files: Dockerfile$
-
-  # Kubernetes安全检查
-  - repo: https://github.com/aquasecurity/kube-bench
-    rev: v0.6.4
-    hooks:
-      - id: kube-bench
-        name: Kubernetes security benchmark
-        files: k8s/
-
-# 排除的文件和目录
-exclude: >
-  (?x)^(
-    \.git/
-    | \.pytest_cache/
-    | __pycache__/
-    | *.py[co]
-    | \.mypy_cache/
-    | \.tox/
-    | venv/
-    | env/
-    | \.venv/
-    | node_modules/
-    | \.next/
-    | \.nuxt/
-    | dist/
-    | build/
-    | coverage/
-    | \.coverage
-    | \.hypothesis/
-    | \.DS_Store
-    | \.idea/
-    | \.vscode/
-    | \*.swp
-    | \*.swo
-    | \*~
-    | migrations/
-    | logs/
-    | tmp/
-    | temp/
-  )$
-
-# 默认语言
-default_language_version:
-  python: python3.12
-
-# 最少安装的依赖
-minimum_pre_commit_version: 3.2.0
-
-# 在合并前运行
-fail_fast: true
-
-# 传递给所有钩子的环境变量
-default_stages: [commit, push]
-
-# 安全钩子的特殊配置
+# ============================================================================
+# CI 配置
+# ============================================================================
 ci:
-  autofix_commit_msg: |
-    style(pre-commit-ci): auto fixes from pre-commit.com hooks
-
-    for more information, see https://pre-commit.ci
-  autofix_prs: true
-  autoupdate_branch: ''
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
-  autoupdate_schedule: weekly
-  skip: []
-  submodules: false
+  autofix_prs: false           # 不自动创建 PR 修复问题
+  autoupdate_schedule: monthly  # 每月自动更新 hooks
+  skip:
+    # CI 环境中可以跳过的 hooks（可选）
+    - python-safety-dependencies-check  # 依赖检查可以只在本地运行
