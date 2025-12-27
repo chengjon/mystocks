@@ -1,0 +1,169 @@
+# MyStocks SLO (Service Level Objectives) Configuration
+# Phase 5 Production Readiness
+
+slos:
+  - name: "api-availability"
+    description: "API availability target"
+    target: 99.9
+    window: 720h  # 30 days
+    measurement: |
+      (total_requests - error_5xx_requests) / total_requests * 100
+    warning_threshold: 99.5
+    critical_threshold: 99.0
+    metrics:
+      - http_requests_total
+      - http_requests_total{status_code=~"5.."}
+
+  - name: "api-latency-p95"
+    description: "API P95 latency target"
+    target: 300
+    unit: ms
+    window: 720h  # 30 days
+    measurement: |
+      histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) * 1000
+    warning_threshold: 500
+    critical_threshold: 1000
+
+  - name: "api-latency-p99"
+    description: "API P99 latency target"
+    target: 1000
+    unit: ms
+    window: 720h
+    measurement: |
+      histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) * 1000
+    warning_threshold: 2000
+    critical_threshold: 5000
+
+  - name: "api-error-rate"
+    description: "API error rate target"
+    target: 0.1
+    unit: percent
+    window: 720h
+    measurement: |
+      sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100
+    warning_threshold: 0.5
+    critical_threshold: 1.0
+
+  - name: "cache-hit-rate"
+    description: "Cache hit rate target"
+    target: 80
+    unit: percent
+    window: 360h  # 15 days
+    measurement: |
+      sum by (level) (cache_hits_total) / (sum by (level) (cache_hits_total) + sum by (level) (cache_misses_total)) * 100
+    warning_threshold: 60
+    critical_threshold: 40
+
+  - name: "database-query-latency"
+    description: "Database query latency target"
+    target: 100
+    unit: ms
+    window: 360h
+    measurement: |
+      histogram_quantile(0.95, sum(rate(db_query_duration_seconds_bucket[5m])) by (le)) * 1000
+    warning_threshold: 250
+    critical_threshold: 500
+
+  - name: "database-connection-pool"
+    description: "Database connection pool health"
+    target: 95
+    unit: percent
+    window: 720h
+    measurement: |
+      (db_pool_connections_idle / db_pool_size) * 100
+    warning_threshold: 80
+    critical_threshold: 60
+
+error_budget_policies:
+  - name: "fast-burn"
+    description: "Fast burn rate policy for critical issues"
+    condition: "error_rate > 5% for 5m"
+    action: "page_on_call"
+
+  - name: "slow-burn"
+    description: "Slow burn rate policy for gradual degradation"
+    condition: "error_rate > 1% for 1h"
+    action: "notify_slack"
+
+  - name: "latency-warning"
+    description: "High latency warning policy"
+    condition: "p95_latency > 500ms for 10m"
+    action: "notify_slack"
+
+  - name: "latency-critical"
+    description: "Critical latency policy"
+    condition: "p95_latency > 1s for 5m"
+    action: "page_on_call"
+
+alerting_rules:
+  availability:
+    - alert: "HighErrorRate"
+      expr: "sum(rate(http_requests_total{status_code=~'5..'}[5m])) / sum(rate(http_requests_total[5m])) > 0.01"
+      for: "2m"
+      labels:
+        severity: "warning"
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate above 1% for 2 minutes"
+
+    - alert: "VeryHighErrorRate"
+      expr: "sum(rate(http_requests_total{status_code=~'5..'}[5m])) / sum(rate(http_requests_total[5m])) > 0.05"
+      for: "1m"
+      labels:
+        severity: "critical"
+      annotations:
+        summary: "Critical error rate detected"
+        description: "Error rate above 5% for 1 minute"
+
+  latency:
+    - alert: "HighLatency"
+      expr: "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.3"
+      for: "5m"
+      labels:
+        severity: "warning"
+      annotations:
+        summary: "High P95 latency detected"
+        description: "P95 latency above 300ms for 5 minutes"
+
+    - alert: "VeryHighLatency"
+      expr: "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1.0"
+      for: "2m"
+      labels:
+        severity: "critical"
+      annotations:
+        summary: "Critical latency detected"
+        description: "P95 latency above 1s for 2 minutes"
+
+  cache:
+    - alert: "LowCacheHitRate"
+      expr: "sum(cache_hits_total) / (sum(cache_hits_total) + sum(cache_misses_total)) < 0.6"
+      for: "10m"
+      labels:
+        severity: "warning"
+      annotations:
+        summary: "Low cache hit rate"
+        description: "Cache hit rate below 60% for 10 minutes"
+
+  database:
+    - alert: "SlowQueries"
+      expr: "increase(db_slow_query_total[5m]) > 10"
+      for: "5m"
+      labels:
+        severity: "warning"
+      annotations:
+        summary: "Many slow database queries"
+        description: "More than 10 slow queries in 5 minutes"
+
+notification_channels:
+  slack:
+    name: "mystocks-alerts"
+    channel: "#mystocks-alerts"
+
+  pagerduty:
+    name: "mystocks-oncall"
+    service_key: "${PAGERDUTY_SERVICE_KEY}"
+
+  email:
+    name: "mystocks-team"
+    recipients:
+      - "team@mystocks.example.com"

@@ -1,285 +1,328 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-性能基准测试工具
-
-提供基准测试框架，支持：
-- 函数/方法性能基准
-- 内存使用基准
-- 响应时间基准
-- 吞吐量基准
+API Performance Benchmark Tool
+Establishes performance baselines and identifies slow endpoints
 """
 
-import time
-import gc
-import functools
+import asyncio
+import aiohttp
 import statistics
-from typing import Callable, Any, Dict, List, Optional
+import time
 from dataclasses import dataclass, field
-from contextlib import contextmanager
-import psutil
-import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class BenchmarkResult:
-    """基准测试结果"""
+    """Benchmark result for a single endpoint"""
 
-    name: str
-    iterations: int
-    total_time: float
-    avg_time: float
-    min_time: float
-    max_time: float
-    std_dev: float
-    throughput: float
-    memory_used: float
-    memory_delta: float
-    timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
+    endpoint: str
+    method: str
+    total_requests: int = 0
+    successful_requests: int = 0
+    failed_requests: int = 0
+    response_times: List[float] = field(default_factory=list)
+    status_codes: Dict[int, int] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "name": self.name,
-            "iterations": self.iterations,
-            "total_time": self.total_time,
-            "avg_time": self.avg_time,
-            "min_time": self.min_time,
-            "max_time": self.max_time,
-            "std_dev": self.std_dev,
-            "throughput": self.throughput,
-            "memory_used": self.memory_used,
-            "memory_delta": self.memory_delta,
-            "timestamp": self.timestamp,
-        }
+    @property
+    def avg_response_time(self) -> float:
+        return statistics.mean(self.response_times) if self.response_times else 0
 
+    @property
+    def median_response_time(self) -> float:
+        return statistics.median(self.response_times) if self.response_times else 0
 
-class MemoryTracker:
-    """内存跟踪器"""
+    @property
+    def p95_response_time(self) -> float:
+        if len(self.response_times) < 2:
+            return 0
+        sorted_times = sorted(self.response_times)
+        idx = int(len(sorted_times) * 0.95)
+        return sorted_times[min(idx, len(sorted_times) - 1)]
 
-    def __init__(self):
-        self.process = psutil.Process(os.getpid())
-        self.start_memory = 0
-        self.peak_memory = 0
+    @property
+    def p99_response_time(self) -> float:
+        if len(self.response_times) < 2:
+            return 0
+        sorted_times = sorted(self.response_times)
+        idx = int(len(sorted_times) * 0.99)
+        return sorted_times[min(idx, len(sorted_times) - 1)]
 
-    def start(self):
-        gc.collect()
-        self.start_memory = self.process.memory_info().rss / 1024 / 1024
-        self.peak_memory = self.start_memory
+    @property
+    def min_response_time(self) -> float:
+        return min(self.response_times) if self.response_times else 0
 
-    def stop(self) -> float:
-        current_memory = self.process.memory_info().rss / 1024 / 1024
-        self.peak_memory = max(self.peak_memory, current_memory)
-        return current_memory - self.start_memory
+    @property
+    def max_response_time(self) -> float:
+        return max(self.response_times) if self.response_times else 0
 
-    def get_peak_memory(self) -> float:
-        return self.peak_memory - self.start_memory
+    @property
+    def requests_per_second(self) -> float:
+        return self.successful_requests / sum(self.response_times) if self.response_times else 0
+
+    @property
+    def error_rate(self) -> float:
+        return self.failed_requests / self.total_requests * 100 if self.total_requests > 0 else 0
 
 
 class PerformanceBenchmark:
-    """性能基准测试类"""
+    """API Performance Benchmark Tool"""
 
-    def __init__(
+    def __init__(self, base_url: str, concurrent_users: int = 10, iterations: int = 100):
+        self.base_url = base_url.rstrip("/")
+        self.concurrent_users = concurrent_users
+        self.iterations = iterations
+        self.results: Dict[str, BenchmarkResult] = {}
+        self.slow_threshold_ms = 300
+        self.critical_threshold_ms = 500
+
+    async def benchmark_endpoint(
         self,
-        warmup_iterations: int = 3,
-        min_iterations: int = 10,
-        max_iterations: int = 1000,
-        max_time_seconds: float = 60.0,
-    ):
-        """
-        初始化基准测试
-
-        Args:
-            warmup_iterations: 预热迭代次数
-            min_iterations: 最小迭代次数
-            max_iterations: 最大迭代次数
-            max_time_seconds: 最大测试时间（秒）
-        """
-        self.warmup_iterations = warmup_iterations
-        self.min_iterations = min_iterations
-        self.max_iterations = max_iterations
-        self.max_time_seconds = max_time_seconds
-
-    def benchmark(
-        self,
-        name: str,
-        func: Callable,
-        *args,
-        iterations: Optional[int] = None,
-        **kwargs,
-    ) -> BenchmarkResult:
-        """
-        运行基准测试
-
-        Args:
-            name: 测试名称
-            func: 被测试的函数
-            *args: 传递给函数的位置参数
-            iterations: 迭代次数（可选，自动确定）
-            **kwargs: 传递给函数的关键字参数
-
-        Returns:
-            BenchmarkResult: 基准测试结果
-        """
-        if iterations is None:
-            iterations = self._auto_detect_iterations(func, *args, **kwargs)
-
-        times = []
-        memory_tracker = MemoryTracker()
-
-        for i in range(iterations + self.warmup_iterations):
-            memory_tracker.start()
-            start_time = time.perf_counter()
-
-            try:
-                result = func(*args, **kwargs)
-            except Exception as e:
-                memory_delta = memory_tracker.stop()
-                raise BenchmarkError(f"基准测试失败: {e}") from e
-
-            end_time = time.perf_counter()
-            memory_delta = memory_tracker.stop()
-
-            if i >= self.warmup_iterations:
-                times.append(end_time - start_time)
-
-        if not times:
-            raise BenchmarkError("没有收集到有效的测试时间数据")
-
-        return self._calculate_results(name, times, iterations, memory_tracker)
-
-    def _auto_detect_iterations(self, func: Callable, *args, **kwargs) -> int:
-        """自动检测最佳迭代次数"""
+        session: aiohttp.ClientSession,
+        endpoint: str,
+        method: str = "GET",
+        payload: Optional[Dict] = None,
+    ) -> float:
+        """Benchmark a single endpoint"""
+        url = f"{self.base_url}{endpoint}"
         start_time = time.perf_counter()
+
         try:
-            func(*args, **kwargs)
+            if method == "GET":
+                async with session.get(url) as response:
+                    await response.read()
+                    status = response.status
+            elif method == "POST":
+                async with session.post(url, json=payload) as response:
+                    await response.read()
+                    status = response.status
+            else:
+                raise ValueError(f"Unsupported method: {method}")
+
+            duration = time.perf_counter() - start_time
+            return status, duration
+
         except Exception:
-            pass
-        elapsed = time.perf_counter() - start_time
+            duration = time.perf_counter() - start_time
+            return 500, duration
 
-        if elapsed > 1.0:
-            return min(self.max_iterations, 10)
-        elif elapsed > 0.1:
-            return min(self.max_iterations, 100)
-        else:
-            return self.min_iterations
+    async def run_benchmark(
+        self,
+        endpoints: List[Dict[str, Any]],
+    ) -> Dict[str, BenchmarkResult]:
+        """Run performance benchmark"""
+        print(f"\n{'='*60}")
+        print("Performance Benchmark Started")
+        print(f"Base URL: {self.base_url}")
+        print(f"Concurrent Users: {self.concurrent_users}")
+        print(f"Iterations per endpoint: {self.iterations}")
+        print(f"{'='*60}\n")
 
-    def _calculate_results(
-        self, name: str, times: List[float], iterations: int, memory_tracker: MemoryTracker
-    ) -> BenchmarkResult:
-        """计算基准测试结果"""
-        total_time = sum(times)
-        avg_time = total_time / len(times)
+        async with aiohttp.ClientSession() as session:
+            for endpoint_config in endpoints:
+                endpoint = endpoint_config["endpoint"]
+                method = endpoint_config.get("method", "GET")
+                payload = endpoint_config.get("payload")
 
-        return BenchmarkResult(
-            name=name,
-            iterations=iterations,
-            total_time=total_time,
-            avg_time=avg_time,
-            min_time=min(times),
-            max_time=max(times),
-            std_dev=statistics.stdev(times) if len(times) > 1 else 0,
-            throughput=iterations / total_time if total_time > 0 else 0,
-            memory_used=memory_tracker.peak_memory,
-            memory_delta=memory_tracker.get_peak_memory(),
+                print(f"Benchmarking: {method} {endpoint}")
+
+                result = BenchmarkResult(endpoint=endpoint, method=method)
+
+                tasks = []
+                for _ in range(self.iterations):
+                    tasks.append(self.benchmark_endpoint(session, endpoint, method, payload))
+
+                for status, duration in await asyncio.gather(*tasks, return_exceptions=True):
+                    if isinstance(status, Exception):
+                        result.failed_requests += 1
+                        result.response_times.append(0)
+                    else:
+                        result.total_requests += 1
+                        response_status, duration = status
+                        result.response_times.append(duration)
+
+                        result.status_codes[response_status] = result.status_codes.get(response_status, 0) + 1
+
+                        if 200 <= response_status < 300:
+                            result.successful_requests += 1
+                        else:
+                            result.failed_requests += 1
+
+                self.results[endpoint] = result
+
+                status_icon = "✓" if result.error_rate < 1 else "⚠"
+                print(
+                    f"  {status_icon} Requests: {result.total_requests}, "
+                    f"Avg: {result.avg_response_time*1000:.1f}ms, "
+                    f"P95: {result.p95_response_time*1000:.1f}ms, "
+                    f"Error: {result.error_rate:.1f}%"
+                )
+
+        return self.results
+
+    def generate_report(self) -> str:
+        """Generate benchmark report"""
+        report = []
+        report.append(f"\n{'='*60}")
+        report.append("Performance Benchmark Report")
+        report.append(f"Generated: {datetime.now().isoformat()}")
+        report.append(f"{'='*60}\n")
+
+        sorted_results = sorted(self.results.values(), key=lambda x: x.p95_response_time, reverse=True)
+
+        slow_endpoints = []
+        critical_endpoints = []
+
+        report.append("Endpoint Performance Summary:")
+        report.append("-" * 100)
+        report.append(
+            f"{'Endpoint':<40} {'Method':<8} {'Avg(ms)':<12} {'P95(ms)':<12} {'P99(ms)':<12} {'RPS':<10} {'Errors':<8} {'Status'}"
         )
+        report.append("-" * 100)
 
-    def compare(self, name: str, *functions: tuple[str, Callable]) -> Dict[str, BenchmarkResult]:
-        """
-        比较多个函数的性能
+        for result in sorted_results:
+            p95_ms = result.p95_response_time * 1000
+            p99_ms = result.p99_response_time * 1000
+            avg_ms = result.avg_response_time * 1000
 
-        Args:
-            name: 比较测试名称
-            *functions: (名称, 函数) 元组列表
+            if p95_ms > self.critical_threshold_ms:
+                status = "🔴 CRITICAL"
+                critical_endpoints.append(result)
+            elif p95_ms > self.slow_threshold_ms:
+                status = "🟡 SLOW"
+                slow_endpoints.append(result)
+            else:
+                status = "🟢 OK"
 
-        Returns:
-            Dict[str, BenchmarkResult]: 各函数的测试结果
-        """
-        results = {}
-        for func_name, func in functions:
-            results[func_name] = self.benchmark(f"{name}_{func_name}", func)
-        return results
-
-
-class BenchmarkError(Exception):
-    """基准测试错误"""
-
-    pass
-
-
-def benchmark(
-    iterations: int = 100,
-    warmup: int = 3,
-    name: Optional[str] = None,
-):
-    """
-    基准测试装饰器
-
-    Args:
-        iterations: 迭代次数
-        warmup: 预热迭代次数
-        name: 测试名称（可选，默认使用函数名）
-
-    Usage:
-        @benchmark(iterations=1000)
-        def my_function():
-            ...
-    """
-
-    def decorator(func: Callable) -> Callable:
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> Any:
-            bench = PerformanceBenchmark(
-                warmup_iterations=warmup,
-                min_iterations=iterations,
-                max_iterations=iterations,
+            report.append(
+                f"{result.endpoint:<40} {result.method:<8} "
+                f"{avg_ms:<12.1f} {p95_ms:<12.1f} {p99_ms:<12.1f} "
+                f"{result.requests_per_second:<10.1f} {result.error_rate:<8.1f}% {status}"
             )
-            result = bench.benchmark(name=name or func.__name__, func=func, *args, **kwargs)
-            print(
-                f"\n[benchmark] {result.name}: "
-                f"avg={result.avg_time * 1000:.4f}ms, "
-                f"throughput={result.throughput:.2f} ops/s, "
-                f"memory={result.memory_delta:.2f}MB"
-            )
-            return func(*args, **kwargs)
 
-        return wrapper
+        report.append("-" * 100)
 
-    return decorator
+        if slow_endpoints:
+            report.append(f"\n🟡 Slow Endpoints ({len(slow_endpoints)}):")
+            for result in slow_endpoints:
+                report.append(f"  - {result.method} {result.endpoint} (P95: {result.p95_response_time*1000:.1f}ms)")
+
+        if critical_endpoints:
+            report.append(f"\n🔴 Critical Endpoints ({len(critical_endpoints)}):")
+            for result in critical_endpoints:
+                report.append(f"  - {result.method} {result.endpoint} (P95: {result.p95_response_time*1000:.1f}ms)")
+
+        report.append("\n" + "=" * 60)
+        report.append("Recommendations:")
+        report.append("=" * 60)
+
+        if critical_endpoints:
+            report.append("1. IMMEDIATE ACTION REQUIRED for critical endpoints:")
+            for result in critical_endpoints:
+                report.append(f"   - Optimize {result.endpoint} (current P95: {result.p95_response_time*1000:.1f}ms)")
+                if result.p95_response_time > 1.0:
+                    report.append("     * Consider adding caching")
+                    report.append("     * Review database queries")
+                if result.error_rate > 1:
+                    report.append("     * Check error logs for root cause")
+
+        if slow_endpoints:
+            report.append("\n2. Performance improvements needed:")
+            for result in slow_endpoints:
+                report.append(f"   - {result.endpoint} (current P95: {result.p95_response_time*1000:.1f}ms)")
+
+        overall_avg = statistics.mean(r.avg_response_time for r in self.results.values()) * 1000
+        overall_p95 = statistics.mean(r.p95_response_time for r in self.results.values()) * 1000
+
+        report.append("\nOverall Metrics:")
+        report.append(f"  - Average Response Time: {overall_avg:.1f}ms")
+        report.append(f"  - Average P95 Response Time: {overall_p95:.1f}ms")
+        report.append(f"  - Total Endpoints Tested: {len(self.results)}")
+        report.append(f"  - Endpoints Meeting SLA: {len(self.results) - len(critical_endpoints) - len(slow_endpoints)}")
+
+        return "\n".join(report)
+
+    def save_report(self, filepath: str = "performance-benchmark-report.txt"):
+        """Save report to file"""
+        report = self.generate_report()
+        with open(filepath, "w") as f:
+            f.write(report)
+        print(f"\nReport saved to: {filepath}")
+        return report
+
+    def get_slo_status(self) -> Dict[str, Any]:
+        """Check SLO compliance"""
+        slo_targets = {
+            "p95_latency_ms": 300,
+            "error_rate_percent": 0.1,
+            "availability_percent": 99.9,
+        }
+
+        status = {
+            "timestamp": datetime.now().isoformat(),
+            "targets": {},
+            "compliant": True,
+            "violations": [],
+        }
+
+        if self.results:
+            avg_p95 = statistics.mean(r.p95_response_time for r in self.results.values()) * 1000
+            avg_error = statistics.mean(r.error_rate for r in self.results.values())
+
+            if avg_p95 > slo_targets["p95_latency_ms"]:
+                status["compliant"] = False
+                status["violations"].append(
+                    f"P95 latency ({avg_p95:.1f}ms) exceeds target ({slo_targets['p95_latency_ms']}ms)"
+                )
+
+            if avg_error > slo_targets["error_rate_percent"]:
+                status["compliant"] = False
+                status["violations"].append(
+                    f"Error rate ({avg_error:.2f}%) exceeds target ({slo_targets['error_rate_percent']}%)"
+                )
+
+        return status
 
 
-@contextmanager
-def timed_operation(operation_name: str):
-    """上下文管理器：计时操作"""
-    start_time = time.perf_counter()
-    yield
-    elapsed = time.perf_counter() - start_time
-    print(f"[timed] {operation_name}: {elapsed * 1000:.4f}ms")
+async def main():
+    """Main entry point"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="API Performance Benchmark")
+    parser.add_argument("--url", default="http://localhost:8000", help="Base URL")
+    parser.add_argument("--users", type=int, default=10, help="Concurrent users")
+    parser.add_argument("--iterations", type=int, default=100, help="Iterations per endpoint")
+    parser.add_argument("--output", default="performance-benchmark-report.txt", help="Output file")
+
+    args = parser.parse_args()
+
+    endpoints = [
+        {"endpoint": "/health", "method": "GET"},
+        {"endpoint": "/api/v1/market/overview", "method": "GET"},
+        {"endpoint": "/api/v1/stock/000001/quote", "method": "GET"},
+        {"endpoint": "/api/v1/stock/000001/kline", "method": "GET", "payload": {"period": "day"}},
+        {"endpoint": "/api/v1/market/fund-flow", "method": "GET"},
+        {"endpoint": "/api/v1/market/dragon-tiger", "method": "GET"},
+        {"endpoint": "/api/v1/portfolio", "method": "GET"},
+        {"endpoint": "/api/v1/risk/positions", "method": "GET"},
+    ]
+
+    benchmark = PerformanceBenchmark(
+        base_url=args.url,
+        concurrent_users=args.users,
+        iterations=args.iterations,
+    )
+
+    await benchmark.run_benchmark(endpoints)
+    benchmark.save_report(args.output)
+
+    slo_status = benchmark.get_slo_status()
+    print(f"\nSLO Status: {'COMPLIANT' if slo_status['compliant'] else 'NON-COMPLIANT'}")
+    if slo_status["violations"]:
+        for v in slo_status["violations"]:
+            print(f"  - {v}")
 
 
 if __name__ == "__main__":
-
-    @benchmark(iterations=10000, name="list_comprehension")
-    def test_list_comprehension():
-        return [i * 2 for i in range(1000)]
-
-    @benchmark(iterations=10000, name="for_loop")
-    def test_for_loop():
-        result = []
-        for i in range(1000):
-            result.append(i * 2)
-        return result
-
-    print("Running benchmark comparison...")
-    bench = PerformanceBenchmark()
-    results = bench.compare(
-        "list_vs_for",
-        ("list_comprehension", test_list_comprehension),
-        ("for_loop", test_for_loop),
-    )
-
-    print("\n=== Benchmark Results ===")
-    for name, result in results.items():
-        print(f"\n{name}:")
-        print(f"  Avg Time: {result.avg_time * 1000:.4f}ms")
-        print(f"  Throughput: {result.throughput:.2f} ops/s")
-        print(f"  Memory Delta: {result.memory_delta:.2f}MB")
+    asyncio.run(main())
