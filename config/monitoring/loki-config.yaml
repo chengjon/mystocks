@@ -1,0 +1,53 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+common:
+  storage:
+    local:
+      directory: /tmp/loki/chunks
+      max_size: 5GB
+      min_free_space: 500MB
+  path_prefix: /tmp/loki
+
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  chunk_idle_period: 15m
+  chunk_retain_period: 30s
+  max_transfer_retries: 0
+
+limits_config:
+  max_streams_match_per_query: 1000
+  max_entries_limit_per_query: 5000
+
+chunk_store_config:
+  max_look_back_period: 72h
+
+query_range:
+  align_queries_with_step: true
+  max_retries: 3
+  cache_results: true
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+        ttl: 1h
+
+ruler:
+  storage:
+    local:
+      directory: /tmp/loki/rules
+  rule_path: /tmp/loki/rules-temp
+  alertmanager_url: http://localhost:9093
+  ring:
+    kvstore:
+      store: inmemberlist
+  enable_api: true

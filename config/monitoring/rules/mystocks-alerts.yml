@@ -1,0 +1,86 @@
+groups:
+  - name: mystocks-api-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status_code=~"5.."}[5m]))
+          / sum(rate(http_requests_total[5m])) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 1% for the last 5 minutes"
+
+      - alert: VeryHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status_code=~"5.."}[5m]))
+          / sum(rate(http_requests_total[5m])) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Very high error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes"
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High P95 latency detected"
+          description: "P95 latency is above 300ms for the last 5 minutes"
+
+      - alert: VeryHighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1.0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Very high P95 latency detected"
+          description: "P95 latency is above 1s for the last 5 minutes"
+
+      - alert: HighCacheMissRate
+        expr: |
+          sum by (level) (cache_misses_total)
+          / (sum by (level) (cache_hits_total) + sum by (level) (cache_misses_total)) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High cache miss rate detected"
+          description: "Cache miss rate is above 50%"
+
+      - alert: SlowRequestsDetected
+        expr: |
+          increase(slow_http_requests_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow requests detected"
+          description: "More than 10 slow requests (>300ms) in the last 5 minutes"
+
+  - name: mystocks-slo-recording
+    rules:
+      - record: mystocks:api:availability:ratio_30d
+        expr: |
+          (1 - sum(rate(http_requests_total{status_code=~"5.."}[30d]))
+          / sum(rate(http_requests_total[30d]))) * 100
+
+      - record: mystocks:api:latency_p95:30d
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[30d])) by (le)) * 1000
+
+      - record: mystocks:api:error_rate:ratio_30d
+        expr: |
+          sum(rate(http_requests_total{status_code=~"5.."}[30d]))
+          / sum(rate(http_requests_total[30d])) * 100
+
+      - record: mystocks:cache:hit_rate:ratio
+        expr: |
+          sum by (level) (cache_hits_total)
+          / (sum by (level) (cache_hits_total) + sum by (level) (cache_misses_total)) * 100

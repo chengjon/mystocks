@@ -1,0 +1,442 @@
+# MyStocks Kubernetes Deployment Manifest
+# Phase 5 Production Deployment
+
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mystocks
+  labels:
+    app: mystocks
+    environment: production
+
+---
+# ConfigMap for Application Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mystocks-config
+  namespace: mystocks
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  CORS_ORIGINS: "https://mystocks.example.com"
+  REDIS_URL: "redis://redis:6379"
+  TDENGINE_URL: "taos://tdengine:6030"
+  POSTGRESQL_HOST: "postgresql.postgres.svc.cluster.local"
+  POSTGRESQL_PORT: "5432"
+  POSTGRESQL_DB: "mystocks"
+
+---
+# Secret for Sensitive Data
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mystocks-secrets
+  namespace: mystocks
+type: Opaque
+stringData:
+  POSTGRESQL_USER: "mystocks_user"
+  POSTGRESQL_PASSWORD: "${POSTGRESQL_PASSWORD}"
+  JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+  API_KEY_AKSHARE: "${API_KEY_AKSHARE}"
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: mystocks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: mystocks
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+  clusterIP: None
+
+---
+# Redis PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: mystocks
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# MyStocks API Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mystocks-api
+  namespace: mystocks
+  labels:
+    app: mystocks-api
+    version: v1.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: mystocks-api
+  template:
+    metadata:
+      labels:
+        app: mystocks-api
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: mystocks
+      containers:
+      - name: mystocks-api
+        image: mystocks/api:v1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        - containerPort: 9090  # Prometheus metrics
+        env:
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: mystocks-config
+              key: ENVIRONMENT
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mystocks-config
+              key: REDIS_URL
+        - name: POSTGRESQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mystocks-config
+              key: POSTGRESQL_HOST
+        - name: POSTGRESQL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mystocks-config
+              key: POSTGRESQL_PORT
+        - name: POSTGRESQL_DB
+          valueFrom:
+            configMapKeyRef:
+              name: mystocks-config
+              key: POSTGRESQL_DB
+        - name: POSTGRESQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mystocks-secrets
+              key: POSTGRESQL_USER
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mystocks-secrets
+              key: POSTGRESQL_PASSWORD
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mystocks-secrets
+              key: JWT_SECRET_KEY
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}
+
+---
+# MyStocks API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mystocks-api
+  namespace: mystocks
+  labels:
+    app: mystocks-api
+spec:
+  selector:
+    app: mystocks-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
+
+---
+# HPA for Auto-scaling
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mystocks-api-hpa
+  namespace: mystocks
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mystocks-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mystocks-api-pdb
+  namespace: mystocks
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: mystocks-api
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mystocks-network-policy
+  namespace: mystocks
+spec:
+  podSelector:
+    matchLabels:
+      app: mystocks-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          app: tdengine
+    ports:
+    - protocol: TCP
+      port: 6030
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090
+    - protocol: TCP
+      port: 3100
+
+---
+# RBAC
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ServiceAccount
+metadata:
+  name: mystocks
+  namespace: mystocks
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mystocks-role
+  namespace: mystocks
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mystocks-rolebinding
+  namespace: mystocks
+subjects:
+- kind: ServiceAccount
+  name: mystocks
+  namespace: mystocks
+roleRef:
+  kind: Role
+  name: mystocks-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Monitoring ServiceMonitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mystocks-api-monitor
+  namespace: mystocks
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: mystocks-api
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 15s
+    scheme: http
+
+---
+# Ingress Configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mystocks-ingress
+  namespace: mystocks
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.mystocks.example.com
+    secretName: mystocks-tls  # pragma: allowlist secret
+  rules:
+  - host: api.mystocks.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: mystocks-api
+            port:
+              number: 80
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: mystocks-api
+            port:
+              number: 9090
