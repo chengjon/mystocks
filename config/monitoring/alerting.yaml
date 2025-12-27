@@ -1,0 +1,157 @@
+# MyStocks Alerting Configuration
+# Notification channels and routing rules
+
+# Notification Channels
+channels:
+  slack:
+    name: "mystocks-alerts"
+    type: "slack"
+    settings:
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#mystocks-alerts"
+      username: "MyStocks Bot"
+      icon_emoji: ":chart_with_upwards_trend:"
+
+  pagerduty:
+    name: "mystocks-oncall"
+    type: "pagerduty"
+    settings:
+      service_key: "${PAGERDUTY_SERVICE_KEY}"
+      severity_threshold: "warning"
+
+  email:
+    name: "mystocks-team-email"
+    type: "email"
+    settings:
+      smtp_host: "${SMTP_HOST}"
+      smtp_port: 587
+      smtp_user: "${SMTP_USER}"
+      smtp_password: "${SMTP_PASSWORD}"
+      from_address: "alerts@mystocks.example.com"
+      recipients:
+        - "team@mystocks.example.com"
+        - "oncall@mystocks.example.com"
+
+  webhook:
+    name: "mystocks-webhook"
+    type: "webhook"
+    settings:
+      url: "${WEBHOOK_URL}"
+      method: "POST"
+      headers:
+        Content-Type: "application/json"
+
+# Alert Routing
+routing:
+  # Critical alerts -> PagerDuty + Slack
+  - matcher:
+      severity: "critical"
+    receiver: "pagerduty"
+    group_by: ["alertname", "severity"]
+    continue: true
+
+  - matcher:
+      severity: "critical"
+    receiver: "slack"
+
+  # High priority -> Slack + Email
+  - matcher:
+      severity: "warning"
+      priority: "high"
+    receiver: "slack"
+    continue: true
+
+  - matcher:
+      severity: "warning"
+      priority: "high"
+    receiver: "email"
+
+  # Low priority -> Slack only
+  - matcher:
+      severity: "warning"
+      priority: "low"
+    receiver: "slack"
+
+  # Info -> Slack #mystocks-info
+  - matcher:
+      severity: "info"
+    receiver: "slack-info"
+
+# Notification Policies
+policies:
+  - name: "business-hours"
+    schedule: "09:00-18:00 Mon-Fri"
+    timezone: "Asia/Shanghai"
+    notification_channels:
+      - slack
+      - email
+
+  - name: "after-hours"
+    schedule: "18:00-09:00 Mon-Fri, all day Sat-Sun"
+    timezone: "Asia/Shanghai"
+    notification_channels:
+      - pagerduty
+      - slack
+
+# Alert Silence Rules
+silences:
+  - id: "maintenance-window-2024-12-30"
+    matchers:
+      - name: "env"
+        value: "production"
+    starts_at: "2024-12-30T02:00:00Z"
+    ends_at: "2024-12-30T06:00:00Z"
+    created_by: "platform-team"
+    comment: "Scheduled database maintenance"
+
+  - id: "known-issue-workaround"
+    matchers:
+      - name: "alertname"
+        value: "HighLatency"
+      - name: "endpoint"
+        value: "/api/v1/market/overview"
+    starts_at: "2024-12-01T00:00:00Z"
+    ends_at: "2025-01-01T00:00:00Z"
+    created_by: "api-team"
+    comment: "Known issue, fix in progress"
+
+# Escalation Policies
+escalation:
+  - name: "default-escalation"
+    levels:
+      - receiver: "slack"
+        repeat_interval: "1h"
+        repeat_count: 3
+
+      - receiver: "pagerduty"
+        delay: "15m"
+        repeat_interval: "30m"
+        repeat_count: 2
+
+      - receiver: "manager-pagerduty"
+        delay: "1h"
+        repeat_interval: "1h"
+        repeat_count: 1
+
+# Alert Grouping
+grouping:
+  - name: "api-alerts"
+    matchers:
+      - name: "service"
+        value: "mystocks-api"
+    group_interval: "5m"
+    repeat_interval: "1h"
+
+  - name: "database-alerts"
+    matchers:
+      - name: "service"
+        value: "database"
+    group_interval: "10m"
+    repeat_interval: "2h"
+
+  - name: "infrastructure-alerts"
+    matchers:
+      - name: "service"
+        value: "infrastructure"
+    group_interval: "15m"
+    repeat_interval: "4h"

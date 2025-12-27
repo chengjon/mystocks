@@ -6,6 +6,7 @@ TradingView Widget API
 from fastapi import APIRouter, Query, HTTPException, Depends
 from typing import Dict, List
 from pydantic import BaseModel, Field
+import os
 
 from app.services.tradingview_widget_service import get_tradingview_service
 from app.api.auth import get_current_user, User

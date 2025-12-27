@@ -34,6 +34,9 @@ from .core.socketio_manager import get_socketio_manager
 # 导入统一响应格式中间件
 from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
 
+# 导入性能监控中间件 (Phase 5)
+from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
+
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
@@ -179,6 +182,10 @@ app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压
 app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
 app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
 
+# Phase 5: 配置性能监控中间件
+performance_middleware = PerformanceMiddleware()
+app.add_middleware(PerformanceMiddleware)
+
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
 sio = socketio_manager.sio
@@ -310,6 +317,13 @@ async def health_check(request: Request):
         message="系统健康检查完成",
         request_id=request_id,
     )
+
+
+# Phase 5: Prometheus指标端点
+@app.get("/metrics", include_in_schema=False)
+async def prometheus_metrics():
+    """Prometheus指标端点"""
+    return metrics_endpoint()
 
 
 # Socket.IO健康检查端点
