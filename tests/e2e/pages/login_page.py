@@ -1,5 +1,5 @@
 """
-登录页面对象 (Login Page Object)
+Login Page Object for E2E Tests
 """
 
 from playwright.sync_api import Page
@@ -9,91 +9,70 @@ from .base_page import BasePage
 class LoginPage(BasePage):
     """登录页面"""
 
-    # ============ 定位器 ============
-    USERNAME_INPUT = "input[placeholder='请输入用户名或邮箱']"
-    PASSWORD_INPUT = "input[placeholder='请输入密码']"
-    LOGIN_BUTTON = "button:has-text('登 录')"
-    ERROR_MESSAGE = ".el-message__content"
-    REMEMBER_ME_CHECKBOX = "input[type='checkbox']"
-    FORGOT_PASSWORD_LINK = "a:has-text('忘记密码')"
+    USERNAME_INPUT = "#username"
+    PASSWORD_INPUT = "#password"
+    LOGIN_BUTTON = "#login-btn"
+    ERROR_MESSAGE = ".error-message"
+    REMEMBER_ME_CHECKBOX = "#remember-me"
 
-    def __init__(self, page: Page):
-        """初始化登录页面"""
-        super().__init__(page)
+    def __init__(self, page: Page, base_url: str = ""):
+        super().__init__(page, base_url)
+        self.base_url = base_url
 
-    # ============ 登录操作 ============
+    def navigate_to_login(self) -> None:
+        """导航到登录页面"""
+        self.navigate("/login")
 
-    def login(self, username: str, password: str) -> None:
+    def login(self, username: str, password: str, remember_me: bool = False) -> None:
         """执行登录操作"""
         self.fill(self.USERNAME_INPUT, username)
         self.fill(self.PASSWORD_INPUT, password)
-        self.click(self.LOGIN_BUTTON)
-        self.wait_for_navigation()
 
-    def login_as_admin(self) -> None:
-        """以管理员身份登录"""
-        self.login("admin", "admin123")
+        if remember_me:
+            self.check_checkbox(self.REMEMBER_ME_CHECKBOX)
 
-    def login_as_user(self) -> None:
-        """以普通用户身份登录"""
-        self.login("user", "user123")
-
-    def login_with_invalid_credentials(self, username: str, password: str) -> None:
-        """使用无效凭证登录"""
-        self.fill(self.USERNAME_INPUT, username)
-        self.fill(self.PASSWORD_INPUT, password)
         self.click(self.LOGIN_BUTTON)
 
-    # ============ 页面验证 ============
-
-    def is_login_form_visible(self) -> bool:
-        """检查登录表单是否可见"""
-        return self.is_element_visible(self.USERNAME_INPUT) and self.is_element_visible(self.PASSWORD_INPUT)
+    def login_success(self, username: str, password: str) -> "DashboardPage":
+        """登录成功并跳转到仪表盘"""
+        self.login(username, password)
+        self.wait_for_url("**/dashboard", timeout=10000)
+        return DashboardPage(self.page, self.base_url)
 
     def get_error_message(self) -> str:
         """获取错误消息"""
-        return self.get_text(self.ERROR_MESSAGE)
+        if self.is_visible(self.ERROR_MESSAGE):
+            return self.get_text(self.ERROR_MESSAGE)
+        return ""
 
     def is_login_button_enabled(self) -> bool:
-        """检查登录按钮是否启用"""
-        return self.is_element_enabled(self.LOGIN_BUTTON)
+        """检查登录按钮是否可用"""
+        return self.is_enabled(self.LOGIN_BUTTON)
 
-    def is_remember_me_checked(self) -> bool:
-        """检查记住密码是否勾选"""
-        return self.page.locator(self.REMEMBER_ME_CHECKBOX).is_checked()
+    def clear_form(self) -> None:
+        """清空表单"""
+        self.fill(self.USERNAME_INPUT, "")
+        self.fill(self.PASSWORD_INPUT, "")
 
-    # ============ 记住密码 ============
 
-    def check_remember_me(self) -> None:
-        """勾选记住密码"""
-        self.check_checkbox(self.REMEMBER_ME_CHECKBOX)
+class DashboardPage(BasePage):
+    """仪表盘页面"""
 
-    def uncheck_remember_me(self) -> None:
-        """取消勾选记住密码"""
-        self.uncheck_checkbox(self.REMEMBER_ME_CHECKBOX)
+    USER_MENU = "#user-menu"
+    LOGOUT_BUTTON = "#logout"
+    SIDEBAR = ".sidebar"
+    MARKET_OVERVIEW = "text=行情概览"
 
-    # ============ 忘记密码 ============
+    def is_user_logged_in(self) -> bool:
+        """检查用户是否已登录"""
+        return self.is_visible(self.USER_MENU)
 
-    def click_forgot_password(self) -> None:
-        """点击忘记密码链接"""
-        self.click(self.FORGOT_PASSWORD_LINK)
+    def logout(self) -> "LoginPage":
+        """退出登录"""
+        self.click(self.USER_MENU)
+        self.click(self.LOGOUT_BUTTON)
+        return LoginPage(self.page, self.base_url)
 
-    # ============ 验证辅助方法 ============
-
-    def wait_for_login_form(self) -> None:
-        """等待登录表单加载"""
-        self.wait_for_element_visible(self.USERNAME_INPUT)
-
-    def assert_login_form_visible(self) -> None:
-        """断言登录表单可见"""
-        self.assert_element_visible(self.USERNAME_INPUT)
-        self.assert_element_visible(self.PASSWORD_INPUT)
-        self.assert_element_visible(self.LOGIN_BUTTON)
-
-    def assert_error_message_displayed(self) -> None:
-        """断言显示错误消息"""
-        self.assert_element_visible(self.ERROR_MESSAGE)
-
-    def assert_error_message_contains(self, text: str) -> None:
-        """断言错误消息包含特定文本"""
-        self.assert_text_present(self.ERROR_MESSAGE, text)
+    def navigate_to_market_overview(self) -> None:
+        """导航到行情概览"""
+        self.click(self.MARKET_OVERVIEW)
