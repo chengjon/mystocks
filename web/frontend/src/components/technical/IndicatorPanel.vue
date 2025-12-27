@@ -51,11 +51,19 @@
               :key="`selected-${index}`"
               closable
               size="large"
-              type="success"
+              :type="indicator.enabled !== false ? 'success' : 'info'"
               effect="dark"
               class="selected-indicator-tag"
+              :style="{ opacity: indicator.enabled !== false ? 1 : 0.6 }"
               @close="handleRemove(index)"
             >
+              <el-icon
+                :size="14"
+                style="margin-right: 6px; cursor: pointer;"
+                @click.stop="handleToggleIndicator(index)"
+              >
+                <component :is="indicator.enabled !== false ? View : Hide" />
+              </el-icon>
               <span class="indicator-name">
                 {{ indicator.abbreviation }}
                 <template v-if="indicator.parameters && indicator.parameters.timeperiod">
@@ -123,34 +131,74 @@
       </div>
     </div>
 
-    <!-- 参数配置对话框 -->
+    <!-- 参数配置对话框 (增强版) -->
     <el-dialog
       v-model="showConfigDialog"
       title="配置指标参数"
-      width="400px"
+      width="500px"
       append-to-body
     >
-      <el-form v-if="currentIndicatorConfig" label-width="120px">
-        <el-form-item
-          v-for="param in currentIndicatorConfig.parameters"
-          :key="param.name"
-          :label="param.display_name"
+      <div v-if="currentIndicatorConfig" class="config-dialog-content">
+        <!-- 指标信息 -->
+        <el-alert
+          :title="`${currentIndicatorConfig.chinese_name} (${currentIndicatorConfig.abbreviation})`"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 20px;"
         >
-          <el-input-number
-            v-model="parameterValues[param.name]"
-            :min="param.min"
-            :max="param.max"
-            :step="param.step || 1"
-          />
-          <el-text size="small" type="info" style="display: block; margin-top: 4px;">
-            {{ param.description }} (默认: {{ param.default }})
-          </el-text>
-        </el-form-item>
-      </el-form>
+          <p class="indicator-desc">{{ currentIndicatorConfig.description }}</p>
+        </el-alert>
+
+        <!-- 参数列表 -->
+        <el-form label-width="140px" label-position="left">
+          <el-form-item
+            v-for="param in currentIndicatorConfig.parameters"
+            :key="param.name"
+            :label="param.display_name"
+          >
+            <el-space direction="vertical" :size="8" style="width: 100%;">
+              <el-space>
+                <el-input-number
+                  v-model="parameterValues[param.name]"
+                  :min="param.min"
+                  :max="param.max"
+                  :step="param.step || 1"
+                  :precision="param.step && param.step < 1 ? 2 : 0"
+                  controls-position="right"
+                  style="width: 200px;"
+                />
+
+                <!-- 快速预设按钮 -->
+                <el-button
+                  size="small"
+                  text
+                  @click="resetParameter(param.name, param.default)"
+                >
+                  重置
+                </el-button>
+              </el-space>
+
+              <!-- 参数说明 -->
+              <div class="param-description">
+                <el-text size="small" type="info">
+                  <el-icon><InfoFilled /></el-icon>
+                  {{ param.description }}
+                </el-text>
+                <el-text size="small" type="warning" style="display: block; margin-top: 4px;">
+                  范围: {{ param.min }} - {{ param.max }} (默认: {{ param.default }})
+                </el-text>
+              </div>
+            </el-space>
+          </el-form-item>
+        </el-form>
+      </div>
 
       <template #footer>
-        <el-button @click="showConfigDialog = false">取消</el-button>
-        <el-button type="primary" @click="confirmAddIndicator">确认添加</el-button>
+        <el-space>
+          <el-button @click="showConfigDialog = false">取消</el-button>
+          <el-button type="warning" @click="resetAllParameters">重置全部</el-button>
+          <el-button type="primary" @click="confirmAddIndicator">确认添加</el-button>
+        </el-space>
       </template>
     </el-dialog>
   </el-drawer>
@@ -158,7 +206,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { Search, Plus } from '@element-plus/icons-vue'
+import { Search, Plus, View, Hide, InfoFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { indicatorService } from '@/services/indicatorService'
 
@@ -173,7 +221,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'add-indicator', 'remove-indicator'])
+const emit = defineEmits(['update:modelValue', 'add-indicator', 'remove-indicator', 'toggle-indicator'])
 
 // 状态
 const visible = ref(props.modelValue)
@@ -294,6 +342,37 @@ const confirmAddIndicator = () => {
 // 移除指标
 const handleRemove = (index) => {
   emit('remove-indicator', index)
+}
+
+// 增强: 切换指标启用/禁用状态
+const handleToggleIndicator = (index) => {
+  const indicator = props.selectedIndicators[index]
+  const newState = indicator.enabled !== false ? false : true
+
+  emit('toggle-indicator', {
+    index: index,
+    abbreviation: indicator.abbreviation,
+    enabled: newState
+  })
+
+  ElMessage.success(`${indicator.abbreviation} ${newState ? '已启用' : '已禁用'}`)
+}
+
+// 增强: 重置单个参数到默认值
+const resetParameter = (paramName, defaultValue) => {
+  parameterValues.value[paramName] = defaultValue
+  ElMessage.info(`参数 ${paramName} 已重置为 ${defaultValue}`)
+}
+
+// 增强: 重置所有参数到默认值
+const resetAllParameters = () => {
+  if (!currentIndicatorConfig.value) return
+
+  currentIndicatorConfig.value.parameters.forEach(param => {
+    parameterValues.value[param.name] = param.default
+  })
+
+  ElMessage.success('所有参数已重置为默认值')
 }
 
 // 清空所有指标
@@ -462,6 +541,28 @@ const formatParameters = (parameters) => {
             border-top: 1px solid #ebeef5;
           }
         }
+      }
+    }
+  }
+}
+
+// 增强: 参数配置对话框样式
+.config-dialog-content {
+  .indicator-desc {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #606266;
+  }
+
+  .param-description {
+    .el-text {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .el-icon {
+        flex-shrink: 0;
       }
     }
   }

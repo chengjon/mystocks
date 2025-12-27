@@ -5,7 +5,6 @@ TODO: These tests are templates and need to be properly implemented
 
 import unittest
 import pytest
-import time
 
 
 class TestBaseAdapterOptimized(unittest.TestCase):
