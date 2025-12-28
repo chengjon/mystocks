@@ -139,7 +139,7 @@ async def get_alert_rules():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -148,7 +148,7 @@ async def get_alert_rules():
                 }
 
     except Exception as e:
-        logger.error(f"获取告警规则失败: {str(e)}")
+        logger.error("获取告警规则失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取告警规则失败: {str(e)}",
@@ -170,7 +170,7 @@ async def get_alerts():
             logger.info("使用Mock数据源: 获取告警记录")
             mock_data = get_monitoring_mock_data()
             result = mock_data["get_realtime_alerts"]()
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}条告警")
+            logger.info("Mock数据响应: 共%s条告警", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -205,7 +205,7 @@ async def get_alerts():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -214,7 +214,7 @@ async def get_alerts():
                 }
 
     except Exception as e:
-        logger.error(f"获取告警记录失败: {str(e)}")
+        logger.error("获取告警记录失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取告警记录失败: {str(e)}",
@@ -276,7 +276,7 @@ async def get_realtime_data():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -285,7 +285,7 @@ async def get_realtime_data():
                 }
 
     except Exception as e:
-        logger.error(f"获取实时行情失败: {str(e)}")
+        logger.error("获取实时行情失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取实时行情失败: {str(e)}",
@@ -304,7 +304,7 @@ async def get_symbol_realtime(symbol: str):
         Dict: 指定股票实时数据
     """
     try:
-        logger.info(f"获取股票实时数据: {symbol}")
+        logger.info("获取股票实时数据: %s", symbol)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取指定股票实时数据")
@@ -356,7 +356,7 @@ async def get_symbol_realtime(symbol: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -365,7 +365,7 @@ async def get_symbol_realtime(symbol: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取股票实时数据失败: {str(e)}")
+        logger.error("获取股票实时数据失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取股票实时数据失败: {str(e)}",
@@ -427,7 +427,7 @@ async def get_dragon_tiger_data():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -436,7 +436,7 @@ async def get_dragon_tiger_data():
                 }
 
     except Exception as e:
-        logger.error(f"获取龙虎榜数据失败: {str(e)}")
+        logger.error("获取龙虎榜数据失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取龙虎榜数据失败: {str(e)}",
@@ -498,7 +498,7 @@ async def get_monitoring_summary():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -507,7 +507,7 @@ async def get_monitoring_summary():
                 }
 
     except Exception as e:
-        logger.error(f"获取监控摘要失败: {str(e)}")
+        logger.error("获取监控摘要失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取监控摘要失败: {str(e)}",
@@ -581,7 +581,7 @@ async def get_today_stats():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -590,7 +590,7 @@ async def get_today_stats():
                 }
 
     except Exception as e:
-        logger.error(f"获取今日统计失败: {str(e)}")
+        logger.error("获取今日统计失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取今日统计失败: {str(e)}",
@@ -647,7 +647,7 @@ async def start_monitoring():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库操作失败: {str(e)}")
+                logger.error("真实数据库操作失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库操作失败: {str(e)}",
@@ -656,7 +656,7 @@ async def start_monitoring():
                 }
 
     except Exception as e:
-        logger.error(f"启动监控失败: {str(e)}")
+        logger.error("启动监控失败: %s", str(e))
         return {
             "success": False,
             "message": f"启动监控失败: {str(e)}",
@@ -708,7 +708,7 @@ async def stop_monitoring():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库操作失败: {str(e)}")
+                logger.error("真实数据库操作失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库操作失败: {str(e)}",
@@ -717,7 +717,7 @@ async def stop_monitoring():
                 }
 
     except Exception as e:
-        logger.error(f"停止监控失败: {str(e)}")
+        logger.error("停止监控失败: %s", str(e))
         return {
             "success": False,
             "message": f"停止监控失败: {str(e)}",
@@ -780,7 +780,7 @@ async def get_monitoring_status():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -789,7 +789,7 @@ async def get_monitoring_status():
                 }
 
     except Exception as e:
-        logger.error(f"获取监控状态失败: {str(e)}")
+        logger.error("获取监控状态失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取监控状态失败: {str(e)}",
@@ -842,7 +842,7 @@ async def check_monitoring_health():
                     "version": "1.0.0",
                 }
             except Exception as e:
-                logger.error(f"真实数据库健康检查失败: {str(e)}")
+                logger.error("真实数据库健康检查失败: %s", str(e))
                 return {
                     "status": "unhealthy",
                     "service": "Monitoring",
@@ -852,7 +852,7 @@ async def check_monitoring_health():
                 }
 
     except Exception as e:
-        logger.error(f"检查监控服务健康状态失败: {str(e)}")
+        logger.error("检查监控服务健康状态失败: %s", str(e))
         return {
             "status": "unhealthy",
             "service": "Monitoring",

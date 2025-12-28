@@ -69,7 +69,7 @@ class DataSourceManager:
             raise TypeError(f"数据源必须实现IDataSource接口: {type(source)}")
 
         self._sources[name] = source
-        self.logger.info(f"数据源已注册: {name}")
+        self.logger.info("数据源已注册: %s", name)
 
     def get_source(self, name: str) -> Optional[IDataSource]:
         """
@@ -115,14 +115,14 @@ class DataSourceManager:
             if not data_source:
                 continue
 
-            self.logger.info(f"尝试从{source_name}获取实时行情: {symbol}")
+            self.logger.info("尝试从%s获取实时行情: %s", source_name, symbol)
             result = data_source.get_real_time_data(symbol)
 
             if isinstance(result, dict):
-                self.logger.info(f"成功从{source_name}获取实时行情")
+                self.logger.info("成功从%s获取实时行情", source_name)
                 return result
             else:
-                self.logger.warning(f"{source_name}获取失败: {result}")
+                self.logger.warning("%s获取失败: %s", source_name, result)
 
         return "所有数据源均获取失败"
 
@@ -147,7 +147,7 @@ class DataSourceManager:
             # 使用指定数据源
             data_source = self._sources.get(source)
             if not data_source:
-                self.logger.error(f"数据源不存在: {source}")
+                self.logger.error("数据源不存在: %s", source)
                 return pd.DataFrame()
 
             return data_source.get_stock_daily(symbol, start_date, end_date)
@@ -158,14 +158,14 @@ class DataSourceManager:
             if not data_source:
                 continue
 
-            self.logger.info(f"尝试从{source_name}获取股票日线: {symbol}")
+            self.logger.info("尝试从%s获取股票日线: %s", source_name, symbol)
             df = data_source.get_stock_daily(symbol, start_date, end_date)
 
             if not df.empty:
-                self.logger.info(f"成功从{source_name}获取{len(df)}条日线数据")
+                self.logger.info("成功从%s获取%s条日线数据", source_name, len(df))
                 return df
             else:
-                self.logger.warning(f"{source_name}获取失败或数据为空")
+                self.logger.warning("%s获取失败或数据为空", source_name)
 
         self.logger.error("所有数据源均获取失败")
         return pd.DataFrame()
@@ -189,7 +189,7 @@ class DataSourceManager:
             # 使用指定数据源
             data_source = self._sources.get(source)
             if not data_source:
-                self.logger.error(f"数据源不存在: {source}")
+                self.logger.error("数据源不存在: %s", source)
                 return pd.DataFrame()
 
             return data_source.get_index_daily(symbol, start_date, end_date)
@@ -200,14 +200,14 @@ class DataSourceManager:
             if not data_source:
                 continue
 
-            self.logger.info(f"尝试从{source_name}获取指数日线: {symbol}")
+            self.logger.info("尝试从%s获取指数日线: %s", source_name, symbol)
             df = data_source.get_index_daily(symbol, start_date, end_date)
 
             if not df.empty:
-                self.logger.info(f"成功从{source_name}获取{len(df)}条指数数据")
+                self.logger.info("成功从%s获取%s条指数数据", source_name, len(df))
                 return df
             else:
-                self.logger.warning(f"{source_name}获取失败或数据为空")
+                self.logger.warning("%s获取失败或数据为空", source_name)
 
         self.logger.error("所有数据源均获取失败")
         return pd.DataFrame()
@@ -275,7 +275,7 @@ class DataSourceManager:
             raise ValueError(f"未知的数据类型: {data_type}")
 
         self._priority_config[data_type] = priority_list
-        self.logger.info(f"已更新{data_type}优先级: {priority_list}")
+        self.logger.info("已更新%s优先级: %s", data_type, priority_list)
 
 
 def get_default_manager() -> DataSourceManager:
@@ -293,14 +293,14 @@ def get_default_manager() -> DataSourceManager:
     try:
         tdx = TdxDataSource()
         manager.register_source("tdx", tdx)
-    except Exception as e:
+self.logger.info("数据源管理器初始化完成")
         logging.warning(f"TDX数据源注册失败: {e}")
 
     # 注册AKShare数据源
     try:
         akshare = AkshareDataSource()
         manager.register_source("akshare", akshare)
-    except Exception as e:
+self.logger.info("成功加载配置")
         logging.warning(f"AKShare数据源注册失败: {e}")
 
     return manager

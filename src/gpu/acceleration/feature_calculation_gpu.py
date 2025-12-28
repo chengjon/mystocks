@@ -66,7 +66,7 @@ class FeatureCalculationGPU:
             特征计算结果字典
         """
         try:
-            logger.info(f"开始GPU特征计算: {len(data)} 数据点")
+            logger.info("开始GPU特征计算: %s 数据点", len(data))
 
             # 数据验证
             self._validate_data(data)
@@ -124,11 +124,11 @@ class FeatureCalculationGPU:
             # 缓存结果
             self.feature_cache[cache_key] = features
 
-            logger.info(f"GPU特征计算完成: {len(features)} 类特征 ({calculation_time:.3f}s)")
+            logger.info("GPU特征计算完成: %s 类特征 (%ss)", len(features), calculation_time)
             return features
 
         except Exception as e:
-            logger.error(f"GPU特征计算失败: {e}")
+            logger.error("GPU特征计算失败: %s", e)
             return {"error": str(e), "gpu_mode": self.gpu_available}
 
     def _calculate_technical_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -199,7 +199,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"技术指标计算失败: {e}")
+            logger.error("技术指标计算失败: %s", e)
             return {}
 
     def _calculate_statistical_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -252,7 +252,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"统计特征计算失败: {e}")
+            logger.error("统计特征计算失败: %s", e)
             return {}
 
     def _calculate_volatility_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -307,7 +307,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"波动率特征计算失败: {e}")
+            logger.error("波动率特征计算失败: %s", e)
             return {}
 
     def _calculate_volume_price_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -381,7 +381,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"量价特征计算失败: {e}")
+            logger.error("量价特征计算失败: %s", e)
             return {}
 
     def _calculate_momentum_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -435,7 +435,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"动量特征计算失败: {e}")
+            logger.error("动量特征计算失败: %s", e)
             return {}
 
     def _calculate_pattern_features(self, df: Union[cudf.DataFrame, pd.DataFrame]) -> Dict[str, Any]:
@@ -446,7 +446,7 @@ class FeatureCalculationGPU:
             required_columns = ["high", "low", "close"]
             for col in required_columns:
                 if col not in df.columns:
-                    logger.warning(f"缺少列 {col}，跳过部分模式识别")
+                    logger.warning("缺少列 %s，跳过部分模式识别", col)
                     continue
 
             if len(df) < 20:
@@ -470,7 +470,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"模式特征计算失败: {e}")
+            logger.error("模式特征计算失败: %s", e)
             return {}
 
     # 辅助方法
@@ -501,7 +501,7 @@ class FeatureCalculationGPU:
             return float(ema[-1])
 
         except Exception as e:
-            logger.error(f"EMA计算失败: {e}")
+            logger.error("EMA计算失败: %s", e)
             return 0.0
 
     def _calculate_rsi(self, prices: Union[cudf.Series, pd.Series], period: int) -> float:
@@ -548,7 +548,7 @@ class FeatureCalculationGPU:
                 return 50.0
 
         except Exception as e:
-            logger.error(f"RSI计算失败: {e}")
+            logger.error("RSI计算失败: %s", e)
             return 50.0
 
     def _calculate_kdj(
@@ -601,7 +601,7 @@ class FeatureCalculationGPU:
             return float(k_values[-1]), float(d_values[-1]), float(j_values[-1])
 
         except Exception as e:
-            logger.error(f"KDJ计算失败: {e}")
+            logger.error("KDJ计算失败: %s", e)
             return 50.0, 50.0, 50.0
 
     def _calculate_williams_r(
@@ -629,7 +629,7 @@ class FeatureCalculationGPU:
             return float(np.clip(wr, -100, 0))
 
         except Exception as e:
-            logger.error(f"Williams %R计算失败: {e}")
+            logger.error("Williams %R计算失败: %s", e)
             return -50.0
 
     def _calculate_volatility_clustering(self, returns: Union[cudf.Series, pd.Series]) -> float:
@@ -652,7 +652,7 @@ class FeatureCalculationGPU:
             return float(high_vol_periods / total_periods if total_periods > 0 else 0)
 
         except Exception as e:
-            logger.error(f"波动率聚类计算失败: {e}")
+            logger.error("波动率聚类计算失败: %s", e)
             return 0.0
 
     def _calculate_garch_effect(self, returns: Union[cudf.Series, pd.Series]) -> float:
@@ -672,7 +672,7 @@ class FeatureCalculationGPU:
             return float(np.abs(lag1_corr) if not np.isnan(lag1_corr) else 0)
 
         except Exception as e:
-            logger.error(f"GARCH效应计算失败: {e}")
+            logger.error("GARCH效应计算失败: %s", e)
             return 0.0
 
     def _calculate_obv(
@@ -705,7 +705,7 @@ class FeatureCalculationGPU:
             return float(obv[-1])
 
         except Exception as e:
-            logger.error(f"OBV计算失败: {e}")
+            logger.error("OBV计算失败: %s", e)
             return 0.0
 
     def _calculate_sma(
@@ -727,7 +727,7 @@ class FeatureCalculationGPU:
                 return float(np.mean(values_array[-window:]))
 
         except Exception as e:
-            logger.error(f"SMA计算失败: {e}")
+            logger.error("SMA计算失败: %s", e)
             return 0.0
 
     def _calculate_price_volume_divergence(
@@ -757,7 +757,7 @@ class FeatureCalculationGPU:
             return float(divergence)
 
         except Exception as e:
-            logger.error(f"价量背离计算失败: {e}")
+            logger.error("价量背离计算失败: %s", e)
             return 0.0
 
     def _calculate_support_resistance(
@@ -784,7 +784,7 @@ class FeatureCalculationGPU:
             return support, resistance
 
         except Exception as e:
-            logger.error(f"支撑阻力计算失败: {e}")
+            logger.error("支撑阻力计算失败: %s", e)
             return float(close.iloc[-1]), float(close.iloc[-1])
 
     def _calculate_trend_strength(self, close: Union[cudf.Series, pd.Series]) -> float:
@@ -809,7 +809,7 @@ class FeatureCalculationGPU:
             return float(abs(r_squared))
 
         except Exception as e:
-            logger.error(f"趋势强度计算失败: {e}")
+            logger.error("趋势强度计算失败: %s", e)
             return 0.0
 
     def _identify_price_pattern(self, close: Union[cudf.Series, pd.Series]) -> str:
@@ -846,7 +846,7 @@ class FeatureCalculationGPU:
                     return "downtrend_volatile"
 
         except Exception as e:
-            logger.error(f"价格模式识别失败: {e}")
+            logger.error("价格模式识别失败: %s", e)
             return "unknown"
 
     def _validate_data(self, data: pd.DataFrame) -> None:

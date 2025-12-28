@@ -78,7 +78,7 @@ class TrendAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error in trend optimization: {str(e)}")
+            logger.error("Error in trend optimization: %s", str(e))
             return {
                 "recommended_threshold": current_threshold,
                 "confidence_score": 0.0,

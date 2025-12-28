@@ -50,7 +50,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
         cache_key = self._get_cache_key(symbol, "financial_report", report_type=report_type, period=period)
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"从缓存获取财务报告: {symbol} {report_type} {period}")
+            logger.info("从缓存获取财务报告: %s %s %s", symbol, report_type, period)
             return cached_data
 
         # 按优先级尝试不同的数据源
@@ -64,10 +64,10 @@ class FinancialReportAdapter(BaseFinancialAdapter):
                 data = fetch_func(symbol, report_type, period)
                 if data:
                     self._save_to_cache(cache_key, data)
-                    logger.info(f"通过 {source_name} 获取财务报告成功: {symbol}")
+                    logger.info("通过 %s 获取财务报告成功: %s", source_name, symbol)
                     return data
             except Exception as e:
-                logger.warning(f"通过 {source_name} 获取财务报告失败: {e}")
+                logger.warning("通过 %s 获取财务报告失败: %s", source_name, e)
                 continue
 
         raise Exception(f"所有数据源都无法获取股票 {symbol} 的财务报告")
@@ -125,7 +125,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"akshare 获取财务报告失败: {e}")
+            logger.error("akshare 获取财务报告失败: %s", e)
             raise
 
     def _fetch_financial_report_from_tushare(self, symbol: str, report_type: str, period: str) -> Dict:
@@ -172,7 +172,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"tushare 获取财务报告失败: {e}")
+            logger.error("tushare 获取财务报告失败: %s", e)
             raise
 
     def _extract_financial_data_by_type(self, data: pd.DataFrame, report_type: str, period: str) -> Dict:
@@ -233,7 +233,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"提取财务数据失败: {e}")
+            logger.error("提取财务数据失败: %s", e)
             return {}
 
     def _convert_tushare_data_to_dict(self, data: pd.DataFrame, report_type: str) -> Dict:
@@ -259,7 +259,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"转换tushare数据失败: {e}")
+            logger.error("转换tushare数据失败: %s", e)
             return {}
 
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -271,7 +271,7 @@ class FinancialReportAdapter(BaseFinancialAdapter):
         try:
             return [self.get_financial_report(symbol, "财务指标", period)]
         except Exception as e:
-            logger.error(f"获取财务指标失败: {e}")
+            logger.error("获取财务指标失败: %s", e)
             return []
 
     def get_balance_sheet(self, symbol: str, period: str = "年报") -> Dict:

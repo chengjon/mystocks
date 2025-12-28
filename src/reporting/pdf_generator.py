@@ -92,9 +92,9 @@ class PDFReportGenerator:
             try:
                 pdfmetrics.registerFont(TTFont("SimSun", font_path))
                 self.chinese_font_available = True
-                self.logger.info(f"已加载中文字体: {font_path}")
+                self.logger.info("已加载中文字体: %s", font_path)
             except Exception as e:
-                self.logger.warning(f"无法加载中文字体: {e}")
+                self.logger.warning("无法加载中文字体: %s", e)
 
         # 如果没有中文字体，使用默认字体
         if not self.chinese_font_available:
@@ -161,7 +161,7 @@ class PDFReportGenerator:
         if not REPORTLAB_AVAILABLE:
             raise ImportError("ReportLab未安装，无法生成PDF")
 
-        self.logger.info(f"开始生成PDF报告: {output_path}")
+        self.logger.info("开始生成PDF报告: %s", output_path)
 
         # 创建PDF文档
         doc = SimpleDocTemplate(
@@ -207,7 +207,7 @@ class PDFReportGenerator:
         # 生成PDF
         doc.build(story)
 
-        self.logger.info(f"✓ PDF报告已生成: {output_path}")
+        self.logger.info("✓ PDF报告已生成: %s", output_path)
         return output_path
 
     def _build_cover(self, strategy_name: str, result: Dict) -> List:
@@ -375,7 +375,7 @@ class PDFReportGenerator:
                     elements.append(img)
                     elements.append(Spacer(1, 0.3 * inch))
                 except Exception as e:
-                    self.logger.warning(f"无法加载图表 {chart_name}: {e}")
+                    self.logger.warning("无法加载图表 %s: %s", chart_name, e)
 
         return elements
 

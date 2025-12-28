@@ -47,7 +47,7 @@ class BacktestEngine:
     def run_backtest(self, request: BacktestRequest) -> Dict[str, Any]:
         """执行回测"""
         try:
-            logger.info(f"开始执行回测: {request.backtest_id}")
+            logger.info("开始执行回测: %s", request.backtest_id)
             start_time = time.time()
 
             # 数据预处理
@@ -80,11 +80,11 @@ class BacktestEngine:
                 "timestamp": datetime.now().isoformat(),
             }
 
-            logger.info(f"回测完成: {request.backtest_id}, 耗时: {processing_time:.2f}秒")
+            logger.info("回测完成: %s, 耗时: %s秒", request.backtest_id, processing_time)
             return results
 
         except Exception as e:
-            logger.error(f"回测执行失败: {request.backtest_id}, 错误: {e}")
+            logger.error("回测执行失败: %s, 错误: %s", request.backtest_id, e)
             return {
                 "backtest_id": request.backtest_id,
                 "status": "failed",
@@ -148,7 +148,7 @@ class BacktestEngine:
             gpu_id = self.gpu_manager.allocate_gpu(request.backtest_id, priority="medium", memory_required=1024)
 
             if gpu_id:
-                logger.info(f"使用GPU {gpu_id} 执行回测")
+                logger.info("使用GPU %s 执行回测", gpu_id)
 
                 # 这里应该使用cuDF进行GPU加速计算
                 # 当前模拟GPU处理
@@ -164,7 +164,7 @@ class BacktestEngine:
                 return self._run_backtest_cpu(market_data, strategy, request)
 
         except Exception as e:
-            logger.error(f"GPU回测失败: {e}")
+            logger.error("GPU回测失败: %s", e)
             return self._run_backtest_cpu(market_data, strategy, request)
 
     def _run_backtest_cpu(self, market_data: pd.DataFrame, strategy: Any, request: BacktestRequest) -> Dict[str, Any]:
@@ -511,7 +511,7 @@ class BacktestService(BacktestServiceServicer):
             self.active_tasks[cache_key]["status"] = "queued"
             self.active_tasks[cache_key]["message"] = "任务已加入队列"
 
-            logger.info(f"回测任务已提交: {task_id}")
+            logger.info("回测任务已提交: %s", task_id)
 
             return TaskResponse(
                 task_id=task_id,
@@ -522,7 +522,7 @@ class BacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"提交回测任务失败: {e}")
+            logger.error("提交回测任务失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return TaskResponse()
@@ -573,7 +573,7 @@ class BacktestService(BacktestServiceServicer):
             return QueryResponse()
 
         except Exception as e:
-            logger.error(f"查询回测状态失败: {e}")
+            logger.error("查询回测状态失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return QueryResponse()
@@ -593,7 +593,7 @@ class BacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"获取回测历史失败: {e}")
+            logger.error("获取回测历史失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return HistoryResponse()
@@ -642,7 +642,7 @@ class BacktestService(BacktestServiceServicer):
                     )
 
                 except Exception as e:
-                    logger.error(f"批量任务提交失败 {i}: {e}")
+                    logger.error("批量任务提交失败 %s: %s", i, e)
                     failed_tasks.append({"index": i, "error": str(e)})
 
             return BatchResponse(
@@ -655,7 +655,7 @@ class BacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"批量提交回测失败: {e}")
+            logger.error("批量提交回测失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return BatchResponse()
@@ -690,7 +690,7 @@ class BacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"参数优化失败: {e}")
+            logger.error("参数优化失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return OptimizationResult()
@@ -737,7 +737,7 @@ class BacktestService(BacktestServiceServicer):
                     best_params = params
 
             except Exception as e:
-                logger.warning(f"参数组合优化失败 {params}: {e}")
+                logger.warning("参数组合优化失败 %s: %s", params, e)
                 continue
 
         execution_time = time.time() - start_time
@@ -802,7 +802,7 @@ class BacktestService(BacktestServiceServicer):
                     best_params = params
 
             except Exception as e:
-                logger.warning(f"随机参数优化失败 {params}: {e}")
+                logger.warning("随机参数优化失败 %s: %s", params, e)
                 continue
 
         execution_time = time.time() - start_time

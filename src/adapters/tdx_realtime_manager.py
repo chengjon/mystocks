@@ -75,7 +75,7 @@ class TdxRealtimeManager:
                     result.append(batch_data[symbol])
 
         except Exception as e:
-            logger.error(f"Failed to fetch realtime batch: {str(e)}")
+            logger.error("Failed to fetch realtime batch: %s", str(e))
 
         return result
 
@@ -101,7 +101,7 @@ class TdxRealtimeManager:
                 "active": True,
             }
 
-        logger.info(f"Subscribed to realtime updates for {symbol}, ID: {subscription_id}")
+        logger.info("Subscribed to realtime updates for %s, ID: %s", symbol, subscription_id)
 
         return subscription_id
 
@@ -121,7 +121,7 @@ class TdxRealtimeManager:
                 subscription["active"] = False
                 del self.subscriptions[subscription_id]
 
-                logger.info(f"Unsubscribed from realtime updates, ID: {subscription_id}")
+                logger.info("Unsubscribed from realtime updates, ID: %s", subscription_id)
                 return True
 
         return False
@@ -156,7 +156,7 @@ class TdxRealtimeManager:
         Returns:
             Dict[str, Any]: 实时行情数据
         """
-        logger.debug(f"Fetching realtime quote for {symbol}")
+        logger.debug("Fetching realtime quote for %s", symbol)
 
         # 模拟实时数据
         base_price = 10.0 + hash(symbol) % 100  # 基于股票代码生成基础价格
@@ -185,7 +185,7 @@ class TdxRealtimeManager:
         Returns:
             Dict[str, Dict[str, Any]]: 实时数据字典
         """
-        logger.debug(f"Fetching realtime batch for {len(symbols)} symbols")
+        logger.debug("Fetching realtime batch for %s symbols", len(symbols))
 
         result = {}
         current_time = time.time()
@@ -217,7 +217,7 @@ class TdxRealtimeManager:
         # 生成订阅ID
         subscription_id = str(uuid.uuid4())
 
-        logger.debug(f"Setting up realtime subscription for {symbol}, ID: {subscription_id}")
+        logger.debug("Setting up realtime subscription for %s, ID: %s", symbol, subscription_id)
 
         # 在实际实现中，这里会建立WebSocket连接或其他推送机制
         # 这里只是模拟设置并返回订阅ID
@@ -240,7 +240,7 @@ class TdxRealtimeManager:
                         callback = subscription["callback"]
                         callback(data)
                     except Exception as e:
-                        logger.error(f"Error in realtime callback for {subscription_id}: {str(e)}")
+                        logger.error("Error in realtime callback for %s: %s", subscription_id, str(e))
 
     def _get_cached_realtime_data(self, key: str) -> Optional[Dict[str, Any]]:
         """

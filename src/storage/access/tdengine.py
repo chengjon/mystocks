@@ -91,7 +91,7 @@ class TDengineDataAccess(IDataAccessLayer):
             )
 
             if final_data is None or final_data.empty:
-                logger.info(f"TDengine去重后无数据需要保存: {actual_table_name}")
+                logger.info("TDengine去重后无数据需要保存: %s", actual_table_name)
                 self.monitoring_db.log_operation_result(operation_id, True, 0)
                 return True
 
@@ -110,7 +110,7 @@ class TDengineDataAccess(IDataAccessLayer):
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, len(final_data))
                 logger.info(
-                    f"TDengine保存成功: {actual_table_name}, {len(final_data)}条记录，去重策略: {dedup_strategy}"
+                    "TDengine保存成功: %s, %s条记录，去重策略: %s", actual_table_name, len(final_data), dedup_strategy
                 )
             else:
                 self.monitoring_db.log_operation_result(operation_id, False, 0, "插入失败")
@@ -165,7 +165,7 @@ class TDengineDataAccess(IDataAccessLayer):
             processed_data = self._postprocess_timeseries_data(data, classification)
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"TDengine加载成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("TDengine加载成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return processed_data
 
@@ -237,11 +237,11 @@ class TDengineDataAccess(IDataAccessLayer):
             elif strategy == "reject":
                 return self._handle_tdengine_reject(data, table_name, classification)
             else:
-                logger.warning(f"未知TDengine去重策略: {strategy}, 使用原始数据")
+                logger.warning("未知TDengine去重策略: %s, 使用原始数据", strategy)
                 return data
 
         except Exception as e:
-            logger.error(f"TDengine去重策略处理失败: {strategy}, 错误: {e}")
+            logger.error("TDengine去重策略处理失败: %s, 错误: %s", strategy, e)
             return data
 
     def _handle_tdengine_latest_wins(
@@ -268,12 +268,12 @@ class TDengineDataAccess(IDataAccessLayer):
 
             removed_count = len(data) - len(deduped_data)
             if removed_count > 0:
-                logger.info(f"TDengine LATEST_WINS去重：移除 {removed_count} 条重复记录")
+                logger.info("TDengine LATEST_WINS去重：移除 %s 条重复记录", removed_count)
 
             return deduped_data
 
         except Exception as e:
-            logger.error(f"TDengine LATEST_WINS处理失败: {e}")
+            logger.error("TDengine LATEST_WINS处理失败: %s", e)
             return data
 
     def _handle_tdengine_first_wins(
@@ -326,12 +326,12 @@ class TDengineDataAccess(IDataAccessLayer):
 
             removed_count = len(data) - len(new_data)
             if removed_count > 0:
-                logger.info(f"TDengine FIRST_WINS去重：过滤 {removed_count} 条已存在记录")
+                logger.info("TDengine FIRST_WINS去重：过滤 %s 条已存在记录", removed_count)
 
             return new_data
 
         except Exception as e:
-            logger.error(f"TDengine FIRST_WINS处理失败: {e}")
+            logger.error("TDengine FIRST_WINS处理失败: %s", e)
             return data
 
     def _handle_tdengine_merge(
@@ -359,14 +359,14 @@ class TDengineDataAccess(IDataAccessLayer):
 
             if duplicates.any():
                 dup_count = duplicates.sum()
-                logger.warning(f"TDengine REJECT策略：发现 {dup_count} 条内部重复记录，拒绝保存")
+                logger.warning("TDengine REJECT策略：发现 %s 条内部重复记录，拒绝保存", dup_count)
                 return pd.DataFrame()  # 返回空DataFrame，拒绝所有数据
 
             # 简化实现：如果没有内部重复，允许保存
             return data
 
         except Exception as e:
-            logger.error(f"TDengine REJECT处理失败: {e}")
+            logger.error("TDengine REJECT处理失败: %s", e)
             return data
 
     def _preprocess_timeseries_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:
@@ -399,7 +399,7 @@ class TDengineDataAccess(IDataAccessLayer):
         # 检查必要列
         missing_columns = [col for col in required_columns if col not in processed_data.columns]
         if missing_columns:
-            logger.warning(f"缺少必要列: {missing_columns}")
+            logger.warning("缺少必要列: %s", missing_columns)
 
         return processed_data
 
@@ -443,7 +443,7 @@ class TDengineDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"插入Tick数据失败: {e}")
+            logger.error("插入Tick数据失败: %s", e)
             return False
 
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -477,7 +477,7 @@ class TDengineDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"插入分钟K线数据失败: {e}")
+            logger.error("插入分钟K线数据失败: %s", e)
             return False
 
     def _insert_generic_timeseries(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -496,7 +496,7 @@ class TDengineDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"插入通用时序数据失败: {e}")
+            logger.error("插入通用时序数据失败: %s", e)
             return False
 
     def _build_timeseries_query(

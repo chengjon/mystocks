@@ -87,7 +87,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
                 raise ValueError(f"不支持的数据类型: {data_type}")
 
         except Exception as e:
-            logger.error(f"获取数据失败: {e}")
+            logger.error("获取数据失败: %s", e)
             return pd.DataFrame()
 
     def save_data(self, data: pd.DataFrame, params: Dict[str, Any]) -> bool:
@@ -117,7 +117,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             connection = self._get_tdx_connection()
             return connection and hasattr(connection, "connected") and connection.connected
         except Exception as e:
-            logger.error(f"TDX连接验证失败: {e}")
+            logger.error("TDX连接验证失败: %s", e)
             return False
 
     # ==================== 实时行情数据 ====================
@@ -227,12 +227,12 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
                             }
                         )
                 except Exception as e:
-                    logger.warning(f"获取指数 {index_code} 数据失败: {e}")
+                    logger.warning("获取指数 %s 数据失败: %s", index_code, e)
 
             return overview
 
         except Exception as e:
-            logger.error(f"获取市场概览失败: {e}")
+            logger.error("获取市场概览失败: %s", e)
             return {"error": str(e), "timestamp": datetime.now().isoformat()}
 
     def get_hot_stocks(self, limit: int = 20) -> List[Dict]:
@@ -260,7 +260,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
                             }
                         )
                 except Exception as e:
-                    logger.warning(f"获取股票 {symbol} 数据失败: {e}")
+                    logger.warning("获取股票 %s 数据失败: %s", symbol, e)
 
             # 按涨幅排序
             hot_stocks.sort(key=lambda x: x.get("change_pct", 0), reverse=True)
@@ -268,7 +268,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             return hot_stocks
 
         except Exception as e:
-            logger.error(f"获取热门股票失败: {e}")
+            logger.error("获取热门股票失败: %s", e)
             return []
 
     def search_stocks(self, keyword: str, limit: int = 10) -> List[Dict]:
@@ -298,7 +298,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             return results
 
         except Exception as e:
-            logger.error(f"搜索股票失败: {e}")
+            logger.error("搜索股票失败: %s", e)
             return []
 
     def _is_trading_time(self) -> bool:
@@ -324,7 +324,7 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             return morning_start <= current_time <= morning_end or afternoon_start <= current_time <= afternoon_end
 
         except Exception as e:
-            logger.error(f"判断交易时间失败: {e}")
+            logger.error("判断交易时间失败: %s", e)
             return False
 
     # ==================== 统计和诊断功能 ====================
@@ -438,5 +438,5 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             return data
 
         except Exception as e:
-            logger.error(f"获取股票列表失败: {e}")
+            logger.error("获取股票列表失败: %s", e)
             return []

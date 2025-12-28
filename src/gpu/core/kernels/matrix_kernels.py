@@ -60,7 +60,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 await self._warmup_gpu()
 
                 self.is_initialized = True
-                logger.info(f"MatrixKernelEngine initialized on device {self.config.device_id}")
+                logger.info("MatrixKernelEngine initialized on device %s", self.config.device_id)
                 return True
             else:
                 logger.warning("CuPy not available, falling back to NumPy")
@@ -68,7 +68,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize MatrixKernelEngine: {e}")
+            logger.error("Failed to initialize MatrixKernelEngine: %s", e)
             return False
 
     async def _warmup_gpu(self):
@@ -86,7 +86,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             cp.cuda.Stream.null.synchronize()
             logger.debug("GPU warmup completed")
         except Exception as e:
-            logger.warning(f"GPU warmup failed: {e}")
+            logger.warning("GPU warmup failed: %s", e)
 
     async def execute_matrix_operation(
         self,
@@ -127,7 +127,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Matrix operation {operation_config.operation_type.value} " f"completed in {execution_time:.2f}ms"
+                    "Matrix operation {operation_config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -136,7 +136,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            logger.error(f"Error executing matrix operation: {e}")
+            logger.error("Error executing matrix operation: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
     def _check_matrix_dimensions(
@@ -182,7 +182,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
                 return await self._execute_cpu_matrix_kernel(left_data, right_data, config)
 
         except Exception as e:
-            logger.error(f"Matrix kernel execution failed: {e}")
+            logger.error("Matrix kernel execution failed: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     def _should_use_cpu_fallback(self, data: np.ndarray, config: MatrixOperationConfig) -> bool:
@@ -268,7 +268,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             )
 
         except Exception as e:
-            logger.error(f"GPU matrix kernel execution failed: {e}")
+            logger.error("GPU matrix kernel execution failed: %s", e)
             # 回退到CPU
             return await self._execute_cpu_matrix_kernel(left_data, right_data, config)
 
@@ -327,7 +327,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
             )
 
         except Exception as e:
-            logger.error(f"CPU matrix kernel execution failed: {e}")
+            logger.error("CPU matrix kernel execution failed: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     def _gpu_matrix_multiply(self, left: np.ndarray, right: np.ndarray, config: MatrixOperationConfig) -> np.ndarray:
@@ -655,7 +655,7 @@ class MatrixKernelEngine(StandardizedKernelInterface):
 
             except Exception as e:
                 # 并行计算失败，回退到标准方法
-                logger.warning(f"Parallel multiplication failed, falling back: {e}")
+                logger.warning("Parallel multiplication failed, falling back: %s", e)
                 return cp.matmul(a, b)
 
         else:

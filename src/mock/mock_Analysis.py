@@ -21,7 +21,6 @@ import datetime
 import random
 
 
-# TODO: 根据实际API接口修改函数实现
 def get_data_list() -> List[Dict]:
     """获取数据列表
 
@@ -31,7 +30,7 @@ def get_data_list() -> List[Dict]:
     Returns:
         List[Dict]: 获取数据列表数据列表
     """
-    # TODO: 实现具体的数据生成逻辑
+
     # 示例Mock数据
     mock_data = [
         {
@@ -53,7 +52,7 @@ def get_data_detail() -> Dict:
     Returns:
         Dict: 获取数据详情数据
     """
-    # TODO: 实现具体的数据生成逻辑
+
     mock_data = {
         "id": 1,
         "name": "示例数据",
@@ -72,7 +71,7 @@ def get_data_table() -> pd.DataFrame:
     Returns:
         pd.DataFrame: 获取数据表格数据表格，列名对应前端表格字段
     """
-    # TODO: 实现具体的数据生成逻辑
+
     # 示例DataFrame数据
     data = {
         "date": ["2025-01-01", "2025-01-02", "2025-01-03"],

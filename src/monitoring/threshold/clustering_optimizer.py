@@ -112,7 +112,7 @@ class ClusteringOptimizer:
                 },
             )
         except Exception as e:
-            self.logger.error(f"聚类优化失败: {e}")
+            self.logger.error("聚类优化失败: %s", e)
             return OptimizationResult(
                 rule_name="clustering_optimizer",
                 optimization_type="clustering",
@@ -162,7 +162,7 @@ class ClusteringOptimizer:
                 "noise_ratio": np.sum(cluster_labels == -1) / len(cluster_labels),
             }
         except Exception as e:
-            self.logger.error(f"聚类质量分析失败: {e}")
+            self.logger.error("聚类质量分析失败: %s", e)
             return {"quality_score": 0, "silhouette_score": 0, "num_clusters": 0}
 
     def detect_anomalies_with_clustering(
@@ -184,7 +184,7 @@ class ClusteringOptimizer:
 
             return anomaly_indices
         except Exception as e:
-            self.logger.error(f"聚类异常检测失败: {e}")
+            self.logger.error("聚类异常检测失败: %s", e)
             return []
 
     def optimize_dbscan_parameters(self, values: List[float]) -> dict:
@@ -223,5 +223,5 @@ class ClusteringOptimizer:
 
             return best_params
         except Exception as e:
-            self.logger.error(f"DBSCAN参数优化失败: {e}")
+            self.logger.error("DBSCAN参数优化失败: %s", e)
             return {"eps": 0.5, "min_samples": 3, "score": 0}

@@ -52,7 +52,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
         """
         self.pg_access = PostgreSQLDataAccess()
         self._connection_pool_size = connection_pool_size
-        logger.info(f"PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})")
+        logger.info("PostgreSQL关系数据源初始化完成 (连接池大小: %s)", connection_pool_size)
 
     # ==================== 自选股管理 ====================
 
@@ -114,11 +114,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}")
+            logger.info("获取自选股成功: user_id=%s, list_type=%s, count=%s", user_id, list_type, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取自选股失败: {e}")
+            logger.error("获取自选股失败: %s", e)
             raise
 
     def add_to_watchlist(
@@ -168,14 +168,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "added_at": row[5].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
-            logger.info(f"添加自选股成功: user_id={user_id}, symbol={symbol}, list_type={list_type}")
+            logger.info("添加自选股成功: user_id=%s, symbol=%s, list_type=%s", user_id, symbol, list_type)
             return result
 
         except ValueError:
             raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"添加自选股失败: {e}")
+            logger.error("添加自选股失败: %s", e)
             raise
 
     def remove_from_watchlist(self, user_id: int, symbol: str, list_type: Optional[str] = None) -> bool:
@@ -206,12 +206,12 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"删除自选股成功: user_id={user_id}, symbol={symbol}, deleted={deleted_count}")
+            logger.info("删除自选股成功: user_id=%s, symbol=%s, deleted=%s", user_id, symbol, deleted_count)
             return deleted_count > 0
 
         except Exception as e:
             conn.rollback()
-            logger.error(f"删除自选股失败: {e}")
+            logger.error("删除自选股失败: %s", e)
             raise
 
     def update_watchlist_note(self, user_id: int, symbol: str, list_type: str, note: str) -> bool:
@@ -234,12 +234,12 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"更新自选股备注成功: user_id={user_id}, symbol={symbol}")
+            logger.info("更新自选股备注成功: user_id=%s, symbol=%s", user_id, symbol)
             return updated_count > 0
 
         except Exception as e:
             conn.rollback()
-            logger.error(f"更新自选股备注失败: {e}")
+            logger.error("更新自选股备注失败: %s", e)
             raise
 
     # ==================== 策略配置管理 ====================
@@ -303,11 +303,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取策略配置成功: user_id={user_id}, count={len(result)}")
+            logger.info("获取策略配置成功: user_id=%s, count=%s", user_id, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取策略配置失败: {e}")
+            logger.error("获取策略配置失败: %s", e)
             raise
 
     def save_strategy_config(
@@ -370,14 +370,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "updated_at": row[8].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
-            logger.info(f"保存策略配置成功: user_id={user_id}, name={name}")
+            logger.info("保存策略配置成功: user_id=%s, name=%s", user_id, name)
             return result
 
         except ValueError:
             raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"保存策略配置失败: {e}")
+            logger.error("保存策略配置失败: %s", e)
             raise
 
     def update_strategy_status(self, strategy_id: int, user_id: int, status: str) -> bool:
@@ -412,14 +412,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"更新策略状态成功: strategy_id={strategy_id}, status={status}")
+            logger.info("更新策略状态成功: strategy_id=%s, status=%s", strategy_id, status)
             return updated_count > 0
 
         except PermissionError:
             raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"更新策略状态失败: {e}")
+            logger.error("更新策略状态失败: %s", e)
             raise
 
     def delete_strategy_config(self, strategy_id: int, user_id: int) -> bool:
@@ -447,14 +447,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"删除策略配置成功: strategy_id={strategy_id}")
+            logger.info("删除策略配置成功: strategy_id=%s", strategy_id)
             return True
 
         except PermissionError:
             raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"删除策略配置失败: {e}")
+            logger.error("删除策略配置失败: %s", e)
             raise
 
     # ==================== 风险管理配置 ====================
@@ -526,11 +526,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取风险预警成功: user_id={user_id}, count={len(result)}")
+            logger.info("获取风险预警成功: user_id=%s, count=%s", user_id, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取风险预警失败: {e}")
+            logger.error("获取风险预警失败: %s", e)
             raise
 
     def save_risk_alert(
@@ -594,12 +594,12 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
                 "created_at": row[8].strftime("%Y-%m-%d %H:%M:%S"),
             }
 
-            logger.info(f"保存风险预警成功: user_id={user_id}, symbol={symbol}")
+            logger.info("保存风险预警成功: user_id=%s, symbol=%s", user_id, symbol)
             return result
 
         except Exception as e:
             conn.rollback()
-            logger.error(f"保存风险预警失败: {e}")
+            logger.error("保存风险预警失败: %s", e)
             raise
 
     def toggle_risk_alert(self, alert_id: int, user_id: int, enabled: bool) -> bool:
@@ -628,14 +628,14 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"切换风险预警成功: alert_id={alert_id}, enabled={enabled}")
+            logger.info("切换风险预警成功: alert_id=%s, enabled=%s", alert_id, enabled)
             return True
 
         except PermissionError:
             raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"切换风险预警失败: {e}")
+            logger.error("切换风险预警失败: %s", e)
             raise
 
     # ==================== 用户配置管理 ====================
@@ -680,11 +680,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取用户偏好成功: user_id={user_id}")
+            logger.info("获取用户偏好成功: user_id=%s", user_id)
             return result
 
         except Exception as e:
-            logger.error(f"获取用户偏好失败: {e}")
+            logger.error("获取用户偏好失败: %s", e)
             raise
 
     def update_user_preferences(self, user_id: int, preferences: Dict[str, Any]) -> bool:
@@ -737,12 +737,12 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"更新用户偏好成功: user_id={user_id}")
+            logger.info("更新用户偏好成功: user_id=%s", user_id)
             return True
 
         except Exception as e:
             conn.rollback()
-            logger.error(f"更新用户偏好失败: {e}")
+            logger.error("更新用户偏好失败: %s", e)
             raise
 
     # ==================== 股票基础信息 ====================
@@ -813,11 +813,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取股票基础信息成功: count={len(result)}")
+            logger.info("获取股票基础信息成功: count=%s", len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取股票基础信息失败: {e}")
+            logger.error("获取股票基础信息失败: %s", e)
             raise
 
     def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
@@ -883,11 +883,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"搜索股票成功: keyword={keyword}, count={len(result)}")
+            logger.info("搜索股票成功: keyword=%s, count=%s", keyword, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"搜索股票失败: {e}")
+            logger.error("搜索股票失败: %s", e)
             raise
 
     # ==================== 行业概念板块 ====================
@@ -929,11 +929,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取行业列表成功: classification={classification}, count={len(result)}")
+            logger.info("获取行业列表成功: classification=%s, count=%s", classification, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取行业列表失败: {e}")
+            logger.error("获取行业列表失败: %s", e)
             raise
 
     def get_concept_list(self) -> List[Dict[str, Any]]:
@@ -968,11 +968,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取概念列表成功: count={len(result)}")
+            logger.info("获取概念列表成功: count=%s", len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取概念列表失败: {e}")
+            logger.error("获取概念列表失败: %s", e)
             raise
 
     def get_stocks_by_industry(self, industry_code: str) -> List[str]:
@@ -1001,11 +1001,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取行业成分股成功: industry_code={industry_code}, count={len(result)}")
+            logger.info("获取行业成分股成功: industry_code=%s, count=%s", industry_code, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取行业成分股失败: {e}")
+            logger.error("获取行业成分股失败: %s", e)
             raise
 
     def get_stocks_by_concept(self, concept_code: str) -> List[str]:
@@ -1034,11 +1034,11 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             cursor.close()
             self.pg_access._return_connection(conn)
 
-            logger.info(f"获取概念成分股成功: concept_code={concept_code}, count={len(result)}")
+            logger.info("获取概念成分股成功: concept_code=%s, count=%s", concept_code, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取概念成分股失败: {e}")
+            logger.error("获取概念成分股失败: %s", e)
             raise
 
     # ==================== 数据库操作辅助 ====================
@@ -1055,7 +1055,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             logger.info("开始事务")
             return conn
         except Exception as e:
-            logger.error(f"开始事务失败: {e}")
+            logger.error("开始事务失败: %s", e)
             raise
 
     def commit_transaction(self, transaction: Any) -> None:
@@ -1068,7 +1068,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             self.pg_access._return_connection(transaction)
             logger.info("提交事务成功")
         except Exception as e:
-            logger.error(f"提交事务失败: {e}")
+            logger.error("提交事务失败: %s", e)
             raise
 
     def rollback_transaction(self, transaction: Any) -> None:
@@ -1081,7 +1081,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             self.pg_access._return_connection(transaction)
             logger.info("回滚事务成功")
         except Exception as e:
-            logger.error(f"回滚事务失败: {e}")
+            logger.error("回滚事务失败: %s", e)
             raise
 
     def health_check(self) -> Dict[str, Any]:
@@ -1128,7 +1128,7 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
             }
 
         except Exception as e:
-            logger.error(f"健康检查失败: {e}")
+            logger.error("健康检查失败: %s", e)
             return {
                 "status": "unhealthy",
                 "data_source_type": "postgresql",

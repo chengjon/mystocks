@@ -124,13 +124,12 @@ class NotificationProvider(ABC):
                 result.retry_count = attempt
                 return result
             except asyncio.TimeoutError:
-                logger.warning(
-                    f"Timeout sending via {self.config.channel.value} " f"(attempt {attempt + 1}/{self.retry_count})"
+                logger.warning("Timeout sending via {self.config.channel.value} " f"(attempt {attempt + 1}/{self.retry_count})"
                 )
                 if attempt < self.retry_count - 1:
                     await asyncio.sleep(self.retry_delay * (2**attempt))
             except Exception as e:
-                logger.error(f"Error sending via {self.config.channel.value}: {e}")
+                logger.error("Error sending via %s: %s", self.config.channel.value, e)
                 if attempt < self.retry_count - 1:
                     await asyncio.sleep(self.retry_delay * (2**attempt))
 
@@ -180,7 +179,7 @@ class EmailNotificationProvider(NotificationProvider):
 
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
-            logger.info(f"✅ Email sent to {len(recipients)} recipients ({delivery_time:.0f}ms)")
+            logger.info("✅ Email sent to %s recipients (%sms)", len(recipients), delivery_time)
 
             return NotificationResult(
                 channel=NotificationChannel.EMAIL,
@@ -192,7 +191,7 @@ class EmailNotificationProvider(NotificationProvider):
             )
 
         except Exception as e:
-            logger.error(f"❌ Email delivery failed: {e}")
+            logger.error("❌ Email delivery failed: %s", e)
             raise
 
     def _format_html_email(self, alert: Alert, body: str) -> str:
@@ -294,7 +293,7 @@ class SlackNotificationProvider(NotificationProvider):
                 ) as response:
                     if response.status == 200:
                         delivery_time = (datetime.now() - start_time).total_seconds() * 1000
-                        logger.info(f"✅ Slack notification sent ({delivery_time:.0f}ms)")
+                        logger.info("✅ Slack notification sent (%sms)", delivery_time)
                         return NotificationResult(
                             channel=NotificationChannel.SLACK,
                             alert_id=alert.alertname,
@@ -307,7 +306,7 @@ class SlackNotificationProvider(NotificationProvider):
                         raise Exception(f"Slack API returned {response.status}")
 
         except Exception as e:
-            logger.error(f"❌ Slack delivery failed: {e}")
+            logger.error("❌ Slack delivery failed: %s", e)
             raise
 
     def _get_severity_color(self, severity: str) -> str:
@@ -357,12 +356,12 @@ class SMSNotificationProvider(NotificationProvider):
                         if response.status == 201:
                             sent_count += 1
                         else:
-                            logger.warning(f"Failed to send SMS to {phone_number}: {response.status}")
+                            logger.warning("Failed to send SMS to %s: %s", phone_number, response.status)
 
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info(f"✅ SMS sent to {sent_count}/{len(recipients)} recipients " f"({delivery_time:.0f}ms)")
+                logger.info("✅ SMS sent to %ssent_count/%slen(recipients")} recipients " f"({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.SMS,
                     alert_id=alert.alertname,
@@ -375,7 +374,7 @@ class SMSNotificationProvider(NotificationProvider):
                 raise Exception("Failed to send SMS to any recipient")
 
         except Exception as e:
-            logger.error(f"❌ SMS delivery failed: {e}")
+            logger.error("❌ SMS delivery failed: %s", e)
             raise
 
 
@@ -411,15 +410,14 @@ class WebhookNotificationProvider(NotificationProvider):
                             if 200 <= response.status < 300:
                                 sent_count += 1
                             else:
-                                logger.warning(f"Webhook returned {response.status}: {url}")
+                                logger.warning("Webhook returned %s: %s", response.status, url)
                     except Exception as e:
-                        logger.warning(f"Webhook failed ({url}): {e}")
+                        logger.warning("Webhook failed (%s): %s", url, e)
 
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info(
-                    f"✅ Webhook sent to {sent_count}/{len(webhook_urls)} endpoints " f"({delivery_time:.0f}ms)"
+                logger.info("✅ Webhook sent to %ssent_count/%slen(webhook_urls")} endpoints " f"({delivery_time:.0f}ms)"
                 )
                 return NotificationResult(
                     channel=NotificationChannel.WEBHOOK,
@@ -433,7 +431,7 @@ class WebhookNotificationProvider(NotificationProvider):
                 raise Exception("Failed to send to any webhook")
 
         except Exception as e:
-            logger.error(f"❌ Webhook delivery failed: {e}")
+            logger.error("❌ Webhook delivery failed: %s", e)
             raise
 
 
@@ -521,7 +519,7 @@ class AlertNotificationManager:
             NotificationConfig(channel=NotificationChannel.WEBHOOK, enabled=True, retry_count=2)
         )
 
-        logger.info(f"✅ Initialized {len(self.providers)} notification providers")
+        logger.info("✅ Initialized %s notification providers", len(self.providers))
 
     async def send_alert(
         self, alert: Alert, recipients_map: Dict[NotificationChannel, List[str]]
@@ -529,17 +527,17 @@ class AlertNotificationManager:
         """
         Send alert via multiple channels to specified recipients
         """
-        logger.info(f"📨 Sending alert: {alert.alertname} via {len(recipients_map)} channels")
+        logger.info("📨 Sending alert: %s via %s channels", alert.alertname, len(recipients_map))
 
         tasks = []
         for channel, recipients in recipients_map.items():
             if channel not in self.providers:
-                logger.warning(f"⚠️  Channel {channel} not configured")
+                logger.warning("⚠️  Channel %s not configured", channel)
                 continue
 
             provider = self.providers[channel]
             if not provider.config.enabled:
-                logger.debug(f"⏭️  Skipping disabled channel: {channel}")
+                logger.debug("⏭️  Skipping disabled channel: %s", channel)
                 continue
 
             # Create notification task
@@ -559,7 +557,7 @@ class AlertNotificationManager:
         notification_results = []
         for result in results:
             if isinstance(result, Exception):
-                logger.error(f"❌ Notification failed: {result}")
+                logger.error("❌ Notification failed: %s", result)
             else:
                 notification_results.append(result)
                 self._save_notification_history(alert, result)
@@ -612,7 +610,7 @@ class AlertNotificationManager:
             conn.commit()
             conn.close()
         except Exception as e:
-            logger.error(f"Failed to save notification history: {e}")
+            logger.error("Failed to save notification history: %s", e)
 
     def get_notification_history(self, alert_name: Optional[str] = None, days: int = 7) -> List[Dict]:
         """Retrieve notification history"""
@@ -647,7 +645,7 @@ class AlertNotificationManager:
             conn.close()
             return results
         except Exception as e:
-            logger.error(f"Failed to retrieve notification history: {e}")
+            logger.error("Failed to retrieve notification history: %s", e)
             return []
 
 

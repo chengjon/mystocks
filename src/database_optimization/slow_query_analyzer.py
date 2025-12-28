@@ -236,7 +236,7 @@ class SlowQueryAnalyzer:
                 "optimization_suggestions": [...]
             }
         """
-        logger.info(f"Generating EXPLAIN analysis for {database}...")
+        logger.info("Generating EXPLAIN analysis for %s...", database)
 
         bottlenecks = []
         optimization_suggestions = []

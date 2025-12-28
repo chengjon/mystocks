@@ -188,7 +188,7 @@ class BaseStrategy(ABC):
         if self.unified_manager is None:
             raise ValueError("UnifiedDataManager未初始化，无法获取数据")
 
-        self.logger.info(f"获取市场数据: {symbol}, {start_date} 至 {end_date}, 频率: {frequency}")
+        self.logger.info("获取市场数据: %s, %s 至 %s, 频率: %s", symbol, start_date, end_date, frequency)
 
         # 通过UnifiedDataManager获取数据
         # 注意: 实际实现需要根据UnifiedDataManager的具体接口调整
@@ -227,9 +227,9 @@ class BaseStrategy(ABC):
             ... )
             >>> print(f"生成了 {len(result['signals'])} 个信号")
         """
-        self.logger.info(f"开始执行策略: {self.name} v{self.version}")
-        self.logger.info(f"股票池大小: {len(symbols)}")
-        self.logger.info(f"日期范围: {start_date} 至 {end_date}")
+        self.logger.info("开始执行策略: %s v%s", self.name, self.version)
+        self.logger.info("股票池大小: %s", len(symbols))
+        self.logger.info("日期范围: %s 至 %s", start_date, end_date)
 
         # 执行前回调
         self.on_before_execute(symbols, start_date, end_date, **kwargs)
@@ -240,13 +240,13 @@ class BaseStrategy(ABC):
 
         for i, symbol in enumerate(symbols):
             try:
-                self.logger.debug(f"处理股票 [{i + 1}/{len(symbols)}]: {symbol}")
+                self.logger.debug("处理股票 [%s/%s]: %s", i + 1, len(symbols), symbol)
 
                 # 获取市场数据
                 data = self.get_market_data(symbol, start_date, end_date)
 
                 if data.empty:
-                    self.logger.warning(f"股票 {symbol} 数据为空，跳过")
+                    self.logger.warning("股票 %s 数据为空，跳过", symbol)
                     continue
 
                 # 生成信号
@@ -261,7 +261,7 @@ class BaseStrategy(ABC):
                     valid_signals["strategy_id"] = self.strategy_id
                     all_signals.append(valid_signals)
 
-                    self.logger.info(f"股票 {symbol} 生成 {len(valid_signals)} 个信号")
+                    self.logger.info("股票 %s 生成 %s 个信号", symbol, len(valid_signals))
 
             except Exception as e:
                 error_msg = f"处理股票 {symbol} 时出错: {str(e)}"
@@ -299,7 +299,7 @@ class BaseStrategy(ABC):
         # 执行后回调
         self.on_after_execute(result)
 
-        self.logger.info(f"策略执行完成: 生成 {len(signals_df)} 个信号，耗时 {execution_time:.2f}秒")
+        self.logger.info("策略执行完成: 生成 %s 个信号，耗时 %s秒", len(signals_df), execution_time)
 
         return result
 

@@ -67,9 +67,9 @@ class TdxBinaryParser:
         self.data_path = data_path or os.getenv("TDX_DATA_PATH", "/mnt/d/ProgramData/tdx_new/vipdoc")
 
         if not os.path.exists(self.data_path):
-            self.logger.warning(f"TDX数据路径不存在: {self.data_path}")
+            self.logger.warning("TDX数据路径不存在: %s", self.data_path)
         else:
-            self.logger.info(f"TDX数据路径: {self.data_path}")
+            self.logger.info("TDX数据路径: %s", self.data_path)
 
         # 市场目录映射
         self.market_dirs = {
@@ -110,7 +110,7 @@ class TdxBinaryParser:
         file_path = self._get_day_file_path(market, code)
 
         if not os.path.exists(file_path):
-            self.logger.warning(f"文件不存在: {file_path}")
+            self.logger.warning("文件不存在: %s", file_path)
             return pd.DataFrame()
 
         # 读取二进制数据
@@ -126,11 +126,11 @@ class TdxBinaryParser:
             if end_date:
                 data = data[data["date"] <= pd.Timestamp(end_date)]
 
-            self.logger.info(f"读取 {symbol} 日线数据: {len(data)} 条记录")
+            self.logger.info("读取 %s 日线数据: %s 条记录", symbol, len(data))
             return data
 
         except Exception as e:
-            self.logger.error(f"读取日线数据失败 {symbol}: {e}")
+            self.logger.error("读取日线数据失败 %s: %s", symbol, e)
             return pd.DataFrame()
 
     def read_5min_data(
@@ -154,7 +154,7 @@ class TdxBinaryParser:
         file_path = self._get_5min_file_path(market, code)
 
         if not os.path.exists(file_path):
-            self.logger.warning(f"文件不存在: {file_path}")
+            self.logger.warning("文件不存在: %s", file_path)
             return pd.DataFrame()
 
         try:
@@ -169,11 +169,11 @@ class TdxBinaryParser:
             if end_date:
                 data = data[data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)]
 
-            self.logger.info(f"读取 {symbol} 5分钟数据: {len(data)} 条记录")
+            self.logger.info("读取 %s 5分钟数据: %s 条记录", symbol, len(data))
             return data
 
         except Exception as e:
-            self.logger.error(f"读取5分钟数据失败 {symbol}: {e}")
+            self.logger.error("读取5分钟数据失败 %s: %s", symbol, e)
             return pd.DataFrame()
 
     def read_1min_data(
@@ -197,7 +197,7 @@ class TdxBinaryParser:
         file_path = self._get_1min_file_path(market, code)
 
         if not os.path.exists(file_path):
-            self.logger.warning(f"文件不存在: {file_path}")
+            self.logger.warning("文件不存在: %s", file_path)
             return pd.DataFrame()
 
         try:
@@ -212,11 +212,11 @@ class TdxBinaryParser:
             if end_date:
                 data = data[data["datetime"] < pd.Timestamp(end_date) + timedelta(days=1)]
 
-            self.logger.info(f"读取 {symbol} 1分钟数据: {len(data)} 条记录")
+            self.logger.info("读取 %s 1分钟数据: %s 条记录", symbol, len(data))
             return data
 
         except Exception as e:
-            self.logger.error(f"读取1分钟数据失败 {symbol}: {e}")
+            self.logger.error("读取1分钟数据失败 %s: %s", symbol, e)
             return pd.DataFrame()
 
     def list_available_stocks(self, market: str = "sh") -> List[str]:
@@ -232,7 +232,7 @@ class TdxBinaryParser:
         dir_path = self.market_dirs.get(market)
 
         if not dir_path or not os.path.exists(dir_path):
-            self.logger.warning(f"市场目录不存在: {market}")
+            self.logger.warning("市场目录不存在: %s", market)
             return []
 
         stocks = []
@@ -245,7 +245,7 @@ class TdxBinaryParser:
                     code = code[len(market) :]
                 stocks.append(f"{market}{code}")
 
-        self.logger.info(f"市场 {market} 共有 {len(stocks)} 只股票")
+        self.logger.info("市场 %s 共有 %s 只股票", market, len(stocks))
         return sorted(stocks)
 
     def get_latest_date(self, symbol: str) -> Optional[date]:

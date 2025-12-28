@@ -21,7 +21,7 @@ router = APIRouter(prefix="/data/markets", tags=["dashboard"])
 
 # 环境变量控制的数据源切换
 USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", "true").lower() == "true"
-logger.info(f"数据源模式: {'Mock数据' if USE_MOCK_DATA else '真实数据库'}")
+logger.info("数据源模式: %s", "Mock数据" if USE_MOCK_DATA else "真实数据库")
 
 # 导入Mock数据或真实数据
 if USE_MOCK_DATA:
@@ -127,7 +127,7 @@ async def get_market_overview():
         return JSONResponse(content=overview_data)
 
     except Exception as e:
-        logger.error(f"获取市场概览数据失败: {str(e)}")
+        logger.error("获取市场概览数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=f"服务器内部错误: {str(e)}")
 
 
@@ -143,7 +143,7 @@ async def get_market_statistics():
         stats = get_market_stats()
         return JSONResponse(content={"success": True, "data": stats, "message": "获取市场统计数据成功"})
     except Exception as e:
-        logger.error(f"获取市场统计数据失败: {str(e)}")
+        logger.error("获取市场统计数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -173,7 +173,7 @@ async def get_market_heat(
             }
         )
     except Exception as e:
-        logger.error(f"获取市场热度数据失败: {str(e)}")
+        logger.error("获取市场热度数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -195,7 +195,7 @@ async def get_leading_sectors_data():
             }
         )
     except Exception as e:
-        logger.error(f"获取领涨板块数据失败: {str(e)}")
+        logger.error("获取领涨板块数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -217,7 +217,7 @@ async def get_price_distribution_data():
             }
         )
     except Exception as e:
-        logger.error(f"获取涨跌分布数据失败: {str(e)}")
+        logger.error("获取涨跌分布数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -239,7 +239,7 @@ async def get_capital_flow():
             }
         )
     except Exception as e:
-        logger.error(f"获取资金流向数据失败: {str(e)}")
+        logger.error("获取资金流向数据失败: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -269,7 +269,7 @@ async def get_industry_fund_flow(
             }
         )
     except Exception as e:
-        logger.error(f"获取行业资金流向数据失败: {str(e)}")
+        logger.error("获取行业资金流向数据失败: %s", str(e))
         if isinstance(e, HTTPException):
             raise
         raise HTTPException(status_code=500, detail=str(e))
@@ -314,7 +314,7 @@ async def get_stock_data_by_type(
             }
         )
     except Exception as e:
-        logger.error(f"获取{stock_type}股票数据失败: {str(e)}")
+        logger.error("获取%s股票数据失败: %s", stock_type, str(e))
         if isinstance(e, HTTPException):
             raise
         raise HTTPException(status_code=500, detail=str(e))

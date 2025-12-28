@@ -183,7 +183,7 @@ class PricePredictorCPU:
 
         self.performance_stats["total_training_time"] = total_training_time
 
-        self.logger.info(f"CPU模型训练完成，总耗时: {total_training_time:.2f}秒")
+        self.logger.info("CPU模型训练完成，总耗时: %s秒", total_training_time)
         return training_results
 
     def predict_price(
@@ -270,7 +270,7 @@ class PricePredictorCPU:
                 result = self.predict_price(data, model_name, prediction_horizon)
                 results.append(result)
             except Exception as e:
-                self.logger.error(f"批量预测中发生错误: {e}")
+                self.logger.error("批量预测中发生错误: %s", e)
                 continue
 
         return results
@@ -323,7 +323,7 @@ class PricePredictorCPU:
         }
 
         joblib.dump(model_data, filepath)
-        self.logger.info(f"CPU模型已保存到: {filepath}")
+        self.logger.info("CPU模型已保存到: %s", filepath)
 
     def load_model(self, filepath: str):
         """加载模型"""
@@ -337,7 +337,7 @@ class PricePredictorCPU:
         self.is_fitted = model_data["is_fitted"]
         self.performance_stats = model_data["performance_stats"]
 
-        self.logger.info(f"CPU模型已从 {filepath} 加载")
+        self.logger.info("CPU模型已从 %s 加载", filepath)
 
 
 # CPU版本的数据处理器
@@ -472,10 +472,10 @@ class DataProcessorCPU:
                 results.append(processed_data)
 
                 if (i + 1) % 10 == 0:
-                    self.logger.info(f"并行处理进度: {i + 1}/{len(data_list)}")
+                    self.logger.info("并行处理进度: %s/%s", i + 1, len(data_list))
 
             except Exception as e:
-                self.logger.error(f"处理第 {i + 1} 个数据时出错: {e}")
+                self.logger.error("处理第 %s 个数据时出错: %s", i + 1, e)
                 results.append(data)  # 出错时返回原始数据
 
         return results

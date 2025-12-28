@@ -117,7 +117,7 @@ class DatabaseService:
             return result
 
         except Exception as e:
-            logger.error(f"获取股票列表失败: {e}")
+            logger.error("获取股票列表失败: %s", e)
             return []
 
     def get_stock_detail(self, stock_code: str) -> Dict:
@@ -155,7 +155,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取股票详细信息失败: {e}")
+            logger.error("获取股票详细信息失败: %s", e)
             return {}
 
     def get_realtime_quotes(self, symbols: List[str]) -> List[Dict]:
@@ -216,7 +216,7 @@ class DatabaseService:
             return result
 
         except Exception as e:
-            logger.error(f"获取实时行情失败: {e}")
+            logger.error("获取实时行情失败: %s", e)
             return []
 
     # ==================== 问财相关查询 ====================
@@ -279,7 +279,7 @@ class DatabaseService:
             }
 
         except Exception as e:
-            logger.error(f"执行问财查询失败: {e}")
+            logger.error("执行问财查询失败: %s", e)
             return {
                 "query_name": query_params.get("query_name", ""),
                 "total_records": 0,
@@ -364,7 +364,7 @@ class DatabaseService:
             return result
 
         except Exception as e:
-            logger.error(f"获取技术指标失败: {e}")
+            logger.error("获取技术指标失败: %s", e)
             return []
 
     # ==================== 监控相关查询 ====================
@@ -437,7 +437,7 @@ class DatabaseService:
             return result
 
         except Exception as e:
-            logger.error(f"获取监控告警失败: {e}")
+            logger.error("获取监控告警失败: %s", e)
             return []
 
     def get_monitoring_summary(self) -> Dict:
@@ -463,7 +463,7 @@ class DatabaseService:
                 "unread_alerts": 12,
             }
         except Exception as e:
-            logger.error(f"获取监控摘要失败: {e}")
+            logger.error("获取监控摘要失败: %s", e)
             return {}
 
     def get_trend_indicators(self, stock_code: str) -> Dict:
@@ -493,7 +493,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取趋势指标失败: {e}")
+            logger.error("获取趋势指标失败: %s", e)
             return {}
 
     def get_momentum_indicators(self, stock_code: str) -> Dict:
@@ -523,7 +523,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取动量指标失败: {e}")
+            logger.error("获取动量指标失败: %s", e)
             return {}
 
     def get_volatility_indicators(self, stock_code: str) -> Dict:
@@ -553,7 +553,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取波动率指标失败: {e}")
+            logger.error("获取波动率指标失败: %s", e)
             return {}
 
     def get_volume_indicators(self, stock_code: str) -> Dict:
@@ -583,7 +583,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取成交量指标失败: {e}")
+            logger.error("获取成交量指标失败: %s", e)
             return {}
 
     def get_all_indicators(self, params: Dict) -> Dict:
@@ -619,7 +619,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取所有技术指标失败: {e}")
+            logger.error("获取所有技术指标失败: %s", e)
             return {}
 
     def get_pattern_recognition(self, stock_code: str) -> Dict:
@@ -670,7 +670,7 @@ class DatabaseService:
             }
 
         except Exception as e:
-            logger.error(f"获取形态识别结果失败: {e}")
+            logger.error("获取形态识别结果失败: %s", e)
             return {}
 
     def get_trading_signals(self, symbol: str) -> Dict:
@@ -714,7 +714,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取交易信号失败: {e}")
+            logger.error("获取交易信号失败: %s", e)
             return {}
 
     def get_stock_history(self, params: Optional[Dict] = None) -> Dict:
@@ -766,7 +766,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取股票历史数据失败: {e}")
+            logger.error("获取股票历史数据失败: %s", e)
             return {}
 
     def get_batch_indicators(self, symbols: List[str]) -> Dict:
@@ -791,7 +791,7 @@ class DatabaseService:
             return {"success": True, "count": len(results), "data": results}
 
         except Exception as e:
-            logger.error(f"批量获取技术指标失败: {e}")
+            logger.error("批量获取技术指标失败: %s", e)
             return {}
 
     def get_strategy_definitions(self) -> Dict:
@@ -833,7 +833,7 @@ class DatabaseService:
             return {"strategies": result, "total": len(result)}
 
         except Exception as e:
-            logger.error(f"获取策略定义失败: {e}")
+            logger.error("获取策略定义失败: %s", e)
             return {}
 
     def get_strategy_results(self, params: Optional[Dict] = None) -> Dict:
@@ -887,7 +887,7 @@ class DatabaseService:
             }
 
         except Exception as e:
-            logger.error(f"获取策略结果失败: {e}")
+            logger.error("获取策略结果失败: %s", e)
             return {}
 
     def get_strategy_performance(self) -> Dict:
@@ -921,7 +921,7 @@ class DatabaseService:
             return {}
 
         except Exception as e:
-            logger.error(f"获取策略性能失败: {e}")
+            logger.error("获取策略性能失败: %s", e)
             return {}
 
     def get_monitoring_status(self) -> Dict:
@@ -968,7 +968,7 @@ class DatabaseService:
             }
 
         except Exception as e:
-            logger.error(f"获取监控状态失败: {e}")
+            logger.error("获取监控状态失败: %s", e)
             # 发生错误时返回默认状态
             from datetime import datetime
 
@@ -1014,7 +1014,7 @@ class DatabaseService:
             }
 
         except Exception as e:
-            logger.error(f"获取市场监控数据失败: {e}")
+            logger.error("获取市场监控数据失败: %s", e)
             # 发生错误时返回默认状态
             return {
                 "total_logs": 0,
@@ -1076,7 +1076,7 @@ class DatabaseService:
                 raise AttributeError(f"适配器 {adapter_type} 没有方法 {method}")
 
         except Exception as e:
-            logger.error(f"从适配器 {adapter_type} 调用方法 {method} 失败: {e}")
+            logger.error("从适配器 %s 调用方法 %s 失败: %s", adapter_type, method, e)
             # 根据返回类型返回合适的默认值
             import pandas as pd
 
@@ -1132,26 +1132,26 @@ class DatabaseService:
             # 按优先级顺序尝试适配器
             for adapter_type in adapter_priority:
                 try:
-                    logger.info(f"尝试使用适配器 {adapter_type} 获取 {data_type} 数据")
+                    logger.info("尝试使用适配器 %s 获取 %s 数据", adapter_type, data_type)
                     result = self.get_data_from_adapter(adapter_type, method, **kwargs)
 
                     # 检查结果是否有效
                     if self._is_valid_result(result):
-                        logger.info(f"成功使用适配器 {adapter_type} 获取 {data_type} 数据")
+                        logger.info("成功使用适配器 %s 获取 %s 数据", adapter_type, data_type)
                         return result
                     else:
-                        logger.warning(f"适配器 {adapter_type} 返回空数据")
+                        logger.warning("适配器 %s 返回空数据", adapter_type)
 
                 except Exception as e:
-                    logger.warning(f"适配器 {adapter_type} 获取 {data_type} 数据失败: {e}")
+                    logger.warning("适配器 %s 获取 %s 数据失败: %s", adapter_type, data_type, e)
                     continue
 
             # 所有适配器都失败
-            logger.error(f"所有适配器都无法获取 {data_type} 数据")
+            logger.error("所有适配器都无法获取 %s 数据", data_type)
             raise Exception(f"所有适配器都无法获取 {data_type} 数据")
 
         except Exception as e:
-            logger.error(f"使用故障转移机制获取 {data_type} 数据失败: {e}")
+            logger.error("使用故障转移机制获取 %s 数据失败: %s", data_type, e)
             # 根据返回类型返回合适的默认值
             import pandas as pd
 
@@ -1212,7 +1212,7 @@ class DatabaseService:
             return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"获取指标数据失败: {e}")
+            logger.error("获取指标数据失败: %s", e)
             return pd.DataFrame()
 
     def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -1255,7 +1255,7 @@ class DatabaseService:
             return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"获取分钟K线数据失败: {e}")
+            logger.error("获取分钟K线数据失败: %s", e)
             return pd.DataFrame()
 
     def get_industry_classify(self) -> pd.DataFrame:
@@ -1293,7 +1293,7 @@ class DatabaseService:
             return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"获取行业分类数据失败: {e}")
+            logger.error("获取行业分类数据失败: %s", e)
             return pd.DataFrame()
 
     def get_concept_classify(self) -> pd.DataFrame:
@@ -1331,7 +1331,7 @@ class DatabaseService:
             return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"获取概念分类数据失败: {e}")
+            logger.error("获取概念分类数据失败: %s", e)
             return pd.DataFrame()
 
     def get_stock_industry_concept(self, symbol: str) -> Dict:
@@ -1366,7 +1366,7 @@ class DatabaseService:
             return {"symbol": symbol, "industries": industries, "concepts": concepts}
 
         except Exception as e:
-            logger.error(f"获取个股行业概念信息失败: {e}")
+            logger.error("获取个股行业概念信息失败: %s", e)
             return {"symbol": symbol, "industries": [], "concepts": []}
 
 

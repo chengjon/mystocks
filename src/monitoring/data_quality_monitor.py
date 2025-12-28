@@ -119,7 +119,7 @@ class DataQualityMonitor:
                 metrics={"missing_rate": missing_rate, "threshold": threshold},
             )
 
-        logger.info(f"✓ 完整性检查: {table_name} - {check_status} ({missing_rate:.2f}%)")
+        logger.info("✓ 完整性检查: %s - %s (%s%)", table_name, check_status, missing_rate)
 
         return {
             "check_status": check_status,
@@ -198,7 +198,7 @@ class DataQualityMonitor:
                 },
             )
 
-        logger.info(f"✓ 新鲜度检查: {table_name} - {check_status} ({data_delay_seconds}秒)")
+        logger.info("✓ 新鲜度检查: %s - %s (%s秒)", table_name, check_status, data_delay_seconds)
 
         return {
             "check_status": check_status,
@@ -275,7 +275,7 @@ class DataQualityMonitor:
                 metrics={"invalid_rate": invalid_rate, "threshold": threshold},
             )
 
-        logger.info(f"✓ 准确性检查: {table_name} - {check_status} ({invalid_rate:.2f}%)")
+        logger.info("✓ 准确性检查: %s - %s (%s%)", table_name, check_status, invalid_rate)
 
         return {
             "check_status": check_status,
@@ -326,7 +326,7 @@ class DataQualityMonitor:
             }
 
         except Exception as e:
-            logger.warning(f"查询检查结果失败: {e}")
+            logger.warning("查询检查结果失败: %s", e)
             return None
 
     def generate_quality_report(self, classification: str, database_type: str, table_name: str) -> Dict[str, Any]:
@@ -385,10 +385,10 @@ class DataQualityMonitor:
                 report["overall_status"] = "PASS"
 
         except Exception as e:
-            logger.warning(f"查询历史检查结果失败: {e}")
+            logger.warning("查询历史检查结果失败: %s", e)
             # 如果查询失败，仍返回基本结构
 
-        logger.info(f"📊 质量报告生成: {table_name}")
+        logger.info("📊 质量报告生成: %s", table_name)
 
         return report
 
@@ -400,7 +400,6 @@ class DataQualityMonitor:
         classification: str,
         database_type: str,
         table_name: str,
-        check_type: str,
         metrics: Dict[str, Any],
     ):
         """创建质量告警"""
@@ -442,7 +441,7 @@ class DataQualityMonitor:
             self.DEFAULT_INVALID_RATE_THRESHOLD = invalid_rate_threshold
 
         logger.info(
-            f"✓ 质量阈值已更新: 缺失率={self.DEFAULT_MISSING_RATE_THRESHOLD}%, "
+            "✓ 质量阈值已更新: 缺失率={self.DEFAULT_MISSING_RATE_THRESHOLD}%, "
             f"延迟={self.DEFAULT_DELAY_THRESHOLD_SECONDS}秒, "
             f"无效率={self.DEFAULT_INVALID_RATE_THRESHOLD}%"
         )

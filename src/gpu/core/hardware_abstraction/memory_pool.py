@@ -100,11 +100,11 @@ class MemoryPool:
                     self.free_blocks.append(block_id)
 
             self.is_initialized = True
-            logger.info(f"Memory pool initialized with {len(self.free_blocks)} preallocated blocks")
+            logger.info("Memory pool initialized with %s preallocated blocks", len(self.free_blocks))
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize memory pool: {e}")
+            logger.error("Failed to initialize memory pool: %s", e)
             return False
 
     async def allocate(self, size_bytes: int) -> Optional[str]:
@@ -162,7 +162,7 @@ class MemoryPool:
                             self.stats["pool_hits"] += 1
                         else:
                             # 内存不足
-                            logger.warning(f"Cannot allocate {size_bytes} bytes: memory pool exhausted")
+                            logger.warning("Cannot allocate %s bytes: memory pool exhausted", size_bytes)
                             return None
 
                 # 更新统计信息
@@ -178,7 +178,7 @@ class MemoryPool:
                 return block_id
 
         except Exception as e:
-            logger.error(f"Memory allocation failed: {e}")
+            logger.error("Memory allocation failed: %s", e)
             return None
 
     async def deallocate(self, block_id: str) -> bool:
@@ -188,13 +188,13 @@ class MemoryPool:
         try:
             with self._lock:
                 if block_id not in self.memory_blocks:
-                    logger.warning(f"Block {block_id} not found in memory pool")
+                    logger.warning("Block %s not found in memory pool", block_id)
                     return False
 
                 block = self.memory_blocks[block_id]
 
                 if block.state != MemoryBlockState.ALLOCATED:
-                    logger.warning(f"Block {block_id} is not allocated")
+                    logger.warning("Block %s is not allocated", block_id)
                     return False
 
                 # 清理GPU内存内容
@@ -219,7 +219,7 @@ class MemoryPool:
                 return True
 
         except Exception as e:
-            logger.error(f"Memory deallocation failed: {e}")
+            logger.error("Memory deallocation failed: %s", e)
             return False
 
     def get_memory_ptr(self, block_id: str) -> Optional[Any]:
@@ -282,7 +282,7 @@ class MemoryPool:
                 cleaned_count += 1
 
         if cleaned_count > 0:
-            logger.info(f"Cleaned up {cleaned_count} unused memory blocks")
+            logger.info("Cleaned up %s unused memory blocks", cleaned_count)
 
         return cleaned_count
 

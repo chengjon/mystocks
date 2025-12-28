@@ -34,7 +34,7 @@ class TdxDataParser:
 
         # 检查必要的列
         if not all(col in data.columns for col in self.required_columns):
-            logger.warning(f"Missing required columns. Available: {list(data.columns)}")
+            logger.warning("Missing required columns. Available: %s", list(data.columns))
             return pd.DataFrame()
 
         # 验证数据逻辑
@@ -50,7 +50,7 @@ class TdxDataParser:
             ):
                 valid_rows.append(True)
             else:
-                logger.warning(f"Invalid data at row {idx}: {dict(row)}")
+                logger.warning("Invalid data at row %s: %s", idx, dict(row))
                 valid_rows.append(False)
 
         validated_data = validated_data[valid_rows]
@@ -154,7 +154,7 @@ class TdxDataParser:
         try:
             return float(value)
         except (ValueError, TypeError):
-            logger.warning(f"Invalid numeric value: {value}")
+            logger.warning("Invalid numeric value: %s", value)
             return 0.0
 
     def format_timestamp(self, timestamp: int) -> int:
@@ -170,7 +170,7 @@ class TdxDataParser:
         try:
             return int(timestamp)
         except (ValueError, TypeError):
-            logger.warning(f"Invalid timestamp: {timestamp}")
+            logger.warning("Invalid timestamp: %s", timestamp)
             return 0
 
     def clean_data_dict(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:

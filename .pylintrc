@@ -43,3 +43,26 @@ generated-members=talib.*,baostock.*,efinance.*,cupy.*,cudf.*,cuml.*
 ignore-imports=yes
 ignore-comments=yes
 min-similarity-lines=10
+
+# Disable W1201 and W1203 for specific files with complex logging
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0301,  # line-too-long (用black处理)
+    C0103,  # invalid-name (允许短变量名)
+    C0415,  # import-outside-toplevel (可选依赖延迟导入)
+    C0413,  # wrong-import-position
+    W0511,  # fixme (TODO注释)
+    W0612,  # unused-variable (开发中允许)
+    W0613,  # unused-argument (接口方法需要)
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0915,  # too-many-statements
+    E0401,  # import-error (路径问题单独处理)
+
+[TYPECHECK:src/data_sources/real/enhanced_postgresql_relational.py]
+disable-file=src/data_sources/real/enhanced_postgresql_relational.py
+    W1203,  # logging-fstring-interpolation
+    W1201,  # logging-not-lazy

@@ -668,7 +668,7 @@ class AlertHistoryDatabase:
         self.connection.commit()
         deleted_count = cursor.rowcount
 
-        logger.info(f"Deleted {deleted_count} alert records older than {days} days")
+        logger.info("Deleted %s alert records older than %s days", deleted_count, days)
         return deleted_count
 
     def close(self):

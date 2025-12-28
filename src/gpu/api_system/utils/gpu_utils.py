@@ -51,7 +51,7 @@ class GPUResourceManager:
             "low": [],  # 低优先级GPU
         }
 
-        logger.info(f"初始化GPU资源管理器，GPU数量: {len(self.gpu_ids)}")
+        logger.info("初始化GPU资源管理器，GPU数量: %s", len(self.gpu_ids))
 
     def initialize(self):
         """初始化GPU管理器"""
@@ -60,7 +60,7 @@ class GPUResourceManager:
                 pynvml.nvmlInit()
                 logger.info("NVIDIA ML库初始化成功")
             except Exception as e:
-                logger.error(f"NVIDIA ML库初始化失败: {e}")
+                logger.error("NVIDIA ML库初始化失败: %s", e)
 
         # 初始化每个GPU的状态
         for gpu_id in self.gpu_ids:
@@ -83,7 +83,7 @@ class GPUResourceManager:
             # 分类GPU优先级
             self.classify_gpu_priority(gpu_id)
 
-            logger.info(f"GPU {gpu_id} 初始化完成: {self.gpu_states[gpu_id]}")
+            logger.info("GPU %s 初始化完成: %s", gpu_id, self.gpu_states[gpu_id])
 
     def get_gpu_count(self) -> int:
         """获取GPU数量"""
@@ -93,11 +93,11 @@ class GPUResourceManager:
             return pynvml.nvmlDeviceGetCount()
         except pynvml.NVMLError as e:
             if hasattr(self, "logger"):
-                self.logger.debug(f"NVIDIA GPU not available: {e}")
+                self.logger.debug("NVIDIA GPU not available: %s", e)
             return 0
         except (ImportError, AttributeError) as e:
             if hasattr(self, "logger"):
-                self.logger.warning(f"NVIDIA library not properly installed: {e}")
+                self.logger.warning("NVIDIA library not properly installed: %s", e)
             return 0
 
     def get_gpu_memory_total(self, gpu_id: int) -> int:
@@ -201,13 +201,13 @@ class GPUResourceManager:
 
         if memory >= 16000 and temperature < 70:  # 大内存且低温
             self.gpu_priority["high"].append(gpu_id)
-            logger.info(f"GPU {gpu_id} 分类为高优先级")
+            logger.info("GPU %s 分类为高优先级", gpu_id)
         elif memory >= 8000 and temperature < 75:  # 中等内存温度
             self.gpu_priority["medium"].append(gpu_id)
-            logger.info(f"GPU {gpu_id} 分类为中优先级")
+            logger.info("GPU %s 分类为中优先级", gpu_id)
         else:
             self.gpu_priority["low"].append(gpu_id)
-            logger.info(f"GPU {gpu_id} 分类为低优先级")
+            logger.info("GPU %s 分类为低优先级", gpu_id)
 
     def get_gpu_stats(self) -> Dict[str, float]:
         """获取GPU统计信息"""
@@ -226,7 +226,7 @@ class GPUResourceManager:
 
     def allocate_gpu(self, task_id: str, priority: str = "medium", memory_required: int = 0) -> Optional[int]:
         """分配GPU资源"""
-        logger.info(f"为任务 {task_id} 分配GPU，优先级: {priority}, 内存需求: {memory_required}MB")
+        logger.info("为任务 %s 分配GPU，优先级: %s, 内存需求: %sMB", task_id, priority, memory_required)
 
         # 根据优先级选择GPU
         gpu_ids = self.gpu_priority.get(priority, [])
@@ -248,10 +248,10 @@ class GPUResourceManager:
                     self.reserved_memory[gpu_id] = self.reserved_memory.get(gpu_id, 0) + memory_required
                     self.active_tasks[gpu_id] = task_id
 
-                    logger.info(f"已为任务 {task_id} 分配GPU {gpu_id}")
+                    logger.info("已为任务 %s 分配GPU %s", task_id, gpu_id)
                     return gpu_id
 
-        logger.warning(f"无法为任务 {task_id} 分配GPU资源")
+        logger.warning("无法为任务 %s 分配GPU资源", task_id)
         return None
 
     def release_gpu(self, task_id: str, gpu_id: Optional[int] = None):
@@ -263,9 +263,9 @@ class GPUResourceManager:
                 memory_released = self.reserved_memory.get(gpu_id, 0)
                 self.reserved_memory[gpu_id] = 0
                 del self.active_tasks[gpu_id]
-                logger.info(f"已释放GPU {gpu_id}，释放内存: {memory_released}MB")
+                logger.info("已释放GPU %s，释放内存: %sMB", gpu_id, memory_released)
             else:
-                logger.warning(f"GPU {gpu_id} 未被锁定")
+                logger.warning("GPU %s 未被锁定", gpu_id)
         else:
             # 通过任务ID查找GPU
             for gpu_id, task in self.active_tasks.items():
@@ -274,7 +274,7 @@ class GPUResourceManager:
                     memory_released = self.reserved_memory.get(gpu_id, 0)
                     self.reserved_memory[gpu_id] = 0
                     del self.active_tasks[gpu_id]
-                    logger.info(f"已为任务 {task_id} 释放GPU {gpu_id}，释放内存: {memory_released}MB")
+                    logger.info("已为任务 %s 释放GPU %s，释放内存: %sMB", task_id, gpu_id, memory_released)
                     break
 
     def update_gpu_status(self):
@@ -337,7 +337,7 @@ class GPUResourceManager:
                 pynvml.nvmlShutdown()
                 logger.info("NVIDIA ML库已清理")
             except Exception as e:
-                logger.error(f"NVIDIA ML库清理失败: {e}")
+                logger.error("NVIDIA ML库清理失败: %s", e)
 
         logger.info("GPU资源管理器已清理")
 

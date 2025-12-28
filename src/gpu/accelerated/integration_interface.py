@@ -69,7 +69,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
         try:
             if should_use_gpu:
                 # 使用GPU进行数据处理
-                self.logger.info(f"使用GPU处理分类数据: {data_classification}")
+                self.logger.info("使用GPU处理分类数据: %s", data_classification)
 
                 # 数据预处理
                 processed_result = self.gpu_manager.process_data_with_gpu(
@@ -85,11 +85,11 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 result["processing_time"] = processed_result.processing_time
                 result["speedup_factor"] = processed_result.speedup_factor
 
-                self.logger.info(f"GPU数据处理完成 - 耗时: {processed_result.processing_time:.4f}秒")
+                self.logger.info("GPU数据处理完成 - 耗时: %s秒", processed_result.processing_time)
 
             else:
                 # 使用传统方法
-                self.logger.info(f"使用CPU处理分类数据: {data_classification}")
+                self.logger.info("使用CPU处理分类数据: %s", data_classification)
                 result = super().save_data_by_classification(data, data_classification)
 
                 # 更新CPU统计
@@ -97,7 +97,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                 result["gpu_enabled"] = False
                 result["processing_time"] = time.time() - start_time
 
-                self.logger.info(f"CPU数据处理完成 - 耗时: {result['processing_time']:.4f}秒")
+                self.logger.info("CPU数据处理完成 - 耗时: %s秒", result["processing_time"])
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -115,7 +115,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             return result
 
         except Exception as e:
-            self.logger.error(f"数据保存失败: {e}")
+            self.logger.error("数据保存失败: %s", e)
 
             # 如果GPU失败且有CPU回退配置，则回退到CPU
             if should_use_gpu and self.gpu_config.fallback_to_cpu:
@@ -144,7 +144,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
 
             if should_use_gpu:
                 # 使用GPU进行数据处理
-                self.logger.info(f"使用GPU处理加载的数据: {data_classification}")
+                self.logger.info("使用GPU处理加载的数据: %s", data_classification)
 
                 processed_result = self.gpu_manager.process_data_with_gpu(
                     data=data, processing_config=ProcessingConfig()
@@ -159,7 +159,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "speedup_factor": processed_result.speedup_factor,
                 }
 
-                self.logger.info(f"GPU数据加载完成 - 耗时: {processed_result.processing_time:.4f}秒")
+                self.logger.info("GPU数据加载完成 - 耗时: %s秒", processed_result.processing_time)
 
             else:
                 # 使用传统方法
@@ -171,7 +171,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "speedup_factor": 1.0,
                 }
 
-                self.logger.info(f"CPU数据加载完成 - 耗时: {time.time() - start_time:.4f}秒")
+                self.logger.info("CPU数据加载完成 - 耗时: %s秒", time.time() - start_time)
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -179,7 +179,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             return processed_data
 
         except Exception as e:
-            self.logger.error(f"数据加载失败: {e}")
+            self.logger.error("数据加载失败: %s", e)
 
             # GPU失败回退
             if should_use_gpu and self.gpu_config.fallback_to_cpu:
@@ -218,7 +218,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
 
             if should_use_gpu:
                 # 使用GPU进行预测
-                self.logger.info(f"使用GPU生成价格预测: {model_type}, 预测周期: {prediction_horizon}")
+                self.logger.info("使用GPU生成价格预测: %s, 预测周期: %s", model_type, prediction_horizon)
 
                 prediction_result = self.gpu_manager.generate_predictions_with_gpu(
                     data=stock_data,
@@ -249,11 +249,11 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                         }
                     )
 
-                self.logger.info(f"GPU预测完成 - 价格: {result.get('predicted_price', 'N/A')}")
+                self.logger.info("GPU预测完成 - 价格: %s", result.get("predicted_price", "N/A"))
 
             else:
                 # 使用CPU预测
-                self.logger.info(f"使用CPU生成价格预测: {model_type}")
+                self.logger.info("使用CPU生成价格预测: %s", model_type)
 
                 # 使用传统价格预测器
                 from ..gpu_accelerated.price_predictor_gpu import PricePredictorCPU
@@ -281,7 +281,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
                     "errors": [],
                 }
 
-                self.logger.info(f"CPU预测完成 - 价格: {prediction_result.predicted_price}")
+                self.logger.info("CPU预测完成 - 价格: %s", prediction_result.predicted_price)
 
             # 更新总操作数
             self.gpu_usage_stats["total_operations"] += 1
@@ -296,7 +296,7 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             return result
 
         except Exception as e:
-            self.logger.error(f"价格预测失败: {e}")
+            self.logger.error("价格预测失败: %s", e)
 
             # GPU失败回退
             if should_use_gpu and self.gpu_config.fallback_to_cpu:
@@ -338,13 +338,13 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
         # 检查性能阈值
         expected_time = data_size * self.gpu_config.performance_threshold
         if expected_time > 60:  # 预期处理时间超过60秒，不使用GPU
-            self.logger.warning(f"数据量过大({data_size}行)，预期处理时间过长，使用CPU")
+            self.logger.warning("数据量过大(%s行)，预期处理时间过长，使用CPU", data_size)
             return False
 
         # 检查GPU内存限制
         gpu_memory_usage = self.gpu_manager._get_gpu_memory_usage()
         if gpu_memory_usage > self.gpu_config.gpu_memory_threshold_mb:
-            self.logger.warning(f"GPU内存使用过高({gpu_memory_usage:.1f}MB)，使用CPU")
+            self.logger.warning("GPU内存使用过高(%sMB)，使用CPU", gpu_memory_usage)
             return False
 
         # 其他GPU资源检查可以在这里添加
@@ -377,13 +377,13 @@ class GPUEnhancedUnifiedManager(MyStocksUnifiedManager):
             }
 
             self.logger.info(
-                f"基准测试完成 - GPU: {benchmark_result['gpu_time']:.4f}s, "
+                "基准测试完成 - GPU: {benchmark_result['gpu_time']:.4f}s, "
                 f"CPU: {benchmark_result['cpu_time']:.4f}s, "
                 f"加速比: {benchmark_result['speedup']:.2f}x"
             )
 
         except Exception as e:
-            self.logger.error(f"基准测试失败: {e}")
+            self.logger.error("基准测试失败: %s", e)
 
     def get_gpu_integration_status(self) -> Dict[str, Any]:
         """获取GPU集成状态"""

@@ -1051,6 +1051,33 @@ async def database_health():
             except Exception:
                 pass
 
+    # Format databases array for E2E tests
+    databases = []
+    if health_data["tdengine"]["status"] == "healthy":
+        databases.append(
+            {
+                "name": "TDengine",
+                "status": "healthy",
+                "host": health_data["tdengine"].get("host"),
+                "port": health_data["tdengine"].get("port"),
+                "database": health_data["tdengine"].get("database"),
+            }
+        )
+
+    if health_data["postgresql"]["status"] == "healthy":
+        databases.append(
+            {
+                "name": "PostgreSQL",
+                "status": "healthy",
+                "host": health_data["postgresql"].get("host"),
+                "port": health_data["postgresql"].get("port"),
+                "database": health_data["postgresql"].get("database"),
+            }
+        )
+
+    # Add databases array to response for E2E tests
+    health_data["databases"] = databases
+
     return {"success": True, "message": "数据库健康检查完成", "data": health_data}
 
 

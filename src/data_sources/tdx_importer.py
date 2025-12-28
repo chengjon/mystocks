@@ -118,7 +118,7 @@ class TdxImporter:
             >>> print(f"成功导入 {result['success_count']} 只股票")
         """
         self.logger.info("=" * 70)
-        self.logger.info(f"开始导入 {market.upper()} 市场日线数据")
+        self.logger.info("开始导入 %s 市场日线数据", market.upper())
         self.logger.info("=" * 70)
 
         self.stats["start_time"] = datetime.now()
@@ -128,7 +128,7 @@ class TdxImporter:
             symbols = self.parser.list_available_stocks(market)
 
         self.stats["total_symbols"] = len(symbols)
-        self.logger.info(f"待导入股票数: {len(symbols)}")
+        self.logger.info("待导入股票数: %s", len(symbols))
 
         # 批量导入
         for i in tqdm(range(0, len(symbols), batch_size), desc="导入进度"):
@@ -140,7 +140,7 @@ class TdxImporter:
                     data = self.parser.read_day_data(symbol, start_date=start_date, end_date=end_date)
 
                     if data.empty:
-                        self.logger.debug(f"  跳过 {symbol}: 无数据")
+                        self.logger.debug("  跳过 %s: 无数据", symbol)
                         continue
 
                     # 保存到数据库
@@ -151,7 +151,7 @@ class TdxImporter:
                     self.stats["total_records"] += len(data)
 
                 except Exception as e:
-                    self.logger.error(f"  导入失败 {symbol}: {e}")
+                    self.logger.error("  导入失败 %s: %s", symbol, e)
                     self.stats["fail_count"] += 1
 
         self.stats["end_time"] = datetime.now()
@@ -175,7 +175,7 @@ class TdxImporter:
         start_date = date.today() - timedelta(days=lookback_days)
         end_date = date.today()
 
-        self.logger.info(f"增量导入: {start_date} 至 {end_date}")
+        self.logger.info("增量导入: %s 至 %s", start_date, end_date)
 
         return self.import_market_daily(market=market, start_date=start_date, end_date=end_date)
 
@@ -207,7 +207,7 @@ class TdxImporter:
             classification = DataClassification.MARKET_DATA_MIN1
             table_name = "stock_1min"
         else:
-            self.logger.error(f"未知数据类型: {data_type}")
+            self.logger.error("未知数据类型: %s", data_type)
             return
 
         try:
@@ -217,7 +217,7 @@ class TdxImporter:
             )
 
         except Exception as e:
-            self.logger.error(f"保存到数据库失败 {symbol}: {e}")
+            self.logger.error("保存到数据库失败 %s: %s", symbol, e)
             raise
 
     def get_import_progress(self, market: str) -> Dict:
@@ -260,19 +260,19 @@ class TdxImporter:
     def _print_summary(self):
         """打印导入统计摘要"""
         duration = (self.stats["end_time"] - self.stats["start_time"]).total_seconds()
-
+self.logger.info("TDX数据导入完成")
         self.logger.info("\n" + "=" * 70)
         self.logger.info("导入完成")
         self.logger.info("=" * 70)
-        self.logger.info(f"总股票数:     {self.stats['total_symbols']}")
-        self.logger.info(f"成功导入:     {self.stats['success_count']}")
-        self.logger.info(f"导入失败:     {self.stats['fail_count']}")
-        self.logger.info(f"总记录数:     {self.stats['total_records']:,}")
-        self.logger.info(f"耗时:         {duration:.2f} 秒")
+        self.logger.info("总股票数:     %s", self.stats['total_symbols'])
+        self.logger.info("成功导入:     %s", self.stats['success_count'])
+        self.logger.info("导入失败:     %s", self.stats['fail_count'])
+        self.logger.info("总记录数:     %s", self.stats['total_records'])
+        self.logger.info("耗时:         %s 秒", duration)
 
         if duration > 0:
             rate = self.stats["total_records"] / duration
-            self.logger.info(f"导入速度:     {rate:.0f} 条/秒")
+            self.logger.info("导入速度:     %s 条/秒", rate)
 
         self.logger.info("=" * 70)
 

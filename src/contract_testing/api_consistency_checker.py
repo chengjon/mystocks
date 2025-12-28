@@ -123,7 +123,7 @@ class APIConsistencyChecker:
                     description=doc.get("description", ""),
                 )
             except Exception as e:
-                logger.warning(f"⚠️  Failed to register endpoint {endpoint_key}: {e}")
+                logger.warning("⚠️  Failed to register endpoint %s: %s", endpoint_key, e)
 
     def check_consistency(self) -> List[DiscrepancyReport]:
         """
@@ -148,7 +148,7 @@ class APIConsistencyChecker:
         # Check for response code mismatches
         self._check_response_code_consistency()
 
-        logger.info(f"✅ Consistency check complete: {len(self.discrepancies)} discrepancies found")
+        logger.info("✅ Consistency check complete: %s discrepancies found", len(self.discrepancies))
         return self.discrepancies
 
     def _check_missing_spec_endpoints(self) -> None:
@@ -171,7 +171,7 @@ class APIConsistencyChecker:
                 suggestion=f"Implement {method} {path} as specified in OpenAPI",
             )
             self.discrepancies.append(report)
-            logger.warning(f"⚠️  Missing endpoint: {endpoint_key}")
+            logger.warning("⚠️  Missing endpoint: %s", endpoint_key)
 
     def _check_extra_api_endpoints(self) -> None:
         """Check for endpoints in API but not in spec"""
@@ -193,7 +193,7 @@ class APIConsistencyChecker:
                 suggestion=f"Add {method} {path} to OpenAPI specification",
             )
             self.discrepancies.append(report)
-            logger.info(f"ℹ️  Extra endpoint: {endpoint_key}")
+            logger.info("ℹ️  Extra endpoint: %s", endpoint_key)
 
     def _check_parameter_consistency(self) -> None:
         """Check for parameter discrepancies"""
@@ -223,7 +223,7 @@ class APIConsistencyChecker:
                         suggestion=f"Add '{param}' parameter to {spec_key}",
                     )
                     self.discrepancies.append(report)
-                    logger.warning(f"⚠️  Missing parameter: {param} in {spec_key}")
+                    logger.warning("⚠️  Missing parameter: %s in %s", param, spec_key)
 
             # Check for extra parameters
             extra_params = api_params - spec_params
@@ -239,7 +239,7 @@ class APIConsistencyChecker:
                     suggestion=f"Document '{param}' in OpenAPI specification for {spec_key}",
                 )
                 self.discrepancies.append(report)
-                logger.info(f"ℹ️  Extra parameter: {param} in {spec_key}")
+                logger.info("ℹ️  Extra parameter: %s in %s", param, spec_key)
 
     def _check_response_code_consistency(self) -> None:
         """Check for response code discrepancies"""
@@ -267,7 +267,7 @@ class APIConsistencyChecker:
                     suggestion=f"Ensure {code} response is handled in {spec_key}",
                 )
                 self.discrepancies.append(report)
-                logger.warning(f"⚠️  Missing response code: {code} in {spec_key}")
+                logger.warning("⚠️  Missing response code: %s in %s", code, spec_key)
 
             # Check for extra response codes
             extra_codes = api_codes - spec_codes
@@ -283,7 +283,7 @@ class APIConsistencyChecker:
                     suggestion=f"Document response code {code} in OpenAPI specification",
                 )
                 self.discrepancies.append(report)
-                logger.info(f"ℹ️  Extra response code: {code} in {spec_key}")
+                logger.info("ℹ️  Extra response code: %s in %s", code, spec_key)
 
     def get_critical_issues(self) -> List[DiscrepancyReport]:
         """Get critical discrepancies only"""
@@ -341,4 +341,4 @@ class APIConsistencyChecker:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"✅ Exported consistency report to {output_path}")
+        logger.info("✅ Exported consistency report to %s", output_path)

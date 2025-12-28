@@ -85,7 +85,7 @@ class RealTimeService(RealTimeServiceServicer):
                 time.sleep(1)
 
             except Exception as e:
-                logger.error(f"数据处理循环错误: {e}")
+                logger.error("数据处理循环错误: %s", e)
                 time.sleep(5)
 
     def _process_data_buffer(self):
@@ -110,7 +110,7 @@ class RealTimeService(RealTimeServiceServicer):
                         self._process_batch_on_cpu(batch, stock_code)
 
         except Exception as e:
-            logger.error(f"处理数据缓冲区失败: {e}")
+            logger.error("处理数据缓冲区失败: %s", e)
 
     def _process_batch_on_gpu(self, batch: List[Dict], stock_code: str):
         """使用GPU批量处理数据"""
@@ -140,7 +140,7 @@ class RealTimeService(RealTimeServiceServicer):
                 self._update_processed_data(stock_code, processed_data)
 
         except Exception as e:
-            logger.error(f"GPU处理失败: {e}")
+            logger.error("GPU处理失败: %s", e)
 
     def _process_batch_on_cpu(self, batch: List[Dict], stock_code: str):
         """使用CPU批量处理数据"""
@@ -160,7 +160,7 @@ class RealTimeService(RealTimeServiceServicer):
             self._update_processed_data(stock_code, processed_data)
 
         except Exception as e:
-            logger.error(f"CPU处理失败: {e}")
+            logger.error("CPU处理失败: %s", e)
 
     def _update_processed_data(self, stock_code: str, processed_data: List[Dict]):
         """更新处理后的数据"""
@@ -213,7 +213,7 @@ class RealTimeService(RealTimeServiceServicer):
                 self.redis_queue.enqueue_task("realtime", feature_task)
 
         except Exception as e:
-            logger.error(f"计算特征失败: {e}")
+            logger.error("计算特征失败: %s", e)
 
     def _calculate_technical_indicators(self, data_list: List[Dict]) -> Dict[str, float]:
         """计算技术指标"""
@@ -266,7 +266,7 @@ class RealTimeService(RealTimeServiceServicer):
             }
 
         except Exception as e:
-            logger.error(f"计算技术指标失败: {e}")
+            logger.error("计算技术指标失败: %s", e)
             return {}
 
     def _calculate_ema(self, prices: List[float], period: int) -> float:
@@ -325,7 +325,7 @@ class RealTimeService(RealTimeServiceServicer):
             self.metrics_collector.record_system_metrics()
 
         except Exception as e:
-            logger.error(f"更新统计信息失败: {e}")
+            logger.error("更新统计信息失败: %s", e)
 
     def _cleanup_expired_data(self):
         """清理过期数据"""
@@ -342,7 +342,7 @@ class RealTimeService(RealTimeServiceServicer):
             # 删除过期缓存
             for key in expired_keys:
                 del self.feature_cache[key]
-                logger.info(f"清理过期特征缓存: {key}")
+                logger.info("清理过期特征缓存: %s", key)
 
             # 限制数据缓冲区大小
             for stock_code in list(self.data_buffer.keys()):
@@ -350,7 +350,7 @@ class RealTimeService(RealTimeServiceServicer):
                     self.data_buffer[stock_code] = self.data_buffer[stock_code][-self.config["buffer_size"] :]
 
         except Exception as e:
-            logger.error(f"清理过期数据失败: {e}")
+            logger.error("清理过期数据失败: %s", e)
 
     # gRPC服务实现
     def GetMarketData(self, request: StreamRequest, context: grpc.ServicerContext) -> StreamResponse:
@@ -401,7 +401,7 @@ class RealTimeService(RealTimeServiceServicer):
                 return StreamResponse()
 
         except Exception as e:
-            logger.error(f"获取市场数据失败: {e}")
+            logger.error("获取市场数据失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return StreamResponse()
@@ -451,7 +451,7 @@ class RealTimeService(RealTimeServiceServicer):
             return FeatureResponse()
 
         except Exception as e:
-            logger.error(f"计算特征失败: {e}")
+            logger.error("计算特征失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return FeatureResponse()
@@ -478,7 +478,7 @@ class RealTimeService(RealTimeServiceServicer):
             return statistics
 
         except Exception as e:
-            logger.error(f"获取统计信息失败: {e}")
+            logger.error("获取统计信息失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return RealtimeStatistics()
@@ -496,7 +496,7 @@ class RealTimeService(RealTimeServiceServicer):
                 "created_at": datetime.now(),
             }
 
-            logger.info(f"新的流数据客户端: {client_id} (股票: {stock_code})")
+            logger.info("新的流数据客户端: %s (股票: %s)", client_id, stock_code)
 
             # 持续推送数据
             while context.is_active():
@@ -529,15 +529,15 @@ class RealTimeService(RealTimeServiceServicer):
                     time.sleep(1)  # 每秒推送一次
 
                 except Exception as e:
-                    logger.error(f"流数据推送失败: {e}")
+                    logger.error("流数据推送失败: %s", e)
                     break
                 # 清理客户端
                 if client_id in self.stream_clients:
                     del self.stream_clients[client_id]
-                    logger.info(f"客户端断开连接: {client_id}")
+                    logger.info("客户端断开连接: %s", client_id)
 
         except Exception as e:
-            logger.error(f"流数据处理失败: {e}")
+            logger.error("流数据处理失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
 
@@ -552,7 +552,7 @@ class RealTimeService(RealTimeServiceServicer):
                 self.data_buffer[stock_code].append(market_data)
 
         except Exception as e:
-            logger.error(f"添加市场数据失败: {e}")
+            logger.error("添加市场数据失败: %s", e)
 
     def stop(self):
         """停止服务"""

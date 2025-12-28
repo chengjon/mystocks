@@ -121,7 +121,7 @@ class UnifiedDataAccessManager:
             logger.info("统一数据访问管理器初始化完成")
 
         except Exception as e:
-            logger.error(f"初始化失败: {e}")
+            logger.error("初始化失败: %s", e)
             raise
 
     async def _initialize_adapters(self):
@@ -133,7 +133,7 @@ class UnifiedDataAccessManager:
             self.adapters.setdefault(DatabaseType.POSTGRESQL, []).append(pg_adapter)
             logger.info("PostgreSQL适配器初始化成功")
         except Exception as e:
-            logger.warning(f"PostgreSQL适配器初始化失败: {e}")
+            logger.warning("PostgreSQL适配器初始化失败: %s", e)
 
         # 初始化TDengine适配器
         try:
@@ -142,7 +142,7 @@ class UnifiedDataAccessManager:
             self.adapters.setdefault(DatabaseType.TDENGINE, []).append(td_adapter)
             logger.info("TDengine适配器初始化成功")
         except Exception as e:
-            logger.warning(f"TDengine适配器初始化失败: {e}")
+            logger.warning("TDengine适配器初始化失败: %s", e)
 
     async def _register_adapters_to_router(self):
         """注册适配器到路由器"""
@@ -188,16 +188,14 @@ class UnifiedDataAccessManager:
             # 6. 更新指标
             self._update_metrics(adapter.get_database_type(), query.operation, start_time, success=True)
 
-            logger.debug(
-                f"查询执行成功: {query.table_name}, 耗时: {(datetime.now() - start_time).total_seconds():.3f}s"
-            )
+            logger.debug("查询执行成功: %s, 耗时: %ss", query.table_name, (datetime.now() - start_time).total_seconds())
             return result
 
         except Exception as e:
             self._update_metrics(DatabaseType.POSTGRESQL, query.operation, start_time, success=False)
             self.metrics.error_count += 1
 
-            logger.error(f"查询执行失败: {e}")
+            logger.error("查询执行失败: %s", e)
 
             # 尝试故障转移
             if self.config.failover_enabled:
@@ -254,7 +252,7 @@ class UnifiedDataAccessManager:
 
     async def _execute_with_failover(self, query: DataQuery, original_error: Exception) -> QueryResult:
         """故障转移执行"""
-        logger.warning(f"主查询失败，尝试故障转移: {original_error}")
+        logger.warning("主查询失败，尝试故障转移: %s", original_error)
 
         # 获取替代数据库
         decision = await self.router.route_query(query)
@@ -262,12 +260,12 @@ class UnifiedDataAccessManager:
 
         for alt_db, alt_adapter, reason in alternatives:
             try:
-                logger.info(f"尝试故障转移到: {alt_db.value}, 原因: {reason}")
+                logger.info("尝试故障转移到: %s, 原因: %s", alt_db.value, reason)
                 result = await alt_adapter.execute_query(query)
-                logger.info(f"故障转移成功: {alt_db.value}")
+                logger.info("故障转移成功: %s", alt_db.value)
                 return result
             except Exception as e:
-                logger.warning(f"故障转移失败 {alt_db.value}: {e}")
+                logger.warning("故障转移失败 %s: %s", alt_db.value, e)
                 continue
 
         raise Exception(f"所有故障转移尝试都失败，原始错误: {original_error}")
@@ -486,7 +484,7 @@ class UnifiedDataAccessManager:
                 await self.perform_health_check()
                 await asyncio.sleep(self.config.health_check_interval)
             except Exception as e:
-                logger.error(f"健康检查失败: {e}")
+                logger.error("健康检查失败: %s", e)
                 await asyncio.sleep(10)  # 出错时短暂等待
 
     async def perform_health_check(self) -> Dict[str, Any]:
@@ -509,7 +507,7 @@ class UnifiedDataAccessManager:
                         db_healthy = True
                         break
                 except Exception as e:
-                    logger.warning(f"健康检查失败 {db_type.value}: {e}")
+                    logger.warning("健康检查失败 %s: %s", db_type.value, e)
 
             health_info["databases"][db_type.value] = db_healthy
             if not db_healthy:
@@ -532,7 +530,7 @@ class UnifiedDataAccessManager:
                     info = await adapters[0].get_database_info()
                     db_info[db_type.value] = info
                 except Exception as e:
-                    logger.warning(f"获取数据库信息失败 {db_type.value}: {e}")
+                    logger.warning("获取数据库信息失败 %s: %s", db_type.value, e)
                     db_info[db_type.value] = {"error": str(e)}
 
         return db_info
@@ -561,9 +559,9 @@ class UnifiedDataAccessManager:
             for adapter in adapters:
                 try:
                     await adapter.disconnect()
-                    logger.info(f"已断开 {db_type.value} 适配器连接")
+                    logger.info("已断开 %s 适配器连接", db_type.value)
                 except Exception as e:
-                    logger.warning(f"断开连接失败 {db_type.value}: {e}")
+                    logger.warning("断开连接失败 %s: %s", db_type.value, e)
 
         # 清空缓存
         self._cache.clear()

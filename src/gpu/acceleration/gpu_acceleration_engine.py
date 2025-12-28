@@ -58,7 +58,7 @@ class GPUAccelerationEngine:
                 self.gpu_manager = GPUResourceManager()
                 logger.info("✅ GPU资源管理器初始化成功")
             except Exception as e:
-                logger.warning(f"GPU资源管理器初始化失败，将使用CPU模式: {e}")
+                logger.warning("GPU资源管理器初始化失败，将使用CPU模式: %s", e)
                 self.enable_gpu = False
                 self.gpu_manager = None
         else:
@@ -77,7 +77,7 @@ class GPUAccelerationEngine:
             "gpu_memory_peak": 0.0,
         }
 
-        logger.info(f"✅ GPU加速引擎初始化完成 (GPU模式: {self.enable_gpu})")
+        logger.info("✅ GPU加速引擎初始化完成 (GPU模式: %s)", self.enable_gpu)
 
     def _get_default_config(self) -> Dict[str, Any]:
         """获取默认配置"""
@@ -109,7 +109,7 @@ class GPUAccelerationEngine:
             logger.info("✅ 所有子引擎初始化完成")
 
         except Exception as e:
-            logger.error(f"子引擎初始化失败: {e}")
+            logger.error("子引擎初始化失败: %s", e)
             raise
 
     # 回测相关方法
@@ -155,11 +155,11 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(f"回测完成，总收益: {result.get('total_return', 0):.2%}")
+            logger.info("回测完成，总收益: %s", result.get('total_return', 0))
             return result
 
         except Exception as e:
-            logger.error(f"回测执行失败: {e}")
+            logger.error("回测执行失败: %s", e)
             return {
                 "error": str(e),
                 "status": "failed",
@@ -212,11 +212,11 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(f"模型训练完成，验证得分: {result.get('val_score', 0):.4f}")
+            logger.info("模型训练完成，验证得分: %s", result.get('val_score', 0))
             return result
 
         except Exception as e:
-            logger.error(f"模型训练失败: {e}")
+            logger.error("模型训练失败: %s", e)
             return {
                 "error": str(e),
                 "status": "failed",
@@ -231,7 +231,7 @@ class GPUAccelerationEngine:
         try:
             return self.ml_engine.predict_gpu(model_id, X_test)
         except Exception as e:
-            logger.error(f"预测失败: {e}")
+            logger.error("预测失败: %s", e)
             raise
 
     def evaluate_model_gpu(self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
@@ -239,7 +239,7 @@ class GPUAccelerationEngine:
         try:
             return self.ml_engine.evaluate_model_gpu(model_id, X_test, y_test)
         except Exception as e:
-            logger.error(f"模型评估失败: {e}")
+            logger.error("模型评估失败: %s", e)
             raise
 
     # 特征计算相关方法
@@ -273,11 +273,11 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(f"特征计算完成，{len(result.get('metadata', {}).get('feature_types', []))} 类特征")
+            logger.info("特征计算完成，%slen(result.get('metadata', %s").get('feature_types', []))} 类特征")
             return result
 
         except Exception as e:
-            logger.error(f"特征计算失败: {e}")
+            logger.error("特征计算失败: %s", e)
             return {
                 "error": str(e),
                 "engine_info": {
@@ -331,11 +331,11 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(f"参数优化完成，最佳得分: {result.get('best_score', 0):.4f}")
+            logger.info("参数优化完成，最佳得分: %s", result.get('best_score', 0))
             return result
 
         except Exception as e:
-            logger.error(f"参数优化失败: {e}")
+            logger.error("参数优化失败: %s", e)
             return {
                 "error": str(e),
                 "status": "failed",
@@ -357,7 +357,7 @@ class GPUAccelerationEngine:
             result["engine_gpu_mode"] = self.enable_gpu
             return result
         except Exception as e:
-            logger.error(f"投资组合优化失败: {e}")
+            logger.error("投资组合优化失败: %s", e)
             return {"error": str(e), "method": method}
 
     # 综合分析方法
@@ -430,11 +430,11 @@ class GPUAccelerationEngine:
                 "success": True,
             }
 
-            logger.info(f"综合分析完成，耗时: {time.time() - analysis_start:.2f}s")
+            logger.info("综合分析完成，耗时: %ss", time.time() - analysis_start)
             return results
 
         except Exception as e:
-            logger.error(f"综合分析失败: {e}")
+            logger.error("综合分析失败: %s", e)
             return {
                 "error": str(e),
                 "analysis_summary": {
@@ -471,7 +471,7 @@ class GPUAccelerationEngine:
             }
 
         except Exception as e:
-            logger.error(f"获取引擎状态失败: {e}")
+            logger.error("获取引擎状态失败: %s", e)
             return {"error": str(e), "gpu_enabled": self.enable_gpu}
 
     def get_gpu_utilization(self) -> Dict[str, Any]:
@@ -532,7 +532,7 @@ class GPUAccelerationEngine:
 
             return cache_info
         except Exception as e:
-            logger.error(f"获取缓存信息失败: {e}")
+            logger.error("获取缓存信息失败: %s", e)
             return {"error": str(e)}
 
     # 缓存管理
@@ -547,7 +547,7 @@ class GPUAccelerationEngine:
             logger.info("所有缓存已清除")
 
         except Exception as e:
-            logger.error(f"清除缓存失败: {e}")
+            logger.error("清除缓存失败: %s", e)
 
     def reset_performance_metrics(self) -> None:
         """重置性能指标"""
@@ -585,7 +585,7 @@ class GPUAccelerationEngine:
             self.reset_performance_metrics()
 
         except Exception as e:
-            logger.error(f"资源清理失败: {e}")
+            logger.error("资源清理失败: %s", e)
 
     # 兼容性方法（保持向后兼容）
     def run_ml_training(self, *args, **kwargs):

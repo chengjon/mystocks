@@ -32,7 +32,7 @@ except (ImportError, ModuleNotFoundError):
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
-    from web.backend.app.core.data_formats import (
+    from app.core.data_formats import (
         get_current_iso_timestamp,
         get_current_ms_timestamp,
         validate_price,

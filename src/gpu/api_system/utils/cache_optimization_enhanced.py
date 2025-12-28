@@ -157,7 +157,7 @@ class QueryResultCache:
                 partial_key = f"{self.partial_namespace}:{symbol}:{fingerprint[:8]}"
                 self.cache.put(partial_key, result, ttl=ttl // 2)  # 部分结果TTL减半
 
-        logger.debug(f"Cached query result: {full_key}")
+        logger.debug("Cached query result: %s", full_key)
 
     def get_query_result(self, query_params: dict) -> Optional[Any]:
         """获取查询结果"""
@@ -200,7 +200,7 @@ class NegativeCache:
             {"negative": True, "timestamp": time.time()},
             ttl=self.negative_ttl,
         )
-        logger.debug(f"Marked as negative: {key}")
+        logger.debug("Marked as negative: %s", key)
 
     def is_negative(self, key: str) -> bool:
         """检查是否为负结果"""
@@ -211,7 +211,7 @@ class NegativeCache:
         """带负缓存检查的获取"""
         # 先检查负缓存
         if self.is_negative(key):
-            logger.debug(f"Negative cache hit: {key}")
+            logger.debug("Negative cache hit: %s", key)
             return None
 
         # 正常获取
@@ -379,7 +379,7 @@ class PredictivePrefetcher:
         if not all_keys:
             return
 
-        logger.debug(f"Prefetching {len(all_keys)} related keys for {current_key}")
+        logger.debug("Prefetching %s related keys for %s", len(all_keys), current_key)
 
         # 并发预加载
         futures = []
@@ -410,7 +410,7 @@ class PredictivePrefetcher:
 
             self.prefetch_stats["failed_prefetches"] += 1
         except Exception as e:
-            logger.error(f"Prefetch failed for {key}: {e}")
+            logger.error("Prefetch failed for %s: %s", key, e)
             self.prefetch_stats["failed_prefetches"] += 1
 
     def _get_related_keys(self, key: str) -> List[str]:
@@ -522,7 +522,7 @@ class EnhancedCacheManager:
 
         # 2. 负缓存检查
         if self.negative_cache.is_negative(key):
-            logger.debug(f"Negative cache hit: {key}")
+            logger.debug("Negative cache hit: %s", key)
             return None
 
         # 3. 多级缓存获取
@@ -531,7 +531,7 @@ class EnhancedCacheManager:
         if value is not None:
             # 缓存命中
             access_time = time.time() - start_time
-            logger.debug(f"Cache hit: {key} ({access_time:.4f}s)")
+            logger.debug("Cache hit: %s (%ss)", key, access_time)
 
             # 4. 触发预测性预加载
             self.prefetcher.prefetch_related_keys(key, fetch_func)
@@ -551,7 +551,7 @@ class EnhancedCacheManager:
                 self.put(key, value)
 
         access_time = time.time() - start_time
-        logger.debug(f"Cache miss: {key} ({access_time:.4f}s)")
+        logger.debug("Cache miss: %s (%ss)", key, access_time)
 
         return value
 
@@ -569,7 +569,7 @@ class EnhancedCacheManager:
         # 3. 存储到多级缓存
         self.multi_level_cache.put(key, value, ttl=adaptive_ttl)
 
-        logger.debug(f"Cache put: {key} (TTL={adaptive_ttl}s, compressed={is_compressed})")
+        logger.debug("Cache put: %s (TTL=%ss, compressed=%s)", key, adaptive_ttl, is_compressed)
 
     def cache_query_result(self, query_params: dict, result: Any, ttl: int = 300):
         """缓存查询结果"""
@@ -588,7 +588,7 @@ class EnhancedCacheManager:
 
         # 1. 预热热点股票
         hot_keys = self.pattern_learner.get_hot_keys(top_n=20)
-        logger.info(f"Preloading {len(hot_keys)} hot keys")
+        logger.info("Preloading %s hot keys", len(hot_keys))
 
         # 2. 预热常用查询
         for symbol in self.hot_symbols:
@@ -609,12 +609,12 @@ class EnhancedCacheManager:
                 keys_to_preload = self.pattern_learner.get_keys_to_preload()
 
                 if keys_to_preload:
-                    logger.info(f"Predictive prefetch: {len(keys_to_preload)} keys")
+                    logger.info("Predictive prefetch: %s keys", len(keys_to_preload))
                     for key in keys_to_preload:
                         self.prefetcher._prefetch_single_key(key)
 
             except Exception as e:
-                logger.error(f"Background loop error: {e}")
+                logger.error("Background loop error: %s", e)
 
     def get_comprehensive_stats(self) -> dict:
         """获取综合统计信息"""

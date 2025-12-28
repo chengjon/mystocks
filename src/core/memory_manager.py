@@ -90,7 +90,7 @@ class MemoryLimit:
                 try:
                     callback(memory_mb)
                 except Exception as e:
-                    logger.error(f"内存监控器回调失败: {str(e)}")
+                    logger.error("内存监控器回调失败: %s", str(e))
 
 
 class ResourceManager:
@@ -146,15 +146,15 @@ class ResourceManager:
         if resource_id in self._cleanup_callbacks:
             try:
                 self._cleanup_callbacks[resource_id]()
-                logger.debug(f"资源清理成功: {resource_id}")
+                logger.debug("资源清理成功: %s", resource_id)
             except Exception as e:
-                logger.error(f"资源清理失败: {resource_id}, 错误: {str(e)}")
+                logger.error("资源清理失败: %s, 错误: %s", resource_id, str(e))
 
         self._cleanup_callbacks.pop(resource_id, None)
 
     def _auto_cleanup(self, resource_id: str):
         """自动清理资源（弱引用回调）"""
-        logger.info(f"弱引用触发资源清理: {resource_id}")
+        logger.info("弱引用触发资源清理: %s", resource_id)
         self.unregister_resource(resource_id)
 
     def get_resource(self, resource_id: str) -> Optional[Any]:
@@ -165,7 +165,7 @@ class ResourceManager:
     def cleanup_all(self):
         """清理所有资源"""
         with self._lock:
-            logger.info(f"开始清理所有资源，数量: {len(self._resources)}")
+            logger.info("开始清理所有资源，数量: %s", len(self._resources))
 
             # 按顺序清理资源
             for resource_id in list(self._resources.keys()):
@@ -216,7 +216,7 @@ class MemoryMonitor:
         self._running = True
         self._thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self._thread.start()
-        logger.info(f"内存监控器已启动，检查间隔: {self.check_interval}秒")
+        logger.info("内存监控器已启动，检查间隔: %s秒", self.check_interval)
 
     def stop(self):
         """停止内存监控"""
@@ -241,10 +241,10 @@ class MemoryMonitor:
                 if len(self._stats_history) % 10 == 0:
                     collected = gc.collect()
                     if collected > 0:
-                        logger.debug(f"垃圾回收: 回收了 {collected} 个对象")
+                        logger.debug("垃圾回收: 回收了 %s 个对象", collected)
 
             except Exception as e:
-                logger.error(f"内存监控失败: {str(e)}")
+                logger.error("内存监控失败: %s", str(e))
 
             time.sleep(self.check_interval)
 
@@ -288,11 +288,11 @@ class MemoryMonitor:
         """检查内存限制"""
         # 检查是否超过警告阈值
         if self._memory_limit.is_approaching_limit():
-            logger.warning(f"内存使用接近限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB")
+            logger.warning("内存使用接近限制: %sMB/%sMB", stats.process_memory_mb, self._memory_limit.max_memory_mb)
 
         # 检查是否超过限制
         if self._memory_limit.is_over_limit():
-            logger.error(f"内存使用超过限制: {stats.process_memory_mb:.2f}MB/{self._memory_limit.max_memory_mb}MB")
+            logger.error("内存使用超过限制: %sMB/%sMB", stats.process_memory_mb, self._memory_limit.max_memory_mb)
 
             # 触发紧急清理
             self._emergency_cleanup()
@@ -323,7 +323,7 @@ class MemoryMonitor:
 
         # 清理所有可回收的对象
         collected = gc.collect()
-        logger.info(f"紧急垃圾回收: 回收了 {collected} 个对象")
+        logger.info("紧急垃圾回收: 回收了 %s 个对象", collected)
 
         # 清理资源管理器中的资源
         from src.core.memory_manager import resource_manager

@@ -167,13 +167,13 @@ class StrategyExecutor:
 
         self.logger.info("=" * 60)
         self.logger.info("策略执行开始")
-        self.logger.info(f"执行ID: {self.execution_id}")
-        self.logger.info(f"策略: {self.strategy.name} v{self.strategy.version}")
-        self.logger.info(f"执行模式: {mode.value}")
-        self.logger.info(f"股票池大小: {len(stock_pool)}")
-        self.logger.info(f"并行执行: {self.config.parallel}")
+        self.logger.info("执行ID: %s", self.execution_id)
+        self.logger.info("策略: %s v%s", self.strategy.name, self.strategy.version)
+        self.logger.info("执行模式: %s", mode.value)
+        self.logger.info("股票池大小: %s", len(stock_pool))
+        self.logger.info("并行执行: %s", self.config.parallel)
         if self.config.parallel:
-            self.logger.info(f"工作进程数: {self.config.max_workers}")
+            self.logger.info("工作进程数: %s", self.config.max_workers)
         self.logger.info("=" * 60)
 
         # 验证参数
@@ -200,7 +200,7 @@ class StrategyExecutor:
                 all_signals, errors = self._execute_serial(stock_pool, start_date, end_date, **kwargs)
 
         except Exception as e:
-            self.logger.error(f"策略执行过程中发生严重错误: {e}")
+            self.logger.error("策略执行过程中发生严重错误: %s", e)
             self.logger.error(traceback.format_exc())
             errors.append(
                 {
@@ -232,11 +232,10 @@ class StrategyExecutor:
                     strategy_id=self.strategy.strategy_id,
                     batch_insert=True,
                 )
-                self.logger.info(
-                    f"信号保存完成: 成功={save_result['saved_count']}, " f"失败={save_result['failed_count']}"
+                self.logger.info("信号保存完成: 成功={save_result['saved_count']}, " f"失败={save_result['failed_count']}"
                 )
             except Exception as e:
-                self.logger.error(f"保存信号时出错: {e}")
+                self.logger.error("保存信号时出错: %s", e)
 
         # 确定执行状态
         if self.progress.failed_symbols == 0:
@@ -278,12 +277,12 @@ class StrategyExecutor:
         # 日志总结
         self.logger.info("=" * 60)
         self.logger.info("策略执行完成")
-        self.logger.info(f"状态: {status}")
-        self.logger.info(f"处理股票: {self.progress.processed_symbols}/{self.progress.total_symbols}")
-        self.logger.info(f"失败股票: {self.progress.failed_symbols}")
-        self.logger.info(f"生成信号: {self.progress.signals_found}")
-        self.logger.info(f"执行时间: {self.progress.elapsed_seconds:.2f}秒")
-        self.logger.info(f"处理速度: {result['statistics']['stocks_per_second']:.2f} 股票/秒")
+        self.logger.info("状态: %s", status)
+        self.logger.info("处理股票: %s/%s", self.progress.processed_symbols, self.progress.total_symbols)
+        self.logger.info("失败股票: %s", self.progress.failed_symbols)
+        self.logger.info("生成信号: %s", self.progress.signals_found)
+        self.logger.info("执行时间: %s秒", self.progress.elapsed_seconds)
+        self.logger.info("处理速度: %s 股票/秒", result['statistics']['stocks_per_second'])
         self.logger.info("=" * 60)
 
         return result
@@ -303,15 +302,14 @@ class StrategyExecutor:
 
                 # 进度日志
                 if (i + 1) % 10 == 0:
-                    self.logger.info(
-                        f"进度: {self.progress.get_progress_pct():.1f}% "
+                    self.logger.info("进度: %sself.progress.get_progress_pct("):.1f}% "
                         f"({self.progress.processed_symbols}/{self.progress.total_symbols})"
                     )
 
             except Exception as e:
                 self.progress.failed_symbols += 1
                 errors.append({"symbol": symbol, "error": str(e), "timestamp": datetime.now()})
-                self.logger.error(f"处理股票 {symbol} 时出错: {e}")
+                self.logger.error("处理股票 %s 时出错: %s", symbol, e)
 
         return all_signals, errors
 
@@ -325,7 +323,7 @@ class StrategyExecutor:
             stock_pool[i : i + self.config.batch_size] for i in range(0, len(stock_pool), self.config.batch_size)
         ]
 
-        self.logger.info(f"分{len(batches)}批处理，每批{self.config.batch_size}只股票")
+        self.logger.info("分%s批处理，每批%s只股票", len(batches), self.config.batch_size)
 
         with ProcessPoolExecutor(max_workers=self.config.max_workers) as executor:
             # 提交所有任务
@@ -350,14 +348,13 @@ class StrategyExecutor:
                     self.progress.failed_symbols += len(batch_errors)
 
                     # 进度日志
-                    self.logger.info(
-                        f"批次 {batch_idx + 1}/{len(batches)} 完成 | "
+                    self.logger.info("批次 %sbatch_idx + 1/%slen(batches")} 完成 | "
                         f"进度: {self.progress.get_progress_pct():.1f}% | "
                         f"信号: +{len(batch_signals)}"
                     )
 
                 except Exception as e:
-                    self.logger.error(f"批次 {batch_idx} 执行失败: {e}")
+                    self.logger.error("批次 %s 执行失败: %s", batch_idx, e)
                     self.progress.failed_symbols += len(batches[batch_idx])
 
         return all_signals, errors
@@ -384,7 +381,7 @@ class StrategyExecutor:
         data = self.strategy.get_market_data(symbol, start_date, end_date)
 
         if data is None or data.empty:
-            self.logger.debug(f"股票 {symbol} 数据为空，跳过")
+            self.logger.debug("股票 %s 数据为空，跳过", symbol)
             return None
 
         # 生成信号

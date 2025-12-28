@@ -174,7 +174,7 @@ class GPUPerformanceOptimizer:
 
                 # 获取GPU信息
                 device_count = cp.cuda.runtime.getDeviceCount()
-                self.logger.info(f"检测到 {device_count} 个GPU设备")
+                self.logger.info("检测到 %s 个GPU设备", device_count)
 
                 # 初始化基准测试
                 await self._initialize_baseline()
@@ -185,7 +185,7 @@ class GPUPerformanceOptimizer:
             return True
 
         except Exception as e:
-            self.logger.error(f"GPU初始化失败: {e}")
+            self.logger.error("GPU初始化失败: %s", e)
             return False
 
     async def _initialize_baseline(self):
@@ -198,10 +198,10 @@ class GPUPerformanceOptimizer:
             baseline_metrics = await self._run_performance_benchmark(test_data)
             self.performance_baseline = baseline_metrics
 
-            self.logger.info(f"性能基准建立完成 - 效率评分: {baseline_metrics.efficiency_score:.3f}")
+            self.logger.info("性能基准建立完成 - 效率评分: %s", baseline_metrics.efficiency_score)
 
         except Exception as e:
-            self.logger.error(f"基准测试失败: {e}")
+            self.logger.error("基准测试失败: %s", e)
 
     def _create_benchmark_data(self) -> pd.DataFrame:
         """创建基准测试数据"""
@@ -242,7 +242,7 @@ class GPUPerformanceOptimizer:
             return metrics
 
         except Exception as e:
-            self.logger.error(f"基准测试失败: {e}")
+            self.logger.error("基准测试失败: %s", e)
             # 返回默认指标
             return GPUMetrics(
                 timestamp=datetime.now(),
@@ -318,7 +318,7 @@ class GPUPerformanceOptimizer:
             )
 
         except Exception as e:
-            self.logger.error(f"GPU指标收集失败: {e}")
+            self.logger.error("GPU指标收集失败: %s", e)
             # 返回默认指标
             return GPUMetrics(
                 timestamp=datetime.now(),
@@ -356,7 +356,7 @@ class GPUPerformanceOptimizer:
             return min(1.0, total_score)
 
         except Exception as e:
-            self.logger.error(f"效率评分计算失败: {e}")
+            self.logger.error("效率评分计算失败: %s", e)
             return 0.5
 
     async def optimize_performance(self) -> OptimizationResult:
@@ -419,12 +419,12 @@ class GPUPerformanceOptimizer:
             if improvement_score < -0.1:  # 性能下降超过10%
                 await self._send_performance_alert(before_metrics, after_metrics, improvement_score)
 
-            self.logger.info(f"性能优化完成 - 改进评分: {improvement_score:.3f}, 操作: {len(applied_actions)}个")
+            self.logger.info("性能优化完成 - 改进评分: %s, 操作: %s个", improvement_score, len(applied_actions))
 
             return result
 
         except Exception as e:
-            self.logger.error(f"性能优化失败: {e}")
+            self.logger.error("性能优化失败: %s", e)
             return OptimizationResult(
                 timestamp=datetime.now(),
                 optimization_type="failed",
@@ -459,7 +459,7 @@ class GPUPerformanceOptimizer:
             return None
 
         except Exception as e:
-            self.logger.error(f"内存优化失败: {e}")
+            self.logger.error("内存优化失败: %s", e)
             return None
 
     async def _optimize_batch_size(self, metrics: GPUMetrics) -> Optional[str]:
@@ -481,7 +481,7 @@ class GPUPerformanceOptimizer:
             return None
 
         except Exception as e:
-            self.logger.error(f"批次大小优化失败: {e}")
+            self.logger.error("批次大小优化失败: %s", e)
             return None
 
     async def _optimize_cpu_gpu_balance(self) -> Optional[str]:
@@ -510,7 +510,7 @@ class GPUPerformanceOptimizer:
             return None
 
         except Exception as e:
-            self.logger.error(f"负载均衡优化失败: {e}")
+            self.logger.error("负载均衡优化失败: %s", e)
             return None
 
     async def _get_cpu_usage(self) -> float:
@@ -543,7 +543,7 @@ class GPUPerformanceOptimizer:
             return max(-1.0, min(1.0, total_score))  # 限制在 -1 到 1 之间
 
         except Exception as e:
-            self.logger.error(f"改进评分计算失败: {e}")
+            self.logger.error("改进评分计算失败: %s", e)
             return 0.0
 
     def _generate_optimization_recommendation(self, before: GPUMetrics, after: GPUMetrics, actions: List[str]) -> str:
@@ -563,7 +563,7 @@ class GPUPerformanceOptimizer:
                 return f"❌ 性能显著下降 ({improvement:.1%}) - 建议检查GPU硬件状态"
 
         except Exception as e:
-            self.logger.error(f"建议生成失败: {e}")
+            self.logger.error("建议生成失败: %s", e)
             return "优化建议生成失败"
 
     async def _send_performance_alert(self, before: GPUMetrics, after: GPUMetrics, improvement: float):
@@ -581,10 +581,10 @@ class GPUPerformanceOptimizer:
             }
 
             # 这里可以调用告警管理器发送具体的告警
-            self.logger.warning(f"GPU性能下降告警: {improvement:.1%}")
+            self.logger.warning("GPU性能下降告警: %s", improvement)
 
         except Exception as e:
-            self.logger.error(f"性能告警发送失败: {e}")
+            self.logger.error("性能告警发送失败: %s", e)
 
     async def get_performance_report(self) -> Dict[str, Any]:
         """生成性能报告"""
@@ -625,7 +625,7 @@ class GPUPerformanceOptimizer:
             }
 
         except Exception as e:
-            self.logger.error(f"性能报告生成失败: {e}")
+            self.logger.error("性能报告生成失败: %s", e)
             return {"error": str(e)}
 
     def _calculate_utilization_trend(self) -> float:
@@ -698,14 +698,14 @@ class GPUPerformanceOptimizer:
                 recommendations.append("⚡ GPU功耗较高，注意电源供应和散热需求")
 
         except Exception as e:
-            self.logger.error(f"性能建议生成失败: {e}")
+            self.logger.error("性能建议生成失败: %s", e)
             recommendations.append("建议生成失败，请检查系统状态")
 
         return recommendations
 
     async def start_continuous_optimization(self, duration_minutes: int = 60):
         """启动连续优化监控"""
-        self.logger.info(f"启动连续GPU性能优化 - 持续时间: {duration_minutes}分钟")
+        self.logger.info("启动连续GPU性能优化 - 持续时间: %s分钟", duration_minutes)
 
         end_time = time.time() + (duration_minutes * 60)
 
@@ -735,7 +735,7 @@ class GPUPerformanceOptimizer:
                 if should_optimize and self.config.auto_optimize:
                     result = await self.optimize_performance()
                     if result.success:
-                        self.logger.info(f"自动优化完成: {result.recommendation}")
+                        self.logger.info("自动优化完成: %s", result.recommendation)
 
                 # 等待下次检查
                 await asyncio.sleep(30)  # 每30秒检查一次
@@ -743,7 +743,7 @@ class GPUPerformanceOptimizer:
         except asyncio.CancelledError:
             self.logger.info("连续优化监控已取消")
         except Exception as e:
-            self.logger.error(f"连续优化监控出错: {e}")
+            self.logger.error("连续优化监控出错: %s", e)
 
         self.logger.info("连续GPU性能优化结束")
 
@@ -762,16 +762,16 @@ class GPUPerformanceOptimizer:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=2, ensure_ascii=False, default=str)
 
-            self.logger.info(f"优化状态已保存到: {filepath}")
+            self.logger.info("优化状态已保存到: %s", filepath)
 
         except Exception as e:
-            self.logger.error(f"保存优化状态失败: {e}")
+            self.logger.error("保存优化状态失败: %s", e)
 
     def load_optimization_state(self, filepath: str):
         """加载优化状态"""
         try:
             if not Path(filepath).exists():
-                self.logger.warning(f"优化状态文件不存在: {filepath}")
+                self.logger.warning("优化状态文件不存在: %s", filepath)
                 return
 
             with open(filepath, "r", encoding="utf-8") as f:
@@ -800,10 +800,10 @@ class GPUPerformanceOptimizer:
             if "performance_baseline" in state and state["performance_baseline"]:
                 self.performance_baseline = GPUMetrics(**state["performance_baseline"])
 
-            self.logger.info(f"优化状态已从 {filepath} 加载")
+            self.logger.info("优化状态已从 %s 加载", filepath)
 
         except Exception as e:
-            self.logger.error(f"加载优化状态失败: {e}")
+            self.logger.error("加载优化状态失败: %s", e)
 
 
 # 全局单例

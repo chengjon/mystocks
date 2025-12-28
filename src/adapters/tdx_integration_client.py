@@ -41,7 +41,7 @@ class TDXIntegrationClient:
         """
         try:
             # 模拟连接过程
-            logger.info(f"Connecting to TDX server at {self.host}:{self.port}")
+            logger.info("Connecting to TDX server at %s:%s", self.host, self.port)
 
             # 在实际实现中，这里会创建真实的TDX客户端连接
             # 为了测试，我们模拟连接逻辑
@@ -68,7 +68,7 @@ class TDXIntegrationClient:
                 self._connected = False
                 logger.info("TDX connection closed")
             except Exception as e:
-                logger.error(f"Error during disconnect: {str(e)}")
+                logger.error("Error during disconnect: %s", str(e))
 
     def is_connected(self) -> bool:
         """
@@ -91,12 +91,12 @@ class TDXIntegrationClient:
         """
         for attempt in range(max_attempts):
             try:
-                logger.info(f"Reconnection attempt {attempt + 1}/{max_attempts}")
+                logger.info("Reconnection attempt %s/%s", attempt + 1, max_attempts)
                 self.disconnect()
                 time.sleep(1)  # 等待1秒后重连
                 return self.connect()
             except Exception as e:
-                logger.error(f"Reconnection attempt {attempt + 1} failed: {str(e)}")
+                logger.error("Reconnection attempt %s failed: %s", attempt + 1, str(e))
                 if attempt == max_attempts - 1:
                     logger.error("All reconnection attempts failed")
                     return False
@@ -126,7 +126,7 @@ class TDXIntegrationClient:
             # 为了测试，返回模拟数据
             return self._simulate_stock_data(symbol, start_date, end_date)
         except Exception as e:
-            logger.error(f"Failed to get stock data: {str(e)}")
+            logger.error("Failed to get stock data: %s", str(e))
             raise
 
     def get_tdx_index_data(self, index_code: str, start_date: str, end_date: str) -> Dict[str, Any]:
@@ -152,7 +152,7 @@ class TDXIntegrationClient:
             # 为了测试，返回模拟数据
             return self._simulate_index_data(index_code, start_date, end_date)
         except Exception as e:
-            logger.error(f"Failed to get index data: {str(e)}")
+            logger.error("Failed to get index data: %s", str(e))
             raise
 
     def get_tdx_market_data(self, market_code: str = "1") -> Dict[str, Any]:
@@ -176,7 +176,7 @@ class TDXIntegrationClient:
             # 为了测试，返回模拟数据
             return self._simulate_market_data(market_code)
         except Exception as e:
-            logger.error(f"Failed to get market data: {str(e)}")
+            logger.error("Failed to get market data: %s", str(e))
             raise
 
     def _simulate_connection(self):
@@ -230,7 +230,7 @@ class TDXIntegrationClient:
             error: 错误对象
         """
         self._last_error = str(error)
-        logger.error(f"TDX Error: {str(error)}")
+        logger.error("TDX Error: %s", str(error))
 
         # 根据错误类型进行不同处理
         if "Connection" in str(error):
@@ -238,7 +238,7 @@ class TDXIntegrationClient:
         elif "Timeout" in str(error):
             logger.warning("TDX operation timed out")
         else:
-            logger.error(f"Unexpected TDX error: {str(error)}")
+            logger.error("Unexpected TDX error: %s", str(error))
 
     @property
     def last_error(self) -> Optional[str]:
