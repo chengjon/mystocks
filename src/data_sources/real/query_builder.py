@@ -35,6 +35,7 @@ class QueryBuilder:
         self._table_name = None
         self._joins = []
         self._where_conditions = []
+        self._where_connectors = []
         self._group_by_fields = []
         self._having_conditions = []
         self._order_by_fields = []
@@ -105,6 +106,25 @@ class QueryBuilder:
             QueryBuilder: 链式调用
         """
         self._where_conditions.append(condition)
+        self._where_connectors.append("AND")
+        self._values.extend(args)
+        return self
+
+    def or_where(self, condition: str, *args) -> "QueryBuilder":
+        """
+        添加OR WHERE条件
+
+        Args:
+            condition: 条件字符串，使用%s作为参数占位符
+            *args: 参数值
+
+        Returns:
+            QueryBuilder: 链式调用
+        """
+        if not self._where_conditions:
+            raise ValueError("or_where() must be called after where()")
+        self._where_conditions.append(condition)
+        self._where_connectors.append("OR")
         self._values.extend(args)
         return self
 
@@ -369,7 +389,12 @@ class QueryBuilder:
 
         # WHERE子句
         if self._where_conditions:
-            sql_parts.append(f"WHERE {' AND '.join(self._where_conditions)}")
+            where_parts = []
+            for i, condition in enumerate(self._where_conditions):
+                where_parts.append(condition)
+                if i < len(self._where_connectors):
+                    where_parts.append(self._where_connectors[i])
+            sql_parts.append(f"WHERE {' '.join(where_parts)}")
 
         # GROUP BY子句
         if self._group_by_fields:

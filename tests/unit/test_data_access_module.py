@@ -9,7 +9,7 @@ Data Access Module Test Suite (Mock-based)
 
 import pytest
 import pandas as pd
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 import sys
 import os
 

@@ -139,7 +139,7 @@ class BaseTdxAdapter(IDataSource):
 
     def _get_tdx_connection(self) -> TdxHq_API:
         """获取TDX连接"""
-        if self._connection is None or not hasattr(self._connection, "connected") or not self._connection.connected:
+        if self._connection is None:
             try:
                 self.logger.info(f"创建TDX连接到 {self.tdx_host}:{self.tdx_port}")
                 self._connection = TdxHq_API()

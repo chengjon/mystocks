@@ -110,7 +110,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             buffer_start = (start_dt - timedelta(days=7)).strftime("%Y-%m-%d")
             buffer_end = (end_dt + timedelta(days=7)).strftime("%Y-%m-%d")
 
-            data = efinance.stock.get_quote_history(code=symbol, beg=buffer_start, end=buffer_end)
+            data = efinance.stock.get_quote_history(stock_codes=symbol, beg=buffer_start, end=buffer_end)
 
             if data is None or data.empty:
                 return pd.DataFrame()
