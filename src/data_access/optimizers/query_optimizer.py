@@ -262,7 +262,7 @@ class QueryOptimizer(IQueryOptimizer):
                         recommendations.append(f"应用优化: {rule.description}")
 
             except Exception as e:
-                logger.warning(f"优化规则应用失败 {rule.name}: {e}")
+                logger.warning("优化规则应用失败 %s: %s", rule.name, e)
                 warnings.append(f"优化规则 '{rule.name}' 应用失败: {str(e)}")
 
         optimization_time = (datetime.now() - start_time).total_seconds()
@@ -285,7 +285,7 @@ class QueryOptimizer(IQueryOptimizer):
         if len(self.optimization_history) > 1000:
             self.optimization_history = self.optimization_history[-1000:]
 
-        logger.info(f"查询优化完成: 应用了 {len(applied_optimizations)} 个优化规则，预估提升 {total_improvement:.1%}")
+        logger.info("查询优化完成: 应用了 %s 个优化规则，预估提升 %s", len(applied_optimizations), total_improvement)
 
         return current_query
 

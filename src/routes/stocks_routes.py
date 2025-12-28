@@ -92,7 +92,7 @@ async def get_stock_list(
         Dict: 股票列表数据
     """
     try:
-        logger.info(f"获取股票列表: page={page}, limit={limit}, exchange={exchange}, industry={industry}")
+        logger.info("获取股票列表: page=%s, limit=%s, exchange=%s, industry=%s", page, limit, exchange, industry)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取股票列表")
@@ -105,7 +105,7 @@ async def get_stock_list(
                     "industry": industry,
                 }
             )
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}只股票")
+            logger.info("Mock数据响应: 共%s只股票", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -141,7 +141,7 @@ async def get_stock_list(
                 # 计算总数量（从结果中获取或单独查询）
                 total_count = result[0]["total"] if result else 0
 
-                logger.info(f"真实数据库查询成功: 共{total_count}只股票")
+                logger.info("真实数据库查询成功: 共%s只股票", total_count)
 
                 return {
                     "success": True,
@@ -151,7 +151,7 @@ async def get_stock_list(
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -160,7 +160,7 @@ async def get_stock_list(
                 }
 
     except Exception as e:
-        logger.error(f"获取股票列表失败: {str(e)}")
+        logger.error("获取股票列表失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取股票列表失败: {str(e)}",
@@ -179,13 +179,13 @@ async def get_stock_detail(stock_code: str):
         Dict: 股票详细信息
     """
     try:
-        logger.info(f"获取股票详细信息: {stock_code}")
+        logger.info("获取股票详细信息: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取股票详细信息")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_stock_detail"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}详细信息")
+            logger.info("Mock数据响应: 股票%s详细信息", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -211,7 +211,7 @@ async def get_stock_detail(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_stock_detail(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}详细信息")
+                logger.info("真实数据库查询成功: 股票%s详细信息", stock_code)
 
                 return {
                     "success": True,
@@ -220,7 +220,7 @@ async def get_stock_detail(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -229,7 +229,7 @@ async def get_stock_detail(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取股票详细信息失败: {str(e)}")
+        logger.error("获取股票详细信息失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取股票详细信息失败: {str(e)}",
@@ -248,13 +248,13 @@ async def get_stock_financial_data(stock_code: str):
         Dict: 股票财务数据
     """
     try:
-        logger.info(f"获取股票财务数据: {stock_code}")
+        logger.info("获取股票财务数据: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取股票财务数据")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_stock_financial_data"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}财务数据")
+            logger.info("Mock数据响应: 股票%s财务数据", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -281,7 +281,7 @@ async def get_stock_financial_data(stock_code: str):
                 # Using technical indicators as a proxy for financial data
                 result = db_service.get_technical_indicators({"symbol": stock_code})
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}财务数据")
+                logger.info("真实数据库查询成功: 股票%s财务数据", stock_code)
 
                 return {
                     "success": True,
@@ -290,7 +290,7 @@ async def get_stock_financial_data(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -299,7 +299,7 @@ async def get_stock_financial_data(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取股票财务数据失败: {str(e)}")
+        logger.error("获取股票财务数据失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取股票财务数据失败: {str(e)}",
@@ -318,13 +318,13 @@ async def get_stock_indicators(stock_code: str):
         Dict: 股票技术指标
     """
     try:
-        logger.info(f"获取股票技术指标: {stock_code}")
+        logger.info("获取股票技术指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取股票技术指标")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_stock_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}技术指标")
+            logger.info("Mock数据响应: 股票%s技术指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -350,7 +350,7 @@ async def get_stock_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_technical_indicators({"symbol": stock_code})
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}技术指标")
+                logger.info("真实数据库查询成功: 股票%s技术指标", stock_code)
 
                 return {
                     "success": True,
@@ -359,7 +359,7 @@ async def get_stock_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -368,7 +368,7 @@ async def get_stock_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取股票技术指标失败: {str(e)}")
+        logger.error("获取股票技术指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取股票技术指标失败: {str(e)}",
@@ -390,7 +390,7 @@ async def get_realtime_quotes():
             logger.info("使用Mock数据源: 获取实时行情")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_realtime_quotes"]()
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}只股票实时行情")
+            logger.info("Mock数据响应: 共%s只股票实时行情", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -425,7 +425,7 @@ async def get_realtime_quotes():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -434,7 +434,7 @@ async def get_realtime_quotes():
                 }
 
     except Exception as e:
-        logger.error(f"获取实时行情失败: {str(e)}")
+        logger.error("获取实时行情失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取实时行情失败: {str(e)}",
@@ -457,13 +457,13 @@ async def search_stocks(
         Dict: 搜索结果
     """
     try:
-        logger.info(f"搜索股票: {q}, limit: {limit}")
+        logger.info("搜索股票: %s, limit: %s", q, limit)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 搜索股票")
             mock_data = get_stocks_mock_data()
             result = mock_data["search_stocks"]({"q": q, "limit": limit})
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}只股票")
+            logger.info("Mock数据响应: 共%s只股票", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -490,7 +490,7 @@ async def search_stocks(
                 # For search functionality, we'll use stock list with filters
                 result = db_service.get_stock_list({"q": q, "limit": limit})
 
-                logger.info(f"真实数据库查询成功: 搜索股票{q}")
+                logger.info("真实数据库查询成功: 搜索股票%s", q)
 
                 return {
                     "success": True,
@@ -499,7 +499,7 @@ async def search_stocks(
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -508,7 +508,7 @@ async def search_stocks(
                 }
 
     except Exception as e:
-        logger.error(f"搜索股票失败: {str(e)}")
+        logger.error("搜索股票失败: %s", str(e))
         return {
             "success": False,
             "message": f"搜索股票失败: {str(e)}",
@@ -533,13 +533,13 @@ async def get_stock_by_industry(
         Dict: 行业股票列表
     """
     try:
-        logger.info(f"按行业获取股票: {industry_name}, page: {page}, limit: {limit}")
+        logger.info("按行业获取股票: %s, page: %s, limit: %s", industry_name, page, limit)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 按行业获取股票")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_stock_by_industry"]({"industry_name": industry_name, "page": page, "limit": limit})
-            logger.info(f"Mock数据响应: {industry_name}行业共{result.get('total', 0)}只股票")
+            logger.info("Mock数据响应: %s行业共%s只股票", industry_name, result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -565,7 +565,7 @@ async def get_stock_by_industry(
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_stock_list({"industry": industry_name, "page": page, "limit": limit})
 
-                logger.info(f"真实数据库查询成功: 按行业{industry_name}获取股票")
+                logger.info("真实数据库查询成功: 按行业%s获取股票", industry_name)
 
                 return {
                     "success": True,
@@ -574,7 +574,7 @@ async def get_stock_by_industry(
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -583,7 +583,7 @@ async def get_stock_by_industry(
                 }
 
     except Exception as e:
-        logger.error(f"按行业获取股票失败: {str(e)}")
+        logger.error("按行业获取股票失败: %s", str(e))
         return {
             "success": False,
             "message": f"按行业获取股票失败: {str(e)}",
@@ -605,7 +605,7 @@ async def get_watchlist():
             logger.info("使用Mock数据源: 获取自选股")
             mock_data = get_stocks_mock_data()
             result = mock_data["get_watchlist"]()
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}只自选股")
+            logger.info("Mock数据响应: 共%s只自选股", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -641,7 +641,7 @@ async def get_watchlist():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -650,7 +650,7 @@ async def get_watchlist():
                 }
 
     except Exception as e:
-        logger.error(f"获取自选股列表失败: {str(e)}")
+        logger.error("获取自选股列表失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取自选股列表失败: {str(e)}",
@@ -674,13 +674,13 @@ async def add_to_watchlist(request: Dict):
         stock_code = request.get("stock_code", "")
         notes = request.get("notes", "")
 
-        logger.info(f"添加到自选股: {stock_code}, 备注: {notes}")
+        logger.info("添加到自选股: %s, 备注: %s", stock_code, notes)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 添加到自选股")
             mock_data = get_stocks_mock_data()
             result = mock_data["add_to_watchlist"](request)
-            logger.info(f"Mock数据响应: 添加{stock_code}到自选股")
+            logger.info("Mock数据响应: 添加%s到自选股", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -707,7 +707,7 @@ async def add_to_watchlist(request: Dict):
                 # For adding to watchlist, we'll return a success message
                 result = {"message": f"成功添加股票{stock_code}到自选股"}
 
-                logger.info(f"真实数据库查询成功: 添加股票{stock_code}到自选股")
+                logger.info("真实数据库查询成功: 添加股票%s到自选股", stock_code)
 
                 return {
                     "success": True,
@@ -716,7 +716,7 @@ async def add_to_watchlist(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -725,7 +725,7 @@ async def add_to_watchlist(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"添加到自选股失败: {str(e)}")
+        logger.error("添加到自选股失败: %s", str(e))
         return {
             "success": False,
             "message": f"添加到自选股失败: {str(e)}",
@@ -744,13 +744,13 @@ async def remove_from_watchlist(stock_code: str):
         Dict: 移除结果
     """
     try:
-        logger.info(f"从自选股移除: {stock_code}")
+        logger.info("从自选股移除: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 从自选股移除")
             mock_data = get_stocks_mock_data()
             result = mock_data["remove_from_watchlist"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 从自选股移除{stock_code}")
+            logger.info("Mock数据响应: 从自选股移除%s", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -777,7 +777,7 @@ async def remove_from_watchlist(stock_code: str):
                 # For removing from watchlist, we'll return a success message
                 result = {"message": f"成功从自选股移除股票{stock_code}"}
 
-                logger.info(f"真实数据库查询成功: 从自选股移除股票{stock_code}")
+                logger.info("真实数据库查询成功: 从自选股移除股票%s", stock_code)
 
                 return {
                     "success": True,
@@ -786,7 +786,7 @@ async def remove_from_watchlist(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -795,7 +795,7 @@ async def remove_from_watchlist(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"从自选股移除失败: {str(e)}")
+        logger.error("从自选股移除失败: %s", str(e))
         return {
             "success": False,
             "message": f"从自选股移除失败: {str(e)}",
@@ -848,7 +848,7 @@ async def check_stocks_health():
                     "version": "1.0.0",
                 }
             except Exception as e:
-                logger.error(f"真实数据库健康检查失败: {str(e)}")
+                logger.error("真实数据库健康检查失败: %s", str(e))
                 return {
                     "status": "unhealthy",
                     "service": "Stocks",
@@ -858,7 +858,7 @@ async def check_stocks_health():
                 }
 
     except Exception as e:
-        logger.error(f"检查股票服务健康状态失败: {str(e)}")
+        logger.error("检查股票服务健康状态失败: %s", str(e))
         return {
             "status": "unhealthy",
             "service": "Stocks",

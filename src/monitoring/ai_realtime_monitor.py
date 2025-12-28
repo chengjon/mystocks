@@ -140,7 +140,7 @@ class SystemMetricsCollector(IMetricsCollector):
             }
 
         except Exception as e:
-            logger.error(f"❌ 系统指标收集失败: {e}")
+            logger.error("❌ 系统指标收集失败: %s", e)
             return {}
 
     def is_available(self) -> bool:
@@ -176,7 +176,7 @@ class GPUMetricsCollector(IMetricsCollector):
             }
 
         except Exception as e:
-            logger.warning(f"⚠️ GPU指标收集失败: {e}")
+            logger.warning("⚠️ GPU指标收集失败: %s", e)
             return {}
 
     def is_available(self) -> bool:
@@ -219,7 +219,7 @@ class AIStrategyMetricsCollector(IMetricsCollector):
             }
 
         except Exception as e:
-            logger.error(f"❌ AI策略指标收集失败: {e}")
+            logger.error("❌ AI策略指标收集失败: %s", e)
             return {}
 
     def is_available(self) -> bool:
@@ -253,7 +253,7 @@ class TradingMetricsCollector(IMetricsCollector):
             }
 
         except Exception as e:
-            logger.error(f"❌ 交易指标收集失败: {e}")
+            logger.error("❌ 交易指标收集失败: %s", e)
             return {}
 
     def is_available(self) -> bool:
@@ -308,7 +308,7 @@ class AdaptiveIntervalManager:
             return max(self.min_interval, min(self.current_interval, self.max_interval))
 
         except Exception as e:
-            logger.error(f"❌ 自适应间隔计算失败: {e}")
+            logger.error("❌ 自适应间隔计算失败: %s", e)
             return self.base_interval
 
     def get_interval(self) -> float:
@@ -357,7 +357,7 @@ class AIRealtimeMonitor:
             "monitoring_start_time": None,
         }
 
-        logger.info(f"✅ AIRealtimeMonitor initialized (interval: {self.config.monitoring_interval}s)")
+        logger.info("✅ AIRealtimeMonitor initialized (interval: %ss)", self.config.monitoring_interval)
 
     async def start_monitoring(self, duration_seconds: int = 120):
         """启动实时监控"""
@@ -369,7 +369,7 @@ class AIRealtimeMonitor:
         self.stats["monitoring_start_time"] = datetime.now()
 
         print(f"🔍 开始AI实时监控，时长: {duration_seconds}秒")
-        logger.info(f"🔍 开始AI实时监控，时长: {duration_seconds}秒")
+        logger.info("🔍 开始AI实时监控，时长: %s秒", duration_seconds)
 
         try:
             monitoring_start = time.time()
@@ -416,14 +416,14 @@ class AIRealtimeMonitor:
                         await asyncio.sleep(interval)
 
                 except Exception as e:
-                    logger.error(f"❌ 监控循环异常: {e}")
+                    logger.error("❌ 监控循环异常: %s", e)
                     self.stats["failed_cycles"] += 1
                     await asyncio.sleep(5)  # 错误后短暂等待
 
                 self.stats["total_cycles"] += 1
 
         except Exception as e:
-            logger.error(f"❌ 监控异常: {e}")
+            logger.error("❌ 监控异常: %s", e)
         finally:
             self.running = False
             self._print_final_stats()
@@ -468,7 +468,7 @@ class AIRealtimeMonitor:
 
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
-                    logger.error(f"❌ 指标收集异常: {result}")
+                    logger.error("❌ 指标收集异常: %s", result)
                     continue
 
                 if i == 0 and self.system_collector.is_available():
@@ -501,7 +501,7 @@ class AIRealtimeMonitor:
             return combined_metrics
 
         except Exception as e:
-            logger.error(f"❌ 指标收集失败: {e}")
+            logger.error("❌ 指标收集失败: %s", e)
             return None
 
     def _save_metrics_history(self, metrics: SystemMetrics):
@@ -518,7 +518,7 @@ class AIRealtimeMonitor:
             if self.current_metrics:
                 await self.alert_manager.check_alert_conditions(self.current_metrics)
         except Exception as e:
-            logger.error(f"❌ 告警检查失败: {e}")
+            logger.error("❌ 告警检查失败: %s", e)
 
     def _update_cycle_stats(self, cycle_time: float):
         """更新循环统计"""
@@ -550,9 +550,7 @@ class AIRealtimeMonitor:
     def _print_final_stats(self):
         """打印最终统计"""
         stats = self.stats
-        (
-            (datetime.now() - stats["monitoring_start_time"]).total_seconds() if stats["monitoring_start_time"] else 0
-        )
+        ((datetime.now() - stats["monitoring_start_time"]).total_seconds() if stats["monitoring_start_time"] else 0)
 
         final_msg = (
             f"📊 监控完成 | 总循环: {stats['total_cycles']} | "
@@ -629,7 +627,7 @@ class AIRealtimeMonitor:
             if hasattr(self.config, key):
                 setattr(self.config, key, value)
 
-        logger.info(f"✅ 更新监控配置: {config_updates}")
+        logger.info("✅ 更新监控配置: %s", config_updates)
 
     def set_performance_thresholds(self, thresholds: Dict[str, float]):
         """设置性能阈值"""
@@ -637,7 +635,7 @@ class AIRealtimeMonitor:
             if hasattr(self.thresholds, key):
                 setattr(self.thresholds, key, value)
 
-        logger.info(f"✅ 更新性能阈值: {thresholds}")
+        logger.info("✅ 更新性能阈值: %s", thresholds)
 
     async def run_health_check(self) -> Dict[str, Any]:
         """运行健康检查"""
@@ -695,7 +693,7 @@ class AIRealtimeMonitor:
                 health_status["overall_status"] = "warning"
 
         except Exception as e:
-            logger.error(f"❌ 健康检查失败: {e}")
+            logger.error("❌ 健康检查失败: %s", e)
             health_status["overall_status"] = "error"
             health_status["error"] = str(e)
 

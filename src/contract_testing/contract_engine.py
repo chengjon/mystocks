@@ -79,7 +79,7 @@ class ContractTestEngine:
             handler: Callable that executes the test
         """
         self.test_handlers[endpoint_key] = handler
-        logger.debug(f"✅ Registered test handler for {endpoint_key}")
+        logger.debug("✅ Registered test handler for %s", endpoint_key)
 
     def register_api_endpoint(
         self,
@@ -109,7 +109,7 @@ class ContractTestEngine:
         self.test_results = []
 
         logger.info("🚀 Starting contract tests...")
-        logger.info(f"📋 Testing {len(self.spec_validator.get_all_endpoints())} endpoints")
+        logger.info("📋 Testing %s endpoints", len(self.spec_validator.get_all_endpoints()))
 
         # Run before-all hooks
         context = HookContext(
@@ -120,7 +120,7 @@ class ContractTestEngine:
         try:
             self.hooks_manager.execute_hooks(HookType.BEFORE_ALL, context)
         except Exception as e:
-            logger.error(f"❌ beforeAll hook failed: {e}")
+            logger.error("❌ beforeAll hook failed: %s", e)
             return self._get_failed_results()
 
         # Run each endpoint test
@@ -129,7 +129,7 @@ class ContractTestEngine:
                 result = self._run_endpoint_test(endpoint)
                 self.test_results.append(result)
             except Exception as e:
-                logger.error(f"❌ Test failed for {endpoint.method.value.upper()} {endpoint.path}: {e}")
+                logger.error("❌ Test failed for %s %s: %s", endpoint.method.value.upper(), endpoint.path, e)
                 result = TestResult(
                     test_id=f"{endpoint.method.value.upper()}_{endpoint.path.replace('/', '_')}",
                     endpoint_method=endpoint.method.value.upper(),
@@ -149,12 +149,12 @@ class ContractTestEngine:
         try:
             self.hooks_manager.execute_hooks(HookType.AFTER_ALL, context)
         except Exception as e:
-            logger.error(f"❌ afterAll hook failed: {e}")
+            logger.error("❌ afterAll hook failed: %s", e)
 
         self.end_time = datetime.now()
 
         summary = self._get_test_summary()
-        logger.info(f"✅ Tests completed: {summary['passed']}/{summary['total']} passed")
+        logger.info("✅ Tests completed: {summary['passed']}/{summary['total']} passed")
 
         return summary
 
@@ -163,7 +163,7 @@ class ContractTestEngine:
         test_id = f"{endpoint.method.value.upper()}_{endpoint.path.replace('/', '_')}"
         endpoint_key = f"{endpoint.method.value.upper()} {endpoint.path}"
 
-        logger.debug(f"🧪 Testing {endpoint_key}")
+        logger.debug("🧪 Testing %s", endpoint_key)
 
         # Create hook context
         context = HookContext(
@@ -207,12 +207,12 @@ class ContractTestEngine:
                 assertions_passed=assertions,
             )
 
-            logger.info(f"✅ {endpoint_key} - PASSED ({duration:.2f}ms)")
+            logger.info("✅ %s - PASSED (%sms)", endpoint_key, duration)
             return result
 
         except Exception as e:
             duration = (datetime.now() - start).total_seconds() * 1000
-            logger.error(f"❌ {endpoint_key} - FAILED: {e}")
+            logger.error("❌ %s - FAILED: %s", endpoint_key, e)
 
             result = TestResult(
                 test_id=test_id,
@@ -277,7 +277,7 @@ class ContractTestEngine:
                 ensure_ascii=False,
                 indent=2,
             )
-        logger.info(f"✅ Exported test results to {output_path}")
+        logger.info("✅ Exported test results to %s", output_path)
 
     def get_test_results(self) -> List[TestResult]:
         """Get all test results"""

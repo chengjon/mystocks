@@ -75,7 +75,7 @@ class PostgreSQLConnectionAdapter:
             logger.info("PostgreSQL连接池初始化成功")
 
         except Exception as e:
-            logger.error(f"连接池初始化失败: {e}")
+            logger.error("连接池初始化失败: %s", e)
             raise
 
     @contextmanager
@@ -196,7 +196,7 @@ class PostgreSQLConnectionAdapter:
                 conn.rollback()
             except Exception:
                 pass
-            logger.error(f"事务执行失败: {e}")
+            logger.error("事务执行失败: %s", e)
             return False
 
         finally:
@@ -287,7 +287,7 @@ class EnhancedPostgreSQLRelationalDataSource:
         self.connection_adapter = PostgreSQLConnectionAdapter(db_manager, pool_config)
         self._connection_pool_size = connection_pool_size
 
-        logger.info(f"增强PostgreSQL关系数据源初始化完成 (连接池: {connection_pool_size})")
+        logger.info("增强PostgreSQL关系数据源初始化完成 (连接池: %s)", connection_pool_size)
 
     # ==================== 连接池管理方法 ====================
 
@@ -376,11 +376,11 @@ class EnhancedPostgreSQLRelationalDataSource:
 
             result = query.fetch_all()
 
-            logger.info(f"使用连接池获取自选股成功: user_id={user_id}, list_type={list_type}, count={len(result)}")
+            logger.info("使用连接池获取自选股成功: user_id=%s, list_type=%s, count=%s", user_id, list_type, len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取自选股失败 (连接池版本): {e}")
+            logger.error("获取自选股失败 (连接池版本): %s", e)
             raise
 
     def execute_batch_operations(self, operations: List[Dict[str, Any]]) -> bool:
@@ -400,11 +400,11 @@ class EnhancedPostgreSQLRelationalDataSource:
             # 使用连接池执行事务
             success = self.connection_adapter.execute_transaction(DatabaseType.POSTGRESQL, "mystocks", queries)
 
-            logger.info(f"批量操作执行成功: 操作数={len(operations)}, 成功={success}")
+            logger.info("批量操作执行成功: 操作数=%s, 成功=%s", len(operations), success)
             return success
 
         except Exception as e:
-            logger.error(f"批量操作执行失败: {e}")
+            logger.error("批量操作执行失败: %s", e)
             return False
 
     def monitor_connection_pool_performance(self) -> Dict[str, Any]:

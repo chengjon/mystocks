@@ -56,7 +56,7 @@ class DatabaseService(BaseDatabaseService):
         if response.get("success"):
             return response.get("data", [])
         else:
-            logger.error(f"获取股票列表失败: {response.get('error')}")
+            logger.error("获取股票列表失败: %s", response.get("error"))
             return []
 
     def get_stock_detail(self, stock_code: str) -> Dict:
@@ -65,7 +65,7 @@ class DatabaseService(BaseDatabaseService):
         if response.get("success"):
             return response.get("data", {})
         else:
-            logger.error(f"获取股票详情失败: {response.get('error')}")
+            logger.error("获取股票详情失败: %s", response.get("error"))
             return {}
 
     def get_realtime_quotes(self, symbols: List[str]) -> List[Dict]:
@@ -74,7 +74,7 @@ class DatabaseService(BaseDatabaseService):
         if response.get("success"):
             return response.get("data", [])
         else:
-            logger.error(f"获取实时行情失败: {response.get('error')}")
+            logger.error("获取实时行情失败: %s", response.get("error"))
             return []
 
     def get_stock_history(self, params: Optional[Dict] = None) -> Dict:
@@ -99,7 +99,7 @@ class DatabaseService(BaseDatabaseService):
                 indicators.extend(values)
             return indicators
         else:
-            logger.error(f"获取技术指标失败: {response.get('error')}")
+            logger.error("获取技术指标失败: %s", response.get("error"))
             return []
 
     def get_trend_indicators(self, stock_code: str) -> Dict:
@@ -167,7 +167,7 @@ class DatabaseService(BaseDatabaseService):
             else:
                 return {"success": False, "error": "缺少查询名称或查询文本", "data": None}
 
-            logger.info(f"问财查询执行成功: {query_name or query_text}")
+            logger.info("问财查询执行成功: %s", query_name or query_text)
             return {"success": True, "data": result, "query_name": query_name, "query_text": query_text, "pages": pages}
 
         except Exception as e:
@@ -198,11 +198,11 @@ class DatabaseService(BaseDatabaseService):
             # 获取告警列表
             alerts = alert_manager.get_alerts(limit=limit, offset=offset, severity=severity, status=status)
 
-            logger.info(f"获取监控告警成功，返回{len(alerts)}条记录")
+            logger.info("获取监控告警成功，返回%s条记录", len(alerts))
             return alerts
 
         except Exception as e:
-            logger.error(f"获取监控告警失败: {e}")
+            logger.error("获取监控告警失败: %s", e)
             return []
 
         def get_monitoring_summary(self) -> Dict:
@@ -266,7 +266,7 @@ class DatabaseService(BaseDatabaseService):
                 return summary
 
             except Exception as e:
-                logger.error(f"获取监控摘要失败: {e}")
+                logger.error("获取监控摘要失败: %s", e)
                 return {"error": str(e)}
 
     def get_trading_signals(self, symbol: str) -> Dict:
@@ -298,7 +298,7 @@ class DatabaseService(BaseDatabaseService):
                 "overall_recommendation": "BUY",
             }
 
-            logger.info(f"获取交易信号成功: {symbol}")
+            logger.info("获取交易信号成功: %s", symbol)
             return signals
 
         except Exception as e:
@@ -334,7 +334,7 @@ class DatabaseService(BaseDatabaseService):
                 },
             }
 
-            logger.info(f"获取策略定义成功，共{len(strategies)}个策略")
+            logger.info("获取策略定义成功，共%s个策略", len(strategies))
             return strategies
 
         except Exception as e:
@@ -371,7 +371,7 @@ class DatabaseService(BaseDatabaseService):
                 "metrics": {"profit_factor": 1.68, "avg_trade_return": 0.022, "volatility": 0.14},
             }
 
-            logger.info(f"获取策略结果成功: {strategy_name or '默认策略'}")
+            logger.info("获取策略结果成功: %s", strategy_name or "默认策略")
             return results
         except Exception as e:
             return self._handle_database_error(e, "获取策略结果")

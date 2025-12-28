@@ -82,7 +82,7 @@ class ThresholdRuleManager:
         )
 
         self.rules[rule.name] = rule
-        logger.info(f"Created threshold rule: {rule.name}")
+        logger.info("Created threshold rule: %s", rule.name)
 
         return rule
 
@@ -108,7 +108,7 @@ class ThresholdRuleManager:
             ThresholdAdjustment: 调整记录
         """
         if rule_name not in self.rules:
-            logger.warning(f"Rule not found: {rule_name}")
+            logger.warning("Rule not found: %s", rule_name)
             return None
 
         rule = self.rules[rule_name]
@@ -146,7 +146,7 @@ class ThresholdRuleManager:
         # 保存调整记录
         self.adjustments.append(adjustment)
 
-        logger.info(f"Adjusted threshold for rule {rule_name}: {old_threshold} -> {new_threshold}")
+        logger.info("Adjusted threshold for rule %s: %s -> %s", rule_name, old_threshold, new_threshold)
 
         return adjustment
 
@@ -183,7 +183,7 @@ class ThresholdRuleManager:
         """
         if rule_name in self.rules:
             del self.rules[rule_name]
-            logger.info(f"Deleted threshold rule: {rule_name}")
+            logger.info("Deleted threshold rule: %s", rule_name)
             return True
         return False
 
@@ -351,9 +351,9 @@ class ThresholdRuleManager:
                 if "name" in rule_data and rule_data["name"] not in self.rules:
                     rule = self.create_threshold_rule(rule_data)
                     imported_count += 1
-                    logger.info(f"Imported rule: {rule.name}")
+                    logger.info("Imported rule: %s", rule.name)
             except Exception as e:
-                logger.error(f"Failed to import rule {rule_data.get('name', 'unknown')}: {str(e)}")
+                logger.error("Failed to import rule %s: %s", rule_data.get("name", "unknown"), str(e))
 
         return imported_count
 

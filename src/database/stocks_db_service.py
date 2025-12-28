@@ -83,7 +83,7 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
         return result
 
     except Exception as e:
-        logger.error(f"获取股票列表失败: {e}")
+        logger.error("获取股票列表失败: %s", e)
         # 出错时返回空列表，保持接口一致性
         return []
 
@@ -128,7 +128,7 @@ def get_real_time_quote(code: str) -> Dict:
         return {}
 
     except Exception as e:
-        logger.error(f"获取实时行情失败: {e}")
+        logger.error("获取实时行情失败: %s", e)
         return {}
 
 
@@ -175,5 +175,5 @@ def get_history_profit(params: Optional[Dict] = None) -> pd.DataFrame:
         return df
 
     except Exception as e:
-        logger.error(f"获取历史收益失败: {e}")
+        logger.error("获取历史收益失败: %s", e)
         return pd.DataFrame()

@@ -141,7 +141,7 @@ class MyStocksUnifiedManager:
             # 委托给DataManager
             return self._data_manager.save_data(classification, data, table_name, **kwargs)
         except Exception as e:
-            logger.error(f"保存数据失败: {classification} - {e}")
+            logger.error("保存数据失败: %s - %s", classification, e)
             # 故障恢复：加入队列
             self.recovery_queue.add_failed_operation(
                 operation_type="save",
@@ -179,7 +179,7 @@ class MyStocksUnifiedManager:
 
             return self._data_manager.load_data(classification, table_name, **filters)
         except Exception as e:
-            logger.error(f"加载数据失败: {classification} - {e}")
+            logger.error("加载数据失败: %s - %s", classification, e)
             return None
 
     def get_routing_info(self, classification: DataClassification) -> Dict[str, Any]:
@@ -313,7 +313,7 @@ class MyStocksUnifiedManager:
                 self.postgresql.close()
             logger.info("所有数据库连接已关闭")
         except Exception as e:
-            logger.error(f"关闭连接时出错: {e}")
+            logger.error("关闭连接时出错: %s", e)
 
     def __del__(self) -> None:
         """析构函数：确保连接被关闭"""

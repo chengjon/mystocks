@@ -93,7 +93,7 @@ class BackupManager:
         backup_id = f"tdengine_full_{start_time.strftime('%Y%m%d_%H%M%S')}"
 
         try:
-            logger.info(f"Starting TDengine full backup: {backup_id}")
+            logger.info("Starting TDengine full backup: %s", backup_id)
 
             # 获取所有表
             tables = self._get_tdengine_tables()
@@ -105,7 +105,7 @@ class BackupManager:
 
             # 备份每个表
             for table in tables:
-                logger.info(f"Backing up TDengine table: {table}")
+                logger.info("Backing up TDengine table: %s", table)
 
                 # 查询表数据
                 df = self.tdengine_access.query_all(table)
@@ -118,7 +118,7 @@ class BackupManager:
                     df.to_parquet(table_file, compression="snappy")
                     backup_files.append(table_file)
 
-                    logger.info(f"  Backed up {len(df)} rows from {table}")
+                    logger.info("  Backed up %s rows from %s", len(df), table)
 
             # 计算备份大小和压缩率
             original_size = sum(f.stat().st_size for f in backup_files)
@@ -159,9 +159,8 @@ class BackupManager:
 
             # 保存元数据
             self._save_metadata(metadata)
-
-            logger.info(
-                f"TDengine full backup completed: {backup_id}, "
+self.logger.info("备份管理器初始化完成")
+            logger.info("TDengine full backup completed: {backup_id}, "
                 f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
                 f"ratio={compression_ratio:.2f}x"
             )
@@ -169,7 +168,7 @@ class BackupManager:
             return metadata
 
         except Exception as e:
-            logger.error(f"TDengine full backup failed: {e}")
+            logger.error("TDengine full backup failed: %s", e)
 
             end_time = datetime.now()
             metadata = BackupMetadata(
@@ -204,12 +203,12 @@ class BackupManager:
         backup_id = f"tdengine_incr_{start_time.strftime('%Y%m%d_%H%M%S')}"
 
         try:
-            logger.info(f"Starting TDengine incremental backup: {backup_id}")
+            logger.info("Starting TDengine incremental backup: %s", backup_id)
 
             # 获取上次备份的时间戳
             since_metadata = self._load_metadata(since_backup_id)
             if not since_metadata:
-                logger.warning(f"Previous backup {since_backup_id} not found, doing full backup instead")
+                logger.warning("Previous backup %s not found, doing full backup instead", since_backup_id)
                 return self.backup_tdengine_full()
 
             since_time = datetime.fromisoformat(since_metadata["end_time"])
@@ -224,7 +223,7 @@ class BackupManager:
 
             # 备份每个表的增量数据
             for table in tables:
-                logger.info(f"Backing up TDengine incremental data from {table}")
+                logger.info("Backing up TDengine incremental data from %s", table)
 
                 # 查询增量数据
                 df = self.tdengine_access.query_by_time_range(table, since_time, datetime.now())
@@ -237,7 +236,7 @@ class BackupManager:
                     df.to_parquet(table_file, compression="snappy")
                     backup_files.append(table_file)
 
-                    logger.info(f"  Backed up {len(df)} incremental rows from {table}")
+                    logger.info("  Backed up %s incremental rows from %s", len(df), table)
 
             # 计算备份大小
             original_size = sum(f.stat().st_size for f in backup_files)
@@ -276,16 +275,15 @@ class BackupManager:
             )
 
             self._save_metadata(metadata)
-
-            logger.info(
-                f"TDengine incremental backup completed: {backup_id}, "
+self.logger.info("备份任务完成")
+            logger.info("TDengine incremental backup completed: {backup_id}, "
                 f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB"
             )
 
             return metadata
 
         except Exception as e:
-            logger.error(f"TDengine incremental backup failed: {e}")
+            logger.error("TDengine incremental backup failed: %s", e)
 
             end_time = datetime.now()
             metadata = BackupMetadata(
@@ -317,7 +315,7 @@ class BackupManager:
         backup_id = f"postgresql_full_{start_time.strftime('%Y%m%d_%H%M%S')}"
 
         try:
-            logger.info(f"Starting PostgreSQL full backup: {backup_id}")
+            logger.info("Starting PostgreSQL full backup: %s", backup_id)
 
             # 获取数据库连接信息
             self.conn_manager.get_postgresql_connection()
@@ -383,9 +381,8 @@ class BackupManager:
             )
 
             self._save_metadata(metadata)
-
-            logger.info(
-                f"PostgreSQL full backup completed: {backup_id}, "
+self.logger.info("恢复任务完成")
+            logger.info("PostgreSQL full backup completed: {backup_id}, "
                 f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
                 f"ratio={compression_ratio:.2f}x"
             )
@@ -393,7 +390,7 @@ class BackupManager:
             return metadata
 
         except Exception as e:
-            logger.error(f"PostgreSQL full backup failed: {e}")
+            logger.error("PostgreSQL full backup failed: %s", e)
 
             end_time = datetime.now()
             metadata = BackupMetadata(
@@ -422,7 +419,7 @@ class BackupManager:
             for backup_file in backup_dir.iterdir():
                 if backup_file.is_file():
                     if backup_file.stat().st_mtime < cutoff_date:
-                        logger.info(f"Deleting old backup: {backup_file}")
+                        logger.info("Deleting old backup: %s", backup_file)
                         backup_file.unlink()
 
     # ==================== 私有方法 ====================
@@ -440,7 +437,7 @@ class BackupManager:
             ]
             return tables
         except Exception as e:
-            logger.error(f"Failed to get TDengine tables: {e}")
+            logger.error("Failed to get TDengine tables: %s", e)
             return []
 
     def _get_postgresql_tables(self) -> List[str]:
@@ -464,7 +461,7 @@ class BackupManager:
 
             return tables
         except Exception as e:
-            logger.error(f"Failed to get PostgreSQL tables: {e}")
+            logger.error("Failed to get PostgreSQL tables: %s", e)
             return []
 
     def _count_postgresql_rows(self) -> int:
@@ -486,7 +483,7 @@ class BackupManager:
 
             return total_rows
         except Exception as e:
-            logger.error(f"Failed to count PostgreSQL rows: {e}")
+            logger.error("Failed to count PostgreSQL rows: %s", e)
             return 0
 
     def _save_metadata(self, metadata: BackupMetadata):
@@ -496,7 +493,7 @@ class BackupManager:
         with open(metadata_file, "w") as f:
             json.dump(asdict(metadata), f, indent=2)
 
-        logger.info(f"Metadata saved: {metadata_file}")
+        logger.info("Metadata saved: %s", metadata_file)
 
     def _load_metadata(self, backup_id: str) -> Optional[dict]:
         """加载备份元数据"""

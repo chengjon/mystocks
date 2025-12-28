@@ -60,10 +60,10 @@ class RedisQueue:
             )
             # 测试连接
             self.redis_client.ping()
-            logger.info(f"Redis连接成功: {self.host}:{self.port}")
+            logger.info("Redis连接成功: %s:%s", self.host, self.port)
             return True
         except Exception as e:
-            logger.error(f"Redis连接失败: {e}")
+            logger.error("Redis连接失败: %s", e)
             return False
 
     def disconnect(self):
@@ -106,10 +106,10 @@ class RedisQueue:
                 ),
             )
 
-            logger.info(f"任务已添加到队列 {queue_type}: {task_id}")
+            logger.info("任务已添加到队列 %s: %s", queue_type, task_id)
             return task_id
         except Exception as e:
-            logger.error(f"添加任务失败: {e}")
+            logger.error("添加任务失败: %s", e)
             raise
 
     def dequeue_task(self, queue_type: str, timeout: int = 30) -> Optional[Dict[str, Any]]:
@@ -129,11 +129,11 @@ class RedisQueue:
                 # 更新任务状态为处理中
                 self.update_task_status(queue_type, task_data["task_id"], "processing")
 
-                logger.info(f"获取任务: {task_data['task_id']}")
+                logger.info("获取任务: %s", task_data["task_id"])
                 return task_data
             return None
         except Exception as e:
-            logger.error(f"获取任务失败: {e}")
+            logger.error("获取任务失败: %s", e)
             return None
 
     def update_task_status(
@@ -179,9 +179,9 @@ class RedisQueue:
                     ),
                 )
 
-            logger.info(f"任务 {task_id} 状态更新为: {status}")
+            logger.info("任务 %s 状态更新为: %s", task_id, status)
         except Exception as e:
-            logger.error(f"更新任务状态失败: {e}")
+            logger.error("更新任务状态失败: %s", e)
 
     def get_task_status(self, queue_type: str, task_id: str) -> Optional[Dict[str, Any]]:
         """获取任务状态"""
@@ -196,7 +196,7 @@ class RedisQueue:
                 return json.loads(status_json)
             return None
         except Exception as e:
-            logger.error(f"获取任务状态失败: {e}")
+            logger.error("获取任务状态失败: %s", e)
             return None
 
     def get_queue_length(self, queue_type: Optional[str] = None) -> Union[int, Dict[str, int]]:
@@ -214,7 +214,7 @@ class RedisQueue:
                     lengths[q_type] = self.redis_client.llen(q_key)
                 return lengths
         except Exception as e:
-            logger.error(f"获取队列长度失败: {e}")
+            logger.error("获取队列长度失败: %s", e)
             return {} if queue_type is None else 0
 
     def get_pending_tasks(self, queue_type: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -238,7 +238,7 @@ class RedisQueue:
 
             return pending_tasks
         except Exception as e:
-            logger.error(f"获取待处理任务失败: {e}")
+            logger.error("获取待处理任务失败: %s", e)
             return []
 
     def get_task_results(self, queue_type: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -257,7 +257,7 @@ class RedisQueue:
                     results.append(json.loads(result_json))
             return results
         except Exception as e:
-            logger.error(f"获取任务结果失败: {e}")
+            logger.error("获取任务结果失败: %s", e)
             return []
 
     def cleanup_old_tasks(self, queue_type: str, days: int = 7):
@@ -287,9 +287,9 @@ class RedisQueue:
             # 批量删除
             if tasks_to_remove:
                 self.redis_client.hdel(status_key, *tasks_to_remove)
-                logger.info(f"清理了 {len(tasks_to_remove)} 个旧任务")
+                logger.info("清理了 %s 个旧任务", len(tasks_to_remove))
         except Exception as e:
-            logger.error(f"清理旧任务失败: {e}")
+            logger.error("清理旧任务失败: %s", e)
 
     def get_queue_statistics(self) -> Dict[str, Any]:
         """获取队列统计信息"""
@@ -344,7 +344,7 @@ class RedisQueue:
 
             return stats
         except Exception as e:
-            logger.error(f"获取队列统计失败: {e}")
+            logger.error("获取队列统计失败: %s", e)
             return {}
 
     def monitor_queue_health(self) -> Dict[str, Any]:
@@ -393,5 +393,5 @@ class RedisQueue:
 
             return health
         except Exception as e:
-            logger.error(f"监控队列健康失败: {e}")
+            logger.error("监控队列健康失败: %s", e)
             return {"overall_status": "error", "error": str(e)}

@@ -53,7 +53,7 @@ class RedisDataAccess:
             logger.info("Redis连接成功")
 
         except Exception as e:
-            logger.error(f"Redis连接失败: {e}")
+            logger.error("Redis连接失败: %s", e)
             raise
 
     def save_realtime_data(
@@ -78,7 +78,7 @@ class RedisDataAccess:
                 self.redis_client.setex(key, expire, data_str)
 
             self.monitoring_db.log_operation_result(operation_id, True, 1)
-            logger.info(f"Redis保存成功: {key}")
+            logger.info("Redis保存成功: %s", key)
 
             return True
 
@@ -115,7 +115,7 @@ class RedisDataAccess:
                 data = self.redis_client.get(key)
 
             self.monitoring_db.log_operation_result(operation_id, True, 1)
-            logger.info(f"Redis加载成功: {key}")
+            logger.info("Redis加载成功: %s", key)
 
             return data
 
@@ -133,7 +133,7 @@ class RedisDataAccess:
             self.redis_client.delete(key)
 
             self.monitoring_db.log_operation_result(operation_id, True, 1)
-            logger.info(f"Redis删除成功: {key}")
+            logger.info("Redis删除成功: %s", key)
 
             return True
 
@@ -158,12 +158,12 @@ class RedisDataAccess:
             # 保存到Redis
             self.redis_client.setex(key, expire, data_json)
 
-            logger.info(f"DataFrame保存到Redis成功: {key}, {len(data)}行")
+            logger.info("DataFrame保存到Redis成功: %s, %s行", key, len(data))
 
             return True
 
         except Exception as e:
-            logger.error(f"DataFrame保存到Redis失败: {e}")
+            logger.error("DataFrame保存到Redis失败: %s", e)
             return False
 
     def load_json_as_dataframe(
@@ -180,15 +180,15 @@ class RedisDataAccess:
                 # 将JSON转换为DataFrame
                 data = pd.read_json(json_data, orient="records")
 
-                logger.info(f"从Redis加载DataFrame成功: {key}, {len(data)}行")
+                logger.info("从Redis加载DataFrame成功: %s, %s行", key, len(data))
 
                 return data
             else:
-                logger.warning(f"Redis中找不到数据: {key}")
+                logger.warning("Redis中找不到数据: %s", key)
                 return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"从Redis加载DataFrame失败: {e}")
+            logger.error("从Redis加载DataFrame失败: %s", e)
             return pd.DataFrame()
 
     def update_realtime_data(
@@ -206,12 +206,12 @@ class RedisDataAccess:
             # 设置过期时间
             self.redis_client.expire(key, expire)
 
-            logger.info(f"Redis Hash更新成功: {key}, {result}字段")
+            logger.info("Redis Hash更新成功: %s, %s字段", key, result)
 
             return True
 
         except Exception as e:
-            logger.error(f"Redis Hash更新失败: {e}")
+            logger.error("Redis Hash更新失败: %s", e)
             return False
 
     def get_realtime_data_keys(self, pattern: str = "*") -> List[str]:
@@ -220,12 +220,12 @@ class RedisDataAccess:
             # 使用模式匹配获取键
             keys = self.redis_client.keys(pattern)
 
-            logger.info(f"获取Redis键列表成功: {len(keys)}个键")
+            logger.info("获取Redis键列表成功: %s个键", len(keys))
 
             return keys
 
         except Exception as e:
-            logger.error(f"获取Redis键列表失败: {e}")
+            logger.error("获取Redis键列表失败: %s", e)
             return []
 
     def clear_realtime_data(self, pattern: str = "*") -> int:
@@ -238,7 +238,7 @@ class RedisDataAccess:
                 # 删除匹配的键
                 count = self.redis_client.delete(*keys)
 
-                logger.info(f"清理Redis数据成功: {count}个键")
+                logger.info("清理Redis数据成功: %s个键", count)
 
                 return count
             else:
@@ -246,7 +246,7 @@ class RedisDataAccess:
                 return 0
 
         except Exception as e:
-            logger.error(f"清理Redis数据失败: {e}")
+            logger.error("清理Redis数据失败: %s", e)
             return 0
 
     def cache_data(

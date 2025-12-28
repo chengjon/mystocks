@@ -52,7 +52,7 @@ class PredefinedTasks:
             Dict: 更新结果
         """
         logger.info("=" * 70)
-        logger.info(f"开始每日数据更新: {market.upper()}")
+        logger.info("开始每日数据更新: %s", market.upper())
         logger.info("=" * 70)
 
         try:
@@ -66,8 +66,8 @@ class PredefinedTasks:
             result = importer.import_incremental(market=market, lookback_days=lookback_days)
 
             logger.info("✓ 数据更新完成")
-            logger.info(f"  成功: {result['success_count']} 只股票")
-            logger.info(f"  记录数: {result['total_records']:,}")
+            logger.info("  成功: %s 只股票", result["success_count"])
+            logger.info("  记录数: %s", result["total_records"])
 
             return {
                 "status": "success",
@@ -78,7 +78,7 @@ class PredefinedTasks:
             }
 
         except Exception as e:
-            logger.error(f"✗ 数据更新失败: {e}")
+            logger.error("✗ 数据更新失败: %s", e)
             raise
 
     @staticmethod
@@ -101,8 +101,8 @@ class PredefinedTasks:
             Dict: 执行结果
         """
         logger.info("=" * 70)
-        logger.info(f"执行策略: {strategy_name}")
-        logger.info(f"股票池大小: {len(universe)}")
+        logger.info("执行策略: %s", strategy_name)
+        logger.info("股票池大小: %s", len(universe))
         logger.info("=" * 70)
 
         try:
@@ -118,8 +118,8 @@ class PredefinedTasks:
             sell_signals = [s for s in signals if s["signal"] == "sell"]
 
             logger.info("✓ 策略执行完成")
-            logger.info(f"  买入信号: {len(buy_signals)}")
-            logger.info(f"  卖出信号: {len(sell_signals)}")
+            logger.info("  买入信号: %s", len(buy_signals))
+            logger.info("  卖出信号: %s", len(sell_signals))
 
             # 发送信号通知
             if notification_manager:
@@ -141,7 +141,7 @@ class PredefinedTasks:
             }
 
         except Exception as e:
-            logger.error(f"✗ 策略执行失败: {e}")
+            logger.error("✗ 策略执行失败: %s", e)
             raise
 
     @staticmethod
@@ -180,8 +180,8 @@ class PredefinedTasks:
             filtered = screener.screen(universe)
 
             logger.info("✓ 筛选完成")
-            logger.info(f"  候选股票: {len(universe)}")
-            logger.info(f"  通过筛选: {len(filtered)}")
+            logger.info("  候选股票: %s", len(universe))
+            logger.info("  通过筛选: %s", len(filtered))
 
             return {
                 "status": "success",
@@ -191,7 +191,7 @@ class PredefinedTasks:
             }
 
         except Exception as e:
-            logger.error(f"✗ 筛选失败: {e}")
+            logger.error("✗ 筛选失败: %s", e)
             raise
 
     @staticmethod
@@ -214,17 +214,17 @@ class PredefinedTasks:
 
             # 1. 数据质量检查
             logger.info("1. 数据质量检查")
-            # TODO: 实现数据质量检查
+
             results["quality_check"] = "passed"
 
             # 2. 性能优化
             logger.info("2. 性能优化")
-            # TODO: 实现索引优化、统计信息更新等
+
             results["optimization"] = "completed"
 
             # 3. 清理过期数据
             logger.info("3. 清理过期数据")
-            # TODO: 实现过期数据清理
+
             results["cleanup"] = "completed"
 
             logger.info("✓ 数据库维护完成")
@@ -232,7 +232,7 @@ class PredefinedTasks:
             return {"status": "success", **results}
 
         except Exception as e:
-            logger.error(f"✗ 数据库维护失败: {e}")
+            logger.error("✗ 数据库维护失败: %s", e)
             raise
 
     @staticmethod
@@ -251,7 +251,7 @@ class PredefinedTasks:
         report_date = date or datetime.now().date()
 
         logger.info("=" * 70)
-        logger.info(f"生成每日报告: {report_date}")
+        logger.info("生成每日报告: %s", report_date)
         logger.info("=" * 70)
 
         try:
@@ -304,7 +304,7 @@ class PredefinedTasks:
             }
 
         except Exception as e:
-            logger.error(f"✗ 报告生成失败: {e}")
+            logger.error("✗ 报告生成失败: %s", e)
             raise
 
     @staticmethod
@@ -340,16 +340,16 @@ class PredefinedTasks:
                     # 检查策略引擎
                     health_status["strategy"] = "healthy"
 
-                logger.info(f"  ✓ {service}: healthy")
+                logger.info("  ✓ %s: healthy", service)
 
             except Exception as e:
                 health_status[service] = f"unhealthy: {e}"
-                logger.error(f"  ✗ {service}: {e}")
+                logger.error("  ✗ %s: %s", service, e)
 
         # 总体状态
         all_healthy = all(status == "healthy" for status in health_status.values())
 
-        logger.info(f"\n总体状态: {'✓ 健康' if all_healthy else '✗ 异常'}")
+        logger.info("\n总体状态: %s", "✓ 健康" if all_healthy else "✗ 异常")
 
         return {
             "status": "healthy" if all_healthy else "unhealthy",

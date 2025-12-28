@@ -179,8 +179,8 @@ class CustomStrategy(BaseStrategy):
             **kwargs: 额外参数
         """
         # 示例: 打印执行信息
-        self.logger.info(f"策略执行开始: {len(symbols)}只股票")
-        self.logger.info(f"日期范围: {start_date} 至 {end_date}")
+        self.logger.info("策略执行开始: %s只股票", len(symbols))
+        self.logger.info("日期范围: %s 至 %s", start_date, end_date)
 
         # 添加您的自定义逻辑...
 
@@ -198,7 +198,7 @@ class CustomStrategy(BaseStrategy):
         """
         # 示例: 打印执行结果
         stats = result.get("statistics", {})
-        self.logger.info(f"执行完成: 生成{stats.get('total_signals', 0)}个信号")
+        self.logger.info("执行完成: 生成%s个信号", stats.get("total_signals", 0))
 
         # 添加您的自定义逻辑...
 

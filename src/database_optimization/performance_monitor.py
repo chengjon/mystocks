@@ -59,7 +59,7 @@ class IndexPerformanceMonitor:
                 "execution_count": ...
             }
         """
-        logger.info(f"Analyzing query performance for {query_name or 'all queries'}...")
+        logger.info("Analyzing query performance for %s...", query_name or "all queries")
 
         results = {}
 

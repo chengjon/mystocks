@@ -71,7 +71,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
         cache_key = self._get_cache_key(symbol, "stock_daily", start_date=start_date, end_date=end_date)
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"从缓存获取股票日线数据: {symbol}")
+            logger.info("从缓存获取股票日线数据: %s", symbol)
             return cached_data
 
         # 按优先级尝试不同的数据源
@@ -86,10 +86,10 @@ class StockDailyAdapter(BaseFinancialAdapter):
                 if data is not None and not data.empty:
                     data = self._standardize_column_names(data)
                     self._save_to_cache(cache_key, data)
-                    logger.info(f"通过 {source_name} 获取股票日线数据成功: {symbol}")
+                    logger.info("通过 %s 获取股票日线数据成功: %s", source_name, symbol)
                     return data
             except Exception as e:
-                logger.warning(f"通过 {source_name} 获取股票日线数据失败: {e}")
+                logger.warning("通过 %s 获取股票日线数据失败: %s", source_name, e)
                 continue
 
         raise Exception(f"所有数据源都无法获取股票 {symbol} 的日线数据")
@@ -121,7 +121,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             return self._process_efinance_stock_daily_data(data)
 
         except Exception as e:
-            logger.error(f"efinance 获取股票日线数据失败: {e}")
+            logger.error("efinance 获取股票日线数据失败: %s", e)
             raise
 
     def _fetch_stock_daily_from_easyquotation(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -158,7 +158,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             return pd.DataFrame(df_data)
 
         except Exception as e:
-            logger.error(f"easyquotation 获取股票日线数据失败: {e}")
+            logger.error("easyquotation 获取股票日线数据失败: %s", e)
             raise
 
     def _filter_broader_data_by_date(self, data: pd.DataFrame, start_date: str, end_date: str) -> pd.DataFrame:
@@ -186,11 +186,11 @@ class StockDailyAdapter(BaseFinancialAdapter):
             mask = (data[date_col] >= start_dt) & (data[date_col] <= end_dt)
             filtered_data = data[mask].copy()
 
-            logger.info(f"日期过滤: {len(data)} -> {len(filtered_data)} 条记录")
+            logger.info("日期过滤: %s -> %s 条记录", len(data), len(filtered_data))
             return filtered_data
 
         except Exception as e:
-            logger.error(f"日期过滤失败: {e}")
+            logger.error("日期过滤失败: %s", e)
             return data
 
     def _process_efinance_stock_daily_data(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -212,7 +212,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             missing_columns = [col for col in required_columns if col not in data.columns]
 
             if missing_columns:
-                logger.warning(f"缺少必要的列: {missing_columns}")
+                logger.warning("缺少必要的列: %s", missing_columns)
                 # 尝试使用备用的列名映射
                 column_mapping = {
                     "股票代码": ["代码", "symbol", "code"],
@@ -233,7 +233,7 @@ class StockDailyAdapter(BaseFinancialAdapter):
             # 重新检查是否有必要的列
             final_missing = [col for col in required_columns if col not in data.columns]
             if final_missing:
-                logger.error(f"仍然缺少必要的列: {final_missing}")
+                logger.error("仍然缺少必要的列: %s", final_missing)
                 return pd.DataFrame()
 
             # 选择需要的列并重命名
@@ -248,11 +248,11 @@ class StockDailyAdapter(BaseFinancialAdapter):
             # 删除空值行
             result_data = result_data.dropna()
 
-            logger.info(f"处理成功，返回 {len(result_data)} 条记录")
+            logger.info("处理成功，返回 %s 条记录", len(result_data))
             return result_data
 
         except Exception as e:
-            logger.error(f"处理 efinance 股票日线数据失败: {e}")
+            logger.error("处理 efinance 股票日线数据失败: %s", e)
             return pd.DataFrame()
 
     def get_financial_report(self, symbol: str, report_type: str, period: str) -> dict:

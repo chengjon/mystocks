@@ -109,7 +109,7 @@ class QueryRouter(IQueryRouter):
         if db_type not in self.adapters:
             self.adapters[db_type] = []
         self.adapters[db_type].append(adapter)
-        logger.info(f"注册适配器: {db_type.value}, 总数: {len(self.adapters[db_type])}")
+        logger.info("注册适配器: %s, 总数: %s", db_type.value, len(self.adapters[db_type]))
 
     def _initialize_default_rules(self):
         """初始化默认路由规则"""
@@ -193,14 +193,14 @@ class QueryRouter(IQueryRouter):
             decision = await self._make_routing_decision(query)
             self._update_metrics(start_time, success=True)
 
-            logger.info(f"查询路由到: {decision.target_database.value}, 置信度: {decision.confidence:.2f}")
-            logger.debug(f"路由原因: {decision.reasoning}")
+            logger.info("查询路由到: %s, 置信度: %s", decision.target_database.value, decision.confidence)
+            logger.debug("路由原因: %s", decision.reasoning)
 
             return decision.selected_adapter
 
         except Exception as e:
             self._update_metrics(start_time, success=False)
-            logger.error(f"查询路由失败: {e}")
+            logger.error("查询路由失败: %s", e)
             raise
 
     async def route_operation(self, operation: QueryOperation, table_name: str) -> IDataAccess:
@@ -220,7 +220,7 @@ class QueryRouter(IQueryRouter):
             priority=len(self.routing_rules),
         )
         self.routing_rules.append(routing_rule)
-        logger.info(f"添加自定义路由规则: {routing_rule.name}")
+        logger.info("添加自定义路由规则: %s", routing_rule.name)
 
     def remove_routing_rule(self, rule: Callable):
         """移除路由规则"""
@@ -238,7 +238,7 @@ class QueryRouter(IQueryRouter):
                     confidence = self._calculate_rule_confidence(rule, query)
                     applicable_rules.append((rule, confidence))
                 except Exception as e:
-                    logger.warning(f"评估路由规则失败 {rule.name}: {e}")
+                    logger.warning("评估路由规则失败 %s: %s", rule.name, e)
 
         # 按优先级和置信度排序
         applicable_rules.sort(key=lambda x: (x[0].priority, -x[1]))

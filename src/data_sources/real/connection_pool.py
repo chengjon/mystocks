@@ -141,7 +141,7 @@ class PostgreSQLConnectionPool:
         self._health_check_thread = None
         self._cleanup_thread = None
 
-        logger.info(f"PostgreSQL连接池初始化完成: min={self.config.min_connections}, max={self.config.max_connections}")
+        logger.info("PostgreSQL连接池初始化完成: min=%s, max=%s", self.config.min_connections, self.config.max_connections)
 
         # 预热连接池
         self._initialize_pool()
@@ -160,7 +160,7 @@ class PostgreSQLConnectionPool:
                     if conn:
                         self._pool.put(conn)
                 except Exception as e:
-                    logger.warning(f"创建初始连接失败: {e}")
+                    logger.warning("创建初始连接失败: %s", e)
 
     def _create_connection(self) -> Optional[PooledConnection]:
         """创建新连接"""
@@ -178,11 +178,11 @@ class PostgreSQLConnectionPool:
             with self._lock:
                 self.metrics.total_created += 1
 
-            logger.debug(f"创建新数据库连接: {id(raw_conn)}")
+            logger.debug("创建新数据库连接: %s", id(raw_conn))
             return pooled_conn
 
         except Exception as e:
-            logger.error(f"创建数据库连接失败: {e}")
+            logger.error("创建数据库连接失败: %s", e)
             with self._lock:
                 self.metrics.failed_requests += 1
             return None
@@ -241,7 +241,7 @@ class PostgreSQLConnectionPool:
                     self.metrics.current_active = len(self._active_connections)
                     self.metrics.peak_active = max(self.metrics.peak_active, self.metrics.current_active)
 
-                logger.debug(f"从池中获取连接: {id(conn.connection)}")
+                logger.debug("从池中获取连接: %s", id(conn.connection))
                 return conn
             else:
                 # 连接不健康，关闭并创建新连接
@@ -267,7 +267,7 @@ class PostgreSQLConnectionPool:
                     return conn
 
             except Exception as e:
-                logger.warning(f"创建连接失败 (尝试 {attempt + 1}/{self.config.retry_attempts}): {e}")
+                logger.warning("创建连接失败 (尝试 %s/%s): %s", attempt + 1, self.config.retry_attempts, e)
 
                 if attempt < self.config.retry_attempts - 1:
                     time.sleep(self.config.retry_delay * (2**attempt))
@@ -291,13 +291,13 @@ class PostgreSQLConnectionPool:
                 if conn.is_healthy() and not self._pool.full():
                     conn.mark_used()
                     self._pool.put(conn, block=False)
-                    logger.debug(f"连接返回池中: {id(conn.connection)}")
+                    logger.debug("连接返回池中: %s", id(conn.connection))
                 else:
                     # 连接不健康或池已满，关闭连接
                     self._close_connection(conn)
 
         except Exception as e:
-            logger.error(f"释放连接时出错: {e}")
+            logger.error("释放连接时出错: %s", e)
             self._close_connection(conn)
 
     def _close_connection(self, conn: PooledConnection):
@@ -313,10 +313,10 @@ class PostgreSQLConnectionPool:
                 self.metrics.total_closed += 1
                 self.metrics.current_active = len(self._active_connections)
 
-            logger.debug(f"关闭数据库连接: {id(conn.connection)}")
+            logger.debug("关闭数据库连接: %s", id(conn.connection))
 
         except Exception as e:
-            logger.error(f"关闭连接时出错: {e}")
+            logger.error("关闭连接时出错: %s", e)
 
     def execute_query(self, query: str, params: Optional[tuple] = None, fetch: bool = True) -> Any:
         """
@@ -353,13 +353,13 @@ class PostgreSQLConnectionPool:
 
                 except Exception as e:
                     conn.connection.rollback()
-                    logger.error(f"查询执行失败: {query}, 错误: {e}")
+                    logger.error("查询执行失败: %s, 错误: %s", query, e)
                     raise
 
         finally:
             execution_time = time.time() - start_time
             if execution_time > 1.0:  # 记录慢查询
-                logger.warning(f"慢查询检测: 执行时间 {execution_time:.2f}s, SQL: {query[:100]}...")
+                logger.warning("慢查询检测: 执行时间 %ss, SQL: %s...", execution_time, query[)
 
     def execute_transaction(self, queries: List[tuple]) -> bool:
         """
@@ -392,7 +392,7 @@ class PostgreSQLConnectionPool:
                     conn.connection.rollback()
                 except Exception:
                     pass
-                logger.error(f"事务执行失败: {e}")
+                logger.error("事务执行失败: %s", e)
                 return False
 
     def get_pool_info(self) -> Dict[str, Any]:
@@ -469,16 +469,16 @@ class PostgreSQLConnectionPool:
 
                 # 处理不健康连接
                 for conn in unhealthy:
-                    logger.warning(f"发现不健康连接，准备替换: {id(conn.connection)}")
+                    logger.warning("发现不健康连接，准备替换: %s", id(conn.connection))
                     self._release_connection(conn)
 
                 # 记录健康检查结果
                 health_status = self.health_check()
                 if health_status["status"] != "healthy":
-                    logger.warning(f"连接池健康检查: {health_status}")
+                    logger.warning("连接池健康检查: %s", health_status)
 
             except Exception as e:
-                logger.error(f"健康检查失败: {e}")
+                logger.error("健康检查失败: %s", e)
 
             # 等待下次检查
             if self._shutdown_event.wait(self.config.health_check_interval):
@@ -498,7 +498,7 @@ class PostgreSQLConnectionPool:
 
                 # 处理过期连接
                 for conn in expired_connections:
-                    logger.info(f"清理过期连接: {id(conn.connection)}")
+                    logger.info("清理过期连接: %s", id(conn.connection))
                     self._close_connection(conn)
 
                 # 如果连接数少于最小值，补充连接
@@ -517,7 +517,7 @@ class PostgreSQLConnectionPool:
                             pass
 
             except Exception as e:
-                logger.error(f"连接清理失败: {e}")
+                logger.error("连接清理失败: %s", e)
 
             # 等待下次清理
             if self._shutdown_event.wait(300):  # 5分钟

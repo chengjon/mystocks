@@ -48,11 +48,11 @@ class RealtimeService(BaseTdxAdapter):
             market_code = self._get_market_code(symbol)
 
             # 获取实时行情
-            logger.info(f"获取实时行情数据: {symbol}")
+            logger.info("获取实时行情数据: %s", symbol)
             data = tdx_api.get_security_quotes([symbol], [market_code])
 
             if not data or len(data) == 0:
-                logger.warning(f"未找到股票 {symbol} 的实时数据")
+                logger.warning("未找到股票 %s 的实时数据", symbol)
                 return None
 
             # 提取第一个数据
@@ -82,7 +82,7 @@ class RealtimeService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取实时行情数据失败: {e}")
+            logger.error("获取实时行情数据失败: %s", e)
             return None
 
     def get_stock_basic(self, symbol: str) -> Dict:
@@ -108,11 +108,11 @@ class RealtimeService(BaseTdxAdapter):
             market_code = self._get_market_code(symbol)
 
             # 获取股票基本信息
-            logger.info(f"获取股票基本信息: {symbol}")
+            logger.info("获取股票基本信息: %s", symbol)
             data = tdx_api.get_security_list(market_code, 1)
 
             if not data:
-                logger.warning(f"未找到股票 {symbol} 的基本信息")
+                logger.warning("未找到股票 %s 的基本信息", symbol)
                 return {}
 
             # 查找匹配的股票
@@ -149,7 +149,7 @@ class RealtimeService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取股票基本信息失败: {e}")
+            logger.error("获取股票基本信息失败: %s", e)
             return {}
 
     def get_industry_classify(self) -> pd.DataFrame:
@@ -172,11 +172,11 @@ class RealtimeService(BaseTdxAdapter):
             # 转换为DataFrame
             df = pd.DataFrame(data)
 
-            logger.info(f"成功获取行业分类数据: {len(df)} 条记录")
+            logger.info("成功获取行业分类数据: %s 条记录", len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取行业分类数据失败: {e}")
+            logger.error("获取行业分类数据失败: %s", e)
             return pd.DataFrame()
 
     def get_concept_classify(self) -> pd.DataFrame:
@@ -199,11 +199,11 @@ class RealtimeService(BaseTdxAdapter):
             # 转换为DataFrame
             df = pd.DataFrame(data)
 
-            logger.info(f"成功获取概念分类数据: {len(df)} 条记录")
+            logger.info("成功获取概念分类数据: %s 条记录", len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取概念分类数据失败: {e}")
+            logger.error("获取概念分类数据失败: %s", e)
             return pd.DataFrame()
 
     def get_stock_industry_concept(self, symbol: str) -> Dict:
@@ -234,13 +234,12 @@ class RealtimeService(BaseTdxAdapter):
                     "code": stock_basic.get("industry_code", ""),
                 }
 
-            # TODO: 可以添加更详细的行业和概念查询逻辑
             # 这里可以根据需要进一步扩展
 
             return result
 
         except Exception as e:
-            logger.error(f"获取股票行业概念信息失败: {e}")
+            logger.error("获取股票行业概念信息失败: %s", e)
             return {
                 "symbol": symbol,
                 "error": str(e),
@@ -275,7 +274,7 @@ class RealtimeService(BaseTdxAdapter):
             tdx_api = self._get_tdx_connection()
 
             # 批量获取实时行情
-            logger.info(f"批量获取实时行情数据: {len(symbols)} 只股票")
+            logger.info("批量获取实时行情数据: %s 只股票", len(symbols))
             data = tdx_api.get_security_quotes(normalized_symbols, market_codes)
 
             results = []
@@ -303,9 +302,9 @@ class RealtimeService(BaseTdxAdapter):
                         }
                         results.append(result)
 
-            logger.info(f"成功获取批量实时行情数据: {len(results)} 条记录")
+            logger.info("成功获取批量实时行情数据: %s 条记录", len(results))
             return results
 
         except Exception as e:
-            logger.error(f"批量获取实时行情数据失败: {e}")
+            logger.error("批量获取实时行情数据失败: %s", e)
             return []

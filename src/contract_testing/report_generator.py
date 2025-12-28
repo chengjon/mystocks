@@ -59,7 +59,7 @@ class ContractTestReportGenerator:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"✅ Generated JSON report: {output_path}")
+        logger.info("✅ Generated JSON report: %s", output_path)
 
     def generate_markdown_report(self, output_path: str) -> None:
         """Generate Markdown report"""
@@ -121,7 +121,7 @@ class ContractTestReportGenerator:
         with open(output_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
-        logger.info(f"✅ Generated Markdown report: {output_path}")
+        logger.info("✅ Generated Markdown report: %s", output_path)
 
     def generate_html_report(self, output_path: str) -> None:
         """Generate HTML report"""
@@ -210,7 +210,7 @@ class ContractTestReportGenerator:
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        logger.info(f"✅ Generated HTML report: {output_path}")
+        logger.info("✅ Generated HTML report: %s", output_path)
 
     def generate_all_reports(self, output_dir: str = "reports") -> None:
         """Generate all report formats"""
@@ -221,4 +221,4 @@ class ContractTestReportGenerator:
         self.generate_markdown_report(f"{output_dir}/contract_test_report_{timestamp}.md")
         self.generate_html_report(f"{output_dir}/contract_test_report_{timestamp}.html")
 
-        logger.info(f"✅ Generated all reports in {output_dir}")
+        logger.info("✅ Generated all reports in %s", output_dir)

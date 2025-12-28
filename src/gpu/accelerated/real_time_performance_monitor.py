@@ -128,7 +128,7 @@ class RealTimePerformanceMonitor:
                 time.sleep(self.monitoring_interval)
 
             except Exception as e:
-                self.logger.error(f"监控循环错误: {e}")
+                self.logger.error("监控循环错误: %s", e)
                 time.sleep(self.monitoring_interval)
 
     def _collect_metrics(self) -> PerformanceMetrics:
@@ -171,7 +171,7 @@ class RealTimePerformanceMonitor:
                         power_usage = float(gpu_info[3])
 
             except Exception as e:
-                self.logger.warning(f"GPU指标收集失败: {e}")
+                self.logger.warning("GPU指标收集失败: %s", e)
 
         # 处理时间（模拟）
         processing_time = self._get_recent_processing_time()
@@ -253,13 +253,13 @@ class RealTimePerformanceMonitor:
                 try:
                     callback(metrics, alerts)
                 except Exception as e:
-                    self.logger.error(f"回调函数执行失败: {e}")
+                    self.logger.error("回调函数执行失败: %s", e)
 
     def _log_performance(self, metrics: PerformanceMetrics):
         """记录性能日志"""
         if len(self.performance_history) % 10 == 0:  # 每10个指标记录一次
             self.logger.info(
-                f"性能指标 - GPU: {metrics.gpu_utilization:.1f}%, "
+                "性能指标 - GPU: {metrics.gpu_utilization:.1f}%, "
                 f"CPU: {metrics.cpu_utilization:.1f}%, "
                 f"内存: {metrics.gpu_memory_usage:.1f}MB, "
                 f"处理时间: {metrics.processing_time:.3f}s, "

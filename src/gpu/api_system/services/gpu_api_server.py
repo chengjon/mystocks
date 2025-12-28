@@ -77,7 +77,7 @@ class GPUServer:
             logger.info("GPU API服务器初始化完成")
 
         except Exception as e:
-            logger.error(f"服务器初始化失败: {e}")
+            logger.error("服务器初始化失败: %s", e)
             raise
 
     def create_server(self):
@@ -122,7 +122,7 @@ class GPUServer:
             self.start_monitoring()
 
         except Exception as e:
-            logger.error(f"服务器启动失败: {e}")
+            logger.error("服务器启动失败: %s", e)
             raise
 
     def start_monitoring(self):
@@ -148,7 +148,7 @@ class GPUServer:
                     time.sleep(5)
 
                 except Exception as e:
-                    logger.error(f"监控更新失败: {e}")
+                    logger.error("监控更新失败: %s", e)
                     time.sleep(10)
 
         import threading
@@ -175,7 +175,7 @@ class GPUServer:
         """设置信号处理器"""
 
         def signal_handler(signum, frame):
-            logger.info(f"收到信号 {signum}，正在关闭服务器...")
+            logger.info("收到信号 %s，正在关闭服务器...", signum)
             self.stop()
             sys.exit(0)
 
@@ -196,7 +196,7 @@ class GPUServer:
         except KeyboardInterrupt:
             logger.info("收到键盘中断，正在停止服务器...")
         except Exception as e:
-            logger.error(f"服务器运行异常: {e}")
+            logger.error("服务器运行异常: %s", e)
         finally:
             self.stop()
 
@@ -214,7 +214,7 @@ def main():
     except KeyboardInterrupt:
         logger.info("用户中断，正在关闭服务器...")
     except Exception as e:
-        logger.error(f"服务器启动失败: {e}")
+        logger.error("服务器启动失败: %s", e)
         sys.exit(1)
     finally:
         logger.info("服务器已关闭")

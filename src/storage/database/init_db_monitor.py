@@ -60,24 +60,24 @@ def find_env_file(default_path="mystocks/.env"):
         os.path.join(os.path.dirname(script_dir), ".env"),
     ]
 
-    logger.debug(f"🔍 开始智能搜索环境文件，默认路径: {default_path}")
-    logger.debug(f"📁 脚本所在目录: {script_dir}")
-    logger.debug(f"📂 当前工作目录: {os.getcwd()}")
+    logger.debug("🔍 开始智能搜索环境文件，默认路径: %s", default_path)
+    logger.debug("📁 脚本所在目录: %s", script_dir)
+    logger.debug("📂 当前工作目录: %s", os.getcwd())
 
     for i, path in enumerate(possible_paths, 1):
         try:
             # 转换为绝对路径
             abs_path = os.path.abspath(path)
-            logger.debug(f"📋 [{i}/{len(possible_paths)}] 检查路径: {abs_path}")
+            logger.debug("📋 [%s/%s] 检查路径: %s", i, len(possible_paths), abs_path)
 
             if os.path.exists(abs_path):
                 logger.success(f"✅ 找到环境文件: {abs_path}")
                 return abs_path
             else:
-                logger.debug(f"❌ 路径不存在: {abs_path}")
+                logger.debug("❌ 路径不存在: %s", abs_path)
 
         except Exception as e:
-            logger.debug(f"⚠️ 检查路径时出错: {path} - {str(e)}")
+            logger.debug("⚠️ 检查路径时出错: %s - %s", path, str(e))
             continue
 
     # 如果所有路径都找不到，抛出详细错误
@@ -102,12 +102,12 @@ def load_env_config(env_file=None):
     else:
         # 如果指定了路径，先检查是否存在，不存在则使用智能搜索
         if not os.path.exists(env_file):
-            logger.warning(f"⚠️ 指定的环境文件不存在: {env_file}，尝试智能搜索...")
+            logger.warning("⚠️ 指定的环境文件不存在: %s，尝试智能搜索...", env_file)
             env_file = find_env_file()
         else:
             env_file = os.path.abspath(env_file)
 
-    logger.info(f"🔍 开始加载环境配置文件: {env_file}")
+    logger.info("🔍 开始加载环境配置文件: %s", env_file)
     config = {}
     start_time = time.time()
 
@@ -117,7 +117,7 @@ def load_env_config(env_file=None):
         # 读取文件内容
         with open(env_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
-            logger.info(f"📄 读取到 {len(lines)} 行配置")
+            logger.info("📄 读取到 %s 行配置", len(lines))
 
             for line_num, line in enumerate(lines, 1):
                 line = line.strip()
@@ -129,7 +129,7 @@ def load_env_config(env_file=None):
                 if "=" in line:
                     key, value = line.split("=", 1)
                     config[key.strip()] = value.strip()
-                    logger.debug(f"第{line_num}行: 加载配置 {key.strip()}")
+                    logger.debug("第%s行: 加载配置 %s", line_num, key.strip())
 
         # 验证必要的配置项
         required_keys = ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_PORT"]
@@ -151,13 +151,13 @@ def load_env_config(env_file=None):
 
         load_time = time.time() - start_time
         logger.success(f"✓ 环境配置加载成功! 耗时: {load_time:.3f}s")
-        logger.info(f"🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:{config['MYSQL_PORT']}")
+        logger.info("🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:{config['MYSQL_PORT']}")
 
         return db_config
 
     except Exception as e:
         load_time = time.time() - start_time
-        logger.error(f"❌ 加载配置失败 (耗时: {load_time:.3f}s): {str(e)}")
+        logger.error("❌ 加载配置失败 (耗时: %ss): %s", load_time, str(e))
         raise
 
 
@@ -253,7 +253,7 @@ USE db_monitor;
 
 def create_database_and_tables(drop_existing=False):
     """创建数据库和表结构"""
-    logger.info(f"🚀 开始创建数据库和表结构 (drop_existing={drop_existing})")
+    logger.info("🚀 开始创建数据库和表结构 (drop_existing=%s)", drop_existing)
     start_time = time.time()
 
     try:
@@ -267,7 +267,7 @@ def create_database_and_tables(drop_existing=False):
             f"charset={db_config['charset']}"
         )
 
-        logger.info(f"🔗 连接数据库: {db_config['user']}@{db_config['host']}:{db_config['port']}")
+        logger.info("🔗 连接数据库: {db_config['user']}@{db_config['host']}:{db_config['port']}")
 
         # 建立数据库连接
         engine = sqlalchemy.create_engine(connection_str)
@@ -288,7 +288,7 @@ def create_database_and_tables(drop_existing=False):
             executed_commands = 0
             failed_commands = 0
 
-            logger.info(f"📄 将执行 {total_commands} 条 SQL 命令")
+            logger.info("📄 将执行 %s 条 SQL 命令", total_commands)
 
             # 执行 SQL 命令
             for i, cmd in enumerate(sql_commands, 1):
@@ -298,36 +298,36 @@ def create_database_and_tables(drop_existing=False):
                     try:
                         # 判断命令类型
                         if "CREATE DATABASE" in cmd:
-                            logger.info(f"📁 [{i}/{total_commands}] 创建数据库: db_monitor")
+                            logger.info("📁 [%s/%s] 创建数据库: db_monitor", i, total_commands)
                         elif "USE db_monitor" in cmd:
-                            logger.info(f"🔄 [{i}/{total_commands}] 切换到数据库: db_monitor")
+                            logger.info("🔄 [%s/%s] 切换到数据库: db_monitor", i, total_commands)
                         elif "CREATE TABLE" in cmd:
                             table_name = extract_table_name(cmd)
-                            logger.info(f"📊 [{i}/{total_commands}] 创建表: {table_name}")
+                            logger.info("📊 [%s/%s] 创建表: %s", i, total_commands, table_name)
                         elif "DROP TABLE" in cmd:
-                            logger.warning(f"🗑️ [{i}/{total_commands}] 删除表")
+                            logger.warning("🗑️ [%s/%s] 删除表", i, total_commands)
                         else:
-                            logger.debug(f"📋 [{i}/{total_commands}] 执行 SQL: {cmd[:50]}...")
+                            logger.debug("📋 [%s/%s] 执行 SQL: %s...", i, total_commands, cmd[)
 
                         connection.execute(text(cmd))
                         cmd_time = time.time() - cmd_start_time
                         executed_commands += 1
 
                         if cmd_time > 0.1:  # 只记录较慢的命令
-                            logger.debug(f"⏱️ 命令执行时间: {cmd_time:.3f}s")
+                            logger.debug("⏱️ 命令执行时间: %ss", cmd_time)
 
                     except Exception as cmd_error:
                         cmd_time = time.time() - cmd_start_time
                         failed_commands += 1
-                        logger.error(f"❌ [{i}/{total_commands}] SQL执行失败 (耗时: {cmd_time:.3f}s): {str(cmd_error)}")
-                        logger.debug(f"失败的SQL: {cmd[:100]}...")
+                        logger.error("❌ [%s/%s] SQL执行失败 (耗时: %ss): %s", i, total_commands, cmd_time, str(cmd_error))
+                        logger.debug("失败的SQL: %s...", cmd[)
 
         total_time = time.time() - start_time
 
         # 输出成功统计
         logger.success("✓ 数据库初始化完成!")
-        logger.info(f"📊 执行统计: 成功 {executed_commands} / 失败 {failed_commands} / 总计 {total_commands}")
-        logger.info(f"⏱️ 总执行时间: {total_time:.3f}s")
+        logger.info("📊 执行统计: 成功 %s / 失败 %s / 总计 %s", executed_commands, failed_commands, total_commands)
+        logger.info("⏱️ 总执行时间: %ss", total_time)
 
         # 输出创建的资源汇总
         logger.info("📦 创建的资源汇总:")
@@ -340,17 +340,17 @@ def create_database_and_tables(drop_existing=False):
             "table_validation_log - 表结构验证日志表",
         ]
         for table in tables:
-            logger.info(f"    ▫ {table}")
+            logger.info("    ▫ %s", table)
 
         return True
 
     except SQLAlchemyError as e:
         total_time = time.time() - start_time
-        logger.error(f"❌ 执行 SQL 时发生错误 (耗时: {total_time:.3f}s): {str(e)}")
+        logger.error("❌ 执行 SQL 时发生错误 (耗时: %ss): %s", total_time, str(e))
         return False
     except Exception as e:
         total_time = time.time() - start_time
-        logger.error(f"❌ 发生意外错误 (耗时: {total_time:.3f}s): {str(e)}")
+        logger.error("❌ 发生意外错误 (耗时: %ss): %s", total_time, str(e))
         return False
 
 
@@ -376,7 +376,7 @@ def init_monitoring_database(drop_existing=False):
 
     logger.info("=" * 60)
     logger.info("🎯 数据库监控初始化程序启动 (Jupyter API)")
-    logger.info(f"⚙️ 参数设置: drop_existing={drop_existing}")
+    logger.info("⚙️ 参数设置: drop_existing=%s", drop_existing)
     logger.info("=" * 60)
 
     # 执行数据库初始化
@@ -434,8 +434,8 @@ if __name__ == "__main__":
     # 记录程序启动
     logger.info("=" * 60)
     logger.info("🎯 数据库监控初始化程序启动")
-    logger.info(f"⚙️ 参数设置: drop_existing={drop_existing}")
-    logger.info(f"🌐 运行环境: {'Jupyter' if in_jupyter else 'Command Line'}")
+    logger.info("⚙️ 参数设置: drop_existing=%s", drop_existing)
+    logger.info("🌐 运行环境: %s", 'Jupyter' if in_jupyter else 'Command Line')
     logger.info("=" * 60)
 
     # 执行数据库初始化

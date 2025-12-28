@@ -91,7 +91,7 @@ class BaseDatabaseService(ABC):
             return df
 
         except Exception as e:
-            logger.error(f"查询数据库失败: {e}")
+            logger.error("查询数据库失败: %s", e)
             return pd.DataFrame()
 
     def _count_records(
@@ -109,7 +109,7 @@ class BaseDatabaseService(ABC):
             return df.iloc[0]["total"] if not df.empty else 0
 
         except Exception as e:
-            logger.error(f"统计记录数量失败: {e}")
+            logger.error("统计记录数量失败: %s", e)
             return 0
 
     def _validate_pagination_params(self, limit: Optional[int], offset: Optional[int]) -> tuple:

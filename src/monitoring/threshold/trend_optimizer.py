@@ -100,7 +100,7 @@ class TrendOptimizer:
                 },
             )
         except Exception as e:
-            self.logger.error(f"趋势优化失败: {e}")
+            self.logger.error("趋势优化失败: %s", e)
             return OptimizationResult(
                 rule_name="trend_optimizer",
                 optimization_type="trend_analysis",
@@ -158,7 +158,7 @@ class TrendOptimizer:
                 "autocorr_max": max(autocorr) if autocorr else 0,
             }
         except Exception as e:
-            self.logger.error(f"季节性检测失败: {e}")
+            self.logger.error("季节性检测失败: %s", e)
             return {"has_seasonality": False, "period": None, "strength": 0}
 
     def calculate_trend_strength(self, values: List[float]) -> float:
@@ -186,7 +186,7 @@ class TrendOptimizer:
             # 趋势强度为R²的绝对值
             return abs(r_squared)
         except Exception as e:
-            self.logger.error(f"趋势强度计算失败: {e}")
+            self.logger.error("趋势强度计算失败: %s", e)
             return 0.0
 
     def detect_change_points(self, values: List[float]) -> List[int]:
@@ -220,5 +220,5 @@ class TrendOptimizer:
 
             return change_points
         except Exception as e:
-            self.logger.error(f"变化点检测失败: {e}")
+            self.logger.error("变化点检测失败: %s", e)
             return []

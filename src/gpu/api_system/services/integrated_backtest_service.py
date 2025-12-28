@@ -101,10 +101,10 @@ class IntegratedBacktestService(BacktestServiceServicer):
                 }
                 self.cache_manager.set_data(cache_key, strategy_config, data_type="market_data")
 
-            logger.info(f"缓存预热完成，预加载了{len(common_strategies)}个策略配置")
+            logger.info("缓存预热完成，预加载了%s个策略配置", len(common_strategies))
 
         except Exception as e:
-            logger.error(f"缓存预热失败: {e}")
+            logger.error("缓存预热失败: %s", e)
 
     def _get_default_parameters(self, strategy_type: str) -> Dict[str, Any]:
         """获取默认策略参数"""
@@ -175,7 +175,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                         # 检查是否超时
                         start_time = datetime.fromisoformat(backtest_info["start_time"])
                         if current_time - start_time > timedelta(hours=24):  # 24小时超时
-                            logger.warning(f"回测 {backtest_id} 超时，标记为失败")
+                            logger.warning("回测 %s 超时，标记为失败", backtest_id)
                             self._update_backtest_status(backtest_id, "failed", "回测超时")
                             completed_backtests.append(backtest_id)
 
@@ -183,7 +183,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                         if backtest_info.get("gpu_accelerated", False):
                             gpu_stats = self.gpu_manager.get_gpu_stats()
                             if gpu_stats.get("utilization", 0) < 10:  # GPU利用率过低
-                                logger.info(f"回测 {backtest_id} GPU利用率过低: {gpu_stats['utilization']}%")
+                                logger.info("回测 %s GPU利用率过低: %s%", backtest_id, gpu_stats["utilization"])
                                 # 可以考虑重新分配资源
 
                     # 清理已完成的回测
@@ -191,7 +191,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                         del self.running_backtests[backtest_id]
 
             except Exception as e:
-                logger.error(f"监控回测失败: {e}")
+                logger.error("监控回测失败: %s", e)
 
     def _cleanup_old_results(self):
         """清理旧结果"""
@@ -203,10 +203,10 @@ class IntegratedBacktestService(BacktestServiceServicer):
 
                 # 这里可以实现结果清理逻辑
                 # 清理过期的缓存结果
-                logger.info(f"清理{self.config['result_retention_days']}天前的回测结果")
+                logger.info("清理%s天前的回测结果", self.config["result_retention_days"])
 
             except Exception as e:
-                logger.error(f"清理旧结果失败: {e}")
+                logger.error("清理旧结果失败: %s", e)
 
     def IntegratedBacktest(self, request: BacktestRequest, context: grpc.ServicerContext) -> BacktestResponse:
         """集成回测接口"""
@@ -214,7 +214,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
         backtest_id = f"integrated_{int(time.time())}_{hash(str(request.strategy_config))}"
 
         try:
-            logger.info(f"开始集成回测: {backtest_id}")
+            logger.info("开始集成回测: %s", backtest_id)
 
             # 验证请求参数
             validation_result = self._validate_request(request)
@@ -258,7 +258,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"集成回测失败: {e}")
+            logger.error("集成回测失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
 
@@ -303,7 +303,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             with self.backtest_lock:
                 self.running_backtests[backtest_id]["status"] = "processing"
 
-            logger.info(f"开始执行集成回测: {backtest_id}")
+            logger.info("开始执行集成回测: %s", backtest_id)
 
             # 解析策略配置
             strategy_config = json.loads(request.strategy_config)
@@ -313,7 +313,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             if self.config["cache_enabled"]:
                 cached_result = self._check_cache_for_result(request)
                 if cached_result:
-                    logger.info(f"回测 {backtest_id} 使用缓存结果")
+                    logger.info("回测 %s 使用缓存结果", backtest_id)
                     self._save_backtest_result(backtest_id, cached_result, from_cache=True)
                     return
 
@@ -325,7 +325,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             if self.config["gpu_acceleration_enabled"]:
                 gpu_id = self.gpu_manager.allocate_gpu(f"backtest_{backtest_id}", priority="high", memory_required=1024)
                 if gpu_id:
-                    logger.info(f"回测 {backtest_id} 分配GPU: {gpu_id}")
+                    logger.info("回测 %s 分配GPU: %s", backtest_id, gpu_id)
                     self.running_backtests[backtest_id]["gpu_accelerated"] = True
 
             try:
@@ -348,16 +348,16 @@ class IntegratedBacktestService(BacktestServiceServicer):
                     optimization_suggestions = self._generate_optimization_suggestions(backtest_result)
                     backtest_result["optimization_suggestions"] = optimization_suggestions
 
-                logger.info(f"集成回测完成: {backtest_id}")
+                logger.info("集成回测完成: %s", backtest_id)
 
             finally:
                 # 释放GPU资源
                 if gpu_id:
                     self.gpu_manager.release_gpu(f"backtest_{backtest_id}", gpu_id)
-                    logger.info(f"回测 {backtest_id} 释放GPU: {gpu_id}")
+                    logger.info("回测 %s 释放GPU: %s", backtest_id, gpu_id)
 
         except Exception as e:
-            logger.error(f"执行集成回测失败: {backtest_id} - {e}")
+            logger.error("执行集成回测失败: %s - %s", backtest_id, e)
             self._update_backtest_status(backtest_id, "failed", str(e))
         finally:
             with self.backtest_lock:
@@ -371,12 +371,12 @@ class IntegratedBacktestService(BacktestServiceServicer):
             cached_result = self.cache_manager.get_data(cache_key, data_type="computation_results")
 
             if cached_result:
-                logger.info(f"找到缓存结果: {cache_key}")
+                logger.info("找到缓存结果: %s", cache_key)
                 return cached_result
 
             return None
         except Exception as e:
-            logger.error(f"检查缓存失败: {e}")
+            logger.error("检查缓存失败: %s", e)
             return None
 
     def _generate_cache_key(self, request: BacktestRequest) -> str:
@@ -424,9 +424,9 @@ class IntegratedBacktestService(BacktestServiceServicer):
             return backtest_result
 
         except Exception as e:
-            logger.error(f"GPU回测失败: {e}")
+            logger.error("GPU回测失败: %s", e)
             # 回退到CPU
-            logger.info(f"回退到CPU回测: {backtest_id}")
+            logger.info("回退到CPU回测: %s", backtest_id)
             return self._execute_cpu_backtest(backtest_id, request, strategy_config)
 
     def _execute_cpu_backtest(
@@ -447,7 +447,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             return backtest_result
 
         except Exception as e:
-            logger.error(f"CPU回测失败: {e}")
+            logger.error("CPU回测失败: %s", e)
             raise e
 
     def _save_backtest_result(self, backtest_id: str, result: Dict[str, Any], from_cache: bool = False):
@@ -462,10 +462,10 @@ class IntegratedBacktestService(BacktestServiceServicer):
             # 记录完成指标
             self.metrics_collector.record_task_metrics("backtest", "completed", result.get("execution_time", 0))
 
-            logger.info(f"回测结果已保存: {backtest_id}")
+            logger.info("回测结果已保存: %s", backtest_id)
 
         except Exception as e:
-            logger.error(f"保存回测结果失败: {e}")
+            logger.error("保存回测结果失败: %s", e)
 
     def _update_backtest_status(self, backtest_id: str, status: str, message: str):
         """更新回测状态"""
@@ -476,10 +476,10 @@ class IntegratedBacktestService(BacktestServiceServicer):
                     self.running_backtests[backtest_id]["message"] = message
                     self.running_backtests[backtest_id]["updated_at"] = datetime.now().isoformat()
 
-            logger.info(f"回测状态更新: {backtest_id} -> {status}")
+            logger.info("回测状态更新: %s -> %s", backtest_id, status)
 
         except Exception as e:
-            logger.error(f"更新回测状态失败: {e}")
+            logger.error("更新回测状态失败: %s", e)
 
     def _generate_optimization_suggestions(self, backtest_result: Dict[str, Any]) -> List[Dict[str, Any]]:
         """生成优化建议"""
@@ -554,7 +554,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             return suggestions
 
         except Exception as e:
-            logger.error(f"生成优化建议失败: {e}")
+            logger.error("生成优化建议失败: %s", e)
             return []
 
     def GetBacktestStatus(self, request, context) -> BacktestStatus:
@@ -593,7 +593,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                         return BacktestStatus()
 
         except Exception as e:
-            logger.error(f"获取回测状态失败: {e}")
+            logger.error("获取回测状态失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return BacktestStatus()
@@ -620,7 +620,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                     return BacktestResult()
 
         except Exception as e:
-            logger.error(f"获取回测结果失败: {e}")
+            logger.error("获取回测结果失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return BacktestResult()
@@ -665,7 +665,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"转换回测结果失败: {e}")
+            logger.error("转换回测结果失败: %s", e)
             raise e
 
     def GetIntegratedBacktestStats(self, request, context):
@@ -692,7 +692,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
             return json.dumps(stats, ensure_ascii=False)
 
         except Exception as e:
-            logger.error(f"获取集成回测统计失败: {e}")
+            logger.error("获取集成回测统计失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return json.dumps({"error": str(e)})

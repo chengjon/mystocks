@@ -68,7 +68,7 @@ class GPUAPIServer:
             logger.info("GPU API服务器初始化完成")
 
         except Exception as e:
-            logger.error(f"初始化GPU API服务器失败: {e}")
+            logger.error("初始化GPU API服务器失败: %s", e)
             raise e
 
     def _initialize_core_components(self):
@@ -150,7 +150,7 @@ class GPUAPIServer:
         server_address = f"{self.config.grpc_config['host']}:{self.config.grpc_config['port']}"
         self.server.add_insecure_port(server_address)
 
-        logger.info(f"gRPC服务器创建完成，监听地址: {server_address}")
+        logger.info("gRPC服务器创建完成，监听地址: %s", server_address)
 
     def start(self):
         """启动服务器"""
@@ -159,7 +159,7 @@ class GPUAPIServer:
         try:
             # 启动gRPC服务器
             self.server.start()
-            logger.info(f"GPU API服务器已启动，监听端口: {self.config.grpc_config['port']}")
+            logger.info("GPU API服务器已启动，监听端口: %s", self.config.grpc_config["port"])
 
             # 注册信号处理
             signal.signal(signal.SIGINT, self._signal_handler)
@@ -176,12 +176,12 @@ class GPUAPIServer:
                 logger.info("接收到中断信号")
 
         except Exception as e:
-            logger.error(f"启动GPU API服务器失败: {e}")
+            logger.error("启动GPU API服务器失败: %s", e)
             raise e
 
     def _signal_handler(self, signum, frame):
         """信号处理"""
-        logger.info(f"接收到信号: {signum}")
+        logger.info("接收到信号: %s", signum)
         self.stop()
         sys.exit(0)
 
@@ -193,7 +193,7 @@ class GPUAPIServer:
 
         # GPU状态
         gpu_stats = self.gpu_manager.get_gpu_stats()
-        logger.info(f"GPU状态: {gpu_stats}")
+        logger.info("GPU状态: %s", gpu_stats)
 
         # 服务状态
         logger.info("集成服务:")
@@ -203,9 +203,9 @@ class GPUAPIServer:
 
         # 服务器配置
         logger.info("服务器配置:")
-        logger.info(f"  - gRPC端口: {self.config.grpc_config['port']}")
-        logger.info(f"  - 最大工作线程: {self.config.grpc_config['max_workers']}")
-        logger.info(f"  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']}")
+        logger.info("  - gRPC端口: %s", self.config.grpc_config["port"])
+        logger.info("  - 最大工作线程: %s", self.config.grpc_config["max_workers"])
+        logger.info("  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']}")
 
         logger.info("=" * 80)
 
@@ -240,7 +240,7 @@ class GPUAPIServer:
             logger.info("GPU API服务器已完全停止")
 
         except Exception as e:
-            logger.error(f"停止GPU API服务器失败: {e}")
+            logger.error("停止GPU API服务器失败: %s", e)
 
 
 def main():
@@ -261,7 +261,7 @@ def main():
         server.start()
 
     except Exception as e:
-        logger.error(f"服务器运行失败: {e}")
+        logger.error("服务器运行失败: %s", e)
         server.stop()
         sys.exit(1)
 

@@ -153,7 +153,7 @@ class TdxBasicDataManager:
         Returns:
             Dict[str, Any]: 股票基础信息
         """
-        logger.debug(f"Fetching stock basic info for {symbol}")
+        logger.debug("Fetching stock basic info for %s", symbol)
 
         # 模拟股票基础信息
         stock_info_db = {
@@ -217,7 +217,7 @@ class TdxBasicDataManager:
         Returns:
             List[str]: 成分股代码列表
         """
-        logger.debug(f"Fetching index components for {index_code}")
+        logger.debug("Fetching index components for %s", index_code)
 
         # 模拟指数成分股
         index_components_db = {
@@ -239,7 +239,7 @@ class TdxBasicDataManager:
         Returns:
             List[Dict[str, Any]]: 交易日历数据
         """
-        logger.debug(f"Fetching trading calendar from {start_date} to {end_date}")
+        logger.debug("Fetching trading calendar from %s to %s", start_date, end_date)
 
         # 模拟交易日历
         from datetime import datetime
@@ -285,7 +285,7 @@ class TdxBasicDataManager:
         Returns:
             List[Dict[str, Any]]: 股票列表
         """
-        logger.debug(f"Fetching stock list for market: {market}")
+        logger.debug("Fetching stock list for market: %s", market)
 
         # 模拟股票列表
         all_stocks = [

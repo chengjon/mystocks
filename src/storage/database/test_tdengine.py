@@ -28,14 +28,14 @@ def test_tdengine_import():
     for module_name, description in connection_methods:
         try:
             module = __import__(module_name)
-            logger.info(f"✓ TDengine Python库导入成功 ({description})")
-            logger.info(f"TDengine客户端版本: {getattr(module, '__version__', '未知版本')}")
+            logger.info("✓ TDengine Python库导入成功 (%s)", description)
+            logger.info("TDengine客户端版本: %s", getattr(module, "__version__", "未知版本"))
             return module, module_name
         except ImportError:
-            logger.debug(f"未找到{module_name}模块")
+            logger.debug("未找到%s模块", module_name)
             continue
         except Exception as e:
-            logger.error(f"✗ {module_name}客户端库加载失败: {e}")
+            logger.error("✗ %s客户端库加载失败: %s", module_name, e)
             continue
 
     logger.error("✗ 所有TDengine Python库导入失败")
@@ -49,7 +49,7 @@ def test_tdengine_connection(taos_module, module_name):
         return False
 
     try:
-        logger.info(f"正在连接TDengine数据库... ({module_name}方式)")
+        logger.info("正在连接TDengine数据库... (%s方式)", module_name)
 
         # 从环境变量获取TDengine连接参数
         import os
@@ -107,7 +107,7 @@ def test_tdengine_connection(taos_module, module_name):
         ]
 
         for operation, sql in test_operations:
-            logger.info(f"执行: {operation}")
+            logger.info("执行: %s", operation)
             cursor.execute(sql)
 
         # 查询数据
@@ -131,7 +131,7 @@ def test_tdengine_connection(taos_module, module_name):
         return True
 
     except Exception as e:
-        logger.error(f"✗ 数据库操作失败: {e}")
+        logger.error("✗ 数据库操作失败: %s", e)
         return False
 
 

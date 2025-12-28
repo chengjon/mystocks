@@ -611,7 +611,7 @@ class QueryExecutor:
                 return True
             except Exception as e:
                 conn.rollback()
-                logger.error(f"事务执行失败: {e}")
+                logger.error("事务执行失败: %s", e)
                 return False
             finally:
                 cursor.close()
@@ -650,7 +650,7 @@ class QueryExecutor:
                 return affected_rows
             except Exception as e:
                 conn.rollback()
-                logger.error(f"批量插入失败: {e}")
+                logger.error("批量插入失败: %s", e)
                 raise
             finally:
                 cursor.close()

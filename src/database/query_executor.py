@@ -59,7 +59,7 @@ class DatabaseQueryExecutor:
             return result or []
 
         except Exception as e:
-            logger.error(f"Failed to get stock list: {str(e)}")
+            logger.error("Failed to get stock list: %s", str(e))
             return []
 
     def get_stock_detail(self, stock_code: str) -> Dict:
@@ -101,7 +101,7 @@ class DatabaseQueryExecutor:
             return result[0] if isinstance(result, list) and result else (result or {})
 
         except Exception as e:
-            logger.error(f"Failed to get stock detail for {stock_code}: {str(e)}")
+            logger.error("Failed to get stock detail for %s: %s", stock_code, str(e))
             return {}
 
     def get_realtime_quotes(self, symbols: List[str]) -> List[Dict]:
@@ -150,7 +150,7 @@ class DatabaseQueryExecutor:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to get realtime quotes: {str(e)}")
+            logger.error("Failed to get realtime quotes: %s", str(e))
             return []
 
     def get_batch_indicators(self, symbols: List[str]) -> Dict:
@@ -197,7 +197,7 @@ class DatabaseQueryExecutor:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to get batch indicators: {str(e)}")
+            logger.error("Failed to get batch indicators: %s", str(e))
             return {}
 
     def get_stock_history(self, params: Optional[Dict] = None) -> Dict:
@@ -245,7 +245,7 @@ class DatabaseQueryExecutor:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to get stock history: {str(e)}")
+            logger.error("Failed to get stock history: %s", str(e))
             return {}
 
     def _execute_query(self, query: str) -> Any:
@@ -259,7 +259,7 @@ class DatabaseQueryExecutor:
             查询结果
         """
         # 模拟查询执行
-        logger.debug(f"Executing query: {query[:50]}...")
+        logger.debug("Executing query: %s...", query[)
 
         # 根据查询类型返回不同的模拟数据
         if "SELECT" in query.upper():
@@ -317,7 +317,7 @@ class DatabaseQueryExecutor:
                 result = self._execute_query(query)
                 results.append(result)
             except Exception as e:
-                logger.error(f"Batch query failed: {str(e)}")
+                logger.error("Batch query failed: %s", str(e))
                 results.append(None)
         return results
 

@@ -38,7 +38,7 @@ class BacktestEngineGPU:
     ) -> Dict[str, Any]:
         """运行GPU加速回测"""
         try:
-            logger.info(f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}")
+            logger.info("开始GPU回测: 策略=%s, 资金=%s", strategy_config["name"], initial_capital)
 
             # 转换数据到GPU
             gpu_start = time.time()
@@ -76,11 +76,11 @@ class BacktestEngineGPU:
                 "metrics": metrics,
             }
 
-            logger.info(f"GPU回测完成: {performance['total_return']:.2%} 收益率")
+            logger.info("GPU回测完成: %s 收益率", performance["total_return"])
             return result
 
         except Exception as e:
-            logger.error(f"GPU回测失败: {e}")
+            logger.error("GPU回测失败: %s", e)
             return {"status": "failed", "error": str(e)}
 
     def _convert_to_gpu(self, data: pd.DataFrame) -> cudf.DataFrame:
@@ -95,11 +95,11 @@ class BacktestEngineGPU:
 
             # 转换到GPU
             gpu_df = cudf.DataFrame.from_pandas(data)
-            logger.debug(f"数据已转换到GPU: {len(gpu_df)} 行")
+            logger.debug("数据已转换到GPU: %s 行", len(gpu_df))
             return gpu_df
 
         except Exception as e:
-            logger.error(f"GPU数据转换失败: {e}")
+            logger.error("GPU数据转换失败: %s", e)
             raise
 
     def _calculate_gpu_indicators(self, gpu_df: cudf.DataFrame) -> cudf.DataFrame:
@@ -148,7 +148,7 @@ class BacktestEngineGPU:
             return indicators.fillna(0)
 
         except Exception as e:
-            logger.error(f"GPU技术指标计算失败: {e}")
+            logger.error("GPU技术指标计算失败: %s", e)
             raise
 
     def _gpu_ema(self, prices: cp.ndarray, period: int) -> cp.ndarray:
@@ -164,7 +164,7 @@ class BacktestEngineGPU:
             return ema
 
         except Exception as e:
-            logger.error(f"GPU EMA计算失败: {e}")
+            logger.error("GPU EMA计算失败: %s", e)
             raise
 
     def _gpu_rsi(self, prices: cp.ndarray, period: int) -> cp.ndarray:
@@ -187,7 +187,7 @@ class BacktestEngineGPU:
             return result
 
         except Exception as e:
-            logger.error(f"GPU RSI计算失败: {e}")
+            logger.error("GPU RSI计算失败: %s", e)
             raise
 
     def _apply_strategy_gpu(
@@ -211,7 +211,7 @@ class BacktestEngineGPU:
             return signals
 
         except Exception as e:
-            logger.error(f"GPU策略应用失败: {e}")
+            logger.error("GPU策略应用失败: %s", e)
             raise
 
     def _trend_following_gpu(self, gpu_df: cudf.DataFrame, indicators: cudf.DataFrame, config: Dict) -> cudf.DataFrame:
@@ -375,7 +375,7 @@ class BacktestEngineGPU:
             return portfolio
 
         except Exception as e:
-            logger.error(f"GPU交易模拟失败: {e}")
+            logger.error("GPU交易模拟失败: %s", e)
             raise
 
     def _calculate_performance_gpu(self, portfolio: Dict, gpu_df: cudf.DataFrame) -> Dict[str, float]:
@@ -420,7 +420,7 @@ class BacktestEngineGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU性能计算失败: {e}")
+            logger.error("GPU性能计算失败: %s", e)
             return self._empty_performance()
 
     def _gpu_max_drawdown(self, portfolio_values: cp.ndarray) -> float:
@@ -430,7 +430,7 @@ class BacktestEngineGPU:
             drawdown = (peak - portfolio_values) / peak
             return cp.max(drawdown)
         except Exception as e:
-            logger.error(f"GPU最大回撤计算失败: {e}")
+            logger.error("GPU最大回撤计算失败: %s", e)
             return 0.0
 
     def _gpu_drawdown_periods(self, portfolio_values: cp.ndarray) -> float:
@@ -441,7 +441,7 @@ class BacktestEngineGPU:
             drawdown_periods = cp.sum(drawdown > 0)
             return float(drawdown_periods)
         except Exception as e:
-            logger.error(f"GPU回撤期间计算失败: {e}")
+            logger.error("GPU回撤期间计算失败: %s", e)
             return 0.0
 
     def _empty_performance(self) -> Dict[str, float]:
@@ -476,7 +476,7 @@ class MLTrainingGPU:
     ) -> Dict[str, Any]:
         """GPU加速模型训练"""
         try:
-            logger.info(f"开始GPU模型训练: {model_type}")
+            logger.info("开始GPU模型训练: %s", model_type)
 
             # 转换数据到GPU
             gpu_start = time.time()
@@ -525,11 +525,11 @@ class MLTrainingGPU:
                 "status": "success",
             }
 
-            logger.info(f"GPU模型训练完成: {model_id}")
+            logger.info("GPU模型训练完成: %s", model_id)
             return result
 
         except Exception as e:
-            logger.error(f"GPU模型训练失败: {e}")
+            logger.error("GPU模型训练失败: %s", e)
             return {"status": "failed", "error": str(e)}
 
     def predict_gpu(self, model_id: str, X_test: pd.DataFrame) -> np.ndarray:
@@ -555,7 +555,7 @@ class MLTrainingGPU:
             return predictions.to_pandas().values
 
         except Exception as e:
-            logger.error(f"GPU预测失败: {e}")
+            logger.error("GPU预测失败: %s", e)
             raise
 
     def _convert_to_gpu(self, data: Union[pd.DataFrame, pd.Series]) -> Union[cudf.DataFrame, cudf.Series]:
@@ -578,7 +578,7 @@ class FeatureCalculationGPU:
     def calculate_features_gpu(self, data: pd.DataFrame, feature_types: List[str] = None) -> Dict[str, Any]:
         """GPU加速特征计算"""
         try:
-            logger.info(f"开始GPU特征计算: {len(data)} 数据点")
+            logger.info("开始GPU特征计算: %s 数据点", len(data))
 
             # 转换数据到GPU
             gpu_start = time.time()
@@ -612,11 +612,11 @@ class FeatureCalculationGPU:
                 "feature_types": list(features.keys()),
             }
 
-            logger.info(f"GPU特征计算完成: {len(features)} 类特征")
+            logger.info("GPU特征计算完成: %s 类特征", len(features))
             return features
 
         except Exception as e:
-            logger.error(f"GPU特征计算失败: {e}")
+            logger.error("GPU特征计算失败: %s", e)
             return {"error": str(e)}
 
     def _calculate_technical_features(self, gpu_df: cudf.DataFrame) -> Dict[str, Any]:
@@ -656,7 +656,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"技术指标计算失败: {e}")
+            logger.error("技术指标计算失败: %s", e)
             return {}
 
     def _calculate_statistical_features(self, gpu_df: cudf.DataFrame) -> Dict[str, Any]:
@@ -684,7 +684,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"统计特征计算失败: {e}")
+            logger.error("统计特征计算失败: %s", e)
             return {}
 
     def _calculate_volatility_features(self, gpu_df: cudf.DataFrame) -> Dict[str, Any]:
@@ -705,7 +705,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"波动率特征计算失败: {e}")
+            logger.error("波动率特征计算失败: %s", e)
             return {}
 
     def _calculate_volume_price_features(self, gpu_df: cudf.DataFrame) -> Dict[str, Any]:
@@ -738,7 +738,7 @@ class FeatureCalculationGPU:
             return features
 
         except Exception as e:
-            logger.error(f"量价特征计算失败: {e}")
+            logger.error("量价特征计算失败: %s", e)
             return {}
 
     def _calculate_volatility_clustering(self, returns: cp.ndarray) -> float:
@@ -755,7 +755,7 @@ class FeatureCalculationGPU:
             return high_vol_periods / total_periods if total_periods > 0 else 0
 
         except Exception as e:
-            logger.error(f"波动率聚类计算失败: {e}")
+            logger.error("波动率聚类计算失败: %s", e)
             return 0.0
 
     def _calculate_obv(self, close: cp.ndarray, volume: cp.ndarray) -> float:
@@ -774,7 +774,7 @@ class FeatureCalculationGPU:
             return obv[-1]
 
         except Exception as e:
-            logger.error(f"OBV计算失败: {e}")
+            logger.error("OBV计算失败: %s", e)
             return 0.0
 
     def _gpu_ema(self, prices: cp.ndarray, period: int) -> cp.ndarray:
@@ -823,7 +823,7 @@ class OptimizationGPU:
     ) -> Dict[str, Any]:
         """GPU加速参数优化"""
         try:
-            logger.info(f"开始GPU参数优化: {method}")
+            logger.info("开始GPU参数优化: %s", method)
 
             gpu_start = time.time()
 
@@ -842,11 +842,11 @@ class OptimizationGPU:
             result["gpu_memory_used_mb"] = self.gpu_manager.get_gpu_memory_usage()
             result["method"] = method
 
-            logger.info(f"GPU参数优化完成: {result['best_score']:.4f}")
+            logger.info("GPU参数优化完成: %s", result["best_score"])
             return result
 
         except Exception as e:
-            logger.error(f"GPU参数优化失败: {e}")
+            logger.error("GPU参数优化失败: %s", e)
             return {"error": str(e)}
 
     def _grid_search_gpu(self, objective_func, param_space: Dict) -> Dict[str, Any]:
@@ -874,7 +874,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU网格搜索失败: {e}")
+            logger.error("GPU网格搜索失败: %s", e)
             raise
 
     def _random_search_gpu(self, objective_func, param_space: Dict, n_trials: int) -> Dict[str, Any]:
@@ -900,7 +900,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU随机搜索失败: {e}")
+            logger.error("GPU随机搜索失败: %s", e)
             raise
 
     def _bayesian_optimization_gpu(self, objective_func, param_space: Dict, n_trials: int) -> Dict[str, Any]:
@@ -927,7 +927,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU贝叶斯优化失败: {e}")
+            logger.error("GPU贝叶斯优化失败: %s", e)
             raise
 
     def _generate_param_grid(self, param_space: Dict) -> List[Dict]:
@@ -1005,7 +1005,7 @@ class GPUAccelerationEngine:
     def process_batch_tasks(self, tasks: List[Dict]) -> List[Dict]:
         """批量处理任务（并发执行）"""
         try:
-            logger.info(f"开始批量处理 {len(tasks)} 个任务")
+            logger.info("开始批量处理 %s 个任务", len(tasks))
 
             # 提交任务到线程池
             futures = []
@@ -1020,14 +1020,14 @@ class GPUAccelerationEngine:
                     result = future.result(timeout=300)  # 5分钟超时
                     results.append(result)
                 except Exception as e:
-                    logger.error(f"任务处理失败: {e}")
+                    logger.error("任务处理失败: %s", e)
                     results.append({"status": "failed", "error": str(e)})
 
-            logger.info(f"批量处理完成: {len(results)} 个结果")
+            logger.info("批量处理完成: %s 个结果", len(results))
             return results
 
         except Exception as e:
-            logger.error(f"批量处理失败: {e}")
+            logger.error("批量处理失败: %s", e)
             return [{"status": "failed", "error": str(e)} for _ in tasks]
 
     def _process_single_task(self, task: Dict) -> Dict:
@@ -1036,7 +1036,7 @@ class GPUAccelerationEngine:
             task_type = task.get("type")
             task_id = task.get("task_id")
 
-            logger.info(f"处理任务: {task_id} ({task_type})")
+            logger.info("处理任务: %s (%s)", task_id, task_type)
 
             # 记录开始时间
             start_time = time.time()
@@ -1078,11 +1078,11 @@ class GPUAccelerationEngine:
             # 记录指标
             self.metrics_collector.record_task_metrics("gpu_acceleration", "success", processing_time)
 
-            logger.info(f"任务完成: {task_id} (耗时: {processing_time:.2f}s)")
+            logger.info("任务完成: %s (耗时: %ss)", task_id, processing_time)
             return result
 
         except Exception as e:
-            logger.error(f"任务处理失败: {task.get('task_id', 'unknown')}, 错误: {e}")
+            logger.error("任务处理失败: %s, 错误: %s", task.get("task_id", "unknown"), e)
             return {
                 "task_id": task.get("task_id", "unknown"),
                 "status": "failed",
@@ -1130,7 +1130,7 @@ class GPUAccelerationEngine:
             return stats
 
         except Exception as e:
-            logger.error(f"获取引擎统计信息失败: {e}")
+            logger.error("获取引擎统计信息失败: %s", e)
             return {"error": str(e)}
 
     def cleanup(self):
@@ -1149,4 +1149,4 @@ class GPUAccelerationEngine:
             logger.info("GPU加速引擎资源清理完成")
 
         except Exception as e:
-            logger.error(f"资源清理失败: {e}")
+            logger.error("资源清理失败: %s", e)

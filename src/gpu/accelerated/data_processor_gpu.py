@@ -22,6 +22,7 @@ try:
     from cuml.preprocessing import StandardScaler
     from cuml.feature_selection import SelectKBest
     from cuml.decomposition import PCA
+
     CUML_AVAILABLE = True
 except ImportError:
     CUML_AVAILABLE = False
@@ -285,7 +286,7 @@ class GPUDataProcessor:
                     result = future.result(timeout=300)
                     results.append(result)
                 except Exception as e:
-                    self.logger.error(f"并行处理失败: {e}")
+                    self.logger.error("并行处理失败: %s", e)
 
         total_time = time.time() - start_time
         avg_processing_time = total_time / len(results) if results else 0
@@ -335,7 +336,7 @@ class GPUDataProcessor:
                     window_data = []
 
             except Exception as e:
-                self.logger.error(f"实时数据处理错误: {e}")
+                self.logger.error("实时数据处理错误: %s", e)
                 continue
 
         # 处理剩余数据
@@ -706,7 +707,7 @@ class BatchDataProcessor:
             }
 
         except Exception as e:
-            self.logger.error(f"分布式处理失败: {e}")
+            self.logger.error("分布式处理失败: %s", e)
             return {"error": str(e)}
 
 

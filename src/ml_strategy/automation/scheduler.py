@@ -21,7 +21,6 @@
 import sys
 import os
 import logging
-import traceback
 import time
 from typing import Dict, List, Optional, Callable, Any
 from datetime import datetime, timedelta

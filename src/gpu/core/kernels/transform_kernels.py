@@ -57,7 +57,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
                 await self._warmup_gpu()
 
                 self.is_initialized = True
-                logger.info(f"TransformKernelEngine initialized on device {self.config.device_id}")
+                logger.info("TransformKernelEngine initialized on device %s", self.config.device_id)
                 return True
             else:
                 logger.warning("CuPy not available, falling back to NumPy")
@@ -65,7 +65,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
                 return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize TransformKernelEngine: {e}")
+            logger.error("Failed to initialize TransformKernelEngine: %s", e)
             return False
 
     async def _warmup_gpu(self):
@@ -83,7 +83,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             cp.cuda.Stream.null.synchronize()
             logger.debug("Transform kernel GPU warmup completed")
         except Exception as e:
-            logger.warning(f"Transform kernel GPU warmup failed: {e}")
+            logger.warning("Transform kernel GPU warmup failed: %s", e)
 
     async def execute_matrix_operation(
         self,
@@ -139,7 +139,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Transform operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
+                    "Transform operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -148,7 +148,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            logger.error(f"Error executing transform operation: {e}")
+            logger.error("Error executing transform operation: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
     async def _execute_transform_kernel(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
@@ -162,7 +162,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
                 return await self._execute_cpu_transform_kernel(data, config)
 
         except Exception as e:
-            logger.error(f"Transform kernel execution failed: {e}")
+            logger.error("Transform kernel execution failed: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     def _should_use_cpu_fallback(self, data: np.ndarray, config: TransformConfig) -> bool:
@@ -252,7 +252,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             )
 
         except Exception as e:
-            logger.error(f"GPU transform kernel execution failed: {e}")
+            logger.error("GPU transform kernel execution failed: %s", e)
             # 回退到CPU
             return await self._execute_cpu_transform_kernel(data, config)
 
@@ -304,7 +304,7 @@ class TransformKernelEngine(StandardizedKernelInterface):
             )
 
         except Exception as e:
-            logger.error(f"CPU transform kernel execution failed: {e}")
+            logger.error("CPU transform kernel execution failed: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     def _gpu_normalize(self, data: np.ndarray, config: TransformConfig) -> np.ndarray:

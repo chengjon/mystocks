@@ -109,7 +109,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("PostgreSQL保存成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return True
 
@@ -179,7 +179,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("PostgreSQL加载成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return processed_data
 
@@ -251,7 +251,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     operation_status="SUCCESS",
                     execution_time_ms=execution_time_ms,
                 )
-                logger.info(f"PostgreSQL更新成功: {actual_table_name}, {len(data)}条记录")
+                logger.info("PostgreSQL更新成功: %s, %s条记录", actual_table_name, len(data))
             else:
                 conn.rollback()
                 end_time = datetime.now()
@@ -353,7 +353,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 operation_status="SUCCESS",
                 execution_time_ms=execution_time_ms,
             )
-            logger.info(f"PostgreSQL删除成功: {actual_table_name}, {affected_rows}条记录")
+            logger.info("PostgreSQL删除成功: %s, %s条记录", actual_table_name, affected_rows)
 
             return True
 
@@ -436,7 +436,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             ]
             for col in required_columns:
                 if col not in processed_data.columns:
-                    logger.warning(f"日线数据缺少必要字段: {col}")
+                    logger.warning("日线数据缺少必要字段: %s", col)
 
         elif classification == DataClassification.TECHNICAL_INDICATORS:
             # 确保技术指标必要字段
@@ -448,7 +448,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             ]
             for col in required_columns:
                 if col not in processed_data.columns:
-                    logger.warning(f"技术指标数据缺少必要字段: {col}")
+                    logger.warning("技术指标数据缺少必要字段: %s", col)
 
         return processed_data
 
@@ -482,16 +482,16 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             with engine.begin() as conn:
                 raw_conn = conn.connection
                 affected_rows = self._upsert_data(data, table_name, raw_conn, classification)
-                logger.info(f"UPSERT完成: {table_name}, 影响行数: {affected_rows}")
+                logger.info("UPSERT完成: %s, 影响行数: %s", table_name, affected_rows)
 
         except Exception as e:
-            logger.error(f"UPSERT操作失败，回退到简单插入模式: {e}")
+            logger.error("UPSERT操作失败，回退到简单插入模式: %s", e)
             # 回退到简单插入模式
             try:
                 data.to_sql(table_name, engine, if_exists="append", index=False, method="multi")
             except Exception as fallback_error:
                 if "duplicate key" in str(fallback_error).lower() or "unique constraint" in str(fallback_error).lower():
-                    logger.warning(f"检测到重复数据，跳过插入: {fallback_error}")
+                    logger.warning("检测到重复数据，跳过插入: %s", fallback_error)
                     # 对于重复数据，我们已经有了UPSERT逻辑处理，这里可以忽略
                     pass
                 else:
@@ -563,11 +563,11 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             cursor.executemany(upsert_sql, records_to_insert)
             conn.commit()
 
-            logger.info(f"PostgreSQL UPSERT操作完成: {table_name}, 处理记录数: {len(records_to_insert)}")
+            logger.info("PostgreSQL UPSERT操作完成: %s, 处理记录数: %s", table_name, len(records_to_insert))
             return len(records_to_insert)
 
         except Exception as e:
-            logger.error(f"PostgreSQL UPSERT操作失败: {table_name}, 错误: {e}")
+            logger.error("PostgreSQL UPSERT操作失败: %s, 错误: %s", table_name, e)
             conn.rollback()
             raise
 
@@ -603,7 +603,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"执行更新操作失败: {e}")
+            logger.error("执行更新操作失败: %s", e)
             return False
 
     def _build_analytical_query(
@@ -777,7 +777,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                     base_query += f" ORDER BY {validated_order_by}"
                 else:
                     # 如果没有有效的排序列，使用默认排序
-                    self.logger.warning(f"Invalid order_by columns: {order_by}, using default sort")
+                    self.logger.warning("Invalid order_by columns: %s, using default sort", order_by)
                     if classification == DataClassification.DAILY_KLINE:
                         base_query += " ORDER BY trade_date DESC"
                     elif classification in [

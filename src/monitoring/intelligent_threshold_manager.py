@@ -542,7 +542,7 @@ class IntelligentThresholdManager:
             try:
                 self.monitoring_db = get_monitoring_database()
             except Exception as e:
-                logger.warning(f"监控数据库初始化失败: {e}")
+                logger.warning("监控数据库初始化失败: %s", e)
 
         # 初始化默认阈值规则
         self._initialize_default_rules()
@@ -608,13 +608,13 @@ class IntelligentThresholdManager:
         for rule in default_rules:
             self.add_threshold_rule(rule)
 
-        logger.info(f"✅ 已初始化{len(default_rules)}个默认阈值规则")
+        logger.info("✅ 已初始化%s个默认阈值规则", len(default_rules))
 
     def add_threshold_rule(self, rule: ThresholdRule):
         """添加阈值规则"""
         self.threshold_rules[rule.name] = rule
         self.data_analyzers[rule.name] = DataAnalyzer()
-        logger.info(f"✅ 已添加阈值规则: {rule.name}")
+        logger.info("✅ 已添加阈值规则: %s", rule.name)
 
     def remove_threshold_rule(self, rule_name: str) -> bool:
         """移除阈值规则"""
@@ -622,7 +622,7 @@ class IntelligentThresholdManager:
             del self.threshold_rules[rule_name]
             if rule_name in self.data_analyzers:
                 del self.data_analyzers[rule_name]
-            logger.info(f"✅ 已移除阈值规则: {rule_name}")
+            logger.info("✅ 已移除阈值规则: %s", rule_name)
             return True
         return False
 
@@ -688,7 +688,7 @@ class IntelligentThresholdManager:
             # self.monitoring_db.record_intelligent_metric_data(record)
 
         except Exception as e:
-            logger.warning(f"记录指标数据失败: {e}")
+            logger.warning("记录指标数据失败: %s", e)
 
     async def _handle_potential_false_positive(self, rule_name: str, value: float, timestamp: datetime):
         """处理可能的误报"""
@@ -710,7 +710,7 @@ class IntelligentThresholdManager:
                     self._flag_potential_false_positive(rule_name, value, timestamp)
 
         except Exception as e:
-            logger.warning(f"误报检测失败: {e}")
+            logger.warning("误报检测失败: %s", e)
 
     def _confirm_true_positive(self, rule_name: str, value: float, timestamp: datetime):
         """确认真正的正例"""
@@ -744,7 +744,7 @@ class IntelligentThresholdManager:
 
             # 如果误报率过高，触发阈值调整
             if rule.false_positive_rate > self.config["false_positive_threshold"]:
-                logger.info(f"规则{rule_name}误报率过高({rule.false_positive_rate:.2f})，建议调整阈值")
+                logger.info("规则%s误报率过高(%s)，建议调整阈值", rule_name, rule.false_positive_rate)
 
             # 记录历史
             self._add_to_rule_history(
@@ -833,7 +833,7 @@ class IntelligentThresholdManager:
                     result = await self._optimize_single_rule(name)
                     results[name] = result
                 except Exception as e:
-                    logger.error(f"优化规则{name}失败: {e}")
+                    logger.error("优化规则%s失败: %s", name, e)
                     continue
 
             return results
@@ -873,7 +873,7 @@ class IntelligentThresholdManager:
             )
             optimization_results.append(stat_result)
         except Exception as e:
-            logger.warning(f"统计优化失败: {e}")
+            logger.warning("统计优化失败: %s", e)
 
         # 2. 趋势优化
         try:
@@ -882,7 +882,7 @@ class IntelligentThresholdManager:
             )
             optimization_results.append(trend_result)
         except Exception as e:
-            logger.warning(f"趋势优化失败: {e}")
+            logger.warning("趋势优化失败: %s", e)
 
         # 3. 聚类优化
         try:
@@ -891,7 +891,7 @@ class IntelligentThresholdManager:
             )
             optimization_results.append(cluster_result)
         except Exception as e:
-            logger.warning(f"聚类优化失败: {e}")
+            logger.warning("聚类优化失败: %s", e)
 
         if not optimization_results:
             return OptimizationResult(
@@ -911,7 +911,7 @@ class IntelligentThresholdManager:
             key=lambda x: x.confidence_score * x.expected_improvement,
         )
 
-        logger.info(f"规则{rule_name}优化完成: {rule.current_threshold:.2f} -> {best_result.recommended_threshold:.2f}")
+        logger.info("规则%s优化完成: %s -> %s", rule_name, rule.current_threshold, best_result.recommended_threshold)
 
         return best_result
 
@@ -919,14 +919,14 @@ class IntelligentThresholdManager:
         """应用优化结果"""
 
         if rule_name not in self.threshold_rules:
-            logger.error(f"规则{rule_name}不存在")
+            logger.error("规则%s不存在", rule_name)
             return False
 
         rule = self.threshold_rules[rule_name]
 
         # 验证置信度
         if optimization_result.confidence_score < self.config["confidence_threshold"]:
-            logger.info(f"优化结果置信度过低({optimization_result.confidence_score:.2f})，跳过应用")
+            logger.info("优化结果置信度过低(%s)，跳过应用", optimization_result.confidence_score)
             return False
 
         old_threshold = rule.current_threshold
@@ -956,7 +956,7 @@ class IntelligentThresholdManager:
         if len(self.adjustment_history) > self.config["max_history_size"]:
             self.adjustment_history = self.adjustment_history[-self.config["max_history_size"] :]
 
-        logger.info(f"✅ 已应用阈值优化: {rule_name} {old_threshold:.2f} -> {new_threshold:.2f}")
+        logger.info("✅ 已应用阈值优化: %s %s -> %s", rule_name, old_threshold, new_threshold)
         return True
 
     def get_threshold_status(self) -> Dict[str, Any]:
@@ -1110,11 +1110,11 @@ class IntelligentThresholdManager:
             # 更新配置
             self.config.update(config_data.get("config", {}))
 
-            logger.info(f"✅ 配置导入成功: {len(self.threshold_rules)}个规则")
+            logger.info("✅ 配置导入成功: %s个规则", len(self.threshold_rules))
             return True
 
         except Exception as e:
-            logger.error(f"配置导入失败: {e}")
+            logger.error("配置导入失败: %s", e)
             return False
 
 

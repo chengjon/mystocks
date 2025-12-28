@@ -187,11 +187,11 @@ class EmailAlertHandler(IAlertHandler):
 
             # 发送邮件
             await self._send_email(msg)
-            logger.info(f"✅ 邮件告警发送成功: {alert.rule_name}")
+            logger.info("✅ 邮件告警发送成功: %s", alert.rule_name)
             return True
 
         except Exception as e:
-            logger.error(f"❌ 邮件告警发送失败: {e}")
+            logger.error("❌ 邮件告警发送失败: %s", e)
             return False
 
     async def _send_email(self, msg: MIMEMultipart):
@@ -220,7 +220,7 @@ class EmailAlertHandler(IAlertHandler):
             return await loop.run_in_executor(None, _test)
 
         except Exception as e:
-            logger.error(f"❌ 邮件连接测试失败: {e}")
+            logger.error("❌ 邮件连接测试失败: %s", e)
             return False
 
 
@@ -259,14 +259,14 @@ class WebhookAlertHandler(IAlertHandler):
                     timeout=aiohttp.ClientTimeout(total=10),
                 ) as response:
                     if response.status == 200:
-                        logger.info(f"✅ Webhook告警发送成功: {alert.rule_name}")
+                        logger.info("✅ Webhook告警发送成功: %s", alert.rule_name)
                         return True
                     else:
-                        logger.error(f"❌ Webhook告警发送失败: HTTP {response.status}")
+                        logger.error("❌ Webhook告警发送失败: HTTP %s", response.status)
                         return False
 
         except Exception as e:
-            logger.error(f"❌ Webhook告警发送失败: {e}")
+            logger.error("❌ Webhook告警发送失败: %s", e)
             return False
 
     async def test_connection(self) -> bool:
@@ -288,7 +288,7 @@ class WebhookAlertHandler(IAlertHandler):
                     return response.status == 200
 
         except Exception as e:
-            logger.error(f"❌ Webhook连接测试失败: {e}")
+            logger.error("❌ Webhook连接测试失败: %s", e)
             return False
 
 
@@ -440,12 +440,12 @@ class AIAlertManager:
     def add_alert_handler(self, handler: IAlertHandler):
         """添加告警处理器"""
         self.alert_handlers.append(handler)
-        logger.info(f"✅ 添加告警处理器: {handler.__class__.__name__}")
+        logger.info("✅ 添加告警处理器: %s", handler.__class__.__name__)
 
     def add_alert_rule(self, rule: AlertRule):
         """添加自定义告警规则"""
         self.alert_rules.append(rule)
-        logger.info(f"✅ 添加自定义告警规则: {rule.name}")
+        logger.info("✅ 添加自定义告警规则: %s", rule.name)
 
     def remove_alert_rule(self, rule_name: str):
         """移除告警规则"""
@@ -453,7 +453,7 @@ class AIAlertManager:
         # 移除相关的活跃告警
         if rule_name in self.active_alerts:
             del self.active_alerts[rule_name]
-        logger.info(f"🗑️ 移除告警规则: {rule_name}")
+        logger.info("🗑️ 移除告警规则: %s", rule_name)
 
     async def check_alert_conditions(self, metrics: SystemMetrics):
         """检查告警条件"""
@@ -477,7 +477,7 @@ class AIAlertManager:
                     await self._resolve_alert(rule)
 
             except Exception as e:
-                logger.error(f"❌ 告警规则 {rule.name} 检查失败: {e}")
+                logger.error("❌ 告警规则 %s 检查失败: %s", rule.name, e)
 
     def _get_metric_value(self, metrics: SystemMetrics, alert_type: AlertType) -> Optional[float]:
         """获取指标值"""
@@ -545,7 +545,7 @@ class AIAlertManager:
         # 处理告警
         await self._handle_alert(alert)
 
-        logger.warning(f"🚨 告警触发: {alert.message}")
+        logger.warning("🚨 告警触发: %s", alert.message)
 
     async def _resolve_alert(self, rule: AlertRule):
         """解决告警"""
@@ -558,7 +558,7 @@ class AIAlertManager:
             self._save_alert_history(alert)
             self.alert_stats["resolved_alerts"] += 1
 
-            logger.info(f"✅ 告警解决: {rule.name}")
+            logger.info("✅ 告警解决: %s", rule.name)
 
     def _generate_alert_message(self, rule: AlertRule, metric_value: float) -> str:
         """生成告警消息"""
@@ -606,7 +606,7 @@ class AIAlertManager:
                     additional_data=alert.to_dict(),
                 )
             except Exception as e:
-                logger.error(f"❌ 保存告警到数据库失败: {e}")
+                logger.error("❌ 保存告警到数据库失败: %s", e)
 
     def _update_alert_stats(self, alert: Alert):
         """更新告警统计"""
@@ -626,9 +626,9 @@ class AIAlertManager:
             try:
                 success = await handler.handle_alert(alert)
                 if not success:
-                    logger.error(f"❌ 告警处理器 {handler.__class__.__name__} 处理失败")
+                    logger.error("❌ 告警处理器 %s 处理失败", handler.__class__.__name__)
             except Exception as e:
-                logger.error(f"❌ 告警处理器异常: {e}")
+                logger.error("❌ 告警处理器异常: %s", e)
 
     def get_active_alerts(self) -> List[Alert]:
         """获取活跃告警"""
@@ -641,7 +641,7 @@ class AIAlertManager:
                 alert.acknowledged = True
                 alert.acknowledged_at = datetime.now()
                 alert.acknowledged_by = acknowledged_by
-                logger.info(f"✅ 告警已确认: {alert_id} by {acknowledged_by}")
+                logger.info("✅ 告警已确认: %s by %s", alert_id, acknowledged_by)
                 return True
         return False
 
@@ -667,7 +667,7 @@ class AIAlertManager:
                 result = await handler.test_connection()
                 results[handler.__class__.__name__] = result
             except Exception as e:
-                logger.error(f"❌ 处理器 {handler.__class__.__name__} 测试失败: {e}")
+                logger.error("❌ 处理器 %s 测试失败: %s", handler.__class__.__name__, e)
                 results[handler.__class__.__name__] = False
 
         return results
@@ -683,7 +683,7 @@ class AIAlertManager:
                 for key, value in updates.items():
                     if hasattr(rule, key):
                         setattr(rule, key, value)
-                logger.info(f"✅ 更新告警规则: {rule_name}")
+                logger.info("✅ 更新告警规则: %s", rule_name)
                 return True
         return False
 

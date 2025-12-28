@@ -53,10 +53,7 @@ class DatabaseConnectionManager:
                 f"请参考 .env.example 文件配置环境变量\n"
                 f"注意: MySQL和Redis已从US3架构中移除，不再需要这些环境变量"
             )
-            raise ValueError(
-                "Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n"
-                "请使用1-15号数据库 (建议REDIS_DB=1)"
-            )
+            raise ValueError("Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n" "请使用1-15号数据库 (建议REDIS_DB=1)")
 
     def get_tdengine_connection(self):
         """
@@ -73,11 +70,7 @@ class DatabaseConnectionManager:
 
             if "tdengine" not in self._connections:
                 # WebSocket连接优先使用REST端口(6041),否则使用默认端口(6030)
-                tdengine_port = int(
-                    os.getenv("TDENGINE_REST_PORT")
-                    or os.getenv("TDENGINE_PORT")
-                    or "6030"
-                )
+                tdengine_port = int(os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030")
 
                 # pylint: disable=no-member
                 conn = taosws.connect(
@@ -94,13 +87,8 @@ class DatabaseConnectionManager:
         except ImportError:
             raise ImportError("TDengine驱动未安装: pip install taospy>=2.7.0")
         except Exception as e:
-            port_str = (
-                os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
-            )
-            raise ConnectionError(
-                f"TDengine连接失败: {e}\n"
-                f"请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}"
-            )
+            port_str = os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
+            raise ConnectionError(f"TDengine连接失败: {e}\n" f"请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}")
 
     def get_postgresql_connection(self):
         """
@@ -130,9 +118,7 @@ class DatabaseConnectionManager:
             return self._connections["postgresql"]
 
         except ImportError:
-            raise ImportError(
-                "PostgreSQL驱动未安装: pip install psycopg2-binary>=2.9.5"
-            )
+            raise ImportError("PostgreSQL驱动未安装: pip install psycopg2-binary>=2.9.5")
         except Exception as e:
             raise ConnectionError(
                 f"PostgreSQL连接失败: {e}\n"
@@ -181,8 +167,7 @@ class DatabaseConnectionManager:
             raise ImportError("MySQL驱动未安装: pip install pymysql>=1.0.2")
         except Exception as e:
             raise ConnectionError(
-                f"MySQL连接失败: {e}\n"
-                f"请检查配置: {os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}"
+                f"MySQL连接失败: {e}\n" f"请检查配置: {os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}"
             )
 
     def get_redis_connection(self):

@@ -92,14 +92,14 @@ class KernelRegistry:
 
             # 检查是否已存在
             if name in self._kernels:
-                logger.warning(f"Kernel {name} already exists, updating...")
+                logger.warning("Kernel %s already exists, updating...", name)
                 self._update_existing_kernel(name, kernel_class, metadata)
             else:
                 # 创建新的注册
                 registration = KernelRegistration(kernel_class=kernel_class, metadata=metadata)
                 self._kernels[name] = registration
 
-                logger.info(f"Registered kernel: {name} v{metadata.version}")
+                logger.info("Registered kernel: %s v%s", name, metadata.version)
 
             # 自动初始化
             if auto_initialize:
@@ -114,13 +114,13 @@ class KernelRegistry:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to register kernel {kernel_class.__name__}: {e}")
+            logger.error("Failed to register kernel %s: %s", kernel_class.__name__, e)
             return False
 
     async def unregister_kernel(self, name: str) -> bool:
         """注销内核"""
         if name not in self._kernels:
-            logger.warning(f"Kernel {name} not found for unregistration")
+            logger.warning("Kernel %s not found for unregistration", name)
             return False
 
         try:
@@ -133,7 +133,7 @@ class KernelRegistry:
                     try:
                         await registration.instance.cleanup()
                     except Exception as e:
-                        logger.warning(f"Error cleaning up kernel {name}: {e}")
+                        logger.warning("Error cleaning up kernel %s: %s", name, e)
 
             # 删除注册
             del self._kernels[name]
@@ -148,11 +148,11 @@ class KernelRegistry:
             # 更新统计
             self._update_stats()
 
-            logger.info(f"Unregistered kernel: {name}")
+            logger.info("Unregistered kernel: %s", name)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to unregister kernel {name}: {e}")
+            logger.error("Failed to unregister kernel %s: %s", name, e)
             return False
 
     def get_kernel(self, name: str) -> Optional[StandardizedKernelInterface]:
@@ -163,11 +163,11 @@ class KernelRegistry:
         registration = self._kernels[name]
 
         if registration.instance is None:
-            logger.warning(f"Kernel {name} not initialized")
+            logger.warning("Kernel %s not initialized", name)
             return None
 
         if registration.metadata.status != KernelStatus.ACTIVE:
-            logger.warning(f"Kernel {name} not active (status: {registration.metadata.status.value})")
+            logger.warning("Kernel %s not active (status: %s)", name, registration.metadata.status.value)
             return None
 
         return registration.instance
@@ -202,7 +202,7 @@ class KernelRegistry:
             registration.metadata.status = KernelStatus.ACTIVE
             registration.metadata.last_updated = time.time()
 
-            logger.info(f"Created and initialized kernel: {name}")
+            logger.info("Created and initialized kernel: %s", name)
             return instance
 
         except Exception as e:
@@ -210,7 +210,7 @@ class KernelRegistry:
             registration.load_error = str(e)
             registration.metadata.error_count += 1
 
-            logger.error(f"Failed to create kernel {name}: {e}")
+            logger.error("Failed to create kernel %s: %s", name, e)
             return None
 
     def find_kernels_for_operation(self, operation_type: str, operation_name: Optional[str] = None) -> List[str]:
@@ -382,7 +382,7 @@ class KernelRegistry:
                     try:
                         await registration.instance.cleanup()
                     except Exception as e:
-                        logger.warning(f"Error cleaning up kernel {name}: {e}")
+                        logger.warning("Error cleaning up kernel %s: %s", name, e)
 
                 registration.instance = None
                 registration.is_initialized = False
@@ -441,12 +441,12 @@ class KernelRegistry:
                         success = self.register_kernel(obj)
                         if success:
                             discovered_count += 1
-                            logger.info(f"Auto-discovered kernel: {obj.__name__}")
+                            logger.info("Auto-discovered kernel: %s", obj.__name__)
 
             except Exception as e:
-                logger.error(f"Failed to auto-discover kernels in {module_path}: {e}")
+                logger.error("Failed to auto-discover kernels in %s: %s", module_path, e)
 
-        logger.info(f"Auto-discovered {discovered_count} kernels")
+        logger.info("Auto-discovered %s kernels", discovered_count)
         return discovered_count
 
     def _create_default_metadata(self, kernel_class: Type[StandardizedKernelInterface]) -> KernelMetadata:
@@ -481,7 +481,7 @@ class KernelRegistry:
 
         # 检查版本是否更新
         if metadata.version != registration.metadata.version:
-            logger.info(f"Updating kernel {name} from v{registration.metadata.version} to v{metadata.version}")
+            logger.info("Updating kernel %s from v%s to v%s", name, registration.metadata.version, metadata.version)
 
         registration.kernel_class = kernel_class
         registration.metadata = metadata
@@ -627,6 +627,6 @@ def register_standard_kernels():
         logger.info("Standard kernels registered successfully")
 
     except ImportError as e:
-        logger.warning(f"Failed to register some standard kernels: {e}")
+        logger.warning("Failed to register some standard kernels: %s", e)
     except Exception as e:
-        logger.error(f"Error registering standard kernels: {e}")
+        logger.error("Error registering standard kernels: %s", e)

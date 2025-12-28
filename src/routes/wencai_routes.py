@@ -73,7 +73,7 @@ async def get_wencai_queries():
             logger.info("使用Mock数据源: 获取预定义查询列表")
             mock_data = get_wencai_mock_data()
             result = mock_data["get_wencai_queries"]()
-            logger.info(f"Mock数据响应: {result}")
+            logger.info("Mock数据响应: %s", result)
             return {
                 "success": True,
                 "data": result,
@@ -113,7 +113,7 @@ async def get_wencai_queries():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -122,7 +122,7 @@ async def get_wencai_queries():
                 }
 
     except Exception as e:
-        logger.error(f"获取预定义查询列表失败: {str(e)}")
+        logger.error("获取预定义查询列表失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取预定义查询列表失败: {str(e)}",
@@ -146,13 +146,13 @@ async def execute_predefined_query(request: Dict):
         query_name = request.get("query_name", "qs_1")
         pages = request.get("pages", 1)
 
-        logger.info(f"执行预定义查询: {query_name}, 页数: {pages}")
+        logger.info("执行预定义查询: %s, 页数: %s", query_name, pages)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 执行预定义查询")
             mock_data = get_wencai_mock_data()
             result = mock_data["execute_query"](request)
-            logger.info(f"Mock数据响应: {result}")
+            logger.info("Mock数据响应: %s", result)
             return {
                 "success": True,
                 "data": result,
@@ -187,7 +187,7 @@ async def execute_predefined_query(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -196,7 +196,7 @@ async def execute_predefined_query(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"执行预定义查询失败: {str(e)}")
+        logger.error("执行预定义查询失败: %s", str(e))
         return {
             "success": False,
             "message": f"执行预定义查询失败: {str(e)}",
@@ -220,13 +220,13 @@ async def execute_custom_wencai_query(request: Dict):
         query_text = request.get("query_text", "")
         pages = request.get("pages", 1)
 
-        logger.info(f"执行自定义问财查询: {query_text}, 页数: {pages}")
+        logger.info("执行自定义问财查询: %s, 页数: %s", query_text, pages)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 执行自定义查询")
             mock_data = get_wencai_mock_data()
             result = mock_data["execute_custom_query"](request)
-            logger.info(f"Mock数据响应: 共{result.get('total_records', 0)}条记录")
+            logger.info("Mock数据响应: 共%s条记录", result.get("total_records", 0))
             return {
                 "success": True,
                 "data": result,
@@ -261,7 +261,7 @@ async def execute_custom_wencai_query(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -270,7 +270,7 @@ async def execute_custom_wencai_query(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"执行自定义查询失败: {str(e)}")
+        logger.error("执行自定义查询失败: %s", str(e))
         return {
             "success": False,
             "message": f"执行自定义查询失败: {str(e)}",
@@ -295,13 +295,13 @@ async def get_wencai_query_results(
         Dict: 查询结果数据
     """
     try:
-        logger.info(f"获取问财查询结果: {query_name}, limit: {limit}, offset: {offset}")
+        logger.info("获取问财查询结果: %s, limit: %s, offset: %s", query_name, limit, offset)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取查询结果")
             mock_data = get_wencai_mock_data()
             result = mock_data["get_query_results"](query_name, limit, offset)
-            logger.info(f"Mock数据响应: 共{result.get('total_records', 0)}条记录")
+            logger.info("Mock数据响应: 共%s条记录", result.get("total_records", 0))
             return {
                 "success": True,
                 "data": result,
@@ -342,7 +342,7 @@ async def get_wencai_query_results(
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -351,7 +351,7 @@ async def get_wencai_query_results(
                 }
 
     except Exception as e:
-        logger.error(f"获取问财查询结果失败: {str(e)}")
+        logger.error("获取问财查询结果失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取问财查询结果失败: {str(e)}",
@@ -370,7 +370,7 @@ async def refresh_wencai_query(query_name: str):
         Dict: 刷新结果
     """
     try:
-        logger.info(f"刷新问财查询: {query_name}")
+        logger.info("刷新问财查询: %s", query_name)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 刷新查询结果")
@@ -398,7 +398,7 @@ async def refresh_wencai_query(query_name: str):
                 from src.database.database_service import db_service
 
                 # 实现刷新逻辑（根据实际需求）
-                logger.info(f"真实数据库刷新: {query_name}")
+                logger.info("真实数据库刷新: %s", query_name)
 
                 return {
                     "success": True,
@@ -407,7 +407,7 @@ async def refresh_wencai_query(query_name: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库刷新失败: {str(e)}")
+                logger.error("真实数据库刷新失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库刷新失败: {str(e)}",
@@ -416,7 +416,7 @@ async def refresh_wencai_query(query_name: str):
                 }
 
     except Exception as e:
-        logger.error(f"刷新问财查询失败: {str(e)}")
+        logger.error("刷新问财查询失败: %s", str(e))
         return {
             "success": False,
             "message": f"刷新问财查询失败: {str(e)}",
@@ -435,7 +435,7 @@ async def get_wencai_query_history(query_name: str):
         Dict: 查询历史记录
     """
     try:
-        logger.info(f"获取问财查询历史: {query_name}")
+        logger.info("获取问财查询历史: %s", query_name)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取查询历史")
@@ -494,7 +494,7 @@ async def get_wencai_query_history(query_name: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -503,7 +503,7 @@ async def get_wencai_query_history(query_name: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取问财查询历史失败: {str(e)}")
+        logger.error("获取问财查询历史失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取问财查询历史失败: {str(e)}",
@@ -556,7 +556,7 @@ async def check_wencai_health():
                     "version": "1.0.0",
                 }
             except Exception as e:
-                logger.error(f"真实数据库健康检查失败: {str(e)}")
+                logger.error("真实数据库健康检查失败: %s", str(e))
                 return {
                     "status": "unhealthy",
                     "service": "Wencai",
@@ -566,7 +566,7 @@ async def check_wencai_health():
                 }
 
     except Exception as e:
-        logger.error(f"检查问财服务健康状态失败: {str(e)}")
+        logger.error("检查问财服务健康状态失败: %s", str(e))
         return {
             "status": "unhealthy",
             "service": "Wencai",
