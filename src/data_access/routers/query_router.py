@@ -10,7 +10,7 @@ from datetime import datetime
 from enum import Enum
 import logging
 
-from ..interfaces.i_data_access import (
+from src.data_access.interfaces.i_data_access import (
     IDataAccess,
     DataQuery,
     QueryOperation,

@@ -29,7 +29,7 @@ from functools import wraps
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from mystocks.interfaces.data_source import IDataSource
+from src.interfaces.data_source import IDataSource
 
 # 常量定义
 MAX_RETRIES = 3

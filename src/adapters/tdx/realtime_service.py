@@ -162,9 +162,9 @@ class RealtimeService(BaseTdxAdapter):
             # 获取TDX连接
             tdx_api = self._get_tdx_connection()
 
-            # 获取行业分类
+            # 获取行业分类 (使用 get_block_info)
             logger.info("获取行业分类数据")
-            data = tdx_api.get_industry_classification()
+            data = tdx_api.get_block_info("blocknew.dat", 0, 1000)
 
             if not data:
                 return pd.DataFrame()
@@ -189,9 +189,9 @@ class RealtimeService(BaseTdxAdapter):
             # 获取TDX连接
             tdx_api = self._get_tdx_connection()
 
-            # 获取概念分类
+            # 获取概念分类 (使用 get_block_info)
             logger.info("获取概念分类数据")
-            data = tdx_api.get_concept_classification()
+            data = tdx_api.get_block_info("blockgn.dat", 0, 1000)
 
             if not data:
                 return pd.DataFrame()

@@ -71,7 +71,7 @@ def test_customer_data_source():
     try:
         # 以平安银行(000001)为例，获取最近一个月的数据
         from datetime import datetime, timedelta
-        from mystocks.utils.date_utils import normalize_date
+        from src.utils.date_utils import normalize_date
 
         end_date = normalize_date(datetime.now())
         start_date = normalize_date(datetime.now() - timedelta(days=30))

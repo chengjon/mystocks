@@ -113,9 +113,12 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
             bool: 连接是否正常
         """
         try:
-            # 尝试获取TDX连接
+            # 尝试获取TDX连接并测试
             connection = self._get_tdx_connection()
-            return connection and hasattr(connection, "connected") and connection.connected
+            if connection:
+                connection.do_heartbeat()
+                return True
+            return False
         except Exception as e:
             logger.error("TDX连接验证失败: %s", e)
             return False
@@ -333,9 +336,16 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         """获取连接状态信息"""
         try:
             connection = self._get_tdx_connection()
+            is_connected = False
+            if connection:
+                try:
+                    connection.do_heartbeat()
+                    is_connected = True
+                except Exception:
+                    is_connected = False
 
             return {
-                "connected": connection and hasattr(connection, "connected") and connection.connected,
+                "connected": is_connected,
                 "server": f"{self.tdx_host}:{self.tdx_port}",
                 "server_config": self.server_config is not None,
                 "services": {

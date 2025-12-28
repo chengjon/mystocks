@@ -191,6 +191,7 @@ class DatabaseConnectionPool:
                 await self.pool.release(connection)
 
                 # 计算连接持有时间
+                hold_time = 0.0
                 if connection_id in self._connection_times:
                     hold_time = time.time() - self._connection_times[connection_id]
                     del self._connection_times[connection_id]

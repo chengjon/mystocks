@@ -1,5 +1,6 @@
 server:
   http_listen_port: 3200
+  grpc_listen_port: 9096
 
 distributor:
   receivers:
@@ -30,7 +31,7 @@ storage:
   trace:
     backend: local
     local:
-      path: /data/tempo/traces
+      path: /tmp/tempo/traces
     pool:
       max_workers: 10
       queue_depth: 1000
