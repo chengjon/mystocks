@@ -5,17 +5,54 @@
 
 import os
 import sys
+import time
 from fastapi import FastAPI
 import uvicorn
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import Response
 
 # 设置项目路径
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 # 创建简单的FastAPI应用
-app = FastAPI(
-    title="MyStocks API", description="量化交易数据管理系统 API", version="1.0.0"
-)
+app = FastAPI(title="MyStocks API", description="量化交易数据管理系统 API", version="1.0.0")
+
+# Prometheus Metrics
+REQUEST_COUNT = Counter("http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"])
+
+REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency", ["method", "endpoint"])
+
+ACTIVE_REQUESTS = Gauge("http_requests_active", "Number of active HTTP requests")
+
+API_ERROR_COUNT = Counter("api_errors_total", "Total API errors", ["endpoint", "error_type"])
+
+
+@app.middleware("http")
+async def track_requests(request, call_next):
+    start_time = time.time()
+    ACTIVE_REQUESTS.inc()
+
+    try:
+        response = await call_next(request)
+
+        # Record metrics
+        method = request.method
+        path = request.url.path
+        status = response.status_code
+        latency = time.time() - start_time
+
+        REQUEST_COUNT.labels(method=method, endpoint=path, status=status).inc()
+        REQUEST_LATENCY.labels(method=method, endpoint=path).observe(latency)
+
+        return response
+    except Exception as e:
+        # Record error metrics
+        path = request.url.path
+        API_ERROR_COUNT.labels(endpoint=path, error_type=type(e).__name__).inc()
+        raise
+    finally:
+        ACTIVE_REQUESTS.dec()
 
 
 @app.get("/")
@@ -31,6 +68,12 @@ async def health():
 @app.get("/api/health")
 async def api_health():
     return {"status": "healthy", "service": "MyStocks API"}
+
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint"""
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 # 基础的模拟数据端点
@@ -69,6 +112,4 @@ if __name__ == "__main__":
     print("📍 服务地址: http://localhost:8000")
     print("📖 API文档: http://localhost:8000/docs")
 
-    uvicorn.run(
-        "simple_backend:app", host="0.0.0.0", port=8000, reload=False, log_level="info"
-    )
+    uvicorn.run("simple_backend:app", host="0.0.0.0", port=8000, reload=False, log_level="info")

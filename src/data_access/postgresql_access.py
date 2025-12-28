@@ -30,10 +30,35 @@ class PostgreSQLDataAccess:
     - 聚合和窗口函数
     """
 
-    def __init__(self):
+    def __init__(self, db_manager=None, monitoring_db=None):
         """初始化PostgreSQL连接池"""
+        self.db_manager = db_manager
+        self.monitoring_db = monitoring_db
         self.conn_manager = get_connection_manager()
         self.pool = None
+
+    async def connect(self):
+        """连接数据库(异步接口)"""
+        self._get_pool()
+        return True
+
+    def check_connection(self):
+        """检查数据库连接状态"""
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            cursor.close()
+            self._return_connection(conn)
+            return True
+        except Exception:
+            return False
+
+    def _get_pool(self):
+        """获取连接池(懒加载)"""
+        if self.pool is None:
+            self.pool = self.conn_manager.get_postgresql_connection()
+        return self.pool
 
     def _get_connection(self):
         """从连接池获取连接"""

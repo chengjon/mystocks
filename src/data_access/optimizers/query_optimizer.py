@@ -164,7 +164,7 @@ class QueryOptimizer(IQueryOptimizer):
                 ),
                 OptimizationRule(
                     name="tdengine_tag_filtering",
-                    optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
+                    optimization_type=OptimizationType.PREDIATE_OPTIMIZATION,
                     priority=OptimizationPriority.HIGH,
                     condition=lambda q, db: db == DatabaseType.TDENGINE and q.filters,
                     apply_optimization=self._optimize_tdengine_tag_filtering,
@@ -173,7 +173,7 @@ class QueryOptimizer(IQueryOptimizer):
                 ),
                 OptimizationRule(
                     name="tdengine_time_range_optimization",
-                    optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
+                    optimization_type=OptimizationType.PREDIATE_OPTIMIZATION,
                     priority=OptimizationPriority.CRITICAL,
                     condition=lambda q, db: db == DatabaseType.TDENGINE and self._has_time_filter(q),
                     apply_optimization=self._optimize_tdengine_time_range,
@@ -198,7 +198,7 @@ class QueryOptimizer(IQueryOptimizer):
             [
                 OptimizationRule(
                     name="limit_optimization",
-                    optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
+                    optimization_type=OptimizationType.PREDIATE_OPTIMIZATION,
                     priority=OptimizationPriority.MEDIUM,
                     condition=lambda q, db: q.limit is None and self._is_large_dataset_query(q),
                     apply_optimization=self._add_limit_clause,
@@ -216,7 +216,7 @@ class QueryOptimizer(IQueryOptimizer):
                 ),
                 OptimizationRule(
                     name="predicate_pushdown",
-                    optimization_type=OptimizationType.PREDICATE_OPTIMIZATION,
+                    optimization_type=OptimizationType.PREDIATE_OPTIMIZATION,
                     priority=OptimizationPriority.HIGH,
                     condition=lambda q, db: q.join_clauses and q.filters,
                     apply_optimization=self._push_down_predicates,
@@ -297,7 +297,7 @@ class QueryOptimizer(IQueryOptimizer):
         plan_details = {
             "operation": query.operation.value,
             "table": query.table_name,
-            "estimated_cost": self._estimate_query_cost(query, target_database),
+            "estimated_cost": await self.estimate_query_cost(query, target_database),
             "estimated_rows": self._estimate_result_rows(query),
             "database_type": target_database.value,
             "optimization_suggestions": [],

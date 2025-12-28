@@ -204,3 +204,25 @@ wheels/
 parts/
 lib/
 lib64/
+
+# ========================================
+# MONITORING ARTIFACTS (RUNTIME GENERATED)
+# ========================================
+# Grafana plugins data (auto-downloaded)
+monitoring-stack/data/grafana/plugins/
+monitoring-stack/data/grafana/
+
+# Grafana data persistence
+monitoring-stack/data/grafana/
+
+# Loki data
+monitoring-stack/data/loki/
+
+# Tempo data
+monitoring-stack/data/tempo/
+
+# Prometheus data
+monitoring-stack/data/prometheus/
+
+# Grafana database
+monitoring-stack/data/grafana/grafana.db

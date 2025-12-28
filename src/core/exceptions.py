@@ -95,6 +95,20 @@ class DataValidationError(DataSourceException):
     default_severity = "MEDIUM"
 
 
+class DataSourceQueryError(DataSourceException):
+    """Raised when data source query operation fails."""
+
+    default_code = "DATA_SOURCE_QUERY_ERROR"
+    default_severity = "HIGH"
+
+
+class DataSourceDataNotFound(DataSourceException):
+    """Raised when requested data is not found in the data source."""
+
+    default_code = "DATA_SOURCE_DATA_NOT_FOUND"
+    default_severity = "MEDIUM"
+
+
 # Database Exceptions
 class DatabaseException(MyStocksException):
     """Base exception for database operations."""
