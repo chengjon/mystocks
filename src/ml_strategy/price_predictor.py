@@ -429,10 +429,8 @@ class PricePredictorStrategy:
 
         plt.tight_layout()
         if save_path:
-            plt.savefig(save_path, dpi=150, bbox_inches='tight')
+            plt.savefig(save_path, dpi=150, bbox_inches="tight")
             plt.show()
-
-
 
 
 if __name__ == "__main__":

@@ -116,9 +116,9 @@ class VectorizedBacktester:
         """
         self.logger.info("=" * 60)
         self.logger.info("开始向量化回测")
-        self.logger.info(f"数据范围: {price_data.index[0]} 至 {price_data.index[-1]}")
-        self.logger.info(f"交易日数: {len(price_data)}")
-        self.logger.info(f"初始资金: {self.config.initial_capital:,.2f}")
+        self.logger.info("数据范围: %s 至 %s", price_data.index[0], price_data.index[-1])
+        self.logger.info("交易日数: %s", len(price_data))
+        self.logger.info("初始资金: %s", self.config.initial_capital)
         self.logger.info("=" * 60)
 
         # 验证数据
@@ -235,13 +235,13 @@ class VectorizedBacktester:
 
                 # 止损
                 if self.config.stop_loss_pct and unrealized_pnl_pct <= -self.config.stop_loss_pct:
-                    self.logger.info(f"触发止损: {idx}, 亏损{unrealized_pnl_pct:.2%}")
+                    self.logger.info("触发止损: %s, 亏损%s", idx, unrealized_pnl_pct)
                     # 触发卖出（下一个循环会执行）
                     sell_signals.iloc[i] = True
 
                 # 止盈
                 if self.config.take_profit_pct and unrealized_pnl_pct >= self.config.take_profit_pct:
-                    self.logger.info(f"触发止盈: {idx}, 盈利{unrealized_pnl_pct:.2%}")
+                    self.logger.info("触发止盈: %s, 盈利%s", idx, unrealized_pnl_pct)
                     # 触发卖出（下一个循环会执行）
                     sell_signals.iloc[i] = True
 
@@ -301,9 +301,9 @@ class VectorizedBacktester:
 
         self.logger.info("=" * 60)
         self.logger.info("回测完成")
-        self.logger.info(f"总交易次数: {len(trades)}")
-        self.logger.info(f"最终资金: {equity[-1]:,.2f}")
-        self.logger.info(f"总收益率: {summary['total_return']:.2%}")
+        self.logger.info("总交易次数: %s", len(trades))
+        self.logger.info("最终资金: %s", equity[-1])
+        self.logger.info("总收益率: %s", summary["total_return"])
         self.logger.info("=" * 60)
 
         return {

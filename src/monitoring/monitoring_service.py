@@ -124,7 +124,7 @@ class MonitoringDatabase:
         # 初始化监控表结构
         self._ensure_monitoring_tables()
 
-        logger.info(f"监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']}")
+        logger.info("监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']}")
 
     def _get_monitor_connection(self):
         """获取监控数据库连接"""
@@ -132,7 +132,7 @@ class MonitoringDatabase:
             connection = pymysql.connect(**self.monitor_db_config)
             return connection
         except Exception as e:
-            logger.error(f"连接监控数据库失败: {e}")
+            logger.error("连接监控数据库失败: %s", e)
             return None
 
     def _ensure_monitoring_tables(self):
@@ -163,14 +163,14 @@ class MonitoringDatabase:
                         init_monitoring_database()
                         logger.info("监控表结构创建完成")
                     except Exception as e:
-                        logger.error(f"创建监控表失败: {e}")
+                        logger.error("创建监控表失败: %s", e)
 
                 cursor.close()
                 connection.close()
                 logger.info("监控表结构检查完成")
 
         except Exception as e:
-            logger.error(f"检查监控表结构失败: {e}")
+            logger.error("检查监控表结构失败: %s", e)
 
         if not self.monitor_db_url:
             logger.error("未配置监控数据库URL，无法启动监控服务")
@@ -188,7 +188,7 @@ class MonitoringDatabase:
             # 或者直接创建监控表
             logger.info("监控表结构检查完成")
         except Exception as e:
-            logger.error(f"初始化监控表失败: {e}")
+            logger.error("初始化监控表失败: %s", e)
 
     def log_operation_start(
         self,
@@ -227,7 +227,7 @@ class MonitoringDatabase:
             return operation_id
 
         except Exception as e:
-            logger.error(f"记录操作开始失败: {e}")
+            logger.error("记录操作开始失败: %s", e)
             return f"error_{int(time.time())}"
 
     def log_operation_result(
@@ -260,7 +260,7 @@ class MonitoringDatabase:
             self._update_operation_log(operation_id, update_data)
 
         except Exception as e:
-            logger.error(f"记录操作结果失败: {e}")
+            logger.error("记录操作结果失败: %s", e)
 
     def _insert_operation_log(self, log_data: Dict):
         """插入操作日志到监控数据库"""
@@ -287,10 +287,10 @@ class MonitoringDatabase:
                 cursor.close()
                 connection.close()
 
-                logger.debug(f"操作日志插入成功: {log_data['operation_id']}")
+                logger.debug("操作日志插入成功: %s", log_data['operation_id'])
 
         except Exception as e:
-            logger.error(f"插入操作日志失败: {e}")
+            logger.error("插入操作日志失败: %s", e)
 
     def _update_operation_log(self, operation_id: str, update_data: Dict):
         """更新操作日志"""
@@ -324,10 +324,10 @@ class MonitoringDatabase:
                 cursor.close()
                 connection.close()
 
-                logger.debug(f"操作日志更新成功: {operation_id}")
+                logger.debug("操作日志更新成功: %s", operation_id)
 
         except Exception as e:
-            logger.error(f"更新操作日志失败: {e}")
+            logger.error("更新操作日志失败: %s", e)
 
     def get_operation_statistics(self, hours: int = 24) -> Dict[str, Any]:
         """
@@ -402,7 +402,7 @@ class MonitoringDatabase:
             return stats
 
         except Exception as e:
-            logger.error(f"获取操作统计失败: {e}")
+            logger.error("获取操作统计失败: %s", e)
             return {}
 
     def get_table_creation_history(self, limit: int = 50) -> List[Dict]:
@@ -424,7 +424,7 @@ class MonitoringDatabase:
             return history
 
         except Exception as e:
-            logger.error(f"获取表创建历史失败: {e}")
+            logger.error("获取表创建历史失败: %s", e)
             return []
 
 
@@ -487,11 +487,11 @@ class DataQualityMonitor:
             elif classification == DataClassification.SYMBOLS_INFO:
                 result.update(self._check_symbols_completeness())
 
-            logger.info(f"数据完整性检查完成: {classification.value}")
+            logger.info("数据完整性检查完成: %s", classification.value)
             return result
 
         except Exception as e:
-            logger.error(f"数据完整性检查失败: {e}")
+            logger.error("数据完整性检查失败: %s", e)
             return {"error": str(e)}
 
     def _check_daily_kline_completeness(self) -> Dict[str, Any]:
@@ -530,7 +530,7 @@ class DataQualityMonitor:
             return result
 
         except Exception as e:
-            logger.error(f"数据新鲜度检查失败: {e}")
+            logger.error("数据新鲜度检查失败: %s", e)
             return {"error": str(e)}
 
     def _check_table_freshness(self, table_name: str, threshold_hours: int) -> Dict[str, Any]:
@@ -561,7 +561,7 @@ class DataQualityMonitor:
             return result
 
         except Exception as e:
-            logger.error(f"检查表新鲜度失败: {table_name}, {e}")
+            logger.error("检查表新鲜度失败: %s, %s", table_name, e)
             return {"table_name": table_name, "error": str(e)}
 
     def check_data_accuracy(self, classification: DataClassification, sample_size: int = 1000) -> Dict[str, Any]:
@@ -589,11 +589,11 @@ class DataQualityMonitor:
             if classification == DataClassification.DAILY_KLINE:
                 result.update(self._check_price_data_accuracy(sample_size))
 
-            logger.info(f"数据准确性检查完成: {classification.value}")
+            logger.info("数据准确性检查完成: %s", classification.value)
             return result
 
         except Exception as e:
-            logger.error(f"数据准确性检查失败: {e}")
+            logger.error("数据准确性检查失败: %s", e)
             return {"error": str(e)}
 
     def _check_price_data_accuracy(self, sample_size: int) -> Dict[str, Any]:
@@ -654,11 +654,11 @@ class DataQualityMonitor:
             # 生成建议
             report["recommendations"] = self._generate_recommendations(report)
 
-            logger.info(f"数据质量报告生成完成，整体评分: {report['overall_score']:.2f}")
+            logger.info("数据质量报告生成完成，整体评分: %s", report['overall_score'])
             return report
 
         except Exception as e:
-            logger.error(f"生成数据质量报告失败: {e}")
+            logger.error("生成数据质量报告失败: %s", e)
             return {"error": str(e)}
 
     def _generate_recommendations(self, report: Dict[str, Any]) -> List[str]:
@@ -716,7 +716,7 @@ class PerformanceMonitor:
                 self._alert_slow_operation(metrics)
 
         except Exception as e:
-            logger.error(f"记录操作指标失败: {e}")
+            logger.error("记录操作指标失败: %s", e)
 
     def _alert_slow_operation(self, metrics: OperationMetrics):
         """告警慢操作"""
@@ -772,11 +772,11 @@ class PerformanceMonitor:
                 op_durations = [m.duration for m in op_metrics]
                 summary["operation_breakdown"][op_type]["avg_duration"] = sum(op_durations) / len(op_durations)
 
-            logger.info(f"性能摘要生成完成: 最近{hours}小时，{len(recent_metrics)}个操作")
+            logger.info("性能摘要生成完成: 最近%s小时，%s个操作", hours, len(recent_metrics))
             return summary
 
         except Exception as e:
-            logger.error(f"获取性能摘要失败: {e}")
+            logger.error("获取性能摘要失败: %s", e)
             return {"error": str(e)}
 
     def get_slow_operations(self, hours: int = 24, limit: int = 10) -> List[Dict[str, Any]]:
@@ -808,11 +808,11 @@ class PerformanceMonitor:
             # 按持续时间降序排序
             slow_operations.sort(key=lambda x: x["duration"], reverse=True)
 
-            logger.info(f"获取慢操作列表: {len(slow_operations[:limit])} 个操作")
+            logger.info("获取慢操作列表: %s 个操作", len(slow_operations[)
             return slow_operations[:limit]
 
         except Exception as e:
-            logger.error(f"获取慢操作列表失败: {e}")
+            logger.error("获取慢操作列表失败: %s", e)
             return []
 
 
@@ -889,11 +889,11 @@ class AlertManager:
             # 发送告警
             self._send_alert(alert)
 
-            logger.info(f"创建告警: {alert.alert_id} - {level.value} - {title}")
+            logger.info("创建告警: %s - %s - %s", alert.alert_id, level.value, title)
             return alert
 
         except Exception as e:
-            logger.error(f"创建告警失败: {e}")
+            logger.error("创建告警失败: %s", e)
             raise
 
     def _send_alert(self, alert: Alert):
@@ -908,10 +908,10 @@ class AlertManager:
                 try:
                     channel.send_alert(alert)
                 except Exception as e:
-                    logger.error(f"告警发送失败: {channel_name}, {e}")
+                    logger.error("告警发送失败: %s, %s", channel_name, e)
 
         except Exception as e:
-            logger.error(f"发送告警失败: {e}")
+            logger.error("发送告警失败: %s", e)
 
     def resolve_alert(self, alert_id: str):
         """
@@ -925,11 +925,11 @@ class AlertManager:
                 if alert.alert_id == alert_id and not alert.resolved:
                     alert.resolved = True
                     alert.resolve_time = datetime.now()
-                    logger.info(f"告警已解决: {alert_id}")
+                    logger.info("告警已解决: %s", alert_id)
                     break
 
         except Exception as e:
-            logger.error(f"解决告警失败: {e}")
+            logger.error("解决告警失败: %s", e)
 
     def get_active_alerts(self, level: AlertLevel = None) -> List[Alert]:
         """
@@ -950,7 +950,7 @@ class AlertManager:
             return active
 
         except Exception as e:
-            logger.error(f"获取活跃告警失败: {e}")
+            logger.error("获取活跃告警失败: %s", e)
             return []
 
     def cleanup_old_alerts(self, days: int = 7):
@@ -970,10 +970,10 @@ class AlertManager:
             after_count = len(self.active_alerts)
 
             cleaned_count = before_count - after_count
-            logger.info(f"清理旧告警: 删除{cleaned_count}个，保留{after_count}个")
+            logger.info("清理旧告警: 删除%s个，保留%s个", cleaned_count, after_count)
 
         except Exception as e:
-            logger.error(f"清理旧告警失败: {e}")
+            logger.error("清理旧告警失败: %s", e)
 
 
 class AlertChannel(ABC):
@@ -1023,10 +1023,10 @@ class EmailAlertChannel(AlertChannel):
                 return
 
             # 这里实现邮件发送逻辑
-            logger.info(f"邮件告警发送至: {self.recipients}")
+            logger.info("邮件告警发送至: %s", self.recipients)
 
         except Exception as e:
-            logger.error(f"发送邮件告警失败: {e}")
+            logger.error("发送邮件告警失败: %s", e)
 
 
 class WebhookAlertChannel(AlertChannel):
@@ -1053,10 +1053,10 @@ class WebhookAlertChannel(AlertChannel):
             }
 
             # 这里实现HTTP请求逻辑
-            logger.info(f"Webhook告警发送至: {self.url}")
+            logger.info("Webhook告警发送至: %s", self.url)
 
         except Exception as e:
-            logger.error(f"发送Webhook告警失败: {e}")
+            logger.error("发送Webhook告警失败: %s", e)
 
 
 # 继续在下一个文件中实现自动化维护组件...

@@ -84,10 +84,10 @@ class TdxConnectionManager:
                     last_exception = e
                     if attempt < self.retry_config["max_retries"] - 1:
                         delay = self.retry_config["retry_delay"] * (self.retry_config["backoff_factor"] ** attempt)
-                        logger.warning(f"API call failed (attempt {attempt + 1}), retrying in {delay}s: {str(e)}")
+                        logger.warning("API call failed (attempt %s), retrying in %ss: %s", attempt + 1, delay, str(e))
                         time.sleep(delay)
                     else:
-                        logger.error(f"API call failed after {attempt + 1} attempts: {str(e)}")
+                        logger.error("API call failed after %s attempts: %s", attempt + 1, str(e))
 
             raise last_exception
 

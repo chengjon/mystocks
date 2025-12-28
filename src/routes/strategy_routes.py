@@ -79,7 +79,7 @@ async def get_strategy_definitions():
             logger.info("使用Mock数据源: 获取策略定义列表")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_strategy_definitions"]()
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}个策略")
+            logger.info("Mock数据响应: 共%s个策略", result.get('total', 0))
             return {
                 "success": True,
                 "data": result,
@@ -114,7 +114,7 @@ async def get_strategy_definitions():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -123,7 +123,7 @@ async def get_strategy_definitions():
                 }
 
     except Exception as e:
-        logger.error(f"获取策略定义列表失败: {str(e)}")
+        logger.error("获取策略定义列表失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取策略定义列表失败: {str(e)}",
@@ -146,13 +146,13 @@ async def run_single_strategy(request: Dict):
     """
     try:
         strategy_code = request.get("strategy_code", "STR001")
-        logger.info(f"运行单策略: {strategy_code}")
+        logger.info("运行单策略: %s", strategy_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 运行单策略")
             mock_data = get_strategy_mock_data()
             result = mock_data["run_strategy_single"](request)
-            logger.info(f"Mock数据响应: 匹配{result.get('total_stocks', 0)}只股票")
+            logger.info("Mock数据响应: 匹配%s只股票", result.get('total_stocks', 0))
             return {
                 "success": True,
                 "data": result,
@@ -187,7 +187,7 @@ async def run_single_strategy(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -196,7 +196,7 @@ async def run_single_strategy(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"运行单策略失败: {str(e)}")
+        logger.error("运行单策略失败: %s", str(e))
         return {
             "success": False,
             "message": f"运行单策略失败: {str(e)}",
@@ -219,14 +219,13 @@ async def run_batch_strategies(request: Dict):
     """
     try:
         strategy_codes = request.get("strategy_codes", ["STR001", "STR002"])
-        logger.info(f"批量运行策略: {strategy_codes}")
+        logger.info("批量运行策略: %s", strategy_codes)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 批量运行策略")
             mock_data = get_strategy_mock_data()
             result = mock_data["run_strategy_batch"](request)
-            logger.info(
-                f"Mock数据响应: 处理{result.get('total_strategies', 0)}个策略，匹配{result.get('total_stocks', 0)}只股票"
+            logger.info("Mock数据响应: 处理%sresult.get('total_strategies', 0")}个策略，匹配{result.get('total_stocks', 0)}只股票"
             )
             return {
                 "success": True,
@@ -262,7 +261,7 @@ async def run_batch_strategies(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -271,7 +270,7 @@ async def run_batch_strategies(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"批量运行策略失败: {str(e)}")
+        logger.error("批量运行策略失败: %s", str(e))
         return {
             "success": False,
             "message": f"批量运行策略失败: {str(e)}",
@@ -297,13 +296,13 @@ async def get_strategy_results(request: Dict):
         limit = request.get("limit", 20)
         offset = request.get("offset", 0)
 
-        logger.info(f"获取策略结果: {strategy_code}, limit: {limit}, offset: {offset}")
+        logger.info("获取策略结果: %s, limit: %s, offset: %s", strategy_code, limit, offset)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略结果")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_strategy_results"](request)
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}条结果")
+            logger.info("Mock数据响应: 共%s条结果", result.get('total', 0))
             return {
                 "success": True,
                 "data": result,
@@ -338,7 +337,7 @@ async def get_strategy_results(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -347,7 +346,7 @@ async def get_strategy_results(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"获取策略结果失败: {str(e)}")
+        logger.error("获取策略结果失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取策略结果失败: {str(e)}",
@@ -371,13 +370,13 @@ async def get_matched_stocks(request: Dict):
         strategy_code = request.get("strategy_code", "STR001")
         filters = request.get("filters", {})
 
-        logger.info(f"获取匹配股票: {strategy_code}, filters: {filters}")
+        logger.info("获取匹配股票: %s, filters: %s", strategy_code, filters)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取匹配股票")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_matched_stocks"](request)
-            logger.info(f"Mock数据响应: 共{result.get('total', 0)}只股票")
+            logger.info("Mock数据响应: 共%s只股票", result.get('total', 0))
             return {
                 "success": True,
                 "data": result,
@@ -412,7 +411,7 @@ async def get_matched_stocks(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -421,7 +420,7 @@ async def get_matched_stocks(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"获取匹配股票失败: {str(e)}")
+        logger.error("获取匹配股票失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取匹配股票失败: {str(e)}",
@@ -478,7 +477,7 @@ async def get_strategy_stats():
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -487,7 +486,7 @@ async def get_strategy_stats():
                 }
 
     except Exception as e:
-        logger.error(f"获取策略统计失败: {str(e)}")
+        logger.error("获取策略统计失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取策略统计失败: {str(e)}",
@@ -506,7 +505,7 @@ async def get_strategy_performance(strategy_code: str):
         Dict: 策略性能数据
     """
     try:
-        logger.info(f"获取策略性能: {strategy_code}")
+        logger.info("获取策略性能: %s", strategy_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取策略性能")
@@ -565,7 +564,7 @@ async def get_strategy_performance(strategy_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -574,7 +573,7 @@ async def get_strategy_performance(strategy_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取策略性能失败: {str(e)}")
+        logger.error("获取策略性能失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取策略性能失败: {str(e)}",
@@ -594,7 +593,7 @@ async def optimize_strategy_parameters(strategy_code: str, request: Dict):
         Dict: 参数优化结果
     """
     try:
-        logger.info(f"优化策略参数: {strategy_code}")
+        logger.info("优化策略参数: %s", strategy_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 优化策略参数")
@@ -650,7 +649,7 @@ async def optimize_strategy_parameters(strategy_code: str, request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -659,7 +658,7 @@ async def optimize_strategy_parameters(strategy_code: str, request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"优化策略参数失败: {str(e)}")
+        logger.error("优化策略参数失败: %s", str(e))
         return {
             "success": False,
             "message": f"优化策略参数失败: {str(e)}",
@@ -712,7 +711,7 @@ async def check_strategy_health():
                     "version": "1.0.0",
                 }
             except Exception as e:
-                logger.error(f"真实数据库健康检查失败: {str(e)}")
+                logger.error("真实数据库健康检查失败: %s", str(e))
                 return {
                     "status": "unhealthy",
                     "service": "Strategy",
@@ -722,7 +721,7 @@ async def check_strategy_health():
                 }
 
     except Exception as e:
-        logger.error(f"检查策略服务健康状态失败: {str(e)}")
+        logger.error("检查策略服务健康状态失败: %s", str(e))
         return {
             "status": "unhealthy",
             "service": "Strategy",

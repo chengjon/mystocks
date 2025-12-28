@@ -104,7 +104,7 @@ class FinancialDataSource(IDataSource):
         self.data_cache = {}
         self._init_data_sources()
         logger.info(
-            f"数据源初始化完成 (efinance: {'可用' if self.efinance_available else '不可用'}, easyquotation: {'可用' if self.easyquotation_available else '不可用'})"
+            "数据源初始化完成 (efinance: {'可用' if self.efinance_available else '不可用'}, easyquotation: {'可用' if self.easyquotation_available else '不可用'})"
         )
 
     def _get_cache_key(self, symbol: str, data_type: str, **kwargs) -> str:
@@ -140,7 +140,7 @@ class FinancialDataSource(IDataSource):
             cached_item = self.data_cache[cache_key]
             # 检查缓存是否过期（这里设置为5分钟）
             if (datetime.now() - cached_item["timestamp"]).total_seconds() < 300:
-                logger.info(f"使用缓存数据: {cache_key}")
+                logger.info("使用缓存数据: %s", cache_key)
                 return cached_item["data"]
             else:
                 # 删除过期缓存
@@ -156,7 +156,7 @@ class FinancialDataSource(IDataSource):
             data: 要缓存的数据
         """
         self.data_cache[cache_key] = {"data": data, "timestamp": datetime.now()}
-        logger.info(f"数据已缓存: {cache_key}")
+        logger.info("数据已缓存: %s", cache_key)
 
     def _init_data_sources(self):
         """
@@ -187,7 +187,6 @@ class FinancialDataSource(IDataSource):
             logger.warning("easyquotation库导入失败")
             self.easyquotation_available = False
 
-        # TODO: 扩展其他数据源
         # - akshare: 财务报表、财务指标接口
         # - tushare: 专业财务数据接口(需token)
         # - byapi: 财务数据接口
@@ -208,7 +207,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             DataFrame: 包含股票日线数据的DataFrame
         """
-        logger.info(f"尝试获取股票日线数据: {symbol}")
+        logger.info("尝试获取股票日线数据: %s", symbol)
 
         # 参数验证
         if not symbol:
@@ -218,7 +217,7 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_symbol = symbol_utils.normalize_stock_code(symbol)
         if not normalized_symbol:
-            logger.error(f"无效的股票代码: {symbol}")
+            logger.error("无效的股票代码: %s", symbol)
             return pd.DataFrame()
 
         # 使用date_utils标准化日期
@@ -226,7 +225,7 @@ class FinancialDataSource(IDataSource):
             normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
             normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
         except ValueError as e:
-            logger.error(f"日期格式错误: {e}")
+            logger.error("日期格式错误: %s", e)
             return pd.DataFrame()
 
         if not normalized_start_date or not normalized_end_date:
@@ -238,18 +237,18 @@ class FinancialDataSource(IDataSource):
                 # 使用efinance获取股票日线数据
                 logger.info("使用efinance获取股票日线数据")
                 logger.info(
-                    f"请求参数: symbol={normalized_symbol}, beg={normalized_start_date}, end={normalized_end_date}"
+                    "请求参数: symbol=%s, beg=%s, end=%s", normalized_symbol, normalized_start_date, normalized_end_date
                 )
                 data = self.ef.stock.get_quote_history(
                     normalized_symbol,
                     beg=normalized_start_date,
                     end=normalized_end_date,
                 )
-                logger.info(f"efinance返回数据类型: {type(data)}")
+                logger.info("efinance返回数据类型: %s", type(data))
                 if isinstance(data, pd.DataFrame):
-                    logger.info(f"efinance返回数据行数: {len(data)}")
+                    logger.info("efinance返回数据行数: %s", len(data))
                     if not data.empty:
-                        logger.info(f"efinance获取到{len(data)}行日线数据")
+                        logger.info("efinance获取到%s行日线数据", len(data))
                         # 确保列名是中文
                         expected_columns = [
                             "日期",
@@ -266,7 +265,7 @@ class FinancialDataSource(IDataSource):
                             cleaned_data = self._validate_and_clean_data(data, "stock")
                             return cleaned_data
                         else:
-                            logger.warning(f"数据列名不匹配，实际列名: {list(data.columns)}")
+                            logger.warning("数据列名不匹配，实际列名: %s", list(data.columns))
                             # 尝试重命名列
                             renamed_data = self._rename_columns(data)
                             # 验证和清洗数据
@@ -280,7 +279,7 @@ class FinancialDataSource(IDataSource):
                             normalized_symbol, beg="2020-01-01", end="2024-12-31"
                         )
                         if not broader_data.empty:
-                            logger.info(f"更广泛日期范围获取到{len(broader_data)}行数据")
+                            logger.info("更广泛日期范围获取到%s行数据", len(broader_data))
                             # 过滤日期范围
                             broader_data["日期"] = pd.to_datetime(broader_data["日期"])
                             start_date_dt = pd.to_datetime(date_utils.normalize_date(normalized_start_date))
@@ -289,7 +288,7 @@ class FinancialDataSource(IDataSource):
                                 (broader_data["日期"] >= start_date_dt) & (broader_data["日期"] <= end_date_dt)
                             ]
                             if not filtered_data.empty:
-                                logger.info(f"过滤后得到{len(filtered_data)}行数据")
+                                logger.info("过滤后得到%s行数据", len(filtered_data))
                                 # 验证和清洗数据
                                 cleaned_data = self._validate_and_clean_data(filtered_data, "stock")
                                 return cleaned_data
@@ -300,10 +299,10 @@ class FinancialDataSource(IDataSource):
                             logger.warning("更广泛日期范围也未获取到数据")
                             return pd.DataFrame()
                 else:
-                    logger.error(f"efinance返回数据类型不正确: {type(data)}")
+                    logger.error("efinance返回数据类型不正确: %s", type(data))
                     return pd.DataFrame()
             except Exception as e:
-                logger.error(f"efinance获取日线数据失败: {e}")
+                logger.error("efinance获取日线数据失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -356,7 +355,7 @@ class FinancialDataSource(IDataSource):
                 else:
                     logger.warning("easyquotation未获取到股票数据")
             except Exception as e:
-                logger.error(f"easyquotation获取股票数据失败: {e}")
+                logger.error("easyquotation获取股票数据失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -402,7 +401,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             pd.DataFrame: 指数日线数据
         """
-        logger.info(f"尝试获取指数 {index_code} 的日线数据...")
+        logger.info("尝试获取指数 %s 的日线数据...", index_code)
 
         # 参数验证
         if not index_code:
@@ -412,7 +411,7 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_index_code = symbol_utils.normalize_stock_code(index_code)
         if not normalized_index_code:
-            logger.error(f"无效的指数代码: {index_code}")
+            logger.error("无效的指数代码: %s", index_code)
             return pd.DataFrame()
 
         # 使用date_utils标准化日期
@@ -420,7 +419,7 @@ class FinancialDataSource(IDataSource):
             normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
             normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
         except ValueError as e:
-            logger.error(f"日期格式错误: {e}")
+            logger.error("日期格式错误: %s", e)
             return pd.DataFrame()
 
         if not self.efinance_available:
@@ -434,10 +433,10 @@ class FinancialDataSource(IDataSource):
             else:
                 formatted_code = normalized_index_code
 
-            logger.info(f"使用格式化代码: {formatted_code}")
+            logger.info("使用格式化代码: %s", formatted_code)
 
             # 获取历史行情数据
-            logger.info(f"请求参数: code={formatted_code}, beg={normalized_start_date}, end={normalized_end_date}")
+            logger.info("请求参数: code=%s, beg=%s, end=%s", formatted_code, normalized_start_date, normalized_end_date)
             if normalized_start_date and normalized_end_date:
                 data = self.ef.stock.get_quote_history(
                     formatted_code, beg=normalized_start_date, end=normalized_end_date
@@ -449,9 +448,9 @@ class FinancialDataSource(IDataSource):
             else:
                 data = self.ef.stock.get_quote_history(formatted_code)
 
-            logger.info(f"efinance返回数据类型: {type(data)}")
+            logger.info("efinance返回数据类型: %s", type(data))
             if isinstance(data, pd.DataFrame):
-                logger.info(f"efinance返回数据行数: {len(data)}")
+                logger.info("efinance返回数据行数: %s", len(data))
 
             # 如果使用日期参数没有获取到数据，则获取全部数据并进行过滤
             if (normalized_start_date or normalized_end_date) and (
@@ -467,15 +466,15 @@ class FinancialDataSource(IDataSource):
                         data = data[data["日期"] <= normalized_end_date]
 
             if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
-                logger.info(f"成功获取指数 {index_code} 的日线数据，共 {len(data)} 条记录")
+                logger.info("成功获取指数 %s 的日线数据，共 %s 条记录", index_code, len(data))
                 # 验证和清洗数据
                 cleaned_data = self._validate_and_clean_data(data, "index")
                 return cleaned_data
             else:
-                logger.warning(f"未获取到指数 {index_code} 的日线数据")
+                logger.warning("未获取到指数 %s 的日线数据", index_code)
                 return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取指数 {index_code} 日线数据时发生错误: {str(e)}")
+            logger.error("获取指数 %s 日线数据时发生错误: %s", index_code, str(e))
             import traceback
 
             logger.error(traceback.format_exc())
@@ -491,7 +490,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             Dict: 包含股票基本信息的字典
         """
-        logger.info(f"尝试获取股票基本信息: {symbol}")
+        logger.info("尝试获取股票基本信息: %s", symbol)
 
         # 参数验证
         if not symbol:
@@ -501,7 +500,7 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_symbol = symbol_utils.normalize_stock_code(symbol)
         if not normalized_symbol:
-            logger.error(f"无效的股票代码: {symbol}")
+            logger.error("无效的股票代码: %s", symbol)
             return {}
 
         # 首先尝试使用efinance获取数据
@@ -510,12 +509,12 @@ class FinancialDataSource(IDataSource):
                 # 使用efinance获取股票基本信息
                 logger.info("使用efinance获取股票基本信息")
                 data = self.ef.stock.get_base_info(normalized_symbol)
-                logger.info(f"efinance返回数据类型: {type(data)}")
+                logger.info("efinance返回数据类型: %s", type(data))
                 if data is not None:
                     logger.info("efinance获取到股票基本信息")
                     # 如果data是DataFrame，转换第一行为字典
                     if isinstance(data, pd.DataFrame):
-                        logger.info(f"efinance返回数据行数: {len(data)}")
+                        logger.info("efinance返回数据行数: %s", len(data))
                         if not data.empty:
                             # 验证和清洗数据
                             cleaned_data = self._validate_and_clean_data(data, "stock")
@@ -535,12 +534,12 @@ class FinancialDataSource(IDataSource):
                         return data
                     else:
                         # 其他情况尝试直接返回
-                        logger.warning(f"efinance返回数据类型不支持: {type(data)}")
+                        logger.warning("efinance返回数据类型不支持: %s", type(data))
                         return data if data else {}
                 else:
                     logger.warning("efinance未获取到股票基本信息")
             except Exception as e:
-                logger.error(f"efinance获取股票基本信息失败: {e}")
+                logger.error("efinance获取股票基本信息失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -551,19 +550,19 @@ class FinancialDataSource(IDataSource):
                 logger.info("使用easyquotation获取股票基本信息")
                 quotation = self.eq.use("sina")  # 使用sina源
                 data = quotation.real([normalized_symbol])  # 获取实时数据，其中包含基本信息
-                logger.info(f"easyquotation返回数据类型: {type(data)}")
+                logger.info("easyquotation返回数据类型: %s", type(data))
                 if data and normalized_symbol in data:
                     logger.info("easyquotation获取到股票数据")
                     # 转换为DataFrame格式
                     df = pd.DataFrame([data[normalized_symbol]])
-                    logger.info(f"easyquotation返回数据行数: {len(df)}")
+                    logger.info("easyquotation返回数据行数: %s", len(df))
                     # 验证和清洗数据
                     cleaned_data = self._validate_and_clean_data(df, "stock")
                     return cleaned_data.iloc[0].to_dict()
                 else:
                     logger.warning("easyquotation未获取到股票数据")
             except Exception as e:
-                logger.error(f"easyquotation获取股票基本信息失败: {e}")
+                logger.error("easyquotation获取股票基本信息失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -581,7 +580,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             pd.DataFrame: 指数成分股数据
         """
-        logger.info(f"尝试获取指数 {index_code} 的成分股数据...")
+        logger.info("尝试获取指数 %s 的成分股数据...", index_code)
 
         # 参数验证
         if not index_code:
@@ -591,7 +590,7 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_index_code = symbol_utils.normalize_stock_code(index_code)
         if not normalized_index_code:
-            logger.error(f"无效的指数代码: {index_code}")
+            logger.error("无效的指数代码: %s", index_code)
             return pd.DataFrame()
 
         if not self.efinance_available and not self.easyquotation_available:
@@ -600,21 +599,21 @@ class FinancialDataSource(IDataSource):
 
         try:
             # 使用efinance的stock.get_members方法获取指数成分股
-            logger.info(f"使用efinance获取指数 {index_code} 的成分股数据")
+            logger.info("使用efinance获取指数 %s 的成分股数据", index_code)
             df = self.ef.stock.get_members(normalized_index_code)
 
             # 检查返回的数据是否有效
-            logger.info(f"efinance返回数据类型: {type(df)}")
+            logger.info("efinance返回数据类型: %s", type(df))
             if df is not None and not df.empty:
-                logger.info(f"成功获取指数{index_code}的成分股数据，共{len(df)}只股票")
+                logger.info("成功获取指数%s的成分股数据，共%s只股票", index_code, len(df))
                 # 验证和清洗数据
                 cleaned_data = self._validate_and_clean_data(df, "stock")
                 return cleaned_data
             else:
-                logger.warning(f"获取指数{index_code}的成分股数据为空")
+                logger.warning("获取指数%s的成分股数据为空", index_code)
                 return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取指数{index_code}的成分股数据时发生错误: {str(e)}")
+            logger.error("获取指数%s的成分股数据时发生错误: %s", index_code, str(e))
             import traceback
 
             logger.error(traceback.format_exc())
@@ -630,7 +629,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             DataFrame: 包含实时数据的DataFrame
         """
-        logger.info(f"尝试获取实时数据: symbol={symbol}")
+        logger.info("尝试获取实时数据: symbol=%s", symbol)
 
         # 参数验证
         if symbol and not isinstance(symbol, str):
@@ -643,7 +642,7 @@ class FinancialDataSource(IDataSource):
         # 尝试从缓存中获取数据
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"使用缓存数据: {cache_key}")
+            logger.info("使用缓存数据: %s", cache_key)
             return cached_data
 
         # 首先尝试使用efinance获取数据
@@ -653,11 +652,11 @@ class FinancialDataSource(IDataSource):
                     # 使用symbol_utils标准化股票代码
                     normalized_symbol = symbol_utils.normalize_stock_code(symbol)
                     if not normalized_symbol:
-                        logger.error(f"无效的股票代码: {symbol}")
+                        logger.error("无效的股票代码: %s", symbol)
                         return pd.DataFrame()
 
                     # 获取特定股票的实时数据
-                    logger.info(f"获取特定股票实时数据: {normalized_symbol}")
+                    logger.info("获取特定股票实时数据: %s", normalized_symbol)
                     data = self.ef.stock.get_realtime_quotes(symbol=normalized_symbol)
                 else:
                     # 获取市场快照（仅支持A股市场）
@@ -675,16 +674,16 @@ class FinancialDataSource(IDataSource):
                             if isinstance(index_data, pd.DataFrame) and not index_data.empty:
                                 data = pd.concat([data, index_data], ignore_index=True)
                         except Exception as e:
-                            logger.error(f"获取指数{index_code}数据失败: {e}")
+                            logger.error("获取指数%s数据失败: %s", index_code, e)
                             import traceback
 
                             logger.error(traceback.format_exc())
 
-                logger.info(f"efinance返回数据类型: {type(data)}")
+                logger.info("efinance返回数据类型: %s", type(data))
                 if isinstance(data, pd.DataFrame):
-                    logger.info(f"efinance返回数据行数: {len(data)}")
+                    logger.info("efinance返回数据行数: %s", len(data))
                     if not data.empty:
-                        logger.info(f"efinance获取到{len(data)}行实时数据")
+                        logger.info("efinance获取到%s行实时数据", len(data))
                         # 验证和清洗数据
                         cleaned_data = self._validate_and_clean_data(data, "stock")
                         # 保存到缓存
@@ -694,10 +693,10 @@ class FinancialDataSource(IDataSource):
                         logger.warning("efinance返回空数据")
                         return pd.DataFrame()
                 else:
-                    logger.error(f"efinance返回数据类型不正确: {type(data)}")
+                    logger.error("efinance返回数据类型不正确: %s", type(data))
                     return pd.DataFrame()
             except Exception as e:
-                logger.error(f"efinance获取实时数据失败: {e}")
+                logger.error("efinance获取实时数据失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -713,11 +712,11 @@ class FinancialDataSource(IDataSource):
                     # 使用symbol_utils标准化股票代码
                     normalized_symbol = symbol_utils.normalize_stock_code(symbol)
                     if not normalized_symbol:
-                        logger.error(f"无效的股票代码: {symbol}")
+                        logger.error("无效的股票代码: %s", symbol)
                         return pd.DataFrame()
 
                     # 获取特定股票的实时数据
-                    logger.info(f"获取特定股票实时数据: {normalized_symbol}")
+                    logger.info("获取特定股票实时数据: %s", normalized_symbol)
                     data = quotation.real([normalized_symbol])
                     if data and normalized_symbol in data:
                         logger.info("easyquotation获取到股票数据")
@@ -751,7 +750,7 @@ class FinancialDataSource(IDataSource):
                     ]
                     data = quotation.real(stock_codes)
                     if data:
-                        logger.info(f"easyquotation获取到{len(data)}只股票数据")
+                        logger.info("easyquotation获取到%s只股票数据", len(data))
                         # 转换为DataFrame格式
                         df = pd.DataFrame(data).T  # 转置以使每行代表一只股票
                         # 验证和清洗数据
@@ -764,7 +763,7 @@ class FinancialDataSource(IDataSource):
                         return pd.DataFrame()
 
             except Exception as e:
-                logger.error(f"easyquotation获取实时数据失败: {e}")
+                logger.error("easyquotation获取实时数据失败: %s", e)
                 import traceback
 
                 logger.error(traceback.format_exc())
@@ -784,7 +783,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             DataFrame: 包含股票财务数据的DataFrame
         """
-        logger.info(f"尝试获取财务数据: {symbol}, period: {period}")
+        logger.info("尝试获取财务数据: %s, period: %s", symbol, period)
 
         # 参数验证
         if not symbol:
@@ -794,11 +793,11 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_symbol = symbol_utils.normalize_stock_code(symbol)
         if not normalized_symbol:
-            logger.error(f"无效的股票代码: {symbol}")
+            logger.error("无效的股票代码: %s", symbol)
             return pd.DataFrame()
 
         if period not in ["annual", "quarterly"]:
-            logger.warning(f"不支持的报告期类型: {period}，将使用默认年报类型")
+            logger.warning("不支持的报告期类型: %s，将使用默认年报类型", period)
             period = "annual"
 
         if not self.efinance_available:
@@ -811,7 +810,7 @@ class FinancialDataSource(IDataSource):
         # 尝试从缓存中获取数据
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"使用缓存数据: {cache_key}")
+            logger.info("使用缓存数据: %s", cache_key)
             return cached_data
 
         try:
@@ -825,7 +824,7 @@ class FinancialDataSource(IDataSource):
                     # 注释掉不存在的方法调用
                     # financial_summary = self.ef.stock.get_stock_financial_analysis(normalized_symbol)
                     # if financial_summary is not None and not financial_summary.empty:
-                    #     logger.info(f"efinance获取到个股财务摘要数据: {len(financial_summary)}行")
+                    #     logger.info("efinance获取到个股财务摘要数据: %s行", len(financial_summary))
                     #     # 验证和清洗数据
                     #     cleaned_data = self._validate_and_clean_data(financial_summary, "financial")
                     #     # 保存到缓存
@@ -833,7 +832,7 @@ class FinancialDataSource(IDataSource):
                     #     return cleaned_data
                     pass  # 占位符，避免空的try块
                 except Exception as e:
-                    logger.error(f"获取个股财务摘要数据失败: {e}")
+                    logger.error("获取个股财务摘要数据失败: %s", e)
                     import traceback
 
                     logger.error(traceback.format_exc())
@@ -850,7 +849,7 @@ class FinancialDataSource(IDataSource):
                     ]
 
                     if not filtered_data.empty:
-                        logger.info(f"efinance获取到{len(filtered_data)}行财务数据")
+                        logger.info("efinance获取到%s行财务数据", len(filtered_data))
                         # 添加报告期类型标识
                         filtered_data = filtered_data.copy()  # 创建副本避免SettingWithCopyWarning
                         filtered_data.loc[:, "报告期类型"] = "annual"
@@ -873,7 +872,7 @@ class FinancialDataSource(IDataSource):
                     # pylint: disable=no-member
                     quarterly_data = self.ef.stock.get_quarterly_performance(normalized_symbol)
                     if quarterly_data is not None and not quarterly_data.empty:
-                        logger.info(f"efinance获取到{len(quarterly_data)}行季报数据")
+                        logger.info("efinance获取到%s行季报数据", len(quarterly_data))
                         # 添加报告期类型标识
                         quarterly_data = quarterly_data.copy()  # 创建副本避免SettingWithCopyWarning
                         quarterly_data.loc[:, "报告期类型"] = "quarterly"
@@ -886,13 +885,13 @@ class FinancialDataSource(IDataSource):
                         logger.warning("efinance未获取到季报数据")
                         return pd.DataFrame()
                 except Exception as e:
-                    logger.error(f"获取季报数据失败: {e}")
+                    logger.error("获取季报数据失败: %s", e)
                     import traceback
 
                     logger.error(traceback.format_exc())
                     return pd.DataFrame()
         except Exception as e:
-            logger.error(f"efinance获取财务数据失败: {e}")
+            logger.error("efinance获取财务数据失败: %s", e)
             import traceback
 
             logger.error(traceback.format_exc())
@@ -916,18 +915,18 @@ class FinancialDataSource(IDataSource):
         # 尝试从缓存中获取数据
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"使用缓存数据: {cache_key}")
+            logger.info("使用缓存数据: %s", cache_key)
             return cached_data
 
         try:
             # 使用efinance获取交易日历
             logger.info("使用efinance获取交易日历")
             data = self.ef.stock.get_all_report_dates()
-            logger.info(f"efinance返回数据类型: {type(data)}")
+            logger.info("efinance返回数据类型: %s", type(data))
             if isinstance(data, pd.DataFrame):
-                logger.info(f"efinance返回数据行数: {len(data)}")
+                logger.info("efinance返回数据行数: %s", len(data))
                 if not data.empty:
-                    logger.info(f"efinance获取到{len(data)}个交易日")
+                    logger.info("efinance获取到%s个交易日", len(data))
                     # 保存到缓存
                     self._save_to_cache(cache_key, data)
                     return data
@@ -935,10 +934,10 @@ class FinancialDataSource(IDataSource):
                     logger.warning("efinance未获取到交易日历")
                     return pd.DataFrame()
             else:
-                logger.error(f"efinance返回数据类型不正确: {type(data)}")
+                logger.error("efinance返回数据类型不正确: %s", type(data))
                 return pd.DataFrame()
         except Exception as e:
-            logger.error(f"efinance获取交易日历失败: {e}")
+            logger.error("efinance获取交易日历失败: %s", e)
             import traceback
 
             logger.error(traceback.format_exc())
@@ -954,7 +953,7 @@ class FinancialDataSource(IDataSource):
         Returns:
             DataFrame: 包含股票新闻数据的DataFrame
         """
-        logger.info(f"尝试获取股票新闻数据: {symbol}")
+        logger.info("尝试获取股票新闻数据: %s", symbol)
 
         # 参数验证
         if not symbol:
@@ -964,7 +963,7 @@ class FinancialDataSource(IDataSource):
         # 使用symbol_utils标准化股票代码
         normalized_symbol = symbol_utils.normalize_stock_code(symbol)
         if not normalized_symbol:
-            logger.error(f"无效的股票代码: {symbol}")
+            logger.error("无效的股票代码: %s", symbol)
             return pd.DataFrame()
 
         if not self.efinance_available:
@@ -977,7 +976,7 @@ class FinancialDataSource(IDataSource):
         # 尝试从缓存中获取数据
         cached_data = self._get_from_cache(cache_key)
         if cached_data is not None:
-            logger.info(f"使用缓存数据: {cache_key}")
+            logger.info("使用缓存数据: %s", cache_key)
             return cached_data
 
         try:
@@ -988,7 +987,7 @@ class FinancialDataSource(IDataSource):
             logger.warning("efinance暂不支持获取新闻数据")
             return pd.DataFrame()
         except Exception as e:
-            logger.error(f"efinance获取股票新闻数据失败: {e}")
+            logger.error("efinance获取股票新闻数据失败: %s", e)
             import traceback
 
             logger.error(traceback.format_exc())
@@ -1010,7 +1009,7 @@ class FinancialDataSource(IDataSource):
             return pd.DataFrame()
 
         try:
-            logger.info(f"开始验证和清洗{data_type}数据，原始行数: {len(data)}")
+            logger.info("开始验证和清洗%s数据，原始行数: %s", data_type, len(data))
 
             # 创建数据副本以避免修改原始数据
             cleaned_data = data.copy()
@@ -1020,7 +1019,7 @@ class FinancialDataSource(IDataSource):
             initial_rows = len(cleaned_data)
             cleaned_data = cleaned_data.drop_duplicates()
             if len(cleaned_data) < initial_rows:
-                logger.info(f"删除了{initial_rows - len(cleaned_data)}行完全重复的数据")
+                logger.info("删除了%s行完全重复的数据", initial_rows - len(cleaned_data))
 
             # 2. 处理缺失值
             # 对于数值列，用前向填充或后向填充填补缺失值
@@ -1035,7 +1034,7 @@ class FinancialDataSource(IDataSource):
                         mean_value = cleaned_data[col].mean()
                         # 替换使用inplace=True的fillna方法
                         cleaned_data.loc[:, col] = cleaned_data[col].fillna(mean_value)
-                        logger.info(f"使用均值 {mean_value} 填充列 {col} 的缺失值")
+                        logger.info("使用均值 %s 填充列 %s 的缺失值", mean_value, col)
 
             # 3. 数据类型转换和验证
             if data_type == "stock" or data_type == "index":
@@ -1047,7 +1046,7 @@ class FinancialDataSource(IDataSource):
                     # 删除日期转换失败的行
                     invalid_date_rows = cleaned_data["日期"].isna().sum()
                     if invalid_date_rows > 0:
-                        logger.info(f"删除了{invalid_date_rows}行日期无效的数据")
+                        logger.info("删除了%s行日期无效的数据", invalid_date_rows)
                         cleaned_data = cleaned_data.dropna(subset=["日期"])
 
                     # 检查日期是否在合理范围内（1990年至今）
@@ -1058,7 +1057,7 @@ class FinancialDataSource(IDataSource):
                     invalid_dates = ~valid_date_range
                     invalid_date_count = invalid_dates.sum()
                     if invalid_date_count > 0:
-                        logger.info(f"删除了{invalid_date_count}行日期超出合理范围的数据")
+                        logger.info("删除了%s行日期超出合理范围的数据", invalid_date_count)
                         cleaned_data = cleaned_data[valid_date_range]
 
                 # 确保价格相关列是数值类型
@@ -1070,7 +1069,7 @@ class FinancialDataSource(IDataSource):
                         # 删除数值转换失败的行
                         invalid_numeric_rows = cleaned_data[col].isna().sum()
                         if invalid_numeric_rows > 0:
-                            logger.info(f"发现{invalid_numeric_rows}行{col}列数据无效")
+                            logger.info("发现%s行%s列数据无效", invalid_numeric_rows, col)
                             # 如果是价格列，尝试用其他价格列的数据推算
                             if (
                                 col in ["开盘", "收盘", "最高", "最低"]
@@ -1079,7 +1078,7 @@ class FinancialDataSource(IDataSource):
                                 # 简单的前向和后向填充
                                 # 替换已弃用的fillna(method='ffill')方法
                                 cleaned_data[col] = cleaned_data[col].ffill().bfill()
-                                logger.info(f"使用前向/后向填充处理{col}列的缺失值")
+                                logger.info("使用前向/后向填充处理%s列的缺失值", col)
 
             elif data_type == "financial":
                 # 财务数据特殊处理
@@ -1095,7 +1094,7 @@ class FinancialDataSource(IDataSource):
                     # 记录转换结果
                     converted_count = (cleaned_data[col].notna() & original_values.notna()).sum()
                     if converted_count > 0:
-                        logger.info(f"成功转换{converted_count}个{col}列的字符串值为数值")
+                        logger.info("成功转换%s个%s列的字符串值为数值", converted_count, col)
 
             # 4. 数据范围验证
             if data_type == "stock" or data_type == "index":
@@ -1106,7 +1105,7 @@ class FinancialDataSource(IDataSource):
                         (cleaned_data["收盘"] < 0) | (cleaned_data["收盘"] > 100000)
                     ].shape[0]
                     if invalid_price_rows > 0:
-                        logger.info(f"删除了{invalid_price_rows}行价格异常的数据")
+                        logger.info("删除了%s行价格异常的数据", invalid_price_rows)
                         cleaned_data = cleaned_data[(cleaned_data["收盘"] >= 0) & (cleaned_data["收盘"] <= 100000)]
 
                 # 验证最高价、最低价、开盘价与收盘价的合理性
@@ -1120,7 +1119,7 @@ class FinancialDataSource(IDataSource):
                         | (cleaned_data["收盘"] < cleaned_data["最低"])
                     ].shape[0]
                     if invalid_price_relation_rows > 0:
-                        logger.info(f"发现{invalid_price_relation_rows}行价格关系异常的数据")
+                        logger.info("发现%s行价格关系异常的数据", invalid_price_relation_rows)
                         # 对于价格关系异常的数据，我们可以尝试修复而不是直接删除
                         # 例如，将最高价设置为四个价格中的最大值
                         price_cols = ["开盘", "收盘", "最高", "最低"]
@@ -1137,10 +1136,10 @@ class FinancialDataSource(IDataSource):
                 cleaned_data = cleaned_data.sort_values("日期").reset_index(drop=True)
                 logger.info("数据已按日期排序")
 
-            logger.info(f"数据清洗完成，清洗后行数: {len(cleaned_data)}")
+            logger.info("数据清洗完成，清洗后行数: %s", len(cleaned_data))
             return cleaned_data
         except Exception as e:
-            logger.error(f"数据验证和清洗过程中发生错误: {e}")
+            logger.error("数据验证和清洗过程中发生错误: %s", e)
             import traceback
 
             logger.error(traceback.format_exc())

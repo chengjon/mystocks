@@ -149,7 +149,7 @@ class DeviceHealthMonitor:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in health monitoring loop: {e}")
+                logger.error("Error in health monitoring loop: %s", e)
                 await asyncio.sleep(self.check_interval)
 
     async def _perform_health_check(self):
@@ -167,7 +167,7 @@ class DeviceHealthMonitor:
             self.stats["total_checks"] += 1
 
         except Exception as e:
-            logger.error(f"Error performing health check: {e}")
+            logger.error("Error performing health check: %s", e)
 
     async def _check_device_health(self, device_id: int):
         """检查单个设备健康状态"""
@@ -215,7 +215,7 @@ class DeviceHealthMonitor:
                 await self._handle_device_failure(device_id)
 
         except Exception as e:
-            logger.error(f"Error checking device {device_id} health: {e}")
+            logger.error("Error checking device %s health: %s", device_id, e)
             await self._mark_device_failed(device_id, str(e))
 
     def _check_performance_thresholds(self, device_id: int, metrics: Dict[str, float]) -> List[AlertType]:
@@ -277,14 +277,14 @@ class DeviceHealthMonitor:
             "message": self._generate_alert_message(alert_type, metrics),
         }
 
-        logger.warning(f"GPU Alert: {alert_data['message']}")
+        logger.warning("GPU Alert: %s", alert_data["message"])
 
         # 调用告警回调
         for callback in self.alert_callbacks:
             try:
                 await callback(alert_data)
             except Exception as e:
-                logger.error(f"Error in alert callback: {e}")
+                logger.error("Error in alert callback: %s", e)
 
     def _generate_alert_message(self, alert_type: AlertType, metrics: Dict[str, float]) -> str:
         """生成告警消息"""
@@ -302,13 +302,13 @@ class DeviceHealthMonitor:
 
     async def _handle_device_failure(self, device_id: int) -> FailureResponse:
         """处理设备故障"""
-        logger.error(f"Handling device failure for GPU {device_id}")
+        logger.error("Handling device failure for GPU %s", device_id)
         self.stats["failures_handled"] += 1
 
         # 执行渐进式降级
         for i, recovery_strategy in enumerate(self.recovery_strategies):
             try:
-                logger.info(f"Attempting recovery strategy {i + 1}: {recovery_strategy.__name__}")
+                logger.info("Attempting recovery strategy %s: %s", i + 1, recovery_strategy.__name__)
 
                 start_time = time.time()
                 result = await recovery_strategy(device_id)
@@ -316,15 +316,15 @@ class DeviceHealthMonitor:
 
                 if result.success:
                     self.stats["recoveries_completed"] += 1
-                    logger.info(f"Recovery strategy {i + 1} succeeded for device {device_id}")
+                    logger.info("Recovery strategy %s succeeded for device %s", i + 1, device_id)
                     return result
 
             except Exception as e:
-                logger.error(f"Recovery strategy {i + 1} failed for device {device_id}: {e}")
+                logger.error("Recovery strategy %s failed for device %s: %s", i + 1, device_id, e)
                 continue
 
         # 所有恢复策略都失败
-        logger.error(f"All recovery strategies failed for device {device_id}")
+        logger.error("All recovery strategies failed for device %s", device_id)
         return FailureResponse(
             success=False,
             action_taken="All recovery strategies failed",
@@ -339,7 +339,7 @@ class DeviceHealthMonitor:
             # 模拟操作
             await asyncio.sleep(0.01)  # 10ms切换时间
 
-            logger.info(f"Switched to backup stream for device {device_id}")
+            logger.info("Switched to backup stream for device %s", device_id)
             return FailureResponse(
                 success=True,
                 action_taken="Switched to backup stream",
@@ -347,7 +347,7 @@ class DeviceHealthMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Failed to switch to backup stream for device {device_id}: {e}")
+            logger.error("Failed to switch to backup stream for device %s: %s", device_id, e)
             return FailureResponse(
                 success=False,
                 action_taken="Backup stream switch failed",
@@ -363,7 +363,7 @@ class DeviceHealthMonitor:
             ]
 
             if not available_devices:
-                logger.warning(f"No backup GPU available for device {device_id}")
+                logger.warning("No backup GPU available for device %s", device_id)
                 return FailureResponse(success=False, action_taken="No backup GPU available")
 
             # 选择最佳备用GPU（内存最多，利用率最低）
@@ -375,7 +375,7 @@ class DeviceHealthMonitor:
             # 模拟迁移过程
             await asyncio.sleep(0.05)  # 50ms迁移时间
 
-            logger.info(f"Migrated from device {device_id} to backup device {backup_device.device_id}")
+            logger.info("Migrated from device %s to backup device %s", device_id, backup_device.device_id)
             return FailureResponse(
                 success=True,
                 action_taken="Migrated to backup GPU",
@@ -384,7 +384,7 @@ class DeviceHealthMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Failed to migrate to backup GPU for device {device_id}: {e}")
+            logger.error("Failed to migrate to backup GPU for device %s: %s", device_id, e)
             return FailureResponse(
                 success=False,
                 action_taken="Backup GPU migration failed",
@@ -406,7 +406,7 @@ class DeviceHealthMonitor:
             # 模拟CPU降级过程
             await asyncio.sleep(0.1)  # 100ms降级时间
 
-            logger.info(f"Fallback to CPU for device {device_id}")
+            logger.info("Fallback to CPU for device %s", device_id)
             return FailureResponse(
                 success=True,
                 action_taken="Fallback to CPU",
@@ -415,7 +415,7 @@ class DeviceHealthMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Failed to fallback to CPU for device {device_id}: {e}")
+            logger.error("Failed to fallback to CPU for device %s: %s", device_id, e)
             return FailureResponse(success=False, action_taken="CPU fallback failed", error_details=str(e))
 
     async def _mark_device_failed(self, device_id: int, error_message: str):
@@ -435,7 +435,7 @@ class DeviceHealthMonitor:
         device_health.consecutive_failures += 1
         device_health.last_error_time = time.time()
 
-        logger.error(f"Device {device_id} marked as failed: {error_message}")
+        logger.error("Device %s marked as failed: %s", device_id, error_message)
 
     def check_performance_thresholds(self, device_id: int) -> List[str]:
         """检查性能阈值（同步接口）"""
@@ -460,14 +460,14 @@ class DeviceHealthMonitor:
             "source": "proactive",
         }
 
-        logger.warning(f"Proactive GPU Alert: {message}")
+        logger.warning("Proactive GPU Alert: %s", message)
 
         # 调用告警回调
         for callback in self.alert_callbacks:
             try:
                 asyncio.create_task(callback(alert_data))
             except Exception as e:
-                logger.error(f"Error in proactive alert callback: {e}")
+                logger.error("Error in proactive alert callback: %s", e)
 
     def add_alert_callback(self, callback: Callable):
         """添加告警回调函数"""

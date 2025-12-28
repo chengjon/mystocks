@@ -51,10 +51,10 @@ def test_data_classification_strategy():
     symbols_target = DataManager().get_target_database(DataClassification.SYMBOLS_INFO)
 
     logger.info("📊 数据分类路由验证:")
-    logger.info(f"   REALTIME_POSITIONS → {realtime_target.value}")
-    logger.info(f"   TICK_DATA → {tick_target.value}")
-    logger.info(f"   DAILY_KLINE → {daily_target.value}")
-    logger.info(f"   SYMBOLS_INFO → {symbols_target.value}")
+    logger.info("   REALTIME_POSITIONS → %s", realtime_target.value)
+    logger.info("   TICK_DATA → %s", tick_target.value)
+    logger.info("   DAILY_KLINE → %s", daily_target.value)
+    logger.info("   SYMBOLS_INFO → %s", symbols_target.value)
 
     # 验证路由是否符合设计原则
     expected_routing = {
@@ -68,9 +68,7 @@ def test_data_classification_strategy():
     for classification, expected_target in expected_routing.items():
         actual_target = DataManager().get_target_database(classification)
         if actual_target != expected_target:
-            logger.error(
-                f"❌ 路由错误: {classification.value} 期望→{expected_target.value}, 实际→{actual_target.value}"
-            )
+            logger.error("❌ 路由错误: %s 期望→%s, 实际→%s", classification.value, expected_target.value, actual_target.value)
             routing_correct = False
 
     if routing_correct:
@@ -105,30 +103,30 @@ def test_unified_manager_initialization():
         success_count = sum(1 for success in tables_created.values() if success)
         total_count = len(tables_created)
 
-        logger.info(f"📊 表创建状态: {success_count}/{total_count}")
+        logger.info("📊 表创建状态: %s/%s", success_count, total_count)
 
         # 检查监控系统
         monitoring_init = init_result.get("monitoring_initialized", False)
-        logger.info(f"📈 监控系统: {'已初始化' if monitoring_init else '未初始化'}")
+        logger.info("📈 监控系统: %s", '已初始化' if monitoring_init else '未初始化')
 
         # 检查自动化维护
         maintenance_started = init_result.get("maintenance_started", False)
-        logger.info(f"🔧 自动化维护: {'已启动' if maintenance_started else '未启动'}")
+        logger.info("🔧 自动化维护: %s", '已启动' if maintenance_started else '未启动')
 
         # 获取系统状态
         try:
             status = unified_manager.get_system_status()
             monitoring = status.get("monitoring", {})
             op_stats = monitoring.get("operation_statistics", {})
-            logger.info(f"📊 系统操作统计: {op_stats.get('total_operations', 0)} 次操作")
+            logger.info("📊 系统操作统计: %s 次操作", op_stats.get('total_operations', 0))
         except Exception as e:
-            logger.warning(f"⚠️ 无法获取系统状态: {e}")
+            logger.warning("⚠️ 无法获取系统状态: %s", e)
 
         logger.info("✅ 统一管理器初始化验证通过")
         return True, unified_manager
 
     except Exception as e:
-        logger.error(f"❌ 统一管理器初始化失败: {e}")
+        logger.error("❌ 统一管理器初始化失败: %s", e)
         return False, None
 
 
@@ -153,19 +151,19 @@ def test_data_source_integration():
             data = customer_ds.get_real_time_data("hs")
 
             if data is not None and hasattr(data, "empty") and not data.empty:
-                logger.info(f"✅ 数据获取成功: {len(data)} 行, {len(data.columns)} 列")
-                logger.info(f"📋 数据列名: {list(data.columns)[:5]}...")  # 只显示前5列
+                logger.info("✅ 数据获取成功: %s 行, %s 列", len(data), len(data.columns))
+                logger.info("📋 数据列名: %s...", list(data.columns)[)  # 只显示前5列
                 return True, data
             else:
                 logger.warning("⚠️ 获取到空数据")
                 return False, None
 
         except Exception as e:
-            logger.error(f"❌ 数据获取失败: {e}")
+            logger.error("❌ 数据获取失败: %s", e)
             return False, None
 
     except Exception as e:
-        logger.error(f"❌ 数据源集成验证失败: {e}")
+        logger.error("❌ 数据源集成验证失败: %s", e)
         return False, None
 
 
@@ -199,12 +197,12 @@ def test_unified_interface_save(unified_manager, sample_data):
             loaded_data = unified_manager.load_data_by_classification(DataClassification.REALTIME_POSITIONS, limit=5)
 
             if not loaded_data.empty:
-                logger.info(f"✅ 实时数据查询成功: {len(loaded_data)} 条记录")
+                logger.info("✅ 实时数据查询成功: %s 条记录", len(loaded_data))
             else:
                 logger.info("📊 查询结果为空（可能是Redis配置或数据过期）")
 
         except Exception as e:
-            logger.warning(f"⚠️ 数据查询测试异常: {e}")
+            logger.warning("⚠️ 数据查询测试异常: %s", e)
 
         # 获取系统状态验证操作记录
         try:
@@ -215,16 +213,16 @@ def test_unified_interface_save(unified_manager, sample_data):
             total_ops = op_stats.get("total_operations", 0)
             success_ops = op_stats.get("successful_operations", 0)
 
-            logger.info(f"📊 系统操作统计更新: 总计{total_ops}次, 成功{success_ops}次")
+            logger.info("📊 系统操作统计更新: 总计%s次, 成功%s次", total_ops, success_ops)
 
         except Exception as e:
-            logger.warning(f"⚠️ 无法获取操作统计: {e}")
+            logger.warning("⚠️ 无法获取操作统计: %s", e)
 
         logger.info("✅ 统一接口保存验证完成")
         return True
 
     except Exception as e:
-        logger.error(f"❌ 统一接口保存验证失败: {e}")
+        logger.error("❌ 统一接口保存验证失败: %s", e)
         return False
 
 
@@ -248,7 +246,7 @@ def test_architecture_consistency():
 
         logger.info("📋 MyStocks系统设计原则:")
         for i, (principle, description) in enumerate(principles, 1):
-            logger.info(f"   {i}. {principle}: {description}")
+            logger.info("   %s. %s: %s", i, principle, description)
 
         # 验证关键组件
         components = {
@@ -263,15 +261,15 @@ def test_architecture_consistency():
         for module, description in components.items():
             try:
                 __import__(module)
-                logger.info(f"   ✅ {description} ({module})")
+                logger.info("   ✅ %s (%s)", description, module)
             except ImportError:
-                logger.warning(f"   ⚠️ {description} ({module}) - 模块未找到")
+                logger.warning("   ⚠️ %s (%s) - 模块未找到", description, module)
 
         logger.info("✅ 架构一致性验证通过")
         return True
 
     except Exception as e:
-        logger.error(f"❌ 架构一致性验证失败: {e}")
+        logger.error("❌ 架构一致性验证失败: %s", e)
         return False
 
 

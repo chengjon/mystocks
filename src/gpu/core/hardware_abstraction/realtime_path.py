@@ -29,7 +29,7 @@ class KernelCompiler:
 
         try:
             # 模拟核函数编译过程
-            logger.debug(f"Compiling kernel: {kernel_name}")
+            logger.debug("Compiling kernel: %s", kernel_name)
 
             # 这里需要实际的GPU核函数编译逻辑
             # 例如使用CUDA NVRTC或类似的编译器
@@ -58,11 +58,11 @@ class KernelCompiler:
             self.compiled_kernels[kernel_name] = kernel_info
             self.compilation_cache[kernel_name] = True
 
-            logger.info(f"Kernel {kernel_name} compiled successfully")
+            logger.info("Kernel %s compiled successfully", kernel_name)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to compile kernel {kernel_name}: {e}")
+            logger.error("Failed to compile kernel %s: %s", kernel_name, e)
             self.compilation_cache[kernel_name] = False
             return False
 
@@ -87,7 +87,7 @@ class MemoryPrewarmer:
     async def allocate_and_lock_pools(self, device_id: int, total_memory_mb: int) -> bool:
         """分配并锁定内存池"""
         try:
-            logger.info(f"Allocating and locking {total_memory_mb}MB memory pool on device {device_id}")
+            logger.info("Allocating and locking %sMB memory pool on device %s", total_memory_mb, device_id)
 
             # 模拟内存分配
             allocation_time = total_memory_mb / 10000  # 分配时间与内存大小相关
@@ -105,11 +105,11 @@ class MemoryPrewarmer:
 
             self.locked_memory_blocks[device_id] = memory_blocks
 
-            logger.info(f"Memory pool allocated and locked on device {device_id}: {total_memory_mb}MB")
+            logger.info("Memory pool allocated and locked on device %s: %sMB", device_id, total_memory_mb)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to allocate memory pool on device {device_id}: {e}")
+            logger.error("Failed to allocate memory pool on device %s: %s", device_id, e)
             return False
 
     def release_locked_pools(self, device_id: int) -> bool:
@@ -124,11 +124,11 @@ class MemoryPrewarmer:
 
             del self.locked_memory_blocks[device_id]
 
-            logger.info(f"Memory pool released on device {device_id}")
+            logger.info("Memory pool released on device %s", device_id)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to release memory pool on device {device_id}: {e}")
+            logger.error("Failed to release memory pool on device %s: %s", device_id, e)
             return False
 
     def get_prewarm_status(self) -> Dict[str, Any]:
@@ -152,7 +152,7 @@ class MarketDataCache:
     async def load_market_data_to_gpu(self, market_data: np.ndarray, data_key: str = "default") -> bool:
         """加载行情数据到GPU"""
         try:
-            logger.debug(f"Loading market data to GPU: {data_key}, shape: {market_data.shape}")
+            logger.debug("Loading market data to GPU: %s, shape: %s", data_key, market_data.shape)
 
             # 模拟GPU数据传输
             transfer_time = market_data.nbytes / (1024 * 1024 * 1024)  # 传输时间与数据大小相关
@@ -172,11 +172,11 @@ class MarketDataCache:
                 "last_access": time.time(),
             }
 
-            logger.debug(f"Market data loaded to GPU: {data_key}, ptr: {gpu_ptr}")
+            logger.debug("Market data loaded to GPU: %s, ptr: %s", data_key, gpu_ptr)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to load market data to GPU: {e}")
+            logger.error("Failed to load market data to GPU: %s", e)
             return False
 
     def get_cached_data(self, data_key: str) -> Optional[np.ndarray]:
@@ -197,7 +197,7 @@ class MarketDataCache:
             self.cached_data.clear()
             self.cache_metadata.clear()
 
-        logger.debug(f"Cache cleared: {'all' if data_key is None else data_key}")
+        logger.debug("Cache cleared: %s", "all" if data_key is None else data_key)
 
     def get_cache_status(self) -> Dict[str, Any]:
         """获取缓存状态"""
@@ -281,11 +281,11 @@ class RealTimeGPUPath(IRealTimeExecutor):
             self.prewarm_time = time.time()
             prewarm_duration = (self.prewarm_time - start_time) * 1000
 
-            logger.info(f"GPU prewarming completed in {prewarm_duration:.1f}ms")
+            logger.info("GPU prewarming completed in %sms", prewarm_duration)
             return True
 
         except Exception as e:
-            logger.error(f"Error during GPU prewarming: {e}")
+            logger.error("Error during GPU prewarming: %s", e)
             return False
 
     async def compile_common_kernels(self, kernel_names: List[str]) -> Dict[str, bool]:
@@ -299,13 +299,13 @@ class RealTimeGPUPath(IRealTimeExecutor):
 
         for kernel_name, result in zip(kernel_names, compiled_results):
             if isinstance(result, Exception):
-                logger.error(f"Kernel compilation failed for {kernel_name}: {result}")
+                logger.error("Kernel compilation failed for %s: %s", kernel_name, result)
                 results[kernel_name] = False
             else:
                 results[kernel_name] = result
 
         success_count = sum(1 for success in results.values() if success)
-        logger.info(f"Kernel compilation completed: {success_count}/{len(kernel_names)} successful")
+        logger.info("Kernel compilation completed: %s/%s successful", success_count, len(kernel_names))
 
         return results
 
@@ -330,14 +330,14 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 if success:
                     total_allocated += device_memory_mb
                 else:
-                    logger.error(f"Failed to allocate memory pool for device {device_id}")
+                    logger.error("Failed to allocate memory pool for device %s", device_id)
                     return False
 
-            logger.info(f"Memory pools allocated and locked: {total_allocated}MB total")
+            logger.info("Memory pools allocated and locked: %sMB total", total_allocated)
             return True
 
         except Exception as e:
-            logger.error(f"Error allocating memory pools: {e}")
+            logger.error("Error allocating memory pools: %s", e)
             return False
 
     async def _allocate_memory_pools(self) -> bool:
@@ -369,11 +369,11 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 if success:
                     success_count += 1
 
-            logger.info(f"Market data preloaded: {success_count}/{len(data_configs)} items")
+            logger.info("Market data preloaded: %s/%s items", success_count, len(data_configs))
             return success_count > 0
 
         except Exception as e:
-            logger.error(f"Error preloading market data: {e}")
+            logger.error("Error preloading market data: %s", e)
             return False
 
     async def _prewarm_strategy_contexts(self) -> bool:
@@ -392,9 +392,9 @@ class RealTimeGPUPath(IRealTimeExecutor):
                 success_count += 1
 
             except Exception as e:
-                logger.error(f"Error prewarming strategy {context.get_strategy_id()}: {e}")
+                logger.error("Error prewarming strategy %s: %s", context.get_strategy_id(), e)
 
-        logger.info(f"Strategy contexts prewarmed: {success_count}/{total_strategies}")
+        logger.info("Strategy contexts prewarmed: %s/%s", success_count, total_strategies)
         return success_count == total_strategies
 
     def get_prewarm_status(self) -> Dict[str, Any]:
@@ -436,7 +436,7 @@ class RealTimeGPUPath(IRealTimeExecutor):
             # 尝试即时编译
             success = await self.kernel_compiler.compile_kernel(kernel_name)
             if not success:
-                logger.error(f"Failed to compile kernel {kernel_name}")
+                logger.error("Failed to compile kernel %s", kernel_name)
                 return None
 
             kernel_info = self.kernel_compiler.get_compiled_kernel(kernel_name)

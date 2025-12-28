@@ -87,7 +87,7 @@ class IntegrityChecker:
                     cursor.close()
                     details["total_rows_actual"] += actual_rows
 
-                    logger.info(f"Table {table}: {actual_rows} rows")
+                    logger.info("Table %s: %s rows", table, actual_rows)
 
                     if actual_rows > 0:
                         details["tables_passed"] += 1
@@ -98,7 +98,7 @@ class IntegrityChecker:
                 except Exception as e:
                     details["tables_failed"] += 1
                     details["errors"].append(f"Failed to verify table {table}: {e}")
-                    logger.error(f"Error checking table {table}: {e}")
+                    logger.error("Error checking table %s: %s", table, e)
 
             # 检查行数是否匹配
             if expected_row_count > 0:
@@ -174,7 +174,7 @@ class IntegrityChecker:
                     actual_rows = result if result is not None else 0
                     details["total_rows_actual"] += actual_rows
 
-                    logger.info(f"Table {table}: {actual_rows} rows")
+                    logger.info("Table %s: %s rows", table, actual_rows)
 
                     if actual_rows > 0:
                         details["tables_passed"] += 1
@@ -185,7 +185,7 @@ class IntegrityChecker:
                 except Exception as e:
                     details["tables_failed"] += 1
                     details["errors"].append(f"Failed to verify table {table}: {e}")
-                    logger.error(f"Error checking table {table}: {e}")
+                    logger.error("Error checking table %s: %s", table, e)
 
             # 检查行数是否匹配（在容差范围内）
             if expected_row_count > 0:
@@ -237,11 +237,11 @@ class IntegrityChecker:
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2, ensure_ascii=False)
 
-            logger.info(f"完整性报告已生成: {output_path}")
+            logger.info("完整性报告已生成: %s", output_path)
             return True
 
         except Exception as e:
-            logger.error(f"生成完整性报告失败: {e}")
+            logger.error("生成完整性报告失败: %s", e)
             return False
 
 

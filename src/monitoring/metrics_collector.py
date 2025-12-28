@@ -52,7 +52,7 @@ class MetricsCollector:
         self._initialize_database_metrics()
         self._initialize_business_metrics()
         self._initialize_alerting_metrics()
-        logger.info(f"✅ Initialized {len(self._metrics)} metrics")
+        logger.info("✅ Initialized %s metrics", len(self._metrics))
 
     # ==================== API 指标 ====================
 

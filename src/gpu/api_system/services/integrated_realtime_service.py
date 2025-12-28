@@ -125,12 +125,12 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                         # 检查流超时
                         last_activity = datetime.fromisoformat(stream_info["last_activity"])
                         if current_time - last_activity > timedelta(seconds=self.config["stream_timeout"]):
-                            logger.warning(f"数据流 {stream_id} 超时，关闭流")
+                            logger.warning("数据流 %s 超时，关闭流", stream_id)
                             expired_streams.append(stream_id)
 
                         # 检查流健康状态
                         if stream_info.get("error_count", 0) > 10:
-                            logger.warning(f"数据流 {stream_id} 错误过多，关闭流")
+                            logger.warning("数据流 %s 错误过多，关闭流", stream_id)
                             expired_streams.append(stream_id)
 
                     # 清理过期流
@@ -138,7 +138,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                         self._close_stream(stream_id)
 
             except Exception as e:
-                logger.error(f"监控数据流失败: {e}")
+                logger.error("监控数据流失败: %s", e)
 
     def _cleanup_feature_cache(self):
         """清理过期的特征缓存"""
@@ -158,10 +158,10 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                         del self.feature_cache[key]
 
                     if expired_keys:
-                        logger.info(f"清理了 {len(expired_keys)} 个过期特征缓存")
+                        logger.info("清理了 %s 个过期特征缓存", len(expired_keys))
 
             except Exception as e:
-                logger.error(f"清理特征缓存失败: {e}")
+                logger.error("清理特征缓存失败: %s", e)
 
     def _collect_stats(self):
         """收集性能统计"""
@@ -188,7 +188,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     self.metrics_collector.record_custom_metric("gpu_computation_ratio", gpu_ratio)
 
             except Exception as e:
-                logger.error(f"收集统计信息失败: {e}")
+                logger.error("收集统计信息失败: %s", e)
 
     def StreamMarketData(
         self,
@@ -199,7 +199,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
         stream_id = f"stream_{int(time.time())}_{hash(str(context.peer()))}"
 
         try:
-            logger.info(f"启动市场数据流: {stream_id}")
+            logger.info("启动市场数据流: %s", stream_id)
 
             # 注册数据流
             with self.stream_lock:
@@ -238,7 +238,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     self.stats["total_data_points"] += 1
 
                 except Exception as e:
-                    logger.error(f"处理数据流 {stream_id} 失败: {e}")
+                    logger.error("处理数据流 %s 失败: %s", stream_id, e)
                     with self.stream_lock:
                         if stream_id in self.active_streams:
                             self.active_streams[stream_id]["error_count"] += 1
@@ -249,10 +249,10 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 for response in responses:
                     yield response
 
-            logger.info(f"市场数据流 {stream_id} 正常结束")
+            logger.info("市场数据流 %s 正常结束", stream_id)
 
         except Exception as e:
-            logger.error(f"市场数据流 {stream_id} 异常: {e}")
+            logger.error("市场数据流 %s 异常: %s", stream_id, e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"流处理失败: {e}")
 
@@ -280,7 +280,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     processed_data = self._gpu_process_batch(stock_codes, prices, volumes)
                     self.stats["gpu_computations"] += len(batch)
                 except Exception as e:
-                    logger.warning(f"GPU处理失败，回退到CPU: {e}")
+                    logger.warning("GPU处理失败，回退到CPU: %s", e)
                     processed_data = self._cpu_process_batch(stock_codes, prices, volumes)
                     self.stats["cpu_computations"] += len(batch)
             else:
@@ -298,7 +298,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 responses.append(response)
 
         except Exception as e:
-            logger.error(f"批量处理数据失败: {e}")
+            logger.error("批量处理数据失败: %s", e)
 
         return responses
 
@@ -350,7 +350,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             return processed_data
 
         except Exception as e:
-            logger.error(f"GPU处理批量数据失败: {e}")
+            logger.error("GPU处理批量数据失败: %s", e)
             raise e
 
     def _cpu_process_batch(
@@ -387,7 +387,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 if cache_key in self.feature_cache:
                     cache_data = self.feature_cache[cache_key]
                     if time.time() - cache_data["timestamp"] < self.config["feature_cache_ttl"]:
-                        logger.info(f"使用缓存的特征: {stock_code}")
+                        logger.info("使用缓存的特征: %s", stock_code)
                         self.stats["cache_hits"] += 1
                         return cache_data["response"]
                     else:
@@ -416,7 +416,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                     features = self._compute_features_gpu(historical_data, feature_types)
                     self.stats["gpu_computations"] += 1
                 except Exception as e:
-                    logger.warning(f"GPU计算特征失败，回退到CPU: {e}")
+                    logger.warning("GPU计算特征失败，回退到CPU: %s", e)
                     features = self._compute_features_cpu(historical_data, feature_types)
                     self.stats["cpu_computations"] += 1
             else:
@@ -442,7 +442,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             return response
 
         except Exception as e:
-            logger.error(f"计算特征失败: {e}")
+            logger.error("计算特征失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return FeatureResponse()
@@ -489,7 +489,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             return features
 
         except Exception as e:
-            logger.error(f"GPU计算特征失败: {e}")
+            logger.error("GPU计算特征失败: %s", e)
             raise e
 
     def _compute_features_cpu(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
@@ -543,7 +543,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             return float(rsi)
 
         except Exception as e:
-            logger.error(f"GPU计算RSI失败: {e}")
+            logger.error("GPU计算RSI失败: %s", e)
             return 50.0
 
     def _calculate_rsi_cpu(self, prices: pd.Series) -> float:
@@ -577,7 +577,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 "macd_histogram": float(macd_line.iloc[-1] - signal_line.iloc[-1]),
             }
         except Exception as e:
-            logger.error(f"GPU计算MACD失败: {e}")
+            logger.error("GPU计算MACD失败: %s", e)
             return {"macd": 0.0, "macd_signal": 0.0, "macd_histogram": 0.0}
 
     def _calculate_macd_cpu(self, prices: pd.Series) -> Dict[str, float]:
@@ -608,7 +608,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
                 "bb_lower": float(lower_band.iloc[-1]),
             }
         except Exception as e:
-            logger.error(f"GPU计算布林带失败: {e}")
+            logger.error("GPU计算布林带失败: %s", e)
             return {"bb_upper": 0.0, "bb_middle": 0.0, "bb_lower": 0.0}
 
     def _calculate_bollinger_cpu(self, prices: pd.Series) -> Dict[str, float]:
@@ -631,10 +631,10 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             with self.stream_lock:
                 if stream_id in self.active_streams:
                     stream_info = self.active_streams[stream_id]
-                    logger.info(f"关闭数据流 {stream_id}, 处理了 {stream_info['data_count']} 个数据点")
+                    logger.info("关闭数据流 %s, 处理了 %s 个数据点", stream_id, stream_info["data_count"])
                     del self.active_streams[stream_id]
         except Exception as e:
-            logger.error(f"关闭数据流失败: {e}")
+            logger.error("关闭数据流失败: %s", e)
 
     def GetStreamStats(self, request, context):
         """获取流统计信息"""
@@ -667,7 +667,7 @@ class IntegratedRealTimeService(RealTimeServiceServicer):
             return json.dumps(stats, ensure_ascii=False)
 
         except Exception as e:
-            logger.error(f"获取流统计失败: {e}")
+            logger.error("获取流统计失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return json.dumps({"error": str(e)})

@@ -303,7 +303,7 @@ class QueryPerformanceLogger:
                 if len(self._slow_queries) > self._max_queries:
                     self._slow_queries = self._slow_queries[-self._max_queries :]
 
-                logger.warning(f"Slow query detected ({duration * 1000:.2f}ms): {self._truncate_query(query)}")
+                logger.warning("Slow query detected (%sms): %s", duration * 1000, self._truncate_query(query))
 
     def _truncate_query(self, query: str, max_length: int = 500) -> str:
         """Truncate long queries"""

@@ -121,7 +121,7 @@ class ChartGenerator:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"图表已保存: {save_path}")
+            self.logger.info("图表已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -247,7 +247,7 @@ class ChartGenerator:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"信号图表已保存: {save_path}")
+            self.logger.info("信号图表已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -342,7 +342,7 @@ class ChartGenerator:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"指标图表已保存: {save_path}")
+            self.logger.info("指标图表已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -470,7 +470,7 @@ class ChartGenerator:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"完整图表已保存: {save_path}")
+            self.logger.info("完整图表已保存: %s", save_path)
 
         if show:
             plt.show()

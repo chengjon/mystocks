@@ -255,10 +255,10 @@ try:
         format="{message}",
     )
 except Exception as e:
-    logger.warning(f"无法配置数据库日志sink: {e}")
+    logger.warning("无法配置数据库日志sink: %s", e)
 
 
 # 初始化完成日志
 logger.info("统一日志系统初始化完成")
-logger.info(f"日志目录: {LOG_DIR}")
+logger.info("日志目录: %s", LOG_DIR)
 logger.info("日志级别: 控制台=INFO, 文件=DEBUG, 数据库=WARNING")

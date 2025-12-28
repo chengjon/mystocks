@@ -52,7 +52,7 @@ class TechnicalIndicatorCalculator:
             return indicators
 
         except Exception as e:
-            logger.error(f"Failed to calculate technical indicators: {str(e)}")
+            logger.error("Failed to calculate technical indicators: %s", str(e))
             return {}
 
     def calculate_trend_indicators(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -93,7 +93,7 @@ class TechnicalIndicatorCalculator:
             return trend_indicators
 
         except Exception as e:
-            logger.error(f"Failed to calculate trend indicators: {str(e)}")
+            logger.error("Failed to calculate trend indicators: %s", str(e))
             return {}
 
     def calculate_momentum_indicators(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -124,7 +124,7 @@ class TechnicalIndicatorCalculator:
             return momentum_indicators
 
         except Exception as e:
-            logger.error(f"Failed to calculate momentum indicators: {str(e)}")
+            logger.error("Failed to calculate momentum indicators: %s", str(e))
             return {}
 
     def generate_trading_signals(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -177,7 +177,7 @@ class TechnicalIndicatorCalculator:
             }
 
         except Exception as e:
-            logger.error(f"Failed to generate trading signals: {str(e)}")
+            logger.error("Failed to generate trading signals: %s", str(e))
             return {"signal": "HOLD", "confidence": 0.0}
 
     def _calculate_sma(self, prices: pd.Series, period: int = 20) -> pd.Series:

@@ -301,7 +301,7 @@ class SystemMonitor:
                 self._collect_system_metrics()
                 time.sleep(self.interval)
             except Exception as e:
-                logger.error(f"System monitoring error: {e}")
+                logger.error("System monitoring error: %s", e)
 
     def _collect_system_metrics(self) -> None:
         """收集系统指标"""

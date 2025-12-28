@@ -138,9 +138,16 @@ class MonitoringDatabase:
         except Exception as e:
             self._write_failures += 1
             logger.warning("记录操作日志失败 (降级到本地日志): %s", e)
-            logger.info("操作日志: %s %s -> %s.%s (%s records, %s, %sms)",
-                operation_type, classification, target_database, table_name,
-                record_count, operation_status, execution_time_ms)
+            logger.info(
+                "操作日志: %s %s -> %s.%s (%s records, %s, %sms)",
+                operation_type,
+                classification,
+                target_database,
+                table_name,
+                record_count,
+                operation_status,
+                execution_time_ms,
+            )
             return False
 
     def record_performance_metric(

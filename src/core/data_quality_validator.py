@@ -40,7 +40,7 @@ class DataQualityValidator:
             "freshness_threshold_seconds": 300,  # 新鲜度阈值 5分钟
         }
 
-        logger.info(f"✅ DataQualityValidator initialized for {source_name}")
+        logger.info("✅ DataQualityValidator initialized for %s", source_name)
 
     def validate_stock_data(self, df: pd.DataFrame, symbol: str, data_type: str = "daily") -> Dict[str, Any]:
         """
@@ -396,20 +396,19 @@ class DataQualityValidator:
                     required_columns=self._get_required_columns(data_type),
                     threshold=self.thresholds["missing_rate_threshold"],
                 )
-
-            logger.info(
-                f"质量检查完成: {symbol} {data_type} - "
+self.logger.info("数据质量验证完成")
+            logger.info("质量检查完成: {symbol} {data_type} - "
                 f"得分: {quality_score:.1f}, 有效: {is_valid}, "
                 f"问题: {len(issues)} (严重: {critical_issues}, 警告: {warning_issues})"
             )
 
         except Exception as e:
-            logger.error(f"记录质量检查结果失败: {e}")
+            logger.error("记录质量检查结果失败: %s", e)
 
     def set_thresholds(self, **kwargs):
         """自定义阈值配置"""
         self.thresholds.update(kwargs)
-        logger.info(f"质量阈值已更新: {kwargs}")
+        logger.info("质量阈值已更新: %s", kwargs)
 
 
 # 便捷函数

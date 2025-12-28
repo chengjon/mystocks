@@ -81,7 +81,7 @@ class OptimizationGPU:
             优化结果字典，包含最佳参数、分数等
         """
         try:
-            logger.info(f"开始GPU参数优化: {method} ({n_trials} 次试验)")
+            logger.info("开始GPU参数优化: %s (%s 次试验)", method, n_trials)
 
             optimization_start = time.time()
             early_stopping = early_stopping or {}
@@ -128,11 +128,11 @@ class OptimizationGPU:
                 }
             )
 
-            logger.info(f"GPU参数优化完成: {result['best_score']:.4f} ({optimization_time:.2f}s)")
+            logger.info("GPU参数优化完成: %s (%ss)", result["best_score"], optimization_time)
             return result
 
         except Exception as e:
-            logger.error(f"GPU参数优化失败: {e}")
+            logger.error("GPU参数优化失败: %s", e)
             return {
                 "error": str(e),
                 "method": method,
@@ -155,7 +155,7 @@ class OptimizationGPU:
             param_grid = self._generate_param_grid(param_space)
             total_combinations = len(param_grid)
 
-            logger.info(f"参数网格大小: {total_combinations}")
+            logger.info("参数网格大小: %s", total_combinations)
 
             best_params = None
             best_score = float("-inf") if maximize else float("inf")
@@ -189,19 +189,19 @@ class OptimizationGPU:
                     best_score = score
                     best_params = params.copy()
                     no_improvement_count = 0
-                    logger.debug(f"找到更好的参数: {score:.4f} (改进: {improvement:.4f})")
+                    logger.debug("找到更好的参数: %s (改进: %s)", score, improvement)
                 else:
                     no_improvement_count += 1
 
                 # 早停检查
                 if patience > 0 and no_improvement_count >= patience:
-                    logger.info(f"早停触发，{patience} 次无改进")
+                    logger.info("早停触发，%s 次无改进", patience)
                     break
 
                 # 进度报告
                 if (i + 1) % max(1, total_combinations // 10) == 0:
                     progress = (i + 1) / total_combinations * 100
-                    logger.debug(f"网格搜索进度: {progress:.1f}% ({i + 1}/{total_combinations})")
+                    logger.debug("网格搜索进度: %s% (%s/%s)", progress, i + 1, total_combinations)
 
             return {
                 "best_params": best_params,
@@ -213,7 +213,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU网格搜索失败: {e}")
+            logger.error("GPU网格搜索失败: %s", e)
             raise
 
     def _random_search_gpu(
@@ -226,7 +226,7 @@ class OptimizationGPU:
     ) -> Dict[str, Any]:
         """随机搜索优化（GPU加速）"""
         try:
-            logger.info(f"执行随机搜索优化: {n_trials} 次试验")
+            logger.info("执行随机搜索优化: %s 次试验", n_trials)
 
             best_params = None
             best_score = float("-inf") if maximize else float("inf")
@@ -262,19 +262,19 @@ class OptimizationGPU:
                     best_score = score
                     best_params = params.copy()
                     no_improvement_count = 0
-                    logger.debug(f"试验 {trial + 1}: 更好的参数 {score:.4f}")
+                    logger.debug("试验 %s: 更好的参数 %s", trial + 1, score)
                 else:
                     no_improvement_count += 1
 
                 # 早停检查
                 if patience > 0 and no_improvement_count >= patience:
-                    logger.info(f"早停触发，{patience} 次无改进")
+                    logger.info("早停触发，%s 次无改进", patience)
                     break
 
                 # 进度报告
                 if (trial + 1) % max(1, n_trials // 10) == 0:
                     progress = (trial + 1) / n_trials * 100
-                    logger.debug(f"随机搜索进度: {progress:.1f}% ({trial + 1}/{n_trials})")
+                    logger.debug("随机搜索进度: %s% (%s/%s)", progress, trial + 1, n_trials)
 
             return {
                 "best_params": best_params,
@@ -286,7 +286,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU随机搜索失败: {e}")
+            logger.error("GPU随机搜索失败: %s", e)
             raise
 
     def _bayesian_optimization_gpu(
@@ -299,7 +299,7 @@ class OptimizationGPU:
     ) -> Dict[str, Any]:
         """贝叶斯优化（GPU加速）"""
         try:
-            logger.info(f"执行贝叶斯优化: {n_trials} 次试验")
+            logger.info("执行贝叶斯优化: %s 次试验", n_trials)
 
             # 初始化
             best_params = None
@@ -347,13 +347,13 @@ class OptimizationGPU:
                     best_score = score
                     best_params = params.copy()
                     no_improvement_count = 0
-                    logger.debug(f"贝叶斯优化试验 {trial + 1}: 更好的参数 {score:.4f}")
+                    logger.debug("贝叶斯优化试验 %s: 更好的参数 %s", trial + 1, score)
                 else:
                     no_improvement_count += 1
 
                 # 早停检查
                 if patience > 0 and no_improvement_count >= patience:
-                    logger.info(f"早停触发，{patience} 次无改进")
+                    logger.info("早停触发，%s 次无改进", patience)
                     break
 
             return {
@@ -366,7 +366,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU贝叶斯优化失败: {e}")
+            logger.error("GPU贝叶斯优化失败: %s", e)
             raise
 
     def _genetic_optimization_gpu(
@@ -379,7 +379,7 @@ class OptimizationGPU:
     ) -> Dict[str, Any]:
         """遗传算法优化（GPU加速）"""
         try:
-            logger.info(f"执行遗传算法优化: {n_trials} 代")
+            logger.info("执行遗传算法优化: %s 代", n_trials)
 
             # 遗传算法参数
             population_size = min(20, n_trials // 2)
@@ -416,7 +416,7 @@ class OptimizationGPU:
 
                 # 早停检查
                 if patience > 0 and no_improvement_count >= patience:
-                    logger.info(f"早停触发，{patience} 代无改进")
+                    logger.info("早停触发，%s 代无改进", patience)
                     break
 
                 # 选择、交叉、变异
@@ -434,7 +434,7 @@ class OptimizationGPU:
                 if (generation + 1) % max(1, n_trials // 10) == 0:
                     progress = (generation + 1) / n_trials * 100
                     avg_fitness = np.mean(fitness_scores)
-                    logger.debug(f"遗传算法进度: {progress:.1f}% (平均适应度: {avg_fitness:.4f})")
+                    logger.debug("遗传算法进度: %s% (平均适应度: %s)", progress, avg_fitness)
 
             return {
                 "best_params": best_params,
@@ -447,7 +447,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"GPU遗传算法优化失败: {e}")
+            logger.error("GPU遗传算法优化失败: %s", e)
             raise
 
     def optimize_portfolio_weights(
@@ -458,7 +458,7 @@ class OptimizationGPU:
     ) -> Dict[str, Any]:
         """GPU加速投资组合权重优化"""
         try:
-            logger.info(f"开始投资组合权重优化: {method}")
+            logger.info("开始投资组合权重优化: %s", method)
 
             n_assets = returns.shape[1]
             asset_names = returns.columns.tolist()
@@ -486,7 +486,7 @@ class OptimizationGPU:
             return result
 
         except Exception as e:
-            logger.error(f"投资组合优化失败: {e}")
+            logger.error("投资组合优化失败: %s", e)
             return {"error": str(e), "method": method}
 
     # 辅助方法
@@ -589,7 +589,7 @@ class OptimizationGPU:
             return params
 
         except Exception as e:
-            logger.warning(f"高斯过程采样失败，使用随机采样: {e}")
+            logger.warning("高斯过程采样失败，使用随机采样: %s", e)
             return self._sample_random_params(param_space)
 
     def _genetic_operations(
@@ -642,7 +642,7 @@ class OptimizationGPU:
             return new_population[: len(population)]
 
         except Exception as e:
-            logger.error(f"遗传算法操作失败: {e}")
+            logger.error("遗传算法操作失败: %s", e)
             return population
 
     def _crossover(self, parent1: Dict, parent2: Dict, param_space: Dict) -> tuple:
@@ -754,7 +754,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"均值-方差优化失败: {e}")
+            logger.error("均值-方差优化失败: %s", e)
             return {"error": str(e)}
 
     def _risk_parity_optimization_gpu(self, returns: pd.DataFrame) -> Dict[str, Any]:
@@ -794,7 +794,7 @@ class OptimizationGPU:
             }
 
         except Exception as e:
-            logger.error(f"风险平价优化失败: {e}")
+            logger.error("风险平价优化失败: %s", e)
             return {"error": str(e)}
 
     def _max_sharpe_optimization_gpu(self, returns: pd.DataFrame, risk_free_rate: float) -> Dict[str, Any]:

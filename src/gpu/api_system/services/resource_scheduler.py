@@ -169,7 +169,7 @@ class ResourceScheduler:
                 self._health_check()
 
             except Exception as e:
-                logger.error(f"调度器循环错误: {e}")
+                logger.error("调度器循环错误: %s", e)
                 time.sleep(5)
 
     def _create_task_from_data(self, task_data: Dict[str, Any]) -> Optional[Task]:
@@ -204,14 +204,14 @@ class ResourceScheduler:
             return task
 
         except Exception as e:
-            logger.error(f"创建任务对象失败: {e}")
+            logger.error("创建任务对象失败: %s", e)
             return None
 
     def add_task(self, task: Task):
         """添加任务到调度器"""
         with self.lock:
             self.task_queue.put(task)
-            logger.info(f"任务已添加到调度器: {task.task_id} (优先级: {task.priority.name})")
+            logger.info("任务已添加到调度器: %s (优先级: %s)", task.task_id, task.priority.name)
 
     def _check_running_tasks(self):
         """检查运行中的任务"""
@@ -221,14 +221,14 @@ class ResourceScheduler:
             for task_id, task in self.running_tasks.items():
                 # 检查任务是否超时
                 if task.started_at and (datetime.now() - task.started_at).total_seconds() > task.timeout:
-                    logger.warning(f"任务 {task_id} 超时，取消执行")
+                    logger.warning("任务 %s 超时，取消执行", task_id)
                     self._cancel_task(task_id)
                     tasks_to_remove.append(task_id)
                     continue
 
                 # 检查任务是否完成
                 if task.status == TaskStatus.COMPLETED or task.status == TaskStatus.FAILED:
-                    logger.info(f"任务 {task_id} 完成，状态: {task.status.value}")
+                    logger.info("任务 %s 完成，状态: %s", task_id, task.status.value)
                     self.completed_tasks.append(task)
                     tasks_to_remove.append(task_id)
 
@@ -256,24 +256,24 @@ class ResourceScheduler:
             gpu_stats = self.gpu_manager.get_gpu_usage_summary()
             if gpu_stats:
                 logger.info(
-                    f"GPU资源状态: 可用={gpu_stats['available_gpus']}, "
+                    "GPU资源状态: 可用={gpu_stats['available_gpus']}, "
                     f"总={gpu_stats['total_gpus']}, 利用率={gpu_stats['average_utilization']:.1f}%"
                 )
 
             # 检查任务队列
             queue_stats = self.redis_queue.get_queue_statistics()
-            logger.info(f"任务队列状态: 待处理={queue_stats.get('total_pending', 0)}")
+            logger.info("任务队列状态: 待处理=%s", queue_stats.get("total_pending", 0))
 
             # 检查运行中的任务数量
             running_count = len(self.running_tasks)
-            logger.info(f"运行中任务数量: {running_count}")
+            logger.info("运行中任务数量: %s", running_count)
 
             # 如果运行中任务过多，发出警告
             if running_count > self.config["max_concurrent_tasks"] * 0.9:
-                logger.warning(f"运行中任务数量接近上限: {running_count}/{self.config['max_concurrent_tasks']}")
+                logger.warning("运行中任务数量接近上限: %s/%s", running_count, self.config["max_concurrent_tasks"])
 
         except Exception as e:
-            logger.error(f"健康检查失败: {e}")
+            logger.error("健康检查失败: %s", e)
 
     def _schedule_task(self) -> Optional[Task]:
         """调度任务执行"""
@@ -310,13 +310,13 @@ class ResourceScheduler:
             task.started_at = datetime.now()
             self.running_tasks[task.task_id] = task
 
-            logger.info(f"任务调度成功: {task.task_id} (GPU: {task.gpu_id})")
+            logger.info("任务调度成功: %s (GPU: %s)", task.task_id, task.gpu_id)
             return task
 
     def _execute_task(self, task: Task):
         """执行任务"""
         try:
-            logger.info(f"开始执行任务: {task.task_id}")
+            logger.info("开始执行任务: %s", task.task_id)
 
             # 根据任务类型执行相应的处理逻辑
             if task.task_type == TaskType.BACKTEST:
@@ -339,10 +339,10 @@ class ResourceScheduler:
             task.completed_at = datetime.now()
             task.result = result
 
-            logger.info(f"任务执行完成: {task.task_id}")
+            logger.info("任务执行完成: %s", task.task_id)
 
         except Exception as e:
-            logger.error(f"任务执行失败: {task.task_id}, 错误: {e}")
+            logger.error("任务执行失败: %s, 错误: %s", task.task_id, e)
 
             # 重试逻辑
             if task.retry_count < task.max_retries:
@@ -352,7 +352,7 @@ class ResourceScheduler:
 
                 # 延迟重试
                 retry_delay = self.config["retry_delay"]
-                logger.info(f"任务 {task.task_id} 将在 {retry_delay} 秒后重试 (第 {task.retry_count} 次)")
+                logger.info("任务 %s 将在 %s 秒后重试 (第 %s 次)", task.task_id, retry_delay, task.retry_count)
 
                 # 重新加入队列
                 task.status = TaskStatus.PENDING
@@ -362,7 +362,7 @@ class ResourceScheduler:
                 task.status = TaskStatus.FAILED
                 task.completed_at = datetime.now()
                 task.error_message = str(e)
-                logger.error(f"任务 {task.task_id} 达到最大重试次数，标记为失败")
+                logger.error("任务 %s 达到最大重试次数，标记为失败", task.task_id)
 
         finally:
             # 释放GPU资源
@@ -372,7 +372,7 @@ class ResourceScheduler:
     def _execute_backtest_task(self, task: Task) -> Dict[str, Any]:
         """执行回测任务"""
         # 模拟回测执行
-        logger.info(f"执行回测任务: {task.task_id}")
+        logger.info("执行回测任务: %s", task.task_id)
         time.sleep(5)  # 模拟处理时间
 
         return {
@@ -388,7 +388,7 @@ class ResourceScheduler:
 
     def _execute_realtime_task(self, task: Task) -> Dict[str, Any]:
         """执行实时数据处理任务"""
-        logger.info(f"执行实时数据处理任务: {task.task_id}")
+        logger.info("执行实时数据处理任务: %s", task.task_id)
         time.sleep(2)  # 模拟处理时间
 
         return {
@@ -401,7 +401,7 @@ class ResourceScheduler:
 
     def _execute_ml_task(self, task: Task) -> Dict[str, Any]:
         """执行机器学习训练任务"""
-        logger.info(f"执行机器学习训练任务: {task.task_id}")
+        logger.info("执行机器学习训练任务: %s", task.task_id)
         time.sleep(30)  # 模拟训练时间
 
         return {
@@ -415,7 +415,7 @@ class ResourceScheduler:
 
     def _execute_optimization_task(self, task: Task) -> Dict[str, Any]:
         """执行优化任务"""
-        logger.info(f"执行优化任务: {task.task_id}")
+        logger.info("执行优化任务: %s", task.task_id)
         time.sleep(15)  # 模拟处理时间
 
         return {
@@ -428,7 +428,7 @@ class ResourceScheduler:
 
     def _execute_risk_control_task(self, task: Task) -> Dict[str, Any]:
         """执行风险控制任务"""
-        logger.info(f"执行风险控制任务: {task.task_id}")
+        logger.info("执行风险控制任务: %s", task.task_id)
         time.sleep(8)  # 模拟处理时间
 
         return {
@@ -442,7 +442,7 @@ class ResourceScheduler:
 
     def _execute_high_freq_task(self, task: Task) -> Dict[str, Any]:
         """执行高频交易任务"""
-        logger.info(f"执行高频交易任务: {task.task_id}")
+        logger.info("执行高频交易任务: %s", task.task_id)
         time.sleep(3)  # 模拟处理时间
 
         return {
@@ -466,7 +466,7 @@ class ResourceScheduler:
                 if task.gpu_id is not None:
                     self.gpu_manager.release_gpu(task.task_id, task.gpu_id)
 
-                logger.info(f"任务已取消: {task_id}")
+                logger.info("任务已取消: %s", task_id)
 
     def get_task_status(self, task_id: str) -> Optional[Task]:
         """获取任务状态"""

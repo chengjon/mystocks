@@ -30,7 +30,7 @@ def get_block_file(block="gn"):
         return hy_block("hy")
 
     file_name = f"block_{block}.dat"
-    logger.info(f"开始读取文件 {file_name}")
+    logger.info("开始读取文件 %s", file_name)
     # print(PATH + file_name)
     with open(PATH + file_name, "rb") as f:
         buff = f.read()
@@ -47,7 +47,7 @@ def get_block_file(block="gn"):
     df = pd.DataFrame(bk_list, columns=["name", "tp", "num", "stocks"])
     csv_file = file_name + ".csv"
     df.to_csv(csv_file, encoding="utf_8_sig")
-    logger.info(f"文件 {csv_file} 已成功保存")
+    logger.info("文件 %s 已成功保存", csv_file)
     return df
 
 
@@ -60,7 +60,7 @@ def read_file_loc(file_name, splits):
 @logger.catch
 def get_block_zs_tdx_loc(block="hy"):
     file = PATH + "tdxzs3.cfg"
-    logger.info(f"开始读取文件 {file}")
+    logger.info("开始读取文件 %s", file)
     buf_line = read_file_loc(file, "|")
     mapping = {"hy": "2", "dq": "3", "gn": "4", "fg": "5", "yjhy": "12", "zs": "6"}
     df = pd.DataFrame(buf_line, columns=["name", "code", "type", "t1", "t2", "block"])
@@ -75,7 +75,7 @@ def get_block_zs_tdx_loc(block="hy"):
 @logger.catch
 def get_stock_hyblock_tdx_loc():
     file = PATH + "tdxhy.cfg"
-    logger.info(f"开始读取文件 {file}")
+    logger.info("开始读取文件 %s", file)
     buf_line = read_file_loc(file, "|")
     buf_lis = []
     for x in buf_line:

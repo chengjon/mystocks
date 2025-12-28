@@ -205,7 +205,7 @@ class GPUPricePredictor:
 
         self.performance_stats["total_training_time"] = total_training_time
 
-        self.logger.info(f"模型训练完成，总耗时: {total_training_time:.2f}秒")
+        self.logger.info("模型训练完成，总耗时: %s秒", total_training_time)
         return training_results
 
     def predict_price(
@@ -297,7 +297,7 @@ class GPUPricePredictor:
                 result = self.predict_price(data, model_name, prediction_horizon)
                 results.append(result)
             except Exception as e:
-                self.logger.error(f"批量预测中发生错误: {e}")
+                self.logger.error("批量预测中发生错误: %s", e)
                 continue
 
         return results
@@ -379,7 +379,7 @@ class GPUPricePredictor:
         }
 
         joblib.dump(model_data, filepath)
-        self.logger.info(f"模型已保存到: {filepath}")
+        self.logger.info("模型已保存到: %s", filepath)
 
     def load_model(self, filepath: str):
         """加载模型"""
@@ -393,7 +393,7 @@ class GPUPricePredictor:
         self.is_fitted = model_data["is_fitted"]
         self.performance_stats = model_data["performance_stats"]
 
-        self.logger.info(f"模型已从 {filepath} 加载")
+        self.logger.info("模型已从 %s 加载", filepath)
 
 
 class GPUPredictionPipeline:

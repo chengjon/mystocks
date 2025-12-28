@@ -106,7 +106,7 @@ class TypeConverter:
                 return value
 
         except (ValueError, TypeError) as e:
-            logger.warning(f"类型转换失败 - 字段: {field_name}, 值: {value}, 类型: {field_type}, 错误: {e}")
+            logger.warning("类型转换失败 - 字段: %s, 值: %s, 类型: %s, 错误: %s", field_name, value, field_type, e)
             return None
 
 
@@ -177,7 +177,7 @@ class ResultSetMapper:
             return result
 
         except Exception as e:
-            logger.error(f"行映射失败: {e}, 数据: {row}")
+            logger.error("行映射失败: %s, 数据: %s", e, row)
             raise
 
     def _map_field(self, value: Any, mapping: FieldMapping) -> Any:
@@ -196,7 +196,7 @@ class ResultSetMapper:
             try:
                 value = mapping.transformer(value)
             except Exception as e:
-                logger.warning(f"自定义转换器失败 - 字段: {mapping.target_field}, 错误: {e}")
+                logger.warning("自定义转换器失败 - 字段: %s, 错误: %s", mapping.target_field, e)
                 return None
 
         # 应用类型转换
@@ -206,10 +206,10 @@ class ResultSetMapper:
         if mapping.validator and mapped_value is not None:
             try:
                 if not mapping.validator(mapped_value):
-                    logger.warning(f"字段验证失败 - 字段: {mapping.target_field}, 值: {mapped_value}")
+                    logger.warning("字段验证失败 - 字段: %s, 值: %s", mapping.target_field, mapped_value)
                     return None
             except Exception as e:
-                logger.warning(f"验证器执行失败 - 字段: {mapping.target_field}, 错误: {e}")
+                logger.warning("验证器执行失败 - 字段: %s, 错误: %s", mapping.target_field, e)
                 return None
 
         return mapped_value
@@ -231,7 +231,7 @@ class ResultSetMapper:
                 mapped_row = self.map_row(row)
                 results.append(mapped_row)
             except Exception as e:
-                logger.error(f"跳过无效行: {e}")
+                logger.error("跳过无效行: %s", e)
                 continue
 
         return results
@@ -292,7 +292,7 @@ class MapperRegistry:
     def register_mapper(cls, name: str, mapper: BaseDataMapper):
         """注册映射器"""
         cls._mappers[name] = mapper
-        logger.info(f"数据映射器已注册: {name}")
+        logger.info("数据映射器已注册: %s", name)
 
     @classmethod
     def get_mapper(cls, name: str) -> Optional[BaseDataMapper]:
@@ -309,7 +309,7 @@ class MapperRegistry:
         """注销映射器"""
         if name in cls._mappers:
             del cls._mappers[name]
-            logger.info(f"数据映射器已注销: {name}")
+            logger.info("数据映射器已注销: %s", name)
 
 
 # 预定义的常用转换器

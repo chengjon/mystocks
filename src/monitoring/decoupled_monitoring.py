@@ -204,15 +204,15 @@ class LoggingMonitoringListener(MonitoringEventListener):
     def on_event(self, event: MonitoringEventData):
         """记录监控事件到日志"""
         if event.event_type == MonitoringEvent.OPERATION_START:
-            self.logger.info(f"操作开始: {event.data.get('operation_name')} - ID: {event.data.get('operation_id')}")
+            self.logger.info("操作开始: %sevent.data.get('operation_name'")} - ID: {event.data.get('operation_id')}")
         elif event.event_type == MonitoringEvent.OPERATION_END:
             duration = event.data.get("duration", 0)
-            self.logger.info(f"操作完成: {event.data.get('operation_name')} - 耗时: {duration:.3f}s")
+            self.logger.info("操作完成: %s - 耗时: %ss", event.data.get('operation_name'), duration)
         elif event.event_type == MonitoringEvent.OPERATION_ERROR:
-            self.logger.error(f"操作失败: {event.data.get('operation_name')} - 错误: {event.data.get('error_message')}")
+            self.logger.error("操作失败: %sevent.data.get('operation_name'")} - 错误: {event.data.get('error_message')}")
         elif event.event_type == MonitoringEvent.PERFORMANCE_SLOW:
             duration = event.data.get("duration", 0)
-            self.logger.warning(f"慢操作: {event.data.get('operation_name')} - 耗时: {duration:.3f}s")
+            self.logger.warning("慢操作: %s - 耗时: %ss", event.data.get('operation_name'), duration)
 
 
 class PerformanceMonitoringListener(MonitoringEventListener):

@@ -111,7 +111,7 @@ class GPUIntegratedMonitoring:
             return True
 
         except Exception as e:
-            self.logger.error(f"GPU系统集成失败: {e}")
+            self.logger.error("GPU系统集成失败: %s", e)
             return False
 
     async def _enhance_unified_manager(self):
@@ -166,7 +166,7 @@ class GPUIntegratedMonitoring:
             self.logger.info("✅ 统一管理器GPU增强完成")
 
         except Exception as e:
-            self.logger.error(f"统一管理器增强失败: {e}")
+            self.logger.error("统一管理器增强失败: %s", e)
 
     async def _integrate_monitoring_system(self):
         """集成监控系统"""
@@ -185,7 +185,7 @@ class GPUIntegratedMonitoring:
             self.logger.info("✅ 监控系统GPU集成完成")
 
         except Exception as e:
-            self.logger.error(f"监控系统集成失败: {e}")
+            self.logger.error("监控系统集成失败: %s", e)
 
     async def _start_continuous_monitoring(self):
         """启动连续监控"""
@@ -204,7 +204,7 @@ class GPUIntegratedMonitoring:
                 self.logger.warning("⚠️ GPU优化器未初始化，跳过连续监控")
 
         except Exception as e:
-            self.logger.error(f"连续监控启动失败: {e}")
+            self.logger.error("连续监控启动失败: %s", e)
 
     async def run_manual_optimization(self) -> Dict[str, Any]:
         """手动运行GPU性能优化"""
@@ -227,7 +227,7 @@ class GPUIntegratedMonitoring:
             }
 
         except Exception as e:
-            self.logger.error(f"手动优化失败: {e}")
+            self.logger.error("手动优化失败: %s", e)
             return {"error": str(e)}
 
     async def get_performance_report(self) -> Dict[str, Any]:
@@ -245,7 +245,7 @@ class GPUIntegratedMonitoring:
             return report
 
         except Exception as e:
-            self.logger.error(f"性能报告生成失败: {e}")
+            self.logger.error("性能报告生成失败: %s", e)
             return {"error": str(e)}
 
     def get_integration_status(self) -> Dict[str, Any]:
@@ -275,7 +275,7 @@ class GPUIntegratedMonitoring:
                 return {"success": False, "message": "无需内存优化"}
 
         except Exception as e:
-            self.logger.error(f"GPU内存优化失败: {e}")
+            self.logger.error("GPU内存优化失败: %s", e)
             return {"error": str(e)}
 
     async def get_gpu_health_status(self) -> Dict[str, Any]:
@@ -329,7 +329,7 @@ class GPUIntegratedMonitoring:
             }
 
         except Exception as e:
-            self.logger.error(f"GPU健康状态检查失败: {e}")
+            self.logger.error("GPU健康状态检查失败: %s", e)
             return {"available": False, "error": str(e)}
 
     async def shutdown_integration(self):
@@ -361,7 +361,7 @@ class GPUIntegratedMonitoring:
             self.logger.info("✅ GPU系统集成已关闭")
 
         except Exception as e:
-            self.logger.error(f"GPU集成关闭失败: {e}")
+            self.logger.error("GPU集成关闭失败: %s", e)
 
 
 # 全局集成管理器实例

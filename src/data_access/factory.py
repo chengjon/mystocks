@@ -98,10 +98,10 @@ class DataAccessFactory:
         """
         # 路由决策逻辑
         if self._should_use_tdengine(classification, data_volume):
-            logger.info(f"使用TDengine处理: {classification} - {symbol}")
+            logger.info("使用TDengine处理: %s - %s", classification, symbol)
             return self.get_timeseries_access()
         else:
-            logger.info(f"使用PostgreSQL处理: {classification} - {symbol}")
+            logger.info("使用PostgreSQL处理: %s - %s", classification, symbol)
             return self.get_relational_access()
 
     def _should_use_tdengine(self, classification, data_volume: str) -> bool:
@@ -151,7 +151,7 @@ class DataAccessFactory:
                 status["postgresql"] = False
 
         except Exception as e:
-            logger.error(f"检查数据库连接状态失败: {str(e)}")
+            logger.error("检查数据库连接状态失败: %s", str(e))
             status["error"] = str(e)
 
         return status

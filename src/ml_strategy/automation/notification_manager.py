@@ -20,14 +20,13 @@
 
 import sys
 import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from enum import Enum
-import logging
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Email支持（可选）
 try:
@@ -173,7 +172,7 @@ class NotificationManager:
 
         # 检查频率限制
         if self._is_rate_limited(title, message):
-            self.logger.debug(f"通知被频率限制: {title}")
+            self.logger.self.logger.debug("debug")
             self.stats["rate_limited"] += 1
             return False
 
@@ -212,7 +211,7 @@ class NotificationManager:
                 all_success = False
                 notification.error = str(e)
                 self.stats["failed"] += 1
-                self.logger.error(f"发送通知失败 ({channel.value}): {e}")
+                self.logger.self.logger.error("error")
 
         notification.sent = all_success
         self.notifications.append(notification)
@@ -328,7 +327,7 @@ class NotificationManager:
             server.login(self.config.smtp_user, self.config.smtp_password)
             server.send_message(msg)
 
-        self.logger.info(f"✓ 邮件已发送: {notification.title}")
+        self.logger.self.logger.info("info")
 
     def _send_webhook(self, notification: Notification):
         """发送Webhook通知"""
@@ -357,7 +356,7 @@ class NotificationManager:
         )
 
         response.raise_for_status()
-        self.logger.info(f"✓ Webhook已发送: {notification.title}")
+        self.logger.self.logger.info("info")
 
     def _send_log(self, notification: Notification):
         """发送日志通知"""
@@ -471,7 +470,7 @@ class NotificationManager:
         """清除旧通知历史"""
         cutoff = datetime.now() - timedelta(days=days)
         self.notifications = [n for n in self.notifications if n.timestamp > cutoff]
-        self.logger.info(f"已清除 {days} 天前的通知历史")
+        self.logger.self.logger.info("info")
 
 
 if __name__ == "__main__":

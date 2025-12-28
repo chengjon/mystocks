@@ -881,7 +881,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 return default_name
 
         except Exception as e:
-            self.logger.warning(f"获取股票名称失败 {symbol}: {e}")
+            self.logger.warning("获取股票名称失败 %s: %s", symbol, e)
             # 出错时返回默认值
             return f"股票{symbol}"
 
@@ -938,7 +938,7 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             return float(df.iloc[-1]["close"])
 
         except (IndexError, ValueError, TypeError, KeyError) as e:
-            self.logger.error(f"Failed to get latest price for {symbol}: {e}")
+            self.logger.error("Failed to get latest price for %s: %s", symbol, e)
             return 0.0
 
     def _calculate_ma(self, data: List[float], period: int) -> List[float]:

@@ -45,7 +45,7 @@ class BacktestEngineGPU:
     ) -> Dict[str, Any]:
         """运行GPU加速回测"""
         try:
-            self.logger.info(f"开始GPU回测: 策略={strategy_config['name']}, 资金={initial_capital}")
+            self.logger.info("开始GPU回测: 策略=%s, 资金=%s", strategy_config["name"], initial_capital)
 
             if not CUPY_AVAILABLE:
                 self.logger.warning("CuPy不可用，回退到CPU模式")
@@ -87,11 +87,11 @@ class BacktestEngineGPU:
                 "metrics": metrics,
             }
 
-            self.logger.info(f"GPU回测完成: {performance['total_return']:.2%} 收益率")
+            self.logger.info("GPU回测完成: %s 收益率", performance["total_return"])
             return result
 
         except Exception as e:
-            self.logger.error(f"GPU回测失败: {e}")
+            self.logger.error("GPU回测失败: %s", e)
             return {"status": "failed", "error": str(e)}
 
     def _convert_to_gpu(self, data: pd.DataFrame) -> "cudf.DataFrame":
@@ -109,11 +109,11 @@ class BacktestEngineGPU:
 
             # 转换到GPU
             gpu_df = cudf.DataFrame.from_pandas(data)
-            self.logger.debug(f"数据已转换到GPU: {len(gpu_df)} 行")
+            self.logger.debug("数据已转换到GPU: %s 行", len(gpu_df))
             return gpu_df
 
         except Exception as e:
-            self.logger.error(f"GPU数据转换失败: {e}")
+            self.logger.error("GPU数据转换失败: %s", e)
             raise
 
     def _calculate_gpu_indicators(self, gpu_df: "cudf.DataFrame") -> "cudf.DataFrame":
@@ -165,7 +165,7 @@ class BacktestEngineGPU:
             return indicators.fillna(0)
 
         except Exception as e:
-            self.logger.error(f"GPU技术指标计算失败: {e}")
+            self.logger.error("GPU技术指标计算失败: %s", e)
             raise
 
     def _gpu_ema(self, prices: "cp.ndarray", period: int) -> "cp.ndarray":
@@ -184,7 +184,7 @@ class BacktestEngineGPU:
             return ema
 
         except Exception as e:
-            self.logger.error(f"GPU EMA计算失败: {e}")
+            self.logger.error("GPU EMA计算失败: %s", e)
             raise
 
     def _gpu_rsi(self, prices: "cp.ndarray", period: int) -> "cp.ndarray":
@@ -210,7 +210,7 @@ class BacktestEngineGPU:
             return result
 
         except Exception as e:
-            self.logger.error(f"GPU RSI计算失败: {e}")
+            self.logger.error("GPU RSI计算失败: %s", e)
             raise
 
     def _apply_strategy_gpu(
@@ -237,7 +237,7 @@ class BacktestEngineGPU:
             return signals
 
         except Exception as e:
-            self.logger.error(f"GPU策略应用失败: {e}")
+            self.logger.error("GPU策略应用失败: %s", e)
             raise
 
     def _trend_following_gpu(
@@ -405,7 +405,7 @@ class BacktestEngineGPU:
             return portfolio
 
         except Exception as e:
-            self.logger.error(f"GPU交易模拟失败: {e}")
+            self.logger.error("GPU交易模拟失败: %s", e)
             raise
 
     def _calculate_performance_gpu(self, portfolio: Dict, gpu_df: "cudf.DataFrame") -> Dict[str, float]:
@@ -453,7 +453,7 @@ class BacktestEngineGPU:
             }
 
         except Exception as e:
-            self.logger.error(f"GPU性能计算失败: {e}")
+            self.logger.error("GPU性能计算失败: %s", e)
             return self._empty_performance()
 
     def _calculate_performance_cpu(self, portfolio_values: List[float]) -> Dict[str, float]:
@@ -502,7 +502,7 @@ class BacktestEngineGPU:
                 "max_drawdown_periods": float(drawdown_periods),
             }
         except Exception as e:
-            self.logger.error(f"CPU性能计算失败: {e}")
+            self.logger.error("CPU性能计算失败: %s", e)
             return self._empty_performance()
 
     def _gpu_max_drawdown(self, portfolio_values: "cp.ndarray") -> float:
@@ -515,7 +515,7 @@ class BacktestEngineGPU:
             drawdown = (peak - portfolio_values) / peak
             return float(cp.max(drawdown))
         except Exception as e:
-            self.logger.error(f"GPU最大回撤计算失败: {e}")
+            self.logger.error("GPU最大回撤计算失败: %s", e)
             return 0.0
 
     def _gpu_drawdown_periods(self, portfolio_values: "cp.ndarray") -> float:
@@ -529,7 +529,7 @@ class BacktestEngineGPU:
             drawdown_periods = cp.sum(drawdown > 0)
             return float(drawdown_periods)
         except Exception as e:
-            self.logger.error(f"GPU回撤期间计算失败: {e}")
+            self.logger.error("GPU回撤期间计算失败: %s", e)
             return 0.0
 
     def _cpu_max_drawdown(self, portfolio_values: np.ndarray) -> float:
@@ -539,7 +539,7 @@ class BacktestEngineGPU:
             drawdown = (peak - portfolio_values) / peak
             return float(np.max(drawdown))
         except Exception as e:
-            self.logger.error(f"CPU最大回撤计算失败: {e}")
+            self.logger.error("CPU最大回撤计算失败: %s", e)
             return 0.0
 
     def _cpu_drawdown_periods(self, portfolio_values: np.ndarray) -> float:
@@ -549,7 +549,7 @@ class BacktestEngineGPU:
             drawdown = (peak - portfolio_values) / peak
             return float(np.sum(drawdown > 0))
         except Exception as e:
-            self.logger.error(f"CPU回撤期间计算失败: {e}")
+            self.logger.error("CPU回撤期间计算失败: %s", e)
             return 0.0
 
     def _empty_performance(self) -> Dict[str, float]:
@@ -605,5 +605,5 @@ class BacktestEngineGPU:
                 },
             }
         except Exception as e:
-            self.logger.error(f"CPU回退模式也失败: {e}")
+            self.logger.error("CPU回退模式也失败: %s", e)
             return {"status": "failed", "error": str(e)}

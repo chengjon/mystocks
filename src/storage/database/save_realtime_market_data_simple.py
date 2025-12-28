@@ -71,7 +71,7 @@ class SimpleRealtimeDataSaver:
         # 如果有专用配置文件，则加载
         if self.config_file:
             load_dotenv(self.config_file, override=True)
-            self.logger.info(f"✅ 成功加载配置文件: {self.config_file}")
+            self.logger.info("✅ 成功加载配置文件: %s", self.config_file)
         else:
             self.logger.info("⚠️ 使用默认配置")
 
@@ -102,9 +102,9 @@ class SimpleRealtimeDataSaver:
         self.logger.setLevel(log_level)
 
         self.logger.info("✅ 配置参数加载完成")
-        self.logger.info(f"📊 市场代码: {self.config['market_symbol']}")
-        self.logger.info(f"💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']}")
-        self.logger.info(f"📁 CSV备份: {self.config['save_to_csv']}")
+        self.logger.info("📊 市场代码: %s", self.config["market_symbol"])
+        self.logger.info("💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']}")
+        self.logger.info("📁 CSV备份: %s", self.config["save_to_csv"])
 
     def initialize_redis(self) -> bool:
         """初始化Redis连接"""
@@ -126,13 +126,13 @@ class SimpleRealtimeDataSaver:
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ Redis连接失败: {e}")
+            self.logger.error("❌ Redis连接失败: %s", e)
             self.logger.info("💡 请检查Redis服务是否启动，或使用CSV备份模式")
             return False
 
     def get_realtime_market_data(self) -> Optional[pd.DataFrame]:
         """获取实时市场数据"""
-        self.logger.info(f"获取{self.config['market_symbol']}市场实时数据...")
+        self.logger.info("获取%s市场实时数据...", self.config["market_symbol"])
 
         try:
             # 尝试导入efinance
@@ -157,11 +157,11 @@ class SimpleRealtimeDataSaver:
                 if data is not None:
                     data = data[data["股票代码"].str.startswith(("0", "3"))]
             else:
-                self.logger.error(f"❌ 不支持的市场代码: {self.config['market_symbol']}")
+                self.logger.error("❌ 不支持的市场代码: %s", self.config["market_symbol"])
                 return None
 
             if isinstance(data, pd.DataFrame) and not data.empty:
-                self.logger.info(f"✅ 成功获取实时数据，共 {len(data)} 条记录")
+                self.logger.info("✅ 成功获取实时数据，共 %s 条记录", len(data))
 
                 # 添加数据获取时间戳
                 if self.config["add_timestamp_column"]:
@@ -181,7 +181,7 @@ class SimpleRealtimeDataSaver:
                 return None
 
         except Exception as e:
-            self.logger.error(f"❌ 获取实时市场数据失败: {e}")
+            self.logger.error("❌ 获取实时市场数据失败: %s", e)
             return None
 
     def _validate_market_data(self, data: pd.DataFrame) -> bool:
@@ -196,17 +196,17 @@ class SimpleRealtimeDataSaver:
             missing_columns = [col for col in expected_columns if col not in data.columns]
 
             if missing_columns:
-                self.logger.warning(f"⚠️ 缺少关键列: {missing_columns}")
+                self.logger.warning("⚠️ 缺少关键列: %s", missing_columns)
 
             # 检查空值
             null_counts = data.isnull().sum()
             if null_counts.any():
-                self.logger.info(f"📊 数据包含空值统计: {null_counts[null_counts > 0].head().to_dict()}")
+                self.logger.info("📊 数据包含空值统计: %s", null_counts[null_counts > 0].head().to_dict())
 
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ 数据验证失败: {e}")
+            self.logger.error("❌ 数据验证失败: %s", e)
             return False
 
     def save_to_redis(self, data: pd.DataFrame) -> bool:
@@ -232,13 +232,13 @@ class SimpleRealtimeDataSaver:
             latest_key = f"realtime_positions:{self.config['market_symbol']}:latest"
             self.redis_client.set(latest_key, redis_key)
 
-            self.logger.info(f"✅ 数据已保存到Redis: {redis_key}")
-            self.logger.info(f"⏰ 过期时间: {self.config['cache_expire_seconds']} 秒")
+            self.logger.info("✅ 数据已保存到Redis: %s", redis_key)
+            self.logger.info("⏰ 过期时间: %s 秒", self.config["cache_expire_seconds"])
 
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ Redis保存失败: {e}")
+            self.logger.error("❌ Redis保存失败: %s", e)
             return False
 
     def save_to_csv(self, data: pd.DataFrame) -> bool:
@@ -259,11 +259,11 @@ class SimpleRealtimeDataSaver:
             # 保存CSV
             data.to_csv(filepath, index=False, encoding="utf-8-sig")
 
-            self.logger.info(f"✅ 数据已备份到CSV: {filepath}")
+            self.logger.info("✅ 数据已备份到CSV: %s", filepath)
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ CSV保存失败: {e}")
+            self.logger.error("❌ CSV保存失败: %s", e)
             return False
 
     def force_update(self) -> Dict[str, Any]:
@@ -277,7 +277,7 @@ class SimpleRealtimeDataSaver:
                 keys = self.redis_client.keys(pattern)
                 if keys:
                     self.redis_client.delete(*keys)
-                    self.logger.info(f"🗑️ 已清除 {len(keys)} 个Redis缓存键")
+                    self.logger.info("🗑️ 已清除 %s 个Redis缓存键", len(keys))
 
             # 获取最新数据
             fresh_data = self.get_realtime_market_data()
@@ -301,14 +301,14 @@ class SimpleRealtimeDataSaver:
             }
 
             if result["success"]:
-                self.logger.info(f"✅ 强制更新成功: {len(fresh_data)} 条记录")
+                self.logger.info("✅ 强制更新成功: %s 条记录", len(fresh_data))
             else:
                 self.logger.error("❌ 强制更新失败")
 
             return result
 
         except Exception as e:
-            self.logger.error(f"❌ 强制更新异常: {e}")
+            self.logger.error("❌ 强制更新异常: %s", e)
             return {"success": False, "error": str(e)}
 
     def save_data(self, data: pd.DataFrame) -> Dict[str, bool]:
@@ -344,7 +344,7 @@ class SimpleRealtimeDataSaver:
                 market_data = self.get_realtime_market_data()
                 if market_data is not None:
                     break
-                self.logger.warning(f"⚠️ 第 {attempt + 1} 次尝试获取数据失败")
+                self.logger.warning("⚠️ 第 %s 次尝试获取数据失败", attempt + 1)
 
             if market_data is None:
                 self.logger.error("💥 多次重试后仍无法获取数据")
@@ -360,16 +360,16 @@ class SimpleRealtimeDataSaver:
             if success_count > 0:
                 self.logger.info("=" * 60)
                 self.logger.info("🎉 实时数据保存完成！")
-                self.logger.info(f"📊 数据记录数: {len(market_data)}")
-                self.logger.info(f"💾 保存成功率: {success_count}/{total_count}")
+                self.logger.info("📊 数据记录数: %s", len(market_data))
+                self.logger.info("💾 保存成功率: %s/%s", success_count, total_count)
 
                 # 显示具体的保存结果
                 for save_type, result in save_results.items():
                     status = "✅ 成功" if result else "❌ 失败"
                     if save_type == "redis":
-                        self.logger.info(f"🔥 Redis存储: {status}")
+                        self.logger.info("🔥 Redis存储: %s", status)
                     elif save_type == "csv":
-                        self.logger.info(f"📁 CSV备份: {status}")
+                        self.logger.info("📁 CSV备份: %s", status)
 
                 self.logger.info("=" * 60)
                 return True
@@ -378,7 +378,7 @@ class SimpleRealtimeDataSaver:
                 return False
 
         except Exception as e:
-            self.logger.error(f"💥 程序执行过程中发生错误: {e}")
+            self.logger.error("💥 程序执行过程中发生错误: %s", e)
             return False
 
 

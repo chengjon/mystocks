@@ -34,10 +34,10 @@ class MemoryManager:
         try:
             self.tracked_objects.add((weakref.ref(df), name))
             logger.debug(
-                f"Tracking DataFrame: {name}, shape: {df.shape}, memory: {df.memory_usage().sum() / 1024**2:.2f}MB"
+                "Tracking DataFrame: %s, shape: %s, memory: %sMB", name, df.shape, df.memory_usage().sum() / 1024**2
             )
         except Exception as e:
-            logger.warning(f"Failed to track DataFrame: {e}")
+            logger.warning("Failed to track DataFrame: %s", e)
 
     def cleanup_memory(self, force: bool = False) -> Dict[str, Any]:
         """清理内存并返回清理统计"""
@@ -69,21 +69,21 @@ class MemoryManager:
             # 内存使用率检查
             memory_percent = process.memory_percent()
             if memory_percent > self.memory_threshold * 100:
-                logger.warning(f"High memory usage: {memory_percent:.1f}%")
+                logger.warning("High memory usage: %s%", memory_percent)
                 # 执行深度清理
                 self._deep_cleanup()
 
             self.cleanup_count += 1
             self.last_cleanup_time = time.time()
             logger.info(
-                f"Memory cleanup #{self.cleanup_count}: "
+                "Memory cleanup #{self.cleanup_count}: "
                 f"Before: {stats['before_cleanup_mb']:.1f}MB, "
                 f"After: {stats['after_cleanup_mb']:.1f}MB, "
                 f"Freed: {stats['before_cleanup_mb'] - stats['after_cleanup_mb']:.1f}MB"
             )
 
         except Exception as e:
-            logger.error(f"Memory cleanup failed: {e}")
+            logger.error("Memory cleanup failed: %s", e)
 
         return stats
 
@@ -98,7 +98,7 @@ class MemoryManager:
                 pd._libs.lib.clear_cached()
 
         except Exception as e:
-            logger.debug(f"Pandas cache cleanup warning: {e}")
+            logger.debug("Pandas cache cleanup warning: %s", e)
 
     def _cleanup_tracked_objects(self) -> None:
         """清理被跟踪的弱引用对象"""
@@ -130,7 +130,7 @@ class MemoryManager:
                     del sys.modules[module_name]
 
         except Exception as e:
-            logger.warning(f"Deep cleanup failed: {e}")
+            logger.warning("Deep cleanup failed: %s", e)
 
     def get_memory_stats(self) -> Dict[str, Any]:
         """获取内存统计信息"""
@@ -153,7 +153,7 @@ class MemoryManager:
                 "last_cleanup_time": self.last_cleanup_time,
             }
         except Exception as e:
-            logger.warning(f"Failed to get memory stats: {e}")
+            logger.warning("Failed to get memory stats: %s", e)
             return {
                 "current": {
                     "process_memory_mb": 0,
@@ -203,7 +203,7 @@ def memory_cleanup_decorator(threshold_mb: int = 100):
             memory_mb = process.memory_info().rss / 1024**2
 
             if memory_mb > threshold_mb:
-                logger.debug(f"Memory cleanup before {func.__name__}: {memory_mb:.1f}MB")
+                logger.debug("Memory cleanup before %s: %sMB", func.__name__, memory_mb)
                 memory_manager.cleanup_memory()
 
             try:
@@ -213,7 +213,7 @@ def memory_cleanup_decorator(threshold_mb: int = 100):
                 # 函数执行后检查内存
                 post_memory_mb = process.memory_info().rss / 1024**2
                 if post_memory_mb > threshold_mb:
-                    logger.debug(f"Memory cleanup after {func.__name__}: {post_memory_mb:.1f}MB")
+                    logger.debug("Memory cleanup after %s: %sMB", func.__name__, post_memory_mb)
                     memory_manager.cleanup_memory()
 
         return wrapper
@@ -261,7 +261,7 @@ def optimize_dataframe_memory(df: pd.DataFrame, inplace: bool = False) -> pd.Dat
     compression_ratio = original_memory / optimized_memory if optimized_memory > 0 else 1.0
 
     logger.info(
-        f"DataFrame memory optimization: {original_memory:.1f}MB -> {optimized_memory:.1f}MB "
+        "DataFrame memory optimization: {original_memory:.1f}MB -> {optimized_memory:.1f}MB "
         f"(ratio: {compression_ratio:.1f}x)"
     )
 
@@ -280,11 +280,11 @@ def safe_dataframe_operation(func):
                 memory_manager.track_dataframe(result, func.__name__)
             return result
         except MemoryError as e:
-            logger.error(f"Memory error in {func.__name__}: {e}")
+            logger.error("Memory error in %s: %s", func.__name__, e)
             memory_manager.cleanup_memory(force=True)
             raise
         except Exception as e:
-            logger.error(f"Error in {func.__name__}: {e}")
+            logger.error("Error in %s: %s", func.__name__, e)
             raise
 
     return wrapper

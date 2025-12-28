@@ -126,7 +126,7 @@ class TickReceiver:
             if symbol not in self.subscribed_symbols:
                 self.subscribed_symbols.add(symbol)
                 self.tick_cache[symbol] = []
-                self.logger.info(f"✓ 已订阅: {symbol}")
+                self.logger.info("✓ 已订阅: %s", symbol)
 
     def unsubscribe(self, symbols: List[str]):
         """取消订阅"""
@@ -134,7 +134,7 @@ class TickReceiver:
             if symbol in self.subscribed_symbols:
                 self.subscribed_symbols.remove(symbol)
                 self.tick_cache.pop(symbol, None)
-                self.logger.info(f"✓ 已取消订阅: {symbol}")
+                self.logger.info("✓ 已取消订阅: %s", symbol)
 
     def register_callback(self, callback: Callable[[TickData], None]):
         """
@@ -144,7 +144,7 @@ class TickReceiver:
             callback: 回调函数，接收TickData参数
         """
         self.callbacks.append(callback)
-        self.logger.info(f"✓ 已注册回调函数: {callback.__name__}")
+        self.logger.info("✓ 已注册回调函数: %s", callback.__name__)
 
     def start(self):
         """启动接收器"""
@@ -164,8 +164,8 @@ class TickReceiver:
 
         self.logger.info("=" * 70)
         self.logger.info("实时行情接收器已启动")
-        self.logger.info(f"数据源: {self.source_type.value}")
-        self.logger.info(f"订阅数量: {len(self.subscribed_symbols)}")
+        self.logger.info("数据源: %s", self.source_type.value)
+        self.logger.info("订阅数量: %s", len(self.subscribed_symbols))
         self.logger.info("=" * 70)
 
     def stop(self):
@@ -210,7 +210,7 @@ class TickReceiver:
             except queue.Empty:
                 continue
             except Exception as e:
-                self.logger.error(f"处理数据失败: {e}")
+                self.logger.error("处理数据失败: %s", e)
 
     def _receive_from_tdx(self):
         """从TDX接收数据"""
@@ -297,7 +297,7 @@ class TickReceiver:
             try:
                 callback(tick)
             except Exception as e:
-                self.logger.error(f"回调函数执行失败 {callback.__name__}: {e}")
+                self.logger.error("回调函数执行失败 %s: %s", callback.__name__, e)
 
     def _update_stats(self):
         """更新统计信息"""

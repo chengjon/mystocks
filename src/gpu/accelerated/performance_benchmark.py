@@ -114,7 +114,7 @@ class GPUPerformanceBenchmark:
             tracemalloc.stop()
 
             self.logger.info(
-                f"内存使用 - 初始: {initial_memory:.2f}MB, " f"最终: {final_memory:.2f}MB, 峰值: {peak_memory:.2f}MB"
+                "内存使用 - 初始: {initial_memory:.2f}MB, " f"最终: {final_memory:.2f}MB, 峰值: {peak_memory:.2f}MB"
             )
 
     def _generate_test_data(self, size: int) -> pd.DataFrame:
@@ -176,7 +176,7 @@ class GPUPerformanceBenchmark:
                         gpu_times.append(time.time() - start_time)
                 times["gpu"] = gpu_times
             except Exception as e:
-                self.logger.error(f"GPU数据处理测试失败: {e}")
+                self.logger.error("GPU数据处理测试失败: %s", e)
 
         # CPU测试
         cpu_times = []
@@ -224,7 +224,7 @@ class GPUPerformanceBenchmark:
                         gpu_times.append(time.time() - start_time)
                 times["gpu"] = gpu_times
             except Exception as e:
-                self.logger.error(f"GPU特征生成测试失败: {e}")
+                self.logger.error("GPU特征生成测试失败: %s", e)
 
         # CPU测试
         cpu_times = []
@@ -279,7 +279,7 @@ class GPUPerformanceBenchmark:
                 times["gpu"] = gpu_times
                 accuracies["gpu"] = gpu_accs
             except Exception as e:
-                self.logger.error(f"GPU价格预测测试失败: {e}")
+                self.logger.error("GPU价格预测测试失败: %s", e)
 
         # CPU测试
         cpu_times = []
@@ -562,7 +562,7 @@ class GPUPerformanceBenchmark:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(results_data, f, indent=2, ensure_ascii=False)
 
-        self.logger.info(f"基准测试结果已保存到: {filepath}")
+        self.logger.info("基准测试结果已保存到: %s", filepath)
 
     def generate_performance_report(self) -> str:
         """生成性能报告"""

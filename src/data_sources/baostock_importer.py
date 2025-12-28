@@ -51,7 +51,7 @@ class BaoStockData:
         with open(os.devnull, "w") as fnull, contextlib.redirect_stdout(fnull):
             lg = bs.login()
         if lg.error_code != "0":
-            self.logger.error(f"Baostock登录失败: {lg.error_msg}")
+            self.logger.error("Baostock登录失败: %s", lg.error_msg)
         return lg
 
     def _logout(self):
@@ -67,7 +67,7 @@ class BaoStockData:
         :return: pandas.DataFrame
         """
         if rs.error_code != "0":
-            self.logger.error(f"{error_msg}: {rs.error_msg}")
+            self.logger.error("%s: %s", error_msg, rs.error_msg)
             return pd.DataFrame()
         data_list = []
         while rs.error_code == "0" and rs.next():
@@ -133,7 +133,7 @@ class BaoStockData:
             else:
                 return "sz." + code
         else:
-            self.logger.error(f"无效的股票代码格式: {code}")
+            self.logger.error("无效的股票代码格式: %s", code)
             return code  # 返回原始，baostock会报错
 
     @with_login
@@ -150,7 +150,7 @@ class BaoStockData:
         """
         valid_timeframes = {"5m", "15m", "30m", "1h", "1d", "1w", "1M"}
         if timeframe not in valid_timeframes:
-            self.logger.error(f"无效的时间周期: {timeframe}，必须为 {valid_timeframes} 之一")
+            self.logger.error("无效的时间周期: %s，必须为 %s 之一", timeframe, valid_timeframes)
             return pd.DataFrame()
         frequency_map = {
             "5m": "5",

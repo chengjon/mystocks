@@ -76,7 +76,7 @@ class MySQLDataAccess(IDataAccessLayer):
                 # 使用MySQL UPSERT实现
                 affected_rows = self._mysql_upsert_data(processed_data, actual_table_name, conn, classification)
                 self.monitoring_db.log_operation_result(operation_id, True, affected_rows)
-                logger.info(f"MySQL保存成功: {actual_table_name}, {affected_rows}条记录")
+                logger.info("MySQL保存成功: %s, %s条记录", actual_table_name, affected_rows)
                 return True
             else:  # default append
                 processed_data.to_sql(
@@ -88,7 +88,7 @@ class MySQLDataAccess(IDataAccessLayer):
                 )
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"MySQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("MySQL保存成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return True
 
@@ -128,7 +128,7 @@ class MySQLDataAccess(IDataAccessLayer):
             processed_data = self._postprocess_reference_data(data, classification)
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"MySQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("MySQL加载成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return processed_data
 
@@ -180,7 +180,7 @@ class MySQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"MySQL更新失败: {e}")
+            logger.error("MySQL更新失败: %s", e)
             return False
 
     def delete_data(
@@ -223,7 +223,7 @@ class MySQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"MySQL删除失败: {e}")
+            logger.error("MySQL删除失败: %s", e)
             return False
 
     def _get_default_table_name(self, classification: DataClassification) -> str:
@@ -350,7 +350,7 @@ class MySQLDataAccess(IDataAccessLayer):
 
         except Exception as e:
             conn.rollback()
-            logger.error(f"MySQL UPSERT操作失败: {e}")
+            logger.error("MySQL UPSERT操作失败: %s", e)
             raise
 
     def _get_primary_key_columns(self, classification: DataClassification) -> List[str]:

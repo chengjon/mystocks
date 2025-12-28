@@ -76,16 +76,16 @@ class GPUDataProcessorFixed(IDataProcessor):
                 cp.cuda.set_allocator(cp.cuda.MemoryPool())
                 self.processing_stats["mode"] = "gpu"
                 self.logger.info(
-                    f"GPUDataProcessorFixed initialized with GPU enabled, " f"memory_threshold={memory_threshold_mb}MB"
+                    "GPUDataProcessorFixed initialized with GPU enabled, " f"memory_threshold={memory_threshold_mb}MB"
                 )
             except Exception as e:
-                self.logger.warning(f"GPU initialization failed, falling back to CPU: {e}")
+                self.logger.warning("GPU initialization failed, falling back to CPU: %s", e)
                 self.gpu_enabled = False
                 self.processing_stats["mode"] = "cpu"
         else:
             self.processing_stats["mode"] = "cpu"
             self.logger.info(
-                f"GPUDataProcessorFixed initialized with CPU mode, " f"memory_threshold={memory_threshold_mb}MB"
+                "GPUDataProcessorFixed initialized with CPU mode, " f"memory_threshold={memory_threshold_mb}MB"
             )
 
     def _check_gpu_availability(self) -> bool:
@@ -107,7 +107,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             self.logger.info("GPU available and working")
             return True
         except Exception as e:
-            self.logger.warning(f"GPU not available: {e}")
+            self.logger.warning("GPU not available: %s", e)
             return False
 
     @memory_cleanup_decorator(threshold_mb=500)
@@ -178,7 +178,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             }
 
         except Exception as e:
-            self.logger.error(f"Data preprocessing failed: {e}")
+            self.logger.error("Data preprocessing failed: %s", e)
             memory_manager.cleanup_memory(force=True)
             raise
 
@@ -236,7 +236,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             return processed_results
 
         except Exception as e:
-            self.logger.error(f"Batch processing failed: {e}")
+            self.logger.error("Batch processing failed: %s", e)
             raise
         finally:
             # 清理临时变量
@@ -300,7 +300,7 @@ class GPUDataProcessorFixed(IDataProcessor):
             return features
 
         except Exception as e:
-            self.logger.error(f"Feature computation failed: {e}")
+            self.logger.error("Feature computation failed: %s", e)
             raise
 
     def get_memory_stats(self) -> Dict[str, Any]:

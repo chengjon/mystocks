@@ -200,7 +200,7 @@ async def save_alert_history(alert_data: dict, db: AlertHistoryDatabase = Depend
             "message": "Alert history record created",
         }
     except Exception as e:
-        logger.error(f"Error saving alert: {e}")
+        logger.error("Error saving alert: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -241,7 +241,7 @@ async def acknowledge_alert(
             "message": "Alert acknowledged",
         }
     except Exception as e:
-        logger.error(f"Error acknowledging alert: {e}")
+        logger.error("Error acknowledging alert: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -265,7 +265,7 @@ async def escalate_alert(
             "message": "Alert escalated",
         }
     except Exception as e:
-        logger.error(f"Error escalating alert: {e}")
+        logger.error("Error escalating alert: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -304,7 +304,7 @@ async def record_alert_correlation(
             "message": "Correlation recorded",
         }
     except Exception as e:
-        logger.error(f"Error recording correlation: {e}")
+        logger.error("Error recording correlation: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

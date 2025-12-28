@@ -95,7 +95,7 @@ class StatisticalOptimizer:
                 },
             )
         except Exception as e:
-            self.logger.error(f"统计优化失败: {e}")
+            self.logger.error("统计优化失败: %s", e)
             return self._create_error_result(current_threshold, str(e))
 
     def _calculate_confidence(self, values: np.ndarray, threshold: float, threshold_type: str) -> float:
@@ -117,7 +117,7 @@ class StatisticalOptimizer:
 
             return max(0.0, min(1.0, confidence))
         except Exception as e:
-            self.logger.error(f"置信度计算失败: {e}")
+            self.logger.error("置信度计算失败: %s", e)
             return 0.5
 
     def _estimate_improvement(
@@ -148,7 +148,7 @@ class StatisticalOptimizer:
 
             return max(-1.0, improvement)
         except Exception as e:
-            self.logger.error(f"改进估计失败: {e}")
+            self.logger.error("改进估计失败: %s", e)
             return 0.0
 
     def _is_anomaly(self, value: float, threshold: float, threshold_type: str) -> bool:
