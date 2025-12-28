@@ -70,7 +70,7 @@ class GPUUnifiedManager:
             "average_speedup": 1.0,
         }
 
-        self.logger.info(f"GPU统一管理器初始化完成 - GPU加速: {self.gpu_enabled}")
+        self.logger.info("GPU统一管理器初始化完成 - GPU加速: %s", self.gpu_enabled)
 
     def _detect_gpu_environment(self) -> bool:
         """检测GPU环境是否可用"""
@@ -82,7 +82,7 @@ class GPUUnifiedManager:
             self.logger.info("✅ GPU环境检测成功")
             return True
         except Exception as e:
-            self.logger.warning(f"⚠️  GPU环境检测失败: {e}, 将使用CPU模式")
+            self.logger.warning("⚠️  GPU环境检测失败: %s, 将使用CPU模式", e)
             return False
 
     def process_data_with_gpu(
@@ -122,7 +122,7 @@ class GPUUnifiedManager:
 
             self._update_performance_stats(result)
 
-            self.logger.info(f"GPU数据处理完成 - 耗时: {processing_time:.4f}秒, 数据量: {len(data)}行")
+            self.logger.info("GPU数据处理完成 - 耗时: %s秒, 数据量: %s行", processing_time, len(data))
             return result
 
         except Exception as e:
@@ -183,7 +183,7 @@ class GPUUnifiedManager:
 
             self._update_performance_stats(result)
 
-            self.logger.info(f"GPU预测完成 - 模型: {model_type}, 预测价格: {prediction_result.predicted_price:.2f}")
+            self.logger.info("GPU预测完成 - 模型: %s, 预测价格: %s", model_type, prediction_result.predicted_price)
             return result
 
         except Exception as e:
@@ -208,7 +208,7 @@ class GPUUnifiedManager:
         """批量GPU处理"""
         results = []
 
-        self.logger.info(f"开始批量GPU处理 - 数据数量: {len(data_list)}, 操作: {operation}")
+        self.logger.info("开始批量GPU处理 - 数据数量: %s, 操作: %s", len(data_list), operation)
 
         for i, data in enumerate(data_list):
             try:
@@ -223,10 +223,10 @@ class GPUUnifiedManager:
 
                 # 进度日志
                 if (i + 1) % 10 == 0:
-                    self.logger.info(f"批量GPU处理进度: {i + 1}/{len(data_list)}")
+                    self.logger.info("批量GPU处理进度: %s/%s", i + 1, len(data_list))
 
             except Exception as e:
-                self.logger.error(f"批量GPU处理中第{i + 1}个数据失败: {e}")
+                self.logger.error("批量GPU处理中第%s个数据失败: %s", i + 1, e)
 
                 error_result = GPUProcessingResult(
                     processing_time=0.0,
@@ -239,7 +239,7 @@ class GPUUnifiedManager:
                 )
                 results.append(error_result)
 
-        self.logger.info(f"批量GPU处理完成 - 成功: {len([r for r in results if not r.errors])}/{len(data_list)}")
+        self.logger.info("批量GPU处理完成 - 成功: %s/%s", len([r for r in results if not r.errors]), len(data_list))
         return results
 
     def optimize_hyperparameters_with_gpu(self, data: pd.DataFrame, model_type: str = "ridge") -> GPUProcessingResult:
@@ -268,7 +268,7 @@ class GPUUnifiedManager:
             self._update_performance_stats(result)
 
             self.logger.info(
-                f"GPU超参数优化完成 - 模型: {model_type}, 最佳分数: {optimization_result.get('best_score', 0):.4f}"
+                "GPU超参数优化完成 - 模型: %s, 最佳分数: %s", model_type, optimization_result.get("best_score", 0)
             )
             return result
 
@@ -350,7 +350,7 @@ class GPUUnifiedManager:
             },
         }
 
-        self.logger.info(f"性能对比完成 - GPU: {gpu_time:.4f}s, CPU: {cpu_time:.4f}s, 加速比: {speedup:.2f}x")
+        self.logger.info("性能对比完成 - GPU: %ss, CPU: %ss, 加速比: %sx", gpu_time, cpu_time, speedup)
         return benchmark_result
 
     def _calculate_speedup_factor(self, data: pd.DataFrame, processing_time: float) -> float:
@@ -440,7 +440,7 @@ class GPUUnifiedManager:
         """保存GPU模型"""
         if self.price_predictor.is_fitted:
             self.price_predictor.save_model(filepath)
-            self.logger.info(f"GPU模型已保存到: {filepath}")
+            self.logger.info("GPU模型已保存到: %s", filepath)
         else:
             self.logger.warning("没有训练过的模型可以保存")
 
@@ -448,9 +448,9 @@ class GPUUnifiedManager:
         """加载GPU模型"""
         try:
             self.price_predictor.load_model(filepath)
-            self.logger.info(f"GPU模型已从 {filepath} 加载")
+            self.logger.info("GPU模型已从 %s 加载", filepath)
         except Exception as e:
-            self.logger.error(f"加载GPU模型失败: {e}")
+            self.logger.error("加载GPU模型失败: %s", e)
 
     def generate_gpu_report(self) -> str:
         """生成GPU使用报告"""

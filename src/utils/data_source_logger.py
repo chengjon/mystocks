@@ -42,9 +42,8 @@ class DataSourceLogger:
             result is not None
             and not isinstance(result, str)
             or (isinstance(result, str) and not result.startswith("Error"))
-        )
-        self.logger.info(
-            f"Adapter Call: {adapter_type}.{method} "
+self.logger.info("数据源日志完成")
+        self.logger.info("Adapter Call: {adapter_type}.{method} "
             f"Params: {params} "
             f"Success: {success} "
             f"Duration: {duration:.3f}s"
@@ -52,7 +51,7 @@ class DataSourceLogger:
 
     def log_error(self, adapter_type: str, method: str, params: Dict, error: str):
         """记录数据源调用错误"""
-        self.logger.error(f"Adapter Error: {adapter_type}.{method} Params: {params} Error: {error}")
+        self.logger.error("Adapter Error: %s.%s Params: %s Error: %s", adapter_type, method, params, error)
 
 
 # 全局日志记录器实例
@@ -137,9 +136,8 @@ def log_data_source_method(adapter_type: str, method_name: str):
                     success = False
                 elif result is None:
                     success = False
-
-                data_source_logger.logger.info(
-                    f"DS Call: {adapter_type}.{method_name} "
+self.logger.info("性能统计完成")
+                data_source_logger.logger.info("DS Call: {adapter_type}.{method_name} "
                     f"Success: {success} "
                     f"Duration: {duration:.3f}s "
                     f"Params: {params if len(str(params)) < 200 else str(params)[:200] + '...'}"
@@ -148,8 +146,7 @@ def log_data_source_method(adapter_type: str, method_name: str):
                 return result
             except Exception as e:
                 duration = time.time() - start_time
-                data_source_logger.logger.error(
-                    f"DS Error: {adapter_type}.{method_name} "
+                data_source_logger.logger.error("DS Error: {adapter_type}.{method_name} "
                     f"Duration: {duration:.3f}s "
                     f"Error: {str(e)} "
                     f"Params: {params if len(str(params)) < 200 else str(params)[:200] + '...'}"

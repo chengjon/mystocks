@@ -100,7 +100,7 @@ class MLTrainingGPU:
             训练结果字典，包含模型ID、性能指标等
         """
         try:
-            logger.info(f"开始GPU模型训练: {model_type} ({len(X_train)} 样本)")
+            logger.info("开始GPU模型训练: %s (%s 样本)", model_type, len(X_train))
 
             # 数据验证
             if X_train.empty or y_train.empty:
@@ -141,7 +141,7 @@ class MLTrainingGPU:
             model = self._create_model(model_type, params)
 
             # 模型训练
-            logger.info(f"训练{model_type}模型...")
+            logger.info("训练%s模型...", model_type)
             model.fit(X_train_scaled, y_train_gpu)
 
             # 训练集和验证集评估
@@ -198,11 +198,11 @@ class MLTrainingGPU:
                 "performance_metrics": self._calculate_performance_metrics(model, X_val_scaled, y_val_gpu, y_train_gpu),
             }
 
-            logger.info(f"GPU模型训练完成: {model_id} (验证得分: {val_score:.4f})")
+            logger.info("GPU模型训练完成: %s (验证得分: %s)", model_id, val_score)
             return result
 
         except Exception as e:
-            logger.error(f"GPU模型训练失败: {e}")
+            logger.error("GPU模型训练失败: %s", e)
             return {
                 "status": "failed",
                 "error": str(e),
@@ -231,7 +231,7 @@ class MLTrainingGPU:
             # 特征验证
             expected_features = model_info["features"]
             if list(X_test.columns) != expected_features:
-                logger.warning(f"特征不匹配，期望: {expected_features}, 实际: {list(X_test.columns)}")
+                logger.warning("特征不匹配，期望: %s, 实际: %s", expected_features, list(X_test.columns))
                 # 重新排列特征
                 X_test = X_test[expected_features]
 
@@ -256,7 +256,7 @@ class MLTrainingGPU:
                 return predictions
 
         except Exception as e:
-            logger.error(f"GPU预测失败: {e}")
+            logger.error("GPU预测失败: %s", e)
             raise
 
     def predict_proba_gpu(self, model_id: str, X_test: pd.DataFrame) -> np.ndarray:
@@ -300,7 +300,7 @@ class MLTrainingGPU:
                 return probabilities
 
         except Exception as e:
-            logger.error(f"GPU概率预测失败: {e}")
+            logger.error("GPU概率预测失败: %s", e)
             raise
 
     def evaluate_model_gpu(self, model_id: str, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
@@ -348,7 +348,7 @@ class MLTrainingGPU:
             return {"mse": mse, "mae": mae, "r2": r2, "rmse": mse**0.5}
 
         except Exception as e:
-            logger.error(f"模型评估失败: {e}")
+            logger.error("模型评估失败: %s", e)
             raise
 
     def get_model_info(self, model_id: str) -> Dict[str, Any]:
@@ -404,11 +404,11 @@ class MLTrainingGPU:
                 del self.models[model_id]
                 if model_id in self.scalers:
                     del self.scalers[model_id]
-                logger.info(f"模型已移除: {model_id}")
+                logger.info("模型已移除: %s", model_id)
                 return True
             return False
         except Exception as e:
-            logger.error(f"移除模型失败: {e}")
+            logger.error("移除模型失败: %s", e)
             return False
 
     def save_model(self, model_id: str, filepath: str) -> bool:
@@ -447,11 +447,11 @@ class MLTrainingGPU:
             with open(filepath, "wb") as f:
                 pickle.dump(cpu_model_info, f)
 
-            logger.info(f"模型已保存: {model_id} -> {filepath}")
+            logger.info("模型已保存: %s -> %s", model_id, filepath)
             return True
 
         except Exception as e:
-            logger.error(f"保存模型失败: {e}")
+            logger.error("保存模型失败: %s", e)
             return False
 
     def _create_model(self, model_type: str, params: Dict):
@@ -519,5 +519,5 @@ class MLTrainingGPU:
             }
 
         except Exception as e:
-            logger.warning(f"性能指标计算失败: {e}")
+            logger.warning("性能指标计算失败: %s", e)
             return {"error": str(e)}

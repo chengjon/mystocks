@@ -29,6 +29,7 @@ except ImportError:
 # 导入连接管理器
 try:
     from .connection_manager import get_connection_manager
+
     CONNECTION_MANAGER_AVAILABLE = True
 except ImportError:
     CONNECTION_MANAGER_AVAILABLE = False

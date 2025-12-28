@@ -114,7 +114,7 @@ class BacktestVisualizer:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"权益曲线已保存: {save_path}")
+            self.logger.info("权益曲线已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -195,7 +195,7 @@ class BacktestVisualizer:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"回撤图已保存: {save_path}")
+            self.logger.info("回撤图已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -250,7 +250,7 @@ class BacktestVisualizer:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"收益分布图已保存: {save_path}")
+            self.logger.info("收益分布图已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -347,7 +347,7 @@ class BacktestVisualizer:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"月度收益图已保存: {save_path}")
+            self.logger.info("月度收益图已保存: %s", save_path)
 
         if show:
             plt.show()
@@ -476,7 +476,7 @@ class BacktestVisualizer:
         # 保存或显示
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"仪表盘已保存: {save_path}")
+            self.logger.info("仪表盘已保存: %s", save_path)
 
         if show:
             plt.show()

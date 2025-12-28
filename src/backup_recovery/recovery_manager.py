@@ -160,7 +160,7 @@ class RecoveryManager:
                         return json.load(f)
 
         except Exception as e:
-            logger.error(f"读取备份元数据失败: {e}")
+            logger.error("读取备份元数据失败: %s", e)
 
         return {}
 
@@ -174,11 +174,11 @@ class RecoveryManager:
 
             # 插入到TDengine
             result = self.tdengine_access.insert_dataframe(table_name, df)
-            logger.info(f"TDengine恢复数据: {table_name}, {result} 行")
+            logger.info("TDengine恢复数据: %s, %s 行", table_name, result)
             return result > 0
 
         except Exception as e:
-            logger.error(f"恢复到TDengine失败 {table_name}: {e}")
+            logger.error("恢复到TDengine失败 %s: %s", table_name, e)
             return False
 
     def _restore_to_postgresql(self, parquet_file: Path, table_name: str) -> bool:
@@ -191,11 +191,11 @@ class RecoveryManager:
 
             # 插入到PostgreSQL
             result = self.postgresql_access.insert_dataframe(table_name, df)
-            logger.info(f"PostgreSQL恢复数据: {table_name}, {result} 行")
+            logger.info("PostgreSQL恢复数据: %s, %s 行", table_name, result)
             return result > 0
 
         except Exception as e:
-            logger.error(f"恢复到PostgreSQL失败 {table_name}: {e}")
+            logger.error("恢复到PostgreSQL失败 %s: %s", table_name, e)
             return False
 
     def _log_recovery(self, log_file: Path, message: str):

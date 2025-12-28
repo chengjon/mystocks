@@ -73,11 +73,11 @@ class InferenceKernelEngine(StandardizedKernelInterface):
                 await self._warmup_pytorch()
 
             self.is_initialized = True
-            logger.info(f"InferenceKernelEngine initialized on device {self.config.device_id}")
+            logger.info("InferenceKernelEngine initialized on device %s", self.config.device_id)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize InferenceKernelEngine: {e}")
+            logger.error("Failed to initialize InferenceKernelEngine: %s", e)
             return False
 
     async def _warmup_gpu(self):
@@ -95,7 +95,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             cp.cuda.Stream.null.synchronize()
             logger.debug("CuPy inference kernel warmup completed")
         except Exception as e:
-            logger.warning(f"CuPy inference kernel warmup failed: {e}")
+            logger.warning("CuPy inference kernel warmup failed: %s", e)
 
     async def _warmup_pytorch(self):
         """预热PyTorch GPU"""
@@ -113,7 +113,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
             torch.cuda.synchronize()
             logger.debug("PyTorch inference kernel warmup completed")
         except Exception as e:
-            logger.warning(f"PyTorch inference kernel warmup failed: {e}")
+            logger.warning("PyTorch inference kernel warmup failed: %s", e)
 
     async def execute_matrix_operation(
         self,
@@ -168,7 +168,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
 
             if result.success:
                 logger.debug(
-                    f"Inference operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
+                    "Inference operation {config.operation_type.value} " f"completed in {execution_time:.2f}ms"
                 )
             else:
                 self.stats["fallback_to_cpu"] += 1
@@ -177,7 +177,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            logger.error(f"Error executing inference operation: {e}")
+            logger.error("Error executing inference operation: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=execution_time, error_message=str(e))
 
     async def _execute_linear_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
@@ -193,7 +193,7 @@ class InferenceKernelEngine(StandardizedKernelInterface):
                 return await self._cpu_linear_regression(data, config)
 
         except Exception as e:
-            logger.error(f"Linear regression execution failed: {e}")
+            logger.error("Linear regression execution failed: %s", e)
             return KernelExecutionResult(success=False, execution_time_ms=0.0, error_message=str(e))
 
     async def _gpu_linear_regression(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:

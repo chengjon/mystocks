@@ -10,9 +10,9 @@ Tests the new architecture optimization endpoints added in Phase 6:
 
 Expected: 100% pass rate (18/18 tests)
 """
-
 import pytest
 import requests
+from typing import Dict, Any
 
 
 class TestArchitectureOptimizationE2E:
@@ -148,9 +148,8 @@ class TestArchitectureOptimizationE2E:
             assert "success" in data, f"Missing 'success' in {endpoint}"
             assert "data" in data, f"Missing 'data' in {endpoint}"
             # Response can have message, request_id, or timestamp
-            assert (
-                "message" in data or "request_id" in data or "timestamp" in data
-            ), f"Missing 'message', 'request_id', or 'timestamp' in {endpoint}"
+            assert ("message" in data or "request_id" in data or "timestamp" in data), \
+                f"Missing 'message', 'request_id', or 'timestamp' in {endpoint}"
 
         # Test health endpoint separately (it has a different format)
         response = requests.get(f"{api_base}{health_endpoint}")
@@ -167,9 +166,8 @@ class TestArchitectureOptimizationE2E:
 
         for endpoint in endpoints:
             response = requests.get(f"{api_base}{endpoint}")
-            assert response.headers["content-type"].startswith(
-                "application/json"
-            ), f"Wrong content type for {endpoint}: {response.headers['content-type']}"
+            assert response.headers["content-type"].startswith("application/json"), \
+                f"Wrong content type for {endpoint}: {response.headers['content-type']}"
 
     def test_endpoints_handle_errors_gracefully(self, api_base):
         """Test 16: Endpoints handle invalid requests gracefully"""

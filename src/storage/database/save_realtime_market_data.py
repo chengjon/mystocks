@@ -73,7 +73,7 @@ class RealtimeMarketDataSaver:
 
     def _load_config(self):
         """加载配置参数"""
-        self.logger.info(f"加载配置文件: {self.config_file}")
+        self.logger.info("加载配置文件: %s", self.config_file)
 
         # 首先加载默认的.env文件
         load_dotenv()
@@ -81,9 +81,9 @@ class RealtimeMarketDataSaver:
         # 然后加载专用配置文件
         if os.path.exists(self.config_file):
             load_dotenv(self.config_file, override=True)
-            self.logger.info(f"✅ 成功加载配置文件: {self.config_file}")
+            self.logger.info("✅ 成功加载配置文件: %s", self.config_file)
         else:
-            self.logger.warning(f"⚠️ 配置文件不存在: {self.config_file}，使用默认配置")
+            self.logger.warning("⚠️ 配置文件不存在: %s，使用默认配置", self.config_file)
 
         # 读取配置参数
         self.config = {
@@ -109,10 +109,10 @@ class RealtimeMarketDataSaver:
         self.logger.setLevel(log_level)
 
         self.logger.info("✅ 配置参数加载完成")
-        self.logger.info(f"📊 市场代码: {self.config['market_symbol']}")
-        self.logger.info(f"🔥 保存为实时数据(Redis): {self.config['save_as_realtime']}")
-        self.logger.info(f"💾 保存为日线数据(PostgreSQL): {self.config['save_as_daily']}")
-        self.logger.info(f"⏱️ 保存为Tick数据(TDengine): {self.config['save_as_tick']}")
+        self.logger.info("📊 市场代码: %s", self.config["market_symbol"])
+        self.logger.info("🔥 保存为实时数据(Redis): %s", self.config["save_as_realtime"])
+        self.logger.info("💾 保存为日线数据(PostgreSQL): %s", self.config["save_as_daily"])
+        self.logger.info("⏱️ 保存为Tick数据(TDengine): %s", self.config["save_as_tick"])
 
     def initialize_unified_manager(self) -> bool:
         """初始化MyStocks统一管理器"""
@@ -133,17 +133,17 @@ class RealtimeMarketDataSaver:
                 monitoring = status.get("monitoring", {})
                 op_stats = monitoring.get("operation_statistics", {})
 
-                self.logger.info(f"📊 系统状态 - 总操作数: {op_stats.get('total_operations', 0)}")
-                self.logger.info(f"🗄️ 监控系统: {'正常' if monitoring else '未初始化'}")
+                self.logger.info("📊 系统状态 - 总操作数: %s", op_stats.get("total_operations", 0))
+                self.logger.info("🗄️ 监控系统: %s", "正常" if monitoring else "未初始化")
 
                 return True
             else:
                 self.logger.error("❌ MyStocks统一管理器初始化失败")
-                self.logger.error(f"错误信息: {init_result.get('errors', [])}")
+                self.logger.error("错误信息: %s", init_result.get("errors", []))
                 return False
 
         except Exception as e:
-            self.logger.error(f"❌ 统一管理器初始化异常: {e}")
+            self.logger.error("❌ 统一管理器初始化异常: %s", e)
             return False
 
     def initialize_data_source(self) -> bool:
@@ -161,12 +161,12 @@ class RealtimeMarketDataSaver:
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ 数据源适配器初始化失败: {e}")
+            self.logger.error("❌ 数据源适配器初始化失败: %s", e)
             return False
 
     def get_realtime_market_data(self) -> Optional[pd.DataFrame]:
         """使用efinance获取沪深市场A股实时数据"""
-        self.logger.info(f"使用efinance获取{self.config['market_symbol']}市场实时数据...")
+        self.logger.info("使用efinance获取%s市场实时数据...", self.config["market_symbol"])
 
         try:
             if not self.customer_ds.efinance_available:
@@ -178,8 +178,8 @@ class RealtimeMarketDataSaver:
             data = self.customer_ds.ef.stock.get_realtime_quotes()
 
             if isinstance(data, pd.DataFrame) and not data.empty:
-                self.logger.info(f"✅ 成功获取实时数据，共 {len(data)} 条记录")
-                self.logger.info(f"📊 数据列: {list(data.columns)}")
+                self.logger.info("✅ 成功获取实时数据，共 %s 条记录", len(data))
+                self.logger.info("📊 数据列: %s", list(data.columns))
 
                 # 数据验证
                 if self.config["enable_data_validation"]:
@@ -200,10 +200,10 @@ class RealtimeMarketDataSaver:
                 return None
 
         except Exception as e:
-            self.logger.error(f"❌ 使用efinance获取实时市场数据失败: {e}")
+            self.logger.error("❌ 使用efinance获取实时市场数据失败: %s", e)
             import traceback
 
-            self.logger.error(f"详细错误信息: {traceback.format_exc()}")
+            self.logger.error("详细错误信息: %s", traceback.format_exc())
             return None
 
     def _validate_market_data(self, data: pd.DataFrame) -> bool:
@@ -219,18 +219,18 @@ class RealtimeMarketDataSaver:
             has_symbol_column = any(col in data.columns for col in expected_columns)
 
             if not has_symbol_column:
-                self.logger.warning(f"⚠️ 数据缺少股票代码列，可用列: {list(data.columns)}")
+                self.logger.warning("⚠️ 数据缺少股票代码列，可用列: %s", list(data.columns))
                 # 不算验证失败，可能列名不同
 
             # 检查数据类型合理性
             null_counts = data.isnull().sum()
             if null_counts.any():
-                self.logger.info(f"📊 数据包含空值: {null_counts[null_counts > 0].head().to_dict()}")
+                self.logger.info("📊 数据包含空值: %s", null_counts[null_counts > 0].head().to_dict())
 
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ 数据验证失败: {e}")
+            self.logger.error("❌ 数据验证失败: %s", e)
             return False
 
     def save_data_using_unified_interface(self, data: pd.DataFrame) -> Dict[str, bool]:
@@ -258,7 +258,7 @@ class RealtimeMarketDataSaver:
                     save_results["realtime"] = success
 
                 except Exception as e:
-                    self.logger.error(f"❌ 实时数据保存异常: {e}")
+                    self.logger.error("❌ 实时数据保存异常: %s", e)
                     save_results["realtime"] = False
 
             # 方案2: 保存为日线数据（PostgreSQL持久化存储）
@@ -286,7 +286,7 @@ class RealtimeMarketDataSaver:
                         save_results["daily"] = False
 
                 except Exception as e:
-                    self.logger.error(f"❌ 日线数据保存异常: {e}")
+                    self.logger.error("❌ 日线数据保存异常: %s", e)
                     save_results["daily"] = False
 
             # 方案3: 保存为Tick数据（TDengine时序存储，可选）
@@ -314,13 +314,13 @@ class RealtimeMarketDataSaver:
                         save_results["tick"] = False
 
                 except Exception as e:
-                    self.logger.error(f"❌ Tick数据保存异常: {e}")
+                    self.logger.error("❌ Tick数据保存异常: %s", e)
                     save_results["tick"] = False
 
             return save_results
 
         except Exception as e:
-            self.logger.error(f"❌ 统一接口保存数据失败: {e}")
+            self.logger.error("❌ 统一接口保存数据失败: %s", e)
             return {"error": False}
 
     def _prepare_daily_data(self, market_data: pd.DataFrame) -> Optional[pd.DataFrame]:
@@ -404,16 +404,16 @@ class RealtimeMarketDataSaver:
             available_columns = [col for col in postgres_columns if col in daily_data.columns]
             daily_data = daily_data[available_columns]
 
-            self.logger.info(f"📊 日线数据格式化完成，共 {len(daily_data)} 条记录")
-            self.logger.info(f"📋 包含列: {list(daily_data.columns)}")
+            self.logger.info("📊 日线数据格式化完成，共 %s 条记录", len(daily_data))
+            self.logger.info("📋 包含列: %s", list(daily_data.columns))
 
             return daily_data
 
         except Exception as e:
-            self.logger.error(f"❌ 日线数据格式化失败: {e}")
+            self.logger.error("❌ 日线数据格式化失败: %s", e)
             import traceback
 
-            self.logger.error(f"详细错误信息: {traceback.format_exc()}")
+            self.logger.error("详细错误信息: %s", traceback.format_exc())
             return None
 
     def _prepare_tick_data(self, market_data: pd.DataFrame) -> Optional[pd.DataFrame]:
@@ -451,7 +451,7 @@ class RealtimeMarketDataSaver:
             missing_columns = [col for col in required_columns if col not in tick_data.columns]
 
             if missing_columns:
-                self.logger.warning(f"⚠️ Tick数据缺少必要列: {missing_columns}")
+                self.logger.warning("⚠️ Tick数据缺少必要列: %s", missing_columns)
                 # 尝试填充默认值
                 for col in missing_columns:
                     if col == "symbol":
@@ -459,11 +459,11 @@ class RealtimeMarketDataSaver:
                     elif col == "price":
                         tick_data["price"] = 0.0
 
-            self.logger.info(f"📊 Tick数据格式化完成，共 {len(tick_data)} 条记录")
+            self.logger.info("📊 Tick数据格式化完成，共 %s 条记录", len(tick_data))
             return tick_data
 
         except Exception as e:
-            self.logger.error(f"❌ Tick数据格式化失败: {e}")
+            self.logger.error("❌ Tick数据格式化失败: %s", e)
             return None
 
     def run(self) -> bool:
@@ -488,7 +488,7 @@ class RealtimeMarketDataSaver:
                 market_data = self.get_realtime_market_data()
                 if market_data is not None:
                     break
-                self.logger.warning(f"⚠️ 第 {attempt + 1} 次尝试获取数据失败")
+                self.logger.warning("⚠️ 第 %s 次尝试获取数据失败", attempt + 1)
 
             if market_data is None:
                 self.logger.error("💥 多次重试后仍无法获取数据")
@@ -504,25 +504,25 @@ class RealtimeMarketDataSaver:
             if success_count > 0:
                 self.logger.info("=" * 70)
                 self.logger.info("🎉 沪深市场A股实时数据保存完成！")
-                self.logger.info(f"📊 数据记录数: {len(market_data)}")
-                self.logger.info(f"💾 保存成功率: {success_count}/{total_count}")
+                self.logger.info("📊 数据记录数: %s", len(market_data))
+                self.logger.info("💾 保存成功率: %s/%s", success_count, total_count)
 
                 # 显示具体的保存结果
                 for save_type, result in save_results.items():
                     status = "✅ 成功" if result else "❌ 失败"
                     if save_type == "realtime":
-                        self.logger.info(f"🔥 实时数据 → Redis: {status}")
+                        self.logger.info("🔥 实时数据 → Redis: %s", status)
                     elif save_type == "daily":
-                        self.logger.info(f"💾 日线数据 → PostgreSQL+TimescaleDB: {status}")
+                        self.logger.info("💾 日线数据 → PostgreSQL+TimescaleDB: %s", status)
                     elif save_type == "tick":
-                        self.logger.info(f"⏱️ Tick数据 → TDengine: {status}")
+                        self.logger.info("⏱️ Tick数据 → TDengine: %s", status)
 
                 # 获取并显示系统状态
                 try:
                     status = self.unified_manager.get_system_status()
                     monitoring = status.get("monitoring", {})
                     op_stats = monitoring.get("operation_statistics", {})
-                    self.logger.info(f"📈 系统总操作数: {op_stats.get('total_operations', 0)}")
+                    self.logger.info("📈 系统总操作数: %s", op_stats.get("total_operations", 0))
                 except Exception:
                     pass
 
@@ -533,7 +533,7 @@ class RealtimeMarketDataSaver:
                 return False
 
         except Exception as e:
-            self.logger.error(f"💥 程序执行过程中发生错误: {e}")
+            self.logger.error("💥 程序执行过程中发生错误: %s", e)
             return False
         finally:
             # 清理资源

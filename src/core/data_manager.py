@@ -150,7 +150,7 @@ class DataManager:
                 self._monitoring_db = get_monitoring_database()
                 self._performance_monitor = get_performance_monitor()
             except Exception as e:
-                logger.warning(f"监控组件初始化失败: {e}")
+                logger.warning("监控组件初始化失败: %s", e)
                 self.enable_monitoring = False
 
         # 如果监控未启用，使用null实现
@@ -184,10 +184,10 @@ class DataManager:
             adapter: 适配器实例 (需实现IDataSource接口)
         """
         if name in self._adapters:
-            logger.warning(f"适配器 '{name}' 已存在,将被覆盖")
+            logger.warning("适配器 '{name}' 已存在,将被覆盖")
 
         self._adapters[name] = adapter
-        logger.info(f"已注册适配器: {name}")
+        logger.info("已注册适配器: %s", name)
 
     def unregister_adapter(self, name: str) -> bool:
         """
@@ -201,10 +201,10 @@ class DataManager:
         """
         if name in self._adapters:
             del self._adapters[name]
-            logger.info(f"已注销适配器: {name}")
+            logger.info("已注销适配器: %s", name)
             return True
         else:
-            logger.warning(f"适配器 '{name}' 不存在")
+            logger.warning("适配器 '{name}' 不存在")
             return False
 
     def list_adapters(self) -> List[str]:
@@ -287,18 +287,15 @@ class DataManager:
                     success=success,
                 )
 
-            if success:
-                logger.debug(
-                    f"保存数据成功: {classification.value} → {target_db.value} "
-                    f"({len(data)} rows, {duration_ms:.2f}ms)"
-                )
-            else:
-                logger.error(f"保存数据失败: {classification.value} → {target_db.value}")
+            self.logger.info("数据管理器初始化完成")
+            logger.debug(
+                "保存数据成功: %s → %s (%d rows, %.2fms)", classification.value, target_db.value, len(data), duration_ms
+            )
 
             return success
 
         except Exception as e:
-            logger.error(f"保存数据异常: {classification.value} - {str(e)}")
+            logger.error("保存数据异常: %s - %s", classification.value, str(e))
             logger.debug(traceback.format_exc())
             return False
 
@@ -337,18 +334,22 @@ class DataManager:
                     success=(data is not None),
                 )
 
+            self.logger.info("加载数据初始化完成")
             if data is not None:
                 logger.debug(
-                    f"加载数据成功: {classification.value} → {target_db.value} "
-                    f"({len(data)} rows, {duration_ms:.2f}ms)"
+                    "加载数据成功: %s → %s (%d rows, %.2fms)",
+                    classification.value,
+                    target_db.value,
+                    len(data),
+                    duration_ms,
                 )
             else:
-                logger.warning(f"加载数据为空: {classification.value} → {target_db.value}")
+                logger.warning("加载数据为空: %s → %s", classification.value, target_db.value)
 
             return data
 
         except Exception as e:
-            logger.error(f"加载数据异常: {classification.value} - {str(e)}")
+            logger.error("加载数据异常: %s - %s", classification.value, str(e))
             logger.debug(traceback.format_exc())
             return None
 

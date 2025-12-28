@@ -40,7 +40,7 @@ class DataAnalyzer:
         """
         data_point = {"value": value, "timestamp": timestamp, "rule_name": rule_name}
         self.data_points.append(data_point)
-        logger.debug(f"Added data point: {value} for rule {rule_name}")
+        logger.debug("Added data point: %s for rule %s", value, rule_name)
 
     def calculate_statistics(self) -> Dict[str, float]:
         """
@@ -140,11 +140,11 @@ class DataAnalyzer:
             # 返回异常点索引（-1表示异常）
             anomaly_indices = [i for i, pred in enumerate(predictions) if pred == -1]
 
-            logger.debug(f"Detected {len(anomaly_indices)} anomalies out of {len(self.data_points)} points")
+            logger.debug("Detected %s anomalies out of %s points", len(anomaly_indices), len(self.data_points))
             return anomaly_indices
 
         except Exception as e:
-            logger.error(f"Error in anomaly detection: {str(e)}")
+            logger.error("Error in anomaly detection: %s", str(e))
             return []
 
     def analyze_trend(self) -> Dict[str, Any]:
@@ -210,7 +210,7 @@ class DataAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error in trend analysis: {str(e)}")
+            logger.error("Error in trend analysis: %s", str(e))
             return {
                 "direction": "error",
                 "strength": 0.0,

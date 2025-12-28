@@ -155,7 +155,7 @@ def normalize_api_response_format(data: Dict[str, Any]) -> Dict[str, Any]:
             normalized_df = normalize_stock_data_format(df)
             normalized_data["data"] = normalized_df.to_dict("records")
         except Exception as e:
-            logger.warning(f"列表数据标准化失败: {e}")
+            logger.warning("列表数据标准化失败: %s", e)
 
     # 添加缺失的必要字段
     if "success" not in normalized_data:

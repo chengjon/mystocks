@@ -99,7 +99,7 @@ class DataAnalyzer:
                 "cv": float(np.std(data_array) / np.mean(data_array)) if np.mean(data_array) != 0 else 0,
             }
         except Exception as e:
-            self.logger.error(f"统计分析失败: {e}")
+            self.logger.error("统计分析失败: %s", e)
             return {}
 
     def _calculate_skewness(self, data: np.ndarray) -> float:
@@ -153,7 +153,7 @@ class DataAnalyzer:
                 "iqr": float(iqr),
             }
         except Exception as e:
-            self.logger.error(f"IQR异常值检测失败: {e}")
+            self.logger.error("IQR异常值检测失败: %s", e)
             return {"outliers": [], "outlier_indices": [], "outlier_count": 0}
 
     def calculate_moving_statistics(self, data: List[float], window: Optional[int] = None) -> Dict[str, List[float]]:
@@ -189,7 +189,7 @@ class DataAnalyzer:
                 "moving_median": moving_median,
             }
         except Exception as e:
-            self.logger.error(f"移动统计计算失败: {e}")
+            self.logger.error("移动统计计算失败: %s", e)
             return {"moving_mean": [], "moving_std": [], "moving_median": []}
 
     def analyze_volatility(self, data: List[float]) -> Dict[str, float]:
@@ -228,7 +228,7 @@ class DataAnalyzer:
                 "total_moves": len(valid_returns),
             }
         except Exception as e:
-            self.logger.error(f"波动性分析失败: {e}")
+            self.logger.error("波动性分析失败: %s", e)
             return {"volatility": 0, "max_drawdown": 0, "up_down_ratio": 0}
 
     def calculate_z_scores(self, data: List[float]) -> List[float]:
@@ -247,7 +247,7 @@ class DataAnalyzer:
             z_scores = (data_array - mean) / std
             return [float(z) for z in z_scores]
         except Exception as e:
-            self.logger.error(f"Z分数计算失败: {e}")
+            self.logger.error("Z分数计算失败: %s", e)
             return [0.0] * len(data)
 
     def detect_trend_changes(self, data: List[float], min_window: int = 5) -> List[int]:
@@ -273,7 +273,7 @@ class DataAnalyzer:
 
             return trend_changes
         except Exception as e:
-            self.logger.error(f"趋势变化检测失败: {e}")
+            self.logger.error("趋势变化检测失败: %s", e)
             return []
 
     def get_data_quality_metrics(self, data: List[float]) -> Dict[str, Any]:
@@ -318,7 +318,7 @@ class DataAnalyzer:
                 "quality_score": quality_score,
             }
         except Exception as e:
-            self.logger.error(f"数据质量分析失败: {e}")
+            self.logger.error("数据质量分析失败: %s", e)
             return {
                 "total_count": len(data),
                 "valid_count": 0,

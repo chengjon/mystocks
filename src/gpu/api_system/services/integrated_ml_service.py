@@ -138,7 +138,7 @@ class IntegratedMLService(MLServiceServicer):
                         if task_info["status"] == "training":
                             start_time = datetime.fromisoformat(task_info["start_time"])
                             if current_time - start_time > timedelta(seconds=self.config["training_timeout"]):
-                                logger.warning(f"训练任务 {task_id} 超时")
+                                logger.warning("训练任务 %s 超时", task_id)
                                 timeout_tasks.append(task_id)
 
                     # 标记超时任务为失败
@@ -147,7 +147,7 @@ class IntegratedMLService(MLServiceServicer):
                         self.training_tasks[task_id]["error"] = "训练超时"
 
             except Exception as e:
-                logger.error(f"监控训练任务失败: {e}")
+                logger.error("监控训练任务失败: %s", e)
 
     def _cleanup_old_models(self):
         """清理旧模型"""
@@ -166,7 +166,7 @@ class IntegratedMLService(MLServiceServicer):
                             old_models.append(model_id)
 
                     for model_id in old_models:
-                        logger.info(f"删除过期模型: {model_id}")
+                        logger.info("删除过期模型: %s", model_id)
                         # 删除模型文件
                         model_path = Path(self.config["model_save_path"]) / f"{model_id}.pkl"
                         if model_path.exists():
@@ -175,10 +175,10 @@ class IntegratedMLService(MLServiceServicer):
                         del self.models[model_id]
 
                     if old_models:
-                        logger.info(f"清理了 {len(old_models)} 个过期模型")
+                        logger.info("清理了 %s 个过期模型", len(old_models))
 
             except Exception as e:
-                logger.error(f"清理旧模型失败: {e}")
+                logger.error("清理旧模型失败: %s", e)
 
     def _collect_stats(self):
         """收集性能统计"""
@@ -197,7 +197,7 @@ class IntegratedMLService(MLServiceServicer):
                     self.metrics_collector.record_custom_metric("ml_gpu_training_ratio", gpu_ratio)
 
             except Exception as e:
-                logger.error(f"收集统计信息失败: {e}")
+                logger.error("收集统计信息失败: %s", e)
 
     def _load_saved_models(self):
         """加载已保存的模型"""
@@ -219,22 +219,22 @@ class IntegratedMLService(MLServiceServicer):
                             "model_type": model_data.get("model_type", "unknown"),
                         }
 
-                    logger.info(f"加载模型: {model_id}")
+                    logger.info("加载模型: %s", model_id)
 
                 except Exception as e:
-                    logger.error(f"加载模型文件失败 {model_file}: {e}")
+                    logger.error("加载模型文件失败 %s: %s", model_file, e)
 
-            logger.info(f"加载了 {len(self.models)} 个已保存的模型")
+            logger.info("加载了 %s 个已保存的模型", len(self.models))
 
         except Exception as e:
-            logger.error(f"加载已保存模型失败: {e}")
+            logger.error("加载已保存模型失败: %s", e)
 
     def TrainModel(self, request: TrainModelRequest, context: grpc.ServicerContext) -> TrainModelResponse:
         """训练模型"""
         task_id = f"ml_train_{int(time.time())}_{hash(str(request))}"
 
         try:
-            logger.info(f"开始训练任务: {task_id}")
+            logger.info("开始训练任务: %s", task_id)
 
             # 验证请求
             validation_result = self._validate_training_request(request)
@@ -279,7 +279,7 @@ class IntegratedMLService(MLServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"训练模型失败: {e}")
+            logger.error("训练模型失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
 
@@ -318,7 +318,7 @@ class IntegratedMLService(MLServiceServicer):
         gpu_id = None
 
         try:
-            logger.info(f"执行训练任务: {task_id}")
+            logger.info("执行训练任务: %s", task_id)
 
             # 解析训练数据
             training_data = json.loads(request.training_data)
@@ -333,7 +333,7 @@ class IntegratedMLService(MLServiceServicer):
                 gpu_id = self.gpu_manager.allocate_gpu(f"ml_train_{task_id}", priority="high", memory_required=2048)
 
                 if gpu_id:
-                    logger.info(f"训练任务 {task_id} 分配GPU: {gpu_id}")
+                    logger.info("训练任务 %s 分配GPU: %s", task_id, gpu_id)
 
             # 执行训练
             if gpu_id and self.config["enable_gpu_training"]:
@@ -366,10 +366,10 @@ class IntegratedMLService(MLServiceServicer):
 
             self.stats["total_models_trained"] += 1
 
-            logger.info(f"训练任务完成: {task_id}, 模型ID: {model_id}")
+            logger.info("训练任务完成: %s, 模型ID: %s", task_id, model_id)
 
         except Exception as e:
-            logger.error(f"执行训练任务失败 {task_id}: {e}")
+            logger.error("执行训练任务失败 %s: %s", task_id, e)
 
             with self.task_lock:
                 if task_id in self.training_tasks:
@@ -380,7 +380,7 @@ class IntegratedMLService(MLServiceServicer):
             # 释放GPU资源
             if gpu_id:
                 self.gpu_manager.release_gpu(f"ml_train_{task_id}", gpu_id)
-                logger.info(f"训练任务 {task_id} 释放GPU: {gpu_id}")
+                logger.info("训练任务 %s 释放GPU: %s", task_id, gpu_id)
 
     def _train_model_gpu(self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict) -> Tuple[Any, Dict]:
         """GPU训练模型"""
@@ -449,12 +449,12 @@ class IntegratedMLService(MLServiceServicer):
                     "gpu_accelerated": True,
                 }
 
-            logger.info(f"GPU训练完成，耗时: {training_time:.2f}秒")
+            logger.info("GPU训练完成，耗时: %s秒", training_time)
 
             return model, metrics
 
         except Exception as e:
-            logger.error(f"GPU训练失败: {e}")
+            logger.error("GPU训练失败: %s", e)
             raise e
 
     def _train_model_cpu(self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict) -> Tuple[Any, Dict]:
@@ -513,12 +513,12 @@ class IntegratedMLService(MLServiceServicer):
                     "gpu_accelerated": False,
                 }
 
-            logger.info(f"CPU训练完成，耗时: {training_time:.2f}秒")
+            logger.info("CPU训练完成，耗时: %s秒", training_time)
 
             return model, metrics
 
         except Exception as e:
-            logger.error(f"CPU训练失败: {e}")
+            logger.error("CPU训练失败: %s", e)
             raise e
 
     def _save_model(self, model_id: str, model: Any, model_type: str, metrics: Dict):
@@ -554,10 +554,10 @@ class IntegratedMLService(MLServiceServicer):
                     f,
                 )
 
-            logger.info(f"模型已保存: {model_id}")
+            logger.info("模型已保存: %s", model_id)
 
         except Exception as e:
-            logger.error(f"保存模型失败: {e}")
+            logger.error("保存模型失败: %s", e)
             raise e
 
     def Predict(self, request: PredictRequest, context: grpc.ServicerContext) -> PredictResponse:
@@ -606,7 +606,7 @@ class IntegratedMLService(MLServiceServicer):
             )
 
         except Exception as e:
-            logger.error(f"预测失败: {e}")
+            logger.error("预测失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return PredictResponse()
@@ -635,7 +635,7 @@ class IntegratedMLService(MLServiceServicer):
                 )
 
         except Exception as e:
-            logger.error(f"获取训练状态失败: {e}")
+            logger.error("获取训练状态失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return TrainingStatus()
@@ -664,7 +664,7 @@ class IntegratedMLService(MLServiceServicer):
                 )
 
         except Exception as e:
-            logger.error(f"获取模型指标失败: {e}")
+            logger.error("获取模型指标失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return ModelMetrics()
@@ -694,7 +694,7 @@ class IntegratedMLService(MLServiceServicer):
             return json.dumps(stats, ensure_ascii=False)
 
         except Exception as e:
-            logger.error(f"获取ML统计失败: {e}")
+            logger.error("获取ML统计失败: %s", e)
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"内部错误: {e}")
             return json.dumps({"error": str(e)})

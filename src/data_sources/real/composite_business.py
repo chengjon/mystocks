@@ -63,7 +63,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         # 简单内存缓存（生产环境应使用Redis）
         self._cache = {}
 
-        logger.info(f"复合业务数据源初始化完成 (线程池大小: {max_workers})")
+        logger.info("复合业务数据源初始化完成 (线程池大小: %s)", max_workers)
 
     # ==================== 仪表盘相关 ====================
 
@@ -83,7 +83,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if trade_date is None:
                 trade_date = date.today()
 
-            logger.info(f"获取仪表盘汇总: user_id={user_id}, trade_date={trade_date}")
+            logger.info("获取仪表盘汇总: user_id=%s, trade_date=%s", user_id, trade_date)
 
             # 并行查询多个数据源
             futures = {}
@@ -112,7 +112,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 try:
                     results[key] = future.result(timeout=5)
                 except Exception as e:
-                    logger.error(f"任务 {key} 失败: {e}")
+                    logger.error("任务 %s 失败: %s", key, e)
                     results[key] = None
 
             # 汇总结果
@@ -139,11 +139,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 },
             }
 
-            logger.info(f"仪表盘汇总完成: user_id={user_id}")
+            logger.info("仪表盘汇总完成: user_id=%s", user_id)
             return summary
 
         except Exception as e:
-            logger.error(f"获取仪表盘汇总失败: {e}")
+            logger.error("获取仪表盘汇总失败: %s", e)
             raise
 
     def get_sector_performance(
@@ -158,7 +158,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if trade_date is None:
                 trade_date = date.today()
 
-            logger.info(f"获取板块表现: sector_type={sector_type}, trade_date={trade_date}")
+            logger.info("获取板块表现: sector_type=%s, trade_date=%s", sector_type, trade_date)
 
             if sector_type == "industry":
                 # 获取行业列表
@@ -186,11 +186,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     }
                 )
 
-            logger.info(f"板块表现查询完成: count={len(result)}")
+            logger.info("板块表现查询完成: count=%s", len(result))
             return result
 
         except Exception as e:
-            logger.error(f"获取板块表现失败: {e}")
+            logger.error("获取板块表现失败: %s", e)
             raise
 
     # ==================== 策略回测相关 ====================
@@ -214,7 +214,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         4. 计算收益指标
         """
         try:
-            logger.info(f"开始回测: strategy_id={strategy_id}, user_id={user_id}")
+            logger.info("开始回测: strategy_id=%s, user_id=%s", strategy_id, user_id)
 
             # 1. 获取策略配置
             strategies = self.relational_source.get_strategy_configs(user_id=user_id, strategy_type=None, status=None)
@@ -272,13 +272,13 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "execution_time_seconds": 1.5,
             }
 
-            logger.info(f"回测完成: backtest_id={result['backtest_id']}")
+            logger.info("回测完成: backtest_id=%s", result["backtest_id"])
             return result
 
         except PermissionError:
             raise
         except Exception as e:
-            logger.error(f"回测执行失败: {e}")
+            logger.error("回测执行失败: %s", e)
             raise
 
     def get_backtest_results(
@@ -295,14 +295,14 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         生产版本应该从数据库查询历史回测记录
         """
         try:
-            logger.info(f"获取回测结果: user_id={user_id}, backtest_id={backtest_id}")
+            logger.info("获取回测结果: user_id=%s, backtest_id=%s", user_id, backtest_id)
 
             # 简化版本：返回空列表
             # 生产版本应该查询回测结果表
             return []
 
         except Exception as e:
-            logger.error(f"获取回测结果失败: {e}")
+            logger.error("获取回测结果失败: %s", e)
             raise
 
     # ==================== 风险管理相关 ====================
@@ -314,7 +314,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         使用时序数据计算波动率、VaR等指标
         """
         try:
-            logger.info(f"计算风险指标: user_id={user_id}")
+            logger.info("计算风险指标: user_id=%s", user_id)
 
             # 简化版本：返回Mock数据
             # 生产版本应该:
@@ -351,11 +351,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 },
             }
 
-            logger.info(f"风险指标计算完成: user_id={user_id}")
+            logger.info("风险指标计算完成: user_id=%s", user_id)
             return result
 
         except Exception as e:
-            logger.error(f"计算风险指标失败: {e}")
+            logger.error("计算风险指标失败: %s", e)
             raise
 
     def check_risk_alerts(self, user_id: int) -> List[Dict[str, Any]]:
@@ -365,7 +365,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         整合关系数据源（预警配置）和时序数据源（实时行情）
         """
         try:
-            logger.info(f"检查风险预警: user_id={user_id}")
+            logger.info("检查风险预警: user_id=%s", user_id)
 
             # 1. 获取用户的所有启用预警
             alerts = self.relational_source.get_risk_alerts(user_id=user_id, enabled_only=True)
@@ -400,11 +400,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                         }
                     )
 
-            logger.info(f"风险预警检查完成: triggered_count={len(triggered)}")
+            logger.info("风险预警检查完成: triggered_count=%s", len(triggered))
             return triggered
 
         except Exception as e:
-            logger.error(f"检查风险预警失败: {e}")
+            logger.error("检查风险预警失败: %s", e)
             raise
 
     # ==================== 交易管理相关 ====================
@@ -424,7 +424,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             if trade_date is None:
                 trade_date = date.today()
 
-            logger.info(f"分析交易信号: user_id={user_id}, trade_date={trade_date}")
+            logger.info("分析交易信号: user_id=%s, trade_date=%s", user_id, trade_date)
 
             # 1. 获取策略配置
             if strategy_ids:
@@ -463,11 +463,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                         }
                     )
 
-            logger.info(f"交易信号分析完成: signal_count={len(signals)}")
+            logger.info("交易信号分析完成: signal_count=%s", len(signals))
             return signals
 
         except Exception as e:
-            logger.error(f"分析交易信号失败: {e}")
+            logger.error("分析交易信号失败: %s", e)
             raise
 
     def get_portfolio_analysis(self, user_id: int, include_history: bool = False) -> Dict[str, Any]:
@@ -478,7 +478,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         生产版本应该从持仓表查询实际数据
         """
         try:
-            logger.info(f"获取持仓分析: user_id={user_id}")
+            logger.info("获取持仓分析: user_id=%s", user_id)
 
             # 简化版本：返回Mock数据
             result = {
@@ -513,11 +513,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     {"date": "2025-11-21", "equity": 100000.0},
                 ]
 
-            logger.info(f"持仓分析完成: user_id={user_id}")
+            logger.info("持仓分析完成: user_id=%s", user_id)
             return result
 
         except Exception as e:
-            logger.error(f"获取持仓分析失败: {e}")
+            logger.error("获取持仓分析失败: %s", e)
             raise
 
     def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
@@ -527,7 +527,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         整合持仓数据、行情数据、市场数据进行收益归因
         """
         try:
-            logger.info(f"执行归因分析: user_id={user_id}")
+            logger.info("执行归因分析: user_id=%s", user_id)
 
             # 简化版本：返回Mock数据
             # 生产版本应该:
@@ -567,11 +567,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                 "top_detractors": [{"symbol": "600001", "contribution": -0.008}],
             }
 
-            logger.info(f"归因分析完成: user_id={user_id}")
+            logger.info("归因分析完成: user_id=%s", user_id)
             return result
 
         except Exception as e:
-            logger.error(f"归因分析失败: {e}")
+            logger.error("归因分析失败: %s", e)
             raise
 
     # ==================== 数据分析相关 ====================
@@ -589,7 +589,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
         整合股票基础信息（关系数据源）和实时行情（时序数据源）
         """
         try:
-            logger.info(f"执行股票筛选: user_id={user_id}, criteria={criteria}")
+            logger.info("执行股票筛选: user_id=%s, criteria=%s", user_id, criteria)
 
             # 1. 从关系数据源获取股票列表
             stocks = self.relational_source.get_stock_basic_info()
@@ -617,11 +617,11 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     }
                 )
 
-            logger.info(f"股票筛选完成: result_count={len(result)}")
+            logger.info("股票筛选完成: result_count=%s", len(result))
             return result
 
         except Exception as e:
-            logger.error(f"股票筛选失败: {e}")
+            logger.error("股票筛选失败: %s", e)
             raise
 
     # ==================== 健康检查 ====================
@@ -669,7 +669,7 @@ class CompositeBusinessDataSource(IBusinessDataSource):
             }
 
         except Exception as e:
-            logger.error(f"健康检查失败: {e}")
+            logger.error("健康检查失败: %s", e)
             return {
                 "status": "unhealthy",
                 "data_source_type": "business",

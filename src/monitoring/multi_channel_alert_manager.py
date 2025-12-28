@@ -175,7 +175,7 @@ class AlertHandler:
 
             # 检查速率限制
             if self.rate_limiter and not self.rate_limiter.allow_request():
-                logger.warning(f"告警{self.config.name}触发速率限制")
+                logger.warning("告警%s触发速率限制", self.config.name)
                 return False
 
             # 执行发送
@@ -187,7 +187,7 @@ class AlertHandler:
             return success
 
         except Exception as e:
-            logger.error(f"告警处理器{self.config.name}执行失败: {e}")
+            logger.error("告警处理器%s执行失败: %s", self.config.name, e)
             self.failure_count += 1
             return False
 
@@ -254,11 +254,11 @@ class EmailAlertHandler(AlertHandler):
             # 发送邮件
             await self._send_email_async(msg)
 
-            logger.info(f"邮件告警已发送到: {self.email_config.to_emails}")
+            logger.info("邮件告警已发送到: %s", self.email_config.to_emails)
             return True
 
         except Exception as e:
-            logger.error(f"发送邮件告警失败: {e}")
+            logger.error("发送邮件告警失败: %s", e)
             return False
 
     def _format_template(self, template: str, alert: Alert) -> str:
@@ -278,7 +278,7 @@ class EmailAlertHandler(AlertHandler):
         try:
             return template.format(**format_dict)
         except KeyError as e:
-            logger.warning(f"邮件模板格式化失败，缺少键: {e}")
+            logger.warning("邮件模板格式化失败，缺少键: %s", e)
             return template
 
     def _create_html_body(self, alert: Alert) -> str:
@@ -365,7 +365,7 @@ class EmailAlertHandler(AlertHandler):
                 server.quit()
 
             except Exception as e:
-                logger.error(f"SMTP发送失败: {e}")
+                logger.error("SMTP发送失败: %s", e)
                 raise e
 
         # 在线程池中执行同步的SMTP操作
@@ -414,18 +414,18 @@ class WebhookAlertHandler(AlertHandler):
                     data=payload_data if self.webhook_config.method.upper() != "POST" else None,
                 ) as response:
                     if response.status < 400:
-                        logger.info(f"Webhook告警发送成功: {self.webhook_config.url}")
+                        logger.info("Webhook告警发送成功: %s", self.webhook_config.url)
                         return True
                     else:
                         error_text = await response.text()
-                        logger.error(f"Webhook请求失败: HTTP {response.status} - {error_text}")
+                        logger.error("Webhook请求失败: HTTP %s - %s", response.status, error_text)
                         return False
 
         except asyncio.TimeoutError:
-            logger.error(f"Webhook请求超时: {self.webhook_config.url}")
+            logger.error("Webhook请求超时: %s", self.webhook_config.url)
             return False
         except Exception as e:
-            logger.error(f"Webhook发送失败: {e}")
+            logger.error("Webhook发送失败: %s", e)
             return False
 
     def _prepare_payload(self, alert: Alert) -> Dict[str, Any]:
@@ -445,7 +445,7 @@ class WebhookAlertHandler(AlertHandler):
                 )
                 return json.loads(payload_str)
             except (KeyError, json.JSONDecodeError) as e:
-                logger.warning(f"Webhook模板解析失败: {e}")
+                logger.warning("Webhook模板解析失败: %s", e)
 
         # 默认载荷格式
         return {
@@ -519,7 +519,7 @@ class LogAlertHandler(AlertHandler):
             return True
 
         except Exception as e:
-            logger.error(f"日志记录失败: {e}")
+            logger.error("日志记录失败: %s", e)
             return False
 
     def _format_log_message(self, alert: Alert) -> str:
@@ -537,7 +537,7 @@ class LogAlertHandler(AlertHandler):
         try:
             return self.log_config.format_template.format(**format_dict)
         except KeyError as e:
-            logger.warning(f"日志格式模板缺少键: {e}")
+            logger.warning("日志格式模板缺少键: %s", e)
             return str(alert)
 
 
@@ -613,10 +613,10 @@ class MultiChannelAlertManager:
 
         try:
             self.handlers[handler.config.name] = handler
-            logger.info(f"✅ 已添加告警处理器: {handler.config.name}")
+            logger.info("✅ 已添加告警处理器: %s", handler.config.name)
             return True
         except Exception as e:
-            logger.error(f"添加告警处理器失败: {e}")
+            logger.error("添加告警处理器失败: %s", e)
             return False
 
     def remove_handler(self, handler_name: str) -> bool:
@@ -624,7 +624,7 @@ class MultiChannelAlertManager:
 
         if handler_name in self.handlers:
             del self.handlers[handler_name]
-            logger.info(f"✅ 已移除告警处理器: {handler_name}")
+            logger.info("✅ 已移除告警处理器: %s", handler_name)
             return True
         return False
 
@@ -649,7 +649,7 @@ class MultiChannelAlertManager:
                 success = await task
                 results[handler_name] = success
             except Exception as e:
-                logger.error(f"告警发送到{handler_name}时发生异常: {e}")
+                logger.error("告警发送到%s时发生异常: %s", handler_name, e)
                 results[handler_name] = False
 
         # 记录告警历史
@@ -658,7 +658,7 @@ class MultiChannelAlertManager:
 
         # 统计发送结果
         success_count = sum(1 for success in results.values() if success)
-        logger.info(f"告警已发送到{len(results)}个渠道，成功{success_count}个")
+        logger.info("告警已发送到%s个渠道，成功%s个", len(results), success_count)
 
         return results
 
@@ -681,7 +681,7 @@ class MultiChannelAlertManager:
                     await asyncio.sleep(wait_time)
 
             except Exception as e:
-                logger.warning(f"告警发送尝试{attempt + 1}失败: {e}")
+                logger.warning("告警发送尝试%s失败: %s", attempt + 1, e)
                 if attempt < max_retries:
                     wait_time = retry_delay * (backoff_factor**attempt)
                     await asyncio.sleep(wait_time)
@@ -769,7 +769,7 @@ class MultiChannelAlertManager:
             return self.add_handler(handler)
 
         except Exception as e:
-            logger.error(f"添加邮件处理器失败: {e}")
+            logger.error("添加邮件处理器失败: %s", e)
             return False
 
     def add_webhook_handler(
@@ -793,7 +793,7 @@ class MultiChannelAlertManager:
             return self.add_handler(handler)
 
         except Exception as e:
-            logger.error(f"添加Webhook处理器失败: {e}")
+            logger.error("添加Webhook处理器失败: %s", e)
             return False
 
     def add_log_handler(
@@ -817,7 +817,7 @@ class MultiChannelAlertManager:
             return self.add_handler(handler)
 
         except Exception as e:
-            logger.error(f"添加日志处理器失败: {e}")
+            logger.error("添加日志处理器失败: %s", e)
             return False
 
     def export_configuration(self) -> str:
@@ -875,23 +875,23 @@ class MultiChannelAlertManager:
                         log_config = LogConfig(**handler_data["log_config"])
                         handler = LogAlertHandler(config, log_config)
                     else:
-                        logger.warning(f"未知的处理器类型: {config.channel_type}")
+                        logger.warning("未知的处理器类型: %s", config.channel_type)
                         continue
 
                     self.add_handler(handler)
 
                 except Exception as e:
-                    logger.error(f"恢复处理器{name}失败: {e}")
+                    logger.error("恢复处理器%s失败: %s", name, e)
                     continue
 
             # 恢复告警历史
             self.alert_history = config_data.get("alert_history", [])
 
-            logger.info(f"✅ 配置导入成功: {len(self.handlers)}个处理器")
+            logger.info("✅ 配置导入成功: %s个处理器", len(self.handlers))
             return True
 
         except Exception as e:
-            logger.error(f"配置导入失败: {e}")
+            logger.error("配置导入失败: %s", e)
             return False
 
 

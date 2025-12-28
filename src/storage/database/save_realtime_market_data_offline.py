@@ -68,9 +68,9 @@ class OfflineRealtimeDataSaver:
         """创建备份目录"""
         try:
             os.makedirs(self.config["backup_dir"], exist_ok=True)
-            self.logger.info(f"✅ 备份目录已创建: {self.config['backup_dir']}")
+            self.logger.info("✅ 备份目录已创建: %s", self.config["backup_dir"])
         except Exception as e:
-            self.logger.error(f"❌ 创建备份目录失败: {e}")
+            self.logger.error("❌ 创建备份目录失败: %s", e)
             # 使用当前目录作为备份目录
             self.config["backup_dir"] = "."
 
@@ -94,21 +94,19 @@ class OfflineRealtimeDataSaver:
             missing_libs.append("pandas")
 
         if missing_libs:
-            self.logger.error(f"❌ 缺少依赖库: {missing_libs}")
+            self.logger.error("❌ 缺少依赖库: %s", missing_libs)
             self.logger.info("💡 请运行以下命令安装:")
             for lib in missing_libs:
-                self.logger.info(f"   pip install {lib}")
+                self.logger.info("   pip install %s", lib)
             return False
 
         self.logger.info("✅ 所有依赖库检查通过")
         return True
 
-    def get_realtime_market_data(
-        self, market_symbol: str = None
-    ) -> Optional[pd.DataFrame]:
+    def get_realtime_market_data(self, market_symbol: str = None) -> Optional[pd.DataFrame]:
         """获取实时市场数据"""
         symbol = market_symbol or self.config["market_symbol"]
-        self.logger.info(f"获取{symbol}市场实时数据...")
+        self.logger.info("获取%s市场实时数据...", symbol)
 
         try:
             import efinance as ef
@@ -130,7 +128,7 @@ class OfflineRealtimeDataSaver:
                 data = data[data["股票代码"].str.startswith(("0", "3"))]
             # 'hs' 沪深市场：使用全部数据
 
-            self.logger.info(f"✅ 成功获取 {symbol} 市场数据，共 {len(data)} 条记录")
+            self.logger.info("✅ 成功获取 %s 市场数据，共 %s 条记录", symbol, len(data))
 
             # 添加额外信息
             if self.config["add_timestamp"]:
@@ -148,7 +146,7 @@ class OfflineRealtimeDataSaver:
             self.logger.error("❌ efinance库未安装，请运行: pip install efinance")
             return None
         except Exception as e:
-            self.logger.error(f"❌ 获取数据失败: {e}")
+            self.logger.error("❌ 获取数据失败: %s", e)
             return None
 
     def _validate_data(self, data: pd.DataFrame):
@@ -163,19 +161,17 @@ class OfflineRealtimeDataSaver:
             key_columns = ["股票代码", "股票名称", "最新价"]
             missing_columns = [col for col in key_columns if col not in data.columns]
             if missing_columns:
-                self.logger.warning(f"⚠️ 缺少关键列: {missing_columns}")
+                self.logger.warning("⚠️ 缺少关键列: %s", missing_columns)
 
             # 统计信息
             self.logger.info("📊 数据统计:")
-            self.logger.info(f"   总记录数: {len(data)}")
-            self.logger.info(f"   列数: {len(data.columns)}")
+            self.logger.info("   总记录数: %s", len(data))
+            self.logger.info("   列数: %s", len(data.columns))
 
             # 空值检查
             null_counts = data.isnull().sum()
             if null_counts.sum() > 0:
-                self.logger.info(
-                    f"   空值统计: {null_counts[null_counts > 0].head().to_dict()}"
-                )
+                self.logger.info("   空值统计: %s", null_counts[null_counts > 0].head().to_dict())
             else:
                 self.logger.info("   无空值")
 
@@ -183,14 +179,12 @@ class OfflineRealtimeDataSaver:
             if "最新价" in data.columns:
                 prices = data["最新价"].dropna()
                 if len(prices) > 0:
-                    self.logger.info(
-                        f"   价格范围: {prices.min():.2f} - {prices.max():.2f}"
-                    )
+                    self.logger.info("   价格范围: %s - %s", prices.min(), prices.max())
 
             self.logger.info("✅ 数据验证完成")
 
         except Exception as e:
-            self.logger.error(f"❌ 数据验证失败: {e}")
+            self.logger.error("❌ 数据验证失败: %s", e)
 
     def save_to_csv(self, data: pd.DataFrame, market_symbol: str = None) -> str:
         """保存数据到CSV文件"""
@@ -205,13 +199,13 @@ class OfflineRealtimeDataSaver:
             # 保存CSV（使用UTF-8编码，支持中文）
             data.to_csv(filepath, index=False, encoding="utf-8-sig")
 
-            self.logger.info(f"✅ 数据已保存到CSV: {filepath}")
-            self.logger.info(f"📊 文件大小: {os.path.getsize(filepath)} 字节")
+            self.logger.info("✅ 数据已保存到CSV: %s", filepath)
+            self.logger.info("📊 文件大小: %s 字节", os.path.getsize(filepath))
 
             return filepath
 
         except Exception as e:
-            self.logger.error(f"❌ CSV保存失败: {e}")
+            self.logger.error("❌ CSV保存失败: %s", e)
             return None
 
     def save_to_json(self, data: pd.DataFrame, market_symbol: str = None) -> str:
@@ -238,11 +232,11 @@ class OfflineRealtimeDataSaver:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data_dict, f, ensure_ascii=False, indent=2)
 
-            self.logger.info(f"✅ 数据已保存到JSON: {filepath}")
+            self.logger.info("✅ 数据已保存到JSON: %s", filepath)
             return filepath
 
         except Exception as e:
-            self.logger.error(f"❌ JSON保存失败: {e}")
+            self.logger.error("❌ JSON保存失败: %s", e)
             return None
 
     def save_to_excel(self, data: pd.DataFrame, market_symbol: str = None) -> str:
@@ -261,11 +255,11 @@ class OfflineRealtimeDataSaver:
             # 保存Excel
             data.to_excel(filepath, index=False, engine="openpyxl")
 
-            self.logger.info(f"✅ 数据已保存到Excel: {filepath}")
+            self.logger.info("✅ 数据已保存到Excel: %s", filepath)
             return filepath
 
         except Exception as e:
-            self.logger.error(f"❌ Excel保存失败: {e}")
+            self.logger.error("❌ Excel保存失败: %s", e)
             if "openpyxl" in str(e):
                 self.logger.info("💡 请安装openpyxl: pip install openpyxl")
             return None
@@ -274,9 +268,7 @@ class OfflineRealtimeDataSaver:
         """创建汇总报告"""
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            report_file = os.path.join(
-                self.config["backup_dir"], f"summary_report_{timestamp}.txt"
-            )
+            report_file = os.path.join(self.config["backup_dir"], f"summary_report_{timestamp}.txt")
 
             with open(report_file, "w", encoding="utf-8") as f:
                 f.write("=" * 60 + "\n")
@@ -294,9 +286,7 @@ class OfflineRealtimeDataSaver:
                 if "最新价" in data.columns:
                     prices = data["最新价"].dropna()
                     if len(prices) > 0:
-                        f.write(
-                            f"  价格范围: {prices.min():.2f} - {prices.max():.2f}\n"
-                        )
+                        f.write(f"  价格范围: {prices.min():.2f} - {prices.max():.2f}\n")
 
                 f.write("\n保存的文件:\n")
                 for file_path in saved_files:
@@ -307,10 +297,10 @@ class OfflineRealtimeDataSaver:
                 for i, col in enumerate(data.columns, 1):
                     f.write(f"  {i:2d}. {col}\n")
 
-            self.logger.info(f"✅ 汇总报告已生成: {report_file}")
+            self.logger.info("✅ 汇总报告已生成: %s", report_file)
 
         except Exception as e:
-            self.logger.error(f"❌ 生成汇总报告失败: {e}")
+            self.logger.error("❌ 生成汇总报告失败: %s", e)
 
     def run(self, market_symbol: str = None, force_update: bool = False) -> bool:
         """运行完整流程"""
@@ -320,9 +310,9 @@ class OfflineRealtimeDataSaver:
             self.logger.info("=" * 60)
             self.logger.info("🚀 离线版沪深市场A股实时数据保存系统")
             self.logger.info("=" * 60)
-            self.logger.info(f"📊 目标市场: {symbol}")
-            self.logger.info(f"🗂️ 备份目录: {self.config['backup_dir']}")
-            self.logger.info(f"🔄 强制更新: {'是' if force_update else '否'}")
+            self.logger.info("📊 目标市场: %s", symbol)
+            self.logger.info("🗂️ 备份目录: %s", self.config["backup_dir"])
+            self.logger.info("🔄 强制更新: %s", "是" if force_update else "否")
             self.logger.info("=" * 60)
 
             # 1. 检查依赖
@@ -332,11 +322,11 @@ class OfflineRealtimeDataSaver:
             # 2. 获取数据（支持重试）
             data = None
             for attempt in range(self.config["max_retry_attempts"]):
-                self.logger.info(f"📡 第{attempt + 1}次获取数据...")
+                self.logger.info("📡 第%s次获取数据...", attempt + 1)
                 data = self.get_realtime_market_data(symbol)
                 if data is not None:
                     break
-                self.logger.warning(f"⚠️ 第{attempt + 1}次获取失败")
+                self.logger.warning("⚠️ 第%s次获取失败", attempt + 1)
 
             if data is None:
                 self.logger.error("💥 多次重试后仍无法获取数据")
@@ -365,26 +355,22 @@ class OfflineRealtimeDataSaver:
 
             self.logger.info("=" * 60)
             self.logger.info("🎉 数据保存完成！")
-            self.logger.info(f"📊 数据记录数: {len(data)}")
-            self.logger.info(f"💾 保存文件数: {success_count}")
-            self.logger.info(
-                f"📁 保存位置: {os.path.abspath(self.config['backup_dir'])}"
-            )
+            self.logger.info("📊 数据记录数: %s", len(data))
+            self.logger.info("💾 保存文件数: %s", success_count)
+            self.logger.info("📁 保存位置: %s", os.path.abspath(self.config["backup_dir"]))
 
             # 显示文件列表
             for file_path in saved_files:
                 if file_path:
                     file_size = os.path.getsize(file_path)
-                    self.logger.info(
-                        f"   ✅ {os.path.basename(file_path)} ({file_size} 字节)"
-                    )
+                    self.logger.info("   ✅ %s (%s 字节)", os.path.basename(file_path), file_size)
 
             self.logger.info("=" * 60)
 
             return True
 
         except Exception as e:
-            self.logger.error(f"💥 程序执行失败: {e}")
+            self.logger.error("💥 程序执行失败: %s", e)
             return False
 
 

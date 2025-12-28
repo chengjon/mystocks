@@ -33,12 +33,12 @@ def check_database_connections():
             # 检查环境变量配置
             host_key = f"{db.upper()}_HOST"
             if os.getenv(host_key):
-                logger.info(f"✓ {db} 配置正常")
+                logger.info("✓ %s 配置正常", db)
             else:
-                logger.warning(f"⚠ {db} 配置缺失")
+                logger.warning("⚠ %s 配置缺失", db)
                 all_good = False
         except Exception as e:
-            logger.error(f"✗ {db} 配置检查失败: {e}")
+            logger.error("✗ %s 配置检查失败: %s", db, e)
             all_good = False
 
     return all_good
@@ -77,7 +77,7 @@ def fix_postgresql_hypertable():
         return True
 
     except Exception as e:
-        logger.error(f"✗ PostgreSQL hypertable修复失败: {e}")
+        logger.error("✗ PostgreSQL hypertable修复失败: %s", e)
         return False
 
 
@@ -97,7 +97,7 @@ def fix_tdengine_database():
             logger.info("✓ TDengine已正确指定数据库")
             return True
     except Exception as e:
-        logger.error(f"✗ TDengine数据库指定修复失败: {e}")
+        logger.error("✗ TDengine数据库指定修复失败: %s", e)
         return False
 
 
@@ -182,7 +182,7 @@ def create_databases():
         return True
 
     except Exception as e:
-        logger.error(f"✗ 数据库创建失败: {e}")
+        logger.error("✗ 数据库创建失败: %s", e)
         return False
 
 
@@ -228,19 +228,19 @@ def validate_connections():
                     conn = manager.get_connection(db_type, db_to_connect)
 
                 if conn:
-                    logger.info(f"✓ {db_name}: 正常")
+                    logger.info("✓ %s: 正常", db_name)
                     success_count += 1
                 else:
-                    logger.warning(f"⚠ {db_name}: 连接失败")
+                    logger.warning("⚠ %s: 连接失败", db_name)
             except Exception as e:
-                logger.error(f"✗ {db_name}: 连接错误 - {e}")
+                logger.error("✗ %s: 连接错误 - %s", db_name, e)
 
-        logger.info(f"数据库连接验证完成: {success_count}/{len(databases)} 成功")
+        logger.info("数据库连接验证完成: %s/%s 成功", success_count, len(databases))
         # 允许最多一个数据库连接失败
         return success_count >= len(databases) - 1
 
     except Exception as e:
-        logger.error(f"✗ 数据库连接验证失败: {e}")
+        logger.error("✗ 数据库连接验证失败: %s", e)
         return False
 
 

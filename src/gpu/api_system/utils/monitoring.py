@@ -127,7 +127,7 @@ class MetricsCollector:
             self.gauges["disk_usage"].set(disk.percent)
 
         except Exception as e:
-            logger.error(f"记录系统指标失败: {e}")
+            logger.error("记录系统指标失败: %s", e)
 
     def record_query_performance(self, query_type: str, table: str, duration: float):
         """记录查询性能"""
@@ -165,7 +165,7 @@ class MetricsCollector:
                 ),
             }
         except Exception as e:
-            logger.error(f"获取系统指标失败: {e}")
+            logger.error("获取系统指标失败: %s", e)
             return {}
 
     def _get_gpu_metrics(self) -> Dict[str, Any]:
@@ -181,7 +181,7 @@ class MetricsCollector:
                         }
             return gpu_metrics
         except Exception as e:
-            logger.error(f"获取GPU指标失败: {e}")
+            logger.error("获取GPU指标失败: %s", e)
             return {}
 
     def _get_api_metrics(self) -> Dict[str, Any]:
@@ -196,7 +196,7 @@ class MetricsCollector:
                     }
             return api_metrics
         except Exception as e:
-            logger.error(f"获取API指标失败: {e}")
+            logger.error("获取API指标失败: %s", e)
             return {}
 
     def _get_task_metrics(self) -> Dict[str, Any]:
@@ -211,7 +211,7 @@ class MetricsCollector:
                     }
             return task_metrics
         except Exception as e:
-            logger.error(f"获取任务指标失败: {e}")
+            logger.error("获取任务指标失败: %s", e)
             return {}
 
     def export_metrics(self) -> Dict[str, Any]:
@@ -263,7 +263,7 @@ class MetricsCollector:
 
         # 这里可以实现基于时间的指标清理逻辑
         # 由于Prometheus指标是累积的，通常不需要清理
-        logger.info(f"指标清理完成，保留最近{days}天的数据")
+        logger.info("指标清理完成，保留最近%s天的数据", days)
 
 
 class PerformanceMonitor:
@@ -347,7 +347,7 @@ class PerformanceMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"监控系统健康失败: {e}")
+            logger.error("监控系统健康失败: %s", e)
 
         return alerts
 

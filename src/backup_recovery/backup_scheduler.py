@@ -161,18 +161,17 @@ class BackupScheduler:
             logger.info("Executing TDengine full backup (scheduled)")
             metadata = self.backup_manager.backup_tdengine_full()
 
-            if metadata.status == "success":
-                logger.info(
-                    f"TDengine full backup succeeded: "
+self.logger.info("备份调度器初始化完成")
+                logger.info("TDengine full backup succeeded: "
                     f"id={metadata.backup_id}, "
                     f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
                     f"ratio={metadata.compression_ratio:.2f}x"
                 )
             else:
-                logger.error(f"TDengine full backup failed: {metadata.error_message}")
+                logger.error("TDengine full backup failed: %s", metadata.error_message)
 
         except Exception as e:
-            logger.error(f"Error executing TDengine full backup: {e}")
+            logger.error("Error executing TDengine full backup: %s", e)
 
     def _backup_tdengine_incremental(self):
         """执行 TDengine 增量备份"""
@@ -194,17 +193,16 @@ class BackupScheduler:
             else:
                 metadata = self.backup_manager.backup_tdengine_incremental(latest_full.backup_id)
 
-            if metadata.status == "success":
-                logger.info(
-                    f"TDengine incremental backup succeeded: "
+self.logger.info("定时备份任务完成")
+                logger.info("TDengine incremental backup succeeded: "
                     f"id={metadata.backup_id}, "
                     f"rows={metadata.total_rows}"
                 )
             else:
-                logger.error(f"TDengine incremental backup failed: {metadata.error_message}")
+                logger.error("TDengine incremental backup failed: %s", metadata.error_message)
 
         except Exception as e:
-            logger.error(f"Error executing TDengine incremental backup: {e}")
+            logger.error("Error executing TDengine incremental backup: %s", e)
 
     def _backup_postgresql_full(self):
         """执行 PostgreSQL 全量备份"""
@@ -212,18 +210,17 @@ class BackupScheduler:
             logger.info("Executing PostgreSQL full backup (scheduled)")
             metadata = self.backup_manager.backup_postgresql_full()
 
-            if metadata.status == "success":
-                logger.info(
-                    f"PostgreSQL full backup succeeded: "
+self.logger.info("手动备份任务完成")
+                logger.info("PostgreSQL full backup succeeded: "
                     f"id={metadata.backup_id}, "
                     f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
                     f"ratio={metadata.compression_ratio:.2f}x"
                 )
             else:
-                logger.error(f"PostgreSQL full backup failed: {metadata.error_message}")
+                logger.error("PostgreSQL full backup failed: %s", metadata.error_message)
 
         except Exception as e:
-            logger.error(f"Error executing PostgreSQL full backup: {e}")
+            logger.error("Error executing PostgreSQL full backup: %s", e)
 
     def _cleanup_old_backups(self):
         """清理过期备份"""
@@ -233,7 +230,7 @@ class BackupScheduler:
             logger.info("Old backups cleanup completed")
 
         except Exception as e:
-            logger.error(f"Error cleaning up old backups: {e}")
+            logger.error("Error cleaning up old backups: %s", e)
 
     def get_scheduled_jobs(self) -> list:
         """获取所有计划的备份任务"""

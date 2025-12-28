@@ -35,7 +35,7 @@ class BaseDataSourceAdapter(ABC):
         self.quality_validator = DataQualityValidator(source_name)
         self.logger = logging.getLogger(f"{__name__}.{source_name}")
 
-        self.logger.info(f"✅ {source_name} 适配器基类初始化完成")
+        self.logger.info("✅ %s 适配器基类初始化完成", source_name)
 
     def _apply_quality_check(self, df: pd.DataFrame, symbol: str, data_type: str = "daily") -> pd.DataFrame:
         """
@@ -50,15 +50,14 @@ class BaseDataSourceAdapter(ABC):
             原始DataFrame（质量检查失败不影响数据返回）
         """
         if df.empty:
-            self.logger.warning(f"数据为空，跳过质量检查: {symbol} {data_type}")
+            self.logger.warning("数据为空，跳过质量检查: %s %s", symbol, data_type)
             return df
 
         try:
             quality_result = self.quality_validator.validate_stock_data(df, symbol, data_type)
 
-            if not quality_result["is_valid"]:
-                self.logger.warning(
-                    f"数据质量检查失败: {symbol} {data_type} - "
+self.logger.info("适配器初始化完成")
+                self.logger.warning("数据质量检查失败: {symbol} {data_type} - "
                     f"得分: {quality_result['quality_score']:.1f}, "
                     f"问题数: {len(quality_result['issues'])}"
                 )
@@ -67,19 +66,18 @@ class BaseDataSourceAdapter(ABC):
                 critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
-                        self.logger.error(f"  - {issue['type']}: {issue['message']}")
+                        self.logger.error("  - {issue['type']}: {issue['message']}")
                 else:
                     # 只记录警告级别的问题
                     warning_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "warning"]
                     for issue in warning_issues:
-                        self.logger.warning(f"  - {issue['type']}: {issue['message']}")
-            else:
-                self.logger.info(
-                    f"数据质量检查通过: {symbol} {data_type} - " f"得分: {quality_result['quality_score']:.1f}"
+                        self.logger.warning("  - {issue['type']}: {issue['message']}")
+self.logger.info("数据获取完成")
+                self.logger.info("数据质量检查通过: {symbol} {data_type} - " f"得分: {quality_result['quality_score']:.1f}"
                 )
 
         except Exception as e:
-            self.logger.error(f"数据质量检查异常: {symbol} {data_type} - {e}")
+            self.logger.error("数据质量检查异常: %s %s - %s", symbol, data_type, e)
             # 质量检查失败不应影响数据返回
 
         return df
@@ -96,7 +94,7 @@ class BaseDataSourceAdapter(ABC):
             原始数据字典（质量检查失败不影响数据返回）
         """
         if not data:
-            self.logger.warning(f"实时数据为空，跳过质量检查: {symbol}")
+            self.logger.warning("实时数据为空，跳过质量检查: %s", symbol)
             return data
 
         try:
@@ -111,19 +109,19 @@ class BaseDataSourceAdapter(ABC):
 
             quality_result = self.quality_validator.validate_stock_data(df, symbol, "realtime")
 
-            if not quality_result["is_valid"]:
-                self.logger.warning(f"实时数据质量检查失败: {symbol} - " f"得分: {quality_result['quality_score']:.1f}")
+self.logger.info("数据处理完成")
+                self.logger.warning("实时数据质量检查失败: {symbol} - " f"得分: {quality_result['quality_score']:.1f}")
 
                 # 记录严重问题
                 critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
-                        self.logger.error(f"  - {issue['type']}: {issue['message']}")
+                        self.logger.error("  - {issue['type']}: {issue['message']}")
             else:
-                self.logger.debug(f"实时数据质量检查通过: {symbol}")
+                self.logger.debug("实时数据质量检查通过: %s", symbol)
 
         except Exception as e:
-            self.logger.error(f"实时数据质量检查异常: {symbol} - {e}")
+            self.logger.error("实时数据质量检查异常: %s - %s", symbol, e)
 
         return data
 
@@ -143,10 +141,10 @@ class BaseDataSourceAdapter(ABC):
             record_count: 记录数量
             columns: 列名列表
         """
-        self.logger.info(f"获取{data_type}数据: {symbol} - 记录数: {record_count}")
+        self.logger.info("获取%s数据: %s - 记录数: %s", data_type, symbol, record_count)
 
         if columns:
-            self.logger.debug(f"数据列: {columns}")
+            self.logger.debug("数据列: %s", columns)
 
     def _handle_empty_data(self, symbol: str, data_type: str, fallback_data: Any = None):
         """
@@ -160,10 +158,10 @@ class BaseDataSourceAdapter(ABC):
         Returns:
             空DataFrame或fallback_data
         """
-        self.logger.info(f"获取到空数据: {symbol} {data_type}")
+        self.logger.info("获取到空数据: %s %s", symbol, data_type)
 
         if fallback_data is not None:
-            self.logger.info(f"使用备用数据: {type(fallback_data)}")
+            self.logger.info("使用备用数据: %s", type(fallback_data))
             return fallback_data
 
         return pd.DataFrame()
@@ -229,7 +227,7 @@ class BaseDataSourceAdapter(ABC):
                 "quality_thresholds": self.quality_validator.thresholds,
             }
         except Exception as e:
-            self.logger.error(f"获取质量统计失败: {e}")
+            self.logger.error("获取质量统计失败: %s", e)
             return {"source_name": self.source_name, "error": str(e)}
 
     def set_quality_thresholds(self, **kwargs):
@@ -240,7 +238,7 @@ class BaseDataSourceAdapter(ABC):
             **kwargs: 阈值参数
         """
         self.quality_validator.set_thresholds(**kwargs)
-        self.logger.info(f"质量阈值已更新: {kwargs}")
+        self.logger.info("质量阈值已更新: %s", kwargs)
 
 
 class QualityMixin:

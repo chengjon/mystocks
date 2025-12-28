@@ -238,9 +238,9 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
         X = df[self.feature_columns].values
         y = target.values
 
-        self.logger.info(f"  特征数量: {len(self.feature_columns)}")
-        self.logger.info(f"  样本数量: {len(X)}")
-        self.logger.info(f"  正样本比例: {y.mean() * 100:.2f}%")
+        self.logger.info("  特征数量: %s", len(self.feature_columns))
+        self.logger.info("  样本数量: %s", len(X))
+        self.logger.info("  正样本比例: %.2f%%", y.mean() * 100)
 
         # 4. 数据标准化
         self.logger.info("\n2. 数据标准化")
@@ -252,8 +252,8 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
             X_scaled, y, test_size=test_size, random_state=42, stratify=y
         )
 
-        self.logger.info(f"  训练集: {len(X_train)}")
-        self.logger.info(f"  测试集: {len(X_test)}")
+        self.logger.info("  训练集: %s", len(X_train))
+        self.logger.info("  测试集: %s", len(X_test))
 
         # 6. 训练模型
         self.logger.info("\n4. 训练模型")
@@ -270,11 +270,11 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
 
         self.logger.info("\n训练集指标:")
         for key, value in train_metrics.items():
-            self.logger.info(f"  {key}: {value:.4f}")
+            self.logger.info("  %s: %.4f", key, value)
 
         self.logger.info("\n测试集指标:")
         for key, value in test_metrics.items():
-            self.logger.info(f"  {key}: {value:.4f}")
+            self.logger.info("  %s: %.4f", key, value)
 
         # 8. 交叉验证
         cv_score = None
@@ -282,7 +282,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
             self.logger.info("\n6. 交叉验证")
             cv_scores = cross_val_score(self.model, X_scaled, y, cv=5, scoring="accuracy")
             cv_score = cv_scores.mean()
-            self.logger.info(f"  CV准确率: {cv_score:.4f} (+/- {cv_scores.std():.4f})")
+            self.logger.info("  CV准确率: %.4f (+/- %.4f)", cv_score, cv_scores.std())
 
         # 9. 特征重要性
         if hasattr(self.model, "feature_importances_"):
@@ -291,11 +291,11 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
             indices = np.argsort(importances)[::-1][:10]
 
             for i, idx in enumerate(indices):
-                self.logger.info(f"  {i + 1}. {self.feature_columns[idx]}: {importances[idx]:.4f}")
+                self.logger.info("  %s. %s: %.4f", i + 1, self.feature_columns[idx], importances[idx])
 
         self.is_trained = True
 
-        self.logger.info("\n" + "=" * 70)
+        self.logger.info("  模型评估完成")
         self.logger.info("✓ 模型训练完成")
         self.logger.info("=" * 70)
 
@@ -389,7 +389,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
         with open(path, "wb") as f:
             pickle.dump(model_data, f)
 
-        self.logger.info(f"✓ 模型已保存: {path}")
+        self.logger.info("✓ 模型已保存: %s", path)
 
     def load_model(self, path: str):
         """加载模型"""
@@ -405,7 +405,7 @@ class MLStrategy(BaseStrategy if BASE_STRATEGY_AVAILABLE else object):
 
         self.is_trained = True
 
-        self.logger.info(f"✓ 模型已加载: {path}")
+        self.logger.info("✓ 模型已加载: %s", path)
 
     def _calculate_metrics(self, y_true, y_pred) -> Dict:
         """计算评估指标"""

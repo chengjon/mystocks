@@ -102,7 +102,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 )
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"PostgreSQL保存成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("PostgreSQL保存成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return True
 
@@ -154,7 +154,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             processed_data = self._postprocess_analytical_data(data, classification)
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"PostgreSQL加载成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("PostgreSQL加载成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return processed_data
 
@@ -206,7 +206,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"PostgreSQL更新失败: {e}")
+            logger.error("PostgreSQL更新失败: %s", e)
             return False
 
     def delete_data(
@@ -249,7 +249,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
             return True
 
         except Exception as e:
-            logger.error(f"PostgreSQL删除失败: {e}")
+            logger.error("PostgreSQL删除失败: %s", e)
             return False
 
     def _get_default_table_name(self, classification: DataClassification) -> str:
@@ -416,7 +416,7 @@ class PostgreSQLDataAccess(IDataAccessLayer):
                 conn.execute(sql)
 
         except Exception as e:
-            logger.error(f"PostgreSQL使用ON CONFLICT导入数据失败: {e}")
+            logger.error("PostgreSQL使用ON CONFLICT导入数据失败: %s", e)
             # 回退到直接导入
             data.to_sql(
                 table_name,

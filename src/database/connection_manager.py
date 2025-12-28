@@ -39,7 +39,7 @@ class DatabaseConnectionManager:
             logger.info("Primary database connection established")
             return True
         except Exception as e:
-            logger.error(f"Failed to connect to primary database: {str(e)}")
+            logger.error("Failed to connect to primary database: %s", str(e))
             return False
 
     def connect_backup(self) -> bool:
@@ -55,7 +55,7 @@ class DatabaseConnectionManager:
             logger.info("Backup database connection established")
             return True
         except Exception as e:
-            logger.error(f"Failed to connect to backup database: {str(e)}")
+            logger.error("Failed to connect to backup database: %s", str(e))
             return False
 
     def connect_with_fallback(self) -> bool:
@@ -89,7 +89,7 @@ class DatabaseConnectionManager:
         try:
             return self._test_connection(self.primary_connection)
         except Exception as e:
-            logger.error(f"Connection health check failed: {str(e)}")
+            logger.error("Connection health check failed: %s", str(e))
             return False
 
     def get_data_with_failover(self, query: str) -> Optional[Any]:
@@ -112,7 +112,7 @@ class DatabaseConnectionManager:
                 if self._is_valid_result(result):
                     return result
         except Exception as e:
-            logger.warning(f"Primary database query failed: {str(e)}")
+            logger.warning("Primary database query failed: %s", str(e))
 
         # 主数据库失败，尝试备用数据库
         try:
@@ -124,7 +124,7 @@ class DatabaseConnectionManager:
                 if self._is_valid_result(result):
                     return result
         except Exception as e:
-            logger.error(f"Backup database query failed: {str(e)}")
+            logger.error("Backup database query failed: %s", str(e))
 
         return None
 
@@ -174,7 +174,7 @@ class DatabaseConnectionManager:
             raise Exception("Invalid connection")
 
         # 模拟查询执行
-        logger.info(f"Executing query: {query[:50]}...")
+        logger.info("Executing query: %s...", query[)
 
         # 根据查询类型返回不同的模拟数据
         if "SELECT" in query.upper():

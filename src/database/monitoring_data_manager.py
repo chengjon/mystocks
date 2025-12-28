@@ -49,7 +49,7 @@ class MonitoringDataManager:
             return alerts
 
         except Exception as e:
-            logger.error(f"Failed to get monitoring alerts: {str(e)}")
+            logger.error("Failed to get monitoring alerts: %s", str(e))
             return []
 
     def get_monitoring_summary(self) -> Dict:
@@ -66,7 +66,7 @@ class MonitoringDataManager:
             return summary
 
         except Exception as e:
-            logger.error(f"Failed to get monitoring summary: {str(e)}")
+            logger.error("Failed to get monitoring summary: %s", str(e))
             {
                 "total_alerts": 0,
                 "high_severity": 0,
@@ -88,7 +88,7 @@ class MonitoringDataManager:
             return health_status
 
         except Exception as e:
-            logger.error(f"Failed to get system health status: {str(e)}")
+            logger.error("Failed to get system health status: %s", str(e))
             return {
                 "database_status": "UNKNOWN",
                 "connection_pool": "UNKNOWN",
@@ -139,7 +139,7 @@ class MonitoringDataManager:
             return performance
 
         except Exception as e:
-            logger.error(f"Failed to get strategy performance: {str(e)}")
+            logger.error("Failed to get strategy performance: %s", str(e))
             return {}
 
     def create_alert(
@@ -176,11 +176,11 @@ class MonitoringDataManager:
             alert_key = f"alert_{alert['id']}"
             self.alert_cache[alert_key] = alert
 
-            logger.info(f"Created alert: {alert_type} - {message}")
+            logger.info("Created alert: %s - %s", alert_type, message)
             return True
 
         except Exception as e:
-            logger.error(f"Failed to create alert: {str(e)}")
+            logger.error("Failed to create alert: %s", str(e))
             return False
 
     def _query_monitoring_data(self, params: Optional[Dict] = None) -> List[Dict]:
@@ -332,9 +332,9 @@ class MonitoringDataManager:
                 del self.alert_cache[key]
                 cleared_count += 1
 
-            logger.info(f"Cleared {cleared_count} old alerts")
+            logger.info("Cleared %s old alerts", cleared_count)
             return cleared_count
 
         except Exception as e:
-            logger.error(f"Failed to clear old alerts: {str(e)}")
+            logger.error("Failed to clear old alerts: %s", str(e))
             return 0

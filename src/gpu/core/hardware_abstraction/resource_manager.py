@@ -86,11 +86,11 @@ class GPUResourceManager(IGPUResourceProvider):
                 self.available_devices.add(device_id)
 
             self._initialized = True
-            logger.info(f"GPU ResourceManager initialized with {len(self.devices)} devices")
+            logger.info("GPU ResourceManager initialized with %s devices", len(self.devices))
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize GPU ResourceManager: {e}")
+            logger.error("Failed to initialize GPU ResourceManager: %s", e)
             return False
 
     async def _detect_gpu_devices(self) -> None:
@@ -138,12 +138,12 @@ class GPUResourceManager(IGPUResourceProvider):
                 )
 
                 self.devices[i] = device
-                logger.info(f"Detected GPU {i}: {name} ({memory_total}MB)")
+                logger.info("Detected GPU %s: %s (%sMB)", i, name, memory_total)
 
             pynvml.nvmlShutdown()
 
         except Exception as e:
-            logger.error(f"Failed to detect NVIDIA devices: {e}")
+            logger.error("Failed to detect NVIDIA devices: %s", e)
             await self._simulate_gpu_devices()
 
     async def _simulate_gpu_devices(self) -> None:
@@ -171,7 +171,7 @@ class GPUResourceManager(IGPUResourceProvider):
 
         for device in simulated_devices:
             self.devices[device.device_id] = device
-            logger.info(f"Simulated GPU {device.device_id}: {device.name} ({device.memory_total}MB)")
+            logger.info("Simulated GPU %s: %s (%sMB)", device.device_id, device.name, device.memory_total)
 
     def get_available_devices(self) -> List[GPUDeviceInfo]:
         """获取可用GPU设备列表"""
@@ -189,7 +189,7 @@ class GPUResourceManager(IGPUResourceProvider):
 
             # 检查策略是否已存在
             if request.strategy_id in self.strategy_contexts:
-                logger.warning(f"Strategy {request.strategy_id} already has context")
+                logger.warning("Strategy %s already has context", request.strategy_id)
                 return self.strategy_contexts[request.strategy_id]
 
             # 选择最佳GPU设备
@@ -198,7 +198,7 @@ class GPUResourceManager(IGPUResourceProvider):
                 # 尝试抢占低优先级策略
                 device_id = await self._try_preempt_low_priority_strategies(request)
                 if device_id is None:
-                    logger.error(f"No available GPU for strategy {request.strategy_id}")
+                    logger.error("No available GPU for strategy %s", request.strategy_id)
                     return None
 
             # 创建策略上下文
@@ -211,7 +211,7 @@ class GPUResourceManager(IGPUResourceProvider):
             device_allocation.add_strategy(request.strategy_id, context, request.required_memory)
             self.strategy_contexts[request.strategy_id] = context
 
-            logger.info(f"Allocated GPU context for strategy {request.strategy_id} on device {device_id}")
+            logger.info("Allocated GPU context for strategy %s on device %s", request.strategy_id, device_id)
             return context
 
     async def _select_best_device(self, request: AllocationRequest) -> Optional[int]:
@@ -278,13 +278,13 @@ class GPUResourceManager(IGPUResourceProvider):
         device_id, strategy_id, _, _ = preemptible_strategies[0]
 
         # 执行抢占
-        logger.info(f"Preempting low priority strategy {strategy_id} on device {device_id}")
+        logger.info("Preempting low priority strategy %s on device %s", strategy_id, device_id)
         success = await self._execute_preemption(device_id, strategy_id)
 
         if success:
             return device_id
         else:
-            logger.error(f"Failed to preempt strategy {strategy_id}")
+            logger.error("Failed to preempt strategy %s", strategy_id)
             return None
 
     async def _execute_preemption(self, device_id: int, strategy_id: str) -> bool:
@@ -299,7 +299,7 @@ class GPUResourceManager(IGPUResourceProvider):
                     return True
             return False
         except Exception as e:
-            logger.error(f"Error during preemption of strategy {strategy_id}: {e}")
+            logger.error("Error during preemption of strategy %s: %s", strategy_id, e)
             return False
 
     async def _create_strategy_context(self, device_id: int, request: AllocationRequest) -> Optional[IStrategyContext]:
@@ -329,14 +329,14 @@ class GPUResourceManager(IGPUResourceProvider):
             return context
 
         except Exception as e:
-            logger.error(f"Failed to create strategy context: {e}")
+            logger.error("Failed to create strategy context: %s", e)
             return None
 
     async def release_context(self, strategy_id: str) -> bool:
         """释放策略GPU上下文"""
         async with self._lock:
             if strategy_id not in self.strategy_contexts:
-                logger.warning(f"Strategy {strategy_id} context not found")
+                logger.warning("Strategy %s context not found", strategy_id)
                 return False
 
             context = self.strategy_contexts[strategy_id]
@@ -347,7 +347,7 @@ class GPUResourceManager(IGPUResourceProvider):
                 memory_pool = context.get_memory_pool()
                 memory_pool.cleanup()
             except Exception as e:
-                logger.error(f"Error cleaning up memory pool for strategy {strategy_id}: {e}")
+                logger.error("Error cleaning up memory pool for strategy %s: %s", strategy_id, e)
 
             # 从设备分配中移除
             if device_id in self.device_allocations:
@@ -358,7 +358,7 @@ class GPUResourceManager(IGPUResourceProvider):
             # 移除策略上下文
             del self.strategy_contexts[strategy_id]
 
-            logger.info(f"Released GPU context for strategy {strategy_id}")
+            logger.info("Released GPU context for strategy %s", strategy_id)
             return True
 
     def get_device_health(self, device_id: int) -> Dict[str, Any]:
@@ -425,14 +425,14 @@ class GPUResourceManager(IGPUResourceProvider):
                             device.current_utilization = 0.0
 
                     except Exception as e:
-                        logger.warning(f"Failed to update metrics for device {device_id}: {e}")
+                        logger.warning("Failed to update metrics for device %s: %s", device_id, e)
                         device.current_utilization = 0.0
                         device.current_memory_usage = 0
 
                 pynvml.nvmlShutdown()
 
             except Exception as e:
-                logger.warning(f"Failed to update device metrics: {e}")
+                logger.warning("Failed to update device metrics: %s", e)
 
     def get_resource_usage_summary(self) -> Dict[str, Any]:
         """获取资源使用摘要"""

@@ -58,7 +58,7 @@ class FinancialDataSource(IDataSource):
 
             logger.info("财务数据源依赖检查完成")
         except Exception as e:
-            logger.error(f"财务数据源依赖检查失败: {e}")
+            logger.error("财务数据源依赖检查失败: %s", e)
 
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """
@@ -75,14 +75,14 @@ class FinancialDataSource(IDataSource):
         if not self._stock_daily_available:
             raise Exception("股票日线数据源不可用")
 
-        logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
+        logger.info("获取股票日线数据: %s %s ~ %s", symbol, start_date, end_date)
 
         try:
             data = self._stock_daily_adapter.get_stock_daily(symbol, start_date, end_date)
-            logger.info(f"成功获取股票日线数据: {len(data)} 条记录")
+            logger.info("成功获取股票日线数据: %s 条记录", len(data))
             return data
         except Exception as e:
-            logger.error(f"获取股票日线数据失败: {e}")
+            logger.error("获取股票日线数据失败: %s", e)
             raise
 
     def get_financial_report(self, symbol: str, report_type: str = "利润表", period: str = "年报") -> Dict:
@@ -100,14 +100,14 @@ class FinancialDataSource(IDataSource):
         if not self._financial_reports_available:
             raise Exception("财务报告数据源不可用")
 
-        logger.info(f"获取财务报告: {symbol} {report_type} {period}")
+        logger.info("获取财务报告: %s %s %s", symbol, report_type, period)
 
         try:
             data = self._financial_report_adapter.get_financial_report(symbol, report_type, period)
-            logger.info(f"成功获取财务报告: {symbol}")
+            logger.info("成功获取财务报告: %s", symbol)
             return data
         except Exception as e:
-            logger.error(f"获取财务报告失败: {e}")
+            logger.error("获取财务报告失败: %s", e)
             raise
 
     def get_financial_indicators(self, symbol: str, period: str = "年报") -> List[Dict]:
@@ -123,10 +123,10 @@ class FinancialDataSource(IDataSource):
         """
         try:
             indicators = self._financial_report_adapter.get_financial_indicators(symbol, period)
-            logger.info(f"成功获取财务指标: {symbol}")
+            logger.info("成功获取财务指标: %s", symbol)
             return indicators
         except Exception as e:
-            logger.error(f"获取财务指标失败: {e}")
+            logger.error("获取财务指标失败: %s", e)
             return []
 
     def get_balance_sheet(self, symbol: str, period: str = "年报") -> Dict:
@@ -142,10 +142,10 @@ class FinancialDataSource(IDataSource):
         """
         try:
             balance_sheet = self._financial_report_adapter.get_balance_sheet(symbol, period)
-            logger.info(f"成功获取资产负债表: {symbol}")
+            logger.info("成功获取资产负债表: %s", symbol)
             return balance_sheet
         except Exception as e:
-            logger.error(f"获取资产负债表失败: {e}")
+            logger.error("获取资产负债表失败: %s", e)
             return {}
 
     def get_income_statement(self, symbol: str, period: str = "年报") -> Dict:
@@ -161,10 +161,10 @@ class FinancialDataSource(IDataSource):
         """
         try:
             income_statement = self._financial_report_adapter.get_income_statement(symbol, period)
-            logger.info(f"成功获取利润表: {symbol}")
+            logger.info("成功获取利润表: %s", symbol)
             return income_statement
         except Exception as e:
-            logger.error(f"获取利润表失败: {e}")
+            logger.error("获取利润表失败: %s", e)
             return {}
 
     def get_cash_flow_statement(self, symbol: str, period: str = "年报") -> Dict:
@@ -180,10 +180,10 @@ class FinancialDataSource(IDataSource):
         """
         try:
             cash_flow = self._financial_report_adapter.get_cash_flow_statement(symbol, period)
-            logger.info(f"成功获取现金流量表: {symbol}")
+            logger.info("成功获取现金流量表: %s", symbol)
             return cash_flow
         except Exception as e:
-            logger.error(f"获取现金流量表失败: {e}")
+            logger.error("获取现金流量表失败: %s", e)
             return {}
 
     def get_comprehensive_financial_data(self, symbol: str, period: str = "年报") -> Dict:
@@ -198,7 +198,7 @@ class FinancialDataSource(IDataSource):
             Dict: 综合财务数据
         """
         try:
-            logger.info(f"获取综合财务数据: {symbol} {period}")
+            logger.info("获取综合财务数据: %s %s", symbol, period)
 
             comprehensive_data = {
                 "symbol": symbol,
@@ -210,11 +210,11 @@ class FinancialDataSource(IDataSource):
                 "financial_indicators": self.get_financial_indicators(symbol, period),
             }
 
-            logger.info(f"成功获取综合财务数据: {symbol}")
+            logger.info("成功获取综合财务数据: %s", symbol)
             return comprehensive_data
 
         except Exception as e:
-            logger.error(f"获取综合财务数据失败: {e}")
+            logger.error("获取综合财务数据失败: %s", e)
             return {}
 
     def validate_data_integrity(self, data: Dict) -> bool:
@@ -241,7 +241,7 @@ class FinancialDataSource(IDataSource):
             return True
 
         except Exception as e:
-            logger.error(f"数据完整性验证失败: {e}")
+            logger.error("数据完整性验证失败: %s", e)
             return False
 
     def _validate_symbol(self, symbol: str) -> bool:
@@ -297,5 +297,5 @@ class FinancialDataSource(IDataSource):
             return status
 
         except Exception as e:
-            logger.error(f"获取数据源状态失败: {e}")
+            logger.error("获取数据源状态失败: %s", e)
             return {"error": str(e)}

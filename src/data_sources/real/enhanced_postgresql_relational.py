@@ -70,7 +70,7 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         self._init_mappers()
 
         self._connection_pool_size = connection_pool_size
-        logger.info(f"增强版PostgreSQL关系数据源初始化完成 (连接池大小: {connection_pool_size})")
+        logger.info("增强版PostgreSQL关系数据源初始化完成 (连接池大小: %s)", connection_pool_size)
 
     def _init_mappers(self):
         """初始化数据映射器"""
@@ -138,13 +138,13 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapped_results = mapper.map_rows(raw_results)
 
             logger.info(
-                f"获取自选股成功 (用户:{user_id}, 类型:{list_type}, "
-                f"包含股票信息:{include_stock_info}, 数量:{len(mapped_results)})"
+                "获取自选股成功 (用户:%s, 类型:%s, 包含股票信息:%s, 数量:%s)"
+                % (user_id, list_type, include_stock_info, len(mapped_results))
             )
             return mapped_results
 
         except Exception as e:
-            logger.error(f"获取自选股失败: {e}")
+            logger.error("获取自选股失败: %s", e)
             raise
 
     def add_watchlist(self, user_id: int, symbol: str, list_type: str = "favorite", note: str = "") -> bool:
@@ -171,14 +171,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
 
             success = bool(result and result.get("id"))
             if success:
-                logger.info(f"添加自选股成功: 用户{user_id}, 股票{symbol}")
+                logger.info("添加自选股成功: 用户%s, 股票%s", user_id, symbol)
             else:
-                logger.warning(f"添加自选股失败: 用户{user_id}, 股票{symbol}")
+                logger.warning("添加自选股失败: 用户%s, 股票%s", user_id, symbol)
 
             return success
 
         except Exception as e:
-            logger.error(f"添加自选股失败: {e}")
+            logger.error("添加自选股失败: %s", e)
             return False
 
     def update_watchlist(self, user_id: int, symbol: str, note: str = None, list_type: str = None) -> bool:
@@ -202,14 +202,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             success = affected_rows > 0
 
             if success:
-                logger.info(f"更新自选股成功: 用户{user_id}, 股票{symbol}")
+                logger.info("更新自选股成功: 用户%s, 股票%s", user_id, symbol)
             else:
-                logger.warning(f"更新自选股失败，记录不存在: 用户{user_id}, 股票{symbol}")
+                logger.warning("更新自选股失败，记录不存在: 用户%s, 股票%s", user_id, symbol)
 
             return success
 
         except Exception as e:
-            logger.error(f"更新自选股失败: {e}")
+            logger.error("更新自选股失败: %s", e)
             return False
 
     def remove_watchlist(self, user_id: int, symbol: str) -> bool:
@@ -223,14 +223,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             success = affected_rows > 0
 
             if success:
-                logger.info(f"删除自选股成功: 用户{user_id}, 股票{symbol}")
+                logger.info("删除自选股成功: 用户%s, 股票%s", user_id, symbol)
             else:
-                logger.warning(f"删除自选股失败，记录不存在: 用户{user_id}, 股票{symbol}")
+                logger.warning("删除自选股失败，记录不存在: 用户%s, 股票%s", user_id, symbol)
 
             return success
 
         except Exception as e:
-            logger.error(f"删除自选股失败: {e}")
+            logger.error("删除自选股失败: %s", e)
             return False
 
     # ==================== 增强版策略配置管理 ====================
@@ -260,12 +260,12 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapped_results = mapper.map_rows(raw_results)
 
             logger.info(
-                f"获取策略配置成功: 用户{user_id}, 类型:{strategy_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
+                "获取策略配置成功: 用户{user_id}, 类型:{strategy_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
             )
             return mapped_results
 
         except Exception as e:
-            logger.error(f"获取策略配置失败: {e}")
+            logger.error("获取策略配置失败: %s", e)
             raise
 
     def create_strategy_config(
@@ -300,14 +300,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             config_id = result.get("id") if result else None
 
             if config_id:
-                logger.info(f"创建策略配置成功: 配置ID{config_id}, 用户{user_id}")
+                logger.info("创建策略配置成功: 配置ID%s, 用户%s", config_id, user_id)
             else:
-                logger.error(f"创建策略配置失败: 用户{user_id}")
+                logger.error("创建策略配置失败: 用户%s", user_id)
 
             return config_id
 
         except Exception as e:
-            logger.error(f"创建策略配置失败: {e}")
+            logger.error("创建策略配置失败: %s", e)
             return None
 
     def update_strategy_config(
@@ -346,14 +346,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             success = affected_rows > 0
 
             if success:
-                logger.info(f"更新策略配置成功: 配置ID{config_id}")
+                logger.info("更新策略配置成功: 配置ID%s", config_id)
             else:
-                logger.warning(f"更新策略配置失败，记录不存在: 配置ID{config_id}")
+                logger.warning("更新策略配置失败，记录不存在: 配置ID%s", config_id)
 
             return success
 
         except Exception as e:
-            logger.error(f"更新策略配置失败: {e}")
+            logger.error("更新策略配置失败: %s", e)
             return False
 
     def delete_strategy_config(self, config_id: int, user_id: int) -> bool:
@@ -367,14 +367,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             success = affected_rows > 0
 
             if success:
-                logger.info(f"删除策略配置成功: 配置ID{config_id}")
+                logger.info("删除策略配置成功: 配置ID%s", config_id)
             else:
-                logger.warning(f"删除策略配置失败，记录不存在: 配置ID{config_id}")
+                logger.warning("删除策略配置失败，记录不存在: 配置ID%s", config_id)
 
             return success
 
         except Exception as e:
-            logger.error(f"删除策略配置失败: {e}")
+            logger.error("删除策略配置失败: %s", e)
             return False
 
     # ==================== 增强版风险管理配置 ====================
@@ -405,12 +405,12 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             mapped_results = mapper.map_rows(raw_results)
 
             logger.info(
-                f"获取风险预警成功: 用户{user_id}, 类型:{alert_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
+                "获取风险预警成功: 用户{user_id}, 类型:{alert_type}, " f"状态:{status}, 数量:{len(mapped_results)}"
             )
             return mapped_results
 
         except Exception as e:
-            logger.error(f"获取风险预警失败: {e}")
+            logger.error("获取风险预警失败: %s", e)
             raise
 
     # ==================== 增强版用户配置管理 ====================
@@ -435,14 +435,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
 
             if mapped_results:
                 config = mapped_results[0]
-                logger.info(f"获取用户配置成功: 用户{user_id}, 配置{config_key}")
+                logger.info("获取用户配置成功: 用户%s, 配置%s", user_id, config_key)
                 return config
             else:
-                logger.warning(f"用户配置不存在: 用户{user_id}, 配置{config_key}")
+                logger.warning("用户配置不存在: 用户%s, 配置%s", user_id, config_key)
                 return None
 
         except Exception as e:
-            logger.error(f"获取用户配置失败: {e}")
+            logger.error("获取用户配置失败: %s", e)
             return None
 
     def set_user_config(
@@ -492,14 +492,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
 
             if success:
                 action = "更新" if existing_config else "创建"
-                logger.info(f"{action}用户配置成功: 用户{user_id}, 配置{config_key}")
+                logger.info("%s用户配置成功: 用户%s, 配置%s", action, user_id, config_key)
             else:
-                logger.error(f"设置用户配置失败: 用户{user_id}, 配置{config_key}")
+                logger.error("设置用户配置失败: 用户%s, 配置%s", user_id, config_key)
 
             return success
 
         except Exception as e:
-            logger.error(f"设置用户配置失败: {e}")
+            logger.error("设置用户配置失败: %s", e)
             return False
 
     # ==================== 增强版股票基础信息管理 ====================
@@ -518,14 +518,14 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
 
             if mapped_results:
                 stock_info = mapped_results[0]
-                logger.info(f"获取股票基础信息成功: 股票{symbol}")
+                logger.info("获取股票基础信息成功: 股票%s", symbol)
                 return stock_info
             else:
-                logger.warning(f"股票基础信息不存在: 股票{symbol}")
+                logger.warning("股票基础信息不存在: 股票%s", symbol)
                 return None
 
         except Exception as e:
-            logger.error(f"获取股票基础信息失败: {e}")
+            logger.error("获取股票基础信息失败: %s", e)
             return None
 
     def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
@@ -548,11 +548,11 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             raw_results = query.fetch_all()
             mapped_results = mapper.map_rows(raw_results)
 
-            logger.info(f"搜索股票成功: 关键词{keyword}, 数量{len(mapped_results)}")
+            logger.info("搜索股票成功: 关键词%s, 数量%s", keyword, len(mapped_results))
             return mapped_results
 
         except Exception as e:
-            logger.error(f"搜索股票失败: {e}")
+            logger.error("搜索股票失败: %s", e)
             return []
 
     # ==================== 增强版行业概念板块管理 ====================
@@ -574,11 +574,11 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             raw_results = query.fetch_all()
             mapped_results = mapper.map_rows(raw_results)
 
-            logger.info(f"获取行业列表成功: 父级{parent_code}, 数量{len(mapped_results)}")
+            logger.info("获取行业列表成功: 父级%s, 数量%s", parent_code, len(mapped_results))
             return mapped_results
 
         except Exception as e:
-            logger.error(f"获取行业列表失败: {e}")
+            logger.error("获取行业列表失败: %s", e)
             return []
 
     def get_concepts(self, hot_level_min: int = 0) -> List[Dict[str, Any]]:
@@ -599,11 +599,11 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
             raw_results = query.fetch_all()
             mapped_results = mapper.map_rows(raw_results)
 
-            logger.info(f"获取概念板块成功: 最小热度{hot_level_min}, 数量{len(mapped_results)}")
+            logger.info("获取概念板块成功: 最小热度%s, 数量%s", hot_level_min, len(mapped_results))
             return mapped_results
 
         except Exception as e:
-            logger.error(f"获取概念板块失败: {e}")
+            logger.error("获取概念板块失败: %s", e)
             return []
 
     # ==================== 数据映射器管理方法 ====================

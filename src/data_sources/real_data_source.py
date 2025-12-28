@@ -36,7 +36,7 @@ class RealDataSource(DataSourceInterface):
         try:
             return method(*args, **kwargs)
         except Exception as e:
-            logger.error(f"调用 {method_name} 失败: {str(e)}")
+            logger.error("调用 %s 失败: %s", method_name, str(e))
             # 根据返回类型返回合适的默认值
             if method_name in ["get_stock_list", "get_realtime_alerts"]:
                 return []

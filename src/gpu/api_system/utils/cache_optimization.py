@@ -127,7 +127,7 @@ class CacheLayer:
             self.cache[key] = entry
             self.metrics.memory_usage += size
 
-            logger.debug(f"Cache put: {key} ({size} bytes)")
+            logger.debug("Cache put: %s (%s bytes)", key, size)
             return True
 
     def delete(self, key: str) -> bool:
@@ -191,7 +191,7 @@ class CacheLayer:
         self.metrics.eviction_count += 1
         del self.cache[lru_key]
 
-        logger.debug(f"Cache LRU eviction: {lru_key}")
+        logger.debug("Cache LRU eviction: %s", lru_key)
 
     def get_hot_keys(self, threshold: int = 10) -> List[str]:
         """获取热点键"""
@@ -251,7 +251,7 @@ class MultiLevelCache:
             self.redis_client.ping()
             logger.info("Redis cache connection established")
         except Exception as e:
-            logger.warning(f"Redis connection failed: {e}")
+            logger.warning("Redis connection failed: %s", e)
             self.redis_client = None
 
     def start_background_tasks(self):
@@ -275,7 +275,7 @@ class MultiLevelCache:
         # L1缓存
         value = self.l1_cache.get(key)
         if value is not None:
-            logger.debug(f"Cache hit in L1: {key}")
+            logger.debug("Cache hit in L1: %s", key)
             return value
 
         # L2缓存
@@ -283,7 +283,7 @@ class MultiLevelCache:
         if value is not None:
             # 回填到L1
             self.l1_cache.put(key, value, ttl=60)
-            logger.debug(f"Cache hit in L2: {key}")
+            logger.debug("Cache hit in L2: %s", key)
             return value
 
         # Redis缓存
@@ -295,13 +295,13 @@ class MultiLevelCache:
                     # 回填到L1和L2
                     self.l1_cache.put(key, value, ttl=60)
                     self.l2_cache.put(key, value, ttl=300)
-                    logger.debug(f"Cache hit in Redis: {key}")
+                    logger.debug("Cache hit in Redis: %s", key)
                     return value
             except Exception as e:
-                logger.error(f"Redis cache read failed: {e}")
+                logger.error("Redis cache read failed: %s", e)
 
         access_time = time.time() - start_time
-        logger.debug(f"Cache miss: {key} ({access_time:.4f}s)")
+        logger.debug("Cache miss: %s (%ss)", key, access_time)
         return None
 
     def put(self, key: str, value: Any, ttl: Optional[int] = None):
@@ -322,9 +322,9 @@ class MultiLevelCache:
                 else:
                     self.redis_client.set(redis_key, redis_value)
             except Exception as e:
-                logger.error(f"Redis cache write failed: {e}")
+                logger.error("Redis cache write failed: %s", e)
 
-        logger.debug(f"Cache put: {key}")
+        logger.debug("Cache put: %s", key)
 
     def delete(self, key: str):
         """删除缓存"""
@@ -336,7 +336,7 @@ class MultiLevelCache:
                 redis_key = f"{self.redis_cache_name}:{key}"
                 self.redis_client.delete(redis_key)
             except Exception as e:
-                logger.error(f"Redis cache delete failed: {e}")
+                logger.error("Redis cache delete failed: %s", e)
 
     def clear(self):
         """清空所有缓存"""
@@ -350,7 +350,7 @@ class MultiLevelCache:
                 if keys:
                     self.redis_client.delete(*keys)
             except Exception as e:
-                logger.error(f"Redis cache clear failed: {e}")
+                logger.error("Redis cache clear failed: %s", e)
 
     def get_composite_key(self, *args) -> str:
         """生成复合键"""
@@ -411,14 +411,14 @@ class MultiLevelCache:
                 logger.debug("Cache cleanup completed")
 
             except Exception as e:
-                logger.error(f"Cache cleanup error: {e}")
+                logger.error("Cache cleanup error: %s", e)
 
     def preload_cache(self, keys: List[str]):
         """预热缓存"""
         if not self.warmup_enabled:
             return
 
-        logger.info(f"Preloading cache with {len(keys)} keys")
+        logger.info("Preloading cache with %s keys", len(keys))
 
         # 批量获取数据
         data = self.batch_get(keys)
@@ -592,7 +592,7 @@ class CacheManager:
         if data_type in self.cache_strategies:
             # 清空相关缓存
             # 这里可以根据数据类型清空特定的缓存
-            logger.info(f"Cleared cache for type: {data_type}")
+            logger.info("Cleared cache for type: %s", data_type)
 
     def monitor_cache_performance(self):
         """监控缓存性能"""
@@ -603,10 +603,10 @@ class CacheManager:
 
         # 检查警告条件
         if stats["cache_stats"]["overall_hit_rate"] < 70:
-            logger.warning(f"Cache hit rate low: {stats['cache_stats']['overall_hit_rate']}%")
+            logger.warning("Cache hit rate low: %s%", stats["cache_stats"]["overall_hit_rate"])
 
         if stats["cache_stats"]["total_memory_usage"] > psutil.virtual_memory().total * 0.7:
-            logger.warning(f"Cache memory usage high: {stats['cache_stats']['total_memory_usage']} bytes")
+            logger.warning("Cache memory usage high: %s bytes", stats["cache_stats"]["total_memory_usage"])
 
         return stats
 

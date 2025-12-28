@@ -148,7 +148,7 @@ class TdxKlineDataFetcher:
             result = self._make_batch_request(symbol, market, count)
             return result
         except Exception as e:
-            logger.error(f"Failed to fetch kline batch for {symbol}: {str(e)}")
+            logger.error("Failed to fetch kline batch for %s: %s", symbol, str(e))
             return []
 
     def _fetch_kline_data(
@@ -172,7 +172,7 @@ class TdxKlineDataFetcher:
         Returns:
             pd.DataFrame: K线数据
         """
-        logger.info(f"Fetching kline data for {symbol} ({period}) from {start_date} to {end_date}")
+        logger.info("Fetching kline data for %s (%s) from %s to %s", symbol, period, start_date, end_date)
 
         # 模拟数据获取
         if is_index:
@@ -214,7 +214,7 @@ class TdxKlineDataFetcher:
         Returns:
             List[Dict]: 请求数据
         """
-        logger.info(f"Making batch request for {symbol}, market={market}, count={count}")
+        logger.info("Making batch request for %s, market=%s, count=%s", symbol, market, count)
 
         # 模拟批量数据
         result = []
@@ -252,12 +252,12 @@ class TdxKlineDataFetcher:
 
             # 检查是否过期
             if time.time() - timestamp < self.cache_ttl:
-                logger.debug(f"Cache hit for {key}")
+                logger.debug("Cache hit for %s", key)
                 return cached_data
             else:
                 # 缓存过期，删除
                 del self.cache[key]
-                logger.debug(f"Cache expired for {key}")
+                logger.debug("Cache expired for %s", key)
 
         return None
 
@@ -271,7 +271,7 @@ class TdxKlineDataFetcher:
         """
         if data is not None and not data.empty:
             self.cache[key] = (data.copy(), time.time())
-            logger.debug(f"Cache set for {key}")
+            logger.debug("Cache set for %s", key)
 
     def clear_cache(self):
         """清空缓存"""

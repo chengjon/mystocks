@@ -120,7 +120,7 @@ class GPUFeatureGenerator:
         # 转换回Pandas（如果需要）
         result = df_gpu.to_pandas() if self.gpu_enabled else df_gpu
 
-        self.logger.info(f"技术指标生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("技术指标生成完成，耗时: %s秒", calculation_time)
 
         return result
 
@@ -166,7 +166,7 @@ class GPUFeatureGenerator:
 
         result = df_gpu.to_pandas() if self.gpu_enabled else df_gpu
 
-        self.logger.info(f"统计特征生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("统计特征生成完成，耗时: %s秒", calculation_time)
 
         return result
 
@@ -201,7 +201,7 @@ class GPUFeatureGenerator:
 
         result = df_gpu.to_pandas() if self.gpu_enabled else df_gpu
 
-        self.logger.info(f"动量特征生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("动量特征生成完成，耗时: %s秒", calculation_time)
 
         return result
 
@@ -242,7 +242,7 @@ class GPUFeatureGenerator:
 
         result = df_gpu.to_pandas() if self.gpu_enabled else df_gpu
 
-        self.logger.info(f"波动率特征生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("波动率特征生成完成，耗时: %s秒", calculation_time)
 
         return result
 
@@ -283,7 +283,7 @@ class GPUFeatureGenerator:
 
         result = df_gpu.to_pandas() if self.gpu_enabled else df_gpu
 
-        self.logger.info(f"形态学特征生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("形态学特征生成完成，耗时: %s秒", calculation_time)
 
         return result
 
@@ -393,7 +393,7 @@ class GPUFeatureGenerator:
                 total_memory += result.memory_usage["total_memory"]
 
             except Exception as e:
-                self.logger.error(f"批量特征生成第{i}个数据失败: {e}")
+                self.logger.error("批量特征生成第%s个数据失败: %s", i, e)
                 continue
 
         total_time = time.time() - start_time
@@ -433,7 +433,7 @@ class GPUFeatureGenerator:
                     batch_result = future.result(timeout=300)  # 5分钟超时
                     results.extend(batch_result.results)
                 except Exception as e:
-                    self.logger.error(f"批次处理失败: {e}")
+                    self.logger.error("批次处理失败: %s", e)
 
         total_time = time.time() - start_time
 
@@ -597,7 +597,7 @@ class MultiStockFeatureGenerator:
 
         calculation_time = time.time() - start_time
 
-        self.logger.info(f"横截面特征生成完成，耗时: {calculation_time:.2f}秒")
+        self.logger.info("横截面特征生成完成，耗时: %s秒", calculation_time)
 
         return features_df
 

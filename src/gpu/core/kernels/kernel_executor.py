@@ -192,7 +192,7 @@ class KernelExecutor:
             return results
 
         except Exception as e:
-            logger.error(f"Batch execution failed: {e}")
+            logger.error("Batch execution failed: %s", e)
             return self._create_error_results(contexts, str(e))
 
     async def execute_with_fallback(
@@ -215,15 +215,15 @@ class KernelExecutor:
 
                 if result.success:
                     if kernel_name != primary_kernel:
-                        logger.info(f"Fallback kernel {kernel_name} succeeded after primary {primary_kernel} failed")
+                        logger.info("Fallback kernel %s succeeded after primary %s failed", kernel_name, primary_kernel)
                     return result
                 else:
                     last_error = result.error_message
-                    logger.warning(f"Kernel {kernel_name} failed: {result.error_message}")
+                    logger.warning("Kernel %s failed: %s", kernel_name, result.error_message)
 
             except Exception as e:
                 last_error = str(e)
-                logger.warning(f"Kernel {kernel_name} threw exception: {e}")
+                logger.warning("Kernel %s threw exception: %s", kernel_name, e)
 
         # 所有内核都失败了
         return ExecutionResult(
@@ -418,7 +418,7 @@ class KernelExecutor:
             # 重试失败的作业
             if config.retry_failed_jobs and not result.success and context.retry_count < context.max_retries:
                 context.retry_count += 1
-                logger.info(f"Retrying failed operation {context.kernel_name}:{context.operation_type}")
+                logger.info("Retrying failed operation %s:%s", context.kernel_name, context.operation_type)
 
                 retry_result = await self._execute_context(context)
                 if retry_result.success:
@@ -582,10 +582,10 @@ class KernelExecutor:
                 try:
                     await self._execute_context(context)
                 except Exception as e:
-                    logger.error(f"Error executing queued task: {e}")
+                    logger.error("Error executing queued task: %s", e)
 
             except Exception as e:
-                logger.error(f"Error in queue processor: {e}")
+                logger.error("Error in queue processor: %s", e)
 
         logger.info("Stopped processing execution queue")
 

@@ -72,7 +72,7 @@ except Exception:
     TAOS_AVAILABLE = False
 
 if TAOS_AVAILABLE:
-    logger.info(f"TDengine客户端已加载: {TAOS_MODULE_TYPE}")
+    logger.info("TDengine客户端已加载: %s", TAOS_MODULE_TYPE)
 else:
     logger.warning("TDengine client library not available")
 
@@ -284,7 +284,7 @@ class DatabaseTableManager:
             return conn
 
         except Exception as e:
-            logger.error(f"Failed to connect to {db_type.value} database {db_name}: {str(e)}")
+            logger.error("Failed to connect to %s database %s: %s", db_type.value, db_name, str(e))
             raise
 
     def _log_operation(
@@ -408,7 +408,7 @@ class DatabaseTableManager:
         except Exception as e:
             # 记录错误信息
             error_msg = str(e)
-            logger.error(f"Failed to create table {table_name}: {error_msg}")
+            logger.error("Failed to create table %s: %s", table_name, error_msg)
 
             # 更新操作日志
             self._log_operation(
@@ -486,7 +486,7 @@ class DatabaseTableManager:
 
         except Exception as e:
             error_msg = str(e)
-            logger.error(f"Failed to alter table {table_name}: {error_msg}")
+            logger.error("Failed to alter table %s: %s", table_name, error_msg)
 
             self._log_operation(
                 table_name,
@@ -561,7 +561,7 @@ class DatabaseTableManager:
 
         except Exception as e:
             error_msg = str(e)
-            logger.error(f"Failed to drop table {table_name}: {error_msg}")
+            logger.error("Failed to drop table %s: %s", table_name, error_msg)
 
             self._log_operation(
                 table_name,
@@ -643,7 +643,7 @@ class DatabaseTableManager:
 
         except Exception as e:
             error_msg = str(e)
-            logger.error(f"Failed to validate table {table_name}: {error_msg}")
+            logger.error("Failed to validate table %s: %s", table_name, error_msg)
             issues.append(f"Validation error: {error_msg}")
             validation_status = "fail"
 
@@ -684,7 +684,7 @@ class DatabaseTableManager:
             return results
 
         except Exception as e:
-            logger.error(f"Failed to batch create tables: {str(e)}")
+            logger.error("Failed to batch create tables: %s", str(e))
             return {"error": str(e)}
 
     def _generate_alter_ddl(self, db_type: DatabaseType, table_name: str, alterations: List[Dict]) -> str:
@@ -965,7 +965,7 @@ class DatabaseTableManager:
             return {"table_name": table_name, "columns": columns}
 
         except Exception as e:
-            logger.error(f"Failed to get table info for {table_name}: {str(e)}")
+            logger.error("Failed to get table info for %s: %s", table_name, str(e))
             return None
 
     def close_all_connections(self) -> None:
@@ -977,7 +977,7 @@ class DatabaseTableManager:
                 elif isinstance(conn, redis.Redis):
                     conn.close()
             except Exception as e:
-                logger.warning(f"Error closing connection {conn_key}: {str(e)}")
+                logger.warning("Error closing connection %s: %s", conn_key, str(e))
         self.db_connections = {}
 
         # 关闭监控会话

@@ -76,7 +76,7 @@ class TdxServerConfig:
         编码处理: connect.cfg使用GBK编码(中文Windows默认)
         """
         if not os.path.exists(self.config_file):
-            self.logger.warning(f"TDX配置文件不存在: {self.config_file}, 使用默认服务器")
+            self.logger.warning("TDX配置文件不存在: %s, 使用默认服务器", self.config_file)
             # 使用默认服务器
             self.servers = [("101.227.73.20", 7709, "默认服务器")]
             self.primary_index = 0
@@ -107,7 +107,7 @@ class TdxServerConfig:
             host_num = int(hq_section.get("HostNum", "0"))
             primary_host = int(hq_section.get("PrimaryHost", "1"))
 
-            self.logger.info(f"TDX配置: 共{host_num}个服务器, 主服务器索引={primary_host}")
+            self.logger.info("TDX配置: 共%s个服务器, 主服务器索引=%s", host_num, primary_host)
 
             # 解析每个服务器
             for i in range(1, host_num + 1):
@@ -130,13 +130,13 @@ class TdxServerConfig:
             else:
                 self.primary_index = 0
 
-            self.logger.info(f"成功加载{len(self.servers)}个TDX服务器")
+            self.logger.info("成功加载%s个TDX服务器", len(self.servers))
             if self.servers:
                 primary = self.servers[self.primary_index]
-                self.logger.info(f"主服务器: {primary[2]} ({primary[0]}:{primary[1]})")
+                self.logger.info("主服务器: %s (%s:%s)", primary[2], primary[0], primary[1])
 
         except Exception as e:
-            self.logger.error(f"解析TDX配置文件失败: {e}", exc_info=True)
+            self.logger.error("解析TDX配置文件失败: {e}", exc_info=True)
             # 使用默认服务器
             self.servers = [("101.227.73.20", 7709, "默认服务器")]
             self.primary_index = 0

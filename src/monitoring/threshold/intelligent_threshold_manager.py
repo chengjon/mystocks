@@ -63,7 +63,7 @@ class IntelligentThresholdManager:
             try:
                 self.monitoring_db = get_monitoring_database()
             except Exception as e:
-                logger.warning(f"监控数据库初始化失败: {e}")
+                logger.warning("监控数据库初始化失败: %s", e)
 
         # 初始化默认阈值规则
         self._initialize_default_rules()
@@ -134,7 +134,7 @@ class IntelligentThresholdManager:
             self.threshold_rules[rule.name] = rule
             self.data_analyzers[rule.name] = DataAnalyzer()
 
-        logger.info(f"初始化了{len(default_rules)}个默认阈值规则")
+        logger.info("初始化了%s个默认阈值规则", len(default_rules))
 
     async def optimize_all_thresholds(self) -> Dict[str, OptimizationResult]:
         """优化所有阈值"""
@@ -145,7 +145,7 @@ class IntelligentThresholdManager:
                 result = await self.optimize_threshold(rule_name)
                 results[rule_name] = result
             except Exception as e:
-                logger.error(f"优化阈值 {rule_name} 失败: {e}")
+                logger.error("优化阈值 %s 失败: %s", rule_name, e)
                 results[rule_name] = OptimizationResult(
                     rule_name=rule_name,
                     optimization_type="error",
@@ -196,7 +196,7 @@ class IntelligentThresholdManager:
                 )
                 results.append(stat_result)
             except Exception as e:
-                logger.error(f"统计优化失败: {e}")
+                logger.error("统计优化失败: %s", e)
 
         # 趋势优化
         if "trend" in optimization_methods and timestamps:
@@ -206,7 +206,7 @@ class IntelligentThresholdManager:
                 )
                 results.append(trend_result)
             except Exception as e:
-                logger.error(f"趋势优化失败: {e}")
+                logger.error("趋势优化失败: %s", e)
 
         # 聚类优化
         if "clustering" in optimization_methods:
@@ -216,7 +216,7 @@ class IntelligentThresholdManager:
                 )
                 results.append(cluster_result)
             except Exception as e:
-                logger.error(f"聚类优化失败: {e}")
+                logger.error("聚类优化失败: %s", e)
 
         if not results:
             return OptimizationResult(
@@ -280,10 +280,9 @@ class IntelligentThresholdManager:
             try:
                 await self._save_adjustment_to_db(adjustment)
             except Exception as e:
-                logger.error(f"保存调整记录到数据库失败: {e}")
-
-        logger.info(
-            f"阈值优化完成: {rule_name} {old_threshold} -> {optimization_result.recommended_threshold} "
+                logger.error("保存调整记录到数据库失败: %s", e)
+self.logger.info("智能阈值初始化完成")
+        logger.info("阈值优化完成: {rule_name} {old_threshold} -> {optimization_result.recommended_threshold} "
             f"(置信度: {optimization_result.confidence_score:.2f})"
         )
 
@@ -305,7 +304,7 @@ class IntelligentThresholdManager:
             # 如果没有数据库，返回空列表
             return [], []
         except Exception as e:
-            logger.error(f"获取指标历史数据失败: {e}")
+            logger.error("获取指标历史数据失败: %s", e)
             return [], []
 
     async def _save_adjustment_to_db(self, adjustment: ThresholdAdjustment) -> None:
@@ -317,7 +316,7 @@ class IntelligentThresholdManager:
         """添加新的阈值规则"""
         self.threshold_rules[rule.name] = rule
         self.data_analyzers[rule.name] = DataAnalyzer()
-        logger.info(f"添加阈值规则: {rule.name}")
+        logger.info("添加阈值规则: %s", rule.name)
 
     def get_threshold_rule(self, rule_name: str) -> Optional[ThresholdRule]:
         """获取阈值规则"""
@@ -363,10 +362,10 @@ class IntelligentThresholdManager:
                     r for r in results.values() if r.confidence_score >= self.config["confidence_threshold"]
                 ]
 
-                logger.info(f"自动优化完成: {len(successful_optimizations)}/{len(results)} 个阈值被优化")
+                logger.info("自动优化完成: %s/%s 个阈值被优化", len(successful_optimizations), len(results))
 
             except Exception as e:
-                logger.error(f"自动优化循环出错: {e}")
+                logger.error("自动优化循环出错: %s", e)
 
             # 等待下一次优化
             await asyncio.sleep(self.config["optimization_interval"])
@@ -403,5 +402,5 @@ class IntelligentThresholdManager:
                 "data_points": len(values),
             }
         except Exception as e:
-            logger.error(f"指标数据分析失败: {e}")
+            logger.error("指标数据分析失败: %s", e)
             return {"error": str(e), "data_points": len(values)}

@@ -128,14 +128,14 @@ class StockScreener:
         if as_of_date is None:
             as_of_date = date.today()
 
-        self.logger.info(f"开始股票筛选 | 基准日期: {as_of_date}")
+        self.logger.info("开始股票筛选 | 基准日期: %s", as_of_date)
 
         # 获取股票池
         if symbols is None:
             symbols = self._get_all_symbols()
 
         self.stats["total_input"] = len(symbols)
-        self.logger.info(f"输入股票池大小: {len(symbols)}")
+        self.logger.info("输入股票池大小: %s", len(symbols))
 
         # 获取股票基本信息
         stock_info = self._get_stock_info(symbols, as_of_date)
@@ -265,7 +265,7 @@ class StockScreener:
         excluded = symbols & set(st_stocks)
         self.stats["excluded_st"] = len(excluded)
 
-        self.logger.info(f"排除ST股票: {len(excluded)}只")
+        self.logger.info("排除ST股票: %s只", len(excluded))
 
         return symbols - excluded
 
@@ -277,7 +277,7 @@ class StockScreener:
         excluded = symbols & set(suspended)
         self.stats["excluded_suspended"] = len(excluded)
 
-        self.logger.info(f"排除停牌股票: {len(excluded)}只")
+        self.logger.info("排除停牌股票: %s只", len(excluded))
 
         return symbols - excluded
 
@@ -292,7 +292,7 @@ class StockScreener:
         excluded = symbols & set(new_stocks)
         self.stats["excluded_new_stocks"] = len(excluded)
 
-        self.logger.info(f"排除次新股({self.criteria.new_stock_days}天内): {len(excluded)}只")
+        self.logger.info("排除次新股(%s天内): %s只", self.criteria.new_stock_days, len(excluded))
 
         return symbols - excluded
 
@@ -311,8 +311,7 @@ class StockScreener:
         self.stats["excluded_price"] = len(excluded)
 
         if excluded:
-            self.logger.info(
-                f"价格过滤: 排除{len(excluded)}只 " f"(范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
+            self.logger.info("价格过滤: 排除%slen(excluded")}只 " f"(范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
             )
 
         return symbols - excluded
@@ -332,7 +331,7 @@ class StockScreener:
         self.stats["excluded_volume"] = len(excluded)
 
         if excluded:
-            self.logger.info(f"成交量过滤: 排除{len(excluded)}只")
+            self.logger.info("成交量过滤: 排除%s只", len(excluded))
 
         return symbols - excluded
 
@@ -356,7 +355,7 @@ class StockScreener:
         self.stats["excluded_market_cap"] = len(excluded)
 
         if excluded:
-            self.logger.info(f"市值过滤: 排除{len(excluded)}只")
+            self.logger.info("市值过滤: 排除%s只", len(excluded))
 
         return symbols - excluded
 
@@ -377,7 +376,7 @@ class StockScreener:
         self.stats["excluded_industry"] = len(excluded)
 
         if excluded:
-            self.logger.info(f"行业过滤: 排除{len(excluded)}只")
+            self.logger.info("行业过滤: 排除%s只", len(excluded))
 
         return symbols - excluded
 
@@ -397,7 +396,7 @@ class StockScreener:
                 excluded |= symbols & set(not_included)
 
         if excluded:
-            self.logger.info(f"板块过滤: 排除{len(excluded)}只")
+            self.logger.info("板块过滤: 排除%s只", len(excluded))
 
         return symbols - excluded
 
@@ -408,7 +407,7 @@ class StockScreener:
         excluded = symbols & set(not_in_exchanges)
 
         if excluded:
-            self.logger.info(f"交易所过滤: 排除{len(excluded)}只")
+            self.logger.info("交易所过滤: 排除%s只", len(excluded))
 
         return symbols - excluded
 
@@ -423,10 +422,10 @@ class StockScreener:
                 excluded = symbols - set(kept_symbols)
                 excluded_total |= excluded
 
-                self.logger.info(f"自定义过滤{i + 1}: 排除{len(excluded)}只")
+                self.logger.info("自定义过滤%s: 排除%s只", i + 1, len(excluded))
 
             except Exception as e:
-                self.logger.error(f"自定义过滤{i + 1}执行失败: {e}")
+                self.logger.error("自定义过滤%s执行失败: %s", i + 1, e)
 
         self.stats["excluded_custom"] = len(excluded_total)
 
@@ -436,17 +435,17 @@ class StockScreener:
         """打印筛选摘要"""
         self.logger.info("=" * 60)
         self.logger.info("股票筛选摘要")
-        self.logger.info(f"输入股票数: {self.stats['total_input']}")
-        self.logger.info(f"  - 排除ST股票: {self.stats['excluded_st']}")
-        self.logger.info(f"  - 排除停牌股票: {self.stats['excluded_suspended']}")
-        self.logger.info(f"  - 排除次新股: {self.stats['excluded_new_stocks']}")
-        self.logger.info(f"  - 价格过滤: {self.stats['excluded_price']}")
-        self.logger.info(f"  - 成交量过滤: {self.stats['excluded_volume']}")
-        self.logger.info(f"  - 市值过滤: {self.stats['excluded_market_cap']}")
-        self.logger.info(f"  - 行业过滤: {self.stats['excluded_industry']}")
-        self.logger.info(f"  - 自定义过滤: {self.stats['excluded_custom']}")
-        self.logger.info(f"输出股票数: {self.stats['total_output']}")
-        self.logger.info(f"筛选通过率: {self.stats['total_output'] / self.stats['total_input'] * 100:.1f}%")
+        self.logger.info("输入股票数: %s", self.stats['total_input'])
+        self.logger.info("  - 排除ST股票: %s", self.stats['excluded_st'])
+        self.logger.info("  - 排除停牌股票: %s", self.stats['excluded_suspended'])
+        self.logger.info("  - 排除次新股: %s", self.stats['excluded_new_stocks'])
+        self.logger.info("  - 价格过滤: %s", self.stats['excluded_price'])
+        self.logger.info("  - 成交量过滤: %s", self.stats['excluded_volume'])
+        self.logger.info("  - 市值过滤: %s", self.stats['excluded_market_cap'])
+        self.logger.info("  - 行业过滤: %s", self.stats['excluded_industry'])
+        self.logger.info("  - 自定义过滤: %s", self.stats['excluded_custom'])
+        self.logger.info("输出股票数: %s", self.stats['total_output'])
+        self.logger.info("筛选通过率: %s%", self.stats['total_output'] / self.stats['total_input'] * 100)
         self.logger.info("=" * 60)
 
 

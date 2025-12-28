@@ -93,7 +93,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-                logger.info(f"保存akshare数据成功: {actual_table_name}, {len(processed_data)}条记录")
+                logger.info("保存akshare数据成功: %s, %s条记录", actual_table_name, len(processed_data))
             else:
                 self.monitoring_db.log_operation_result(operation_id, False, 0, "保存失败")
 
@@ -156,7 +156,7 @@ class AkshareDataAccess(IDataAccessLayer):
             processed_data = self._postprocess_akshare_data(data, classification)
 
             self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-            logger.info(f"从akshare获取数据成功: {actual_table_name}, {len(processed_data)}条记录")
+            logger.info("从akshare获取数据成功: %s, %s条记录", actual_table_name, len(processed_data))
 
             return processed_data
 
@@ -233,7 +233,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, len(processed_data))
-                logger.info(f"更新数据成功: {actual_table_name}, {len(processed_data)}条记录")
+                logger.info("更新数据成功: %s, %s条记录", actual_table_name, len(processed_data))
             else:
                 self.monitoring_db.log_operation_result(operation_id, False, 0, "更新失败")
 
@@ -293,7 +293,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
             if success:
                 self.monitoring_db.log_operation_result(operation_id, True, 0)
-                logger.info(f"删除数据成功: {actual_table_name}")
+                logger.info("删除数据成功: %s", actual_table_name)
             else:
                 self.monitoring_db.log_operation_result(operation_id, False, 0, "删除失败")
 
@@ -350,7 +350,7 @@ class AkshareDataAccess(IDataAccessLayer):
 
         if time_since_last_request < self.rate_limit:
             sleep_time = self.rate_limit - time_since_last_request
-            logger.info(f"应用请求频率限制，休眠 {sleep_time:.2f} 秒")
+            logger.info("应用请求频率限制，休眠 %s 秒", sleep_time)
             time.sleep(sleep_time)
 
         self.last_request_time = time.time()
@@ -369,7 +369,7 @@ class AkshareDataAccess(IDataAccessLayer):
             return stock_info
 
         except Exception as e:
-            logger.error(f"获取股票基本信息失败: {e}")
+            logger.error("获取股票基本信息失败: %s", e)
             return pd.DataFrame()
 
     def _process_stock_basic_info(self, stock_info: pd.DataFrame) -> pd.DataFrame:
@@ -434,7 +434,7 @@ class AkshareDataAccess(IDataAccessLayer):
             return kline_data
 
         except Exception as e:
-            logger.error(f"获取日K线数据失败: {e}")
+            logger.error("获取日K线数据失败: %s", e)
             return pd.DataFrame()
 
     def _process_daily_kline_data(self, kline_data: pd.DataFrame, symbol: str) -> pd.DataFrame:
@@ -500,7 +500,7 @@ class AkshareDataAccess(IDataAccessLayer):
             return quote_data
 
         except Exception as e:
-            logger.error(f"获取实时行情数据失败: {e}")
+            logger.error("获取实时行情数据失败: %s", e)
             return pd.DataFrame()
 
     def _process_realtime_quote_data(self, quote_data: pd.DataFrame) -> pd.DataFrame:
@@ -561,11 +561,11 @@ class AkshareDataAccess(IDataAccessLayer):
                 )
             else:
                 # 默认返回空数据
-                logger.warning(f"未实现的通用数据获取: {classification}")
+                logger.warning("未实现的通用数据获取: %s", classification)
                 return pd.DataFrame()
 
         except Exception as e:
-            logger.error(f"获取通用数据失败: {e}")
+            logger.error("获取通用数据失败: %s", e)
             return pd.DataFrame()
 
     def _fetch_technical_indicators(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
@@ -610,7 +610,7 @@ class AkshareDataAccess(IDataAccessLayer):
             return kline_data
 
         except Exception as e:
-            logger.error(f"获取技术指标数据失败: {e}")
+            logger.error("获取技术指标数据失败: %s", e)
             return pd.DataFrame()
 
     def _fetch_quantitative_factors(self, symbol: str, start_date: str = None, end_date: str = None) -> pd.DataFrame:
@@ -655,7 +655,7 @@ class AkshareDataAccess(IDataAccessLayer):
             return kline_data
 
         except Exception as e:
-            logger.error(f"获取量化因子数据失败: {e}")
+            logger.error("获取量化因子数据失败: %s", e)
             return pd.DataFrame()
 
     def _preprocess_akshare_data(self, data: pd.DataFrame, classification: DataClassification) -> pd.DataFrame:

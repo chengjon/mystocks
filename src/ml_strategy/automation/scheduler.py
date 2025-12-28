@@ -20,16 +20,14 @@
 
 import sys
 import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import logging
+import time
 from typing import Dict, List, Optional, Callable, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
-import logging
-import traceback
-import time
 from enum import Enum
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from apscheduler.schedulers.background import BackgroundScheduler
@@ -212,14 +210,14 @@ class TaskScheduler:
             str: 任务ID
         """
         if not task_config.enabled:
-            self.logger.info(f"任务已禁用，跳过添加: {task_config.name}")
+            self.logger.self.logger.info("info")
             return ""
 
         # 保存配置
         self.tasks[task_config.name] = task_config
 
         if not APSCHEDULER_AVAILABLE:
-            self.logger.warning(f"APScheduler不可用，任务仅保存配置: {task_config.name}")
+            self.logger.self.logger.warning("warning")
             return task_config.name
 
         # 创建触发器
@@ -238,9 +236,9 @@ class TaskScheduler:
             max_instances=1,  # 防止重叠
         )
 
-        self.logger.info(f"✓ 任务已添加: {task_config.name}")
-        self.logger.info(f"  触发器: {task_config.trigger_type}")
-        self.logger.info(f"  下次执行: {job.next_run_time}")
+        self.logger.self.logger.info("info")
+        self.logger.self.logger.info("info")
+        self.logger.self.logger.info("info")
 
         return job.id
 
@@ -263,7 +261,7 @@ class TaskScheduler:
 
             # 尝试获取锁
             if not self.job_lock.acquire(task_config.name, timeout=task_config.timeout):
-                self.logger.warning(f"任务已在运行，跳过本次执行: {task_config.name}")
+                self.logger.self.logger.warning("warning")
                 return
 
             # 创建执行记录
@@ -274,7 +272,7 @@ class TaskScheduler:
                 start_time=datetime.now(),
             )
 
-            self.logger.info(f"开始执行任务: {task_config.name}")
+            self.logger.self.logger.info("info")
 
             try:
                 # 执行任务（带重试）
@@ -293,7 +291,7 @@ class TaskScheduler:
                 execution.duration = (execution.end_time - execution.start_time).total_seconds()
 
                 self.stats["successful_executions"] += 1
-                self.logger.info(f"✓ 任务执行成功: {task_config.name} (耗时: {execution.duration:.2f}秒)")
+                self.logger.self.logger.info("info")
 
                 # 成功通知
                 if task_config.notify_on_success and self.notification_manager:
@@ -307,16 +305,14 @@ class TaskScheduler:
                 self._trigger_next_tasks(task_config.next_tasks)
 
             except Exception as e:
-                # 任务失败
+                self.logger.error("任务执行异常，已记录")
                 execution.status = TaskStatus.FAILED
                 execution.error_message = str(e)
                 execution.end_time = datetime.now()
                 execution.duration = (execution.end_time - execution.start_time).total_seconds()
 
                 self.stats["failed_executions"] += 1
-                self.logger.error(f"✗ 任务执行失败: {task_config.name}")
-                self.logger.error(f"  错误: {e}")
-                self.logger.error(f"  堆栈: {traceback.format_exc()}")
+                self.logger.error("error")
 
                 # 失败通知
                 if task_config.notify_on_failure and self.notification_manager:
@@ -358,7 +354,7 @@ class TaskScheduler:
                 result = func(**kwargs)
 
                 if attempt > 0:
-                    self.logger.info(f"  重试成功 (第{attempt}次)")
+                    self.logger.self.logger.info("info")
 
                 return result
 
@@ -371,13 +367,13 @@ class TaskScheduler:
                     delay = retry_delay * (2**attempt)
                     execution.status = TaskStatus.RETRYING
 
-                    self.logger.warning(f"  任务失败，{delay}秒后重试 (第{attempt + 1}/{max_retries}次)")
+                    self.logger.self.logger.warning("warning")
                     self.stats["total_retries"] += 1
 
                     time.sleep(delay)
                 else:
                     # 所有重试都失败
-                    self.logger.error(f"  所有重试均失败 ({max_retries}次)")
+                    self.logger.self.logger.error("error")
                     raise
 
         raise last_error
@@ -386,7 +382,7 @@ class TaskScheduler:
         """触发后续任务"""
         for task_name in next_task_names:
             if task_name in self.tasks:
-                self.logger.info(f"触发后续任务: {task_name}")
+                self.logger.self.logger.info("info")
                 task_config = self.tasks[task_name]
                 # 立即执行一次
                 if self.scheduler:
@@ -400,9 +396,9 @@ class TaskScheduler:
     def _job_listener(self, event):
         """APScheduler事件监听器"""
         if event.exception:
-            self.logger.error(f"任务异常: {event.job_id}")
+            self.logger.self.logger.error("error")
         else:
-            self.logger.debug(f"任务完成: {event.job_id}")
+            self.logger.self.logger.debug("debug")
 
     def _log_to_monitoring(self, execution: TaskExecution):
         """记录到监控数据库"""
@@ -419,7 +415,7 @@ class TaskScheduler:
                     error_message=execution.error_message,
                 )
         except Exception as e:
-            self.logger.error(f"记录监控日志失败: {e}")
+            self.logger.self.logger.error("error")
 
     def start(self):
         """启动调度器"""
@@ -427,7 +423,7 @@ class TaskScheduler:
             self.scheduler.start()
             self.logger.info("=" * 70)
             self.logger.info("调度器已启动")
-            self.logger.info(f"已加载任务数: {len(self.tasks)}")
+            self.logger.self.logger.info("info")
             self.logger.info("=" * 70)
         else:
             self.logger.warning("调度器未启动（APScheduler不可用）")
@@ -477,13 +473,13 @@ class TaskScheduler:
         """暂停任务"""
         if APSCHEDULER_AVAILABLE and self.scheduler:
             self.scheduler.pause_job(task_name)
-            self.logger.info(f"任务已暂停: {task_name}")
+            self.logger.self.logger.info("info")
 
     def resume_task(self, task_name: str):
         """恢复任务"""
         if APSCHEDULER_AVAILABLE and self.scheduler:
             self.scheduler.resume_job(task_name)
-            self.logger.info(f"任务已恢复: {task_name}")
+            self.logger.self.logger.info("info")
 
     def remove_task(self, task_name: str):
         """移除任务"""
@@ -492,7 +488,7 @@ class TaskScheduler:
 
         if APSCHEDULER_AVAILABLE and self.scheduler:
             self.scheduler.remove_job(task_name)
-            self.logger.info(f"任务已移除: {task_name}")
+            self.logger.self.logger.info("info")
 
     def list_tasks(self) -> List[Dict]:
         """列出所有任务"""

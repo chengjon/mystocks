@@ -67,7 +67,7 @@ class StatisticalOptimizer:
             }
 
         except Exception as e:
-            logger.error(f"Error in statistical optimization: {str(e)}")
+            logger.error("Error in statistical optimization: %s", str(e))
             return {
                 "recommended_threshold": current_threshold,
                 "confidence_score": 0.0,

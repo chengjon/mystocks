@@ -67,7 +67,7 @@ class KlineDataService(BaseTdxAdapter):
             end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
             # 获取日线数据
-            logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
+            logger.info("获取股票日线数据: %s %s ~ %s", symbol, start_date, end_date)
             data = tdx_api.get_bars(
                 code=symbol,
                 start_date=start_dt,
@@ -116,11 +116,11 @@ class KlineDataService(BaseTdxAdapter):
             df["market"] = "上交所" if market_code == 1 else "深交所"
             df["adjust"] = adjust
 
-            logger.info(f"成功获取股票日线数据: {symbol}, 共 {len(df)} 条记录")
+            logger.info("成功获取股票日线数据: %s, 共 %s 条记录", symbol, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取股票日线数据失败: {e}")
+            logger.error("获取股票日线数据失败: %s", e)
             raise
 
     def get_index_daily(
@@ -160,7 +160,7 @@ class KlineDataService(BaseTdxAdapter):
             end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
             # 获取指数日线数据
-            logger.info(f"获取指数日线数据: {index_code} {start_date} ~ {end_date}")
+            logger.info("获取指数日线数据: %s %s ~ %s", index_code, start_date, end_date)
             data = tdx_api.get_index_bars(
                 code=index_code,
                 start_date=start_dt,
@@ -196,11 +196,11 @@ class KlineDataService(BaseTdxAdapter):
             df["symbol"] = index_code
             df["security_type"] = "index"
 
-            logger.info(f"成功获取指数日线数据: {index_code}, 共 {len(df)} 条记录")
+            logger.info("成功获取指数日线数据: %s, 共 %s 条记录", index_code, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取指数日线数据失败: {e}")
+            logger.error("获取指数日线数据失败: %s", e)
             raise
 
     def get_stock_kline(
@@ -282,7 +282,7 @@ class KlineDataService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取股票K线数据失败: {e}")
+            logger.error("获取股票K线数据失败: %s", e)
             return {
                 "symbol": symbol,
                 "period": period,
@@ -366,7 +366,7 @@ class KlineDataService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取指数K线数据失败: {e}")
+            logger.error("获取指数K线数据失败: %s", e)
             return {
                 "index_code": index_code,
                 "period": period,
@@ -415,7 +415,7 @@ class KlineDataService(BaseTdxAdapter):
             return resampled
 
         except Exception as e:
-            logger.error(f"重新采样K线数据失败: {e}")
+            logger.error("重新采样K线数据失败: %s", e)
             return pd.DataFrame()
 
     def get_minute_kline(
@@ -454,7 +454,7 @@ class KlineDataService(BaseTdxAdapter):
             frequency = period_mapping[period]
 
             # 获取分钟线数据
-            logger.info(f"获取股票分钟K线数据: {symbol} {period} {count}条")
+            logger.info("获取股票分钟K线数据: %s %s %s条", symbol, period, count)
             data = tdx_api.get_minute_bars(
                 code=symbol,
                 count=count,
@@ -494,9 +494,9 @@ class KlineDataService(BaseTdxAdapter):
             df["period"] = period
             df["adjust"] = adjust
 
-            logger.info(f"成功获取股票分钟K线数据: {symbol}, 共 {len(df)} 条记录")
+            logger.info("成功获取股票分钟K线数据: %s, 共 %s 条记录", symbol, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取股票分钟K线数据失败: {e}")
+            logger.error("获取股票分钟K线数据失败: %s", e)
             raise

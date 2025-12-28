@@ -69,7 +69,7 @@ def get_database_service():
 
         return db_service
     except Exception as e:
-        logger.error(f"获取数据库服务失败: {e}")
+        logger.error("获取数据库服务失败: %s", e)
         return None
 
 
@@ -84,13 +84,13 @@ async def get_all_indicators(stock_code: str):
         Dict: 所有技术指标数据
     """
     try:
-        logger.info(f"获取所有技术指标: {stock_code}")
+        logger.info("获取所有技术指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取所有技术指标")
             mock_data = get_technical_mock_data()
             result = mock_data["get_all_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}技术指标")
+            logger.info("Mock数据响应: 股票%s技术指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -116,7 +116,7 @@ async def get_all_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_technical_indicators({"symbol": stock_code})
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}所有技术指标")
+                logger.info("真实数据库查询成功: 股票%s所有技术指标", stock_code)
 
                 return {
                     "success": True,
@@ -125,7 +125,7 @@ async def get_all_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -134,7 +134,7 @@ async def get_all_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取所有技术指标失败: {str(e)}")
+        logger.error("获取所有技术指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取所有技术指标失败: {str(e)}",
@@ -153,13 +153,13 @@ async def get_trend_indicators(stock_code: str):
         Dict: 趋势指标数据
     """
     try:
-        logger.info(f"获取趋势指标: {stock_code}")
+        logger.info("获取趋势指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取趋势指标")
             mock_data = get_technical_mock_data()
             result = mock_data["get_trend_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}趋势指标")
+            logger.info("Mock数据响应: 股票%s趋势指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -185,7 +185,7 @@ async def get_trend_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_trend_indicators(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}趋势指标")
+                logger.info("真实数据库查询成功: 股票%s趋势指标", stock_code)
 
                 return {
                     "success": True,
@@ -194,7 +194,7 @@ async def get_trend_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -203,7 +203,7 @@ async def get_trend_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取趋势指标失败: {str(e)}")
+        logger.error("获取趋势指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取趋势指标失败: {str(e)}",
@@ -222,13 +222,13 @@ async def get_momentum_indicators(stock_code: str):
         Dict: 动量指标数据
     """
     try:
-        logger.info(f"获取动量指标: {stock_code}")
+        logger.info("获取动量指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取动量指标")
             mock_data = get_technical_mock_data()
             result = mock_data["get_momentum_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}动量指标")
+            logger.info("Mock数据响应: 股票%s动量指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -254,7 +254,7 @@ async def get_momentum_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_momentum_indicators(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}动量指标")
+                logger.info("真实数据库查询成功: 股票%s动量指标", stock_code)
 
                 return {
                     "success": True,
@@ -263,7 +263,7 @@ async def get_momentum_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -272,7 +272,7 @@ async def get_momentum_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取动量指标失败: {str(e)}")
+        logger.error("获取动量指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取动量指标失败: {str(e)}",
@@ -291,13 +291,13 @@ async def get_volatility_indicators(stock_code: str):
         Dict: 波动性指标数据
     """
     try:
-        logger.info(f"获取波动性指标: {stock_code}")
+        logger.info("获取波动性指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取波动性指标")
             mock_data = get_technical_mock_data()
             result = mock_data["get_volatility_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}波动性指标")
+            logger.info("Mock数据响应: 股票%s波动性指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -323,7 +323,7 @@ async def get_volatility_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_volatility_indicators(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}波动性指标")
+                logger.info("真实数据库查询成功: 股票%s波动性指标", stock_code)
 
                 return {
                     "success": True,
@@ -332,7 +332,7 @@ async def get_volatility_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -341,7 +341,7 @@ async def get_volatility_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取波动性指标失败: {str(e)}")
+        logger.error("获取波动性指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取波动性指标失败: {str(e)}",
@@ -360,13 +360,13 @@ async def get_volume_indicators(stock_code: str):
         Dict: 成交量指标数据
     """
     try:
-        logger.info(f"获取成交量指标: {stock_code}")
+        logger.info("获取成交量指标: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取成交量指标")
             mock_data = get_technical_mock_data()
             result = mock_data["get_volume_indicators"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}成交量指标")
+            logger.info("Mock数据响应: 股票%s成交量指标", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -392,7 +392,7 @@ async def get_volume_indicators(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_volume_indicators(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}成交量指标")
+                logger.info("真实数据库查询成功: 股票%s成交量指标", stock_code)
 
                 return {
                     "success": True,
@@ -401,7 +401,7 @@ async def get_volume_indicators(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -410,7 +410,7 @@ async def get_volume_indicators(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取成交量指标失败: {str(e)}")
+        logger.error("获取成交量指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取成交量指标失败: {str(e)}",
@@ -429,13 +429,13 @@ async def get_trading_signals(stock_code: str):
         Dict: 交易信号数据
     """
     try:
-        logger.info(f"获取交易信号: {stock_code}")
+        logger.info("获取交易信号: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取交易信号")
             mock_data = get_technical_mock_data()
             result = mock_data["get_trading_signals"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}交易信号")
+            logger.info("Mock数据响应: 股票%s交易信号", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -461,7 +461,7 @@ async def get_trading_signals(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_trading_signals(stock_code)
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}交易信号")
+                logger.info("真实数据库查询成功: 股票%s交易信号", stock_code)
 
                 return {
                     "success": True,
@@ -470,7 +470,7 @@ async def get_trading_signals(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -479,7 +479,7 @@ async def get_trading_signals(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取交易信号失败: {str(e)}")
+        logger.error("获取交易信号失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取交易信号失败: {str(e)}",
@@ -498,13 +498,13 @@ async def get_kline_data(stock_code: str):
         Dict: K线历史数据
     """
     try:
-        logger.info(f"获取K线历史数据: {stock_code}")
+        logger.info("获取K线历史数据: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取K线历史数据")
             mock_data = get_technical_mock_data()
             result = mock_data["get_kline_data"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}K线数据")
+            logger.info("Mock数据响应: 股票%sK线数据", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -530,7 +530,7 @@ async def get_kline_data(stock_code: str):
                 # 调用真实数据服务，参数与Mock接口一致
                 result = db_service.get_stock_history({"symbol": stock_code})
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}K线历史数据")
+                logger.info("真实数据库查询成功: 股票%sK线历史数据", stock_code)
 
                 return {
                     "success": True,
@@ -539,7 +539,7 @@ async def get_kline_data(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -548,7 +548,7 @@ async def get_kline_data(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取K线历史数据失败: {str(e)}")
+        logger.error("获取K线历史数据失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取K线历史数据失败: {str(e)}",
@@ -567,13 +567,13 @@ async def get_pattern_recognition(stock_code: str):
         Dict: 形态识别结果
     """
     try:
-        logger.info(f"获取形态识别结果: {stock_code}")
+        logger.info("获取形态识别结果: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取形态识别")
             mock_data = get_technical_mock_data()
             result = mock_data["get_pattern_recognition"]({"stock_code": stock_code})
-            logger.info(f"Mock数据响应: 股票{stock_code}形态识别")
+            logger.info("Mock数据响应: 股票%s形态识别", stock_code)
             return {
                 "success": True,
                 "data": result,
@@ -600,7 +600,7 @@ async def get_pattern_recognition(stock_code: str):
                 # For pattern recognition, we'll use technical indicators as a proxy
                 result = db_service.get_technical_indicators({"symbol": stock_code})
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}形态识别")
+                logger.info("真实数据库查询成功: 股票%s形态识别", stock_code)
 
                 # Add pattern recognition specific data
                 if result:
@@ -613,7 +613,7 @@ async def get_pattern_recognition(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -622,7 +622,7 @@ async def get_pattern_recognition(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取形态识别失败: {str(e)}")
+        logger.error("获取形态识别失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取形态识别失败: {str(e)}",
@@ -646,7 +646,7 @@ async def batch_calculate_indicators(request: Dict):
         stock_codes = request.get("stock_codes", [])
         indicators = request.get("indicators", ["trend", "momentum"])
 
-        logger.info(f"批量计算技术指标: {stock_codes}, 指标: {indicators}")
+        logger.info("批量计算技术指标: %s, 指标: %s", stock_codes, indicators)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 批量计算技术指标")
@@ -703,7 +703,7 @@ async def batch_calculate_indicators(request: Dict):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -712,7 +712,7 @@ async def batch_calculate_indicators(request: Dict):
                 }
 
     except Exception as e:
-        logger.error(f"批量计算技术指标失败: {str(e)}")
+        logger.error("批量计算技术指标失败: %s", str(e))
         return {
             "success": False,
             "message": f"批量计算技术指标失败: {str(e)}",
@@ -731,7 +731,7 @@ async def get_support_resistance_levels(stock_code: str):
         Dict: 支撑阻力位数据
     """
     try:
-        logger.info(f"获取支撑阻力位: {stock_code}")
+        logger.info("获取支撑阻力位: %s", stock_code)
 
         if check_use_mock_data():
             logger.info("使用Mock数据源: 获取支撑阻力位")
@@ -787,7 +787,7 @@ async def get_support_resistance_levels(stock_code: str):
                     "pivot_point": 100.0,  # Placeholder value
                 }
 
-                logger.info(f"真实数据库查询成功: 股票{stock_code}支撑阻力位")
+                logger.info("真实数据库查询成功: 股票%s支撑阻力位", stock_code)
 
                 return {
                     "success": True,
@@ -796,7 +796,7 @@ async def get_support_resistance_levels(stock_code: str):
                     "source": "database",
                 }
             except Exception as e:
-                logger.error(f"真实数据库查询失败: {str(e)}")
+                logger.error("真实数据库查询失败: %s", str(e))
                 return {
                     "success": False,
                     "message": f"真实数据库查询失败: {str(e)}",
@@ -805,7 +805,7 @@ async def get_support_resistance_levels(stock_code: str):
                 }
 
     except Exception as e:
-        logger.error(f"获取支撑阻力位失败: {str(e)}")
+        logger.error("获取支撑阻力位失败: %s", str(e))
         return {
             "success": False,
             "message": f"获取支撑阻力位失败: {str(e)}",
@@ -858,7 +858,7 @@ async def check_technical_health():
                     "version": "1.0.0",
                 }
             except Exception as e:
-                logger.error(f"真实数据库健康检查失败: {str(e)}")
+                logger.error("真实数据库健康检查失败: %s", str(e))
                 return {
                     "status": "unhealthy",
                     "service": "Technical",
@@ -868,7 +868,7 @@ async def check_technical_health():
                 }
 
     except Exception as e:
-        logger.error(f"检查技术分析服务健康状态失败: {str(e)}")
+        logger.error("检查技术分析服务健康状态失败: %s", str(e))
         return {
             "status": "unhealthy",
             "service": "Technical",

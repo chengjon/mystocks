@@ -69,9 +69,9 @@ class Hook:
         """Execute hook"""
         try:
             self.handler(context)
-            logger.debug(f"✅ Hook executed: {self.name} ({self.type.value})")
+            logger.debug("✅ Hook executed: %s (%s)", self.name, self.type.value)
         except Exception as e:
-            logger.error(f"❌ Hook failed: {self.name} ({self.type.value}): {e}")
+            logger.error("❌ Hook failed: %s (%s): %s", self.name, self.type.value, e)
             raise
 
 
@@ -126,7 +126,7 @@ class TestHooksManager:
         # Sort by priority (descending)
         self.hooks[hook_type.value].sort(key=lambda h: h.priority, reverse=True)
 
-        logger.info(f"✅ Registered hook: {name} ({hook_type.value})")
+        logger.info("✅ Registered hook: %s (%s)", name, hook_type.value)
 
     def before_all(self, handler: Callable, name: str = "", description: str = "") -> None:
         """Register beforeAll hook"""
@@ -161,7 +161,7 @@ class TestHooksManager:
             context: Hook context
         """
         hooks = self.hooks.get(hook_type.value, [])
-        logger.debug(f"⚙️  Executing {len(hooks)} hooks of type {hook_type.value}")
+        logger.debug("⚙️  Executing %s hooks of type %s", len(hooks), hook_type.value)
 
         for hook in hooks:
             try:
@@ -211,7 +211,7 @@ class TestHooksManager:
         """Export execution log to JSON"""
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(self.hook_execution_log, f, ensure_ascii=False, indent=2)
-        logger.info(f"✅ Exported hook execution log to {output_path}")
+        logger.info("✅ Exported hook execution log to %s", output_path)
 
 
 # Common hook implementations for data setup/cleanup
@@ -221,7 +221,7 @@ def create_test_user_hook(context: HookContext) -> None:
     """Create test user for API testing"""
     context.test_state["test_user_id"] = "test_user_123"
     context.test_state["test_token"] = "test_token_abc"
-    logger.debug(f"✅ Created test user for {context.test_id}")
+    logger.debug("✅ Created test user for %s", context.test_id)
 
 
 def cleanup_test_data_hook(context: HookContext) -> None:
@@ -229,7 +229,7 @@ def cleanup_test_data_hook(context: HookContext) -> None:
     # This would typically delete test data from database
     test_user_id = context.test_state.get("test_user_id")
     if test_user_id:
-        logger.debug(f"✅ Cleaned up test data for user {test_user_id}")
+        logger.debug("✅ Cleaned up test data for user %s", test_user_id)
 
 
 def add_auth_headers_hook(context: HookContext) -> None:
@@ -242,11 +242,11 @@ def add_auth_headers_hook(context: HookContext) -> None:
         "Authorization": f"Bearer {test_token}",
         "Content-Type": "application/json",
     }
-    logger.debug(f"✅ Added auth headers to {context.endpoint_method} {context.endpoint_path}")
+    logger.debug("✅ Added auth headers to %s %s", context.endpoint_method, context.endpoint_path)
 
 
 def validate_response_structure_hook(context: HookContext) -> None:
     """Validate response structure matches specification"""
     if not context.response_data:
         raise ValueError(f"Empty response for {context.endpoint_method} {context.endpoint_path}")
-    logger.debug(f"✅ Validated response structure for {context.test_id}")
+    logger.debug("✅ Validated response structure for %s", context.test_id)

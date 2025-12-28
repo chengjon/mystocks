@@ -266,19 +266,19 @@ def handle_errors(
                         # 计算延迟
                         delay = delay_strategy(attempt)
                         logger.warning(
-                            f"Retrying {func.__name__} in {delay:.2f}s (attempt {attempt + 1}/{max_attempts})"
+                            "Retrying %s in %ss (attempt %s/%s)", func.__name__, delay, attempt + 1, max_attempts
                         )
                         time.sleep(delay)
                         continue
                     else:
                         # 不重试，使用回退值或抛出异常
                         if fallback_value is not None:
-                            logger.warning(f"Using fallback value for {func.__name__}")
+                            logger.warning("Using fallback value for %s", func.__name__)
                             return fallback_value
                         elif reraise:
                             raise
                         else:
-                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
+                            logger.error("Failed to execute %s after %s attempts", func.__name__, max_attempts)
                             return None
 
             return None
@@ -300,19 +300,19 @@ def handle_errors(
                         # 计算延迟
                         delay = delay_strategy(attempt)
                         logger.warning(
-                            f"Retrying {func.__name__} in {delay:.2f}s (attempt {attempt + 1}/{max_attempts})"
+                            "Retrying %s in %ss (attempt %s/%s)", func.__name__, delay, attempt + 1, max_attempts
                         )
                         await asyncio.sleep(delay)
                         continue
                     else:
                         # 不重试，使用回退值或抛出异常
                         if fallback_value is not None:
-                            logger.warning(f"Using fallback value for {func.__name__}")
+                            logger.warning("Using fallback value for %s", func.__name__)
                             return fallback_value
                         elif reraise:
                             raise
                         else:
-                            logger.error(f"Failed to execute {func.__name__} after {max_attempts} attempts")
+                            logger.error("Failed to execute %s after %s attempts", func.__name__, max_attempts)
                             return None
 
             return None
