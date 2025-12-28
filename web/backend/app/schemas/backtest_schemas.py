@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Any
 from datetime import date, datetime
 from pydantic import BaseModel, Field
 
-from web.backend.app.mock.unified_mock_data import get_backtest_data
+from app.mock.unified_mock_data import get_backtest_data
 
 
 def _get_request_example():

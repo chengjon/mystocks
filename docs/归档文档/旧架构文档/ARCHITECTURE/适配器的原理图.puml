@@ -1,0 +1,224 @@
+@startuml MyStocks数据管理系统架构图
+allowmixing
+skinparam packageStyle rectangle
+
+!define PRIMARY_COLOR #1E88E5
+!define SECONDARY_COLOR #43A047
+!define ACCENT_COLOR #FB8C00
+!define UTIL_COLOR #8E24AA
+
+package "用户层 (应用程序)" <<Rectangle,PRIMARY_COLOR>> {
+  class "策略程序" as UserApp {
+    + main()
+    + run_strategy()
+    + analyze_data()
+  }
+  
+  class "主程序入口" as MainEntry {
+    - manager: UnifiedDataManager
+    + main()
+    + demo_akshare()
+    + demo_baostock()
+    + compare_sources()
+  }
+}
+
+package "核心管理层" <<Rectangle,SECONDARY_COLOR>> {
+  class "统一数据管理器" as UnifiedDataManager {
+    - sources: Dict[str, IDataSource]
+    - default_source: str = 'akshare'
+    --
+    + set_default_source(source_type: str)
+    + get_source(source_type: str) -> IDataSource
+    + get_stock_daily(symbol, start_date, end_date, days, source_type) -> DataFrame
+    + get_index_daily(symbol, start_date, end_date, days, source_type) -> DataFrame
+    + get_stock_basic(symbol, source_type) -> Dict
+    + get_index_components(symbol, source_type) -> List[str]
+    + compare_data_sources(symbol, start_date, end_date)
+  }
+  
+  class "数据源工厂" as DataSourceFactory {
+    - _source_types: Dict[str, Type[IDataSource]]
+    --
+    + register_source(source_type: str, source_class: Type)
+    + register_multiple_sources(sources: Dict)
+    + get_available_sources() -> List[str]
+    + unregister_source(source_type: str) -> bool
+    + create_source(source_type: str) -> IDataSource
+  }
+}
+
+package "接口定义层" <<Rectangle,ACCENT_COLOR>> {
+  interface "统一数据接口" as IDataSource {
+    + get_stock_daily(symbol: str, start_date: str, end_date: str) -> DataFrame
+    + get_index_daily(symbol: str, start_date: str, end_date: str) -> DataFrame
+    + get_stock_basic(symbol: str) -> Dict
+    + get_index_components(symbol: str) -> List[str]
+    + get_real_time_data(symbol: str) -> Union[Dict, str]
+    + get_market_calendar(start_date: str, end_date: str) -> Union[DataFrame, str]
+    + get_financial_data(symbol: str, period: str) -> Union[DataFrame, str]
+    + get_news_data(symbol: Optional[str], limit: int) -> Union[List[Dict], str]
+  }
+}
+
+package "数据源适配器层" <<Rectangle,SECONDARY_COLOR>> {
+  class "AKShare适配器" as AkshareAdapter {
+    - api_timeout: int
+    - max_retries: int
+    --
+    + get_stock_daily(symbol, start_date, end_date) -> DataFrame
+    + get_index_daily(symbol, start_date, end_date) -> DataFrame
+    + get_stock_basic(symbol) -> Dict
+    + get_index_components(symbol) -> List[str]
+    + get_real_time_data(symbol) -> Union[Dict, str]
+    + get_market_calendar(start_date, end_date) -> Union[DataFrame, str]
+    + get_financial_data(symbol, period) -> Union[DataFrame, str]
+    + get_news_data(symbol, limit) -> Union[List[Dict], str]
+    - _retry_api_call(func)
+    - _process_index_data(df) -> DataFrame
+  }
+
+  class "Baostock适配器" as BaostockAdapter {
+    - session
+    - is_connected: bool
+    --
+    + connect() -> bool
+    + disconnect()
+    + get_stock_daily(symbol, start_date, end_date) -> DataFrame
+    + get_index_daily(symbol, start_date, end_date) -> DataFrame
+    + get_stock_basic(symbol) -> Dict
+    + get_index_components(symbol) -> List[str]
+    + get_real_time_data(symbol) -> Union[Dict, str]
+    + get_market_calendar(start_date, end_date) -> Union[DataFrame, str]
+    + get_financial_data(symbol, period) -> Union[DataFrame, str]
+    + get_news_data(symbol, limit) -> Union[List[Dict], str]
+  }
+  
+  class "Tushare适配器" as TushareAdapter {
+    - api_token: str
+    + get_stock_daily(...) -> DataFrame
+    + ...
+  }
+}
+
+package "工具层" <<Rectangle,UTIL_COLOR>> {
+  class "列名映射器" as ColumnMapper {
+    + STANDARD_EN_MAPPING: Dict
+    + STANDARD_CN_MAPPING: Dict
+    --
+    + standardize_columns(df, target_lang, custom_mapping) -> DataFrame
+    + to_english(df, custom_mapping) -> DataFrame
+    + to_chinese(df, custom_mapping) -> DataFrame
+    + get_standard_columns(data_type, lang) -> List
+    + validate_columns(df, required_columns, strict) -> Tuple
+    + add_custom_mapping(custom_mapping, target_lang)
+  }
+  
+  class "代码格式化工具" as SymbolUtils {
+    + normalize_stock_code(code) -> str
+    + get_stock_exchange(code) -> str
+    + format_stock_code_for_source(code, source_type) -> str
+    + format_index_code_for_source(code, source_type) -> str
+    + normalize_index_code(code) -> str
+    + is_valid_stock_code(code) -> bool
+  }
+  
+  class "日期处理工具" as DateUtils {
+    + normalize_date(date) -> str
+    + get_date_range(start_date, end_date, days) -> Tuple
+    + is_trading_day(date) -> bool
+  }
+}
+
+package "外部数据源" <<Rectangle,#E0E0E0>> {
+  class "AKShare库" as AkshareAPI {
+    + stock_zh_a_hist()
+    + stock_zh_a_spot()
+    + stock_zh_index_daily()
+    + index_zh_a_hist()
+    + ...
+  }
+  
+  class "Baostock库" as BaostockAPI {
+    + login()
+    + logout()
+    + query_history_k_data_plus()
+    + query_stock_basic()
+    + ...
+  }
+  
+  class "Tushare库" as TushareAPI {
+    + daily()
+    + stock_basic()
+    + index_daily()
+    + ...
+  }
+}
+
+' 依赖关系
+UserApp --> UnifiedDataManager
+MainEntry --> UnifiedDataManager
+
+UnifiedDataManager --> DataSourceFactory : 获取数据源实例
+UnifiedDataManager --> SymbolUtils : 标准化代码格式
+UnifiedDataManager --> DateUtils : 处理日期
+
+DataSourceFactory --> IDataSource : 创建实例
+
+IDataSource <|.. AkshareAdapter : 实现
+IDataSource <|.. BaostockAdapter : 实现
+IDataSource <|.. TushareAdapter : 实现
+
+AkshareAdapter --> AkshareAPI : 调用
+AkshareAdapter --> ColumnMapper : 标准化列名
+AkshareAdapter --> SymbolUtils : 格式化代码
+
+BaostockAdapter --> BaostockAPI : 调用
+BaostockAdapter --> ColumnMapper : 标准化列名
+BaostockAdapter --> SymbolUtils : 格式化代码
+
+TushareAdapter --> TushareAPI : 调用
+TushareAdapter --> ColumnMapper : 标准化列名
+
+' 数据流注释
+note top of UserApp
+  <b>用户程序调用流程：</b>
+  1. 创建UnifiedDataManager实例
+  2. 调用get_stock_daily()等方法
+  3. 接收标准化的DataFrame
+end note
+
+note right of UnifiedDataManager
+  <b>核心协调功能：</b>
+  • 管理数据源实例生命周期
+  • 提供统一的数据获取接口
+  • 处理代码和日期格式标准化
+  • 支持数据源比较和切换
+  • 缓存数据源实例提高性能
+end note
+
+note bottom of DataSourceFactory
+  <b>工厂模式特性：</b>
+  • 动态注册新数据源
+  • 运行时创建数据源实例
+  • 隐藏具体实现细节
+  • 支持扩展性设计
+end note
+
+note left of ColumnMapper
+  <b>列名标准化：</b>
+  • 中英文列名映射
+  • 自动识别常见格式
+  • 支持自定义映射规则
+  • 确保输出格式一致
+end note
+
+note bottom of AkshareAdapter
+  <b>适配器实现特点：</b>
+  • 隐藏第三方API复杂性
+  • 实现重试机制和错误处理
+  • 统一返回格式
+  • 支持多种代码格式输入
+end note
+
+@enduml

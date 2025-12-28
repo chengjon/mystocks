@@ -1,0 +1,40 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  trace_idle_period: 10s
+  max_block_duration: 5m
+  flush_check_period: 10s
+
+compactor:
+  compaction:
+    block_retention: 24h
+    compaction_window: 1h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /data/tempo/traces
+    pool:
+      max_workers: 10
+      queue_depth: 1000
+
+query_frontend:
+  search:
+    max_duration: 72h
