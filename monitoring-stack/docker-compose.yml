@@ -1,13 +1,15 @@
-# MyStocks 监控栈 - Prometheus + Grafana
-# 用于展示 Phase 2.4 实现的健康检查和性能指标
+# MyStocks 监控栈 - Prometheus + Grafana + Loki + Tempo
+# 用于展示 Phase 6 实现的完整监控系统
 #
 # 启动命令: docker-compose up -d
 # 访问地址:
-#   - Prometheus: http://${PROMETHEUS_HOST}:${PROMETHEUS_PORT}
-#   - Grafana: http://${GRAFANA_HOST}:${GRAFANA_PORT}
-#   - AlertManager: http://${ALERTMANAGER_HOST}:${ALERTMANAGER_PORT}
+#   - Prometheus: http://localhost:9090
+#   - Grafana: http://localhost:3000
+#   - Loki: http://localhost:3100
+#   - Tempo: http://localhost:3200
+#   - Node Exporter: http://localhost:9100
 #
-# 环境变量配置文件: .env
+# 环境变量配置文件: .env.monitoring
 
 version: "3.8"
 
@@ -21,7 +23,8 @@ services:
       - "${PROMETHEUS_PORT:-9090}:9090"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ${PROMETHEUS_DATA_VOLUME:-./data/prometheus}:/prometheus
+      - ./config/rules:/etc/prometheus/rules:ro
+      - /data/docker/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -49,7 +52,7 @@ services:
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
       - GF_LOG_LEVEL=${GRAFANA_LOG_LEVEL:-info}
     volumes:
-      - ${GRAFANA_DATA_VOLUME:-./data/grafana}:/var/lib/grafana
+      - /data/docker/grafana:/var/lib/grafana
       - ./provisioning:/etc/grafana/provisioning:ro
     networks:
       - mystocks-monitoring
@@ -57,20 +60,20 @@ services:
       - prometheus
 
   # ==================== AlertManager (可选) ====================
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: ${ALERTMANAGER_CONTAINER_NAME:-mystocks-alertmanager}
-    restart: unless-stopped
-    ports:
-      - "${ALERTMANAGER_PORT:-9093}:9093"
-    volumes:
-      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-      - ${ALERTMANAGER_DATA_VOLUME:-./data/alertmanager}:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-    networks:
-      - mystocks-monitoring
+  # alertmanager:
+  #   image: prom/alertmanager:latest
+  #   container_name: ${ALERTMANAGER_CONTAINER_NAME:-mystocks-alertmanager}
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${ALERTMANAGER_PORT:-9093}:9093"
+  #   volumes:
+  #     - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+  #     - ${ALERTMANAGER_DATA_VOLUME:-./data/alertmanager}:/alertmanager
+  #   command:
+  #     - '--config.file=/etc/alertmanager/alertmanager.yml'
+  #     - '--storage.path=/alertmanager'
+  #   networks:
+  #     - mystocks-monitoring
 
   # ==================== Node Exporter (系统指标) ====================
   node_exporter:
@@ -82,12 +85,43 @@ services:
     command:
       - '--path.procfs=/proc'
       - '--path.sysfs=/sys'
-      # 禁用需要根目录挂载的收集器
-      - '--no-collector.filesystem.mounted'
+    networks:
+      - mystocks-monitoring
+
+  # ==================== Loki (日志聚合) ====================
+  loki:
+    image: grafana/loki:latest
+    container_name: ${LOKI_CONTAINER_NAME:-mystocks-loki}
+    restart: unless-stopped
+    ports:
+      - "${LOKI_PORT:-3100}:3100"
+      - "${LOKI_GRPC_PORT:-9096}:9096"
+    volumes:
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - /data/docker/loki:/data/loki
+      - /data/docker/loki/compactor:/var/loki
+    command:
+      - '-config.file=/etc/loki/local-config.yaml'
+    networks:
+      - mystocks-monitoring
+
+  # ==================== Tempo (分布式追踪) ====================
+  tempo:
+    image: grafana/tempo:latest
+    container_name: ${TEMPO_CONTAINER_NAME:-mystocks-tempo}
+    restart: unless-stopped
+    ports:
+      - "${TEMPO_PORT:-3200}:3200"
+      - "${TEMPO_OTLP_GRPC_PORT:-4317}:4317"
+      - "${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
+    volumes:
+      - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
+      - /data/docker/tempo:/data/tempo
+    command:
+      - '-config.file=/etc/tempo-config.yaml'
     networks:
       - mystocks-monitoring
 
 networks:
   mystocks-monitoring:
-    name: mystocks-monitoring
-    driver: bridge
+    external: true

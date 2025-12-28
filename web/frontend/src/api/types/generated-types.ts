@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-27T02:25:42.629223
+// Generated at: 2025-12-27T19:53:18.200752
 
 // API Response Types
 export interface APIResponse {

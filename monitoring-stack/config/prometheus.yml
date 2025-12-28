@@ -38,7 +38,7 @@ scrape_configs:
           service: 'mystocks-api'
           component: 'backend'
 
-    metrics_path: '/api/metrics'
+    metrics_path: '/metrics'
     scrape_interval: 15s
 
     # 健康检查端点

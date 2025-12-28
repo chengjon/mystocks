@@ -1,0 +1,176 @@
+# MyStocks Prometheus Alert Rules
+# 告警规则定义
+
+groups:
+  # API 性能告警
+  - name: api_performance
+    interval: 30s
+    rules:
+      # API 高延迟告警
+      - alert: HighAPILatency
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "API 响应延迟过高"
+          description: "P95 延迟超过 1 秒 (当前值: {{ $value }}s)"
+
+      # API 极高延迟告警
+      - alert: CriticalAPILatency
+        expr: |
+          histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "API 响应延迟严重过高"
+          description: "P99 延迟超过 5 秒 (当前值: {{ $value }}s)"
+
+      # API 错误率告警
+      - alert: HighAPIErrorRate
+        expr: |
+          rate(http_requests_total{status_code=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "API 错误率过高"
+          description: "API 错误率超过 5% (当前值: {{ $value | humanizePercentage }})"
+
+      # API 极高错误率告警
+      - alert: CriticalAPIErrorRate
+        expr: |
+          rate(http_requests_total{status_code=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "API 错误率严重过高"
+          description: "API 错误率超过 10% (当前值: {{ $value | humanizePercentage }})"
+
+  # 系统资源告警
+  - name: system_resources
+    interval: 30s
+    rules:
+      # CPU 使用率告警
+      - alert: HighCPUUsage
+        expr: |
+          100 * (1 - avg(rate(process_cpu_seconds_total[5m]))) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: ops-team
+          service: mystocks-api
+        annotations:
+          summary: "CPU 使用率过高"
+          description: "CPU 使用率超过 80% (当前值: {{ $value }}%)"
+
+      - alert: CriticalCPUUsage
+        expr: |
+          100 * (1 - avg(rate(process_cpu_seconds_total[5m]))) > 95
+        for: 5m
+        labels:
+          severity: critical
+          team: ops-team
+          service: mystocks-api
+        annotations:
+          summary: "CPU 使用率严重过高"
+          description: "CPU 使用率超过 95% (当前值: {{ $value }}%)"
+
+      # 内存使用率告警
+      - alert: HighMemoryUsage
+        expr: |
+          100 * process_resident_memory_bytes / (node_memory_MemTotal_bytes) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: ops-team
+          service: mystocks-api
+        annotations:
+          summary: "内存使用率过高"
+          description: "内存使用率超过 80% (当前值: {{ $value }}%)"
+
+      - alert: CriticalMemoryUsage
+        expr: |
+          100 * process_resident_memory_bytes / (node_memory_MemTotal_bytes) > 95
+        for: 5m
+        labels:
+          severity: critical
+          team: ops-team
+          service: mystocks-api
+        annotations:
+          summary: "内存使用率严重过高"
+          description: "内存使用率超过 95% (当前值: {{ $value }}%)"
+
+  # 缓存性能告警
+  - name: cache_performance
+    interval: 60s
+    rules:
+      # 缓存命中率告警
+      - alert: LowCacheHitRate
+        expr: |
+          rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "缓存命中率过低"
+          description: "缓存命中率低于 80% (当前值: {{ $value | humanizePercentage }})"
+
+      - alert: CriticalCacheHitRate
+        expr: |
+          rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.5
+        for: 5m
+        labels:
+          severity: critical
+          team: api-team
+          service: mystocks-api
+        annotations:
+          summary: "缓存命中率严重过低"
+          description: "缓存命中率低于 50% (当前值: {{ $value | humanizePercentage }})"
+
+  # 健康检查告警
+  - name: health_checks
+    interval: 15s
+    rules:
+      # 服务不可用告警
+      - alert: ServiceDown
+        expr: |
+          up{job="mystocks-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: ops-team
+          service: mystocks-api
+        annotations:
+          summary: "MyStocks API 服务不可用"
+          description: "MyStocks 后端服务已停止或无法访问"
+
+  # 数据库告警
+  - name: database_performance
+    interval: 60s
+    rules:
+      # 数据库查询延迟告警
+      - alert: HighDBQueryLatency
+        expr: |
+          histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: database-team
+          service: database
+        annotations:
+          summary: "数据库查询延迟过高"
+          description: "P95 查询延迟超过 1 秒 (当前值: {{ $value }}s)"
