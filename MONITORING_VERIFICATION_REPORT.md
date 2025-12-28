@@ -1,8 +1,8 @@
 # Phase 6 监控系统验证报告
 
 ## 执行时间
-开始时间: 2025-12-28 10:30  
-结束时间: 2025-12-28 11:00  
+开始时间: 2025-12-28 10:30
+结束时间: 2025-12-28 11:00
 实际耗时: 约 30 分钟
 
 ---
@@ -131,14 +131,14 @@
 ### 问题 1: Prometheus 配置错误
 **症状**: mystocks-backend 目标初始显示 DOWN
 **原因**: Prometheus 配置中 metrics_path 为 `/api/metrics`，但后端实际使用 `/metrics`
-**解决**: 
+**解决**:
 - 修改 Prometheus 配置文件，将 `metrics_path` 改为 `/metrics`
 - 重启 Prometheus 应用新配置
 **结果**: ✅ 已解决，目标状态变为 UP
 
 ### 问题 2: 告警规则未加载
 **症状**: Prometheus 告警规则组数为 0
-**原因**: 
+**原因**:
 - 规则文件目录 `/etc/prometheus/rules` 未挂载到容器
 - Docker 容器重建失败
 **解决**:
@@ -288,10 +288,10 @@
 | Tempo 显示追踪链路                               | ⏳   |
 | SLO 配置正确加载                                | ⏳   |
 
-**核心基础设施**: ✅ 100% 完成  
+**核心基础设施**: ✅ 100% 完成
 **功能验证**: ⚠️ 需要在 Grafana UI 中手动配置
 
 ---
 
-**签名**: OpenCode (Monitoring Verification Team)  
+**签名**: OpenCode (Monitoring Verification Team)
 **报告生成时间**: 2025-12-28 11:00

@@ -412,7 +412,7 @@ docker inspect mystocks-prometheus --format '{{range .Mounts}}{{.Source}} -> {{.
 
 ### 监控栈部署信息
 
-**部署时间**: 2025-12-28  
-**部署状态**: ✅ 全部正常运行  
-**数据持久化**: ✅ 所有数据存储在 /data/docker/  
-**网络**: ✅ 统一运行在 mystocks-monitoring 网络  
+**部署时间**: 2025-12-28
+**部署状态**: ✅ 全部正常运行
+**数据持久化**: ✅ 所有数据存储在 /data/docker/
+**网络**: ✅ 统一运行在 mystocks-monitoring 网络

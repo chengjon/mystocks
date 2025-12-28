@@ -62,19 +62,12 @@ class KlineDataService(BaseTdxAdapter):
             # 获取市场代码
             market_code = self._get_market_code(symbol)
 
-            # 转换日期格式
-            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
-
             # 获取日线数据
             logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
-            data = tdx_api.get_bars(
+            data = tdx_api.get_k_data(
                 code=symbol,
-                start_date=start_dt,
-                end_date=end_dt,
-                market=market_code,
-                frequency=9,  # 9表示日线
-                adjustflag=1 if adjust == "qfq" else (2 if adjust == "hfq" else 0),
+                start_date=start_date,
+                end_date=end_date,
             )
 
             if not data:
@@ -155,17 +148,12 @@ class KlineDataService(BaseTdxAdapter):
             # 获取TDX连接
             tdx_api = self._get_tdx_connection()
 
-            # 转换日期格式
-            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
-
             # 获取指数日线数据
             logger.info(f"获取指数日线数据: {index_code} {start_date} ~ {end_date}")
-            data = tdx_api.get_index_bars(
+            data = tdx_api.get_k_data(
                 code=index_code,
-                start_date=start_dt,
-                end_date=end_dt,
-                frequency=9,  # 9表示日线
+                start_date=start_date,
+                end_date=end_date,
             )
 
             if not data:
@@ -453,14 +441,13 @@ class KlineDataService(BaseTdxAdapter):
 
             frequency = period_mapping[period]
 
-            # 获取分钟线数据
-            logger.info(f"获取股票分钟K线数据: {symbol} {period} {count}条")
-            data = tdx_api.get_minute_bars(
-                code=symbol,
-                count=count,
+            # 获取分钟线数据 (使用 get_history_minute_time_data)
+            # 注意: TDX API 不支持按数量获取，这里获取最新日期的分钟数据
+            logger.info(f"获取股票分钟K线数据: {symbol} {period}")
+            data = tdx_api.get_history_minute_time_data(
                 market=market_code,
-                frequency=frequency,
-                adjustflag=1 if adjust == "qfq" else (2 if adjust == "hfq" else 0),
+                code=symbol,
+                date=datetime.now().strftime("%Y-%m-%d"),
             )
 
             if not data:

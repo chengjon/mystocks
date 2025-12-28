@@ -26,10 +26,28 @@ class TDengineDataAccess:
     - 聚合查询(OHLC等)
     """
 
-    def __init__(self):
+    def __init__(self, db_manager=None, monitoring_db=None):
         """初始化TDengine连接"""
+        self.db_manager = db_manager
+        self.monitoring_db = monitoring_db
         self.conn_manager = get_connection_manager()
         self.conn = None
+
+    async def connect(self):
+        """连接数据库(异步接口)"""
+        self._get_connection()
+        return True
+
+    def check_connection(self):
+        """检查数据库连接状态"""
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            cursor.close()
+            return True
+        except Exception:
+            return False
 
     def _get_connection(self):
         """获取TDengine连接(懒加载)"""

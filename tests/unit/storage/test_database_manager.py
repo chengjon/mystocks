@@ -8,11 +8,13 @@ Storage Database Manager Test Suite (Mock-based)
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
+
+from src.storage.database.database_manager import DatabaseType
 
 
 class TestDatabaseTableManager:
