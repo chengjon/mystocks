@@ -18,15 +18,12 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple
 import structlog
 
-# 支持从脚本导入：尝试绝对导入，失败则使用相对导入
+# 支持从脚本导入：尝试相对导入
 try:
-    from web.backend.app.core.tdengine_pool import TDengineConnectionPool
+    from app.core.tdengine_pool import TDengineConnectionPool
 except (ImportError, ModuleNotFoundError):
-    try:
-        from app.core.tdengine_pool import TDengineConnectionPool
-    except (ImportError, ModuleNotFoundError):
-        # 作为备选方案，如果都失败则尝试从当前目录导入
-        from .tdengine_pool import TDengineConnectionPool
+    # 作为备选方案，如果失败则尝试从当前目录导入
+    from .tdengine_pool import TDengineConnectionPool
 
 logger = structlog.get_logger()
 

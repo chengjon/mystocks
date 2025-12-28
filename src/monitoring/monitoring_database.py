@@ -39,7 +39,7 @@ class MonitoringDatabase:
         self._write_failures = 0
         self._total_writes = 0
 
-        logger.info(f"✅ MonitoringDatabase initialized (enabled={enable_monitoring})")
+        logger.info("✅ MonitoringDatabase initialized (enabled=%s)", enable_monitoring)
 
     @contextmanager
     def _get_connection(self):
@@ -54,7 +54,7 @@ class MonitoringDatabase:
         except Exception as e:
             if conn:
                 conn.rollback()
-            logger.error(f"监控数据库连接错误: {e}")
+            logger.error("监控数据库连接错误: %s", e)
             raise
         finally:
             if conn and pool:
@@ -137,11 +137,10 @@ class MonitoringDatabase:
 
         except Exception as e:
             self._write_failures += 1
-            logger.warning(f"记录操作日志失败 (降级到本地日志): {e}")
-            logger.info(
-                f"操作日志: {operation_type} {classification} -> {target_database}.{table_name} "
-                f"({record_count} records, {operation_status}, {execution_time_ms}ms)"
-            )
+            logger.warning("记录操作日志失败 (降级到本地日志): %s", e)
+            logger.info("操作日志: %s %s -> %s.%s (%s records, %s, %sms)",
+                operation_type, classification, target_database, table_name,
+                record_count, operation_status, execution_time_ms)
             return False
 
     def record_performance_metric(
@@ -214,7 +213,7 @@ class MonitoringDatabase:
             return True
 
         except Exception as e:
-            logger.warning(f"记录性能指标失败: {e}")
+            logger.warning("记录性能指标失败: %s", e)
             return False
 
     def log_quality_check(
@@ -304,7 +303,7 @@ class MonitoringDatabase:
             return True
 
         except Exception as e:
-            logger.warning(f"记录质量检查失败: {e}")
+            logger.warning("记录质量检查失败: %s", e)
             return False
 
     def create_alert(
@@ -378,12 +377,12 @@ class MonitoringDatabase:
 
                 cursor.close()
 
-            logger.warning(f"🚨 告警创建: [{alert_level}] {alert_title}")
+            logger.warning("🚨 告警创建: [%s] %s", alert_level, alert_title)
             return alert_id
 
         except Exception as e:
-            logger.error(f"创建告警失败: {e}")
-            logger.warning(f"告警内容: [{alert_level}] {alert_title} - {alert_message}")
+            logger.error("创建告警失败: %s", e)
+            logger.warning("告警内容: [%s] %s - %s", alert_level, alert_title, alert_message)
             return None
 
     def update_alert_status(
@@ -444,7 +443,7 @@ class MonitoringDatabase:
             return True
 
         except Exception as e:
-            logger.error(f"更新告警状态失败: {e}")
+            logger.error("更新告警状态失败: %s", e)
             return False
 
     def get_slow_query_count(self, hours: int = 24) -> int:
@@ -481,7 +480,7 @@ class MonitoringDatabase:
 
                 return count
         except Exception as e:
-            logger.warning(f"查询慢查询数量失败: {e}")
+            logger.warning("查询慢查询数量失败: %s", e)
             return 0
 
     def get_average_query_time(self, hours: int = 24) -> float:
@@ -518,7 +517,7 @@ class MonitoringDatabase:
 
                 return float(avg_time)
         except Exception as e:
-            logger.warning(f"查询平均查询时间失败: {e}")
+            logger.warning("查询平均查询时间失败: %s", e)
             return 0.0
 
     def get_max_query_time(self, hours: int = 24) -> float:
@@ -555,7 +554,7 @@ class MonitoringDatabase:
 
                 return float(max_time)
         except Exception as e:
-            logger.warning(f"查询最大查询时间失败: {e}")
+            logger.warning("查询最大查询时间失败: %s", e)
             return 0.0
 
     def get_total_query_count(self, hours: int = 24) -> int:
@@ -592,7 +591,7 @@ class MonitoringDatabase:
 
                 return count
         except Exception as e:
-            logger.warning(f"查询总查询数量失败: {e}")
+            logger.warning("查询总查询数量失败: %s", e)
             return 0
 
     def get_statistics(self) -> Dict[str, Any]:
@@ -657,14 +656,14 @@ class MonitoringDatabase:
                     )
 
                     deleted_counts[table_name] = cursor.rowcount
-                    logger.info(f"清理 {table_name}: 删除 {cursor.rowcount} 条记录 (>{days}天)")
+                    logger.info("清理 %s: 删除 %s 条记录 (>%s天)", table_name, cursor.rowcount, days)
 
                 cursor.close()
 
             return deleted_counts
 
         except Exception as e:
-            logger.error(f"清理过期记录失败: {e}")
+            logger.error("清理过期记录失败: %s", e)
             return deleted_counts
 
 

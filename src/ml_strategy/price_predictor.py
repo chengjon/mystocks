@@ -428,12 +428,11 @@ class PricePredictorStrategy:
         axes[1].grid(True)
 
         plt.tight_layout()
-
         if save_path:
-            plt.savefig(save_path, dpi=150, bbox_inches="tight")
-            self.logger.info(f"预测图表已保存: {save_path}")
-        else:
+            plt.savefig(save_path, dpi=150, bbox_inches='tight')
             plt.show()
+
+
 
 
 if __name__ == "__main__":
