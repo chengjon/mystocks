@@ -114,10 +114,6 @@ class PerformanceMonitor:
                     table_name=table_name,
                     query_sql=query_sql,
                 )
-            elif auto_alert and execution_time_ms >= self.WARNING_THRESHOLD_MS:
-                logger.warning(
-                    f"⚠️  较慢查询: {operation_name} 耗时 {execution_time_ms}ms " f"({database_type}.{table_name})"
-                )
 
     def _record_metric(
         self,
@@ -215,7 +211,7 @@ class PerformanceMonitor:
 
         # 连接时间过长告警 (>1秒)
         if connection_time_ms > 1000:
-            logger.warning(f"⚠️  数据库连接较慢: {database_type} 耗时 {connection_time_ms}ms")
+            logger.warning("⚠️  数据库连接较慢: %s 耗时 %sms", database_type, connection_time_ms)
 
     def record_batch_operation(
         self,
@@ -263,7 +259,7 @@ class PerformanceMonitor:
         if execution_time_ms > 0:
             throughput = (batch_size / execution_time_ms) * 1000
             logger.info(
-                f"📊 批量操作: {operation_name} - {batch_size}条记录 "
+                "📊 批量操作: {operation_name} - {batch_size}条记录 "
                 f"耗时{execution_time_ms}ms (吞吐量: {throughput:.0f} records/s)"
             )
 
@@ -313,7 +309,7 @@ class PerformanceMonitor:
                     "total_queries": 0,
                 }
         except Exception as e:
-            logger.warning(f"查询性能统计信息失败: {e}")
+            logger.warning("查询性能统计信息失败: %s", e)
             # 出错时返回基本数据
             return {
                 "period_hours": hours,

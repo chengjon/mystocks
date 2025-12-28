@@ -39,7 +39,7 @@ class ConfigDrivenTableManager:
         # 加载配置
         self.config = self.load_config()
 
-        logger.info(f"✅ ConfigDrivenTableManager initialized (safe_mode={self.safe_mode})")
+        logger.info("✅ ConfigDrivenTableManager initialized (safe_mode=%s)", self.safe_mode)
 
     def load_config(self) -> Dict[str, Any]:
         """加载配置文件"""
@@ -47,8 +47,8 @@ class ConfigDrivenTableManager:
             config = yaml.safe_load(f)
 
         version = config.get("version", "1.0.0")
-        logger.info(f"加载配置文件: {self.config_path} (version={version})")
-        logger.info(f"配置文件包含 {len(config['tables'])} 个表定义")
+        logger.info("加载配置文件: %s (version=%s)", self.config_path, version)
+        logger.info("配置文件包含 %s 个表定义", len(config["tables"]))
 
         return dict(config) if config else {}
 
@@ -61,26 +61,29 @@ class ConfigDrivenTableManager:
             "errors": [],
         }
 
-        logger.info(f"开始初始化表 (total={len(config['tables'])})")
+        logger.info("开始初始化表 (total=%s)", len(config["tables"]))
 
         for table_def in config["tables"]:
             try:
                 created = self._create_table(table_def)
                 if created:
                     result["tables_created"] += 1
-                    logger.info(f"✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
+                    logger.info("✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
                 else:
                     result["tables_skipped"] += 1
-                    logger.info(f"⏭️ 跳过表: {table_def['table_name']} (已存在)")
+                    logger.info("⏭️ 跳过表: %s (已存在)", table_def["table_name"])
 
             except Exception as e:
                 error_msg = f"{table_def['table_name']}: {str(e)}"
                 result["errors"].append(error_msg)
-                logger.error(f"❌ 创建表失败: {error_msg}")
+                logger.error("❌ 创建表失败: %s", error_msg)
 
+        self.logger.info("配置驱动表管理器初始化完成")
         logger.info(
-            f"表初始化完成: created={result['tables_created']}, "
-            f"skipped={result['tables_skipped']}, errors={len(result['errors'])}"
+            "表初始化完成: created=%s, skipped=%s, errors=%s",
+            result["tables_created"],
+            result["tables_skipped"],
+            len(result["errors"]),
         )
 
         return result
@@ -111,7 +114,7 @@ class ConfigDrivenTableManager:
             return self._create_mysql_table(table_def)
         elif db_type == "Redis":
             # Redis不需要预先创建表结构
-            logger.info(f"Redis数据结构 {table_name} 无需预创建")
+            logger.info("Redis数据结构 %s 无需预创建", table_name)
             return False
         else:
             raise ValueError(f"不支持的数据库类型: {db_type}")
@@ -174,7 +177,7 @@ class ConfigDrivenTableManager:
                 return False
 
         except Exception as e:
-            logger.warning(f"检查表存在性时出错 ({table_name}): {e}")
+            logger.warning("检查表存在性时出错 (%s): %s", table_name, e)
             return False
 
     def _create_tdengine_super_table(self, table_def: Dict[str, Any]) -> bool:
@@ -227,7 +230,7 @@ class ConfigDrivenTableManager:
                 codec = compression.get("codec", "zstd").upper()
                 level = compression.get("level", "medium").upper()
                 # TDengine 3.0+ 压缩配置 (注:实际语法可能需要调整)
-                logger.info(f"TDengine表 {table_name} 压缩配置: {codec} / {level}")
+                logger.info("TDengine表 %s 压缩配置: %s / %s", table_name, codec, level)
 
             retention_days = table_def.get("retention_days")
             if retention_days:
@@ -300,9 +303,9 @@ class ConfigDrivenTableManager:
             if is_hypertable:
                 try:
                     cursor.execute(f"SELECT create_hypertable('{table_name}', '{time_column}')")
-                    logger.info(f"✅ 转换为Hypertable: {table_name}")
+                    logger.info("✅ 转换为Hypertable: %s", table_name)
                 except Exception as e:
-                    logger.warning(f"转换为Hypertable失败: {e}")
+                    logger.warning("转换为Hypertable失败: %s", e)
 
             # 创建索引
             for idx in indexes:
@@ -317,9 +320,9 @@ class ConfigDrivenTableManager:
 
                 try:
                     cursor.execute(idx_sql)
-                    logger.info(f"✅ 创建索引: {idx_name}")
+                    logger.info("✅ 创建索引: %s", idx_name)
                 except Exception as e:
-                    logger.warning(f"创建索引时出错 ({idx_name}): {e}")
+                    logger.warning("创建索引时出错 (%s): %s", idx_name, e)
 
             cursor.close()
             conn.commit()
@@ -397,9 +400,9 @@ class ConfigDrivenTableManager:
 
                 try:
                     cursor.execute(idx_sql)
-                    logger.info(f"✅ 创建索引: {idx_name}")
+                    logger.info("✅ 创建索引: %s", idx_name)
                 except Exception as e:
-                    logger.warning(f"创建索引时出错 ({idx_name}): {e}")
+                    logger.warning("创建索引时出错 (%s): %s", idx_name, e)
 
             cursor.close()
             conn.commit()
@@ -420,13 +423,13 @@ class ConfigDrivenTableManager:
         try:
             # 检查表是否存在
             if not self._table_exists(db_type, table_name, table_def.get("database_name")):
-                logger.warning(f"表不存在: {table_name} ({db_type})")
+                logger.warning("表不存在: %s (%s)", table_name, db_type)
                 return False
 
             # 获取实际表结构
             actual_structure = self._get_table_structure(db_type, table_name)
             if not actual_structure:
-                logger.error(f"无法获取表结构 {table_name}: 结构为空")
+                logger.error("无法获取表结构 %s: 结构为空", table_name)
                 return False
 
             # 验证列结构
@@ -436,13 +439,13 @@ class ConfigDrivenTableManager:
             # 检查缺失的列
             missing_columns = set(expected_columns.keys()) - set(actual_columns.keys())
             if missing_columns:
-                logger.warning(f"表 {table_name} 缺少列: {', '.join(missing_columns)}")
+                logger.warning("表 %s 缺少列: %s", table_name, ", ".join(missing_columns))
                 return False
 
             # 检查多余的列
             extra_columns = set(actual_columns.keys()) - set(expected_columns.keys())
             if extra_columns:
-                logger.info(f"表 {table_name} 存在配置外的列: {', '.join(extra_columns)}")
+                logger.info("表 %s 存在配置外的列: %s", table_name, ", ".join(extra_columns))
 
             # 检查列类型
             for col_name, expected_col in expected_columns.items():
@@ -452,17 +455,24 @@ class ConfigDrivenTableManager:
                     actual_type = actual_col["type"]
 
                     # 简单类型匹配检查
-                    if expected_type.lower() not in actual_type.lower():
+                    if expected_type.upper() != actual_type.upper():
                         logger.warning(
-                            f"表 {table_name} 列 {col_name} 类型不匹配: " f"期望 {expected_type}, 实际 {actual_type}"
+                            "表 %s 列 %s 类型不匹配: 期望 %s, 实际 %s", table_name, col_name, expected_type, actual_type
                         )
                         return False
 
-            logger.info(f"✅ 表结构验证通过: {table_name}")
+            logger.info("✅ 表结构验证通过: %s", table_name)
             return True
 
         except Exception as e:
-            logger.error(f"表结构验证失败 {table_name}: {e}")
+            logger.error("表结构验证失败 %s: %s", table_name, e)
+            return False
+
+            logger.info("✅ 表结构验证通过: %s", table_name)
+            return True
+
+        except Exception as e:
+            logger.error("表结构验证失败 %s: %s", table_name, e)
             return False
 
     def _get_table_structure(self, db_type: str, table_name: str) -> Optional[List[Dict]]:
@@ -506,11 +516,11 @@ class ConfigDrivenTableManager:
                 return [{"name": row[0], "type": row[1]} for row in result]
 
             else:
-                logger.warning(f"不支持的数据库类型: {db_type}")
+                logger.warning("不支持的数据库类型: %s", db_type)
                 return None
 
         except Exception as e:
-            logger.error(f"获取表结构失败 {table_name}: {e}")
+            logger.error("获取表结构失败 %s: %s", table_name, e)
             return None
 
 
