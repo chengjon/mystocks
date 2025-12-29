@@ -1546,6 +1546,113 @@ def test_alert_triggering():
 
 ---
 
+## 工作流程与Git提交规范
+
+### 📚 完整工作流程指南
+
+详细的Worker CLI工作流程请参考:
+📖 **[CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)**
+
+### ⚡ 快速参考
+
+#### 每日工作流程
+
+```bash
+# 1. 拉取最新代码
+cd /opt/claude/mystocks_phase6_monitoring
+git pull
+
+# 2. 查看今日任务
+vim README.md
+
+# 3. 开发实现
+vim src/gpu_monitoring/gpu_monitor_service.py
+
+# 4. 测试代码
+pytest tests/test_gpu_monitoring.py -xvs
+
+# 5. 代码质量检查
+ruff check . --fix
+black .
+pylint src/
+
+# 6. Git提交
+git add .
+git commit -m "feat(monitoring): add GPU metrics collection service
+
+- Implement GPUMonitoringService with pynvml wrapper
+- Add real-time GPU utilization tracking
+- Include temperature and power monitoring
+
+Task: T5.1
+Acceptance: [x] GPU metrics [x] Temperature [x] Power usage"
+
+# 7. 更新README进度
+vim README.md
+git add README.md
+git commit -m "docs(readme): update progress to T+24h"
+
+# 8. 推送到远程
+git push
+```
+
+#### Git提交消息规范
+
+```bash
+# 格式: <type>(<scope>): <subject>
+
+# 示例:
+git commit -m "feat(advisor): implement optimization recommendation engine
+
+- Analyze GPU utilization patterns
+- Generate actionable optimization suggestions
+- Include cost-benefit analysis
+
+Task: T5.4
+Acceptance: [x] Analysis [x] Recommendations [x] Cost estimation"
+```
+
+#### 完成标准检查清单
+
+- [ ] 所有验收标准通过
+- [ ] 代码已提交到Git（频繁提交）
+- [ ] 测试覆盖率>80%
+- [ ] 代码质量检查通过（Pylint>8.0）
+- [ ] README已更新（进度+任务状态）
+
+#### 进度更新格式
+
+```markdown
+## 进度更新
+
+### T+0h (2025-12-29 15:00)
+- ✅ 任务启动
+- 📝 当前任务: T5.1 GPU监控服务实现
+- ⏳ 预计完成: 2025-12-30
+
+### T+24h (2025-12-30 15:00)
+- ✅ T5.1 GPU监控服务完成
+  - Git提交: abc1234
+  - 验收标准: [x] 全部通过
+- 📝 当前任务: T5.2 性能数据收集器
+- 🚧 阻塞问题: 无
+```
+
+### 🎯 关键注意事项
+
+1. **GPU资源监控**: 利用现有68.58x GPU加速基础设施
+2. **频繁提交**: 每完成一个服务模块就提交
+3. **性能优化**: 确保监控开销<5% GPU资源
+4. **及时更新README**: 每天至少更新一次进度
+
+### 📞 需要帮助？
+
+- 📖 [完整工作流程](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
+- 📚 [GPU开发经验](../../mystocks_spec/docs/api/GPU开发经验总结.md)
+- 🚧 遇到阻塞: 在README中记录
+
+---
+
 **最后更新**: 2025-12-29
 **责任人**: CLI-5 Worker (Phase 6 GPU Monitoring)
 **预计完成**: 2025-01-08 (8-10工作日)
