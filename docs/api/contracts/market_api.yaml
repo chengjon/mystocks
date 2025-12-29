@@ -1,0 +1,85 @@
+paths:
+  /api/market/kline:
+    get:
+      summary: 获取K线数据
+      operationId: getKlineData
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "000001.SZ"
+        - name: interval
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [1m, 5m, 15m, 1h, 1d, 1w, 1M]
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: adjust
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [qfq, hfq, none]
+            default: qfq
+      responses:
+        '200':
+          description: 成功获取K线数据
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/APIResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          klines:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/KLineCandle'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonError'
+
+components:
+  schemas:
+    KLineCandle:
+      type: object
+      required: [timestamp, open, high, low, close, volume]
+      properties:
+        timestamp:
+          type: integer
+          description: Unix时间戳 (毫秒)
+        open:
+          type: number
+          format: float
+        high:
+          type: number
+          format: float
+        low:
+          type: number
+          format: float
+        close:
+          type: number
+          format: float
+        volume:
+          type: integer
+          description: 成交量

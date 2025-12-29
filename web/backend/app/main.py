@@ -37,6 +37,9 @@ from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMid
 # 导入性能监控中间件 (Phase 5)
 from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
 
+# 导入全局异常处理器 (Phase 3 - API契约标准化)
+from .core.exception_handler import register_exception_handlers
+
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
@@ -186,6 +189,10 @@ app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
 performance_middleware = PerformanceMiddleware()
 app.add_middleware(PerformanceMiddleware)
 
+# Phase 3: 注册全局异常处理器 (API契约标准化)
+register_exception_handlers(app)
+logger.info("✅ Global exception handlers registered")
+
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
 sio = socketio_manager.sio
@@ -273,28 +280,6 @@ async def log_requests(request: Request, call_next):
     )
 
     return response
-
-
-# 全局异常处理 - 使用统一响应格式
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    logger.error("Unhandled exception", exc_info=exc)
-
-    # 获取请求ID
-    request_id = getattr(request.state, "request_id", str(id(request)))
-
-    # 使用统一响应格式
-    from .core.responses import ErrorCodes, ResponseMessages, create_error_response
-
-    return JSONResponse(
-        status_code=500,
-        content=create_error_response(
-            error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
-            message=ResponseMessages.INTERNAL_ERROR,
-            details={"exception": str(exc), "type": type(exc).__name__},
-            request_id=request_id,
-        ).dict(exclude_unset=True),
-    )
 
 
 # 健康检查端点 - 使用统一响应格式
