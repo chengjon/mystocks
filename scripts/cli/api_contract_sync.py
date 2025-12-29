@@ -45,10 +45,28 @@ def print_info(message: str):
     console.print(f"ℹ️  {message}", style="bold blue")
 
 
+def get_csrf_token() -> str:
+    """获取CSRF token"""
+    try:
+        response = requests.get(f"{API_BASE_URL}/api/csrf-token")
+        response.raise_for_status()
+        data = response.json()
+        return data["data"]["csrf_token"]
+    except Exception as e:
+        print_warning(f"无法获取CSRF token: {e}")
+        return ""
+
+
 def api_request(method: str, endpoint: str, data: Optional[Dict] = None) -> Dict[str, Any]:
     """发送API请求"""
     url = f"{API_BASE_URL}{API_PREFIX}{endpoint}"
     headers = {"Content-Type": "application/json"}
+
+    # 对于需要CSRF保护的请求，获取并添加token
+    if method.upper() in ["POST", "PUT", "DELETE", "PATCH"]:
+        csrf_token = get_csrf_token()
+        if csrf_token:
+            headers["X-CSRF-Token"] = csrf_token
 
     try:
         if method.upper() == "GET":

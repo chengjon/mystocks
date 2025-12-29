@@ -62,6 +62,101 @@
 
 ---
 
+## 🚨 Step -1: Pre-flight检查清单 ⭐ **强制执行（2025-12-30新增）**
+
+**重要性**: 🔴 **极高** - 主CLI在开始任何新工作前，必须强制执行此检查清单
+
+**为什么这很重要**:
+- ❌ **不执行** → 主CLI使用过时代码/工具，浪费时间，可能引入严重bug
+- ✅ **执行** → 主CLI始终使用最新代码，避免重复劳动，确保协作一致性
+
+**实战教训**: 2025-12-30主CLI尝试使用API契约管理工具时，忘记先pull CLI-2的已完成代码，导致工具目录不存在，浪费30分钟排查问题。
+
+### 快速检查命令
+
+在主CLI目录开始任何工作前，必须执行：
+
+```bash
+# 1. 确认在主CLI目录
+pwd  # 应该显示 /opt/claude/mystocks_spec
+
+# 2. 检查所有worktree
+git worktree list
+
+# 3. 检查远程新提交
+git fetch --all
+git log HEAD..origin/main --oneline
+
+# 4. 如果有worktree或新提交，处理它们
+#    （见下方的"合并已完成分支流程"）
+```
+
+### 合并已完成分支流程
+
+**当检查发现已完成worktree时执行**：
+
+```bash
+#!/bin/bash
+# 对每个worktree执行：
+for worktree in $(git worktree list | grep -v '\[main\]' | awk '{print $1}'); do
+    branch=$(cd $worktree && git branch --show-current)
+
+    # 1. 确认worker CLI已提交并推送
+    (cd $worktree && git status --short)
+    # 如果有未提交的更改，停止并要求先提交
+
+    # 2. 拉取远程最新代码
+    git fetch origin $branch
+
+    # 3. 合并分支到main
+    git merge origin/$branch --no-edit
+
+    # 4. 如有冲突，解决冲突
+    #    git status查看冲突文件
+    #    手动解决后: git add . && git commit
+
+    # 5. 推送到远程
+    git push origin main
+
+    # 6. 删除worktree
+    git worktree remove $worktree
+
+    # 7. 删除远程分支（可选）
+    # git push origin --delete $branch
+done
+```
+
+### 任务文档使用规则 ⭐ **重要（2025-12-30新增）**
+
+**原则**:
+- ✅ 使用独立的TASK.md任务文档（位于worktree根目录）
+- ✅ 多阶段任务用TASK-1.md, TASK-2.md等递增命名
+- ❌ **禁止**使用README.md记录CLI特定任务
+
+**为什么**:
+- README.md是主仓库的共享文档，多个CLI同时修改必然导致合并冲突
+- TASK.md在worktree根目录，不合并到主仓库，避免冲突
+
+**模板位置**: `docs/guides/multi-cli-tasks/TASK_TEMPLATE.md`
+
+**使用示例**:
+```bash
+# 1. 创建worktree时生成TASK.md
+git worktree add -b cli-x-feature /opt/claude/mystocks_cli_x
+cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md /opt/claude/mystocks_cli_x/TASK.md
+
+# 2. 第一阶段完成，主CLI下发第二阶段任务
+cd /opt/claude/mystocks_cli_x
+mv TASK.md TASK-1.md  # 重命名已完成任务
+cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md TASK-2.md
+
+# 3. 继续后续阶段...
+mv TASK-2.md TASK-2-completed.md
+cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md TASK-3.md
+```
+
+---
+
 ## 📝 Phase 0: 准备阶段工作清单
 
 在启动任何Worker CLI之前，主CLI必须完成以下步骤：
