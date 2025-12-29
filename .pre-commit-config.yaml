@@ -21,7 +21,7 @@ repos:
   #   - 处理所有格式问题（缩进、空格、换行等）
   # ============================================================================
   - repo: https://github.com/psf/black
-    rev: 24.8.0
+    rev: 25.12.0
     hooks:
       - id: black
         name: Black (Formatter)
@@ -43,11 +43,11 @@ repos:
   #   ✅ 使用 --select 选择性修复（只修复特定问题）
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
+    rev: v0.14.10
     hooks:
       - id: ruff
         name: Ruff (Selective Fix)
-        files: ^(src/|tests/|web/backend/)
+        files: ^(web/backend/|docs/api/|docs/reports/|docs/guides/)
         # ⚠️  关键：只修复未使用的导入和变量，避免格式冲突
         # F401: unused-import (未使用的导入)
         # F841: unused-variable (未使用的变量)
@@ -57,11 +57,11 @@ repos:
   # 第三步：Ruff 最终检查（确保没有遗漏的 lint 问题）
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
+    rev: v0.14.10
     hooks:
       - id: ruff
         name: Ruff (Final Check)
-        files: ^(src/|tests/|web/backend/)
+        files: ^(web/backend/|docs/api/|docs/reports/|docs/guides/)
         # ✅ 只检查，不修复（避免在最终阶段修改代码）
         args: [check, --no-fix]
 
@@ -69,12 +69,12 @@ repos:
   # 第四步：类型检查
   # ============================================================================
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.19.1
     hooks:
       - id: mypy
         name: MyPy (Type Check)
         args: ['--ignore-missing-imports', '--no-error-summary']
-        files: ^(src/|tests/|web/backend/)
+        files: ^(web/backend/|docs/api/)
         additional_dependencies:
           - types-requests
           - types-PyYAML
@@ -83,7 +83,7 @@ repos:
   # 第五步：安全扫描
   # ============================================================================
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
+    rev: 1.9.2
     hooks:
       - id: bandit
         name: Bandit (Security Scan)
@@ -95,7 +95,7 @@ repos:
   # 第六步：依赖安全检查
   # ============================================================================
   - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.3.3
+    rev: v1.4.2
     hooks:
       - id: python-safety-dependencies-check
         name: Safety (Dependency Check)
@@ -105,7 +105,7 @@ repos:
   # 第七步：通用文件检查
   # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         name: Trailing Whitespace
