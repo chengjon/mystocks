@@ -1116,6 +1116,123 @@ pdoc src/ --output-dir docs/api_reference
 
 ---
 
+## 工作流程与Git提交规范
+
+### 📚 完整工作流程指南
+
+详细的Worker CLI工作流程请参考:
+📖 **[CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)**
+
+### ⚡ 快速参考
+
+#### 每日工作流程
+
+```bash
+# 1. 拉取最新代码
+cd /opt/claude/mystocks_phase6_quality
+git pull
+
+# 2. 查看今日任务
+vim README.md
+
+# 3. 编写测试
+vim tests/api/test_market_data.py
+
+# 4. 运行测试
+pytest tests/ -xvs --cov=src --cov-report=html
+
+# 5. 代码质量检查
+ruff check . --fix
+pylint tests/ --rcfile=.pylint.test.rc
+
+# 6. Git提交
+git add .
+git commit -m "test(backend): add market data API integration tests
+
+- Test GET /api/market/kline endpoint
+- Validate response schema with Pydantic
+- Add error handling tests
+
+Task: T6.1
+Coverage: 85%"
+
+# 7. 更新README进度
+vim README.md
+git add README.md
+git commit -m "docs(readme): update progress to T+24h"
+
+# 8. 推送到远程
+git push
+```
+
+#### Git提交消息规范
+
+```bash
+# 格式: <type>(<scope>): <subject>
+
+# Type类型:
+test:     编写测试
+feat:     新增测试工具
+fix:      修复测试问题
+docs:     测试文档更新
+chore:    测试配置更新
+
+# 示例:
+git commit -m "test(e2e): add K-line chart interaction tests
+
+- Test zoom and pan interactions
+- Validate indicator overlay rendering
+- Include crosshair data accuracy tests
+
+Task: T6.8
+Scenarios: 15/15 passed
+Coverage: E2E 100%"
+```
+
+#### 完成标准检查清单
+
+- [ ] 所有验收标准通过
+- [ ] 测试代码已提交到Git
+- [ ] 测试覆盖率达标（后端>80%, 前端>70%）
+- [ ] 所有测试通过（100%）
+- [ ] README已更新（进度+任务状态）
+- [ ] 质量报告完整
+
+#### 进度更新格式
+
+```markdown
+## 进度更新
+
+### T+0h (2025-12-29 15:00)
+- ✅ 任务启动
+- 📝 当前任务: T6.1 后端单元测试框架搭建
+- ⏳ 预计完成: 2025-12-30
+
+### T+24h (2025-12-30 15:00)
+- ✅ T6.1 后端单元测试框架完成
+  - Git提交: abc1234
+  - 测试覆盖: 85%
+- 📝 当前任务: T6.2 API集成测试
+- 🚧 阻塞问题: 无
+```
+
+### 🎯 关键注意事项
+
+1. **测试优先**: 边开发边写测试，不要等到最后
+2. **频繁提交**: 每完成一个测试模块就提交
+3. **覆盖率追踪**: 每次提交都要检查覆盖率是否提升
+4. **质量把关**: 确保所有代码符合质量标准
+5. **及时更新README**: 每天至少更新一次进度
+
+### 📞 需要帮助？
+
+- 📖 [完整工作流程](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
+- 📚 [测试指南](docs/quality/TESTING_GUIDE.md)
+- 📋 [质量标准](docs/quality/CODE_QUALITY_STANDARDS.md)
+- 🚧 遇到阻塞: 在README中记录
+
+---
+
 **最后更新**: 2025-12-29
 **责任人**: CLI-6 Worker (Quality Assurance)
 **预计完成**: 2025-01-08 (8-10工作日)
