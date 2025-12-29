@@ -24,6 +24,9 @@ import './styles/theme-apply.scss'
 // Import global styles (index.scss)
 import './styles/index.scss'
 
+// Import K-line chart styles (Art Deco theme)
+import './styles/kline-chart.scss'
+
 // SECURITY FIX 1.2: 导入CSRF初始化函数
 import { initializeSecurity } from './services/httpClient.js'
 

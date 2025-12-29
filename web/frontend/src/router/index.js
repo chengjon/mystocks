@@ -141,6 +141,12 @@ const router = createRouter({
           name: 'smart-data-test',
           component: () => import('@/views/SmartDataSourceTest.vue'),
           meta: { title: '智能数据源测试', icon: 'Monitor' }
+        },
+        {
+          path: 'kline-demo',
+          name: 'kline-demo',
+          component: () => import('@/views/KLineDemo.vue'),
+          meta: { title: 'K线图表演示', icon: 'TrendCharts' }
         }
       ]
     },

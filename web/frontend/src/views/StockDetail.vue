@@ -207,7 +207,7 @@ import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartOption } from 'echarts'
 import { ElMessage } from 'element-plus'
-import ProKLineChart from '@/components/Market/ProKLineChart.vue'
+import ProKLineChart from '@/components/Charts/ProKLineChart.vue'
 
 // ============================================
 // 类型定义

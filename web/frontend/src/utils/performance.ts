@@ -652,5 +652,192 @@ export default {
   BundleAnalyzer,
   performanceMonitor,
   throttle,
-  debounce
+  debounce,
+  FPSMonitor,
+  VirtualScrollManager,
+  RenderQueue,
+  fpsMonitor,
+  measureRenderTime
 }
+
+export interface PerformanceConfig {
+  targetFPS: number;
+  enableVirtualization: boolean;
+  maxVisibleKLines: number;
+  workerEnabled: boolean;
+  debounceDelay: number;
+}
+
+export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig = {
+  targetFPS: 60,
+  enableVirtualization: true,
+  maxVisibleKLines: 500,
+  workerEnabled: true,
+  debounceDelay: 16
+};
+
+export class FPSMonitor {
+  private fps = 60;
+  private frameCount = 0;
+  private lastTime = performance.now();
+  private callbacks: Set<(fps: number) => void> = new Set();
+
+  constructor() {
+    this.startMonitoring();
+  }
+
+  private startMonitoring(): void {
+    const measure = () => {
+      this.frameCount++;
+      const now = performance.now();
+
+      if (now - this.lastTime >= 1000) {
+        this.fps = this.frameCount;
+        this.frameCount = 0;
+        this.lastTime = now;
+        this.callbacks.forEach(cb => cb(this.fps));
+      }
+
+      requestAnimationFrame(measure);
+    };
+
+    requestAnimationFrame(measure);
+  }
+
+  getFPS(): number {
+    return this.fps;
+  }
+
+  onFPSChange(callback: (fps: number) => void): () => void {
+    this.callbacks.add(callback);
+    return () => this.callbacks.delete(callback);
+  }
+
+  isOptimal(): boolean {
+    return this.fps >= 50;
+  }
+
+  destroy(): void {
+    this.callbacks.clear();
+  }
+}
+
+export class VirtualScrollManager<T> {
+  private items: T[] = [];
+  private visibleStart = 0;
+  private visibleEnd = 100;
+  private itemHeight = 20;
+  private containerHeight = 400;
+  private bufferSize = 10;
+
+  constructor(config?: { itemHeight?: number; containerHeight?: number; bufferSize?: number }) {
+    this.itemHeight = config?.itemHeight ?? 20;
+    this.containerHeight = config?.containerHeight ?? 400;
+    this.bufferSize = config?.bufferSize ?? 10;
+  }
+
+  setItems(items: T[]): void {
+    this.items = items;
+    this.updateVisibleRange();
+  }
+
+  setContainerHeight(height: number): void {
+    this.containerHeight = height;
+    this.updateVisibleRange();
+  }
+
+  scrollTo(offset: number): void {
+    this.visibleStart = Math.floor(offset / this.itemHeight);
+    this.visibleEnd = Math.min(
+      this.visibleStart + Math.ceil(this.containerHeight / this.itemHeight) + this.bufferSize,
+      this.items.length
+    );
+  }
+
+  getVisibleItems(): T[] {
+    return this.items.slice(this.visibleStart, this.visibleEnd);
+  }
+
+  getVisibleRange(): { start: number; end: number; offset: number } {
+    return {
+      start: this.visibleStart,
+      end: this.visibleEnd,
+      offset: this.visibleStart * this.itemHeight
+    };
+  }
+
+  private updateVisibleRange(): void {
+    this.visibleEnd = Math.min(
+      this.visibleStart + Math.ceil(this.containerHeight / this.itemHeight) + this.bufferSize,
+      this.items.length
+    );
+  }
+
+  getTotalHeight(): number {
+    return this.items.length * this.itemHeight;
+  }
+
+  getScrollOffset(): number {
+    return this.visibleStart * this.itemHeight;
+  }
+}
+
+export class RenderQueue {
+  private queue: (() => void)[] = [];
+  private isProcessing = false;
+  private maxBatchSize = 10;
+  private delay = 0;
+
+  constructor(config?: { maxBatchSize?: number; delay?: number }) {
+    this.maxBatchSize = config?.maxBatchSize ?? 10;
+    this.delay = config?.delay ?? 0;
+  }
+
+  add(task: () => void): void {
+    this.queue.push(task);
+    this.process();
+  }
+
+  addBatch(tasks: (() => void)[]): void {
+    this.queue.push(...tasks);
+    this.process();
+  }
+
+  private async process(): Promise<void> {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+
+    while (this.queue.length > 0) {
+      const batch = this.queue.splice(0, this.maxBatchSize);
+
+      for (const task of batch) {
+        task();
+      }
+
+      if (this.delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.delay));
+      }
+    }
+
+    this.isProcessing = false;
+  }
+
+  clear(): void {
+    this.queue = [];
+  }
+
+  getSize(): number {
+    return this.queue.length;
+  }
+}
+
+export function measureRenderTime(label: string): () => void {
+  const start = performance.now();
+
+  return () => {
+    const duration = performance.now() - start;
+    console.log(`[${label}] 渲染耗时: ${duration.toFixed(2)}ms`);
+  };
+}
+
+export const fpsMonitor = new FPSMonitor();
