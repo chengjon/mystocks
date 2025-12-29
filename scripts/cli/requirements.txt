@@ -1,0 +1,14 @@
+# API契约管理CLI工具依赖
+# 安装: pip install -r requirements.txt
+
+# CLI框架
+click>=8.1.0
+
+# 终端UI美化
+rich>=13.0.0
+
+# HTTP请求
+requests>=2.31.0
+
+# YAML支持
+PyYAML>=6.0

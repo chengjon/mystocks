@@ -1,0 +1,65 @@
+# Pre-commit hooks for API contract management
+# Install: pre-commit install --config .pre-commit-contracts.yaml
+
+repos:
+  # ==================== OpenAPI契约验证 ====================
+  - repo: local
+    hooks:
+      - id: validate-openapi-contracts
+        name: 验证OpenAPI契约
+        entry: scripts/ci/validate_contracts.sh
+        language: script
+        files: '^docs/api/contracts/.*\.(yaml|yml|json)$'
+        pass_filenames: true
+
+  # ==================== Python代码格式化 ====================
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        name: Black (代码格式化)
+        files: '^web/backend/app/api/contract/.*\.py$'
+
+  # ==================== Python Lint ====================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        name: Ruff (Lint检查)
+        args: [--fix, --exit-non-zero-on-fix]
+        files: '^web/backend/app/api/contract/.*\.py$'
+
+  # ==================== YAML语法检查 ====================
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: Yamllint (YAML语法检查)
+        files: '^docs/api/contracts/.*\.(yaml|yml)$'
+        args: [-c, .yamllint]
+
+  # ==================== JSON语法检查 ====================
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.31.1
+    hooks:
+      - id: check-jsonschema
+        name: OpenAPI 3.0规范验证
+        files: '^docs/api/contracts/.*\.json$'
+        args: [--schemafile, scripts/ci/openapi-3.0.json]
+
+  # ==================== 破坏性变更检测 ====================
+  - repo: local
+    hooks:
+      - id: detect-breaking-changes
+        name: 检测API破坏性变更
+        entry: scripts/ci/detect_breaking_changes.sh
+        language: script
+        files: '^docs/api/contracts/.*\.(yaml|yml|json)$'
+        pass_filenames: true
+
+# ==================== 全局配置 ====================
+default_language_version:
+  python: python3.12
+
+# 跳过某些hook (如果需要)
+# exclude: ^(docs/legacy/|scripts/old/)

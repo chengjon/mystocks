@@ -397,6 +397,7 @@ from .api import (
     announcement,
     auth,
     cache,
+    contract,  # Phase 4: API契约管理
     dashboard,
     data,
     data_quality,
@@ -480,6 +481,9 @@ app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest,
 
 # 行业概念分析API
 app.include_router(industry_concept_analysis.router)  # 行业概念分析
+
+# Phase 4: API契约管理
+app.include_router(contract.router)  # 契约版本管理、差异检测、验证
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")
