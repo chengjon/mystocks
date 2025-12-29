@@ -934,7 +934,7 @@ class TdxDataSource(IDataSource):
 
             return df_result
 
-        except Exception as e:
+        except Exception:
             self.logger.error("获取{period}K线失败: {e}", exc_info=True)
             return pd.DataFrame()
 
@@ -1037,7 +1037,7 @@ class TdxDataSource(IDataSource):
 
             return df_result
 
-        except Exception as e:
+        except Exception:
             self.logger.error("获取指数{period}K线失败: {e}", exc_info=True)
             return pd.DataFrame()
 

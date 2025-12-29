@@ -135,7 +135,7 @@ class TdxServerConfig:
                 primary = self.servers[self.primary_index]
                 self.logger.info("主服务器: %s (%s:%s)", primary[2], primary[0], primary[1])
 
-        except Exception as e:
+        except Exception:
             self.logger.error("解析TDX配置文件失败: {e}", exc_info=True)
             # 使用默认服务器
             self.servers = [("101.227.73.20", 7709, "默认服务器")]

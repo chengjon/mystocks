@@ -499,7 +499,7 @@ class AkshareDataSource(IDataSource):
 
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("[Akshare] 获取行业'{industry_name}'成分股数据失败: {e}")
             import traceback
 

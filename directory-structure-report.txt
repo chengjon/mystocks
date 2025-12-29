@@ -1,32 +1,33 @@
 项目目录结构检查报告
 =========================
-生成时间: Sat Dec 27 19:43:30 CST 2025
+生成时间: Mon Dec 29 14:44:12 CST 2025
 项目路径: /opt/claude/mystocks_spec
 
 根目录文件统计:
-139
+172
 
 根目录目录统计:
-54
+55
 
 按文件类型统计:
      44 py
-     25 md
-     20 json
-     13 txt
-      6 ts
+     42 md
+     24 json
+     14 txt
+      7 ts
+      4 js
+      3 sh
       3 log
-      3 js
+      2 yml
       2 ini
-      1 yml
       1 yaml
       1 xml
       1 toml
-      1 sh
       1 reject
       1 rc
       1 pylintrc
       1 production
+      1 png
       1 merge
       1 latest_wins
       1 jsonl
@@ -40,9 +41,15 @@
       1 coverage
       1 backup-20251226-125825
       1 LICENSE
+      1 95%
+      1 90%
+      1 80%
+      1 50%（p50）
+      1 50%（p50
       1 0
 
 大文件列表 (>1MB):
 1.1M ./pylint_report.txt
 1.2M ./coverage.xml
+1.9M ./pylint_report_current.json
 6.4M ./test_timing.csv
