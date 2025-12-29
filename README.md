@@ -53,50 +53,54 @@
 
 ---
 
-## 关键文件清单
+## 关键文件清单 ✅
 
 ```
 web/frontend/
 ├── src/
 │   ├── components/
 │   │   └── Charts/
-│   │       ├── ProKLineChart.vue          # 核心K线图组件
-│   │       ├── IndicatorSelector.vue      # 指标选择器
-│   │       └── IndicatorParameterDialog.vue  # 指标参数对话框
+│   │       ├── ProKLineChart.vue          # 核心K线图组件 ✅
+│   │       ├── IndicatorSelector.vue      # 指标选择器 ✅
+│   │       └── OscillatorChart.vue        # 副图指标组件 ✅
 │   ├── api/
-│   │   ├── klineApi.ts                    # K线数据API
-│   │   ├── indicatorApi.ts                # 指标API
-│   │   ├── astockApi.ts                   # A股规则API
-│   │   └── mockKlineData.ts               # Mock数据
+│   │   ├── klineApi.ts                    # K线数据API ✅
+│   │   ├── indicatorApi.ts                # 指标API ✅ (新增)
+│   │   ├── astockApi.ts                   # A股规则API ✅ (新增)
+│   │   └── mockKlineData.ts               # Mock数据 ✅
 │   ├── utils/
-│   │   ├── chartRenderer.ts               # 图表渲染优化
-│   │   ├── chartInteraction.ts            # 图表交互逻辑
-│   │   ├── crosshair.ts                   # 十字光标
-│   │   ├── cacheManager.ts                # 缓存管理
-│   │   ├── indicatorRenderer.ts           # 指标绘制
-│   │   ├── oscillatorRenderer.ts          # 副图指标绘制
+│   │   ├── chartRenderer.ts               # 图表渲染优化 ✅ (新增)
+│   │   ├── chartInteraction.ts            # 图表交互逻辑 ✅
+│   │   ├── crosshair.ts                   # 十字光标 ✅ (新增)
+│   │   ├── cacheManager.ts                # 缓存管理 ✅
+│   │   ├── indicatorRenderer.ts           # 指标绘制 ✅ (整合)
+│   │   ├── oscillatorRenderer.ts          # 副图指标绘制 ✅ (整合)
 │   │   └── astock/
-│   │       ├── StopLimitOverlay.ts        # 涨跌停绘制
-│   │       └── T1Marker.ts                # T+1标记
+│   │       ├── StopLimitOverlay.ts        # 涨跌停绘制 ✅
+│   │       └── T1Marker.ts                # T+1标记 ✅
 │   ├── types/
-│   │   ├── kline.ts                       # K线类型定义
-│   │   └── indicator.ts                   # 指标类型定义
+│   │   ├── kline.ts                       # K线类型定义 ✅
+│   │   └── indicator.ts                   # 指标类型定义 ✅
 │   ├── stores/
-│   │   └── klineStore.ts                  # K线状态管理（Pinia）
+│   │   └── klineStore.ts                  # K线状态管理（Pinia）✅ (useKlineChart)
 │   ├── styles/
-│   │   ├── design-tokens.scss             # Design Tokens
-│   │   └── responsive.scss                # 响应式样式
+│   │   ├── design-tokens.scss             # Design Tokens ✅ (新增)
+│   │   ├── kline-chart.scss               # K线图样式 ✅
+│   │   └── kline-chart-responsive.scss    # 响应式样式 ✅
+│   ├── composables/
+│   │   └── useKlineChart.ts               # K线图组合式函数 ✅
 │   └── workers/
-│       └── indicatorDataWorker.worker.ts  # 指标数据处理Worker
+│       └── indicatorDataWorker.worker.ts  # 指标数据处理Worker ✅ (新增)
 └── tests/
     ├── unit/
-    │   ├── ProKLineChart.spec.ts
-    │   ├── AStockFeatures.spec.ts
-    │   └── ChartInteraction.spec.ts
+    │   ├── ProKLineChart.spec.ts          # K线图组件测试 ✅
+    │   ├── AStockFeatures.spec.ts         # A股特性测试 ✅ (新增)
+    │   ├── ChartInteraction.spec.ts       # 图表交互测试 ✅ (新增)
+    │   └── kline-chart.spec.ts            # K线工具测试 ✅
     └── e2e/
-        ├── kline-chart.spec.ts
+        ├── kline-chart.spec.ts            # K线图E2E测试 ✅
         └── fixtures/
-            └── kline-data.json
+            └── kline-data.json            # E2E测试数据 ✅ (新增)
 ```
 
 ---
