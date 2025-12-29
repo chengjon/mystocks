@@ -251,8 +251,8 @@ class LongHuBangItem(BaseModel):
     reason: Optional[str] = Field(None, description="上榜原因")
 
 
-class MarketOverviewResponse(BaseModel):
-    """市场概览响应"""
+class MarketOverviewDetailedResponse(BaseModel):
+    """市场概览详细响应 (包含ETF、竞价抢筹、龙虎榜)"""
 
     market_stats: MarketOverviewStats = Field(description="市场统计")
     top_etfs: List[TopETFItem] = Field(default_factory=list, description="热门ETF列表")
@@ -320,3 +320,150 @@ class HeatmapResponse(BaseModel):
     sector: str = Field(description="板块名称")
     stocks: List[HeatmapStock] = Field(description="股票列表")
     avg_change: float = Field(description="板块平均涨跌幅(%)")
+
+
+# ==================== Market Overview ====================
+
+
+class MarketOverviewRequest(BaseModel):
+    """市场概览查询请求"""
+
+    date: Optional[str] = Field(None, description="查询日期 YYYY-MM-DD (默认最新)")
+
+
+class IndexQuote(BaseModel):
+    """指数行情"""
+
+    index_code: str = Field(description="指数代码 (如: 000001.SH)")
+    index_name: str = Field(description="指数名称")
+    current_price: float = Field(description="当前点位")
+    change: float = Field(description="涨跌点数")
+    change_percent: float = Field(description="涨跌幅(%)")
+    volume: Optional[float] = Field(None, description="成交量")
+    amount: Optional[float] = Field(None, description="成交额")
+
+
+class HotSector(BaseModel):
+    """热门板块"""
+
+    sector_name: str = Field(description="板块名称")
+    change_percent: float = Field(description="板块涨跌幅(%)")
+    leading_stock: Optional[str] = Field(None, description="领涨股票")
+    stock_count: int = Field(description="成分股数量")
+
+
+class MarketOverviewResponse(BaseModel):
+    """市场概览响应"""
+
+    date: str = Field(description="数据日期")
+    indices: List[IndexQuote] = Field(description="主要指数行情")
+    hot_sectors: List[HotSector] = Field(description="热门板块")
+    market_sentiment: str = Field(description="市场情绪 (up/down/neutral)")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "date": "2024-12-29",
+                "indices": [
+                    {
+                        "index_code": "000001.SH",
+                        "index_name": "上证指数",
+                        "current_price": 3000.5,
+                        "change": 15.3,
+                        "change_percent": 0.51,
+                    }
+                ],
+                "hot_sectors": [
+                    {"sector_name": "新能源", "change_percent": 3.2, "leading_stock": "600519.SH", "stock_count": 45}
+                ],
+                "market_sentiment": "up",
+            }
+        }
+
+
+# ==================== Enhanced KLine Models ====================
+
+
+class KLineRequestV2(BaseModel):
+    """增强版K线查询请求 (符合OpenAPI模板)"""
+
+    symbol: str = Field(
+        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$"
+    )
+    interval: str = Field(..., description="K线周期", examples=["1m", "5m", "15m", "1h", "1d", "1w", "1M"])
+    start_date: Optional[str] = Field(None, description="开始日期", examples=["2024-01-01"])
+    end_date: Optional[str] = Field(None, description="结束日期", examples=["2024-12-29"])
+    adjust: str = Field(
+        default="qfq", description="复权方式 (qfq=前复权, hfq=后复权, none=不复权)", pattern="^(qfq|hfq|none)$"
+    )
+    limit: int = Field(default=500, ge=1, le=1000, description="返回数量限制")
+
+    @field_validator("symbol")
+    @classmethod
+    def validate_symbol(cls, v):
+        """验证股票代码格式"""
+        if len(v) < 6:
+            raise ValueError("股票代码格式错误,至少6位")
+        return v.upper()
+
+    @field_validator("interval")
+    @classmethod
+    def validate_interval(cls, v):
+        """验证K线周期"""
+        valid_intervals = ["1m", "5m", "15m", "1h", "1d", "1w", "1M"]
+        if v not in valid_intervals:
+            raise ValueError(f"无效的K线周期,支持: {valid_intervals}")
+        return v
+
+
+class KLineCandleV2(BaseModel):
+    """增强版K线蜡烛图数据 (符合OpenAPI模板)"""
+
+    timestamp: int = Field(..., description="Unix时间戳 (毫秒)")
+    open: float = Field(..., ge=0, description="开盘价")
+    high: float = Field(..., ge=0, description="最高价")
+    low: float = Field(..., ge=0, description="最低价")
+    close: float = Field(..., ge=0, description="收盘价")
+    volume: int = Field(..., ge=0, description="成交量")
+    amount: Optional[float] = Field(None, ge=0, description="成交额")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "timestamp": 1640995200000,
+                "open": 10.5,
+                "high": 11.0,
+                "low": 10.3,
+                "close": 10.8,
+                "volume": 1000000,
+                "amount": 10800000.0,
+            }
+        }
+
+
+class KLineResponseV2(BaseModel):
+    """增强版K线响应 (使用统一响应格式)"""
+
+    klines: List[KLineCandleV2] = Field(description="K线数据列表")
+    total_count: int = Field(description="总记录数")
+    symbol: str = Field(description="股票代码")
+    interval: str = Field(description="K线周期")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "klines": [
+                    {
+                        "timestamp": 1640995200000,
+                        "open": 10.5,
+                        "high": 11.0,
+                        "low": 10.3,
+                        "close": 10.8,
+                        "volume": 1000000,
+                    }
+                ],
+                "total_count": 250,
+                "symbol": "000001.SZ",
+                "interval": "1d",
+            }
+        }

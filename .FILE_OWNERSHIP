@@ -1,0 +1,49 @@
+# Git Worktree文件所有权映射
+# 维护者：Main CLI
+# 更新频率：每次分配新任务时更新
+
+# 格式：目录/文件模式: 拥有者CLI | 说明
+
+# ========== 主仓库（主CLI）==========
+src/                               main      | 核心业务逻辑
+config/                            main      | 配置文件
+scripts/dev/                       main      | 开发工具
+pyproject.toml                     main      | 项目配置
+.pre-commit-config.yaml            main      | Pre-commit配置（所有CLI继承）
+requirements.txt                   main      | Python依赖
+
+# ========== CLI-1: Phase 3前端K线图 ==========
+web/frontend/src/components/Charts/  cli-1     | K线图组件
+web/frontend/src/api/klineApi.ts     cli-1     | K线图API
+web/frontend/src/api/indicatorApi.ts cli-1     | 技术指标API
+web/frontend/src/api/astockApi.ts    cli-1     | A股规则API
+web/frontend/src/utils/chartRenderer.ts cli-1  | 图表渲染
+web/frontend/src/utils/indicatorRenderer.ts cli-1 | 指标绘制
+
+# ========== CLI-2: API契约标准化 ==========
+docs/api/contracts/                  cli-2     | API契约文档
+web/backend/app/schemas/            cli-2     | 数据模式定义
+web/backend/openapi/                 cli-2     | OpenAPI规范
+
+# ========== CLI-5: GPU监控仪表板 ==========
+src/gpu/                            cli-5     | GPU相关代码
+src/gpu_monitoring/                  cli-5     | GPU监控服务
+scripts/start_gpu_monitoring.sh      cli-5     | GPU监控脚本
+docs/guides/GPU_MONITORING*          cli-5     | GPU监控文档
+
+# ========== CLI-6: 质量保证 ==========
+tests/                              cli-6     | 测试文件
+scripts/maintenance/                cli-6     | 质量保证脚本
+docs/guides/CODE_QUALITY*            cli-6     | 质量标准文档
+docs/guides/TESTING*                 cli-6     | 测试指南文档
+
+# ========== 共享文件（协调修改）==========
+README.md                           main+clis | 主CLI维护，CLI可建议
+CLAUDE.md                           main      | 主CLI维护
+CHANGELOG.md                        main      | 主CLI维护
+
+# ========== 规则说明 ==========
+# 1. 拥有者CLI可以修改其拥有的文件
+# 2. 其他CLI只读这些文件，修改需要协调
+# 3. 共享文件需要主CLI协调修改
+# 4. 未知所有权的文件默认属于主CLI

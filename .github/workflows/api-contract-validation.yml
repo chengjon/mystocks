@@ -1,0 +1,262 @@
+name: API契约验证与发布
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/api/contracts/**'
+      - 'web/backend/app/api/**/*.py'
+      - '.github/workflows/api-contract-validation.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/api/contracts/**'
+      - 'web/backend/app/api/**/*.py'
+
+env:
+  PYTHON_VERSION: '3.12'
+  NODE_VERSION: '20'
+
+jobs:
+  # ==================== 契约验证 ====================
+  contract-validation:
+    name: 验证OpenAPI契约
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 安装依赖
+        run: |
+          pip install -r web/backend/requirements.txt
+          pip install -r scripts/cli/requirements.txt
+          pip install prance[openapi] openapi-spec-validator
+
+      - name: 启动后端服务
+        run: |
+          cd web/backend
+          python -m app.main &
+          sleep 10
+          curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8000/health
+
+      - name: 验证所有OpenAPI契约文件
+        run: |
+          # 查找所有契约文件
+          for file in docs/api/contracts/*.yaml docs/api/contracts/*.json; do
+            if [ -f "$file" ]; then
+              echo "验证契约文件: $file"
+
+              # 使用openapi-spec-validator验证
+              python -m openapi_spec_validator "$file" || {
+                echo "❌ 契约验证失败: $file"
+                exit 1
+              }
+
+              echo "✅ 契约验证通过: $file"
+            fi
+          done
+
+      - name: 检查破坏性变更
+        if: github.event_name == 'pull_request'
+        run: |
+          # 使用CLI工具对比版本
+          pip install -e scripts/cli/
+
+          # TODO: 实现自动对比逻辑
+          echo "检查破坏性变更..."
+          echo "⚠️  当前为演示，实际需调用API对比版本"
+
+  # ==================== 契约发布 ====================
+  contract-publish:
+    name: 发布契约版本
+    runs-on: ubuntu-latest
+    needs: contract-validation
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 安装CLI工具
+        run: |
+          pip install -r scripts/cli/requirements.txt
+          pip install -e scripts/cli/
+
+      - name: 生成版本号
+        id: version
+        run: |
+          # 基于日期和commit生成版本号
+          VERSION=$(date +'%Y.%m.%d')-${{ github.sha }}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 创建契约版本
+        env:
+          API_CONTRACT_API_URL: http://localhost:8000
+        run: |
+          # 启动后端服务
+          cd web/backend
+          python -m app.main &
+          sleep 10
+
+          # 发布契约
+          for file in docs/api/contracts/*.yaml; do
+            if [ -f "$file" ]; then
+              CONTRACT_NAME=$(basename "$file" .yaml)
+              api-contract-sync create \
+                "$CONTRACT_NAME" \
+                "${{ steps.version.outputs.version }}" \
+                -s "$file" \
+                -a "GitHub Actions" \
+                -d "自动发布: ${{ github.event.head_commit.message }}" \
+                -c "${{ github.sha }}"
+            fi
+          done
+
+      - name: 生成变更日志
+        run: |
+          mkdir -p artifacts
+
+          # TODO: 生成详细的变更日志
+          cat > artifacts/CHANGELOG.md <<EOF
+          # API契约变更日志
+
+          **发布时间**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **版本**: ${{ steps.version.outputs.version }}
+          **Commit**: ${{ github.sha }}
+          **作者**: ${{ github.actor }}
+
+          ## 变更内容
+          ${{ github.event.head_commit.message }}
+
+          ## 影响范围
+          - 所有更新的契约文件
+          EOF
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-changelog
+          path: artifacts/CHANGELOG.md
+          retention-days: 90
+
+  # ==================== 差异检测与告警 ====================
+  diff-check:
+    name: 检测契约差异
+    runs-on: ubuntu-latest
+    needs: contract-validation
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 安装依赖
+        run: |
+          pip install -r scripts/cli/requirements.txt
+          pip install deepdiff pyyaml
+
+      - name: 对比OpenAPI契约差异
+        run: |
+          python scripts/ci/compare_contracts.py \
+            --base origin/main \
+            --head HEAD \
+            --output diff-report.json
+
+      - name: 生成差异报告
+        if: always()
+        run: |
+          cat > diff-report.md <<EOF
+          # API契约差异报告
+
+          **PR**: #${{ github.event.number }}
+          **作者**: ${{ github.actor }}
+          **分支**: ${{ github.head_ref }}
+
+          ## 破坏性变更检测
+
+          $(cat diff-report.json | jq -r '.breaking_changes // "无"')
+
+          ## 非破坏性变更
+
+          $(cat diff-report.json | jq -r '.non_breaking_changes // "无"')
+
+          ## 完整差异
+
+          \`\`\`json
+          $(cat diff-report.json)
+          \`\`\`
+          EOF
+
+      - name: 发布PR评论
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('diff-report.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+      - name: 检查破坏性变更
+        run: |
+          BREAKING_COUNT=$(cat diff-report.json | jq '.breaking_changes_count // 0')
+
+          if [ "$BREAKING_COUNT" -gt "0" ]; then
+            echo "❌ 检测到 $BREAKING_COUNT 个破坏性变更"
+            echo "⚠️  请确认所有破坏性变更已被审查和批准"
+            # 注意: 不会阻断PR，但会标记警告
+            exit 0
+          else
+            echo "✅ 未检测到破坏性变更"
+          fi
+
+  # ==================== 通知 ====================
+  notify:
+    name: 发送通知
+    runs-on: ubuntu-latest
+    needs: [contract-validation, contract-publish, diff-check]
+    if: always()
+
+    steps:
+      - name: 发送成功通知
+        if: needs.contract-validation.result == 'success'
+        run: |
+          echo "✅ API契约验证通过"
+
+          # TODO: 集成实际的通知服务
+          # - Slack Webhook
+          # - 企业微信机器人
+          # - 邮件通知
+
+      - name: 发送失败通知
+        if: needs.contract-validation.result == 'failure'
+        run: |
+          echo "❌ API契约验证失败"
+
+          # TODO: 发送告警通知
