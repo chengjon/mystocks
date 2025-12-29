@@ -1,0 +1,300 @@
+:root {
+  --art-deco-bg-primary: #0A0A0A;
+  --art-deco-bg-secondary: #141414;
+  --art-deco-bg-tertiary: #1A1A1A;
+  --art-deco-fg-primary: #F2F0E4;
+  --art-deco-fg-secondary: #C4C0B4;
+  --art-deco-fg-muted: #888888;
+  --art-deco-gold: #D4AF37;
+  --art-deco-gold-light: #F2E8C4;
+  --art-deco-gold-dark: #B8960E;
+  --art-deco-gold-glow: rgba(212, 175, 55, 0.3);
+  --art-deco-blue: #1E3D59;
+  --art-deco-red: #F92855;
+  --art-deco-green: #2DC08E;
+  --art-deco-border: rgba(212, 175, 55, 0.3);
+  --art-deco-border-hover: rgba(212, 175, 55, 0.8);
+  --art-deco-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  --art-deco-radius: 0px;
+  --art-deco-border-width: 1px;
+  --art-deco-font-display: 'Marcellus', serif;
+  --art-deco-font-body: 'Josefin Sans', sans-serif;
+  --art-deco-font-mono: 'Roboto Mono', monospace;
+}
+
+@media (max-width: 1920px) {
+  :root {
+    --font-size-base: 14px;
+    --font-size-sm: 12px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+  }
+}
+
+@media (max-width: 1440px) {
+  :root {
+    --font-size-base: 13px;
+    --font-size-sm: 11px;
+    --font-size-lg: 15px;
+    --font-size-xl: 18px;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --font-size-base: 12px;
+    --font-size-sm: 10px;
+    --font-size-lg: 14px;
+    --font-size-xl: 16px;
+    --chart-height: 400px;
+    --panel-height: 300px;
+  }
+
+  .chart-toolbar {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+  }
+
+  .chart-toolbar-btn {
+    height: 28px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
+
+  .chart-info {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-base: 11px;
+    --font-size-sm: 9px;
+    --font-size-lg: 13px;
+    --font-size-xl: 14px;
+    --chart-height: 350px;
+    --panel-height: 200px;
+  }
+
+  .pro-kline-chart {
+    min-height: 500px;
+  }
+
+  .chart-toolbar {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .chart-toolbar-select {
+    height: 26px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .chart-toolbar-btn {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .info-group {
+    gap: 12px;
+  }
+
+  .info-item {
+    gap: 4px;
+  }
+
+  .loading-spinner {
+    width: 36px;
+    height: 36px;
+  }
+
+  .loading-text {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-base: 10px;
+    --font-size-sm: 8px;
+    --font-size-lg: 12px;
+    --font-size-xl: 13px;
+    --chart-height: 300px;
+    --panel-height: 150px;
+  }
+
+  .pro-kline-chart {
+    min-height: 450px;
+  }
+
+  .chart-toolbar {
+    padding: 4px 6px;
+  }
+
+  .toolbar-center {
+    display: none;
+  }
+
+  .chart-info {
+    gap: 8px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .crosshair-tooltip {
+    padding: 6px 8px;
+    min-width: 100px;
+  }
+
+  .tooltip-header {
+    font-size: 10px;
+  }
+
+  .tooltip-label,
+  .tooltip-value {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 375px) {
+  :root {
+    --font-size-base: 9px;
+    --font-size-sm: 7px;
+    --font-size-lg: 11px;
+    --font-size-xl: 12px;
+  }
+
+  .chart-toolbar-select {
+    height: 24px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .chart-toolbar-btn {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 9px;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+    --chart-height: 700px;
+    --panel-height: 400px;
+  }
+
+  .chart-toolbar {
+    padding: 16px 24px;
+  }
+
+  .chart-toolbar-btn {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 14px;
+  }
+
+  .chart-toolbar-select {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}
+
+@media print {
+  :root {
+    --art-deco-bg-primary: #ffffff;
+    --art-deco-bg-secondary: #f5f5f5;
+    --art-deco-gold: #000000;
+    --art-deco-border: #cccccc;
+  }
+
+  .chart-toolbar,
+  .loading-overlay,
+  .error-toast {
+    display: none !important;
+  }
+
+  .pro-kline-chart {
+    background: white;
+    border: 1px solid #ccc;
+  }
+}
+
+.touch-optimized {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-target-min {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (pointer: coarse) {
+  .chart-toolbar-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .chart-toolbar-select {
+    min-height: 44px;
+  }
+
+  .oscillator-tab {
+    min-height: 36px;
+    min-width: 44px;
+  }
+}
+
+.high-contrast {
+  --art-deco-border: rgba(212, 175, 55, 0.6);
+  --art-deco-gold-glow: rgba(212, 175, 55, 0.5);
+}
+
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.chart-container {
+  background-color: var(--art-deco-bg-secondary);
+  border: var(--art-deco-border-width) solid var(--art-deco-border);
+  position: relative;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
+  opacity: 0.5;
+}
+
+.chart-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
+  opacity: 0.5;
+}
+
+.kline-chart {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
