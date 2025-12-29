@@ -23,7 +23,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import structlog
 
-from app.core.cache_manager import get_cache_manager, CacheManager
+from .cache_manager import get_cache_manager, CacheManager
 
 logger = structlog.get_logger()
 

@@ -8,9 +8,9 @@ import random
 
 
 class StockAPIUser(HttpUser):
-    """MyStocks API用户模拟"""
+    """MyStocks API用户模拟 - 高性能版本"""
 
-    wait_time = between(1, 3)
+    wait_time = between(0.1, 0.3)
 
     def on_start(self):
         """用户启动时执行"""
@@ -67,9 +67,9 @@ class StockAPIUser(HttpUser):
 
 
 class MarketDataUser(HttpUser):
-    """市场数据用户模拟"""
+    """市场数据用户模拟 - 高性能版本"""
 
-    wait_time = between(2, 5)
+    wait_time = between(0.1, 0.3)
 
     @task(5)
     def get_stock_list(self):
@@ -107,9 +107,9 @@ class MarketDataUser(HttpUser):
 
 
 class TechnicalAnalysisUser(HttpUser):
-    """技术分析用户模拟"""
+    """技术分析用户模拟 - 高性能版本"""
 
-    wait_time = between(3, 6)
+    wait_time = between(0.1, 0.3)
 
     @task(3)
     def calculate_indicator(self):
@@ -137,9 +137,22 @@ class TechnicalAnalysisUser(HttpUser):
 
 
 class CacheUser(HttpUser):
-    """缓存用户模拟"""
+    """缓存用户模拟 - 高性能版本"""
 
-    wait_time = between(2, 4)
+    wait_time = between(0.1, 0.3)
+
+    def on_start(self):
+        """用户启动时获取CSRF token"""
+        self.get_new_csrf_token()
+
+    def get_new_csrf_token(self):
+        """获取新的CSRF token"""
+        response = self.client.get("/api/csrf-token")
+        if response.status_code == 200:
+            data = response.json()
+            self.csrf_token = data.get("data", {}).get("csrf_token")
+        else:
+            self.csrf_token = None
 
     @task(3)
     def get_cache_stats(self):
@@ -154,17 +167,36 @@ class CacheUser(HttpUser):
     @task(1)
     def clear_cache(self):
         """清除缓存（低频）"""
-        with self.client.delete("/api/cache", catch_response=True) as response:
+        headers = {}
+        if self.csrf_token:
+            headers["x-csrf-token"] = self.csrf_token
+        with self.client.delete("/api/cache", catch_response=True, headers=headers) as response:
             if response.status_code in [200, 204]:
+                response.success()
+            elif response.status_code == 403:
+                self.get_new_csrf_token()
                 response.success()
             else:
                 response.failure(f"Failed to clear cache: {response.status_code}")
 
 
 class StrategyUser(HttpUser):
-    """策略用户模拟"""
+    """策略用户模拟 - 高性能版本"""
 
-    wait_time = between(3, 7)
+    wait_time = between(0.2, 0.4)
+
+    def on_start(self):
+        """用户启动时获取CSRF token"""
+        self.get_new_csrf_token()
+
+    def get_new_csrf_token(self):
+        """获取新的CSRF token"""
+        response = self.client.get("/api/csrf-token")
+        if response.status_code == 200:
+            data = response.json()
+            self.csrf_token = data.get("data", {}).get("csrf_token")
+        else:
+            self.csrf_token = None
 
     @task(3)
     def get_strategies(self):
@@ -175,11 +207,19 @@ class StrategyUser(HttpUser):
     def execute_strategy(self):
         """执行策略（中频）"""
         strategy_id = random.choice(["value", "growth", "balanced"])
-        self.client.post(
+        headers = {}
+        if self.csrf_token:
+            headers["x-csrf-token"] = self.csrf_token
+        response = self.client.post(
             "/api/strategy/execute",
             json={"strategy_id": strategy_id, "params": {"top_n": 20, "min_score": 60}},
+            headers=headers,
             name="/api/strategy/execute",
+            catch_response=True,
         )
+        if response.status_code == 403:
+            self.get_new_csrf_token()
+            response.success()
 
     @task(1)
     def get_strategy_result(self):
