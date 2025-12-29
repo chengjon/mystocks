@@ -119,7 +119,7 @@
        response = self.client.get("/api/csrf-token")
        if response.status_code == 200:
            self.csrf_token = response.json().get("data", {}).get("csrf_token")
-   
+
    # 2. 在需要认证的请求中添加token
    @task
    def clear_cache(self):
@@ -242,7 +242,7 @@
 
 **RPS**: ❌ **需改进** - 由于失败率过高，有效RPS偏低
 
-**建议**: 
+**建议**:
 1. 优先修复Locust测试脚本
 2. 验证API端点参数格式
 3. 重新运行测试
