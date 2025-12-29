@@ -1,0 +1,228 @@
+{
+  "description": "K-line chart E2E test fixture data",
+  "symbols": ["000001.SZ", "600519.SH", "300750.SZ"],
+  "intervals": ["1m", "5m", "15m", "1h", "1d", "1w", "1M"],
+  "sampleData": {
+    "000001.SZ": {
+      "1d": {
+        "symbol": "000001.SZ",
+        "interval": "1d",
+        "adjust": "qfq",
+        "candles": [
+          {
+            "timestamp": 1704067200000,
+            "open": 10.50,
+            "high": 11.20,
+            "low": 10.30,
+            "close": 10.80,
+            "volume": 12500000,
+            "amount": 135000000
+          },
+          {
+            "timestamp": 1704153600000,
+            "open": 10.80,
+            "high": 11.00,
+            "low": 10.60,
+            "close": 10.95,
+            "volume": 9800000,
+            "amount": 107000000
+          },
+          {
+            "timestamp": 1704240000000,
+            "open": 10.95,
+            "high": 11.50,
+            "low": 10.85,
+            "close": 11.30,
+            "volume": 15200000,
+            "amount": 172000000
+          },
+          {
+            "timestamp": 1704326400000,
+            "open": 11.30,
+            "high": 12.00,
+            "low": 11.20,
+            "close": 11.85,
+            "volume": 18800000,
+            "amount": 223000000
+          },
+          {
+            "timestamp": 1704412800000,
+            "open": 11.85,
+            "high": 12.10,
+            "low": 11.50,
+            "close": 11.60,
+            "volume": 14500000,
+            "amount": 169000000
+          }
+        ]
+      }
+    },
+    "600519.SH": {
+      "1d": {
+        "symbol": "600519.SH",
+        "interval": "1d",
+        "adjust": "qfq",
+        "candles": [
+          {
+            "timestamp": 1704067200000,
+            "open": 1800.00,
+            "high": 1850.00,
+            "low": 1790.00,
+            "close": 1825.00,
+            "volume": 3500000,
+            "amount": 6375000000
+          },
+          {
+            "timestamp": 1704153600000,
+            "open": 1825.00,
+            "high": 1840.00,
+            "low": 1810.00,
+            "close": 1835.00,
+            "volume": 2800000,
+            "amount": 5140000000
+          },
+          {
+            "timestamp": 1704240000000,
+            "open": 1835.00,
+            "high": 1880.00,
+            "low": 1825.00,
+            "close": 1875.00,
+            "volume": 4200000,
+            "amount": 7875000000
+          }
+        ]
+      }
+    },
+    "300750.SZ": {
+      "1d": {
+        "symbol": "300750.SZ",
+        "interval": "1d",
+        "adjust": "qfq",
+        "candles": [
+          {
+            "timestamp": 1704067200000,
+            "open": 250.00,
+            "high": 265.00,
+            "low": 248.00,
+            "close": 260.00,
+            "volume": 8500000,
+            "amount": 221000000
+          },
+          {
+            "timestamp": 1704153600000,
+            "open": 260.00,
+            "high": 275.00,
+            "low": 255.00,
+            "close": 270.00,
+            "volume": 10200000,
+            "amount": 275400000
+          }
+        ]
+      }
+    }
+  },
+  "indicators": {
+    "MA": {
+      "period": [5, 10, 20],
+      "colors": ["#f39c12", "#3498db", "#9b59b6"]
+    },
+    "EMA": {
+      "period": [12, 26],
+      "colors": ["#1abc9c", "#e74c3c"]
+    },
+    "BOLL": {
+      "period": 20,
+      "std": 2,
+      "colors": ["#9b59b6"]
+    },
+    "MACD": {
+      "fast": 12,
+      "slow": 26,
+      "signal": 9,
+      "colors": ["#26a69a", "#ef5350", "#42a5f5"]
+    },
+    "RSI": {
+      "period": 14,
+      "overbought": 70,
+      "oversold": 30
+    },
+    "KDJ": {
+      "period": 9,
+      "k": 3,
+      "d": 3
+    }
+  },
+  "adjustOptions": ["qfq", "hfq", "none"],
+  "testScenarios": [
+    {
+      "name": "Load K-line data for a stock",
+      "steps": [
+        "Navigate to K-line page",
+        "Enter stock symbol 000001.SZ",
+        "Select interval 1d",
+        "Click load button",
+        "Wait for data to load"
+      ],
+      "expectedResult": "K-line chart displays with 100+ candles"
+    },
+    {
+      "name": "Switch between intervals",
+      "steps": [
+        "Load K-line data",
+        "Click on 15m interval",
+        "Click on 1h interval",
+        "Click on 1d interval"
+      ],
+      "expectedResult": "Chart updates with correct interval data"
+    },
+    {
+      "name": "Toggle indicators",
+      "steps": [
+        "Load K-line data",
+        "Click MA indicator toggle",
+        "Verify MA lines appear",
+        "Click BOLL indicator toggle",
+        "Verify BOLL bands appear"
+      ],
+      "expectedResult": "Indicators toggle on and off correctly"
+    },
+    {
+      "name": "Crosshair interaction",
+      "steps": [
+        "Load K-line data",
+        "Move mouse over chart",
+        "Verify crosshair appears",
+        "Move to different candle",
+        "Verify tooltip updates"
+      ],
+      "expectedResult": "Crosshair follows mouse and shows correct data"
+    },
+    {
+      "name": "Zoom with mouse wheel",
+      "steps": [
+        "Load K-line data",
+        "Scroll mouse wheel up",
+        "Verify chart zooms in",
+        "Scroll mouse wheel down",
+        "Verify chart zooms out"
+      ],
+      "expectedResult": "Chart zooms in and out smoothly"
+    },
+    {
+      "name": "Pan by dragging",
+      "steps": [
+        "Load K-line data",
+        "Click and drag left",
+        "Verify chart pans left",
+        "Click and drag right",
+        "Verify chart pans right"
+      ],
+      "expectedResult": "Chart pans smoothly in both directions"
+    }
+  ],
+  "performance": {
+    "maxLoadTime": 2000,
+    "targetFps": 60,
+    "maxMemoryIncrease": 50
+  }
+}
