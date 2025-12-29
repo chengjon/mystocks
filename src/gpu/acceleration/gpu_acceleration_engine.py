@@ -155,7 +155,7 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info("回测完成，总收益: %s", result.get('total_return', 0))
+            logger.info("回测完成，总收益: %s", result.get("total_return", 0))
             return result
 
         except Exception as e:
@@ -212,7 +212,7 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info("模型训练完成，验证得分: %s", result.get('val_score', 0))
+            logger.info("模型训练完成，验证得分: %s", result.get("val_score", 0))
             return result
 
         except Exception as e:
@@ -273,7 +273,7 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info("特征计算完成，%slen(result.get('metadata', %s").get('feature_types', []))} 类特征")
+            logger.info("特征计算完成，%s 类特征", len(result.get("metadata", {}).get("feature_types", [])))
             return result
 
         except Exception as e:
@@ -331,7 +331,7 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info("参数优化完成，最佳得分: %s", result.get('best_score', 0))
+            logger.info("参数优化完成，最佳得分: %s", result.get("best_score", 0))
             return result
 
         except Exception as e:

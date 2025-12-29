@@ -1546,6 +1546,88 @@ def test_alert_triggering():
 
 ---
 
+## 冲突预防与文件所有权
+
+### 🔐 核心原则
+
+**明确所有权 + 职责分离 = 零冲突协作**
+
+- **文件所有权明确**: 每个文件有唯一的拥有者CLI
+- **职责范围清晰**: 通过目录结构物理隔离
+- **配置集中管理**: Pre-commit配置只由主CLI维护
+- **协调机制完善**: 跨CLI修改需要主CLI协调
+
+### 📋 CLI-5文件所有权
+
+**CLI-5拥有以下文件**:
+- `src/gpu_monitoring/` - GPU监控后端服务
+- `web/frontend/src/views/GPUMonitoring/` - GPU监控前端页面
+- `scripts/start_gpu_monitoring.sh` - GPU监控启动脚本
+
+**共享文件** (需协调修改):
+- `README.md` - 主CLI维护，CLI-5可建议
+- `web/backend/app/main.py` - 拥有者: main (CLI-5需要注册路由时需申请)
+- `web/frontend/src/router/index.js` - 拥有者: main (CLI-5需要添加路由时需申请)
+- `monitoring/prometheus.yml` - 拥有者: main (CLI-5需要添加GPU指标时需申请)
+
+### 🚫 文件修改限制
+
+**CLI-5不允许修改**:
+1. ✅ `.pre-commit-config.yaml` - Pre-commit配置（由主CLI管理）
+2. ✅ `pyproject.toml` - Python项目配置（由主CLI管理）
+3. ✅ `src/` - 核心业务逻辑（由主CLI管理，不包括`src/gpu_monitoring/`）
+4. ✅ `config/` - 配置文件（由主CLI管理）
+5. ✅ 其他CLI拥有的文件
+
+**如需修改其他CLI拥有的文件**:
+1. 向主CLI提交申请（包含修改原因和内容）
+2. 主CLI评估影响范围
+3. 主CLI协调相关CLI
+4. 主CLI执行修改或授权CLI-5修改
+5. 主CLI通知所有相关CLI
+
+**⚠️ 特别注意**: CLI-5需要修改以下属于主CLI的文件，这是3个历史遗留冲突，需要通过主CLI协调：
+- `web/backend/app/main.py` - 注册GPU监控API路由
+- `web/frontend/src/router/index.js` - 添加GPU监控页面路由
+- `monitoring/prometheus.yml` - 添加GPU监控指标
+
+### 🔍 如何查看文件所有权
+
+```bash
+# 方法1: 查看所有权映射文件
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep <文件路径>
+
+# 方法2: 运行冲突检测脚本
+cd /opt/claude/mystocks_spec
+bash scripts/maintenance/check_file_conflicts.sh
+
+# 方法3: 查看完整所有权映射
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP
+```
+
+### ⚙️ Pre-commit配置说明
+
+**重要**: CLI-5 **继承**主CLI的pre-commit配置，**不应修改** `.pre-commit-config.yaml`。
+
+**如果pre-commit检查失败**（例如目录结构检查）:
+```bash
+# 使用环境变量绕过不适用的检查
+DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "commit message"
+```
+
+**何时使用环境变量**:
+- ✅ Worktree环境与主仓库不同，导致目录结构检查失败
+- ✅ 文件组织形式不同，但仍符合项目规范
+- ❌ 不能用于绕过代码质量检查（Ruff, Black, Pylint等）
+
+### 📖 相关文档
+
+- **[冲突预防规范](../../mystocks_spec/docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南
+- **[文件所有权映射](../../mystocks_spec/.FILE_OWNERSHIP)** - 所有权定义
+- **[主CLI工作规范](../../mystocks_spec/docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准
+
+---
+
 ## 工作流程与Git提交规范
 
 ### 📚 完整工作流程指南

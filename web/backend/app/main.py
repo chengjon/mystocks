@@ -441,6 +441,7 @@ from .api import (
     wencai,
 )
 from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
+from src.api.gpu_monitoring_routes import router as gpu_monitoring_router  # CLI-5 GPU监控
 
 # 包含路由
 app.include_router(data.router, prefix="/api/data", tags=["data"])
@@ -495,6 +496,9 @@ app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest,
 
 # 行业概念分析API
 app.include_router(industry_concept_analysis.router)  # 行业概念分析
+
+# CLI-5 GPU监控API
+app.include_router(gpu_monitoring_router, tags=["gpu-monitoring"])  # GPU监控
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")
