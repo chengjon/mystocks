@@ -19,13 +19,13 @@ GPU监控API路由 (CLI-5: Phase 6 - T5.2)
 """
 
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
 
 # 导入统一响应格式
-from app.core.responses import create_unified_success_response, ErrorCodes
+from app.core.responses import create_unified_success_response
 
 # 配置日志
 logger = logging.getLogger(__name__)

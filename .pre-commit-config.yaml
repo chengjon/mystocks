@@ -63,7 +63,7 @@ repos:
         name: Ruff (Final Check)
         files: ^(src/|tests/|web/backend/)
         # ✅ 只检查，不修复（避免在最终阶段修改代码）
-        args: [check, --no-fix]
+        args: [--no-fix]
 
   # ============================================================================
   # 第四步：类型检查
