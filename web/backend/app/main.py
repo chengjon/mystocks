@@ -37,8 +37,8 @@ from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMid
 # 导入性能监控中间件 (Phase 5)
 from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
 
-# 导入全局异常处理器 (CLI-2: Phase 3)
-from .core.global_exception_handlers import register_global_exception_handlers
+# 导入全局异常处理器 (Phase 3 - API契约标准化)
+from .core.exception_handler import register_exception_handlers
 
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
@@ -189,9 +189,9 @@ app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
 performance_middleware = PerformanceMiddleware()
 app.add_middleware(PerformanceMiddleware)
 
-# CLI-2: 注册全局异常处理器 (Phase 3 - T2.8)
-register_global_exception_handlers(app)
-logger.info("✅ 全局异常处理器已注册 (CLI-2 Phase 3)")
+# Phase 3: 注册全局异常处理器 (API契约标准化)
+register_exception_handlers(app)
+logger.info("✅ Global exception handlers registered")
 
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
@@ -397,6 +397,7 @@ from .api import (
     announcement,
     auth,
     cache,
+    contract,  # Phase 4: API契约管理
     dashboard,
     data,
     data_quality,
@@ -484,6 +485,9 @@ app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest,
 
 # 行业概念分析API
 app.include_router(industry_concept_analysis.router)  # 行业概念分析
+
+# Phase 4: API契约管理
+app.include_router(contract.router)  # 契约版本管理、差异检测、验证
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")

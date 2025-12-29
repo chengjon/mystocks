@@ -55,3 +55,4 @@ celery>=5.5.3
 
 # 压测工具
 locust>=2.20.0
+datamodel-codegen==0.0.1

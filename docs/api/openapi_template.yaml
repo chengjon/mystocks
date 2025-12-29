@@ -1,0 +1,231 @@
+openapi: 3.0.3
+info:
+  title: MyStocks API Contract
+  version: 1.0.0
+  description: |
+    量化交易系统API契约
+
+    ## 核心原则
+    1. **Schema First** - Pydantic模型是单一数据源(SSOT)
+    2. **契约优先** - 先更新契约,再修改代码
+    3. **自动化校验** - 代码/响应与契约自动对比
+    4. **全流程管控** - 开发→提交→CI/CD→测试→监控
+
+    ## 业务模块分类
+    - **Market** (市场数据): `/api/market/**`
+    - **Technical** (技术指标): `/api/indicators/**`
+    - **Trade** (交易执行): `/api/trade/**`
+    - **Strategy** (策略管理): `/api/strategy/**`
+    - **System** (系统监控): `/api/system/**`
+
+    ## 统一响应格式
+    所有API端点必须返回 `APIResponse` 格式:
+    ```json
+    {
+      "success": true,
+      "code": 0,
+      "message": "操作成功",
+      "data": { ... },
+      "request_id": "550e8400-e29b-41d4-a716-446655440000",
+      "timestamp": "2025-12-29T15:30:00.000Z"
+    }
+    ```
+
+  contact:
+    name: MyStocks API Support
+    email: support@mystocks.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000
+    description: 本地开发环境
+  - url: http://test-api.mystocks.com
+    description: 测试环境
+  - url: https://api.mystocks.com
+    description: 生产环境
+
+components:
+  schemas:
+    # ========== 统一响应格式 ==========
+    APIResponse:
+      type: object
+      required: [success, code, message, request_id, timestamp]
+      properties:
+        success:
+          type: boolean
+          description: 请求是否成功
+        code:
+          type: integer
+          description: 业务错误码 (0=成功, 4xx=客户端错误, 5xx=服务端错误)
+        message:
+          type: string
+          description: 提示信息
+        data:
+          type: object
+          nullable: true
+          description: 实际数据载荷
+        request_id:
+          type: string
+          format: uuid
+          description: 请求唯一标识
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+
+    # ========== 统一错误格式 ==========
+    CommonError:
+      type: object
+      required: [code, message]
+      properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: integer
+          description: 错误码 (遵循HTTP状态码规范)
+        message:
+          type: string
+          description: 错误提示信息 (面向用户的中文描述)
+        data:
+          type: object
+          nullable: true
+          description: 额外错误数据
+        detail:
+          type: string
+          nullable: true
+          description: 技术细节 (仅开发环境)
+
+    # ========== 分页参数 ==========
+    PaginationParams:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+          description: 页码 (从1开始)
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: 每页数量 (默认20,最大100)
+
+    # ========== 分页响应 ==========
+    PaginatedResponse:
+      type: object
+      required: [items, total, page, page_size, total_pages]
+      properties:
+        items:
+          type: array
+          description: 数据列表
+        total:
+          type: integer
+          minimum: 0
+          description: 总记录数
+        page:
+          type: integer
+          minimum: 1
+          description: 当前页码
+        page_size:
+          type: integer
+          minimum: 1
+          description: 每页数量
+        total_pages:
+          type: integer
+          minimum: 0
+          description: 总页数
+
+    # ========== Market模块示例 ==========
+    KLineCandle:
+      type: object
+      required: [timestamp, open, high, low, close, volume]
+      properties:
+        timestamp:
+          type: integer
+          description: Unix时间戳 (毫秒)
+        open:
+          type: number
+          format: float
+          description: 开盘价
+        high:
+          type: number
+          format: float
+          description: 最高价
+        low:
+          type: number
+          format: float
+          description: 最低价
+        close:
+          type: number
+          format: float
+          description: 收盘价
+        volume:
+          type: integer
+          description: 成交量
+
+    KLineRequest:
+      type: object
+      required: [symbol, interval]
+      properties:
+        symbol:
+          type: string
+          example: "000001.SZ"
+          description: 股票代码
+        interval:
+          type: string
+          enum: [1m, 5m, 15m, 1h, 1d, 1w, 1M]
+          example: "1d"
+          description: K线周期
+        start_date:
+          type: string
+          format: date
+          example: "2024-01-01"
+          description: 开始日期
+        end_date:
+          type: string
+          format: date
+          example: "2024-12-29"
+          description: 结束日期
+        adjust:
+          type: string
+          enum: [qfq, hfq, none]
+          default: qfq
+          description: 复权方式 (qfq=前复权, hfq=后复权, none=不复权)
+
+  # ========== 可重用响应示例 ==========
+  examples:
+    SuccessResponse:
+      summary: 成功响应示例
+      value:
+        success: true
+        code: 0
+        message: "操作成功"
+        data:
+          user_id: 123
+          name: "张三"
+        request_id: "550e8400-e29b-41d4-a716-446655440000"
+        timestamp: "2025-12-29T15:30:00.000Z"
+
+    ErrorResponse:
+      summary: 错误响应示例
+      value:
+        success: false
+        code: 400
+        message: "参数错误"
+        data: null
+        detail: "symbol字段不能为空"
+
+  # ========== 安全定义 ==========
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT认证,格式: Bearer <token>'
+
+# ========== 全局安全配置 ==========
+security:
+  - BearerAuth: []
