@@ -17,20 +17,28 @@
 
 **成功更新了4个Worker CLI的README文件**：
 
-1. **CLI-1: Phase 3 前端K线图** (`/opt/claude/mystocks_phase3_frontend/README.md`)
-   - Git提交: `c611668`
+1. **mystocks_phase3_frontend (Phase 3 前端K线图可视化与UI优化)**
+   - 工作目录: `/opt/claude/mystocks_phase3_frontend/`
+   - README: `README.md`
+   - Git提交: `c611668` (branch: `phase3-frontend-optimization`)
    - 新增章节: "冲突预防与文件所有权" (+77行)
 
-2. **CLI-2: API契约标准化** (`/opt/claude/mystocks_phase6_api_contract/README.md`)
-   - Git提交: `73c744c`
+2. **mystocks_phase6_api_contract (API契约优化与标准化)**
+   - 工作目录: `/opt/claude/mystocks_phase6_api_contract/`
+   - README: `README.md`
+   - Git提交: `73c744c` (branch: `phase6-api-contract-standardization`)
    - 新增章节: "冲突预防与文件所有权" (+78行)
 
-3. **CLI-5: GPU监控仪表板** (`/opt/claude/mystocks_phase6_monitoring/README.md`)
-   - Git提交: `29a7632`
+3. **mystocks_phase6_monitoring (Phase 6 GPU加速监控仪表板)**
+   - 工作目录: `/opt/claude/mystocks_phase6_monitoring/`
+   - README: `README.md`
+   - Git提交: `29a7632` (branch: `phase6-api-contract-standardization`)
    - 新增章节: "冲突预防与文件所有权" (+80行)
 
-4. **CLI-6: 质量保证** (`/opt/claude/mystocks_phase6_quality/README.md`)
-   - Git提交: `ffbab5c`
+4. **mystocks_phase6_quality (质量保证体系构建)**
+   - 工作目录: `/opt/claude/mystocks_phase6_quality/`
+   - README: `README.md`
+   - Git提交: `ffbab5c` (branch: `phase6-quality-assurance`)
    - 新增章节: "冲突预防与文件所有权" (+84行)
 
 **总计**: 4个README文件，~319行新增内容
@@ -77,27 +85,27 @@
 
 ## 🎯 关键成果
 
-### 1. **CLI专属文件所有权明确**
+### 1. **Worker CLI专属文件所有权明确**
 
-**CLI-1 (前端K线图)**:
+**mystocks_phase3_frontend (Phase 3 前端K线图)**:
 - `web/frontend/src/components/Charts/`
 - `web/frontend/src/api/klineApi.ts`
 - `web/frontend/src/api/indicatorApi.ts`
 - `web/frontend/src/api/astockApi.ts`
 
-**CLI-2 (API契约)**:
+**mystocks_phase6_api_contract (API契约标准化)**:
 - `docs/api/contracts/`
 - `web/backend/app/schemas/`
 - `web/backend/openapi/`
 - `tools/api-contract-manager/`
 - `tools/api-contract-sync/`
 
-**CLI-5 (GPU监控)**:
+**mystocks_phase6_monitoring (Phase 6 GPU监控仪表板)**:
 - `src/gpu_monitoring/`
 - `web/frontend/src/views/GPUMonitoring/`
 - `scripts/start_gpu_monitoring.sh`
 
-**CLI-6 (质量保证)**:
+**mystocks_phase6_quality (质量保证体系)**:
 - `tests/`
 - `scripts/maintenance/`
 - `docs/guides/CODE_QUALITY*`
@@ -106,16 +114,16 @@
 
 ### 2. **历史遗留冲突已识别并文档化**
 
-**CLI-2**: 1个冲突
+**mystocks_phase6_api_contract**: 1个冲突
 - `web/backend/app/main.py` (拥有者: main)
 
-**CLI-5**: 3个冲突
+**mystocks_phase6_monitoring**: 3个冲突
 - `monitoring/prometheus.yml` (拥有者: main)
 - `web/backend/app/main.py` (拥有者: main)
 - `web/frontend/src/router/index.js` (拥有者: main)
 
-**CLI-1**: 0个冲突 ✅
-**CLI-6**: 0个冲突 ✅
+**mystocks_phase3_frontend**: 0个冲突 ✅
+**mystocks_phase6_quality**: 0个冲突 ✅
 
 ### 3. **Pre-commit配置说明统一**
 
@@ -136,18 +144,18 @@
 ### **待处理** (建议优先级顺序)
 
 1. **处理4个历史遗留冲突** (优先级: 高)
-   - CLI-2: `web/backend/app/main.py` - 注册全局异常处理器
-   - CLI-5: `monitoring/prometheus.yml` - 添加GPU监控指标
-   - CLI-5: `web/backend/app/main.py` - 注册GPU监控API路由
-   - CLI-5: `web/frontend/src/router/index.js` - 添加GPU监控页面路由
+   - **mystocks_phase6_api_contract (API契约优化与标准化)**: `web/backend/app/main.py` - 注册全局异常处理器
+   - **mystocks_phase6_monitoring (Phase 6 GPU加速监控仪表板)**: `monitoring/prometheus.yml` - 添加GPU监控指标
+   - **mystocks_phase6_monitoring (Phase 6 GPU加速监控仪表板)**: `web/backend/app/main.py` - 注册GPU监控API路由
+   - **mystocks_phase6_monitoring (Phase 6 GPU加速监控仪表板)**: `web/frontend/src/router/index.js` - 添加GPU监控页面路由
 
    **解决方案**: 通过主CLI协调，获得修改权限后再实施
 
-2. **启动CLI开发** (优先级: 按Round 1计划)
-   - **CLI-2** (最高优先级): 开始T2.1定义统一响应格式
-   - **CLI-5** (高优先级): 验证GPU环境，开始T5.1
-   - **CLI-6** (高优先级): 创建pytest配置，开始T6.1
-   - **CLI-1** (已完成): 成果合并到main分支
+2. **启动Worker CLI开发** (优先级: 按Round 1计划)
+   - **mystocks_phase6_api_contract (API契约标准化)** (最高优先级): 开始T2.1定义统一响应格式
+   - **mystocks_phase6_monitoring (GPU监控仪表板)** (高优先级): 验证GPU环境，开始T5.1
+   - **mystocks_phase6_quality (质量保证)** (高优先级): 创建pytest配置，开始T6.1
+   - **mystocks_phase3_frontend (前端K线图)** (已完成): 成果合并到main分支
 
 3. **定期执行冲突检测** (持续)
    - 每天运行冲突检测脚本
@@ -160,10 +168,10 @@
 
 | 分支 | 提交SHA | 描述 | 新增行数 |
 |------|---------|------|---------|
-| phase3-frontend-optimization | c611668 | CLI-1 README冲突预防指南 | +77 |
-| phase6-api-contract-standardization | 73c744c | CLI-2 README冲突预防指南 | +78 |
-| phase6-api-contract-standardization | 29a7632 | CLI-5 README冲突预防指南 | +80 |
-| phase6-quality-assurance | ffbab5c | CLI-6 README冲突预防指南 | +84 |
+| phase3-frontend-optimization | c611668 | mystocks_phase3_frontend README冲突预防指南 | +77 |
+| phase6-api-contract-standardization | 73c744c | mystocks_phase6_api_contract README冲突预防指南 | +78 |
+| phase6-api-contract-standardization | 29a7632 | mystocks_phase6_monitoring README冲突预防指南 | +80 |
+| phase6-quality-assurance | ffbab5c | mystocks_phase6_quality README冲突预防指南 | +84 |
 
 ---
 
