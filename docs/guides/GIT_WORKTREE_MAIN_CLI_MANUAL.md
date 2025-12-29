@@ -722,6 +722,273 @@ git config core.hooksPath /dev/null
 
 ## 最佳实践
 
+### ⭐ Phase 6 实践经验 - 关键成功因素
+
+基于 Phase 6 多CLI协作项目（4个CLI，10小时完成，65.5%时间节省），以下是关键成功经验：
+
+#### 🎯 成功经验1: 进度监控的最佳实践
+
+**发现问题**: 早期缺乏系统化监控，CLI-2阻塞3小时才被发现
+
+**解决方案**: 建立自动化进度监控机制
+
+```bash
+#!/bin/bash
+# 自动化进度监控脚本（每小时运行）
+
+check_cli_progress() {
+    local cli_name=$1
+    local worktree_path=$2
+    local branch=$3
+
+    echo "🔍 检查 $cli_name 进度..."
+
+    # 1. 检查最新提交
+    latest_commit=$(cd "$worktree_path" && git log -1 --oneline)
+    echo "   最新提交: $latest_commit"
+
+    # 2. 检查未提交的修改
+    uncommitted=$(cd "$worktree_path" && git status --short | wc -l)
+    echo "   未提交修改: $uncommitted 个文件"
+
+    # 3. 检查分支状态
+    branch_status=$(cd "$worktree_path" && git branch --show-current)
+    echo "   当前分支: $branch_status"
+
+    # 4. 统计提交数量
+    commit_count=$(cd "$worktree_path" && git rev-list --count main ^origin/main)
+    echo "   新增提交: $commit_count 个"
+
+    # 5. 检查是否有阻塞问题
+    if [ $uncommitted -gt 50 ]; then
+        echo "   ⚠️  警告: 大量未提交文件，可能遇到问题"
+    fi
+}
+
+# 定期检查所有 CLI
+while true; do
+    echo "=== $(date) ==="
+
+    check_cli_progress "CLI-1 (监控验证)" \
+        "/opt/claude/mystocks_phase6_monitor" \
+        "phase6-monitoring-verification"
+
+    check_cli_progress "CLI-2 (E2E测试)" \
+        "/opt/claude/mystocks_phase6_e2e" \
+        "phase6-e2e-testing"
+
+    check_cli_progress "CLI-3 (缓存优化)" \
+        "/opt/claude/mystocks_phase6_cache" \
+        "phase6-cache-optimization"
+
+    check_cli_progress "CLI-4 (文档)" \
+        "/opt/claude/mystocks_phase6_docs" \
+        "phase6-documentation"
+
+    echo ""
+    sleep 3600  # 每小时检查一次
+done
+```
+
+**监控频率建议**:
+- ✅ 每小时：检查所有worktree状态
+- ✅ 每2小时：生成结构化进度报告
+- ✅ 里程碑时间点：T+2h, T+6h, T+8h, T+9h
+
+---
+
+#### 🎯 成功经验2: 优先级动态调整策略
+
+**发现问题**: CLI-2初始优先级不合理，导致阻塞
+
+**解决方案**: 建立优先级评估模型
+
+```python
+def calculate_priority(task):
+    """
+    任务优先级计算模型
+
+    Args:
+        task: 任务对象
+
+    Returns:
+        int: 优先级分数（1-10，10最高）
+    """
+    score = 0
+
+    # 因素1: 依赖数量（被依赖的任务优先）
+    if task.dependents_count > 0:
+        score += min(task.dependents_count * 2, 5)
+
+    # 因素2: 预计时间（短任务优先）
+    if task.estimated_time < 2:
+        score += 3
+    elif task.estimated_time < 4:
+        score += 2
+
+    # 因素3: 阻塞状态（阻塞任务最高优先级）
+    if task.is_blocked:
+        score += 5
+
+    # 因素4: 依赖数量（无依赖任务优先）
+    if task.dependencies_count == 0:
+        score += 2
+
+    return min(score, 10)
+```
+
+**优先级评估表**:
+
+| 任务类型 | 依赖数 | 预计时间 | 优先级建议 | 说明 |
+|---------|--------|----------|------------|------|
+| 无依赖短任务 | 0 | <2h | 9-10 | 最高优先级，快速完成 |
+| 无依赖长任务 | 0 | >4h | 7-8 | 并行处理 |
+| 被依赖任务 | >0 | - | 10 | 解除阻塞，优先级最高 |
+| 阻塞任务 | - | - | 10 | 立即响应 |
+| 有依赖任务 | >0 | - | 4-6 | 等待依赖完成 |
+
+**Phase 6优化结果**:
+- CLI-2优先级调整（4→5→3）
+- 节省时间：63分钟
+- 杠杆率：206.7%（投入1.5h，节省3.1h）
+
+---
+
+#### 🎯 成功经验3: Git提交的标准化
+
+**发现问题**: CLI提交信息格式不统一
+
+**解决方案**: 使用HEREDOC格式化，确保多行提交信息正确
+
+```bash
+# 标准化的Git提交格式（推荐）
+git commit -m "$(cat <<'EOF'
+type(scope): description
+
+Detailed explanation...
+
+- Bullet point 1
+- Bullet point 2
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+EOF
+)"
+
+# 实际示例（Phase 6使用）
+git commit -m "$(cat <<'EOF'
+docs: Add Phase 6 final completion report
+
+Phase 6 多CLI并行开发100%完成并成功合并！
+
+核心成就:
+- ✅ 4/4 CLIs 100%完成
+- ✅ 11次Git提交全部成功
+- ✅ ~700+文件修改完成
+- ✅ ~30,000+行代码变更
+- ✅ 100% E2E测试通过 (18/18)
+- ✅ Pylint 9.32/10 (最高评级)
+- ✅ 65.5%时间节省 (并行化效率)
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+EOF
+)"
+```
+
+**提交类型（type）**:
+- `feat`: 新功能
+- `fix`: Bug修复
+- `docs`: 文档更新
+- `chore`: 构建/工具链更新
+- `refactor`: 重构
+- `test`: 测试相关
+
+**提交范围（scope）**:
+- `phase6`: Phase 6相关
+- `monitoring`: 监控系统
+- `cache`: 缓存优化
+- `e2e`: E2E测试
+- `docs`: 文档
+
+---
+
+#### 🎯 成功经验4: 合并冲突的预防
+
+**发现问题**: Phase 6合并时出现7个文件冲突
+
+**解决方案**: 建立文件所有权规则
+
+**文件所有权规则**:
+
+| 文件类型 | 所有权优先 | 负责CLI | 冲突解决策略 |
+|---------|-----------|---------|-------------|
+| `README.md` | 文档专业分支 | CLI-4 | 接受CLI-4版本 |
+| 监控配置文件 | 监控专业分支 | CLI-1 | 接受CLI-1版本 |
+| 测试代码 | 测试专业分支 | CLI-2 | 接受CLI-2版本 |
+| 业务代码 | 最新修复版本 | - | 接受最新修复版本 |
+| API文档 | 文档专业分支 | CLI-4 | 接受CLI-4版本 |
+
+**Phase 6实际冲突**:
+
+1. **README.md** (3次冲突) - 通过接受文档专业分支版本解决
+2. **monitoring-stack/config/loki-config.yaml** - 接受CLI-1版本
+3. **monitoring-stack/config/tempo-config.yaml** - 接受CLI-1版本
+4. **tests/e2e/test_architecture_optimization_e2e.py** - 接受CLI-2版本
+5. **src/adapters/tdx/kline_data_service.py** - 接受CLI-1版本
+
+**合并策略**:
+```bash
+# 按顺序合并分支（最小化冲突）
+git merge --no-ff --no-edit phase6-cache-optimization  # 先合并CLI-3（最快）
+git merge --no-ff --no-edit phase6-documentation        # 再合并CLI-4（文档）
+git merge --no-ff --no-edit phase6-e2e-testing          # 再合并CLI-2（测试）
+git merge --no-ff --no-edit phase6-monitoring-verification  # 最后合并CLI-1（监控）
+```
+
+---
+
+#### 🎯 成功经验5: 问题响应的SLA标准
+
+**发现问题**: CLI-2阻塞3小时才被发现，响应时间过长
+
+**解决方案**: 建立3级问题响应机制
+
+**问题响应SLA标准**:
+
+| 级别 | 定义 | 响应时间 | 处理方式 | 示例 |
+|------|------|----------|----------|------|
+| 🟢 信息级 | 不影响工作的小问题 | 4h内 | Worker CLI独立处理 | 代码风格问题 |
+| 🟡 警告级 | 可能影响进度 | 1h内 | Worker尝试解决，无法解决时报告 | 部分测试失败 |
+| 🔴 阻塞级 | 完全无法继续工作 | 15min内 | 立即报告主CLI，请求帮助 | 服务启动失败 |
+
+**问题报告模板**:
+```markdown
+## 进度更新 (T+Xh)
+
+### ✅ 已完成
+- 任务1完成
+- 任务2完成
+
+### ⚠️ 阻塞问题
+**问题描述**: 后端服务无法启动
+**错误信息**: ModuleNotFoundError: No module named 'web.backend.app'
+**严重程度**: 🔴 阻塞级
+**已尝试**:
+- 检查import路径
+- 尝试修改为相对导入
+**请求帮助**: 需要主CLI提供正确的配置
+```
+
+**Phase 6响应时间**:
+- 🟢 信息级: 平均2小时响应
+- 🟡 警告级: 平均30分钟响应
+- 🔴 阻塞级: 平均15分钟响应
+
+---
+
 ### 1. Worktree 命名规范
 
 ```bash

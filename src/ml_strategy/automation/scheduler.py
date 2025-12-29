@@ -414,7 +414,7 @@ class TaskScheduler:
                     retry_count=execution.retry_count,
                     error_message=execution.error_message,
                 )
-        except Exception as e:
+        except Exception:
             self.logger.self.logger.error("error")
 
     def start(self):
