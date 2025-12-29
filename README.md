@@ -759,6 +759,146 @@ web/frontend/
 
 ---
 
+## 工作流程与Git提交规范
+
+### 📚 完整工作流程指南
+
+详细的Worker CLI工作流程请参考:
+📖 **[CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)**
+
+### ⚡ 快速参考
+
+#### 每日工作流程
+
+```bash
+# 1. 拉取最新代码
+cd /opt/claude/mystocks_phase3_frontend
+git pull
+
+# 2. 查看今日任务
+vim README.md  # 查看"进度跟踪"章节
+
+# 3. 开发实现
+vim web/frontend/src/components/Charts/ProKLineChart.vue
+
+# 4. 测试代码
+npm run test:unit
+
+# 5. 代码质量检查
+npm run lint
+npm run type-check
+
+# 6. Git提交
+git add .
+git commit -m "feat(kline): add indicator selector component
+
+- Implement IndicatorSelector.vue
+- Add parameter configuration dialog
+- Support multi-indicator selection
+
+Task: T3.4
+Acceptance: [x] Selector UI [x] Parameter dialog [ ] API integration"
+
+# 7. 更新README进度
+vim README.md  # 更新"进度更新"章节
+git add README.md
+git commit -m "docs(readme): update progress to T+24h"
+
+# 8. 推送到远程
+git push
+```
+
+#### Git提交消息规范
+
+```bash
+# 格式: <type>(<scope>): <subject>
+
+# Type类型:
+feat:     新功能
+fix:      修复bug
+docs:     文档更新
+test:     测试相关
+refactor: 重构代码
+chore:    构建/工具链相关
+
+# 示例:
+git commit -m "feat(kline): add MACD indicator overlay
+- Implement MACD calculation and rendering
+- Add parameter configuration (fast/slow/signal)
+- Performance optimization with WebWorker
+
+Task: T3.5
+Acceptance: [x] MACD display [x] Parameters [x] Performance >60fps"
+```
+
+#### 完成标准检查清单
+
+每个任务完成前必须确认:
+
+- [ ] 所有验收标准通过
+- [ ] 代码已提交到Git（频繁提交，小步快跑）
+- [ ] 测试覆盖率达标（前端>70%）
+- [ ] 代码质量检查通过（无lint错误）
+- [ ] README已更新（进度+任务状态）
+- [ ] 文档完整（组件说明、API文档等）
+
+#### 提交频率建议
+
+✅ **好的实践**:
+- 每完成一个子功能就提交
+- 至少每天一次提交
+- 每次提交只包含一个逻辑改动
+
+❌ **不好的实践**:
+- 积累大量改动后才一次性提交
+- 一次提交包含多个不相关的功能
+- 几天不提交代码
+
+#### 进度更新格式
+
+在README中添加"进度更新"章节（如果没有）:
+
+```markdown
+## 进度更新
+
+### T+0h (2025-12-29 15:00)
+- ✅ 任务启动
+- 📝 当前任务: T3.1 ProKLineChart核心组件搭建
+- ⏳ 预计完成: 2025-12-31
+- 🚧 阻塞问题: 无
+
+### T+8h (2025-12-29 23:00)
+- ✅ T3.1 基础组件结构已完成
+- 📝 当前任务: T3.1 添加K线渲染逻辑
+- ⏳ 预计完成: 2025-12-30 18:00
+- 🚧 阻塞问题: 无
+
+### T+24h (2025-12-30 15:00)
+- ✅ T3.1 ProKLineChart核心组件搭建完成
+  - Git提交: abc1234, def5678
+  - 验收标准: [x] 全部通过
+  - 测试覆盖: 85%
+- 📝 当前任务: T3.2 后端API集成
+- ⏳ 预计完成: 2025-12-31 18:00
+- 🚧 阻塞问题: 等待CLI-2 API契约定义（预计明天完成）
+```
+
+### 🎯 关键注意事项
+
+1. **频繁提交**: 不要积累大量改动，每完成一个功能点就提交
+2. **原子提交**: 每次提交只包含一个逻辑改动，便于code review
+3. **清晰的提交消息**: 使用规范的提交格式，说明改动内容和验收状态
+4. **及时更新README**: 每天至少更新一次进度章节
+5. **遇到阻塞立即报告**: 超过4小时无法解决，在README中记录并报告主CLI
+
+### 📞 需要帮助？
+
+- 📖 查看完整工作流程: [CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
+- 🚧 遇到阻塞问题: 在README中记录，主CLI会定期检查
+- 💬 技术问题: 查看项目CLAUDE.md和相关技术文档
+
+---
+
 **审批状态**: ⏳ 待审批
 **审批人**: 项目负责人
 **创建日期**: 2025-12-29
