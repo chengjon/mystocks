@@ -105,6 +105,13 @@ const router = createRouter({
           component: () => import('@/views/system/DatabaseMonitor.vue'),
           meta: { title: '数据库监控', icon: 'Database' }
         },
+        // CLI-5: GPU监控页面 (Phase 6 - T5.3)
+        {
+          path: 'gpu-monitoring',
+          name: 'gpu-monitoring',
+          component: () => import('@/views/GPUMonitoring.vue'),
+          meta: { title: 'GPU监控', icon: 'Monitor' }
+        },
         // Demo pages
         {
           path: 'openstock-demo',
