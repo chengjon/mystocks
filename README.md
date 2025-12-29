@@ -1116,6 +1116,90 @@ pdoc src/ --output-dir docs/api_reference
 
 ---
 
+## 冲突预防与文件所有权
+
+### 🔐 核心原则
+
+**明确所有权 + 职责分离 = 零冲突协作**
+
+- **文件所有权明确**: 每个文件有唯一的拥有者CLI
+- **职责范围清晰**: 通过目录结构物理隔离
+- **配置集中管理**: Pre-commit配置只由主CLI维护
+- **协调机制完善**: 跨CLI修改需要主CLI协调
+
+### 📋 CLI-6文件所有权
+
+**CLI-6拥有以下文件**:
+- `tests/` - 所有测试文件（单元测试、集成测试、E2E测试）
+- `scripts/maintenance/` - 质量保证脚本（检查结构、冲突检测）
+- `docs/guides/CODE_QUALITY*` - 代码质量标准文档
+- `docs/guides/TESTING*` - 测试指南文档
+- `reports/quality/` - 质量报告
+
+**共享文件** (需协调修改):
+- `README.md` - 主CLI维护，CLI-6可建议
+- `.pylint.test.rc` - 主CLI维护，CLI-6可建议
+- `pyproject.toml` - 主CLI维护，CLI-6可建议添加测试配置
+
+### 🚫 文件修改限制
+
+**CLI-6不允许修改**:
+1. ✅ `.pre-commit-config.yaml` - Pre-commit配置（由主CLI管理）
+2. ✅ `src/` - 核心业务逻辑代码（由主CLI和各业务CLI管理）
+3. ✅ `config/` - 配置文件（由主CLI管理）
+4. ✅ `web/backend/app/` - 后端业务代码（由各业务CLI管理）
+5. ✅ `web/frontend/src/` - 前端业务代码（由各业务CLI管理）
+
+**CLI-6的特殊权限**（质量保证角色）:
+- ✅ 可以读取所有CLI的代码进行测试
+- ✅ 可以在`tests/`目录下为任何CLI编写测试
+- ✅ 可以建议代码质量改进，但不能直接修改业务代码
+- ⚠️ 如需修改被测试的代码，必须通过主CLI协调
+
+**如需修改其他CLI拥有的文件**:
+1. 向主CLI提交申请（包含修改原因和内容）
+2. 主CLI评估影响范围
+3. 主CLI协调相关CLI
+4. 主CLI执行修改或授权CLI-6修改
+5. 主CLI通知所有相关CLI
+
+### 🔍 如何查看文件所有权
+
+```bash
+# 方法1: 查看所有权映射文件
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep <文件路径>
+
+# 方法2: 运行冲突检测脚本
+cd /opt/claude/mystocks_spec
+bash scripts/maintenance/check_file_conflicts.sh
+
+# 方法3: 查看完整所有权映射
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP
+```
+
+### ⚙️ Pre-commit配置说明
+
+**重要**: CLI-6 **继承**主CLI的pre-commit配置，**不应修改** `.pre-commit-config.yaml`。
+
+**如果pre-commit检查失败**（例如目录结构检查）:
+```bash
+# 使用环境变量绕过不适用的检查
+DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "commit message"
+```
+
+**何时使用环境变量**:
+- ✅ Worktree环境与主仓库不同，导致目录结构检查失败
+- ✅ 文件组织形式不同，但仍符合项目规范
+- ❌ 不能用于绕过代码质量检查（Ruff, Black, Pylint等）
+
+### 📖 相关文档
+
+- **[冲突预防规范](../../mystocks_spec/docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南
+- **[文件所有权映射](../../mystocks_spec/.FILE_OWNERSHIP)** - 所有权定义
+- **[主CLI工作规范](../../mystocks_spec/docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准
+
+---
+
 ## 工作流程与Git提交规范
 
 ### 📚 完整工作流程指南
