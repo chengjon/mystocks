@@ -138,6 +138,114 @@
 - ✅ 风险识别全面，缓解措施可行
 - ✅ 成功指标可衡量
 
+### 0.5 文件所有权和职责范围确认 ⚠️ **新增关键步骤**
+
+**目的**: 防止多个CLI修改同一文件导致协作冲突
+
+**输出文件**: `.FILE_OWNERSHIP` (主仓库根目录)
+
+**必须完成的步骤**:
+
+#### **0.5.1 创建文件所有权映射**
+```bash
+cd /opt/claude/mystocks_spec
+
+cat > .FILE_OWNERSHIP << 'EOF'
+# Git Worktree文件所有权映射
+# 格式：目录/文件模式: 拥有者CLI | 说明
+
+# ========== 主仓库（主CLI）==========
+src/                               main      | 核心业务逻辑
+config/                            main      | 配置文件
+scripts/dev/                       main      | 开发工具
+pyproject.toml                     main      | 项目配置
+.pre-commit-config.yaml            main      | Pre-commit配置（所有CLI继承）
+requirements.txt                   main      | Python依赖
+
+# ========== CLI-1: Phase 3前端K线图 ==========
+web/frontend/src/components/Charts/  cli-1     | K线图组件
+web/frontend/src/api/klineApi.ts     cli-1     | K线图API
+web/frontend/src/api/indicatorApi.ts cli-1     | 技术指标API
+
+# ========== CLI-2: API契约标准化 ==========
+docs/api/contracts/                  cli-2     | API契约文档
+web/backend/app/schemas/            cli-2     | 数据模式定义
+web/backend/openapi/                 cli-2     | OpenAPI规范
+
+# ========== CLI-5: GPU监控仪表板 ==========
+src/gpu/                            cli-5     | GPU相关代码
+src/gpu_monitoring/                  cli-5     | GPU监控服务
+scripts/start_gpu_monitoring.sh      cli-5     | GPU监控脚本
+
+# ========== CLI-6: 质量保证 ==========
+tests/                              cli-6     | 测试文件
+scripts/maintenance/                cli-6     | 质量保证脚本
+docs/guides/CODE_QUALITY*            cli-6     | 质量标准文档
+docs/guides/TESTING*                 cli-6     | 测试指南文档
+
+# ========== 共享文件（协调修改）==========
+README.md                           main+clis | 主CLI维护，CLI可建议
+CLAUDE.md                           main      | 主CLI维护
+CHANGELOG.md                        main      | 主CLI维护
+
+# ========== 规则说明 ==========
+# 1. 拥有者CLI可以修改其拥有的文件
+# 2. 其他CLI只读这些文件，修改需要协调
+# 3. 共享文件需要主CLI协调修改
+# 4. 未知所有权的文件默认属于主CLI
+EOF
+
+git add .FILE_OWNERSHIP
+git commit -m "chore: add file ownership mapping for all CLIs"
+```
+
+#### **0.5.2 明确每个CLI的职责范围**
+- ✅ 为每个CLI定义清晰的职责范围（参考上面的所有权映射）
+- ✅ 确保职责不重叠（通过目录结构物理隔离）
+- ✅ 记录在任务分配文档中
+- ✅ 在CLI README中说明职责边界
+
+#### **0.5.3 运行冲突检测脚本**
+```bash
+# 首次运行（检测潜在冲突）
+bash scripts/maintenance/check_file_conflicts.sh
+
+# 输出示例：
+# ✅ 未发现文件冲突
+# 或
+# ⚠️  发现N个潜在文件冲突
+#    建议与文件拥有者CLI协调
+```
+
+#### **0.5.4 建立协调机制**
+- ✅ 定义跨CLI修改申请流程
+- ✅ 建立定期同步会议机制（每天一次）
+- ✅ 创建冲突报告流程
+- ✅ 记录在主CLI工作规范中
+
+**跨CLI修改申请流程**:
+```
+Worker CLI需要修改其他CLI拥有的文件时：
+1. 向主CLI提交申请（包含修改原因和内容）
+2. 主CLI评估影响范围
+3. 主CLI协调相关CLI
+4. 主CLI执行修改或授权Worker CLI修改
+5. 主CLI通知所有相关CLI
+```
+
+**质量标准**:
+- ✅ `.FILE_OWNERSHIP`文件已创建并提交
+- ✅ 每个CLI有清晰的目录职责范围
+- ✅ 冲突检测脚本已运行并记录结果
+- ✅ 协调机制已建立并文档化
+
+**预防措施**:
+1. ✅ **在分配任务前**: 更新`.FILE_OWNERSHIP`文件
+2. ✅ **在Worktree创建时**: 验证CLI专属工作目录不侵犯其他CLI
+3. ✅ **在开发过程中**: 定期运行冲突检测脚本（每天一次）
+
+**详细文档**: 参见 [Git Worktree协作冲突预防规范](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
+
 ---
 
 ## 🚀 Phase 1: Git Worktree创建标准流程
@@ -318,17 +426,23 @@ cat /opt/claude/mystocks_phase3_frontend/README.md | head -20
 # 3. Hooks有执行权限
 ls -la /opt/claude/mystocks_phase3_frontend/.claude/hooks/ | grep "\.sh" | grep "rwx"
 
-# 4. Git远程仓库名称为origin（新增⚠️）
+# 4. Git远程仓库名称为origin ⚠️
 cd /opt/claude/mystocks_phase3_frontend && git remote -v | grep origin
 
-# 5. Git分支正确
+# 5. 文件所有权已确认 ⚠️ **新增**
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep cli-1
+
+# 6. Pre-commit配置已说明 ⚠️ **新增**
+grep "Pre-commit配置" /opt/claude/mystocks_phase3_frontend/README.md
+
+# 7. Git分支正确
 cd /opt/claude/mystocks_phase3_frontend && git branch
 
-# 6. 首次提交已完成
+# 8. 首次提交已完成
 cd /opt/claude/mystocks_phase3_frontend && git log --oneline -1
 ```
 
-**预期结果**: 所有6项检查都✅通过
+**预期结果**: 所有8项检查都✅通过
 
 ---
 
@@ -443,33 +557,41 @@ mystocks_spec/
 主CLI在启动Worker CLI前必须确认:
 
 - [ ] 任务分配文档已创建并审查通过
+- [ ] **文件所有权映射已创建（.FILE_OWNERSHIP）** ⚠️ **新增**
 - [ ] Git worktree已创建并验证
-- [ ] **Git远程仓库名称为 `origin`（新增⚠️）**
+- [ ] **Git远程仓库名称为 `origin`**
 - [ ] README.md已初始化并包含所有必需章节
 - [ ] 工作流程指南已创建并链接在README中
 - [ ] Hook脚本权限已修复（755）
 - [ ] Hook脚本语法已验证（bash -n）
+- [ ] **Pre-commit配置已说明（继承主仓库，不修改）** ⚠️ **新增**
 - [ ] 监控脚本已创建并可运行
+- [ ] **冲突检测脚本已创建并测试运行** ⚠️ **新增**
 - [ ] 实施方案文档已创建并获得批准
 
 ### 4.2 Round启动检查清单
 
 **Round 1启动前** (CLI-1, CLI-2, CLI-5, CLI-6):
 - [ ] 主CLI已完成Phase 0-4所有准备步骤
+- [ ] **文件所有权映射已创建并验证** ⚠️ **新增**
 - [ ] 4个worktree已创建并验证
-- [ ] **4个worktree的远程仓库名称为 `origin`（新增⚠️）**
+- [ ] 4个worktree的远程仓库名称为 `origin`
 - [ ] 4个README已初始化并包含工作流程规范
 - [ ] 4个hooks权限已修复并验证
+- [ ] **4个Pre-commit配置已说明** ⚠️ **新增**
+- [ ] **冲突检测脚本已运行并记录结果** ⚠️ **新增**
 - [ ] 监控脚本已测试运行成功
 - [ ] 实施方案文档已获得项目组批准
 
 **Round 2启动前** (CLI-3, CLI-4):
 - [ ] Round 1所有CLI已完成≥80%任务
 - [ ] CLI-2（API契约）已100%完成
+- [ ] **文件所有权映射已更新（包含CLI-3, CLI-4）** ⚠️ **新增**
 - [ ] 2个worktree已创建并验证
-- [ ] **2个worktree的远程仓库名称为 `origin`（新增⚠️）**
+- [ ] 2个worktree的远程仓库名称为 `origin`
 - [ ] 2个README已初始化并包含工作流程规范
 - [ ] 2个hooks权限已修复并验证
+- [ ] **2个Pre-commit配置已说明** ⚠️ **新增**
 - [ ] 依赖验证通过（CLI-3可调用CLI-2的API）
 
 ### 4.3 CLI完成验收标准
@@ -632,6 +754,62 @@ git remote -v
    ```
 
 **详细文档**: 参见 [Git远程名称标准化规范](./GIT_REMOTE_NAME_STANDARD.md)
+
+### 问题7: 多CLI修改同一文件产生冲突 ⚠️ **新增**
+
+**症状**: Git合并时产生"Both modified"冲突
+
+**场景示例**:
+```
+时间线：
+Day 1 10:00 - CLI-1修改了web/frontend/src/components/Chart.vue
+Day 1 14:00 - CLI-6也在代码质量检查中修改了同一文件
+Day 2 10:00 - 合并时产生冲突：Both modified
+```
+
+**根因**:
+- 文件所有权不明确
+- 职责范围重叠
+- 缺少协调机制
+
+**预防** ⚠️ **关键**:
+1. ✅ 创建文件所有权映射(`.FILE_OWNERSHIP`)
+2. ✅ 明确每个CLI的职责范围（目录物理隔离）
+3. ✅ 使用目录结构物理隔离（参考0.5章节）
+4. ✅ 运行冲突检测脚本：`bash scripts/maintenance/check_file_conflicts.sh`
+
+**解决**:
+```bash
+# 1. 查看文件所有权
+cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep <文件路径>
+
+# 示例：
+# web/frontend/src/components/Chart.vue: cli-1
+
+# 2. 与文件拥有者CLI协调
+# 方式1: 向主CLI申请修改权限
+# 方式2: 由拥有者CLI执行修改
+
+# 3. 解决冲突后重新提交
+git add <文件路径>
+git commit -m "chore: resolve merge conflict"
+```
+
+**完整解决方案**:
+参见 [Git Worktree协作冲突预防规范](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
+
+**实际案例**:
+- 首次运行冲突检测脚本（2025-12-29）：
+  - ✅ CLI-6: 无冲突
+  - ⚠️ CLI-2: 1个潜在冲突（`web/backend/app/main.py`，属于main）
+  - ⚠️ CLI-5: 3个潜在冲突（`monitoring/prometheus.yml`等，属于main）
+- 这些冲突是历史遗留问题（框架创建前），未来可避免
+
+**预防措施**:
+1. ✅ **在Phase 0.5**: 创建文件所有权映射
+2. ✅ **在Phase 1.3**: 确认文件所有权已明确
+3. ✅ **在开发过程中**: 定期运行冲突检测脚本
+4. ✅ **在跨CLI修改时**: 遵循协调机制流程
 
 ---
 
