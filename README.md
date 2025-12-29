@@ -1827,3 +1827,134 @@ T2.17 (完成报告)
 - `/opt/claude/mystocks_spec/docs/api/API契约同步组件实现方案.md`
 - `/opt/claude/mystocks_spec/docs/api/API与Web组件最终对齐方案.md`
 - `/opt/claude/mystocks_spec/openspec/changes/frontend-optimization-six-phase/proposal.md`
+
+---
+
+## 工作流程与Git提交规范
+
+### 📚 完整工作流程指南
+
+详细的Worker CLI工作流程请参考:
+📖 **[CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)**
+
+### ⚡ 快速参考
+
+#### 每日工作流程
+
+```bash
+# 1. 拉取最新代码
+cd /opt/claude/mystocks_phase6_api_contract
+git pull
+
+# 2. 查看今日任务
+vim README.md  # 查看"进度跟踪"章节
+
+# 3. 开发实现
+vim docs/api/contracts/market_api.yaml
+
+# 4. 代码质量检查
+ruff check . --fix
+black .
+pylint src/
+
+# 5. Git提交
+git add .
+git commit -m "feat(api): add market data OpenAPI schema
+
+- Define GET /api/market/kline endpoint
+- Add request/response schemas with Pydantic
+- Include error codes and validation rules
+
+Task: T2.1
+Acceptance: [x] OpenAPI schema [x] Pydantic models [ ] TypeScript types"
+
+# 6. 更新README进度
+vim README.md
+git add README.md
+git commit -m "docs(readme): update progress to T+24h"
+
+# 7. 推送到远程
+git push
+```
+
+#### Git提交消息规范
+
+```bash
+# 格式: <type>(<scope>): <subject>
+
+# Type类型:
+feat:     新功能
+fix:      修复bug
+docs:     文档更新
+test:     测试相关
+refactor: 重构代码
+chore:    构建/工具链相关
+
+# 示例:
+git commit -m "feat(schemas): implement UnifiedResponse v2.0
+
+- Add UnifiedResponse base class
+- Implement ErrorCode enum with 20+ error codes
+- Add success() and error() factory methods
+- Include request_id tracking
+
+Task: T2.3
+Acceptance: [x] Base class [x] ErrorCode [x] Factory methods [x] Tests"
+```
+
+#### 完成标准检查清单
+
+每个任务完成前必须确认:
+
+- [ ] 所有验收标准通过
+- [ ] 代码已提交到Git（频繁提交，小步快跑）
+- [ ] 测试覆盖率达标（后端>80%）
+- [ ] 代码质量检查通过（Pylint>8.0）
+- [ ] README已更新（进度+任务状态）
+- [ ] API契约文档完整（OpenAPI + Pydantic + TypeScript）
+
+#### 提交频率建议
+
+✅ **好的实践**:
+- 每完成一个API端点定义就提交
+- 至少每天一次提交
+- 每次提交只包含一个API模块
+
+❌ **不好的实践**:
+- 积累多个API定义后才提交
+- 一次提交包含不相关的改动
+- 几天不提交代码
+
+#### 进度更新格式
+
+```markdown
+## 进度更新
+
+### T+0h (2025-12-29 15:00)
+- ✅ 任务启动
+- 📝 当前任务: T2.1 创建API契约目录结构
+- ⏳ 预计完成: 2025-12-29 18:00
+- 🚧 阻塞问题: 无
+
+### T+24h (2025-12-30 15:00)
+- ✅ T2.2 Market API契约定义完成
+  - Git提交: abc1234, def5678
+  - 验收标准: [x] OpenAPI schema [x] TypeScript types
+  - 测试覆盖: 90%
+- 📝 当前任务: T2.3 实现UnifiedResponse
+- 🚧 阻塞问题: 无
+```
+
+### 🎯 关键注意事项
+
+1. **API契约优先**: 先定义OpenAPI schema，再实现Pydantic模型
+2. **频繁提交**: 每完成一个API端点就提交
+3. **原子提交**: 每次提交只包含一个API模块
+4. **优先级最高**: CLI-3和CLI-4依赖你，请加快进度
+5. **及时更新README**: 每天至少更新一次进度
+
+### 📞 需要帮助？
+
+- 📖 [完整工作流程](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
+- 📚 [API契约参考](../../mystocks_spec/docs/api/API契约同步组件实现方案.md)
+- 🚧 遇到阻塞: 在README中记录，主CLI会优先处理
