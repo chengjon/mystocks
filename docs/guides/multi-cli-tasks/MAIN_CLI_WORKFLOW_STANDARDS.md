@@ -238,7 +238,74 @@ done
 - ✅ 在主CLI工作流程中列出此步骤为必需项
 - ✅ 在Worker CLI启动时验证hooks可执行性
 
-### 1.4 验证Worktree完整性
+### 1.4 验证Git远程仓库名称 ⚠️ **关键步骤**
+
+**问题**: 主仓库的远程仓库名称可能不是Git标准的 `origin`，导致所有文档中的 `git push origin` 命令失败
+
+**症状**:
+```bash
+$ git push origin phase3-frontend-optimization
+fatal: 'origin' does not appear to be a git remote
+```
+
+**检查命令**:
+```bash
+# 检查主仓库的远程名称
+git remote -v
+
+# ❌ 如果输出:
+# mystocks    https://github.com/user/repo.git (fetch)
+# mystocks    https://github.com/user/repo.git (push)
+
+# ✅ 应该输出:
+# origin    https://github.com/user/repo.git (fetch)
+# origin    https://github.com/user/repo.git (push)
+```
+
+**修复命令**:
+```bash
+# 修复主仓库（所有worktree会自动继承）
+git remote rename mystocks origin
+
+# 验证修复
+git remote -v
+# 预期输出: origin (而非 mystocks)
+```
+
+**验证修复**:
+```bash
+# 验证所有worktree已自动继承
+for cli in /opt/claude/mystocks_phase3_frontend \
+          /opt/claude/mystocks_phase6_api_contract \
+          /opt/claude/mystocks_phase6_monitoring \
+          /opt/claude/mystocks_phase6_quality; do
+  echo "## $(basename $cli)"
+  cd "$cli" && git remote -v | grep origin && echo "✅ OK" || echo "❌ Failed"
+  echo ""
+done
+```
+
+**实际修复案例**: Commit `0a65718` (2025-12-29 18:29)
+- 主仓库从 `mystocks` 改为 `origin`
+- 所有4个worktree自动继承
+
+**预防措施**:
+- ✅ **在Phase 1.1创建worktree前**: 确认主仓库使用 `origin`
+  ```bash
+  git remote -v | grep origin || git remote rename <当前名称> origin
+  ```
+
+- ✅ **在Phase 1.4验证中**: 检查所有worktree的远程配置
+  ```bash
+  cd /opt/claude/mystocks_phase3_frontend
+  git remote -v | grep origin
+  ```
+
+- ✅ **在文档中**: 始终使用标准的 `origin` 命令示例
+
+**详细文档**: 参见 [Git远程名称标准化规范](./GIT_REMOTE_NAME_STANDARD.md)
+
+### 1.5 验证Worktree完整性
 
 **检查清单**:
 ```bash
@@ -251,14 +318,17 @@ cat /opt/claude/mystocks_phase3_frontend/README.md | head -20
 # 3. Hooks有执行权限
 ls -la /opt/claude/mystocks_phase3_frontend/.claude/hooks/ | grep "\.sh" | grep "rwx"
 
-# 4. Git分支正确
+# 4. Git远程仓库名称为origin（新增⚠️）
+cd /opt/claude/mystocks_phase3_frontend && git remote -v | grep origin
+
+# 5. Git分支正确
 cd /opt/claude/mystocks_phase3_frontend && git branch
 
-# 5. 首次提交已完成
+# 6. 首次提交已完成
 cd /opt/claude/mystocks_phase3_frontend && git log --oneline -1
 ```
 
-**预期结果**: 所有5项检查都✅通过
+**预期结果**: 所有6项检查都✅通过
 
 ---
 
@@ -374,6 +444,7 @@ mystocks_spec/
 
 - [ ] 任务分配文档已创建并审查通过
 - [ ] Git worktree已创建并验证
+- [ ] **Git远程仓库名称为 `origin`（新增⚠️）**
 - [ ] README.md已初始化并包含所有必需章节
 - [ ] 工作流程指南已创建并链接在README中
 - [ ] Hook脚本权限已修复（755）
@@ -386,6 +457,7 @@ mystocks_spec/
 **Round 1启动前** (CLI-1, CLI-2, CLI-5, CLI-6):
 - [ ] 主CLI已完成Phase 0-4所有准备步骤
 - [ ] 4个worktree已创建并验证
+- [ ] **4个worktree的远程仓库名称为 `origin`（新增⚠️）**
 - [ ] 4个README已初始化并包含工作流程规范
 - [ ] 4个hooks权限已修复并验证
 - [ ] 监控脚本已测试运行成功
@@ -395,6 +467,7 @@ mystocks_spec/
 - [ ] Round 1所有CLI已完成≥80%任务
 - [ ] CLI-2（API契约）已100%完成
 - [ ] 2个worktree已创建并验证
+- [ ] **2个worktree的远程仓库名称为 `origin`（新增⚠️）**
 - [ ] 2个README已初始化并包含工作流程规范
 - [ ] 2个hooks权限已修复并验证
 - [ ] 依赖验证通过（CLI-3可调用CLI-2的API）
@@ -487,6 +560,78 @@ DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "message"
 3. 调整任务优先级或提供帮助
 
 **预防**: 监控脚本每2小时自动运行，主CLI每天检查报告
+
+### 问题6: Git远程名称非标准 ⚠️ **高频问题**
+
+**症状**: Worker CLI执行 `git push origin` 失败
+```bash
+$ git push origin phase3-frontend-optimization
+fatal: 'origin' does not appear to be a git remote
+```
+
+**根因**: 主仓库的远程仓库名称为 `mystocks` 而不是Git标准的 `origin`
+```bash
+$ git remote -v
+mystocks    https://github.com/user/repo.git (fetch)
+mystocks    https://github.com/user/repo.git (push)
+```
+
+**影响**:
+- ❌ 所有文档中的 `git push origin` 命令失败
+- ❌ 所有文档中的 `git pull origin` 命令失败
+- ❌ Worker CLI无法按文档推送代码
+- ❌ 违反Git标准命名约定
+
+**解决方案**:
+```bash
+# 1. 修复主仓库（所有worktree会自动继承）
+cd /opt/claude/mystocks_spec
+git remote rename mystocks origin
+
+# 2. 验证修复
+git remote -v
+# 预期输出:
+# origin    https://github.com/user/repo.git (fetch)
+# origin    https://github.com/user/repo.git (push)
+
+# 3. 验证所有worktree已自动更新
+cd /opt/claude/mystocks_phase3_frontend
+git remote -v
+# 预期输出: origin (已自动继承)
+```
+
+**实际修复案例**: Commit `0a65718` (2025-12-29 18:29)
+- ✅ 主仓库: `mystocks` → `origin`
+- ✅ CLI-1: `mystocks` → `origin` (自动继承)
+- ✅ CLI-2: `mystocks` → `origin` (自动继承)
+- ✅ CLI-5: `mystocks` → `origin` (自动继承)
+- ✅ CLI-6: `mystocks` → `origin` (自动继承)
+
+**预防措施**:
+1. ✅ **在Phase 1初始化时**: 确认主仓库使用 `origin`
+   ```bash
+   # 创建worktree前检查
+   git remote -v | grep origin
+   ```
+
+2. ✅ **在worktree创建后**: 验证远程配置已自动继承
+   ```bash
+   # 验证worktree远程配置
+   cd /opt/claude/mystocks_<phase>_<name>
+   git remote -v | grep origin
+   ```
+
+3. ✅ **在文档中**: 始终使用标准的 `origin` 命令
+   ```bash
+   # ✅ 正确: 文档示例
+   git push origin <branch-name>
+   git pull origin <branch-name>
+
+   # ❌ 错误: 避免自定义名称
+   git push mystocks <branch-name>
+   ```
+
+**详细文档**: 参见 [Git远程名称标准化规范](./GIT_REMOTE_NAME_STANDARD.md)
 
 ---
 
