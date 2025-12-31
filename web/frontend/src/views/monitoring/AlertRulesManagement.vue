@@ -39,7 +39,7 @@
           <template #default="{ row }">
             <el-popover
               placement="top-start"
-              :title="参数详情"
+              title="参数详情"
               :width="300"
               trigger="hover"
             >
@@ -191,27 +191,62 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { monitoringApi } from '@/api'
+import type { FormInstance, FormRules } from 'element-plus'
+
+interface AlertRuleParameters {
+  include_st: boolean
+  change_percent_threshold: number | null
+  volume_ratio_threshold: number | null
+}
+
+interface AlertRuleNotificationConfig {
+  level: 'info' | 'warning' | 'error' | 'critical'
+  channels: string[]
+}
+
+interface AlertRule {
+  id: string
+  rule_name: string
+  symbol: string
+  stock_name: string
+  rule_type: string
+  parameters: AlertRuleParameters
+  notification_config: AlertRuleNotificationConfig
+  priority: number
+  is_active: boolean
+}
+
+interface Pagination {
+  page: number
+  size: number
+  total: number
+}
+
+interface RuleType {
+  value: string
+  label: string
+}
 
 // 响应式数据
-const alertRules = ref([])
-const loading = ref(false)
-const showCreateDialog = ref(false)
-const editingRule = ref(null)
+const alertRules = ref<AlertRule[]>([])
+const loading = ref<boolean>(false)
+const showCreateDialog = ref<boolean>(false)
+const editingRule = ref<AlertRule | null>(null)
 
 // 分页数据
-const pagination = reactive({
+const pagination = reactive<Pagination>({
   page: 1,
   size: 10,
   total: 0
 })
 
 // 规则类型
-const ruleTypes = [
+const ruleTypes: RuleType[] = [
   { value: 'limit_up', label: '涨停监控' },
   { value: 'limit_down', label: '跌停监控' },
   { value: 'volume_spike', label: '成交量激增' },
@@ -222,7 +257,8 @@ const ruleTypes = [
 ]
 
 // 表单数据
-const ruleForm = reactive({
+const ruleForm = reactive<AlertRule>({
+  id: '',
   rule_name: '',
   symbol: '',
   stock_name: '',
@@ -241,7 +277,7 @@ const ruleForm = reactive({
 })
 
 // 表单验证规则
-const ruleFormRules = {
+const ruleFormRules: FormRules = {
   rule_name: [
     { required: true, message: '请输入规则名称', trigger: 'blur' }
   ],
@@ -256,13 +292,14 @@ const ruleFormRules = {
   ]
 }
 
-const ruleFormRef = ref(null)
+const ruleFormRef = ref<FormInstance>()
 
 // 获取告警规则列表
-const fetchAlertRules = async () => {
+const fetchAlertRules = async (): Promise<void> => {
   loading.value = true
   try {
-    alertRules.value = await monitoringApi.getAlertRules()
+    const response = await monitoringApi.getAlertRules()
+    alertRules.value = (response as unknown) as AlertRule[]
     pagination.total = alertRules.value.length
   } catch (error) {
     console.error('获取告警规则失败:', error)
@@ -273,7 +310,7 @@ const fetchAlertRules = async () => {
 }
 
 // 获取规则类型标签
-const getRuleTypeTag = (type) => {
+const getRuleTypeTag = (type: string): 'primary' | 'success' | 'warning' | 'danger' | 'info' => {
   switch (type) {
     case 'limit_up':
     case 'limit_down':
@@ -294,8 +331,8 @@ const getRuleTypeTag = (type) => {
 }
 
 // 格式化规则类型显示
-const formatRuleType = (type) => {
-  const typeMap = {
+const formatRuleType = (type: string): string => {
+  const typeMap: Record<string, string> = {
     'limit_up': '涨停监控',
     'limit_down': '跌停监控',
     'volume_spike': '成交量激增',
@@ -308,7 +345,7 @@ const formatRuleType = (type) => {
 }
 
 // 获取通知级别标签
-const getNotificationLevelTag = (level) => {
+const getNotificationLevelTag = (level: string): 'primary' | 'success' | 'warning' | 'danger' | 'info' => {
   switch (level) {
     case 'info':
       return 'info'
@@ -324,7 +361,7 @@ const getNotificationLevelTag = (level) => {
 }
 
 // 编辑规则
-const editRule = (rule) => {
+const editRule = (rule: AlertRule): void => {
   editingRule.value = rule
   Object.assign(ruleForm, {
     ...rule,
@@ -335,7 +372,9 @@ const editRule = (rule) => {
 }
 
 // 保存规则
-const saveRule = async () => {
+const saveRule = async (): Promise<void> => {
+  if (!ruleFormRef.value) return
+
   try {
     await ruleFormRef.value.validate()
 
@@ -357,7 +396,7 @@ const saveRule = async () => {
 }
 
 // 删除规则
-const deleteRule = async (id) => {
+const deleteRule = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定要删除此告警规则吗？', '删除确认', {
       confirmButtonText: '确定',
@@ -377,7 +416,7 @@ const deleteRule = async (id) => {
 }
 
 // 切换规则状态
-const toggleRuleStatus = async (rule) => {
+const toggleRuleStatus = async (rule: AlertRule): Promise<void> => {
   try {
     await monitoringApi.updateAlertRule(rule.id, { is_active: rule.is_active })
     ElMessage.success(`规则已${rule.is_active ? '启用' : '停用'}`)
@@ -389,8 +428,9 @@ const toggleRuleStatus = async (rule) => {
 }
 
 // 重置表单
-const resetForm = () => {
+const resetForm = (): void => {
   Object.assign(ruleForm, {
+    id: '',
     rule_name: '',
     symbol: '',
     stock_name: '',
@@ -411,19 +451,19 @@ const resetForm = () => {
 }
 
 // 关闭对话框
-const handleCloseDialog = () => {
+const handleCloseDialog = (): void => {
   showCreateDialog.value = false
   resetForm()
 }
 
 // 处理分页大小变化
-const handleSizeChange = (size) => {
+const handleSizeChange = (size: number): void => {
   pagination.size = size
   fetchAlertRules()
 }
 
 // 处理当前页变化
-const handleCurrentChange = (page) => {
+const handleCurrentChange = (page: number): void => {
   pagination.page = page
   fetchAlertRules()
 }

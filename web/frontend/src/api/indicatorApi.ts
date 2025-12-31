@@ -1,11 +1,14 @@
 import apiClient from './apiClient';
-import type { OverlayIndicatorResponse, OscillatorIndicatorResponse, IndicatorParams } from '@/types/indicator';
+import type {
+  OverlayIndicatorResponse,
+  OscillatorIndicatorResponse,
+} from '@/api/types/additional-types';
 
 export interface IndicatorRequest {
   symbol: string;
   interval: string;
   indicators: string[];
-  params?: IndicatorParams;
+  params?: Record<string, any>;
 }
 
 export const indicatorApi = {
@@ -13,7 +16,7 @@ export const indicatorApi = {
     symbol: string,
     interval: string,
     indicators: string[],
-    params?: IndicatorParams
+    params?: Record<string, any>
   ): Promise<OverlayIndicatorResponse> {
     const response = await apiClient.post('/api/indicators/overlay', {
       symbol,
@@ -28,7 +31,7 @@ export const indicatorApi = {
     symbol: string,
     interval: string,
     indicators: string[],
-    params?: IndicatorParams
+    params?: Record<string, any>
   ): Promise<OscillatorIndicatorResponse> {
     const response = await apiClient.post('/api/indicators/oscillator', {
       symbol,

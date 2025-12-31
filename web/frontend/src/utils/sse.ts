@@ -1,3 +1,4 @@
+
 /**
  * Server-Sent Events Service
  *
@@ -243,7 +244,7 @@ export class SSEConnection {
         event: event.type || 'message',
         data: JSON.parse(event.data),
         timestamp: Date.now(),
-        retry: event.timeStamp ? parseInt(event.timeStamp) : undefined
+        retry: event.timeStamp ? Math.floor(event.timeStamp / 1000) : undefined  // timeStamp is milliseconds, retry needs seconds
       }
 
       this.state.lastEventTime = sseEvent.timestamp
@@ -433,51 +434,6 @@ export class SSEManager {
     })
     return states
   }
-
-  /**
-   * React hook for SSE
-   */
-  useConnection(name: string, options?: SSEOptions) {
-    const [connection, setConnection] = React.useState<SSEConnection | null>(null)
-    const [state, setState] = React.useState<SSEState>({
-      connected: false,
-      connecting: false,
-      reconnecting: false,
-      retryCount: 0
-    })
-
-    React.useEffect(() => {
-      if (!options) return
-
-      const conn = this.create(name, options)
-      setConnection(conn)
-
-      const unsubscribe = conn.onStateChange(setState)
-
-      return () => {
-        unsubscribe()
-        this.close(name)
-      }
-    }, [name])
-
-    const subscribe = React.useCallback((eventType: string, handler: SSEEventHandler) => {
-      return connection?.subscribe(eventType, handler)
-    }, [connection])
-
-    const disconnect = React.useCallback(() => {
-      this.close(name)
-    }, [name])
-
-    return {
-      connected: state.connected,
-      connecting: state.connecting,
-      reconnecting: state.reconnecting,
-      error: state.error,
-      retryCount: state.retryCount,
-      subscribe,
-      disconnect
-    }
-  }
 }
 
 /**
@@ -541,18 +497,43 @@ export const SSEHandlers = {
 }
 
 /**
- * React Hook (if React is available)
+ * SSE Connection for Vue Composition API
+ *
+ * Note: This is a framework-agnostic utility. For Vue 3 integration,
+ * use the SSEConnection class directly or create a Vue composable wrapper.
+ *
+ * Example Vue composable:
+ * ```typescript
+ * import { ref, onUnmounted } from 'vue'
+ * import { SSEManager, type SSEOptions, type SSEEvent } from '@/utils/sse'
+ *
+ * export function useSSE(name: string, options: SSEOptions) {
+ *   const connection = SSEManager.getInstance().create(name, options)
+ *   const state = ref(connection.getState())
+ *   const eventHandlers = new Map<string, Set<(event: SSEEvent) => void>>()
+ *
+ *   const unsubscribe = connection.onStateChange((newState) => {
+ *     state.value = newState
+ *   })
+ *
+ *   onUnmounted(() => {
+ *     unsubscribe()
+ *     SSEManager.getInstance().close(name)
+ *   })
+ *
+ *   return {
+ *     state: state.value,
+ *     subscribe: (eventType: string, handler: (event: SSEEvent) => void) =>
+ *       connection.subscribe(eventType, handler)
+ *   }
+ * }
+ * ```
  */
-declare global {
-  namespace React {
-    function useState<T>(initial: T): [T, React.Dispatch<React.SetStateAction<T>>]
-    function useEffect(effect: () => void | (() => void), deps?: any[]): void
-    function useCallback<T>(fn: T, deps?: any[]): T
-  }
-}
-
 export function useSSE(name: string, options: SSEOptions) {
-  return SSEManager.getInstance().useConnection(name, options)
+  // This function is now a placeholder. See the documentation above
+  // for how to create a Vue composable wrapper.
+  console.warn('useSSE: This is a placeholder. Please implement a Vue composable wrapper.')
+  return SSEManager.getInstance().create(name, options)
 }
 
 // Auto cleanup on page unload

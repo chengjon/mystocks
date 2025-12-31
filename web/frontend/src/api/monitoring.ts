@@ -7,12 +7,6 @@
 import { request } from '@/utils/request'
 import { MonitoringAdapter } from '@/utils/monitoring-adapters'
 import type {
-  SystemStatusResponse,
-  MonitoringAlertResponse,
-  LogEntryResponse,
-  DataQualityResponse
-} from '@/api/types/generated-types'
-import type {
   SystemStatusVM,
   MonitoringAlertVM,
   LogEntryVM,

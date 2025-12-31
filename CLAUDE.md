@@ -33,6 +33,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 6. [文件组织规范](#文件组织规范)
 7. [代码质量保证](#代码质量保证)
 8. [监控系统](#监控系统)
+9. [BUG登记](#bug登记)
 
 ---
 
@@ -637,7 +638,63 @@ docker logs mystocks-grafana -f
 
 ---
 
-**文档版本**: v2.0 (优化版)
-**最后更新**: 2025-12-29
+## BUG登记
+
+**快速命令**: 输入 **"登记BUG"**、**"记BUG"**、**"登记bug"** 或 **"记bug"** 触发
+
+### 功能说明
+
+当发现需要登记的BUG时，使用上述命令，Claude Code 将：
+1. 读取 `/opt/claude/mystocks_spec/docs/reports/bugs/MANUAL_BUG_REPORTING_GUIDE.md` 获取最新模板格式
+2. 读取 `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-template.json` 获取模板结构
+3. 根据刚才修复的问题，按模板要求生成 BUG 登记文件
+4. 保存到 `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-report.json`
+
+### 模板格式
+
+支持两种格式（由 Claude Code 自动选择）：
+
+| 格式 | 字段 | 数量限制 |
+|------|------|----------|
+| 单个BUG | `bug` 对象 | 1个 |
+| 批量BUG | `bugs` 数组 | 最多20个 |
+
+### metadata 必填字段
+
+| 字段 | 说明 |
+|------|------|
+| `version` | 固定为 `"1.0"` |
+| `format` | 固定为 `"buger-manual-report"` |
+| `reportedAt` | ISO 8601 格式时间 |
+| `reporter` | 登记人姓名 |
+
+### BUG 字段说明
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `errorCode` | 是 | 大写字母、数字、下划线，如 `ERR_TS_TYPE_001` |
+| `title` | 是 | BUG标题，简明扼要 |
+| `message` | 是 | 详细错误描述 |
+| `severity` | 是 | critical/high/medium/low |
+
+### 严重程度分级
+
+| 级别 | 标识 | 影响范围 |
+|------|------|----------|
+| critical | 🔴 崩溃 | 系统不可用 |
+| high | 🟠 严重 | 核心功能受损 |
+| medium | 🟡 中等 | 功能异常，有 workaround |
+| low | 🟢 轻微 | UI显示问题等 |
+
+### 相关文件
+
+- 模板指南: `/opt/claude/mystocks_spec/docs/reports/bugs/MANUAL_BUG_REPORTING_GUIDE.md`
+- 模板文件: `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-template.json`
+- 输出位置: `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-report.json`
+
+---
+
+**文档版本**: v2.1 (新增 BUG 登记功能)
+**最后更新**: 2025-12-31
 **维护者**: Main CLI (Claude Code)
-**优化说明**: 精简多CLI协作内容，去除重复，优化章节结构
+**新增说明**: 添加 BUG 登记快速命令支持

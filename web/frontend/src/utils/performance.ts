@@ -4,7 +4,7 @@
  * Provides lazy loading, code splitting, and performance monitoring tools.
  */
 
-import type { ComponentType } from 'vue'
+import type { Component } from 'vue'
 
 /**
  * Performance metrics interface
@@ -21,8 +21,8 @@ export interface PerformanceMetrics {
  * Lazy load component with loading and error states
  */
 export interface LazyComponentOptions {
-  loadingComponent?: ComponentType
-  errorComponent?: ComponentType
+  loadingComponent?: Component
+  errorComponent?: Component
   timeout?: number
   retry?: boolean
   maxRetries?: number
@@ -196,7 +196,7 @@ export class LazyComponentLoader {
   /**
    * Load component lazily
    */
-  static async load<T = ComponentType>(
+  static async load<T = Component>(
     loader: () => Promise<{ default: T }>,
     options: LazyComponentOptions = {}
   ): Promise<LoadComponentResult<T>> {
@@ -276,7 +276,7 @@ export class LazyComponentLoader {
   /**
    * Preload component
    */
-  static async preload<T = ComponentType>(
+  static async preload<T = Component>(
     loader: () => Promise<{ default: T }>
   ): Promise<void> {
     try {
@@ -553,7 +553,8 @@ export class BundleAnalyzer {
    */
   static monitorChunkLoading(): void {
     // Override import() to monitor chunk loading
-    const originalImport = (window as any).__dynamic_import__ || window.importScripts
+    // Use any type since importScripts is a Web Worker API
+    const originalImport = (window as any).__dynamic_import__ || (window as any).importScripts
 
     if ('import' in window) {
       // Note: This is a simplified example

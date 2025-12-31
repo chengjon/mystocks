@@ -92,14 +92,14 @@ export class StrategyAdapter {
     }
 
     try {
-      const task = apiResponse.data;
+      const task = apiResponse.data as any; // Support both snake_case and camelCase
       return {
         taskId: task.task_id || task.taskId,
         strategyId: task.strategy_id || task.strategyId,
         status: this.translateBacktestStatus(task.status),
         progress: task.progress || 0,
-        startTime: this.parseDate(task.start_time),
-        endTime: task.end_time ? this.parseDate(task.end_time) : undefined,
+        startTime: this.parseDate(task.start_time || task.startTime),
+        endTime: task.end_time || task.endTime ? this.parseDate(task.end_time || task.endTime) : undefined,
         result: task.result ? this.adaptBacktestResult(task.result) : undefined,
         error: task.error,
       };
@@ -226,7 +226,7 @@ export class StrategyAdapter {
 
     try {
       return new Date(dateStr);
-    } catch (error) {
+    } catch (_) {
       console.warn('[StrategyAdapter] Invalid date string:', dateStr);
       return new Date();
     }

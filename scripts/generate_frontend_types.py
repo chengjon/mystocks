@@ -38,6 +38,11 @@ class TypeConverter:
         "Decimal": "string",
         "UUID": "string",
         "bytes": "string",
+        # Handle Python built-in types
+        "dict": "Record<string, any>",
+        "date_type": "string | Date",
+        "list": "any[]",
+        "tuple": "any[]",
     }
 
     # Complex type patterns
@@ -181,6 +186,8 @@ class TypeConverter:
             r'\bfloat\b': 'number',
             r'\bbool\b': 'boolean',
             r'\bAny\b': 'any',  # Python typing.Any -> TypeScript any
+            r'\bdict\b': 'Record<string, any>',  # Python dict -> TypeScript Record
+            r'\bdate_type\b': 'string | Date',  # Python date_type -> Date
         }
 
         for py_type, ts_type in replacements.items():
@@ -200,6 +207,11 @@ class TypeConverter:
         # Record<string, any[>  -> Record<string, any[]>
         type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
 
+        # Fix standalone 'T' type parameter (generic) -> 'any'
+        type_str = re.sub(r'\bT\b', 'any', type_str)
+
+        # Fix any remaining dict[] patterns (dict followed by [])
+        type_str = re.sub(r'dict\[\]', 'Record<string, any>[]', type_str)
 
         return type_str
 
@@ -404,6 +416,29 @@ class TypeScriptGenerator:
         # Fix any remaining parentheses around type names
         ts_code = re.sub(r'\(([^()]+)\)', r'\1', ts_code)
 
+        # Fix Python dict[] patterns
+        ts_code = re.sub(r'dict\[\]', 'Record<string, any>[]', ts_code)
+        ts_code = re.sub(r':\s*dict(;|,|\s)', ': Record<string, any>\1', ts_code)
+
+        # Fix standalone T type parameter -> any
+        ts_code = re.sub(r':\s*T\b', ': any', ts_code)
+
+        # Fix APIResponse interface to be generic
+        # Change "export interface APIResponse {" to "export interface APIResponse<T = any> {"
+        # Only if it has "data: T | null" field
+        ts_code = re.sub(
+            r'export interface APIResponse\s*\{[^}]*data:\s*T\s*\|\s*null',
+            'export interface APIResponse<T = any> {\n  success: boolean;\n  code: number;\n  message: string;\n  data: T | null',
+            ts_code
+        )
+
+        # Fix PaginatedResponse to be generic
+        ts_code = re.sub(
+            r'export interface PaginatedResponse\s*\{[^}]*data\?\:\s*dict\[\]',
+            'export interface PaginatedResponse<T = any> {\n  total?: number;\n  page?: number;\n  pageSize?: number;\n  data?: T[]',
+            ts_code
+        )
+
         # Debug: print if changes were made
         if ts_code != original:
             print(f"  🔧 Fixed syntax issues ({len(original) - len(ts_code)} chars removed)")
@@ -480,10 +515,144 @@ def main():
     generator = TypeScriptGenerator()
     ts_code = generator.generate(extractor.models)
 
-    # Write to output file
+    # Custom types to append (not overwritten by generator)
+    custom_types = '''
+// ============================================
+// Custom Type Aliases (appended by generator)
+// ============================================
+
+// Type alias for backward compatibility
+export type KLineDataResponse = KlineResponse;
+
+// API wrapper response type for FundFlow (inner data structure)
+export interface FundFlowAPIResponse {
+  fundFlow?: FundFlowItem[];
+  total?: number;
+  symbol?: string | null;
+  timeframe?: string | null;
+}
+
+// Full API response wrapper for FundFlow (with success/code/message)
+export interface FundFlowFullResponse {
+  success?: boolean;
+  code?: number;
+  message?: string;
+  data?: FundFlowAPIResponse | null;
+  timestamp?: string;
+  request_id?: string;
+  errors?: any;
+}
+
+// Index data for market overview
+export interface IndexData {
+  code?: string;
+  name?: string;
+  current?: number;
+  change?: number;
+  changePercent?: number;
+  volume?: number;
+  timestamp?: string;
+}
+
+// Sector data for market heatmap
+export interface SectorData {
+  name?: string;
+  changePercent?: number;
+  stockCount?: number;
+  leadingStock?: string | null;
+  avgPrice?: number;
+}
+
+// K-line point for chart data
+export interface KLinePoint {
+  time?: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number | null;
+}
+
+// Stock search result
+export interface StockSearchResult {
+  symbol?: string;
+  name?: string;
+  market?: string;
+  type?: string;
+  current?: number;
+  change?: number;
+  changePercent?: number;
+}
+
+// Indicator parameter type
+export interface IndicatorParameter {
+  name?: string;
+  type?: string;
+  default?: any;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+// System status response
+export interface SystemStatusResponse {
+  status?: string;
+  version?: string;
+  uptime?: number;
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  components?: Record<string, any>;
+  timestamp?: string;
+}
+
+// Monitoring alert response
+export interface MonitoringAlertResponse {
+  alerts?: MonitoringAlert[];
+  totalCount?: number;
+}
+
+export interface MonitoringAlert {
+  id?: number;
+  severity?: string;
+  message?: string;
+  timestamp?: string;
+  acknowledged?: boolean;
+}
+
+// Log entry response
+export interface LogEntryResponse {
+  logs?: LogEntry[];
+  totalCount?: number;
+}
+
+export interface LogEntry {
+  level?: string;
+  message?: string;
+  timestamp?: string;
+  source?: string;
+}
+
+// Data quality response
+export interface DataQualityResponse {
+  checks?: DataQualityCheck[];
+  summary?: Record<string, any>;
+}
+
+export interface DataQualityCheck {
+  checkName?: string;
+  status?: string;
+  message?: string;
+  details?: Record<string, any>;
+}
+'''
+
+    # Write to output file (generated types + custom types)
     output_file = OUTPUT_DIR / "generated-types.ts"
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(ts_code)
+        f.write(custom_types)
 
     print(f"✅ Generated TypeScript types: {output_file}")
     print(f"   Found {len(extractor.models)} models")

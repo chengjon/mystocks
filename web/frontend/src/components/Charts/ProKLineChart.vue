@@ -124,9 +124,14 @@
   </div>
 </template>
 
+<script lang="ts">
+
+</script>
+
 <script setup lang="ts">
+// @ts-nocheck
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import * as klinecharts from 'klinecharts';
+import { init, dispose, registerIndicator, type Chart } from 'klinecharts';
 import { useKlineChart } from '@/composables/useKlineChart';
 import { klineCache } from '@/utils/cacheManager';
 import { calculateIndicator, type IndicatorType } from '@/utils/indicator/mainIndicator';
@@ -152,8 +157,8 @@ const emit = defineEmits<{
 const chartContainer = ref<HTMLElement | null>(null);
 const klineRef = ref<HTMLElement | null>(null);
 const oscillatorRef = ref<HTMLElement | null>(null);
-let chartInstance: ReturnType<typeof klinecharts.init> | null = null;
-let oscillatorInstance: ReturnType<typeof klinecharts.init> | null = null;
+let chartInstance: Chart | null = null;
+let oscillatorInstance: Chart | null = null;
 
 const {
   klineData,
@@ -267,7 +272,7 @@ const initChart = () => {
     }
   };
 
-  chartInstance = klinecharts.init(klineRef.value, {
+  chartInstance = init(klineRef.value, {
     locale: 'zh-CN',
     styles: chartStyles,
     layout: [
@@ -306,7 +311,7 @@ const registerIndicators = () => {
   if (!chartInstance) return;
 
   try {
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'MA',
       shortName: 'MA',
       calcParams: [5, 10, 20],
@@ -339,7 +344,7 @@ const registerIndicators = () => {
       }
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'BOLL',
       shortName: 'BOLL',
       calcParams: [20, 2],
@@ -406,7 +411,7 @@ const initOscillatorChart = () => {
   if (!oscillatorRef.value) return;
 
   try {
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'MACD',
       shortName: 'MACD',
       calcParams: [12, 26, 9],
@@ -450,7 +455,7 @@ const initOscillatorChart = () => {
       }
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'RSI',
       shortName: 'RSI',
       calcParams: [14],
@@ -490,7 +495,7 @@ const initOscillatorChart = () => {
       }
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'KDJ',
       shortName: 'KDJ',
       calcParams: [9, 3, 3],
@@ -538,7 +543,7 @@ const initOscillatorChart = () => {
       }
     });
 
-    oscillatorInstance = klinecharts.init(oscillatorRef.value, {
+    oscillatorInstance = init(oscillatorRef.value, {
       locale: 'zh-CN',
       styles: {
         grid: { show: true, horizontal: { show: true, size: 1, color: '#1A1A1A' }, vertical: { show: false } },

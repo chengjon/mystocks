@@ -253,9 +253,9 @@ export interface MAResult extends IndicatorResult {
 }
 
 /**
- * MACD 指标
+ * MACD 指标 (不继承 Indicator，避免类型冲突)
  */
-export interface MACDIndicator extends Indicator {
+export interface MACDIndicator {
   type: 'MACD';
   config: MACDConfig;
   result: MACDResult;
@@ -274,9 +274,9 @@ export interface MACDConfig extends IndicatorConfig {
 }
 
 /**
- * MACD 结果
+ * MACD 结果 (不继承 IndicatorResult，避免类型冲突)
  */
-export interface MACDResult extends IndicatorResult {
+export interface MACDResult {
   data: IndicatorDataPoint & {
     extra: {
       dif: number; // 快线
@@ -287,9 +287,9 @@ export interface MACDResult extends IndicatorResult {
 }
 
 /**
- * KDJ 指标
+ * KDJ 指标 (不继承 Indicator，避免类型冲突)
  */
-export interface KDJIndicator extends Indicator {
+export interface KDJIndicator {
   type: 'KDJ';
   config: KDJConfig;
   result: KDJResult;
@@ -308,9 +308,9 @@ export interface KDJConfig extends IndicatorConfig {
 }
 
 /**
- * KDJ 结果
+ * KDJ 结果 (不继承 IndicatorResult，避免类型冲突)
  */
-export interface KDJResult extends IndicatorResult {
+export interface KDJResult {
   data: IndicatorDataPoint & {
     extra: {
       k: number; // K值
@@ -321,9 +321,9 @@ export interface KDJResult extends IndicatorResult {
 }
 
 /**
- * RSI 指标
+ * RSI 指标 (不继承 Indicator，避免类型冲突)
  */
-export interface RSIIndicator extends Indicator {
+export interface RSIIndicator {
   type: 'RSI';
   config: RSIConfig;
   result: RSIResult;
@@ -338,9 +338,9 @@ export interface RSIConfig extends IndicatorConfig {
 }
 
 /**
- * RSI 结果
+ * RSI 结果 (不继承 IndicatorResult，避免类型冲突)
  */
-export interface RSIResult extends IndicatorResult {
+export interface RSIResult {
   data: IndicatorDataPoint & {
     extra: {
       rsi6: number; // 6日RSI
@@ -351,9 +351,9 @@ export interface RSIResult extends IndicatorResult {
 }
 
 /**
- * 布林带（BOLL）指标
+ * 布林带（BOLL）指标 (不继承 Indicator，避免类型冲突)
  */
-export interface BOLLIndicator extends Indicator {
+export interface BOLLIndicator {
   type: 'BOLL';
   config: BOLLConfig;
   result: BOLLResult;
@@ -371,9 +371,9 @@ export interface BOLLConfig extends IndicatorConfig {
 }
 
 /**
- * BOLL 结果
+ * BOLL 结果 (不继承 IndicatorResult，避免类型冲突)
  */
-export interface BOLLResult extends IndicatorResult {
+export interface BOLLResult {
   data: IndicatorDataPoint & {
     extra: {
       upper: number; // 上轨

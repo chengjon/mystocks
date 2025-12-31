@@ -10,7 +10,7 @@ import type {
   StrategyConfigResponse,
   BacktestRequest,
   BacktestResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/additional-types'
 import type {
   StrategyListItemVM,
   StrategyConfigVM,

@@ -60,25 +60,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const loginFormRef = ref(null)
-const loading = ref(false)
+const loginFormRef = ref<FormInstance>()
+const loading = ref<boolean>(false)
 
-const loginForm = reactive({
+interface LoginForm {
+  username: string
+  password: string
+}
+
+const loginForm = reactive<LoginForm>({
   username: '',
   password: ''
 })
 
-const rules = {
+const rules: FormRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
   ],
@@ -88,22 +94,27 @@ const rules = {
   ]
 }
 
-const handleLogin = async () => {
+interface LoginResult {
+  success: boolean
+  message?: string
+}
+
+const handleLogin = async (): Promise<void> => {
   if (!loginFormRef.value) return
 
-  await loginFormRef.value.validate(async (valid) => {
+  await loginFormRef.value.validate(async (valid: boolean) => {
     if (!valid) return
 
     loading.value = true
     try {
-      const result = await authStore.login(loginForm.username, loginForm.password)
+      const result: LoginResult = await authStore.login(loginForm.username, loginForm.password)
 
       if (result.success) {
         ElMessage.success('登录成功')
-        const redirect = route.query.redirect || '/'
+        const redirect = (route.query.redirect as string) || '/'
         router.push(redirect)
       } else {
-        ElMessage.error(result.message)
+        ElMessage.error(result.message || '登录失败')
       }
     } catch (error) {
       ElMessage.error('登录失败')

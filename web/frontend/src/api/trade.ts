@@ -9,7 +9,7 @@ import { TradeAdapter } from '@/utils/trade-adapters'
 import type {
   OrderRequest,
   OrderResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/additional-types'
 import type {
   OrderVM,
   PositionVM,
