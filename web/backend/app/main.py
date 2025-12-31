@@ -116,11 +116,27 @@ async def lifespan(app: FastAPI):
         logger.error("❌ Database initialization failed", error=str(e))
         raise
 
-    # 启动缓存淘汰调度器
+    # 启动缓存淘汰调度器 (添加超时保护)
     try:
-        scheduler = get_eviction_scheduler()
-        scheduler.start_daily_cleanup(hour=2, minute=0)
-        logger.info("✅ Cache eviction scheduler started")
+        # 使用signal设置超时（仅在Unix系统上有效）
+        import signal
+
+        def timeout_handler(signum, frame):
+            raise TimeoutError("Cache eviction scheduler initialization timeout")
+
+        # 设置5秒超时
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
+
+        try:
+            scheduler = get_eviction_scheduler()
+            scheduler.start_daily_cleanup(hour=2, minute=0)
+            logger.info("✅ Cache eviction scheduler started")
+        finally:
+            signal.alarm(0)  # 取消超时
+
+    except TimeoutError:
+        logger.warning("⚠️ Cache eviction scheduler initialization timeout - skipping (TDengine not available)")
     except Exception as e:
         logger.warning("⚠️ Failed to start cache eviction scheduler", error=str(e))
 

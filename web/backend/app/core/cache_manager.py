@@ -69,6 +69,7 @@ class CacheManager:
             tdengine_manager: TDengineManager 实例 (如果不提供，使用单例)
         """
         self.tdengine = tdengine_manager or get_tdengine_manager()
+        self._tdengine_available = self.tdengine is not None
         self._cache_stats = {
             "hits": 0,
             "misses": 0,
@@ -400,6 +401,8 @@ class CacheManager:
 
         try:
             # 优化：并发读取内存缓存，先处理最可能命中的数据
+            _ = []  # noqa: F841 - Placeholder for memory_cache_futures (to be implemented)
+            _ = []  # noqa: F841 - Placeholder for tdengine_cache_futures (to be implemented)
 
             # 预过滤：避免重复查询
             unique_queries = []
