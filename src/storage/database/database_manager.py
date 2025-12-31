@@ -627,14 +627,16 @@ class DatabaseTableManager:
                         if expected.get("type") and actual.get("type"):
                             if expected["type"].lower() != actual["type"].lower():
                                 issues.append(
-                                    f"Column {col_name} type mismatch: expected {expected['type']}, got {actual['type']}"
+                                    f"Column {col_name} type mismatch: "
+                                    f"expected {expected['type']}, got {actual['type']}"
                                 )
 
                         # 检查是否允许为空
                         if "nullable" in expected and "nullable" in actual:
                             if expected["nullable"] != actual["nullable"]:
                                 issues.append(
-                                    f"Column {col_name} nullable mismatch: expected {expected['nullable']}, got {actual['nullable']}"
+                                    f"Column {col_name} nullable mismatch: "
+                                    f"expected {expected['nullable']}, got {actual['nullable']}"
                                 )
 
                 # 确定验证状态

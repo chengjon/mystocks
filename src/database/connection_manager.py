@@ -174,7 +174,7 @@ class DatabaseConnectionManager:
             raise Exception("Invalid connection")
 
         # 模拟查询执行
-        logger.info("Executing query: %s...", query[)
+        logger.info("Executing query: %s...", query[:100])
 
         # 根据查询类型返回不同的模拟数据
         if "SELECT" in query.upper():

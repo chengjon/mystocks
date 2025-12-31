@@ -449,7 +449,7 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
         if use_mock:
             # 使用Mock数据
             mock_manager = get_mock_data_manager()
-            monitoring_data = mock_manager.get_data("monitoring", alert_type="all")
+            mock_manager.get_data("monitoring", alert_type="all")
 
             # 构建返回的监控摘要数据
             summary = {

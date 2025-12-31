@@ -56,8 +56,9 @@ class BaseDataSourceAdapter(ABC):
         try:
             quality_result = self.quality_validator.validate_stock_data(df, symbol, data_type)
 
-self.logger.info("适配器初始化完成")
-                self.logger.warning("数据质量检查失败: {symbol} {data_type} - "
+            if quality_result["quality_score"] < 80:
+                self.logger.warning(
+                    "数据质量检查失败: %s %s - "
                     f"得分: {quality_result['quality_score']:.1f}, "
                     f"问题数: {len(quality_result['issues'])}"
                 )
@@ -66,14 +67,15 @@ self.logger.info("适配器初始化完成")
                 critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
-                        self.logger.error("  - {issue['type']}: {issue['message']}")
+                        self.logger.error("  - %s: %s", issue["type"], issue["message"])
                 else:
                     # 只记录警告级别的问题
                     warning_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "warning"]
                     for issue in warning_issues:
-                        self.logger.warning("  - {issue['type']}: {issue['message']}")
-self.logger.info("数据获取完成")
-                self.logger.info("数据质量检查通过: {symbol} {data_type} - " f"得分: {quality_result['quality_score']:.1f}"
+                        self.logger.warning("  - %s: %s", issue["type"], issue["message"])
+            else:
+                self.logger.info(
+                    "数据质量检查通过: %s %s - 得分: %.1f", symbol, data_type, quality_result["quality_score"]
                 )
 
         except Exception as e:
@@ -109,14 +111,14 @@ self.logger.info("数据获取完成")
 
             quality_result = self.quality_validator.validate_stock_data(df, symbol, "realtime")
 
-self.logger.info("数据处理完成")
-                self.logger.warning("实时数据质量检查失败: {symbol} - " f"得分: {quality_result['quality_score']:.1f}")
+            if quality_result["quality_score"] < 80:
+                self.logger.warning("实时数据质量检查失败: %s - 得分: %.1f", symbol, quality_result["quality_score"])
 
                 # 记录严重问题
                 critical_issues = [issue for issue in quality_result["issues"] if issue.get("severity") == "critical"]
                 if critical_issues:
                     for issue in critical_issues:
-                        self.logger.error("  - {issue['type']}: {issue['message']}")
+                        self.logger.error("  - %s: %s", issue["type"], issue["message"])
             else:
                 self.logger.debug("实时数据质量检查通过: %s", symbol)
 

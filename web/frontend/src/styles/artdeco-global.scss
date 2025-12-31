@@ -1,0 +1,436 @@
+/**
+ * Art Deco Global Styles
+ * MyStocks 量化交易平台 - 装饰艺术全局样式
+ *
+ * This file applies the Art Deco design system globally:
+ * - Google Fonts imports (Marcellus, Josefin Sans)
+ * - CSS Custom Properties (Art Deco tokens)
+ * - Body background with diagonal crosshatch pattern
+ * - Typography base styles with display fonts
+ * - Global scrollbar styling
+ * - Root-level design decisions
+ *
+ * Author: MyStocks Frontend Team
+ * Updated: 2025-12-30
+ */
+
+// ============================================
+//   GOOGLE FONTS IMPORT - 字体导入
+//   CRITICAL: Load Art Deco fonts first
+// ============================================
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Marcellus&display=swap');
+
+// ============================================
+//   IMPORT TOKENS - 导入设计令牌
+// ============================================
+
+@import './artdeco-tokens.scss';
+@import './artdeco-patterns.scss';
+
+// ============================================
+//   CSS CUSTOM PROPERTIES - CSS自定义属性
+//   Define Art Deco tokens as CSS variables
+// ============================================
+
+:root {
+  // Background Colors - 背景色系
+  --artdeco-bg-primary: #0A0A0A;
+  --artdeco-bg-card: #141414;
+  --artdeco-bg-secondary: #1E3D59;
+  --artdeco-bg-overlay: rgba(10, 10, 10, 0.92);
+
+  // Foreground Colors - 前景色系
+  --artdeco-fg-primary: #F2F0E4;
+  --artdeco-accent-gold: #D4AF37;
+  --artdeco-accent-gold-light: #F2E8C4;
+  --artdeco-fg-muted: #888888;
+
+  // Market Colors - A股市场颜色
+  --artdeco-color-up: #FF5252;
+  --artdeco-color-down: #00E676;
+  --artdeco-color-flat: #B0B3B8;
+
+  // Typography - 字体系统
+  --artdeco-font-display: 'Marcellus', serif;
+  --artdeco-font-display-alt: 'Italiana', serif;
+  --artdeco-font-body: 'Josefin Sans', sans-serif;
+  --artdeco-font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  // Font Sizes - 字号
+  --artdeco-text-xs: 12px;
+  --artdeco-text-sm: 14px;
+  --artdeco-text-base: 16px;
+  --artdeco-text-lg: 18px;
+  --artdeco-text-xl: 20px;
+  --artdeco-text-2xl: 24px;
+  --artdeco-text-3xl: 30px;
+  --artdeco-text-4xl: 36px;
+  --artdeco-text-5xl: 48px;
+  --artdeco-text-6xl: 60px;
+  --artdeco-text-7xl: 72px;
+
+  // Letter Spacing - 字间距
+  --artdeco-tracking-tight: -0.02em;
+  --artdeco-tracking-normal: 0em;
+  --artdeco-tracking-wide: 0.1em;
+  --artdeco-tracking-wider: 0.15em;
+  --artdeco-tracking-widest: 0.2em;
+
+  // Spacing - 间距
+  --artdeco-spacing-1: 4px;
+  --artdeco-spacing-2: 8px;
+  --artdeco-spacing-3: 12px;
+  --artdeco-spacing-4: 16px;
+  --artdeco-spacing-5: 20px;
+  --artdeco-spacing-6: 24px;
+  --artdeco-spacing-8: 32px;
+  --artdeco-spacing-12: 48px;
+  --artdeco-spacing-16: 64px;
+
+  // Border - 边框
+  --artdeco-border-gold: #D4AF37;
+  --artdeco-border-gold-subtle: rgba(212, 175, 55, 0.3);
+  --artdeco-border-gold-muted: rgba(212, 175, 55, 0.15);
+  --artdeco-border-divider: rgba(212, 175, 55, 0.2);
+
+  // Glow - 发光效果
+  --artdeco-glow-sm: 0 0 10px rgba(212, 175, 55, 0.15);
+  --artdeco-glow-base: 0 0 15px rgba(212, 175, 55, 0.2);
+  --artdeco-glow-md: 0 0 20px rgba(212, 175, 55, 0.3);
+  --artdeco-glow-lg: 0 0 30px rgba(212, 175, 55, 0.4);
+
+  // Transitions - 过渡
+  --artdeco-duration-fast: 150ms;
+  --artdeco-duration-base: 300ms;
+  --artdeco-duration-slow: 500ms;
+  --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  // Pattern Opacity - 图案透明度
+  --artdeco-pattern-opacity: 0.04;
+}
+
+// ============================================
+//   BODY & HTML - 基础元素样式
+//   Apply Art Deco aesthetic globally
+// ============================================
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  // MANDATORY: Diagonal crosshatch background pattern
+  // 必需: 对角线交叉阴影背景图案
+  @include artdeco-crosshatch-bg();
+
+  // Art Deco typography
+  font-family: var(--artdeco-font-body);
+  font-size: var(--artdeco-text-base);
+  line-height: var(--artdeco-leading-normal);
+  color: var(--artdeco-fg-primary);
+  background-color: var(--artdeco-bg-primary);
+
+  // Smooth rendering for metallic effects
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // Theatrical transitions for theme changes
+  transition-property: background-color, color;
+  transition-duration: var(--artdeco-duration-base);
+  transition-timing-function: var(--artdeco-ease-out);
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+// ============================================
+//   TYPOGRAPHY BASE STYLES - 字体基础样式
+//   Art Deco display typography
+// ============================================
+
+// Headings - 标题 (MANDATORY: All caps with wide tracking)
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--artdeco-font-display);
+  font-weight: var(--artdeco-weight-normal);
+  color: var(--artdeco-accent-gold);
+  text-transform: uppercase; // MANDATORY: All-caps
+  letter-spacing: var(--artdeco-tracking-widest); // MANDATORY: 0.2em
+  line-height: var(--artdeco-leading-tight);
+  margin-bottom: var(--artdeco-spacing-4);
+}
+
+h1 {
+  font-size: var(--artdeco-text-6xl); // 60px - Imposing display
+}
+
+h2 {
+  font-size: var(--artdeco-text-4xl); // 36px
+}
+
+h3 {
+  font-size: var(--artdeco-text-2xl); // 24px
+}
+
+h4 {
+  font-size: var(--artdeco-text-xl); // 20px
+}
+
+h5, h6 {
+  font-size: var(--artdeco-text-lg); // 18px
+}
+
+// Body text - 正文
+p {
+  font-family: var(--artdeco-font-body);
+  font-size: var(--artdeco-text-base);
+  line-height: var(--artdeco-leading-relaxed);
+  color: var(--artdeco-fg-primary);
+  margin-bottom: var(--artdeco-spacing-4);
+}
+
+// Links - 链接
+a {
+  color: var(--artdeco-accent-gold);
+  text-decoration: none;
+  transition: color var(--artdeco-duration-base);
+
+  &:hover {
+    color: var(--artdeco-accent-gold-light);
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+//   SCROLLBAR STYLING - 滚动条样式
+//   Art Deco themed scrollbars
+// ============================================
+
+// WebKit browsers (Chrome, Safari, Edge)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--artdeco-bg-primary);
+  border-left: 1px solid var(--artdeco-border-gold-muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--artdeco-border-gold-subtle);
+  border: 1px solid var(--artdeco-border-gold);
+  transition: background var(--artdeco-duration-base);
+
+  &:hover {
+    background: var(--artdeco-border-gold);
+  }
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--artdeco-bg-primary);
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--artdeco-border-gold-subtle) var(--artdeco-bg-primary);
+}
+
+// ============================================
+//   SELECTION STYLING - 文本选择样式
+//   Gold highlight for selected text
+// ============================================
+
+::selection {
+  background-color: var(--artdeco-accent-gold);
+  color: var(--artdeco-bg-primary);
+}
+
+::-moz-selection {
+  background-color: var(--artdeco-accent-gold);
+  color: var(--artdeco-bg-primary);
+}
+
+// ============================================
+//   FOCUS STYLES - 焦点样式
+//   WCAG AA accessibility compliance
+// ============================================
+
+*:focus-visible {
+  outline: 2px solid var(--artdeco-accent-gold);
+  outline-offset: 2px;
+}
+
+// Remove default outline for mouse users
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// ============================================
+//   UTILITY CLASSES - 工具类
+//   Art Deco specific utilities
+// ============================================
+
+// Text colors - 文本颜色
+.text-artdeco-gold {
+  color: var(--artdeco-accent-gold) !important;
+}
+
+.text-artdeco-cream {
+  color: var(--artdeco-fg-primary) !important;
+}
+
+.text-artdeco-muted {
+  color: var(--artdeco-fg-muted) !important;
+}
+
+// Background colors - 背景颜色
+.bg-artdeco-primary {
+  background-color: var(--artdeco-bg-primary) !important;
+}
+
+.bg-artdeco-card {
+  background-color: var(--artdeco-bg-card) !important;
+}
+
+// Typography utilities - 字体工具
+.font-artdeco-display {
+  font-family: var(--artdeco-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-widest);
+}
+
+.font-artdeco-body {
+  font-family: var(--artdeco-font-body) !important;
+}
+
+// Border utilities - 边框工具
+.border-artdeco-gold {
+  border-color: var(--artdeco-accent-gold) !important;
+}
+
+// Glow utilities - 发光工具
+.artdeco-glow {
+  box-shadow: var(--artdeco-glow-base) !important;
+}
+
+.artdeco-glow-hover {
+  transition: box-shadow var(--artdeco-duration-base);
+
+  &:hover {
+    box-shadow: var(--artdeco-glow-md) !important;
+  }
+}
+
+// ============================================
+//   ACCESSIBILITY - 无障碍访问
+//   Skip link and screen reader utilities
+// ============================================
+
+// Skip to content link
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--artdeco-accent-gold);
+  color: var(--artdeco-bg-primary);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  text-decoration: none;
+  z-index: var(--artdeco-z-tooltip);
+  font-weight: var(--artdeco-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// Screen reader only
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ============================================
+//   RESPONSIVE DESIGN - 响应式设计
+//   Mobile optimization
+// ============================================
+
+@media (max-width: 768px) {
+  :root {
+    // Adjust font sizes for mobile
+    --artdeco-text-6xl: 48px; // Reduce from 60px
+    --artdeco-text-4xl: 28px; // Reduce from 36px
+    --artdeco-text-2xl: 20px; // Reduce from 24px
+  }
+
+  h1 {
+    font-size: var(--artdeco-text-5xl); // 48px on mobile
+  }
+
+  h2 {
+    font-size: var(--artdeco-text-3xl); // 30px on mobile
+  }
+}
+
+// ============================================
+//   PRINT STYLES - 打印样式
+//   Optimized for printing
+// ============================================
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    @include artdeco-crosshatch-bg($color: #000, $opacity: 0.02);
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  img {
+    page-break-inside: avoid;
+  }
+}
+
+// ============================================
+//   END: artdeco-global.scss
+//   MyStocks Art Deco Design System
+// ============================================

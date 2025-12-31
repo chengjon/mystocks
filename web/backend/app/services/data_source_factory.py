@@ -379,7 +379,7 @@ class RealDataSource(BaseDataSource):
                 response_time = (time.time() - start_time) * 1000
 
                 if response.status == 200:
-                    health_data = await response.json()
+                    await response.json()
                     return HealthStatus(
                         status=HealthStatusEnum.HEALTHY,
                         response_time=response_time,

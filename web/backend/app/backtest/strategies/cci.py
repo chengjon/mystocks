@@ -184,13 +184,13 @@ class CCIStrategy(BaseStrategy):
         if cci is None or prev_cci is None:
             return None
 
-        current_price = float(current_data["close"])
+        float(current_data["close"])
         has_position = position and position.get("quantity", 0) > 0
         trade_mode = self.parameters["trade_mode"]
 
         overbought = self.parameters["overbought"]
         oversold = self.parameters["oversold"]
-        extreme_overbought = self.parameters["extreme_overbought"]
+        self.parameters["extreme_overbought"]
         extreme_oversold = self.parameters["extreme_oversold"]
 
         # === 回归模式 (Reversal) ===

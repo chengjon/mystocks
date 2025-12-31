@@ -124,7 +124,8 @@ class NotificationProvider(ABC):
                 result.retry_count = attempt
                 return result
             except asyncio.TimeoutError:
-                logger.warning("Timeout sending via {self.config.channel.value} " f"(attempt {attempt + 1}/{self.retry_count})"
+                logger.warning(
+                    "Timeout sending via {self.config.channel.value} " f"(attempt {attempt + 1}/{self.retry_count})"
                 )
                 if attempt < self.retry_count - 1:
                     await asyncio.sleep(self.retry_delay * (2**attempt))
@@ -361,7 +362,7 @@ class SMSNotificationProvider(NotificationProvider):
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info("✅ SMS sent to %ssent_count/%slen(recipients")} recipients " f"({delivery_time:.0f}ms)")
+                logger.info(f"✅ SMS sent to {sent_count}/{len(recipients)} recipients ({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.SMS,
                     alert_id=alert.alertname,
@@ -417,8 +418,7 @@ class WebhookNotificationProvider(NotificationProvider):
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info("✅ Webhook sent to %ssent_count/%slen(webhook_urls")} endpoints " f"({delivery_time:.0f}ms)"
-                )
+                logger.info(f"✅ Webhook sent to {sent_count}/{len(webhook_urls)} endpoints ({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.WEBHOOK,
                     alert_id=alert.alertname,

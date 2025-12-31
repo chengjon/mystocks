@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "buger-manual-report",
+    "reportedAt": "2025-12-31T12:00:00Z",
+    "reporter": "Claude Code",
+    "contact": "ai-assistant",
+    "description": "TypeScript 类型错误修复 - Phase 7 Frontend Web 项目"
+  },
+  "bugs": [
+    {
+      "errorCode": "ERR_TS_VUE_TYPE_001",
+      "title": "Vue 3.4+ ComponentType 类型未导出",
+      "message": "src/utils/performance.ts 中使用泛型类型参数 T = ComponentType，但 Vue 3.4+ 已不再导出 ComponentType 类型，应使用 Component 替代。错误位置: 第 199 行和第 279 行。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/performance.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_REACT_NAMESPACE_001",
+      "title": "Vue 项目中存在 React 命名空间引用",
+      "message": "src/utils/sse.ts 第 441-468 行包含 React Hook 实现代码（React.useState, React.useEffect, React.useCallback），但项目为 Vue 3 项目，不存在 React 依赖，导致 Cannot find name 'React' 编译错误。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/sse.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_EXPORT_DEFAULT_001",
+      "title": "Composables 缺少默认导出",
+      "message": "src/composables/index.ts 尝试重新导出 default，但 src/composables/useKlineChart.ts 和 src/composables/useApiService.js 缺少默认导出，导致 'Module has no exported member default' 错误。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "composables",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_ADAPTER_TYPE_001",
+      "title": "后端 API 响应类型与前端定义不匹配",
+      "message": "src/utils/adapters.ts 中 MarketOverviewResponse 缺少 marketIndex、totalVolume 字段；FundFlowResponse 缺少 items、mainInflow 字段；KlineResponse 缺少 points、date 字段。需与后端团队协调 API 响应格式。涉及约 55 个类型错误。",
+      "severity": "high",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/adapters.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_MONITORING_TYPE_001",
+      "title": "监控适配器类型定义不完整",
+      "message": "src/utils/monitoring-adapters.ts 中 SystemStatusResponse 缺少 network、database、api 字段；MonitoringAlertResponse 缺少 id、title、severity 等字段；LogEntryResponse 缺少 id、logger、module 等字段；DataQualityResponse 缺少 overallScore、completeness 等字段。",
+      "severity": "high",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/monitoring-adapters.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_CIRCULAR_IMPORT_001",
+      "title": "chartInteraction.ts 存在循环导入",
+      "message": "src/utils/chartInteraction.ts 中 ChartInteractionManager、CrosshairManager、CrosshairInfo、ChartInteractionConfig、DEFAULT_CONFIG、createChartInteraction、createCrosshairManager 等存在循环导入定义错误（TS2303），需重构模块结构。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/chartInteraction.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_EXPORT_CONFLICT_001",
+      "title": "类型定义重复导出冲突",
+      "message": "src/utils/connection-health.ts 中 HealthMetrics 和 CircuitBreakerState 存在导出声明冲突；src/utils/request.ts 中 RequestConfig 和 ErrorResponse 存在导出声明冲突。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/connection-health.ts, utils/request.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_AXIOS_TYPE_001",
+      "title": "Axios 类型不兼容",
+      "message": "src/utils/request.ts 中拦截器类型 RequestConfig 与 InternalAxiosRequestConfig 不兼容；skipErrorHandler 属性在 InternalAxiosRequestConfig 中不存在。涉及约 2 个类型错误。",
+      "severity": "medium",
+      "context": {
+        "projectName": "mystocks_phase7_frontend",
+        "projectRoot": "/opt/claude/mystocks_phase7_frontend/web/frontend",
+        "component": "utils/request.ts",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL)",
+        "nodeVersion": "v20.x"
+      }
+    }
+  ]
+}

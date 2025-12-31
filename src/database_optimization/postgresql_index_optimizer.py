@@ -150,7 +150,10 @@ class PostgreSQLIndexOptimizer:
                 "column_order": "symbol ASC, created_at DESC",
                 "reason": "Retrieve latest indicators for symbol",
                 "selectivity": "Very High",
-                "sql": "CREATE INDEX idx_tech_indicators_symbol_created ON technical_indicators(symbol, created_at DESC);",
+                "sql": (
+                    "CREATE INDEX idx_tech_indicators_symbol_created "
+                    "ON technical_indicators(symbol, created_at DESC);"
+                ),
                 "estimated_improvement": "15-35x faster indicator lookups",
                 "use_case": "Get latest MA/MACD/RSI for real-time analysis",
             },
@@ -160,7 +163,10 @@ class PostgreSQLIndexOptimizer:
                 "column_order": "user_id ASC, symbol ASC, created_at DESC",
                 "reason": "Find user's orders for specific symbol, sorted by recency",
                 "selectivity": "Very High",
-                "sql": "CREATE INDEX idx_order_records_user_symbol_date ON order_records(user_id, symbol, created_at DESC);",
+                "sql": (
+                    "CREATE INDEX idx_order_records_user_symbol_date "
+                    "ON order_records(user_id, symbol, created_at DESC);"
+                ),
                 "estimated_improvement": "25-50x faster order history lookups",
                 "use_case": "Portfolio page showing order history by symbol",
             },
@@ -170,7 +176,10 @@ class PostgreSQLIndexOptimizer:
                 "column_order": "user_id ASC, created_at DESC",
                 "reason": "Retrieve user's transaction history",
                 "selectivity": "High",
-                "sql": "CREATE INDEX idx_transaction_records_user_date ON transaction_records(user_id, created_at DESC);",
+                "sql": (
+                    "CREATE INDEX idx_transaction_records_user_date "
+                    "ON transaction_records(user_id, created_at DESC);"
+                ),
                 "estimated_improvement": "15-30x faster transaction history",
                 "use_case": "Trading history/account statement",
             },
@@ -201,7 +210,11 @@ class PostgreSQLIndexOptimizer:
                 "where_clause": "status = 'ACTIVE' OR status = 'PENDING'",
                 "reason": "Only index active orders (most frequently queried)",
                 "space_savings": "40-60% smaller than full index",
-                "sql": "CREATE INDEX idx_order_records_active ON order_records(user_id, symbol) WHERE status IN ('ACTIVE', 'PENDING');",
+                "sql": (
+                    "CREATE INDEX idx_order_records_active "
+                    "ON order_records(user_id, symbol) "
+                    "WHERE status IN ('ACTIVE', 'PENDING');"
+                ),
                 "estimated_improvement": "30-60% faster active order lookups",
                 "use_case": "Real-time portfolio monitoring",
             },
@@ -211,7 +224,11 @@ class PostgreSQLIndexOptimizer:
                 "where_clause": "trade_date >= CURRENT_DATE - INTERVAL '1 year'",
                 "reason": "Index only recent 1-year data (most frequently queried)",
                 "space_savings": "80% smaller than full index",
-                "sql": "CREATE INDEX idx_daily_kline_recent ON daily_kline(symbol) WHERE trade_date >= CURRENT_DATE - INTERVAL '1 year';",
+                "sql": (
+                    "CREATE INDEX idx_daily_kline_recent "
+                    "ON daily_kline(symbol) "
+                    "WHERE trade_date >= CURRENT_DATE - INTERVAL '1 year';"
+                ),
                 "estimated_improvement": "40-70% faster recent data queries",
                 "use_case": "Charting, technical analysis",
             },
@@ -221,7 +238,11 @@ class PostgreSQLIndexOptimizer:
                 "where_clause": "indicator_type IN ('MA', 'MACD', 'RSI')",
                 "reason": "Index only popular technical indicators",
                 "space_savings": "50-70% smaller",
-                "sql": "CREATE INDEX idx_tech_indicators_popular ON technical_indicators(symbol) WHERE indicator_type IN ('MA', 'MACD', 'RSI');",
+                "sql": (
+                    "CREATE INDEX idx_tech_indicators_popular "
+                    "ON technical_indicators(symbol) "
+                    "WHERE indicator_type IN ('MA', 'MACD', 'RSI');"
+                ),
                 "estimated_improvement": "25-50% faster popular indicator lookups",
                 "use_case": "Real-time indicator calculation",
             },
@@ -281,7 +302,10 @@ class PostgreSQLIndexOptimizer:
                 "column": "created_at",
                 "reason": "Time-ordered transactions",
                 "selectivity": "Very high",
-                "sql": "CREATE INDEX idx_transaction_records_created_brin ON transaction_records USING BRIN(created_at);",
+                "sql": (
+                    "CREATE INDEX idx_transaction_records_created_brin "
+                    "ON transaction_records USING BRIN(created_at);"
+                ),
                 "index_size": "0.5-1MB",
                 "estimated_improvement": "90% smaller + efficient for time-series data",
                 "use_case": "Transaction history lookups",

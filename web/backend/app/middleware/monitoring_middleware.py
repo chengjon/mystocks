@@ -30,7 +30,6 @@ class APIMonitoringMiddleware(BaseHTTPMiddleware):
         # 初始化变量
         status_code = 500
         error_message = None
-        response_data = None
 
         try:
             # 调用下一个中间件/处理器

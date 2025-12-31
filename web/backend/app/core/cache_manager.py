@@ -400,8 +400,6 @@ class CacheManager:
 
         try:
             # 优化：并发读取内存缓存，先处理最可能命中的数据
-            memory_cache_futures = []
-            tdengine_cache_futures = []
 
             # 预过滤：避免重复查询
             unique_queries = []

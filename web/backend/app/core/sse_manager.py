@@ -104,7 +104,8 @@ class SSEConnectionManager:
         self._client_channels[client_id].add(channel)
 
         logger.info(
-            f"🔗 SSE client connected: client_id={client_id}, channel={channel}, total_clients={self.get_connection_count(channel)}"
+            f"🔗 SSE client connected: client_id={client_id}, channel={channel}, "
+            f"total_clients={self.get_connection_count(channel)}"
         )
 
         # Send initial connection event
@@ -147,7 +148,8 @@ class SSEConnectionManager:
                 del self._connections[channel]
 
             logger.info(
-                f"🔌 SSE client disconnected: client_id={client_id}, channel={channel}, remaining_clients={self.get_connection_count(channel)}"
+                f"🔌 SSE client disconnected: client_id={client_id}, "
+                f"channel={channel}, remaining_clients={self.get_connection_count(channel)}"
             )
 
     async def broadcast(self, channel: str, event: SSEEvent):

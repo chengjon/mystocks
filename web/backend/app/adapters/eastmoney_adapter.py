@@ -182,7 +182,10 @@ class EastMoneyAdapter:
                 "wbp2u": "|0|0|0|web",
                 "fid": "f3",
                 "fs": "b:MK0021,b:MK0022,b:MK0023,b:MK0024",
-                "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152",
+                "fields": (
+                    "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,"
+                    "f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152"
+                ),
                 "_": str(int(time.time() * 1000)),
             }
 
@@ -286,7 +289,7 @@ class EastMoneyAdapter:
         """
         try:
             # 转换日期格式
-            date_formatted = date_str.replace("-", "")
+            date_str.replace("-", "")
 
             url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
 
@@ -296,7 +299,13 @@ class EastMoneyAdapter:
                 "pageSize": 500,
                 "pageNumber": 1,
                 "reportName": "RPT_DAILYBILLBOARD_DETAILSNEW",
-                "columns": "SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,TRADE_DATE,EXPLAIN,CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE",
+                "columns": (
+                    "SECURITY_CODE,SECUCODE,SECURITY_NAME_ABBR,TRADE_DATE,EXPLAIN,"
+                    "CLOSE_PRICE,CHANGE_RATE,BILLBOARD_NET_AMT,BILLBOARD_BUY_AMT,"
+                    "BILLBOARD_SELL_AMT,BILLBOARD_DEAL_AMT,ACCUM_AMOUNT,DEAL_NET_RATIO,"
+                    "DEAL_AMOUNT_RATIO,TURNOVERRATE,FREE_MARKET_CAP,EXPLANATION,"
+                    "D1_CLOSE_ADJCHRATE,D2_CLOSE_ADJCHRATE,D5_CLOSE_ADJCHRATE,D10_CLOSE_ADJCHRATE"
+                ),
                 "source": "WEB",
                 "client": "WEB",
                 "filter": f"(TRADE_DATE='{date_str}')",

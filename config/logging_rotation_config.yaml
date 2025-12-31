@@ -1,0 +1,73 @@
+# 日志轮转配置
+# 用于配置应用的日志轮转策略
+
+# 日志目录
+log_directory: /opt/claude/mystocks_spec/logs/app
+archive_directory: /opt/claude/mystocks_spec/logs/app/old
+final_archive_directory: /opt/claude/mystocks_spec/logs/archive
+
+# 轮转策略
+rotation:
+  # 当前日志保留天数
+  current_log_retention_days: 7
+
+  # 旧日志压缩阈值（天数）
+  old_log_compression_days: 30
+
+  # 归档保留天数
+  archive_retention_days: 90
+
+  # 单个日志文件最大大小（MB）
+  max_log_file_size_mb: 100
+
+  # 最大日志文件数量
+  max_log_files: 10
+
+# 应用日志配置
+app_logs:
+  backend:
+    filename: backend.log
+    level: INFO
+    max_size_mb: 50
+
+  frontend:
+    filename: frontend.log
+    level: ERROR
+    max_size_mb: 50
+
+  api:
+    filename: app.log
+    level: INFO
+    max_size_mb: 50
+
+  financial_adapter:
+    filename: financial_adapter.log
+    level: DEBUG
+    max_size_mb: 50
+
+  test_results:
+    filename: test-results.log
+    level: INFO
+    max_size_mb: 100
+
+# 执行计划
+schedule:
+  # Cron表达式：每周日凌晨2点执行
+  cron: "0 2 * * 0"
+
+  # 是否启用自动轮转
+  enabled: true
+
+  # 执行脚本路径
+  rotation_script: /opt/claude/mystocks_spec/scripts/maintenance/rotate_logs.sh
+
+# 告警配置
+alerts:
+  # 日志目录大小告警阈值（MB）
+  log_directory_size_mb: 500
+
+  # 单个日志文件大小告警（MB）
+  single_file_size_mb: 100
+
+  # 告警通知方式（email/slack/webhook）
+  notification_method: console

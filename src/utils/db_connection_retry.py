@@ -47,7 +47,8 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                         ]
                     ):
                         if retries < max_retries:
-                            logger.warning("数据库连接失败，%scurrent_delay秒后重试 (%sretries/%smax_retries")",
+                            logger.warning(
+                                f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
                                 function=func.__name__,
                                 error=str(e),
                             )

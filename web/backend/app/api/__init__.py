@@ -31,7 +31,7 @@ from . import (
     tasks,
     tdx,
     technical_analysis,
-    trade,
+    # trade,  # 临时注释: APIResponse泛型问题待修复
     tradingview,
     watchlist,
     wencai,
@@ -65,7 +65,7 @@ __all__ = [
     "tasks",
     "tdx",
     "technical_analysis",
-    "trade",
+    # "trade",  # 临时注释: APIResponse泛型问题待修复
     "tradingview",
     "watchlist",
     "wencai",

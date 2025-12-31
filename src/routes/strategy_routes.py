@@ -79,7 +79,7 @@ async def get_strategy_definitions():
             logger.info("使用Mock数据源: 获取策略定义列表")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_strategy_definitions"]()
-            logger.info("Mock数据响应: 共%s个策略", result.get('total', 0))
+            logger.info("Mock数据响应: 共%s个策略", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -152,7 +152,7 @@ async def run_single_strategy(request: Dict):
             logger.info("使用Mock数据源: 运行单策略")
             mock_data = get_strategy_mock_data()
             result = mock_data["run_strategy_single"](request)
-            logger.info("Mock数据响应: 匹配%s只股票", result.get('total_stocks', 0))
+            logger.info("Mock数据响应: 匹配%s只股票", result.get("total_stocks", 0))
             return {
                 "success": True,
                 "data": result,
@@ -225,7 +225,9 @@ async def run_batch_strategies(request: Dict):
             logger.info("使用Mock数据源: 批量运行策略")
             mock_data = get_strategy_mock_data()
             result = mock_data["run_strategy_batch"](request)
-            logger.info("Mock数据响应: 处理%sresult.get('total_strategies', 0")}个策略，匹配{result.get('total_stocks', 0)}只股票"
+            logger.info(
+                f"Mock数据响应: 处理{result.get('total_strategies', 0)}个策略，"
+                f"匹配{result.get('total_stocks', 0)}只股票"
             )
             return {
                 "success": True,
@@ -302,7 +304,7 @@ async def get_strategy_results(request: Dict):
             logger.info("使用Mock数据源: 获取策略结果")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_strategy_results"](request)
-            logger.info("Mock数据响应: 共%s条结果", result.get('total', 0))
+            logger.info("Mock数据响应: 共%s条结果", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,
@@ -376,7 +378,7 @@ async def get_matched_stocks(request: Dict):
             logger.info("使用Mock数据源: 获取匹配股票")
             mock_data = get_strategy_mock_data()
             result = mock_data["get_matched_stocks"](request)
-            logger.info("Mock数据响应: 共%s只股票", result.get('total', 0))
+            logger.info("Mock数据响应: 共%s只股票", result.get("total", 0))
             return {
                 "success": True,
                 "data": result,

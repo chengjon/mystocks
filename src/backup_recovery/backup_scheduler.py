@@ -161,11 +161,12 @@ class BackupScheduler:
             logger.info("Executing TDengine full backup (scheduled)")
             metadata = self.backup_manager.backup_tdengine_full()
 
-self.logger.info("备份调度器初始化完成")
-                logger.info("TDengine full backup succeeded: "
-                    f"id={metadata.backup_id}, "
-                    f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
-                    f"ratio={metadata.compression_ratio:.2f}x"
+            if metadata.status == "success":
+                logger.info(
+                    "TDengine full backup succeeded: id=%s, size=%.2fMB, ratio=%.2fx",
+                    metadata.backup_id,
+                    metadata.backup_size_bytes / 1024 / 1024,
+                    metadata.compression_ratio,
                 )
             else:
                 logger.error("TDengine full backup failed: %s", metadata.error_message)
@@ -193,10 +194,9 @@ self.logger.info("备份调度器初始化完成")
             else:
                 metadata = self.backup_manager.backup_tdengine_incremental(latest_full.backup_id)
 
-self.logger.info("定时备份任务完成")
-                logger.info("TDengine incremental backup succeeded: "
-                    f"id={metadata.backup_id}, "
-                    f"rows={metadata.total_rows}"
+            if metadata.status == "success":
+                logger.info(
+                    "TDengine incremental backup succeeded: id=%s, rows=%d", metadata.backup_id, metadata.total_rows
                 )
             else:
                 logger.error("TDengine incremental backup failed: %s", metadata.error_message)
@@ -210,11 +210,12 @@ self.logger.info("定时备份任务完成")
             logger.info("Executing PostgreSQL full backup (scheduled)")
             metadata = self.backup_manager.backup_postgresql_full()
 
-self.logger.info("手动备份任务完成")
-                logger.info("PostgreSQL full backup succeeded: "
-                    f"id={metadata.backup_id}, "
-                    f"size={metadata.backup_size_bytes / 1024 / 1024:.2f}MB, "
-                    f"ratio={metadata.compression_ratio:.2f}x"
+            if metadata.status == "success":
+                logger.info(
+                    "PostgreSQL full backup succeeded: id=%s, size=%.2fMB, ratio=%.2fx",
+                    metadata.backup_id,
+                    metadata.backup_size_bytes / 1024 / 1024,
+                    metadata.compression_ratio,
                 )
             else:
                 logger.error("PostgreSQL full backup failed: %s", metadata.error_message)

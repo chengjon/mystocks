@@ -1,18 +1,26 @@
 """
 契约版本管理服务
-负责契约的创建、查询、更新和激活
+负责契约的创建、查询、更新和同步
 """
 
-from typing import List, Optional
+import logging
+import subprocess
+from typing import Any, Dict, List, Optional
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
-from web.backend.app.api.contract.models import ContractVersion
-from web.backend.app.api.contract.schemas import (
+from app.api.contract.models import ContractVersion, ContractDiff, ContractValidation
+from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionUpdate,
     ContractVersionResponse,
     ContractMetadata,
+    SyncResult,
 )
+from .openapi_generator import OpenAPIGenerator
+
+logger = logging.getLogger(__name__)
 
 
 class VersionManager:
@@ -255,3 +263,289 @@ class VersionManager:
             created_at=db_version.created_at,
             is_active=db_version.is_active,
         )
+
+    @staticmethod
+    def sync(
+        db: Session,
+        contract_name: str,
+        direction: str = "code_to_db",
+        commit_hash: Optional[str] = None,
+        author: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> SyncResult:
+        """
+        同步契约规格（Code-to-DB 或 DB-to-Code）
+
+        Args:
+            db: 数据库会话
+            contract_name: 契约名称
+            direction: 同步方向 ("code_to_db" 或 "db_to_code")
+            commit_hash: Git commit hash
+            author: 作者
+            description: 版本描述
+
+        Returns:
+            SyncResult 同步结果
+
+        Raises:
+            ValueError: 无效的同步方向
+        """
+        if direction == "code_to_db":
+            return VersionManager._sync_code_to_db(db, contract_name, commit_hash, author, description)
+        elif direction == "db_to_code":
+            return VersionManager._sync_db_to_code(db, contract_name)
+        else:
+            raise ValueError(f"Invalid sync direction: {direction}")
+
+    @staticmethod
+    def _sync_code_to_db(
+        db: Session,
+        contract_name: str,
+        commit_hash: Optional[str] = None,
+        author: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> SyncResult:
+        """
+        Code-to-DB: 从 FastAPI 路由生成 OpenAPI Spec 并保存到数据库
+
+        Args:
+            db: 数据库会话
+            contract_name: 契约名称
+            commit_hash: Git commit hash
+            author: 作者
+            description: 版本描述
+
+        Returns:
+            SyncResult 同步结果
+        """
+        from app.main import app as fastapi_app
+
+        logger.info(f"Starting Code-to-DB sync for contract: {contract_name}")
+
+        try:
+            # 从 FastAPI 应用生成 OpenAPI Spec
+            generator = OpenAPIGenerator(title="MyStocks API", version="1.0.0")
+            generator.scan_app(fastapi_app)
+            spec = generator.generate_spec()
+
+            # 生成版本号
+            timestamp = datetime.utcnow().strftime("%Y.%m.%d.%H%M")
+            version = f"{timestamp}"
+
+            # 获取 Git commit hash
+            if not commit_hash:
+                try:
+                    commit_hash = (
+                        subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+                        .decode("utf-8")
+                        .strip()[:8]
+                    )
+                except subprocess.CalledProcessError:
+                    commit_hash = "unknown"
+
+            # 准备版本数据
+            version_data = ContractVersionCreate(
+                name=contract_name,
+                version=version,
+                spec=spec,
+                commit_hash=commit_hash,
+                author=author or "system",
+                description=description or f"Auto-generated from code at {datetime.utcnow().isoformat()}",
+                tags=["auto-generated", "code-to-db"],
+            )
+
+            # 创建新版本
+            db_version = VersionManager.create_version(db, version_data)
+
+            # 生成同步报告
+            sync_report = generator.get_sync_report()
+            changes = {
+                "endpoints_added": sync_report["total_endpoints"],
+                "sync_direction": "code_to_db",
+                "generated_from": "FastAPI routes",
+            }
+
+            logger.info(f"Code-to-DB sync completed: {sync_report['total_endpoints']} endpoints")
+
+            return SyncResult(
+                success=True,
+                version_id=db_version.id,
+                version=version,
+                direction="code_to_db",
+                changes=changes,
+                message=f"Successfully synced {sync_report['total_endpoints']} endpoints from code to database",
+            )
+
+        except Exception as e:
+            logger.error(f"Code-to-DB sync failed: {e}")
+            return SyncResult(success=False, direction="code_to_db", changes={}, message=f"Sync failed: {str(e)}")
+
+    @staticmethod
+    def _sync_db_to_code(db: Session, contract_name: str) -> SyncResult:
+        """
+        DB-to-Code: 从数据库生成 OpenAPI Spec 文件
+
+        Args:
+            db: 数据库会话
+            contract_name: 契约名称
+
+        Returns:
+            SyncResult 同步结果
+        """
+        import yaml
+
+        logger.info(f"Starting DB-to-Code sync for contract: {contract_name}")
+
+        try:
+            # 获取最新激活版本
+            active_version = VersionManager.get_active_version(db, contract_name)
+
+            if not active_version:
+                return SyncResult(
+                    success=False,
+                    direction="db_to_code",
+                    changes={},
+                    message=f"No active version found for contract: {contract_name}",
+                )
+
+            # 获取 Spec 数据
+            spec_data = active_version.spec
+
+            # 确定输出路径
+            output_paths = ["docs/api/openapi_generated.yaml", f"docs/api/openapi_{contract_name}.yaml"]
+
+            saved_path = None
+            for output_path in output_paths:
+                try:
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        yaml.dump(spec_data, f, allow_unicode=True, sort_keys=False)
+                    saved_path = output_path
+                    break
+                except IOError:
+                    continue
+
+            if saved_path:
+                # 统计变更
+                paths_count = len(spec_data.get("paths", {}))
+                schemas_count = len(spec_data.get("components", {}).get("schemas", {}))
+
+                changes = {
+                    "endpoints_exported": paths_count,
+                    "schemas_exported": schemas_count,
+                    "output_file": saved_path,
+                    "version": active_version.version,
+                }
+
+                logger.info(f"DB-to-Code sync completed: exported to {saved_path}")
+
+                return SyncResult(
+                    success=True,
+                    version_id=active_version.id,
+                    version=active_version.version,
+                    direction="db_to_code",
+                    changes=changes,
+                    message=f"Successfully exported {paths_count} endpoints to {saved_path}",
+                )
+            else:
+                return SyncResult(
+                    success=False, direction="db_to_code", changes={}, message="Failed to write output file"
+                )
+
+        except Exception as e:
+            logger.error(f"DB-to-Code sync failed: {e}")
+            return SyncResult(success=False, direction="db_to_code", changes={}, message=f"Sync failed: {str(e)}")
+
+    @staticmethod
+    def validate_version(db: Session, version_id: int) -> Dict[str, Any]:
+        """
+        验证契约版本的合规性
+
+        Args:
+            db: 数据库会话
+            version_id: 版本ID
+
+        Returns:
+            验证结果字典
+        """
+        from .contract_validator import create_validator_from_dict
+
+        version = VersionManager.get_version(db, version_id)
+        if not version:
+            return {"valid": False, "error": "Version not found"}
+
+        try:
+            validator = create_validator_from_dict(version.spec)
+
+            # 获取所有端点
+            endpoints = validator.get_endpoint_schema_paths()
+            errors = []
+            warnings = []
+
+            for endpoint in endpoints:
+                for status_code, schema in endpoint.get("responses", {}).items():
+                    if status_code == "default":
+                        continue
+
+            # 记录验证结果
+            validation = ContractValidation(
+                version_id=version_id,
+                valid=True,
+                error_count=len(errors),
+                warning_count=len(warnings),
+                results={"endpoints_checked": len(endpoints), "errors": errors, "warnings": warnings},
+            )
+            db.add(validation)
+            db.commit()
+
+            return {
+                "valid": len(errors) == 0,
+                "endpoints_checked": len(endpoints),
+                "error_count": len(errors),
+                "warning_count": len(warnings),
+                "errors": errors,
+                "warnings": warnings,
+            }
+
+        except Exception as e:
+            logger.error(f"Validation failed: {e}")
+            return {"valid": False, "error": str(e)}
+
+    @staticmethod
+    def compare_versions(db: Session, version_id_1: int, version_id_2: int) -> Dict[str, Any]:
+        """
+        比较两个契约版本的差异
+
+        Args:
+            db: 数据库会话
+            version_id_1: 第一个版本ID
+            version_id_2: 第二个版本ID
+
+        Returns:
+            差异比较结果
+        """
+        from .diff_engine import ContractDiffEngine
+
+        version_1 = VersionManager.get_version(db, version_id_1)
+        version_2 = VersionManager.get_version(db, version_id_2)
+
+        if not version_1 or not version_2:
+            return {"error": "One or both versions not found"}
+
+        diff_engine = ContractDiffEngine()
+        diff_result = diff_engine.compare(version_1.spec, version_2.spec)
+
+        # 保存差异记录
+        diff_record = ContractDiff(
+            contract_name=version_1.name,
+            from_version_id=version_id_1,
+            to_version_id=version_id_2,
+            total_changes=diff_result.total_changes,
+            breaking_changes=diff_result.breaking_changes,
+            non_breaking_changes=diff_result.non_breaking_changes,
+            diffs=diff_result.to_dict()["diffs"],
+            summary=diff_result.summary,
+        )
+        db.add(diff_record)
+        db.commit()
+
+        return diff_result.to_dict()

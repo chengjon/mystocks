@@ -1476,7 +1476,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
         try:
             # 测试技术分析服务可用性
             test_symbol = "000001"
-            test_indicators = await self._get_trend_indicators(test_symbol)
+            await self._get_trend_indicators(test_symbol)
 
             response_time = (time.time() - start_time) * 1000
 
@@ -1643,7 +1643,9 @@ class StrategyDataSourceAdapter(IDataSource):
                             "strategy_code": strategy_code,
                             "total_symbols": len(symbols),
                             "results": results,
-                            "message": f"批量策略执行完成: {len([r for r in results if r['success']])}/{len(symbols)} 成功",
+                            "message": (
+                                f"批量策略执行完成: " f"{len([r for r in results if r['success']])}/{len(symbols)} 成功"
+                            ),
                         }
 
             elif endpoint.startswith("results/"):
@@ -1817,14 +1819,14 @@ class StrategyDataSourceAdapter(IDataSource):
                         self._get_strategy_service().get_strategy_definitions()
                     connection_test = True
                     self.last_successful_check = time.time()
-                except:
+                except Exception:
                     if mock_available:
                         connection_test = True
                         self.last_successful_check = time.time()
 
             status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
-            details = {
+            {
                 "service_available": service_available,
                 "mock_available": mock_available,
                 "connection_test": connection_test,
@@ -2089,14 +2091,14 @@ class WatchlistDataSourceAdapter(IDataSource):
                         self._get_watchlist_service().get_user_watchlist(1)
                     connection_test = True
                     self.last_successful_check = time.time()
-                except:
+                except Exception:
                     if mock_available:
                         connection_test = True
                         self.last_successful_check = time.time()
 
             status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
-            details = {
+            {
                 "service_available": service_available,
                 "mock_available": mock_available,
                 "connection_test": connection_test,

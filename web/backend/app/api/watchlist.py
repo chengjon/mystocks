@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.services.data_source_factory import DataSourceFactory
+from app.services.watchlist_service import WatchlistError, get_watchlist_service
 
 router = APIRouter()
 

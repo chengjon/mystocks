@@ -107,13 +107,19 @@ class IntegrityChecker:
 
                 if diff_percent <= tolerance_percent:
                     details["row_count_match"] = True
-                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    msg = (
+                        f"Row count matches within tolerance: "
+                        f"{details['total_rows_actual']} vs {expected_row_count} "
+                        f"({diff_percent * 100:.2f}%)"
+                    )
                     logger.info(msg)
                 else:
-                    details["errors"].append(
-                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    error_msg = (
+                        f"Row count mismatch: {details['total_rows_actual']} vs "
+                        f"{expected_row_count} ({diff_percent * 100:.2f}%)"
                     )
-                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    details["errors"].append(error_msg)
+                    msg = error_msg
                     logger.warning(msg)
 
             is_valid = details["tables_failed"] == 0 and details["row_count_match"] and len(details["errors"]) == 0
@@ -194,13 +200,19 @@ class IntegrityChecker:
 
                 if diff_percent <= tolerance_percent:
                     details["row_count_match"] = True
-                    msg = f"Row count matches within tolerance: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    msg = (
+                        f"Row count matches within tolerance: "
+                        f"{details['total_rows_actual']} vs {expected_row_count} "
+                        f"({diff_percent * 100:.2f}%)"
+                    )
                     logger.info(msg)
                 else:
-                    details["errors"].append(
-                        f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    error_msg = (
+                        f"Row count mismatch: {details['total_rows_actual']} vs "
+                        f"{expected_row_count} ({diff_percent * 100:.2f}%)"
                     )
-                    msg = f"Row count mismatch: {details['total_rows_actual']} vs {expected_row_count} ({diff_percent * 100:.2f}%)"
+                    details["errors"].append(error_msg)
+                    msg = error_msg
                     logger.warning(msg)
 
             is_valid = details["tables_failed"] == 0 and details["row_count_match"] and len(details["errors"]) == 0

@@ -381,7 +381,7 @@ class StrategyService:
         """获取所有策略定义"""
         db = self.SessionLocal()
         try:
-            strategies = db.query(StrategyDefinition).filter(StrategyDefinition.is_active == True).all()
+            strategies = db.query(StrategyDefinition).filter(StrategyDefinition.is_active is True).all()
             return [s.to_dict() for s in strategies]
         finally:
             db.close()
@@ -403,7 +403,7 @@ class StrategyService:
             query = db.query(StrategyResult).filter(
                 and_(
                     StrategyResult.strategy_code == strategy_code,
-                    StrategyResult.match_result == True,
+                    StrategyResult.match_result is True,
                 )
             )
 

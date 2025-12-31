@@ -209,7 +209,9 @@ class IndexPerformanceMonitor:
             },
             {
                 "test_name": "User Order History",
-                "description": "SELECT * FROM order_records WHERE user_id = 123 AND symbol = 'AAPL' ORDER BY created_at DESC",
+                "description": (
+                    "SELECT * FROM order_records WHERE user_id = 123 " "AND symbol = 'AAPL' ORDER BY created_at DESC"
+                ),
                 "target_time_ms": 50,
                 "baseline_time_ms": 800,
                 "optimization": "CREATE INDEX idx_order_records_user_symbol_date",

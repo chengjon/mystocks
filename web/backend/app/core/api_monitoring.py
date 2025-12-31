@@ -92,7 +92,6 @@ class APIMonitor:
             self._update_stats(metric)
 
             # 日志记录
-            log_level = "error" if status_code >= 400 else "info"
             log_func = logger.error if status_code >= 400 else logger.info
 
             log_func(

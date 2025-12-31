@@ -19,7 +19,13 @@ sys.path.insert(0, str(backend_path))
 
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent
-SCHEMAS_DIR = PROJECT_ROOT / "web" / "backend" / "app" / "schemas"
+# Multiple directories to scan for Pydantic models
+SCAN_DIRS = [
+    PROJECT_ROOT / "web" / "backend" / "app" / "schemas",
+    PROJECT_ROOT / "web" / "backend" / "app" / "schema",
+    PROJECT_ROOT / "web" / "backend" / "app" / "api",
+    PROJECT_ROOT / "web" / "backend" / "app" / "models",
+]
 OUTPUT_DIR = PROJECT_ROOT / "web" / "frontend" / "src" / "api" / "types"
 
 
@@ -33,192 +39,75 @@ class TypeConverter:
         "float": "number",
         "bool": "boolean",
         "None": "null",
+        "NoneType": "null",
         "datetime": "string",
         "date": "string",
-        "Decimal": "string",
+        "Decimal": "number",
         "UUID": "string",
         "bytes": "string",
-    }
-
-    # Complex type patterns
-    COMPLEX_PATTERNS = {
-        r"List\[(.+?)\]": r"\1[]",
-        r"Optional\[(.+?)\]": r"\1 | null",
-        r"Union\[(.+?)\]": r"\1",
-        r"Dict\[(.+?),\s*(.+?)\]": r"Record<\1, \2>",
-        r"Set\[(.+?)\]": r"Set<\1>",
-        r"Tuple\[(.+?)\]": r"[\1]",
-        r"Literal\[(.+?)\]": r"\1",
-        r"Any": "any",
-        "object": "any",
+        "list": "any[]",
+        "dict": "Record<string, any>",
+        "Dict": "Record<string, any>",
+        "Any": "any",
+        "EmailStr": "string",
+        "HttpUrl": "string",
+        "PyObject": "any",
+        "Json": "any",
+        "T": "any",
+        "False": "false",
+        "True": "true",
     }
 
     @classmethod
     def convert_type(cls, type_str: str) -> str:
         """Convert a Python type string to TypeScript"""
+        if not type_str:
+            return "any"
+
         # First handle simple types
         if type_str in cls.TYPE_MAP:
             return cls.TYPE_MAP[type_str]
 
-        # Handle complex types by processing from innermost to outermost
-        # This prevents regex from matching partial nested structures
-        max_iterations = 10  # Prevent infinite loops
-        iteration = 0
+        # Handle List[...]
+        if type_str.startswith("List[") and type_str.endswith("]"):
+            inner = type_str[5:-1]
+            return f"{cls.convert_type(inner)}[]"
 
-        while iteration < max_iterations:
-            iteration += 1
-            original = type_str
+        # Handle Dict[k, v]
+        if type_str.startswith("Dict[") and type_str.endswith("]"):
+            inner = type_str[5:-1]
+            parts = inner.split(",", 1)
+            if len(parts) == 2:
+                k = cls.convert_type(parts[0].strip())
+                v = cls.convert_type(parts[1].strip())
+                return f"Record<{k}, {v}>"
+            return "Record<string, any>"
 
-            # Process in order: Dict first (innermost), then List/Union (outermost)
-            # Handle Dict/Record types - match brackets properly
-            if 'Dict[' in type_str:
-                # Find Dict[ and count brackets to find matching ]
-                while 'Dict[' in type_str:
-                    start = type_str.find('Dict[')
-                    depth = 0
-                    comma_pos = -1
-                    end = -1
-                    for i, char in enumerate(type_str[start+5:], start=start+5):
-                        if char == '[':
-                            depth += 1
-                        elif char == ']':
-                            if depth == 0:
-                                end = i
-                                break
-                            depth -= 1
-                        elif char == ',' and depth == 0 and comma_pos == -1:
-                            comma_pos = i
-                    if end != -1 and comma_pos != -1:
-                        key = type_str[start+5:comma_pos].strip()
-                        value = type_str[comma_pos+1:end].strip()
-                        type_str = type_str[:start] + f'Record<{key}, {value}>' + type_str[end+1:]
-                    else:
-                        break
+        # Handle Optional[...]
+        if type_str.startswith("Optional[") and type_str.endswith("]"):
+            inner = type_str[9:-1]
+            return f"{cls.convert_type(inner)} | null"
 
-            # Handle List/Array types - use greedy match for nested types
-            if 'List[' in type_str:
-                # Count brackets to find the matching closing bracket
-                while 'List[' in type_str:
-                    start = type_str.find('List[')
-                    depth = 0
-                    end = start + 5  # Start after 'List['
-                    for i, char in enumerate(type_str[start+5:], start=start+5):
-                        if char == '[':
-                            depth += 1
-                        elif char == ']':
-                            if depth == 0:
-                                end = i
-                                break
-                            depth -= 1
-                    # Extract the content and replace
-                    inner = type_str[start+5:end]
-                    type_str = type_str[:start] + inner + '[]' + type_str[end+1:]
+        # Handle Union[...]
+        if type_str.startswith("Union[") and type_str.endswith("]"):
+            inner = type_str[6:-1]
+            parts = [cls.convert_type(p.strip()) for p in inner.split(",")]
+            return " | ".join(parts)
 
-            # Handle Set types
-            if 'Set[' in type_str or 'Set<' in type_str:
-                type_str = re.sub(r'Set\[(.+?)\]', r'Set<\1>', type_str)
-
-            # Handle Optional/Union types - match brackets properly
-            if 'Union[' in type_str:
-                while 'Union[' in type_str:
-                    start = type_str.find('Union[')
-                    depth = 0
-                    end = -1
-                    for i, char in enumerate(type_str[start+6:], start=start+6):
-                        if char == '[':
-                            depth += 1
-                        elif char == ']':
-                            if depth == 0:
-                                end = i
-                                break
-                            depth -= 1
-                    if end != -1:
-                        inner = type_str[start+6:end]
-                        type_str = type_str[:start] + inner + type_str[end+1:]
-                    else:
-                        break
-            if 'Optional[' in type_str:
-                while 'Optional[' in type_str:
-                    start = type_str.find('Optional[')
-                    depth = 0
-                    end = -1
-                    for i, char in enumerate(type_str[start+9:], start=start+9):
-                        if char == '[':
-                            depth += 1
-                        elif char == ']':
-                            if depth == 0:
-                                end = i
-                                break
-                            depth -= 1
-                    if end != -1:
-                        inner = type_str[start+9:end]
-                        type_str = type_str[:start] + inner + ' | null' + type_str[end+1:]
-                    else:
-                        break
-
-            # If no changes, we're done
-            if type_str == original:
-                break
-
-        # Fix Python type names
-        type_str = cls._fix_python_type_names(type_str)
-
-        # Handle union types with |
-        if " | " in type_str:
-            parts = type_str.split(" | ")
-            converted_parts = [cls.convert_type(part.strip()) for part in parts]
-            return " | ".join(converted_parts)
-
-        return type_str
-
-    @classmethod
-    def _fix_python_type_names(cls, type_str: str) -> str:
-        """Fix Python type names in generated TypeScript code"""
-        # Replace Python type names with TypeScript equivalents
-        replacements = {
-            r'\bstr\b': 'string',
-            r'\bint\b': 'number',
-            r'\bfloat\b': 'number',
-            r'\bbool\b': 'boolean',
-            r'\bAny\b': 'any',  # Python typing.Any -> TypeScript any
-        }
-
-        for py_type, ts_type in replacements.items():
-            type_str = re.sub(py_type, ts_type, type_str)
-
-        # Fix ast.unparse() adding parentheses around type names
-        # e.g., Record<(string, any)> -> Record<string, any>
-        type_str = re.sub(r'\(([^)]+)\)', r'\1', type_str)
-
-        # Fix Record types with missing closing >
-        # Record<string, any[>  -> Record<string, any[]>
-        type_str = re.sub(r'Record<([^>]+)\[>', r'Record<\1[]', type_str)
-
-        # Fix malformed array syntax
-        type_str = re.sub(r'\[>;', '[];', type_str)  # [...[>;  -> [...[];
-        # Fix Record types with missing closing >
-        # Record<string, any[>  -> Record<string, any[]>
-        type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
-
+        # Handle Literal[...]
+        if type_str.startswith("Literal[") and type_str.endswith("]"):
+            return type_str[8:-1].replace(",", " |")
 
         return type_str
 
     @classmethod
     def convert_field_name(cls, name: str) -> str:
-        """Convert snake_case to camelCase"""
-        if not name:
-            return name
-
-        # Don't convert already camelCase or constants
-        if name.isupper() or "_" not in name:
-            return name
-
-        parts = name.split("_")
-        return parts[0] + "".join(p.capitalize() for p in parts[1:])
+        """Keep original field name (usually snake_case from backend)"""
+        return name
 
 
 class PydanticModelExtractor:
-    """Extract Pydantic model definitions from Python files"""
+    """Extract Pydantic model and Enum definitions from Python files"""
 
     def __init__(self):
         self.models: Dict[str, Dict] = {}
@@ -234,224 +123,123 @@ class PydanticModelExtractor:
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
-                    # Check if it's a Pydantic model
-                    if self._is_pydantic_model(node, content):
-                        model_info = self._extract_model_info(node, content)
+                    if self._is_pydantic_model(node):
+                        model_info = self._extract_model_info(node)
                         if model_info:
                             self.models[node.name] = model_info
+                    elif self._is_enum(node):
+                        enum_info = self._extract_enum_info(node)
+                        if enum_info:
+                            self.models[node.name] = enum_info
 
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
 
-    def _is_pydantic_model(self, class_node: ast.ClassDef, content: str) -> bool:
+    def _is_pydantic_model(self, class_node: ast.ClassDef) -> bool:
         """Check if a class is a Pydantic model"""
-        # Check inheritance from BaseModel
         for base in class_node.bases:
             if isinstance(base, ast.Name) and base.id == "BaseModel":
                 return True
             if isinstance(base, ast.Attribute) and base.attr == "BaseModel":
                 return True
-
-        # Check for @validate_arguments decorator
-        if any(
-            isinstance(d, ast.Name) and d.id == "validate_arguments"
-            for d in class_node.decorator_list
-        ):
-            return True
-
         return False
 
-    def _extract_model_info(
-        self, class_node: ast.ClassDef, content: str
-    ) -> Optional[Dict]:
+    def _is_enum(self, class_node: ast.ClassDef) -> bool:
+        """Check if a class is an Enum"""
+        for base in class_node.bases:
+            if isinstance(base, ast.Name) and base.id == "Enum":
+                return True
+            if isinstance(base, ast.Attribute) and base.attr == "Enum":
+                return True
+        return False
+
+    def _extract_model_info(self, class_node: ast.ClassDef) -> Dict:
         """Extract model information from a class node"""
         fields = {}
-        field_comments = {}
-
-        # Extract field comments
-        lines = content.split("\n")
-        class_start = class_node.lineno - 1
-
-        # Simple field extraction
         for item in class_node.body:
             if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
                 field_name = item.target.id
-                field_type = self._get_type_annotation(item.annotation)
-                default_value = self._get_default_value(item)
-
-                # Skip private/internal fields
                 if field_name.startswith("_"):
                     continue
+                field_type = self._get_type_annotation(item.annotation)
+                fields[field_name] = {"type": field_type, "required": True}
+        return {"type": "interface", "fields": fields}
 
-                fields[field_name] = {
-                    "type": field_type,
-                    "default": default_value,
-                    "required": default_value is None,
-                }
+    def _extract_enum_info(self, class_node: ast.ClassDef) -> Dict:
+        """Extract enum values"""
+        values = []
+        for item in class_node.body:
+            if isinstance(item, ast.Assign) and len(item.targets) == 1:
+                target = item.targets[0]
+                if isinstance(target, ast.Name) and not target.id.startswith("_"):
+                    if isinstance(item.value, ast.Constant):
+                        val = item.value.value
+                        if isinstance(val, str):
+                            values.append(f"'{val}'")
+                        else:
+                            values.append(str(val))
+        return {"type": "enum", "values": values}
 
-        return {"fields": fields}
-
-    def _get_type_annotation(self, annotation) -> str:
-        """Get type annotation as string"""
-        try:
-            if isinstance(annotation, ast.Name):
-                return annotation.id
-            elif isinstance(annotation, ast.Attribute):
-                # Handle Pydantic constraints like constr(), Field(), etc.
-                if annotation.attr == "constr":
-                    return "string"  # constr() -> string
-                elif annotation.attr in ("Field", "validator"):
-                    return "any"  # Skip Field/validator wrappers
-                return f"{annotation.value.id}.{annotation.attr}"
-            elif isinstance(annotation, ast.Subscript):
-                value = self._get_type_annotation(annotation.value)
-                if hasattr(annotation, "slice"):
-                    slice_val = self._get_type_annotation(annotation.slice)
-                    return f"{value}[{slice_val}]"
-                return f"{value}[...]"
-            else:
-                unparsed = ast.unparse(annotation) if hasattr(ast, "unparse") else str(annotation)
-                # Clean up Pydantic constraint syntax
-                unparsed = re.sub(r'constr\([^)]*\)', 'string', unparsed)
-                unparsed = re.sub(r'Field\([^)]*\)', '', unparsed)
-                return unparsed
-        except:
+    def _get_type_annotation(self, node) -> str:
+        """Recursively extract type annotation as string"""
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Constant):
+            return str(node.value)
+        if isinstance(node, ast.Subscript):
+            value = self._get_type_annotation(node.value)
+            slice_val = self._get_type_annotation(node.slice)
+            return f"{value}[{slice_val}]"
+        if isinstance(node, ast.Attribute):
+            return f"{self._get_type_annotation(node.value)}.{node.attr}"
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                if node.func.id == "constr":
+                    return "string"
+                if node.func.id in ("conint", "confloat"):
+                    return "number"
             return "any"
-
-    def _get_default_value(self, node) -> Optional[str]:
-        """Get default value from an AnnAssign node"""
-        if hasattr(node, "value") and node.value:
-            if isinstance(node.value, ast.Constant):
-                return repr(node.value.value)
-            elif isinstance(node.value, ast.List):
-                return "[]"
-            elif isinstance(node.value, ast.Dict):
-                return "{}"
-            elif isinstance(node.value, ast.Call):
-                if hasattr(node.value.func, "id") and node.value.func.id == "Field":
-                    # Check for default in Field()
-                    for keyword in node.value.keywords:
-                        if keyword.arg == "default":
-                            if hasattr(keyword.value, "value"):
-                                return repr(keyword.value.value)
-                    return None  # Field without default means required
-        return None
+        if isinstance(node, ast.Tuple):
+            return ", ".join(self._get_type_annotation(elt) for elt in node.elts)
+        if isinstance(node, ast.List):
+            return ", ".join(self._get_type_annotation(elt) for elt in node.elts)
+        if hasattr(ast, 'unparse'):
+            return ast.unparse(node)
+        return "any"
 
 
 class TypeScriptGenerator:
-    """Generate TypeScript interfaces from model definitions"""
+    """Generate TypeScript code from model definitions"""
 
     def __init__(self):
         self.type_converter = TypeConverter()
-        self.imports: Set[str] = set()
-        self.interfaces: List[str] = []
 
     def generate(self, models: Dict[str, Dict]) -> str:
         """Generate TypeScript code from models"""
-        self.imports.clear()
-        self.interfaces.clear()
+        output = [
+            "// Auto-generated TypeScript types from backend Pydantic models",
+            f"// Generated at: {datetime.now().isoformat()}",
+            "",
+            "// API Response Types"
+        ]
 
-        # Sort models by dependency
-        sorted_models = self._sort_models_by_dependency(models)
-
-        # Generate each model
-        for model_name, model_info in sorted_models.items():
-            interface = self._generate_interface(model_name, model_info)
-            if interface:
-                self.interfaces.append(interface)
-
-        # Combine imports and interfaces
-        output = ["// Auto-generated TypeScript types from backend Pydantic models"]
-        output.append(f"// Generated at: {datetime.now().isoformat()}")
-        output.append("")
-
-        # Add common imports if needed
-        if self.imports:
-            output.append("// Common imports")
-            for imp in sorted(self.imports):
-                output.append(f"export {imp}")
+        # Generate each model/enum
+        for name, info in sorted(models.items()):
+            if info["type"] == "interface":
+                output.append(f"export interface {name} {{")
+                for field_name, field_info in info["fields"].items():
+                    ts_type = self.type_converter.convert_type(field_info["type"])
+                    output.append(f"  {field_name}?: {ts_type};")
+                output.append("}")
+            elif info["type"] == "enum":
+                if info["values"]:
+                    union = " | ".join(info["values"])
+                    output.append(f"export type {name} = {union};")
+                else:
+                    output.append(f"export type {name} = any;")
             output.append("")
 
-        # Add all interfaces
-        output.append("// API Response Types")
-        output.extend(self.interfaces)
-
-        # Post-process to fix any remaining syntax issues
-        ts_code = "\n".join(output)
-        ts_code = self._fix_common_syntax_issues(ts_code)
-
-        return ts_code
-
-    def _fix_common_syntax_issues(self, ts_code: str) -> str:
-        """Fix common TypeScript syntax issues in generated code"""
-        original = ts_code
-
-        # Fix array types with malformed syntax
-        # Record<string, any[>;  -> Record<string, any>[];
-        ts_code = re.sub(r'\[>;', '[];', ts_code)
-
-        # Fix extra closing brackets
-        # ...[]];  -> ...[];
-        ts_code = re.sub(r'\[\]\];', r'[];', ts_code)
-
-        # Fix Record<(type, ...)> -> Record<type, ...>
-        ts_code = re.sub(r'Record<\(([^)]+)\)', r'Record<\1', ts_code)
-
-        # Fix complex array/union patterns
-        # type[ | null]>;  -> type[] | null;
-        ts_code = re.sub(r'\[ \| null\]>;', '[] | null;', ts_code)
-
-        # Fix any remaining parentheses around type names
-        ts_code = re.sub(r'\(([^()]+)\)', r'\1', ts_code)
-
-        # Debug: print if changes were made
-        if ts_code != original:
-            print(f"  🔧 Fixed syntax issues ({len(original) - len(ts_code)} chars removed)")
-
-        return ts_code
-
-    def _generate_interface(self, model_name: str, model_info: Dict) -> str:
-        """Generate a TypeScript interface for a model"""
-        fields = model_info.get("fields", {})
-        if not fields:
-            return None
-
-        interface_lines = [f"export interface {model_name} {{", ""]
-
-        # Generate each field
-        for field_name, field_info in fields.items():
-            ts_field_name = self.type_converter.convert_field_name(field_name)
-            ts_type = self.type_converter.convert_type(field_info["type"])
-
-            # Fix common type syntax issues in the generated type string
-            ts_type = self._fix_field_type(ts_type)
-
-            # Add optional marker if not required
-            optional = "?" if field_info["required"] else ""
-            comment = (
-                f" // Default: {field_info['default']}" if field_info["default"] else ""
-            )
-
-            interface_lines.append(f"  {ts_field_name}{optional}: {ts_type};{comment}")
-
-        interface_lines.append("}")
-        interface_lines.append("")
-
-        return "\n".join(interface_lines)
-
-    def _fix_field_type(self, type_str: str) -> str:
-        """Fix type string syntax issues"""
-        # Fix malformed array syntax
-        # type[>;  -> type[];
-        type_str = re.sub(r'\[>;', '[];', type_str)
-
-        # Fix type[ | null]>;  -> type[] | null;
-        type_str = re.sub(r'\[ \| null\]>;', '[] | null;', type_str)
-
-        # Fix parentheses around type names
-        type_str = re.sub(r'\(([^()]+)\)', r'\1', type_str)
-
-        return type_str
+        return "\n".join(output)
 
     def _sort_models_by_dependency(self, models: Dict[str, Dict]) -> Dict[str, Dict]:
         """Sort models by dependency order"""
@@ -470,11 +258,17 @@ def main():
     # Extract models
     extractor = PydanticModelExtractor()
 
-    # Process all Python files in schemas directory
-    for py_file in SCHEMAS_DIR.glob("*.py"):
-        if py_file.name != "__init__.py":
-            print(f"  Processing {py_file.name}...")
-            extractor.extract_from_file(py_file)
+    # Process all Python files in specified directories recursively
+    for scan_dir in SCAN_DIRS:
+        if not scan_dir.exists():
+            print(f"  ⚠️  Directory not found: {scan_dir}")
+            continue
+
+        print(f"  📂 Scanning {scan_dir.relative_to(PROJECT_ROOT)}...")
+        for py_file in scan_dir.rglob("*.py"):
+            if py_file.name != "__init__.py":
+                print(f"    Processing {py_file.name}...")
+                extractor.extract_from_file(py_file)
 
     # Generate TypeScript
     generator = TypeScriptGenerator()
@@ -486,8 +280,7 @@ def main():
         f.write(ts_code)
 
     print(f"✅ Generated TypeScript types: {output_file}")
-    print(f"   Found {len(extractor.models)} models")
-    print(f"   Generated {len(generator.interfaces)} interfaces")
+    print(f"   Found {len(extractor.models)} models/enums")
 
 
 if __name__ == "__main__":

@@ -375,7 +375,10 @@ class ClusteringAnalyzer:
             "current_threshold": current_threshold,
             "confidence_score": 0.0,
             "num_clusters": 0,
-            "reasoning": f"Insufficient data for clustering: {len(data)} points (minimum {self.min_cluster_size * 2} required)",
+            "reasoning": (
+                f"Insufficient data for clustering: {len(data)} points "
+                f"(minimum {self.min_cluster_size * 2} required)"
+            ),
             "data_size": len(data),
             "method": "clustering",
             "optimization_type": "clustering",

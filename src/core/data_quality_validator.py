@@ -396,11 +396,12 @@ class DataQualityValidator:
                     required_columns=self._get_required_columns(data_type),
                     threshold=self.thresholds["missing_rate_threshold"],
                 )
-self.logger.info("数据质量验证完成")
-            logger.info("质量检查完成: {symbol} {data_type} - "
-                f"得分: {quality_score:.1f}, 有效: {is_valid}, "
-                f"问题: {len(issues)} (严重: {critical_issues}, 警告: {warning_issues})"
-            )
+                self.logger.info("数据质量验证完成")
+                logger.info(
+                    "质量检查完成: {symbol} {data_type} - "
+                    f"得分: {quality_score:.1f}, 有效: {is_valid}, "
+                    f"问题: {len(issues)} (严重: {critical_issues}, 警告: {warning_issues})"
+                )
 
         except Exception as e:
             logger.error("记录质量检查结果失败: %s", e)

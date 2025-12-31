@@ -103,7 +103,7 @@ class GPUPerformanceBenchmark:
 
         tracemalloc.start()
         process = psutil.Process()
-        initial_memory = process.memory_info().rss / 1024 / 1024
+        process.memory_info().rss / 1024 / 1024
 
         try:
             yield

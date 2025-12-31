@@ -36,7 +36,7 @@ async def get_industry_list():
     """
     try:
         # 使用统一数据服务获取行业数据
-        unified_service = UnifiedDataService()
+        UnifiedDataService()
 
         # 从数据库查询行业分类数据
         query = """
@@ -83,7 +83,7 @@ async def get_concept_list():
     """
     try:
         # 使用统一数据服务获取概念数据
-        unified_service = UnifiedDataService()
+        UnifiedDataService()
 
         # 从数据库查询概念分类数据
         query = """

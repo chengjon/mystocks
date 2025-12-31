@@ -430,13 +430,19 @@ MyStocks GPU集成状态报告
   • 总操作次数: {status["gpu_usage_stats"]["total_operations"]}
   • GPU操作次数: {status["gpu_usage_stats"]["gpu_operations"]}
   • CPU回退次数: {status["gpu_usage_stats"]["cpu_fallback_operations"]}
-  • GPU使用率: {(status["gpu_usage_stats"]["gpu_operations"] / max(1, status["gpu_usage_stats"]["total_operations"]) * 100):.1f}%
+  • GPU使用率: {
+    (status["gpu_usage_stats"]["gpu_operations"] /
+     max(1, status["gpu_usage_stats"]["total_operations"]) * 100):.1f
+}%
 
 ⚡ GPU组件状态:
   • GPU环境: {"✅ 可用" if status["gpu_available"] else "❌ 不可用"}
-  • 数据处理器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["data_processor"]["enabled"] else "❌ 已禁用"}
-  • 特征生成器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["feature_generator"]["enabled"] else "❌ 已禁用"}
-  • 价格预测器: {"✅ 已启用" if status["gpu_performance_summary"]["gpu_components_status"]["price_predictor"]["enabled"] else "❌ 已禁用"}
+  • 数据处理器: {"✅ 已启用" if status["gpu_performance_summary"][
+      "gpu_components_status"]["data_processor"]["enabled"] else "❌ 已禁用"}
+  • 特征生成器: {"✅ 已启用" if status["gpu_performance_summary"][
+      "gpu_components_status"]["feature_generator"]["enabled"] else "❌ 已禁用"}
+  • 价格预测器: {"✅ 已启用" if status["gpu_performance_summary"][
+      "gpu_components_status"]["price_predictor"]["enabled"] else "❌ 已禁用"}
 
 🏆 性能基准测试:
 """
@@ -507,9 +513,10 @@ def main():
     # 数据加载测试
     print("\n2. 数据加载测试:")
     loaded_data = gpu_manager.load_data_by_classification_with_gpu("market_data")
-    print(
-        f"加载完成 - GPU: {hasattr(loaded_data, 'gpu_processing_info') and loaded_data.gpu_processing_info.get('gpu_enabled', False)}"
+    gpu_enabled = hasattr(loaded_data, "gpu_processing_info") and loaded_data.gpu_processing_info.get(
+        "gpu_enabled", False
     )
+    print(f"加载完成 - GPU: {gpu_enabled}")
 
     # 价格预测测试
     print("\n3. 价格预测测试:")

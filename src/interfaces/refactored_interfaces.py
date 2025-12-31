@@ -76,7 +76,8 @@ class IPriceDataSource(abc.ABC):
 
         Returns:
             DataResponse: 包含日线数据的响应
-                - success=True时，data为包含['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'amount']的DataFrame
+                - success=True时，data为包含
+                  ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'amount']的DataFrame
                 - success=False时，error包含错误信息
         """
         pass

@@ -97,10 +97,10 @@ services:
       - "${LOKI_GRPC_PORT:-9096}:9096"
     volumes:
       - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
-      - /data/docker/loki:/data/loki
-      - /data/docker/loki/compactor:/var/loki
+      - ${LOKI_DATA_VOLUME:-/data/docker/loki}:/tmp/loki
     command:
       - '-config.file=/etc/loki/local-config.yaml'
+      - '-config.expand-env=true'
     networks:
       - mystocks-monitoring
 
@@ -115,42 +115,10 @@ services:
       - "${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
     volumes:
       - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
-      - /data/docker/tempo:/data/tempo
+      - ${TEMPO_DATA_VOLUME:-/data/docker/tempo}:/tmp/tempo
     command:
       - '-config.file=/etc/tempo-config.yaml'
-    networks:
-      - mystocks-monitoring
-
-  # ==================== Loki (日志聚合) ====================
-  loki:
-    image: grafana/loki:latest
-    container_name: ${LOKI_CONTAINER_NAME:-mystocks-loki}
-    restart: unless-stopped
-    ports:
-      - "${LOKI_PORT:-3100}:3100"
-      - "${LOKI_GRPC_PORT:-9096}:9096"
-    volumes:
-      - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
-      - ${LOKI_DATA_VOLUME:-./data/loki}:/tmp/loki
-    command:
-      - '-config.file=/etc/loki/local-config.yaml'
-    networks:
-      - mystocks-monitoring
-
-  # ==================== Tempo (分布式追踪) ====================
-  tempo:
-    image: grafana/tempo:latest
-    container_name: ${TEMPO_CONTAINER_NAME:-mystocks-tempo}
-    restart: unless-stopped
-    ports:
-      - "${TEMPO_PORT:-3200}:3200"
-      - "${TEMPO_OTLP_GRPC_PORT:-4317}:4317"
-      - "${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
-    volumes:
-      - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
-      - ${TEMPO_DATA_VOLUME:-./data/tempo}:/tmp/tempo
-    command:
-      - '-config.file=/etc/tempo-config.yaml'
+      - '-config.expand-env=true'
     networks:
       - mystocks-monitoring
 

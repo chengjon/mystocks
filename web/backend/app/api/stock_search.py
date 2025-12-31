@@ -363,7 +363,8 @@ async def search_stocks(
             except Exception as api_error:
                 circuit_breaker.record_failure()
                 logger.error(
-                    f"❌ Stock search API failed with unexpected error: {str(api_error)}, failures: {circuit_breaker.failure_count}"
+                    f"❌ Stock search API failed with unexpected error: {str(api_error)}, "
+                    f"failures: {circuit_breaker.failure_count}"
                 )
                 raise HTTPException(status_code=500, detail="股票搜索失败，请稍后重试") from api_error
 

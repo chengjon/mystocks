@@ -260,7 +260,7 @@ async def get_indicator_registry_endpoint(
             # 分类筛选
             if category:
                 try:
-                    category_enum = IndicatorCategory(category)
+                    IndicatorCategory(category)
                     category_value = (
                         meta["category"].value if hasattr(meta["category"], "value") else str(meta["category"])
                     )

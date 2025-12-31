@@ -1,9 +1,10 @@
 # Main CLI 工作规范与最佳实践
 
-**文档版本**: v1.0
+**文档版本**: v2.0
 **创建日期**: 2025-12-29
 **适用范围**: 所有使用Git Worktree进行多CLI并行开发的项目
-**维护者**: Main CLI (主CLI)
+**最后更新**: 2025-12-30
+**维护者**: Main CLI (Manager)
 
 ---
 
@@ -26,7 +27,7 @@
 在启动任何Worker CLI之前，必须确保其具备完整的工作能力：
 
 - ✅ Git worktree已创建并初始化
-- ✅ README.md包含完整任务清单和工作流程规范
+- ✅ TASK.md包含完整任务清单和工作流程规范
 - ✅ 所有hook脚本具有执行权限
 - ✅ 监控系统已配置并可正常追踪进度
 - ✅ 提交流程和验收标准已明确
@@ -37,7 +38,7 @@
 
 所有规范、流程、标准必须文档化，并放在显眼位置：
 
-- ✅ 工作流程指南必须链接在README中
+- ✅ 工作流程指南必须链接在TASK.md中
 - ✅ Git提交规范必须包含具体示例
 - ✅ 进度更新格式必须提供模板
 - ✅ 完成标准必须明确可衡量
@@ -46,7 +47,7 @@
 
 主CLI通过被动方式监控进度，不主动干预Worker CLI工作：
 
-- ✅ 通过README更新时间判断活跃状态
+- ✅ 通过TASK-REPORT.md更新时间判断活跃状态
 - ✅ 通过Git提交历史了解进展
 - ✅ 通过自动化脚本定期检查
 - ❌ 不直接修改Worker CLI的代码或文件
@@ -56,13 +57,13 @@
 所有CLI共享相同的工作流程、文档格式、提交规范：
 
 - ✅ 统一的CLI工作流程指南
-- ✅ 统一的README章节结构
+- ✅ 统一的TASK.md章节结构
 - ✅ 统一的Git提交消息格式
 - ✅ 统一的进度更新模板
 
 ---
 
-## 🚨 Step -1: Pre-flight检查清单 ⭐ **强制执行（2025-12-30新增）**
+## 🚨 Step -1: Pre-flight检查清单 ⭐ **强制执行**
 
 **重要性**: 🔴 **极高** - 主CLI在开始任何新工作前，必须强制执行此检查清单
 
@@ -126,7 +127,7 @@ for worktree in $(git worktree list | grep -v '\[main\]' | awk '{print $1}'); do
 done
 ```
 
-### 任务文档使用规则 ⭐ **重要（2025-12-30新增）**
+### 任务文档使用规则 ⭐ **重要**
 
 **原则**:
 - ✅ 使用独立的TASK.md任务文档（位于worktree根目录）
@@ -148,12 +149,22 @@ cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md /opt/claude/mystocks_cli_x/TASK.
 # 2. 第一阶段完成，主CLI下发第二阶段任务
 cd /opt/claude/mystocks_cli_x
 mv TASK.md TASK-1.md  # 重命名已完成任务
-cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md TASK-2.md
+cat > TASK-2.md << 'EOF'
+# CLI-X 第二阶段任务
+...
+EOF
 
 # 3. 继续后续阶段...
 mv TASK-2.md TASK-2-completed.md
-cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md TASK-3.md
+cat > TASK-3.md << 'EOF'
+# CLI-X 第三阶段任务
+...
+EOF
 ```
+
+**相关文档**:
+- [任务文档模板](./TASK_TEMPLATE.md) - 详细的TASK.md和TASK-REPORT.md模板
+- [协作冲突预防](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 避免README.md冲突
 
 ---
 
@@ -188,7 +199,7 @@ cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md TASK-3.md
 2. **开发实现阶段**: 开发原则、TDD工作流
 3. **自测验证阶段**: 如何验证验收标准
 4. **Git提交阶段**: 提交前检查清单、提交频率建议
-5. **README更新阶段**: 进度报告格式
+5. **更新TASK-REPORT阶段**: 如何使用TASK-REPORT.md记录进度
 6. **完成确认阶段**: 任务完成标准、合并流程
 
 **质量标准**:
@@ -298,7 +309,7 @@ git commit -m "chore: add file ownership mapping for all CLIs"
 - ✅ 为每个CLI定义清晰的职责范围（参考上面的所有权映射）
 - ✅ 确保职责不重叠（通过目录结构物理隔离）
 - ✅ 记录在任务分配文档中
-- ✅ 在CLI README中说明职责边界
+- ✅ 在CLI TASK.md中说明职责边界
 
 #### **0.5.3 运行冲突检测脚本**
 ```bash
@@ -361,18 +372,20 @@ git worktree list  # 确认worktree已创建
 ls -la /opt/claude/mystocks_phase3_frontend  # 确认目录存在
 ```
 
-### 1.2 初始化README
+**详细命令参考**: [Git Worktree命令手册](./GIT_WORKTREE_MAIN_CLI_MANUAL.md)
 
-**步骤1**: 复制任务分配文档到README
+### 1.2 初始化TASK.md
+
+**步骤1**: 复制任务分配文档到TASK.md
 ```bash
 cp /opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md \
-   /opt/claude/mystocks_phase3_frontend/README.md
+   /opt/claude/mystocks_phase3_frontend/TASK.md
 ```
 
 **步骤2**: 首次提交到Git
 ```bash
 cd /opt/claude/mystocks_phase3_frontend
-git add README.md
+git add TASK.md
 DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "feat: initialize CLI-1 Phase 3 frontend optimization tasks
 
 - 20 tasks across 4 stages (12-14 working days)
@@ -515,8 +528,8 @@ done
 # 1. Worktree已创建
 git worktree list | grep phase3-frontend-optimization
 
-# 2. README已初始化
-cat /opt/claude/mystocks_phase3_frontend/README.md | head -20
+# 2. TASK.md已初始化
+cat /opt/claude/mystocks_phase3_frontend/TASK.md | head -20
 
 # 3. Hooks有执行权限
 ls -la /opt/claude/mystocks_phase3_frontend/.claude/hooks/ | grep "\.sh" | grep "rwx"
@@ -528,7 +541,7 @@ cd /opt/claude/mystocks_phase3_frontend && git remote -v | grep origin
 cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep cli-1
 
 # 6. Pre-commit配置已说明 ⚠️ **新增**
-grep "Pre-commit配置" /opt/claude/mystocks_phase3_frontend/README.md
+grep "Pre-commit配置" /opt/claude/mystocks_phase3_frontend/TASK.md
 
 # 7. Git分支正确
 cd /opt/claude/mystocks_phase3_frontend && git branch
@@ -548,7 +561,7 @@ cd /opt/claude/mystocks_phase3_frontend && git log --oneline -1
 **文件位置**: `scripts/monitoring/check_worker_progress.sh`
 
 **关键特性**:
-- ✅ 非侵入式（只读README和Git历史）
+- ✅ 非侵入式（只读TASK-REPORT.md和Git历史）
 - ✅ 自动化（可配置cron定时执行）
 - ✅ 预警机制（黄/红色预警）
 - ✅ 报告生成（保存到 `/tmp/mystocks_progress_*.txt`）
@@ -577,13 +590,13 @@ crontab -l | grep check_worker
 **报告文件**: `/tmp/mystocks_progress_YYYYMMDD_HHMMSS.txt`
 
 **关键指标**:
-- Active CLIs (< 24h): README更新时间在24小时内
-- Warning CLIs (24-48h): README超过24小时未更新
-- Alert CLIs (> 48h): README超过48小时未更新
+- Active CLIs (< 24h): TASK-REPORT.md更新时间在24小时内
+- Warning CLIs (24-48h): TASK-REPORT.md超过24小时未更新
+- Alert CLIs (> 48h): TASK-REPORT.md超过48小时未更新
 
 **响应策略**:
 - 🟢 正常: 无需干预
-- 🟡 预警: 在README中记录，主CLI关注
+- 🟡 预警: 在TASK-REPORT.md中记录，主CLI关注
 - 🔴 告警: 主CLI主动联系Worker CLI了解阻塞原因
 
 ---
@@ -606,7 +619,11 @@ mystocks_spec/
 │           ├── CLI-6_QUALITY_ASSURANCE_TASKS.md
 │           ├── PROGRESS_MONITORING_AND_MILESTONES.md
 │           ├── CLI_WORKFLOW_GUIDE.md
-│           └── MAIN_CLI_WORKFLOW_STANDARDS.md  # 本文档
+│           ├── MAIN_CLI_WORKFLOW_STANDARDS.md  # 本文档
+│           ├── GIT_WORKTREE_MAIN_CLI_MANUAL.md
+│           ├── GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md
+│           ├── GIT_REMOTE_NAME_STANDARD.md
+│           └── TASK_TEMPLATE.md
 ├── openspec/
 │   └── changes/
 │       └── frontend-optimization-six-phase/
@@ -621,27 +638,26 @@ mystocks_spec/
 - 流程指南文档: `*_WORKFLOW_GUIDE.md`
 - 监控相关文档: `PROGRESS_MONITORING_AND_MILESTONES.md`
 - 工作规范文档: `MAIN_CLI_WORKFLOW_STANDARDS.md`
+- Git命令文档: `*_MANUAL.md`
+- 冲突预防文档: `*_COLLABORATION_CONFLICT_PREVENTION.md`
+- 远程名称文档: `GIT_REMOTE_NAME_STANDARD.md`
+- 任务模板文档: `TASK_TEMPLATE.md`
 
-### 3.2 README章节标准
+### 3.2 TASK.md章节标准
 
-**所有CLI的README必须包含以下章节**:
+**所有CLI的TASK.md必须包含以下章节**:
 
 1. **基本信息**: 工作目录、Git分支、技术栈、任务数量、预计工期
 2. **核心职责**: 明确的任务目标和范围
 3. **依赖关系**: 输入依赖和输出依赖
 4. **任务清单**: 详细的分阶段任务列表
 5. **总体验收标准**: 功能完整性、性能指标、测试覆盖、文档完整性
-6. **进度跟踪**: 任务进度统计和更新日志
-7. **工作流程与Git提交规范**:
-   - 📚 完整工作流程指南链接
-   - ⚡ 快速参考（每日工作流程、提交消息格式、完成标准、进度更新格式）
-   - 🎯 关键注意事项
-   - 📞 需要帮助？（文档链接）
+6. **进度跟踪**: 任务进度统计和更新日志（链接到TASK-REPORT.md）
 
 **禁止**:
-- ❌ README中没有"工作流程与Git提交规范"章节
-- ❌ 没有进度更新格式模板
-- ❌ 没有Git提交消息规范和示例
+- ❌ TASK.md中没有"进度跟踪"章节
+- ❌ 没有链接到TASK-REPORT.md
+- ❌ 没有Git提交规范和示例
 
 ---
 
@@ -655,8 +671,8 @@ mystocks_spec/
 - [ ] **文件所有权映射已创建（.FILE_OWNERSHIP）** ⚠️ **新增**
 - [ ] Git worktree已创建并验证
 - [ ] **Git远程仓库名称为 `origin`**
-- [ ] README.md已初始化并包含所有必需章节
-- [ ] 工作流程指南已创建并链接在README中
+- [ ] TASK.md已初始化并包含所有必需章节
+- [ ] 工作流程指南已创建并链接在TASK.md中
 - [ ] Hook脚本权限已修复（755）
 - [ ] Hook脚本语法已验证（bash -n）
 - [ ] **Pre-commit配置已说明（继承主仓库，不修改）** ⚠️ **新增**
@@ -671,10 +687,10 @@ mystocks_spec/
 - [ ] **文件所有权映射已创建并验证** ⚠️ **新增**
 - [ ] 4个worktree已创建并验证
 - [ ] 4个worktree的远程仓库名称为 `origin`
-- [ ] 4个README已初始化并包含工作流程规范
+- [ ] 4个TASK.md已初始化并包含工作流程规范
 - [ ] 4个hooks权限已修复并验证
 - [ ] **4个Pre-commit配置已说明** ⚠️ **新增**
-- [ ] **冲突检测脚本已运行并记录结果** ⚠️ **新增**
+- [ ] **4个冲突检测脚本已运行并记录结果** ⚠️ **新增**
 - [ ] 监控脚本已测试运行成功
 - [ ] 实施方案文档已获得项目组批准
 
@@ -684,7 +700,7 @@ mystocks_spec/
 - [ ] **文件所有权映射已更新（包含CLI-3, CLI-4）** ⚠️ **新增**
 - [ ] 2个worktree已创建并验证
 - [ ] 2个worktree的远程仓库名称为 `origin`
-- [ ] 2个README已初始化并包含工作流程规范
+- [ ] 2个TASK.md已初始化并包含工作流程规范
 - [ ] 2个hooks权限已修复并验证
 - [ ] **2个Pre-commit配置已说明** ⚠️ **新增**
 - [ ] 依赖验证通过（CLI-3可调用CLI-2的API）
@@ -697,8 +713,9 @@ mystocks_spec/
 - [ ] 代码已推送到远程分支
 - [ ] 测试覆盖率达标（后端>80%, 前端>70%）
 - [ ] 代码质量检查通过（Pylint>8.0, 无高危漏洞）
-- [ ] README中记录了完整的进度更新历史
-- [ ] 完成报告已生成（如需要）
+- [ ] TASK-REPORT.md已更新（完整进度）
+- [ ] 完成报告已生成（TASK-*-REPORT.md）
+- [ ] 文档完整（API文档、组件说明等）
 
 **Round完成标准**:
 - [ ] Round内所有CLI已完成（100%）
@@ -708,292 +725,120 @@ mystocks_spec/
 
 ---
 
-## 🔧 常见问题与解决方案
+## 💡 最佳实践总结
 
-### 问题1: Hook脚本权限错误
+### 会话标记规范 ⭐ **新增（借鉴iflow）**
 
-**症状**: `Permission denied` 错误在 `stop-python-quality-gate.sh` 或 `user-prompt-submit-skill-activation.sh`
+在Claude Code会话中，使用一致的标识符来维护上下文。
 
-**根因**: Hook脚本在worktree创建时没有执行权限（644而非755）
-
-**解决方案**:
+**使用方法**:
 ```bash
-chmod +x /opt/claude/mystocks_<phase>_<name>/.claude/hooks/*.sh
+# 启动 Claude 时使用清晰的会话标识符
+claude
 
-# 验证
-ls -la /opt/claude/mystocks_<phase>_<name>/.claude/hooks/ | grep "\.sh"
+# 始终在提示中使用清晰的上下文标签
+Human: [CLI-1-Phase3] 让我们继续处理K线图实现...
+Human: [CLI-2-API] 让我们继续处理API契约定义...
 ```
 
-**预防**: 在所有Worktree创建流程中加入此步骤为必需项
+**好处**:
+- ✅ 避免不同CLI的上下文混淆
+- ✅ 每个会话有明确的身份标识
+- ✅ 便于主CLI区分和跟踪
 
-### 问题2: README中没有工作流程规范
+### 终端提示符配置 ⭐ **新增（借鉴iflow）**
 
-**症状**: Worker CLI不知道如何提交代码、更新进度
+在shell提示符中添加分支信息，避免忘记当前worktree。
 
-**根因**: README只包含任务清单，缺少工作流程章节
-
-**解决方案**:
-1. 在主仓库创建通用工作流程指南（`CLI_WORKFLOW_GUIDE.md`）
-2. 在每个CLI的README中添加"工作流程与Git提交规范"章节
-3. 包含快速参考和完整指南链接
-
-**预防**: 在Worktree初始化检查清单中加入README章节验证
-
-### 问题3: 监控脚本检测不到进度
-
-**症状**: 所有CLI显示"尚未开始记录进度"
-
-**根因**: Worker CLI没有在README中添加"进度更新"章节
-
-**解决方案**:
-1. 在README中提供进度更新模板
-2. 在工作流程指南中明确要求添加"进度更新"章节
-3. 监控脚本优先检测"进度更新"章节的存在
-
-**预防**: 在Worker CLI启动指南中强调添加进度更新章节
-
-### 问题4: Git提交被pre-commit hook阻止
-
-**症状**: 提交时报告"项目根目录不存在: --quiet"
-
-**根因**: Worktree环境与主仓库不同，`scripts/maintenance/check-structure.sh` 不存在
-
-**解决方案**:
+**Bash配置**:
 ```bash
-DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "message"
+# 添加到 ~/.bashrc
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+export PS1="\[\e[36m\]\w\[\e[91m\]\$(parse_git_branch)\[\e[00m\] $ "
 ```
 
-**预防**: 在所有提交示例中使用此环境变量
-
-### 问题5: Worker CLI进度停滞
-
-**症状**: 监控显示黄色或红色预警
-
-**根因**: Worker CLI遇到阻塞问题未报告，或忘记更新README
-
-**解决方案**:
-1. 主CLI主动联系Worker CLI了解情况
-2. 在README中记录阻塞问题
-3. 调整任务优先级或提供帮助
-
-**预防**: 监控脚本每2小时自动运行，主CLI每天检查报告
-
-### 问题6: Git远程名称非标准 ⚠️ **高频问题**
-
-**症状**: Worker CLI执行 `git push origin` 失败
+**Zsh配置**:
 ```bash
-$ git push origin phase3-frontend-optimization
-fatal: 'origin' does not appear to be a git remote
+# 在主题或 .zshrc 中包含 git 分支信息
 ```
 
-**根因**: 主仓库的远程仓库名称为 `mystocks` 而不是Git标准的 `origin`
+**iTerm颜色区分**:
 ```bash
-$ git remote -v
-mystocks    https://github.com/user/repo.git (fetch)
-mystocks    https://github.com/user/repo.git (push)
+# 在iTerm中为不同worktree使用不同的终端颜色
+echo -e "\033]0;Claude: CLI-1 Phase 3\007"
 ```
 
-**影响**:
-- ❌ 所有文档中的 `git push origin` 命令失败
-- ❌ 所有文档中的 `git pull origin` 命令失败
-- ❌ Worker CLI无法按文档推送代码
-- ❌ 违反Git标准命名约定
+### 进度跟踪的协调文件 ⭐ **新增（借鉴iflow）**
 
-**解决方案**:
+创建项目协调目录来跟踪所有worktree的进度。
+
+**创建协调目录**:
 ```bash
-# 1. 修复主仓库（所有worktree会自动继承）
-cd /opt/claude/mystocks_spec
-git remote rename mystocks origin
+# 创建项目协调目录
+mkdir -p ~/projects/feature-coordination
+cd ~/projects/feature-coordination
 
-# 2. 验证修复
-git remote -v
-# 预期输出:
-# origin    https://github.com/user/repo.git (fetch)
-# origin    https://github.com/user/repo.git (push)
+# 创建进度跟踪文件
+echo "# 项目进度跟踪" > README.md
+echo "- [ ] CLI-1: K线图优化 (../mystocks_phase3_frontend)" >> README.md
+echo "- [ ] CLI-2: API契约 (../mystocks_phase6_api_contract)" >> README.md
+echo "- [ ] CLI-5: GPU监控 (../mystocks_phase6_monitoring)" >> README.md
 
-# 3. 验证所有worktree已自动更新
-cd /opt/claude/mystocks_phase3_frontend
-git remote -v
-# 预期输出: origin (已自动继承)
+# 随着工作进展更新状态
+sed -i 's/- \[ \] CLI-1/- [x] CLI-1/' README.md
+git commit -am "CLI-1完成"
 ```
-
-**实际修复案例**: Commit `0a65718` (2025-12-29 18:29)
-- ✅ 主仓库: `mystocks` → `origin`
-- ✅ CLI-1: `mystocks` → `origin` (自动继承)
-- ✅ CLI-2: `mystocks` → `origin` (自动继承)
-- ✅ CLI-5: `mystocks` → `origin` (自动继承)
-- ✅ CLI-6: `mystocks` → `origin` (自动继承)
-
-**预防措施**:
-1. ✅ **在Phase 1初始化时**: 确认主仓库使用 `origin`
-   ```bash
-   # 创建worktree前检查
-   git remote -v | grep origin
-   ```
-
-2. ✅ **在worktree创建后**: 验证远程配置已自动继承
-   ```bash
-   # 验证worktree远程配置
-   cd /opt/claude/mystocks_<phase>_<name>
-   git remote -v | grep origin
-   ```
-
-3. ✅ **在文档中**: 始终使用标准的 `origin` 命令
-   ```bash
-   # ✅ 正确: 文档示例
-   git push origin <branch-name>
-   git pull origin <branch-name>
-
-   # ❌ 错误: 避免自定义名称
-   git push mystocks <branch-name>
-   ```
-
-**详细文档**: 参见 [Git远程名称标准化规范](./GIT_REMOTE_NAME_STANDARD.md)
-
-### 问题7: 多CLI修改同一文件产生冲突 ⚠️ **新增**
-
-**症状**: Git合并时产生"Both modified"冲突
-
-**场景示例**:
-```
-时间线：
-Day 1 10:00 - CLI-1修改了web/frontend/src/components/Chart.vue
-Day 1 14:00 - CLI-6也在代码质量检查中修改了同一文件
-Day 2 10:00 - 合并时产生冲突：Both modified
-```
-
-**根因**:
-- 文件所有权不明确
-- 职责范围重叠
-- 缺少协调机制
-
-**预防** ⚠️ **关键**:
-1. ✅ 创建文件所有权映射(`.FILE_OWNERSHIP`)
-2. ✅ 明确每个CLI的职责范围（目录物理隔离）
-3. ✅ 使用目录结构物理隔离（参考0.5章节）
-4. ✅ 运行冲突检测脚本：`bash scripts/maintenance/check_file_conflicts.sh`
-
-**解决**:
-```bash
-# 1. 查看文件所有权
-cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep <文件路径>
-
-# 示例：
-# web/frontend/src/components/Chart.vue: cli-1
-
-# 2. 与文件拥有者CLI协调
-# 方式1: 向主CLI申请修改权限
-# 方式2: 由拥有者CLI执行修改
-
-# 3. 解决冲突后重新提交
-git add <文件路径>
-git commit -m "chore: resolve merge conflict"
-```
-
-**完整解决方案**:
-参见 [Git Worktree协作冲突预防规范](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
-
-**实际案例**:
-- 首次运行冲突检测脚本（2025-12-29）：
-  - ✅ CLI-6: 无冲突
-  - ⚠️ CLI-2: 1个潜在冲突（`web/backend/app/main.py`，属于main）
-  - ⚠️ CLI-5: 3个潜在冲突（`monitoring/prometheus.yml`等，属于main）
-- 这些冲突是历史遗留问题（框架创建前），未来可避免
-
-**预防措施**:
-1. ✅ **在Phase 0.5**: 创建文件所有权映射
-2. ✅ **在Phase 1.3**: 确认文件所有权已明确
-3. ✅ **在开发过程中**: 定期运行冲突检测脚本
-4. ✅ **在跨CLI修改时**: 遵循协调机制流程
-
----
-
-## 📖 最佳实践总结
 
 ### Do's（应该做的）
 
 1. ✅ **完整准备**: 在启动任何Worker CLI前，完成所有准备阶段工作（Phase 0-4）
-2. ✅ **文档驱动**: 所有流程、规范、标准都有文档记录，并在README中链接
+2. ✅ **文档驱动**: 所有流程、规范、标准都有文档记录，并在TASK.md中链接
 3. ✅ **标准化**: 所有CLI使用相同的文档格式、工作流程、提交规范
-4. ✅ **非侵入式**: 监控通过README更新和Git历史，不主动干预Worker CLI
+4. ✅ **非侵入式**: 监控通过TASK-REPORT.md更新和Git历史，不主动干预Worker CLI
 5. ✅ **及时响应**: 遇到预警（黄/红）立即联系Worker CLI了解情况
-6. ✅ **验证优先**: Worktree创建后立即验证hooks权限、README完整性
+6. ✅ **验证优先**: Worktree创建后立即验证hooks权限、TASK.md完整性
 7. ✅ **工具自动化**: 使用监控脚本自动化进度检查，减少人工干预
+8. ✅ **会话标记**: 使用[CLI-X-PhaseY]标识不同会话
+9. ✅ **终端配置**: 配置shell提示符显示分支信息
+10. ✅ **进度协调**: 创建协调文件跟踪所有worktree进度
 
 ### Don'ts（不应该做的）
 
 1. ❌ **不完整启动**: 只创建worktree和复制任务文档，忽略工作流程和hooks
 2. ❌ **侵入式管理**: 直接修改Worker CLI的代码或文件，除非被请求
 3. ❌ **忽视权限**: 忘记修复hook脚本权限，导致Worker CLI无法正常工作
-4. ❌ **文档缺失**: README中没有工作流程、Git提交规范、进度更新格式
+4. ❌ **文档缺失**: TASK.md中没有工作流程、Git提交规范、进度更新格式
 5. ❌ **缺少监控**: 没有设置自动化监控，无法及时发现停滞或阻塞
 6. ❌ **不验收交付**: Worker CLI声称完成但主CLI未验收就合并到main
 7. ❌ **重复造轮**: 每次项目都重新设计流程，而不是复用已验证的模板
+8. ❌ **README任务**: 使用README.md记录CLI特定任务，导致合并冲突
+9. ❌ **忘记Pre-flight**: 开始新工作前不检查worktree和远程更新
+10. ❌ **忽略所有权**: 不创建文件所有权映射，导致协作冲突
 
 ---
 
-## 🎯 快速参考检查清单
+## 🔗 相关文档
 
-### 主CLI准备阶段（启动Worker CLI前）
-
-```
-Phase 0: 文档准备
-  [ ] 任务分配文档 (CLI-N_PHASE_NAME_TASKS.md)
-  [ ] 工作流程指南 (CLI_WORKFLOW_GUIDE.md)
-  [ ] 监控机制文档 (PROGRESS_MONITORING_AND_MILESTONES.md)
-  [ ] 实施方案文档 (implementation-plan.md)
-
-Phase 1: Worktree创建
-  [ ] Git worktree已创建
-  [ ] README.md已初始化
-  [ ] Hooks权限已修复 (chmod +x)
-  [ ] Hooks语法已验证 (bash -n)
-  [ ] 首次提交已完成
-
-Phase 2: 监控设置
-  [ ] 监控脚本已创建
-  [ ] 监控脚本已测试运行
-  [ ] 自动化监控已设置 (crontab)
-
-Phase 3: 验证
-  [ ] 所有检查项通过
-  [ ] 准备启动Worker CLI
-```
-
-### Worker CLI启动检查（30秒快速验证）
-
-```bash
-# 1. Worktree存在
-git worktree list | grep <branch-name>
-
-# 2. README完整
-grep "工作流程与Git提交规范" /opt/claude/mystocks_*/README.md
-
-# 3. Hooks可执行
-ls -la /opt/claude/mystocks_*/.claude/hooks/*.sh | grep "rwx"
-
-# 4. 监控可运行
-bash /opt/claude/mystocks_spec/scripts/monitoring/check_worker_progress.sh
-```
-
----
-
-## 📚 相关文档索引
-
-**流程文档**:
+### 流程文档
 - [Worker CLI工作流程指南](./CLI_WORKFLOW_GUIDE.md) - Worker CLI必读
-- [进度监控与里程碑](./PROGRESS_MONITORING_AND_MILESTONES.md) - 监控机制
-- [Git Worktree手册](../GIT_WORKTREE_MAIN_CLI_MANUAL.md) - Git worktree命令
+- [Git Worktree协作冲突预防](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 冲突处理
+- [任务文档模板](./TASK_TEMPLATE.md) - TASK.md和TASK-REPORT.md模板
 
-**任务分配文档**:
+### Git命令文档
+- [Git Worktree手册](./GIT_WORKTREE_MAIN_CLI_MANUAL.md) - Git worktree命令参考
+- [Git远程名称标准](./GIT_REMOTE_NAME_STANDARD.md) - 远程配置规范
+
+### 任务分配文档
 - [CLI-1: Phase 3前端K线图优化](./CLI-1_PHASE3_TASKS.md)
 - [CLI-2: API契约标准化](./CLI-2_API_CONTRACT_TASKS.md)
 - [CLI-3: Phase 4完整实现](./CLI-3_PHASE4_COMPLETE_TASKS.md)
-- [CLI-4: AI智能筛选](./CLI-4_PHASE5_AI_SCREENING_TASKS.md)
-- [CLI-5: GPU监控仪表板](./CLI-5_PHASE6_GPU_MONITORING_TASKS.md)
+- [CLI-4: Phase 5 AI智能筛选](./CLI-4_PHASE5_AI_SCREENING_TASKS.md)
+- [CLI-5: Phase 6 GPU监控](./CLI-5_PHASE6_GPU_MONITORING_TASKS.md)
 - [CLI-6: 质量保证](./CLI-6_QUALITY_ASSURANCE_TASKS.md)
 
-**实施方案**:
+### 实施方案
 - [Frontend Six-Phase实施方案](../../openspec/changes/frontend-optimization-six-phase/implementation-plan.md)
 
 ---
@@ -1002,11 +847,18 @@ bash /opt/claude/mystocks_spec/scripts/monitoring/check_worker_progress.sh
 
 **版本历史**:
 - v1.0 (2025-12-29): 初始版本，基于Phase 3-6多CLI并行开发经验
+- v2.0 (2025-12-30): 重大更新
+  - 添加Step -1: Pre-flight检查清单（强制执行）
+  - 更新任务文档方式为TASK.md + TASK-REPORT.md
+  - 添加文件所有权确认步骤
+  - 添加会话标记规范
+  - 添加终端提示符配置
+  - 添加进度跟踪协调文件
+  - 增强文档链接矩阵
+  - 减少Git命令详解，链接到命令手册
 
 **维护者**: Main CLI
 **更新频率**: 每个项目结束后总结经验教训，更新本文档
-
-**反馈渠道**: 如果在遵循本规范过程中遇到问题或有改进建议，请在项目复盘会议上提出。
 
 ---
 

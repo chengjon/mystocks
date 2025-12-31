@@ -185,7 +185,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 """
 
             # 创建adapter（使用内存存储）
-            adapter = casbin.FileAdapter(":memory:")
+            casbin.FileAdapter(":memory:")
 
             # 创建enforcer
             self.enforcer = casbin.Enforcer(model_text, None)

@@ -459,8 +459,8 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
         health = data_source.health_check()
 
         # 统计数据库中的策略和回测数量
-        strategy_repo = StrategyRepository(db)
-        backtest_repo = BacktestRepository(db)
+        StrategyRepository(db)
+        BacktestRepository(db)
 
         # 简单查询以验证数据库可用性
         from app.repositories.strategy_repository import UserStrategyModel

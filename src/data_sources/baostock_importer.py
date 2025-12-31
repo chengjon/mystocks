@@ -468,7 +468,8 @@ class BaoStockData:
     def query_stock_industry(self, code=None, date=None):
         """
         行业分类
-        :param code: 股票代码，支持 sh.600000、sz.000001、600000、000001、sh600000、sz300377 等格式，自动标准化。为空时返回全量数据
+        :param code: 股票代码，支持 sh.600000、sz.000001、600000、000001、sh600000、sz300377
+                     等格式，自动标准化。为空时返回全量数据
         :param date: 查询日期，格式YYYY-MM-DD，为空时默认最新日期
         :return: pandas.DataFrame
         示例: bao.query_stock_industry('300377')

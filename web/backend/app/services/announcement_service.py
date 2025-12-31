@@ -247,7 +247,7 @@ class AnnouncementService:
 
         try:
             # 获取所有活跃规则
-            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
+            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active is True).all()
 
             logger.info(f"Evaluating {len(rules)} active monitor rules")
 

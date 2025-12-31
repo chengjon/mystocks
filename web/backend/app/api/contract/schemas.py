@@ -122,21 +122,21 @@ class ContractSyncRequest(BaseModel):
     """契约同步请求"""
 
     name: str = Field(..., description="契约名称")
-    source_path: str = Field(..., description="源文件路径")
-    direction: SyncDirection = Field(..., description="同步方向")
-    version: Optional[str] = Field(None, description="指定版本号 (默认自动递增)")
-    commit: bool = Field(default=False, description="是否提交到Git")
+    direction: str = Field(default="code_to_db", description="同步方向: code_to_db | db_to_code")
+    commit_hash: Optional[str] = Field(None, description="Git commit hash")
+    author: Optional[str] = Field(None, description="作者")
+    description: Optional[str] = Field(None, description="版本描述")
 
 
 class SyncResult(BaseModel):
     """同步结果"""
 
     success: bool = Field(..., description="是否成功")
-    operation: str = Field(..., description="操作类型")
+    version_id: Optional[int] = Field(None, description="版本ID")
+    version: Optional[str] = Field(None, description="版本号")
+    direction: str = Field(..., description="同步方向: code_to_db | db_to_code")
+    changes: Dict[str, Any] = Field(default_factory=dict, description="变更详情")
     message: str = Field(..., description="结果消息")
-    files_created: List[str] = Field(default_factory=list, description="创建的文件")
-    files_modified: List[str] = Field(default_factory=list, description="修改的文件")
-    version: Optional[str] = Field(None, description="新版本号")
 
 
 class ContractSyncResponse(BaseModel):

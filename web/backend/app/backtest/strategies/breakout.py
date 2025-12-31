@@ -133,7 +133,10 @@ class BreakoutStrategy(BaseStrategy):
                         symbol=symbol,
                         signal_type=SignalType.LONG,
                         strength=strength,
-                        reason=f"价格{current_price:.2f}突破{lookback}日高点{resistance:.2f}，成交量放大{current_volume / avg_volume:.1f}倍",
+                        reason=(
+                            f"价格{current_price:.2f}突破{lookback}日高点{resistance:.2f}，"
+                            f"成交量放大{current_volume / avg_volume:.1f}倍"
+                        ),
                         stop_loss=stop_loss,
                         take_profit=take_profit,
                     )

@@ -118,7 +118,8 @@ class AkshareDataSource(IDataSource):
                 )
                 logger.info(
                     str(
-                        f"主要API调用成功，参数: symbol={stock_code}, start_date={start_date_fmt}, end_date={end_date_fmt}"
+                        f"主要API调用成功，参数: symbol={stock_code}, "
+                        f"start_date={start_date_fmt}, end_date={end_date_fmt}"
                     )
                 )
             except Exception as e:

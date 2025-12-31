@@ -238,7 +238,7 @@ class TurtleStrategy(BaseStrategy):
         self.update_history(symbol, current_data)
 
         current_price = float(current_data["close"])
-        history = self.price_history.get(symbol, [])
+        self.price_history.get(symbol, [])
 
         # 计算N值
         n_value = self._calculate_n(symbol)
@@ -260,7 +260,12 @@ class TurtleStrategy(BaseStrategy):
                     symbol=symbol,
                     signal_type=SignalType.EXIT,
                     strength=1.0,
-                    reason=f"退出信号: 价格{current_price:.2f}跌破{self.parameters.get('exit_period_s1' if self.parameters['system'] == 1 else 'exit_period_s2')}日低点",
+                    reason=(
+                        f"退出信号: 价格{current_price:.2f}跌破"
+                        f"{self.parameters.get(
+                            'exit_period_s1' if self.parameters['system'] == 1 else 'exit_period_s2'
+                        )}日低点"
+                    ),
                 )
 
             # 2. 止损检查 - 任何单位触发止损则全部退出
@@ -299,7 +304,13 @@ class TurtleStrategy(BaseStrategy):
                     symbol=symbol,
                     signal_type=SignalType.LONG,
                     strength=0.25,  # 初始仓位25% (1/4单位)
-                    reason=f"海龟入场: 突破{self.parameters.get('entry_period_s1' if self.parameters['system'] == 1 else 'entry_period_s2')}日高点, N={n_value:.2f}",
+                    reason=(
+                        f"海龟入场: 突破"
+                        f"{self.parameters.get(
+                            'entry_period_s1' if self.parameters['system'] == 1 else 'entry_period_s2'
+                        )}日高点, "
+                        f"N={n_value:.2f}"
+                    ),
                     stop_loss=Decimal(str(stop_loss)),
                     metadata={
                         "unit_size": quantity,
@@ -343,7 +354,10 @@ class TurtleStrategy(BaseStrategy):
                 symbol=symbol,
                 signal_type=SignalType.LONG,
                 strength=min(strength, 1.0),
-                reason=f"海龟加仓: 第{unit_number}单位, 价格上涨{(current_price - self.last_add_price[symbol]) / n_value:.2f}N",
+                reason=(
+                    f"海龟加仓: 第{unit_number}单位, "
+                    f"价格上涨{(current_price - self.last_add_price[symbol]) / n_value:.2f}N"
+                ),
                 stop_loss=Decimal(str(stop_loss)),
                 metadata={
                     "unit_number": unit_number,

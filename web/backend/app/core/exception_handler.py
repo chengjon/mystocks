@@ -81,18 +81,14 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         success=False,
         code=error_code.value,
         message=error_message,
-        data=None,
+        data=error_detail,
         request_id=request_id,
         timestamp=datetime.now(),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
-
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
     )
 
 
@@ -138,18 +134,14 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         success=False,
         code=error_code.value,
         message=error_message,
-        data=None,
+        data=error_detail,
         request_id=request_id,
         timestamp=datetime.now(),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
-
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
     )
 
 
@@ -193,18 +185,14 @@ async def validation_exception_handler(
         success=False,
         code=error_code.value,
         message=error_message,
-        data=None,
+        data=error_detail,
         request_id=request_id,
         timestamp=datetime.now(),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
-
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
     )
 
 
@@ -245,20 +233,15 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
     # 构建响应内容
     response_content = APIResponse(
         success=False,
-        code=error_code.value,
         message=error_message,
-        data=None,
+        data=error_detail if not config.PRODUCTION else {"type": "DatabaseError"},
         request_id=request_id,
         timestamp=datetime.now(),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
-
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
     )
 
 

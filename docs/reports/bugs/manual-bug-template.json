@@ -1,0 +1,179 @@
+/**
+ * BUGer 手工BUG登记模板
+ *
+ * 用法说明：
+ * 1. 在网络不畅时，手工填写此模板记录BUG信息
+ * 2. 将填写完成的 .json 文件保存到接收目录（如 /opt/iflow/buger/incoming）
+ * 3. 网络恢复后，运行导入脚本将BUG批量导入系统
+ *
+ * 支持两种格式：
+ * - 单个BUG: 使用 "bug" 对象
+ * - 批量BUG: 使用 "bugs" 数组 (最多20个)
+ *
+ * 字段说明：
+ * - * 为必填字段
+ * - errorCode: 大写字母、数字、下划线组成
+ * - severity: critical(崩溃) / high(严重) / medium(中等) / low(轻微)
+ */
+
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "buger-manual-report",
+    "reportedAt": "2025-12-30T10:30:00Z",
+    "reporter": "张三",
+    "contact": "zhangsan@example.com"
+  },
+
+  // ============================================================
+  // 格式一：单个BUG
+  // ============================================================
+  "bug": {
+    "errorCode": "ERR_MODULE_IMPORT_001",
+    "title": "模块导入失败",
+    "message": "Cannot find module 'express'，检查node_modules目录是否存在",
+    "stackTrace": "Error: Cannot find module 'express'\n    at Function.Module._resolveFilename (node:internal/base/loader/Module.js:674:15)\n    at Function.Module._load (node:internal/base/loader/Module.js:273:27)\n    at Function.Module.require (node:internal/base/loader/Module.js:1000:19)",
+    "severity": "critical",
+    "context": {
+      "projectName": "MyProject",
+      "projectRoot": "/path/to/project",
+      "component": "backend",
+      "environment": "production",
+      "operatingSystem": "Linux",
+      "nodeVersion": "v18.19.0"
+    }
+  }
+
+  // ============================================================
+  // 格式二：批量BUG（推荐，一次最多20个）
+  // ============================================================
+  // "bugs": [
+  //   {
+  //     "errorCode": "ERR_001",
+  //     "title": "BUG标题1",
+  //     "message": "错误描述1",
+  //     "stackTrace": "堆栈跟踪1（可选）",
+  //     "severity": "critical",
+  //     "context": {
+  //       "projectName": "项目名",
+  //       "projectRoot": "/path",
+  //       "component": "组件名",
+  //       "environment": "production"
+  //     }
+  //   },
+  //   {
+  //     "errorCode": "ERR_002",
+  //     "title": "BUG标题2",
+  //     "message": "错误描述2",
+  //     "severity": "high",
+  //     "context": {
+  //       "projectName": "项目名",
+  //       "projectRoot": "/path",
+  //       "component": "组件名",
+  //       "environment": "production"
+  //     }
+  //   },
+  //   {
+  //     "errorCode": "ERR_003",
+  //     "title": "BUG标题3",
+  //     "message": "错误描述3",
+  //     "severity": "medium",
+  //     "context": {
+  //       "projectName": "项目名",
+  //       "projectRoot": "/path",
+  //       "component": "组件名",
+  //       "environment": "production"
+  //     }
+  //   }
+  // ]
+}
+
+/**
+ * ============================================================
+ * 批量BUG完整示例（复制以下内容到单独文件使用）
+ * ============================================================
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "buger-manual-report",
+    "reportedAt": "2025-12-30T10:30:00Z",
+    "reporter": "张三",
+    "contact": "zhangsan@example.com",
+    "description": "今日测试发现的问题汇总"
+  },
+  "bugs": [
+    {
+      "errorCode": "ERR_DB_CONNECTION_001",
+      "title": "数据库连接超时",
+      "message": "尝试连接MySQL数据库时超时，连接池已满",
+      "stackTrace": "Error: connect ETIMEDOUT\n    at Connection._handleTimeout (/app/node_modules/mysql2/lib/connection.js:123:15)",
+      "severity": "high",
+      "context": {
+        "projectName": "PaymentService",
+        "projectRoot": "/app/payment-service",
+        "component": "database",
+        "environment": "production",
+        "operatingSystem": "Linux",
+        "nodeVersion": "v18.19.0"
+      }
+    },
+    {
+      "errorCode": "ERR_API_RESPONSE_002",
+      "title": "第三方API响应格式错误",
+      "message": "微信支付回调返回的JSON格式无法解析",
+      "stackTrace": "SyntaxError: Unexpected token in JSON at position 0\n    at JSON.parse (<anonymous>)\n    at PaymentCallbackHandler.handle (/app/handlers/payment.js:45:12)",
+      "severity": "high",
+      "context": {
+        "projectName": "PaymentService",
+        "projectRoot": "/app/payment-service",
+        "component": "payment",
+        "environment": "staging",
+        "operatingSystem": "Linux",
+        "nodeVersion": "v18.19.0"
+      }
+    },
+    {
+      "errorCode": "ERR_VALIDATION_003",
+      "title": "用户注册表单验证失败",
+      "message": "邮箱格式验证正则表达式不支持特殊域名",
+      "severity": "medium",
+      "context": {
+        "projectName": "UserService",
+        "projectRoot": "/app/user-service",
+        "component": "validation",
+        "environment": "development",
+        "operatingSystem": "macOS",
+        "nodeVersion": "v20.10.0"
+      }
+    },
+    {
+      "errorCode": "ERR_UI_RENDER_004",
+      "title": "仪表盘页面加载缓慢",
+      "message": "大数据量渲染导致页面卡顿，首次加载超过5秒",
+      "severity": "medium",
+      "context": {
+        "projectName": "Dashboard",
+        "projectRoot": "/app/dashboard",
+        "component": "frontend",
+        "environment": "staging",
+        "operatingSystem": "Windows 11",
+        "browser": "Chrome 120"
+      }
+    },
+    {
+      "errorCode": "ERR_LOG_WRITE_005",
+      "title": "日志写入权限不足",
+      "message": "生产环境日志目录权限配置错误",
+      "severity": "low",
+      "context": {
+        "projectName": "PaymentService",
+        "projectRoot": "/app/payment-service",
+        "component": "logging",
+        "environment": "production",
+        "operatingSystem": "Linux",
+        "nodeVersion": "v18.19.0"
+      }
+    }
+  ]
+}
+ */

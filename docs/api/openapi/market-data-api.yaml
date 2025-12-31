@@ -1,0 +1,728 @@
+openapi: 3.0.3
+info:
+  title: Market Data API
+  version: 1.0.0
+  description: |
+    MyStocks市场数据查询API
+
+    提供实时市场数据查询功能，包括：
+    - 市场概览（指数、涨跌统计）
+    - 资金流向数据
+    - K线数据（日K、分钟K）
+    - ETF行情数据
+    - 龙虎榜数据
+    - 竞价抢筹数据
+
+    **数据源**: Akshare、TDX（通达信）
+    **更新频率**: 实时
+  contact:
+    name: MyStocks API Team
+    email: support@mystocks.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: 本地开发服务器
+  - url: https://api.mystocks.com
+    description: 生产环境服务器
+
+tags:
+  - name: Market Overview
+    description: 市场概览数据
+  - name: Fund Flow
+    description: 资金流向数据
+  - name: Kline Data
+    description: K线数据
+  - name: ETF Data
+    description: ETF行情数据
+  - name: LongHuBang
+    description: 龙虎榜数据
+  - name: Chip Race
+    description: 竞价抢筹数据
+
+# ============================================================================
+# 通用组件定义
+# ============================================================================
+components:
+  schemas:
+    # 统一响应格式
+    UnifiedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+          example: true
+        code:
+          type: integer
+          description: HTTP状态码
+          example: 200
+        message:
+          type: string
+          description: 用户友好消息
+          example: "操作成功"
+        data:
+          type: object
+          description: 响应数据
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601时间戳
+          example: "2025-12-29T23:53:41Z"
+        request_id:
+          type: string
+          description: 请求追踪ID
+          example: "req_20251229235341"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: 错误详情列表
+
+    ErrorDetail:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 错误码
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: 错误消息
+          example: "参数验证失败"
+        details:
+          type: object
+          description: 详细错误信息
+
+    # 市场概览数据
+    MarketOverviewData:
+      type: object
+      properties:
+        market_index:
+          type: object
+          description: 主要市场指数
+          additionalProperties:
+            type: number
+          example:
+            sh000001: 3200.5
+            sz399001: 10500.2
+        turnover_rate:
+          type: number
+          description: 换手率
+          example: 0.025
+        rise_fall_count:
+          type: object
+          properties:
+            rise:
+              type: integer
+              description: 上涨股票数
+              example: 2500
+            fall:
+              type: integer
+              description: 下跌股票数
+              example: 1800
+            flat:
+              type: integer
+              description: 平盘股票数
+              example: 300
+        top_etfs:
+          type: array
+          description: 涨幅榜前N名ETF
+          items:
+            $ref: '#/components/schemas/TopETF'
+        timestamp:
+          type: string
+          format: date-time
+          description: 数据时间戳
+
+    TopETF:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: ETF代码
+          example: "510300"
+        name:
+          type: string
+          description: ETF名称
+          example: "沪深300ETF"
+        change_percent:
+          type: number
+          description: 涨跌幅（%）
+          example: 2.5
+
+    # 资金流向数据
+    FundFlowData:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: 股票代码
+          example: "600519"
+        main_net_inflow:
+          type: number
+          description: 主力净流入（万元）
+          example: 12500.5
+        retail_net_inflow:
+          type: number
+          description: 散户净流入（万元）
+          example: -3200.8
+        big_order_net_inflow:
+          type: number
+          description: 大单净流入（万元）
+          example: 8900.3
+        timeframe:
+          type: string
+          description: 时间维度（1/3/5/10天）
+          example: "1"
+        timestamp:
+          type: string
+          format: date-time
+          description: 数据时间戳
+
+    # K线数据
+    KlineData:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: 股票代码
+          example: "600519"
+        interval:
+          type: string
+          description: K线周期
+          enum: ["1m", "5m", "15m", "30m", "1h", "1d"]
+          example: "1d"
+        data:
+          type: array
+          description: K线数据点
+          items:
+            $ref: '#/components/schemas/KlinePoint'
+        timestamp:
+          type: string
+          format: date-time
+          description: 数据时间戳
+
+    KlinePoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: 时间戳
+          example: "2025-12-29T00:00:00Z"
+        open:
+          type: number
+          description: 开盘价
+          example: 100.5
+        high:
+          type: number
+          description: 最高价
+          example: 102.3
+        low:
+          type: number
+          description: 最低价
+          example: 99.8
+        close:
+          type: number
+          description: 收盘价
+          example: 101.2
+        volume:
+          type: integer
+          description: 成交量
+          example: 12345678
+        amount:
+          type: number
+          description: 成交额
+          example: 1234567890.12
+
+    # ETF数据
+    ETFData:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: ETF代码
+          example: "510300"
+        name:
+          type: string
+          description: ETF名称
+          example: "沪深300ETF"
+        price:
+          type: number
+          description: 当前价格
+          example: 4.523
+        change_percent:
+          type: number
+          description: 涨跌幅（%）
+          example: 1.25
+        volume:
+          type: integer
+          description: 成交量
+          example: 12345678
+        amount:
+          type: number
+          description: 成交额
+          example: 123456789.01
+        market:
+          type: string
+          description: 市场（SH/SZ）
+          example: "SH"
+
+    # 龙虎榜数据
+    LongHuBangData:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: 日期
+          example: "2025-12-29"
+        stocks:
+          type: array
+          description: 龙虎榜股票列表
+          items:
+            $ref: '#/components/schemas/LongHuBangStock'
+
+    LongHuBangStock:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: 股票代码
+          example: "600519"
+        name:
+          type: string
+          description: 股票名称
+          example: "贵州茅台"
+        reason:
+          type: string
+          description: 上榜原因
+          example: "日涨幅偏离值达7%"
+        buy_amount:
+          type: number
+          description: 买入金额（万元）
+          example: 12345.67
+        sell_amount:
+          type: number
+          description: 卖出金额（万元）
+          example: 9876.54
+
+    # 竞价抢筹数据
+    ChipRaceData:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: 日期
+          example: "2025-12-29"
+        stocks:
+          type: array
+          description: 抢筹股票列表
+          items:
+            $ref: '#/components/schemas/ChipRaceStock'
+
+    ChipRaceStock:
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: 股票代码
+          example: "600519"
+        name:
+          type: string
+          description: 股票名称
+          example: "贵州茅台"
+        race_ratio:
+          type: number
+          description: 抢筹比例（%）
+          example: 85.5
+        main_buy_amount:
+          type: number
+          description: 主力买入金额（万元）
+          example: 25000.8
+        retail_buy_amount:
+          type: number
+          description: 散户买入金额（万元）
+          example: 12500.4
+
+    # 错误响应
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/UnifiedResponse'
+        - type: object
+          properties:
+            success:
+              example: false
+            code:
+              example: 400
+            data:
+              example: null
+
+# ============================================================================
+# API路径定义
+# ============================================================================
+paths:
+  # ==================== 市场概览 ====================
+  /api/market/overview:
+    get:
+      tags:
+        - Market Overview
+      summary: 获取市场概览
+      description: |
+        获取A股市场整体概览数据，包括：
+        - 主要市场指数（上证指数、深证成指等）
+        - 市场涨跌统计
+        - 换手率
+        - 涨幅榜前N名ETF
+      operationId: getMarketOverview
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MarketOverviewData'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== 资金流向 ====================
+  /api/market/fund-flow:
+    get:
+      tags:
+        - Fund Flow
+      summary: 查询资金流向
+      description: |
+        查询指定股票的资金流向数据，包括：
+        - 主力资金流向
+        - 散户资金流向
+        - 大单资金流向
+      operationId: getFundFlow
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 股票代码
+          example: "600519"
+        - name: timeframe
+          in: query
+          schema:
+            type: string
+            enum: ["1", "3", "5", "10"]
+            default: "1"
+          description: 时间维度（1/3/5/10天）
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期（YYYY-MM-DD）
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期（YYYY-MM-DD）
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/FundFlowData'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 股票代码不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== K线数据 ====================
+  /api/market/kline:
+    get:
+      tags:
+        - Kline Data
+      summary: 获取K线数据
+      description: |
+        获取指定股票的K线数据，支持：
+        - 分钟K：1m, 5m, 15m, 30m
+        - 小时K：1h
+        - 日K：1d
+      operationId: getKlineData
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 股票代码
+          example: "600519"
+        - name: interval
+          in: query
+          schema:
+            type: string
+            enum: ["1m", "5m", "15m", "30m", "1h", "1d"]
+            default: "1d"
+          description: K线周期
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期（YYYY-MM-DD）
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期（YYYY-MM-DD）
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: 返回数据点数量限制
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/KlineData'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 股票代码不存在或无数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== ETF列表 ====================
+  /api/market/etf/list:
+    get:
+      tags:
+        - ETF Data
+      summary: 查询ETF列表
+      description: |
+        查询ETF列表，支持多种筛选条件：
+        - 按代码或名称搜索
+        - 按市场筛选（上海/深圳）
+        - 按类型筛选（股票/债券/商品/货币/QDII）
+      operationId: getETFList
+      parameters:
+        - name: symbol
+          in: query
+          schema:
+            type: string
+          description: ETF代码（精确查询）
+        - name: keyword
+          in: query
+          schema:
+            type: string
+          description: 关键词搜索（代码或名称模糊匹配）
+        - name: market
+          in: query
+          schema:
+            type: string
+            enum: ["SH", "SZ"]
+          description: 市场类型
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: ["股票", "债券", "商品", "货币", "QDII"]
+          description: ETF类型
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+          description: 返回数量限制
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 10000
+            default: 0
+          description: 偏移量（用于分页）
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          etfs:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ETFData'
+                          total:
+                            type: integer
+                            description: 总数量
+                          page:
+                            type: integer
+                            description: 当前页码
+                          page_size:
+                            type: integer
+                            description: 每页大小
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== 龙虎榜 ====================
+  /api/market/lhb:
+    get:
+      tags:
+        - LongHuBang
+      summary: 查询龙虎榜数据
+      description: |
+        查询指定日期的龙虎榜数据，包括：
+        - 涨幅榜上榜股票
+        - 跌幅榜上榜股票
+        - 异常波动股票
+      operationId: getLongHuBang
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 日期（YYYY-MM-DD），默认为最新交易日
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["rise", "fall", "all"]
+            default: "all"
+          description: 龙虎榜类型（涨幅榜/跌幅榜/全部）
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/LongHuBangData'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 指定日期无数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== 竞价抢筹 ====================
+  /api/market/chip-race:
+    get:
+      tags:
+        - Chip Race
+      summary: 查询竞价抢筹数据
+      description: |
+        查询指定日期的竞价抢筹数据，包括：
+        - 开盘抢筹比例
+        - 主力vs散户买入对比
+        - 热门抢筹股票排行
+      operationId: getChipRace
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 日期（YYYY-MM-DD），默认为最新交易日
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 返回股票数量限制
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UnifiedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ChipRaceData'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 指定日期无数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

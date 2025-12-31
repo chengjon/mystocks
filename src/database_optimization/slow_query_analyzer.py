@@ -87,7 +87,9 @@ class SlowQueryAnalyzer:
                 "severity": "MEDIUM",
                 "root_cause": "No index on (user_id, symbol); requires full table scan for aggregation",
                 "explain_plan_issue": "Hash Aggregate with Seq Scan",
-                "optimization": "CREATE INDEX idx_transaction_records_user_symbol ON transaction_records(user_id, symbol)",
+                "optimization": (
+                    "CREATE INDEX idx_transaction_records_user_symbol " "ON transaction_records(user_id, symbol)"
+                ),
                 "expected_speedup": "8-15x faster",
                 "affected_queries_per_day": 50,
             },
@@ -105,7 +107,9 @@ class SlowQueryAnalyzer:
                 "priority": "HIGH",
                 "recommendation": "Create index on (user_id, created_at) for order_records",
                 "impact": "Reduce aggregation query time from 1200ms to 50-80ms",
-                "implementation": "CREATE INDEX idx_order_records_user_date ON order_records(user_id, created_at DESC);",
+                "implementation": (
+                    "CREATE INDEX idx_order_records_user_date " "ON order_records(user_id, created_at DESC);"
+                ),
                 "estimated_queries_improved": 100,
             },
             {

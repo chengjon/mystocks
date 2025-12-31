@@ -12,10 +12,11 @@
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Generic, TypeVar
 
 from pydantic import BaseModel, Field
 
+T = TypeVar("T")
 
 # ==================== 错误详情模型 ====================
 
@@ -31,7 +32,7 @@ class ErrorDetail(BaseModel):
 # ==================== 统一响应模型 (增强版) ====================
 
 
-class UnifiedResponse(BaseModel):
+class UnifiedResponse(BaseModel, Generic[T]):
     """
     统一API响应模型 (增强版)
 
@@ -41,7 +42,7 @@ class UnifiedResponse(BaseModel):
     success: bool = Field(True, description="操作是否成功")
     code: int = Field(200, description="业务状态码 (200=成功, 400=参数错误, 401=未认证, 404=未找到, 500=服务器错误)")
     message: str = Field("操作成功", description="给前端展示的消息")
-    data: Optional[Any] = Field(None, description="实际的业务数据，成功时返回，失败时为null")
+    data: Optional[T] = Field(None, description="实际的业务数据，成功时返回，失败时为null")
     timestamp: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc), description="响应生成的时间戳 (UTC)"
     )
@@ -49,7 +50,7 @@ class UnifiedResponse(BaseModel):
     errors: Optional[List[ErrorDetail]] = Field(None, description="详细错误信息数组，仅在请求失败时存在")
 
 
-class APIResponse(BaseModel):
+class APIResponse(BaseModel, Generic[T]):
     """
     向后兼容的成功响应模型
 
@@ -57,7 +58,7 @@ class APIResponse(BaseModel):
     """
 
     success: bool = Field(True, description="操作是否成功")
-    data: Optional[Dict[str, Any]] = Field(None, description="响应数据")
+    data: Optional[T] = Field(None, description="响应数据")
     message: Optional[str] = Field("操作成功", description="响应消息")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="响应时间戳")
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
@@ -77,7 +78,7 @@ class ErrorResponse(BaseModel):
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪")
 
 
-class PaginatedResponse(APIResponse):
+class PaginatedResponse(APIResponse[T], Generic[T]):
     """分页响应模型"""
 
     pagination: Dict[str, Any] = Field(..., description="分页信息")
@@ -85,7 +86,7 @@ class PaginatedResponse(APIResponse):
     @classmethod
     def create(
         cls,
-        data: Any,
+        data: T,
         page: int = 1,
         size: int = 20,
         total: Optional[int] = None,
@@ -123,7 +124,7 @@ class PaginatedResponse(APIResponse):
         )
 
 
-class UnifiedPaginatedResponse(UnifiedResponse):
+class UnifiedPaginatedResponse(UnifiedResponse[T], Generic[T]):
     """统一分页响应模型 (增强版)"""
 
     pagination: Dict[str, Any] = Field(..., description="分页信息")
@@ -131,7 +132,7 @@ class UnifiedPaginatedResponse(UnifiedResponse):
     @classmethod
     def create(
         cls,
-        data: Any,
+        data: T,
         page: int = 1,
         size: int = 20,
         total: Optional[int] = None,

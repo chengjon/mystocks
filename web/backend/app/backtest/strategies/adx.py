@@ -289,7 +289,7 @@ class ADXStrategy(BaseStrategy):
         if prev_adx is None:
             return None
 
-        current_price = float(current_data["close"])
+        float(current_data["close"])
         has_position = position and position.get("quantity", 0) > 0
 
         strong_trend = self.parameters["strong_trend"]

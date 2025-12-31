@@ -24,7 +24,8 @@ def test_financial_adapter():
 
     # 检查数据源是否初始化成功
     print(
-        f"Financial数据源初始化状态: efinance可用={financial_ds.efinance_available}, easyquotation可用={financial_ds.easyquotation_available}"
+        f"Financial数据源初始化状态: efinance可用={financial_ds.efinance_available}, "
+        f"easyquotation可用={financial_ds.easyquotation_available}"
     )
 
     # 测试获取股票日线数据（以平安银行为例）

@@ -207,7 +207,7 @@ class RoomManager:
             self.create_room(room_name)
 
         room = self.rooms[room_name]
-        member = room.add_member(sid, user_id)
+        room.add_member(sid, user_id)
         self.member_to_room[sid] = room_name
 
         self._trigger_event(

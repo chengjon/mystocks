@@ -449,9 +449,8 @@ class DatabaseTestTool:
             print(f"❌ 导入驱动失败: {str(e)}")
             return False
 
-        print(
-            f"\n📊 连接测试结果: {successful_connections}/{len([k for k, v in self.test_results.items() if v])} 个数据库连接成功"
-        )
+        total_dbs = len([k for k, v in self.test_results.items() if v])
+        print(f"\n📊 连接测试结果: {successful_connections}/{total_dbs} 个数据库连接成功")
         return successful_connections > 0
 
     def _test_mysql_monitor_simple(self, config: Dict[str, Any], create_engine, text) -> bool:
