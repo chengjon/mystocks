@@ -524,14 +524,28 @@ class TDengineManager:
 _tdengine_manager: Optional[TDengineManager] = None
 
 
-def get_tdengine_manager() -> TDengineManager:
-    """获取 TDengine 管理器单例"""
+def get_tdengine_manager() -> Optional[TDengineManager]:
+    """获取 TDengine 管理器单例 (快速失败版本)"""
     global _tdengine_manager
 
     if _tdengine_manager is None:
+        # 检查环境变量，如果禁用了TDengine，快速返回None
+        import os
+
+        if os.getenv("TDENGINE_DISABLED", "false").lower() == "true":
+            logger.warning("⚠️ TDengine已禁用 (TDENGINE_DISABLED=true)")
+            return None
+
         _tdengine_manager = TDengineManager()
-        if not _tdengine_manager.initialize():
-            logger.error("❌ 无法初始化 TDengine 管理器")
+
+        # 只尝试一次初始化，不进行重试
+        try:
+            if not _tdengine_manager.initialize():
+                logger.warning("⚠️ TDengine初始化失败 - 系统将在无TDengine模式下运行")
+                _tdengine_manager = None
+        except Exception as e:
+            logger.error(f"❌ TDengine初始化异常: {e} - 系统将在无TDengine模式下运行")
+            _tdengine_manager = None
 
     return _tdengine_manager
 

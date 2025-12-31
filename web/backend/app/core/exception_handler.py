@@ -8,7 +8,6 @@
 import os
 import traceback
 from typing import Union
-from datetime import datetime
 
 from fastapi import Request
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -22,7 +21,7 @@ from app.core.error_codes import (
     get_error_message,
     is_client_error,
 )
-from app.schemas.common_schemas import APIResponse
+from app.schemas.common_schemas import CommonError
 
 
 # ==================== 配置 ====================
@@ -62,7 +61,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    request_id = getattr(request.state, "request_id", "unknown")
+    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
 
     # 确定错误码和HTTP状态码
     error_code, http_status = _determine_error_code_and_status(exc)
@@ -76,19 +75,20 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     # 记录错误日志
     _log_error(exc, request, error_code, error_detail)
 
-    # 构建响应内容
-    response_content = APIResponse(
-        success=False,
+    # 构建响应内容 - 使用CommonError以支持detail字段
+    response_content = CommonError(
         code=error_code.value,
         message=error_message,
-        data=error_detail,
-        request_id=request_id,
-        timestamp=datetime.now(),
+        data=None,
     )
+
+    # 在开发环境中添加额外信息
+    if not config.PRODUCTION:
+        response_content.detail = error_detail
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
     )
 
 
@@ -104,7 +104,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    request_id = getattr(request.state, "request_id", "unknown")
+    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
 
     # 确定错误码和HTTP状态码
     error_code = _map_http_status_to_error_code(exc.status_code)
@@ -129,19 +129,20 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
     # 记录错误日志
     _log_error(exc, request, error_code, error_detail)
 
-    # 构建响应内容
-    response_content = APIResponse(
-        success=False,
+    # 构建响应内容 - 使用CommonError以支持detail字段
+    response_content = CommonError(
         code=error_code.value,
         message=error_message,
-        data=error_detail,
-        request_id=request_id,
-        timestamp=datetime.now(),
+        data=None,
     )
+
+    # 在开发环境中添加额外信息
+    if not config.PRODUCTION:
+        response_content.detail = error_detail
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
     )
 
 
@@ -159,7 +160,7 @@ async def validation_exception_handler(
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    request_id = getattr(request.state, "request_id", "unknown")
+    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
 
     # 确定错误码
     error_code = ErrorCode.VALIDATION_ERROR
@@ -180,19 +181,20 @@ async def validation_exception_handler(
     # 记录错误日志
     _log_error(exc, request, error_code, error_detail)
 
-    # 构建响应内容
-    response_content = APIResponse(
-        success=False,
+    # 构建响应内容 - 使用CommonError以支持detail字段
+    response_content = CommonError(
         code=error_code.value,
         message=error_message,
-        data=error_detail,
-        request_id=request_id,
-        timestamp=datetime.now(),
+        data=None,
     )
+
+    # 在开发环境中添加额外信息
+    if not config.PRODUCTION:
+        response_content.detail = error_detail
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
     )
 
 
@@ -208,7 +210,7 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    request_id = getattr(request.state, "request_id", "unknown")
+    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
 
     # 确定错误码
     error_code = ErrorCode.DATABASE_ERROR
@@ -230,18 +232,20 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
     # 记录错误日志
     _log_error(exc, request, error_code, error_detail)
 
-    # 构建响应内容
-    response_content = APIResponse(
-        success=False,
+    # 构建响应内容 - 使用CommonError以支持detail字段
+    response_content = CommonError(
+        code=error_code.value,
         message=error_message,
-        data=error_detail if not config.PRODUCTION else {"type": "DatabaseError"},
-        request_id=request_id,
-        timestamp=datetime.now(),
+        data=None,
     )
+
+    # 在开发环境中添加额外信息
+    if not config.PRODUCTION:
+        response_content.detail = error_detail
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(mode="json", exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
     )
 
 
