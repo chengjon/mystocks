@@ -10,7 +10,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-from app.api.contract.models import ContractVersion
+from app.api.contract.models import ContractVersion, ContractValidation, ContractDiff
 from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionUpdate,
