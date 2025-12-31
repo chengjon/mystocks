@@ -11,6 +11,9 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Path, Query
 
 from app.models.announcement import (
+    Announcement,
+    AnnouncementMonitorRecord,
+    AnnouncementMonitorRule,
     AnnouncementMonitorRuleCreate,
     AnnouncementMonitorRuleResponse,
     AnnouncementMonitorRuleUpdate,
@@ -354,7 +357,7 @@ async def get_monitor_rules():
         session = service.SessionLocal()
 
         try:
-            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
+            rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active.is_(True)).all()
 
             return [AnnouncementMonitorRuleResponse.from_orm(rule) for rule in rules]
         finally:

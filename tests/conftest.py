@@ -6,6 +6,7 @@
 
 import asyncio
 import os
+import sys
 import pytest
 import tempfile
 import time
@@ -18,6 +19,11 @@ from dotenv import load_dotenv
 
 # 加载环境变量
 load_dotenv()
+
+# 添加app模块路径
+backend_path = Path(__file__).parent.parent / "web" / "backend"
+if str(backend_path) not in sys.path:
+    sys.path.insert(0, str(backend_path))
 
 
 class TestConfig:

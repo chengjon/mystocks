@@ -14,7 +14,7 @@ except ImportError:
     PRANCE_AVAILABLE = False
 
 
-from web.backend.app.api.contract.schemas import (
+from app.api.contract.schemas import (
     ValidationResult,
     ContractValidateResponse,
 )

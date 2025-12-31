@@ -174,6 +174,7 @@ class ErrorCode(IntEnum):
     DATABASE_ERROR = 9003
     CACHE_ERROR = 9004
     NETWORK_ERROR = 9005
+    METHOD_NOT_ALLOWED = 9006  # HTTP方法不允许
 
 
 # ==================== HTTP状态码映射 ====================
@@ -198,6 +199,7 @@ class HTTPStatus:
 
     INTERNAL_SERVER_ERROR = 500
     NOT_IMPLEMENTED = 501
+    BAD_GATEWAY = 502
     SERVICE_UNAVAILABLE = 503
     GATEWAY_TIMEOUT = 504
 
@@ -303,6 +305,7 @@ ERROR_CODE_HTTP_MAP: Dict[ErrorCode, int] = {
     ErrorCode.DATABASE_ERROR: HTTPStatus.INTERNAL_SERVER_ERROR,
     ErrorCode.CACHE_ERROR: HTTPStatus.INTERNAL_SERVER_ERROR,
     ErrorCode.NETWORK_ERROR: HTTPStatus.SERVICE_UNAVAILABLE,
+    ErrorCode.METHOD_NOT_ALLOWED: HTTPStatus.METHOD_NOT_ALLOWED,
 }
 
 
@@ -409,6 +412,7 @@ ERROR_CODE_MESSAGE_MAP: Dict[ErrorCode, str] = {
     ErrorCode.DATABASE_ERROR: "数据库操作失败",
     ErrorCode.CACHE_ERROR: "缓存服务错误",
     ErrorCode.NETWORK_ERROR: "网络连接错误",
+    ErrorCode.METHOD_NOT_ALLOWED: "不支持的HTTP方法",
 }
 
 
@@ -438,6 +442,7 @@ ERROR_CODE_CATEGORY_MAP: Dict[ErrorCode, ErrorCategory] = {
     ErrorCode.DATABASE_ERROR: ErrorCategory.SERVER_ERROR,
     ErrorCode.CACHE_ERROR: ErrorCategory.SERVER_ERROR,
     ErrorCode.NETWORK_ERROR: ErrorCategory.SERVER_ERROR,
+    ErrorCode.METHOD_NOT_ALLOWED: ErrorCategory.CLIENT_ERROR,
 }
 
 

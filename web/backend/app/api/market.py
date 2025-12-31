@@ -13,6 +13,7 @@
 - GET /api/market/heatmap - 获取市场热力图数据
 """
 
+import logging
 import os
 from datetime import date, datetime
 from typing import List, Optional
@@ -29,12 +30,12 @@ from app.schema import (  # 导入P0改进的验证模型
 from app.schemas.market_schemas import (
     ChipRaceResponse,
     ETFDataResponse,
-    FundFlowRequest,
     LongHuBangResponse,
     MessageResponse,
 )
 from app.services.market_data_service import MarketDataService, get_market_data_service
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/market", tags=["市场数据"])
 
 
@@ -57,42 +58,6 @@ class MarketDataRequest(BaseModel):
         if ".." in v:
             raise ValueError("股票代码不能包含连续的点")
         return v.upper()
-
-
-class FundFlowRequest(BaseModel):
-    """资金流向请求参数"""
-
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
-    timeframe: str = Field("1", description="时间维度: 1/3/5/10天", pattern=r"^[13510]$")
-    start_date: Optional[date] = Field(None, description="开始日期")
-    end_date: Optional[date] = Field(None, description="结束日期")
-
-    @field_validator("symbol")
-    @classmethod
-    def validate_symbol(cls, v: str) -> str:
-        """验证股票代码格式"""
-        if v.startswith("."):
-            raise ValueError("股票代码不能以点开头")
-        if ".." in v:
-            raise ValueError("股票代码不能包含连续的点")
-        return v.upper()
-
-    @field_validator("end_date")
-    @classmethod
-    def validate_date_range(cls, v: Optional[date], values) -> Optional[date]:
-        """验证结束日期必须大于开始日期"""
-        if v is None or "start_date" not in values or values["start_date"] is None:
-            return v
-
-        if v <= values["start_date"]:
-            raise ValueError("结束日期必须大于开始日期")
-
-        # 限制查询范围不能超过1年
-        time_diff = v - values["start_date"]
-        if time_diff.days > 365:
-            raise ValueError("查询时间范围不能超过365天")
-
-        return v
 
 
 class ETFQueryParams(BaseModel):
