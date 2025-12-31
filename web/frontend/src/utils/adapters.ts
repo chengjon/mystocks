@@ -9,12 +9,15 @@ import type {
   MarketOverviewResponse,
   FundFlowResponse,
   KlineResponse,
-  IndexData,
-  SectorData,
   FundFlowItem,
-  KLinePoint,
   StockSearchResult
 } from '@/api/types/generated-types'
+
+// Temporary: Use any for missing generated types
+// TODO: Fix type generation to include these types
+type IndexData = any
+type SectorData = any
+type KLinePoint = any
 
 // ViewModel interfaces for UI consumption
 export interface MarketOverviewVM {
@@ -70,22 +73,25 @@ export class DataAdapter {
    * Convert Market Overview API response to ViewModel
    */
   static toMarketOverviewVM(data: MarketOverviewResponse): MarketOverviewVM {
-    const indices = data.marketIndex?.map((item: IndexData) => ({
-      name: item.name || '',
-      current: item.current || 0,
-      change: item.change || 0,
-      changePercent: this.formatPercent(item.changePercent || 0),
-      trend: this.getTrend(item.change || 0),
-      volume: this.formatVolume(item.volume || 0)
-    })) || []
+    const dataAny = data as any
+    const indices = dataAny.market_index || dataAny.marketIndex || []
+      .map((item: any) => ({
+        name: item.name || '',
+        current: item.current || 0,
+        change: item.change || 0,
+        changePercent: this.formatPercent(item.change_percent || item.changePercent || 0),
+        trend: this.getTrend(item.change || 0),
+        volume: this.formatVolume(item.volume || 0)
+      })) || []
 
-    const sectors = data.hotSectors?.map((item: SectorData) => ({
-      name: item.sectorName || '',
-      changePercent: this.formatPercent(item.changePercent || 0),
-      stockCount: item.stockCount || 0,
-      leaderStock: item.leaderStock || '',
-      leaderChange: this.formatPercent(item.leaderChange || 0)
-    })) || []
+    const sectors = dataAny.hot_sectors || dataAny.hotSectors || []
+      .map((item: any) => ({
+        name: item.sector_name || item.sectorName || '',
+        changePercent: this.formatPercent(item.change_percent || item.changePercent || 0),
+        stockCount: item.stock_count || item.stockCount || 0,
+        leaderStock: item.leader_stock || item.leaderStock || '',
+        leaderChange: this.formatPercent(item.leader_change || item.leaderChange || 0)
+      })) || []
 
     // Determine market sentiment based on index performance
     const avgChange = indices.reduce((sum, idx) => sum + idx.change, 0) / indices.length
@@ -97,7 +103,7 @@ export class DataAdapter {
       indices,
       sectors,
       marketSentiment,
-      totalVolume: this.formatVolume(data.totalVolume || 0),
+      totalVolume: this.formatVolume(dataAny.total_volume || dataAny.totalVolume || 0),
       lastUpdate: Date.now()
     }
   }
@@ -106,12 +112,13 @@ export class DataAdapter {
    * Convert Fund Flow API response to chart data
    */
   static toFundFlowChartData(data: FundFlowResponse): FundFlowChartPoint[] {
-    return data.items?.map((item: FundFlowItem) => ({
-      date: item.tradeDate || '',
-      mainInflow: this.convertToWan(item.mainInflow || 0),
-      mainOutflow: Math.abs(this.convertToWan(item.mainOutflow || 0)),
-      netInflow: this.convertToWan(item.netInflow || 0),
-      timestamp: new Date(item.tradeDate || '').getTime()
+    const items = (data as any).items || []
+    return items.map((item: any) => ({
+      date: item.trade_date || item.tradeDate || '',
+      mainInflow: this.convertToWan(item.main_inflow || item.mainInflow || 0),
+      mainOutflow: Math.abs(this.convertToWan(item.main_outflow || item.mainOutflow || 0)),
+      netInflow: this.convertToWan(item.net_inflow || item.netInflow || 0),
+      timestamp: new Date(item.trade_date || item.tradeDate || '').getTime()
     })) || []
   }
 
@@ -119,12 +126,13 @@ export class DataAdapter {
    * Convert K-Line API response to chart data
    */
   static toKLineChartData(data: KlineResponse): KLineChartData {
-    const points = data.points || []
+    const dataAny = data as any
+    const points = dataAny.points || dataAny.klines || []
 
     return {
-      categoryData: points.map((p: KLinePoint) => p.date || ''),
-      values: points.map((p: KLinePoint) => [
-        p.open || 0,
+      categoryData: points.map((p: any) => p.date || p.date_str || ''),
+      values: points.map((p: any) => [
+        p.open || p.open_price || 0,
         p.close || 0,
         p.low || 0,
         p.high || 0
@@ -137,12 +145,12 @@ export class DataAdapter {
    * Convert Stock Search results to ViewModel
    */
   static toStockSearchVM(data: StockSearchResult[]): StockSearchVM[] {
-    return data.map((item) => ({
+    return data.map((item: any) => ({
       symbol: item.symbol || '',
       name: item.name || '',
       market: item.market || '',
       current: item.current || 0,
-      changePercent: this.formatPercent(item.changePercent || 0),
+      changePercent: this.formatPercent(item.changePercent || item.change_percent || 0),
       trend: this.getTrend(item.change || 0)
     }))
   }

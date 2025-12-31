@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-31T08:14:10.525021
+// Generated at: 2025-12-31T21:45:04.447811
 
 // API Response Types
 export interface APIResponse {
@@ -1198,13 +1198,8 @@ export interface MarketOverviewRequest {
 export interface MarketOverviewResponse {
   date?: string;
   indices?: IndexQuote[];
-  marketIndex?: IndexData[];
-  market_index?: IndexData[];
   hot_sectors?: HotSector[];
-  hotSectors?: SectorData[];
   market_sentiment?: string;
-  totalVolume?: number;
-  total_volume?: number;
 }
 
 export interface MarketOverviewStats {
@@ -1409,28 +1404,17 @@ export interface OrderRequest {
 
 export interface OrderResponse {
   order_id?: string;
-  orderId?: string;
   symbol?: string;
-  name?: string;
   direction?: string;
-  side?: string;
   order_type?: string;
-  type?: string;
   price?: number | null;
   quantity?: number;
-  amount?: number;
   filled_quantity?: number;
-  filledQuantity?: number;
-  filledAmount?: number;
   average_price?: number | null;
-  averagePrice?: number;
   status?: string;
   commission?: number | null;
   created_at?: string;
-  orderTime?: string;
   updated_at?: string | null;
-  updateTime?: string;
-  remarks?: string;
 }
 
 export interface OscillatorIndicatorRequest {
@@ -1775,7 +1759,7 @@ export interface ScheduledJobInfo {
 }
 
 export interface SchedulerControlRequest {
-  action?: 'start' | 'stop' | 'restart' | 'status'
+  action?: 'start' | 'stop' | 'restart' | 'status';
   force?: boolean;
 }
 
@@ -2193,7 +2177,6 @@ export interface TradeHistoryResponse {
   total_commission?: number;
   page?: number;
   page_size?: number;
-  tradeTime?: string;
 }
 
 export interface TradeOrderModel {
@@ -2587,336 +2570,4 @@ export interface WencaiStatsResponse {
   active_queries?: number;
   total_records?: number;
   last_refresh_time?: string | null;
-}
-
-// Additional system types for monitoring and strategy management
-export interface ServiceStatus {
-  name?: string;
-  status?: string;
-  cpu?: number;
-  memory?: number;
-  lastCheck?: string;
-  healthEndpoint?: string;
-}
-
-export interface SystemStatusResponse {
-  status?: string;
-  uptime_seconds?: number;
-  version?: string;
-  last_check?: string;
-  cpu?: CPUMetric;
-  memory?: MemoryMetric;
-  disk?: DiskMetric;
-  gpu?: number;
-  network?: NetworkMetric;
-  database?: DatabaseMetric;
-  api?: APIMetric;
-  websocket?: WebSocketMetric;
-  metrics?: SystemMetrics;
-  services?: ServiceStatus[];
-}
-
-export interface MonitoringAlertResponse {
-  id?: string;
-  alert_id?: string;
-  alert_type?: string;
-  title?: string;
-  description?: string;
-  category?: string;
-  source?: string;
-  severity?: string;
-  message?: string;
-  timestamp?: string;
-  resolved?: boolean;
-  acknowledged?: boolean;
-  assignee?: string;
-  tags?: string[];
-}
-
-export interface LogEntryResponse {
-  id?: string;
-  timestamp?: string;
-  level?: string;
-  message?: string;
-  module?: string;
-  logger?: string;
-  stackTrace?: string;
-  context?: Record<string, any>;
-}
-
-export interface DataQualityResponse {
-  overall_score?: number;
-  overallScore?: number;
-  completeness?: number;
-  accuracy?: number;
-  timeliness?: number;
-  consistency?: number;
-  last_checked?: string;
-  lastCheck?: string;
-  issues?: string[] | DataQualityIssue[];
-}
-
-export interface DataQualityIssue {
-  id?: string;
-  type?: string;
-  severity?: string;
-  description?: string;
-  affectedRecords?: number;
-  suggestion?: string;
-}
-
-export interface StrategyConfigResponse {
-  id?: string;
-  strategy_id?: string;
-  name?: string;
-  description?: string;
-  parameters?: Record<string, any>;
-  enabled?: boolean;
-  last_modified?: string;
-  lastModified?: string;
-  canEdit?: boolean;
-}
-
-// Additional data types for adapters
-export interface IndexData {
-  code?: string;
-  name?: string;
-  current?: number;
-  change?: number;
-  changePercent?: number;
-  change_percent?: number;
-  volume?: number;
-  timestamp?: string;
-}
-
-export interface SectorData {
-  sector?: string;
-  sectorName?: string;
-  changePercent?: number;
-  change_percent?: number;
-  stockCount?: number;
-  stocks_count?: number;
-  marketCap?: number;
-  market_cap?: number;
-  leaderStock?: string;
-  leaderChange?: number;
-}
-
-export interface KLinePoint {
-  date?: string;
-  timestamp?: number;
-  open?: number;
-  high?: number;
-  low?: number;
-  close?: number;
-  volume?: number;
-  amount?: number;
-}
-
-export interface BacktestResultResponse {
-  backtest_id?: string;
-  strategyId?: string;
-  strategy_name?: string;
-  strategyName?: string;
-  total_return?: number;
-  annual_return?: number;
-  annualizedReturn?: number;
-  sharpe_ratio?: number;
-  sharpeRatio?: number;
-  max_drawdown?: number;
-  maxDrawdown?: number;
-  win_rate?: number;
-  winRate?: number;
-  start_date?: string;
-  startDate?: string;
-  end_date?: string;
-  endDate?: string;
-  initialCapital?: number;
-  finalCapital?: number;
-  profitFactor?: number;
-  totalTrades?: number;
-  equityCurve?: EquityCurvePoint[];
-  profitAndLoss?: number;
-  grossProfit?: number;
-  grossLoss?: number;
-  averageTrade?: number;
-  averageWin?: number;
-  averageLoss?: number;
-  largestWin?: number;
-  largestLoss?: number;
-  consecutiveWins?: number;
-  consecutiveLosses?: number;
-}
-
-export interface EquityCurvePoint {
-  date?: string;
-  equity?: number;
-  drawdown?: number;
-}
-
-export interface TechnicalIndicatorResponse {
-  indicator_name?: string;
-  name?: string;
-  displayName?: string;
-  category?: string;
-  parameters?: Record<string, any>;
-  values?: number[];
-  outputs?: string[];
-  signals?: ('buy' | 'sell' | 'hold')[];
-  timestamp?: string;
-  description?: string;
-  formula?: string;
-}
-
-export interface AccountOverviewResponse {
-  total_assets?: number;
-  totalAssets?: number;
-  totalMarketValue?: number;
-  available_cash?: number;
-  availableCash?: number;
-  market_value?: number;
-  marketValue?: number;
-  totalPositionValue?: number;
-  total_pnl?: number;
-  totalPnL?: number;
-  today_pnl?: number;
-  todayPnL?: number;
-  positions_count?: number;
-  positionsCount?: number;
-  currency?: string;
-  assetAllocation?: AssetAllocation[];
-}
-
-export interface AssetAllocation {
-  category?: string;
-  value?: number;
-  percentage?: number;
-  color?: string;
-}
-
-export interface PositionResponse {
-  symbol?: string;
-  quantity?: number;
-  avg_cost?: number;
-  avgCost?: number;
-  avgPrice?: number;
-  current_price?: number;
-  currentPrice?: number;
-  market_value?: number;
-  marketValue?: number;
-  pnl?: number;
-  pnl_percent?: number;
-  pnlPercent?: number;
-  side?: string;
-  costBasis?: number;
-  realizedPnL?: number;
-  unrealizedPnL?: number;
-  unrealizedPnLPercent?: number;
-  positionPnL?: number;
-  positionPnLPercent?: number;
-  name?: string;
-  marginUsed?: number;
-  marginAvailable?: number;
-  lastUpdate?: string;
-}
-
-export interface FundFlowResponse {
-  items?: FundFlowItem[];
-  date?: string;
-}
-
-export interface FundFlowItem {
-  tradeDate?: string;
-  trade_date?: string;
-  mainInflow?: number;
-  main_outflow?: number;
-  mainOutflow?: number;
-  netInflow?: number;
-  net_inflow?: number;
-}
-
-export interface KlineResponse {
-  points?: KLinePoint[];
-  symbol?: string;
-  period?: string;
-}
-
-export interface StockSearchResult {
-  name?: string;
-  code?: string;
-  current?: number;
-  changePercent?: number;
-  change_percent?: number;
-  change?: number;
-  volume?: number;
-}
-
-export interface SystemMetrics {
-  cpu?: CPUMetric;
-  memory?: MemoryMetric;
-  disk?: DiskMetric;
-  network?: NetworkMetric;
-  gpu?: number;
-  database?: DatabaseMetric;
-  api?: APIMetric;
-  websocket?: WebSocketMetric;
-}
-
-export interface CPUMetric {
-  current?: number;
-  total?: number;
-  percentage?: number;
-}
-
-export interface MemoryMetric {
-  current?: number;
-  total?: number;
-  percentage?: number;
-}
-
-export interface DiskMetric {
-  current?: number;
-  total?: number;
-  percentage?: number;
-}
-
-export interface NetworkMetric {
-  inbound?: number;
-  outbound?: number;
-  errors?: number;
-  errorRate?: number;
-}
-
-export interface DatabaseMetric {
-  connections?: number;
-  connected?: boolean;
-  maxConnections?: number;
-  queries?: number;
-  latency?: number;
-  responseTime?: number;
-  status?: string;
-}
-
-export interface APIMetric {
-  requests?: number;
-  uptime?: number;
-  requestsPerMinute?: number;
-  errors?: number;
-  latency?: number;
-  averageResponseTime?: number;
-  errorRate?: number;
-  status?: string;
-}
-
-export interface WebSocketMetric {
-  connections?: number;
-  connected?: boolean;
-  services?: number;
-  messages?: number;
-  errors?: number;
-  status?: string;
-}
-
-export interface SystemStatusResponseExtended extends SystemStatusResponse {
-  metrics?: SystemMetrics;
 }

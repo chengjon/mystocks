@@ -209,7 +209,7 @@ import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
 import { ElMessage } from 'element-plus'
-import ProKLineChart from '@/components/Market/ProKLineChart.vue'
+import ProKLineChart from '@/components/market/ProKLineChart.vue'
 import { Web3Card, Web3Button } from '@/components/web3'
 
 // Type definitions

@@ -42,6 +42,7 @@ class TypeConverter:
         "NoneType": "null",
         "datetime": "string",
         "date": "string",
+        "date_type": "string",  # datetime.date alias
         "Decimal": "number",
         "UUID": "string",
         "bytes": "string",
@@ -96,7 +97,41 @@ class TypeConverter:
 
         # Handle Literal[...]
         if type_str.startswith("Literal[") and type_str.endswith("]"):
-            return type_str[8:-1].replace(",", " |")
+            literal_content = type_str[8:-1]
+            # Check if it's a string literal (single or double quoted)
+            if literal_content.startswith("'") or literal_content.startswith('"'):
+                # It's a string literal, keep it as-is
+                return literal_content
+            else:
+                # It might be multiple values or other literals
+                # Try to parse and quote string values
+                try:
+                    # Remove outer quotes if present and split by comma
+                    cleaned = literal_content.strip("'\"")
+                    if "," in cleaned:
+                        parts = [p.strip().strip("'\"") for p in cleaned.split(",")]
+                        quoted_parts = []
+                        for part in parts:
+                            # Check if it looks like a string (not a number or boolean)
+                            if part in ["True", "False"]:
+                                quoted_parts.append(part.lower())
+                            elif part.isdigit() or part.replace(".", "").isdigit():
+                                quoted_parts.append(part)
+                            else:
+                                # It's a string literal, add quotes
+                                quoted_parts.append(f"'{part}'")
+                        return " | ".join(quoted_parts)
+                    else:
+                        # Single value
+                        if cleaned in ["True", "False"]:
+                            return cleaned.lower()
+                        elif cleaned.isdigit() or cleaned.replace(".", "").isdigit():
+                            return cleaned
+                        else:
+                            return f"'{cleaned}'"
+                except:
+                    # Fallback: return original
+                    return literal_content
 
         return type_str
 
@@ -176,6 +211,9 @@ class PydanticModelExtractor:
                         val = item.value.value
                         if isinstance(val, str):
                             values.append(f"'{val}'")
+                        elif isinstance(val, bool):
+                            # Convert Python True/False to TypeScript true/false
+                            values.append(str(val).lower())
                         else:
                             values.append(str(val))
         return {"type": "enum", "values": values}

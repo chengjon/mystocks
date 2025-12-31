@@ -5,11 +5,14 @@
  */
 
 import type {
-  StrategyListResponse,
-  StrategyConfigResponse,
-  BacktestResultResponse,
-  TechnicalIndicatorResponse
+  StrategyListResponse
 } from '@/api/types/generated-types'
+
+// Temporary: Use any for missing generated types
+// TODO: Fix type generation to include these types
+type StrategyConfigResponse = any
+type BacktestResultResponse = any
+type TechnicalIndicatorResponse = any
 
 // ViewModel interfaces
 export interface StrategyListItemVM {

@@ -25,11 +25,12 @@
           <!-- 趋势指标 -->
           <el-tab-pane label="趋势" name="trend">
             <div class="indicator-list">
+              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
-                v-for="indicator in trendIndicators"
-                :key="indicator.value"
+                v-for="(indicator, idx) in trendIndicators"
+                :key="idx"
                 :model-value="isIndicatorSelected(indicator.value)"
-                @change="handleToggleIndicator(indicator.value, $event)"
+                @change="onCheckboxChange(indicator.value, $event)"
               >
                 <div class="indicator-item">
                   <span class="indicator-name">{{ indicator.label }}</span>
@@ -42,11 +43,12 @@
           <!-- 动量指标 -->
           <el-tab-pane label="动量" name="momentum">
             <div class="indicator-list">
+              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
-                v-for="indicator in momentumIndicators"
-                :key="indicator.value"
+                v-for="(indicator, idx) in momentumIndicators"
+                :key="idx"
                 :model-value="isIndicatorSelected(indicator.value)"
-                @change="handleToggleIndicator(indicator.value, $event)"
+                @change="onCheckboxChange(indicator.value, $event)"
               >
                 <div class="indicator-item">
                   <span class="indicator-name">{{ indicator.label }}</span>
@@ -59,11 +61,12 @@
           <!-- 波动率指标 -->
           <el-tab-pane label="波动率" name="volatility">
             <div class="indicator-list">
+              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
-                v-for="indicator in volatilityIndicators"
-                :key="indicator.value"
+                v-for="(indicator, idx) in volatilityIndicators"
+                :key="idx"
                 :model-value="isIndicatorSelected(indicator.value)"
-                @change="handleToggleIndicator(indicator.value, $event)"
+                @change="onCheckboxChange(indicator.value, $event)"
               >
                 <div class="indicator-item">
                   <span class="indicator-name">{{ indicator.label }}</span>
@@ -76,11 +79,12 @@
           <!-- 成交量指标 -->
           <el-tab-pane label="成交量" name="volume">
             <div class="indicator-list">
+              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
-                v-for="indicator in volumeIndicators"
-                :key="indicator.value"
+                v-for="(indicator, idx) in volumeIndicators"
+                :key="idx"
                 :model-value="isIndicatorSelected(indicator.value)"
-                @change="handleToggleIndicator(indicator.value, $event)"
+                @change="onCheckboxChange(indicator.value, $event)"
               >
                 <div class="indicator-item">
                   <span class="indicator-name">{{ indicator.label }}</span>
@@ -128,6 +132,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { TrendCharts } from '@element-plus/icons-vue'
+import type { CheckboxValueType } from 'element-plus'
 import type { IndicatorMeta } from '@/types/indicators'
 
 /**
@@ -206,8 +211,8 @@ const selectedCount = computed(() => selectedIndicators.value.length)
 /**
  * 检查指标是否已选中
  */
-const isIndicatorSelected = (indicator: string): boolean => {
-  return selectedIndicators.value.includes(indicator)
+const isIndicatorSelected = (indicator: string): CheckboxValueType => {
+  return selectedIndicators.value.includes(indicator) as CheckboxValueType
 }
 
 /**
@@ -232,6 +237,13 @@ const handleToggleIndicator = (indicator: string, checked: boolean): void => {
       selectedIndicators.value.splice(index, 1)
     }
   }
+}
+
+/**
+ * 包装器函数，处理Element Plus checkbox的类型问题
+ */
+const onCheckboxChange = (indicator: string, value: CheckboxValueType): void => {
+  handleToggleIndicator(indicator, Boolean(value))
 }
 
 /**

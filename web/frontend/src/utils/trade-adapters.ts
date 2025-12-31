@@ -5,11 +5,14 @@
  */
 
 import type {
-  AccountOverviewResponse,
   OrderResponse,
-  PositionResponse,
   TradeHistoryResponse
 } from '@/api/types/generated-types'
+
+// Temporary: Use any for missing generated types
+// TODO: Fix type generation to include these types
+type AccountOverviewResponse = any
+type PositionResponse = any
 
 // ViewModel interfaces
 export interface AccountOverviewVM {
@@ -127,22 +130,22 @@ export class TradeAdapter {
    * Convert order response to ViewModel
    */
   static toOrderVM(data: OrderResponse[]): OrderVM[] {
-    return data.map(order => ({
-      orderId: order.orderId || '',
+    return data.map((order: any) => ({
+      orderId: order.order_id || order.orderId || '',
       symbol: order.symbol || '',
-      name: order.name || '',
-      side: this.getOrderSide(order.side),
-      type: order.type || 'market',
-      quantity: order.quantity || 0,
-      price: order.price || 0,
-      amount: order.amount || 0,
-      status: this.getOrderStatus(order.status),
-      filledQuantity: order.filledQuantity || 0,
-      filledAmount: order.filledAmount || 0,
-      averagePrice: order.averagePrice || 0,
-      orderTime: this.formatDateTime(order.orderTime),
-      updateTime: this.formatDateTime(order.updateTime),
-      remarks: order.remarks
+      name: order.name || order.order_name || '',
+      side: this.getOrderSide(order.side || order.order_side),
+      type: order.type || order.order_type || 'market',
+      quantity: order.quantity || order.order_quantity || 0,
+      price: order.price || order.order_price || 0,
+      amount: order.amount || order.order_amount || 0,
+      status: this.getOrderStatus(order.status || order.order_status),
+      filledQuantity: order.filledQuantity || order.filled_quantity || 0,
+      filledAmount: order.filledAmount || order.filled_amount || 0,
+      averagePrice: order.averagePrice || order.average_price || 0,
+      orderTime: this.formatDateTime(order.orderTime || order.order_time),
+      updateTime: this.formatDateTime(order.updateTime || order.update_time),
+      remarks: order.remarks || order.order_remarks || ''
     }))
   }
 
@@ -184,8 +187,8 @@ export class TradeAdapter {
    */
   static toTradeHistoryVM(data: TradeHistoryResponse[]): TradeHistoryVM[] {
     // Group trades by date
-    const groupedTrades = data.reduce((groups, trade) => {
-      const date = this.formatDate(trade.tradeTime)
+    const groupedTrades = data.reduce((groups, trade: any) => {
+      const date = this.formatDate(trade.tradeTime || trade.trade_time)
       if (!groups[date]) {
         groups[date] = []
       }
