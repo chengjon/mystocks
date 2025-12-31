@@ -94,9 +94,9 @@ class TDengineConnectionPool:
         self.health_check_interval = health_check_interval
 
         # 连接池（使用队列管理）
-        self._pool = queue.Queue(maxsize=max_size)
-        self._all_connections = []  # 跟踪所有创建的连接
-        self._connection_meta = {}  # 连接元数据（创建时间、最后使用时间等）
+        self._pool: queue.Queue = queue.Queue(maxsize=max_size)
+        self._all_connections: list[Any] = []  # 跟踪所有创建的连接
+        self._connection_meta: dict[str, Any] = {}  # 连接元数据（创建时间、最后使用时间等）
         self._lock = threading.Lock()
 
         # 统计信息

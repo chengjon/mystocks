@@ -118,7 +118,7 @@ class TDengineManager:
         try:
             # Phase 3: 创建连接池替代单连接
             self._pool = TDengineConnectionPool(
-                host=self.host,
+                host=self.host or "localhost",
                 port=self.port,
                 user=self.user,
                 password=self.password,
