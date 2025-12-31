@@ -273,7 +273,8 @@ class GPUAccelerationEngine:
             if self.enable_gpu:
                 self.performance_metrics["total_gpu_time"] += time.time() - operation_start
 
-            logger.info(f"特征计算完成，{len(result.get('metadata', {}).get('feature_types', []))} 类特征")
+            feature_count = len(result.get("metadata", {}).get("feature_types", []))
+            logger.info("特征计算完成，%d 类特征", feature_count)
             return result
 
         except Exception as e:

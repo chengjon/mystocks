@@ -113,7 +113,7 @@ export const mockIndicatorRegistry = {
     { name: 'Price Transform', count: 5 },
     { name: 'Cycle Indicators', count: 5 },
     { name: 'Pattern Recognition', count: 10 },
-    { name: 'Statistic Functions', 10 },
+    { name: 'Statistic Functions', count: 10 },
   ],
   indicators: [
     {

@@ -72,16 +72,24 @@ request.interceptors.response.use(
 // 认证 API
 export const authApi = {
   login(username, password) {
-    return request.post('/auth/login', { username, password })
+    // 后端使用 OAuth2PasswordRequestForm，需要表单数据格式
+    const formData = new URLSearchParams()
+    formData.append('username', username)
+    formData.append('password', password)
+    return request.post('/v1/auth/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
   },
   logout() {
-    return request.post('/auth/logout')
+    return request.post('/v1/auth/logout')
   },
   getCurrentUser() {
-    return request.get('/auth/user')
+    return request.get('/v1/auth/me')
   },
   refreshToken() {
-    return request.post('/auth/refresh')
+    return request.post('/v1/auth/refresh')
   }
 }
 

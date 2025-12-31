@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-31T21:46:07.499128
+// Generated at: 2025-12-31T01:12:24.678787
 
 // API Response Types
 export interface APIResponse {
@@ -7,7 +7,7 @@ export interface APIResponse {
   success: boolean; // Default: True
   code: number; // Default: 0
   message: string; // Default: '操作成功'
-  data: any | null; // Default: None
+  data: T | null; // Default: None
   requestId?: string;
   timestamp?: string;
 }
@@ -229,6 +229,12 @@ export interface BOLLParams {
   stdDev: number; // Default: 2.0
 }
 
+export interface BOLLParams {
+
+  period: number; // Default: 20
+  stdDev: number; // Default: 2.0
+}
+
 export interface BacktestRequest {
   strategy_id?: number;
   user_id?: number;
@@ -384,6 +390,21 @@ export interface ChartConfigRequest {
   theme?: string;
   locale?: string;
   container_id?: string;
+}
+
+export interface CancelOrderRequest {
+
+  orderId?: string;
+}
+
+export interface CancelOrderResponse {
+
+  orderId?: string;
+  success?: boolean;
+  message?: string;
+  cancelledQuantity?: number;
+  remainingQuantity?: number;
+  cancelledAt?: string;
 }
 
 export interface CancelOrderRequest {
@@ -588,6 +609,14 @@ export interface CommonError {
   code?: number;
   message?: string;
   data: Record<string, any> | null; // Default: None
+  detail: string | null; // Default: None
+}
+
+export interface CommonError {
+
+  code?: number;
+  message?: string;
+  data: dict | null; // Default: None
   detail: string | null; // Default: None
 }
 
@@ -879,6 +908,14 @@ export interface HotSector {
   stockCount?: number;
 }
 
+export interface HotSector {
+
+  sectorName?: string;
+  changePercent?: number;
+  leadingStock?: string | null;
+  stockCount?: number;
+}
+
 export interface HyperparameterSearchRequest {
   stock_code?: string;
   market?: string;
@@ -902,6 +939,17 @@ export interface IndexQuote {
   current_price?: number;
   change?: number;
   change_percent?: number;
+  volume?: number | null;
+  amount?: number | null;
+}
+
+export interface IndexQuote {
+
+  indexCode?: string;
+  indexName?: string;
+  currentPrice?: number;
+  change?: number;
+  changePercent?: number;
   volume?: number | null;
   amount?: number | null;
 }
@@ -1168,6 +1216,42 @@ export interface KLineResponseV2 {
   interval?: string;
 }
 
+export interface KDJParams {
+
+  n: number; // Default: 9
+  m1: number; // Default: 3
+  m2: number; // Default: 3
+}
+
+export interface KLineCandleV2 {
+
+  timestamp?: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number | null;
+}
+
+export interface KLineRequestV2 {
+
+  symbol?: string;
+  interval?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  adjust: string; // Default: 'qfq'
+  limit: number; // Default: 500
+}
+
+export interface KLineResponseV2 {
+
+  klines?: KLineCandleV2[];
+  totalCount?: number;
+  symbol?: string;
+  interval?: string;
+}
+
 export interface KlineCandle {
   datetime?: string;
   open?: number;
@@ -1264,6 +1348,19 @@ export interface MAParams {
   priceType: string; // Default: 'close'
 }
 
+export interface MACDParams {
+
+  fastPeriod: number; // Default: 12
+  slowPeriod: number; // Default: 26
+  signalPeriod: number; // Default: 9
+}
+
+export interface MAParams {
+
+  period: number; // Default: 20
+  priceType: string; // Default: 'close'
+}
+
 export interface MLResponse {
   success?: boolean;
   message?: string;
@@ -1272,43 +1369,10 @@ export interface MLResponse {
 
 export interface MarketOverviewDetailedResponse {
 
-export interface MarketDataRequest {
-  symbol?: string;
-}
-
-export interface MarketFilterParams {
-  market?: string;
-  limit?: number | null;
-}
-
-export interface MarketIndexItem {
-  symbol?: string;
-  name?: string;
-  current_price?: number;
-  change_percent?: number;
-  volume?: number | null;
-  turnover?: number | null;
-  update_time?: string | null;
-}
-
-export interface MarketOverview {
-  indices?: MarketIndexItem[];
-  up_count?: number;
-  down_count?: number;
-  flat_count?: number;
-  total_volume?: number | null;
-  total_turnover?: number | null;
-  top_gainers?: Record<string, any>[];
-  top_losers?: Record<string, any>[];
-  most_active?: Record<string, any>[];
-}
-
-export interface MarketOverviewDetailedResponse {
-  market_stats?: MarketOverviewStats;
-  top_etfs?: TopETFItem[];
-  chip_races?: ChipRaceItem[];
-  long_hu_bang?: LongHuBangItem[];
-  timestamp?: string;
+  date?: string;
+  indices?: IndexQuote[];
+  hotSectors?: HotSector[];
+  marketSentiment?: string;
 }
 
 export interface MarketOverviewRequest {
@@ -1715,6 +1779,12 @@ export interface PaginationParams {
 
 export interface PaginationRequest {
 
+  page: number; // Default: 1
+  pageSize: number; // Default: 20
+}
+
+export interface PaginationRequest {
+
 export interface PaginationParams {
   page?: number;
   page_size?: number;
@@ -1810,6 +1880,29 @@ export interface PositionsResponse {
   totalProfitLossPercent?: number;
 }
 
+export interface Position {
+
+  symbol?: string;
+  symbolName?: string | null;
+  quantity?: number;
+  availableQuantity?: number;
+  costPrice?: string;
+  currentPrice?: string | null;
+  marketValue?: string;
+  profitLoss?: string;
+  profitLossPercent?: number;
+  lastUpdate?: string;
+}
+
+export interface PositionsResponse {
+
+  positions?: Position[];
+  totalCount?: number;
+  totalMarketValue?: string;
+  totalProfitLoss?: string;
+  totalProfitLossPercent?: number;
+}
+
 export interface PredictionResult {
   date?: string;
   predicted_price?: number;
@@ -1836,6 +1929,11 @@ export interface RealTimeNotification {
   expires_at?: string | null;
   action_required?: boolean;
   action_url?: string | null;
+}
+
+export interface RSIParams {
+
+  period: number; // Default: 14
 }
 
 export interface RSIParams {

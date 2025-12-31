@@ -3,8 +3,8 @@
     <el-card class="login-card">
       <template #header>
         <div class="card-header">
-          <h2>MyStocks 登录</h2>
-          <p>量化交易数据管理系统</p>
+          <h1 data-testid="login-heading">MyStocks 登录</h1>
+          <p data-testid="login-subtitle">量化交易数据管理系统</p>
         </div>
       </template>
 
@@ -44,6 +44,7 @@
             size="large"
             style="width: 100%"
             :loading="loading"
+            :disabled="loading"
             @click="handleLogin"
           >
             登录
@@ -51,10 +52,10 @@
         </el-form-item>
       </el-form>
 
-      <div class="tips">
+      <div class="tips" data-testid="test-account-tips">
         <el-divider>测试账号</el-divider>
-        <p>管理员: admin / admin123</p>
-        <p>普通用户: user / user123</p>
+        <p data-testid="admin-account-hint">管理员: admin / admin123</p>
+        <p data-testid="user-account-hint">普通用户: user / user123</p>
       </div>
     </el-card>
   </div>
@@ -139,7 +140,7 @@ const handleLogin = async (): Promise<void> => {
     .card-header {
       text-align: center;
 
-      h2 {
+      h1 {
         margin: 0 0 8px;
         color: #303133;
       }
