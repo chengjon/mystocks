@@ -82,6 +82,7 @@ export interface TradeVM {
   commission: number
   tradeTime: string
   tradeType: string
+  realizedPnL?: number
   notes?: string
 }
 
@@ -160,7 +161,7 @@ export class TradeAdapter {
       return {
         symbol: position.symbol || '',
         name: position.name || '',
-        side: position.side || 'long',
+        side: (position.side || 'long') as 'long' | 'short',
         quantity: position.quantity || 0,
         avgPrice: position.avgPrice || 0,
         currentPrice: position.currentPrice || 0,

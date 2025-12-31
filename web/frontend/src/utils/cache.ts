@@ -48,7 +48,7 @@ export class LRUCache<T = any> {
   private cache = new Map<string, CacheEntry<T>>()
   private accessOrder = new Map<string, number>()
   private accessCounter = 0
-  private cleanupTimer?: NodeJS.Timeout
+  private cleanupTimer?: ReturnType<typeof setTimeout>
   private stats: CacheStats = {
     hits: 0,
     misses: 0,

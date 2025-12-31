@@ -35,6 +35,22 @@ export enum IndicatorCategory {
 }
 
 /**
+ * 指标元数据（用于UI选择器）
+ */
+export interface IndicatorMeta {
+  /** 显示标签 */
+  label: string
+  /** 唯一标识 */
+  value: string
+  /** 描述 */
+  description: string
+  /** 类别 */
+  category: 'trend' | 'momentum' | 'volatility' | 'volume' | 'custom'
+  /** 参数 */
+  params?: number[]
+}
+
+/**
  * 指标计算周期
  */
 export type IndicatorPeriod = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M';
@@ -276,14 +292,14 @@ export interface MACDConfig extends IndicatorConfig {
 /**
  * MACD 结果
  */
-export interface MACDResult extends IndicatorResult {
-  data: IndicatorDataPoint & {
+export interface MACDResult extends Omit<IndicatorResult, 'data'> {
+  data: (IndicatorDataPoint & {
     extra: {
       dif: number; // 快线
       dea: number; // 慢线
       macd: number; // 柱状图
     };
-  }[];
+  })[];
 }
 
 /**
@@ -310,14 +326,14 @@ export interface KDJConfig extends IndicatorConfig {
 /**
  * KDJ 结果
  */
-export interface KDJResult extends IndicatorResult {
-  data: IndicatorDataPoint & {
+export interface KDJResult extends Omit<IndicatorResult, 'data'> {
+  data: (IndicatorDataPoint & {
     extra: {
       k: number; // K值
       d: number; // D值
       j: number; // J值
     };
-  }[];
+  })[];
 }
 
 /**
@@ -340,14 +356,14 @@ export interface RSIConfig extends IndicatorConfig {
 /**
  * RSI 结果
  */
-export interface RSIResult extends IndicatorResult {
-  data: IndicatorDataPoint & {
+export interface RSIResult extends Omit<IndicatorResult, 'data'> {
+  data: (IndicatorDataPoint & {
     extra: {
       rsi6: number; // 6日RSI
       rsi12: number; // 12日RSI
       rsi24: number; // 24日RSI
     };
-  }[];
+  })[];
 }
 
 /**
@@ -373,14 +389,14 @@ export interface BOLLConfig extends IndicatorConfig {
 /**
  * BOLL 结果
  */
-export interface BOLLResult extends IndicatorResult {
-  data: IndicatorDataPoint & {
+export interface BOLLResult extends Omit<IndicatorResult, 'data'> {
+  data: (IndicatorDataPoint & {
     extra: {
       upper: number; // 上轨
       middle: number; // 中轨
       lower: number; // 下轨
     };
-  }[];
+  })[];
 }
 
 // ============================================

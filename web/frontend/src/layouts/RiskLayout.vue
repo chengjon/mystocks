@@ -437,6 +437,16 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
+import {
+  Notification,
+  Delete,
+  Refresh,
+  Odometer,
+  TrendCharts,
+  Bell,
+  Warning,
+  CircleCheck
+} from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 
@@ -507,7 +517,7 @@ const selectedTimeRange: Ref<string> = ref('today')
 const selectedStatuses: Ref<string[]> = ref(['active', 'acknowledged'])
 const selectedAlerts: Ref<any[]> = ref([])
 const isRefreshing: Ref<boolean> = ref(false)
-const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
+const refreshInterval: Ref<ReturnType<typeof setInterval> | null> = ref(null)
 
 // Risk statistics
 const riskStats: Ref<RiskStats> = ref({

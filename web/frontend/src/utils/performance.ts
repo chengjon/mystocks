@@ -4,7 +4,9 @@
  * Provides lazy loading, code splitting, and performance monitoring tools.
  */
 
-import type { ComponentType } from 'vue'
+import type { Component } from 'vue'
+
+type ComponentType = Component
 
 /**
  * Performance metrics interface
@@ -553,7 +555,7 @@ export class BundleAnalyzer {
    */
   static monitorChunkLoading(): void {
     // Override import() to monitor chunk loading
-    const originalImport = (window as any).__dynamic_import__ || window.importScripts
+    const originalImport = (window as any).__dynamic_import__ || (window as any).importScripts
 
     if ('import' in window) {
       // Note: This is a simplified example
@@ -609,7 +611,7 @@ export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   delay: number
 ): T {
-  let timer: NodeJS.Timeout
+  let timer: ReturnType<typeof setTimeout>
 
   return ((...args: Parameters<T>) => {
     clearTimeout(timer)
@@ -631,7 +633,7 @@ export function initPerformanceMonitoring(): void {
   LazyImageLoader.setup()
 
   // Log performance metrics
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     setInterval(() => {
       const metrics = monitor.getAllMetrics()
       console.log('Performance Metrics:', metrics)

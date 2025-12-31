@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<{
 
 const chartContainer = ref<HTMLElement | null>(null);
 const chartRef = ref<HTMLElement | null>(null);
-let chartInstance: ReturnType<typeof klinecharts.init> | null = null;
+let chartInstance: any | null = null;
 
 const currentValues = ref<{ label: string; value: string; color: string }[]>([]);
 
@@ -107,7 +107,7 @@ const updateChart = () => {
   });
 
   try {
-    chartInstance.applyNewData(chartData);
+    chartInstance.applyNewData(chartData as any);
   } catch (e) {
     console.warn('Failed to update oscillator chart:', e);
   }
@@ -132,6 +132,7 @@ const initChart = () => {
       vertical: { show: false, size: 1, color: '#1A1A1A' }
     },
     xAxis: {
+      type: 'xAxis' as const,
       axisLine: { show: true, color: '#333333' },
       tickLine: { show: false, color: '#333333' },
       tickText: { color: '#888888', size: 10 }
@@ -160,9 +161,9 @@ const initChart = () => {
     locale: 'zh-CN',
     styles: chartStyles,
     layout: [
-      { type: 'xAxis' as const, height: 25 }
+      { type: 'xAxis' as any, height: 25 }
     ]
-  });
+  } as any);
 
   if (props.klineData.length > 0) {
     updateChart();

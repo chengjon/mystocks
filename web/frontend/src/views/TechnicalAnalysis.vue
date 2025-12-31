@@ -442,7 +442,7 @@ const fetchKlineData = async (): Promise<void> => {
             values: values,
             display_name: key
           }],
-          panel_type: key.includes('rsi') || key.includes('macd') ? 'separate' : 'overlay'
+          panel_type: (key.toLowerCase().includes('rsi') || key.toLowerCase().includes('macd') ? 'separate' : 'overlay') as 'overlay' | 'separate'
         }
       })
 

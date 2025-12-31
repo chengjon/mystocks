@@ -7,22 +7,10 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 import App from './App.vue'
 import router from './router'
-
-// ============================================
-// MyStocks Professional Dark Theme
-// 深色主题系统导入
-// ============================================
-// Import Element Plus dark theme CSS variables
-import 'element-plus/theme-chalk/dark/css-vars.css'
-
-// Import custom dark theme with A-share market colors (red=up, green=down)
-import './styles/theme-dark.scss'
-
-// Import global theme application styles (applies theme to all components)
-import './styles/theme-apply.scss'
-
-// Import global styles (index.scss)
 import './styles/index.scss'
+
+// LINEAR THEME: Import Linear design tokens
+import './styles/linear-tokens.scss'
 
 // SECURITY FIX 1.2: 导入CSRF初始化函数
 import { initializeSecurity } from './services/httpClient.js'

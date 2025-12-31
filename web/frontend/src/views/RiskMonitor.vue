@@ -1,74 +1,92 @@
 <template>
-  <div class="risk-monitor">
+  <div class="web3-risk-monitor">
+    <!-- Page Header with Gradient Text -->
     <div class="page-header">
-      <h1>🛡️ 风险管理仪表板</h1>
-      <p class="subtitle">实时监控投资组合风险指标，VaR/CVaR/Beta分析</p>
+      <h1 class="text-4xl font-heading font-semibold">
+        <span class="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
+          RISK MANAGEMENT DASHBOARD
+        </span>
+      </h1>
+      <p class="subtitle">REAL-TIME RISK MONITORING | VaR | CVaR | BETA ANALYSIS</p>
     </div>
 
-    <!-- 关键指标概览 -->
+    <!-- Key Metrics Overview with Web3 Cards -->
     <el-row :gutter="20" class="metrics-overview">
       <el-col :span="6">
-        <el-card class="metric-card">
-          <el-statistic title="VaR (95%)" :value="dashboard.var_95" :precision="2">
-            <template #prefix>
-              <el-icon color="#f56c6c"><TrendCharts /></el-icon>
-            </template>
-            <template #suffix>%</template>
-          </el-statistic>
-          <div class="metric-description">Value at Risk (95%置信度)</div>
-        </el-card>
+        <Web3Card class="metric-card hover-lift">
+          <div class="metric-content">
+            <div class="metric-icon-wrapper risk-var">
+              <el-icon class="metric-icon"><TrendCharts /></el-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">VaR (95%)</div>
+              <div class="metric-value orange-glow">{{ dashboard.var_95.toFixed(2) }}%</div>
+              <div class="metric-description">Value at Risk</div>
+            </div>
+          </div>
+        </Web3Card>
       </el-col>
       <el-col :span="6">
-        <el-card class="metric-card">
-          <el-statistic title="CVaR (95%)" :value="dashboard.cvar_95" :precision="2">
-            <template #prefix>
-              <el-icon color="#e6a23c"><Warning /></el-icon>
-            </template>
-            <template #suffix>%</template>
-          </el-statistic>
-          <div class="metric-description">Conditional VaR (条件风险值)</div>
-        </el-card>
+        <Web3Card class="metric-card hover-lift">
+          <div class="metric-content">
+            <div class="metric-icon-wrapper risk-cvar">
+              <el-icon class="metric-icon"><Warning /></el-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">CVaR (95%)</div>
+              <div class="metric-value yellow-glow">{{ dashboard.cvar_95.toFixed(2) }}%</div>
+              <div class="metric-description">Conditional VaR</div>
+            </div>
+          </div>
+        </Web3Card>
       </el-col>
       <el-col :span="6">
-        <el-card class="metric-card">
-          <el-statistic title="Beta系数" :value="dashboard.beta" :precision="3">
-            <template #prefix>
-              <el-icon color="#409eff"><DataLine /></el-icon>
-            </template>
-          </el-statistic>
-          <div class="metric-description">相对市场波动性</div>
-        </el-card>
+        <Web3Card class="metric-card hover-lift">
+          <div class="metric-content">
+            <div class="metric-icon-wrapper risk-beta">
+              <el-icon class="metric-icon"><DataLine /></el-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">BETA COEFFICIENT</div>
+              <div class="metric-value blue-glow">{{ dashboard.beta.toFixed(3) }}</div>
+              <div class="metric-description">Market Volatility</div>
+            </div>
+          </div>
+        </Web3Card>
       </el-col>
       <el-col :span="6">
-        <el-card class="metric-card">
-          <el-statistic title="风险告警" :value="dashboard.alert_count">
-            <template #prefix>
-              <el-icon color="#67c23a"><BellFilled /></el-icon>
-            </template>
-            <template #suffix>条</template>
-          </el-statistic>
-          <div class="metric-description">活跃告警数量</div>
-        </el-card>
+        <Web3Card class="metric-card hover-lift">
+          <div class="metric-content">
+            <div class="metric-icon-wrapper risk-alert">
+              <el-icon class="metric-icon"><BellFilled /></el-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">ACTIVE ALERTS</div>
+              <div class="metric-value green-glow">{{ dashboard.alert_count }}</div>
+              <div class="metric-description">Risk Warnings</div>
+            </div>
+          </div>
+        </Web3Card>
       </el-col>
     </el-row>
 
-    <!-- 主要内容区 -->
+    <!-- Main Content Area -->
     <el-row :gutter="20" style="margin-top: 20px">
-      <!-- 左侧: 风险指标历史趋势 -->
+      <!-- Left: Risk Metrics History Chart -->
       <el-col :span="16">
-        <el-card>
+        <Web3Card class="chart-card">
           <template #header>
             <div class="card-header">
-              <span>📈 风险指标历史趋势</span>
-              <div>
-                <el-select v-model="historyPeriod" @change="loadMetricsHistory" style="width: 120px">
-                  <el-option label="7天" value="7d" />
-                  <el-option label="30天" value="30d" />
-                  <el-option label="90天" value="90d" />
+              <span class="section-title">I. RISK METRICS HISTORY</span>
+              <div class="card-actions">
+                <el-select v-model="historyPeriod" @change="loadMetricsHistory" class="web3-select" style="width: 120px">
+                  <el-option label="7 DAYS" value="7d" />
+                  <el-option label="30 DAYS" value="30d" />
+                  <el-option label="90 DAYS" value="90d" />
                 </el-select>
-                <el-button type="primary" size="small" @click="loadMetricsHistory" :loading="historyLoading" style="margin-left: 10px">
-                  <el-icon><Refresh /></el-icon> 刷新
-                </el-button>
+                <Web3Button variant="outline" size="sm" @click="loadMetricsHistory" :loading="historyLoading">
+                  <el-icon><Refresh /></el-icon> REFRESH
+                </Web3Button>
               </div>
             </div>
           </template>
@@ -77,23 +95,23 @@
             <el-skeleton :rows="5" animated />
           </div>
 
-          <div v-else-if="metricsHistory.length > 0" class="chart-container">
+          <div v-else-if="metricsHistory.length > 0" class="chart-container grid-bg">
             <div id="risk-chart" style="height: 300px"></div>
           </div>
 
-          <el-empty v-else description="暂无历史数据" />
-        </el-card>
+          <el-empty v-else description="NO HISTORICAL DATA AVAILABLE" />
+        </Web3Card>
       </el-col>
 
-      <!-- 右侧: 风险告警 -->
+      <!-- Right: Risk Alerts -->
       <el-col :span="8">
-        <el-card>
+        <Web3Card class="alerts-card">
           <template #header>
             <div class="card-header">
-              <span>🚨 风险告警</span>
-              <el-button type="primary" size="small" @click="showCreateAlertDialog">
-                <el-icon><Plus /></el-icon> 新建
-              </el-button>
+              <span class="section-title">II. RISK ALERTS</span>
+              <Web3Button variant="primary" size="sm" @click="showCreateAlertDialog">
+                <el-icon><Plus /></el-icon> NEW ALERT
+              </Web3Button>
             </div>
           </template>
 
@@ -103,9 +121,9 @@
             </div>
 
             <div v-else-if="alerts.length > 0" class="alerts-list">
-              <div v-for="alert in alerts" :key="alert.id" class="alert-item">
+              <div v-for="alert in alerts" :key="alert.id" class="alert-item corner-border">
                 <div class="alert-header">
-                  <el-tag :type="getAlertType(alert.level)" size="small">
+                  <el-tag :type="getAlertType(alert.level)" size="small" class="web3-tag">
                     {{ alert.level }}
                   </el-tag>
                   <span class="alert-time">{{ formatTime(alert.created_at) }}</span>
@@ -115,34 +133,34 @@
                   <p class="alert-description">{{ alert.description }}</p>
                 </div>
                 <div class="alert-actions">
-                  <el-button size="small" text @click="viewAlertDetail(alert)">
-                    详情
-                  </el-button>
+                  <Web3Button variant="ghost" size="sm" @click="viewAlertDetail(alert)">
+                    VIEW DETAILS
+                  </Web3Button>
                 </div>
               </div>
             </div>
 
-            <el-empty v-else description="暂无告警" :image-size="80" />
+            <el-empty v-else description="NO ACTIVE ALERTS" :image-size="80" />
           </el-scrollbar>
-        </el-card>
+        </Web3Card>
       </el-col>
     </el-row>
 
-    <!-- VaR/CVaR详细分析 -->
+    <!-- VaR/CVaR Detailed Analysis -->
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :span="12">
-        <el-card>
+        <Web3Card class="var-card">
           <template #header>
             <div class="card-header">
-              <span>📊 VaR 风险值分析</span>
-              <el-button size="small" @click="loadVarCvar">
-                <el-icon><Refresh /></el-icon> 刷新
-              </el-button>
+              <span class="section-title">III. VaR RISK ANALYSIS</span>
+              <Web3Button variant="outline" size="sm" @click="loadVarCvar">
+                <el-icon><Refresh /></el-icon> REFRESH
+              </Web3Button>
             </div>
           </template>
 
-          <el-table :data="varData" v-loading="varLoading" stripe>
-            <el-table-column prop="confidence_level" label="置信度" width="100">
+          <el-table :data="varData" v-loading="varLoading" class="web3-table">
+            <el-table-column prop="confidence_level" label="CONFIDENCE" width="100">
               <template #default="scope">
                 {{ scope.row.confidence_level }}%
               </template>
@@ -161,98 +179,99 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="风险等级" align="center">
+            <el-table-column label="RISK LEVEL" align="center">
               <template #default="scope">
-                <el-tag :type="getRiskLevelType(scope.row.var)">
+                <el-tag :type="getRiskLevelType(scope.row.var)" size="small" class="web3-tag">
                   {{ getRiskLevel(scope.row.var) }}
                 </el-tag>
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
+        </Web3Card>
       </el-col>
 
       <el-col :span="12">
-        <el-card>
+        <Web3Card class="beta-card">
           <template #header>
             <div class="card-header">
-              <span>📉 Beta系数分析</span>
-              <el-button size="small" @click="loadBeta">
-                <el-icon><Refresh /></el-icon> 刷新
-              </el-button>
+              <span class="section-title">IV. BETA COEFFICIENT</span>
+              <Web3Button variant="outline" size="sm" @click="loadBeta">
+                <el-icon><Refresh /></el-icon> REFRESH
+              </Web3Button>
             </div>
           </template>
 
-          <el-table :data="betaData" v-loading="betaLoading" stripe>
-            <el-table-column prop="symbol" label="股票代码" width="100" />
-            <el-table-column prop="stock_name" label="股票名称" width="120" />
-            <el-table-column prop="beta" label="Beta系数" align="right">
+          <el-table :data="betaData" v-loading="betaLoading" class="web3-table">
+            <el-table-column prop="symbol" label="SYMBOL" width="100" />
+            <el-table-column prop="stock_name" label="NAME" width="120" />
+            <el-table-column prop="beta" label="BETA" align="right">
               <template #default="scope">
                 <span :class="getBetaClass(scope.row.beta)">
                   {{ scope.row.beta?.toFixed(3) }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="波动性" align="center">
+            <el-table-column label="VOLATILITY" align="center">
               <template #default="scope">
-                <el-tag :type="getBetaType(scope.row.beta)" size="small">
+                <el-tag :type="getBetaType(scope.row.beta)" size="small" class="web3-tag">
                   {{ getBetaDescription(scope.row.beta) }}
                 </el-tag>
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
+        </Web3Card>
       </el-col>
     </el-row>
 
-    <!-- 创建告警对话框 -->
+    <!-- Create Alert Dialog -->
     <el-dialog
       v-model="createAlertVisible"
-      title="创建风险告警规则"
+      title="CREATE RISK ALERT RULE"
       width="500px"
+      class="web3-dialog"
     >
       <el-form :model="alertForm" label-width="100px">
-        <el-form-item label="告警名称">
-          <el-input v-model="alertForm.title" placeholder="请输入告警名称" />
+        <el-form-item label="ALERT NAME">
+          <Web3Input v-model="alertForm.title" placeholder="ENTER ALERT NAME" />
         </el-form-item>
 
-        <el-form-item label="指标类型">
-          <el-select v-model="alertForm.metric_type" placeholder="选择监控指标">
+        <el-form-item label="METRIC TYPE">
+          <el-select v-model="alertForm.metric_type" placeholder="SELECT MONITORING METRIC" class="web3-select" style="width: 100%">
             <el-option label="VaR (95%)" value="var_95" />
             <el-option label="CVaR (95%)" value="cvar_95" />
-            <el-option label="Beta系数" value="beta" />
-            <el-option label="波动率" value="volatility" />
+            <el-option label="Beta Coefficient" value="beta" />
+            <el-option label="Volatility" value="volatility" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="告警阈值">
-          <el-input-number v-model="alertForm.threshold" :precision="2" :step="0.1" />
+        <el-form-item label="THRESHOLD">
+          <el-input-number v-model="alertForm.threshold" :precision="2" :step="0.1" class="web3-input-number" />
         </el-form-item>
 
-        <el-form-item label="告警级别">
-          <el-select v-model="alertForm.level">
-            <el-option label="低" value="low" />
-            <el-option label="中" value="medium" />
-            <el-option label="高" value="high" />
-            <el-option label="严重" value="critical" />
+        <el-form-item label="ALERT LEVEL">
+          <el-select v-model="alertForm.level" class="web3-select" style="width: 100%">
+            <el-option label="LOW" value="low" />
+            <el-option label="MEDIUM" value="medium" />
+            <el-option label="HIGH" value="high" />
+            <el-option label="CRITICAL" value="critical" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="说明">
-          <el-input
+        <el-form-item label="DESCRIPTION">
+          <Web3Input
             v-model="alertForm.description"
             type="textarea"
             :rows="3"
-            placeholder="告警规则说明"
+            placeholder="ALERT RULE DESCRIPTION"
           />
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <el-button @click="createAlertVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleCreateAlert" :loading="createAlertLoading">
-          创建
-        </el-button>
+        <Web3Button variant="ghost" @click="createAlertVisible = false">CANCEL</Web3Button>
+        <Web3Button variant="primary" @click="handleCreateAlert" :loading="createAlertLoading">
+          CREATE ALERT
+        </Web3Button>
       </template>
     </el-dialog>
   </div>
@@ -272,14 +291,10 @@ import {
 import { riskApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
+import type { EChartsOption } from '@/types/echarts'
+import { Web3Button, Web3Card, Web3Input } from '@/components/web3'
 
-// ============================================
-// 类型定义
-// ============================================
-
-/**
- * 风险仪表板数据
- */
+// Type definitions remain the same
 interface RiskDashboard {
   var_95: number
   cvar_95: number
@@ -287,9 +302,6 @@ interface RiskDashboard {
   alert_count: number
 }
 
-/**
- * 历史指标数据点
- */
 interface MetricsHistoryPoint {
   date: string
   var_95: number
@@ -297,14 +309,8 @@ interface MetricsHistoryPoint {
   beta: number
 }
 
-/**
- * 告警级别
- */
 type AlertLevel = 'low' | 'medium' | 'high' | 'critical'
 
-/**
- * 告警数据
- */
 interface Alert {
   id: number
   title: string
@@ -316,9 +322,6 @@ interface Alert {
   triggered_at?: string
 }
 
-/**
- * VaR/CVaR数据
- */
 interface VarCvarData {
   symbol: string
   var_95: number
@@ -326,18 +329,13 @@ interface VarCvarData {
   date: string
 }
 
-/**
- * Beta数据
- */
 interface BetaData {
   symbol: string
   beta: number
   date: string
+  stock_name?: string
 }
 
-/**
- * 告警表单
- */
 interface AlertForm {
   title: string
   metric_type: string
@@ -346,32 +344,10 @@ interface AlertForm {
   description: string
 }
 
-/**
- * ECharts 选项类型
- */
-interface EChartOption {
-  tooltip?: any
-  legend?: any
-  grid?: any
-  xAxis?: any
-  yAxis?: any
-  series?: any[]
-}
-
-/**
- * Element Plus 标签类型
- */
-type TagType = 'info' | 'warning' | 'danger' | 'success' | ''
-
-/**
- * 风险等级
- */
+type TagType = "primary" | "success" | "warning" | "info" | "danger"
 type RiskLevel = '低' | '中' | '高' | '极高' | '未知'
 
-// ============================================
-// 响应式数据
-// ============================================
-
+// Reactive state
 const dashboard: Ref<RiskDashboard> = ref({
   var_95: 0,
   cvar_95: 0,
@@ -382,16 +358,12 @@ const dashboard: Ref<RiskDashboard> = ref({
 const historyPeriod: Ref<string> = ref('30d')
 const historyLoading: Ref<boolean> = ref(false)
 const metricsHistory: Ref<MetricsHistoryPoint[]> = ref([])
-
 const alertsLoading: Ref<boolean> = ref(false)
 const alerts: Ref<Alert[]> = ref([])
-
 const varLoading: Ref<boolean> = ref(false)
 const varData: Ref<VarCvarData[]> = ref([])
-
 const betaLoading: Ref<boolean> = ref(false)
 const betaData: Ref<BetaData[]> = ref([])
-
 const createAlertVisible: Ref<boolean> = ref(false)
 const createAlertLoading: Ref<boolean> = ref(false)
 const alertForm: Ref<AlertForm> = ref({
@@ -404,13 +376,7 @@ const alertForm: Ref<AlertForm> = ref({
 
 let chartInstance: ECharts | null = null
 
-// ============================================
-// 数据加载方法
-// ============================================
-
-/**
- * 加载仪表板数据
- */
+// Data loading methods
 const loadDashboard = async (): Promise<void> => {
   try {
     const response = await riskApi.getDashboard()
@@ -418,13 +384,10 @@ const loadDashboard = async (): Promise<void> => {
       dashboard.value = response.data.data
     }
   } catch (error: any) {
-    console.error('加载仪表板失败:', error)
+    console.error('Failed to load dashboard:', error)
   }
 }
 
-/**
- * 加载指标历史
- */
 const loadMetricsHistory = async (): Promise<void> => {
   historyLoading.value = true
   try {
@@ -436,16 +399,13 @@ const loadMetricsHistory = async (): Promise<void> => {
       renderChart()
     }
   } catch (error: any) {
-    console.error('加载历史数据失败:', error)
-    ElMessage.error('加载历史数据失败')
+    console.error('Failed to load history:', error)
+    ElMessage.error('FAILED TO LOAD HISTORICAL DATA')
   } finally {
     historyLoading.value = false
   }
 }
 
-/**
- * 加载告警列表
- */
 const loadAlerts = async (): Promise<void> => {
   alertsLoading.value = true
   try {
@@ -454,15 +414,12 @@ const loadAlerts = async (): Promise<void> => {
       alerts.value = response.data.data
     }
   } catch (error: any) {
-    console.error('加载告警失败:', error)
+    console.error('Failed to load alerts:', error)
   } finally {
     alertsLoading.value = false
   }
 }
 
-/**
- * 加载VaR/CVaR数据
- */
 const loadVarCvar = async (): Promise<void> => {
   varLoading.value = true
   try {
@@ -471,15 +428,12 @@ const loadVarCvar = async (): Promise<void> => {
       varData.value = response.data.data
     }
   } catch (error: any) {
-    console.error('加载VaR/CVaR失败:', error)
+    console.error('Failed to load VaR/CVaR:', error)
   } finally {
     varLoading.value = false
   }
 }
 
-/**
- * 加载Beta数据
- */
 const loadBeta = async (): Promise<void> => {
   betaLoading.value = true
   try {
@@ -488,19 +442,13 @@ const loadBeta = async (): Promise<void> => {
       betaData.value = response.data.data
     }
   } catch (error: any) {
-    console.error('加载Beta失败:', error)
+    console.error('Failed to load Beta:', error)
   } finally {
     betaLoading.value = false
   }
 }
 
-// ============================================
-// 图表渲染
-// ============================================
-
-/**
- * 渲染图表
- */
+// Chart rendering with Web3 colors
 const renderChart = (): void => {
   if (!metricsHistory.value || metricsHistory.value.length === 0) return
 
@@ -514,17 +462,20 @@ const renderChart = (): void => {
   const dates = metricsHistory.value.map(item => item.date)
   const varValues = metricsHistory.value.map(item => item.var_95)
   const cvarValues = metricsHistory.value.map(item => item.cvar_95)
-  const betaValues = metricsHistory.value.map(item => item.beta * 10) // 放大10倍以便显示
+  const betaValues = metricsHistory.value.map(item => item.beta * 10)
 
-  const option: EChartOption = {
+  const option: EChartsOption = {
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      axisPointer: {
-        type: 'cross'
-      }
+      axisPointer: { type: 'cross' },
+      backgroundColor: 'rgba(3, 3, 4, 0.95)',
+      borderColor: '#F7931A',
+      textStyle: { color: '#E5E7EB' }
     },
     legend: {
-      data: ['VaR (95%)', 'CVaR (95%)', 'Beta×10']
+      data: ['VaR (95%)', 'CVaR (95%)', 'Beta×10'],
+      textStyle: { color: '#E5E7EB' }
     },
     grid: {
       left: '3%',
@@ -535,11 +486,16 @@ const renderChart = (): void => {
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: dates
+      data: dates,
+      axisLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.5)' } },
+      axisLabel: { color: '#94A3B8', fontFamily: 'JetBrains Mono' }
     },
     yAxis: {
       type: 'value',
-      name: '风险值 (%)'
+      name: 'RISK VALUE (%)',
+      axisLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.5)' } },
+      axisLabel: { color: '#94A3B8', fontFamily: 'JetBrains Mono' },
+      splitLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.3)' } }
     },
     series: [
       {
@@ -547,21 +503,21 @@ const renderChart = (): void => {
         type: 'line',
         data: varValues,
         smooth: true,
-        itemStyle: { color: '#f56c6c' }
+        itemStyle: { color: '#F7931A' }
       },
       {
         name: 'CVaR (95%)',
         type: 'line',
         data: cvarValues,
         smooth: true,
-        itemStyle: { color: '#e6a23c' }
+        itemStyle: { color: '#FFD600' }
       },
       {
         name: 'Beta×10',
         type: 'line',
         data: betaValues,
         smooth: true,
-        itemStyle: { color: '#409eff' }
+        itemStyle: { color: '#22C55E' }
       }
     ]
   }
@@ -569,13 +525,7 @@ const renderChart = (): void => {
   chartInstance?.setOption(option)
 }
 
-// ============================================
-// 告警管理
-// ============================================
-
-/**
- * 显示创建告警对话框
- */
+// Alert management
 const showCreateAlertDialog = (): void => {
   alertForm.value = {
     title: '',
@@ -587,12 +537,9 @@ const showCreateAlertDialog = (): void => {
   createAlertVisible.value = true
 }
 
-/**
- * 创建告警
- */
 const handleCreateAlert = async (): Promise<void> => {
   if (!alertForm.value.title) {
-    ElMessage.warning('请输入告警名称')
+    ElMessage.warning('PLEASE ENTER ALERT NAME')
     return
   }
 
@@ -600,30 +547,24 @@ const handleCreateAlert = async (): Promise<void> => {
   try {
     const response = await riskApi.createAlert(alertForm.value)
     if (response.data.success) {
-      ElMessage.success('创建告警成功')
+      ElMessage.success('ALERT CREATED SUCCESSFULLY')
       createAlertVisible.value = false
       loadAlerts()
     } else {
-      ElMessage.error(response.data.message || '创建失败')
+      ElMessage.error(response.data.message || 'CREATION FAILED')
     }
   } catch (error: any) {
-    console.error('创建告警失败:', error)
-    ElMessage.error('创建告警失败')
+    console.error('Failed to create alert:', error)
+    ElMessage.error('FAILED TO CREATE ALERT')
   } finally {
     createAlertLoading.value = false
   }
 }
 
-/**
- * 查看告警详情
- */
 const viewAlertDetail = (alert: Alert): void => {
-  ElMessage.info(`查看告警详情: ${alert.title}`)
+  ElMessage.info(`VIEWING ALERT DETAILS: ${alert.title}`)
 }
 
-/**
- * 获取告警类型
- */
 const getAlertType = (level: AlertLevel): TagType => {
   const typeMap: Record<AlertLevel, TagType> = {
     low: 'info',
@@ -634,22 +575,13 @@ const getAlertType = (level: AlertLevel): TagType => {
   return typeMap[level] || 'info'
 }
 
-// ============================================
-// 工具函数
-// ============================================
-
-/**
- * 格式化时间
- */
+// Utility functions
 const formatTime = (time: string | Date): string => {
   if (!time) return '-'
   const date = new Date(time)
   return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
-/**
- * 获取风险等级
- */
 const getRiskLevel = (var95: number | null): RiskLevel => {
   if (!var95) return '未知'
   if (var95 > 10) return '极高'
@@ -658,20 +590,14 @@ const getRiskLevel = (var95: number | null): RiskLevel => {
   return '低'
 }
 
-/**
- * 获取风险等级标签类型
- */
 const getRiskLevelType = (var95: number | null): TagType => {
   if (!var95) return 'info'
   if (var95 > 10) return 'danger'
   if (var95 > 7) return 'warning'
-  if (var95 > 5) return ''
+  if (var95 > 5) return 'info'
   return 'success'
 }
 
-/**
- * 获取风险样式类
- */
 const getRiskClass = (value: number | null): string => {
   if (!value) return ''
   if (value > 10) return 'risk-critical'
@@ -680,9 +606,6 @@ const getRiskClass = (value: number | null): string => {
   return 'risk-low'
 }
 
-/**
- * Beta相关辅助函数 - 获取Beta样式类
- */
 const getBetaClass = (beta: number | null): string => {
   if (!beta) return ''
   if (beta > 1.5) return 'beta-high'
@@ -690,36 +613,24 @@ const getBetaClass = (beta: number | null): string => {
   return 'beta-normal'
 }
 
-/**
- * 获取Beta标签类型
- */
 const getBetaType = (beta: number | null): TagType => {
   if (!beta) return 'info'
   if (beta > 1.5) return 'danger'
   if (beta > 1.2) return 'warning'
   if (beta < 0.8) return 'success'
-  return ''
+  return 'primary'
 }
 
-/**
- * 获取Beta描述
- */
 const getBetaDescription = (beta: number | null): string => {
-  if (!beta) return '未知'
-  if (beta > 1.5) return '高波动'
-  if (beta > 1.2) return '较高波动'
-  if (beta > 0.8) return '正常'
-  if (beta > 0.5) return '低波动'
-  return '极低波动'
+  if (!beta) return 'UNKNOWN'
+  if (beta > 1.5) return 'HIGH VOLATILITY'
+  if (beta > 1.2) return 'MODERATE HIGH'
+  if (beta > 0.8) return 'NORMAL'
+  if (beta > 0.5) return 'LOW VOLATILITY'
+  return 'VERY LOW'
 }
 
-// ============================================
-// 生命周期
-// ============================================
-
-/**
- * 组件挂载
- */
+// Lifecycle
 onMounted((): void => {
   loadDashboard()
   loadMetricsHistory()
@@ -727,7 +638,6 @@ onMounted((): void => {
   loadVarCvar()
   loadBeta()
 
-  // 监听窗口大小变化
   window.addEventListener('resize', (): void => {
     if (chartInstance) {
       chartInstance.resize()
@@ -735,9 +645,6 @@ onMounted((): void => {
   })
 })
 
-/**
- * 组件卸载
- */
 onUnmounted((): void => {
   if (chartInstance) {
     chartInstance.dispose()
@@ -747,32 +654,100 @@ onUnmounted((): void => {
 </script>
 
 <style scoped lang="scss">
-.risk-monitor {
-  padding: 20px;
+.web3-risk-monitor {
+  min-height: 100vh;
+  padding: 24px;
+  background: #030304;
+
+  // Grid pattern background mixin equivalent
+  .grid-bg {
+    position: relative;
+    background-image:
+      linear-gradient(rgba(247, 147, 26, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247, 147, 26, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 
   .page-header {
-    margin-bottom: 20px;
-
-    h1 {
-      font-size: 28px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
-    }
+    margin-bottom: 32px;
+    text-align: center;
 
     .subtitle {
+      margin-top: 8px;
       font-size: 14px;
-      color: #909399;
-      margin: 0;
+      color: #94A3B8;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
   }
 
   .metrics-overview {
+    margin-bottom: 24px;
+
     .metric-card {
-      .metric-description {
-        font-size: 12px;
-        color: #909399;
-        margin-top: 8px;
+      position: relative;
+      transition: all 0.3s ease;
+
+      &.hover-lift:hover {
+        transform: translateY(-4px);
+        border-color: rgba(247, 147, 26, 0.5);
+        box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
+      }
+
+      .metric-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+
+        .metric-icon-wrapper {
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 12px;
+          background: rgba(247, 147, 26, 0.1);
+
+          .metric-icon {
+            font-size: 28px;
+            color: #F7931A;
+          }
+
+          &.risk-cvar .metric-icon { color: #FFD600; }
+          &.risk-beta .metric-icon { color: #3B82F6; }
+          &.risk-alert .metric-icon { color: #22C55E; }
+        }
+
+        .metric-info {
+          flex: 1;
+
+          .metric-label {
+            font-size: 12px;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+          }
+
+          .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
+
+            &.orange-glow { color: #F7931A; }
+            &.yellow-glow { color: #FFD600; }
+            &.blue-glow { color: #3B82F6; }
+            &.green-glow { color: #22C55E; }
+          }
+
+          .metric-description {
+            font-size: 11px;
+            color: #64748B;
+          }
+        }
       }
     }
   }
@@ -781,19 +756,69 @@ onUnmounted((): void => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #F7931A;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
   }
 
   .chart-container {
-    padding: 10px 0;
+    padding: 16px;
+    border-radius: 8px;
   }
 
   .alerts-list {
     .alert-item {
       padding: 12px;
-      border-bottom: 1px solid #ebeef5;
+      border: 1px solid rgba(30, 41, 59, 0.5);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+
+      &.corner-border {
+        position: relative;
+
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-color: #F7931A;
+          border-style: solid;
+        }
+
+        &::before {
+          top: -1px;
+          left: -1px;
+          border-width: 2px 0 0 2px;
+          border-radius: 4px 0 0 0;
+        }
+
+        &::after {
+          bottom: -1px;
+          right: -1px;
+          border-width: 0 2px 2px 0;
+          border-radius: 0 0 4px 0;
+        }
+
+        &:hover {
+          border-color: rgba(247, 147, 26, 0.3);
+        }
+      }
 
       &:last-child {
-        border-bottom: none;
+        margin-bottom: 0;
       }
 
       .alert-header {
@@ -804,7 +829,8 @@ onUnmounted((): void => {
 
         .alert-time {
           font-size: 12px;
-          color: #909399;
+          color: #94A3B8;
+          font-family: 'JetBrains Mono', monospace;
         }
       }
 
@@ -814,13 +840,13 @@ onUnmounted((): void => {
         .alert-title {
           font-size: 14px;
           font-weight: 500;
-          color: #303133;
+          color: #E5E7EB;
           margin: 0 0 4px 0;
         }
 
         .alert-description {
           font-size: 12px;
-          color: #606266;
+          color: #94A3B8;
           margin: 0;
         }
       }
@@ -835,38 +861,96 @@ onUnmounted((): void => {
     padding: 20px;
   }
 
-  // 风险等级颜色
+  // Risk level colors
   .risk-critical {
-    color: #f56c6c;
+    color: #F7931A;
     font-weight: 600;
   }
 
   .risk-high {
-    color: #e6a23c;
+    color: #FFD600;
     font-weight: 600;
   }
 
   .risk-medium {
-    color: #409eff;
+    color: #3B82F6;
   }
 
   .risk-low {
-    color: #67c23a;
+    color: #22C55E;
   }
 
-  // Beta系数颜色
+  // Beta coefficient colors
   .beta-high {
-    color: #f56c6c;
+    color: #F7931A;
     font-weight: 600;
   }
 
   .beta-low {
-    color: #67c23a;
+    color: #22C55E;
     font-weight: 600;
   }
 
   .beta-normal {
-    color: #606266;
+    color: #94A3B8;
+  }
+
+  // Web3 table styling
+  .web3-table {
+    background: transparent;
+
+    :deep(.el-table__header) {
+      th {
+        background: rgba(30, 41, 59, 0.5) !important;
+        color: #F7931A !important;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(247, 147, 26, 0.3) !important;
+      }
+    }
+
+    :deep(.el-table__body) {
+      tr {
+        background: transparent !important;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: rgba(247, 147, 26, 0.05) !important;
+        }
+
+        td {
+          border-bottom: 1px solid rgba(30, 41, 59, 0.5) !important;
+          color: #E5E7EB;
+        }
+      }
+    }
+  }
+
+  .web3-select,
+  .web3-input-number {
+    :deep(.el-input__wrapper) {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(30, 41, 59, 0.5);
+      box-shadow: none;
+
+      &:hover {
+        border-color: rgba(247, 147, 26, 0.3);
+      }
+    }
+
+    :deep(.el-input__inner) {
+      color: #E5E7EB;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  }
+
+  .web3-tag {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    font-size: 11px;
+    border: 1px solid rgba(247, 147, 26, 0.3);
+    background: rgba(247, 147, 26, 0.1);
   }
 }
 </style>

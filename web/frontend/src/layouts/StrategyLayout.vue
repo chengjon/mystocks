@@ -399,6 +399,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
+import {
+  Plus,
+  VideoPlay,
+  Refresh,
+  Odometer,
+  TrendCharts,
+  MagicStick
+} from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 
@@ -465,7 +473,7 @@ const selectedTimeRange: Ref<string> = ref('1y')
 const selectedSort: Ref<string> = ref('return')
 const selectedStrategies: Ref<any[]> = ref([])
 const isRefreshing: Ref<boolean> = ref(false)
-const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
+const refreshInterval: Ref<ReturnType<typeof setInterval> | null> = ref(null)
 
 // Strategy statistics
 const strategyStats: Ref<StrategyStats> = ref({

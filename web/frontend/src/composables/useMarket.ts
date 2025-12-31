@@ -8,7 +8,7 @@
 import { ref, readonly, onMounted } from 'vue';
 import { marketApiService } from '@/api/services/marketService';
 import { MarketAdapter } from '@/api/adapters/marketAdapter';
-import { CacheManager } from '@/utils/cache';
+import { getCache } from '@/utils/cache';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/market';
 
 /**
@@ -49,7 +49,7 @@ export function useMarket(options?: {
   const error = ref<string | null>(null);
 
   // Cache manager instance
-  const cache = new CacheManager('market-api');
+  const cache = getCache('market-api');
 
   /**
    * Fetch market overview with caching and automatic fallback
@@ -65,7 +65,7 @@ export function useMarket(options?: {
     try {
       // Try cache first (if enabled and not forcing refresh)
       if (enableCache && !forceRefresh) {
-        const cached = cache.get<MarketOverviewVM>(cacheKey);
+        const cached = cache.get(cacheKey) as MarketOverviewVM | undefined;
         if (cached) {
           console.log('[useMarket] ✅ Market Overview from cache');
           marketOverview.value = cached;
@@ -75,15 +75,41 @@ export function useMarket(options?: {
 
       console.log('[useMarket] 🔄 Fetching Market Overview from API...');
 
-      // Call API service
-      const response = await marketApiService.getMarketOverview();
+      // Parallel fetch to gather all data for the Dashboard VM
+      const [overviewRes, etfRes, chipRes, lhbRes] = await Promise.all([
+        marketApiService.getMarketOverview(),
+        marketApiService.getETFList({ limit: 10 }),
+        marketApiService.getChipRace({ limit: 10 }),
+        marketApiService.getLongHuBang() // Removed limit parameter
+      ]);
 
-      // Adapt data (includes automatic Mock fallback)
-      const vm = MarketAdapter.adaptMarketOverview(response);
+      // Adapt Overview
+      const vm = MarketAdapter.adaptMarketOverview(overviewRes);
 
-      // Validate adapted data
+      // Validate adapted data (basic check)
       if (!MarketAdapter.validateMarketOverview(vm)) {
         throw new Error('Invalid market overview data');
+      }
+
+      // Merge ETF data if available
+      if (etfRes.success && etfRes.data && etfRes.data.etfs) {
+          vm.topEtfs = etfRes.data.etfs.map(etf => ({
+              symbol: etf.symbol || '',
+              name: etf.name || '',
+              latestPrice: etf.price || 0,
+              changePercent: etf.change_percent || 0,
+              volume: etf.volume || 0
+          }));
+      }
+
+      // Merge Chip Race data
+      if (chipRes.success) {
+          vm.chipRaces = MarketAdapter.adaptChipRace(chipRes);
+      }
+
+      // Merge Long Hu Bang data
+      if (lhbRes.success) {
+          vm.longHuBang = MarketAdapter.adaptLongHuBang(lhbRes);
       }
 
       // Cache the result
@@ -98,7 +124,9 @@ export function useMarket(options?: {
       error.value = `获取市场概览失败: ${errorMsg}`;
       console.error('[useMarket] fetchMarketOverview error:', err);
 
-      // Adapter already handles Mock fallback, so no need for additional fallback here
+      // Adapter handles Mock fallback for individual calls, but since we are assembling,
+      // if the main overview fails, the adapter returns mock overview.
+      // If separate calls fail, we just have empty lists for those sections (safe).
     } finally {
       loading.value = false;
     }
@@ -111,10 +139,11 @@ export function useMarket(options?: {
    * @param forceRefresh - Force refresh from API, bypassing cache
    */
   const fetchFundFlow = async (
-    params?: {
-      startDate?: string;
-      endDate?: string;
-      market?: string;
+    params: {
+      symbol: string;
+      timeframe?: "1" | "3" | "5" | "10";
+      start_date?: string;
+      end_date?: string;
     },
     forceRefresh = false
   ) => {
@@ -126,17 +155,12 @@ export function useMarket(options?: {
     try {
       // Try cache first (if enabled and not forcing refresh)
       if (enableCache && !forceRefresh) {
-        const cached = cache.get<FundFlowChartPoint[]>(cacheKey);
+        const cached = cache.get(cacheKey) as FundFlowChartPoint[] | undefined;
         if (cached) {
           console.log('[useMarket] ✅ Fund Flow from cache');
           fundFlowData.value = cached;
           return;
         }
-      }
-
-      // Validate parameters
-      if (!MarketAdapter.validateFundFlowParams(params || {})) {
-        throw new Error('Invalid fund flow parameters');
       }
 
       console.log('[useMarket] 🔄 Fetching Fund Flow from API...');
@@ -158,8 +182,6 @@ export function useMarket(options?: {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取资金流向失败: ${errorMsg}`;
       console.error('[useMarket] fetchFundFlow error:', err);
-
-      // Adapter already handles Mock fallback
     } finally {
       loading.value = false;
     }
@@ -174,7 +196,7 @@ export function useMarket(options?: {
   const fetchKLineData = async (
     params: {
       symbol: string;
-      interval: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M';
+      interval: '1m' | '5m' | '15m' | '30m' | '1h' | '1d';
       startDate?: string;
       endDate?: string;
       limit?: number;
@@ -189,7 +211,7 @@ export function useMarket(options?: {
     try {
       // Try cache first (if enabled and not forcing refresh)
       if (enableCache && !forceRefresh) {
-        const cached = cache.get<KLineChartData>(cacheKey);
+        const cached = cache.get(cacheKey) as KLineChartData | undefined;
         if (cached) {
           console.log('[useMarket] ✅ K-Line from cache');
           klineData.value = cached;
@@ -197,15 +219,19 @@ export function useMarket(options?: {
         }
       }
 
-      // Validate parameters
-      if (!MarketAdapter.validateKLineParams(params)) {
-        throw new Error('Invalid K-line parameters');
-      }
+      // Adapt parameters for API (startDate -> start_date)
+      const apiParams = {
+        symbol: params.symbol,
+        interval: params.interval,
+        start_date: params.startDate,
+        end_date: params.endDate,
+        limit: params.limit
+      };
 
       console.log(`[useMarket] 🔄 Fetching K-Line for ${params.symbol} from API...`);
 
       // Call API service
-      const response = await marketApiService.getKLineData(params);
+      const response = await marketApiService.getKLineData(apiParams);
 
       // Adapt data (includes automatic Mock fallback)
       const vm = MarketAdapter.adaptKLineData(response);
@@ -221,8 +247,6 @@ export function useMarket(options?: {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取K线数据失败: ${errorMsg}`;
       console.error('[useMarket] fetchKLineData error:', err);
-
-      // Adapter already handles Mock fallback
     } finally {
       loading.value = false;
     }

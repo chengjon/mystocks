@@ -63,13 +63,13 @@
         <div class="active-title">已选指标</div>
         <div class="active-list">
           <div
-            v-for="indicator in activeIndicators"
-            :key="indicator.type"
+            v-for="[key, indicator] in activeIndicators"
+            :key="key"
             class="active-item"
           >
             <span class="active-name">{{ indicator.shortName }}</span>
             <span class="active-params">({{ indicator.params.join(', ') }})</span>
-            <button class="active-remove" @click="removeIndicator(indicator.type)">×</button>
+            <button class="active-remove" @click="removeIndicator(key)">×</button>
           </div>
         </div>
       </div>

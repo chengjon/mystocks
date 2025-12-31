@@ -9,9 +9,11 @@
       <!-- Logo Area -->
       <div class="sidebar-logo">
         <transition name="logo-fade">
-          <h1 v-if="!isCollapsed" class="logo-text">MyStocks</h1>
+          <h1 v-if="!isCollapsed" class="logo-text">MYSTOCKS</h1>
           <h1 v-else class="logo-text-short">MS</h1>
         </transition>
+        <!-- Web3 gradient line under logo -->
+        <div v-if="!isCollapsed" class="logo-divider"></div>
       </div>
 
       <!-- Menu Items -->
@@ -20,8 +22,8 @@
         :collapse="isCollapsed"
         :unique-opened="true"
         background-color="transparent"
-        text-color="var(--text-secondary)"
-        active-text-color="var(--color-primary)"
+        text-color="var(--web3-fg-secondary)"
+        active-text-color="var(--web3-accent-primary)"
         class="sidebar-menu"
         @select="handleMenuSelect"
       >
@@ -145,6 +147,9 @@
           <template #title>系统设置</template>
         </el-menu-item>
       </el-menu>
+
+      <!-- Web3 corner decoration (bottom of sidebar) -->
+      <div class="sidebar-footer-decoration"></div>
     </el-aside>
 
     <!-- Main Container -->
@@ -174,9 +179,6 @@
         </div>
 
         <div class="header-right">
-          <!-- Theme Toggle (Future) -->
-          <!-- <el-icon class="header-action"><Sunny /></el-icon> -->
-
           <!-- Notifications -->
           <el-badge :value="notificationCount" :hidden="notificationCount === 0" class="header-action">
             <el-icon><Bell /></el-icon>
@@ -229,40 +231,49 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // ============================================
-// 类型定义
+//   COMPONENT: MainLayout (Web3 Redesign)
+//   Bitcoin DeFi Web3 Style Main Layout
+//
+//   Design Philosophy:
+//   - True void background (#030304)
+//   - Grid pattern (blockchain network effect)
+//   - Orange active states
+//   - Glass morphism header
+//   - Rounded corners (16px)
 // ============================================
 
-/**
- * 面包屑导航项
- */
+// ============================================
+//   TYPE DEFINITIONS - 类型定义
+// ============================================
+
 interface BreadcrumbItem {
   path: string
   title: string
 }
 
-/**
- * 用户命令类型
- */
 type UserCommand = 'profile' | 'settings' | 'logout'
 
 // ============================================
-// Composables
+//   COMPOSABLES - 组合式函数
 // ============================================
+
 const route = useRoute()
 const router = useRouter()
 
 // ============================================
-// State
+//   STATE - 响应式状态
 // ============================================
+
 const isCollapsed: Ref<boolean> = ref(false)
 const notificationCount: Ref<number> = ref(0)
 const username: Ref<string> = ref('Admin')
 
 // ============================================
-// Computed Properties
+//   COMPUTED PROPERTIES - 计算属性
 // ============================================
+
 const sidebarWidth: ComputedRef<string> = computed((): string => {
-  return isCollapsed.value ? '64px' : '220px'
+  return isCollapsed.value ? '64px' : '240px'
 })
 
 const activeMenu: ComputedRef<string> = computed((): string => {
@@ -278,8 +289,9 @@ const breadcrumbs: ComputedRef<BreadcrumbItem[]> = computed((): BreadcrumbItem[]
 })
 
 // ============================================
-// Methods
+//   METHODS - 方法
 // ============================================
+
 const toggleSidebar = (): void => {
   isCollapsed.value = !isCollapsed.value
 }
@@ -319,158 +331,286 @@ const handleUserCommand = async (command: UserCommand): Promise<void> => {
 }
 
 // ============================================
-// Lifecycle
+//   LIFECYCLE - 生命周期
 // ============================================
-// Watch for route changes to update active menu
+
 watch(() => route.path, (newPath: string): void => {
   console.log('Route changed:', newPath)
 }, { immediate: true })
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/web3-tokens.scss';
+
 // ============================================
-// Main Layout Container
+//   GRID PATTERN BACKGROUND
+//   Blockchain network effect
 // ============================================
+
+@mixin web3-grid-bg {
+  background-color: var(--web3-bg-primary);
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+// ============================================
+//   MAIN LAYOUT CONTAINER - 主布局容器
+//   Web3 grid pattern background
+// ============================================
+
 .main-layout {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: var(--bg-primary);
+
+  // MANDATORY: Grid pattern background
+  @include web3-grid-bg;
 }
 
 // ============================================
-// Sidebar Styles
+//   SIDEBAR STYLES - 侧边栏样式
+//   Dark matter background, grid pattern
 // ============================================
+
 .layout-sidebar {
-  background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-base);
-  transition: width var(--transition-base);
+  // MANDATORY: Dark matter background
+  background-color: var(--web3-bg-surface);
+
+  // MANDATORY: Ultra-thin border (white/10)
+  border-right: 1px solid var(--web3-border-subtle);
+
+  // Smooth width transition
+  transition: width var(--web3-duration-base) var(--web3-ease-out);
+
+  // Position relative for decorations
+  position: relative;
   overflow-x: hidden;
   overflow-y: auto;
 
-  // Custom scrollbar
+  // Custom scrollbar (Web3 themed)
   &::-webkit-scrollbar {
     width: 6px;
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--bg-primary);
+    background: var(--web3-bg-primary);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--border-base);
-    border-radius: 3px;
+    background: rgba(247, 147, 26, 0.3);
+    border-radius: var(--web3-radius-sm);
 
     &:hover {
-      background: var(--border-light);
+      background: var(--web3-accent-primary);
     }
   }
 
-  &.is-collapsed {
-    .sidebar-logo {
-      .logo-text {
-        display: none;
-      }
-
-      .logo-text-short {
-        display: block;
-      }
-    }
+  // Grid pattern overlay (subtle)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: 50px 50px;
+    background-image:
+      linear-gradient(to right, rgba(30, 41, 59, 0.3) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(30, 41, 59, 0.3) 1px, transparent 1px);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
   }
 }
+
+// ============================================
+//   LOGO AREA - Logo区域
+//   Space Grotesk font, gradient text
+// ============================================
 
 .sidebar-logo {
-  height: 60px;
+  height: 80px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid var(--border-dark);
-  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
-
-  .logo-text {
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-    margin: 0;
-    letter-spacing: 1px;
-    display: block;
-  }
-
-  .logo-text-short {
-    font-size: 20px;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-    margin: 0;
-    display: none;
-  }
-
-  .logo-fade-enter-active,
-  .logo-fade-leave-active {
-    transition: opacity var(--transition-base);
-  }
-
-  .logo-fade-enter-from,
-  .logo-fade-leave-to {
-    opacity: 0;
-  }
+  border-bottom: 1px solid var(--web3-border-subtle);
+  background: linear-gradient(
+    180deg,
+    var(--web3-bg-surface) 0%,
+    rgba(15, 17, 21, 0.5) 100%
+  );
+  position: relative;
+  padding: var(--web3-spacing-4);
+  z-index: 1;
 }
+
+.logo-text {
+  // MANDATORY: Space Grotesk font (heading)
+  font-family: var(--web3-font-heading);
+
+  // MANDATORY: Uppercase
+  text-transform: uppercase;
+  letter-spacing: var(--web3-tracking-wider);
+
+  // MANDATORY: Gradient text (orange to gold)
+  background: var(--web3-gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  // Size and weight
+  font-size: var(--web3-text-2xl);
+  font-weight: var(--web3-weight-bold);
+
+  margin: 0;
+  display: block;
+  line-height: var(--web3-leading-tight);
+}
+
+.logo-text-short {
+  font-family: var(--web3-font-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--web3-tracking-wider);
+
+  // Gradient text
+  background: var(--web3-gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  font-size: var(--web3-text-xl);
+  font-weight: var(--web3-weight-bold);
+  margin: 0;
+  display: none;
+  line-height: var(--web3-leading-tight);
+}
+
+// MANDATORY: Gradient line under logo
+.logo-divider {
+  width: 60%;
+  height: 2px;
+  background: var(--web3-gradient-orange);
+  margin-top: var(--web3-spacing-2);
+  border-radius: var(--web3-radius-full);
+}
+
+// Logo transition
+.logo-fade-enter-active,
+.logo-fade-leave-active {
+  transition: opacity var(--web3-duration-base);
+}
+
+.logo-fade-enter-from,
+.logo-fade-leave-to {
+  opacity: 0;
+}
+
+// ============================================
+//   SIDEBAR MENU - 侧边栏菜单
+//   Web3 hover effects (orange glow)
+// ============================================
 
 .sidebar-menu {
   border-right: none;
-  padding: var(--spacing-sm) 0;
+  padding: var(--web3-spacing-4) 0;
+  position: relative;
+  z-index: 1;
 
   // Menu item hover effect
   :deep(.el-menu-item),
   :deep(.el-sub-menu__title) {
-    margin: 0 var(--spacing-sm);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
+    margin: 0 var(--web3-spacing-3);
+
+    // MANDATORY: Rounded corners (8px)
+    border-radius: var(--web3-radius-sm);
+
+    // Web3 typography
+    text-transform: uppercase;
+    letter-spacing: var(--web3-tracking-wide);
+    font-size: var(--web3-text-sm);
+
+    color: var(--web3-fg-secondary);
+
+    transition: all var(--web3-duration-base) var(--web3-ease-out);
 
     &:hover {
-      background-color: var(--bg-hover);
-      color: var(--text-primary);
+      background-color: rgba(247, 147, 26, 0.1);
+      color: var(--web3-accent-primary);
     }
   }
 
-  // Active menu item
+  // Active menu item (MANDATORY: Orange with glow)
   :deep(.el-menu-item.is-active) {
-    background-color: var(--color-primary-bg);
-    color: var(--color-primary);
-    font-weight: var(--font-weight-medium);
+    background: linear-gradient(90deg, rgba(247, 147, 26, 0.15), transparent);
+    color: var(--web3-accent-primary);
+    font-weight: var(--web3-weight-semibold);
+
+    // MANDATORY: Orange glow on active item
+    box-shadow: 0 0 20px -5px rgba(247, 147, 26, 0.3);
 
     &::before {
       content: '';
       position: absolute;
       left: 0;
-      top: 0;
-      bottom: 0;
+      top: 50%;
+      transform: translateY(-50%);
       width: 3px;
-      background-color: var(--color-primary);
-      border-radius: 0 2px 2px 0;
+      height: 60%;
+      background: var(--web3-accent-primary);
+      border-radius: 0 var(--web3-radius-full) var(--web3-radius-full) 0;
     }
   }
 
   // Submenu
   :deep(.el-sub-menu) {
     .el-sub-menu__title {
-      margin: 0 var(--spacing-sm);
-      border-radius: var(--radius-md);
+      margin: 0 var(--web3-spacing-3);
+      border-radius: var(--web3-radius-sm);
     }
 
     .el-menu {
-      background-color: var(--bg-card);
+      background-color: rgba(3, 3, 4, 0.5);
 
       .el-menu-item {
         padding-left: 48px !important;
-        margin: 0 var(--spacing-sm);
+        margin: 0 var(--web3-spacing-3);
+
+        // Nested item styling
+        font-size: var(--web3-text-xs);
+        letter-spacing: var(--web3-tracking-normal);
       }
     }
   }
 }
 
 // ============================================
-// Main Container
+//   SIDEBAR FOOTER DECORATION - 底部装饰
+//   Bitcoin orange corner embellishment
 // ============================================
+
+.sidebar-footer-decoration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-bottom: 2px solid var(--web3-accent-primary);
+  border-right: 2px solid var(--web3-accent-primary);
+  border-bottom-right-radius: 4px;
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+// ============================================
+//   MAIN CONTAINER - 主容器
+// ============================================
+
 .layout-main-container {
   flex: 1;
   display: flex;
@@ -479,53 +619,78 @@ watch(() => route.path, (newPath: string): void => {
 }
 
 // ============================================
-// Header Styles
+//   HEADER STYLES - 顶部导航栏样式
+//   Glass morphism, orange accents
 // ============================================
+
 .layout-header {
-  height: 60px;
-  padding: 0 var(--spacing-lg);
+  height: 64px;
+  padding: 0 var(--web3-spacing-6);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--bg-card);
-  border-bottom: 1px solid var(--border-base);
-  box-shadow: var(--shadow-1);
-  z-index: var(--z-index-sticky);
+
+  // MANDATORY: Glass morphism
+  background: var(--web3-bg-glass-light);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  // MANDATORY: Ultra-thin border (bottom)
+  border-bottom: 1px solid var(--web3-border-subtle);
+
+  z-index: var(--web3-z-sticky);
+
+  // Position relative for effects
+  position: relative;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--web3-spacing-6);
 }
 
+// Collapse toggle
 .collapse-toggle {
   font-size: 20px;
-  color: var(--text-secondary);
+  color: var(--web3-fg-secondary);
   cursor: pointer;
-  transition: color var(--transition-base);
+  padding: var(--web3-spacing-2);
+  border-radius: var(--web3-radius-sm);
+  transition: all var(--web3-duration-base);
 
   &:hover {
-    color: var(--color-primary);
+    color: var(--web3-accent-primary);
+    background: var(--web3-bg-glass-light);
+    box-shadow: var(--web3-glow-orange-sm);
   }
 }
 
+// Breadcrumb (monospace font)
 .breadcrumb {
   :deep(.el-breadcrumb__item) {
     .el-breadcrumb__inner {
-      color: var(--text-secondary);
-      font-weight: var(--font-weight-normal);
+      color: var(--web3-fg-secondary);
+      font-weight: var(--web3-weight-normal);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
+      font-size: var(--web3-text-xs);
+      font-family: var(--web3-font-mono);
 
       &:hover {
-        color: var(--color-primary);
+        color: var(--web3-accent-primary);
       }
     }
 
     &:last-child {
       .el-breadcrumb__inner {
-        color: var(--text-primary);
-        font-weight: var(--font-weight-medium);
+        color: var(--web3-accent-primary);
+        font-weight: var(--web3-weight-semibold);
       }
+    }
+
+    .el-breadcrumb__separator {
+      color: var(--web3-fg-muted);
     }
   }
 }
@@ -533,89 +698,105 @@ watch(() => route.path, (newPath: string): void => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--web3-spacing-4);
 }
 
 .header-action {
   font-size: 20px;
-  color: var(--text-secondary);
+  color: var(--web3-fg-secondary);
   cursor: pointer;
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
+  padding: var(--web3-spacing-2);
+  border-radius: var(--web3-radius-sm);
+  transition: all var(--web3-duration-base);
 
   &:hover {
-    color: var(--color-primary);
-    background-color: var(--bg-hover);
+    color: var(--web3-accent-primary);
+    background: var(--web3-bg-glass-light);
   }
 }
 
+// User dropdown (glass morphism)
 .user-dropdown {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-lg);
+  gap: var(--web3-spacing-2);
+  padding: var(--web3-spacing-1) var(--web3-spacing-2);
+
+  // MANDATORY: Rounded corners (pill)
+  border-radius: var(--web3-radius-full);
+
   cursor: pointer;
-  transition: background-color var(--transition-base);
+  transition: all var(--web3-duration-base);
+  border: 1px solid transparent;
 
   &:hover {
-    background-color: var(--bg-hover);
+    background: var(--web3-bg-glass-light);
+    border-color: var(--web3-border-hover);
   }
 
   .user-avatar {
-    background-color: var(--color-primary);
-    color: var(--text-primary);
+    background: var(--web3-accent-primary);
+    color: var(--web3-bg-primary);
   }
 
   .username {
-    color: var(--text-primary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    color: var(--web3-fg-primary);
+    font-size: var(--web3-text-sm);
+    font-weight: var(--web3-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--web3-tracking-wide);
+    font-family: var(--web3-font-heading);
   }
 
   .dropdown-arrow {
     font-size: 12px;
-    color: var(--text-tertiary);
+    color: var(--web3-fg-secondary);
   }
 }
 
 // ============================================
-// Main Content Styles
+//   MAIN CONTENT - 主内容区域
+//   Grid pattern background
 // ============================================
+
 .layout-main {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--spacing-lg);
-  background-color: var(--bg-primary);
+  padding: var(--web3-spacing-6);
 
-  // Custom scrollbar
+  // MANDATORY: Grid pattern background
+  @include web3-grid-bg;
+
+  // Custom scrollbar (Web3 themed)
   &::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--bg-primary);
+    background: var(--web3-bg-primary);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--border-base);
-    border-radius: var(--radius-md);
+    background: rgba(247, 147, 26, 0.3);
+    border: 1px solid var(--web3-accent-primary);
+    border-radius: var(--web3-radius-sm);
 
     &:hover {
-      background: var(--border-light);
+      background: var(--web3-accent-primary);
     }
   }
 }
 
 // ============================================
-// Page Transition Animation
+//   PAGE TRANSITION - 页面切换动画
+//   Fast, smooth transitions
 // ============================================
+
 .fade-transform-enter-active,
 .fade-transform-leave-active {
-  transition: all var(--transition-base);
+  transition: all var(--web3-duration-base) var(--web3-ease-out);
 }
 
 .fade-transform-enter-from {
@@ -629,20 +810,28 @@ watch(() => route.path, (newPath: string): void => {
 }
 
 // ============================================
-// Responsive Design
+//   RESPONSIVE DESIGN - 响应式设计
+//   Mobile optimization
 // ============================================
+
 @media (max-width: 768px) {
   .layout-sidebar {
     position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: var(--z-index-fixed);
+    z-index: var(--web3-z-fixed);
     transform: translateX(-100%);
+    transition: transform var(--web3-duration-base) var(--web3-ease-out);
 
     &.mobile-open {
       transform: translateX(0);
     }
+  }
+
+  .layout-header {
+    height: 56px;
+    padding: 0 var(--web3-spacing-4);
   }
 
   .header-right {
@@ -652,17 +841,21 @@ watch(() => route.path, (newPath: string): void => {
   }
 
   .layout-main {
-    padding: var(--spacing-md);
+    padding: var(--web3-spacing-4);
+  }
+
+  .breadcrumb {
+    display: none;
   }
 }
 
 @media (max-width: 576px) {
   .layout-header {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--web3-spacing-3);
   }
 
-  .breadcrumb {
-    display: none;
+  .logo-text {
+    font-size: var(--web3-text-xl);
   }
 }
 </style>

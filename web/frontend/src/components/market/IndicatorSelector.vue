@@ -128,16 +128,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { TrendCharts } from '@element-plus/icons-vue'
-import type { Indicator } from './ProKLineChart'
-
-/**
- * 指标元数据
- */
-interface IndicatorMeta extends Indicator {
-  description: string
-  category: 'trend' | 'momentum' | 'volatility' | 'volume'
-  params?: number[]
-}
+import type { IndicatorMeta } from '@/types/indicators'
 
 /**
  * 组件Props

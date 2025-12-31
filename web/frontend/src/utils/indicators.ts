@@ -12,7 +12,6 @@ import {
   RSI,
   Stochastic,
   BollingerBands,
-  AT,
   ATR,
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
   WMA
@@ -104,13 +103,13 @@ export function calculateMACD(data: KLineDataPoint[]): {
     fastPeriod: 12,
     slowPeriod: 26,
     signalPeriod: 9,
-    SimpleMAOscillator: false,
+    SimpleMASignal: false,
     StandardDeviation: 1,
     MovingAverageType: 'SMA' as const
   }
 
   try {
-    const macdData = MACD.calculate(macdInput)
+    const macdData = MACD.calculate(macdInput as any)
 
     // 替换无效值而非过滤，保持长度一致
     const macd = macdData.map(d => isFinite(d.MACD) ? d.MACD : 0)
@@ -197,8 +196,7 @@ export function calculateBOLL(
   const bollInput = {
     period,
     values: closePrices,
-    stdDevUp: stdDev,
-    stdDevDown: stdDev
+    stdDev: stdDev
   }
 
   const bollData = BollingerBands.calculate(bollInput)

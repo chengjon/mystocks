@@ -1,188 +1,150 @@
 <template>
-  <div class="backtest-analysis">
-    <!-- 回测配置 -->
-    <el-card class="config-card">
+  <div class="web3-backtest-analysis">
+    <!-- Page Header with Gradient Text -->
+    <div class="page-header">
+      <h1 class="text-4xl font-heading font-semibold">
+        <span class="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
+          BACKTEST ANALYSIS
+        </span>
+      </h1>
+      <p class="subtitle">QUANTITATIVE STRATEGY BACKTESTING | PERFORMANCE METRICS | RETURN ANALYTICS</p>
+    </div>
+
+    <!-- Backtest Configuration -->
+    <Web3Card class="config-card hover-lift corner-border">
       <template #header>
         <div class="card-header">
-          <span>回测配置</span>
-          <el-button type="primary" size="small" @click="runBacktest" :loading="running">
-            <el-icon><VideoPlay /></el-icon> 运行回测
-          </el-button>
+          <span class="section-title">I. BACKTEST CONFIGURATION</span>
+          <Web3Button variant="primary" size="sm" @click="runBacktest" :loading="running">
+            <el-icon><VideoPlay /></el-icon> RUN BACKTEST
+          </Web3Button>
         </div>
       </template>
 
-      <el-form :model="configForm" label-width="100px" :inline="true">
-        <el-form-item label="策略">
-          <el-select v-model="configForm.strategy_code" placeholder="选择策略" style="width: 200px">
-            <el-option
-              v-for="strategy in strategies"
-              :key="strategy.strategy_code"
-              :label="strategy.strategy_name_cn"
-              :value="strategy.strategy_code"
-            />
+      <el-form :model="configForm" label-width="100px" :inline="true" class="config-form">
+        <el-form-item label="STRATEGY">
+          <el-select v-model="configForm.strategy_code" placeholder="SELECT STRATEGY" class="web3-select" style="width: 200px">
+            <el-option v-for="strategy in strategies" :key="strategy.strategy_code" :label="strategy.strategy_name_cn" :value="strategy.strategy_code" />
           </el-select>
         </el-form-item>
-
-        <el-form-item label="股票代码">
-          <el-input v-model="configForm.symbol" placeholder="如: 600519" style="width: 150px" />
+        <el-form-item label="SYMBOL">
+          <Web3Input v-model="configForm.symbol" placeholder="600519" style="width: 150px" />
         </el-form-item>
-
-        <el-form-item label="回测周期">
-          <el-date-picker
-            v-model="configForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            style="width: 260px"
-          />
+        <el-form-item label="DATE RANGE">
+          <el-date-picker v-model="configForm.dateRange" type="daterange" range-separator="TO" start-placeholder="START" end-placeholder="END" format="YYYY-MM-DD" value-format="YYYY-MM-DD" class="web3-date-picker" style="width: 260px" />
         </el-form-item>
-
-        <el-form-item label="初始资金">
-          <el-input-number
-            v-model="configForm.initial_capital"
-            :min="10000"
-            :max="100000000"
-            :step="10000"
-            style="width: 150px"
-          />
+        <el-form-item label="CAPITAL">
+          <el-input-number v-model="configForm.initial_capital" :min="10000" :max="100000000" :step="10000" class="web3-input-number" style="width: 150px" />
         </el-form-item>
-
-        <el-form-item label="手续费率">
-          <el-input-number
-            v-model="configForm.commission_rate"
-            :min="0"
-            :max="0.01"
-            :step="0.0001"
-            :precision="4"
-            style="width: 120px"
-          />
+        <el-form-item label="COMMISSION">
+          <el-input-number v-model="configForm.commission_rate" :min="0" :max="0.01" :step="0.0001" :precision="4" class="web3-input-number" style="width: 120px" />
         </el-form-item>
       </el-form>
-    </el-card>
+    </Web3Card>
 
-    <!-- 回测结果列表 -->
-    <el-card class="results-card">
+    <!-- Backtest Results -->
+    <Web3Card class="results-card grid-bg">
       <template #header>
         <div class="card-header">
-          <span>回测结果历史</span>
-          <el-button size="small" @click="loadResults" :loading="loading">
-            <el-icon><Refresh /></el-icon> 刷新
-          </el-button>
+          <span class="section-title">II. BACKTEST RESULTS HISTORY</span>
+          <Web3Button variant="outline" size="sm" @click="loadResults" :loading="loading">
+            <el-icon><Refresh /></el-icon> REFRESH
+          </Web3Button>
         </div>
       </template>
 
-      <el-table :data="results" v-loading="loading" stripe border>
+      <el-table :data="results" v-loading="loading" class="web3-table" stripe border>
         <el-table-column prop="backtest_id" label="ID" width="80" />
-        <el-table-column prop="strategy_code" label="策略" width="120">
+        <el-table-column prop="strategy_code" label="STRATEGY" width="120">
           <template #default="scope">
-            <el-tag size="small">{{ scope.row.strategy_code }}</el-tag>
+            <el-tag size="small" class="web3-tag">{{ scope.row.strategy_code }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="symbol" label="股票" width="100" />
-        <el-table-column label="回测周期" width="200">
+        <el-table-column prop="symbol" label="SYMBOL" width="100" />
+        <el-table-column label="PERIOD" width="200">
+          <template #default="scope">{{ scope.row.start_date }} ~ {{ scope.row.end_date }}</template>
+        </el-table-column>
+        <el-table-column label="TOTAL RETURN" width="120" align="right">
           <template #default="scope">
-            {{ scope.row.start_date }} ~ {{ scope.row.end_date }}
+            <span :class="getReturnClass(scope.row.total_return)">{{ formatPercent(scope.row.total_return) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="总收益率" width="120" align="right">
+        <el-table-column label="ANNUAL RETURN" width="120" align="right">
           <template #default="scope">
-            <span :class="getReturnClass(scope.row.total_return)">
-              {{ formatPercent(scope.row.total_return) }}
-            </span>
+            <span :class="getReturnClass(scope.row.annual_return)">{{ formatPercent(scope.row.annual_return) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="年化收益" width="120" align="right">
-          <template #default="scope">
-            <span :class="getReturnClass(scope.row.annual_return)">
-              {{ formatPercent(scope.row.annual_return) }}
-            </span>
-          </template>
+        <el-table-column label="MAX DRAWDOWN" width="120" align="right">
+          <template #default="scope"><span class="profit-down">{{ formatPercent(scope.row.max_drawdown) }}</span></template>
         </el-table-column>
-        <el-table-column label="最大回撤" width="120" align="right">
-          <template #default="scope">
-            <span class="negative">{{ formatPercent(scope.row.max_drawdown) }}</span>
-          </template>
+        <el-table-column label="SHARPE" width="100" align="right">
+          <template #default="scope">{{ scope.row.sharpe_ratio?.toFixed(2) || '-' }}</template>
         </el-table-column>
-        <el-table-column label="夏普比率" width="100" align="right">
+        <el-table-column prop="created_at" label="CREATED" width="180" />
+        <el-table-column label="ACTIONS" width="150" fixed="right">
           <template #default="scope">
-            {{ scope.row.sharpe_ratio?.toFixed(2) || '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="created_at" label="创建时间" width="180" />
-        <el-table-column label="操作" width="150" fixed="right">
-          <template #default="scope">
-            <el-button size="small" type="primary" @click="viewDetail(scope.row)">
-              详情
-            </el-button>
-            <el-button size="small" @click="exportResult(scope.row)">
-              导出
-            </el-button>
+            <Web3Button variant="outline" size="sm" @click="viewDetail(scope.row)">DETAILS</Web3Button>
+            <Web3Button variant="ghost" size="sm" @click="exportResult(scope.row)">EXPORT</Web3Button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
-        :total="pagination.total"
-        layout="total, sizes, prev, pager, next"
-        @size-change="loadResults"
-        @current-change="loadResults"
-        style="margin-top: 16px; justify-content: center"
-      />
-    </el-card>
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize" :page-sizes="[10, 20, 50]" :total="pagination.total" layout="total, sizes, prev, pager, next" @size-change="loadResults" @current-change="loadResults" style="margin-top: 16px; justify-content: center" />
+    </Web3Card>
 
-    <!-- 详情对话框 -->
-    <el-dialog v-model="detailVisible" title="回测详情" width="900px" top="5vh">
+    <!-- Detail Dialog -->
+    <el-dialog v-model="detailVisible" title="BACKTEST DETAILS" width="900px" top="5vh" class="web3-dialog">
       <div v-if="selectedResult" class="detail-content">
-        <!-- 核心指标 -->
+        <!-- Core Metrics -->
         <el-row :gutter="16" class="metrics-row">
           <el-col :span="6">
-            <el-statistic title="总收益率" :value="selectedResult.total_return * 100" :precision="2">
-              <template #suffix>%</template>
-            </el-statistic>
+            <div class="metric-box">
+              <div class="metric-label">TOTAL RETURN</div>
+              <div class="metric-value" :class="getReturnClass(selectedResult.total_return)">{{ formatPercent(selectedResult.total_return) }}</div>
+            </div>
           </el-col>
           <el-col :span="6">
-            <el-statistic title="年化收益" :value="selectedResult.annual_return * 100" :precision="2">
-              <template #suffix>%</template>
-            </el-statistic>
+            <div class="metric-box">
+              <div class="metric-label">ANNUAL RETURN</div>
+              <div class="metric-value" :class="getReturnClass(selectedResult.annual_return)">{{ formatPercent(selectedResult.annual_return) }}</div>
+            </div>
           </el-col>
           <el-col :span="6">
-            <el-statistic title="最大回撤" :value="selectedResult.max_drawdown * 100" :precision="2">
-              <template #suffix>%</template>
-            </el-statistic>
+            <div class="metric-box">
+              <div class="metric-label">MAX DRAWDOWN</div>
+              <div class="metric-value profit-down">{{ formatPercent(selectedResult.max_drawdown) }}</div>
+            </div>
           </el-col>
           <el-col :span="6">
-            <el-statistic title="夏普比率" :value="selectedResult.sharpe_ratio" :precision="2" />
+            <div class="metric-box">
+              <div class="metric-label">SHARPE RATIO</div>
+              <div class="metric-value blue-glow">{{ selectedResult.sharpe_ratio?.toFixed(2) || '-' }}</div>
+            </div>
           </el-col>
         </el-row>
 
-        <el-divider />
+        <el-divider style="border-color: rgba(247, 147, 26, 0.2);" />
 
-        <!-- 详细指标 -->
-        <el-descriptions :column="3" border>
-          <el-descriptions-item label="策略">{{ selectedResult.strategy_code }}</el-descriptions-item>
-          <el-descriptions-item label="股票">{{ selectedResult.symbol }}</el-descriptions-item>
-          <el-descriptions-item label="初始资金">{{ formatMoney(selectedResult.initial_capital) }}</el-descriptions-item>
-          <el-descriptions-item label="最终资金">{{ formatMoney(selectedResult.final_capital) }}</el-descriptions-item>
-          <el-descriptions-item label="总交易次数">{{ selectedResult.total_trades }}</el-descriptions-item>
-          <el-descriptions-item label="胜率">{{ formatPercent(selectedResult.win_rate) }}</el-descriptions-item>
-          <el-descriptions-item label="盈亏比">{{ selectedResult.profit_factor?.toFixed(2) || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="平均持仓天数">{{ selectedResult.avg_hold_days?.toFixed(1) || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="最大连续盈利">{{ selectedResult.max_consecutive_wins || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="最大连续亏损">{{ selectedResult.max_consecutive_losses || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="开始日期">{{ selectedResult.start_date }}</el-descriptions-item>
-          <el-descriptions-item label="结束日期">{{ selectedResult.end_date }}</el-descriptions-item>
+        <!-- Detailed Metrics -->
+        <el-descriptions :column="3" border class="web3-descriptions">
+          <el-descriptions-item label="STRATEGY">{{ selectedResult.strategy_code }}</el-descriptions-item>
+          <el-descriptions-item label="SYMBOL">{{ selectedResult.symbol }}</el-descriptions-item>
+          <el-descriptions-item label="INITIAL CAPITAL">{{ formatMoney(selectedResult.initial_capital) }}</el-descriptions-item>
+          <el-descriptions-item label="FINAL CAPITAL">{{ formatMoney(selectedResult.final_capital) }}</el-descriptions-item>
+          <el-descriptions-item label="TOTAL TRADES">{{ selectedResult.total_trades }}</el-descriptions-item>
+          <el-descriptions-item label="WIN RATE">{{ formatPercent(selectedResult.win_rate) }}</el-descriptions-item>
+          <el-descriptions-item label="PROFIT FACTOR">{{ selectedResult.profit_factor?.toFixed(2) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="AVG HOLD DAYS">{{ selectedResult.avg_hold_days?.toFixed(1) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="MAX WINS">{{ selectedResult.max_consecutive_wins || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="MAX LOSSES">{{ selectedResult.max_consecutive_losses || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="START">{{ selectedResult.start_date }}</el-descriptions-item>
+          <el-descriptions-item label="END">{{ selectedResult.end_date }}</el-descriptions-item>
         </el-descriptions>
 
-        <!-- 收益曲线图 -->
+        <!-- Equity Curve -->
         <div v-if="chartData" class="chart-section">
-          <h4>收益曲线</h4>
-          <div id="backtest-chart" style="height: 300px"></div>
+          <h4 class="chart-title">EQUITY CURVE</h4>
+          <div id="backtest-chart" class="chart-container-inner"></div>
         </div>
       </div>
     </el-dialog>
@@ -196,14 +158,8 @@ import { VideoPlay, Refresh } from '@element-plus/icons-vue'
 import { strategyApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
+import { Web3Button, Web3Card, Web3Input } from '@/components/web3'
 
-// ============================================
-// 类型定义
-// ============================================
-
-/**
- * 回测配置表单
- */
 interface BacktestConfig {
   strategy_code: string
   symbol: string
@@ -212,18 +168,12 @@ interface BacktestConfig {
   commission_rate: number
 }
 
-/**
- * 策略定义
- */
 interface StrategyDefinition {
-  code: string
-  name: string
+  strategy_code: string
+  strategy_name_cn: string
   description?: string
 }
 
-/**
- * 回测结果
- */
 interface BacktestResult {
   backtest_id: string
   strategy_code: string
@@ -235,30 +185,27 @@ interface BacktestResult {
   sharpe_ratio?: number
   max_drawdown?: number
   win_rate?: number
+  initial_capital?: number
+  final_capital?: number
+  total_trades?: number
+  profit_factor?: number
+  avg_hold_days?: number
+  max_consecutive_wins?: number
+  max_consecutive_losses?: number
   created_at?: string
 }
 
-/**
- * 分页信息
- */
 interface Pagination {
   page: number
   pageSize: number
   total: number
 }
 
-/**
- * 图表数据
- */
 interface ChartData {
   dates?: string[]
   strategy_returns?: number[]
   benchmark_returns?: number[]
 }
-
-// ============================================
-// 响应式数据
-// ============================================
 
 const loading: Ref<boolean> = ref(false)
 const running: Ref<boolean> = ref(false)
@@ -284,13 +231,6 @@ const pagination: Ref<Pagination> = ref({
   total: 0
 })
 
-// ============================================
-// 方法定义
-// ============================================
-
-/**
- * 加载策略列表
- */
 const loadStrategies = async (): Promise<void> => {
   try {
     const response = await strategyApi.getDefinitions()
@@ -298,13 +238,10 @@ const loadStrategies = async (): Promise<void> => {
       strategies.value = response.data.data
     }
   } catch (error) {
-    console.error('加载策略列表失败:', error)
+    console.error('Failed to load strategies:', error)
   }
 }
 
-/**
- * 加载回测结果
- */
 const loadResults = async (): Promise<void> => {
   loading.value = true
   try {
@@ -318,27 +255,24 @@ const loadResults = async (): Promise<void> => {
       pagination.value.total = response.data.total || results.value.length
     }
   } catch (error) {
-    console.error('加载回测结果失败:', error)
-    ElMessage.error('加载回测结果失败')
+    console.error('Failed to load results:', error)
+    ElMessage.error('FAILED TO LOAD BACKTEST RESULTS')
   } finally {
     loading.value = false
   }
 }
 
-/**
- * 运行回测
- */
 const runBacktest = async (): Promise<void> => {
   if (!configForm.value.strategy_code) {
-    ElMessage.warning('请选择策略')
+    ElMessage.warning('PLEASE SELECT STRATEGY')
     return
   }
   if (!configForm.value.symbol) {
-    ElMessage.warning('请输入股票代码')
+    ElMessage.warning('PLEASE ENTER SYMBOL')
     return
   }
   if (!configForm.value.dateRange || configForm.value.dateRange.length !== 2) {
-    ElMessage.warning('请选择回测周期')
+    ElMessage.warning('PLEASE SELECT DATE RANGE')
     return
   }
 
@@ -354,26 +288,22 @@ const runBacktest = async (): Promise<void> => {
     }
     const response = await strategyApi.runBacktest(data)
     if (response.data.success) {
-      ElMessage.success('回测任务已提交')
+      ElMessage.success('BACKTEST SUBMITTED')
       setTimeout(() => loadResults(), 2000)
     } else {
-      ElMessage.error(response.data.message || '回测失败')
+      ElMessage.error(response.data.message || 'BACKTEST FAILED')
     }
   } catch (error: any) {
-    console.error('运行回测失败:', error)
-    ElMessage.error('运行回测失败: ' + (error.response?.data?.detail || error.message))
+    console.error('Failed to run backtest:', error)
+    ElMessage.error('BACKTEST FAILED')
   } finally {
     running.value = false
   }
 }
 
-/**
- * 查看详情
- */
 const viewDetail = async (row: BacktestResult): Promise<void> => {
   selectedResult.value = row
   detailVisible.value = true
-
   try {
     const response = await strategyApi.getBacktestChartData(row.backtest_id)
     if (response.data.success) {
@@ -382,30 +312,28 @@ const viewDetail = async (row: BacktestResult): Promise<void> => {
       renderChart()
     }
   } catch (error) {
-    console.error('加载图表数据失败:', error)
+    console.error('Failed to load chart data:', error)
   }
 }
 
-/**
- * 渲染图表
- */
 const renderChart = (): void => {
   if (!chartData.value) return
-
   const chartDom = document.getElementById('backtest-chart')
   if (!chartDom) return
-
-  if (!chartInstance) {
-    chartInstance = echarts.init(chartDom)
-  }
+  if (!chartInstance) chartInstance = echarts.init(chartDom)
 
   const option = {
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      axisPointer: { type: 'cross' }
+      axisPointer: { type: 'cross' },
+      backgroundColor: 'rgba(3, 3, 4, 0.95)',
+      borderColor: '#F7931A',
+      textStyle: { color: '#E5E7EB' }
     },
     legend: {
-      data: ['策略收益', '基准收益']
+      data: ['STRATEGY', 'BENCHMARK'],
+      textStyle: { color: '#E5E7EB' }
     },
     grid: {
       left: '3%',
@@ -416,83 +344,66 @@ const renderChart = (): void => {
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: chartData.value.dates || []
+      data: chartData.value.dates || [],
+      axisLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.5)' } },
+      axisLabel: { color: '#94A3B8', fontFamily: 'JetBrains Mono' }
     },
     yAxis: {
       type: 'value',
       axisLabel: {
-        formatter: '{value}%'
-      }
+        formatter: '{value}%',
+        color: '#94A3B8',
+        fontFamily: 'JetBrains Mono'
+      },
+      axisLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.5)' } },
+      splitLine: { lineStyle: { color: 'rgba(30, 41, 59, 0.3)' } }
     },
     series: [
       {
-        name: '策略收益',
+        name: 'STRATEGY',
         type: 'line',
         data: chartData.value.strategy_returns || [],
         smooth: true,
-        itemStyle: { color: '#409eff' },
+        itemStyle: { color: '#F7931A' },
         areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-            { offset: 1, color: 'rgba(64, 158, 255, 0.1)' }
-          ])
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: 'rgba(247, 147, 26, 0.3)' }, { offset: 1, color: 'rgba(247, 147, 26, 0.1)' }]
+          }
         }
       },
       {
-        name: '基准收益',
+        name: 'BENCHMARK',
         type: 'line',
         data: chartData.value.benchmark_returns || [],
         smooth: true,
-        itemStyle: { color: '#909399' },
+        itemStyle: { color: '#94A3B8' },
         lineStyle: { type: 'dashed' }
       }
     ]
   }
-
   chartInstance?.setOption(option)
 }
 
-/**
- * 导出结果
- */
 const exportResult = (row: BacktestResult): void => {
-  ElMessage.info('导出功能开发中')
+  ElMessage.info('EXPORT FEATURE COMING SOON')
 }
 
-// ============================================
-// 格式化函数
-// ============================================
-
-/**
- * 格式化百分比
- */
 const formatPercent = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '-'
   return (value * 100).toFixed(2) + '%'
 }
 
-/**
- * 格式化金额
- */
 const formatMoney = (value: number): string => {
   if (!value) return '-'
-  return new Intl.NumberFormat('zh-CN', {
-    style: 'currency',
-    currency: 'CNY'
-  }).format(value)
+  return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(value)
 }
 
-/**
- * 获取收益样式类
- */
 const getReturnClass = (value: number | null | undefined): string => {
   if (!value) return ''
-  return value > 0 ? 'positive' : value < 0 ? 'negative' : ''
+  return value > 0 ? 'profit-up' : value < 0 ? 'profit-down' : ''
 }
-
-// ============================================
-// 监听器
-// ============================================
 
 watch(detailVisible, (val: boolean) => {
   if (!val && chartInstance) {
@@ -501,14 +412,8 @@ watch(detailVisible, (val: boolean) => {
   }
 })
 
-// ============================================
-// 窗口resize处理
-// ============================================
-
 const handleResize = (): void => {
-  if (chartInstance) {
-    chartInstance.resize()
-  }
+  if (chartInstance) chartInstance.resize()
 }
 
 onMounted(() => {
@@ -519,53 +424,234 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
-  if (chartInstance) {
-    chartInstance.dispose()
-  }
+  if (chartInstance) chartInstance.dispose()
 })
 </script>
 
 <style scoped lang="scss">
-.backtest-analysis {
-  .config-card {
-    margin-bottom: 16px;
+.web3-backtest-analysis {
+  min-height: 100vh;
+  padding: 24px;
+  background: #030304;
+
+  .grid-bg {
+    position: relative;
+    background-image:
+      linear-gradient(rgba(247, 147, 26, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247, 147, 26, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .page-header {
+    margin-bottom: 32px;
+    text-align: center;
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #94A3B8;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  }
+
+  .config-card {
+    margin-bottom: 20px;
+
+    &.hover-lift:hover {
+      transform: translateY(-2px);
+      border-color: rgba(247, 147, 26, 0.5);
+      box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
+    }
+
+    &.corner-border {
+      position: relative;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-color: #F7931A;
+        border-style: solid;
+      }
+
+      &::before {
+        top: -1px;
+        left: -1px;
+        border-width: 2px 0 0 2px;
+        border-radius: 8px 0 0 0;
+      }
+
+      &::after {
+        bottom: -1px;
+        right: -1px;
+        border-width: 0 2px 2px 0;
+        border-radius: 0 0 8px 0;
+      }
+    }
+
+    .config-form {
+      .el-form-item {
+        margin-right: 16px;
+        margin-bottom: 0;
+      }
+    }
   }
 
   .results-card {
-    .el-table {
-      margin-top: 0;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .section-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 600;
+        color: #F7931A;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
     }
   }
 
   .detail-content {
     .metrics-row {
       margin-bottom: 20px;
+
+      .metric-box {
+        padding: 16px;
+        border: 1px solid rgba(30, 41, 59, 0.5);
+        border-radius: 8px;
+        background: rgba(15, 17, 21, 0.5);
+        text-align: center;
+
+        .metric-label {
+          font-size: 11px;
+          color: #94A3B8;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 8px;
+        }
+
+        .metric-value {
+          font-size: 20px;
+          font-weight: 700;
+          font-family: 'JetBrains Mono', monospace;
+
+          &.orange-glow { color: #F7931A; }
+          &.blue-glow { color: #3B82F6; }
+          &.green-glow { color: #22C55E; }
+          &.profit-up { color: #F7931A; }
+          &.profit-down { color: #22C55E; }
+        }
+      }
     }
 
     .chart-section {
       margin-top: 20px;
 
-      h4 {
-        margin-bottom: 12px;
-        color: #303133;
+      .chart-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 600;
+        color: #F7931A;
+        text-transform: uppercase;
+        margin: 0 0 16px 0;
+      }
+
+      .chart-container-inner {
+        height: 300px;
+        width: 100%;
       }
     }
   }
 
-  .positive {
-    color: #f56c6c;
-    font-weight: 500;
+  .web3-table {
+    background: transparent;
+
+    :deep(.el-table__header) {
+      th {
+        background: rgba(30, 41, 59, 0.5) !important;
+        color: #F7931A !important;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(247, 147, 26, 0.3) !important;
+      }
+    }
+
+    :deep(.el-table__body) {
+      tr {
+        background: transparent !important;
+
+        &:hover {
+          background: rgba(247, 147, 26, 0.05) !important;
+        }
+
+        td {
+          border-bottom: 1px solid rgba(30, 41, 59, 0.5) !important;
+          color: #E5E7EB;
+        }
+      }
+    }
   }
 
-  .negative {
-    color: #67c23a;
-    font-weight: 500;
+  .web3-descriptions {
+    :deep(.el-descriptions__label) {
+      background: rgba(30, 41, 59, 0.3) !important;
+      color: #94A3B8 !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      border-color: rgba(30, 41, 59, 0.5) !important;
+    }
+
+    :deep(.el-descriptions__content) {
+      background: transparent !important;
+      color: #E5E7EB !important;
+      font-family: 'JetBrains Mono', monospace;
+      border-color: rgba(30, 41, 59, 0.5) !important;
+    }
+  }
+
+  .web3-select,
+  .web3-date-picker,
+  .web3-input-number {
+    :deep(.el-input__wrapper) {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(30, 41, 59, 0.5);
+
+      &:hover {
+        border-color: rgba(247, 147, 26, 0.3);
+      }
+    }
+
+    :deep(.el-input__inner) {
+      color: #E5E7EB;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  }
+
+  .web3-tag {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    font-size: 11px;
+    border: 1px solid rgba(247, 147, 26, 0.3);
+    background: rgba(247, 147, 26, 0.1);
+  }
+
+  .profit-up {
+    color: #F7931A;
+    font-weight: 600;
+  }
+
+  .profit-down {
+    color: #22C55E;
+    font-weight: 600;
   }
 }
 </style>

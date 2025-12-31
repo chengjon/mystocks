@@ -15,7 +15,7 @@
  * @deprecated Use useMarket() composable instead
  */
 
-import { marketApiService } from './services/marketService';
+import { MarketApiService as MarketApiServiceClass } from './services/marketService';
 import { MarketAdapter } from './adapters/marketAdapter';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from './types/market';
 
@@ -34,8 +34,10 @@ export type {
  */
 class MarketApiServiceWithFallback {
   private useRealData = import.meta.env.VITE_USE_REAL_DATA !== 'false';
+  private marketService: MarketApiServiceClass;
 
   constructor() {
+    this.marketService = new MarketApiServiceClass();
     console.log('📊 MarketApiServiceWithFallback initialized');
     console.log('   ⚠️  This is a legacy compatibility layer');
     console.log('   ℹ️  New code should use: useMarket() composable');
@@ -52,7 +54,7 @@ class MarketApiServiceWithFallback {
   async getMarketOverview(forceRefresh = false): Promise<MarketOverviewVM> {
     console.warn('[DEPRECATED] getMarketOverview() - use useMarket() composable instead');
 
-    const response = await marketApiService.getMarketOverview();
+    const response = await this.marketService.getMarketOverview();
     return MarketAdapter.adaptMarketOverview(response);
   }
 
@@ -74,7 +76,11 @@ class MarketApiServiceWithFallback {
   ): Promise<FundFlowChartPoint[]> {
     console.warn('[DEPRECATED] getFundFlow() - use useMarket() composable instead');
 
-    const response = await marketApiService.getFundFlow(params);
+    const response = await this.marketService.getFundFlow({
+      symbol: params?.market || 'sh000001', // Default to Shanghai index
+      start_date: params?.startDate,
+      end_date: params?.endDate,
+    });
     return MarketAdapter.adaptFundFlow(response);
   }
 
@@ -98,7 +104,23 @@ class MarketApiServiceWithFallback {
   ): Promise<KLineChartData> {
     console.warn('[DEPRECATED] getKLineData() - use useMarket() composable instead');
 
-    const response = await marketApiService.getKLineData(params);
+    // Map legacy intervals to new API intervals
+    // New API only supports: "1m" | "5m" | "15m" | "30m" | "1h" | "1d"
+    const supportedIntervals = ['1m', '5m', '15m', '30m', '1h', '1d'] as const;
+    const interval = supportedIntervals.includes(params.interval as any)
+      ? params.interval
+      : '1d'; // Default to 1d for unsupported intervals
+
+    if (!supportedIntervals.includes(params.interval as any)) {
+      console.warn(`[MarketApiServiceWithFallback] Interval '${params.interval}' not supported by new API, using '1d' instead`);
+    }
+
+    const response = await this.marketService.getKLineData({
+      symbol: params.symbol,
+      interval: interval as typeof supportedIntervals[number],
+      start_date: params.startDate,
+      end_date: params.endDate,
+    });
     return MarketAdapter.adaptKLineData(response);
   }
 

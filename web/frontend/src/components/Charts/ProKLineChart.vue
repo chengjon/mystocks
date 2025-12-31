@@ -132,6 +132,7 @@ import { klineCache } from '@/utils/cacheManager';
 import { calculateIndicator, type IndicatorType } from '@/utils/indicator/mainIndicator';
 import { calculateOscillator, type OscillatorType } from '@/utils/indicator/oscillator';
 import type { KLineData, IntervalType, AdjustType, StopLimitData } from '@/types/kline';
+import type { Chart, LayoutChildType, ActionType, LayoutOptions } from '@/types/klinecharts';
 import '@/styles/kline-chart.scss';
 
 const props = withDefaults(defineProps<{
@@ -152,8 +153,8 @@ const emit = defineEmits<{
 const chartContainer = ref<HTMLElement | null>(null);
 const klineRef = ref<HTMLElement | null>(null);
 const oscillatorRef = ref<HTMLElement | null>(null);
-let chartInstance: ReturnType<typeof klinecharts.init> | null = null;
-let oscillatorInstance: ReturnType<typeof klinecharts.init> | null = null;
+let chartInstance: Chart | null = null;
+let oscillatorInstance: Chart | null = null;
 
 const {
   klineData,
@@ -162,7 +163,7 @@ const {
   limitData,
   latestPrice,
   priceChange,
-  loadData: loadKlineData,
+  loadKlineData,
   reload,
   clearCache
 } = useKlineChart({ useMock: props.useMock });
@@ -269,16 +270,16 @@ const initChart = () => {
 
   chartInstance = klinecharts.init(klineRef.value, {
     locale: 'zh-CN',
-    styles: chartStyles,
+    styles: chartStyles as any,  // 类型断言绕过 DeepPartial 推断限制
     layout: [
-      { type: 'candle' as const, height: '65%' },
-      { type: 'volume' as const, height: '15%' },
-      { type: 'xAxis' as const, height: 30 }
+      { type: 'candle' as LayoutChildType, height: '65%' } as LayoutOptions,
+      { type: 'volume' as LayoutChildType, height: '15%' } as LayoutOptions,
+      { type: 'xAxis' as LayoutChildType, height: 30 } as LayoutOptions
     ]
-  });
+  }) as Chart;
 
   try {
-    chartInstance.subscribeAction('onZoom' as const, () => {
+    chartInstance.subscribeAction('onZoom' as ActionType, () => {
       console.log('Zoom event');
     });
   } catch (e) {
@@ -311,11 +312,11 @@ const registerIndicators = () => {
       shortName: 'MA',
       calcParams: [5, 10, 20],
       figures: [
-        { key: 'MA5', title: 'MA5: ', type: 'line', styles: [{ color: '#2DC08E' }] },
-        { key: 'MA10', title: 'MA10: ', type: 'line', styles: [{ color: '#D4AF37' }] },
-        { key: 'MA20', title: 'MA20: ', type: 'line', styles: [{ color: '#F92855' }] }
+        { key: 'MA5', title: 'MA5: ', type: 'line', styles: [{ color: '#2DC08E' }] as any },
+        { key: 'MA10', title: 'MA10: ', type: 'line', styles: [{ color: '#D4AF37' }] as any },
+        { key: 'MA20', title: 'MA20: ', type: 'line', styles: [{ color: '#F92855' }] as any }
       ],
-      calc: (kLineDataList) => {
+      calc: ((kLineDataList) => {
         const closes = kLineDataList.map(d => d.close);
         const result: Record<string, number[]> = { MA5: [], MA10: [], MA20: [] };
 
@@ -336,7 +337,7 @@ const registerIndicators = () => {
         result.MA10 = calcMA(10);
         result.MA20 = calcMA(20);
         return result;
-      }
+      }) as any
     });
 
     klinecharts.registerIndicator({
@@ -344,11 +345,11 @@ const registerIndicators = () => {
       shortName: 'BOLL',
       calcParams: [20, 2],
       figures: [
-        { key: 'upper', title: '上轨: ', type: 'line', styles: [{ color: '#D4AF37' }] },
-        { key: 'middle', title: '中轨: ', type: 'line', styles: [{ color: '#D4AF37' }] },
-        { key: 'lower', title: '下轨: ', type: 'line', styles: [{ color: '#D4AF37' }] }
+        { key: 'upper', title: '上轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as any },
+        { key: 'middle', title: '中轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as any },
+        { key: 'lower', title: '下轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as any }
       ],
-      calc: (kLineDataList) => {
+      calc: ((kLineDataList) => {
         const closes = kLineDataList.map(d => d.close);
         const period = 20;
         const stdDev = 2;
@@ -371,7 +372,7 @@ const registerIndicators = () => {
           }
         }
         return result;
-      }
+      }) as any
     });
   } catch (e) {
     console.warn('Failed to register indicators:', e);
@@ -411,11 +412,11 @@ const initOscillatorChart = () => {
       shortName: 'MACD',
       calcParams: [12, 26, 9],
       figures: [
-        { key: 'DIF', title: 'DIF: ', type: 'line', styles: [{ color: '#2DC08E' }] },
-        { key: 'DEA', title: 'DEA: ', type: 'line', styles: [{ color: '#F92855' }] },
-        { key: 'MACD', title: 'MACD: ', type: 'bar', styles: [{ color: 'rgba(212, 175, 55, 0.6)' }] }
+        { key: 'DIF', title: 'DIF: ', type: 'line', styles: [{ color: '#2DC08E' }] as any },
+        { key: 'DEA', title: 'DEA: ', type: 'line', styles: [{ color: '#F92855' }] as any },
+        { key: 'MACD', title: 'MACD: ', type: 'bar', styles: [{ color: 'rgba(212, 175, 55, 0.6)' }] as any }
       ],
-      calc: (kLineDataList) => {
+      calc: ((kLineDataList) => {
         const closes = kLineDataList.map(d => d.close);
         const result = { DIF: [], DEA: [], MACD: [] };
 
@@ -447,7 +448,7 @@ const initOscillatorChart = () => {
         }
 
         return result;
-      }
+      }) as any
     });
 
     klinecharts.registerIndicator({
@@ -455,9 +456,9 @@ const initOscillatorChart = () => {
       shortName: 'RSI',
       calcParams: [14],
       figures: [
-        { key: 'RSI', title: 'RSI: ', type: 'line', styles: [{ color: '#D4AF37' }] }
+        { key: 'RSI', title: 'RSI: ', type: 'line', styles: [{ color: '#D4AF37' }] as any }
       ],
-      calc: (kLineDataList) => {
+      calc: ((kLineDataList) => {
         const closes = kLineDataList.map(d => d.close);
         const result: number[] = [];
         let gains = 0;
@@ -487,7 +488,7 @@ const initOscillatorChart = () => {
 
         result.unshift(NaN);
         return { RSI: result };
-      }
+      }) as any
     });
 
     klinecharts.registerIndicator({
@@ -495,11 +496,11 @@ const initOscillatorChart = () => {
       shortName: 'KDJ',
       calcParams: [9, 3, 3],
       figures: [
-        { key: 'K', title: 'K: ', type: 'line', styles: [{ color: '#D4AF37' }] },
-        { key: 'D', title: 'D: ', type: 'line', styles: [{ color: '#2DC08E' }] },
-        { key: 'J', title: 'J: ', type: 'line', styles: [{ color: '#F92855' }] }
+        { key: 'K', title: 'K: ', type: 'line', styles: [{ color: '#D4AF37' }] as any },
+        { key: 'D', title: 'D: ', type: 'line', styles: [{ color: '#2DC08E' }] as any },
+        { key: 'J', title: 'J: ', type: 'line', styles: [{ color: '#F92855' }] as any }
       ],
-      calc: (kLineDataList) => {
+      calc: ((kLineDataList) => {
         const highs = kLineDataList.map(d => d.high);
         const lows = kLineDataList.map(d => d.low);
         const closes = kLineDataList.map(d => d.close);
@@ -535,7 +536,7 @@ const initOscillatorChart = () => {
         }
 
         return result;
-      }
+      }) as any
     });
 
     oscillatorInstance = klinecharts.init(oscillatorRef.value, {
@@ -545,8 +546,8 @@ const initOscillatorChart = () => {
         xAxis: { axisLine: { show: true, color: '#333333' }, tickText: { color: '#888888' } },
         yAxis: { axisLine: { show: true, color: '#333333' }, tickText: { color: '#888888' } }
       },
-      layout: [{ type: 'xAxis' as const, height: 25 }]
-    });
+      layout: [{ type: 'xAxis' as LayoutChildType, height: 25 } as LayoutOptions]
+    }) as Chart;
 
     updateOscillatorIndicator();
   } catch (e) {

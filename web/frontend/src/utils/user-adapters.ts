@@ -280,7 +280,7 @@ export class UserAdapter {
   static toNotificationVM(data: NotificationResponse[]): NotificationVM[] {
     return data.map(notification => ({
       id: notification.id || '',
-      type: notification.type || 'system',
+      type: (notification.type || 'system') as any,
       title: notification.title || '',
       message: notification.message || '',
       data: notification.data,

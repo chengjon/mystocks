@@ -60,7 +60,7 @@
                     <input
                       :value="value"
                       type="text"
-                      @input="updateParameter(key, $event.target.value)"
+                      @input="updateParameter(key, ($event.target as HTMLInputElement).value)"
                       class="form-input param-value"
                     />
                   </div>
@@ -158,7 +158,6 @@ const handleSubmit = () => {
     const data: UpdateStrategyRequest = {
       name: formData.value.name,
       description: formData.value.description,
-      type: formData.value.type,
       parameters: formData.value.parameters,
     };
     emit('save', data);

@@ -333,8 +333,8 @@ export function calculateAO(data: ExtendedKLineDataPoint[]): number[] {
   const aoInput = {
     high: data.map(d => d.high),
     low: data.map(d => d.low),
-    fast: 5,
-    slow: 34
+    fastPeriod: 5,
+    slowPeriod: 34
   }
   return AwesomeOscillator.calculate(aoInput)
 }
@@ -625,8 +625,7 @@ export function calculateBB(
 } {
   const bbInput = {
     period,
-    stdDevUp: stdDev,      // 上轨标准差
-    stdDevDown: stdDev,    // 下轨标准差
+    stdDev,      // 标准差
     values: data.map(d => d.close)
   }
 
