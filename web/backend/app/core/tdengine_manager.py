@@ -15,7 +15,7 @@ Features:
 import os
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, cast
 import structlog
 
 # 支持从脚本导入：尝试相对导入
@@ -330,7 +330,7 @@ class TDengineManager:
 
             if result and len(result) > 0:
                 data_str, updated_at = result[0]
-                data = json.loads(data_str)
+                data: Dict[str, Any] = json.loads(data_str)
 
                 # 更新命中次数
                 self._update_hit_count(symbol, data_type)
@@ -477,7 +477,7 @@ class TDengineManager:
                     cursor.execute(f"USE {self.database}")
 
                 cursor.execute(sql)
-                result = cursor.fetchall()
+                result: List[Tuple[Any, ...]] = cursor.fetchall()
                 cursor.close()
                 return result
         except Exception as e:
