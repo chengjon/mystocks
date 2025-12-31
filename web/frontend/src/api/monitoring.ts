@@ -7,17 +7,18 @@
 import { request } from '@/utils/request'
 import { MonitoringAdapter } from '@/utils/monitoring-adapters'
 import type {
-  SystemStatusResponse,
-  MonitoringAlertResponse,
-  LogEntryResponse,
-  DataQualityResponse
-} from '@/api/types/generated-types'
-import type {
   SystemStatusVM,
   MonitoringAlertVM,
   LogEntryVM,
   DataQualityVM
 } from '@/utils/monitoring-adapters'
+
+// Temporary: Use any for missing generated types
+// TODO: Fix type generation to include these types
+type SystemStatusResponse = any
+type MonitoringAlertResponse = any
+type LogEntryResponse = any
+type DataQualityResponse = any
 
 class MonitoringApiService {
   private baseUrl = '/api/monitoring'

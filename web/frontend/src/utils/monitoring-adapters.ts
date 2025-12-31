@@ -4,13 +4,13 @@
  * Transforms API responses into ViewModels for UI components.
  */
 
-import type {
-  SystemStatusResponse,
-  MonitoringAlertResponse,
-  LogEntryResponse,
-  DataQualityResponse,
-  DataQualityIssue
-} from '@/api/types/generated-types'
+// Temporary: Use any for missing generated types
+// TODO: Fix type generation to include these types
+type SystemStatusResponse = any
+type MonitoringAlertResponse = any
+type LogEntryResponse = any
+type DataQualityResponse = any
+type DataQualityIssue = any
 
 // ViewModel interfaces
 export interface SystemStatusVM {

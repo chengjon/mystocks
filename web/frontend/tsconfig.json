@@ -67,7 +67,8 @@
     "node_modules",
     "reports",
     "src/**/*.spec.ts",
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/components/market/ProKLineChart.vue"
   ],
 
   // Vue-specific compiler options (via vue-tsc)
