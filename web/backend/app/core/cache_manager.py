@@ -98,6 +98,20 @@ class CacheManager:
             "default": 300,  # 默认5分钟
         }
 
+    def _with_tdengine(self, fallback_value=None):
+        """
+        安全地执行需要 tdengine 的操作
+
+        Args:
+            fallback_value: 如果 tdengine 不可用时的返回值
+
+        Returns:
+            上下文管理器，确保 tdengine 可用
+        """
+        if self.tdengine is None:
+            return fallback_value
+        return self.tdengine
+
         logger.info("🔧 初始化缓存管理器(含内存缓存层)")
 
     # ==================== 核心缓存操作 ====================
@@ -352,15 +366,16 @@ class CacheManager:
                     logger.warning("🗑️ 清除所有内存缓存")
 
             # 清理TDengine缓存（异步）
-            if symbol and data_type:
-                tdengine_deleted = self.tdengine.clear_expired_cache(days=0)  # 需要实现精确删除
-                total_deleted += tdengine_deleted
-            elif symbol:
-                tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
-                total_deleted += tdengine_deleted
-            else:
-                tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
-                total_deleted += tdengine_deleted
+            if self.tdengine is not None:
+                if symbol and data_type:
+                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)  # 需要实现精确删除
+                    total_deleted += tdengine_deleted
+                elif symbol:
+                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
+                    total_deleted += tdengine_deleted
+                else:
+                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
+                    total_deleted += tdengine_deleted
 
             logger.info(
                 "✅ 缓存清除完成",
@@ -467,12 +482,15 @@ class CacheManager:
                     cache_key = self.get_cache_key(symbol, data_type, timeframe)
 
                     try:
-                        cache_data = self.tdengine.read_cache(
-                            symbol=symbol,
-                            data_type=data_type,
-                            timeframe=timeframe,
-                            days=query.get("days", 1),
-                        )
+                        if self.tdengine is not None:
+                            cache_data = self.tdengine.read_cache(
+                                symbol=symbol,
+                                data_type=data_type,
+                                timeframe=timeframe,
+                                days=query.get("days", 1),
+                            )
+                        else:
+                            cache_data = None
 
                         if cache_data:
                             enriched_data = {
@@ -655,9 +673,10 @@ class CacheManager:
 
         # 从 TDengine 获取额外统计
         try:
-            tdengine_stats = self.tdengine.get_cache_stats()
-            if tdengine_stats:
-                stats["tdengine_stats"] = tdengine_stats
+            if self.tdengine is not None:
+                tdengine_stats = self.tdengine.get_cache_stats()
+                if tdengine_stats:
+                    stats["tdengine_stats"] = tdengine_stats
         except Exception as e:
             logger.warning("无法获取 TDengine 统计", error=str(e))
 
@@ -771,6 +790,9 @@ class CacheManager:
         """异步写入TDengine"""
         try:
             # 使用线程池执行TDengine写入，避免阻塞
+            if self.tdengine is None:
+                return False
+
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
@@ -884,7 +906,7 @@ class CacheManager:
 
         try:
             # 检查 TDengine 连接
-            tdengine_healthy = self.tdengine.health_check()
+            tdengine_healthy = self.tdengine.health_check() if self.tdengine is not None else False
             health_status["components"]["tdengine"] = {
                 "healthy": tdengine_healthy,
                 "status": "OK" if tdengine_healthy else "ERROR",
@@ -946,7 +968,8 @@ class CacheManager:
     def close(self) -> None:
         """关闭缓存管理器"""
         try:
-            self.tdengine.close()
+            if self.tdengine is not None:
+                self.tdengine.close()
             logger.info("✅ 缓存管理器已关闭")
         except Exception as e:
             logger.warning("关闭缓存管理器时出错", error=str(e))
